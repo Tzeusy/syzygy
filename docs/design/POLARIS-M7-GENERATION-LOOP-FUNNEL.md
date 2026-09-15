@@ -32,8 +32,8 @@ Q2 and Q3 are independent of it; Q4 and Q5 each gate exactly one slice.
 
 | # | Question | Recommended |
 |---|---|---|
-| Q1 | **Does the observer registry's `git-tree-entry` source identity satisfy RFC7-10's closed anchor classes, or does citing a project source file need a sixth class?** The effective REQ-polaris-generation-003 requires, verbatim at `openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md` line 98 (REQ-003 is not one of the seven the understanding amendment touched, so the predecessor is the effective text): "Source anchors SHALL use the closed classes and durable revision/evaluation-bound identities required by RFC7-10, not labels or paths as identity." RFC7-10 (`.syzygy/governance/contracts/rfcs/RFC-0007/narrative-contract.md` lines 204–213, quoted whole in Gate 5) closes the target class at **five**: a kernel entity reference; a doctrine rule or accepted-contract citation; an `openspec/**` anchor; a decision or policy identifier; or an evidence artifact identifier with integrity digest. What is **[Observed]** here is the clause and its five classes, read at source this session and enumerated: RFC7-10 names five target classes and names **no** class for a file inside an observed repository. That such a file therefore falls outside all five is **[Inferred]** — it is precisely the reading Q1 asks the owner to make, and this packet's own recommended arm is that it falls *inside* the fifth. [Superseded 2026-09-15, review 1 F6: this read "A file inside an observed project is **none of those five** [Observed, the clause read at source this session and its five classes enumerated]" — an [Observed] label on the negative standing beside a recommendation for the positive. Per AGENTS.md §Epistemic and change discipline, an LLM assertion is Inferred.] What the PWB observer actually issues is a sixth thing: the adopted registry entry declares an input class `git-tree-entry` whose `identityScheme` is `repository-id-plus-revision-plus-repository-relative-path-plus-object-id` (`.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` line **54**, inside the object whose `"class": "git-tree-entry"` is on line 53; the literal `git-tree-entry` occurs **1** time across every tracked file under `.syzygy/` and `openspec/`, at line 53) [anchor corrected 2026-09-15, review 1 F10.1; it read "line 53" for the `identityScheme`] [Observed, literal sweep this session, denominator the two governed trees]. That entry is act-bound twice over — `PWB-OBSERVER-REGISTRY-ENTRY-ACT.md` and `PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md` both name it as their artifact identity — so slice 1 reads it and may never edit it. | **Rule that `git-tree-entry` is admitted as RFC7-10's fifth class — "an evidence artifact identifier with integrity digest" — for the generator's source anchors, and say so in a recorded ruling rather than leaving it to the implementation.** The object id *is* the integrity digest, the revision *is* the target state RFC7-10 demands, and the scheme is durable and path-free in exactly the sense the clause's closing sentence requires ("Anchors embed durable identifiers, never labels, paths, or coordinates"). **The counter-argument, which this packet does not resolve:** RFC7-10's fifth class reads naturally as *Syzygy's own* evidence artifacts (the class `docs/evidence/**` records belong to), and the clause says in terms "No target class exists for narrative content, renderings, or editorial drafts" — a deliberately closed list. Reading a sixth kind of target into the fifth class is a widening of an accepted contract, and RFC acceptance is VIS-4's always-human-gated shape-defining class. **Second lawful arm:** amend RFC-0007 to name the class, through the normative-change workflow and a new owner act — slower, and it re-opens an accepted contract. **Third lawful arm:** build slice 1's richer source type without claiming RFC7-10 conformance, and record the clause as unsatisfied — honest, and it leaves the specification's own anchor obligation open. **Default if unanswered: the third arm** — slice 1 ships the identity fields and records REQ-003's anchor sentence as **unsatisfied**, rather than asserting a conformance the owner has not ruled. |
-| Q2 | **Is running the generator over Syzygy's own governed corpus a "real-project read" the implementation act reserves, or the observing project reading its own tree?** `POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md` line 42 reserves, verbatim: "Real-project reads, provider egress and destination writes remain separately admitted; no effect, production release, broad remote access or observed-project code execution is authorized by this act." `EXECUTION-PHASES.md` lines **13–14** say Phase A's operator seam "does not create or mutate live scheduler items, call a real provider, serve owner effect controls, or read **another** project" — the sentence begins on line 13 and only its second half is on 14 (emphasis this packet's, marked as added) [anchor corrected 2026-09-15, review 1 F10.2; it read "line 14"]. Syzygy is not another project; it is the observing one, and its own tree is already read by every script in the battery. But the act's reservation does not say "another project" — it says "real-project reads", and Syzygy is a real project. Measured this session, the corpus slice 3 would use is **105 files / 1,266,454 bytes / 1,258,724 characters** (the six doctrine files, the 71 tracked `.md` files under `.syzygy/governance/decisions/` at every level — 67 at the top level and four under `launch-gate/` — and the 28 accepted RFC modules, the `.md` files one directory below `.syzygy/governance/contracts/rfcs/`. The two accepted RFCs that are single files rather than directories, `RFC-0001-project-graph-identity-state-planes.md` and `RFC-0006-cross-surface-selection-query-drawer.md`, are **out of scope** of that predicate, and the slice's own corpus builder must say so: including them gives 107 files / 1,369,266 bytes / 1,360,678 characters / 0 over the cap / largest 63,903 [Observed, both predicates run 2026-09-15]), **0** of them over the landed per-source 100,000-character cap, the largest 55,836 characters [Observed, counted this session and re-derived 2026-09-15; predicate and denominator in the evidence record. Superseded 2026-09-15, review 1 F2: the parenthesis read "the 71 top-level `.md` files under `.syzygy/governance/decisions/`" — the 71 is the count at every level, and read strictly as *top-level* the predicate gives 67 and a 101-file corpus, so both halves of it were wrong. The six published figures re-derive exactly under the corrected wording]. | **Rule it the observing project reading its own tree: no new consent record, no registry entry, no act — with the ruling recorded, because the sentence above can be read the other way.** The read adds no capability the repository does not already exercise; the PWB body-read-authority gate exists to protect an *observed* repository from the observer, and Syzygy is on the other side of that gate. **Counter-argument, and it is not weak:** the generator is the thing that will one day send this material to a provider, and giving it a reader over Syzygy's own governance corpus builds the pipe before the egress act exists — the discipline the reservation protects is precisely that a read path and an egress path are admitted separately. **Second lawful arm:** require a narrow owner direction naming the self-corpus read, its file set and its no-egress condition, in the shape of `POLARIS-TRUSTED-BOOTSTRAP-OBSERVATION-DIRECTION.md`. **Default if unanswered: slice 3 does not ship.** Slices 1, 2, 5 and 6 are unaffected. |
+| Q1 | **Does the observer registry's `git-tree-entry` source identity satisfy RFC7-10's closed anchor classes, or does citing a project source file need a sixth class?** The effective REQ-polaris-generation-003 requires, verbatim at `openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md` line 98 (REQ-003 is not one of the seven the understanding amendment touched, so the predecessor is the effective text): "Source anchors SHALL use the closed classes and durable revision/evaluation-bound identities required by RFC7-10, not labels or paths as identity." RFC7-10 (`.syzygy/governance/contracts/rfcs/RFC-0007/narrative-contract.md` lines 204–213, quoted whole in Gate 5) closes the target class at **five**: a kernel entity reference; a doctrine rule or accepted-contract citation; an `openspec/**` anchor; a decision or policy identifier; or an evidence artifact identifier with integrity digest. What is **[Observed]** here is the clause and its five classes, read at source this session and enumerated: RFC7-10 names five target classes and names **no** class for a file inside an observed repository. That such a file therefore falls outside all five is **[Inferred]** — it is precisely the reading Q1 asks the owner to make, and this packet's own recommended arm is that it falls *inside* the fifth. [Superseded 2026-09-15, review 1 F6: this read "A file inside an observed project is **none of those five** [Observed, the clause read at source this session and its five classes enumerated]" — an [Observed] label on the negative standing beside a recommendation for the positive. Per AGENTS.md §Epistemic and change discipline, an LLM assertion is Inferred.] What the PWB observer actually issues is a sixth thing: the adopted registry entry declares an input class `git-tree-entry` whose `identityScheme` is `repository-id-plus-revision-plus-repository-relative-path-plus-object-id` (`.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` line **54**, inside the object whose `"class": "git-tree-entry"` is on line 53; the literal `git-tree-entry` occurs **1** time across every tracked file under `.syzygy/` and `openspec/`, at line 53, **at `a9f671e`**; at this commit it occurs **3** times over the same 619 tracked files, the two additions being this packet's own P-76 register blockquote and row) [anchor corrected 2026-09-15, review 1 F10.1; it read "line 53" for the `identityScheme`. Commit anchor added 2026-09-15, review 2 G5(a): the clause read "the literal `git-tree-entry` occurs **1** time across every tracked file under `.syzygy/` and `openspec/`, at line 53)" with no commit anchor, and this packet's own register commit falsified it] [Observed, literal sweep re-run 2026-09-15 at both revisions with Python `re`, denominator the 619 tracked files under the two governed trees at each]. That entry is act-bound twice over — `PWB-OBSERVER-REGISTRY-ENTRY-ACT.md` and `PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md` both name it as their artifact identity — so slice 1 reads it and may never edit it. | **Rule that `git-tree-entry` is admitted as RFC7-10's fifth class — "an evidence artifact identifier with integrity digest" — for the generator's source anchors, and say so in a recorded ruling rather than leaving it to the implementation.** The object id *is* the integrity digest, the revision *is* the target state RFC7-10 demands, and the scheme is durable and path-free in exactly the sense the clause's closing sentence requires ("Anchors embed durable identifiers, never labels, paths, or coordinates"). **The counter-argument, which this packet does not resolve:** RFC7-10's fifth class reads naturally as *Syzygy's own* evidence artifacts (the class `docs/evidence/**` records belong to), and the clause says in terms "No target class exists for narrative content, renderings, or editorial drafts" — a deliberately closed list. Reading a sixth kind of target into the fifth class is a widening of an accepted contract, and RFC acceptance is VIS-4's always-human-gated shape-defining class. **Second lawful arm:** amend RFC-0007 to name the class, through the normative-change workflow and a new owner act — slower, and it re-opens an accepted contract. **Third lawful arm:** build slice 1's richer source type without claiming RFC7-10 conformance, and record the clause as unsatisfied — honest, and it leaves the specification's own anchor obligation open. **Default if unanswered: the third arm** — slice 1 ships the identity fields and records REQ-003's anchor sentence as **unsatisfied**, rather than asserting a conformance the owner has not ruled. **Review 1 named a fourth lawful arm this row does not offer — rule RFC7-10 not engaged — and observed that Q1's default is the only one of the five that ships rather than holds; both are carried unapplied in "Review 1 and repairs (2026-09-15)" below and in the P-76 register row, because adding or re-weighting an arm changes what is put to the owner and is the owner's own reading to make [clause added 2026-09-15, review 2 G16; the arm is deliberately **not** folded into this table]. |
+| Q2 | **Is running the generator over Syzygy's own governed corpus a "real-project read" the implementation act reserves, or the observing project reading its own tree?** `POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md` line 42 reserves, verbatim: "Real-project reads, provider egress and destination writes remain separately admitted; no effect, production release, broad remote access or observed-project code execution is authorized by this act." `EXECUTION-PHASES.md` lines **13–14** say Phase A's operator seam "does not create or mutate live scheduler items, call a real provider, serve owner effect controls, or read **another** project" — the sentence begins on line 13 and only its second half is on 14 (emphasis this packet's, marked as added) [anchor corrected 2026-09-15, review 1 F10.2; it read "line 14"]. Syzygy is not another project; it is the observing one, and its own tree is already read by every script in the battery. But the act's reservation does not say "another project" — it says "real-project reads", and Syzygy is a real project. Measured this session **at `a9f671e`**, the corpus slice 3 would use is **105 files / 1,266,454 bytes / 1,258,724 characters** (the six doctrine files, the 71 tracked `.md` files under `.syzygy/governance/decisions/` at every level — 67 at the top level and four under `launch-gate/` — and the 28 accepted RFC modules, the `.md` files one directory below `.syzygy/governance/contracts/rfcs/`. The two accepted RFCs that are single files rather than directories, `RFC-0001-project-graph-identity-state-planes.md` and `RFC-0006-cross-surface-selection-query-drawer.md`, are **out of scope** of that predicate, and the slice's own corpus builder must say so: including them gives 107 files / 1,369,266 bytes / 1,360,678 characters / 0 over the cap / largest 63,903 [Observed, both predicates run 2026-09-15]), **0** of them over the landed per-source 100,000-character cap, the largest 55,836 characters [Observed, counted this session and re-derived 2026-09-15; predicate and denominator in the evidence record. Commit anchor added 2026-09-15, review 2 G5(b): the corpus includes `.syzygy/governance/decisions/`, so this packet's own P-76 register row moved the byte and character figures — at this commit the same predicate gives 105 files / 1,277,862 bytes / 1,270,122 characters, with the file count, the cap result and the largest source unchanged, and every future decision row will move them again [Observed, the predicate run at both revisions 2026-09-15 from `git ls-tree` blobs, denominator the 105 files at each]. Superseded 2026-09-15, review 1 F2: the parenthesis read "the 71 top-level `.md` files under `.syzygy/governance/decisions/`" — the 71 is the count at every level, and read strictly as *top-level* the predicate gives 67 and a 101-file corpus, so both halves of it were wrong. The six published figures re-derive exactly under the corrected wording]. | **Rule it the observing project reading its own tree: no new consent record, no registry entry, no act — with the ruling recorded, because the sentence above can be read the other way.** The read adds no capability the repository does not already exercise; the PWB body-read-authority gate exists to protect an *observed* repository from the observer, and Syzygy is on the other side of that gate. **Counter-argument, and it is not weak:** the generator is the thing that will one day send this material to a provider, and giving it a reader over Syzygy's own governance corpus builds the pipe before the egress act exists — the discipline the reservation protects is precisely that a read path and an egress path are admitted separately. **Second lawful arm:** require a narrow owner direction naming the self-corpus read, its file set and its no-egress condition, in the shape of `POLARIS-TRUSTED-BOOTSTRAP-OBSERVATION-DIRECTION.md`. **Default if unanswered: slice 3 does not ship.** Slices 1, 2, 5 and 6 are unaffected. |
 | Q3 | **Slice 4 would add `GET /polaris/draft/<runId>` behind the machine credential. P-72's recommended category does not reach it. Extend that category, mint a second one, or serve no route?** M5's Q1 (P-72, on `agent/syzygy-dov.5` at `ba9ca61`) recommends a PWB semantic delta naming a closed category, "derived read-only machine view", defined as "composed only of fields already reachable from `/api/poc` at the same evaluation, independently oracle-verified as derivable, served under its own declared, digest-bound response ceiling", and placing `/api/poc/polaris` retroactively and `/api/poc/briefing` prospectively under it [Observed, read at source in that worktree this session]. A generation draft is **not** reachable from `/api/poc`: the two planes are disjoint, `0` references to `three-surface-poc-core`, `PocModel` or `projectShape` across the **20 tracked files** of `packages/polaris-generation-core` and `apps/three-surface-poc/src/polaris-generation` [Observed, re-run 2026-09-15 over that denominator and over the 17-file `src`-only set; **0** on both. Superseded 2026-09-15, review 1 F1: this read "across the 20 files of the generation package and the app's generation directory"]. So slice 4's route fails P-72's own membership test by construction. | **Do not open a competing question: fold slice 4 into P-72 as a second declared category in the same delta — "generated editorial draft view" — with its own `ResponseLimitIdentity` and its own registry ceiling, and rule it together with Q1 and Q2 of P-72 rather than separately.** One delta, two categories, one act; the alternative is two amendments to the same signed specification weeks apart. **Counter-argument:** P-72 is itself unruled, so folding makes slice 4 wait on a decision it cannot influence, and an owner who takes P-72's arm (c) — serve the briefing on the existing `/api/poc` with a selector — has no corresponding arm here, because a draft cannot be a selector over a body it shares no fields with. **Second lawful arm:** serve no route; keep the preview a file the operator opens, as `pipeline-demo-main.ts` writes it today, and take slice 4's owner control as a separate later move. **Default if unanswered: the second arm** — slice 4's route does not ship; the drafted-act packet limb of slice 4 is independent and is governed by Q4. |
 | Q4 | **Slice 4's drafted act is an RFC7-21 per-block authorship act over Syzygy's own draft. Does it ride P-71's Q3 ruling, or is it a different subject?** M4's Q3 (P-71, on `agent/syzygy-dov.4` at `63b8e33`) asks whether Syzygy may emit a drafted owner-act packet and into whose tree, and recommends arm (a) — into Syzygy's own `.syzygy/governance/decisions/`, marked draft, under a fresh narrow direction — while recording that arm (b), a pure drafter that emits packet *data* and writes no file, needs no act [Observed, read at source in that worktree this session]. P-71's subject is a drafted act about the **observed** project's gaps. M7's is different: the effective REQ-polaris-generation-010 (base line 528, unamended) says a generated bundle "SHALL remain editorial-draft until the existing effective-owner-act predicate under RFC3-16 and RFC7-21 admits an attributed per-block authorship act for its exact subject", and RFC7-21 (`.syzygy/governance/contracts/rfcs/RFC-0007/narrative-contract.md` lines 398–406) requires the adopter to attest **per claim block**. The subject is Syzygy's own narrative about a project, not a finding about Butlers. | **Take P-71's arm (b) for slice 4 — a pure drafter that returns the packet as data, writing no file — and let P-71's arm (a) govern the file-writing limb if and when the owner grants it.** Arm (b) needs no act on anyone's reading, is fully testable with no filesystem, and produces exactly the artifact RFC7-21 demands the owner sign. It also keeps one packet writer rather than two, which is what the dossier asks for. **Counter-argument:** a packet the owner must copy out of a JSON body by hand is a worse owner experience than a file, and REQ-020's "without manually assembling governance or scheduler records" is the clause slice 4 exists to serve; arm (b) satisfies the letter and strains the intent. **Second lawful arm:** wait for P-71's ruling and take whichever arm it takes, building nothing until then. **Default if unanswered: arm (b)** — the drafter is built pure and writes nothing. |
 | Q5 | **Slice 6 would replace the admit port's "an already-dispatched identity MUST refuse" with reserve/complete, so a completed attempt returns its recorded artifact instead of refusing. Implementation of REQ-008, or a change to a reviewed effect-boundary safety property?** The landed contract sentence is a comment on the port declaration, `packages/polaris-generation-core/src/pipeline.ts` lines 60–64, and `packages/polaris-generation-core/src/pipeline.test.ts` lines 73–76 pin the behaviour: re-running the same request returns `admission-refused` after exactly **5** stage sends. The effective REQ-polaris-generation-008 (base line 400, unamended) asks for something narrower than the comment: "Duplicate starts for the same request identity SHALL not duplicate provider effects or spend the same allowance", and its approved scenario **"Resume valid work"** (base lines 407–411) requires that "resume reuses those stages and records which work was reused and newly dispatched". A port that refuses a completed identity cannot satisfy that scenario. | **Rule it an implementation of REQ-008, on the condition that the replay prohibition is retained unchanged for in-flight and uncertain identities.** The requirement and its scenario name the behaviour; the comment is stricter than the clause it implements, and `EXECUTION-PHASES.md` line 18 puts 008 inside Phase A's own requirement set. **Counter-argument:** the sentence is a reviewed safety property at the one boundary where a mistake spends real money and real provider effects, its stricter reading is the conservative one, and `docs/evidence/polaris-pipeline-synthetic-verification-2026-09-13.json` records a digest over exactly these bytes — editing them retires that record's binding (verification rule 10 applied to an evidence record). **Second lawful arm:** leave `admit` alone and implement resume as a caller-side artifact cache outside the port, which changes no reviewed sentence and leaves the port's own contract mismatched with REQ-008's scenario — a mismatch the bead would then have to record. **Default if unanswered: the second arm**, and this packet records that REQ-008's "Resume valid work" scenario stays unimplemented. |
@@ -371,29 +371,48 @@ corrected wording and under nothing else.]
 | One `inventory` envelope, encoded | **about 1.29 MB**, ± the id and question bytes (see below) |
 | Smallest `maxInputBytes` that encodes it | between 1,000,000 (rejected, `byte-limit`) and 2,000,000 (accepted) |
 
+**Which commit these figures are of.** All of them are taken at
+`a9f671e`, the baseline this packet measures. The corpus includes
+`.syzygy/governance/decisions/`, so this packet's own P-76 register row
+moved two of them: at this commit the same predicate gives **105 files /
+1,277,862 bytes / 1,270,122 characters**, with the file count, the cap
+result (**0** over) and the largest source (**55,836** characters)
+unchanged [Observed, the predicate run at both revisions 2026-09-15 from
+`git ls-tree` blobs, denominator the 105 files at each; anchor added
+2026-09-15, review 2 G5(b), which found the figures relying on a section
+heading 300 lines above rather than carrying the anchor at the site].
+Every future decision row will move them again.
+
 **Why that row is approximate, and what it is approximate over.** The method
 above omits two free inputs the encoded size depends on: what each source's
-`sourceId` is, and what `readerQuestions` holds. Twelve reproductions were run
-2026-09-15 over the same 105 files, the same `promptForStage('inventory')`,
-the same `stageSchema('inventory')` and the same envelope shape `pipeline.ts`
-line 176 constructs, varying only those two. With the repository-relative path
-as `sourceId`: 1,300,688 bytes with the demo's three reader questions,
-1,300,601 with none. With the basename: 1,297,209 / 1,297,122. With the stem:
-1,296,894 / 1,296,807. With the path minus its `.syzygy/governance/` prefix:
+`sourceId` is, and what `readerQuestions` holds. **Eighteen**
+reproductions — nine `sourceId` schemes × two reader-question arrays —
+were run 2026-09-15 over the same 105 files, the same
+`promptForStage('inventory')`, the same `stageSchema('inventory')` and
+the same envelope shape `pipeline.ts` line 176 constructs, varying only
+those two. With the repository-relative path as `sourceId`: 1,300,688
+bytes with the demo's three reader questions, 1,300,601 with none. With
+the basename: 1,297,209 / 1,297,122. With the stem: 1,296,894 /
+1,296,807. With the path minus its `.syzygy/governance/` prefix:
 1,298,693 / 1,298,606. With `source-N` ids: 1,294,916 / 1,294,829 one-based
 and 1,294,914 / 1,294,827 zero-based. With `src-N`: 1,294,601 / 1,294,514.
 With `s-N`: 1,294,391 / 1,294,304. With the bare ordinal: 1,294,181 /
 1,294,094. **None equals 1,294,284**; the nearest is 20 bytes away and the
-figure sits inside the band rather than on any stated scheme [Observed, twelve
-encodings run this session; each scheme and question array is published in the
-evidence record]. So the row is restated as approximate, which is what slice
+figure sits inside the band rather than on any stated scheme [Observed,
+**eighteen** encodings run this session; each scheme and question array
+is published in the evidence record, whose
+`review1.f3_reproduction.bytes_by_scheme` carries nine schemes each with
+a `demo_3` and an `empty` array. Restated 2026-09-15, review 2 G3: this
+read "twelve encodings", a count that does not re-derive over the
+eighteen values printed immediately above it]. So the row is restated as
+approximate, which is what slice
 3's own oracle already says ("an `inventory` envelope of about 1.29 MB"): rule
 3's shape is that a computed figure a later reader cannot recompute is not yet
 evidence. [Superseded 2026-09-15, review 1 F3: the table row read
 "**1,294,284** bytes" as an exact computed figure.] What does re-derive
-exactly under **every** one of the twelve variants is the limit probe —
+exactly under **every** one of the eighteen variants is the limit probe —
 1,000,000 rejected with `byte-limit`, 2,000,000 accepted — and the ×5
-arithmetic below.
+arithmetic below ["the twelve variants" until 2026-09-15, review 2 G3].
 
 Because `sources` is a key of all five envelopes, a no-repair run over this
 corpus needs a cumulative `maxInputBytes` of at least **5 × about 1.29 MB,
@@ -564,7 +583,13 @@ have to say", a contract claim wider than the clause it is anchored to.] **No
 slice in M7 sends anything anywhere.** Swept over the **20 tracked files** of
 `packages/polaris-generation-core` and
 `apps/three-surface-poc/src/polaris-generation`, the literals `fetch(`,
-`node:http`, `node:https`, `undici` and `axios` occur **0** times; the three
+`node:http`, `node:https`, `undici`, `axios` and `XMLHttpRequest` occur
+**0** times [`XMLHttpRequest` added to the enumeration 2026-09-15, review
+2 G13: the evidence record's predicate and this packet's own F1
+disposition row both name six network primitives and this list named
+five, so a reader re-running the enumerated five ran a weaker sweep than
+the figure is claimed over. All six re-run over the 17-file and the
+20-file sets 2026-09-15: **0** on each]; the three
 matches for `https://` are all escaping fixtures inside tests, at
 `packages/polaris-generation-core/src/provider-draft.test.ts` line 61 and
 `apps/three-surface-poc/src/polaris-generation/draft-preview.test.ts` lines 48
@@ -768,7 +793,8 @@ from it (one inventory entry per source, one section per reader question, one
 paragraph per cited entry). It is still a synthetic provider and the slice's
 output says so in REQ-014's own words.
 
-**The corpus.** Syzygy's own 105 governed files, measured above — the
+**The corpus.** Syzygy's own 105 governed files, measured above at
+`a9f671e` (anchor added 2026-09-15, review 2 G5(b)) — the
 doctrine, the decisions and the accepted RFC modules — behind an explicit
 test-only profile. No new read authority is needed on Q2's recommended arm;
 the files are in the worktree the process is already running in.
@@ -785,7 +811,8 @@ reader-quality obligations remain **unproven** because the provider was
 scripted.
 
 **Oracle.** The expected breach list is written independently, from the
-measurements in this packet, before the run: 105 sources under a 200-item cap
+measurements in this packet, before the run: 105 sources at `a9f671e`
+(anchor added 2026-09-15, review 2 G5(b)) under a 200-item cap
 (passes), 0 sources over the 100,000-character cap (passes), an `inventory`
 envelope of about 1.29 MB, and a cumulative requirement above 6.4 MB. A run
 that reports no breach against a 1 MB budget has a broken check, not a cheap
@@ -1115,7 +1142,9 @@ receipts distinguish them, AND a run supplying one route for every stage
 behaves exactly as today.
 
 **S6 (slice 3).** WHEN the unchanged pipeline is run over Syzygy's own
-105-file governed corpus with a scripted responder, THEN the recorded evidence
+105-file governed corpus — the file count at `a9f671e` and unchanged at
+this commit, though its byte total is not (anchor added 2026-09-15,
+review 2 G5(b)) — with a scripted responder, THEN the recorded evidence
 names every budget and cap breach it hit, AND it states in the specification's
 own words that real generation, regeneration and reader-quality obligations
 remain unproven.
@@ -1144,7 +1173,26 @@ in-flight or uncertain attempt identity still refuses.
 sibling is not zero, and the number is eleven.** Method, stated once: extract
 every code span from each sibling's packet file and keep those that resolve as
 a real **file** in this worktree (`os.path.isfile`); intersect with M7's own
-**27-file touch-set**. That set is the 24-file candidate surface — everything
+**27-file touch-set**. **The two intersection columns below are taken under
+exactly that membership predicate; the two span columns are not** — they
+keep the first draft's additional prefix filter (a span must also begin
+`apps/`, `packages/`, `scripts/`, `docs/polaris-generation/` or be
+`package.json`), and they are left under it because that is what the
+published figures were measured with. The membership count is printed
+beside each of them so the stated method re-derives [clarified 2026-09-15,
+review 2 G8: the method paragraph and the supersession note below said the
+prefix filter "is dropped in favour of membership" without saying that the
+span columns were not recomputed, so a reader re-running the stated method
+got different numbers in one of the six columns. Both sweeps were re-run
+over all nine siblings 2026-09-15: the published 1 / 0 / 11 / 13 / 22 / 9 /
+13 / 51 / 13 reproduce **only** under the prefix filter, and under membership
+the counts are 4 / 9 / 25 / 28 / 39 / 20 / 30 / 74 / 37 at the heads the rows
+name (M8 is 75 at its current head `bce9039`). The two intersection columns
+are correct under membership: the 24-column is identical under both
+predicates for all nine, and the 27-column differs at **M4** (1 rather than
+2) and **M9** (2 rather than 3) under the prefix filter, because no prefix
+reaches `PROJECT-STATUS.md` — which is the reason the filter was dropped for
+the intersections]. That set is the 24-file candidate surface — everything
 under `packages/polaris-generation-core/src` and
 `apps/three-surface-poc/src/polaris-generation`, everything under
 `docs/polaris-generation`, plus `apps/three-surface-poc/src/routes.ts`,
@@ -1160,19 +1208,21 @@ beginning `apps/`, `packages/`, `scripts/`, `docs/polaris-generation/` or
 `package.json` — a prefix filter that can never reach `PROJECT-STATUS.md`. The
 24-file figures are kept below as the first draft's surface, because that is
 what the published rows measured; the 27-file column is the packet's own
-touch-set and is the one a reader should use.]
+touch-set and is the one a reader should use. The prefix filter is dropped
+**for the intersections only**; the two span columns are still taken under
+it, as the paragraph above now states — amended 2026-09-15, review 2 G8.]
 
-| Sibling | Head read 2026-09-15 | Prefixed spans | Resolving as files | Intersection with M7's 24 (first draft's surface) | Intersection with M7's 27-file touch-set |
+| Sibling | Head read 2026-09-15 | Prefixed spans (first draft's prefix predicate) | Resolving as files, prefix predicate (membership count in brackets) | Intersection with M7's 24 (first draft's surface) | Intersection with M7's 27-file touch-set |
 |---|---|---:|---:|---:|---:|
-| M1 (lane A, on main) | `a9f671e` | 3 | 1 | **1** | **1** |
-| lane B, PR #35, P-68 | `4090f98` | 2 | 0 | **0** | **0** by code span; **1** (`PROJECT-STATUS.md`) under its stronger diff predicate — see below |
-| M2, PR #36, P-69 | `f2f37dd` | 19 | 11 | **1** | **1** |
-| M3, PR #37, P-70 | `6574600` | 15 | 13 | **0** | **0** |
-| M4, PR #38, P-71 | `63b8e33` | 31 | 22 | **1** | **2**, adding `PROJECT-STATUS.md` |
-| M5, PR #39, P-72 | `ba9ca61` | 11 | 9 | **1** | **3**, adding `apps/three-surface-poc/src/polaris-source.ts` and `packages/three-surface-poc-core/src/project-shape-observation.ts` |
-| M6, PR #40, P-73 | `83c9f60` | 26 | 13 | **11** (a floor — see the `pipeline.ts` row below) | **11**, the same eleven |
-| M8, PR #41, P-74 | `4b2e8cb` | 61 | 51 | **4** | **6**, adding the same two as M5 — see the M8/M9 paragraph below |
-| M9, PR #43, P-75 | `3e764d8` | 22 | 13 | **2** | **3**, adding `PROJECT-STATUS.md` |
+| M1 (lane A, on main) | `a9f671e` | 3 | 1 (4) | **1** | **1** |
+| lane B, PR #35, P-68 | `4090f98` | 2 | 0 (9) | **0** | **0** by code span; **1** (`PROJECT-STATUS.md`) under its stronger diff predicate — see below |
+| M2, PR #36, P-69 | `f2f37dd` | 19 | 11 (25) | **1** | **1** |
+| M3, PR #37, P-70 | `6574600` | 15 | 13 (28) | **0** | **0** |
+| M4, PR #38, P-71 | `63b8e33` | 31 | 22 (39) | **1** | **2**, adding `PROJECT-STATUS.md` |
+| M5, PR #39, P-72 | `ba9ca61` | 11 | 9 (20) | **1** | **3**, adding `apps/three-surface-poc/src/polaris-source.ts` and `packages/three-surface-poc-core/src/project-shape-observation.ts` |
+| M6, PR #40, P-73 | `83c9f60` | 26 | 13 (30) | **11** (a floor — see the `pipeline.ts` row below) | **11**, the same eleven |
+| M8, PR #41, P-74 | `4b2e8cb` | 61 | 51 (74) | **4** | **6**, adding the same two as M5 — see the M8/M9 paragraph below |
+| M9, PR #43, P-75 | `3e764d8` | 22 | 13 (37) | **2** | **3**, adding `PROJECT-STATUS.md` |
 
 **Lane B's row, and why its predicate differs.** Lane B's packet is a
 governance amendment rather than a design funnel, so its spans were taken from
@@ -1196,8 +1246,17 @@ paragraph is at lines 38–44, both read at source this session — but the
 published claim is a file-set claim and now reads as one. [Superseded
 2026-09-15, review 1 F7: this read "**The intersection with M7's surface is 0
 under both predicates**", true only of the narrower 24-file surface.] The
-other six siblings have committed **0** implementation-plane files, so for
-them the code-span predicate is the only one available.
+other **eight** siblings — M1, M2, M3, M4, M5, M6, M8 and M9 — have
+committed **0** implementation-plane files, so for them the code-span
+predicate is the only one available [Observed,
+`git diff --name-only a9f671e HEAD` run 2026-09-15 in each of the eight
+sibling worktrees at the head named for it; M1 is on main at `a9f671e`
+and has no diff, and
+M2, M3, M4, M5, M6, M8 and M9 each name only the register, their own
+`docs/design` packet, their own `docs/evidence` record and their own
+retained raws. Denominator eight. This read "The other six siblings"
+until 2026-09-15, review 2 G7: it was counted when the collision table
+had seven rows and went stale when the table grew to nine].
 
 **The single-file intersections are all
 `apps/three-surface-poc/src/routes.ts`, and three of the four are real.** M1's
@@ -1283,10 +1342,19 @@ surprise is: lane B lands, then this packet's check is re-run before merge. At
 this commit the check passes in this worktree (Gate 6).
 
 **Not verifiable this session.** [Unknown] Whether the sibling branches'
-actual diffs stay inside the paths their packets cite, until they land — five
-of the six have committed no implementation file at all. [Unknown] Which arm
+actual diffs stay inside the paths their packets cite, until they land —
+**seven of the eight** have committed no implementation file at all, lane
+B being the one that has [Observed, eight diffs run 2026-09-15;
+denominator the eight sibling branches. This read "five of the six" until
+2026-09-15, review 2 G7, having been counted when the collision table had
+seven rows]. [Unknown] Which arm
 the owner takes on P-72's Q1, on which slice 4's route depends entirely.
-[Unknown] Whether M8 or M9 will claim any file in M7's 24.
+[Unknown] Whether M8 or M9 will claim any file in M7's 24. [**RESOLVED
+2026-09-15**, review 2 G6: answered by the measured rows twenty lines above —
+M8 claims **4** of the 24 and **6** of the 27, M9 **2** and **3**, recomputed
+2026-09-15 at both the heads this packet names and the siblings' current
+heads. The evidence record's twin entry was marked resolved in the same
+pass and this sentence was left behind.]
 
 ## Gate 6 — Engineering bar
 
@@ -1343,15 +1411,22 @@ the owner takes on P-72's Q1, on which slice 4's route depends entirely.
    by that citation, never reproduced (CG-1b). No act argument and no signed
    or manifest digest is reproduced; the four digest-bearing records consulted
    are cited by path (CG-7e, CG-15).
-9. **Independent review.** This packet has had **one**, retained verbatim at
-   `docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-RAW.md`; its verdict
-   word, copied exactly, is **CONFIRM WITH EXCEPTIONS**. See "Review 1 and
-   repairs (2026-09-15)" below for the bytes it bound, its counts and the
-   disposition of every finding. By verification rule 10 review 1 covers the
-   bytes it names at `0c4b4a9` and not these, so the exception repairs made
-   after it are themselves uncovered until a second fresh-context review reads
-   them. [Superseded 2026-09-15: this item read "This packet has had **none**.
-   It is a first draft… Its raw would be a file named
+9. **Independent review.** This packet has had **two**, each retained
+   verbatim and neither overwriting the other:
+   `docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-RAW.md` and
+   `docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-2-RAW.md`; both
+   verdict words, copied exactly, are **CONFIRM WITH EXCEPTIONS**. See
+   "Review 1 and repairs (2026-09-15)" and "Review 2 and repairs
+   (2026-09-15)" below for the bytes each bound, their counts and the
+   disposition of every finding ["This packet has had **one**" until
+   2026-09-15, later the same day]. By verification rule 10 review 1
+   covers the bytes it names at `0c4b4a9` and not these, so the
+   exception repairs made after it are themselves uncovered until a
+   second fresh-context review reads them (which has since happened —
+   review 2, 2026-09-15, retained at
+   `docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-2-RAW.md`;
+   re-tensed 2026-09-15). [Superseded 2026-09-15: this item read "This
+   packet has had **none**. It is a first draft… Its raw would be a file named
    R-POLARIS-M7-GENERATION-LOOP-FUNNEL-RAW.md under docs/reviews, written here
    without a code span because the file does not yet exist and CG-1b requires
    every code-span path to resolve." The file now exists and resolves.]
@@ -1360,12 +1435,25 @@ the owner takes on P-72's Q1, on which slice 4's route depends entirely.
     deleted.
 11. **Conventions this packet was checked against, this session.** Every
     non-fence line has an even backtick count, so no code span is broken
-    across a line break. Over-width lines outside fences, tables, block quotes
-    and headings are enumerated in the evidence record. Of the distinct code
+    across a line break. Over-width lines are counted and enumerated in
+    the evidence record under the predicate the published figure is taken
+    with: lines outside fenced code blocks whose first non-space
+    character is not a pipe, longer than 78 columns, denominator every
+    line of this file [restated 2026-09-15, review 2 G12: this read
+    "outside fences, tables, block quotes and headings", under which the
+    figure is **4** — lines 205, 266, 975 and 986 — rather than the
+    published **10**, which also counts the H1 title at line 1 and a
+    banner block-quote line at 6. Both predicates were run over this file
+    2026-09-15]. Of the distinct code
     spans containing a `/`, the ones that do **not** resolve as a path in this
     worktree are enumerated there too and are each not a path. Re-derived
-    after the 2026-09-15 repairs under the same predicate: **298** distinct
-    spans, **78** slash-bearing, **19** not resolving — the five write-root
+    after the 2026-09-15 repairs under the same predicate, and again
+    after review 2's: **346** distinct spans, **82**
+    slash-bearing, **19** not resolving — the same nineteen
+    entries, unchanged in membership ["**298** distinct spans, **78**
+    slash-bearing" until 2026-09-15, later the same day, when review
+    2's repairs added spans; re-derived last over the bytes that carry
+    it] — the five write-root
     globs (`.syzygy/**`, `openspec/**`, `apps/**`, `packages/**`, `docs/**`),
     the five route and URL literals (`/api/poc`, `/api/poc/polaris`,
     `/api/poc/briefing`, `/polaris/draft/<runId>`,
@@ -1426,7 +1514,17 @@ anchor obligation open") without offering as an arm — and it notes that **Q1's
 default is the only one of the five that ships rather than holds**, a
 defensible trade-off that the packet does not flag as the least conservative
 default it carries. Both stand open before the owner and are named in the P-76
-row.
+row. **A third observation of review 1's — from its measurements
+table rather than its five-question table — is carried here too**: the
+sentinel figure 1/2/2/4/4 = **13** re-derives only with the sentinel in
+the `mechanism` source; with it in `purpose` the counts are 1/2/2/3/3 =
+**11**, because the shipped garden fixture repeats the mechanism text
+twice inside the draft and the purpose text once. Both were reproduced
+this session against the built package, locally and with no provider
+call. The observation moves no arm — `sources` is a key of all five
+envelopes either way — and the evidence record's method now names
+`mechanism` [added 2026-09-15, review 2 G14, which found this observation
+neither applied, carried nor mentioned].
 
 **No recommended answer changed.** Confirmed against the raw's own
 five-question table, whose "Recommendation follows from the evidence?" column
@@ -1457,8 +1555,17 @@ left unchanged and the reason is recorded here. Two findings carried a defect
 of their own: **F2** reports the record's predicate as yielding 107 and reads
 its "top-level tracked .md under decisions" as 71, but 71 is the count at
 *every* directory level (67 are top-level and four are under `launch-gate/`),
-so read strictly as written the predicate gives **101**, not 107 — both halves
-of the phrase were wrong and both are corrected; and **F4**'s anchor names act
+so read strictly as written the predicate gives **103 files / 1,309,493
+bytes / 1,301,412 characters / 0 over the cap / largest 63,903**, not
+107 — both halves of the phrase were wrong and both are corrected
+[restated 2026-09-15, review 2 G4: this read "the predicate gives
+**101**, not 107". 101 is 6 doctrine + 67 top-level decisions + the 28
+RFC *modules* — the strict reading of one half combined with the
+*corrected* reading of the other, which is not what "read literally"
+names; the literal reading takes every tracked `.md` under `rfcs/`, which
+is 30 at `a9f671e`, and gives 103. All four compositions recomputed at
+`a9f671e` from `git ls-tree` blobs 2026-09-15. The adopted 105-file
+figures are unaffected]; and **F4**'s anchor names act
 lines 29–32, where the sentence listing the seven amended requirements spans
 lines **29–30** inside the Scope paragraph at 28–32. Superseded wording is
 marked in place and dated throughout, never deleted.
@@ -1466,12 +1573,12 @@ marked in place and dated throughout, never deleted.
 | Finding | Severity | Disposition |
 |---|---|---|
 | F1 the "20 files" denominator names the wrong set | non-blocking | **CONFIRMED.** `git ls-files` over both spellings this session: `packages/polaris-generation-core/src` + the app directory is **17** tracked files (11 + 6); `packages/polaris-generation-core` + the app directory is **20** (14 + 6). Both sweeps were re-run over both sets: the three plane literals occur **0** times on each, the six network primitives **0** times on each, and the three `https://` hits are the same three test fixtures on each. The denominator is rewritten as "the 20 tracked files of `packages/polaris-generation-core` and `apps/three-surface-poc/src/polaris-generation`" at all seven packet sites and in both evidence fields, superseded wording kept |
-| F2 the self-corpus predicate does not yield the 105 it reports | non-blocking | **CONFIRMED in substance, with the finding's own reading corrected.** Three predicates were run this session: the record's words read literally (top-level decisions + every `.md` under `rfcs/`) give **101** files / 1,206,681 bytes; the review's reading (recursive decisions + every `.md` under `rfcs/`) gives **107** / 1,369,266; the module form (recursive decisions + the `.md` files one directory below `rfcs/`) gives **105** / 1,266,454 / 1,258,724 characters / **0** over the cap / largest 55,836 — the six published figures, exactly. The module form is now stated, at both packet sites and in the record, with the four `launch-gate/` files named and the two single-file RFCs named as out of scope and why |
-| F3 the envelope figure does not re-derive from the stated method | non-blocking | **CONFIRMED**, and reproduced twelve ways rather than four. Over the same 105 files, the same `promptForStage('inventory')`, the same `stageSchema('inventory')` and the envelope `pipeline.ts` line 176 constructs, varying only the `sourceId` scheme and the reader-question array: 1,300,688 / 1,300,601 (repository-relative path), 1,297,209 / 1,297,122 (basename), 1,296,894 / 1,296,807 (stem), 1,298,693 / 1,298,606 (path without its `.syzygy/governance/` prefix), 1,294,916 / 1,294,829 (`source-N`, one-based), 1,294,914 / 1,294,827 (`source-N`, zero-based), 1,294,601 / 1,294,514 (`src-N`), 1,294,391 / 1,294,304 (`s-N`) and 1,294,181 / 1,294,094 (the bare ordinal). **None is 1,294,284**; the nearest is 20 bytes away. The table row is restated as "about 1.29 MB, ± the id and question bytes", the twelve readings and both free inputs are published in the record, and the ×5 floor is restated on the approximate figure. The limit probe re-derives under all twelve |
+| F2 the self-corpus predicate does not yield the 105 it reports | non-blocking | **CONFIRMED in substance, with the finding's own reading corrected.** Three predicates were run this session: the record's words read literally (top-level decisions + every `.md` under `rfcs/`, which is 30 at `a9f671e`) give **103** files / 1,309,493 bytes / 1,301,412 characters / **0** over the cap / largest 63,903, and the top-level-decisions-plus-RFC-**modules** variant gives **101** / 1,206,681 [restated 2026-09-15, review 2 G4: this row attributed the 101 / 1,206,681 figures to the literal reading, which is 103 / 1,309,493; both compositions recomputed at `a9f671e` from `git ls-tree` blobs 2026-09-15]; the review's reading (recursive decisions + every `.md` under `rfcs/`) gives **107** / 1,369,266; the module form (recursive decisions + the `.md` files one directory below `rfcs/`) gives **105** / 1,266,454 / 1,258,724 characters / **0** over the cap / largest 55,836 — the six published figures, exactly. The module form is now stated, at both packet sites and in the record, with the four `launch-gate/` files named and the two single-file RFCs named as out of scope and why |
+| F3 the envelope figure does not re-derive from the stated method | non-blocking | **CONFIRMED**, and reproduced eighteen ways rather than four — nine `sourceId` schemes × two reader-question arrays. Over the same 105 files, the same `promptForStage('inventory')`, the same `stageSchema('inventory')` and the envelope `pipeline.ts` line 176 constructs, varying only the `sourceId` scheme and the reader-question array: 1,300,688 / 1,300,601 (repository-relative path), 1,297,209 / 1,297,122 (basename), 1,296,894 / 1,296,807 (stem), 1,298,693 / 1,298,606 (path without its `.syzygy/governance/` prefix), 1,294,916 / 1,294,829 (`source-N`, one-based), 1,294,914 / 1,294,827 (`source-N`, zero-based), 1,294,601 / 1,294,514 (`src-N`), 1,294,391 / 1,294,304 (`s-N`) and 1,294,181 / 1,294,094 (the bare ordinal). **None is 1,294,284**; the nearest is 20 bytes away. The table row is restated as "about 1.29 MB, ± the id and question bytes", the eighteen readings and both free inputs are published in the record, and the ×5 floor is restated on the approximate figure. The limit probe re-derives under all eighteen. [Restated 2026-09-15, review 2 G3: this row read "reproduced twelve ways", "the twelve readings" and "all twelve"; the data published beside the sentence is nine `sourceId` schemes each at two reader-question arrays, i.e. **18** encodings, all eighteen of which review 2 reproduced byte for byte] |
 | F4 Gate 5's opening sentence is wrong about REQ-009 | non-blocking | **CONFIRMED**, with the anchor tightened. `.syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md` lines 29–30, inside the Scope paragraph at 28–32, read "REQ-polaris-generation-002, 004, 006, **009**, 012, 014 and 019 take their full amended clauses and preserved scenarios". "and 009" is struck from Gate 5's not-amended list and REQ-009 is placed with the overlay-cited half. The packet's REQ-009 citations already pointed at the overlay and both resolve: the requirement heading at overlay line 241 and its text at 243, opened this session |
 | F5 "four envelopes, not six" reconciles with nothing else | non-blocking | **CONFIRMED.** The four are the envelopes that carry the `plan` today — `author`, `edit`, `fidelity` and `repair`, the last because `pipeline.ts` line 267 hands `repair` the accumulated `context` [read at source this session]. The population is now named at the site and reconciled with Gate 4's "exactly two envelopes change" — of the four, `fidelity` and `repair` lose the plan and `author` and `edit` keep it. Superseded wording marked |
 | F6 Q1's `[Observed]` label carries the inference the owner is asked to make | non-blocking | **CONFIRMED**, and split rather than merely relabelled. The observed part is stated exactly — RFC7-10 names five target classes and names no class for a file inside an observed repository — and the conclusion that such a file falls outside all five is carried as `[Inferred]`, the reading Q1 puts to the owner. Mirrored in the P-76 register row. Per AGENTS.md §Epistemic and change discipline, an LLM assertion is Inferred |
-| F7 the collision surface is narrower than the packet's own touch-set | non-blocking | **CONFIRMED**, and the whole table recomputed at each sibling's current head (lane B `4090f98`, M2 `f2f37dd`, M3 `6574600`, M4 `63b8e33`, M5 `ba9ca61`, M6 `83c9f60`; M1 on this worktree's tree at `a9f671e`). The touch-set is restated as **27** — the 24 plus `PROJECT-STATUS.md`, `packages/three-surface-poc-core/src/project-shape-observation.ts` and `apps/three-surface-poc/src/polaris-source.ts` — and the prefix filter is dropped in favour of membership, because no prefix can reach `PROJECT-STATUS.md`. Over the 27: M1 1, lane B **1** under its diff predicate (`PROJECT-STATUS.md`, hunks at lines 252 and 263 against M7 slice 5's target at 38–44, both read at source) and 0 by code span, M2 1, M3 0, M4 **2**, M5 **3**, M6 11. The 24-file figures are kept as the first draft's surface |
+| F7 the collision surface is narrower than the packet's own touch-set | non-blocking | **CONFIRMED**, and the whole table recomputed at each sibling's current head (lane B `4090f98`, M2 `f2f37dd`, M3 `6574600`, M4 `63b8e33`, M5 `ba9ca61`, M6 `83c9f60`; M1 on this worktree's tree at `a9f671e`). The touch-set is restated as **27** — the 24 plus `PROJECT-STATUS.md`, `packages/three-surface-poc-core/src/project-shape-observation.ts` and `apps/three-surface-poc/src/polaris-source.ts` — and the prefix filter is dropped in favour of membership **for the intersections**, because no prefix can reach `PROJECT-STATUS.md`. [Amended 2026-09-15, review 2 G8: the filter is dropped for the two intersection columns and **not** for the two span columns, which still carry the first draft's prefix-filtered figures; both predicates were re-run over all nine siblings 2026-09-15 and the membership counts are now printed beside the span column. Under the prefix filter the 24-column is unchanged for all nine and the 27-column would read M4 1 and M9 2, because no prefix reaches `PROJECT-STATUS.md`.] Over the 27: M1 1, lane B **1** under its diff predicate (`PROJECT-STATUS.md`, hunks at lines 252 and 263 against M7 slice 5's target at 38–44, both read at source) and 0 by code span, M2 1, M3 0, M4 **2**, M5 **3**, M6 11. The 24-file figures are kept as the first draft's surface |
 | F8 "disjoint from M7 by design" is unlabeled and is now false | non-blocking | **CONFIRMED**, and both rows measured at heads later than the ones the review read. **M8** at `4b2e8cb` (past the `8035c8f` the review saw): **4** against M7's 24 — `apps/three-surface-poc/src/routes.ts`, `docs/polaris-generation/README.md`, `docs/polaris-generation/ARTIFACTS-AND-TOOLS.md`, `package.json` — and **6** against the 27. **M9** at `3e764d8` (past `206d775`): **2** against the 24 — `routes.ts` and `package.json` — and **3** against the 27. The sentence is replaced by the measured rows with the superseded wording kept and dated, and the claimant count for that one 240-line file is restated from four to **six** (M2, M4, M5, M7, M8, M9), each read in its own Gate 3 table this session. Mirrored in the record by same-line marking plus an appended resolved key |
 | F9 slice 5's five fields are not "taken field for field from SEC-2" | non-blocking | **CONFIRMED.** `.syzygy/governance/doctrine/security.md` lines 25–37, read at source this session, name **two** of the five: the providers permitted for a governed project and the content classes that may be sent. Refusal-on-withdrawal is REQ-001's, at base line 12, which the packet already cited correctly. Route and retention are attributed to this packet's own proposal and labelled `[Inferred]`. Superseded "field for field" wording marked |
 | F10 five anchor and quotation imprecisions | editorial | **FOUR CONFIRMED, ONE NOT.** (1) `identityScheme` is on registry line **54** and `"class": "git-tree-entry"` on 53 — corrected at both sites, with the literal-sweep hit left at 53 where it belongs. (2) `EXECUTION-PHASES.md`'s sentence begins on line **13** and ends on 14 — corrected at both citations. (3) **NOT CONFIRMED:** `boundedResponse` is declared on line **137** under its comment at 136 and closes at **142**, so the packet's "lines 137–142" was already exact; not applied, reason recorded above. (4) the dropped closing fragment — the bracketed ordinal and the anchor's own end tag — is restored to the `draft-preview.ts` line 23 quotation. (5) REQ-008's sentence begins with a capital "An" at base line 400 — the packet's mid-sentence lowercase is marked "[a]n" |
@@ -1488,9 +1595,12 @@ By verification rule 10, review 1 binds the bytes it names — the two digests
 in the table above, at commit `0c4b4a9` — and not these. Every edit in this
 section and above was made after it, so **the eleven applied exception
 repairs — and the recorded decision not to apply the twelfth — are uncovered
-until a second independent fresh-context review confirms them**;
-that raw will be a second `-RAW.md` file, never an overwrite of the retained
-one. Subject to that, and on review 1's confirmation of the `0c4b4a9` bytes —
+until a second independent fresh-context review confirms them** (which
+has since happened — review 2, 2026-09-15, retained at
+`docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-2-RAW.md`; re-tensed
+2026-09-15); that raw will be a second `-RAW.md` file, never an overwrite
+of the retained one. Subject to that, and on review 1's confirmation of
+the `0c4b4a9` bytes —
 CONFIRM WITH EXCEPTIONS, no blocking finding, no recommended answer moved, all
 five questions found to be genuine gates and no lawful arm called unlawful —
 **this packet stands at the owner gate**: P-76 is ready to be ruled, with the
@@ -1499,7 +1609,139 @@ two unapplied observations above open in front of it.
 Over-width lines after these edits, under the predicate "lines outside fenced
 code blocks whose first non-space character is not a pipe, longer than 78
 columns", denominator every line of this file: **10** [Observed,
-measured after all of the edits above].
+measured after all of the edits above. That figure describes the bytes
+review 1's pass left, at `1803608`; this pass's repairs have since
+changed them, and the current figure is measured last in the review-2
+section below. Marked 2026-09-15].
+
+## Review 2 and repairs (2026-09-15)
+
+A second independent fresh-context review of the once-repaired packet
+(read-only; only the artifact, its governing references and the acceptance
+criteria) is retained verbatim at
+`docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-2-RAW.md` (42736 bytes,
+sha256
+`772c61f08f4d8b73dfbd040ee140d6371b3e28fc027cd482428bd228ccf29f84`,
+computed by `wc -c` and `sha256sum` this session, never transcribed). It
+reviewed commit `1803608`, at which the four files it names hashed as
+follows — recomputed this session with `git show 1803608:<path>` piped to
+`wc -c` and `sha256sum`:
+
+| File reviewed | Bytes | sha256 |
+|---|---:|---|
+| `docs/design/POLARIS-M7-GENERATION-LOOP-FUNNEL.md` | 139264 | `c45d12c01be340321fbe6286e316cbf1eee4fb9c0129f0b32851dad5008c33bc` |
+| `docs/evidence/polaris-m7-generation-loop-funnel-2026-09-15.json` | 46936 | `668b14a5cd00cceb694fec35f11c3a643c8a5bec4dd5bc306058401d22754e5d` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 34761 | `4ba0e3624d8c68bb5b7200dd6166a48ebeddc743b9b98bdb672b8115ceced5eb` |
+| `docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-RAW.md` | 33233 | `93aabafeaf50933c8ff03cfe448bbd5b13a7f289bad872d75a819485f8e85943` |
+
+Its verdict word, copied exactly: **CONFIRM WITH EXCEPTIONS**. Its counts, as
+the raw states them: **0 blocking, 10 non-blocking, 6 editorial** — sixteen
+findings, G1–G16, non-blocking G1–G10 and editorial G11–G16.
+
+**Its verification of the review-1 dispositions, carried here as it states
+them: eleven REPAIRED over twelve, and F10 item 3's non-application confirmed
+correct.** Review 2 opened `apps/three-surface-poc/src/routes.ts` itself and
+found the comment on line 136, the `export function boundedResponse(`
+declaration on 137 and its closing brace on 142 — so this packet's "lines
+137–142" was already exact, review 1's correction was off by one in both
+directions, and the close-out's recorded reason matches the bytes. It also
+confirms that review 1's own two defects, F2's reading of "71" and F4's
+anchor, were corrected rather than copied. **Three of the eleven repairs were
+incomplete rather than wrong, and all three are completed here:** **F7** was
+repaired in the prose and the two intersection columns but left the two
+method columns under the dropped prefix filter (**G8**) and its
+evidence-record measurement block untouched (**G9**); **F8** left a resolved
+`[Unknown]` standing in the prose (**G6**), left two sibling counts stale
+(**G7**) and did not carry its six-packet restatement into the funnel summary
+(**G1**); and **F9**'s superseded wording was reinstated unmarked in the
+funnel summary (**G2**).
+
+**Every exception was re-derived this session against source before being
+applied; none was applied on the review's say-so. Sixteen of sixteen were
+confirmed**, one of them with a sub-claim of the finding's own restated
+rather than copied: **G8**'s "the intersections are identical under both" is
+true of the 24-file column at all nine siblings and **not** of the 27-file
+column, which reads M4 **1** and M9 **2** under the prefix filter against M4
+**2** and M9 **3** under membership, because no prefix reaches
+`PROJECT-STATUS.md` — which is the packet's own stated reason for dropping
+the filter for the intersections. Everything else in that finding — the span
+columns, the membership counts and all nine intersection pairs — reproduces
+exactly. Superseded wording is marked in place and dated, never deleted.
+
+| Finding | Severity | Re-derivation | Disposition |
+|---|---|---|---|
+| G1 the funnel summary still says four packets edit `routes.ts` | non-blocking | **CONFIRMED.** The summary's Collision line read "routes.ts shared with M2, M4 and M5 - four packets propose editing the same 240-line file", unmarked, while the body says six with the supersession marked and its neighbouring fence lines all carry one. All six re-verified at source this session in each sibling's Gate 3 "Lives in" column at its current head: M2 slice 3, M4 slice 5, M5 slices 1 and 3, M7 slice 4, M8 slice 2, M9 slices 2, 4a and 6 [Observed, all nine sibling packets opened; denominator the nine collision rows] | Applied at the summary line: restated as six, with the superseded four quoted in place and dated, as the neighbouring lines already do |
+| G2 the summary reinstates the exact wording F9 superseded | non-blocking | **CONFIRMED.** `.syzygy/governance/doctrine/security.md` lines 30–32 read "Onboarding consent must name the providers permitted for a governed project and the content classes that may be sent" — two of slice 5's five fields, opened at source this session. Gate 2 and slice 5 both carry the repair with the superseded wording marked; the summary restated the superseded claim in five unmarked words | Applied with the raw's suggested phrase — "SEC-2 naming two of slice 5's five fields, the other three attributed at the site" — with the superseded five words quoted in place and dated |
+| G3 "twelve reproductions" is eighteen | non-blocking | **CONFIRMED.** The record's `review1.f3_reproduction.bytes_by_scheme` carries **9** keys, each with a `demo_3` and an `empty` array — 9 × 2 = **18** — and the packet prints eighteen values beside the sentence [Observed, the record parsed this session; denominator the nine scheme keys] | Applied at all four packet sites and in the record, by a same-line append inside `review1.disposition_summary.F3` that keeps the superseded word and marks it. The record's `f3_reproduction` values are not edited |
+| G4 the "101" attributed to the literal predicate is 103 | non-blocking | **CONFIRMED exactly.** Recomputed at `a9f671e` from `git ls-tree` blobs this session: 6 doctrine + **67** top-level decisions + the **30** tracked `.md` under `rfcs/` = **103 files / 1,309,493 bytes / 1,301,412 characters / 0 over the cap / largest 63,903**. The published 101 / 1,206,681 is 6 + 67 + the **28 RFC modules**, which is the strict reading of one half with the corrected reading of the other. All four compositions run in one sweep; the adopted 105-file figures are unaffected and re-derive exactly | Applied at the review-1 prose and the F2 disposition row, restated as 103 with the superseded attribution quoted and dated, and in the record by two dated sibling keys — a note that the existing key is misnamed, and a `literal_…_2026_09_15` variant carrying the true reading. The review1 key and its values are left unedited |
+| G5 two self-referential measurements are falsified by this packet's own register commit | non-blocking | **CONFIRMED, both limbs.** (a) The literal `git-tree-entry` occurs **1** time over the **619** tracked files under `.syzygy/` and `openspec/` at `a9f671e` and **3** at `1803608` — registry line 53 plus the P-76 blockquote at register line 114 and the P-76 row at line 221. (b) The 105-file corpus is **1,266,454** bytes / **1,258,724** characters at `a9f671e` and **1,277,862** / **1,270,122** at `1803608`, with the file count, the cap result and the largest source unchanged [Observed, both sweeps run at both revisions this session from `git ls-tree` blobs] | Applied: Q1's clause now says "1 at `a9f671e`; 3 at this commit, the two additions being this packet's own register row", and the byte figures are anchored at the site at Q2, at the corpus table, at slice 3's corpus paragraph, at its oracle and at scenario S6. The P-76 register row repeats neither figure — the whole register was swept this session for `105`, `1,266,454`, `1,258,724` and the one-time clause, and the row carries none of them — so there was nothing there to mirror |
+| G6 a resolved `[Unknown]` left standing in the "Not verifiable" block | non-blocking | **CONFIRMED.** "[Unknown] Whether M8 or M9 will claim any file in M7's 24" is answered twenty lines above it by the measured rows, and the evidence record's twin entry was marked "[RESOLVED 2026-09-15]" in the same pass while the prose sentence was not [Observed, both sites read this session] | Applied: the sentence is marked resolved in place, dated, with the measured figures restated and the rows pointed at |
+| G7 two sibling counts went stale when the table grew from seven rows to nine | non-blocking | **CONFIRMED.** `git diff --name-only a9f671e HEAD` run this session in all eight sibling worktrees, heads by `git -C <wt> rev-parse --short HEAD`: M2 `f2f37dd`, M3 `6574600`, M4 `63b8e33`, M5 `ba9ca61`, M6 `83c9f60`, M8 `bce9039` and M9 `65de02b` each name only the register, their own `docs/design` packet, their own `docs/evidence` record and their own retained raws; M1 is on main at `a9f671e` and has no diff; lane B `4090f98` is the one branch that also names files under `scripts/` and `.github/`. Denominator eight | Applied at both sites — "the other **eight** siblings", naming them, and "**seven of the eight**" in the Not-verifiable block — with both superseded counts quoted and dated, and the record's first `could_not_verify` entry restated the same way |
+| G8 the two method columns do not re-derive under the method the repair states | non-blocking | **CONFIRMED, with one sub-claim of the finding's own restated.** Both sweeps re-run this session over all nine siblings: the published 1 / 0 / 11 / 13 / 22 / 9 / 13 / 51 / 13 reproduce **only** under the prefix filter, and under membership the counts are 4 / 9 / 25 / 28 / 39 / 20 / 30 / **74** / 37 at the heads the rows name (M8 is **75** at its current head `bce9039`; M9 is 37 at both `3e764d8` and `65de02b`). The intersections are **not** identical under both predicates: the 24-column is, for all nine, and the 27-column differs at M4 and M9 because no prefix reaches `PROJECT-STATUS.md`. All nine intersection pairs reproduce under membership at the heads the rows name and at the current heads alike | Applied at the method paragraph, the supersession note, the table header and the F7 disposition row: the two span columns are stated to keep the first draft's prefix predicate, only the intersections use membership, the membership count is printed beside each span figure, and the two cells where the predicates disagree are named. Superseded wording kept |
+| G9 the record's `file_set_intersection` block is unrepaired and unmarked | non-blocking | **CONFIRMED.** The block still carries the prefix-filtered 24-file predicate, `m7_surface_size` **24** and **seven** rows with no 27-file column and no M8 or M9 row, while `measurements.plane_disjointness` and `measurements.egress_surface` both took an inline dated correction [Observed, the record parsed this session] | Applied: `predicate` marked in place with a dated bracket and a `superseded_2026_09_15` sibling key added, both routing the reader to `review1.f7_collision_recomputed`. Nothing deleted or overwritten |
+| G10 the record's `shared_governance_file` block is false in four respects and unmarked | non-blocking | **CONFIRMED in all four, and the recount reproduces exactly.** All nine sibling registers recounted this session at their own heads under the predicate `^| P-` partitioned by the `##` section: every one holds **27** rows (**22** open + **5** acceptance-act) and carries exactly one row above P-53 — P-68 `4090f98`, P-69 `f2f37dd`, P-70 `6574600`, P-71 `63b8e33`, P-72 `ba9ca61`, P-73 `83c9f60`, P-74 `bce9039`, P-75 `65de02b`, P-76 `1803608` — and main at `a9f671e` gives 21 / 5 / 26. Denominator all nine worktrees | Applied: `touched_by_M7` set **true** and `touched_by` extended to **eight**, each with a dated note key recording what it read, and the three false `disclosure` sentences marked in place and dated with the recount and the nine heads beside them |
+| G11 `packet_measured.measured` asserts a currency its own sibling key denies | editorial | **CONFIRMED.** The key reads "after every other edit in this pass, so the figures are true of the bytes they describe" while every value in the block is the first draft's at `0c4b4a9`, and the disclaimer sits at the end of `slash_bearing_note`, a key about a different subject [Observed, the record parsed this session] | Applied: a `describes_commit` key set to `0c4b4a9` on the same line, and a dated clause appended inside `measured` routing the reader to `review1.post_repair_measurements` and to `review2.packet_measured_after_review2`. The values are left exactly as they are |
+| G12 the over-width predicate is stated two ways and the published list satisfies one | editorial | **CONFIRMED.** Both predicates run over this file this session: under Gate 6 item 11's words ("outside fences, tables, block quotes and headings") the figure is **4** — lines 205, 266, 975 and 986 — and under the pipe-only predicate it is the published **10**, which also counts the H1 title at line 1 and a banner block-quote line at 6 | Applied: Gate 6 item 11 now names the pipe-only predicate with its denominator, the superseded wording quoted and dated, and `packet_measured.over_width_predicate` takes a dated sibling key recording that it is a third spelling describing the `0c4b4a9` figures |
+| G13 the SEC-2 sweep enumerates five network literals where the record says six | editorial | **CONFIRMED.** All six re-run this session over both denominators: `fetch(`, `node:http`, `node:https`, `undici`, `axios` and `XMLHttpRequest` occur **0** times over the 17-file `src`-only set and **0** times over the 20-file package set, and `https://` occurs **3** times on each, the same three test fixtures | Applied: `XMLHttpRequest` added to the enumeration at the Gate 2 site, with the reason and both denominators stated |
+| G14 a third review-1 observation is neither applied nor disclosed | editorial | **CONFIRMED, and reproduced without a provider call.** Driving the built package over the shipped garden fixture this session and counting the sentinel in each stage's encoded envelope: with the sentinel in `mechanism` the counts are 1/2/2/4/4 = **13**, and with it in `purpose` 1/2/2/3/3 = **11**, because the fixture repeats the mechanism text twice inside the draft and the purpose text once | Applied: `measurements.stage_envelopes.method` now names `mechanism` by a dated append, and the observation is carried as a **third** unapplied review-1 observation in the review-1 section above and in the record by a dated sibling key beside `review1.raw_observations_outside_f1_f12_not_applied`, which is not edited |
+| G15 the register renders the raw's gate column without its two qualifiers | editorial | **CONFIRMED.** The raw's column answers Q2 "**Yes, but the weakest of the five**" and Q4 "**Weakest as a gate** … the recommended path dissolves the question. The gate is real only on the file-writing limb"; the packet carries both verbatim in its review-1 section and the register's blockquote and P-76 row said only "all five questions … genuine hard gates" [Observed, both register sites and the packet site read this session] | Applied at both register sites in the register's own shape: the two qualifiers and the dissolving arm, with the superseded phrase quoted and dated at each |
+| G16 Q1's fourth lawful arm is disclosed 1,390 lines below Q1 | editorial | **CONFIRMED.** The Q1 row names three lawful arms and a default; the fourth arm review 1 identified — RFC7-10 **not engaged** — and the disclosure that Q1's default is the only one of the five that ships rather than holds appear in the review-1 section and in the P-76 row, faithfully and unsmoothed, and nowhere in the row itself | Applied: **one clause** in Q1's recommended cell pointing at the review-1 section and the register row and saying why the arm is deliberately not folded in. The arm is **not** added to the table; that decision stands and is the owner's to make on P-76 |
+
+**Recommended answers changed after review 2: none, stated explicitly.**
+Review 2's own five-question table answers "Scope truthful?" **Yes** for all
+five, "Genuine hard human gate?" **Yes** for four with **Q4 qualified** for
+the reason review 1 gave and this packet carries — the recommended arm "needs
+no act on anyone's reading", so the gate is real only on the file-writing
+limb — "Recommendation follows?" **Yes** for all five, and "Every lawful arm
+named?" for all five, Q1's fourth arm being disclosed in the review-1 section
+and the register row rather than in its own row. **No lawful arm is called
+unlawful anywhere**, **no owner trade-off is smoothed**, every question states
+a default-if-unanswered and four of the five default to not shipping, and no
+P-71, P-72 or P-73 question is re-asked [Observed, read from the retained
+raw]. All sixteen exceptions are presentational or evidentiary: G1, G2, G6 and
+G7 are wording the repair pass reinstated or left behind; G3, G4, G8, G12 and
+G13 are counts and predicates inside the repairs that did not re-derive over
+the data printed beside them; G5 is two self-referential measurements this
+packet's own register commit falsified; G9, G10, G11 and G14 are
+evidence-record fields not carried forward with the packet; G15 and G16 move a
+disclosure to where the owner meets it. **Q1 through Q5 keep the
+recommendations, named arms and defaults they carried into this review, word
+for word**, and no default-if-unanswered moved.
+
+**The three review-1 observations carried unapplied, for the owner.** Each is
+named here rather than acted on, because adding or re-weighting an arm changes
+what P-76 puts to the owner and that reading is the owner's own. (1) Q1 has a
+**fourth lawful arm this packet does not offer** — rule RFC7-10 **not
+engaged**, on the reading that REQ-003's "source anchors" are the bundle's
+anchors into governed artifacts and a provider-side source record is not an
+anchor in RFC7's sense. (2) **Q1's default is the only one of the five that
+ships rather than holds**, and the question does not flag it as the least
+conservative default the packet carries. (3) The sentinel figure re-derives
+**only** with the sentinel in the `mechanism` source; with it in `purpose` it
+is **11** rather than **13**. Review 2 found the first two carried faithfully
+and unsmoothed in both of their places and the decision not to fold them in
+correctly reasoned; the third it found neither applied, carried nor mentioned,
+and it is now carried in all three — here, in the review-1 section, and in the
+evidence record's method.
+
+By verification rule 10, review 2 binds the bytes it names — the four digests
+in the table above, at commit `1803608` — and not these. Every edit in this
+section and in the repairs above was made after it, so **the sixteen exception
+repairs are uncovered until a third independent fresh-context review confirms
+them**; that raw will be a third `-RAW.md` file, never an overwrite of either
+retained one. Subject to that, and on review 2's confirmation of the
+`1803608` bytes — CONFIRM WITH EXCEPTIONS, no blocking finding, no recommended
+answer moved, and the review-1 dispositions verified as eleven REPAIRED over
+twelve with F10 item 3's non-application confirmed correct and all three
+incomplete repairs completed here — **this packet stands at the owner gate**:
+P-76 is ready to be ruled, with the three unapplied review-1 observations open
+in front of it.
+
+Over-width lines after these edits, under the predicate "lines outside fenced
+code blocks whose first non-space character is not a pipe, longer than 78
+columns", denominator every line of this file: **10** [Observed, measured
+after every other edit of this pass and iterated to a fixed point, so the
+figure is true of the bytes that carry it].
 
 ## Funnel summary
 
@@ -1508,14 +1750,14 @@ measured after all of the edits above].
 Size: small (slice 5) / medium (slices 2, 3, 6) / large (slices 1, 4) / deferred (slice 7)
 Baseline: Syzygy a9f671e; the M7 surface is byte-identical to 1932f74; the dossier's syzygy_audited_at f4589e2 predates the whole generation package, and routes.ts is unchanged at all three
 - G1 Motif: the loop has no entrance, no exit and no independence. Entrance: 0 references to three-surface-poc-core, PocModel or projectShape across the 20 tracked files of packages/polaris-generation-core and apps/three-surface-poc/src/polaris-generation (denominator corrected 2026-09-15, review 1 F1; the src-only spelling it named is 17 tracked files and the sweep returns 0 over both), whose entire notion of a source is {sourceId, text<=100000}, while the observation plane carries 12 identity fields plus per-source and per-claim identities. Independence: providerRoute is one scalar for six stages, and the fidelity envelope carries the author's plan - measured by sentinel, 5 keys including plan, against inventory's 2. Exit: awaiting-rendered-review has no successor in the PipelineResult union, and the literals generation and draft occur 0 times in a 240-line route table of 15 entries. Citations are array indices, so reordering the input renumbers the page [Observed, every figure measured this session with predicate and denominator stated]
-- G2 Doctrine: VIS-2 at the citation and the self-corpus seams, VIS-1's ordering putting slice 1 above slice 4, VIS-4 for Q1 (accepted-contract reading) and Q5 (normative data contract), VIS-5 for the one slice that would write into .syzygy (slice 4, whose recommended arm writes nothing), SEC-2 as the whole content of slice 5 - 0 network primitives across the same 20 tracked files
+- G2 Doctrine: VIS-2 at the citation and the self-corpus seams, VIS-1's ordering putting slice 1 above slice 4, VIS-4 for Q1 (accepted-contract reading) and Q5 (normative data contract), VIS-5 for the one slice that would write into .syzygy (slice 4, whose recommended arm writes nothing), SEC-2 naming two of slice 5's five fields, the other three attributed at the site - 0 network primitives across the same 20 tracked files [this line read "SEC-2 as the whole content of slice 5" until 2026-09-15, review 2 G2; the body was repaired the same day under review 1 F9 and this summary reinstated the superseded claim in five unmarked words]
 - G3 Topology: packages/polaris-generation-core/src + apps/three-surface-poc/src/polaris-generation + routes.ts + docs/polaris-generation + package.json + PROJECT-STATUS.md; no boundary crossed; no governed artifact edited; every slice filed against an unchecked tasks.md task (24 boxes, 24 unchecked, counted this session)
 - G4 Design: an observation-shaped source type whose four identity fields are the registry's own declared scheme; per-stage envelopes constructed at the call site so fidelity and repair lose the plan; a rule-based responder over Syzygy's own 105-file, 1,266,454-byte corpus that publishes its breaches; a machine-credentialed draft route folded into P-72's delta; a pure RFC7-21 per-block packet drafter that writes nothing; stage-scoped inputs and reserve/complete resume
 - G5 Spec: no delta needed for the source type - the whole question is whether the registry's git-tree-entry identity is admitted as one of RFC7-10's five closed classes, which is Q1. RFC2-26 run over all seven slice rows (denominator 7): slices 1, 3, 4 and 6 map to named requirement-and-scenario pairs; slice 2's requirement is named and no scenario states the envelope case; slices 3, 5 and 6 enumerate no RFC-0002 consequence; slice 7 deferred and not run
-- G6 Bar: three independent methods for the re-billing figure; two each for the two load-bearing zeros; rule-6 mutants per slice; no act-bound byte proposed for edit, with the synthetic-verification record's re-run obligation recorded once for both M6 and M7; ONE independent review, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 9 non-blocking, 3 editorial, F1-F12), retained at docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-RAW.md; eleven of the twelve exceptions re-derived and applied and one (F10.3) not confirmed and not applied, and by rule 10 the repairs are uncovered until a second review [this line read "NO independent review yet - this is a first draft, and by rule 10 nothing here is covered until a fresh-context review reads these bytes" until 2026-09-15]
+- G6 Bar: three independent methods for the re-billing figure; two each for the two load-bearing zeros; rule-6 mutants per slice; no act-bound byte proposed for edit, with the synthetic-verification record's re-run obligation recorded once for both M6 and M7; TWO independent reviews, both verdicts copied exactly: review 1 CONFIRM WITH EXCEPTIONS (0 blocking, 9 non-blocking, 3 editorial, F1-F12), retained at docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-RAW.md, and review 2 CONFIRM WITH EXCEPTIONS (0 blocking, 10 non-blocking, 6 editorial, G1-G16), retained at docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-2-RAW.md; eleven of review 1's twelve exceptions re-derived and applied and one (F10.3) not confirmed and not applied, which review 2 verified as eleven REPAIRED with F10 item 3's non-application confirmed correct; all sixteen of review 2's exceptions re-derived and applied, and by rule 10 those sixteen repairs are uncovered until a third review [this line read "NO independent review yet - this is a first draft, and by rule 10 nothing here is covered until a fresh-context review reads these bytes" until 2026-09-15, and then "ONE independent review, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 9 non-blocking, 3 editorial, F1-F12) ... and by rule 10 the repairs are uncovered until a second review" until later the same day]
 Acts: every M7 clause is predecessor text (ten-sentence sweep over both specification files), so all six slices ride POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md (2026-09-12) on either reading of the understanding act's limiting sentence - the arm that gates M6's slice 4 reaches no M7 slice. What M7 needs instead is five rulings: Q1 an anchor-class reading, Q2 a self-corpus read, Q3 and Q4 arms of sibling questions P-72 and P-71, Q5 an effect-boundary contract sentence
 Open questions: Q1-Q5 above, registered 2026-09-15 as P-76 in .syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md on this branch - the row the first draft said would land after review 1 [this line read "NOT registered - this packet writes two files and no register row, by instruction; the row lands after review 1, batched" until then]. The eight siblings' rows are P-68 lane B, P-69 M2, P-70 M3, P-71 M4, P-72 M5, P-73 M6, P-74 M8 and P-75 M9, each only on its own branch
-Collision: NOT zero. Eleven files shared with M6 (a floor: M6 cites pipeline.ts 10 times as a bare span the predicate misses), and routes.ts shared with M2, M4 and M5 - four packets propose editing the same 240-line file
+Collision: NOT zero. Eleven files shared with M6 (a floor: M6 cites pipeline.ts 10 times as a bare span the predicate misses), and routes.ts shared with M2, M4, M5, M8 and M9 - six packets including this one propose editing the same 240-line file [this line read "routes.ts shared with M2, M4 and M5 - four packets propose editing the same 240-line file" until 2026-09-15, review 2 G1; the body restated it to six the same day under review 1 F8 and the summary was left behind. All six re-verified at source 2026-09-15 in each sibling's Gate 3 table at its current head: M2 slice 3, M4 slice 5, M5 slices 1 and 3, M7 slice 4, M8 slice 2, M9 slices 2, 4a and 6]
 Sign-off: pending - the owner's
 Recommended handoff: land slice 5 now; then slice 1, which everything else rests on; slices 2 and 6(a) as one refactor behind M6 slice 4's ruling; slice 3 after Q2; slice 6(b) after Q5; slice 4 after P-72 and P-71; defer slice 7 behind M12
 ```
