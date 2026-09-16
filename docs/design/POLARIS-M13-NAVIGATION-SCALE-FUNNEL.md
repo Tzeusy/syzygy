@@ -1385,9 +1385,11 @@ selected-passages block, which neither capture exposes.
     draft, and every figure in it is uncovered until a fresh-context review
     confirms it."] Verification rule 10 applies to this file: review 1 binds
     the bytes it names at `97b37ee` and not these, so the eleven exception
-    repairs are uncovered until a second independent fresh-context review
-    confirms them. Superseded wording is marked and dated in place, never
-    deleted.
+    repairs were uncovered until a second independent fresh-context review
+    confirmed them — which review 2 (2026-09-16, verdict **CONFIRMED**, no
+    new finding) has now done, retained at a second `-RAW.md`; see "Review
+    2 (2026-09-16)" below. Superseded wording is marked and dated in place,
+    never deleted.
 11. **The battery was run in this worktree at the end of this session.**
     `scripts/check_governance.py` ends with 32 OK, 20 WARN and **0 FAIL**
     over 52 checks, counts derived rather than asserted, and neither of this
@@ -1536,10 +1538,13 @@ partitioned by the `##` section each row falls under].
 
 By verification rule 10, review 1 binds the bytes it names — the two digests
 in the table above, at commit `97b37ee` — and not these. Every edit in this
-section and above was made after it, so **the eleven exception repairs are
-uncovered until a second independent fresh-context review confirms them**;
-that raw will be a second `-RAW.md` file, never an overwrite of the retained
-one. Subject to that, and on review 1's confirmation of the `97b37ee` bytes —
+section and above was made after it, so the eleven exception repairs were
+uncovered until a second independent fresh-context review confirmed them;
+that review has now been performed — **review 2, 2026-09-16, verdict
+CONFIRMED, no new finding**, retained at a second `-RAW.md` file (never an
+overwrite of the retained one), which verified all eleven repairs REPAIRED
+against the `893cbda` bytes and source. See "Review 2 (2026-09-16)" below.
+Subject to that, and on review 1's confirmation of the `97b37ee` bytes —
 CONFIRM WITH EXCEPTIONS, no blocking finding, no recommended answer moved,
 all five questions found to be genuine hard gates, and no lawful arm called
 unlawful — **this packet stands at the owner gate**: P-80 is ready to be
@@ -1565,6 +1570,85 @@ by line and compared against the file's bytes at `97b37ee`, which are
 identical on those two lines]. All figures in this paragraph were measured
 last, in the order stated.
 
+## Review 2 (2026-09-16)
+
+A second independent fresh-context review of the once-repaired packet
+(read-only; only the artifact, its governing references and the acceptance
+criteria) is retained verbatim at
+`docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-2-RAW.md` (**12,629**
+bytes, sha256
+`8b5ec0b1d36d872925920d206cd7954e389e66f5355702e2b4b4f88d56faed6e`,
+computed this session with `wc -c` and `sha256sum` and never transcribed).
+It reviewed commit `893cbda` — the review-1 close-out — at which the four
+files it names hashed as follows, recomputed this session with
+`git show 893cbda:<path>` piped to `wc -c` and to `sha256sum`:
+
+| File reviewed at `893cbda` | Bytes | sha256 |
+|---|---:|---|
+| `docs/design/POLARIS-M13-NAVIGATION-SCALE-FUNNEL.md` | 133570 | `5e808cfe8dfc062c0a49842f708a84258d28be486dc1ddd7227e2775d1afa8ed` |
+| `docs/evidence/polaris-m13-navigation-scale-funnel-2026-09-15.json` | 62481 | `4c975d9a4fee7d0fdc3f83abd22af11e472280357f2e32ac45855f5bf7cf4b41` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 35734 | `3ca492e0dbc790d40859ca8932dc7535ab56c51ca6161f13ec48eca1d147a8fa` |
+| `docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md` | 33333 | `b20d823a28ae3e90cba686e4ac5a77f5da0c6a45711ab254e76cbb9551cddc31` |
+
+Its verdict word, copied exactly: **CONFIRMED**. Its counts, as the raw
+states them: **0 blocking · 0 non-blocking · 0 editorial** — it raised no
+finding of its own.
+
+**Its verification of the eleven review-1 exception repairs, in the raw's
+own verdict word for each row: all eleven REPAIRED.** F1 — the
+`polaris-markdown.ts` block at **158–162** and the level expression at
+**159** anchored at every site, the superseded "lines 156–160" / "line 157"
+surviving only inside dated brackets, and the review confirms the close-out
+worker right that review 1's sixth site does not exist. F2 — re-derived at
+`a9f671e` under the four-prefix predicate (`.syzygy/`, `openspec/`, `docs/`,
+`scripts/`): **913** tracked files, **66** whose path contains "manifest",
+**0** of the fifteen surface files as a digest row, the published "2" being
+the single `manifesto`-named evidence file caught because "manifest" is a
+substring of "manifesto"; the 13-of-15-in-20 clause and the 15-re-run /
+5-re-anchor partition sound. F3 — `polaris-parity-sweep.test.ts` line 494
+quoted whole, **0** of **409** `data-polaris-item` carrying an id, the fifth
+rule-6 mutant present. F4 — the four numbers labelled character indices, the
+UTF-8 byte offsets kept as dated sibling keys. F5 — three script-free
+stopping affordances. F6 — POC-REQ-030 reads per slice and does not rule Q1.
+F7 — the heading-attribute sentence scoped, no over-broad claim standing.
+F8 — the over-78 figure re-derives to **19** under the packet's stated
+predicate, which the review confirms matches the one the packet states. F9 —
+the `\b(?:script|javascript|progressive\w*)\b` sweep gives **9** word-bounded
+matched lines over **73** files. F10 — `tableRegion` **159–161**, `depthNav`
+**1529–1558**, four call sites over five lines. F11 — PWB-REQ-012 at PWB spec
+line 679 closes four roles, not a set of strings, and does not govern
+`POLARIS_COPY`.
+
+**No new defect was found.** Review 2 re-ran the load-bearing measurements
+against the `893cbda` bytes (they reproduce exactly), confirmed the P-80 row
+a faithful one-line rendering of the Q1–Q5 table with the blockquote's
+verdict word and counts exact, reproduced the register recount (**22** open
++ **5** acceptance = **27**; main at `a9f671e` **26**, no P-80) and confirmed
+each of the twelve sibling registers carries **27** rows and none carries
+P-80, and found the self-referential convention figures true of the bytes
+that carry them. It moved no recommendation, no arm and no default; Q1–Q5 are
+byte-identical to `97b37ee`.
+
+**The packet's rule-10 obligation is discharged.** Review 1 bound the
+`97b37ee` bytes; review 2 bound the `893cbda` bytes and confirmed the eleven
+exception repairs against current bytes and source. The edits this close-out
+makes in turn — this section, its retained raw, the record's `review2` block
+and the re-tensed rule-10 notes above — post-date `893cbda`, so by rule 10
+they are themselves uncovered until any further review; no third review is
+queued, and what they add is review 2's own confirmation, carrying no new
+claim of the packet's. **P-80 stands at the owner gate on two independent
+reviews.**
+
+**Figures re-derived last of all, after every edit in this pass**, over the
+bytes this paragraph is itself part of and iterated to a fixed point.
+Over-width lines under the predicate "lines outside fenced code blocks whose
+first non-space character is not `|`, `>` or `#`, longer than 78 columns",
+denominator every line of this file: **19**. Non-fence lines with an
+odd backtick count: **0** of **1672**, so no code span is
+broken across a line break. `python3 scripts/check_governance.py` was re-run
+in this worktree after these edits, its tail line read and not grepped:
+`32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted`.
+
 ## Funnel summary
 
 ```
@@ -1576,12 +1660,12 @@ Baseline: Syzygy a9f671e; the dossier audited a capture at f4589e2, BEFORE the l
 - G3 Topology: apps/three-surface-poc/src only; no governed artifact touched; slices 1, 2 and 4 cross no escalation trigger on any reading, slices 3 and 5 are tested against the continuation act's "any scope beyond the signed change" and put to the owner
 - G4 Design: labels gain a suffix subject the same row already renders, chosen so the existing copy oracle's startsWith predicate still reaches them; heading levels map relative to the fragment's own minimum hash depth and the anchoring heading; the source record's four fields become three columns of the table its row is already in; the outline lists every h2 and h3 and the always-reachable quick-links becomes a 7-entry skip list, with no command palette because the page needs no script; the catalog populations get a bounded first view in whichever of three arms Q1 picks
 - G5 Spec: 0 occurrences of the literal "details" and 0 of "outline" across both spec trees, so no scenario names the disclosure form or the outline; RFC2-26 run over all five slices (denominator 5): slices 1 and 4 map to named requirement-and-scenario pairs, slice 3's content maps to three requirements and one scenario while its form is named nowhere, slice 2's scenario fit is partial and its consequence class is not one the clause enumerates, slice 5 maps for arms (a) and (b) and is partial for arm (c)
-- G6 Bar: two methods for every load-bearing figure; three absence claims each with a stated pattern and denominator; rule-6 mutants per slice including one self-test of an existing guard; no act-bound byte proposed for edit, with the retained fidelity review's re-run obligation recorded for slice 2, and 13 of the 15 surface files named as paths in 20 docs/evidence records, 15 of the 20 at a mutation-target key (review 1's F2); review 1 applied 2026-09-15, verdict copied exactly CONFIRM WITH EXCEPTIONS - 0 blocking, 6 non-blocking, 5 editorial, F1-F11, all eleven re-derived against source and applied, and uncovered until a second review confirms them (superseded 2026-09-15: NO independent review yet - this is a first draft)
+- G6 Bar: two methods for every load-bearing figure; three absence claims each with a stated pattern and denominator; rule-6 mutants per slice including one self-test of an existing guard; no act-bound byte proposed for edit, with the retained fidelity review's re-run obligation recorded for slice 2, and 13 of the 15 surface files named as paths in 20 docs/evidence records, 15 of the 20 at a mutation-target key (review 1's F2); review 1 applied 2026-09-15, verdict copied exactly CONFIRM WITH EXCEPTIONS - 0 blocking, 6 non-blocking, 5 editorial, F1-F11, all eleven re-derived against source and applied, and confirmed by review 2 (2026-09-16, verdict copied exactly CONFIRMED, no new finding, all eleven verified REPAIRED, retained at docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-2-RAW.md) (superseded 2026-09-15: NO independent review yet - this is a first draft; superseded 2026-09-16: uncovered until a second review confirms them)
 Figures corrected against the dossier: 'Exact text' targets 372 -> 185 pre-trim and 192 post-trim (the dossier's figure was wrong on its own capture); source records 271 -> 278; 'Exact text' links 372 -> 386; details 353 -> 359; h6 15 -> 14; tables 10 -> 5; baseline-spec 185 table rows -> 192 compact-list entries; topology-component 87 table rows -> 87 compact-list entries; architecture-group citation links ~150 -> 89 over 2 distinct hrefs; in-group h3s outside the outline ~30 -> 28; polaris.ts source-record line 818 -> 835; exact-text line 1530 -> 378 and 1549; depthNav 1510-1538 -> 1529-1558 (superseded 2026-09-15 under review 1's F10: 1529-1556)
 Acts: PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md (2026-09-02) as continued by PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md (2026-09-05); there is no PWB overlay change directory - the 2026-09-05 amendment replaced the spec bytes in place and they are bound by the eleven-row manifest, so no slice may edit them; slices 3 and 5 should be ruled against the continuation act's escalation triggers at lines 150-156
 Open questions: Q1-Q5 above, registered as P-80 in PENDING-OWNER-DECISIONS.md on branch agent/syzygy-dov.13 after review 1, batched - 22 open rows and 5 acceptance-act rows, 27 in all, on this branch (superseded 2026-09-15: NOT registered - this packet writes two files and no register row, by instruction; the row would be P-80 after review 1, batched). The twelve siblings' rows are P-68 lane B, P-69 M2, P-70 M3, P-71 M4, P-72 M5, P-73 M6, P-74 M8, P-75 M9, P-76 M7, P-77 M10, P-78 M11, P-79 M12, each only on its own branch
 Governance check in this worktree at the end of this session: 32 OK, 20 WARN, 0 FAIL (52 checks) - counts derived, not asserted; neither of this packet's two files appears in any finding
-Sign-off: pending - the owner's; P-80 is at the owner gate on review 1's CONFIRM WITH EXCEPTIONS, with the eleven exception repairs uncovered until a second independent review confirms them
+Sign-off: pending - the owner's; P-80 is at the owner gate on two independent reviews (review 1 CONFIRM WITH EXCEPTIONS, review 2 2026-09-16 CONFIRMED with no new finding), the eleven exception repairs now confirmed against the 893cbda bytes and source
 Recommended handoff: land slices 1 and 2 now (no gate, few lines, the most comprehension per byte); then slice 4; rule Q2 and Q5 before slice 3; rule Q1, Q4 and Q5 and land lane B before slice 5
 ```
 

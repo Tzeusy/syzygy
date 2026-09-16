@@ -1,7 +1,7 @@
 {
  "kind": "polaris-m13-navigation-scale-funnel",
  "version": 1,
- "status": "candidate; binds nothing; planning only; one independent fresh-context review applied 2026-09-15 - review 1, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 6 non-blocking, 5 editorial, F1-F11), retained verbatim at docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md; all eleven exceptions re-derived against source and applied; at the owner gate, registered as P-80 on branch agent/syzygy-dov.13, with the eleven exception repairs uncovered until a second independent fresh-context review confirms them [superseded 2026-09-15: \"no independent review yet\"]",
+ "status": "candidate; binds nothing; planning only; two independent fresh-context reviews applied - review 1 (2026-09-15, verdict copied exactly: CONFIRM WITH EXCEPTIONS, 0 blocking / 6 non-blocking / 5 editorial, F1-F11, all eleven re-derived against source and applied) and review 2 (2026-09-16, verdict copied exactly: CONFIRMED, no new finding, all eleven review-1 exception repairs verified REPAIRED against the 893cbda bytes and source, retained verbatim at docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-2-RAW.md); by verification rule 10 the eleven exception repairs are now confirmed, review 2 being bound to the 893cbda bytes it names; at the owner gate on two independent reviews, registered as P-80 on branch agent/syzygy-dov.13 [superseded 2026-09-16: candidate; binds nothing; planning only; one independent fresh-context review applied 2026-09-15 - review 1, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 6 non-blocking, 5 editorial, F1-F11), retained verbatim at docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md; all eleven exceptions re-derived against source and applied; at the owner gate, registered as P-80 on branch agent/syzygy-dov.13, with the eleven exception repairs uncovered until a second independent fresh-context review confirms them [superseded 2026-09-15: \"no independent review yet\"]]",
  "date": "2026-09-15",
  "bead": "syzygy-dov.13",
  "move": "M13 \u2014 Navigation at population scale",
@@ -1107,10 +1107,10 @@
   "act_arguments_or_digests_reproduced": 0
  },
  "independent_review": {
-  "count": 1,
-  "raws": ["docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md"],
-  "verdicts": ["CONFIRM WITH EXCEPTIONS"],
-  "note": "Review 1 landed 2026-09-15, verdict copied exactly CONFIRM WITH EXCEPTIONS (0 blocking, 6 non-blocking, 5 editorial, F1-F11), retained verbatim at the raw path above and never overwritten; see the review1 block at the end of this record. Verification rule 10: review 1 binds the bytes it names at 97b37ee and not these, so its eleven exception repairs are uncovered until a second fresh-context review confirms them, and that review's raw would be a second -RAW.md file, never an overwrite. [Superseded 2026-09-15: count 0, raws [], 'first draft; every figure here is uncovered until a fresh-context review confirms it (verification rule 10)'.]"
+  "count": 2,
+  "raws": ["docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md", "docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-2-RAW.md"],
+  "verdicts": ["CONFIRM WITH EXCEPTIONS", "CONFIRMED"],
+  "note": "Review 1 landed 2026-09-15 (CONFIRM WITH EXCEPTIONS, 0 blocking, 6 non-blocking, 5 editorial, F1-F11) and its eleven exception repairs were applied. Review 2 landed 2026-09-16, verdict copied exactly CONFIRMED with no new finding; it verified all eleven review-1 exception repairs REPAIRED against the 893cbda bytes and source, re-ran the load-bearing measurements to reproduction, confirmed the P-80 register row faithful and moved no recommendation, arm or default. Both raws are retained verbatim at the paths above and never overwritten; see the review1 and review2 blocks at the end of this record. Verification rule 10 is now discharged for review 1's repairs: review 2 bound the 893cbda bytes and confirmed them. [Superseded 2026-09-16: count 1, one raw, 'review 1 applied; its eleven exception repairs uncovered until a second fresh-context review confirms them'.] [Superseded 2026-09-15: count 0, raws [], 'first draft; every figure here is uncovered until a fresh-context review confirms it (verification rule 10)'.]"
  },
  "governance_check": {
   "command": "python3 scripts/check_governance.py",
@@ -1175,5 +1175,79 @@
   "uncovered_until": "a second independent fresh-context review, for the eleven exception repairs recorded here; all eleven post-date review 1 (verification rule 10). Its raw would be a second -RAW.md file, never an overwrite of the retained one.",
   "packet_measured_after_review1": {"bytes": 133570, "sha256": "5e808cfe8dfc062c0a49842f708a84258d28be486dc1ddd7227e2775d1afa8ed", "total_lines": 1631, "over_78": 19, "over_78_predicate": "lines outside fenced code blocks whose first non-space character is not |, > or #, longer than 78 columns; denominator every line of the file", "non_fence_lines": 1589, "odd_backtick_non_fence_lines": 0},
   "validation_after_review1": {"command": "python3 scripts/check_governance.py", "tail_line": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted", "note": "tail line read, not grep -c FAIL (verification rule 4)"}
+ },
+ "review2": {
+  "raw_path": "docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-2-RAW.md",
+  "raw_bytes": 12629,
+  "raw_sha256": "8b5ec0b1d36d872925920d206cd7954e389e66f5355702e2b4b4f88d56faed6e",
+  "raw_digest_method": "wc -c and sha256sum this session; never transcribed",
+  "verdict": "CONFIRMED",
+  "counts": {
+   "blocking": 0,
+   "non_blocking": 0,
+   "editorial": 0,
+   "new_findings": 0
+  },
+  "reviewed_commit": "893cbda",
+  "reviewed_files_at_that_commit": {
+   "docs/design/POLARIS-M13-NAVIGATION-SCALE-FUNNEL.md": {
+    "bytes": 133570,
+    "sha256": "5e808cfe8dfc062c0a49842f708a84258d28be486dc1ddd7227e2775d1afa8ed"
+   },
+   "docs/evidence/polaris-m13-navigation-scale-funnel-2026-09-15.json": {
+    "bytes": 62481,
+    "sha256": "4c975d9a4fee7d0fdc3f83abd22af11e472280357f2e32ac45855f5bf7cf4b41"
+   },
+   ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+    "bytes": 35734,
+    "sha256": "3ca492e0dbc790d40859ca8932dc7535ab56c51ca6161f13ec48eca1d147a8fa"
+   },
+   "docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md": {
+    "bytes": 33333,
+    "sha256": "b20d823a28ae3e90cba686e4ac5a77f5da0c6a45711ab254e76cbb9551cddc31"
+   }
+  },
+  "method": "each file above measured this session with git show 893cbda:<path> piped to wc -c and to sha256sum; the raw measured with wc -c and sha256sum. No digest transcribed.",
+  "repairs_applied_this_session": false,
+  "f1_f11_verification_as_review2_states_it": {
+   "REPAIRED": [
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+    "F9",
+    "F10",
+    "F11"
+   ],
+   "PARTIAL": [],
+   "NOT_REPAIRED": [],
+   "denominator": 11,
+   "note": "All eleven review-1 exception repairs verified REPAIRED against the 893cbda bytes and source; the review raised no exception of its own. F1: polaris-markdown.ts block 158-162 and expression 159 anchored at every site, and the close-out worker is right that review 1's sixth site does not exist. F2: at a9f671e under the four-prefix predicate 913 tracked files, 66 whose path contains 'manifest', 0 of the 15 surface files as a digest row, the published '2' being the one manifesto-named file. F3: polaris-parity-sweep.test.ts line 494 quoted whole, 0 of 409 data-polaris-item with an id, fifth rule-6 mutant present. F8: over-78 re-derives to 19 under the packet's stated predicate, which review 2 confirms matches the one the packet states. F9: the word-bounded pattern gives 9 matched lines over 73 files."
+  },
+  "new_findings": "none; review 2 raised no blocking, non-blocking or editorial finding of its own",
+  "load_bearing_measurements_reverified": "review 2 re-ran the load-bearing measurements against the 893cbda bytes and they reproduce exactly (polaris-copy.ts 129/134; polaris.ts 835/836, 378, 1549; both captures' populations; the depth-nav anchors; both tab-stop predicates; architecture links; script/noscript counts; the byte arithmetic; the keyword sweep; the RFC9-13.c1 coverage row; the two retained fidelity-review hashes; the continuation-act triggers at lines 150-156; the collision table at the twelve sibling HEADs), and confirmed Q1-Q5's recommendations, arms and defaults byte-identical to 97b37ee.",
+  "register_check_as_review2_states_it": "the P-80 row is a faithful one-line rendering of the Q1-Q5 table after the repairs; the blockquote's verdict word and counts are exact (CONFIRM WITH EXCEPTIONS - 0 blocking, 6 non-blocking, 5 editorial, F1-F11); the recount reproduces (22 open + 5 acceptance = 27; main at a9f671e 26, no P-80); each of the twelve sibling registers carries 27 rows and none carries P-80; the row quotes no digest and backticks no Butlers path; check_governance names the register in exactly two WARN lines at its own lines 9 and 13, inside the 2026-08-17 header blockquote.",
+  "unknowns": "Review 2 attaches no [Unknown] label of its own.",
+  "recommended_answers_changed": "none; review 2 moved no recommendation, arm or default",
+  "rule_10": "Review 2 binds the four digests recorded above at commit 893cbda, not the bytes this close-out then wrote. The edits of this close-out - the packet's Review 2 (2026-09-16) section, its retained -2-RAW.md, this review2 block, and the re-tensed rule-10 notes - all post-date 893cbda, so by verification rule 10 they are themselves uncovered until any further review; none is queued, and what they add is review 2's own confirmation.",
+  "gate": "at the owner gate on two independent reviews (review 1 CONFIRM WITH EXCEPTIONS, review 2 CONFIRMED with no new finding); the eleven exception repairs are now confirmed against the 893cbda bytes and source; P-80 is ready to be ruled",
+  "packet_measured_after_review2": {
+   "bytes": 139312,
+   "sha256": "d811850548e17a00a77dcf38b650f91635bb2e737c003b33f8f253836e50f685",
+   "total_lines": 1714,
+   "over_78": 19,
+   "over_78_predicate": "lines outside fenced code blocks whose first non-space character is not |, > or #, longer than 78 columns; denominator every line of the file",
+   "non_fence_lines": 1672,
+   "odd_backtick_non_fence_lines": 0
+  },
+  "validation_after_review2": {
+   "command": "python3 scripts/check_governance.py",
+   "tail_line": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+   "note": "tail line read, not grep -c FAIL (verification rule 4)"
+  }
  }
 }
