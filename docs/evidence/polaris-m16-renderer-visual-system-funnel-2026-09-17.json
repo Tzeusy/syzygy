@@ -142,13 +142,44 @@
   "packet_rules_nothing": true
  },
  "review": {
-  "status": "NONE. This is a first draft. By verification rule 10 every figure here is uncovered until a fresh-context review, bound to these bytes, confirms it.",
+  "status": "review-1-applied 2026-09-17: CONFIRM WITH EXCEPTIONS (0 blocking / 2 non-blocking / 3 editorial); findings F1-F5 repaired in place in the packet. Superseded first-draft posture (was): 'NONE. This is a first draft.' By verification rule 10 the review-1 close-out repairs post-date the reviewed commit 429924a and are themselves uncovered until a second fresh-context review, bound to the new bytes, confirms them.",
   "load_bearing_figures_confirmed_by_second_method_this_session": "the four differing mutation-subject digests (sha256sum current vs the record's subjects, plus git log showing 7+ commits); the five HTML-string helper signatures (band read + grep for `function .*: string {`); the 0 <svg over three captures (grep -c -F + Python count, with byte denominators); the eight stray literals in design-tokens.ts and the 19 app-wide (precise {3,4,6,8} sweep + per-line # count); and the forced dark theme with no recorded decision (color-scheme: dark grep + prefers-color-scheme absence + layout-doc token search) - verification rule 2, not a review"
+ },
+ "review1": {
+  "verdict": "CONFIRM WITH EXCEPTIONS",
+  "reviewed_commit": "429924a",
+  "counts": {"blocking": 0, "non_blocking": 2, "editorial": 3},
+  "raw": {
+   "path": "docs/reviews/R-POLARIS-M16-RENDERER-VISUAL-SYSTEM-FUNNEL-1-RAW.md",
+   "bytes": 11812,
+   "sha256": "cddd9878ed4c89b50c9afe1d4eca25e164c5c0f3affed895cd01b9380b7c5c79",
+   "note": "retained byte-identical (cmp clean); the -RAW.md suffix exempts it from CG-1b/CG-15 for the paths and digests it quotes"
+  },
+  "findings": {
+   "F1": {"class": "non-blocking", "disposition": "repaired in Measurement 2", "correction": "causeRoutes (polaris.ts:448) returns readonly string[] | undefined and does not match a `: string {` grep; the band-scoped grep returns exactly the five helpers, next `: string {` match is readingFigure (491), one line past the 416-490 band"},
+   "F2": {"class": "non-blocking", "disposition": "repaired in Q5 and Gate 4 slice 5", "correction": "the offset-slicing lives in polaris-reading.ts (SourceSpan defined :26-30, validator/render :47-64) and uses JS character offsets over text, not byte offsets; the polaris-markdown.ts fence renderer already consumes literal fence lines; flowDiagram/relationshipDiagram anchors (108-113, 115-127) are correct and stand"},
+   "F3": {"class": "editorial", "disposition": "repaired in Q2", "correction": "no function escapedCauseRoute exists; the band's first helper is excludedCauseRoute (416), which the same sentence already names correctly"},
+   "F4": {"class": "editorial", "disposition": "repaired in Q6", "correction": "the ten --token: definitions are lines 46-55, not 45-55; line 45 is color-scheme: dark"},
+   "F5": {"class": "editorial", "disposition": "repaired in Measurement 4", "correction": "the two excluded contrast-threshold matches are two values (#777777, #767676), not two pairs; the exclusion total (3) and the stray counts (8 / 19) are unaffected"}
+  },
+  "no_arm_moved": "none of the five moves any recommended arm, any lawful arm, or any default; each corrects a second-method narration or an anchor",
+  "reviewer_reproduced_load_bearing_values": {
+   "polaris_ts_line_count": 1634,
+   "mutation_subjects": "all four recorded digests MATCH the record's subjects block; all four current sha256 DIFFER this session (the rule-10 gap is real)",
+   "svg_canvas_over_three_captures": {
+    "polaris-direct.html": {"svg": 0, "canvas": 0, "bytes": 1478637},
+    "polaris-tailnet.html": {"svg": 0, "canvas": 0, "bytes": 1484487},
+    "polaris-7478.html": {"svg": 0, "canvas": 0, "bytes": 2090025}
+   },
+   "stray_hex": {"design_tokens_ts_stray": 8, "app_wide_stray": 19, "root_token_defs": 10},
+   "theme": "color-scheme: dark at design-tokens.ts:45; 0 prefers-color-scheme across the app source"
+  },
+  "rule10_posture": "these review-1 close-out edits post-date the reviewed commit 429924a and are themselves uncovered until a second fresh-context review bound to the new bytes confirms them"
  },
  "register": {
   "row": "P-83",
   "branch": "agent/syzygy-dov.16",
-  "posture": "six batched questions, no spec prerequisite, mixed build/design arms under the POC improvement-cycle scope, no review yet; the row records that Q1-Q4 and the token half of Q6 are build arms, Q5 and the palette/curation halves of Q6 are design, and no slice touches spec, doctrine, security posture or scope",
+  "posture": "six batched questions, no spec prerequisite, mixed build/design arms under the POC improvement-cycle scope, review 1 applied 2026-09-17 (CONFIRM WITH EXCEPTIONS; the review-1 repairs post-date 429924a and are uncovered until a second review, rule 10); the row records that Q1-Q4 and the token half of Q6 are build arms, Q5 and the palette/curation halves of Q6 are design, and no slice touches spec, doctrine, security posture or scope",
   "counts": "the branch at a9f671e carries 26 `^| P-` rows; after P-83 it carries 27. P-83 sits after P-82 in the '## Open, and only the owner can dispose' section."
  },
  "self_referential_figures": {
@@ -156,18 +187,29 @@
   "over_78": 0,
   "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file (split on newline)",
   "odd_backtick_non_fence_lines": 0,
-  "non_fence_lines": 397,
-  "total_lines": 430
+  "non_fence_lines": 462,
+  "total_lines": 498
  },
  "packet_measured": {
-  "note": "computed LAST over the committed packet bytes; equals what is committed; self_referential_figures agrees",
+  "note": "computed LAST over the committed packet bytes after the review-1 close-out; equals what is committed; self_referential_figures agrees",
   "path": "docs/design/POLARIS-M16-RENDERER-VISUAL-SYSTEM-FUNNEL.md",
-  "bytes": 39136,
-  "sha256": "f6be38e10f7c8ac7b1129ccebe83f7e340ea234ed4718921713b9a82c7a11365",
-  "total_lines": 430,
-  "non_fence_lines": 397,
+  "bytes": 44175,
+  "sha256": "0d29c755261b353d4f9b68c1005e5bf44ec29d2347a9acb3702ac0918544fa7f",
+  "total_lines": 498,
+  "non_fence_lines": 462,
   "over_78": 0,
   "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file (split on newline)",
+  "odd_backtick_non_fence_lines": 0
+ },
+ "packet_measured_after_review1": {
+  "note": "computed LAST over the committed packet bytes after the review-1 repairs and re-tensing; the packet's Gate 6 and self_referential_figures state the same numbers",
+  "path": "docs/design/POLARIS-M16-RENDERER-VISUAL-SYSTEM-FUNNEL.md",
+  "bytes": 44175,
+  "sha256": "0d29c755261b353d4f9b68c1005e5bf44ec29d2347a9acb3702ac0918544fa7f",
+  "total_lines": 498,
+  "over_78": 0,
+  "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file (split on newline)",
+  "non_fence_lines": 462,
   "odd_backtick_non_fence_lines": 0
  }
 }
