@@ -1,0 +1,123 @@
+{
+ "kind": "polaris-m15-pipeline-truthfulness-funnel",
+ "version": 1,
+ "status": "candidate; binds nothing; planning only; FIRST DRAFT - NO independent review yet. Where the M14 packet records one fresh-context review, this packet records none. By verification rule 10 every figure here is uncovered until a fresh-context review, bound to these bytes, confirms it. The load-bearing figures were reproduced this session by a second method each (verification rule 2), which is not a review. The whole move is spec-amendment-gated: every slice trips the continuation act's spec-amendment escalation trigger, so the packet recommends drafting a CC-REV-2 semantic delta and designing against it, never building. Not registered as an act; the packet asks four batched owner questions and records a default of 'nothing happens' per question if unanswered.",
+ "date": "2026-09-17",
+ "bead": "syzygy-dov.15",
+ "move": "M15 - Pipeline truthfulness at class granularity: class-scoped Unknown, a flagged unenumerated heading, and root-independence declared per tree rule",
+ "packet": "docs/design/POLARIS-M15-PIPELINE-TRUTHFULNESS-FUNNEL.md",
+ "commit": "a9f671e",
+ "dossier": {
+  "section": "### M15 in docs/pursuits/2026-09-13-vision-pursuit.md at a9f671e",
+  "merges": ["S7-M1", "S7-M2", "L1-M4"],
+  "evidence_findings": ["S7-F1", "S7-F2", "L1-F2"],
+  "doctrine": ["VIS-2", "VIS-1"],
+  "prerequisite_line": "spec amendment (PWB-REQ-002's 'a source never yields a partial item set' is the current, tested, spec-quoted contract, not a bug); every slice is downstream of it",
+  "owner_value": 4,
+  "build_cost": 3
+ },
+ "labels": "Every figure is [Observed] unless marked. [Inferred] marks a counterfactual harm not present in Butlers today (a tenth category, a second project's unread root index); [Unknown] marks what neither the source nor the machine answer exposes. An LLM assertion is [Inferred].",
+ "conventions": {
+  "line_count": "one-based index into split-on-newline segments of the file at a9f671e (the number `sed -n 'Np'` prints)",
+  "byte_count": "UTF-8 length",
+  "sweeps": "Python re and a JSON walk over the retained capture, never grep character classes (verification rule 1)"
+ },
+ "capture": {
+  "api-poc.json": {
+   "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/api-poc.json",
+   "bytes": 5520314,
+   "provenance": "the lane A 'after' machine answer; Syzygy 2ef68f5, Butlers 2e3bac97790b4bd8906dcac63eadb5642a0bb1ac; recorded in docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json"
+  },
+  "role": "the capture supplies magnitudes only; the defects are read structurally at the source at a9f671e. On the capture's Butlers revision the v1 index reads cleanly; the AGENTS.md known-gap note records it whole-source Unknown at an EARLIER Butlers revision 13d269b. Both states are [Observed] on their named revisions and neither is smoothed into the other.",
+  "daemon": "none started this session; no Butlers body was read"
+ },
+ "why": "a fact the pipeline holds must not vanish because a different fact next to it could not be read (VIS-2, VIS-1). Three shapes: one class's grammar failure discards the source's succeeded classes; a catalog category outside the closed nine headings is invisible not Unknown; a tree rule mints modeled facts even when the root index never read.",
+ "s7_f1_whole_source_discard": {
+  "claim": "extractSource returns whole-source Unknown on the first failing class, discarding the items it already accumulated for the classes that succeeded",
+  "discard_site": "packages/three-surface-poc-core/src/project-shape-extraction.ts:646 - `if (result.kind === 'failed') return { kind: 'unknown', path, classes, failure: result.failure };`, inside the class loop at lines 628-662; the extractClass call is line 645 and the discarded accumulator `all` is filled at line 647 on the success path",
+  "dossier_line_note": "the dossier's S7-F1 cited the discard at :645-646; the `return { kind: 'unknown' ... }` statement is line 646, and line 645 is the extractClass call it tests - a precision, not a correction",
+  "contract_is_intentional": {
+   "code_comment": "packages/three-surface-poc-core/src/project-shape-extraction.ts:14-17 - 'Any grammar failure ... makes the whole source's item denominator Unknown. A source never yields a partial item set.'",
+   "spec_falsifier": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md, requirement PWB-REQ-002 at line 115: its Falsifier list includes 'a malformed source emits a partial population' - a partial set is currently a bug, which is why slice 1 is an amendment"
+  },
+  "pinning_test": "packages/three-surface-poc-core/src/project-shape-extraction.test.ts:778-786 - named 'a failing class withholds the items of the classes that succeeded'; it asserts project-account-section and success-criterion each extract 'items' alone, fails the principle class, and asserts extractSource returns kind 'unknown' for the whole source",
+  "method_1": "read the code path and the test at a9f671e",
+  "method_2": "grouped projectShape.items in the retained capture by each item's first anchor path and by class",
+  "magnitude_on_capture": {
+   "source": "projectShape.items in api-poc.json, 415 items total across 9 classes",
+   "multi_class_item_bearing_sources": "exactly two: the Butlers v1 index and the Butlers vision file",
+   "v1_index": {"total": 75, "by_class": {"catalog-entry": 65, "project-account-section": 2, "success-criterion": 8}},
+   "vision_file": {"total": 15, "by_class": {"principle": 7, "project-account-section": 3, "success-criterion": 5}},
+   "meaning": "under the current contract each bundle is discarded whole if any one of its classes fails; the manifest class assignment at project-shape-manifest.ts:250 independently shows both files declaring exactly three extraction classes",
+   "live_bite": "at Butlers 13d269b the v1 index's whole bundle was in fact lost - the AGENTS.md known-gap note records it whole-source Unknown there (colon forms and duplicate labels outside the signed dash grammar). [Observed] on that revision; the capture is on a later revision where it reads."
+  }
+ },
+ "s7_f2_closed_catalog_vocabulary": {
+  "claim": "an added level-3 catalog category outside the closed nine-literal vocabulary is neither counted nor Unknown - it is invisible, which VIS-2 forbids",
+  "catalog_headings": {
+   "site": "packages/three-surface-poc-core/src/project-shape-extraction.ts:56-66",
+   "literal_count": 9,
+   "method_1": "parse the CATALOG_HEADINGS array body for single-quote literals -> 9",
+   "method_2": "count the per-line literal rows between the brackets -> 9"
+  },
+  "no_document_scan": "extractCatalogEntries (packages/three-surface-poc-core/src/project-shape-extraction.ts:438-460) iterates only `for (const headingText of CATALOG_HEADINGS)` and performs no scan of the document's own headings for a tenth level-3 heading (measured: the substring 'doc.headings' does not occur in the function body)",
+  "current_failure_vocabulary": "EXTRACTION_FAILURES (packages/three-surface-poc-core/src/project-shape-extraction.ts:33-41) is 7 reasons; slice 3 adds an eighth, unenumerated-heading",
+  "presence_in_butlers": "[Inferred] - Butlers does not have a tenth catalog category today; the harm is for the project that first adds one. What is [Observed] is the code path that would make it invisible."
+ },
+ "l1_f2_tree_rules_run_without_root": {
+  "claim": "Rules 3 and 4 (tree metadata) run unconditionally over the whole tree with no dependence on rootIndex.state, so a second repository with an unread root index would mint modeled baseline-spec facts beneath five pillars all reporting root-index-missing - the silent-partial-truth class VIS-1 ranks worst",
+  "rule2_gates_on_root": "packages/three-surface-poc-core/src/project-shape-manifest.ts:419 - the pillars map branches on rootIndex.state and returns an 'unknown' pillar when the root is missing or unavailable (measured: the region references rootIndex.state)",
+  "rules34_do_not": "packages/three-surface-poc-core/src/project-shape-manifest.ts:491-506 - the `for (const entry of input.tree)` loop references rootIndex nowhere (measured: zero occurrences of the token 'rootIndex' between the 'Rules 3 and 4' comment and the manifest body assembly)",
+  "regexes": "BASELINE_SPEC at packages/three-surface-poc-core/src/project-shape-manifest.ts:354 and ROSTER_BUTLER at line 355 mint sources over the whole tree irrespective of root state",
+  "magnitude_on_capture": "Rule 3 mints 192 baseline-spec sources on the retained capture (the M14 baseline-spec-tree tally, reproduced)",
+  "butlers_unexposed": "Butlers' root index reads, so it is not exposed; the exposure is [Inferred] for a second repository using OpenSpec's conventional openspec/specs/<dir>/spec.md layout whose root index does not read"
+ },
+ "questions": {
+  "Q1": "slice 1 / S7-M1: DRAFT a CC-REV-2 semantic delta to PWB-REQ-002 narrowing 'a source never yields a partial item set' from whole-source to whole-class granularity, via the normative-change workflow. Recommended: authorize DRAFTING only (binds nothing, VIS-4); implementation waits on the signed amendment and a fresh authorization. Arms: (a) no change; (b) draft the delta; (c) draft the full package (delta + CC-IMPACT blast radius + fresh review). Default: no delta drafted, the whole-source contract stands and slices 2-4 stay blocked.",
+  "Q2": "slice 2 / S7-M1: given a signed Q1 delta, design a `partially-extracted` SourceExtraction outcome carrying items+denominators for the succeeded classes and a per-class failure record for the failed ones. Recommended: design it inside the drafted delta package; build only after signoff (a partial item set is what the current contract forbids). Arms: (a) no partial outcome; (b) per-class outcome; (c) coarser fully-extracted-or-Unknown split. Default: extraction stays all-or-nothing per source.",
+  "Q3": "slice 3 / S7-M2: add an `unenumerated-heading` failure reason with a tenth-category fixture so a level-3 catalog heading outside the closed nine, or an unenumerated root heading, is flagged not skipped. Recommended: design it in the same drafted delta and rule which arm. Arms: (a) fail the class; (b) surface it as a flagged extra declaration (depends on Q1/Q2); (c) no change. Default: a tenth category stays invisible.",
+  "Q4": "slice 4 / L1-M4: declare root-independence per tree rule (a rootIndexRequired flag + rule provenance), so a root-dependent rule's sources stay counted-and-Unknown when the root is unread and a root-independent population is stamped with an aggregate qualification. Recommended: design it and route it through the same drafted delta (it changes admission semantics), additive flags leaving Butlers' manifest digest unchanged; build after signoff. Arms: (a) no change; (b) declare independence + render the qualification; (c) qualify only, no admission change. Default: Rules 3-4 stay root-blind."
+ },
+ "acts": {
+  "authorization": ".syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md (2026-09-02)",
+  "continuation": ".syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md (2026-09-05); its record states as [Observed] that the 2026-09-02 authorization names escalation triggers stopping implementation before an amendment to the signed PWB specification, and that further spec changes route through CC-REV-2's amendment path and a new owner act",
+  "overlay": "none - there is no PWB overlay change directory; the 2026-09-05 amendment replaced the spec bytes in place and PWB-REQ-002's requirement text and falsifier are bound",
+  "per_slice_trigger_test": {
+   "1 S7-M1 delta": "trips 'a further amendment to the signed PWB specification' - Q1 authorizes drafting only",
+   "2 S7-M1 outcome": "inherits Q1's trigger - designed here, built only after the signed delta and a fresh authorization",
+   "3 S7-M2": "changes a bound, tested pipeline's observable behavior - rides the drafted delta, ruled with Q1",
+   "4 L1-M4": "changes admission semantics when the root is unread - rides the drafted delta; additive flags must leave Butlers' manifest digest unchanged"
+  },
+  "workflow_reference": ".syzygy/governance/contracts/candidates/policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md (CC-REV-2 is the propagate-in-the-same-change rule); cited by identifier, not inlined",
+  "packet_rules_nothing": true
+ },
+ "review": {
+  "status": "NONE. This is a first draft. Where the M14 packet records one fresh-context review, this packet records none. By verification rule 10 every figure here is uncovered until a fresh-context review, bound to these bytes, confirms it.",
+  "load_bearing_figures_confirmed_by_second_method_this_session": "the discard at line 646 (code path + pinning test 778-786); the 75 and 15 multi-class bundles (JSON walk grouping items by anchor path and class, plus the manifest's three-class assignment at :250); the nine CATALOG_HEADINGS literals (array-body parse + per-line count); the 192 root-blind baseline-spec sources (capture rule tally); and that Rule 2 references rootIndex.state while Rules 3-4 do not (token search over each region) - verification rule 2, not a review"
+ },
+ "register": {
+  "row": "P-82",
+  "branch": "agent/syzygy-dov.15",
+  "posture": "first-draft, no review; the whole move is spec-amendment-gated and the row records that the packet recommends drafting a CC-REV-2 delta and design only, never building",
+  "counts": "the branch at a9f671e carries 26 `^| P-` rows; after P-82 it carries 27. P-82 sits in the '## Open, and only the owner can dispose' section after P-53."
+ },
+ "self_referential_figures": {
+  "note": "computed at a fixed point over the bytes the packet ends in, iterated to convergence after every edit; the packet's Gate 6 states the same numbers",
+  "over_78": 0,
+  "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file",
+  "odd_backtick_non_fence_lines": 0,
+  "non_fence_lines": 365,
+  "total_lines": 390
+ },
+ "packet_measured": {
+  "note": "computed LAST over the exact committed packet bytes; equals what is committed",
+  "path": "docs/design/POLARIS-M15-PIPELINE-TRUTHFULNESS-FUNNEL.md",
+  "bytes": 33748,
+  "sha256": "0733d7271a707ebaf04d969275e0c5811c7fb5f479b2017d4f6bb1b52f2e18d4",
+  "total_lines": 390,
+  "non_fence_lines": 365,
+  "over_78": 0,
+  "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file",
+  "odd_backtick_non_fence_lines": 0
+ }
+}
