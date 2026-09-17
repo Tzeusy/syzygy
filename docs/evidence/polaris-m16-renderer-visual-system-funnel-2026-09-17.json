@@ -157,7 +157,7 @@
   },
   "findings": {
    "F1": {"class": "non-blocking", "disposition": "repaired in Measurement 2", "correction": "causeRoutes (polaris.ts:448) returns readonly string[] | undefined and does not match a `: string {` grep; the band-scoped grep returns exactly the five helpers, next `: string {` match is readingFigure (491), one line past the 416-490 band"},
-   "F2": {"class": "non-blocking", "disposition": "repaired in Q5 and Gate 4 slice 5", "correction": "the offset-slicing lives in polaris-reading.ts (SourceSpan defined :26-30, validator/render :47-64) and uses JS character offsets over text, not byte offsets; the polaris-markdown.ts fence renderer already consumes literal fence lines; flowDiagram/relationshipDiagram anchors (108-113, 115-127) are correct and stand"},
+   "F2": {"class": "non-blocking", "disposition": "repaired in Q5 and Gate 4 slice 5", "correction": "the offset-slicing lives in polaris-reading.ts (SourceSpan defined :26-30; the stitch/emit site is :107-113 in applyReadingPlan - text.slice(start,end) assembling the relations/flow fence bodies - the anchor refined 2026-09-17 from the :47-64 validation block) and uses JS character offsets over text, not byte offsets; the polaris-markdown.ts fence renderer already consumes literal fence lines; flowDiagram/relationshipDiagram anchors (108-113, 115-127) are correct and stand"},
    "F3": {"class": "editorial", "disposition": "repaired in Q2", "correction": "no function escapedCauseRoute exists; the band's first helper is excludedCauseRoute (416), which the same sentence already names correctly"},
    "F4": {"class": "editorial", "disposition": "repaired in Q6", "correction": "the ten --token: definitions are lines 46-55, not 45-55; line 45 is color-scheme: dark"},
    "F5": {"class": "editorial", "disposition": "repaired in Measurement 4", "correction": "the two excluded contrast-threshold matches are two values (#777777, #767676), not two pairs; the exclusion total (3) and the stray counts (8 / 19) are unaffected"}
@@ -187,29 +187,29 @@
   "over_78": 0,
   "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file (split on newline)",
   "odd_backtick_non_fence_lines": 0,
-  "non_fence_lines": 462,
-  "total_lines": 498
+  "non_fence_lines": 467,
+  "total_lines": 503
  },
  "packet_measured": {
-  "note": "computed LAST over the committed packet bytes after the review-1 close-out; equals what is committed; self_referential_figures agrees",
+  "note": "computed LAST over the committed packet bytes after the review-1 close-out and its F2 anchor refinement; equals what is committed; self_referential_figures agrees",
   "path": "docs/design/POLARIS-M16-RENDERER-VISUAL-SYSTEM-FUNNEL.md",
-  "bytes": 44175,
-  "sha256": "0d29c755261b353d4f9b68c1005e5bf44ec29d2347a9acb3702ac0918544fa7f",
-  "total_lines": 498,
-  "non_fence_lines": 462,
+  "bytes": 44735,
+  "sha256": "6925ea93083f2e757f641fae537a244c1fa80baa6219c816a0b301393a31a13e",
+  "total_lines": 503,
+  "non_fence_lines": 467,
   "over_78": 0,
   "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file (split on newline)",
   "odd_backtick_non_fence_lines": 0
  },
  "packet_measured_after_review1": {
-  "note": "computed LAST over the committed packet bytes after the review-1 repairs and re-tensing; the packet's Gate 6 and self_referential_figures state the same numbers",
+  "note": "computed LAST over the committed packet bytes after the review-1 repairs, re-tensing and the F2 anchor refinement; the packet's Gate 6 and self_referential_figures state the same numbers",
   "path": "docs/design/POLARIS-M16-RENDERER-VISUAL-SYSTEM-FUNNEL.md",
-  "bytes": 44175,
-  "sha256": "0d29c755261b353d4f9b68c1005e5bf44ec29d2347a9acb3702ac0918544fa7f",
-  "total_lines": 498,
+  "bytes": 44735,
+  "sha256": "6925ea93083f2e757f641fae537a244c1fa80baa6219c816a0b301393a31a13e",
+  "total_lines": 503,
   "over_78": 0,
   "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file (split on newline)",
-  "non_fence_lines": 462,
+  "non_fence_lines": 467,
   "odd_backtick_non_fence_lines": 0
  }
 }
