@@ -1,0 +1,198 @@
+{
+ "kind": "polaris-m14-provenance-depth-funnel",
+ "version": 1,
+ "status": "candidate; binds nothing; planning only; FIRST DRAFT - NO independent review yet. By verification rule 10 every figure here is uncovered until a fresh-context review confirms it. Not registered as an act; the packet asks five batched owner questions and records a default of 'nothing happens' per question if unanswered.",
+ "date": "2026-09-17",
+ "bead": "syzygy-dov.14",
+ "move": "M14 — Provenance depth: every digest reachable, every citation targeted, every catalog item deep",
+ "packet": "docs/design/POLARIS-M14-PROVENANCE-DEPTH-FUNNEL.md",
+ "commit": "a9f671e",
+ "dossier": {
+  "section": "### M14 in docs/pursuits/2026-09-13-vision-pursuit.md at a9f671e",
+  "audited_at": "the dossier's headline figure is stated over a pre-trim capture (271 sources); this packet re-derives on the retained post-trim lane A capture (278 sources) and publishes both side by side with predicate and denominator",
+  "merges": [
+   "S5-M2",
+   "S5-M3",
+   "S5-M4",
+   "S4-M4",
+   "S4-M3"
+  ],
+  "evidence_findings": [
+   "S5-F2"
+  ],
+  "prerequisite_line": "none for the route work; spec amendment for per-item depth pages (PWB-REQ-015 band semantics)",
+  "owner_value": 4,
+  "build_cost": 3
+ },
+ "labels": "Every figure is [Observed] unless marked. [Inferred] marks a sum, an arithmetic estimate or a reading; [Unknown] marks what neither capture nor the machine answer exposes.",
+ "conventions": {
+  "line_count": "one-based index into split-on-newline segments of the file at a9f671e (the number `sed -n 'Np'` prints)",
+  "byte_count": "UTF-8 length",
+  "sweeps": "Python re throughout, never grep character classes (verification rule 1)"
+ },
+ "captures": {
+  "post_trim": {
+   "polaris-direct.html": {
+    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-direct.html",
+    "bytes": 1478637,
+    "sha256": "2fecdd01e1a2ff577567495796ea7e59ab89f1420be6033e23314d26442ea094"
+   },
+   "polaris-tailnet.html": {
+    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-tailnet.html",
+    "bytes": 1484487
+   },
+   "api-poc.json": {
+    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/api-poc.json",
+    "bytes": 5520314
+   },
+   "provenance": "the lane A 'after' capture; Syzygy 2ef68f5, Butlers 2e3bac97790b4bd8906dcac63eadb5642a0bb1ac; recorded in docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json"
+  },
+  "pre_trim": {
+   "polaris-7478.html": {
+    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/capture/polaris-7478.html",
+    "bytes_on_disk": 2090025,
+    "note": "the capture the dossier's figure is stated over; 2,090,025 UTF-8 bytes on disk"
+   }
+  },
+  "daemon": "none started this session; the loopback daemon on port 7478 was never contacted"
+ },
+ "headline_measurement": {
+  "claim": "86 of 278 sources (31%) on the post-trim capture render a content digest with no exact-source route; the dossier stated 86 of 271 (32%) on its pre-trim capture",
+  "predicate": "a source row is <tr id=\"polaris-source-...\">; its rule is the token after <b>Rule:</b>; a row 'has the route' iff its body carries /polaris/source?identity=; a row 'digest-only' iff its rule != baseline-spec-tree",
+  "method_1": "python re.findall over the two literals, per capture",
+  "method_2": "Counter over the per-rule literal tokens (rows == rule tokens == sum of per-rule counts), and independently the machine answer projectShape.sources anchor.kind/record.outcome tally",
+  "post_trim": {
+   "denominator_sources": 278,
+   "rule_tally": {
+    "root-index": 1,
+    "pillar-index": 5,
+    "pillar-named-file": 54,
+    "baseline-spec-tree": 192,
+    "roster-tree": 26
+   },
+   "digest_only_nonbaseline": 86,
+   "digest_only_composition": "1 root-index + 5 pillar-index + 54 pillar-named-file + 26 roster-tree",
+   "percent": "30.9% (published as 31%)",
+   "route_link_rows": {
+    "baseline-spec-tree": 192,
+    "all_nonbaseline": 0
+   },
+   "in_page_route_hrefs": 386,
+   "distinct_route_identities": 192,
+   "note": "each of the 192 baseline-spec identities renders twice (catalog group + evidence group), so 386 links over 192 distinct destinations"
+  },
+  "pre_trim": {
+   "denominator_sources": 271,
+   "rule_tally": {
+    "root-index": 1,
+    "pillar-index": 5,
+    "pillar-named-file": 54,
+    "baseline-spec-tree": 185,
+    "roster-tree": 26
+   },
+   "digest_only_nonbaseline": 86,
+   "percent": "31.7% (dossier's 32%)"
+  },
+  "figure_that_moved": "denominator 271 -> 278 (+7); baseline-spec-tree 185 -> 192 (+7 now route-reachable); the 86 digest-only rows unchanged in count and composition; percentage 32% -> 31%",
+  "class_gate": "apps/three-surface-poc/src/verbatim-route.ts lines 78-79: `if (source.rule !== 'baseline-spec-tree')` returns refusal 'unconsented-source-or-provider' with detail 'the exact-requirement route applies to baseline specs only.' So exactly the 86 non-baseline rows are refused the route.",
+  "digest_render": "the 86 non-baseline rows each render a truncated (12 hex) content digest in <code data-parity-field=\"shape-source-digest\">; the 192 baseline-spec rows render a no-body epistemic disclosure in that field and carry the route instead"
+ },
+ "body_classification_for_s5_m2": {
+  "source": "projectShape.sources in api-poc.json (278 entries), tallied by (anchor.kind, record.outcome)",
+  "baseline-spec-tree": {
+   "blob_classified": 192,
+   "note": "all 192 already reach the route"
+  },
+  "nonbaseline_total": 86,
+  "nonbaseline_blob_classified": {
+   "count": 77,
+   "composition": "pillar-index 5 + pillar-named-file 53 + root-index 1 + roster-tree 18",
+   "meaning": "a blob anchor whose body the pipeline read and admitted; an exact-source route could serve these once a non-baseline body render mode exists"
+  },
+  "nonbaseline_blob_excluded": {
+   "count": 9,
+   "composition": "pillar-named-file 1 + roster-tree 8",
+   "meaning": "withheld active content (AGENTS.md known gap: TOML has no inert context); the route's existing excluded-content refusal at verbatim-route.ts:87 keeps these digest-only by construction, fail-closed"
+  },
+  "no_tree_or_missing_anchors_in_this_capture": true,
+  "route_leaf_caveat": "the route's leaf renderer runs selectRequirementSections (apps/three-surface-poc/src/capability-detail.ts:256-259) and refuses a body with no requirement heading ('carries no requirement heading to select'), so dropping the class gate alone would refuse the 77 with reference-unresolvable; S5-M2 also needs a whole-body render mode for non-baseline classes"
+ },
+ "route_carrier_for_s5_m3": {
+  "href_builder": "apps/three-surface-poc/src/polaris-source.ts lines 41-43: sourceRouteHref(mountPrefix, identity) = `${withMountPrefix(mountPrefix, POLARIS_SOURCE_PATH)}?${SOURCE_IDENTITY_PARAM}=${encodeURIComponent(identity)}`; SOURCE_IDENTITY_PARAM = 'identity'",
+  "identity_reader": "apps/three-surface-poc/src/polaris-source.ts lines 49-58: sourceRouteIdentities reads the identity back off the href; comment lines 45-47 say the href is 'the one carrier of the identity; no attribute restates it'",
+  "leaf_renderer": "apps/three-surface-poc/src/capability-detail.ts lines 256-260: selectRequirementSections(text) selects requirement headings and joins their text; a requirement selector + scroll anchor would scope this to one requirement",
+  "pwb_req_020_hazard": "the same 192 identities render twice; an id-level parity check would not see a divergence, so S5-M3's added parameter must not change the href identity the parity sweep reads back"
+ },
+ "item_reconciliation_for_s4_m4": {
+  "machine_answer": {
+   "path": "projectShape.items in api-poc.json",
+   "total": 415,
+   "per_class": {
+    "baseline-spec": 192,
+    "topology-component": 87,
+    "catalog-entry": 65,
+    "design-contract": 32,
+    "success-criterion": 13,
+    "principle": 7,
+    "craft-policy": 7,
+    "roster-identity": 6,
+    "project-account-section": 6
+   },
+   "classes": 9
+  },
+  "page": {
+   "bare_data_polaris_item_occurrences": 417,
+   "m13_catalog_eight_class_sum": 409,
+   "m13_note": "M13's 409 is the eight catalog classes only; 415 machine items minus the 6 project-account-section items (which render in the account section, not the catalog) = 409",
+   "delta_417_vs_415": 2,
+   "delta_label": "[Unknown] from the HTML alone which 2 markers are the excess over the machine 415; the render predicate (per-class bounding vs bare occurrence) changes the number, which is precisely the unstated reconciliation S4-M4 renders"
+  },
+  "sources": 278,
+  "unstated": "a reader is given none of: the 278 sources -> 415 items derivation, the 8-catalog-class 409 vs the whole-model 415, or the page's 417 rendered markers, nor their relationship"
+ },
+ "depth_page_for_s4_m3": {
+  "current": "apps/three-surface-poc/src/capability-detail.ts lines 96-119: deriveCapabilityDeepDives returns one deep dive per entity of kind 'capability'; the model carries exactly 1 capability entity (9 entities total, one of each kind), so there is one hard-coded capability depth page",
+  "generalization": "S4-M3 routes catalog items into per-item depth pages instead of the single capability deep dive",
+  "spec_dependency": "PWB-REQ-015 (spec.md line 816) 'Capability detail preserves authority bands and exact intent' fixes the deep dive's band semantics (argument/contract/reality bands, one band-class attribute per block); generalizing depth pages to non-capability catalog items requires a CC-REV-2 semantic delta to PWB-REQ-015's band semantics",
+  "question_kind": "amendment-DRAFTING authorization, not implementation; drafting binds nothing (VIS-4) and implementation waits on the signed amendment and a fresh implementation authorization"
+ },
+ "why": "a digest with no route to its bytes is not provenance (VIS-3, VIS-7); 86 of 278 sources show a content digest a reader cannot verify against anything",
+ "questions": {
+  "Q1": "slice 1 / S5-M2: drop the class gate for the 77 body-classified non-baseline sources (add a whole-body render mode), keep the 9 withheld sources digest-only by the route's fail-closed refusal. Default if unanswered: gate stays, the 86 keep a routeless digest, no route work ships.",
+  "Q2": "slice 2 / S5-M3: add a requirement selector parameter and a scroll anchor so a citation lands on its one requirement, the full spec still served. Default if unanswered: no selector; the route serves the whole spec as today.",
+  "Q3": "slice 3 / S5-M4: add one copy-table legend sentence decoding the source-identity grammar beside the sources table. Default if unanswered: no legend ships.",
+  "Q4": "slice 4 / S4-M4: render a reconciliation line beside the catalog, derived from the machine answer, relating sources, classes and items. Default if unanswered: no reconciliation line ships.",
+  "Q5": "slice 5 / S4-M3: authorize DRAFTING a CC-REV-2 semantic delta to PWB-REQ-015 band semantics for per-item depth pages (drafting binds nothing; implementation waits on sign-off and a fresh authorization). Default if unanswered: no amendment is drafted; the single capability depth page stands."
+ },
+ "acts": {
+  "authorization": ".syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md (2026-09-02), point 1 at lines 50-52",
+  "continuation": ".syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md (2026-09-05), point 3 at lines 110-114; escalation triggers at lines 150-156 (a further amendment to the signed PWB specification beyond the 2026-09-05 package is a stop-and-return trigger, which is Q5)",
+  "overlay": "none — there is no PWB overlay change directory; the 2026-09-05 amendment replaced the spec bytes in place and they are bound",
+  "per_slice_trigger_test": {
+   "1 S5-M2": "tested against 'any scope beyond the signed change' — a new content-presentation mode (serving non-baseline bodies) that the exact-source scenario does not describe; put to the owner in Q1 and Q5",
+   "2 S5-M3": "no trigger on the recommended arm (full spec still served, scroll only); arm (b) narrows the response and touches PWB-REQ-011 route shape",
+   "3 S5-M4": "no trigger; a copy-table legend sentence is implementation",
+   "4 S4-M4": "no trigger; a derived reconciliation line the parity sweep must cover",
+   "5 S4-M3": "trips 'a further amendment to the signed PWB specification' — Q5 authorizes drafting only"
+  },
+  "packet_rules_nothing": true
+ },
+ "review": {
+  "status": "NONE. This is a first draft. By verification rule 10 every figure here is uncovered until a fresh-context review confirms it; where M13 records two independent reviews, this packet records none.",
+  "load_bearing_figure_confirmed_by_second_method_this_session": "86/278 and 86/271 reproduced by re.findall and by per-rule Counter, and the 77+9 body/excluded split reproduced independently from the machine answer projectShape.sources tally (verification rule 2)"
+ },
+ "register": {
+  "row": "P-81",
+  "branch": "agent/syzygy-dov.14",
+  "posture": "first-draft, no review; the row records that every figure is uncovered until a fresh-context review confirms it",
+  "counts": "main at a9f671e: 21 open + 5 acceptance = 26; this branch after P-81: 22 open + 5 acceptance = 27, counted with the predicate `^| P-` partitioned by the `##` section each row falls under"
+ },
+ "self_referential_figures": {
+  "note": "computed at a fixed point over the bytes the packet ends in, iterated to convergence after every edit; the packet's Gate 6 states the same numbers",
+  "over_78": 0,
+  "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file",
+  "odd_backtick_non_fence_lines": 0,
+  "non_fence_lines": 365,
+  "total_lines": 391
+ }
+}
