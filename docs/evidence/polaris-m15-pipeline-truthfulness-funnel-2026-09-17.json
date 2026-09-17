@@ -38,9 +38,9 @@
   "dossier_line_note": "the dossier's S7-F1 cited the discard at :645-646; the `return { kind: 'unknown' ... }` statement is line 646, and line 645 is the extractClass call it tests - a precision, not a correction",
   "contract_is_intentional": {
    "code_comment": "packages/three-surface-poc-core/src/project-shape-extraction.ts:14-17 - 'Any grammar failure ... makes the whole source's item denominator Unknown. A source never yields a partial item set.'",
-   "spec_falsifier": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md, requirement PWB-REQ-002 at line 115: its Falsifier list includes 'a malformed source emits a partial population' - a partial set is currently a bug, which is why slice 1 is an amendment"
+   "spec_falsifier": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md, requirement PWB-REQ-002 at line 115 (requirement header; its Falsifier bullet is at spec lines 137-138, added 2026-09-17 per review 1 F3): its Falsifier list includes 'a malformed source emits a partial population' - a partial set is currently a bug, which is why slice 1 is an amendment"
   },
-  "pinning_test": "packages/three-surface-poc-core/src/project-shape-extraction.test.ts:778-786 - named 'a failing class withholds the items of the classes that succeeded'; it asserts project-account-section and success-criterion each extract 'items' alone, fails the principle class, and asserts extractSource returns kind 'unknown' for the whole source",
+  "pinning_test": "packages/three-surface-poc-core/src/project-shape-extraction.test.ts:779-786 [line ref corrected 2026-09-17 from 778-786 per review 1 F1; 778 is the blank line before the it( block] - named 'a failing class withholds the items of the classes that succeeded'; it asserts project-account-section and success-criterion each extract 'items' alone, fails the principle class, and asserts extractSource returns kind 'unknown' for the whole source",
   "method_1": "read the code path and the test at a9f671e",
   "method_2": "grouped projectShape.items in the retained capture by each item's first anchor path and by class",
   "magnitude_on_capture": {
@@ -48,7 +48,7 @@
    "multi_class_item_bearing_sources": "exactly two: the Butlers v1 index and the Butlers vision file",
    "v1_index": {"total": 75, "by_class": {"catalog-entry": 65, "project-account-section": 2, "success-criterion": 8}},
    "vision_file": {"total": 15, "by_class": {"principle": 7, "project-account-section": 3, "success-criterion": 5}},
-   "meaning": "under the current contract each bundle is discarded whole if any one of its classes fails; the manifest class assignment at project-shape-manifest.ts:250 independently shows both files declaring exactly three extraction classes",
+   "meaning": "under the current contract each bundle is discarded whole if any one of its classes fails; the manifest class assignments at project-shape-manifest.ts:248 (vision.md) and :250 (v1 index) independently show both files declaring exactly three extraction classes [line refs corrected 2026-09-17 per review 1 F2 from a single :250 pointer; :250 is only the v1 index, :249 is single-class architecture.md, vision.md is :248]",
    "live_bite": "at Butlers 13d269b the v1 index's whole bundle was in fact lost - the AGENTS.md known-gap note records it whole-source Unknown there (colon forms and duplicate labels outside the signed dash grammar). [Observed] on that revision; the capture is on a later revision where it reads."
   }
  },
@@ -93,7 +93,7 @@
  },
  "review": {
   "status": "review 1 landed 2026-09-17, verdict CONFIRM WITH EXCEPTIONS (0 blocking, 2 non-blocking F1+F2, 1 editorial F3); the two non-blocking and one editorial line-pointer repairs were applied at this close-out - see the review1 block below. By verification rule 10 those repairs post-date the reviewed bdc2fda bytes and are uncovered until a second independent review confirms them [superseded 2026-09-17 after review 1: 'NONE. This is a first draft. Where the M14 packet records one fresh-context review, this packet records none. By verification rule 10 every figure here is uncovered until a fresh-context review, bound to these bytes, confirms it.'].",
-  "load_bearing_figures_confirmed_by_second_method_this_session": "the discard at line 646 (code path + pinning test 778-786); the 75 and 15 multi-class bundles (JSON walk grouping items by anchor path and class, plus the manifest's three-class assignment at :250); the nine CATALOG_HEADINGS literals (array-body parse + per-line count); the 192 root-blind baseline-spec sources (capture rule tally); and that Rule 2 references rootIndex.state while Rules 3-4 do not (token search over each region) - verification rule 2, not a review"
+  "load_bearing_figures_confirmed_by_second_method_this_session": "the discard at line 646 (code path + pinning test 779-786 [corrected 2026-09-17 from 778-786 per review 1]); the 75 and 15 multi-class bundles (JSON walk grouping items by anchor path and class, plus the manifest's three-class assignments at :248 and :250 [corrected 2026-09-17 from a single :250 per review 1]); the nine CATALOG_HEADINGS literals (array-body parse + per-line count); the 192 root-blind baseline-spec sources (capture rule tally); and that Rule 2 references rootIndex.state while Rules 3-4 do not (token search over each region) - verification rule 2, not a review"
  },
  "register": {
   "row": "P-82",
