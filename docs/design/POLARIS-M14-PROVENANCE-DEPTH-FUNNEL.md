@@ -9,12 +9,15 @@
 > lawful arms for the owner to take; it rules no slice authorized or
 > unauthorized, and the owner disposes.
 >
-> **First draft — NO independent review yet.** Where the M13 packet records
-> two fresh-context reviews, this packet records none. By verification rule
-> 10 every figure below is uncovered until a review, bound to these bytes,
-> confirms it. The load-bearing headline was reproduced this session by two
-> independent methods (verification rule 2); that is not the independent
-> review rule 10 still requires.
+> **Review 1 landed 2026-09-17 — CONFIRM WITH EXCEPTIONS (0 blocking, 1
+> non-blocking F1, 1 editorial F2), both applied.** [superseded 2026-09-17
+> after review 1: "First draft — NO independent review yet. Where the M13
+> packet records two fresh-context reviews, this packet records none."] By
+> verification rule 10 review 1 binds the reviewed `7d764fc` bytes; the F1
+> and F2 repairs and this re-tensing post-date them, so they are themselves
+> uncovered until a second independent review confirms them. The load-bearing
+> headline was also reproduced this session by two independent methods
+> (verification rule 2). See "## Review 1 and repairs (2026-09-17)" below.
 
 Date: 2026-09-17. Author: a funnel session (Claude), for the owner.
 
@@ -51,7 +54,7 @@ the move exists — a digest with no route to its bytes is not provenance
 
 | # | Question | Recommended |
 |---|---|---|
-| Q1 | **[S5-M2] May the exact-source route be extended to the body-classified non-baseline sources — dropping the class gate for the 77 that carry a classified blob, and keeping the 9 withheld sources digest-only?** Measured this session on the post-trim capture: **86** of **278** source rows (**31%**) render a content digest with no exact-source route, because `apps/three-surface-poc/src/verbatim-route.ts` lines 78–79 refuse the route to every source whose rule is not `baseline-spec-tree` (refusal `unconsented-source-or-provider`, "the exact-requirement route applies to baseline specs only"). Of the 86, the machine answer `projectShape.sources` in `api-poc.json` classifies **77** as a blob anchor the pipeline read and admitted — pillar-index 5, pillar-named-file 53, root-index 1, roster-tree 18 — and **9** as withheld active content — pillar-named-file 1, roster-tree 8 — which the route's own fail-closed refusal at line 87 (`excluded-content`) keeps digest-only by construction. There are no tree or missing-at-revision anchors in this capture. A caveat the slice cannot skip: the route's leaf renderer runs `selectRequirementSections` (`apps/three-surface-poc/src/capability-detail.ts` lines 256–260) and refuses a body with no requirement heading, so dropping the gate alone would refuse the 77 with `reference-unresolvable`; S5-M2 also needs a whole-body render mode for the non-baseline classes, which is new content-presentation behavior the signed change does not describe. | **Yes for the 77, never for the 9 — and add the body render mode, do not merely delete the gate.** The 9 withheld sources are the AGENTS.md known gap (roster identity files and one named file have no inert context), and the route's excluded-content refusal is the fail-closed polarity doctrine wants; it must stay. **Every lawful arm:** (a) *no change* — the 86 keep a routeless digest; (b) *the recommended arm* — drop the class gate for the 77 body-classified sources and add a whole-body render mode, the 9 withheld staying digest-only by the existing refusal; (c) *route-metadata only* — for the 77, render the anchor's revision-bound identity and classification reason as reachable text without serving the body, half the value, no new render mode. **Counter-argument, and it is the strong one:** arm (b) adds a rendering mode the specification never contemplated, so Q5's escalation reading (Gate 3) reaches it too — an owner who reads "any scope beyond the signed change" strictly will want arm (b) ruled, not inherited. **Default if unanswered: the gate stays, the 86 keep a routeless digest, no route work ships.** |
+| Q1 | **[S5-M2] May the exact-source route be extended to the body-classified non-baseline sources — dropping the class gate for the 77 that carry a classified blob, and keeping the 9 withheld sources digest-only?** Measured this session on the post-trim capture: **86** of **278** source rows (**31%**) render a content digest with no exact-source route, because `apps/three-surface-poc/src/verbatim-route.ts` lines 78–79 refuse the route to every source whose rule is not `baseline-spec-tree` (refusal `unconsented-source-or-provider`, "the exact-requirement route applies to baseline specs only"). Of the 86, the machine answer `projectShape.sources` in `api-poc.json` classifies **77** as a blob anchor the pipeline read and admitted — pillar-index 5, pillar-named-file 53, root-index 1, roster-tree 18 — and **9** as excluded, kept digest-only by the route's own fail-closed refusal at line 87 (`excluded-content`) — pillar-named-file 1, roster-tree 8, of which 8 are `unclassifiable-excluded` (frontend.md and seven butler.toml, the active-content / "TOML has no inert context" files) and 1 is an `excluded-artifact` (roster/qa/MANIFESTO.md, a markdown manifesto), all outcome=excluded [superseded 2026-09-17 after review 1 F1: "withheld active content"]. There are no tree or missing-at-revision anchors in this capture. A caveat the slice cannot skip: the route's leaf renderer runs `selectRequirementSections` (`apps/three-surface-poc/src/capability-detail.ts` lines 256–260) and refuses a body with no requirement heading, so dropping the gate alone would refuse the 77 with `reference-unresolvable`; S5-M2 also needs a whole-body render mode for the non-baseline classes, which is new content-presentation behavior the signed change does not describe. | **Yes for the 77, never for the 9 — and add the body render mode, do not merely delete the gate.** The 9 withheld sources are the AGENTS.md known gap — seven butler.toml with no inert context, one named markdown file (frontend.md, also `unclassifiable-excluded`), and one `excluded-artifact` markdown manifesto (roster/qa/MANIFESTO.md) [superseded 2026-09-17 after review 1 F1: "roster identity files and one named file have no inert context"] — and the route's excluded-content refusal is the fail-closed polarity doctrine wants; it must stay. **Every lawful arm:** (a) *no change* — the 86 keep a routeless digest; (b) *the recommended arm* — drop the class gate for the 77 body-classified sources and add a whole-body render mode, the 9 withheld staying digest-only by the existing refusal; (c) *route-metadata only* — for the 77, render the anchor's revision-bound identity and classification reason as reachable text without serving the body, half the value, no new render mode. **Counter-argument, and it is the strong one:** arm (b) adds a rendering mode the specification never contemplated, so Q5's escalation reading (Gate 3) reaches it too — an owner who reads "any scope beyond the signed change" strictly will want arm (b) ruled, not inherited. **Default if unanswered: the gate stays, the 86 keep a routeless digest, no route work ships.** |
 | Q2 | **[S5-M3] May the exact-source route take a requirement selector parameter and a scroll anchor, so a citation lands on the one requirement it names rather than the whole spec?** Today the route serves every requirement section of the baseline spec, joined (`selectRequirementSections`, `apps/three-surface-poc/src/capability-detail.ts` lines 256–260). A citation names one requirement; the reader is dropped at the top of all of them. The route's identity is carried entirely by the href — `sourceRouteHref(mountPrefix, identity)` at `apps/three-surface-poc/src/polaris-source.ts` lines 41–43 appends `?identity=`, and `sourceRouteIdentities(html)` at lines 49–58 reads it back, "the one carrier of the identity; no attribute restates it." | **Yes, add a scroll anchor, and keep the whole spec served — arm (a).** A scroll anchor lands the reader on the named requirement without narrowing what the route returns, so PWB-REQ-011's coarser-account invariant is untouched. **Second lawful arm:** (b) a selector that serves only the named requirement — smaller payload, but it removes a stopping point the depth invariant arguably counts, and it multiplies the route identities PWB-REQ-011's depth sweep must enumerate. **Counter-argument:** the same 192 baseline identities already render twice (catalog group and evidence group), so a per-tuple PWB-REQ-020 parity check, not a per-id one, must cover the new parameter, or a divergence hides behind an unchanged id. **Default if unanswered: no selector and no anchor; the route serves the whole spec as today.** |
 | Q3 | **[S5-M4] May one legend sentence be added beside the sources table, decoding the source-identity grammar a reader now has to infer?** The 278 source rows render a rule token, an anchor kind, a classification outcome and — for the 86 non-baseline rows — a truncated content digest, with no key on the page saying what those fields mean. | **Yes — one copy-table sentence, `POLARIS_COPY` being implementation, not a governed artifact.** It is the cheapest slice in the move and it removes an inference the reader should not have to make. **Counter-argument:** any legend is prose that can drift from the grammar it describes; the sentence must be derived from the same rule set the manifest declares (`SOURCE_RULES` at `packages/three-surface-poc-core/src/project-shape-manifest.ts` line 71), not hand-written beside it. **Second lawful arm:** render the legend from the rule set programmatically rather than as a copy string, so it cannot drift. **Default if unanswered: no legend ships.** |
 | Q4 | **[S4-M4] May a reconciliation line be rendered beside the catalog, relating the sources, the extraction classes and the items — derived from the machine answer?** The machine answer `projectShape.items` carries **415** items across **9** classes; the page renders **417** bare `data-polaris-item` markers; the catalog's eight classes sum to **409** (the M13 figure, which is 415 minus the 6 project-account-section items that render in the account section, not the catalog). A reader is given none of these three numbers, nor the 278-sources-to-415-items derivation, nor their relationship. | **Yes — one line, derived from `projectShape`, labelled `[Observed]` for the machine figures and `[Inferred]` for any sum.** It renders the reconciliation the page currently withholds. **Counter-argument:** the 417-versus-415 delta is `[Unknown]` from the HTML alone — the render predicate (per-class bounding versus bare occurrence) changes the number — so the line must state its predicate, or it manufactures a false exactness. **Second lawful arm:** render only the authoritative `projectShape.items` total and per-class counts, and omit the bare-marker count until its predicate is settled. **Default if unanswered: no reconciliation line ships.** |
@@ -74,10 +77,13 @@ which is the move's motive.
 **The 86 is two populations, not one, and only 77 are the slice's subject.**
 The dossier reads the 86 as a single "digest-only" class to be routed. Split
 this session against the machine answer: **77** carry a classified blob and
-are route-able once a body render mode exists; **9** are withheld active
-content the route must keep digest-only, and its fail-closed refusal already
-does. Collapsing the two would propose serving withheld content, which the
-recommendation explicitly does not.
+are route-able once a body render mode exists; **9** are excluded — eight
+active-content sources (seven butler.toml and frontend.md) plus one
+excluded-artifact markdown manifesto (roster/qa/MANIFESTO.md) [superseded
+2026-09-17 after review 1 F1: "9 are withheld active content"] — the route
+must keep digest-only, and its fail-closed refusal already does. Collapsing
+the two would propose serving withheld content, which the recommendation
+explicitly does not.
 
 **The item reconciliation is genuinely unstated, and stating it honestly is
 the slice — not resolving every off-by-two.** The authoritative figure is
@@ -164,9 +170,12 @@ record.outcome): baseline-spec-tree is 192 blob+classified, all already
 routed. The 86 non-baseline are **77** blob+classified (pillar-index 5,
 pillar-named-file 53, root-index 1, roster-tree 18) and **9** blob+excluded
 (pillar-named-file 1, roster-tree 8). No tree or missing-at-revision anchors
-appear in this capture. The 9 excluded are withheld active content; the route
-already refuses them at `apps/three-surface-poc/src/verbatim-route.ts` line
-87 with `excluded-content`, fail-closed.
+appear in this capture. The 9 excluded are eight active-content sources
+(seven butler.toml and frontend.md, `unclassifiable-excluded`) plus one
+`excluded-artifact` markdown manifesto (roster/qa/MANIFESTO.md) [superseded
+2026-09-17 after review 1 F1: "withheld active content"]; the route already
+refuses them at `apps/three-surface-poc/src/verbatim-route.ts` line 87 with
+`excluded-content`, fail-closed.
 
 ### 3. The item reconciliation
 
@@ -319,7 +328,7 @@ afresh.
 ## Gate 6 — Engineering bar and the first-draft posture
 
 - **Self-referential figures, computed at a fixed point.** This file is
-  **391** lines, **365** of them outside fenced code blocks. Over the
+  **494** lines, **467** of them outside fenced code blocks. Over the
   non-fenced prose lines whose first non-space character is not `|`, `>` or
   `#`, **0** exceed 78 columns — every code span and long identifier was
   wrapped at a space between spans, never broken across a line, so there is
@@ -330,24 +339,112 @@ afresh.
 - **No self-referential figure was transcribed.** Each was scripted over the
   finished bytes and iterated to convergence after the last edit
   (verification rule 3).
-- **First draft — no review.** By verification rule 10 every figure above is
-  uncovered until a fresh-context review, bound to these bytes, confirms it.
-  The headline (86 of 278; 86 of 271; the 77 + 9 split) was reproduced this
-  session by Python `re` over the source rows, by a per-rule `Counter`, and
-  by the machine `projectShape.sources` tally — which is verification rule 2,
-  a second method, not the independent review rule 10 requires. Where the M13
-  packet records a CONFIRM-WITH-EXCEPTIONS review and a CONFIRMED review,
-  this packet records **none**, and the register row P-81 says so.
+- **Review 1 landed 2026-09-17, CONFIRM WITH EXCEPTIONS (0 blocking, 1
+  non-blocking F1, 1 editorial F2); both applied** [superseded 2026-09-17
+  after review 1: "First draft — no review"]. By verification rule 10 review
+  1 binds the reviewed `7d764fc` bytes; the F1 and F2 repairs and this
+  re-tensing post-date them, so they are themselves uncovered until a second
+  independent review confirms them. The headline (86 of 278; 86 of 271; the
+  77 + 9 split) was reproduced this session by Python `re` over the source
+  rows, by a per-rule `Counter`, and by the machine `projectShape.sources`
+  tally — verification rule 2, a second method — and now by review 1's
+  independent re-derivation as well. Where the M13 packet records two
+  fresh-context reviews, this packet records **one**, and the register row
+  P-81 says so.
 - **What a review must re-derive.** The two captures' 86; the 77 + 9 split
   against `projectShape.sources`; the 415 / 417 / 409 item figures and their
   predicates; that the class gate and the excluded-content refusal are the
   two lines they are quoted as; and that Q5's subject is PWB-REQ-015's band
   semantics and nothing broader.
 
+## Review 1 and repairs (2026-09-17)
+
+An independent fresh-context review of this packet (read-only; only the
+artifact, its governing references and the acceptance criteria) is retained
+verbatim at `docs/reviews/R-POLARIS-M14-PROVENANCE-DEPTH-FUNNEL-1-RAW.md`
+(**9415** bytes, sha256
+`a3858514d22cf758f1d1fb16f5c3a4116ce8110445e51b9a9f266dfa4b600a81`, both
+computed this session with `wc -c` and `sha256sum`, never transcribed). It
+reviewed commit `7d764fc`, at which the three files it measured hashed as
+follows — file-content sha256 (not truncated signed digests), recomputed this
+session with `git show 7d764fc:<path>` piped to `wc -c` and `sha256sum`:
+
+| File reviewed at `7d764fc` | Bytes | sha256 |
+|---|---:|---|
+| `docs/design/POLARIS-M14-PROVENANCE-DEPTH-FUNNEL.md` | 31659 | `0ed3940533bfb368170ba5a4226e40273e646dcb442da0f7349d633e025cb3e3` |
+| `docs/evidence/polaris-m14-provenance-depth-funnel-2026-09-17.json` | 13943 | `1a16d30552f04f6e08f149790f487e22d9ccb5e344fd134278e87e5903adcafe` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 29287 | `ba741cc157371f9e966e1e7b93c5278b19ff7c8ad55cb746558285c5ef20598b` |
+
+All three match the raw's own frozen-bytes block exactly.
+
+Its verdict word, copied exactly: **CONFIRM WITH EXCEPTIONS**. Its counts:
+**0 blocking, 1 non-blocking (F1), 1 editorial (F2)** — no blocking finding.
+
+**Every load-bearing figure reproduced exactly, by at least two independent
+methods (verification rule 2).** The review re-derived the headline
+distribution on both captures — 278 source rows and 86 non-baseline (30.9%)
+on the post-trim capture, 271 and 86 (31.7%) on the pre-trim, the per-rule
+tally and the 185→192 / 271→278 figures that moved, the 86 unchanged in count
+and composition — confirmed against the machine `projectShape.sources` rule
+tally and the 192 distinct route identities; the 386 route hrefs over 192
+distinct baseline identities and 0 non-baseline; the 77 + 9 split against
+`projectShape.sources` (all 278 anchors blob, 0 tree, 0 missing-at-revision,
+all 9 excluded carrying `record.outcome == 'excluded'`); the item figures
+`projectShape.items` 415 across nine classes, 417 page markers and the catalog
+eight-class 409, the 417−415 delta of two labelled `[Unknown]` from the HTML;
+Q5's one `capability` entity of nine and its one hard-coded deep dive; and
+every source citation at `a9f671e` (`verbatim-route.ts` 78–79 and 87,
+`capability-detail.ts` 96–119 and 256–260, `polaris-source.ts` 41–58,
+`project-shape-manifest.ts` 71, `spec.md` 816). It confirmed the packet
+planning-only — the diff is the packet, its evidence record and a two-line
+register addition, no implementation code and no act-bound byte edited — and
+the P-81 row a faithful one-line rendering. It raised two exceptions, both
+re-derived against source before being applied.
+
+**F1 — non-blocking. The composition of the 9 withheld sources was glossed
+imprecisely.** The packet (Q1 and Measurement 2) and the evidence record
+characterized all 9 uniformly as "withheld active content" whose "TOML has no
+inert context." Re-derived against `projectShape.sources`: 8 of the 9 carry
+redactionClass `unclassifiable-excluded` — frontend.md (rule
+pillar-named-file) and seven butler.toml (rule roster-tree) — while the ninth,
+roster/qa/MANIFESTO.md (rule roster-tree), carries `excluded-artifact`: a
+markdown manifesto, not a TOML file and not an identity file. The load-bearing
+partition is unaffected — all 9 carry `record.outcome == 'excluded'` and the
+line-87 refusal keeps every one digest-only regardless of sub-class, so the
+77/9 split, the pillar-named-file 1 / roster-tree 8 rule split, every count
+and every recommendation stand. Repaired: the gloss is qualified at Q1's
+composition sentence and its answer, at Measurement 2 and at the evidence
+record's `meaning` key, each superseded phrase kept in a dated bracket.
+
+**F2 — editorial. A line-range disagreement inside the evidence record.** The
+evidence key `route_leaf_caveat` cited `capability-detail.ts:256-259` while
+the packet (Q1 and Q2) and the evidence key `leaf_renderer` cite `256-260`
+for the same `selectRequirementSections` block — the call at line 256 through
+the render at line 260. Repaired: `route_leaf_caveat` is aligned to `256-260`,
+the superseded `256-259` kept in a dated bracket.
+
+**Rule 10.** Review 1 binds the bytes it named — the three digests in the
+table above, at commit `7d764fc` — and not these. The F1 and F2 repairs, this
+section and the re-tensed posture above and in the register all post-date
+`7d764fc`, so by verification rule 10 they are themselves uncovered until a
+second independent fresh-context review, bound to the post-repair bytes,
+confirms them. What these edits add is review 1's own confirmation and two
+applied exceptions; they move no recommendation, arm or default, and Q1–Q5 are
+byte-identical to `7d764fc`.
+
+**Figures re-derived last of all, after every edit in this pass**, over the
+bytes this paragraph is part of and iterated to a fixed point. Over-width
+lines under the predicate "lines outside fenced code blocks whose first
+non-space character is not `|`, `>` or `#`, longer than 78 columns",
+denominator every line of this file: **0**. Non-fence lines with an odd
+backtick count: **0** of **467**, so no code span is broken across a line
+break. Total lines **494**, non-fence lines **467**. These are the same
+numbers the evidence record's `packet_measured_after_review1` block carries.
+
 ## Funnel summary
 
 ```
-Move M14 — Provenance depth                         first draft, no review
+Move M14 — Provenance depth              review 1 2026-09-17: CONFIRM w/ EXC
 -------------------------------------------------------------------------
 Motif      a digest a reader cannot reach is not provenance (VIS-3, VIS-7)
 Headline   86 of 278 sources (31%) route-less on the post-trim capture
@@ -368,17 +465,22 @@ Q5 S4-M3   DRAFT a CC-REV-2 delta to PWB-REQ-015 band semantics    large
 
 Acts       Q1 reaches the scope trigger; Q5 trips the spec-amendment
            trigger and asks for drafting only (binds nothing, VIS-4)
-Review     NONE yet. Rule 10: every figure uncovered until a fresh
-           review confirms it. Rule 2 met this session, not rule 10.
+Review     Review 1 (2026-09-17): CONFIRM WITH EXCEPTIONS, 0 blk / 1 nonblk
+           F1 / 1 ed F2; both applied. Rule 10: the repairs are uncovered
+           until a second independent review confirms them.
 Register   P-81, first-draft posture, added to PENDING-OWNER-DECISIONS.md
 ```
 
 ## Recommended handoff
 
-1. **Commission the fresh-context review this packet does not have.** It is
-   the first-draft gap by design; rule 10 makes every figure uncovered until
-   it lands. Give the reviewer only this packet, its evidence record, the
-   named source files at `a9f671e`, and the acceptance criteria.
+1. **Commission the second fresh-context review** [superseded 2026-09-17
+   after review 1: "Commission the fresh-context review this packet does not
+   have. It is the first-draft gap by design"]. Review 1 (2026-09-17, CONFIRM
+   WITH EXCEPTIONS) has landed and its F1/F2 repairs are applied, but by rule
+   10 those repairs are uncovered until a second review, bound to the
+   post-repair bytes, confirms them. Give the reviewer only this packet, its
+   evidence record, the named source files at `a9f671e`, and the acceptance
+   criteria.
 2. **Put Q1–Q5 to the owner as one batch.** Each carries a recommended
    answer, its lawful arms and a stated default of "nothing happens." Slices
    3 and 4 may proceed under the acts in force once ruled; slices 1 and 2
