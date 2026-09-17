@@ -92,32 +92,81 @@
   "packet_rules_nothing": true
  },
  "review": {
-  "status": "NONE. This is a first draft. Where the M14 packet records one fresh-context review, this packet records none. By verification rule 10 every figure here is uncovered until a fresh-context review, bound to these bytes, confirms it.",
+  "status": "review 1 landed 2026-09-17, verdict CONFIRM WITH EXCEPTIONS (0 blocking, 2 non-blocking F1+F2, 1 editorial F3); the two non-blocking and one editorial line-pointer repairs were applied at this close-out - see the review1 block below. By verification rule 10 those repairs post-date the reviewed bdc2fda bytes and are uncovered until a second independent review confirms them [superseded 2026-09-17 after review 1: 'NONE. This is a first draft. Where the M14 packet records one fresh-context review, this packet records none. By verification rule 10 every figure here is uncovered until a fresh-context review, bound to these bytes, confirms it.'].",
   "load_bearing_figures_confirmed_by_second_method_this_session": "the discard at line 646 (code path + pinning test 778-786); the 75 and 15 multi-class bundles (JSON walk grouping items by anchor path and class, plus the manifest's three-class assignment at :250); the nine CATALOG_HEADINGS literals (array-body parse + per-line count); the 192 root-blind baseline-spec sources (capture rule tally); and that Rule 2 references rootIndex.state while Rules 3-4 do not (token search over each region) - verification rule 2, not a review"
  },
  "register": {
   "row": "P-82",
   "branch": "agent/syzygy-dov.15",
-  "posture": "first-draft, no review; the whole move is spec-amendment-gated and the row records that the packet recommends drafting a CC-REV-2 delta and design only, never building",
+  "posture": "one review, CONFIRM WITH EXCEPTIONS, repairs uncovered until a second independent review; the whole move is spec-amendment-gated and the row records that the packet recommends drafting a CC-REV-2 delta and design only, never building [superseded 2026-09-17 after review 1: 'first-draft, no review; the whole move is spec-amendment-gated and the row records that the packet recommends drafting a CC-REV-2 delta and design only, never building']",
   "counts": "the branch at a9f671e carries 26 `^| P-` rows; after P-82 it carries 27. P-82 sits in the '## Open, and only the owner can dispose' section after P-53."
  },
  "self_referential_figures": {
-  "note": "computed at a fixed point over the bytes the packet ends in, iterated to convergence after every edit; the packet's Gate 6 states the same numbers",
+  "note": "computed at a fixed point over the bytes the packet ends in after the review-1 close-out, iterated to convergence after every edit; the packet's Gate 6 states the same numbers",
   "over_78": 0,
   "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file",
   "odd_backtick_non_fence_lines": 0,
-  "non_fence_lines": 365,
-  "total_lines": 390
+  "non_fence_lines": 454,
+  "total_lines": 481
  },
  "packet_measured": {
-  "note": "computed LAST over the exact committed packet bytes; equals what is committed",
+  "note": "recomputed at the review-1 close-out over the committed packet bytes; equals what is committed; the reviewed bdc2fda snapshot (33748 bytes, sha256 0733d7271a707ebaf04d969275e0c5811c7fb5f479b2017d4f6bb1b52f2e18d4) is in review1.reviewed_files_at_that_commit",
   "path": "docs/design/POLARIS-M15-PIPELINE-TRUTHFULNESS-FUNNEL.md",
-  "bytes": 33748,
-  "sha256": "0733d7271a707ebaf04d969275e0c5811c7fb5f479b2017d4f6bb1b52f2e18d4",
-  "total_lines": 390,
-  "non_fence_lines": 365,
+  "bytes": 39547,
+  "sha256": "6d57ba7445c9a6ef47de7214061502c280c7a819189cb1892bdcc9083024e73a",
+  "total_lines": 481,
+  "non_fence_lines": 454,
   "over_78": 0,
   "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file",
   "odd_backtick_non_fence_lines": 0
+ },
+ "review1": {
+  "raw_path": "docs/reviews/R-POLARIS-M15-PIPELINE-TRUTHFULNESS-FUNNEL-1-RAW.md",
+  "raw_bytes": 12919,
+  "raw_sha256": "f7c9171a5708f5464c51d6adb205db5191513556a8425d373a5891c8d44cbbe3",
+  "raw_digest_method": "wc -c and sha256sum this session; never transcribed",
+  "verdict": "CONFIRM WITH EXCEPTIONS",
+  "counts": {"blocking": 0, "non_blocking": 2, "editorial": 1},
+  "reviewed_commit": "bdc2fda",
+  "reviewed_files_at_that_commit": {
+   "docs/design/POLARIS-M15-PIPELINE-TRUTHFULNESS-FUNNEL.md": {"bytes": 33748, "sha256": "0733d7271a707ebaf04d969275e0c5811c7fb5f479b2017d4f6bb1b52f2e18d4"},
+   "docs/evidence/polaris-m15-pipeline-truthfulness-funnel-2026-09-17.json": {"bytes": 14709, "sha256": "e50cc378717b999b868ff4dc5f8e9445afc106d9e0c3d102b3f25c42eeb17e79"},
+   ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {"bytes": 25667, "sha256": "ea6248edaa38cc652f2c02e4d97d705407da6484994d3fb0ac71c5117bc4bdad"}
+  },
+  "reviewed_files_note": "file-content sha256 (not truncated signed digests); recomputed this session with git show bdc2fda:<path> piped to wc -c and sha256sum",
+  "f1": {
+   "severity": "non-blocking",
+   "finding": "the pinning test's it( block (named 'a failing class withholds the items of the classes that succeeded') was cited as lines 778-786 at four sites: the Q1 cell, the S7-F1 structural note, Measurement 1, and the Gate 6 re-derivation list",
+   "ground_truth": "re-derived against bdc2fda: line 778 is the blank separator before the it( and line 779 is the it( line, so the block is 779-786",
+   "repaired": "corrected to 779-786 at all four sites; the old 778-786 kept in a dated bracket at the first site and compactly at the repeats"
+  },
+  "f2": {
+   "severity": "non-blocking",
+   "finding": "Measurement 1 cited project-shape-manifest.ts line 250 as the class assignment for both multi-class sources, but line 250 is only the v1 index's three-class declaration",
+   "ground_truth": "re-derived against bdc2fda: the vision file's three-class declaration is line 248 and the v1 index's is line 250; line 249, between them, is architecture.md, a single-class assignment",
+   "repaired": "corrected to lines 248 and 250, the old line 250 kept in a dated bracket",
+   "divergence_from_reviewer": "the reviewer's raw suggested 249-250; that is wrong because line 249 is the single-class architecture.md assignment and must not be included, so the two multi-class lines are 248 and 250, not a 249-250 range"
+  },
+  "f3": {
+   "severity": "editorial",
+   "finding": "the Q1 cell cited PWB-REQ-002's Falsifier as the requirement at spec line 115, which is the requirement header, with no pointer to the falsifier bullet itself",
+   "ground_truth": "the falsifier bullet 'a malformed source emits a partial population' is at spec lines 137-138",
+   "repaired": "appended ', its Falsifier at lines 137-138' to the existing 'the requirement at line 115'; nothing replaced, only made precise"
+  },
+  "repairs_applied_this_session": true,
+  "rule_2": "the load-bearing magnitudes were re-derived and unmoved by any repair: 415 items across 9 classes, the two multi-class sources' 75 and 15 bundles, CATALOG_HEADINGS 9 literals, EXTRACTION_FAILURES 7 reasons, and the 192 root-blind baseline-spec sources; F1-F3 corrected only line pointers, not magnitudes",
+  "rule_10": "review 1 binds the three digests recorded above at commit bdc2fda, not the bytes this close-out then wrote. The F1-F3 repairs, the packet's Review 1 section, this review1 block and the re-tensed posture in the packet and register all post-date bdc2fda, so by verification rule 10 they are themselves uncovered until a second independent fresh-context review, bound to the post-repair bytes, confirms them; none is queued. No recommendation, arm or default moved.",
+  "gate": "the packet is at the owner gate on one review; the F1-F3 repairs are uncovered until a second independent review confirms them",
+  "packet_measured_after_review1": {
+   "note": "computed LAST over the committed packet bytes; equals what is committed and equals packet_measured and the packet's Gate 6",
+   "path": "docs/design/POLARIS-M15-PIPELINE-TRUTHFULNESS-FUNNEL.md",
+   "bytes": 39547,
+   "sha256": "6d57ba7445c9a6ef47de7214061502c280c7a819189cb1892bdcc9083024e73a",
+   "total_lines": 481,
+   "over_78": 0,
+   "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file",
+   "non_fence_lines": 454,
+   "odd_backtick_non_fence_lines": 0
+  }
  }
 }
