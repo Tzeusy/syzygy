@@ -57,7 +57,7 @@ act-phrase registration and no ceremony. That is the shape of
 `POLARIS-TRUSTED-BOOTSTRAP-OBSERVATION-DIRECTION.md` (both this
 directory), and of the continuation act quoted above, which says of
 itself that it "binds no artifact bytes, adds no row to the
-acceptance-act record and registers nothing".
+acceptance-act record and registers nothing in CG-7e".
 
 ## The one decision
 
@@ -99,11 +99,22 @@ six:
 
 **Once per record, the envelope.** A per-claim map alone would not be an
 observation record: doctrine requires one to be *evaluation-identified*
-(VIS-6(b), quoted below). The envelope is therefore closed at: the schema
-name; the evaluation identity the model already computes
-(`snapshot`, `snapshotLabel`, `inputsDigest`, `asOf`); the observer
-revision; the observed project's revision; and two counts (claim objects,
-distinct identities). Nothing else. `[Inferred]` The envelope is the
+(VIS-6(b), quoted below). The envelope is therefore closed at **six
+top-level keys, counted as the key-set assertion of invariant I3 counts
+them**:
+
+| # | Envelope key | What it carries |
+|---|---|---|
+| 1 | `schema` | the record schema name and version |
+| 2 | `evaluation` | one object holding the evaluation identity the model already computes — `snapshot`, `snapshotLabel`, `inputsDigest`, `asOf` |
+| 3 | `observerRevision` | the observer revision |
+| 4 | `projectRevision` | the observed project's revision |
+| 5 | `claimCount` | the number of claim objects in the record |
+| 6 | `identityCount` | the number of distinct claim identities in it |
+
+Nothing else. The two counts are two top-level keys, not one `counts`
+object, so the set invariant I3 asserts over is exactly these six and the
+arithmetic is not left to a reading. `[Inferred]` The envelope is the
 drafter's reading of what "claim identity plus epistemic tuple and
 challenge state only" must carry to be a record at all rather than a
 loose map; if you want it narrower, that is edit (b).
@@ -153,7 +164,8 @@ or `.syzygy/**`.
 
 `[Inferred]` How the drafter reads the write boundary. Doctrine's write
 rule is **VIS-5** (`.syzygy/governance/doctrine/vision.md` lines 141–166),
-whose opening sentences, through line 145, are:
+whose opening sentences, through the word ending that third sentence
+early on line 146, are:
 
 > **VIS-5 — Syzygy never writes code; direct writes are confined to two
 > namespaces.** Syzygy's **direct project-content writes** touch only
@@ -183,13 +195,34 @@ leaning on it.** `.syzygy/governance/doctrine/security.md` lines 47–52:
 > *Violation:* first-pass doctrine drafting silently replacing an
 > existing `.syzygy/governance/` tree.
 
-`[Inferred]` SEC-4 governs writes *into a governed repository*. The
-retained record is written into neither the observed repository nor
-Syzygy's governed plane, so SEC-4 is not the clause that permits it and
-is not the clause that forbids it; it is the clause that would govern the
-note promotion this direction explicitly does not authorize. Its
-discipline is nonetheless met in substance: the write is atomic, its
-author is the daemon, and deleting the state directory reverts it
+`[Inferred]` SEC-4 governs writes *into a governed repository*. Neither
+`security.md` nor `vision.md` defines that term in a definition sentence,
+so the reading is anchored to the clause text that uses it against a
+contrasting case — VIS-5's *Violation* clause, `vision.md` lines 162–165,
+quoted from the clause marker where it begins mid-line:
+
+> *Violation:* Syzygy committing a source-file edit to a governed
+> repository; a direct write landing outside `openspec/**` and
+> `.syzygy/**`; a manifest purporting to extend the write universe; an
+> adapter effect without explicit authorization.
+
+`[Inferred]` That clause names "committing a source-file edit to a
+governed repository" and "a direct write landing outside `openspec/**`
+and `.syzygy/**`" as two *different* violations, so a governed repository
+is not Syzygy's own two roots; SEC-4's own qualifier, "recorded
+per-repository consent (onboarding)", points at the same class — a
+repository Syzygy was onboarded onto. A runtime file in the daemon's
+state directory is neither: it is committed nowhere, and it is not
+project content in either root. The retained record is therefore written
+into neither the observed repository nor Syzygy's governed plane, so
+SEC-4 is not the clause that permits it and is not the clause that
+forbids it; it is the clause that would govern the note promotion this
+direction explicitly does not authorize. Against the observed repository
+the point is not a reading at all: the observer registry entry declares
+`"writeSurface": []` at line 125 [Observed, read at the registry entry
+this session], so there is no write surface for SEC-4 to consent to.
+SEC-4's discipline is nonetheless met in substance: the write is atomic,
+its author is the daemon, and deleting the state directory reverts it
 entirely.
 
 **How long.** **Unbounded** — no record is ever pruned, discarded or
@@ -199,7 +232,7 @@ population [Observed by the funnel packet at `a9f671e`], plus the file's
 envelope.
 
 **And therefore, disclosure.** Your ruling attaches a condition to the
-unbounded arm: "the on-disk total rendered beside the delta". The delta
+unbounded arm: "on-disk total rendered beside the delta". The delta
 band is slice 2, which lands after slice 1. So the direction below states
 the obligation in a form slice 1 alone can satisfy: **from the first
 build that retains a record, the retained-record count and the on-disk
@@ -252,7 +285,7 @@ bead, not as part of what you would be authorizing.
 |---|---|---|
 | I1 | The per-claim payload is closed at three keys | add `resolutionRoutes` to the stored payload — the key-set assertion must fail |
 | I2 | The record contains no body bytes, no support anchor and no credential value | store one support anchor — the byte-scan assertion must fail |
-| I3 | The envelope is closed at the declared keys | add any seventh envelope key — the key-set assertion must fail |
+| I3 | The envelope's top-level key set is exactly the six declared above | add a seventh top-level key, or nest `claimCount` and `identityCount` under a `counts` object — the key-set equality assertion must fail either way |
 | I4 | Records are append-only: an existing record is never rewritten | rewrite in place on a second build with different content — the duplicate-identity refusal must fail |
 | I5 | One record per identified evaluation, named by the evaluation's own input digest | name the file by the as-of instant — the two-builds-one-record test must fail |
 | I6 | Nothing is ever pruned | discard the oldest record above any threshold — a "no record is ever removed" test must fail |
@@ -376,6 +409,29 @@ excludes — and by invariant I2, which tests it rather than assuming it.
 clause a promoted note would have to satisfy, and promotion is exactly
 what this direction does not authorize.
 
+**VIS-4 is the one doctrine clause that names retention as a gating
+trigger, and it is quoted here so its scope is visible rather than
+assumed.** `vision.md` lines 131–133, from "One class" where the sentence
+begins mid-line:
+
+> One class
+> is always human-gated, gate open or not: spec changes touching security
+> posture, privacy or retention obligations, or normative data contracts.
+
+`[Inferred]` VIS-4's gate is over **specification changes** — it sits in
+the clause that puts `openspec/` behavioral specs below the sign-off line
+and then carves this class back out of any opened gate. This direction
+amends no specification text, so VIS-4's gate is not the one being
+discharged here; the gate actually being discharged is the continuation
+act's own retention-posture escalation trigger, quoted at the head of
+this packet, which is an implementation-posture gate and a different
+mechanism. The two agree in outcome: by either route retention is the
+owner's to open and no agent's. They are named separately because a
+reader who greps doctrine for "retention" finds VIS-4 first, and because
+the moment any of this reaches specification text — a challenge
+vocabulary widened, a requirement amended — VIS-4's gate applies on its
+own terms and this direction does not satisfy it.
+
 **The temporal rule is the clause that keeps a retained record from
 becoming a clock.** `architecture.md` lines 221–229:
 
@@ -408,11 +464,15 @@ dropped it would not be the result of the evaluation it names.
 
 Listed so you can take any of them back. `[Inferred]` on all four.
 
-1. **The envelope's key set** (schema name, evaluation identity, observer
-   revision, observed revision, two counts). Your ruling closed the
-   per-claim payload at three fields and said nothing about the envelope;
-   the drafter closed it at six keys because VIS-6(b) requires an
-   observation record to be evaluation-identified.
+1. **The envelope's key set** — the six top-level keys tabulated above
+   (`schema`, `evaluation`, `observerRevision`, `projectRevision`,
+   `claimCount`, `identityCount`). Your ruling closed the per-claim
+   payload at three fields and said nothing about the envelope; the
+   drafter closed it at those six because VIS-6(b) requires an
+   observation record to be evaluation-identified. The direction text
+   below names the envelope's *content*; the six key names and the
+   decision to keep the two counts top-level rather than nested are the
+   drafter's, and they are what invariant I3 asserts over.
 2. **The disclosure timing.** Your ruling says the on-disk total renders
    "beside the delta"; the delta is slice 2. The drafter's reading makes
    the count and total render from the first retained record, so
@@ -561,3 +621,37 @@ the population the first retained record will see. The observed project's
 content moves; the implementing bead re-measures the on-disk cost at the
 commit it lands on, and the disclosure obligation in clause 5 is what
 makes the real number visible rather than the estimate.
+
+## Review
+
+An independent fresh-context review of this packet ran against commit
+`4ddb193` and returned **CONFIRM WITH EXCEPTIONS**. The raw output is
+retained unchanged at `docs/reviews/R-POLARIS-RETENTION-POSTURE-PACKET-RAW.md`
+(CC-REV-6); the verdict word above is copied from it. The four findings
+and their dispositions:
+
+| Finding | Severity | Disposition | Where repaired |
+|---|---|---|---|
+| F1 — an inline quotation of the continuation act's self-description dropped the closing words "in CG-7e" with no ellipsis | revise | accepted | "Why an owner act is needed at all": the quotation now runs to the clause's end, and the byte-compare was re-run over every blockquote *and* every attributed inline quotation |
+| F2 — the SEC-4 non-applicability reading was asserted rather than anchored to a clause | note | accepted | "Where it lives": VIS-5's *Violation* clause is now quoted at `vision.md` lines 162–165 and the registry entry's empty write surface is cited at its line, so the reading rests on quoted text (verification rule 8) |
+| F3 — the doctrine test omitted VIS-4, the one doctrine clause naming retention as a gating trigger | note | accepted | "The doctrine test": VIS-4's human-gated-class sentence is quoted at `vision.md` lines 131–133, with the distinction between its specification gate and the continuation act's implementation-posture gate stated |
+| F4 — "six keys" could be read as five top-level keys plus a nested `counts` object | note | accepted | "What the record would hold": the envelope's six top-level keys are now tabulated by name, invariant I3 asserts key-set equality over exactly those six, and "What is the drafter's and not yours" §1 marks the shape as the drafter's |
+
+`[Observed]` The sweeps behind that table, re-run over the repaired bytes
+in this session, with their denominators: 13 blockquote blocks in the
+file, of which 12 are attributed quotes and all 12 match their cited
+source bytes exactly (three of them as disclosed truncations that begin
+or end mid-line at a sentence boundary), the thirteenth being this
+packet's own banner; 11 attributed inline quotations, all 11 present
+byte-for-byte in both this file and the source they name; 0 lines over 78
+columns outside a table row or a fenced block, and 0 non-fence lines with
+an odd inline backtick count, over all 658 lines; 0 sixty-four-character
+and 0 forty-character hex strings; 0 mentions of the observed
+repository's name or paths; and `check_governance.py` at **32 OK, 20
+WARN, 0 FAIL (52 checks)**, with no OK, WARN or FAIL line naming this
+file.
+
+`[Observed]` Verification rule 10: these repairs changed the bytes the
+review confirmed, so that review confirms commit `4ddb193` and not this
+one. It is retained as the record of the findings, never edited, and a
+confirmation of the repaired bytes is a separate review.
