@@ -5,9 +5,14 @@
 > merged pull request, a review, a manifest, silence or a general "approved"
 > performs no act.
 
-Date: 2026-09-21 (first draft). **No review has been run against this
-package**; `REVIEW-BRIEF.md` commissions one and the drafting agent did not
-review its own work.
+Date: 2026-09-21 (first draft; repaired the same day). One fresh-context
+review has been run against `REVIEW-BRIEF.md` and returned **CONFIRM WITH
+EXCEPTIONS** with three notes and no blocking finding — raw output at
+`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md`, dispositions in
+`SEMANTIC-DELTA.md` §Review. All three notes are repaired in prose only: no
+patch byte, no manifest row and none of the five open questions moved, so
+the manifest digest below is unchanged. The verdict is bound to the commit
+the raw names, **not** to these repaired bytes (rule 10).
 
 Warrant: your 2026-09-21 direction recorded in
 `.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`,
@@ -129,6 +134,15 @@ and the aggregate tuple (PWB-REQ-007's subject). Three placements:
 **Not taken:** asserting that (A) is sufficient. It is offered as the least
 colliding placement and put back to you as a question.
 
+**Read this as a precondition, not a rounding error.** Until OQ-2 is
+answered it is **not settled that this scenario clears RFC2-26 limb 1 even
+for slice 3**: the consequence's position half and tuple half sit under two
+different requirements, and PWB-REQ-007's only scenario is still the
+per-claim case. Nothing in this package claims RFC2-26 is satisfied. If you
+adopt the amendment, OQ-2 remains a condition of any later claim that slice
+3's limb 1 is supplied. The 2026-09-21 review raised exactly this as its
+finding 2.
+
 ### OQ-3 — the designed band does not satisfy the clause it inherits
 
 PWB-REQ-007 requires an aggregate to disclose "separate primary/secondary
@@ -182,8 +196,10 @@ clarification alike:
 and
 `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json`.
 Each carries a `signedBy` value naming a pending exact owner act. This
-package edits neither, because P-74 Q4 and P-78 Q4 say the registry entry is
-edited on no arm, and P-69 Q2(a) with P-72 Q2 travel as one superseding
+package edits neither, because the P-74 and P-78 rows each close by saying
+the registry entry is edited on no arm (a whole-row summary, not a
+sub-question ruling; an earlier draft tagged it "Q4" and that tag is
+withdrawn), and P-69 Q2(a) with P-72 Q2 travel as one superseding
 registry-entry act at gate bead `syzygy-dov.18`. That the repair belongs
 there is **[Inferred]** — no record read this session says so in those
 words. `IMPACT-LEDGER.md` carries the full sweep.
@@ -195,7 +211,10 @@ words. `IMPACT-LEDGER.md` carries the full sweep.
 None of it performed by this package.
 
 1. Fresh-context review against `REVIEW-BRIEF.md`; raw output retained
-   verbatim, bytes frozen (rule 10).
+   verbatim, bytes frozen (rule 10). **Done once** — CONFIRM WITH
+   EXCEPTIONS, three notes, all repaired in prose. The verdict is bound to
+   the reviewed commit; a confirmation over the repaired bytes would need a
+   fresh review, which is yours to require or waive.
 2. You answer OQ-1 to OQ-5. An answer to OQ-2 or OQ-3 changes the proposed
    bytes and retires the review.
 3. A dedicated amendment act of yours naming this manifest's digest, with a

@@ -24,8 +24,30 @@ Stated so every figure can be re-derived rather than re-read (verification
 rules 2, 4 and 9). A claim of absence with no denominator is not a finding.
 
 **Population.** Every path returned by `ls-files -z` in this worktree,
-decoded as UTF-8; paths that fail to decode are skipped and none did.
-**Denominator: 1,334 tracked files.**
+decoded as UTF-8; paths that fail to decode are skipped.
+**Denominator: 1,334 tracked files** at the baseline commit.
+
+**Skipped paths, enumerated** (this paragraph replaces an earlier
+unenumerated "none did", which was false — the review of 2026-09-21 found
+it, and it is recorded in §Review finding 1). Re-derived by script,
+2026-09-21, over the branch population of 1,343 tracked files — the baseline
+1,334 plus this package's own eight files and the retained raw review.
+**Four** paths fail UTF-8 decode and are skipped, all binary images under
+`docs/evidence/`: `orrery-height-repaired-narrow-2026-09-09.png`,
+`orrery-height-repaired-wide-2026-09-09.png`,
+`polaris-existing-orrery-narrow-2026-09-09.png` and
+`polaris-existing-orrery-wide-2026-09-09.png` [Observed]. None can carry any
+of the five patterns below, so no reported figure moves.
+
+**The remainder, stated** (rule 2's second method, which does *not* return
+the same set). A NUL-byte scan over the same 1,343 files returns **six**
+files: the four above plus `packages/three-surface-poc-core/src/owner-act-record.ts`
+and `packages/three-surface-poc-core/src/project-shape-coverage.test.ts`,
+which carry a literal NUL byte yet decode as UTF-8 and were therefore swept,
+not skipped [Observed]. The decode-failure set is a strict subset of the
+binary set; "binary" and "undecodable" are different predicates here, and
+naming which one a skip figure uses is the difference between a number a
+reader can check and one they cannot.
 
 **Sweep 1 — Python `re`.** Five patterns, counted per file and per
 occurrence:
@@ -114,8 +136,13 @@ pins — this package's, lane B's, and the P-69 Q7a clarification alike
 [Observed].
 
 This package does not edit either file, for two reasons. First, the owner
-ruled on 2026-09-21 in P-74 Q4 and P-78 Q4 that the adapter-registry entry
-"is edited on no arm" of those moves. Second, P-69 Q2(a) and P-72 Q2 travel
+ruled on 2026-09-21, in the P-74 and P-78 rows, that the adapter-registry
+entry "is edited on no arm" of those moves. That sentence closes each row's
+"What it means" cell as a summary of the whole row, which answers several
+sub-questions; it is **not** a sentence scoped to a numbered sub-question,
+and an earlier draft of this ledger tagged it "Q4" in both rows. The
+substance is the owner's; the per-question tag was this package's inference
+and has been withdrawn (§Review finding 3). Second, P-69 Q2(a) and P-72 Q2 travel
 together as one superseding registry-entry amendment act at gate bead
 `syzygy-dov.18`, which is where a registry repair belongs [Observed for the
 ruling rows; **[Inferred]** that the repair is that act's, since no record

@@ -398,6 +398,17 @@ scenario but is not "one CC-REV-2 scenario" and would move the requirement
 count, the proposal's stated totals and the coverage matrices. The reading not
 taken: asserting that (a) is sufficient. It is stated as a question.
 
+**OQ-2 is a precondition, not a placement preference.** Until it is
+answered, it is **not settled that this scenario clears RFC2-26 limb 1 even
+for slice 3** — the position half and the tuple half sit under two
+requirements, and PWB-REQ-007's only scenario remains the unmodified
+per-claim case. This delta never asserts that RFC2-26 is satisfied; it says
+the scenario is placed so as to clear it for slice 3 only, with OQ-2 open.
+Whoever performs the amendment act should treat OQ-2 as a condition of any
+later claim that slice 3's limb 1 is supplied, and not round it off as a
+drafting nicety. The 2026-09-21 review raised this as finding 2 and it is
+carried here unresolved, by design (rule 6).
+
 **OQ-3 — the designed band does not satisfy the clause it inherits.**
 PWB-REQ-007 requires an aggregate to disclose "separate primary/secondary
 reason counts". The projection party 3 reuses counts primary reasons only —
@@ -501,8 +512,11 @@ this session].
   Both carry a `signedBy` value naming a pending exact owner act over the
   PWB truth-and-readiness amendment manifest. **Any** amendment to this
   specification stales both pins, this package's included; the owner has
-  ruled in P-74 Q4 and P-78 Q4 that the registry entry "is edited on no arm"
-  of those moves, and P-69 Q2(a) and P-72 Q2 travel together as one
+  ruled, in the P-74 and P-78 rows, that the registry entry "is edited on no
+  arm" of those moves — a sentence closing each row's whole "What it means"
+  cell, not one scoped to a numbered sub-question, so the "Q4" tag an earlier
+  draft carried is withdrawn (§Review finding 3) while the ruling stands —
+  and P-69 Q2(a) and P-72 Q2 travel together as one
   superseding registry-entry amendment act at gate bead `syzygy-dov.18`. So
   the repair belongs to that act, not to this package, and this package edits
   neither file. [Observed: the two pins found by the digest sweep above;
@@ -539,7 +553,9 @@ CG-7d and CG-7e catch a stale copy once the package is registered.
 
 1. The package is reviewed in fresh context against `REVIEW-BRIEF.md`; the
    raw output is retained verbatim and the bytes it is bound to are frozen
-   (rule 10).
+   (rule 10). **Done once**, verdict CONFIRM WITH EXCEPTIONS, dispositions
+   in §Review — and the prose repairs that followed left that verdict bound
+   to the reviewed commit, not to these bytes.
 2. The owner answers the five open questions in `OWNER-DECISION-PACKET.md`.
    Answers to OQ-2 or OQ-3 may change the proposed bytes, which retires the
    review and needs a fresh one.
@@ -578,10 +594,52 @@ no reading path drops anything.
 the frozen bytes of this package, against `REVIEW-BRIEF.md`. The change class
 claim above is itself part of what is reviewed.
 
-**Reviewer:** not yet assigned. Must not have authored these bytes or shared
-the drafting session.
+**Reviewer:** a fresh-context session with no authoring context, per
+CC-REV-1. The drafting agent did not review its own work.
 
-**Verdict:** none. No review has been run against this package. Per the
-normative-change workflow this delta stops at step 2; the drafting agent did
-not review its own work, and the absence of a verdict here is the honest
-state, not an omission [Observed].
+**Verdict:** **CONFIRM WITH EXCEPTIONS**. The word is copied exactly from
+the retained raw output, never restated.
+
+**Raw output:** `docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md`,
+retained verbatim and never edited (CC-REV-6).
+
+**Bytes the verdict is bound to (rule 10).** The raw names commit
+`59733d3` and the manifest digest quoted in `OWNER-DECISION-PACKET.md`. The
+three dispositions below edited `SEMANTIC-DELTA.md`, `IMPACT-LEDGER.md` and
+`OWNER-DECISION-PACKET.md` **after** that commit, so **the confirmation is
+bound to the reviewed bytes and not to these**. The repairs touch prose only
+— no byte of `proposed/spec.md.patch`, `proposed/GOVERNING-DEPENDENCIES.md.patch`
+or the manifest moved, so the manifest digest is unchanged and the reviewer's
+machine findings (items 2–10 and 13–16 of the raw) still hold at this commit
+[Observed: builder `--check` and `--selftest` re-run after the repairs]. A
+reader who needs a confirmation over *these* bytes needs a fresh review; this
+section records the disposition, it does not extend the verdict.
+
+**Dispositions.** Three findings, all notes, none blocking.
+
+1. **Finding 1 — the ledger's "none did" was false.** Four tracked files
+   fail UTF-8 decode, all binary images under `docs/evidence/`; the reviewer
+   enumerated them. **Accepted and repaired.** `IMPACT-LEDGER.md`'s
+   Population section now enumerates the four skipped paths from a scripted
+   re-derivation, states the branch population it was derived over, and adds
+   the remainder rule 2 demands: a NUL-byte second method returns **six**
+   files, not four — the two extra decode as UTF-8 and were swept, not
+   skipped — so the skip figure now names which predicate it uses. No swept
+   figure moves; the reviewer independently reproduced all five.
+2. **Finding 2 — OQ-2 should not be rounded off.** **Accepted; wording
+   promoted, no decision taken.** OQ-2 stays open. Both `SEMANTIC-DELTA.md`
+   and `OWNER-DECISION-PACKET.md` now say plainly that until OQ-2 is
+   answered it is not settled that this scenario clears RFC2-26 limb 1 even
+   for slice 3, and that whoever performs the act must treat OQ-2 as a
+   condition of any later limb-1 claim. Nothing in the package asserts
+   RFC2-26 is satisfied, which the reviewer confirmed.
+3. **Finding 3 — the "Q4" attribution is tighter than the source.**
+   **Accepted and withdrawn.** The sentence "is edited on no arm" closes the
+   P-74 and P-78 rows' whole "What it means" cells; it is not scoped to a
+   numbered sub-question. All three prose files now cite the rows rather
+   than a sub-question, and say the earlier tag was this package's inference
+   and is withdrawn. The ruling itself stands and remains [Observed].
+
+**What no disposition changed.** No patch byte, no manifest row, no
+requirement, no scenario text, and none of the five open questions. OQ-1 to
+OQ-5 remain the owner's, unresolved.
