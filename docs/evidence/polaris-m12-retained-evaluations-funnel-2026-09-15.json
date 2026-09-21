@@ -237,7 +237,7 @@
       ]
     },
     "claimPopulation": {
-      "source": "the retained /api/poc capture (5,508,208 bytes), evaluation as-of 2026-09-13T02:03:33.040Z",
+      "measuredOn": "the retained /api/poc capture (5,508,208 bytes), evaluation as-of 2026-09-13T02:03:33.040Z",
       "predicate": "every JSON object anywhere in the payload carrying both a claimId and an epistemic member, found by a recursive walk",
       "claimObjects": 1149,
       "distinctClaimIds": 1148,
