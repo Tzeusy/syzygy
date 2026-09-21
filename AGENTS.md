@@ -507,6 +507,25 @@ added 2026-09-07.
   administration record: rule 7 makes a transcript valid only for the commit
   it names, and a JSON record with none is a record no later reader can
   confirm was checked.
+- **Landing many packet branches that each append one register row.** Every
+  branch conflicts pairwise on `PENDING-OWNER-DECISIONS.md`; merge them in
+  ruling order with `git merge-file --union` (real temp files — process
+  substitution feeds it nothing and the register comes back empty), then
+  assert the row set equals the union of the inputs and is distinct
+  (`^\| P-[0-9]+[^ |]*`, so `P-25(c)` stays its own row), and that every
+  other file matches its branch blob. Each branch's header note counts the
+  register as of its own branch alone ("22 open, 27 in all" thirteen times
+  on 2026-09-21); add one dated note at merge time naming those sentences
+  and giving the recount, never edit them.
+- **The PWB-REQ-014 authority sweep reads evidence-record keys.** A JSON key
+  named `source`, `provenance`, `evidence` or `anchor` whose value names the
+  Polaris capture or route fails the fourth test in
+  `polaris-authority-sweep.test.ts` on a combined tree even though each
+  branch passed alone (M12's `claimPopulation.source`, M16's capture
+  `provenance`); name the measured subject `measuredOn` / `capture`. Retained
+  `docs/reviews/*-RAW.md` are skipped since 2026-09-21 (reviewer `Anchor:`
+  lines, uneditable under CC-REV-6), the same population
+  `check_governance._is_raw_review` exempts; any other `-RAW.md` still counts.
 
 ### Known gaps
 
