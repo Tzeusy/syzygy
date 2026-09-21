@@ -363,7 +363,16 @@ that population is mapped by no scenario, so the consequence is unmapped, and
 RFC2-26's alternative (a reviewed N/A judgment proving the consequence purely
 structural) is unavailable: a route that returns a body where it previously
 returned a refusal is independently testable behavior, and the observable
-population moves from 192 served to 269 served out of 278. The honest reading
+population moves from 192 served to 269 served out of 278 [Inferred — 192 +
+77, arithmetic performed in this prose and in no script's output. The two
+addends are [Observed]: the M14 record
+`docs/evidence/polaris-m14-provenance-depth-funnel-2026-09-17.json` reports
+`headline_measurement.post_trim.rule_tally.baseline-spec-tree` = 192 and
+`body_classification_for_s5_m2.nonbaseline_blob_classified.count` = 77 over
+its 278-source denominator, measured by a `re.findall` sweep over the
+post-trim lane A captures named in that record's `captures.post_trim` block
+and the `projectShape.sources` array of its API capture. P-81 Q4 rules
+machine figures Observed and sums Inferred; this is a sum]. The honest reading
 is therefore that PWB-REQ-011 does **not** already admit these sources and the
 change adds an obligation. Someone who complied before — by refusing every
 non-baseline source — would not comply after. That is the Normative test in
@@ -523,6 +532,19 @@ selector, the parity sweep and the copy module are named in
    adopted first, `GOVERNING-DEPENDENCIES.md` is regenerated in step 3 and
    its patch is dropped rather than merged, and the manifest is regenerated
    before the phrase is offered.
+   **Sequencing caveat, round-1 finding F3.** That rule covers the sibling
+   candidate landing whole. A *partial* landing — its `spec.md.patch` alone,
+   cherry-picked before its package is otherwise ready — is rejected by no
+   patch tool in any order, and would leave `GOVERNING-DEPENDENCIES.md`
+   naming a digest for a `spec.md` that is not on disk, silently, because
+   regeneration never runs on that path [Observed — the reviewer constructed
+   it in four tool and order combinations, and this package's `--check` now
+   reproduces the tree]. Since this package's `--check` was extended in
+   response, that tree is no longer silent: the check asserts that the
+   generated file's declared digest equals the sha256 of the `spec.md` bytes
+   beside it, and reports a finding only if a partial tree ever becomes
+   self-consistent. Neither package's tooling *prevents* the partial landing;
+   the owner's sequencing decision and step 3's regeneration are what do.
 4. **Supersession.** This package supersedes nothing. It would become the
    latest link over the eleven-artifact behavior population; every earlier
    act's rows stay immutable act-time history. The order of the two candidate
@@ -536,6 +558,34 @@ selector, the parity sweep and the copy module are named in
 
 **Required class:**  CC-REV-1 full fresh-context review; the artifact is
 gate-bound and the class is Normative.
-**Reviewer:**        Not yet assigned. Must not have authored this package or
-shared its session.
-**Verdict:**         [Unknown] — no review has been run against these bytes.
+
+### Round 1 — 2026-09-21
+
+**Reviewer:**  fresh-context reviewer, no authoring share.
+**Raw output:** `docs/reviews/R-PWB-EXACT-SOURCE-RENDER-MODE-DELTA-RAW.md`,
+retained verbatim and never edited (CC-REV-6).
+**Verdict (copied exactly):** `CONFIRM WITH EXCEPTIONS`
+**Reviewed bytes:** commit `08f980f`. The raw review states the manifest
+SHA-256 it was bound to; this page does not copy it, so that there is exactly
+one registered copy of the act argument (`OWNER-DECISION-PACKET.md`) for
+CG-7d/CG-7e to keep current.
+
+**Rule 10.** The raw review confirms the bytes at `08f980f`, **not** these
+bytes. The repairs below edited `SEMANTIC-DELTA.md` and
+`scripts/check_governance.py` and
+`scripts/build_pwb_exact_source_render_mode_amendment.py` after that commit,
+so round 1's confirmation is retired as to the current bytes and stands as
+history for `08f980f`. A second fresh reviewer is required before the phrase
+is offered. The manifest digest did **not** move: no repair touched a
+manifest subject, so the phrase in `OWNER-DECISION-PACKET.md` still names
+the reviewed argument.
+
+| Finding | Class | Disposition |
+|---|---|---|
+| F1 | revise | **Accepted and repaired.** The 269 figure in the change-class argument now carries `[Inferred]`, names both addends' Observed sites and fields in the M14 evidence record, names the measurement method and the captures they were measured over, and cites P-81 Q4's rule that sums are Inferred. The packet already labeled the same figure |
+| F2 | revise | **Accepted and repaired.** `check_governance.py --selftest` gains two rule-6 fixtures for `PWB_RENDER_MODE_LABEL` (`valid`, `missing-aggregate`) in the `PWB_TRUTH_AMENDMENT_LABEL` pattern; the battery moves 255 → 257 fixtures, 0 failing. Mutation-proved this session: neutering the dedicated-record registration fails 1 of the 2, neutering the aggregate registration fails both. **Disclosed limit:** misspelling the act *path* constant fails neither, because the fixture creates the record at whatever path the constant names — the fixtures prove the registration wiring, not the filename. The identical gap on `PWB_SCOPED_AMENDMENT_LABEL`, which F2 also names, is left to that package's own branch rather than edited from here |
+| F3 | note | **Accepted; closed by tooling rather than by prose alone.** F3 owed this package nothing, and the reviewer could construct no false sentence in it. Rather than only state the caveat, `--check` was extended: it now builds the partial tree, confirms all four of this package's patches apply to it without any tool objection (reproducing the finding), and asserts the dependency digest is detectably inconsistent with the `spec.md` beside it. `--selftest` gains the inverse fixture — a no-op lane-B spec diff makes the partial tree self-consistent and must be reported. The sequencing caveat is also written into the migration plan above and the decision packet |
+
+**Findings raised and rejected:** none.
+**Findings deferred:** none. F2's sibling-label gap is disclosed above and
+belongs to the scoped-attributes branch.

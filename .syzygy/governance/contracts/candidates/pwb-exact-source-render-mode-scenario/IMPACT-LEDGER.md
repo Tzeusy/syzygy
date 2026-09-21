@@ -113,6 +113,14 @@ resolve by hand: whichever amendment lands second re-runs
 `python3 scripts/build_polaris_project_wide_spec_dependencies.py` and
 regenerates its manifest before its phrase is offered.
 
+The sentence above is scoped to that candidate landing **whole**. Round-1
+review finding F3 showed that a *partial* landing — its `spec.md.patch`
+alone — collides with nothing, in any tool or order, and leaves the
+generated file naming a digest for a `spec.md` that is not on disk. That
+tree is now detected rather than prevented; see `SEMANTIC-DELTA.md`
+§"Migration / supersession plan" for the caveat and §Review for the
+disposition.
+
 `scripts/build_pwb_exact_source_render_mode_amendment.py --check` asserts this
 rather than assuming it. It applies the scoped-attributes diffs to a scratch
 copy of the eleven subjects, then requires that the three semantic patches
@@ -120,7 +128,11 @@ here still apply and that the generated one does **not**. `--selftest` proves
 both halves fail closed: a wide-context design diff (which would collide with
 the scoped-attributes design addition at the same insertion point) is
 rejected, and a lane-B tree without the dependency regeneration — where no
-collision exists — is rejected too.
+collision exists — is rejected too. A third pair covers F3: the check
+builds the partial tree, confirms all four patches apply to it without
+objection, and asserts the dependency digest is detectably inconsistent with
+the `spec.md` beside it; `--selftest` proves the inverse, that a
+self-consistent partial tree is reported.
 
 **Two digest pins go stale on any specification amendment.** The approved
 secret-classification policy candidate and the adapter-registry observer

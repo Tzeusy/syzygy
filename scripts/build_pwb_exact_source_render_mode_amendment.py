@@ -217,6 +217,70 @@ def lane_b_findings(
     return findings
 
 
+def partial_lane_b_findings(
+    patches: list[pathlib.Path] | None = None,
+    lane_b_spec_patch: pathlib.Path | None = None,
+) -> list[str]:
+    """Round-1 review finding F3: a *partial* scoped-attributes landing.
+
+    `lane_b_findings` tests the sibling candidate landing whole. The reviewer
+    showed that cherry-picking the sibling's `spec.md.patch` alone provokes no
+    rejection from either patch tool in any order, and leaves
+    `GOVERNING-DEPENDENCIES.md` naming a digest for a `spec.md` that is not on
+    disk -- silently, since regeneration never runs on that path.
+
+    No patch tool can catch that, so this asserts the invariant that can: in
+    any tree this package's diffs produce, the generated dependency file's
+    declared `spec.md` digest must equal the sha256 of the `spec.md` bytes
+    beside it. The finding fires when the inconsistency is *not* detected, so
+    a future change that makes the partial tree genuinely consistent (a
+    regeneration step in the merge path) passes rather than fails.
+    """
+    findings: list[str] = []
+    if lane_b_spec_patch is None:
+        lane_b_spec_patch = ROOT / LANE_B_PROPOSED / f"{SPEC.name}.patch"
+    if not lane_b_spec_patch.is_file():
+        return [
+            "the scoped-attributes candidate has no "
+            f"{SPEC.name}.patch; the partial-landing case cannot be tested"
+        ]
+    mine = patch_files() if patches is None else patches
+    with tempfile.TemporaryDirectory() as scratch:
+        base = pathlib.Path(scratch)
+        for rel, body in current_bytes().items():
+            (base / rel).parent.mkdir(parents=True, exist_ok=True)
+            (base / rel).write_bytes(body)
+        code, error = _apply_into(base, lane_b_spec_patch)
+        if code != 0:
+            return findings + [
+                "the scoped-attributes spec.md.patch does not apply to the "
+                f"current subject bytes: {error}"
+            ]
+        for patch in mine:
+            code, _error = _apply_into(base, patch)
+            if code != 0:
+                # A tool-level rejection is itself a lawful outcome: the
+                # partial tree never forms, so there is nothing to detect.
+                return findings
+        text = (base / GENERATED).read_bytes().decode("utf-8")
+        match = GENERATED_SOURCE_RE.search(text)
+        if match is None:
+            return findings + [
+                f"no source digest line in {GENERATED.as_posix()} on the "
+                "partial scoped-attributes tree"
+            ]
+        on_disk = sha256((base / SPEC).read_bytes())
+        if match.group(1) == on_disk:
+            findings.append(
+                "a partial scoped-attributes landing (its spec.md.patch "
+                "alone) leaves this package's generated dependency digest "
+                "consistent with the spec.md beside it, so the only detector "
+                "of that sequencing is silent; state the caveat or add a "
+                "regeneration step to the merge path"
+            )
+    return findings
+
+
 def render(values: dict[pathlib.Path, bytes]) -> str:
     lines = [
         f"# {TITLE}",
@@ -264,6 +328,7 @@ def check() -> list[str]:
             findings.append(f"declared patched subject is byte-identical: {rel.as_posix()}")
     findings.extend(generated_findings(proposed))
     findings.extend(lane_b_findings())
+    findings.extend(partial_lane_b_findings())
     target = ROOT / BEHAVIOR_OUT
     if not target.is_file():
         findings.append(f"manifest missing: {BEHAVIOR_OUT.as_posix()}")
@@ -396,10 +461,37 @@ def selftest() -> int:
         print("SELFTEST FAILED: an absent regeneration collision passed")
         return 1
 
+    # (c) F3: the partial-landing detector. On the real partial tree the
+    #     declared and on-disk spec digests differ, so nothing is reported.
+    #     Substitute a lane-B spec diff that changes nothing and the partial
+    #     tree becomes self-consistent -- the one case the detector must call
+    #     out, because then no signal distinguishes it from a lawful tree.
+    if partial_lane_b_findings():
+        print("SELFTEST FAILED: the partial-lane detector fires on real bytes")
+        return 1
+    with tempfile.TemporaryDirectory() as scratch:
+        empty = pathlib.Path(scratch) / f"{SPEC.name}.patch"
+        empty.write_text(
+            f"diff --git a/{SPEC.as_posix()} b/{SPEC.as_posix()}\n"
+            + "".join(
+                difflib.unified_diff(
+                    unpatched[SPEC].decode("utf-8").splitlines(keepends=True),
+                    unpatched[SPEC].decode("utf-8").splitlines(keepends=True),
+                    f"a/{SPEC.as_posix()}",
+                    f"b/{SPEC.as_posix()}",
+                    n=3,
+                )
+            )
+        )
+        if not partial_lane_b_findings(lane_b_spec_patch=empty):
+            print("SELFTEST FAILED: a self-consistent partial tree passed")
+            return 1
+
     print(
         "selftest: closed population, byte drift, path order, subject drift, "
         "patch corruption, transcribed generated digest, wide-context lane "
-        "collision and absent regeneration collision fail closed"
+        "collision, absent regeneration collision and a self-consistent "
+        "partial scoped-attributes tree fail closed"
     )
     return 0
 
@@ -459,7 +551,9 @@ def main(argv: list[str]) -> int:
               f"({len(PATCHED)} patched, {len(BEHAVIOR_SUBJECTS) - len(PATCHED)} "
               f"unchanged); the generated dependency file carries the proposed "
               f"spec.md digest; on the scoped-attributes tree the 3 semantic "
-              f"patches apply and the generated one collides as declared")
+              f"patches apply and the generated one collides as declared; and "
+              f"on a partial scoped-attributes tree the dependency digest is "
+              f"detectably inconsistent with the spec.md beside it")
         return 0
     if not args.write:
         print("refusing: regenerating the manifest changes the act argument; pass "

@@ -6208,6 +6208,26 @@ def selftest():
                   row[0] == "FAIL"
                   and any(PERFORMED_ACT_RECORD in d for d in row[4])))
 
+    # Rule 6 for this repository's newest act-phrase registration. Review
+    # finding F2 on the exact-source render-mode package observed that a
+    # registration with no fixture is trusted rather than proved: the general
+    # copy-registry mechanism is exercised above, but not this label, which is
+    # the surface a later edit to its packet or its constants block would
+    # break. The one registered label still without a fixture of its own is
+    # PWB_SCOPED_AMENDMENT_LABEL (the same gap, disclosed in that review);
+    # adding it belongs to that package's own branch, not this one.
+    render_mode_link = (PWB_RENDER_MODE_LABEL, PWB_RENDER_MODE_SUBJECT,
+                        PWB_RENDER_MODE_ACT,
+                        _activate_pwb_render_mode_act_copy_registry)
+    row = _selftest_pwb_act_copy_registry("valid", render_mode_link)
+    cases.append(("CG-7e performed PWB render-mode act registers both record copies",
+                  row[0] == "OK" and row[2] == 2 and row[3] == 0))
+
+    row = _selftest_pwb_act_copy_registry("missing-aggregate", render_mode_link)
+    cases.append(("CG-7e performed PWB render-mode act requires aggregate record copy",
+                  row[0] == "FAIL"
+                  and any(PERFORMED_ACT_RECORD in d for d in row[4])))
+
     for act in POLARIS_GENERATOR_APPROVAL_ACTS:
         link = (POLARIS_GENERATOR_APPROVAL_LABEL, POLARIS_GENERATOR_APPROVAL_SUBJECT,
                 act, _activate_polaris_generator_act_copy_registry)

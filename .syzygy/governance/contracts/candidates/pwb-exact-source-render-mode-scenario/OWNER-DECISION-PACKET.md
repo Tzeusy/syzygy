@@ -11,7 +11,14 @@
 > `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md`. Until that act,
 > the 2026-09-05 specification stands unchanged.
 
-Date: 2026-09-21 (first draft; no review has been run on it yet).
+Date: 2026-09-21 (drafted); repaired 2026-09-22 after round 1.
+
+Round 1 returned `CONFIRM WITH EXCEPTIONS` on commit `08f980f`
+(`docs/reviews/R-PWB-EXACT-SOURCE-RENDER-MODE-DELTA-RAW.md`); its three
+findings are dispositioned in `SEMANTIC-DELTA.md` §Review. The repairs
+touched no manifest subject, so the digest and the phrase below are the ones
+that review named — but the repaired bytes need a second fresh reviewer
+before the phrase is offered (verification rule 10).
 
 Ruling this serves: row **P-81** of
 `.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`,
@@ -144,6 +151,16 @@ meaning and collide on one generated line only. Whichever is second
 regenerates that line and its manifest before its phrase is offered; the
 ordering is yours and neither depends on the other.
 
+One caveat on that ordering, raised by the round-1 review as F3 and worth
+your eye because no tool prevents it: if the *other* package's
+specification patch is taken alone — cherry-picked before the rest of its
+package is ready — no patch tool objects, and the generated dependency file
+is left naming a digest for a specification that is not on disk. This
+package's `--check` now detects that tree, so it cannot pass silently, but
+detection is not prevention. The safeguard is that each amendment lands
+whole, with its regeneration step, which is what the migration plan in
+`SEMANTIC-DELTA.md` requires.
+
 Silence, a partial answer, a commit or a merge performs nothing; the
 2026-09-05 package stays the PWB authority in every case until an act says
 otherwise.
@@ -166,7 +183,8 @@ would accept it, and nothing is performed.
 1. **Review.** A fresh-context reviewer, with only the package, the
    governing references and `REVIEW-BRIEF.md`, returns one exact verdict.
    Raw output is retained verbatim; findings are dispositioned in
-   `SEMANTIC-DELTA.md` §Review; repaired bytes need a new reviewer.
+   `SEMANTIC-DELTA.md` §Review; repaired bytes need a new reviewer. Round 1
+   is done and repaired; round 2 is the outstanding step.
 2. **Offer.** The manifest is regenerated over the repaired bytes and the
    phrase above is re-derived from it — never transcribed — and offered.
 3. **Act.** A dedicated recorder validates the phrase against the manifest
