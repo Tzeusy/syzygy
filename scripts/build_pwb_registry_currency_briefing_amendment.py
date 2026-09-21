@@ -350,9 +350,75 @@ def selftest() -> int:
         print("SELFTEST FAILED: invalid JSON passed")
         return 1
 
-    print("selftest: subject drift, patch corruption, manifest digest and path "
-          "mutation, version bump, limit semantics, claim-class population, "
-          "bound value, semantics keys and JSON validity all fail closed")
+    # Predicate 11: the top-level registryVersion is checked by its own `if`,
+    # separately from observerVersion. Bump one and not the other — the exact
+    # shape a hand-edit produces, because convention edits them together.
+    half_bumped = proposed.replace(
+        f'"registryVersion": "{PROPOSED_VERSION}"'.encode(),
+        f'"registryVersion": "{CURRENT_VERSION}"'.encode(), 1)
+    assert half_bumped != proposed
+    if not structure_findings(half_bumped):
+        print("SELFTEST FAILED: an unbumped top-level registryVersion passed")
+        return 1
+
+    # Predicate 12: a duplicated claim class — a copy-pasted currencyBounds
+    # row — fails, and not only through the population comparison.
+    duplicated = proposed.replace(
+        b'"claimClass": "principle"',
+        b'"claimClass": "project-account-section"', 1)
+    assert duplicated != proposed
+    if "currencyBounds declares a claim class twice" not in structure_findings(
+            duplicated):
+        print("SELFTEST FAILED: a duplicated claim class passed")
+        return 1
+
+    # Predicate 13: a non-positive briefing ceiling fails. A ceiling of zero
+    # serves nothing and is indistinguishable from an absent declaration.
+    no_ceiling = proposed.replace(
+        f'"{BRIEFING_LIMIT_KEY}": 20480'.encode(),
+        f'"{BRIEFING_LIMIT_KEY}": 0'.encode(), 1)
+    assert no_ceiling != proposed
+    if not structure_findings(no_ceiling):
+        print("SELFTEST FAILED: a zero briefing ceiling passed")
+        return 1
+
+    # Predicates 14-19 mutate the parsed document and re-serialize, so each
+    # one reaches the structural assertion under test rather than failing
+    # earlier on JSON validity. Each names the assertion it covers.
+    def mutate(fn) -> bytes:
+        doc = json.loads(proposed)
+        fn(doc)
+        return json.dumps(doc, indent=2).encode()
+
+    structural_mutants = (
+        ("a second registry entry",
+         lambda doc: doc["entries"].append(dict(doc["entries"][0]))),
+        ("resourceLimits that is not an object",
+         lambda doc: doc["entries"][0].__setitem__("resourceLimits", [])),
+        ("absent currencyBounds",
+         lambda doc: doc["entries"][0].pop("currencyBounds")),
+        ("a currencyBounds row carrying an extra key",
+         lambda doc: doc["entries"][0]["currencyBounds"][0].__setitem__(
+             "note", "why")),
+        ("currencyBoundSemantics that is not an object",
+         lambda doc: doc["entries"][0].__setitem__(
+             "currencyBoundSemantics", "see the contract")),
+        ("an empty currencyBoundSemantics sentence",
+         lambda doc: doc["entries"][0]["currencyBoundSemantics"].__setitem__(
+             CURRENCY_SEMANTICS_KEYS[0], "   ")),
+    )
+    for label, fn in structural_mutants:
+        mutant = mutate(fn)
+        assert mutant != proposed
+        if not structure_findings(mutant):
+            print(f"SELFTEST FAILED: {label} passed")
+            return 1
+
+    print("selftest: 19 predicates — subject drift, patch corruption, manifest "
+          "digest and path mutation, both version bumps, limit semantics, the "
+          "briefing ceiling's value, claim-class population, duplication, row "
+          "shape and bound value, the semantics block's type, keys and empty "
+          "sentences, entry count and JSON validity all fail closed")
     return 0
 
 

@@ -1,9 +1,13 @@
 # Review brief — registry currency bounds and the briefing ceiling
 
 > **Candidate — binds nothing.** This brief states what an independent
-> reviewer is to be given and what they are to decide. It is not a review,
-> contains no verdict word, and no review has been run against this
-> package. Effect over the subject would come from one superseding
+> reviewer is to be given and what they are to decide. It is not a review
+> and carries no verdict of its own. One review has since been run against
+> this package: its raw output is
+> `docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-RAW.md` and its
+> disposition is the `## Review` section of `SEMANTIC-DELTA.md`; that
+> review is bound to the bytes it names, which the repairs have since
+> moved. Effect over the subject would come from one superseding
 > `adopt-registry-entry` owner act and from nothing else.
 
 ## Status of the package under review
@@ -11,7 +15,10 @@
 Drafted to step 2 of
 `.syzygy/governance/contracts/candidates/policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md`
 and stopped there, as the drafting authorization requires. No self-review
-was performed.
+was performed at any point. The independent review named in the banner
+was run in fresh context by a different session and its findings were
+repaired; this brief is unchanged apart from the predicate count in
+criterion 3, which the repair moved.
 
 ## What the reviewer is given, and nothing else
 
@@ -65,10 +72,10 @@ Each is a yes/no question with the evidence that settles it.
    proposed change is the unified diff under `proposed/`, and that no act
    record, no superseded record and no manifest of a prior act is edited.
 3. **Does the package verify, and does its verification mean anything?**
-   Run `--check` and `--selftest`. `--selftest` mutates ten predicates in
-   turn; confirm each mutation is one the package would actually be wrong
-   about, not a tautology, and name any predicate the package asserts that
-   no mutant covers.
+   Run `--check` and `--selftest`. `--selftest` mutates nineteen
+   predicates in turn; confirm each mutation is one the package would
+   actually be wrong about, not a tautology, and name any predicate the
+   package asserts that no mutant covers.
 4. **Is the thirteen-class population complete and disjoint?** The delta
    claims the thirteen rows cover every claim identity the shape model
    mints and nothing else. Check it against the nine extraction classes

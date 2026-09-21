@@ -133,7 +133,11 @@ evaluation's own as-of instant and to no other coordinate. `measuredTo`
 states the consequence that makes the bound auditable — the judge reads no
 wall clock, so two runs of one identified evaluation agree on every
 freshness state. `claimClassAssignment` says which claims each row
-governs. `undeclaredClass` says that a class with no row never leaves
+governs, naming every population by its full claim id: the six keys behind
+`claim:fact:project-account:<key>` and `claim:project-account:<key>` are
+two different populations that differ only by an infix, and they take
+different rows, so the sentence decides the assignment on its own words
+without a reader holding the implementation open beside it. `undeclaredClass` says that a class with no row never leaves
 Unknown and that no implementation constant, default or fallback repairs
 that. `outOfBoundResult` says that age-exceeded, unreadable and
 future-dated evidence all fail closed. `outsideTheseBounds` says the rows
@@ -219,9 +223,11 @@ Method warrant: `NORMATIVE-CHANGE-WORKFLOW.md` and
 `SEMANTIC-DELTA-TEMPLATE.md` under
 `.syzygy/governance/contracts/candidates/policy-candidates/`. This delta
 stops at step 2 of that workflow: it is drafted and its blast radius is
-established, and it has **not** been reviewed. `REVIEW-BRIEF.md` states
-what an independent reviewer is to be given; no review has been run and no
-review file exists in this package.
+established. One independent review has since been run in fresh context by
+a different session, against the brief's own criteria; the `## Review`
+section below carries its verdict, the path to its raw output and the
+disposition of every finding. No review file lives inside this package,
+and no self-review was performed.
 
 ## Evidence or decision basis
 
@@ -319,8 +325,35 @@ superseding act, never an edit.
 
 ## Review
 
-**None.** This package stops at step 2 of `NORMATIVE-CHANGE-WORKFLOW.md`.
-`REVIEW-BRIEF.md` states the artifact, the governing references and the
-acceptance criteria an independent reviewer is to be given, in fresh
-context, per CC-REV. No self-review was performed and no verdict word
-appears in this package.
+One independent review has been run, in fresh context, per CC-REV. No
+self-review was performed at any point.
+
+**Raw output, stored verbatim and never edited:**
+`docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-RAW.md`.
+
+**Verdict, copied exactly: CONFIRM WITH EXCEPTIONS** (two revise, four
+note).
+
+**Rule 10 — what the raw is bound to.** The review names the commit
+`3030668` and a manifest digest computed over the bytes at that commit.
+The repairs below changed one line of the patch under `proposed/`, so the
+proposed bytes and the manifest row both moved and the raw's confirmation
+covers the reviewed bytes, not these. A reviewer wanting a confirmation of
+the current bytes issues a second raw; this one is not overwritten.
+
+### Disposition of each finding
+
+| Finding | Class | Disposition |
+|---|---|---|
+| F1 — `--selftest` undercounts what `structure_findings` asserts | revise | **Repaired.** Nine predicates added, covering the three the reviewer mutation-tested by hand (top-level `registryVersion` bumped alone, a duplicated `claimClass`, a zeroed `maxBriefingResponseBytes`) and the six it identified by inspection (entry count, `resourceLimits` not an object, absent `currencyBounds`, a row with an extra key, `currencyBoundSemantics` not an object, an empty sentence). The printed count and both prose copies now read nineteen. |
+| F2 — the ledger's itemized "+7" miscounts its Markdown component | note | **Repaired.** Four Markdown files, not five; the total of 7 was already correct and is unchanged. |
+| F3 — `claimClassAssignment` names two populations with one shorthand | revise | **Repaired in the proposed bytes.** Every population is now named by its full claim id, and the sentence says in its own words that `claim:fact:project-account:<key>` and `claim:project-account:<key>` are different populations taking different rows. This changed the patch, so the manifest row was regenerated. |
+| F4 — PWB-REQ-004 does not define a claim-class vocabulary | note | **No change.** The finding is against the review instructions this session was given, not the package: `SEMANTIC-DELTA.md` and `REVIEW-BRIEF.md` both cite PWB-REQ-006/007 and verify the thirteen classes against the two source files, which is the reading the reviewer independently confirmed with zero set difference. |
+| F5 — the briefing-ceiling rationale mischaracterizes its measurement | note | **Repaired.** The packet row now states the measured figures (7,076 and 5,150 bytes) and that 20,480 is roughly 2.9x the larger — headroom, deliberately not a tight budget. The value itself is unchanged and remains the owner's. |
+| F6 — "named subject" is undefined until the sibling package lands | note | **Open, and stays open.** No text here can close it: the derived read-only machine view category is the sibling package's to define, and the reviewer confirmed by sweep that no such package is in the tree. Recorded as a sixth open question in `OWNER-DECISION-PACKET.md`; the answer to `REVIEW-BRIEF.md` criterion 6 depends entirely on that package's content, which this package does not assume. |
+
+**What the review did not touch.** No finding reached the thirteen bound
+values, the ceiling value, the class population, the act boundary or the
+package's authority claims; the reviewer re-derived the manifest digest,
+the key-level delta, the class vocabulary and the no-registration argument
+independently and each survived.

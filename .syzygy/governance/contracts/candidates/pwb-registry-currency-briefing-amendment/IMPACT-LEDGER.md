@@ -70,9 +70,9 @@ stated rather than hidden:
   doing its job: had a binary or non-UTF-8 file carried one of these
   identifiers, the two columns above would differ.
 - The denominator excludes this package's own files, which were untracked
-  when both sweeps ran. Adding them raises the denominator by **7** (five
-  Markdown files, one manifest, one patch, one builder script — the patch
-  and script counted as one each) and raises the `currencyBounds`,
+  when both sweeps ran. Adding them raises the denominator by **7** —
+  four Markdown files, one manifest, one patch and one builder script —
+  and raises the `currencyBounds`,
   `currencyBoundSemantics`, `maxBriefingResponseBytes` and
   subject-basename counts accordingly. The tables below are the baseline
   tables and are not restated at the later commit; a reviewer wanting the

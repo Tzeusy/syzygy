@@ -20,7 +20,10 @@ that preparation. It proposes new bytes for one artifact —
 — without editing the bytes the act in force bound. `SEMANTIC-DELTA.md`
 says what changes and why; `IMPACT-LEDGER.md` says what depends on it, by
 count and denominator; `REVIEW-BRIEF.md` says what an independent reviewer
-is to be given. **No review has been run.**
+is to be given. **One independent review has been run** — raw output at
+`docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-RAW.md`, verdict and
+disposition in the `## Review` section of `SEMANTIC-DELTA.md`. Its
+confirmation is bound to the bytes it names, which the repairs moved.
 
 ## Every value here is the owner's
 
@@ -68,7 +71,7 @@ would be simpler to explain.
 
 | Field | Proposed value | Reading | One-line rationale |
 |---|---|---|---|
-| `maxBriefingResponseBytes` | 20480 | 20 KiB | The design work that asked for this ceiling costed the briefing at roughly 20 KB, and the whole point of minting a third ceiling is that reusing the 8 MiB machine ceiling would let a briefing grow four hundredfold with nothing to stop it. |
+| `maxBriefingResponseBytes` | 20480 | 20 KiB | The design work that asked for this ceiling measured the two one-claim briefing compositions at 7,076 and 5,150 bytes and recommended 20,480 as roughly 2.9x the larger — deliberate headroom, not a tight budget and not the measured cost. The point of minting a third ceiling is that reusing the 8 MiB machine ceiling would let a briefing grow four hundredfold with nothing to stop it. |
 
 **The trade-off**: 20 KiB is tight enough that the ceiling is a real gate
 and loose enough for the fields the briefing is meant to carry. Set it
@@ -204,6 +207,13 @@ deciding something the drafting authorization does not cover.
    complete against today's two source files; nothing mechanically
    prevents a future class from being minted with no row, and the
    `undeclaredClass` sentence is what makes that safe rather than silent.
+6. **What counts as the "one named subject" the third ceiling bounds.**
+   The sentence bounds the ceiling to a single-subject view built from an
+   already-served evaluation, but nothing yet pins whether a subject is
+   one claim id or something coarser. The category belongs to the sibling
+   specification package, which is not in the tree; until it lands this
+   stays open, and no wording here can close it. Raised as F6 by the
+   independent review and dispositioned in `SEMANTIC-DELTA.md`.
 
 ## How to verify this package before acting
 
@@ -218,5 +228,7 @@ python3 scripts/check_governance.py
 
 `--check` proves the patch still applies to the bytes the act in force
 bound and that the manifest row is an exact regeneration over the result.
-`--selftest` mutates ten predicates in turn and requires each to fail
-closed. `--diff` prints the proposed change in full.
+`--selftest` mutates nineteen predicates in turn and requires each to
+fail closed; the count is the one the command prints, and it covers every
+assertion `structure_findings` makes. `--diff` prints the proposed change
+in full.
