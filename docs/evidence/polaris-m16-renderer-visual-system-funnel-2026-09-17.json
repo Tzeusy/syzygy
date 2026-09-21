@@ -1,0 +1,215 @@
+{
+ "kind": "polaris-m16-renderer-visual-system-funnel",
+ "version": 1,
+ "status": "candidate; binds nothing; planning only; FIRST DRAFT - NO independent review yet. By verification rule 10 every figure here is uncovered until a fresh-context review, bound to these bytes, confirms it. The load-bearing figures were reproduced this session by a second method each (verification rule 2), which is not a review. The move has NO spec prerequisite: no slice is downstream of a change to the signed PWB specification, so - assessed per slice in Gate 3 - the low-risk mechanical and additive slices recommend BUILDING under the POC improvement-cycle scope, while the SVG-diagram slice and the light-palette/curation halves recommend DESIGN. No slice touches the signed spec, doctrine text, the security/privacy/retention posture, or POC scope. Not registered as an act; the packet asks six batched owner questions and records a default of 'nothing happens' per question if unanswered.",
+ "date": "2026-09-17",
+ "bead": "syzygy-dov.16",
+ "move": "M16 - Renderer, diagram and visual-system engineering: mutation evidence bound to dead bytes, escaping by convention not the compiler, zero SVG on the page, and a forced dark theme with eight stray colours outside the token set",
+ "packet": "docs/design/POLARIS-M16-RENDERER-VISUAL-SYSTEM-FUNNEL.md",
+ "commit": "a9f671e",
+ "dossier": {
+  "section": "### M16 in docs/pursuits/2026-09-13-vision-pursuit.md at a9f671e",
+  "merges": ["S8-M4", "S8-M3", "S8-M5", "S3-M1", "S3-M3", "S3-M4", "S3-M2", "S1-M4", "S11-M3", "S11-M4"],
+  "evidence_findings": ["S8-F3", "S8-F4", "S8-F5", "S3-F1", "S3-F2", "S3-F3", "S11-F3", "S11-F4"],
+  "doctrine": ["VIS-1", "VIS-3", "VIS-7", "SEC-1"],
+  "prerequisite_line": "NONE - no slice is downstream of a signed-spec change; the mechanical and additive slices recommend building under the POC improvement-cycle scope",
+  "owner_value": 4,
+  "build_cost": 4
+ },
+ "labels": "Every figure is [Observed] unless marked. [Inferred] marks a harm real under doctrine but not measured against a specific reader this session (the harm to a screen-reader user, the harm of a page that cannot draw a graph). [Unknown] marks the current renderer's mutation state, which no evidence binds to. An LLM assertion is [Inferred].",
+ "conventions": {
+  "line_count": "one-based index into split-on-newline segments of the file at a9f671e (the number `sed -n 'Np'` prints)",
+  "byte_count": "UTF-8 length",
+  "sweeps": "Python re, sha256sum/wc, and grep -c -F over the source and the retained captures, never grep character classes (verification rule 1)"
+ },
+ "captures": {
+  "polaris-direct.html": {
+   "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-direct.html",
+   "bytes": 1478637,
+   "capture": "post-trim direct /polaris capture; the lane A 'after' human page"
+  },
+  "polaris-tailnet.html": {
+   "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-tailnet.html",
+   "bytes": 1484487,
+   "capture": "post-trim tailnet-mounted twin of the same page"
+  },
+  "polaris-7478.html": {
+   "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/capture/polaris-7478.html",
+   "bytes": 2090025,
+   "capture": "pre-trim /polaris capture"
+  },
+  "role": "the captures supply the rendered-page magnitudes (the SVG count and the page byte denominators); the defects are read structurally at the source at a9f671e",
+  "daemon": "none started this session; no Butlers body was read"
+ },
+ "why": "the surface that renders the truth must itself be trustworthy: its evidence current, its escaping enforced, its diagrams legible, and its colours named (VIS-7, VIS-3, VIS-1, SEC-1). Four render-side gaps: the highest-traffic module's mutation evidence is bound to bytes that no longer exist; escaping is convention, not compiler-enforced; the diagrams are AT-opaque and the page draws zero graphs; and the shared visual system has no type scale, eight stray colours, and a forced undocumented dark theme.",
+ "s8_f4_mutation_evidence_dead_bytes": {
+  "claim": "the one renderer mutation record binds its result by per-file content sha256 to bytes that changed 7+ commits ago; the current renderer carries no mutation confirmation (verification rule 10)",
+  "record": "docs/evidence/pwb-p3-6-narrative-mutation-run-2026-09-04.json",
+  "record_shape": "binds by a per-file content sha256 in `subjects` (four files) and records no commit; killed 17, total 17",
+  "polaris_ts_recorded_sha256": "e5367575adb5ec9db5358d1fb58144dec0efe630534752c7b08f389c3a1e5674",
+  "polaris_ts_current_sha256": "b6dd1a90ea3dd8f53ed8bf2fc46b96476fa945430bf11b13333b04b3d714f2a6",
+  "all_four_subjects_differ": {
+   "apps/three-surface-poc/src/polaris.ts": {"recorded": "e5367575adb5ec9db5358d1fb58144dec0efe630534752c7b08f389c3a1e5674", "current": "b6dd1a90ea3dd8f53ed8bf2fc46b96476fa945430bf11b13333b04b3d714f2a6"},
+   "apps/three-surface-poc/src/polaris-narrative.ts": {"recorded": "0b0733ef410eb1791eaa3698c9db75a8c57bede106a9fdd0df68a4f133212e0b", "current": "a97a80db28410491f926cb811eea13c379aa214140ac1dba285a9440a70cdf3d"},
+   "apps/three-surface-poc/src/polaris-copy.ts": {"recorded": "f6ab0f2a6a8bf9607a81bc72d0fc03e1cebc23be2f707c225f860cafdc7c15e5", "current": "6a0dce8f15fb049126da6ae74716161d221a38dfa7026d085f9059d170996d95"},
+   "apps/three-surface-poc/src/page-shell.ts": {"recorded": "5fb5a4cdd2be27a515833911102232c9f5e686c37e6c6dfbf82776d849fc39fd", "current": "c969d2442c5f16cf9c6906a817bc28dcb2073e382fe1a24a9418f9565c662da4"}
+  },
+  "digest_method": "sha256sum this session over the current bytes; the recorded digests read from the record's `subjects` block; both full sha256, never truncated (a full file-content sha256 computed this session is allowed; CG-15 forbids only truncated signed digests)",
+  "method_2": "git log --since 2026-09-04 -- apps/three-surface-poc/src/polaris.ts lists 7+ commits (2ef68f5, a121591, 6fa339b, 5290cd0, and earlier), so the file provably changed after the run",
+  "reading": "the record's 17/17-killed outcome is [Observed] for the recorded bytes; the current renderer's mutation state is [Unknown] (VIS-2: no evidence yields Unknown, never a green carried over from dead bytes)"
+ },
+ "s8_m3_escaping_by_convention": {
+  "claim": "escaping is enforced by convention, not the compiler: every render helper returns a bare string that is HTML, so a caller can interpolate an unescaped value with no type error",
+  "escapeHtml_import": "apps/three-surface-poc/src/polaris.ts:3 - `import { escapeHtml } from '@syzygy/cap1-daemon';`",
+  "five_html_string_helpers_416_490": {
+   "excludedCauseRoute": {"line": 416, "signature": "function excludedCauseRoute(exclusion: Exclusion): string"},
+   "unavailableCauseRoute": {"line": 440, "signature": "function unavailableCauseRoute(source: { readonly path: string; readonly reason: string }): string"},
+   "routeOf": {"line": 462, "signature": "function routeOf(claim: ProjectShapeClaim, reason: string): string"},
+   "reasonRouteHtml": {"line": 472, "signature": "function reasonRouteHtml(reason: string): string"},
+   "unknownRoutes": {"line": 480, "signature": "function unknownRoutes(claim: ProjectShapeClaim, prefix: string): string"}
+  },
+  "dossier_window_note": "the dossier names lines 417-490; the band's first HTML-string helper (excludedCauseRoute) begins at 416, corrected here",
+  "method_2": "grep for `function .*: string {` across the band returns these five plus causeRoutes (448), which returns readonly string[] and is not an HTML-string helper - five HTML-string helpers, confirmed by reading each signature"
+ },
+ "s3_m1_zero_svg": {
+  "claim": "the page renders zero SVG; the relations are text-arrow lists and stacked from/to rows, never a graph",
+  "svg_count_per_capture": {"polaris-direct.html": 0, "polaris-tailnet.html": 0, "polaris-7478.html": 0},
+  "canvas_count_per_capture": {"polaris-direct.html": 0, "polaris-tailnet.html": 0, "polaris-7478.html": 0},
+  "method_1": "grep -c -F '<svg' over each capture -> 0",
+  "method_2": "Python str.count('<svg') over each capture -> 0; same two methods for '<canvas'",
+  "byte_denominators": {"polaris-direct.html": 1478637, "polaris-tailnet.html": 1484487, "polaris-7478.html": 2090025},
+  "current_renderers": "flowDiagram (apps/three-surface-poc/src/polaris-markdown.ts:108-113) emits an ordered list of node spans with text arrows; relationshipDiagram (:115-127) emits stacked from/to rows"
+ },
+ "s3_m3_m4_diagram_accessibility": {
+  "claim": "the diagrams carry no assistive-technology text equivalent and non-normative nodes are marked only in data attributes, with no visible marker",
+  "non_normative_data_only": "apps/three-surface-poc/src/polaris-markdown.ts:101-105 - diagramNodeAttrs emits `data-non-normative data-claim-role=\"non-normative-framing\"` for un-anchored nodes but no visible marker",
+  "no_at_equivalent": "the flow list (:112) and relationship blocks (:126) render arrows as `aria-hidden=\"true\"` with no aria-label or off-screen prose describing the graph as a whole",
+  "accessibility_module_present": "apps/three-surface-poc/src/polaris-accessibility.ts (567 lines) exists; the diagram emitters do not use an AT text equivalent",
+  "harm_label": "[Inferred] - the harm to a screen-reader user is real under VIS-3 but not measured against a specific reader this session; what is [Observed] is the absent AT equivalent and the data-only non-normative marking"
+ },
+ "s8_m5_module_split": {
+  "claim": "polaris.ts is a single large module divided by its own section seams, splittable mechanically with no behaviour change",
+  "line_count": 1634,
+  "dossier_line_note": "the dossier says 1,615; the file is 1,634 lines at a9f671e, corrected here",
+  "banner_seams": [106, 212, 297, 852, 1032, 1206],
+  "exported_render_entrypoints": "10 (renderProjectReading:505, renderCapabilityDeepDive:1481, renderPolarisPresentation:1503, renderPolarisPage:1521, and six more)",
+  "method_2": "grep -c '^export function|^export const' -> 10; the banner seams found by grepping the '// ----' comment rows"
+ },
+ "s11_m3_stray_hex_literals": {
+  "claim": "the shared token stylesheet has no type-scale token and eight stray hex colour literals outside its :root token block; app-wide the stray count is 19",
+  "token_definitions": "design-tokens.ts:45-55 - ten :root colour tokens and four --space-* spacing tokens; NO type-scale token, every font size a literal rem",
+  "stray_in_design_tokens": {
+   "count": 8,
+   "lines": [68, 95, 99, 100, 131, 144, 147, 148],
+   "note": "line 131 is the 8-digit RGBA literal #3d2f1322, which a {3,6}-digit sweep misses; the precise {3,4,6,8} sweep is the load-bearing one"
+  },
+  "stray_app_wide": {
+   "count": 19,
+   "other_11_files": ["materialize-action.ts", "orrery.ts", "routes.ts", "trajectory.ts"]
+  },
+  "method_1": "Python re `#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})(?![0-9a-fA-F])` over non-test .ts, excluding :root token-definition lines",
+  "method_2": "count `#` occurrences per line and subtract the ten token-definition rows -> 8 stray in design-tokens.ts",
+  "excluded_non_colours": "two contrast-threshold pairs in polaris-accessibility.browser.test.ts (test fixtures) and one #0000... fragment identifier in a source-route test",
+  "dossier_confirms": "the dossier's 'eight' is the design-tokens.ts count, confirmed; the 19 app-wide is the honest wider denominator"
+ },
+ "s11_m4_forced_dark_theme": {
+  "claim": "the theme is forced dark and the decision is undocumented",
+  "forced_dark": "design-tokens.ts:45 sets `color-scheme: dark` inside a single :root",
+  "no_light_branch": "a Python search for 'prefers-color-scheme' across the whole app source returns 0 matches",
+  "no_recorded_decision": "docs/POLARIS-READING-LAYOUT.md (45 lines) contains no 'theme', 'dark', 'light' or 'color-scheme' token by a case-insensitive Python search"
+ },
+ "questions": {
+  "Q1": "slice 1 / S8-M4: re-run and re-date the renderer mutation-kill sweep, old record untouched, so the highest-traffic module carries mutation evidence bound to its current bytes. Recommended: BUILD (authorize the re-run); evidence hygiene under rules 7 and 10; no source edit, no shipped-behaviour change, no escalation trigger. The sweep rewrites sources in place and runs ~35 min - no edit/commit while it runs. Arms: (a) no re-run; (b) re-run + new dated record; (c) all four subjects at once (coincides with b). Default: mutation evidence stays bound to dead bytes.",
+  "Q2": "slice 2 / S8-M3: introduce a branded Html type so escaping is compiler-enforced, converting the five HTML-returning helpers (416-490). Recommended: design then BUILD as a behaviour-preserving refactor within the POC improvement-cycle scope; SEC-1/VIS-7, output byte-identical, no posture change, no escalation trigger. Arms: (a) no change; (b) branded Html; (c) lint-only advisory. Default: escaping stays convention-enforced.",
+  "Q3": "slice 3 / S3-M3, S3-M4: add an AT text equivalent for the relations/flow diagrams and a visible non-normative marker, with a counterexample fixture. Recommended: design then BUILD as an additive rendering change within the POC improvement-cycle scope; VIS-1/VIS-3, fixture-guarded, no PWB-REQ pins the a11y markup, no escalation trigger. Arms: (a) no change; (b) AT equivalent + visible marker; (c) AT equivalent only. Default: diagrams stay AT-opaque and non-normative nodes invisibly marked.",
+  "Q4": "slice 4 / S8-M5: split the 1,634-line polaris.ts at its six banner seams, mechanically, output byte-identical. Recommended: BUILD within the POC improvement-cycle scope; verify by the existing parity/reachability sweeps plus a rendered-capture diff; land alone, no escalation trigger. Arms: (a) no split; (b) split at the six seams; (c) split by entrypoint into ten files. Default: polaris.ts stays one 1,634-line file.",
+  "Q5": "slice 5 / S3-M1, S3-M2: design model-derived inline SVG diagrams over a graph shape (fan-in/fan-out/hierarchy) with a real legend, and feed the fence renderer literal fences instead of byte-offset-stitched ones. Recommended: DESIGN only (feature-request candidate) - a graph renders truth visually so it needs a legend, an AT equivalent, a normative/non-normative visual grammar, a fixture oracle and a byte estimate before any build. Arms: (a) no change; (b) design the SVG graph + legend + AT + fixture; (c) design the literal-fence fix alone. Default: no SVG, no graph, no literal-fence fix.",
+  "Q6": "slice 6 / S11-M3, S11-M4, S1-M4: name a type scale and retire the eight stray hex literals for tokens (with a grep guard); resolve the forced dark theme by a light palette or one recorded sentence; generalize figure/passage curation alongside generation. Recommended SPLIT: BUILD the type-scale/token cleanup + grep guard, RECORD the theme decision in one dated sentence in docs/POLARIS-READING-LAYOUT.md (a light palette is DESIGN), DESIGN the curation generalization. Arms: (a) no change; (b) the recommended split; (c) tokens only, no type scale or guard. Default: no type scale, eight stray colours, undocumented dark theme, generator-specific curation."
+ },
+ "acts": {
+  "authorization": ".syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md (2026-09-02)",
+  "continuation": ".syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md (2026-09-05); its escalation triggers stop implementation before a spec amendment, a doctrine or contract change, a security/privacy/retention posture change, or a scope change",
+  "scope": "POC improvement cycles (AGENTS.md 'Beads scope': review -> repair beads from recorded findings -> confirmation); the mechanical and additive slices sit inside this cycle, which is why they may recommend building",
+  "per_slice_trigger_test": {
+   "1 S8-M4": "re-runs a test suite, writes a new evidence record, edits no source - NO trigger, build arm",
+   "2 S8-M3": "hardens escaping in the implementation; no posture change, output byte-identical - NO trigger, build arm",
+   "3 S3-M3/S3-M4": "additive rendering; no PWB-REQ pins the diagram a11y markup - NO trigger, build arm",
+   "4 S8-M5": "mechanical module split; output byte-identical - NO trigger, build arm",
+   "5 S3-M1/S3-M2": "a new visual feature rendering model truth as a graph - feature-request candidate, DESIGN arm by its own nature",
+   "6 S11-M3/S11-M4/S1-M4": "token cleanup + grep guard mechanical (build); light palette + curation new design (design); theme sentence recorded (build/doc)"
+  },
+  "no_slice_amends_spec_or_changes_posture": true,
+  "packet_rules_nothing": true
+ },
+ "review": {
+  "status": "review-1-applied 2026-09-17: CONFIRM WITH EXCEPTIONS (0 blocking / 2 non-blocking / 3 editorial); findings F1-F5 repaired in place in the packet. Superseded first-draft posture (was): 'NONE. This is a first draft.' By verification rule 10 the review-1 close-out repairs post-date the reviewed commit 429924a and are themselves uncovered until a second fresh-context review, bound to the new bytes, confirms them.",
+  "load_bearing_figures_confirmed_by_second_method_this_session": "the four differing mutation-subject digests (sha256sum current vs the record's subjects, plus git log showing 7+ commits); the five HTML-string helper signatures (band read + grep for `function .*: string {`); the 0 <svg over three captures (grep -c -F + Python count, with byte denominators); the eight stray literals in design-tokens.ts and the 19 app-wide (precise {3,4,6,8} sweep + per-line # count); and the forced dark theme with no recorded decision (color-scheme: dark grep + prefers-color-scheme absence + layout-doc token search) - verification rule 2, not a review"
+ },
+ "review1": {
+  "verdict": "CONFIRM WITH EXCEPTIONS",
+  "reviewed_commit": "429924a",
+  "counts": {"blocking": 0, "non_blocking": 2, "editorial": 3},
+  "raw": {
+   "path": "docs/reviews/R-POLARIS-M16-RENDERER-VISUAL-SYSTEM-FUNNEL-1-RAW.md",
+   "bytes": 11812,
+   "sha256": "cddd9878ed4c89b50c9afe1d4eca25e164c5c0f3affed895cd01b9380b7c5c79",
+   "note": "retained byte-identical (cmp clean); the -RAW.md suffix exempts it from CG-1b/CG-15 for the paths and digests it quotes"
+  },
+  "findings": {
+   "F1": {"class": "non-blocking", "disposition": "repaired in Measurement 2", "correction": "causeRoutes (polaris.ts:448) returns readonly string[] | undefined and does not match a `: string {` grep; the band-scoped grep returns exactly the five helpers, next `: string {` match is readingFigure (491), one line past the 416-490 band"},
+   "F2": {"class": "non-blocking", "disposition": "repaired in Q5 and Gate 4 slice 5", "correction": "the offset-slicing lives in polaris-reading.ts (SourceSpan defined :26-30; the stitch/emit site is :107-113 in applyReadingPlan - text.slice(start,end) assembling the relations/flow fence bodies - the anchor refined 2026-09-17 from the :47-64 validation block) and uses JS character offsets over text, not byte offsets; the polaris-markdown.ts fence renderer already consumes literal fence lines; flowDiagram/relationshipDiagram anchors (108-113, 115-127) are correct and stand"},
+   "F3": {"class": "editorial", "disposition": "repaired in Q2", "correction": "no function escapedCauseRoute exists; the band's first helper is excludedCauseRoute (416), which the same sentence already names correctly"},
+   "F4": {"class": "editorial", "disposition": "repaired in Q6", "correction": "the ten --token: definitions are lines 46-55, not 45-55; line 45 is color-scheme: dark"},
+   "F5": {"class": "editorial", "disposition": "repaired in Measurement 4", "correction": "the two excluded contrast-threshold matches are two values (#777777, #767676), not two pairs; the exclusion total (3) and the stray counts (8 / 19) are unaffected"}
+  },
+  "no_arm_moved": "none of the five moves any recommended arm, any lawful arm, or any default; each corrects a second-method narration or an anchor",
+  "reviewer_reproduced_load_bearing_values": {
+   "polaris_ts_line_count": 1634,
+   "mutation_subjects": "all four recorded digests MATCH the record's subjects block; all four current sha256 DIFFER this session (the rule-10 gap is real)",
+   "svg_canvas_over_three_captures": {
+    "polaris-direct.html": {"svg": 0, "canvas": 0, "bytes": 1478637},
+    "polaris-tailnet.html": {"svg": 0, "canvas": 0, "bytes": 1484487},
+    "polaris-7478.html": {"svg": 0, "canvas": 0, "bytes": 2090025}
+   },
+   "stray_hex": {"design_tokens_ts_stray": 8, "app_wide_stray": 19, "root_token_defs": 10},
+   "theme": "color-scheme: dark at design-tokens.ts:45; 0 prefers-color-scheme across the app source"
+  },
+  "rule10_posture": "these review-1 close-out edits post-date the reviewed commit 429924a and are themselves uncovered until a second fresh-context review bound to the new bytes confirms them"
+ },
+ "register": {
+  "row": "P-83",
+  "branch": "agent/syzygy-dov.16",
+  "posture": "six batched questions, no spec prerequisite, mixed build/design arms under the POC improvement-cycle scope, review 1 applied 2026-09-17 (CONFIRM WITH EXCEPTIONS; the review-1 repairs post-date 429924a and are uncovered until a second review, rule 10); the row records that Q1-Q4 and the token half of Q6 are build arms, Q5 and the palette/curation halves of Q6 are design, and no slice touches spec, doctrine, security posture or scope",
+  "counts": "the branch at a9f671e carries 26 `^| P-` rows; after P-83 it carries 27. P-83 sits after P-82 in the '## Open, and only the owner can dispose' section."
+ },
+ "self_referential_figures": {
+  "note": "computed at a fixed point over the bytes the packet ends in, iterated to convergence after every edit; the packet's Gate 6 states the same numbers",
+  "over_78": 0,
+  "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file (split on newline)",
+  "odd_backtick_non_fence_lines": 0,
+  "non_fence_lines": 467,
+  "total_lines": 503
+ },
+ "packet_measured": {
+  "note": "computed LAST over the committed packet bytes after the review-1 close-out and its F2 anchor refinement; equals what is committed; self_referential_figures agrees",
+  "path": "docs/design/POLARIS-M16-RENDERER-VISUAL-SYSTEM-FUNNEL.md",
+  "bytes": 44735,
+  "sha256": "6925ea93083f2e757f641fae537a244c1fa80baa6219c816a0b301393a31a13e",
+  "total_lines": 503,
+  "non_fence_lines": 467,
+  "over_78": 0,
+  "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file (split on newline)",
+  "odd_backtick_non_fence_lines": 0
+ },
+ "packet_measured_after_review1": {
+  "note": "computed LAST over the committed packet bytes after the review-1 repairs, re-tensing and the F2 anchor refinement; the packet's Gate 6 and self_referential_figures state the same numbers",
+  "path": "docs/design/POLARIS-M16-RENDERER-VISUAL-SYSTEM-FUNNEL.md",
+  "bytes": 44735,
+  "sha256": "6925ea93083f2e757f641fae537a244c1fa80baa6219c816a0b301393a31a13e",
+  "total_lines": 503,
+  "over_78": 0,
+  "over_78_predicate": "lines outside fenced code blocks whose first non-space char is not `|`, `>` or `#`, longer than 78 columns; denominator every line of the file (split on newline)",
+  "non_fence_lines": 467,
+  "odd_backtick_non_fence_lines": 0
+ }
+}
