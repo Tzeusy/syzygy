@@ -1,0 +1,992 @@
+{
+  "generated": "2026-09-14",
+  "purpose": "Evidence computed this session for the M3 honest-encoding funnel packet (bead syzygy-dov.3). Planning only; nothing here authorizes implementation.",
+  "syzygy_commit": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
+  "worktree_branch": "agent/syzygy-dov.3",
+  "capture": {
+    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-tailnet.html",
+    "bytes": 1484487,
+    "sha256": "e8a04b4631dedbda159dd162d25f4e8a7ed4f9f4059a37ca1bca87b717790111",
+    "decoded_characters": 1481819,
+    "sha256_verified_this_session": true,
+    "recorded_in": "docs/evidence/polaris-m2-evidence-currency-funnel-2026-09-14.json (identical bytes and digest)",
+    "provenance": "retained lane A 'after' capture, tailnet host form, Butlers evaluation revision 2e3bac97790b (committed 2026-09-13T10:31:11Z), captured 2026-09-13T13:33:24.295Z"
+  },
+  "tuple_population": {
+    "method_1_regex_span_open": 713,
+    "method_2_literal_split": 713,
+    "method_3_class_literal": 713,
+    "methods_agree": true,
+    "distinct_claim_ids": 703,
+    "claim_ids_rendered_more_than_once": 10,
+    "note": "713 rendered tuples over 703 distinct claim ids; parity is per tuple, never per id"
+  },
+  "epistemic_states_rendered": {
+    "label": {
+      "Observed": 702,
+      "Unknown": 11
+    },
+    "tier": {
+      "report-fact": 702,
+      "unstated": 11
+    },
+    "freshness": {
+      "fresh": 713
+    },
+    "challenge": {
+      "unchallenged": 713
+    },
+    "tuple_shapes": {
+      "Observed | report-fact | fresh | unchallenged": 702,
+      "Unknown | unstated | fresh | unchallenged": 11
+    },
+    "attribute_method_cross_check": {
+      "data-epistemic-label": {
+        "Observed": 702,
+        "Unknown": 11
+      },
+      "data-epistemic-tier": {
+        "report-fact": 702,
+        "unstated": 11
+      }
+    }
+  },
+  "visual_treatments": {
+    "css_style_blocks": 1,
+    "css_rules_whose_selector_names_claim_tuple": [
+      {
+        "selector": ".claim-tuple",
+        "declarations": "font-family: var(--font-mono); font-size: .78rem; color: var(--muted); letter-spacing: .04em;"
+      },
+      {
+        "selector": ".claim-tuple",
+        "declarations": "letter-spacing: 0; font-size: .72rem;"
+      }
+    ],
+    "distinct_colour_treatments_over_713_tuples": 1,
+    "selector_probe_counts": {
+      "claim-tuple[": 0,
+      "[data-epistemic-label": 0,
+      "[data-epistemic-tier": 0,
+      "[data-epistemic-freshness": 0,
+      "[data-challenge-state": 0
+    },
+    "method": "every CSS rule in the one served <style> block parsed by a non-nesting selector{declarations} regex; the probe counts are literal substring counts over the same block"
+  },
+  "declared_encoding_use": {
+    "declared_table": "apps/three-surface-poc/src/design-tokens.ts lines 16-29 (EPISTEMIC_ENCODING: Observed/epistemic-observed/'\\u25cf', Unknown/epistemic-unknown/'?')",
+    "polaris_declared_badge_spans_total": 2,
+    "polaris_declared_badge_spans_in_legend": 2,
+    "polaris_declared_badge_spans_in_body": 0,
+    "legend_offset_chars": 1481009,
+    "legend_depth_percent": 99.95
+  },
+  "cross_surface_population": {
+    "pages": {
+      "home": {
+        "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/capture/home.html",
+        "bytes": 38706,
+        "sha256": "c2fd6d1af7103e871c26dc65b76cc391fe2765a1c7391ac19ddf1656e57b5fca",
+        "declared_badges_total": 37,
+        "declared_badges_in_legend": 2,
+        "declared_badges_in_body": 35,
+        "claim_tuple_spans": 0,
+        "unknown_disclosure_blocks": 0,
+        "body_epistemic_encodings": 35,
+        "body_encodings_carrying_a_declared_class": 35
+      },
+      "trajectory": {
+        "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/capture/trajectory.html",
+        "bytes": 244524,
+        "sha256": "fd802531b199084e7145932715150f4977335e49ca6aa168d68d5227c9d6ddde",
+        "declared_badges_total": 301,
+        "declared_badges_in_legend": 2,
+        "declared_badges_in_body": 299,
+        "claim_tuple_spans": 0,
+        "unknown_disclosure_blocks": 0,
+        "body_epistemic_encodings": 299,
+        "body_encodings_carrying_a_declared_class": 299
+      },
+      "orrery": {
+        "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/capture/orrery.html",
+        "bytes": 37048,
+        "sha256": "e3ae5b7901c599a04b685456e6070430edf72fcd025cd1f6afecf863153582fa",
+        "declared_badges_total": 20,
+        "declared_badges_in_legend": 2,
+        "declared_badges_in_body": 18,
+        "claim_tuple_spans": 0,
+        "unknown_disclosure_blocks": 0,
+        "body_epistemic_encodings": 18,
+        "body_encodings_carrying_a_declared_class": 18
+      },
+      "polaris": {
+        "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-tailnet.html",
+        "bytes": 1484487,
+        "sha256": "e8a04b4631dedbda159dd162d25f4e8a7ed4f9f4059a37ca1bca87b717790111",
+        "declared_badges_total": 2,
+        "declared_badges_in_legend": 2,
+        "declared_badges_in_body": 0,
+        "claim_tuple_spans": 713,
+        "unknown_disclosure_blocks": 22,
+        "body_epistemic_encodings": 735,
+        "body_encodings_carrying_a_declared_class": 0,
+        "body_encodings_with_no_declared_class_and_no_distinguishing_treatment": 713,
+        "body_encodings_carrying_the_declared_unknown_token_under_an_undeclared_class": 22,
+        "split_note": "review 1 finding F5: of the 735, the 713 claim tuples carry no declared class and no distinguishing treatment (one colour, var(--muted), over Observed and Unknown alike); the 22 unknown-disclosure blocks carry the declared Unknown token under an undeclared, unlegended class - ad hoc styling in POC-REQ-060 falsifier sense, but not invisible"
+      }
+    },
+    "body_epistemic_encodings_total": 1087, "three_surface_total_per_poc_req_060": 1052, "three_surface_pages": ["polaris", "trajectory", "orrery"], "polaris_share_of_three_surface_total_pct": 69.87, "polaris_share_of_four_page_total_pct": 67.62, "why_four_pages": "the sweep adds home deliberately: home imports the design-token set slices 5 and 6 change, so a token regression there is in scope although POC-REQ-060's Case counts only the three surfaces (added after review 4, finding J4)",
+    "body_encodings_carrying_a_declared_class_total": 352,
+    "predicate": "a body epistemic encoding is one of: a <span class='epistemic epistemic-*'> badge outside the page legend; a <span class='claim-tuple'> span; a class='unknown-disclosure' element",
+    "caveat": "home, trajectory and orrery are the 2026-09-13 fresh captures at Syzygy f4589e2 / Butlers 7c8743f63, i.e. pre-lane-A; git diff f4589e2..a9f671e over apps/ and packages/ changes no home, trajectory, orrery, page-shell or design-tokens source, so the renderer for those three surfaces is unchanged at a9f671e; their model data is one Butlers revision older",
+    "dossier_figure_for_comparison": "L6-F3 reported 1,085 body encodings (home 35, polaris 721, trajectory 310, orrery 19) over the pre-lane-A 7478 captures; this session's 1,087 is a different capture population, not a correction"
+  },
+  "checker_denominator": {
+    "file": "apps/three-surface-poc/src/surface-routes.test.ts",
+    "lines": "64-101",
+    "denominator_expression": "pages.length",
+    "denominator_value": 4,
+    "population_per_POC-REQ-060_case": "every epistemic encoding on all three surfaces",
+    "measured_population_this_session": 1087,
+    "predicate_the_checker_uses": "String.includes of 'class=\"epistemic epistemic-observed\"' / '...unknown\"', which the page legend alone satisfies",
+    "second_checker": "apps/three-surface-poc/src/cross-cutting.test.ts lines 47-64: it iterates pages AND the declared table's two entries, asserting both badge spans and both descriptions per page, and asserts every rendered epistemic-* class name it finds is in the table. Its denominator is pages(model) and it enumerates the DECLARED TABLE, never the rendered encoding population - the only rendered markup it looks at is what <span class=\"epistemic (epistemic-\\w+)\"> matches, which is the legend's own (review 1 finding F11)"
+  },
+  "first_reading": {
+    "predicate": "document start to the first occurrence of data-polaris-group=\"catalog\" (the four opening groups: overview, boundaries, v1, architecture)",
+    "boundary_offset_chars": 281986,
+    "boundary_depth_percent": 19.03,
+    "tuples_in_region": 126,
+    "tuple_labels_in_region": {
+      "Observed": 126
+    },
+    "unknown_disclosure_blocks_in_region": 0,
+    "rendered_unknown_states_in_region": 0,
+    "word_Unknown_in_region_visible_text": 14,
+    "word_Unknown_occurrences_are": "navigation label, glossary definitions, the sentence 'No member claim carries an Unknown reason.' and '0 Unknown' coverage counts - no rendered Unknown state",
+    "sentence_no_member_unknown_occurrences_page": 8,
+    "first_rendered_unknown_of_any_kind": {
+      "kind": "unknown-disclosure",
+      "offset_chars": 378599, "offset_anchor": "character index of the element's opening <; the earlier value 378604 was the index of its class attribute (one convention adopted after review 6, L6)",
+      "depth_percent": 25.55
+    },
+    "first_unknown_tuple": {
+      "claim_id": "claim:class:roster-identity",
+      "offset_chars": 380767, "offset_anchor": "character index of the element's opening < (its class attribute begins at 380773)",
+      "depth_percent": 25.7
+    },
+    "whole_shape_unknown_tuple_depth_percent": 57.72,
+    "unknown_tuple_offsets_percent": [
+      25.7,
+      57.72,
+      61.03,
+      95.75,
+      96.25,
+      96.74,
+      97.0,
+      97.49,
+      97.88,
+      98.26,
+      98.75
+    ],
+    "unknown_disclosure_offsets_percent": [
+      25.55,
+      56.44,
+      56.51,
+      57.01,
+      57.05,
+      57.1,
+      57.14,
+      57.42,
+      57.45,
+      57.47,
+      57.49,
+      57.51,
+      57.58,
+      60.97,
+      95.7,
+      96.2,
+      96.69,
+      96.95,
+      97.44,
+      97.82,
+      98.2,
+      98.7
+    ]
+  },
+  "item_and_source_rows": {
+    "data_polaris_item_attribute_occurrences": 409,
+    "data_polaris_item_substring_occurrences": 417,
+    "data_polaris_items_attribute_occurrences": 8,
+    "item_rows_by_id_matched_to_a_tuple": 409,
+    "item_row_tuple_labels": {
+      "Observed": 409
+    },
+    "source_rows": 278,
+    "source_row_tuple_labels": {
+      "Observed": 269,
+      "Unknown": 9
+    },
+    "method": "rows matched to tuples by claim id, never by enclosing-element regex: one item row contains a nested </li> from its markdown prose and defeats a non-greedy row matcher (verified this session)",
+    "unknown_claim_ids": [
+      "claim:class:roster-identity",
+      "claim:project-shape",
+      "claim:source:about/lay-and-land/frontend.md",
+      "claim:source:roster/chronicler/butler.toml",
+      "claim:source:roster/education/butler.toml",
+      "claim:source:roster/general/butler.toml",
+      "claim:source:roster/health/butler.toml",
+      "claim:source:roster/lifestyle/butler.toml",
+      "claim:source:roster/qa/MANIFESTO.md",
+      "claim:source:roster/relationship/butler.toml",
+      "claim:source:roster/travel/butler.toml"
+    ]
+  },
+  "vocabulary_versus_rendered": {
+    "closed_tier_vocabulary": [
+      "gate-backed",
+      "report-fact",
+      "asserted-by-worker",
+      "reduced-fidelity",
+      "declared-only",
+      "suspended"
+    ],
+    "closed_tier_vocabulary_source": "packages/cap1-core/src/epistemic.ts lines 23-30 (RENDERING_TIERS, six values); RFC2-25 'Six tiers, closed'",
+    "tier_values_rendered": [
+      "report-fact",
+      "unstated"
+    ],
+    "unstated_is_in_closed_tier_vocabulary": false,
+    "unstated_rendered_count": 11,
+    "unstated_origin": "apps/three-surface-poc/src/polaris.ts lines 306-307: the renderer mints \"unstated\" into TWO closed-vocabulary fields - line 306 claim.epistemic.tier ?? 'unstated' and line 307 claim.epistemic.freshness ?? 'unstated' (review 1 finding F4)",
+    "closed_freshness_vocabulary": [
+      "fresh",
+      "stale",
+      "broken",
+      "superseded"
+    ],
+    "closed_freshness_vocabulary_source": "packages/cap1-core/src/staleness.ts line 18 (FRESHNESS_STATES) - the implementation echo of RFC2-10, not the authority (review 1 finding F9)",
+    "freshness_values_rendered": [
+      "fresh"
+    ],
+    "challenge_values_rendered": [
+      "unchallenged"
+    ],
+    "glossary_state_sentences": 15,
+    "glossary_state_sentences_source": "apps/three-surface-poc/src/polaris-copy.ts lines 34-51 (3 label, 7 tier incl. unstated, 4 freshness, 1 challenge)",
+    "glossary_sentences_whose_value_no_tuple_carries": 9,
+    "glossary_sentences_with_a_visual_encoding": 0,
+    "textual_completeness_sweep": "apps/three-surface-poc/src/polaris-first-reading.test.ts lines 96-99 checks every used tier/freshness/challenge/label value has a '<term> \\u2014' sentence; there is no visual counterpart",
+    "closed_freshness_vocabulary_authority": "RFC2-10, .syzygy/governance/contracts/rfcs/RFC-0002/snapshot-and-evaluation-core.md lines 209-223, quoted from \"Four values, closed.\" to the clause's end: \"Four values, closed. The list changes only by amendment to this RFC; no implementation may mint, spell, or force-fit a freshness value it does not carry. The closure is required for the same reason RFC2-24's is: a machine answer carries the freshness state verbatim (RFC6-14), aggregates count per freshness value (RFC6-17), and a disagreement between two renderings over one declared scope is release-blocking (RFC6-22/23) - a value existing in no vocabulary can be neither carried verbatim nor checked for parity, and leaving it unstated is how the value gets chosen by whoever implements the render first. A condition genuinely outside the four is disclosed as a fact of the render, never dressed as a freshness state. Freshness is orthogonal to the three labels and the tier registry; it never substitutes for either.\" (extended after review 4, finding J1: until then this field stopped at line 214 with no elision marker, while the review-3 disposition said it had been extended)",
+    "unstated_rendered_count_tier": 11,
+    "unstated_rendered_count_freshness": 0,
+    "freshness_mint_hazard": "the freshness twin fires 0 times on this capture because all 713 tuples carry \"fresh\"; assessCurrency no-bound-declared arm (packages/cap1-core/src/staleness.ts lines 98-104) returns no freshness field, so wiring it - M2 slice 5 - makes line 307 mint a fifth freshness value on every class with no declared bound. RFC2-10 forbids the mint in terms at lines 212-214 (\"no implementation may mint, spell, or force-fit a freshness value it does not carry\"; an earlier text of this field pointed at line 219, which carries the parity rationale and not the prohibition - corrected after review 5, K3) and, at lines 220-222, supplies the remedy the packet first said it lacked: a condition genuinely outside the four freshness states is disclosed as a fact of the render, never dressed as a freshness state, and lines 222-223 add (the single line 223 named here until review 6, L5) that freshness never substitutes for the labels or the tier registry. So arm (b) of Q2 has three lawful readings for the freshness field, stated here in the packet's own words, which the P-70 row paraphrases clause for clause (an earlier text of this field said \"the packet's and register's own words\" - corrected after review 5, K6): (b-i) the renderer supplies one of the closed four (M2's Q7, recommending stale with the reason kept distinct); (b-ii) the claim is held Unknown and the tuple is not rendered as though it had a freshness state; or (b-iii) the condition is disclosed as a fact of the render, in a carrier that is not data-epistemic-freshness and is not dressed as a freshness state - the packet's recommendation - and none of them mints a fifth value. An earlier text of this sentence, written in the review-3 repair, enumerated \"(b-i) render only the four declared states and no absence, (b-ii) disclose the no-bound-declared condition as a fact of the render beside the tuple, (b-iii) the disclosure route with the absence named in the legend\" - three arms that matched neither the packet nor the register; withdrawn after review 4 (finding J3) and kept here marked. An earlier text of this field read \"supplies no absence marker, so arm (b) of Q2 is not available for freshness\"; that wording was withdrawn after review 2 (finding G1) at the packet's four sites and the register, missed here, and corrected after review 3 (finding H1)",
+    "sibling_surface_states_rendered": {
+      "rfc2_25_closed_three": [
+        "dismissed-by-decision",
+        "unadopted-draft",
+        "editorial-draft"
+      ],
+      "rfc2_25_location": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md line 169",
+      "occurrences_on_capture": {
+        "dismissed-by-decision": 0,
+        "unadopted-draft": 0,
+        "editorial-draft": 0,
+        "challenge-pending": 0
+      },
+      "denominator": "the whole 1,481,819-character capture, literal str.count",
+      "note": "the page renders no sibling surface state; the proposal treatment is not one of them. Review 1 finding F3: slice 6 is reframed as a render-disclosure family and adds no member to any closed vocabulary"
+    }
+  },
+  "token_reuse": {
+    "rules_using_var_unknown": [
+      {
+        "selector": ".epistemic-unknown",
+        "declarations": "color: var(--unknown); background: #3d2f1322;"
+      },
+      {
+        "selector": ".unavailable-notice",
+        "declarations": "color: var(--unknown); border: 1px dashed var(--unknown); padding: .75rem 1rem;"
+      },
+      {
+        "selector": ".unknown-disclosure",
+        "declarations": "color: var(--unknown); border-left: 3px solid var(--unknown); padding-left: .9rem;"
+      },
+      {
+        "selector": ".proposal",
+        "declarations": "border-left: 4px solid var(--unknown); padding-left: 1rem;"
+      },
+      {
+        "selector": ".proposal-label",
+        "declarations": "font-family: var(--font-mono); font-size: .85rem; letter-spacing: .04em; text-transform: uppercase; color: var(--unknown);"
+      }
+    ],
+    "rules_using_var_cyan_count": 17,
+    "rules_using_var_cyan_that_are_the_declared_observed_encoding": 1,
+    "amber_and_focus_are_the_same_value": true,
+    "proposal_label_rendered_count": 1,
+    "proposal_label_offset_chars": 834152, "proposal_label_offset_anchor": "character index of the element's opening <; the earlier value 834155 was the index of its class attribute, the anchor the two first_reading fields left after review 6 (brought to the L6 convention after review 7, M1; the depth percentage is 56.29 under either anchor)",
+    "proposal_label_depth_percent": 56.29,
+    "proposal_label_text": "Proposed change \\u2014 not current authority.",
+    "proposal_container_class_rendered_count": 0,
+    "unavailable_notice_rendered_count": 0,
+    "colour_pairs": {
+      "cyan|amber": {
+        "contrast_ratio": 1.148,
+        "deltaE76": 71.97
+      },
+      "cyan|unknown": {
+        "contrast_ratio": 1.035,
+        "deltaE76": 64.85
+      },
+      "cyan|muted": {
+        "contrast_ratio": 1.71,
+        "deltaE76": 32.0
+      },
+      "cyan|ink": {
+        "contrast_ratio": 1.256,
+        "deltaE76": 31.78
+      },
+      "amber|unknown": {
+        "contrast_ratio": 1.109,
+        "deltaE76": 7.85
+      },
+      "amber|muted": {
+        "contrast_ratio": 1.489,
+        "deltaE76": 61.74
+      },
+      "amber|ink": {
+        "contrast_ratio": 1.443,
+        "deltaE76": 57.82
+      },
+      "unknown|muted": {
+        "contrast_ratio": 1.651,
+        "deltaE76": 56.47
+      },
+      "unknown|ink": {
+        "contrast_ratio": 1.301,
+        "deltaE76": 51.0
+      },
+      "muted|ink": {
+        "contrast_ratio": 2.148,
+        "deltaE76": 26.74
+      }
+    },
+    "colour_method": "WCAG 2.x relative-luminance contrast ratio and CIE76 deltaE over CIE Lab (D65, sRGB), both computed this session from the token hex values at apps/three-surface-poc/src/design-tokens.ts lines 46-55 (review 1 finding F13: the earlier 'lines 51-55' excluded --ink at 46 and --muted at 47, which are in the measured pairs, and included --line at 51, which is not a foreground token)",
+    "declared_colour_token_set": {
+      "source": "apps/three-surface-poc/src/design-tokens.ts DESIGN_TOKENS_CSS, lines 46-55",
+      "tokens": {
+        "--ink": "#dfe9e7",
+        "--muted": "#8ca3a4",
+        "--void": "#071012",
+        "--panel": "#0c181b",
+        "--panel-raised": "#102126",
+        "--line": "#294248",
+        "--cyan": "#78e1d1",
+        "--amber": "#f1b85b",
+        "--unknown": "#f3c56f",
+        "--focus": "#f1b85b"
+      },
+      "declared_colour_tokens": 10,
+      "distinct_colour_values": 9,
+      "note": "--focus duplicates --amber exactly; counting --focus as a named token in its own right the smallest deltaE76 in the declared set is 0.00",
+      "foreground_tokens": [
+        "--amber",
+        "--cyan",
+        "--ink",
+        "--muted",
+        "--unknown"
+      ],
+      "ground_tokens": [
+        "--line",
+        "--panel",
+        "--panel-raised",
+        "--void"
+      ],
+      "ground_exclusion_reason": "ground tokens are deliberately adjacent - near-identity is their purpose - so a perceptual floor over them would forbid the page own surfaces; the slice 6 bar is over foreground tokens only"
+    },
+    "deltaE76_all_distinct_pairs": {
+      "denominator": 36,
+      "pairs": {
+        "--panel|--void": 3.98,
+        "--panel|--panel-raised": 4.82,
+        "--amber|--unknown": 7.85,
+        "--panel-raised|--void": 8.78,
+        "--line|--panel-raised": 14.96,
+        "--line|--panel": 19.56,
+        "--line|--void": 23.27,
+        "--ink|--muted": 26.74,
+        "--cyan|--ink": 31.78,
+        "--cyan|--muted": 32.0,
+        "--line|--muted": 39.21,
+        "--ink|--unknown": 50.99,
+        "--muted|--panel-raised": 53.89,
+        "--muted|--unknown": 56.47,
+        "--amber|--ink": 57.82,
+        "--muted|--panel": 58.13,
+        "--muted|--void": 61.43,
+        "--amber|--muted": 61.73,
+        "--cyan|--line": 62.97,
+        "--cyan|--unknown": 64.85,
+        "--ink|--line": 65.75,
+        "--amber|--cyan": 71.97,
+        "--cyan|--panel-raised": 77.35,
+        "--line|--unknown": 79.89,
+        "--ink|--panel-raised": 80.23,
+        "--cyan|--panel": 81.74,
+        "--amber|--line": 82.23,
+        "--ink|--panel": 84.32,
+        "--cyan|--void": 85.26,
+        "--ink|--void": 87.45,
+        "--panel-raised|--unknown": 89.75,
+        "--amber|--panel-raised": 91.07,
+        "--panel|--unknown": 91.86,
+        "--amber|--panel": 92.81,
+        "--unknown|--void": 93.32,
+        "--amber|--void": 93.96
+      }
+    },
+    "deltaE76_foreground_pairs": {
+      "denominator": 10,
+      "pairs": {
+        "--amber|--unknown": 7.85,
+        "--ink|--muted": 26.74,
+        "--cyan|--ink": 31.78,
+        "--cyan|--muted": 32.0,
+        "--ink|--unknown": 50.99,
+        "--muted|--unknown": 56.47,
+        "--amber|--ink": 57.82,
+        "--amber|--muted": 61.73,
+        "--cyan|--unknown": 64.85,
+        "--amber|--cyan": 71.97
+      }
+    },
+    "deltaE76_ground_pairs": {
+      "denominator": 6,
+      "pairs": {
+        "--panel|--void": 3.98,
+        "--panel|--panel-raised": 4.82,
+        "--panel-raised|--void": 8.78,
+        "--line|--panel-raised": 14.96,
+        "--line|--panel": 19.56,
+        "--line|--void": 23.27
+      }
+    },
+    "smallest_deltaE76_over_the_five_foreground_tokens": {
+      "pair": "--amber|--unknown",
+      "value": 7.85,
+      "predicate": "smallest of the 10 pairs over {--cyan, --amber, --unknown, --muted, --ink}; ground tokens excluded and the exclusion stated"
+    },
+    "next_smallest_deltaE76_over_the_five_foreground_tokens": {
+      "pair": "--muted|--ink",
+      "value": 26.74,
+      "predicate": "second smallest of the same 10 pairs; this is the slice 6 floor and it holds over this population only"
+    },
+    "smallest_deltaE76_over_the_nine_distinct_declared_colours": {
+      "pair": "--panel|--void",
+      "value": 3.98,
+      "pairs_below_26_74": 7,
+      "pairs_below_26_74_enumerated": [
+        "--panel|--void = 3.98",
+        "--panel|--panel-raised = 4.82",
+        "--amber|--unknown = 7.85",
+        "--panel-raised|--void = 8.78",
+        "--line|--panel-raised = 14.96",
+        "--line|--panel = 19.56",
+        "--line|--void = 23.27"
+      ],
+      "predicate": "all 36 pairs over the 9 distinct declared colour values",
+      "correction": "review 1 finding F2 was right that the earlier \"smallest between any two named tokens: 7.85\" and \"every other pair >= 26.7\" were false universals with no stated predicate; 7.85 is the THIRD smallest over the declared set. Review 1 own enumeration listed six sub-threshold pairs and said \"five pairs sit below 26.74\"; it omitted --line|--void at 23.27. Re-derived here over all 36 pairs the count is 7.",
+      "floor_precision_note": "review 2 finding G7: '26.74' is the --ink|--muted pair rounded to two decimals; computed to more precision it is 26.7371, so 'below 26.74' is 0.0029 off the pair's own value. The predicate is the pair itself, not the rounded literal; the count of 7 pairs strictly below it is unaffected, and the slice-6 bar (>= 26.7) is unaffected since 26.7371 >= 26.7."
+    },
+    "rules_using_var_unknown_rendered_counts": {
+      "predicate": "literal str.count of the class attribute over the 1,481,819-character capture",
+      "class=\"epistemic epistemic-unknown\"": 2,
+      "class=\"unavailable-notice\"": 0,
+      "class=\"unknown-disclosure\"": 22,
+      "class=\"proposal\"": 0,
+      "class=\"proposal-label\"": 1,
+      "note": "five rules, four declared meanings, two of which render zero times; the live reuse beside the 2 legend badges is 22 disclosure blocks and 1 proposal label (review 1 finding F10)"
+    }
+  },
+  "byte_arithmetic": {
+    "page_tailnet_bytes": 1484487,
+    "m1_ruled_working_target_bytes": 1400000,
+    "bytes_over_target": 84487,
+    "response_ceiling_bytes": 2097152,
+    "bytes_under_ceiling": 612665,
+    "butlers_p60_p61_reservation_bytes": "418000-443000",
+    "slice1_design_a_attribute_and_symbol_cost_bytes": 16366,
+    "slice1_design_a_method": "702 x len(' epistemic-observed') + 11 x len(' epistemic-unknown') + 702 x len('\\u25cf ' utf-8) + 11 x len('? ')",
+    "slice1_design_b_cost_bytes_order": "~300 (two CSS attribute-selector rules plus two ::before rules; no per-tuple bytes)",
+    "lane_b_estimated_saving_bytes_tailnet": 188902
+  },
+  "lane_b_collision": {
+    "branch": "origin/agent/syzygy-dov.17",
+    "head": "4090f98",
+    "estimate_record": "docs/evidence/pwb-laneb-strict-scope-estimate-2026-09-14.json on that branch",
+    "container_mode_hoistedPerField": {
+      "data-epistemic-label": 409,
+      "data-epistemic-tier": 409,
+      "data-epistemic-primary-reason": 409,
+      "data-epistemic-secondary-reasons": 713,
+      "data-epistemic-freshness": 713,
+      "data-challenge-state": 713,
+      "data-evaluation-id": 713
+    },
+    "consequence": "409 of 713 tuples would carry no data-epistemic-label attribute of their own, so any CSS or sweep keyed on that attribute at the tuple silently drops to a denominator of 304",
+    "package_absent_from_main": true,
+    "package_file_count_on_branch": 9
+  },
+  "m2_collision": {
+    "branch": "origin/agent/syzygy-dov.2",
+    "head": "f2f37dd", "head_re_derived_after_review_3_at_f2f37dd": true, "head_re_confirmed_after_review_6": "f2f37dd, read read-only 2026-09-15",
+    "head_note": "head field was set to da1497b at the review-2 repair pass (G4) and moved to f2f37dd after review 3 (H4) in the packet but not here until review 6 (L2); da1497b is 'M2 funnel review 5 retained and K1-K9 repaired', 2026-09-14 - reviews 4 and 5 landed since review 2 read M2 at 1befd6f, repairing findings J1-J8 and K1-K9",
+    "shared_files": [
+      "apps/three-surface-poc/src/polaris-copy.ts (freshness sentences, lines 46-49)",
+      "apps/three-surface-poc/src/polaris.ts claimStatesBlock (lines 346-361; the freshness group is line 357)"
+    ],
+    "m2_slice_1": "marks the three unreachable freshness sentences in place with a copy-oracle, carrying the reason it is unreachable and, where one exists, the route (M2's superseded marker has a reason and no route, by design; M2's J4 repair weakened both the requirement and the register description to this wording - review 2, G4)",
+    "m3_slice_5": "generates the same glossary from encoding tables",
+    "register_rows": {
+      "main_last_note": "P-67",
+      "P-68": "origin/agent/syzygy-dov.17 only",
+      "P-69": "origin/agent/syzygy-dov.2 only",
+      "this_packet_would_queue_as": "P-70"
+    },
+    "head_at_packet_first_draft": "ec30494",
+    "head_at_review_1": "e0ecdc8",
+    "head_at_review_2": "68123fc",
+    "head_re_derived_after_review_2_at_1befd6f": true,
+    "slice_count": 6,
+    "m2_slice_6": "A lapsed reviewed selection announces itself: apps/three-surface-poc/src/polaris-reading.ts line 44 and apps/three-surface-poc/src/polaris.ts lines 506-510 - neither touched by any M3 slice",
+    "shared_surface_unchanged_at_f2f37dd": true, "shared_surface_unchanged_at_da1497b_superseded_key": true,
+    "structural_collision_confirmed_by": "M2's own Gate 3 row and Q5 text, read read-only at da1497b on 2026-09-14 (review-2 repair pass) and re-read at f2f37dd after review 3 (H4) the same day; head confirmed still f2f37dd on 2026-09-15 after review 6 (L2)",
+    "m3_slice_5_line_range_correction": "review 1 finding F8: claimStatesBlock spans 346-361, not 346-353; the freshness group - the exact overlap - is line 357",
+    "cross_packet_note_review_2_G1": "M2's Q3, Q5 and Q7 rest on the same RFC2-10 sentence this packet's Q2 relies on ('a condition genuinely outside the four is disclosed as a fact of the render, never dressed as a freshness state'); M2's own Q7 already questions its stale recommendation against that sentence. P-69 and P-70 must be ruled together"
+  },
+  "governance_check": {
+    "command": "python3 scripts/check_governance.py",
+    "baseline_last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) - counts derived, not asserted"
+  },
+  "sweep_methods": {
+    "rule_1": "every load-bearing sweep in this record is Python re or a literal str.count, never shell grep",
+    "rule_2": "no zero/all/100% claim without the exact sweep this session; each count above was taken by at least two predicates where the packet states two",
+    "rule_4": "each count is reported with the denominator it was taken over",
+    "rule_9": "absence claims (zero attribute-keyed CSS selectors; zero declared badges in the Polaris body; zero rendered Unknown in the first reading) each name their population above"
+  },
+  "warrants_blocks": {
+    "file": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+    "POC-REQ-060": {
+      "heading_line": 927,
+      "warrants_block_lines": "955-964",
+      "contracts": [
+        "RFC6-18",
+        "RFC6-22",
+        "RFC8-31"
+      ],
+      "rfc_0009_clauses": []
+    },
+    "POC-REQ-061": {
+      "heading_line": 966,
+      "warrants_block_lines": "999-1008",
+      "contracts": [
+        "RFC7-34",
+        "RFC8-31",
+        "RFC9-48"
+      ],
+      "rfc_0009_clauses": [
+        "RFC9-48"
+      ]
+    },
+    "block_at_line_920": {
+      "contracts": [
+        "RFC1-26",
+        "RFC6-20",
+        "RFC9-3",
+        "RFC9-46",
+        "RFC9-48"
+      ],
+      "belongs_to": "the preceding (Orrery) requirement, whose scenario ends at line 914"
+    },
+    "correction": "review 1 finding F1: the packet first draft claimed POC-REQ-060 and POC-REQ-061 name RFC9-3, RFC9-46 and RFC9-48 among their own warrants. False. POC-REQ-060 names no RFC 0009 clause; POC-REQ-061 names RFC9-48 only"
+  },
+  "review1": {
+    "raw": {
+      "path": "docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-RAW.md",
+      "bytes": 31503,
+      "sha256": "1eca5fbac6fe95266ac4968f5b55ebf89e6e63544441383c545fb89b9140bc1f",
+      "method": "wc -c and sha256sum, computed this session"
+    },
+    "reviewed_subject_as_the_raw_records_it": {
+      "packet": {
+        "path": "docs/design/POLARIS-M3-HONEST-ENCODING-FUNNEL.md",
+        "bytes": 71765,
+        "sha256": "a5e4cc4f6aaf40031131dda2c8366e931f5bea7a8a2b9a45e2ec5da41d2a6383"
+      },
+      "evidence": {
+        "path": "docs/evidence/polaris-m3-honest-encoding-funnel-2026-09-14.json",
+        "bytes": 16677,
+        "sha256": "886cf48ef0e11c7ed72033b8334b1f61fd8db71cd3af5c5a3e97e2aeff9fb7ea"
+      },
+      "commit": "a9f671e",
+      "files_untracked": true
+    },
+    "verdict_word_copied_exactly": "REVISE",
+    "findings": {
+      "blocking": [
+        "F1",
+        "F2",
+        "F3",
+        "F4"
+      ],
+      "non_blocking": [
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9",
+        "F10"
+      ],
+      "editorial": [
+        "F11",
+        "F12",
+        "F13",
+        "F14"
+      ]
+    },
+    "dispositions": {
+      "F1": "accepted and repaired - both warrants blocks quoted verbatim at 955-964 and 999-1008; the false claim withdrawn",
+      "F2": "accepted, repaired and extended - population named (10 declared colour tokens, 9 distinct, 36 pairs), full matrix recomputed and recorded, 7 pairs below 26.74 not 5 (review 1 omitted --line|--void at 23.27), bar restated over the 5 foreground tokens; both JSON fields replaced with predicated ones",
+      "F3": "accepted and repaired - sibling-state framing dropped, RFC2-25 three-member list quoted at line 169, family renamed render disclosures, invented quotation withdrawn, contradiction returned to the tier table and slice 4; Q6 reframed so no arm mints anything",
+      "F4": "accepted and repaired - RFC2-10 quoted at line 209, lines 306-307 shown together, Q2 scope extended to freshness with arm (b) ruled unavailable there [superseded 2026-09-15: that freshness wording was withdrawn after review 2 (G1) - RFC2-10 supplies a disclosure remedy at 220-222 and arm (b) is not called unlawful for freshness; Q2 states three arms; this entry stood unmarked until review 6, L1], slice 5 closure moved to served output, mutant (e) added, S9 extended, M2 slice-5 interaction named in the collision section",
+      "F5": "accepted and repaired - 713/22 split stated in Q1, the Motif, the cross-surface table, the funnel summary and the Q1-other-way paragraph",
+      "F6": "accepted and repaired - walkthrough-preflight.ts added to the Gate 3 row, its claimStrength requirements stated in slice 5, added to Gate 6 item 6, mutant (f) added",
+      "F7": "accepted and repaired, re-derived past the review - M2 head was 68123fc at review 2 [superseded: 1befd6f after review 2, da1497b at the review-2 repair pass, f2f37dd after review 3 (H4), confirmed unchanged after review 6 (L2)] with six slices; slice 6 two files named and shown untouched by M3; shared surface unchanged",
+      "F8": "accepted and repaired - 346-361 with line 357 named, in all three places",
+      "F9": "accepted and repaired - RFC2-10 is the authority; staleness.ts line 18 kept as the implementation echo",
+      "F10": "accepted and repaired - unavailable-notice 0 and proposal 0 disclosed; live reuse stated as 22 blocks and 1 label",
+      "F11": "accepted and repaired - restated in the review own terms",
+      "F12": "accepted and repaired - added bold removed from all five quotes of bound text",
+      "F13": "accepted and repaired - lines 46-55",
+      "F14": "accepted and repaired - lines 34-51 in the slice and the Gate 3 row"
+    },
+    "recommended_answers_changed": {
+      "Q2": "was \"Arm (b).\"; now \"Arm (b) for the tier field; arm (b) is not lawfully available for the freshness field, and the owner should see why\" - the tier ruling unchanged, the freshness half new (F4). That freshness wording was itself withdrawn after review 2 (finding G1): the recommendation now reads (b-iii) with (b-i) and (b-ii) named as live, lawful arms - see review2 and review3 below (marker appended after review 3, finding H2; the superseded text above is kept, not deleted)",
+      "Q6": "was \"Yes, with a --proposed token at a stated perceptual distance\"; now \"Yes - a --proposed token, declared as a render-disclosure encoding, at a stated perceptual distance\" - same answer, framing no longer routes an implementer into a closed vocabulary (F3), bar now names its population (F2)"
+    },
+    "recommended_answers_unchanged": [
+      "Q1",
+      "Q3",
+      "Q4",
+      "Q5",
+      "Q7"
+    ],
+    "coverage": "every repair post-dates the review, so by verification rule 10 the review binds the 71,765-byte packet and 16,677-byte evidence record whose digests it names, not the current bytes; the current bytes are uncovered until a second independent fresh-context review, retained as a second -RAW.md file, confirms them"
+  },
+  "review2": {
+    "raw": {
+      "path": "docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-2-RAW.md",
+      "bytes": 48381,
+      "sha256": "a04b20517539e971c1e192015329dd39a2e2f536b52c06fffdce473177397012",
+      "method": "wc -c and sha256sum, computed this session; matches the raw's own header table exactly"
+    },
+    "reviewed_commit": "573abb0",
+    "reviewed_subject_as_the_raw_records_it": {
+      "packet": {
+        "path": "docs/design/POLARIS-M3-HONEST-ENCODING-FUNNEL.md",
+        "bytes": 102085,
+        "sha256": "bf526da8be926fdae5c58a525d1769b7fcf2d527920df45a6777f7caf6f560cf"
+      },
+      "evidence": {
+        "path": "docs/evidence/polaris-m3-honest-encoding-funnel-2026-09-14.json",
+        "bytes": 30747,
+        "sha256": "5370f6cd2af1ff6c00f0625616e5b9c356bebf3a113175a74c8cd8e83d2ea6f5"
+      },
+      "register": {
+        "path": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+        "bytes": 29780,
+        "sha256": "cac255f552e198d318146c402d67e7118cdb1c5a2188cabdfd85dcff987d37e7"
+      }
+    },
+    "verdict_word_copied_exactly": "REVISE",
+    "verdict_word_copied_exactly_note": "the raw's exact verdict line (:567) is 'Verdict: REVISE'; the counts are a separate sentence at :564-566, not part of the verdict word (review 3, finding H9; the earlier field text ran the two together as though quoted verbatim)",
+    "findings": {
+      "blocking": [
+        "G1"
+      ],
+      "non_blocking": [
+        "G2",
+        "G3",
+        "G4",
+        "G5",
+        "G6"
+      ],
+      "editorial": [
+        "G7",
+        "G8",
+        "G9"
+      ]
+    },
+    "f_verification_against_review_1": {
+      "REPAIRED": 10, "denominator": 14, "note": "counted by row from the raw's own F1-F14 table (...-2-RAW.md lines 461-474); the raw's totals line says 9 REPAIRED / 5 PARTIAL and its summary says eleven repaired - this record read 9 until review 4, finding J2, corrected it to the row count",
+      "PARTIAL": [
+        "F4",
+        "F6",
+        "F7",
+        "F12"
+      ],
+      "NOT_REPAIRED": 0
+    },
+    "repairs": {
+      "G1": "Gate 2 RFC2-10 quote extended verbatim through the clause's remedy sentence; 'supplies no absence marker at all' withdrawn at four packet sites and the register row - but not from this record's own vocabulary_versus_rendered.freshness_mint_hazard field, a fifth site the review-2 repair pass missed (review 3, H1; this sentence corrected after review 4, finding J1, having claimed completeness until then); Q2 freshness limb restated with three lawful arms (b-i/b-ii/b-iii), the PWB-REQ-007 tension put to the owner unresolved, (b-iii) recommended [Inferred] without calling any arm unlawful; cross-packet link to M2's Q3/Q5/Q7 stated in Q2, Q7 and the collision section",
+      "G2": "unstated - guard moved from walkthrough-preflight.ts to polaris-first-reading.test.ts line 88 in the slice-5 readiness paragraph; preflight's three true examples (lede id, strengthen sentence, aria-describedby) kept",
+      "G3": "added bold dropped from the RFC7-34 quote at Gate 2; F12 disposition row corrected",
+      "G4": "M2 head re-derived to da1497b (reviews 4-5, J1-J8, K1-K9 repaired), named once in the collision section, cited elsewhere by register row P-69 and the two shared files; marker wording weakened to 'the reason and, where one exists, the route' in slice 5 and collision item 1; structural collision and sequence confirmed unchanged via M2's own Gate 3 row and Q5 text at da1497b",
+      "G5": "register P-70 Q4 depth corrected to 57.72% and 25.70%",
+      "G6": "RFC2-26 quoted at Gate 2 (rendering-vocabularies.md:196); POC-REQ-061 named in Gate 5 as the mapping requirement for slices 5-6",
+      "G7": "'below 26.74' restated as 'below the --ink <-> --muted floor (26.74 to two decimals, 26.7371 computed)' at all three packet sites; evidence record gains floor_precision_note",
+      "G8": "trust-and-evidence.md:101 anchored and marked cited by analogy, with its actual subject (a superseded observation record) stated",
+      "G9": "register P-70 Q3 cost restated as 'at least 13,088 attribute bytes plus an unseparated text component'"
+    },
+    "re_derived_before_applying": {
+      "RFC2-10_line_span": "snapshot-and-evaluation-core.md lines 209-223; the remedy sentence ('a condition genuinely outside the four is disclosed as a fact of the render, never dressed as a freshness state') is at lines 220-222, read and confirmed verbatim this session before any repair was applied",
+      "RFC7-34_line_span": "rendering-and-surface.md lines 241-243, confirmed only 'without colour, position, or layout' is bold in source",
+      "unstated_guard_line": "apps/three-surface-poc/src/polaris-first-reading.test.ts line 88, confirmed to hard-code 'unstated \\u2014' in its required-terms list",
+      "RFC2-26_line": "rendering-vocabularies.md line 196, confirmed",
+      "m2_head_confirmed": "da1497b, confirmed via git log in the M2 worktree; M2's Gate 3 row and Q5 text re-read at that head",
+      "deltaE76_ink_muted_precise": 26.7371,
+      "trust_and_evidence_line": "trust-and-evidence.md line 101, confirmed"
+    },
+    "coverage": "every repair above post-dates review 2, so by verification rule 10 review 2 binds the 102,085-byte packet and 30,747-byte evidence record it read at 573abb0, not the current bytes; the current bytes are uncovered until a third independent fresh-context review, retained as a third -RAW.md file, confirms them"
+  },
+  "review3": {
+    "raw": {
+      "path": "docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-3-RAW.md",
+      "bytes": 42726,
+      "sha256": "7154f1f3972cfc73619694d48851f4368a8eb7fdce77cadb81493290f82c5aa6",
+      "method": "wc -c and sha256sum equivalents computed this session over the retained file"
+    },
+    "reviewed_commit": "b34fca7",
+    "verdict_word_copied_exactly": "REVISE",
+    "findings": {
+      "blocking": [
+        "H1"
+      ],
+      "non_blocking": [
+        "H2",
+        "H3",
+        "H4",
+        "H5",
+        "H6",
+        "H7"
+      ],
+      "editorial": [
+        "H8",
+        "H9",
+        "H10",
+        "H11"
+      ]
+    },
+    "re_derived_before_applying": {
+      "H1": "json :282 grepped this session; the withdrawn 'supplies no absence marker ... not available for freshness' text was still present - confirmed",
+      "H2": "json :674 grepped this session; 'not lawfully available for the freshness field' carried no in-place marker - confirmed",
+      "H3": "P-70 note and row swept for 'together', 'ruled together', 'read together' before the repair: 0 hits in both - confirmed; M2's Q7 (stale with reason) and M3's Q2 (b-iii) are mutually exclusive recommendations for the same claims, not complementary",
+      "H4": "git log --oneline -1 in the M2 worktree this session returns f2f37dd, one past the da1497b the packet named - confirmed; sibling cited by row P-69 and the two shared files, one dated head line kept",
+      "H5": "review 2's F1-F14 table counted by row this session: 10 REPAIRED / 4 PARTIAL over 14 - confirmed",
+      "H6": "all 11 human-side Unknown tuples matched to api-poc.json objects whose epistemic keys are exactly ['freshness','label','reasons'], no tier key, denominator 713 - confirmed",
+      "H7": "class=\"proposal-label\" occurs once on the retained tailnet capture at 56.29% depth with color var(--unknown) - confirmed",
+      "H8": "worktree is two commits past a9f671e (573abb0, b34fca7), not at the same commit - confirmed",
+      "H9": "review 2 raw :567 reads exactly 'Verdict: REVISE'; the counts are a separate sentence at :564-566 - confirmed",
+      "H10": "the PWB-REQ-007 and PWB-REQ-020 block quotes elided bullets without a marker - confirmed",
+      "H11": "RFC2-10 runs through line 223; the Gate 2 quote stopped at line 222 while called 'quoted in full' - confirmed"
+    },
+    "repairs": {
+      "H1": "this record's vocabulary_versus_rendered.freshness_mint_hazard rewritten to RFC2-10's actual remedy (lines 220-223) and the three lawful arms, with the withdrawn wording quoted and marked in place (the three arms enumerated here did not match the packet's or the register's - corrected after review 4, finding J3; and the remedy sentence runs 220-222, with 222-223 the separate orthogonality sentence - settled after review 5, K3)",
+      "H2": "in-place withdrawal marker appended to review1.recommended_answers_changed.Q2; superseded wording kept",
+      "H3": "one 'rule P-69 and P-70 together' clause added to the P-70 row naming the two recommendations as mutually exclusive and the choice as the owner's; collision item 3 no longer calls them complementary",
+      "H4": "M2 cited by register row P-69 and the two shared files; one dated line names f2f37dd",
+      "H5": "10 REPAIRED / 4 PARTIAL stated in the packet's review-2 section with the raw's own disagreeing totals disclosed; this record's review2.f_verification_against_review_1 was NOT corrected in the same pass and still read 9 - corrected after review 4, finding J2 (this sentence said 'both places' until then)",
+      "H6": "Q2 states the machine-side absence of tier for the 11 Unknown claims with predicate and denominator; PWB-REQ-007's parity implication disclosed, not resolved",
+      "H7": ".proposal-label named as slice 2's one live positive; the handoff states slice 2's sweep is red until slice 6 lands or the two are resequenced",
+      "H8": "baseline sentence corrected",
+      "H9": "verdict word and counts split in the packet and in this record's review2 block",
+      "H10": "ellipses added between elided bullets",
+      "H11": "Gate 2 quote extended through line 223 and the orthogonality sentence weighed where the packet relies on it"
+    },
+    "recommended_answers_changed": "none - all seven recommendations word for word as after review 2; Q2 (b-iii) now additionally disclosed as mutually exclusive with M2's stale recommendation (H3)",
+    "sweep_after_repair": {
+      "predicate": "grep -F for 'no absence marker', 'not available for freshness', 'not lawfully available' over the packet, this record and the register",
+      "denominator": "3 files, every line",
+      "result": "remaining hits are all inside review-history text that quotes the withdrawn wording and marks it withdrawn in the same sentence or field; 0 hits stand as a live claim"
+    },
+    "uncovered_until": "a fourth independent fresh-context review; every edit recorded here post-dates review 3 (verification rule 10)"
+  },
+  "review4": {
+    "raw": {"path": "docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-4-RAW.md", "bytes": 40037, "sha256": "2c3a91917d957ad58a16b5c2cddbcc5326c412e4c35b89531c317c41b6a4d947", "method": "wc -c and sha256sum equivalents computed this session over the retained file"},
+    "reviewed_commit": "f35a25f",
+    "reviewed_bytes": {"packet": {"bytes": 129183, "sha256": "99e95b1773884661017352a17826bf40c74e9b21ba074b12f56c5695a2f649c4"}, "record": {"bytes": 42787, "sha256": "03ea7e0eea4d752c30557faa5ab30465d27d5518e422f426521a68065b49bdad"}, "register": {"bytes": 32136, "sha256": "4165ebc80d1c69b8bab30bb6d579b7dce7fab09ced1f108568098e99310b6991"}, "method": "git show f35a25f:<path> piped to wc -c and sha256sum this session"},
+    "verdict_word_copied_exactly": "REVISE",
+    "findings": {"blocking": ["J1", "J2", "J3"], "non_blocking": ["J4", "J5", "J6"], "editorial": ["J7", "J8", "J9"]},
+    "re_derived_before_applying": {
+      "J1": "json :279 read this session: the quote ended at line 214 with no marker; json :741 read: 'all four packet sites and the register row', no fifth site - confirmed",
+      "J2": "review 2's F1-F14 table recounted by row this session: 10 REPAIRED (F1, F2, F3, F5, F8, F9, F10, F11, F13, F14), 4 PARTIAL, denominator 14; json :730 read 9 - confirmed",
+      "J3": "json :282 read against packet Q2 and register :208: the three arm descriptions differed in substance from (b-i)/(b-ii)/(b-iii) - confirmed",
+      "J4": "cross-surface table re-summed: 735 + 299 + 18 = 1052; 735 / 1052 = 69.87%; 735 / 1087 = 67.62%; POC-REQ-060's Case counts three surfaces and home is not one - confirmed",
+      "J5": "api-poc.json re-walked this session: 1,149 objects carrying claimId and epistemic, 1,148 distinct ids, 12 with no tier key, all 12 labelled Unknown; register :208 Q2 limb carried no machine-channel clause - confirmed",
+      "J6": "handoff condition line read: Q1, Q3, Q4 only; slice 2 section read: --proposed pull-forward from slice 6, whose bar is Q6 - confirmed",
+      "J7": "wc -l over the three files: 2,479 at b34fca7, 2,697 at f35a25f; the H1 row's 2,482 matches neither - confirmed [superseded after review 5, K1: 2,482 is 2,479 plus each file's trailing line, the same population under another convention, so the figure matches b34fca7 exactly and the 'matches neither' confirmation was a method switch]",
+      "J8": "git log --oneline a9f671e..f35a25f: three commits; the bracket named two - confirmed",
+      "J9": "Gate 3 bracket read: six limbs under one [Observed]; Gate 5 argues the scope limb - confirmed"
+    },
+    "repairs": {
+      "J1": "closed_freshness_vocabulary_authority extended verbatim through line 223 with a note that it had stopped at 214; review2.repairs.G1 now names this record as the missed fifth site; packet H1 row restated to what was and was not done and marked PARTIAL at f35a25f",
+      "J2": "review2.f_verification_against_review_1.REPAIRED set to 10 with denominator 14 and the raw's disagreeing totals noted; review3.repairs.H5 restated; packet H5 row restated and marked PARTIAL at f35a25f",
+      "J3": "freshness_mint_hazard arms rewritten in the packet's and register's words; the earlier enumeration quoted and marked withdrawn in the same field [corrected after review 5, K6: the arms are the packet's verbatim; the register paraphrases them clause for clause]",
+      "J4": "both denominators (1,052 three-surface, 1,087 four-page) with their percentages and the reason for the wider sweep stated in the packet's population prose, Q1, denominators paragraph and summary, in the register's Q1 limb, and in this record's cross_surface_population",
+      "J5": "one clause added to the register row's Q2 limb: the tier field has no machine-channel counterpart for the 11 Unknown tuples (12 of 1,149 objects lack a tier key), a PWB-REQ-020 parity question disclosed and not resolved",
+      "J6": "Q6 added to the handoff's condition for the immediate run, with the dated-exception alternative named",
+      "J7": "H1 row's sweep figure date-stamped to the working tree between b34fca7 and f35a25f, with the f35a25f re-derivation (41 over 2,697 lines) beside it [false as written - review 5, K1: the figure is exact at b34fca7 under the trailing-line convention; the H1 and J7 rows now carry that stamp with both conventions named]",
+      "J8": "baseline bracket no longer counts the packet's own commits; points at git log",
+      "J9": "Gate 3 bracket split: Observed for five textual absences, Inferred for the scope limb with the Gate 5 pointer"
+    },
+    "recommended_answers_changed": "none - all seven recommendations word for word as after review 2; Q1 and Q2 gained disclosure clauses (denominators; machine-channel tier absence) that move no recommendation",
+    "sweep_after_repair": {"predicate": "grep -F for the six literals the H1 row names, over the packet, this record and the register", "denominator": "3 files, 2,805 lines", "result": "42 occurrences at the bytes this block describes, every one inside review-history or lawful-arms text; 0 stand as a live claim that any arm is unavailable"},
+    "uncovered_until": "a fifth independent fresh-context review; every edit recorded here post-dates review 4 (verification rule 10)"
+  },
+  "review5": {
+    "raw": {
+      "path": "docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-5-RAW.md",
+      "bytes": 36904,
+      "sha256": "cbc9deac4698656e9434694741fdf66e91c60c179cd3a6942c6036e9331146d7",
+      "method": "wc -c and sha256sum computed this session over the retained file"
+    },
+    "reviewed_commit": "76e897f",
+    "reviewed_bytes": {
+      "packet": {
+        "bytes": 139050,
+        "sha256": "254f72e3308052944b7e19276d948d10c15132765ea4a2395c50a75705bcd45d"
+      },
+      "record": {
+        "bytes": 50219,
+        "sha256": "52e14c419ad62a6ad603067152af250de4a887ee297d0315eaa24fecedea2f45"
+      },
+      "register": {
+        "bytes": 33783,
+        "sha256": "1754fe069c7635a0ae35b3b958a24e33e54f98c29b5ed4283d135a34daa0ef31"
+      },
+      "method": "git show 76e897f:<path> piped to wc -c and sha256sum this session"
+    },
+    "verdict_word_copied_exactly": "REVISE",
+    "findings": {
+      "blocking": [
+        "K1"
+      ],
+      "non_blocking": [
+        "K2",
+        "K3",
+        "K4"
+      ],
+      "editorial": [
+        "K5",
+        "K6"
+      ]
+    },
+    "re_derived_before_applying": {
+      "K1": "six literals over the three files at b34fca7: 25 occurrences; wc -l 2,479; counting each file's trailing line 2,482 - the H1 figure matches b34fca7 exactly; f35a25f: 41 over 2,697 / 2,700; 76e897f: 42 over 2,805 / 2,808 - confirmed",
+      "K2": "packet funnel-summary handoff line read: Q1 and Q3 only, 'slices 1-4 now'; handoff section: Q1, Q3, Q4, Q6 and 'slices 1, 2 and 4 immediately, slice 3 next' - confirmed",
+      "K3": "snapshot-and-evaluation-core.md read 209-223: line 219 is the parity rationale; the prohibition sentence runs 212-214; the remedy 220-222; the orthogonality sentence 222-223; packet G1 row 220-222 against H1 row and review3.repairs.H1 220-223 - confirmed",
+      "K4": "review3.repairs.H1 read: no marker; review3.repairs.H5 and review2.repairs.G1 carry theirs - confirmed",
+      "K5": "register note stamp 2026-09-14 against the review-4 material added 2026-09-15; 'every finding repaired after it' against the packet's 10 REPAIRED / 4 PARTIAL - confirmed",
+      "K6": "freshness_mint_hazard arm text compared to packet Q2 (identical) and to the register's Q2 limb (paraphrase) - confirmed"
+    },
+    "repairs": {
+      "K1": "H1 row restored to the b34fca7 stamp with both line-count conventions; J7 row quotes and corrects its own false text; review4.re_derived_before_applying.J7 and review4.repairs.J7 marked superseded on their lines; review-4 section notes its J7 disposition was wrong",
+      "K2": "funnel-summary handoff line names Q1, Q3, Q4 and Q6 and 'slices 1, 2 and 4 now, slice 3 next', earlier text quoted in place",
+      "K3": "freshness_mint_hazard anchors the prohibition at lines 212-214 and quotes it, the line-219 pointer marked; remedy extent settled at 220-222 in the packet H1 row and review3.repairs.H1, 222-223 named as the orthogonality sentence",
+      "K4": "review3.repairs.H1 carries the J3 marker",
+      "K5": "P-70 note stamped for both dates; review-1 clause in the note and the row read ten repaired in that pass, four closed after review 2 (10 REPAIRED / 4 PARTIAL)",
+      "K6": "freshness_mint_hazard says the packet's own words, paraphrased clause for clause by the P-70 row; review4.repairs.J3 marked"
+    },
+    "recommended_answers_changed": "none - all seven recommendations word for word as after review 2",
+    "sweep_after_repair": {
+      "predicate": "grep -F for the six literals the H1 row names, over the packet, this record and the register",
+      "denominator": "3 files, 2,932 lines by wc -l (2,935 counting each file's trailing line)",
+      "result": "42 occurrences at the bytes this block describes, every one inside review-history or lawful-arms text; 0 stand as a live claim that any arm is unavailable [superseded 2026-09-15 after review 6, L1: inside-a-review-history-section and framed-as-superseded are different tests; under the four-box rule in review6.sweep_after_repair, 2 of the 42 (packet F4 row, record review1.dispositions.F4) stated the withdrawn proposition unmarked]"
+    },
+    "uncovered_until": "a sixth independent fresh-context review; every edit recorded here post-dates review 5 (verification rule 10)"
+  },
+  "review6": {
+    "raw": {
+      "path": "docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-6-RAW.md",
+      "bytes": 39570,
+      "sha256": "384f398c3041dc9e59031c84976e61419cedc904c193f3c249af865eebe48ead",
+      "method": "wc -c and sha256sum computed this session over the retained file"
+    },
+    "reviewed_commit": "9cb4d65",
+    "reviewed_bytes": {
+      "packet": {"bytes": 144850, "sha256": "11766f08d8f227422021c2de7475f7ef20d50a8e2fd83f741f5506b94e310a45"},
+      "record": {"bytes": 55345, "sha256": "4c61e5ccc8f51fb03a814914b918069a67806e71b1ab1a5a1872e0e51a4068ee"},
+      "register": {"bytes": 35006, "sha256": "be27c3bb880f6d8c08ed3015f0c708ef8419e481447edea30be2f42a3953d852"}
+    },
+    "verdict_word_copied_exactly": "REVISE",
+    "findings": {"blocking": ["L1"], "non_blocking": ["L2", "L3", "L4"], "editorial": ["L5", "L6"], "denominator": 6},
+    "k_verification_by_review_6": "6 REPAIRED, 0 PARTIAL, 0 NOT REPAIRED over 6",
+    "re_derived_before_applying": {
+      "L1": "packet :1461 (F4 row) and record review1.dispositions.F4 read: both state 'arm (b) ... not lawfully available / ruled unavailable' for freshness in the present tense with no marker, while :1476 twelve lines below carries one - confirmed; the six-literal sweep re-run at 9cb4d65: 42 over 2,932 / 2,935, each hit classified by hand",
+      "L2": "record :542 head da1497b, :543 head_note 'this repair pass', :562 shared_surface_unchanged_at_da1497b, :563 'read this session at da1497b' against packet :1259-1267 naming f2f37dd; M2 worktree HEAD read read-only: f2f37dd - confirmed",
+      "L3": "packet :63 'five reviews retained' against the M2 worktree's docs/reviews listing: 6 files matching R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL*-RAW.md - confirmed",
+      "L4": "J6 row read bare 'CONFIRMED - REPAIRED'; review-5 raw :348 gives 7 REPAIRED / 1 PARTIAL (J6) / 1 NOT REPAIRED (J7) over 9; the review-5 section carried no counts - confirmed",
+      "L5": "record :282 'line 223 adds' against snapshot-and-evaluation-core.md 222-223 (sentence begins on 222) - confirmed",
+      "L6": "polaris-tailnet.html (1,481,819 chars): class=\"unknown-disclosure\" attribute at 378,604, its element's < at 378,599; first claim-tuple span's < at 380,767, its class attribute at 380,773 - two anchors in adjacent fields, confirmed"
+    },
+    "repairs": {
+      "L1": "packet F4 row and record review1.dispositions.F4 marked in place; G1 row now counts seven sites; H1 row's three-way classification restated with a fourth box; review5.sweep_after_repair.result marked superseded on its line; the review-5 section's sweep sentence qualified",
+      "L2": "m2_collision.head f2f37dd with the ladder extended on the same line; head_note past tense; shared_surface_unchanged re-keyed to f2f37dd; structural_collision_confirmed_by dated to both reads; review1.dispositions.F7 carries the H4 marker",
+      "L3": "Q7's parenthetical reads six reviews retained, M2 at f2f37dd, the earlier five kept and marked",
+      "L4": "J6 row reads PARTIAL at 76e897f, completed after review 5 (K2); the review-5 section states 7 / 1 / 1 over 9",
+      "L5": "freshness_mint_hazard reads lines 222-223 with the earlier single line kept",
+      "L6": "one anchor adopted (the element's opening <): first_rendered_unknown_of_any_kind.offset_chars 378,599 with the earlier 378,604 kept on its line; first_unknown_tuple states the same anchor; depth percentages unchanged at two decimals (this sentence names the two first_reading fields only; the token_reuse.proposal_label_offset_chars field stayed on the class-attribute anchor until review 7, M1, and now carries its own offset_anchor)"
+    },
+    "recommended_answers_changed": "none - all seven recommendations word for word as after review 2; Q7's parenthetical count corrected without moving its premise or its answer",
+    "sweep_after_repair": {
+      "predicate": "Python str.count of the six literals the H1 row names, over the packet, this record and the register, every hit then sorted into exactly one of four boxes: (1) current lawful-arms language, (2) an in-place withdrawal marker, (3) review-history text framed as superseded, (4) review-history text stating the withdrawn proposition in the present tense with no marker; a marker counts when it sits anywhere in the same sentence as the hit, hard wrap disregarded, so a sentence is the unit sorted, never a line (unit stated after review 7, M2; the sort published here was made on that unit)",
+      "denominator": "3 files, 3,051 lines by wc -l (3,054 counting each file's trailing line)",
+      "result": "45 occurrences at the bytes this block describes; box (4) holds 0 and boxes (1)/(2)/(3) hold 6/13/26 after the two L1 sites were marked (they now sit in box 2); 0 stand as a live claim that any arm is unavailable"
+    },
+    "uncovered_until": "a seventh independent fresh-context review; every edit recorded here post-dates review 6 (verification rule 10)"
+  },
+  "review7": {
+    "raw": {
+      "path": "docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-7-RAW.md",
+      "bytes": 29279,
+      "sha256": "b6c2a69c57e8aa7d4e17bf70184c9d31e73a9e7160107a155421b16c7ca421ef",
+      "method": "wc -c and sha256sum computed this session over the retained file"
+    },
+    "reviewed_commit": "cfcb745",
+    "reviewed_bytes": {
+      "packet": {"bytes": 152072, "sha256": "0dc635903b94382d4f3167af3c1f957913a54712cb7f9a3e46bcbb00a8dcde31"},
+      "record": {"bytes": 61335, "sha256": "6599db53eeb3fa7a62ab570f09b503a890dd3263292a6201c03e00755ce0e366"},
+      "register": {"bytes": 35994, "sha256": "44ac06919896b79028a60ce9839dc6bccdf67358a6f76c56e2875096717e7493"}
+    },
+    "verdict_word_copied_exactly": "CONFIRM WITH EXCEPTIONS",
+    "findings": {"blocking": [], "non_blocking": [], "editorial": ["M1", "M2"], "denominator": 2},
+    "l_verification_by_review_7": "6 REPAIRED, 0 PARTIAL, 0 NOT REPAIRED over 6",
+    "sweep_re_derived_by_review_7": "45 over 3,051 / 3,054 at cfcb745, sorted blind 6/13/26/0 - identical to review6.sweep_after_repair",
+    "re_derived_before_applying": {
+      "M1": "polaris-tailnet.html (1,481,819 chars): class=\"proposal-label\" attribute at 834,155, its element's < at 834,152, 56.29% either way; :327 carried the attribute index with no anchor field while :169 and :174 carry the element anchor with offset_anchor fields, and review6.repairs.L6 read as record-wide - confirmed",
+      "M2": "review6.sweep_after_repair.predicate read without a unit; packet :1476 hit with its marker on :1478-1479 of the same sentence; :1475 read 'and is now' of the Q2 wording withdrawn after review 2 (G1) - confirmed"
+    },
+    "repairs": {
+      "M1": "proposal_label_offset_chars 834,152 with the earlier 834,155 kept on its line in proposal_label_offset_anchor; review6.repairs.L6 scoped on its line to the two first_reading fields; depth percent unchanged at 56.29",
+      "M2": "review6.sweep_after_repair.predicate states the sentence unit on its line; packet :1475 reads 'and was then' with the earlier 'is now' kept in the marker on :1479"
+    },
+    "recommended_answers_changed": "none - all seven recommendations word for word as after review 2",
+    "sweep_after_repair": {
+      "predicate": "the review6.sweep_after_repair predicate as now stated, sentence unit; the hit set compared line for line against review 7's enumeration",
+      "denominator": "3 files, 3,151 lines by wc -l (3,154 counting each file's trailing line)",
+      "result": "45 occurrences at the bytes this block describes, the same hit set review 7 enumerated; boxes (1)/(2)/(3)/(4) hold 6/13/26/0; the text added after review 7 contains none of the six literals"
+    },
+    "gate": "at the owner gate on review 7's CONFIRM WITH EXCEPTIONS with both exceptions applied",
+    "uncovered_until": "an eighth independent fresh-context review, for the two editorial repairs recorded here; both post-date review 7 (verification rule 10)"
+  }
+}
