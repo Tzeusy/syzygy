@@ -1,0 +1,27 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+index 543469d..5908348 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -618,6 +618,22 @@ single capability's detail.
+ - **THEN** the Polaris entry explains Butlers before linking to that slice
+ - **AND** the slice is labeled as one capability within the complete catalog
+ 
++#### Scenario: One opening Unknown aggregate, reconciled with members
++
++- **WHEN** Polaris's first reading level renders an aggregate over the Unknown
++  project-shape claims one evaluation holds, before the first capability
++  catalog
++- **THEN** exactly one such aggregate is rendered there, it displaces and
++  defers no project-level category of this requirement, and it reads only that
++  same evaluation's machine claims
++- **AND** it discloses its own label, tier, freshness and separate primary and
++  secondary reason counts as PWB-REQ-007 requires of an aggregate, claims no
++  headline status, and exposes every counted Unknown reason's resolution route
++- **AND** its member population and its primary and secondary reason counts
++  equal those of the claims it names at that evaluation, every counted member
++  stays separately disclosed at its own claim and reachable from the aggregate,
++  and the machine answer carries the same aggregate under PWB-REQ-020
++
+ ```yaml
+ warrants:
+   primary: RFC7-1
