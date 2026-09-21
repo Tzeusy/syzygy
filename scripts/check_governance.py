@@ -1534,6 +1534,23 @@ PWB_RENDER_MODE_SUBJECT = (
     f"{PWB_RENDER_MODE_DIR}/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt")
 PWB_RENDER_MODE_ACT = (
     f"{DECISIONS}/PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md")
+#: The P-72 (M5) machine-view amendment and the P-71 (M4) opening-band
+#: scenario, both drafted 2026-09-21 against the same eleven-path behavior
+#: population, registered on the same terms as the render-mode package:
+#: packet copies watched now, act records registered once they exist, and
+#: no `PWB_SUCCESSOR_CHAIN` link until an act fixes the performance order.
+PWB_MACHINE_VIEW_LABEL = "SIGN OFF PWB MACHINE-VIEW AMENDMENT"
+PWB_MACHINE_VIEW_DIR = f"{CANDIDATES}/pwb-machine-view-amendment"
+PWB_MACHINE_VIEW_SUBJECT = (
+    f"{PWB_MACHINE_VIEW_DIR}/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt")
+PWB_MACHINE_VIEW_ACT = (
+    f"{DECISIONS}/PWB-MACHINE-VIEW-AMENDMENT-ACT.md")
+PWB_OPENING_BAND_LABEL = "SIGN OFF PWB OPENING-BAND SCENARIO"
+PWB_OPENING_BAND_DIR = f"{CANDIDATES}/pwb-opening-band-scenario"
+PWB_OPENING_BAND_SUBJECT = (
+    f"{PWB_OPENING_BAND_DIR}/PWB-OPENING-BAND-SCENARIO-MANIFEST.txt")
+PWB_OPENING_BAND_ACT = (
+    f"{DECISIONS}/PWB-OPENING-BAND-SCENARIO-ACT.md")
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -1594,6 +1611,8 @@ PWB_TRUTH_AMENDMENT_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_SCOPED_AMENDMENT_SUBJECTS = PWB_STATE1_SUBJECTS
 #: So does the exact-source render-mode amendment.
 PWB_RENDER_MODE_SUBJECTS = PWB_STATE1_SUBJECTS
+PWB_MACHINE_VIEW_SUBJECTS = PWB_STATE1_SUBJECTS
+PWB_OPENING_BAND_SUBJECTS = PWB_STATE1_SUBJECTS
 #: Successor chain over the PWB behavioral package, in performance order.
 #: The latest validly performed link binds current bytes; every earlier
 #: link's rows are immutable act-time history.
@@ -2032,6 +2051,14 @@ def _act_subjects():
             re.compile(re.escape(PWB_RENDER_MODE_LABEL)
                        + r"\s*:\s*`?([0-9a-f]{64})"),
         ))
+    for label, subject in ((PWB_MACHINE_VIEW_LABEL, PWB_MACHINE_VIEW_SUBJECT),
+                           (PWB_OPENING_BAND_LABEL, PWB_OPENING_BAND_SUBJECT)):
+        if not any(existing == label for existing, _rel, _pat in out):
+            out.append((
+                label,
+                subject,
+                re.compile(re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})"),
+            ))
     out.append((POLARIS_NO_SIGNAL_LABEL, POLARIS_NO_SIGNAL_SUBJECT,
                 re.compile(re.escape(POLARIS_NO_SIGNAL_LABEL)
                            + r"\s*:\s*`?([0-9a-f]{64})")))
@@ -2239,6 +2266,10 @@ ACT_DIGEST_COPY_FILES = {
         (PWB_SCOPED_AMENDMENT_LABEL,),
     f"{PWB_RENDER_MODE_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_RENDER_MODE_LABEL,),
+    f"{PWB_MACHINE_VIEW_DIR}/OWNER-DECISION-PACKET.md":
+        (PWB_MACHINE_VIEW_LABEL,),
+    f"{PWB_OPENING_BAND_DIR}/OWNER-DECISION-PACKET.md":
+        (PWB_OPENING_BAND_LABEL,),
     # The owner-act record quotes each performed act's exact phrase and
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
@@ -2355,6 +2386,35 @@ def _activate_pwb_render_mode_act_copy_registry():
 
 
 _activate_pwb_render_mode_act_copy_registry()
+
+
+def _activate_pwb_candidate_act_copy_registry(label, act_rel):
+    """Same transition rule for the machine-view and opening-band successors.
+
+    A no-op until the dedicated act record exists; the packet copy is
+    registered statically above.
+    """
+    if not os.path.isfile(os.path.join(ROOT, act_rel)):
+        return
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+    if label not in labels:
+        ACT_DIGEST_COPY_FILES[aggregate] = labels + (label,)
+    ACT_DIGEST_COPY_FILES[act_rel] = (label,)
+
+
+def _activate_pwb_machine_view_act_copy_registry():
+    _activate_pwb_candidate_act_copy_registry(
+        PWB_MACHINE_VIEW_LABEL, PWB_MACHINE_VIEW_ACT)
+
+
+def _activate_pwb_opening_band_act_copy_registry():
+    _activate_pwb_candidate_act_copy_registry(
+        PWB_OPENING_BAND_LABEL, PWB_OPENING_BAND_ACT)
+
+
+_activate_pwb_machine_view_act_copy_registry()
+_activate_pwb_opening_band_act_copy_registry()
 
 
 def _activate_polaris_no_signal_act_copy_registry():
@@ -6227,6 +6287,21 @@ def selftest():
     cases.append(("CG-7e performed PWB render-mode act requires aggregate record copy",
                   row[0] == "FAIL"
                   and any(PERFORMED_ACT_RECORD in d for d in row[4])))
+
+    for name, link in (
+            ("machine-view", (PWB_MACHINE_VIEW_LABEL, PWB_MACHINE_VIEW_SUBJECT,
+                              PWB_MACHINE_VIEW_ACT,
+                              _activate_pwb_machine_view_act_copy_registry)),
+            ("opening-band", (PWB_OPENING_BAND_LABEL, PWB_OPENING_BAND_SUBJECT,
+                              PWB_OPENING_BAND_ACT,
+                              _activate_pwb_opening_band_act_copy_registry))):
+        row = _selftest_pwb_act_copy_registry("valid", link)
+        cases.append((f"CG-7e performed PWB {name} act registers both record copies",
+                      row[0] == "OK" and row[2] == 2 and row[3] == 0))
+        row = _selftest_pwb_act_copy_registry("missing-aggregate", link)
+        cases.append((f"CG-7e performed PWB {name} act requires aggregate record copy",
+                      row[0] == "FAIL"
+                      and any(PERFORMED_ACT_RECORD in d for d in row[4])))
 
     for act in POLARIS_GENERATOR_APPROVAL_ACTS:
         link = (POLARIS_GENERATOR_APPROVAL_LABEL, POLARIS_GENERATOR_APPROVAL_SUBJECT,
