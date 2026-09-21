@@ -482,9 +482,12 @@ Register P-83 in PENDING-OWNER-DECISIONS.md: six questions, mixed build/design,
 
 ## Recommended handoff
 
-1. **Commission the first fresh-context review.** This packet records none; by
-   rule 10 every figure is uncovered until a fresh-context review, bound to
-   these bytes, confirms it. Give the reviewer only this packet, its evidence
+1. **Commission the second fresh-context review of the close-out bytes.**
+   [Superseded 2026-09-21 at this sentence: it read "Commission the first
+   fresh-context review. This packet records none" after review 1 (commit
+   429924a, CONFIRM WITH EXCEPTIONS) had landed — see the banner and Gate 6.]
+   By rule 10 the close-out repairs are uncovered until a fresh-context
+   review, bound to these bytes, confirms them. Give the reviewer only this packet, its evidence
    record, the named source files at `a9f671e`, the three captures, and the
    acceptance criteria.
 2. **Put Q1–Q6 to the owner as one batch.** Each carries a recommended arm
