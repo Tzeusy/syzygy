@@ -12,6 +12,36 @@
 > cells — are preserved verbatim in git history at commit `9c43fc5`
 > (`git show 9c43fc5:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`).
 
+## Resolved on 2026-09-21 (the Polaris pursuit rulings, P-68…P-83)
+
+The sixteen rows filed 2026-09-13 through 2026-09-17 by the Polaris
+pursuit's feature-request funnels (packets under `docs/design/`, one per
+move M2–M16, plus the lane B direction question) were ruled by the owner
+on 2026-09-21 in one questionnaire sitting, taking the recommended option
+on every one of the packet's seventeen items with no edits. The rulings
+record is `POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`, which owns the full detail, quotes the owner's words,
+and lists the fifty-six beads the rulings crystallized into. The rows'
+full pre-ruling text is preserved in git history at `b7a29f2`.
+
+| # | What happened |
+|---|---|
+| P-68 | **Ruled — A**: lane B proceeds by ceremony — RFC-0007 successor tooling (implementation plane), the held PWB-REQ-007 qualifier and a further review, then the contract act, then the PWB behavior act, each a separate dated owner act; nothing authorized yet. Bead `syzygy-dov.17` |
+| P-69 | **Ruled — B**: the missing RFC2-9 bound is disclosed outside the freshness slot (claim stays Unknown) and a CC-REV-2 clarification scenario to PWB-REQ-007 gates slice 5 with its registry and continuation acts; slices 1–4 and 6 proceed under the continuation act. Beads `syzygy-dov.2.1`, `.2.2`, gates `.18`–`.20` |
+| P-70 | **Ruled — A**: the M3 bundle; slices 1–4 after M2, 5–6 after them, freshness per P-69. Beads `syzygy-dov.3.1`, `.3.2` |
+| P-71 | **Ruled — A**: slices 1–2 after M3 slice 5, slices 3–5 behind one opening-band CC-REV-2 scenario, pure drafter writes no file; `P-71-Q5` ruled Reading B — the return path never writes into Butlers on this answer. Beads `syzygy-dov.4.1`, `.4.2`, gate `.21` |
+| P-72 | **Ruled — A**: one PWB delta names a closed derived read-only machine-view category; `maxBriefingResponseBytes` minted under a superseding registry act shared with P-69 Q2(a); slices 1–2 now. Beads `syzygy-dov.5.1`, `.5.2`, gates `.22`, `.18` |
+| P-73 | **Ruled — A**: slices 1, 2, 3, 5 under the generator implementation act; slice 4 behind its edit-stage-deletion scenario, named by the record. Beads `syzygy-dov.6.1`–`.6.3`, gate `.23` |
+| P-74 | **Ruled — A**: slices 1, 3, 4, 6 (design), 7 under the existing act, slice 7 first in the shared-model WIP-one slot; slice 5's fifth limb behind a registry act; slice 6's run behind three self-observation acts; population stays 195. Beads `syzygy-dov.8.1`–`.8.6`, gates `.24`, `.25` |
+| P-75 | **Ruled — A**: one CC-REV-2 package against the three-surface spec after lane B's manifest is disposed of; `Inferred` as a typed landing zone; Q6 read generally — any pursuit slice tracing to a recorded finding lands under the improvement-cycles direction. Beads `syzygy-dov.9.1`, `.9.2`, gate `.26` |
+| P-76 | **Ruled — A**: `git-tree-entry` admitted as the fifth RFC7-10 class; an observing project reading its own tree needs no consent record; the self-corpus category folds into P-72's delta. Beads `syzygy-dov.7.1`, `.7.2` |
+| P-77 | **Ruled — A**: a response-identity digest (POC-REQ-004) in the WIP-one slot after M8 slice 7; compression behind a dated owner act; `machine-credentialed`; join key behind M9. Beads `syzygy-dov.10.1`–`.10.5`, gate `.27` |
+| P-78 | **Ruled — A**: status surface machine-credentialed / human-open, breach line with population counts, breach-to-readiness against the two declared ceilings with no new limit, human line in `pageShell` under 400 bytes. Beads `syzygy-dov.11.1`, `.11.2` |
+| P-79 | **Ruled — A**: retention is a posture change needing an owner act before anything ships; unbounded claim-tuple records, a capped band, a stage-1 unpromoted note only, dismissal by delta plus act. Beads `syzygy-dov.12.1`–`.12.3`, gates `.28`, `.29` |
+| P-80 | **Ruled — A**: progressive enhancement over native details, source record hoisted (no delta), stateless filter designed after lane B with a rule-6 mutant; slices 3 and 5 named by the record. Beads `syzygy-dov.13.1`, `.13.2` |
+| P-81 | **Ruled — A**: exact-source route to the 77 non-baseline sources behind a PWB-REQ-011 scenario and act, never the 9 withheld; legend sentence and labelled figures now; PWB-REQ-015 delta drafted only. Beads `syzygy-dov.14.1`–`.14.3`, gate `.30` |
+| P-82 | **Ruled — A**: one CC-REV-2 delta to PWB-REQ-002 drafted behind lane B's manifest, no code. Bead `syzygy-dov.15.1` |
+| P-83 | **Ruled — A**: build Q1, Q2, Q3, Q4 and the token cleanup half of Q6; design only Q5 and the palette/curation halves; six improvement-cycle beads `syzygy-dov.16.1`–`.16.6` |
+
 ## Resolved on 2026-09-13 (the Polaris page-size question, P-67)
 
 The three batched questions from the M1 feature-request funnel
@@ -169,6 +199,11 @@ repository.
 
 ## The register's as-of chronology (oldest last)
 
+- **2026-09-21** — the sixteen Polaris pursuit rows P-68…P-83 ruled in
+  one owner questionnaire sitting (recommended option on all seventeen
+  items, no edits) and routed as a plain owner direction: rows moved to
+  resolved; `POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md` owns them; fifty-six beads crystallized under
+  `syzygy-dov`. P-52 stays open.
 - **2026-09-13** — P-67 (Polaris page size at the ceiling) filed and
   ruled the same day in one owner reply ("Agreed"); row moved to
   resolved; `POLARIS-M1-PAGE-SIZE-OWNER-RULING-DECISION.md` owns it.
