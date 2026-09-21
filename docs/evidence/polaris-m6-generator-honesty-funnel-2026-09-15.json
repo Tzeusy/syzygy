@@ -1,0 +1,1119 @@
+{
+  "kind": "polaris-m6-generator-honesty-funnel-evidence",
+  "version": 1,
+  "bead": "syzygy-dov.6",
+  "move": "M6",
+  "date": "2026-09-15",
+  "packet": "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md",
+  "status": "candidate; binds nothing; planning only; two independent reviews applied 2026-09-15 - review 1 (REVISE) and review 2 (CONFIRM WITH EXCEPTIONS), which verified the review-1 repairs 9 REPAIRED, 4 PARTIAL and 0 NOT REPAIRED over 13; at the owner gate, with review 2's twelve exception repairs uncovered until a third review confirms them [this field read 'one independent review (REVISE) applied 2026-09-15, uncovered until a second review confirms the repairs' until 2026-09-15, review 2]",
+  "commit": {
+    "baseline": "a9f671e",
+    "note": "Every measurement below was taken in a worktree at a9f671e this session.",
+    "m6_surface_identical_to": "1932f74",
+    "m6_surface_diff_1932f74_to_a9f671e": {
+      "method": "git diff --numstat 1932f74 a9f671e -- packages/polaris-generation-core docs/polaris-generation package.json apps/three-surface-poc/src/polaris-generation",
+      "rows": 0,
+      "meaning": "the whole M6 surface is byte-identical between the commit the S9 agent read and this packet's baseline"
+    },
+    "dossier_syzygy_audited_at": "f4589e2",
+    "dossier_audit_commit_discrepancy": {
+      "claim_label": "Observed",
+      "finding": "At f4589e2 the entire packages/polaris-generation-core package did not exist. git diff --numstat f4589e2 a9f671e over the four M6 paths shows 22 files added with 0 deletions, including every file L3 and S9 cite. [Superseded 2026-09-15 after review 2, G4: that count sentence is false and was corrected in the packet after review 1, F4. git diff --name-status f4589e2 a9f671e over the four paths gives 20 A and 2 M, the two M rows being the kit README and package.json, and three cited files are blob-identical at f4589e2 and appear in no row; see review1.re_derived_before_applying.baseline_diff. The superseded sentence is retained here unedited.] S9-F1's own evidence names the tree it read as main @ 1932f74, and f4589e2 is an ancestor of 1932f74 (git merge-base --is-ancestor returns true).",
+      "consequence": "The dossier's syzygy_audited_at value does not hold for surfaces L3 and S9; the correct audit base for those two is 1932f74. No line citation is affected, because the surface is byte-identical across 1932f74..a9f671e."
+    }
+  },
+  "file_digests_sha256": {
+    "packages/polaris-generation-core/src/provider-draft.ts": "2cd7f1c069733fc13ca3335ccdd9a1f660c0ca9ea792819ea9cd06210206e4c2",
+    "packages/polaris-generation-core/src/prompts.ts": "b45b014eb184df22d1ecab1cfca34f6a7ec201d61953cd60b8b7e66ac79b437c",
+    "packages/polaris-generation-core/src/pipeline.ts": "0533cfc30a50034223f871c45271abf909e352925099880f7263851997ac2239",
+    "packages/polaris-generation-core/src/index.ts": "d60ca390e56207630faf5700d7da9d8a96c4735673ac0d5ea1635dfe8a6eac46",
+    "packages/polaris-generation-core/README.md": "d4485e67c9a2521e00f80bc5744ac59f4fa5eb12f51b648bf21b503d34dfae0d",
+    "docs/polaris-generation/README.md": "09ca9c0f5a5c872054153a402cb0df655ad6df69432ae80d1e69ef8b8a50fabf",
+    "docs/polaris-generation/AUTHORING.md": "f174270cb4ad8b6a86905754572fc7f52d41cf2632dcb8ef9203ee7d30f31e55",
+    "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md": "f5c0fa6c58dbdf6adfe84c37754cda8e37d3f4f40a210fb81e835c5409c9c22b",
+    "docs/polaris-generation/example.json": "882d7d9205ae26fa5b46086acfd5af2fce9e197d9bb3f6d8d05efc98101eebd2",
+    "package.json": "b767c375a4e5b414e05590ed162a06fa4f203c8a371fc8c08264062efeb1c995",
+    "apps/three-surface-poc/src/polaris-generation/draft-preview.ts": "1f3e9e963d0817d740b476585e4fdb412883d1f92c79e74967dabc3f182661ee"
+  },
+  "file_bytes": {
+    "packages/polaris-generation-core/src/provider-draft.ts": 9810,
+    "packages/polaris-generation-core/src/prompts.ts": 7517,
+    "packages/polaris-generation-core/src/pipeline.ts": 13959,
+    "packages/polaris-generation-core/src/index.ts": 711,
+    "packages/polaris-generation-core/README.md": 4014,
+    "docs/polaris-generation/README.md": 7217,
+    "docs/polaris-generation/AUTHORING.md": 7837,
+    "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md": 7937,
+    "docs/polaris-generation/example.json": 3175,
+    "package.json": 1881,
+    "apps/three-surface-poc/src/polaris-generation/draft-preview.ts": 9336
+  },
+  "digest_policy_note": "Digests are recorded only for implementation-plane files. No digest of a bound openspec artifact, no act argument and no truncated signed digest is reproduced here, per CG-7e/CG-15; the two digest records consulted are cited by path: docs/evidence/polaris-generator-rfc7-coverage-v2-2026-09-12.json and docs/evidence/polaris-understanding-adoption-manifest-2026-09-13.json.",
+  "measurements": {
+    "M1_demo_command_chain": {
+      "finding_reverified": "S9-F1",
+      "claim_label": "Observed",
+      "command_location": "packages/polaris-generation-core/README.md line 55; the only occurrence of poc:generator-demo in either README (literal sweep, denominator 2 files)",
+      "command": "npm run poc:generator-demo -- --out <scratch>",
+      "chain": "package.json line 24: npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/pipeline-demo-main.js",
+      "runs": [
+        {
+          "run": 1,
+          "condition": "as-is, after npm ci in the worktree",
+          "exit": 0,
+          "stdout_exact": "Created three synthetic pipeline previews and their stage records. No real provider or project was used.",
+          "outputs": [
+            "archive.html",
+            "archive.json",
+            "garden-changed.html",
+            "garden-changed.json",
+            "garden.html",
+            "garden.json",
+            "report.json"
+          ],
+          "output_bytes_total": 87940
+        },
+        {
+          "run": 2,
+          "condition": "node_modules/@syzygy/polaris-generation-core moved aside; dist/ of packages/polaris-generation-core and apps/three-surface-poc removed",
+          "exit": 2,
+          "error_TS_lines": 42,
+          "TS2307_lines": 5,
+          "distinct_files": 6,
+          "files": [
+            "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts",
+            "apps/three-surface-poc/src/polaris-generation/draft-preview.test.ts",
+            "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+            "apps/three-surface-poc/src/polaris-generation/pipeline-demo-main.ts",
+            "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+            "apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts"
+          ],
+          "first_error_exact": "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts(6,36): error TS2307: Cannot find module '@syzygy/polaris-generation-core' or its corresponding type declarations."
+        },
+        {
+          "run": 3,
+          "condition": "symlink restored, rebuilt, rerun",
+          "exit": 0,
+          "stdout_exact": "Created three synthetic pipeline previews and their stage records. No real provider or project was used."
+        }
+      ],
+      "counterexample_direction": "both; the failure appears when the workspace symlink is absent and disappears when it is restored (verification rule 6)",
+      "what_the_readme_omits": "any setup step. Literal 'npm ci' occurs 0 times in packages/polaris-generation-core/README.md and 0 times in the four kit files. Denominator: 5 files.",
+      "additional_defect_not_in_dossier": "package.json line 15's build:poc tsc -b list names four projects and does not name packages/polaris-generation-core; the package builds only transitively through apps/three-surface-poc's project reference. [Qualified 2026-09-15 after review 2, G7: it is the build:poc CHAIN that builds the package only transitively, not the repository at large. package.json line 14 (build) and line 22 (typecheck) each name packages/polaris-generation-core explicitly. The superseded sentence is retained unedited.]",
+      "dossier_figure_that_differs": "The dossier says the demo 'fails with TS2307 from a fresh checkout'. At a9f671e after npm ci it succeeds (exit 0). The break is conditional on install state, not on a fresh checkout. The finding's own evidence already names that cause."
+    },
+    "M2a_prompt_instruction_sweep": {
+      "findings_reverified": [
+        "L3-F1",
+        "S9-F2"
+      ],
+      "claim_label": "Observed",
+      "predicate": "a sentence in packages/polaris-generation-core/src/prompts.ts that directs the model to express missing, unsupported or changed material using a named schema ('the supplied schema', \"the schema's\", 'the trusted schema')",
+      "denominator": "the whole file: 30 lines (split-on-newline; 29 by wc -l), 7517 bytes",
+      "count": 5,
+      "occurrences": [
+        {
+          "line": 6,
+          "stage": "common",
+          "text": "Follow the supplied schema's unresolved/failure representation when support or capability is missing"
+        },
+        {
+          "line": 13,
+          "stage": "plan",
+          "text": "Account for every requested asset with the schema's disposition and a reason; unsupported required assets remain unresolved."
+        },
+        {
+          "line": 18,
+          "stage": "edit",
+          "text": "Preserve source support and report changed content and affected references using the supplied schema."
+        },
+        {
+          "line": 21,
+          "stage": "fidelity",
+          "text": "Return findings tied to supplied handles, severity and unresolved reasons using the trusted schema."
+        },
+        {
+          "line": 22,
+          "stage": "repair",
+          "text": "Return the schema's affected content and finding-to-change dispositions; retain explicit unresolved findings when a valid repair is unsupported."
+        }
+      ],
+      "broader_literal_sweep_same_denominator_case_insensitive": {
+        "unresolved": {
+          "count": 6,
+          "lines": [
+            6,
+            6,
+            10,
+            13,
+            21,
+            22
+          ],
+          "note": "the line-10 occurrence is 'unresolved questions', a property of source content rather than a schema representation; this is why the directive count is 5 and not 6"
+        },
+        "disposition": {
+          "count": 5,
+          "lines": [
+            10,
+            13,
+            16,
+            21,
+            22
+          ]
+        },
+        "omission": {
+          "count": 2,
+          "lines": [
+            10,
+            20
+          ]
+        },
+        "omitted": {
+          "count": 0
+        },
+        "unsupported": {
+          "count": 5
+        },
+        "unknown": {
+          "count": 1,
+          "lines": [
+            27
+          ],
+          "note": "the error string 'unknown-generation-stage', not an epistemic use"
+        },
+        "inferred": {
+          "count": 1,
+          "lines": [
+            6
+          ]
+        }
+      }
+    },
+    "M2b_schema_field_census": {
+      "findings_reverified": [
+        "L3-F1",
+        "S9-F2"
+      ],
+      "claim_label": "Observed",
+      "method": "import stageSchema from the package's own built dist/provider-draft.js; walk each of the six stage schemas recursively; collect every object 'properties' key and every string 'enum'",
+      "denominator": "all six landed stages",
+      "per_stage": {
+        "inventory": {
+          "version": "polaris-provider-inventory-v1",
+          "field_count": 5,
+          "fields": [
+            "entries",
+            "id",
+            "kind",
+            "sourceIds",
+            "statement"
+          ]
+        },
+        "plan": {
+          "version": "polaris-provider-plan-v1",
+          "field_count": 5,
+          "fields": [
+            "id",
+            "reason",
+            "sections",
+            "sourceIds",
+            "title"
+          ]
+        },
+        "author": {
+          "version": "polaris-provider-author-v1",
+          "field_count": 15,
+          "fields": [
+            "deepDives",
+            "diagrams",
+            "edges",
+            "from",
+            "id",
+            "introduction",
+            "label",
+            "nodes",
+            "paragraphs",
+            "sectionId",
+            "sections",
+            "sourceIds",
+            "text",
+            "title",
+            "to"
+          ]
+        },
+        "edit": {
+          "version": "polaris-provider-edit-v1",
+          "field_count": 15,
+          "fields": [
+            "deepDives",
+            "diagrams",
+            "edges",
+            "from",
+            "id",
+            "introduction",
+            "label",
+            "nodes",
+            "paragraphs",
+            "sectionId",
+            "sections",
+            "sourceIds",
+            "text",
+            "title",
+            "to"
+          ]
+        },
+        "repair": {
+          "version": "polaris-provider-repair-v1",
+          "field_count": 15,
+          "fields": [
+            "deepDives",
+            "diagrams",
+            "edges",
+            "from",
+            "id",
+            "introduction",
+            "label",
+            "nodes",
+            "paragraphs",
+            "sectionId",
+            "sections",
+            "sourceIds",
+            "text",
+            "title",
+            "to"
+          ]
+        },
+        "fidelity": {
+          "version": "polaris-provider-fidelity-v1",
+          "field_count": 6,
+          "fields": [
+            "blockIds",
+            "findings",
+            "inventoryIds",
+            "message",
+            "severity",
+            "target"
+          ]
+        }
+      },
+      "distinct_field_names_across_all_six": 25,
+      "distinct_field_names": [
+        "blockIds",
+        "deepDives",
+        "diagrams",
+        "edges",
+        "entries",
+        "findings",
+        "from",
+        "id",
+        "introduction",
+        "inventoryIds",
+        "kind",
+        "label",
+        "message",
+        "nodes",
+        "paragraphs",
+        "reason",
+        "sectionId",
+        "sections",
+        "severity",
+        "sourceIds",
+        "statement",
+        "target",
+        "text",
+        "title",
+        "to"
+      ],
+      "enums": [
+        {
+          "path": "inventory.entries[].kind",
+          "values": [
+            "purpose",
+            "beneficiary",
+            "thesis",
+            "capability",
+            "choice",
+            "term",
+            "qualification",
+            "conflict",
+            "other"
+          ],
+          "count": 9
+        },
+        {
+          "path": "fidelity.findings[].severity",
+          "values": [
+            "blocking",
+            "advisory"
+          ],
+          "count": 2
+        }
+      ],
+      "the_zero": {
+        "predicate": "a field whose name, or whose enum values, admit a per-asset or per-claim disposition, an unresolved state, an omitted state, or an epistemic class (quoted vs inferred vs synthesised)",
+        "denominator": "25 field names and 11 enum values",
+        "count": 0,
+        "nearest_candidates_and_why_they_do_not_qualify": [
+          "plan.sections[].reason - the free-text justification for a section's presence, not a disposition on a requested asset",
+          "fidelity.findings[].severity - a triage level with two values, not a disposition"
+        ],
+        "second_method_agreeing": "a literal case-insensitive sweep for 'disposition', 'unresolved' and 'unnecessary' over provider-draft.ts and pipeline.ts returns 0 matches (verification rule 2)"
+      },
+      "author_edit_repair_schema_identity": {
+        "method": "JSON.stringify equality over the three returned schema objects",
+        "author_equals_edit": true,
+        "author_equals_repair": true,
+        "source_line": "packages/polaris-generation-core/src/provider-draft.ts line 33"
+      }
+    },
+    "M3_fidelity_coverage_shape": {
+      "finding_reverified": "L3-F4",
+      "claim_label": "Observed",
+      "schema_lines": "packages/polaris-generation-core/src/provider-draft.ts lines 30-32",
+      "per_entry_fields_on_inventoryIds": 0,
+      "per_entry_fields_on_blockIds": 0,
+      "entry_type_both_directions": "handle (string, minLength 1, maxLength 100, pattern ^[A-Za-z0-9][A-Za-z0-9_.:-]*$, declared at line 14)",
+      "per_entry_fields_on_a_finding": 3,
+      "finding_fields": [
+        "severity",
+        "message",
+        "target"
+      ],
+      "findings_minItems": 0,
+      "findings_minItems_line": 31,
+      "verdict_function": "reviewVerdict at lines 148-152; blocking is true only if some finding has severity 'blocking'",
+      "denominator_discipline_preserved_by_every_slice": "same() at lines 86-89 throws incomplete-coverage; called at lines 127 and 128 against the inventory entry id set and draftHandles(context.draft).blocks"
+    },
+    "M4_edit_repair_and_the_absent_comparison": {
+      "finding_reverified": "L3-F2",
+      "claim_label": "Observed",
+      "pipeline_sites": {
+        "edit": "packages/polaris-generation-core/src/pipeline.ts line 262",
+        "repair": "packages/polaris-generation-core/src/pipeline.ts line 267"
+      },
+      "both_overwrite_prior_draft": true,
+      "validators_exported_by_the_package": [
+        "validateStage (provider-draft.ts line 107)",
+        "reviewVerdict (provider-draft.ts line 148)"
+      ],
+      "other_exports": [
+        "encodeCanonicalJson",
+        "digestCanonicalJson",
+        "parseBoundedJson",
+        "stageSchema"
+      ],
+      "other_exports_superseded_2026_09_15": "The array above is the first draft's four and is false; it is retained unedited and marked here after review 2, G4. index.ts lines 1-14 re-export ELEVEN runtime values beside thirteen type-only exports: CANONICAL_JSON_ENCODING, CanonicalJsonError, digestCanonicalJson, encodeCanonicalJson, parseBoundedJson, BoundedJsonError, promptForStage, runGenerationPipeline, stageSchema, validateStage, reviewVerdict. The adjacent export_sweep_method string has said eleven since review 1, F3; the array had not been marked.",
+      "export_sweep_method": "literal sweep for lines beginning 'export' followed by function / async function / const / interface / type, over the six non-test sources: canonical-json.ts, index.ts, parse-json.ts, pipeline.ts, prompts.ts, provider-draft.ts [corrected 2026-09-15 after review 1, F3; the first draft said 'the four non-test sources', and its 'other four exports' enumeration omitted CANONICAL_JSON_ENCODING, CanonicalJsonError, BoundedJsonError, promptForStage and runGenerationPipeline - index.ts lines 1-14 re-export eleven runtime values and thirteen types]",
+      "absence_claim": {
+        "statement": "no validator in the package compares a stage's output to its input",
+        "predicate": "occurrences of the literal 'context.draft' and of the literal 'priorDraft' in provider-draft.ts",
+        "denominator": "the whole file, 152 lines",
+        "context_draft_lines": [
+          124,
+          126
+        ],
+        "context_draft_branch": "both are inside the fidelity branch (lines 121-130)",
+        "priorDraft_count": 0,
+        "else_branch_reads": {
+          "lines": [
+            133,
+            134,
+            137
+          ],
+          "reads": "context.plan only"
+        },
+        "consequence": "an edit output that drops arbitrarily many prior blocks validates, provided it still covers the plan's section ids (line 137); the next fidelity call's blockIds denominator is then recomputed from the shrunken draft (line 128)"
+      }
+    },
+    "M5_kit_promises_vs_schema": {
+      "finding_reverified": "S9-F3",
+      "claim_label": "Observed",
+      "promises": [
+        {
+          "quote": "For each visual supply its reader question, named nodes, typed edges, edge meaning, source support, necessary qualifications, text equivalent and proposed placement.",
+          "at": "docs/polaris-generation/AUTHORING.md lines 45-47 [corrected 2026-09-15 after review 1, F5: the sentence's last word, 'placement', is on line 47; this field read 'lines 45-46']",
+          "promised_fields": 8,
+          "schema_fields_present": 2,
+          "present": [
+            "named nodes (nodes[].label)",
+            "source support (sourceIds)"
+          ],
+          "absent": [
+            "reader question",
+            "edge meaning distinct from label",
+            "qualifications",
+            "text equivalent",
+            "proposed placement",
+            "legend"
+          ],
+          "schema_at": "provider-draft.ts lines 24-27"
+        },
+        {
+          "quote": "one meaningful trade-off, and links back to the parent and to its evidence",
+          "at": "docs/polaris-generation/AUTHORING.md lines 62-63 [corrected 2026-09-15 after review 2, G4: this field read 'line 62'; the clause begins on 62 and ends on 63, as the packet has said since review 1, F5]",
+          "promised_fields": 3,
+          "schema_fields_present": 0,
+          "schema_at": "provider-draft.ts line 28 (deepDives: id, title, sectionId, paragraphs)"
+        },
+        {
+          "quote": "add a glossary when it helps further reading",
+          "at": "docs/polaris-generation/AUTHORING.md lines 26-27 [corrected 2026-09-15 after review 2, G4: this field read 'line 26'; the clause ends on 27, as the packet has said since review 1, F5]",
+          "schema_field": null,
+          "sweep": "the literal 'glossar' (case-insensitive, Python re) occurs 0 times in provider-draft.ts and 0 times in pipeline.ts, and TWICE in prompts.ts - line 13 ('Use contents, glossary and comparison tables only when they help') and line 20, in the fidelity prompt ('every generated claim-bearing block, table cell, glossary explanation, deep dive and factual diagram element/edge must have actual support'); denominator: the six non-test sources [corrected 2026-09-15 after review 1, F6, which found the first draft saying 'once ... line 13' over a four-file denominator]"
+        },
+        {
+          "quote": "Glossary entries are shared by inline definitions and glossary routes",
+          "at": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md lines 40-41 [corrected 2026-09-15 after review 2, G4: this field read 'line 40'; the sentence spans both lines, so review 1's F5 found the dossier range exact here]",
+          "schema_field": null
+        },
+        {
+          "quote": "Every requested asset has a produced, unnecessary-with-reason or unresolved disposition",
+          "at": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md lines 42-43 [corrected 2026-09-15 after review 2, G4: this field read 'line 43'; the sentence begins on 42, as the packet has said since review 1, F5]",
+          "schema_field": null
+        },
+        {
+          "quote": "Give every requested asset a planned, unnecessary-with-reason or unresolved disposition.",
+          "at": "docs/polaris-generation/AUTHORING.md lines 101-102, inside a copy-pasteable Plan prompt block [corrected 2026-09-15 after review 2, G4: this field read 'line 102'; the sentence begins on 101, as the packet has said since review 1, F5]",
+          "schema_field": null
+        }
+      ],
+      "line_corrections_to_the_finding": {
+        "AUTHORING.md diagram promise": "S9-F3 cited 45-49; the sentence spans 45-47 [corrected 2026-09-15 after review 1, F5; this field read 'the sentence ends at 46', which was wrong in the other direction - S9-F3's range was closer than the first draft's correction]",
+        "AUTHORING.md deep-dive trade-off": "S9-F3 cited 60-63; the clause spans 62-63 [span widened 2026-09-15 after review 1, F5; this field read 'the clause is on 62']",
+        "ARTIFACTS-AND-TOOLS.md glossary": "S9-F3 cited 40-41; the sentence spans 40-41, so the finding's range was exact [corrected 2026-09-15 after review 1, F5; this field read 'the sentence begins at 40']"
+      }
+    },
+    "M6_no_egress_boundary_across_the_kit": {
+      "finding_reverified": "S9-F4",
+      "claim_label": "Observed",
+      "denominator": {
+        "files": 4,
+        "lines": 473,
+        "per_file": {
+          "docs/polaris-generation/README.md": 102,
+          "docs/polaris-generation/AUTHORING.md": 144,
+          "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md": 108,
+          "docs/polaris-generation/example.json": 119
+        }
+      },
+      "predicate_1": {
+        "literal": "egress",
+        "case_sensitive": true,
+        "count": 1,
+        "occurrences": [
+          {
+            "file": "docs/polaris-generation/README.md",
+            "line": 4,
+            "text": "This kit grants no source access, provider egress, authorship adoption or release."
+          }
+        ]
+      },
+      "predicate_2": {
+        "literal": "grants no",
+        "case_sensitive": true,
+        "count": 2,
+        "occurrences": [
+          {
+            "file": "docs/polaris-generation/README.md",
+            "line": 4
+          },
+          {
+            "file": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md",
+            "line": 15,
+            "text": "verified outside the LLM; putting a grant-shaped string in JSON grants nothing.",
+            "note": "about the invalidity of a self-asserted grant, not about whether the document grants anything"
+          }
+        ]
+      },
+      "AUTHORING_md_occurrences_of_either": 0,
+      "AUTHORING_md_stage_prompts_heading_line": 72,
+      "ARTIFACTS_per_stage_envelope_heading_line": 8,
+      "doctrine_tag_correction": {
+        "finding_said": "SEC-1",
+        "correct": "SEC-2",
+        "why": "SEC-1 (.syzygy/governance/doctrine/security.md line 10) is 'Authenticated by default' and governs endpoint authentication. SEC-2 (line 25) is 'Portfolio data leaves owner-controlled infrastructure only through explicit, scoped consent' and states in terms: 'Model providers are such services.'"
+      }
+    },
+    "M7_landed_validator_over_example_json": {
+      "claim_label": "Observed",
+      "subject": "docs/polaris-generation/example.json",
+      "method": "parse the file; build the validator context from its own sourceBundle.sources (one source, id s1); call validateStage for each of the six landed stages against each of three payloads (illustrativeOutput, illustrativeLaterDraft, the whole file); separately call stageSchema for the stage the file names",
+      "denominator": "18 validateStage calls plus 1 stageSchema call",
+      "results": {
+        "stageSchema('understand')": "throws invalid-stage",
+        "all 18 validateStage calls": "each throws invalid-fields"
+      },
+      "throws": 19,
+      "passes": 0,
+      "cause": "check() at provider-draft.ts lines 61-63 requires the payload's key set to equal the schema's required set exactly, so an object with a field the schema does not name is rejected before its contents are examined. illustrativeOutput carries editorialState, claims, unresolved, assetDispositions and coverage - five keys, none of which appears in the 25-name census.",
+      "fairness_qualification": "The file does not claim validator-conformance. Its own exampleKind is 'synthetic-documentation-handoff', its schemaStatus is 'candidate-not-registered', its stageId is 'understand' (a stage the landed pipeline does not have), and docs/polaris-generation/README.md lines 41-42 call it 'one small handoff... neither a complete manifesto nor a successful generator run'. The defect is the kit's routing at README.md line 41 ('Inspect the synthetic example'), which does not say which half is executable."
+    },
+    "M8_tasks_md_checkbox_count": {
+      "claim_label": "Observed",
+      "file": "openspec/changes/polaris-manifesto-generation/tasks.md",
+      "predicate": "^- \\[[ xX]\\] ",
+      "denominator": "the whole file, 52 lines",
+      "total_boxes": 24,
+      "unchecked": 24,
+      "checked": 0,
+      "dossier_prerequisite_claim": "none (confirm against generator tasks.md)",
+      "verdict": "confirmed in the sense the dossier meant it: no doctrine amendment, owner act or spec amendment is needed to FILE the work, and every slice duplicates an unchecked task and is filed against it rather than as new scope. It does not follow that no owner ruling is needed to LAND it: Q1 and Q3 are genuine gates."
+    },
+    "M9_file_set_intersection": {
+      "claim_label": "Observed",
+      "method": "extract every code span from each sibling packet; keep those that are implementation-plane paths (apps/, packages/, scripts/, docs/polaris-generation/, or package.json) AND resolve as a real file in this worktree; intersect with M6's 23-file candidate surface [Superseded 2026-09-15 after review 2, G4: this names one predicate where the packet publishes two. The counts below are os.path.exists; the packet's table also publishes os.path.isfile (M1 1, M2 11, M3 13, M4 22, M5 9), and both were run against the sibling heads f2f37dd, 6574600, 63b8e33, ba9ca61 and 4090f98. The superseded single-predicate wording is retained unedited.]",
+      "method_note_review2_G4": "Per-sibling counts below are the os.path.exists figures taken in THIS worktree and were not labelled by predicate or by sibling commit; the sibling heads are recorded in the packet table. For laneB the figures published here and in the packet reproduce in neither worktree - see laneB_recount_review2_G3 below.",
+      "m6_surface_count": 23,
+      "m6_surface": [
+        "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/draft-preview.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+        "apps/three-surface-poc/src/polaris-generation/pipeline-demo-main.ts",
+        "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts",
+        "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md",
+        "docs/polaris-generation/AUTHORING.md",
+        "docs/polaris-generation/README.md",
+        "docs/polaris-generation/example.json",
+        "package.json",
+        "packages/polaris-generation-core/README.md",
+        "packages/polaris-generation-core/src/canonical-json.test.ts",
+        "packages/polaris-generation-core/src/canonical-json.ts",
+        "packages/polaris-generation-core/src/index.ts",
+        "packages/polaris-generation-core/src/parse-json.test.ts",
+        "packages/polaris-generation-core/src/parse-json.ts",
+        "packages/polaris-generation-core/src/pipeline.test.ts",
+        "packages/polaris-generation-core/src/pipeline.ts",
+        "packages/polaris-generation-core/src/prompts.test.ts",
+        "packages/polaris-generation-core/src/prompts.ts",
+        "packages/polaris-generation-core/src/provider-draft.test.ts",
+        "packages/polaris-generation-core/src/provider-draft.ts"
+      ],
+      "per_sibling": {
+        "M1 (lane A, on main)": {
+          "their_resolving_impl_paths": 3,
+          "intersection": 0
+        },
+        "M2 (PR #36, P-69)": {
+          "their_resolving_impl_paths": 17,
+          "intersection": 0
+        },
+        "M3 (PR #37, P-70)": {
+          "their_resolving_impl_paths": 15,
+          "intersection": 0
+        },
+        "M4 (PR #38, P-71)": {
+          "their_resolving_impl_paths": 26,
+          "intersection": 0
+        },
+        "M5 (PR #39, P-72)": {
+          "their_resolving_impl_paths": 11,
+          "intersection": 0
+        },
+        "laneB (PR #35, P-68)": {
+          "their_resolving_impl_paths": 3,
+          "their_resolving_impl_paths_superseded_2026_09_15": "The 3 above reproduces in neither worktree and is retained unedited, marked after review 2, G3/G4. Recomputed this session over the three paths listed below: in this worktree at e318cbd, 1 under os.path.exists and 1 under os.path.isfile (only scripts/check_governance.py is present); in the lane-B worktree at 4090f98, 3 and 3. The other two paths exist only on lane B's branch and are directories nowhere. The intersection is 0 under both predicates in both worktrees, unchanged.",
+          "intersection": 0,
+          "paths": [
+            "scripts/build_pwb_scoped_attributes_amendment.py",
+            "scripts/check_governance.py",
+            "scripts/estimate_pwb_scoped_attributes_saving.py"
+          ]
+        }
+      },
+      "near_misses_named": [
+        {
+          "sibling": "M4",
+          "span": "apps/three-surface-poc/src/polaris-generation/",
+          "where": "its line 49",
+          "context": "a baseline-provenance paragraph establishing what changed between f4589e2 and a9f671e; proposes touching no file inside it"
+        },
+        {
+          "sibling": "M5",
+          "span": "packages/polaris-generation-core/",
+          "where": "its line 29",
+          "context": "same; its own sentence says 'none of the files this packet cites'"
+        }
+      ],
+      "shared_governance_file": {
+        "path": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+        "touched_by": [
+          "M2",
+          "M3",
+          "M4",
+          "M5",
+          "laneB",
+          "M6"
+        ],
+        "touched_by_M6": true,
+        "touched_by_M6_superseded_2026_09_15": "This field read false until 2026-09-15; corrected after review 2, G2. M6 writes this register: P-73 was added at e318cbd and git diff --name-only a9f671e e318cbd names this path.",
+        "disclosure": "This packet writes exactly two files and no register row, so its six owner questions are unregistered as of this commit. Whoever lands this packet should file them. [Superseded 2026-09-15 after review 2, G2: both sentences were true of the first draft and are false at e318cbd. P-73 is filed at e318cbd on branch agent/syzygy-dov.6 and this register is one of the four files the branch changes; do not file the questions a second time. The superseded sentences are retained above, unedited.]"
+      },
+      "sequencing_risk": "laneB edits scripts/check_governance.py, which this packet's two files must pass. Land laneB first, then re-run the check before merging this packet."
+    },
+    "M10_specification_mapping": {
+      "claim_label": "Observed",
+      "effective_composition": {
+        "requirements": 31,
+        "scenarios": 177,
+        "authority": ".syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md, Scope paragraph"
+      },
+      "amended_requirements": [
+        "002",
+        "004",
+        "006",
+        "009",
+        "012",
+        "014",
+        "019"
+      ],
+      "added_requirements": [
+        "030",
+        "031"
+      ],
+      "unchanged_predecessor_requirements": 22,
+      "base_spec": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "overlay_spec": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "per_slice": {
+        "slice 1 onramp": {
+          "requirement": null,
+          "scenario": null,
+          "rfc2_26_consequence_class": null,
+          "tasks_md_task": "3.5 (tasks.md line 50)"
+        },
+        "slice 2 asset disposition": {
+          "requirements": [
+            {
+              "id": "REQ-polaris-generation-019",
+              "at": "overlay line 453",
+              "predecessor_at": "base line 1015",
+              "scenario": "Two requested diagrams have different obligations",
+              "scenario_at": "overlay lines 465-469"
+            },
+            {
+              "id": "REQ-polaris-generation-004",
+              "at": "overlay line 78",
+              "scenario": "Required visual unavailable",
+              "scenario_at": "overlay lines 103-107"
+            },
+            {
+              "id": "REQ-polaris-generation-003",
+              "at": "base line 98",
+              "scenario": "Computed output has no enabled production renderer",
+              "scenario_at": "base lines 159-163"
+            }
+          ],
+          "limb_1": "available",
+          "tasks_md_task": "2.2 (tasks.md line 22)"
+        },
+        "slice 3 coverage rows": {
+          "requirements": [
+            {
+              "id": "REQ-polaris-generation-006",
+              "at": "overlay line 180",
+              "predecessor_at": "base line 302",
+              "scenario": "Source trade-off omitted entirely",
+              "scenario_at": "overlay lines 199-203"
+            }
+          ],
+          "limb_1": "available",
+          "tasks_md_task": "2.4 (tasks.md line 24)"
+        },
+        "slice 4 edit/repair accounting": {
+          "requirements": [
+            {
+              "id": "REQ-polaris-generation-006",
+              "at": "overlay line 180",
+              "clause": "The original finding, repair, dispositions and input/output identities SHALL remain traceable"
+            }
+          ],
+          "scenarios_read": [
+            "overlay 187",
+            "overlay 193",
+            "overlay 199",
+            "overlay 205",
+            "overlay 214"
+          ],
+          "scenario_count_under_REQ_006": 5,
+          "scenario_naming_the_edit_stage_deletion_case": 0,
+          "limb_1": "requirement available, scenario partial",
+          "tasks_md_task": "2.4 (tasks.md line 24)"
+        },
+        "slice 5 boundary restatement": {
+          "requirement": null,
+          "scenario": null,
+          "doctrine": "SEC-2",
+          "rfc2_26_consequence_class": null
+        },
+        "slice 6 deferred": {
+          "requirements_that_would_apply": [
+            {
+              "id": "REQ-polaris-generation-003",
+              "at": "base line 98",
+              "scenario": "Editorial relationship diagram",
+              "scenario_at": "base lines 117-121"
+            },
+            {
+              "id": "REQ-polaris-generation-004",
+              "at": "overlay line 78",
+              "scenario": "No supported optional asset",
+              "scenario_at": "overlay lines 91-95"
+            }
+          ],
+          "limb_1": "deferred, not run"
+        }
+      },
+      "rfc2_26_test": {
+        "clause_at": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md lines 196-221",
+        "heading_at": "line 194",
+        "quoted_in_packet": "in full, both paragraphs, no elision",
+        "denominator": 6,
+        "denominator_source": "the six slice rows of the packet's Gate 3 'The authorizing act, per slice' table"
+      },
+      "disposition_enum_spelling_residue": {
+        "claim_label": "Observed",
+        "spellings": [
+          {
+            "literal": "produced, omitted or unresolved",
+            "at": "overlay line 453 and base line 1015 (REQ-polaris-generation-019)",
+            "bound": true
+          },
+          {
+            "literal": "produced, reasoned-omission or unresolved",
+            "at": "overlay line 78 (REQ-polaris-generation-004)",
+            "bound": true
+          },
+          {
+            "literal": "Produced / Omitted / Unresolved",
+            "at": "openspec/changes/polaris-manifesto-generation/SCHEMA-CONTRACT.md lines 35-39",
+            "bound": true
+          },
+          {
+            "literal": "planned, unnecessary-with-reason or unresolved",
+            "at": "docs/polaris-generation/AUTHORING.md lines 101-102 [corrected 2026-09-15 in the review-2 pass; this field read 'line 102' and the sentence begins on 101. Not named by G4, which enumerated promises[1..5]; corrected here because it is the same defect in the same file]",
+            "bound": false
+          },
+          {
+            "literal": "produced, unnecessary-with-reason or unresolved",
+            "at": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md lines 42-43 [corrected 2026-09-15 in the review-2 pass; this field read 'line 43' and the sentence begins on 42. Not named by G4, which enumerated promises[1..5]; corrected here because it is the same defect in the same file]",
+            "bound": false
+          }
+        ],
+        "consequence": "Whichever literal the executable schema adopts will disagree with at least one bound artifact, and no bound artifact may be edited to agree. This is Q1's residue and is the owner's to settle."
+      }
+    },
+    "M11_acts": {
+      "claim_label": "Observed",
+      "implementation_authorization": {
+        "path": ".syzygy/governance/decisions/POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md",
+        "date": "2026-09-12",
+        "authorization_sentence_line": 42,
+        "authorization_sentence_verbatim": "Authorize the full EXECUTION-PHASES.md implementation goal, including protected effect host, complete owner experience, two-project and changed-source proof obligations. Phase A alone is not completion. Real-project reads, provider egress and destination writes remain separately admitted; no effect, production release, broad remote access or observed-project code execution is authorized by this act."
+      },
+      "specification_adoption": {
+        "path": ".syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md",
+        "date": "2026-09-12",
+        "scope_sentence_line": 42
+      },
+      "applicability": {
+        "path": ".syzygy/governance/decisions/POLARIS-GENERATOR-APPLICABILITY-ACT.md",
+        "date": "2026-09-12",
+        "scope_sentence_line": 42
+      },
+      "understanding_amendment": {
+        "path": ".syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md",
+        "date": "2026-09-13",
+        "grants_no_implementation_extension_line": 40,
+        "verbatim": "This act grants no implementation extension, source/provider/content permission, write consent, deployment or release."
+      },
+      "phase_for_every_slice": "A",
+      "phase_A_scope_verbatim": "Implement the source/draft contracts, immutable identities and support, bounded pure stage controller, dependency invalidation, trusted rendering and fixture adapters. (EXECUTION-PHASES.md lines 10-11)",
+      "phase_A_requirement_set_verbatim": "Requirements 001-012, 014-019 and 025 provide the data/reading/failure behavior for these mechanics. (EXECUTION-PHASES.md line 18)",
+      "offer_file_set": {
+        "record": "docs/evidence/polaris-generator-current-scope-2026-09-12.json",
+        "rows": 21,
+        "note": "SCHEMA-CONTRACT.md, ASSET-CONTRACT.md, SOURCE-POLICY.md, EXECUTION-PHASES.md, tasks.md and the base spec are all rows; every one is therefore digest-bound and no slice proposes editing one."
+      },
+      "pre_act_banner_caution": "docs/evidence/polaris-generator-current-scope-2026-09-12.json carries status 'unadopted; awaiting final independent review and owner acts' and implementedGenerator false. It is a pre-act snapshot whose status line was never rewritten; the three acts were performed 2026-09-12. Both specification files likewise still open 'Candidate specification - binds nothing until the required owner adoption' over bytes an act bound. Read the act record, never the package banner."
+    }
+  },
+  "owner_questions": [
+    {
+      "id": "Q1",
+      "gist": "Is adding a disposition field to the provider stage schemas an implementation of the adopted specification, or an amendment to it?",
+      "recommended": "an implementation; no CC-REV-2 delta for the field itself",
+      "arms": 2,
+      "default_if_unanswered": "slices 2, 3 and 4 do not ship"
+    },
+    {
+      "id": "Q2",
+      "gist": "Does the support discriminant (quoted / synthesis / inference / unresolved replacing bare sourceIds) go in with slice 2, or is it deferred?",
+      "recommended": "defer to its own funnel",
+      "arms": 2,
+      "default_if_unanswered": "deferred; the claim-level hole is recorded as open"
+    },
+    {
+      "id": "Q3",
+      "gist": "Should the fidelity verdict become fail-closed over coverage rows, so silence blocks readiness instead of passing it?",
+      "recommended": "yes",
+      "arms": 2,
+      "default_if_unanswered": "rows added, polarity unchanged; readiness still passes on silence"
+    },
+    {
+      "id": "Q4",
+      "gist": "example.json fails the landed validator 19 of 19; regenerate it from a real validation, or re-label it?",
+      "recommended": "regenerate, keeping a separated illustrative block for the understanding stage",
+      "arms": 2,
+      "default_if_unanswered": "the one-sentence re-labelling arm"
+    },
+    {
+      "id": "Q5",
+      "gist": "The onramp: install line only, or install line plus a fresh-install battery assertion, and is the package added to build:poc's explicit tsc -b list?",
+      "recommended": "all three",
+      "arms": 2,
+      "default_if_unanswered": "the install line lands, the assertion does not"
+    },
+    {
+      "id": "Q6",
+      "gist": "Which act covers the five slices, and does RFC2-26 gate any of them?",
+      "recommended": "the existing implementation-authorization act covers all five; RFC2-26 gates none",
+      "arms": 2,
+      "default_if_unanswered": "slices 1 and 5 proceed; slices 2, 3 and 4 hold"
+    }
+  ],
+  "figures_that_differ_from_the_dossier": [
+    "The README's demo command chain SUCCEEDS at a9f671e after npm ci (exit 0); the dossier says it 'fails with TS2307 from a fresh checkout'. The break is conditional on the workspace symlink, established by counterexample in both directions.",
+    "The dossier's syzygy_audited_at is f4589e2, at which the entire generation package did not exist. The audit base for surfaces L3 and S9 is 1932f74; the M6 surface is byte-identical across 1932f74..a9f671e.",
+    "S9-F4 tags SEC-1 (endpoint authentication); the governing doctrine for the no-egress boundary is SEC-2.",
+    "M6's Slices list has five entries where its What bullet names six moves; S9-M3 (the diagram/deep-dive/glossary gap) appears in the What and in evidence_findings and in no slice. It is carried in the packet as a deferred slice 6 with its mapping recorded.",
+    "S9-F3's line ranges are slightly long in three places: AUTHORING.md 45-49 (the sentence ends at 46), 60-63 (the clause is on 62), ARTIFACTS-AND-TOOLS.md 40-41 (begins at 40).",
+    "[Corrected entry, appended 2026-09-15 after review 1, F5; the entry above is retained unedited.] S9-F3's line ranges, re-read at source: AUTHORING.md 45-49 is long, the sentence spans 45-47, not 45-46; 60-63 is long, the clause spans 62-63; ARTIFACTS-AND-TOOLS.md 40-41 is exact, the sentence spans both lines.",
+    "A defect the dossier does not name: package.json line 15's build:poc tsc -b list omits packages/polaris-generation-core, which builds only transitively. [Qualified 2026-09-15 after review 2, G7: only transitively IN THE build:poc CHAIN; package.json lines 14 (build) and 22 (typecheck) name the package explicitly. The superseded sentence is retained unedited.]"
+  ],
+  "not_verifiable_this_session": [
+    "Whether the sibling branches' actual diffs stay inside the paths their packets cite, until they land.",
+    "Which arm the owner takes on Q1, and therefore whether slices 2, 3 and 4 are one change or a change plus an amendment.",
+    "Which disposition literal the owner will choose; three bound spellings are in force simultaneously and none may be edited to agree.",
+    "Whether an account of what an editor changed counts as an 'API answer over epistemic state' under RFC2-26's consequence list; this packet states the reading and does not resolve it."
+  ],
+  "conventions_checked": {
+    "packet_non_fence_lines": 1299,
+    "wrapped_code_spans": 0,
+    "lines_over_78_outside_fences_tables_headings": 2,
+    "lines_over_78_note": "each is a single unbreakable code-span path; re-measured 2026-09-15 after the review-1 repairs, and the first draft's figures over the bytes review 1 was bound to were 1073 non-fence lines, 261 distinct code spans and over-width lines at 657 and 787",
+    "distinct_code_spans": 295,
+    "code_spans_with_slash_that_do_not_resolve": 10,
+    "code_spans_with_slash_exceptions": [
+      ".syzygy/**",
+      "openspec/**",
+      "apps/**",
+      "packages/**",
+      "docs/**",
+      "TS2307: Cannot find module '@syzygy/polaris-generation-core'",
+      "TS2307: Cannot find module '@syzygy/polaris-generation-core' or its corresponding type declarations",
+      "decisions/",
+      "dist/",
+      "dist/provider-draft.js"
+    ],
+    "observed_repository_paths_backticked": 0,
+    "act_arguments_or_signed_digests_reproduced": 0,
+    "cg_1b_note": "The path of this packet's first review is named without a code span, because CG-1b requires every code-span path to resolve and it does not exist yet. An earlier draft backticked it and CG-1b failed on exactly that reference. [Superseded 2026-09-15 after review 2, G4: the raw exists and is tracked, the packet backticks it, the code span resolves and CG-1b passes. Review 2's own raw is retained beside it. The superseded sentences are kept unedited.]",
+    "lines_over_78_at": [
+      760,
+      890
+    ]
+  },
+  "independent_review": {
+    "count": 2,
+    "note": "Two independent fresh-context reviews, retained verbatim at docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-RAW.md (verdict REVISE) and docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-2-RAW.md (verdict CONFIRM WITH EXCEPTIONS). Review 1's thirteen findings were re-derived against source and applied 2026-09-15; see review1 below. Review 2 verified those repairs 9 REPAIRED, 4 PARTIAL and 0 NOT REPAIRED over 13 and raised twelve exceptions, all re-derived and applied 2026-09-15; see review2 below. Verification rule 10: each review binds the bytes it names, not these, and review 2's exception repairs are uncovered until a third review confirms them. [This field read count 1 and 'the repairs are uncovered until a second review confirms them' until 2026-09-15, review 2; and count 0 and 'This packet has had no independent review' before that.]"
+  },
+  "packet_measured": {
+    "path": "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md",
+    "bytes": 86188,
+    "sha256": "5ff5520f5d4c3e709512c65bf81ca65ce4ac289c223d06a31f341999a418883d",
+    "total_lines": 1122,
+    "note": "measured this session after the last edit to the packet; verification rule 10 binds a review to exactly these bytes [Superseded 2026-09-15 after review 2, G4: these three values are the FIRST DRAFT's, at 91b1343, and were never re-measured after the review-1 repairs. They are retained unedited. The post-review-1 values are under review1.packet_after_repairs; the post-review-2 values are under packet_measured_after_review2 below, computed last.]"
+  },
+  "packet_measured_after_review2": {
+    "path": "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md",
+    "bytes": 137166,
+    "sha256": "f2ffc748af416958f9935530a3832ad58643caae9dce79a83558ea4a9fdc877b",
+    "total_lines": 1521,
+    "line_count_convention": "split-on-newline, the convention stated once in the packet; wc -l returns one fewer",
+    "note": "computed LAST, after every other edit of this pass, so it names the bytes that carry it. Verification rule 10: a review is bound to exactly these bytes and any later edit retires it."
+  },
+  "governance_check": {
+    "command": "python3 scripts/check_governance.py",
+    "run_in": "the worktree at a9f671e with both files present",
+    "baseline_before_these_files": "32 OK, 20 WARN, 0 FAIL (52 checks)",
+    "last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+    "note": "An earlier draft failed CG-1b on one code-span path (the not-yet-written first review) and was repaired by naming it without a code span."
+  },
+  "review1": {
+    "raw": "docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-RAW.md",
+    "bytes": 35780,
+    "sha256": "c6e307a55e9215a2d9d884936cb295cef7b6ae1a8fff6a01c60905de78bb581b",
+    "verdict": "REVISE - one blocking, eleven non-blocking, one editorial",
+    "reviewed_commit": "91b1343",
+    "reviewed_packet_bytes": 86188,
+    "reviewed_record_bytes": 42882,
+    "repairs_applied_this_session": true,
+    "uncovered_until_second_review": true,
+    "re_derived_before_applying": {
+      "understanding_act_limiting_sentence": "POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md lines 39-41, read and quoted from the file this session, not transcribed from the review",
+      "spec_sentence_sweeps_python_re": {
+        "slice4_traceability_clause": "1 in the overlay (line 180), 0 in the predecessor",
+        "slice6_glossary_clause": "1 in the overlay (line 78), 0 in the predecessor",
+        "REQ_004_disposition_sentence": "present at predecessor line 186",
+        "REQ_006_coverage_sentence": "present at predecessor line 302",
+        "REQ_019_disposition_sentence": "present at predecessor line 1015",
+        "denominator": "the two specification files, whitespace-normalised"
+      },
+      "demo_rerun": "two runs into separate scratch directories: 7 files and 87940 bytes both times; run 2's counterexample re-executed (symlink aside, both dist trees removed) giving exit 2 and 42 error TS lines = 5 TS2307 + 32 TS7006 + 4 TS2339 + 1 TS7053 across 6 files, then symlink restored and exit 0, short git status clean",
+      "package_surface": "index.ts lines 1-14 re-export eleven runtime values and thirteen types; src/ holds six non-test sources",
+      "baseline_diff": "git diff --name-status f4589e2 a9f671e over the four paths: 20 A, 2 M (docs/polaris-generation/README.md and package.json); example.json, AUTHORING.md and ARTIFACTS-AND-TOOLS.md existed at f4589e2 with the same blob; git diff --name-only 1932f74..a9f671e over openspec and .syzygy: 3 rows, all under governance decisions, no specification file",
+      "kit_line_spans": "AUTHORING.md 26-27, 45-47, 62-63, 101-102; ARTIFACTS-AND-TOOLS.md 40-41 and 42-43; core README sentence at line 52, command at 55",
+      "glossar_sweep": "0 in provider-draft.ts, 0 in pipeline.ts, 2 in prompts.ts (lines 13 and 20); denominator the six non-test sources",
+      "rfc2_26": "lines 194-221 read; the scope sentence spans 219-220 and line 221 carries the shape-parallel list; the reviewed N/A-judgment route is named in the clause itself",
+      "synthetic_verification_record": "docs/evidence/polaris-pipeline-synthetic-verification-2026-09-13.json lists 17 source digests; the digests recorded for provider-draft.ts and draft-preview.ts equal those files' current bytes (compared, neither value reproduced here)",
+      "sibling_state": "five sibling registers carry exactly one row each (P-68, P-69, P-70, P-71, P-72) and M6's carried none; sibling heads f2f37dd, 6574600, 63b8e33, ba9ca61, 4090f98 are the heads review 1 read, so no branch advanced; the first-draft intersection counts reproduce under os.path.exists and the reviewer's under os.path.isfile, and the intersection is 0 under both",
+      "genuine_gates": "'six questions' occurs once in the packet (the section heading) and 'six gates' zero times, so the packet stated no six-gate count; it named Q1 and Q3 as the genuine gates and now names Q1, Q3 and Q6"
+    },
+    "dispositions": {
+      "F1": "CONFIRMED, blocking; repairs (a)-(d) applied; Q6's recommendation changed",
+      "F2": "CONFIRMED; 87940 bytes, deterministic over two runs",
+      "F3": "CONFIRMED; eleven runtime exports, six non-test sources",
+      "F4": "CONFIRMED; 20 A / 2 M, three unchanged files named, spec sweep added",
+      "F5": "CONFIRMED; README sentence at 52, diagram sentence at 45-47, every span widened",
+      "F6": "CONFIRMED; glossar occurs twice in prompts.ts, lines 13 and 20",
+      "F7": "CONFIRMED both parts; scope sentence 219-220, N/A-judgment arm added",
+      "F8": "PARTLY CONFIRMED; Q5 reclassified as a delegable cost trade-off and kept in the batch; the packet stated no six-gate count, so nothing there needed correcting beyond adding Q6 to the genuine-gates sentence",
+      "F9": "CONFIRMED; the deferred REQ-006 conformance named in the Q3 cell",
+      "F10": "CONFIRMED; the verification record named in Gate 3 with the re-run obligation, and Gate 6 item 8 narrowed to act-bound bytes",
+      "F11": "(a) CONFIRMED, five siblings; (b) PARTLY CONFIRMED - the counts differ by predicate, not by branch drift; both predicates published with each sibling head",
+      "F12": "CONFIRMED all four; six figures, banner reworded, run-2 breakdown re-measured, line-count convention stated once",
+      "F13": "CONFIRMED; the forcing step labelled Inferred in Q1 and in the handoff"
+    },
+    "recommended_answers_changed": [
+      "Q6: from 'the existing implementation-authorization act covers all five; no new act is needed' to 'it covers slices 1, 2, 3 and 5 on either reading; slice 4 should be ruled explicitly before it lands'. RFC2-26 still gates none. The default if unanswered is unchanged and already held slice 4.",
+      "Q1, Q2, Q3, Q4, Q5: unchanged. Q1 and Q3 gained disclosures, Q5 was reclassified as a delegable cost trade-off, and none of that moved what they advise."
+    ],
+    "packet_after_repairs": {
+      "bytes": 116325,
+      "sha256": "da54c37407644627352e835dcf15bf182da40ba723ea9a673efcd5ff329075aa",
+      "note": "measured after every repair; verification rule 10 binds review 1 to the 86188 bytes it named, not to these"
+    },
+    "conventions_remeasured_after_repairs": {
+      "non_fence_lines": 1299,
+      "wrapped_code_spans": 0,
+      "distinct_code_spans": 295,
+      "lines_over_78_outside_fences_and_tables": 6,
+      "lines_over_78_outside_fences_tables_and_headings": 2,
+      "note": "the packet's own predicate excludes headings and gives 2, both single unbreakable code-span paths; the review prompt's predicate keeps headings and gives 6. The first draft's figures, over the bytes review 1 was bound to, were 1073 non-fence lines and 261 distinct code spans."
+    },
+    "register_row": "P-73 added to .syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md on branch agent/syzygy-dov.6; 22 open rows and 5 acceptance-act rows, 27 in all, counted from main's 21/5/26 at a9f671e with the predicate '^| P-' partitioned by section"
+  },
+  "review2": {
+    "raw": "docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-2-RAW.md",
+    "bytes": 35804,
+    "sha256": "6107894098ddbdc59a7b059c94c4ec0d7a617b6e53c75c6c2ff6607c0fd8d2b0",
+    "verdict": "CONFIRM WITH EXCEPTIONS - no blocking, seven non-blocking, five editorial",
+    "reviewed_commit": "e318cbd",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md": {
+        "bytes": 116325,
+        "sha256": "da54c37407644627352e835dcf15bf182da40ba723ea9a673efcd5ff329075aa"
+      },
+      "docs/evidence/polaris-m6-generator-honesty-funnel-2026-09-15.json": {
+        "bytes": 51469,
+        "sha256": "a90840448f34c85102e13cd89c1cadc311c91c66eaf8c3fb20efa5221aa4149c"
+      },
+      ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+        "bytes": 30541,
+        "sha256": "52ba85289540edefa5f83d8b74be35fd6bc11f34f13b0e5ab7fae2a1a876b826"
+      }
+    },
+    "repairs_applied_this_session": true,
+    "f1_f13_verification_as_review2_states_it": {
+      "REPAIRED": ["F1", "F2", "F6", "F7", "F8", "F9", "F10", "F12", "F13"],
+      "PARTIAL": ["F3", "F4", "F5", "F11"],
+      "NOT_REPAIRED": [],
+      "denominator": 13,
+      "note": "9 REPAIRED, 4 PARTIAL, 0 NOT REPAIRED. F12 is REPAIRED in (b), (c) and (d) and partial in (a), which review 2 raises as G1. Every partial is a residue in this evidence record or one named instance of F5, never a failure of the packet's argument; the blocking F1 is fully discharged and was independently re-derived by review 2's own sweep of both specification files."
+    },
+    "disposition_summary": {
+      "G1": "CONFIRMED and applied (non-blocking). The figures_that_differ_from_the_dossier array carries 7 entries and the packet's reconciliation list 6, counted this session. The array's entries at index 4 and 5 are both S9-F3's line ranges - the stale first-draft entry and the corrected entry appended after review 1, F5 - and the packet's item (5) is the corrected one. The sentence now says seven against six, names the appended corrected entry and states the collapse explicitly; the superseded 'Six figures ... in the same order' wording is quoted and dated in place.",
+      "G2": "CONFIRMED and applied (non-blocking). At e318cbd this record's measurements.M9_file_set_intersection.shared_governance_file carried touched_by_M6 false, a five-member touched_by and a disclosure telling a reader the six questions were unregistered and should be filed; git diff --name-only a9f671e e318cbd returns four paths, one of them this register. Applied here by same-line edits: touched_by_M6 is true, touched_by gains M6, and the disclosure keeps its text with a dated superseded clause appended inside the same string naming P-73 as filed at e318cbd. Nothing deleted.",
+      "G3": "CONFIRMED and applied (non-blocking). The three lane-B implementation-plane code spans this record names resolve 1 and 1 under os.path.exists and os.path.isfile in the M6 worktree at e318cbd (only scripts/check_governance.py is present) and 3 and 3 in the lane-B worktree at 4090f98; the published 3 / 1 reproduces in neither. Intersection with M6's 23-file surface is 0 under both predicates in both worktrees - four resolutions and four intersections computed this session. The packet's row now publishes both worktrees' figures and says which worktree each was taken in, a new dated paragraph recomputes the row and names branch content rather than the predicate as the cause, and the directory-span sentence is narrowed to the five rows it holds for. The load-bearing zero is unchanged.",
+      "G4": "CONFIRMED at all seven sites and applied (non-blocking). Each read at e318cbd this session: the F4 sentence at record line 21, other_exports at 399, promises[1..5].at at 452/459/465/470/475, M9's method at 563 and its per-sibling counts at 592-612, cg_1b_note at 915 and packet_measured at 925-930. Marked in place by same-line edits inside the existing strings, and by sibling keys for the two non-string values; every existing line is kept. packet_measured's numbers are not overwritten - they are marked, and packet_measured_after_review2 carries bytes, sha256 and the split-on-newline line count computed LAST, after every other edit of this pass.",
+      "G5": "CONFIRMED and applied (non-blocking). The kit README's product promise begins on line 69 and ends on 70; RFC2-24's clause runs 92-93, line 92 ending at 'carries'. Both packet citations widened to their true spans with the superseded single-line citation quoted and dated. The first is the instance review 1's F5 named explicitly and left unwidened.",
+      "G6": "CONFIRMED and applied (non-blocking). Swept this session over both versions: at 91b1343 'six questions' returns 1 and 'six gates' 0; over the current bytes both return more, every extra hit lying inside the reporting sentences. The cell now attributes 1 and 0 to the first draft by commit and publishes the current figures beside them. Self-reference was handled mechanically: both figures were written as placeholder tokens and resolved by a final pass after every other edit in this pass, so the published numbers are true of the bytes carrying them.",
+      "G7": "CONFIRMED IN SUBSTANCE, with one line number of the finding's own corrected, and applied (non-blocking). package.json line 14 (build) and line 22 (typecheck) each name packages/polaris-generation-core explicitly; G7 cites typecheck at line 21, which is poc:pwb-mutation-sweep. What rests solely on apps/three-surface-poc/tsconfig.json's project reference is the build:poc chain. Applied at the Gate 1 paragraph, Q5's cell and Gate 4's references sentence, each narrowed to the build:poc chain with the superseded wider wording quoted and dated, and line 22 used throughout; mirrored at this record's two 'builds only transitively' sites. The register's Q5 clause does not carry the over-wide claim and needed no mirror, swept this session. Q5's third limb and its recommendation are unchanged.",
+      "G8": "CONFIRMED at both sites and applied (editorial). The act's line 39 opens 'Revocation relationship: none.' and the packet quoted from 'Existing implementation', naming a span wider than the text given. Both sites now quote the whole span from line 39's first sentence rather than narrowing the citation, so the revocation sentence the packet elsewhere names is inside the quotation.",
+      "G9": "CONFIRMED and applied (editorial). security.md lines 25-37 bold only 'Model providers are such services.'; the packet also bolded 'including prompts'. The words are otherwise verbatim. The added emphasis is dropped rather than labelled, and the removal is recorded in place with its date, because a quotation a reader cannot distinguish from its source is the defect.",
+      "G10": "CONFIRMED and applied (editorial). The intersection table's M1 row named 91b1343 as 'this worktree', which is at e318cbd. git diff --name-only 91b1343 e318cbd over docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md is empty, so the M1 packet is byte-identical at both and no measured figure moves. The row now names e318cbd and states the byte-identity at 91b1343, where the figures were taken.",
+      "G11": "CONFIRMED and applied (editorial). At e318cbd the branch carries four committed files and git status --short in the worktree is empty. Gate 6 item 7 now states both, with the superseded 'clean of everything but this packet's two files' sentence quoted and dated in place.",
+      "G12": "CONFIRMED and applied (editorial). Gate 0's 'so those slices are covered on either reading of that sentence' is a reading of what the implementation act authorizes, which Q6 declines to settle and labels Inferred in both arms; the Observed half now carries its label and the consequence carries Inferred with a pointer to Q6."
+    },
+    "re_derived_before_applying": {
+      "G1_array_versus_list": {
+        "record_array_entries": 7,
+        "packet_list_items": 6,
+        "collapsed_pair": "array indices 4 and 5, the stale and the corrected S9-F3 line-range entries",
+        "method": "counted this session from this file and from the packet"
+      },
+      "G2_register_touched": {
+        "git_diff_name_only_a9f671e_e318cbd": [
+          ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+          "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md",
+          "docs/evidence/polaris-m6-generator-honesty-funnel-2026-09-15.json",
+          "docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-RAW.md"
+        ],
+        "p_73_filed_at": "e318cbd"
+      },
+      "laneB_recount_review2_G3": {
+        "paths": [
+          "scripts/build_pwb_scoped_attributes_amendment.py",
+          "scripts/check_governance.py",
+          "scripts/estimate_pwb_scoped_attributes_saving.py"
+        ],
+        "m6_worktree_at_e318cbd": {"os_path_exists": 1, "os_path_isfile": 1, "intersection": 0},
+        "laneB_worktree_at_4090f98": {"os_path_exists": 3, "os_path_isfile": 3, "intersection": 0},
+        "published_row_superseded": "3 under os.path.exists and 1 under os.path.isfile, reproducible in neither worktree",
+        "cause": "branch content, not the predicate: two of the three paths exist only on lane B's branch and are directories nowhere",
+        "denominator": "the three named paths against the 23-file M6 surface published above"
+      },
+      "G5_line_spans": {
+        "docs/polaris-generation/README.md": "product promise 69-70; the sentence begins on 69 at 'Missing evidence is'",
+        ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md": "RFC2-24 clause 92-93; line 92 ends at 'carries'"
+      },
+      "G6_self_referential_sweep": {
+        "predicate": "grep -o -F over the whole packet, literals 'six questions' and 'six gates'",
+        "at_91b1343": {"six_questions": 1, "six_gates": 0},
+        "at_this_commit": {"six_questions": 6, "six_gates": 3},
+        "self_reference_handling": "both current figures were written as placeholder tokens and resolved by a final pass after every other edit of this pass, including the review-2 section, so they are true of the bytes that carry them"
+      },
+      "G7_package_json": {
+        "line_14_build": "names packages/polaris-generation-core explicitly",
+        "line_15_build_poc": "four projects, does not name packages/polaris-generation-core",
+        "line_22_typecheck": "names packages/polaris-generation-core explicitly",
+        "finding_line_number_corrected": "G7 cites typecheck at line 21; line 21 is poc:pwb-mutation-sweep. package.json is 31 lines by wc -l, read at source this session.",
+        "register_q5_clause": "swept this session; it does not carry the over-wide claim, so no mirror was needed"
+      },
+      "G10_m1_packet_bytes": "git diff --name-only 91b1343 e318cbd -- docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md is empty",
+      "G11_worktree_state": "at e318cbd, four committed files on the branch and git status --short empty",
+      "register_recount_reverified": {
+        "predicate": "^| P- partitioned by the ## section each row falls under",
+        "at_e318cbd": {"open": 22, "acceptance_act": 5, "total": 27},
+        "at_a9f671e": {"open": 21, "acceptance_act": 5, "total": 26},
+        "note": "re-verified this session and unchanged by this pass, which adds no row"
+      }
+    },
+    "recommended_answers_changed": {
+      "none": "No recommended answer changed after review 2. Its own six-question table answers 'Recommendation follows?' Yes for all six post-repair recommendations, Q5 as 'Yes, on the merits'. G1, G3, G4, G10 and G11 date or recompute a figure rather than move one; G5 and G8 widen a citation to its true span; G6 re-derives a self-referential count; G9 removes added emphasis; G12 adds a label Q6 already carries; G7 narrows a defect's scope without touching the limb Q5 recommends. Q1 through Q6 keep the recommendations they carried into this review, word for word."
+    },
+    "rule_10": "Review 2 binds the three digests recorded above at commit e318cbd, not these bytes. Every edit of this pass was made after it.",
+    "gate": "at the owner gate on review 2's CONFIRM WITH EXCEPTIONS with all twelve exceptions applied - no blocking finding, no recommended answer moved, and the review-1 repairs verified 9 REPAIRED, 4 PARTIAL and 0 NOT REPAIRED over 13; P-73 is ready to be ruled",
+    "uncovered_until": "a third independent fresh-context review, for the twelve exception repairs recorded here; all twelve post-date review 2 (verification rule 10). Its raw would be a third -RAW.md file, never an overwrite of either retained one."
+  }
+}
