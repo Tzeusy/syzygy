@@ -860,6 +860,16 @@
 > all at `a9f671e` plus this row, with the predicate `^| P-` partitioned by
 > the `##` section each row falls under].
 
+> **Updated 2026-09-21 (P-68…P-83 landed together):** the thirteen notes
+> above dated 2026-09-14 and 2026-09-15 each count "**22** open rows … **5**
+> acceptance-act rows, **27** in all". Each was true of its own branch alone
+> and none is true of this file: the sixteen packets (PRs #35–#50) merged
+> to main in one pass on 2026-09-21, so every one of those counts is
+> superseded here. Now **37** open rows below (sub-lettered rows counted)
+> and **5** acceptance-act rows, **42** in all [Observed — counted
+> 2026-09-21 by `^| P-` rows per section]. P-81, P-82 and P-83 added rows
+> without a note.
+
 ## The acceptance acts (four performed; the rest open)
 
 Exact phrases, digests, and the ceremony live in
