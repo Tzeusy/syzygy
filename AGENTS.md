@@ -556,6 +556,28 @@ added 2026-09-07.
   an act are registered from an existence-gated activation function.
 - Plain owner directions (implementation authorization, continuation)
   bind no digest, add no acceptance-record row and register nothing.
+- **Candidate packets register a phrase and a copy, never a chain link.**
+  A `PWB_SUCCESSOR_CHAIN` entry asserts adoption *order*, which only the
+  performing act decides; register `LABEL/DIR/SUBJECT/ACT`, the
+  `ACT_DIGEST_COPY_FILES` row and an existence-gated activation at drafting
+  time, and add the chain link with the act. A packet that quotes a bare
+  digest (no `<PHRASE>: <digest>` form) is invisible to CG-7d and caught only
+  by CG-7e, so a rule-6 mutation must rewrite *every* copy (`sed s///g`),
+  not the first match — a `str.replace(..., 1)` hit an unregistered copy and
+  reported a false pass.
+- **CG-26 is one coupled triple: register it once, at merge.** Several
+  packages each adding their builder to the PROJECT-STATUS battery, the
+  hosted workflow and the count sentence conflict pairwise and each counts
+  the battery as of its own branch. Draft packages leave all three alone;
+  one integration commit adds every line, step and the new number word.
+- Sibling packages patching the same CG-7h-bound tree (lane B and the three
+  spec-touching gate packages) each hash post-apply bytes against the
+  *current* tree: whichever act lands second must be regenerated with
+  `--write` first, or its manifest is stale on arrival. Say so in the packet.
+- A reviewer killed mid-write by a rate limit may already have a complete
+  raw on disk: check the worktree before re-dispatching, and if the file is
+  whole commit it verbatim (CC-REV-6) — a second reviewer run is a second
+  `-RAW.md`, never a replacement.
 
 ## Beads Issue Tracker
 
