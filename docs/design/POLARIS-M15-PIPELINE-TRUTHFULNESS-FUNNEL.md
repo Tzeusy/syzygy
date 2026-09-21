@@ -185,7 +185,8 @@ an eighth, `unenumerated-heading`.
 
 ### 3. Rules 3 and 4 run without the root index
 
-Rule 2, the pillar discovery at `project-shape-manifest.ts` line 419, branches
+Rule 2, the pillar discovery at `project-shape-manifest.ts` lines 419–420 (419
+was cited alone until 2026-09-21; the branch is at 420), branches
 on `rootIndex.state` and returns an `unknown` pillar when the root is missing
 or unavailable. Rules 3 and 4, the tree-population block at lines 491–506,
 contain no reference to `rootIndex` at all — measured this session by reading
