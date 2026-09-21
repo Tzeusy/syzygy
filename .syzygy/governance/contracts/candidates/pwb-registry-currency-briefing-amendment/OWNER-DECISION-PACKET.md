@@ -20,10 +20,10 @@ that preparation. It proposes new bytes for one artifact —
 — without editing the bytes the act in force bound. `SEMANTIC-DELTA.md`
 says what changes and why; `IMPACT-LEDGER.md` says what depends on it, by
 count and denominator; `REVIEW-BRIEF.md` says what an independent reviewer
-is to be given. **One independent review has been run** — raw output at
-`docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-RAW.md`, verdict and
-disposition in the `## Review` section of `SEMANTIC-DELTA.md`. Its
-confirmation is bound to the bytes it names, which the repairs moved.
+is to be given. **Two independent reviews have been run**, a first review
+and a confirmation of its repairs; both verdicts and every disposition are
+in the `## Review` section of `SEMANTIC-DELTA.md`, which names each raw.
+Each review is bound to the bytes it names, which later repairs moved.
 
 ## Every value here is the owner's
 
@@ -228,7 +228,9 @@ python3 scripts/check_governance.py
 
 `--check` proves the patch still applies to the bytes the act in force
 bound and that the manifest row is an exact regeneration over the result.
-`--selftest` mutates nineteen predicates in turn and requires each to
-fail closed; the count is the one the command prints, and it covers every
-assertion `structure_findings` makes. `--diff` prints the proposed change
-in full.
+`--selftest` mutates twenty-two predicates in turn and requires each to
+fail closed; the count is the one the command prints. It covers every
+assertion `structure_findings` makes and all three `check()` makes on its
+own — the patch population under `proposed/`, a patch that changes
+nothing, and an absent manifest — so no assertion either function makes is
+left to inspection. `--diff` prints the proposed change in full.

@@ -2,12 +2,15 @@
 
 > **Candidate — binds nothing.** This brief states what an independent
 > reviewer is to be given and what they are to decide. It is not a review
-> and carries no verdict of its own. One review has since been run against
-> this package: its raw output is
-> `docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-RAW.md` and its
-> disposition is the `## Review` section of `SEMANTIC-DELTA.md`; that
-> review is bound to the bytes it names, which the repairs have since
-> moved. Effect over the subject would come from one superseding
+> and carries no verdict of its own. Two reviews have since been run
+> against this package — a first review and a confirmation of its repairs.
+> Their raw output is
+> `docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-RAW.md` and
+> `docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-CONFIRMATION-RAW.md`,
+> and both dispositions are the `## Review` section of
+> `SEMANTIC-DELTA.md`; each is bound to the bytes it names, which later
+> repairs have since moved. Effect over the subject would come from one
+> superseding
 > `adopt-registry-entry` owner act and from nothing else.
 
 ## Status of the package under review
@@ -72,7 +75,7 @@ Each is a yes/no question with the evidence that settles it.
    proposed change is the unified diff under `proposed/`, and that no act
    record, no superseded record and no manifest of a prior act is edited.
 3. **Does the package verify, and does its verification mean anything?**
-   Run `--check` and `--selftest`. `--selftest` mutates nineteen
+   Run `--check` and `--selftest`. `--selftest` mutates twenty-two
    predicates in turn; confirm each mutation is one the package would
    actually be wrong about, not a tautology, and name any predicate the
    package asserts that no mutant covers.

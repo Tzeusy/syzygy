@@ -220,27 +220,42 @@ def verify_manifest(text: str, expected: str) -> list[str]:
     return []
 
 
-def check() -> list[str]:
-    findings: list[str] = []
-    patches = patch_files()
-    expected_patch = f"{SUBJECT.name}.patch"
-    if [p.name for p in patches] != [expected_patch]:
-        findings.append(
+def patch_population_findings(patches: list[pathlib.Path]) -> list[str]:
+    """The one declared subject patch, and nothing else, lives under proposed/."""
+    if [p.name for p in patches] != [f"{SUBJECT.name}.patch"]:
+        return [
             "proposed/*.patch population is not the single declared subject patch: "
             + ", ".join(p.name for p in patches)
-        )
+        ]
+    return []
+
+
+def noop_findings(proposed: bytes, current: bytes) -> list[str]:
+    """A patch that changes nothing would make the act argument the current bytes."""
+    if proposed == current:
+        return [f"the proposed patch changes nothing: {SUBJECT.as_posix()}"]
+    return []
+
+
+def manifest_findings(text: str | None, expected: str) -> list[str]:
+    """`text` is None when the manifest file is absent — never a silent pass."""
+    if text is None:
+        return [f"manifest missing: {OUT.as_posix()}"]
+    return verify_manifest(text, expected)
+
+
+def check() -> list[str]:
+    findings: list[str] = []
+    findings.extend(patch_population_findings(patch_files()))
     try:
         proposed = proposed_bytes()
     except ValueError as error:
         return findings + [str(error)]
-    if proposed == current_bytes():
-        findings.append(f"the proposed patch changes nothing: {SUBJECT.as_posix()}")
+    findings.extend(noop_findings(proposed, current_bytes()))
     findings.extend(structure_findings(proposed))
     target = ROOT / OUT
-    if not target.is_file():
-        findings.append(f"manifest missing: {OUT.as_posix()}")
-    else:
-        findings.extend(verify_manifest(target.read_text(), render(proposed)))
+    findings.extend(manifest_findings(
+        target.read_text() if target.is_file() else None, render(proposed)))
     return findings
 
 
@@ -414,10 +429,31 @@ def selftest() -> int:
             print(f"SELFTEST FAILED: {label} passed")
             return 1
 
-    print("selftest: 19 predicates — subject drift, patch corruption, manifest "
-          "digest and path mutation, both version bumps, limit semantics, the "
-          "briefing ceiling's value, claim-class population, duplication, row "
-          "shape and bound value, the semantics block's type, keys and empty "
+    # Predicates 20-22 cover the three assertions `check()` makes that
+    # `structure_findings` does not. Each is exercised through the helper
+    # `check()` itself calls, so a fixture cannot drift from the caller.
+    good_patches = patch_files()
+    assert not patch_population_findings(good_patches)
+    if not patch_population_findings(
+            good_patches + [pathlib.Path("SECOND.patch")]):
+        print("SELFTEST FAILED: a second patch under proposed/ passed")
+        return 1
+
+    assert not noop_findings(proposed, current)
+    if not noop_findings(proposed, proposed):
+        print("SELFTEST FAILED: a patch that changes nothing passed")
+        return 1
+
+    assert not manifest_findings(baseline, baseline)
+    if not manifest_findings(None, baseline):
+        print("SELFTEST FAILED: an absent manifest passed")
+        return 1
+
+    print("selftest: 22 predicates — subject drift, patch corruption, patch "
+          "population, a no-op patch, manifest digest, path mutation and "
+          "absence, both version bumps, limit semantics, the briefing "
+          "ceiling's value, claim-class population, duplication, row shape "
+          "and bound value, the semantics block's type, keys and empty "
           "sentences, entry count and JSON validity all fail closed")
     return 0
 

@@ -325,8 +325,11 @@ superseding act, never an edit.
 
 ## Review
 
-One independent review has been run, in fresh context, per CC-REV. No
-self-review was performed at any point.
+Two independent reviews have been run, each in fresh context, per CC-REV:
+a first review of the drafted package and a confirmation review of the
+repairs. No self-review was performed at any point.
+
+### First review
 
 **Raw output, stored verbatim and never edited:**
 `docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-RAW.md`.
@@ -352,7 +355,26 @@ the current bytes issues a second raw; this one is not overwritten.
 | F5 — the briefing-ceiling rationale mischaracterizes its measurement | note | **Repaired.** The packet row now states the measured figures (7,076 and 5,150 bytes) and that 20,480 is roughly 2.9x the larger — headroom, deliberately not a tight budget. The value itself is unchanged and remains the owner's. |
 | F6 — "named subject" is undefined until the sibling package lands | note | **Open, and stays open.** No text here can close it: the derived read-only machine view category is the sibling package's to define, and the reviewer confirmed by sweep that no such package is in the tree. Recorded as a sixth open question in `OWNER-DECISION-PACKET.md`; the answer to `REVIEW-BRIEF.md` criterion 6 depends entirely on that package's content, which this package does not assume. |
 
-**What the review did not touch.** No finding reached the thirteen bound
+### Confirmation review
+
+A second, independent confirmation review was run against the repairs.
+Raw output, stored verbatim and never edited:
+`docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-CONFIRMATION-RAW.md`.
+**Verdict, copied exactly: CONFIRM**, with two notes.
+
+**Rule 10 — what that confirmation is bound to.** It names the commit
+`82cca27` and re-derived its figures there rather than carrying the first
+review's forward. The N1 repair below changed `check()`'s decomposition,
+`selftest()` and two prose sentences, so those bytes have moved again and
+the confirmation covers the commit it names, not these bytes. The patch
+under `proposed/` is byte-identical, so the manifest row did not move.
+
+| Note | Disposition |
+|---|---|
+| N1 — the nineteen-predicate net covered `structure_findings` exactly, as claimed, but not `check()`'s own three assertions | **Repaired by fixture, not by narrowing the sentence.** `check()` is decomposed into `patch_population_findings`, `noop_findings` and `manifest_findings`, which it now calls, and three predicates mutate each in turn: a second patch under `proposed/`, a patch that changes nothing, and an absent manifest. Each fixture also asserts the good input returns clean, so none is a tautology, and each runs through the helper the caller uses, so a fixture cannot drift from `check()`. The count is now twenty-two and the packet sentence says the net covers both functions. |
+| N2 — F6 is genuinely open at this commit, confirmed by a fresh sweep | **Confirmed open.** No change is available here: the derived read-only machine view category belongs to the sibling specification package, which the confirming reviewer re-swept for and did not find. Open question 6 in `OWNER-DECISION-PACKET.md` stands as written. |
+
+**What neither review touched.** No finding reached the thirteen bound
 values, the ceiling value, the class population, the act boundary or the
 package's authority claims; the reviewer re-derived the manifest digest,
 the key-level delta, the class vocabulary and the no-registration argument
