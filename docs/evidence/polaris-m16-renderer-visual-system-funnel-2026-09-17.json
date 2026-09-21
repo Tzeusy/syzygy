@@ -26,17 +26,17 @@
   "polaris-direct.html": {
    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-direct.html",
    "bytes": 1478637,
-   "provenance": "post-trim direct /polaris capture; the lane A 'after' human page"
+   "capture": "post-trim direct /polaris capture; the lane A 'after' human page"
   },
   "polaris-tailnet.html": {
    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-tailnet.html",
    "bytes": 1484487,
-   "provenance": "post-trim tailnet-mounted twin of the same page"
+   "capture": "post-trim tailnet-mounted twin of the same page"
   },
   "polaris-7478.html": {
    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/capture/polaris-7478.html",
    "bytes": 2090025,
-   "provenance": "pre-trim /polaris capture"
+   "capture": "pre-trim /polaris capture"
   },
   "role": "the captures supply the rendered-page magnitudes (the SVG count and the page byte denominators); the defects are read structurally at the source at a9f671e",
   "daemon": "none started this session; no Butlers body was read"

@@ -121,6 +121,12 @@ describe('Zero downstream citations of Polaris as authority (PWB-REQ-014)', () =
     const hits: string[] = [];
     for (const file of files) {
       if (file.endsWith('polaris-authority-sweep.test.ts')) continue;
+      // A retained raw review is a reviewer's verbatim output kept unchanged
+      // (CC-REV-6); it anchors findings to Polaris source lines and is never
+      // a project artifact, evidence record or warrant citing Polaris as
+      // authority. Same population `check_governance._is_raw_review` exempts
+      // from CG-1b and CG-15.
+      if (relative(REPO_ROOT, file).startsWith('docs/reviews/') && file.endsWith('-RAW.md')) continue;
       const lines = readFileSync(file, 'utf8').split('\n');
       lines.forEach((line, index) => {
         if (/^\s*["']?(source|authority|warrants?|primary|evidence|provenance|cites?|anchor)["']?\s*[:=]/i.test(line) && POLARIS_SURFACE.test(line)) {
