@@ -263,10 +263,15 @@ may not comply now" — that does not hold:
    ceiling. That is an obligation on a future route, and it is the
    specification's first sentence making service conditional on a registry
    field.
-3. **A scope limit is added.** The requirement's comparison is stated not to
-   range over either category. That is a narrowing of the parity oracle's
-   population — a reader could previously have argued the presentation view's
-   fields belonged in the compared multiset.
+3. **A scope limit is added — the weakest of the three, and not
+   dispositive.** The requirement's comparison is stated not to range over
+   either category, which narrows the parity oracle's population against a
+   reading under which the presentation view's own rendering fields belonged
+   in the compared multiset. That reading was always strained: the current
+   Observable and Oracle never enumerate those fields as in-scope, so this
+   ground may formalize an already-implicit exclusion rather than newly
+   narrow one [Inferred]. Grounds 1 and 2 each satisfy the template's test on
+   their own, and the classification does not rest on this one.
 
 What *does* survive from the source's claim, and is stated here rather than
 dropped: no Case, Observable, Oracle, Oracle-independence, Mutation-proof,
@@ -345,6 +350,46 @@ set stays retrievable. Under this delta it does: the machine answer keeps
 serving the complete fact set at the same evaluation, and the inserted text
 says a derived view "subtracts nothing" for exactly this reason. A derived
 view hides nothing at rest.
+
+**The worked violation case in the same document.** `RFC-0006`'s
+§ "Violation cases", item 7, is the closest illustration the source carries
+to the question this section decides
+(`.syzygy/governance/contracts/rfcs/RFC-0006-cross-surface-selection-query-drawer.md`
+lines 524-526):
+
+```
+7. *(RFC6-18/21)* Polaris's drawer shows an evidence artifact Trajectory's
+   omits for the same selection and evaluation; an endpoint serves only the
+   "minimal" display subset.
+```
+
+The wrong it names is a *silent* subset: one surface quietly missing what
+another shows at the same evaluation, and an endpoint serving a display
+subset as though it were the answer. A category-1 member is the opposite on
+each count — it is named in the specification, its category is closed by
+enumeration, it is bounded by a declared ceiling, and the complete fact set
+stays served by the unmodified machine answer at the same evaluation. On that
+reading the narrow reading survives item 7 [Inferred]. A reviewer who reads
+item 7 as reaching any endpoint that is not itself complete reaches the wide
+reading below.
+
+**The signed package already treats this question, and leaves it open.** The
+contract-coverage matrix inside the specification package carries a row for
+this clause, marked `unknown-uncovered`
+(`openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md`
+line 234):
+
+```
+| RFC6-21.c2 | RFC6-21 | .syzygy/governance/contracts/rfcs/RFC-0006-cross-surface-selection-query-drawer.md:382-386 | Endpoint always serves the full set | yes | [Inferred] `PWB-REQ-020` only requires every Polaris fact in the machine answer, not completeness of endpoint-only facts. | unknown-uncovered |
+```
+
+That is the same narrow reading, already signed and already flagged as not
+covered — prior art for this disclosure, not a new position. Item 9 of "What
+explicitly does NOT change" says the row remains accurate; it remains
+accurate precisely because this delta neither closes nor widens the open
+question the row records. The row is why this section discloses rather than
+reconciles: reconciling it would mean marking a signed `unknown-uncovered`
+row covered, which is an owner's act over the contract, not a drafter's.
 
 **The reading this delta does not take, stated so a reviewer can take it:**
 if `RFC6-21` is read as a property of *every* endpoint rather than of the
@@ -511,5 +556,38 @@ in `REVIEW-BRIEF.md`. CC-TEST-6's mutation bar applies to the builder, whose
 change or shared its session; this draft's author has run no review of it and
 has written none.
 
-**Verdict:** none. No review has been run against these bytes, and no verdict
-word may be written here by anyone who did not produce it.
+**Verdict of record:** `CONFIRM WITH EXCEPTIONS`, copied exactly from
+`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-RAW.md`, a fresh-context review
+retained verbatim under CC-REV-6. That raw is not edited, here or anywhere.
+
+**Rule 10.** The raw names the commit it reviewed and the manifest digest it
+saw. It confirms *those* bytes. The repairs below were made after it, so the
+current `SEMANTIC-DELTA.md` bytes carry no confirmation; the patches and the
+manifest are unchanged, so the digest the review saw is still the digest of
+the manifest today. A reviewer who needs a confirmation over the repaired
+prose needs a fresh one, from a reviewer who did not author these bytes.
+
+**Dispositions**, finding by finding:
+
+- **F1 (non-blocking) — the `RFC6-21` disclosure omits two on-point pieces of
+  evidence.** Accepted and repaired in "The RFC6-21 tension, disclosed rather
+  than reconciled": `RFC-0006`'s § "Violation cases" item 7 is now quoted in
+  full with the silent-versus-named distinction stated, and the signed
+  package's `RFC6-21.c2` coverage row is now quoted as existing treatment of
+  the same question. The narrow reading stays **disclosed, not resolved**;
+  neither addition changes the delta's conclusion or the act count, and no
+  patch byte moved.
+- **F2 (editorial) — ground 3 of the Normative classification is the weakest
+  and says so only by omission.** Accepted and repaired by marking, not
+  dropping: ground 3 now states that it is the weakest of the three, that it
+  may formalize an already-implicit exclusion, and that grounds 1 and 2
+  independently carry the classification. The class stays **Normative**.
+
+**What the repairs did not touch:** `proposed/spec.md.patch`,
+`proposed/GOVERNING-DEPENDENCIES.md.patch` and
+`PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt` are byte-identical to the reviewed
+commit, so the manifest digest did not move and the digest quoted in
+`OWNER-DECISION-PACKET.md` still matches the file the builder writes.
+
+**Author's standing:** this draft's author dispositioned these findings and
+authored the repairs, and therefore may run no review of them.
