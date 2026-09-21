@@ -903,7 +903,7 @@ to the full rendered reading "including the owner's reported failures", which
 is also an actual-generated-artifact obligation, and 3.6's requirement-by-
 requirement audit. **What it does not buy:** 3.1, 3.2 and 3.5 (failure seams,
 rendered distinctions, fresh clone), which are reachable without it and should
-land first — which is the sequencing L3-M9 argues for and this packet adopts.
+land first — which is the sequencing L3-M9 argues for and this packet follows.
 The partition is over the **seven** boxes `tasks.md` §3 carries — 3.1, 3.2,
 3.3, 3.4, 3.4a (line 49), 3.5 and 3.6 [Observed, enumerated 2026-09-15].
 [Superseded 2026-09-15, review 1 F12: the buys list named 3.3, 3.4 and 3.6 and
