@@ -1,0 +1,1060 @@
+{
+  "record": "polaris-m12-retained-evaluations-funnel",
+  "date": "2026-09-15",
+  "status": "candidate; binds nothing; planning only; one independent review retained (review 1, 2026-09-15, verdict REVISE) and its repairs applied; by verification rule 10 those repairs are uncovered until a second review confirms them - which has since happened (review 2, 2026-09-15, verdict CONFIRM WITH EXCEPTIONS, blocking 0 / non-blocking 2 / editorial 3, G1-G5, retained at docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-2-RAW.md; re-tensed 2026-09-15), and it verified those review-1 repairs as 10 REPAIRED, 1 REPAIRED with a residual (F1) and 1 PARTIAL (F11) over 12; all five review-2 exceptions applied 2026-09-15 and themselves uncovered until a third review; at the owner gate; registered as P-79 on agent/syzygy-dov.12 [superseded 2026-09-15: 'candidate; binds nothing; planning only; no independent review yet']",
+  "bead": "syzygy-dov.12",
+  "move": "M12",
+  "commit": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
+  "commitShort": "a9f671e",
+  "branch": "agent/syzygy-dov.12",
+  "dossierAuditedAt": "f4589e2",
+  "independent_review": {
+    "count": 2,
+    "reviews": [
+      "docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-RAW.md",
+      "docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-2-RAW.md"
+    ],
+    "verdicts": [
+      "REVISE",
+      "CONFIRM WITH EXCEPTIONS"
+    ],
+    "note": "Review 1 landed 2026-09-15, verdict REVISE (blocking 1, non-blocking 7, editorial 4, F1-F12), retained verbatim at docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-RAW.md; see the review1 block at the end of this record. Verification rule 10: review 1 binds the bytes it names (commit a55fe3a) and not these, so its repairs are uncovered until a second fresh-context review confirms them, and that review's raw would be a second -RAW.md file, never an overwrite - which has since happened (re-tensed 2026-09-15): review 2 landed 2026-09-15, verdict CONFIRM WITH EXCEPTIONS (blocking 0, non-blocking 2, editorial 3, G1-G5), retained verbatim as that second -RAW.md file, and its own five exception repairs are in turn uncovered until a third review; see the review2 block at the end of this record. [Superseded 2026-09-15: count 0, 'first draft; by verification rule 10 nothing in the packet is confirmed'.]"
+  },
+  "proposedRegisterNumber": "P-79 (not written by this packet; the row lands with review 1)",
+  "registerNumber_2026_09_15": "P-79, written on branch agent/syzygy-dov.12 in the review-1 pass. Main at a9f671e carries 26 rows under ^| P- (21 open + 5 acceptance-act); with P-79 this branch carries 22 open and 5 acceptance-act, 27 in all.",
+  "conventions": {
+    "lineNumbers": "1-based over file bytes at a9f671e unless another commit or worktree is named",
+    "lineCounts": "wc -l (physical newline-terminated lines), never the split-on-newline count"
+  },
+  "artifacts": {
+    "docs/design/POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL.md": {
+      "bytes": 136105,
+      "wc_l": 1736,
+      "sha256": "d65c7860608bf8f1520c27ff71501bd9e8861c840aeec0177e2a70e0f58ab924"
+    },
+    "docs/evidence/polaris-m12-retained-evaluations-funnel-2026-09-15.json": {
+      "bytes": null,
+      "wc_l": null,
+      "sha256": null,
+      "note": "this record cannot hash itself; the report names its post-write sha256"
+    }
+  },
+  "dossier": {
+    "files": {
+      "docs/pursuits/2026-09-13-vision-pursuit.md": {
+        "wc_l": 552,
+        "m12SectionLine": 403
+      },
+      "docs/pursuits/2026-09-13-vision-pursuit-data.json": {
+        "wc_l": 5014
+      },
+      "docs/pursuits/2026-09-13-vision-pursuit-harvest.json": {
+        "wc_l": 4596
+      }
+    },
+    "merges": [
+      "L2-M6",
+      "L2-M7",
+      "L2-M8"
+    ],
+    "evidence_findings": [
+      "L2-F4",
+      "L2-F5"
+    ],
+    "prerequisiteLine": "none for retention and delta; owner act for the note; spec amendment for dismissal",
+    "prerequisiteLine_note_2026-09-15": "The value above elides two words of the dossier's line with no ellipsis and is kept unedited only as the record of what was published. The full line, docs/pursuits/2026-09-13-vision-pursuit.md lines 415-416 at a9f671e: '**Prerequisite.** None for retention and delta; owner act for the note (retention posture); spec amendment for dismissal.' The elided '(retention posture)' is the dossier naming the continuation act's retention-posture trigger by the trigger's own noun and attaching it to the note's owner act. Review 1's F1, blocking.",
+    "prerequisiteSurvives": false,
+  "prerequisiteSurvives_note_2026-09-15": "Kept unedited as the record of what was published. Review 2 G1: the first clause cannot be asserted without ruling Q1 - Q1 second arm (same-posture reading) and third arm (disclosure-limited reading) each rule the record inside the existing authorization and each leave the dossier first clause standing, so a flat false here asserts Q1 own recommended answer. The honest value is Unknown until Q1 is ruled. [Unknown, pending the owner ruling on Q1.]",
+    "prerequisiteVerdict": "The first clause does not survive: retention touches the continuation act's retention-posture escalation trigger by its own noun (PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md lines 150-156). Whether 'beyond' reaches a derived record is genuinely open and is published as Q1, never ruled. The second clause understates: the act in force forbids the write in terms rather than merely failing to cover it. The third clause holds.",
+    "prerequisiteVerdict_note2_2026-09-15": "Re-cast after review 2 G1. The packet no longer asserts that the first clause does not survive; it states that the first clause cannot be asserted without ruling Q1, because retention is the one part of this move that touches a named escalation trigger by its own noun, and that on Q1 second and third lawful arms the clause stands. The prerequisiteVerdict value above is kept unedited as the record of what was published; its opening sentence, The first clause does not survive, is superseded 2026-09-15. Q1 question, recommended answer, three lawful arms and default are unchanged, byte for byte against git show 4d61b73 of the packet.",
+  "prerequisiteVerdict_note_2026-09-15": "Restated after review 1 F1. What the evidence supports: the dossier attached the retention-posture trigger to the note's owner act and gave 'none' for retention and delta; whether that trigger reaches slice 1's derived claim-state record is Q1 and is not ruled here. Any reading of what the dossier's author did or did not read is withdrawn from the packet and is not restated in this record. Q1's recommended answer, its three arms and its default are unchanged.",
+    "driftCheck": {
+      "predicate": "git diff --numstat f4589e2 a9f671e restricted to the twelve M12-cited files",
+      "predicate_2026-09-15": "git diff --name-only f4589e2 a9f671e prints 146 paths; 0 of the twelve distinct files of the packet's 'Line numbers re-verified at a9f671e' table appear among them, tested by exact whole-line match. The twelve are apps/three-surface-poc/src/main.ts, apps/three-surface-poc/src/materialize-action.ts, packages/three-surface-poc-core/src/body-read-authority.ts, packages/three-surface-poc-core/src/walkthrough-judgment.ts, packages/three-surface-poc-core/src/walkthrough-readiness.ts, packages/three-surface-poc-core/src/project-shape-manifest.ts, packages/three-surface-poc-core/src/project-shape-observation.ts, packages/three-surface-poc-core/src/project-shape-model.ts, packages/three-surface-poc-core/src/materialization.ts, .syzygy/governance/doctrine/vision.md, .syzygy/governance/doctrine/architecture.md and the PWB spec.md. apps/three-surface-poc/src/polaris.ts IS in the 146 and is NOT one of the twelve. Review 1's F8; the earlier prose denominator ('the nine implementation files and three governance files named in Gate 0 and the Measurements') identified no set and is superseded in the packet.",
+      "rows": 0,
+      "conclusion": "every M12-cited file is byte-identical between the dossier's audit commit and this baseline"
+    },
+    "lineSpanReverification": {
+      "rowCount": 14,
+      "exact": 10,
+    "exact_note_2026-09-15": "Review 2 G3: re-reading the verdict column row by row gives 9 wholly exact, not 10. The vision.md row is mixed - F12 changed its verdict to exact for 167-181; approximate for the other two - and was still counted among the exact. The partition over the 14 rows is 9 exact + 2 narrowed + 1 approximate + 1 wrong referent + 1 mixed = 14. The value above is kept unedited as the record of what was published; the funnel summary tally is corrected in place and dated.",
+      "narrowedByOneAtTail": 2,
+      "approximate": [
+        {
+          "cited": "materialization.ts:78-145",
+          "actual": "line 78 closes a type; the file-backed record block is 80-141"
+        }
+      ],
+      "wrongReferent": 1,
+      "wrongReferentDetail": "L2-M8 cites project-shape-model.ts:89-102 as the ChallengeState seam; 89-102 is UNKNOWN_REASON_ROUTES. The seam is lines 81-84 (comment, CHALLENGE_STATES, ChallengeState) and line 129 (the challenge field).",
+      "narrowed": [
+        {
+          "cited": "body-read-authority.ts:754-766",
+          "actual": "comment 754-756, function 757-767"
+        },
+        {
+          "cited": "walkthrough-judgment.ts:810-823",
+          "actual": "comment 810-812, function 813-824"
+        }
+      ]
+    }
+  },
+  "measurements": {
+    "observationInstant": {
+      "site": "apps/three-surface-poc/src/main.ts:134",
+      "text": "const asOf = new Date().toISOString();",
+      "enclosingFunctionDeclaredAt": 113,
+      "usedAt": [
+        148,
+        168,
+        175
+      ],
+      "buildModelCallSites": [
+        187,
+        201
+      ],
+      "predicate": "the literal buildModel() occurring in apps/three-surface-poc/src/main.ts",
+      "predicate_note_2026-09-15": "Review 2 G2: as published, that predicate returns 3, not 2. grep -n -F 'buildModel()' over that file returns lines 113 (the declaration function buildModel(): ReturnType<typeof buildButlersPocModel> {), 187 and 201, denominator its 253 lines by wc -l. The predicate that yields the 2 in buildModelCallSites is the literal EXCLUDING the declaration at line 113. The call-site figure and everything resting on it are unchanged; the predicate above is kept unedited as the record of what was published.",
+      "denominator_wc_l": 253,
+      "buildButlersPocModelNonTestCallSites": [
+        "packages/three-surface-poc-core/src/model.ts:369 (definition)",
+        "apps/three-surface-poc/src/main.ts:171",
+        "apps/three-surface-poc/src/test-model-fixture.ts:133"
+      ],
+      "buildButlersPocModelTotalOccurrences": 36
+    },
+    "stateDirWriteSweep": {
+      "predicate": "Python re word-boundary alternation writeFileSync|writeFile|appendFileSync|appendFile|mkdirSync|mkdir|authorizeWrite|createWriteStream|rmSync|unlinkSync|renameSync|openSync|chmodSync",
+      "roots": [
+        "apps/three-surface-poc/src",
+        "packages/three-surface-poc-core/src",
+        "packages/cap1-daemon/src"
+      ],
+      "denominator_ts_files": 157,
+      "denominator_non_test_ts_files": 81,
+      "matchingNonTestLines": 56,
+      "partition": {
+        "import": 11,
+        "entryPointOrFixture": 31,
+        "clearOrDelete": 2,
+        "comment": 3,
+        "governedPlaneWrite": 2,
+        "authorizeWriteCall": 1,
+        "stateDirectory": 6,
+        "other": 0
+      },
+      "stateDirectorySites": [
+        {
+          "site": "packages/cap1-daemon/src/credentials.ts:223-227",
+          "writes": "machine-credential.token",
+          "dirMode": "0o700",
+          "fileMode": "0o600"
+        },
+        {
+          "site": "packages/three-surface-poc-core/src/materialization.ts:128-134",
+          "writes": "materialization-record.json",
+          "dirMode": "0o700",
+          "fileMode": "0o600"
+        },
+        {
+          "site": "packages/three-surface-poc-core/src/test-artifact-verification.ts:73-79",
+          "writes": "the test-artifact record",
+          "dirMode": "0o700",
+          "fileMode": "0o600"
+        }
+      ],
+      "sitesWritingAnEvaluationOrClaimState": 0,
+      "retainedCaptureStateDirectory": {
+        "entries": 1,
+        "names": [
+          "machine-credential.token"
+        ],
+        "bytes": 64,
+        "fileMode": "0600",
+        "dirMode": "0700",
+        "contentsRead": false
+      }
+    },
+    "appenders": {
+      "appendEvaluation": {
+        "definition": "packages/three-surface-poc-core/src/body-read-authority.ts:757-767",
+        "headComment": "754-756",
+        "occurrences": 5,
+        "nonTestOccurrences": 1,
+        "persisted": false
+      },
+      "appendJudgmentEvaluation": {
+        "definition": "packages/three-surface-poc-core/src/walkthrough-judgment.ts:813-824",
+        "headComment": "810-812",
+        "mutationPointComment": 818,
+        "occurrences": 6,
+        "nonTestOccurrences": 1,
+        "persisted": false
+      },
+      "predicate": "literal name over every .ts file under apps/, packages/ and scripts/",
+      "reExportedFromPackageIndex": false
+    },
+    "canonicalJsonUsers": {
+      "definition": "packages/three-surface-poc-core/src/project-shape-manifest.ts:333 (head comment 331-332)",
+      "totalOccurrences": 7,
+      "digestSites": [
+        {
+          "site": "packages/three-surface-poc-core/src/project-shape-observation.ts:337",
+          "function": "resourceLimitsDigest",
+          "identifies": "the declared resource envelope"
+        },
+        {
+          "site": "packages/three-surface-poc-core/src/project-shape-observation.ts:635",
+          "function": "inline in the observation builder",
+          "identifies": "the observation digest, capture instants stripped by stripCaptureInstant at 642-650"
+        },
+        {
+          "site": "packages/three-surface-poc-core/src/walkthrough-readiness.ts:126",
+          "function": "walkthroughEvaluationIdentity",
+          "identifies": "the readiness evaluation identity, pwb-eval- plus 24 hex characters"
+        }
+      ]
+    },
+    "evaluationIdentityToday": {
+      "inputsDigestComputedAt": "packages/three-surface-poc-core/src/model.ts:381 (surfaced at 691; snapshot composed at 689)",
+      "footerSites": [
+        "apps/three-surface-poc/src/routes.ts:92",
+        "apps/three-surface-poc/src/polaris.ts:1630",
+        "apps/three-surface-poc/src/polaris-source.ts:140"
+      ],
+      "footerFields": [
+        "observed-repository revision",
+        "working-tree sha256",
+        "observer revision",
+        "inputs sha256"
+      ],
+      "renderedSnapshotChars": 262,
+      "renderedInstantChars": 24,
+      "note": "field values are described by label only; no digest value is reproduced (CG-15)",
+      "digestsNotInFooter": [
+        "the observation digest",
+        "the readiness evaluation identity"
+      ]
+    },
+    "claimPopulation": {
+      "measuredOn": "the retained /api/poc capture (5,508,208 bytes), evaluation as-of 2026-09-13T02:03:33.040Z",
+      "predicate": "every JSON object anywhere in the payload carrying both a claimId and an epistemic member, found by a recursive walk",
+      "claimObjects": 1149,
+      "distinctClaimIds": 1148,
+      "identitiesOccurringTwice": 1,
+      "duplicateIdentityPaths": [
+        "projectShape.items[].claim",
+        "proposedWork.currentAuthority.claim"
+      ],
+      "distinctEpistemicChallengeTuples": 2,
+      "tupleCounts": {
+        "Observed/report-fact/fresh/unchallenged": 1137,
+        "Unknown/excluded-content/fresh/unchallenged": 12
+      },
+      "byIdentityPrefix": {
+        "claim:source:": 278,
+        "claim:item:": 416,
+        "claim:fact:": 439,
+        "claim:class:": 9,
+        "claim:project-account:": 6,
+        "claim:project-shape": 1
+      },
+      "byIdentityPrefix_note_2026-09-15": "The block above is a count of claim OBJECTS (tuple instances), not of distinct identities, and its six values sum to 1149 rather than to the 1148 the packet claimed; kept unedited as the record of what was published. Review 1's F2.",
+      "byIdentityPrefix_distinctIdentities_2026-09-15": {
+        "claim:source:": 278,
+        "claim:item:": 415,
+        "claim:fact:": 439,
+        "claim:class:": 9,
+        "claim:project-account:": 6,
+        "claim:project-shape": 1,
+        "sum": 1148
+      },
+      "byIdentityPrefix_tupleInstances_2026-09-15": {
+        "claim:source:": 278,
+        "claim:item:": 416,
+        "claim:fact:": 439,
+        "claim:class:": 9,
+        "claim:project-account:": 6,
+        "claim:project-shape": 1,
+        "sum": 1149
+      },
+      "claimFactDecomposition_2026-09-15": {
+        "item:": 415,
+        "count:": 9,
+        "catalog-count:": 9,
+        "project-account:": 6,
+        "sum": 439
+      },
+      "observedDerivedVsClosedVocabulary_2026-09-15": {
+        "observedDerived": 1117,
+        "observedDerivedParts": "278 source paths + 415 item class-and-key pairs + 415 claim:fact:item: twins + 9 catalog headings",
+        "closedVocabulary": 30,
+        "closedVocabularyParts": "9 claim:class: and 9 claim:fact:count: from EXTRACTION_CLASSES (nine values, packages/three-surface-poc-core/src/project-shape-manifest.ts lines 58-68); 6 claim:project-account: and 6 claim:fact:project-account: from PROJECT_ACCOUNT_KEYS (six values, packages/three-surface-poc-core/src/project-shape-extraction.ts line 46)",
+        "fixedLiteral": 1,
+        "sum": 1148,
+        "note": "Review 1's F4. The packet published 1148 as interpolated from observed-project text against exactly 1 fixed literal; 30 of the 1148 carry no observed text at all. Q1's recommendation, arms and default do not change."
+      },
+      "canonicalClaimStateMapBytes": 177031,
+      "canonicalClaimStateMapWithRoutesBytes": 203379,
+      "routesRedundancyBytes": 26348,
+      "claimIdConstructionSites": [
+        367,
+        375,
+        383,
+        403,
+        430
+      ],
+      "claimIdConstructionSites_2026-09-15": [
+        367,
+        375,
+        383,
+        403,
+        430,
+        447
+      ],
+      "claimIdConstructionSites_note_2026-09-15": "Review 1's F3: line 447, the Unknown arm of projectAccountOf, interpolates the same closed-vocabulary account key as 430 and was missing from the array above, which is kept unedited. Re-derived this session: the literal 'claimId:' returns 13 lines in packages/three-surface-poc-core/src/project-shape-model.ts - the six interpolating sites, 4 carrying the fixed literal 'claim:project-shape' (345, 457, 611, 659), 2 interface declarations (123, 157) and 1 pass-through (173). The raw's incidental 'twelve claimId: lines, the remaining six the fixed literal' does not confirm and is not carried. No site interpolates a revision.",
+      "anyConstructionSiteInterpolatesRevision": false
+    },
+    "challengeSweep": {
+      "predicateUsed": "case-insensitive substring 'challenge'; a line excluded only when its single occurrence is the unrelated Unknown reason challenge-suspended; dist/ and node_modules excluded",
+      "denominator_ts_files": 246,
+      "matchingLines": 50,
+      "testLines": 25,
+      "nonTestLines": 25,
+      "rejectedPredicate": "\\bchallenge\\b (case-insensitive) returns 35 lines and misses CHALLENGE_STATES and ChallengeState, because _ is a word character and ChallengeState has no trailing boundary",
+      "rejectedPredicate_2026-09-15": "\\bchallenge\\b is CASE-SENSITIVE at 35 lines, not case-insensitive; the value above is kept unedited. Re-derived four ways over the same 246 .ts files this session: case-sensitive with the challenge-suspended exclusion 35, case-insensitive with it 36, case-sensitive without it 43, case-insensitive without it 44. Review 1's F5.",
+      "rejectedPredicateDifference_2026-09-15": {
+        "lines": 15,
+        "nonTest": 7,
+        "test": 8,
+        "nonTestLines": "packages/cap1-core/src/drawer.ts 59, 60, 114, 138, 174; packages/three-surface-poc-core/src/project-shape-model.ts 83, 84",
+        "testLines": "polaris-epistemic-tuples.test.ts 42; polaris-first-reading.test.ts 88; req-040.conformance.test.ts 163, 196, 225, 227; project-shape-model.test.ts 19, 351",
+        "insideTheSeam": 2,
+        "note": "The packet said the 15-line difference was entirely in the non-test population; it splits 7/8, and only 2 of the 15 - CHALLENGE_STATES at line 83 and ChallengeState at line 84 - lie inside the seam L2-M8 proposes to extend. Review 1's F5. The substantive point (the word-boundary predicate misses the constant and the type) survives."
+      },
+      "rejectedPredicateLines": 35,
+      "producerSites": [
+        "packages/three-surface-poc-core/src/project-shape-model.ts:177"
+      ],
+      "vocabularyAndType": [
+        "packages/three-surface-poc-core/src/project-shape-model.ts:81-84",
+        "packages/three-surface-poc-core/src/project-shape-model.ts:129"
+      ],
+      "consumerSites": [
+        "apps/three-surface-poc/src/polaris.ts:301",
+        "apps/three-surface-poc/src/polaris.ts:314",
+        "apps/three-surface-poc/src/polaris.ts:358",
+        "apps/three-surface-poc/src/polaris-copy.ts:33",
+        "apps/three-surface-poc/src/polaris-copy.ts:43",
+        "apps/three-surface-poc/src/polaris-copy.ts:50",
+        "apps/three-surface-poc/src/polaris-copy.ts:51",
+        "apps/three-surface-poc/src/walkthrough-preflight.ts:216"
+      ],
+      "unrelatedSubsystemLines": {
+        "packages/cap1-core/src/drawer.ts": 10,
+        "packages/cap1-conformance/src/req-040.conformance.test.ts": 9
+      },
+      "unrelatedSameWord": "packages/three-surface-poc-core/src/project-shape-model.ts:98 (the UNKNOWN_REASON_ROUTES entry for the reason challenge-suspended)",
+      "admittedChallengeValues": 1
+    },
+    "localAndCacheAbsence": {
+      "thisRepository": {
+        "predicate": "git ls-files .syzygy, paths beginning .syzygy/local/ or .syzygy/cache/",
+        "denominator": 556,
+        "hits": 0,
+        "topLevelDirs": [
+          "governance",
+          "intent",
+          "map"
+        ],
+        "caveat": "git stores no empty directory, so this measures the tracked population"
+      },
+      "repositoryTrackedFilesTotal": 1216,
+      "governanceRecordsDirectory": {
+        "path": ".syzygy/governance/records/",
+        "exists": false,
+        "trackedFiles": 0,
+        "namedBy": "PWB-REQ-022, PWB spec line 1033"
+      },
+      "observedProject": {
+        "predicate": "distinct source paths in the retained capture's projectShape block",
+        "denominator": 278,
+        "pathsBeginningDotSyzygy": 0,
+        "pathsWithSegmentLocal": 0,
+        "topLevelSegments": 3,
+        "remainder": "[Unknown] — the observation population is the manifest's scope, not the repository; establishing more would need a read outside the consented content class"
+      }
+    },
+    "ceiling": {
+      "maxHumanResponseBytes": 2097152,
+      "maxMachineResponseBytes": 8388608,
+      "limitsDeclaredAt": "packages/three-surface-poc-core/src/project-shape-observation.ts:81-82",
+      "polarisServedTailnetAfterLaneA": 1484487,
+      "polarisServedDirectAfterLaneA": 1478637,
+      "tailnetHeadroom": 612665,
+      "directHeadroom": 618515,
+      "machineModelBytes": 5520314,
+      "machineHeadroom": 2868294,
+      "source": "docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json; the two headroom subtractions computed this session",
+      "claimTupleSpansOnRetainedPage": 699,
+      "bytesPerTupleSpan": {
+        "min": 559,
+        "max": 661,
+        "mean": 586.3,
+        "total": 409829
+      },
+      "retainedPageBytes": 2090025,
+      "retainedPageIsPreTrim": true,
+      "twoTupleRowBytes": 1172.6,
+      "rowsBeforeTailnetCeiling": 522,
+      "rowsLabel": "[Inferred] extrapolation from a measured per-tuple cost to a renderer that does not exist; the per-tuple figure is an upper bound because the capture is pre-trim",
+      "claimTupleSpansPostTrim_2026-09-15": 713,
+      "bytesPerTupleSpanPostTrim_2026-09-15": {
+        "min": 559,
+        "max": 661,
+        "mean": 586.4,
+        "total": 418122,
+        "measuredOn": "the lane A after-captures, both host forms, 1478637 direct and 1484487 tailnet; identical figures on both"
+      },
+      "twoTupleRowBytesPostTrim_2026-09-15": 1172.8,
+      "rowsBeforeTailnetCeilingPostTrim_2026-09-15": 522,
+      "rowsLabel_2026-09-15": "[Inferred] extrapolation from a measured per-tuple cost to a renderer that does not exist. The 'upper bound' gloss above is withdrawn: the per-tuple cost is STABLE across the lane A trim, 586.3 pre-trim and 586.4 post-trim, because the trim removed narrative JSON and list markup rather than tuple spans. 612665 / 1172.8 = 522.4, so the 522 does not move. Review 1's F6; the superseded values above are kept unedited."
+    },
+    "specRetentionSweep": {
+      "files": [
+        "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+        "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md"
+      ],
+      "denominatorLines": 2160,
+      "perTerm": {
+        "retain": {
+          "poc": 0,
+          "pwb": 15
+        },
+        "retention": {
+          "poc": 0,
+          "pwb": 0
+        },
+        "delta": {
+          "poc": 0,
+          "pwb": 1
+        },
+        "since(word)": {
+          "poc": 0,
+          "pwb": 0
+        },
+        "annotat": {
+          "poc": 0,
+          "pwb": 0
+        },
+        "dismiss": {
+          "poc": 0,
+          "pwb": 0
+        },
+        "expir": {
+          "poc": 0,
+          "pwb": 1
+        },
+        "note(s)": {
+          "poc": 1,
+          "pwb": 0
+        },
+        "history": {
+          "poc": 1,
+          "pwb": 5
+        },
+        "append-only": {
+          "poc": 0,
+          "pwb": 0
+        },
+        "previous": {
+          "poc": 0,
+          "pwb": 2
+        },
+        "changed": {
+          "poc": 0,
+          "pwb": 3
+        }
+      },
+      "disclosedException": "PWB-REQ-022 (spec lines 1032-1035) requires 'a retained walkthrough execution record in .syzygy/governance/records/' — human-authored, in Syzygy's governed plane, at a path that does not exist in this repository. It is a different object from a daemon-written per-evaluation claim-state store.",
+      "conclusion": "no approved requirement in either signed specification names retention of an evaluation's claim state by Syzygy, a claim-state delta, an owner note, an annotation, a dismissal or an expiry of one"
+    },
+    "specCounts": {
+      "pwb": {
+        "requirements": 17,
+        "scenarios": 31,
+        "wc_l": 1152
+      },
+      "poc": {
+        "requirements": 24,
+        "scenarios": 24,
+        "wc_l": 1008
+      },
+      "predicate": "^### Requirement and ^#### Scenario"
+    },
+    "pwbTasks": {
+      "checkboxes": 35,
+      "checked": 32,
+      "unchecked": 3,
+      "uncheckedIds": [
+        "4.6",
+        "5.2",
+        "5.3"
+      ],
+      "wc_l": 138,
+      "predicate": "^- \\[[ xX]\\] ",
+      "anyM12SliceDuplicatesAnUncheckedTask": false
+    }
+  },
+  "acts": {
+    "PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md": {
+      "implementationPlane": "lines 59-61 (sentence continues to 63)",
+      "writeProhibition": "lines 70-72",
+      "escalationTriggers": "lines 86-94"
+    },
+    "PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md": {
+      "escalationTriggers": "lines 150-156",
+      "retentionPostureTrigger": "lines 152-154",
+      "specAmendmentTrigger": "lines 151-152",
+      "registryEnvelopeTrigger": "lines 154-155"
+    },
+    "THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md": {
+      "recordedFindingLimb": "lines 55-56",
+      "itemBound": "lines 23-24"
+    },
+    "THREE-SURFACE-POC-MODE-DIRECTION.md": {
+      "humanTriggeredWork": "lines 18-19",
+      "wc_l": 43
+    },
+    "registry": {
+      "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+      "writeSurfaceLine": 125,
+      "writeSurfaceValue": [],
+      "boundBy": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md",
+      "editedByAnySlice": false
+    },
+    "secretPolicy": {
+      "path": ".syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json",
+      "rawBodyHandlingLines": "178-184",
+      "rawBodyHandling": {
+        "storage": "never",
+        "logging": "never",
+        "rendering": "never",
+        "machineResponse": "never",
+        "externalEgress": "never"
+      },
+      "editedByAnySlice": false
+    }
+  },
+  "doctrine": {
+    "VIS-6": {
+      "path": ".syzygy/governance/doctrine/vision.md",
+      "lines": "167-181",
+      "reverified": true
+    },
+    "VIS-2": {
+      "lines": "96-106"
+    },
+    "VIS-1": {
+      "lines": "82-94"
+    },
+    "architecture.temporalRule": {
+      "path": ".syzygy/governance/doctrine/architecture.md",
+      "lines": "221-229"
+    },
+    "architecture.observationRecord": {
+      "lines": "231-235"
+    },
+    "architecture.cacheAndLocalRows": {
+      "lines": "56-57"
+    },
+    "SEC-1": {
+      "path": ".syzygy/governance/doctrine/security.md",
+      "lines": "10-23"
+    },
+    "SEC-2": {
+      "lines": "25-37"
+    },
+    "SEC-4": {
+      "lines": "47-52"
+    },
+    "SEC-5": {
+      "lines": "54-60"
+    },
+    "RFC2-26": {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md",
+      "lines": "196-221",
+      "headingLine": 194,
+      "locatedVia": "DIRECTIVE-REGISTER.md"
+    },
+    "RFC5-11": {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0005/admission-and-boundary.md",
+      "lines": "244-252",
+      "headingLine": 242,
+      "locatedVia": "DIRECTIVE-REGISTER.md"
+    }
+  },
+  "rfc2_26_test": {
+    "denominator": 4,
+    "rows": [
+      {
+        "slice": 1,
+        "mappedRequirement": null,
+        "mappedScenario": null,
+        "limb1": "unmapped; scheduled from recorded finding L2-F5 under the improvement-cycles direction; limb 2 (reviewed N/A) judged not obviously reachable because a file on disk is independently testable; not ruled lawful or unlawful"
+      },
+      {
+        "slice": 2,
+        "mappedRequirement": "PWB-REQ-007 (PWB spec line 439), Case line 453-454, Oracle line 460-461",
+        "mappedScenario": "Missing current evidence remains explicit Unknown (PWB spec 470-474); POC-REQ-032 scenario Unknown disclosed in the narrative (POC spec 599-604); PWB-REQ-020 scenario Complete model has wire parity (PWB spec 928-933); PWB-REQ-014 scenario A project claim is supported without making Polaris authority (PWB spec 799-803)",
+        "limb1": "available; residue: no scenario WHEN limb names a rendered delta"
+      },
+      {
+        "slice": 3,
+        "mappedRequirement": "PWB-REQ-014 (PWB spec line 759), personal-view-state sentence 772-773, Case 778-782, Oracle 791-792",
+        "mappedScenario": "A project claim is supported without making Polaris authority (799-803)",
+        "limb1": "partial and inverted: the requirement constrains personal state rather than warranting a note"
+      },
+      {
+        "slice": 4,
+        "mappedRequirement": "PWB-REQ-007 (PWB spec line 439), Case line 454-456",
+        "mappedScenario": "Missing current evidence remains explicit Unknown (470-474)",
+        "limb1": "available as a constraint, unavailable as a warrant; the requirement is the reason slice 4 is an amendment"
+      }
+    ]
+  },
+  "actCorpusSweep": {
+    "predicate": "the file's repository-relative path, or its basename where that basename is unique across the repository's 1,216 tracked files, occurring in any tracked .md/.txt under .syzygy/ or any tracked file whose basename contains MANIFEST, plus docs/evidence files whose basename contains manifest",
+    "denominators": {
+      "governanceMdTxt": 538,
+      "manifestBasename": 24,
+      "evidenceManifest": 7,
+      "union": 553
+    },
+    "surfaceFiles": 15,
+    "manifestRows": 0,
+    "actRecords": 0,
+    "hits": {
+      ".syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/IMPACT-LEDGER.md": 8,
+      "docs/evidence/polaris-manifesto-example-mutation-2026-09-09.json": 1
+    },
+    "impactLedgerSelfDescription": "Candidate review input - never authority. This is the CC-REV-2 affected-consumer inventory. It performs no act and authorizes no implementation. (its own lines 3-5)",
+    "impactLedgerIsAManifestRow": false,
+    "impactLedgerManifestsSearched": [
+      "PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt",
+      "PWB-EFFECT-AMENDMENT-MANIFEST.txt"
+    ],
+    "evidenceHitKind": "a rule-6 mutation record (commit/file/old/new/exitCode/output/restored), not a digest table",
+    "nonUniqueBasenames": {
+      "main.ts": 2,
+      "index.ts": 4
+    },
+    "unknownRemainder": "whether any docs/evidence/*.json digest table beyond the seven whose basename contains 'manifest' binds these bytes"
+  },
+  "collision": {
+    "m12_surface": [
+      "apps/three-surface-poc/src/main.ts",
+      "apps/three-surface-poc/src/polaris.ts",
+      "apps/three-surface-poc/src/polaris-copy.ts",
+      "apps/three-surface-poc/src/materialize-action.ts",
+      "packages/three-surface-poc-core/src/index.ts",
+      "packages/three-surface-poc-core/src/model.ts",
+      "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+      "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+      "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+      "packages/three-surface-poc-core/src/materialization.ts",
+      "packages/cap1-daemon/src/write-guard.ts",
+      "docs/THREE-SURFACE-POC.md"
+    ],
+    "predicateA": "every code span in every .md under each sibling worktree's docs/design/, kept when it begins apps/, packages/, scripts/ or docs/ or equals package.json, resolves as a file in this worktree, and lies on M12's 15-file surface",
+    "predicateB_full": "predicate A restricted to the section from '## Gate 3 — Topology' to the line before the next '## ' heading; full paths only",
+    "predicateB_basename": "B-full plus bare code spans with no '/' equal to a surface basename that is unique across the repository's 1,216 tracked files; main.ts and index.ts are excluded from this limb and matched by full path only",
+    "rowsMovedByBasenameLimb": 7,
+    "rowsTotal": 11,
+    "falseAbsencesUnderBfull": [
+      "M1 lane B",
+      "M6"
+    ],
+    "perFileFrequencyBbasename": {
+      "apps/three-surface-poc/src/polaris.ts": 11,
+      "packages/three-surface-poc-core/src/model.ts": 7,
+      "apps/three-surface-poc/src/polaris-copy.ts": 5,
+      "packages/three-surface-poc-core/src/project-shape-model.ts": 5,
+      "packages/three-surface-poc-core/src/project-shape-observation.ts": 4,
+      "apps/three-surface-poc/src/main.ts": 3,
+      "packages/three-surface-poc-core/src/body-read-authority.ts": 2,
+      "packages/three-surface-poc-core/src/walkthrough-readiness.ts": 2,
+      "apps/three-surface-poc/src/materialize-action.ts": 1,
+      "packages/three-surface-poc-core/src/project-shape-manifest.ts": 1,
+      "packages/three-surface-poc-core/src/materialization.ts": 1,
+      "docs/THREE-SURFACE-POC.md": 1,
+      "packages/three-surface-poc-core/src/index.ts": 0,
+      "packages/three-surface-poc-core/src/walkthrough-judgment.ts": 0,
+      "packages/cap1-daemon/src/write-guard.ts": 0
+    },
+    "siblings": [
+      {
+        "name": "M1 lane B",
+        "pr": "#35",
+        "p": "P-68",
+        "worktree": "laneb",
+        "head": "4090f98",
+        "A": 0,
+        "B_full": 0,
+        "B_basename": 1
+      },
+      {
+        "name": "M2",
+        "pr": "#36",
+        "p": "P-69",
+        "worktree": "m2wt",
+        "head": "f2f37dd",
+        "A": 4,
+        "B_full": 4,
+        "B_basename": 5
+      },
+      {
+        "name": "M3",
+        "pr": "#37",
+        "p": "P-70",
+        "worktree": "m3wt",
+        "head": "6574600",
+        "A": 3,
+        "B_full": 2,
+        "B_basename": 2
+      },
+      {
+        "name": "M4",
+        "pr": "#38",
+        "p": "P-71",
+        "worktree": "m4wt",
+        "head": "63b8e33",
+        "A": 6,
+        "B_full": 5,
+        "B_basename": 5
+      },
+      {
+        "name": "M5",
+        "pr": "#39",
+        "p": "P-72",
+        "worktree": "m5wt",
+        "head": "ba9ca61",
+        "A": 4,
+        "B_full": 3,
+        "B_basename": 4
+      },
+      {
+        "name": "M6",
+        "pr": "#40",
+        "p": "P-73",
+        "worktree": "m6wt",
+        "head": "83c9f60",
+        "A": 0,
+        "B_full": 0,
+        "B_basename": 1
+      },
+      {
+        "name": "M7",
+        "pr": "#42",
+        "p": "P-76",
+        "worktree": "m7wt",
+        "head": "f97baf4",
+        "A": 2,
+        "B_full": 1,
+        "B_basename": 2
+      },
+      {
+        "name": "M8",
+        "pr": "#43",
+        "p": "P-74",
+        "worktree": "m8wt",
+        "head": "bce9039",
+        "A": 10,
+        "B_full": 7,
+        "B_basename": 9
+      },
+      {
+        "name": "M9",
+        "pr": "#41",
+        "p": "P-75",
+        "worktree": "m9wt",
+        "head": "65de02b",
+        "A": 4,
+        "B_full": 2,
+        "B_basename": 6
+      },
+      {
+        "name": "M10",
+        "pr": "#44",
+        "p": "P-77",
+        "worktree": "m10wt",
+        "head": "95f31cb",
+        "A": 4,
+        "B_full": 2,
+        "B_basename": 2
+      },
+      {
+        "name": "M11",
+        "pr": "#45",
+        "p": "P-78",
+        "worktree": "m11wt",
+        "head": "bbd6837",
+        "A": 8,
+        "B_full": 6,
+        "B_basename": 6
+      }
+    ],
+    "largestOverlap": {
+      "sibling": "M8",
+      "B_full": 7,
+      "B_basename": 9,
+      "outOf": 15
+    }
+  },
+  "ownerQuestions": {
+    "count": 6,
+    "registeredNumber": "P-79 (written on branch agent/syzygy-dov.12 in the review-1 pass, 2026-09-15; null until then)",
+    "questions": [
+      {
+        "id": "Q1",
+        "gist": "Is a durable per-evaluation claim-state record a change to retention posture, and therefore a named escalation trigger needing an act?",
+        "recommended": "Yes - treat it as a retention-posture change and obtain an act",
+        "arms": 3,
+        "defaultIfUnanswered": "slice 1 does not ship, and slice 2 with it"
+      },
+      {
+        "id": "Q2",
+        "gist": "What may a retained evaluation record hold, and how long may it live, given VIS-6(b)'s 'immutable'?",
+        "recommended": "Claim identity plus epistemic tuple and challenge state only; unbounded, with the on-disk total rendered",
+        "arms": 4,
+        "defaultIfUnanswered": "one prior evaluation only"
+      },
+      {
+        "id": "Q3",
+        "gist": "May the delta band spend the response-ceiling headroom M1 lane A bought, and what is its cap?",
+        "recommended": "Yes, capped with the remainder disclosed as a counted Unknown",
+        "arms": 3,
+        "defaultIfUnanswered": "counts on the page, list on the machine channel"
+      },
+      {
+        "id": "Q4",
+        "gist": "May an owner note be promoted by committing it out into the observed project's governed plane, and does any act permit that write?",
+        "recommended": "Do not build promotion in this move; the question is put, not answered",
+        "arms": 4,
+        "defaultIfUnanswered": "no note ships, promoted or unpromoted"
+      },
+      {
+        "id": "Q5",
+        "gist": "Is a dismissal acting on the epistemic tuple an implementation of PWB-REQ-007 or an amendment to it?",
+        "recommended": "An amendment; CC-REV-2 plus a new act. Neither lawful nor unlawful is ruled",
+        "arms": 3,
+        "defaultIfUnanswered": "slice 4 does not ship"
+      },
+      {
+        "id": "Q6",
+        "gist": "Which evaluation does a delta claim belong to?",
+        "recommended": "A claim of the current evaluation about two evaluations, never a tuple field and never a freshness value",
+        "arms": 3,
+        "defaultIfUnanswered": "a disclosed rendering artifact under PWB-REQ-014's non-normative framing role, minting no identity"
+      }
+    ]
+  },
+  "slices": [
+    {
+      "n": 1,
+      "title": "Retained evaluation record",
+      "size": "medium",
+      "gate": "Q1, Q2",
+      "ships": true,
+      "mutants": 6
+    },
+    {
+      "n": 2,
+      "title": "Claim-state delta view",
+      "size": "medium",
+      "gate": "Q3, Q6 (machine arm also M10's Q6)",
+      "ships": true,
+      "mutants": 6
+    },
+    {
+      "n": 3,
+      "title": "Owner note",
+      "size": "large",
+      "gate": "Q4 (and Q1/Q2 for the unpromoted half)",
+      "ships": false,
+      "mutants": 5
+    },
+    {
+      "n": 4,
+      "title": "Dismissal with a live expiry",
+      "size": "large",
+      "gate": "Q5",
+      "ships": false,
+      "mutants": 5
+    }
+  ],
+  "sliceResplit": "the dossier's three slices become four; its third slice carried two different gates (an owner act and a CC-REV-2 amendment) and cannot share a Gate 3 or Gate 5 row",
+  "figuresDifferingFromDossier": [
+    "prerequisite 'none for retention and delta' cannot be asserted without ruling Q1 [this entry read 'does not survive (Q1)' until 2026-09-15; review 2's G1 re-cast it as what Q1 asks. Restated 2026-09-15 after review 1 F1: the dossier's full line attaches the retention-posture trigger to the note's owner act and gives 'none' for retention and delta; whether that trigger reaches slice 1's derived record is Q1 and is not ruled]",
+    "'Depends on ... M10's stable id' does not hold: the claim identity a delta joins on already exists, carries no revision at any of its six construction sites (five until 2026-09-15; site 447 was omitted, review 1's F3), and is required stable by PWB-REQ-007",
+    "a tuple-difference-only band would be nearly silent: 2 distinct tuples over 1,149 claim objects; membership is the signal",
+    "'the state directory holds only the machine credential' is true of the capture and understates the code, which admits three files",
+    "the two appenders are a pattern, not a mechanism: neither is reachable outside its own test file",
+    "L2-M8's project-shape-model.ts:89-102 names UNKNOWN_REASON_ROUTES, not the challenge seam (81-84 and 129)",
+    "M11's exact-contents state-directory assertion binds the Capability 1 daemon, not the POC: 19 readdirSync sites in 8 files, exactly one asserting a state directory's contents"
+  ],
+  "notVerified": [
+    "no POC daemon was run, no repository was observed, no provider call was made",
+    "no real claim-state delta between two Butlers revisions was measured; none can exist before slice 1 does",
+    "whether the sibling branches' actual diffs stay inside the paths their Gate 3 tables name",
+    "whether any docs/evidence/*.json digest table beyond the seven whose basename contains 'manifest' binds M12's surface bytes"
+  ],
+  "governanceCheck": {
+    "command": "python3 scripts/check_governance.py",
+    "tailLine": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+    "baselineTailLineBeforeThesePublishes": "32 OK, 20 WARN, 0 FAIL (52 checks)",
+    "note": "CG-1b failed on a first assembly because two sibling packets are cited by path and do not exist in this worktree; both citations were rewritten without code spans, as the M11 packet does. Re-run is clean."
+  },
+  "review1": {
+    "raw": "docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-RAW.md",
+    "bytes": 34220,
+    "sha256": "549b38f1654b0bc33fc6329aae8b9747fb91260e63405ac6c393cf9ca84e2605",
+    "verdict": "REVISE - blocking 1, non-blocking 7, editorial 4, F1-F12",
+    "reviewed_commit": "a55fe3a",
+    "reviewed_packet_bytes": 136105,
+    "reviewed_packet_sha256": "d65c7860608bf8f1520c27ff71501bd9e8861c840aeec0177e2a70e0f58ab924",
+    "reviewed_record_bytes": 31585,
+    "reviewed_record_sha256": "9765554e546c159b676df90b702984211cd9e7c2ac5c1361c52222cb3b28485f",
+    "six_question_table": "Six genuine hard human gates (Q3 'partly', its honesty constraint being settled rather than open); scope truthful on all six, with Q1's dossier comparison qualified by F1 and Q3's per-tuple limiting sentence by F6; the recommendation follows from the evidence on all six; every lawful arm named on all six rows; no lawful arm called unlawful anywhere; all six defaults stated and all six fail closed. Eight of the nine items under 'Decided in this packet, not put to the owner' are properly a delegate's; the ninth is the hidden owner question F1 names.",
+    "repairs_applied_this_session": true,
+    "uncovered_until_second_review": true,
+    "re_derived_before_applying": {
+      "dossier_prerequisite_line": "docs/pursuits/2026-09-13-vision-pursuit.md lines 415-416 read at a9f671e: '- **Prerequisite.** None for retention and delta; owner act for the note (retention posture); spec amendment for dismissal.' grep -n -F 'retention posture' counts: dossier 1, packet 2 (both the packet's own prose about the trigger, neither a quotation of the dossier line), record 1 (Q1's gist). grep -n -F 'owner act for the note': packet 1 line, record 1 line - the two quotation sites, plus the re-split paragraph's partial quotation.",
+      "prefix_census": "recursive walk over the retained /api/poc capture for every object carrying both claimId and epistemic: 1149 objects, 1148 distinct identities. Distinct by prefix 278/415/439/9/6/1 = 1148; objects by prefix 278/416/439/9/6/1 = 1149.",
+      "claim_fact_decomposition": "claim:fact: 439 = 415 item: + 9 count: + 9 catalog-count: + 6 project-account:.",
+      "closed_vocabularies": "EXTRACTION_CLASSES read at packages/three-surface-poc-core/src/project-shape-manifest.ts lines 58-68, nine members; PROJECT_ACCOUNT_KEYS read at packages/three-surface-poc-core/src/project-shape-extraction.ts line 46, six members. Every claim:class: and claim:fact:count: suffix matched against the first, every claim:project-account: and claim:fact:project-account: suffix against the second: all matched. 1117 observed-derived + 30 closed-vocabulary + 1 fixed literal = 1148.",
+      "claimId_sites": "the literal 'claimId:' over packages/three-surface-poc-core/src/project-shape-model.ts returns 13 lines: 6 interpolating (367, 375, 383, 403, 430, 447), 4 fixed literal 'claim:project-shape' (345, 457, 611, 659), 2 interface declarations (123, 157), 1 pass-through (173). 447 is the Unknown arm of projectAccountOf.",
+      "challenge_sweep": "246 .ts files under apps/ and packages/ excluding dist/ and node_modules. Accepted substring predicate 50 lines = 25 test + 25 non-test. Rejected predicate \\bchallenge\\b four ways: case-sensitive with the challenge-suspended exclusion 35, case-insensitive with it 36, case-sensitive without it 43, case-insensitive without it 44. Difference set 15 lines = 7 non-test (drawer.ts 59, 60, 114, 138, 174; project-shape-model.ts 83, 84) + 8 test (polaris-epistemic-tuples.test.ts 42; polaris-first-reading.test.ts 88; req-040.conformance.test.ts 163, 196, 225, 227; project-shape-model.test.ts 19, 351).",
+      "tuple_span_measurement": "span predicate '<span class=\"claim-tuple\".*?</span>' with DOTALL over three files: the pre-trim retained capture 699 spans / 409829 bytes / mean 586.3 / min 559 / max 661; each lane A after-capture 713 / 418122 / 586.4 / 559 / 661, identical direct and tailnet. 612665 / (2 x 586.4) = 522.4.",
+      "surface_enumeration": "all 15 paths of collision.m12_surface tested with os.path.exists in this worktree: 15 of 15 resolve. Gate 3's topology table's four data rows yield 12 code spans that resolve as files; 2 of the 12 are off-surface (polaris-parity-sweep.test.ts, walkthrough-preflight.ts) and 5 of the 15 are not among the 12 (project-shape-observation.ts and walkthrough-readiness.ts in the 'Not touched by any slice' prose, body-read-authority.ts as a bare basename inside the slice-1 row, walkthrough-judgment.ts and write-guard.ts nowhere in the Gate 3 section).",
+      "drift_diff": "git diff --name-only f4589e2 a9f671e: 146 paths. Each of the twelve re-verification-table files tested by exact whole-line match: 0 hits. apps/three-surface-poc/src/polaris.ts: 1 hit.",
+      "editorial_spans": "canonicalJson in project-shape-observation.ts at lines 36 (import member), 337 and 635; M10's packet at 95f31cb line 35 is Q1 and line 36 is Q2; materialize-action.ts line 27 carries the comment and 28-29 the MATERIALIZE_ATTRIBUTION declaration [superseded 2026-09-15 by review 2 G4: the comment sentence spans 26-27; this value is in the review1 block and is kept unedited]; vision.md's expiry parenthetical spans 175-177, exception (a) ends on 177, and 178-179 are exception (b).",
+      "register_recount": "git show a9f671e:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md, predicate ^| P- partitioned by the ## section each row falls under: 26 rows, 21 open and 5 acceptance-act. With P-79 this branch carries 22 open and 5 acceptance-act, 27 in all."
+    },
+    "dispositions": {
+      "F1": "CONFIRMED, blocking. The full dossier line is now block-quoted with '(retention posture)' at both packet sites and noted in this record by a dated sibling key. The correction is restated as what the evidence supports; the 'reached without the trigger list being read' ruling is WITHDRAWN at all four places it appeared. Q1's question, recommended answer, three arms and default are unchanged.",
+      "F2": "CONFIRMED exactly. Both rows published - distinct identities summing to 1148 and tuple instances summing to 1149 - in the packet and by dated sibling keys here; the original 416 block is kept unedited and marked.",
+      "F3": "CONFIRMED IN PART. The six interpolating sites and the omission of 447 confirm and are repaired in the packet, the funnel summary and this record. The raw's incidental 'twelve claimId: lines / the remaining six are the fixed literal' does NOT confirm: the count is 13 and the fixed-literal sites are 4. Recorded rather than copied.",
+      "F4": "CONFIRMED and quantified: 1117 observed-derived / 30 closed-vocabulary / 1 fixed literal = 1148, with both constants named and their arities read at source. Q1's recommendation, arms and default do not change.",
+      "F5": "CONFIRMED in every figure: 35 / 36 / 43 / 44 four ways, 50 = 25 + 25 accepted, and the 15-line difference splitting 7 non-test / 8 test with only 2 inside the seam. Repaired in the Measurements and in Gate 6 item (1), and mirrored here.",
+      "F6": "CONFIRMED on both host forms: 713 spans / 418122 bytes / mean 586.4 post-trim against 699 / 409829 / 586.3 pre-trim. 'Upper bound' is replaced by 'stable across the trim'; 612665 / 1172.8 = 522.4 and the 522-row figure with its [Inferred] label survives.",
+      "F7": "CONFIRMED. The 15 are enumerated in the packet and all 15 resolve; the prose no longer calls them Gate 3's existing-file set and states how the two sets differ in both directions. No collision cell is recomputed and none moves.",
+      "F8": "CONFIRMED. The twelve are named one by one, the claim is scoped to the re-verification table, and polaris.ts is called out as present in the 146-row diff and absent from the twelve.",
+      "F9": "CONFIRMED. The import is at line 36; corrected with the superseded 336 marked.",
+      "F10": "CONFIRMED. M10's line 35 is its Q1; the first clause now says Q1 and names what M10's Q2 actually asks.",
+      "F11": "CONFIRMED at the quoting site: the comment is at line 27 and 28-29 are the declaration. The other site cites 28-29 for the constant, which was already accurate, and is made explicit rather than changed.",
+      "F11_note_2026-09-15": "Review 2 G4, PARTIAL. Read at source: line 26 of apps/three-surface-poc/src/materialize-action.ts carries 'Fixed, never user-supplied' and line 27 'this action is human-triggered but not human-identified', so the quoted sentence spans 26-27, not 27. Review 1 raw said 'line 27' in the same words and the review-1 pass applied it rather than re-deriving it. The packet now cites 26-27 at both sites, the F11 disposition row carries a dated correction, and the review-1 section names F11 as the second partial beside F3 (10 re-derived exactly + 2 in part = 12). The F11 value above is in the review1 block and is kept unedited.",
+      "F12": "CONFIRMED, and the same two-line overrun is in the row's third span. The verdict cell now reads 'exact for 167-181; approximate for the other two', with both overruns stated and with the note that these are the dossier's spans, not the packet's."
+    },
+    "recommended_answers_changed": [
+      "NONE. Q1 still recommends treating a durable per-evaluation claim-state record as a retention-posture change and obtaining an owner act before slice 1 lands; F1 changed the dossier comparison beside it and withdrew a ruling, F2/F3/F4 corrected the figures inside it, and the question, the three lawful arms and the default are word for word what they were.",
+      "Q3 still recommends the capped band with the remainder disclosed as a counted, routed Unknown; F6 replaced a claimed upper bound with a measured figure and the 522 rows did not move, so neither the recommendation nor the default changed.",
+      "Q2, Q4, Q5 and Q6 are untouched by every finding. No default-if-unanswered moved, and no seventh question was added."
+    ],
+    "register_row": "P-79, added on branch agent/syzygy-dov.12 in this pass",
+    "not_checkable_from_the_artifact": "The claim that each finding was re-derived BEFORE being applied, and that the packet_measured_after_review1 figures were computed last, assert an ordering inside this session that no reader can verify from the bytes. The results are checkable; the ordering is not [Observed for the results, Unknown for the ordering].",
+    "packet_measured_after_review1": {
+      "bytes": 166846,
+      "sha256": "528f8eb8fa1cc90e504a689e2f91f0925fd7beda55b694713ca096cf58468ba0",
+      "total_lines": 2019,
+      "non_fence_lines": 1931,
+      "over_78": 8,
+      "predicate": "total_lines: split on newline with the trailing empty segment dropped (equals wc -l on this newline-terminated file). non_fence_lines: the same, excluding fence lines and fenced content. over_78: lines outside fenced blocks whose first non-space character is not a pipe, length > 78; denominator all total_lines. Computed last of all in this pass, after every packet edit, and iterated to a fixed point because the packet states the figures."
+    }
+  },
+  "review2": {
+    "raw": "docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-2-RAW.md",
+    "bytes": 33703,
+    "sha256": "f75576d0f18c180df785af338a6c718b617bd5180a3150b15746449351e9ebba",
+    "verdict": "CONFIRM WITH EXCEPTIONS - blocking 0, non-blocking 2, editorial 3, G1-G5",
+    "reviewed_commit": "4d61b73",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL.md": {
+        "bytes": 166846,
+        "sha256": "528f8eb8fa1cc90e504a689e2f91f0925fd7beda55b694713ca096cf58468ba0"
+      },
+      "docs/evidence/polaris-m12-retained-evaluations-funnel-2026-09-15.json": {
+        "bytes": 50409,
+        "sha256": "70a1c880dd1af410d744ffd6b6d04fedf74134dac7197646ae7b7c07ecb0de8a"
+      },
+      ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+        "bytes": 34027,
+        "sha256": "8dc39326a8d39f7e5cb8f0167126163a4ddeca18b2839ee74ae6e8ba36e90c34"
+      },
+      "docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-RAW.md": {
+        "bytes": 34220,
+        "sha256": "549b38f1654b0bc33fc6329aae8b9747fb91260e63405ac6c393cf9ca84e2605"
+      }
+    },
+    "method": "every file above measured this session with git show 4d61b73:<path> piped to wc -c and to sha256sum; the raw measured with wc -c and sha256sum. No digest transcribed.",
+    "repairs_applied_this_session": true,
+    "f1_f12_verification_as_review2_states_it": {
+      "REPAIRED": ["F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12"],
+      "REPAIRED_with_residual": ["F1"],
+      "PARTIAL": ["F11"],
+      "NOT_REPAIRED": [],
+      "denominator": 12,
+      "note": "10 REPAIRED, 1 REPAIRED with one residual (F1, the residual being the Q1 ruling still standing in 'Decided in this packet, not put to the owner' - review 2's G1) and 1 PARTIAL (F11, whose quoted comment spans lines 26-27 while the review-1 repair moved it to 27 - review 2's G4) over 12. The raw's own verdict strings, copied: F1 'REPAIRED (one residual, G1)'; F2 'REPAIRED'; F3 'REPAIRED, and the repair worker is right against the raw'; F4 'REPAIRED, and the partition re-derives to the identity'; F5 'REPAIRED, all five predicates reproduce'; F6 'REPAIRED, on both host forms'; F7 'REPAIRED, and the enumeration is exact'; F8 'REPAIRED'; F9 'REPAIRED'; F10 'REPAIRED'; F11 'PARTIAL - see G4'; F12 'REPAIRED (one consequence missed, G3)'. Review 2 also confirms the packet's 13-line claimId: count against review 1's twelve: 6 interpolating + 4 fixed literal + 2 interface declarations + 1 pass-through = 13, re-counted this session."
+    },
+    "re_derived_before_applying": {
+      "G1_q1_arms": "the Q1 table row and the Q1 section re-read this session. Q1's second lawful arm rules the record inside the existing authorization on the same-posture reading and its third on the narrower disclosure-limited ground; on either the dossier's first clause, 'None for retention and delta', stands. So the packet's lead sentence ('does not survive as written, and the half that fails is the first half') and its :109-116 argument ('The first clause does not') asserted Q1's own recommended answer inside a section headed 'not put to the owner'. Live-occurrence sweep for 'does not survive' / 'does NOT survive' over the packet, this record and the register as they stood at 4d61b73, counted line-wise and over the whitespace-flattened text: 3 in the packet, 2 here, 0 in the register; all five handled - two re-cast and three marked in place - and over the bytes this close-out produced none of the surviving occurrences is a live assertion, every one being inside a quotation, a dated supersession bracket or a locator note.",
+      "G2_buildModel": "grep -n -F 'buildModel()' apps/three-surface-poc/src/main.ts returns 3 lines this session - 113 (the declaration), 187 and 201 - over that file's 253 lines by wc -l. The published predicate, which named no exclusion, therefore returned 3 where the packet stated 2.",
+      "G3_tally": "the re-verification table's verdict column re-read row by row this session: 9 wholly exact, 2 narrowed by one at the tail, 1 approximate (materialization.ts), 1 wrong referent (project-shape-model.ts:89-102) and 1 mixed (vision.md, whose verdict F12 changed to 'exact for 167-181; approximate for the other two'). 9+2+1+1+1 = 14; denominator the table's 14 rows.",
+      "G4_comment_span": "apps/three-surface-poc/src/materialize-action.ts lines 24-29 read at source: line 26 ends '... Fixed, never user-supplied', line 27 is 'this action is human-triggered but not human-identified.', lines 28-29 are the MATERIALIZE_ATTRIBUTION declaration. The quoted sentence spans 26-27; the declaration citation was already right at both sites.",
+      "G5_over78_spans": "the 8 over-78 lines at 4d61b73 re-measured this session with their longest code span including delimiters: 57 span 102, 236 span 148, 342 span 79 and 1009 span 85 are forced by a span wider than 78; 430 (line 79, longest span 64), 547 (92, the double-backtick span 64), 1350 (88, longest span 29) and 1794 (79, longest span 32) are wrapping choices. The count of 8 is exact; the 'every ... unbreakable code span forces' explanation failed on 4 of 8.",
+      "register_recount_with_heads": "predicate ^| P- over the register, partitioned by the ## section each row falls under: this branch 22 open + 5 acceptance-act = 27; main at a9f671e 21 + 5 = 26; unchanged by this pass, which adds no row. The eleven siblings recounted at their own heads, each register carrying 27 rows and none a P-79 row: laneb 4090f98, m2wt f2f37dd, m3wt 6574600, m4wt 63b8e33, m5wt ba9ca61, m6wt 83c9f60, m7wt f97baf4, m8wt bce9039, m9wt 65de02b, m10wt 95f31cb, m11wt bbd6837. Denominator all eleven worktrees."
+    },
+    "disposition_summary": {
+      "G1": "CONFIRMED and applied (non-blocking). The lead sentence and the :109-116 argument are re-cast as what Q1 asks - the first clause cannot be asserted without ruling Q1 - with the superseded wording quoted and dated at both sites, the same change made in the funnel summary's opening dossier clause, and dated sibling keys added here beside the dossier entry. Q1's question, recommended answer, three lawful arms and default are unchanged, byte for byte against git show 4d61b73 of the packet.",
+      "G2": "CONFIRMED and applied (non-blocking) at both packet sites: the predicate now names the exclusion of the declaration at line 113 and publishes 3 as the raw count beside the 2 call sites, superseded wording quoted and dated. Mirrored here by predicate_note_2026-09-15.",
+      "G3": "CONFIRMED and applied (editorial). The funnel-summary tally publishes 9 exact, 2 narrowed, 1 approximate, 1 wrong referent and 1 mixed, 9+2+1+1+1 = 14, with the superseded tally quoted and dated. Mirrored here by exact_note_2026-09-15.",
+      "G4": "CONFIRMED and applied (editorial) at four places: the quoting site and the earlier precedent sentence now cite lines 26-27; the F11 disposition row carries a dated correction rather than a deletion; and the review-1 section's 'eleven re-derived exactly' sentence is superseded in place to name F11 as the second partial beside F3 (10 + 2 = 12). Mirrored here by dated sibling keys beside the review1 block's dispositions.F11 and re_derived_before_applying.editorial_spans, neither of which is edited.",
+      "G5": "CONFIRMED and applied (editorial) by ANNOTATING rather than reflowing - the choice this pass made, because a reflow would move lines review 2 read for a cosmetic reason and risks breaking a span. The review-1 conventions paragraph names the 4 forced lines with their span widths, states the other 4 as wrapping choices, keeps the superseded 'every' sentence quoted and dated, and is pinned to the 4d61b73 bytes it describes; the conventions over this pass's own bytes are re-derived at the end of the packet's review-2 section."
+    },
+    "recommended_answers_changed": {
+      "none": "No recommended answer changed after review 2. Its six-question table answers 'Recommendation follows?' Yes for all six and 'All lawful arms named?' Yes for all six; the human-gate column is Yes for five and Partly for Q3, as in review 1; it calls no arm and no default unlawful, records all six defaults as stated and failing closed, and finds no trade-off smoothed into consensus language. Q1 through Q6 keep the recommendations, the lawful arms and the defaults they carried into the review, word for word; no default-if-unanswered moved, no seventh question was added, no sibling packet's question is re-asked. All five exceptions are presentational or evidentiary."
+    },
+    "unknowns_recorded_for_the_owner": {
+      "review2_labels": "Review 2 attaches no [Unknown] label of its own.",
+      "hidden_owner_question": "One, and it is G1: the residue of F1. Every other item under 'Decided in this packet, not put to the owner' is a measurement-backed correction a delegate may properly make, and review 2 re-derived each.",
+      "non_material_observation": "The Q1 quotation of the continuation act's trigger paragraph adds bold emphasis that the packet's 'verbatim' framing does not flag. Review 2 records it as not material; carried here as the review states it rather than argued away.",
+      "ordering_not_verifiable_from_bytes": "This pass's claim to have re-derived G1-G5 before applying them, and to have computed the convention figures last, assert an ordering inside the repairing session that no reader can check from the artifact. The results are checkable; the ordering is not. [Observed for the results, Unknown for the ordering.]",
+      "prerequisiteSurvives_now_unknown": "dossier.prerequisiteSurvives remains false as published, with a dated sibling recording that the honest value is Unknown until the owner rules Q1."
+    },
+    "rule_10": "Review 2 binds the four digests recorded above at commit 4d61b73, not these bytes. Every edit of this pass was made after it, so the five exception repairs are uncovered until a third review confirms them.",
+    "gate": "at the owner gate on review 2's CONFIRM WITH EXCEPTIONS with all five exceptions applied - no blocking finding, no recommended answer moved, and the review-1 repairs verified 10 REPAIRED, 1 REPAIRED with a residual (F1) and 1 PARTIAL (F11) over 12; P-79 is ready to be ruled",
+    "uncovered_until": "a third independent fresh-context review, for the five exception repairs recorded here; all five post-date review 2 (verification rule 10). Its raw would be a third -RAW.md file, never an overwrite of either retained one.",
+    "register_row": "P-79, unchanged in identity; its note and row carry the review-2 entry added in this pass. The recount is unchanged at 22 open + 5 acceptance-act = 27 on this branch and 21 + 5 = 26 at a9f671e, re-verified this session by the ^| P- predicate.",
+    "governance_check_after_review2": {
+      "command": "python3 scripts/check_governance.py",
+      "last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+      "note": "run in this worktree after all four files of this pass were written - the packet, this record, the P-79 register row and note, and the retained review-2 raw. Read the last line, not the exit code (verification rule 4)."
+    },
+    "packet_measured_after_review2": {
+      "path": "docs/design/POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL.md",
+      "bytes": 187229,
+      "sha256": "b8db6200ebcdc06e575f56f167de9d8d6137901826fca8f67ffbd5bd475017be",
+      "total_lines": 2217,
+      "non_fence_lines": 2129,
+      "over_78": 8,
+      "over_78_lines": "57, 256, 362, 455, 578, 1041, 1385, 1829",
+      "over_78_forced_by_a_span_wider_than_78": "57 span 102; 256 span 148; 362 span 79; 1041 span 85",
+      "over_78_wrapping_choices_annotated_not_reflowed": "455 line 79 longest span 64; 578 line 92 longest span 65; 1385 line 88 longest span 29; 1829 line 79 longest span 32",
+      "predicate": "total_lines: split on newline with the trailing empty segment dropped (equals wc -l on this newline-terminated file). non_fence_lines: the same, excluding fence lines and fenced content. over_78: lines outside fenced blocks whose first non-space character is not a pipe, length > 78; denominator all total_lines. forced/choice: the longest code span on the line, including its delimiters, compared with 78.",
+      "note": "computed LAST, after the final edit to the packet, and iterated to a fixed point because the packet states the figures, so these name the bytes that carry them and match the committed packet exactly. Verification rule 10: a review is bound to exactly these bytes and any later edit retires it."
+    }
+  }
+}
