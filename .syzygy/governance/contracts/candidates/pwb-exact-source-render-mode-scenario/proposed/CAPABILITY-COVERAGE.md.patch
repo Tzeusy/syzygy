@@ -1,0 +1,12 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md b/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+--- a/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+@@ -14,7 +14,7 @@
+ | 7 | Accept valid state-(1), state-(2) or mixed consent/policy/registry acts with exact states visible, and reject the closed 195-case invalid population before body reads | covered — PWB-REQ-005 |
+ | 8 | Keep repository content contained, context-inert, bounded and secret-safe, including secret scanning inside inert code contexts | covered — PWB-REQ-003, PWB-REQ-006 |
+ | 9 | Present the whole project before capability detail | covered — PWB-REQ-010 |
+-| 10 | Preserve progressive paths to catalogs, deep dives and transient verbatim baseline requirements within the existing content class | covered — PWB-REQ-011 |
++| 10 | Preserve progressive paths to catalogs, deep dives and transient verbatim bodies of every admitted source within the existing content class, in two closed render modes, never for a withheld source | covered — PWB-REQ-011 |
+ | 11 | Use finite, direct owner-facing copy rules | covered — PWB-REQ-012 |
+ | 12 | Keep active/proposed work subordinate and visibly distinct | covered — PWB-REQ-013 |
+ | 13 | Preserve project-wide human/machine parity | covered — PWB-REQ-020 |

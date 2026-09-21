@@ -1,0 +1,96 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -637,16 +637,51 @@
+ deep dives and exact authoritative artifacts as progressively deeper reading
+ levels. A reader who stops at any level SHALL retain a true, coarser account.
+ 
++The exact-source route SHALL serve every project-shape source the evaluation
++admitted as a classified blob, in exactly one render mode drawn from the closed
++set `requirement-sections`, `whole-body`: `requirement-sections` for a baseline
++`openspec/specs/*/spec.md` source and `whole-body` for every other admitted
++source. A source whose record outcome is excluded SHALL NOT be served in any
++mode; it SHALL stay counted with its revision-bound identity, its content
++digest and its fixed exclusion reason, and no route or sink SHALL carry any of
++its body bytes. Every mode SHALL apply the same authority, exact-object,
++secret-detection and inert-content gates to the complete transient body before
++encoding any part of it; a failed gate SHALL leave that body Unknown with its
++reason and SHALL grant no wider content-class access. Each served mode SHALL
++expose a scroll anchor for each reading unit a citation can name; an anchor is
++presentation only, SHALL NOT remove, narrow or reorder what the route serves
++without it, and SHALL NOT enter, replace or qualify any source, claim or
++narrative anchor identity. Each served route's mode, source identity and each
++refusal's reason SHALL be recoverable, per rendered tuple, from the same
++evaluation in the machine answer.
++
+ - **Case (sweep)**: start from every project-level catalog category and follow
+-  one declared item through each available depth.
++  one declared item through each available depth; separately, request the
++  exact-source route once for every source in the complete source population,
++  admitted and excluded alike.
+ - **Observable**: each path resolves from summary to catalog to detail to exact
+-  source without changing the fact's identity or epistemic state.
++  source without changing the fact's identity or epistemic state; each source's
++  served mode, or its refusal reason, is recoverable in both channels.
+ - **Oracle**: enumerate every category and compare path targets to the machine
+-  answer and source anchors; the complete path population decides.
++  answer and source anchors; the complete path population decides. Separately
++  partition the complete source population into served and refused, compare
++  each served body to the exact Git object its identity names and each
++  refusal to that source's recorded outcome, and report both denominators;
++  the complete source population decides.
+ - **Oracle independence**: categories and anchors come from the source model,
+-  while expected depth semantics come from RFC7-13/14/17.
++  while expected depth semantics come from RFC7-13/14/17; the served/refused
++  partition and every expected body come from the evaluation's own source
++  records, never from the route's output.
++- **Mutation proof**: independently inject a served excluded source, a mode
++  outside the closed set, a mode applied to the wrong source class, a body
++  encoded before a gate ran, an anchor that removes or reorders served content,
++  and an anchor used as an anchor identity; confirm the oracle fails before
++  restoration and report both denominators for every run.
+ - **Falsifier**: a category is unreachable, a link resolves to a different
+-  identity, or a coarser level overstates the deeper source.
++  identity, a coarser level overstates the deeper source, an excluded source is
++  served in any mode, a served mode is outside the closed set or wrong for its
++  source class, or an anchor narrows what the route serves or serves as an
++  identity.
+ 
+ #### Scenario: Capability reaches exact requirements
+ 
+@@ -664,6 +699,35 @@
+   scenarios verbatim after verifying their source identity
+ - **AND** it stores, logs, caches and returns no unselected body bytes; a failed
+   gate leaves the exact text Unknown and grants no wider content-class access
++
++#### Scenario: Consented non-baseline source renders whole-body
++
++- **WHEN** the requested source is an exact Git object already selected by the
++  signed source population, is not a baseline `openspec/specs/*/spec.md`
++  source, was admitted by this evaluation as a classified blob, and the
++  existing `declared-project-shape-text` authority, exact-object, secret and
++  inert-content gates all admit its complete transient body
++- **THEN** Polaris may transiently encode that body verbatim in the
++  `whole-body` mode after verifying its source identity
++- **AND** it stores, logs, caches and returns no other body bytes; a failed
++  gate leaves that body Unknown with its reason and grants no wider
++  content-class access
++
++#### Scenario: Withheld source stays digest-only
++
++- **WHEN** the requested source's record outcome is excluded
++- **THEN** the route serves no body in any mode and names that source's fixed
++  exclusion reason
++- **AND** the source keeps its revision-bound identity and content digest in
++  both channels, the source denominator is unchanged, and no route or sink
++  carries any of its body bytes
++
++#### Scenario: A citation lands on the unit it names
++
++- **WHEN** a citation names one reading unit of a source the route serves
++- **THEN** the route exposes that unit's scroll anchor as the citation's target
++- **AND** the route serves exactly the units it serves without the anchor, in
++  the same order
+ 
+ ```yaml
+ warrants:

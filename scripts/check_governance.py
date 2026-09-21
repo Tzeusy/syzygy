@@ -1521,6 +1521,19 @@ PWB_SCOPED_AMENDMENT_SUBJECT = (
     f"{PWB_SCOPED_AMENDMENT_DIR}/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt")
 PWB_SCOPED_AMENDMENT_ACT = (
     f"{DECISIONS}/PWB-SCOPED-ATTRIBUTES-AMENDMENT-ACT.md")
+#: The P-81 (M14) exact-source render-mode scenario, drafted 2026-09-21 and
+#: registered before its packet exists for the same CG-7d/CG-7e reason. It
+#: amends the same closed eleven-path behavior population and its manifest
+#: likewise hashes proposed bytes. It is deliberately NOT a
+#: `PWB_SUCCESSOR_CHAIN` link yet: two candidate successors now sit behind
+#: the truth-and-readiness link and their performance order is the owner's
+#: to set, so the link is registered with the act that performs it.
+PWB_RENDER_MODE_LABEL = "SIGN OFF PWB EXACT-SOURCE RENDER-MODE AMENDMENT"
+PWB_RENDER_MODE_DIR = f"{CANDIDATES}/pwb-exact-source-render-mode-scenario"
+PWB_RENDER_MODE_SUBJECT = (
+    f"{PWB_RENDER_MODE_DIR}/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt")
+PWB_RENDER_MODE_ACT = (
+    f"{DECISIONS}/PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md")
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -1579,6 +1592,8 @@ PWB_STATE1_SUBJECTS = tuple(sorted((
 PWB_TRUTH_AMENDMENT_SUBJECTS = PWB_STATE1_SUBJECTS
 #: The scoped-attributes amendment binds the same eleven paths again.
 PWB_SCOPED_AMENDMENT_SUBJECTS = PWB_STATE1_SUBJECTS
+#: So does the exact-source render-mode amendment.
+PWB_RENDER_MODE_SUBJECTS = PWB_STATE1_SUBJECTS
 #: Successor chain over the PWB behavioral package, in performance order.
 #: The latest validly performed link binds current bytes; every earlier
 #: link's rows are immutable act-time history.
@@ -2010,6 +2025,13 @@ def _act_subjects():
             re.compile(re.escape(PWB_SCOPED_AMENDMENT_LABEL)
                        + r"\s*:\s*`?([0-9a-f]{64})"),
         ))
+    if not any(label == PWB_RENDER_MODE_LABEL for label, _rel, _pat in out):
+        out.append((
+            PWB_RENDER_MODE_LABEL,
+            PWB_RENDER_MODE_SUBJECT,
+            re.compile(re.escape(PWB_RENDER_MODE_LABEL)
+                       + r"\s*:\s*`?([0-9a-f]{64})"),
+        ))
     out.append((POLARIS_NO_SIGNAL_LABEL, POLARIS_NO_SIGNAL_SUBJECT,
                 re.compile(re.escape(POLARIS_NO_SIGNAL_LABEL)
                            + r"\s*:\s*`?([0-9a-f]{64})")))
@@ -2215,6 +2237,8 @@ ACT_DIGEST_COPY_FILES = {
         (PWB_TRUTH_AMENDMENT_LABEL,) + PWB_EFFECT_ACT_LABELS[1:],
     f"{PWB_SCOPED_AMENDMENT_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_SCOPED_AMENDMENT_LABEL,),
+    f"{PWB_RENDER_MODE_DIR}/OWNER-DECISION-PACKET.md":
+        (PWB_RENDER_MODE_LABEL,),
     # The owner-act record quotes each performed act's exact phrase and
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
@@ -2311,6 +2335,26 @@ def _activate_pwb_scoped_amendment_act_copy_registry():
 
 
 _activate_pwb_scoped_amendment_act_copy_registry()
+
+
+def _activate_pwb_render_mode_act_copy_registry():
+    """Same transition rule, for the exact-source render-mode successor.
+
+    Once `PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md` exists, it and the
+    aggregate record must both carry the exact current behavior-manifest
+    digest. A no-op until then; the packet copy is registered statically
+    above.
+    """
+    if not os.path.isfile(os.path.join(ROOT, PWB_RENDER_MODE_ACT)):
+        return
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+    if PWB_RENDER_MODE_LABEL not in labels:
+        ACT_DIGEST_COPY_FILES[aggregate] = labels + (PWB_RENDER_MODE_LABEL,)
+    ACT_DIGEST_COPY_FILES[PWB_RENDER_MODE_ACT] = (PWB_RENDER_MODE_LABEL,)
+
+
+_activate_pwb_render_mode_act_copy_registry()
 
 
 def _activate_polaris_no_signal_act_copy_registry():
