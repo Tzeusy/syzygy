@@ -1,0 +1,2288 @@
+# Feature request M4 — Close the owner loop: a route from every Unknown, home as the day-opening, and run the return path once
+
+> **Candidate — binds nothing.** This is the feature-request funnel for the
+> fourth move released from the 2026-09-13 vision pursuit. It proposes; the
+> owner disposes (VIS-4). Nothing here authorizes implementation, and no bead
+> becomes runnable by this file. Bead: `syzygy-dov.4`. Dossier:
+> `docs/pursuits/2026-09-13-vision-pursuit.md`, section M4. It is written in
+> the shape of `docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md`, of the ruling
+> that packet produced
+> (`.syzygy/governance/decisions/POLARIS-M1-PAGE-SIZE-OWNER-RULING-DECISION.md`,
+> the M1 ruling), and of the M2 packet as reviewed four times on
+> `agent/syzygy-dov.2`.
+
+Date: 2026-09-14. Author: a funnel session (Claude), for the owner.
+
+Size: **medium** for slices 1–5 (app and core renderer plus machine-payload
+fields; observable behaviour changes; no governed artifact touched);
+**medium** for slice 6, which builds nothing and runs an existing mechanism
+once; **large** for slice 7 and for the deferred pair in slice 8, each of
+which needs its own owner act before any code is written.
+
+Baseline: Syzygy `a9f671e` (main; the only working-tree change is a
+co-lead's in-flight `AGENTS.md`, unrelated) [Observed].
+
+**The captures this packet measures, and their provenance.** Two sets, and
+the packet says which is which at every use.
+
+| Capture | Path | Bytes | sha256 (computed this session) | Provenance |
+|---|---|---|---|---|
+| Polaris, tailnet host form | the retained lane A *after* capture, `polaris-tailnet.html` | 1,484,487 | `e8a04b4631dedbda159dd162d25f4e8a7ed4f9f4059a37ca1bca87b717790111` | Butlers evaluation revision 2e3bac97790b, committed 2026-09-13T10:31:11Z, captured 2026-09-13T13:33:24.295Z; observer `2ef68f5` |
+| Polaris, direct host form | `polaris-direct.html`, same directory | 1,478,637 | `2fecdd01e1a2ff577567495796ea7e59ab89f1420be6033e23314d26442ea094` | same daemon, same evaluation |
+| Machine, full model | `api-poc.json`, same directory | 5,520,314 | `a89b0e059b5fdadc5f359c2bee58115cd50747399cfb00444703e0fafdfb466e` | same evaluation |
+| Machine, presentation envelope | `api-polaris.json`, same directory | 640,592 | `ab3b517be1e62a0a7f4cabe73d870f9aa6bea7d2bbbadf0d27a2f00c34eca22e` | same evaluation |
+| Home page | the pursuit capture directory, `home.html` | 38,706 | `c2fd6d1af7103e871c26dc65b76cc391fe2765a1c7391ac19ddf1656e57b5fca` | **pre-lane-A**: Syzygy `f4589e2`, Butlers 7c8743f63, 2026-09-13T02:03:33.040Z |
+| Trajectory | same directory, `trajectory.html` | 244,524 | `fd802531b199084e7145932715150f4977335e49ca6aa168d68d5227c9d6ddde` | **pre-lane-A**, same run |
+| Orrery | same directory, `orrery.html` | 37,048 | `e3ae5b7901c599a04b685456e6070430edf72fcd025cd1f6afecf863153582fa` | **pre-lane-A**, same run |
+| Machine, pre-lane-A | same directory, `api-poc.json` | 5,508,208 | `8b8d8a3078f085d4d53aa3bcad9d5a06b5b0c064bb8cdc7b3832913a81bc44d0` | **pre-lane-A**, same run |
+
+The retained lane A sha256 was verified against the figure recorded in the
+M2 evidence file before any measurement was taken, and matched [Observed].
+
+**Why the pre-lane-A home and Trajectory captures are still valid for this
+packet.** `git diff --stat f4589e2..a9f671e` restricted to
+`apps/three-surface-poc/src/routes.ts` and
+`apps/three-surface-poc/src/trajectory.ts` returns **no rows**, and the same
+diff over `packages/three-surface-poc-core/` returns no rows at all: lane A
+touched exactly two rendering sources, `apps/three-surface-poc/src/polaris.ts`
+(+25/−6) and `apps/three-surface-poc/src/polaris-narrative.ts`, plus tests and
+the new `apps/three-surface-poc/src/polaris-generation/` directory [Observed:
+`git diff --numstat` over both paths, this session]. So the home, Trajectory
+and Orrery renderers at `a9f671e` are byte-identical to the ones that
+produced those captures; only the observed Butlers revision differs
+(7c8743f63 versus 2e3bac97790b), and every count this packet takes from them
+is a count of *rendering structure*, not of Butlers content. Where a count
+could move with the Butlers revision, it is taken from the lane A capture.
+
+## The seven questions for the owner
+
+Batched, each with the recommended answer first. Q1, Q3, Q5 and Q7 are owner
+gates in the strict sense: Q1 decides whether rendered Unknowns across all
+three surfaces are in breach of a requirement in force, Q3 decides whether a
+new write effect is authorized at all, Q5 confirms what a run may honestly
+be expected to produce **and**, since review 1 (F4), whether that run's
+existing write into the observed repository's tracker is itself authorized,
+and Q7 orders this move against three sibling packages **and**, since review
+1 (F3, F6) and review 2 (G1, G2), reconciles the file-level collisions — now
+three packages writing one page region, not two — and names the authorization
+arm slices 4 and 5 rest on (widened 2026-09-15, review 5, K2, to carry
+the RFC2-26 gate over slices 3, 4 and 5). **Superseded 2026-09-15 (review
+2, G4).** This preamble
+read: "Q6 is contract-determined on this packet's own reasoning — it
+has one lawful arm and one that mints a vocabulary value no requirement enters
+— and is put to the owner for confirmation and disclosure rather than as a
+free choice." Both halves were wrong. Neither Q6 arm mints a vocabulary value;
+that phrase belongs to Q2 alone, about `none-modelled`. And
+"contract-determined" is the opposite of what this packet establishes about
+`model.surfaces` in three other places — Gate 0, Gate 3's slice-4 row and Gate
+5 all state that **no requirement in either signed spec governs the home route
+or `model.surfaces`**, on three sweeps with their denominators. **Q6 is
+therefore a genuine engineering choice, put to the owner *because* no
+requirement reaches the field, not because one constrains it**: neither arm —
+derive the field, or delete it — is foreclosed by any requirement, and the Q6
+row states deletion's cost rather than denying deletion is available.
+**Reworded 2026-09-15 (review 4, J2):** this passage read "both arms — derive
+the field, or delete it — are lawful today, exactly as Gate 5's own
+consequence sentence says ('changing the home page freely is lawful today
+precisely because nothing specifies it')", resting the lawfulness claim on the
+sentence review 4 withdrew. RFC2-26 is the test that sentence never ran:
+absent a mapping to an approved requirement and scenario, or a reviewed N/A
+judgment
+homed in `.syzygy/governance/decisions/` and honored by an effective owner
+act, the observable
+consequence is "unmapped and Unknown, never covered". So what the three sweeps
+establish is that the arms are *unconstrained by any requirement*; whether
+either may be *scheduled* is the RFC2-26 question Q7 now puts to the owner.
+Only the *derive* arm is designed as a slice here, so only it is tested at
+Gate 5; the deletion arm's own limbs, added 2026-09-15 per review 5 (K3):
+deleting the field removes the three surface panels it feeds and adds no new
+behavior, so limb 2's "purely structural with no independently testable
+behavior" is plausibly reachable for deletion in a way it is not for slice
+4, whose whole content is a testable declared-equals-rendered assertion — but
+limb 2 still needs a reviewed N/A judgment homed in
+`.syzygy/governance/decisions/` and honored by an effective owner act, so
+deletion is not free of the clause either [Inferred].
+**Q2 is a genuine choice,
+corrected from the draft's contract-determined framing** (review 1, F2): the
+code models a routeless Unknown today, so minting `none-modelled` competes
+with naming the existing arm rather than being foreclosed. Q4 is a real
+choice between two lawful arms.
+
+| # | Question | Recommended |
+|---|---|---|
+| Q1 | **Nine of the twenty-two Unknown disclosures Polaris renders carry no reason from the closed RFC2-24 twelve and no route. Is that a POC-REQ-060 non-conformance to be repaired, or the accepted shape of the entity-and-relationship graph?** [Observed: 22 `data-unknown-disclosure` elements on the retained Polaris capture; 13 contain a `data-unknown-reason` value and the literal `Route:` inside their own element; 9 contain neither — the four entity Unknowns and all five relationship Unknowns. Method and offsets in the evidence record. **Scope correction (review 1, F5):** POC-REQ-060 quantifies over "every epistemic encoding across the three surfaces", not Polaris alone. Measured this session on the other surfaces' retained captures, **raw and rendered** (corrected per review 2, G3) [predicate: literal occurrences of the string `epistemic-unknown`; denominator: the whole served page; then partitioned by enclosing tag, a partition that accounts for every occurrence on every page]: Trajectory **0** `data-unknown-disclosure` elements and **301 raw** `epistemic-unknown` occurrences = 1 stylesheet rule + 1 legend key item + **299** claim-carrying spans; Orrery **0** and **11 raw** = 1 + 1 + **9**; Home **0** and **18 raw** = 1 + 1 + **16**; Polaris **2 raw** = 1 + 1 + **0**, so the class marks no Polaris claim at all and the 22 `data-unknown-disclosure` elements (offsets 378,631 through 1,462,622) contain zero occurrences of it. Trajectory and Orrery render every occurrence of the literal `epistemic-unknown` as a bare class span, with no disclosure wrapper, no closed reason and no route at all — a *third* encoding, never before measured against this requirement. **Superseded 2026-09-15 (review 3, H1):** this clause read "Trajectory and Orrery render **every Unknown** through the bare `epistemic-unknown` class", which asserts that one class literal exhausts those surfaces' rendered Unknown population. The predicate actually run counts occurrences of that one literal, not that population, and a fourth family sits outside both censused ones. **Fourth encoding family, added 2026-09-15 (review 3, H1): `provenance-none`.** `apps/three-surface-poc/src/exact-tables.ts` line 10 emits `<span class="provenance-none">No positive provenance; this relationship remains Unknown.</span>` whenever an entity's or relationship's `provenance` array is empty. Counted this session [predicate: literal occurrences of the string `provenance-none`; denominator: the whole served page; then every occurrence assigned to its enclosing tag, a partition that accounts for every occurrence on every page]: Polaris **0** on both lane A forms; Trajectory **0**; Orrery **9**, all nine rendered spans with **0** occurrences inside `<style>`; home **10** = 1 stylesheet rule + **9** rendered spans. The nine Orrery spans sit inside the `<tr>` elements whose ids are `work:whatsapp-single-event-normalization`, `evidence:focused-pytest`, `runtime:live-satisfaction`, `region:unmapped-code`, `relationship:intent-to-work`, `relationship:work-to-code`, `relationship:code-to-evidence`, `relationship:code-to-runtime` and `relationship:capability-to-unmapped-region` — **exactly the nine objects this question is about**, the four entity Unknowns and the five relationship Unknowns, reached a third time and by neither censused family [Observed]. Two facts make this POC-REQ-060's own falsifier rather than a naming quibble. **First, `provenance-none` is in no declared token table:** `apps/three-surface-poc/src/design-tokens.ts` line 25 declares `className: 'epistemic-unknown'` and that file names `provenance-none` nowhere; its only style rule is `apps/three-surface-poc/src/routes.ts` line 73, `.provenance-none { color: var(--unknown); font-size: .8rem; }`, inside `HOME_STYLE` — declared at line 57 of that file and passed as `extraStyle` at line 90, the home route, and nowhere else. A span carrying the Unknown colour token under a class the declared table does not carry is the falsifier's second limb verbatim, "or a surface styling epistemic state ad hoc" (spec line 946). **Second, the same class renders differently on two surfaces:** `apps/three-surface-poc/src/orrery.ts` imports `exactTablesSection` at line 4 and calls it at lines 125 and 151 without `HOME_STYLE`, so home carries the rule and Orrery carries **0** style occurrences against its nine rendered spans — the falsifier's first limb, "one surface encoding Unknown (or Observed) differently from the declared table" [Observed, this session, over the retained captures and the four source files named]. Noted in passing, not itself a finding against this packet: the literal reads "this **relationship** remains Unknown" on all nine rows, four of which are entities. **Superseded 2026-09-15 (review 2, G3):** this cell reconciled the two marker families with the clause "`epistemic-unknown` counts a CSS/data class occurring on every surface, **including Polaris's own 22 disclosures**", and offered 301 and 11 as the population. The clause is false — Polaris carries exactly two occurrences, one inside `<style>` and one in the legend list, and none of the 22 disclosures carries it — and those same two non-claim occurrences sat inside every published figure, so a stylesheet declaration was inside the denominator of a requirement about what a surface *renders* (verification rule 4). **Superseded 2026-09-15 (review 3, H2).** This sentence read "**Re-checked against the corrected figures, the third encoding is still the largest of the three:** 299 + 9 = **308** rendered claim encodings across the two surfaces, against Polaris's 13 routed disclosures and 9 bare-prose ones". Ranking the encodings by size is the cross-family comparison the next sentence forbids, and the two terms count different objects — `epistemic-unknown` spans on Trajectory and Orrery against disclosure elements on Polaris. Restated as what was actually measured: **each surface's Unknowns are encoded by a marker the other two do not share**, and the per-family denominators are reported unranked [Observed, this session, over the four retained captures]. The two marker families are still not directly comparable (`data-unknown-disclosure` counts disclosure elements on Polaris; `epistemic-unknown` is a CSS/data class whose occurrences must be partitioned before they count as encodings), so each is reported against its own denominator, never combined into one total. Home's 16 is stated for completeness and sits outside POC-REQ-060's three-surface population.] | **A non-conformance, repaired by slice 1 — but slice 1's sweep must cover a marker the three renderers actually share, not `data-unknown-disclosure` alone.** POC-REQ-060 is an invariant in force over "every epistemic encoding across the three surfaces" and its falsifier is "one surface encoding Unknown (or Observed) differently from the declared table". Across the three surfaces there are at least **four** encodings today (**corrected 2026-09-15, review 3, H1**, which superseded "at least three encodings today"): Polaris's reason-span-plus-`Route:` (13 of 22), Polaris's bare prose (9 of 22), Trajectory/Orrery's bare `epistemic-unknown` span with no disclosure wrapper, reason or route (299 and 9 rendered claim encodings respectively, from 301 and 11 raw occurrences — unmeasured until this repair, and re-partitioned per review 2, G3), and Orrery's `provenance-none` span over the same nine objects (9 rendered, against 1 stylesheet rule and 9 rendered spans on home and 0 on Polaris and Trajectory). The prose comes from `unknown(reason: string)` at `packages/three-surface-poc-core/src/model.ts` line 305, which accepts any string; RFC2-24 closes the reason vocabulary at twelve and says a condition genuinely not among them "is disclosed as a **fact of the render** — named, expandable, routed to its resolving action — never dressed as a reason". Rule it a repair, not a redesign: the nine Polaris disclosures keep their existing sentences as the *basis* text and gain a closed reason and its route, and slice 1 must additionally either require Trajectory and Orrery to emit the same `data-unknown-disclosure`/`data-unknown-reason` marker pair the sweep checks, or the sweep is re-specified over a marker the three renderers already share (see slice 1's repaired Tests section). **Whichever arm the owner takes, the shared marker must cover the `provenance-none` rendering too** (added per review 3, H1): its nine Orrery spans are nine encodings of exactly the nine Unknowns this question is about, so a sweep blind to them would pass on every denominator published here while POC-REQ-060's falsifier still stands. Slice 1's Tests carry the corresponding rule-6 mutant. **The recommended arm itself does not change** [Observed: the remedy turns on the zero-denominator fact — Trajectory and Orrery emit 0 `data-unknown-disclosure` elements — which the fourth family neither creates nor removes; it widens the marker's required coverage, not the arm]. |
+| Q2 | **L5-M4 proposes minting `none-modelled` as a third state so that an empty `resolutionRoutes` array "stops being legal". Mint it?** This is a genuine choice, not contract-determined as review 1 (F2) found the packet had wrongly framed it: `routesFor`'s actual code and cap1-core's `EpistemicState` type both already model a routeless Unknown, so `none-modelled` is not foreclosed by construction — it competes with an existing, narrower arm. | **Do not mint `none-modelled`; instead name and route the existing `basis: 'deferred'` arm.** Corrected facts (review 1, F2). `routesFor` (`packages/three-surface-poc-core/src/project-shape-model.ts:151`) is `if (state.label !== 'Unknown' \|\| !('reasons' in state)) return [];` — **two** return-`[]` branches, not one: not-Unknown, and Unknown-with-no-`reasons`. cap1-core's `EpistemicState` (`packages/cap1-core/src/epistemic.ts:50-67`) has exactly that second arm as a third union member: `{ label: 'Unknown', basis: 'deferred', tier?, freshness? }` — no `reasons` field, so it cannot borrow a route from RFC2-24's twelve either. So a routeless Unknown is *modelled today*, not "unreachable by construction"; what is true, and confirmed this session on both machine captures, is the narrower, data-only fact that **0 of 1,137** empty-array claims are Unknown — no claim in either retained evaluation exercises the deferred arm. Two measured facts still hold and still argue against minting a *new* value: (a) of the 1,149 objects carrying `resolutionRoutes`, 1,137 are empty (all `Observed`) and 12 are non-empty (all `Unknown`) [Observed: both machine captures, identical]; (b) the state L5-M4 wants a name for **already exists as declared copy** — `label.no-route`, text "No route declared" (`apps/three-surface-poc/src/polaris-copy.ts:193`), used as the fallback in `routeOf` (`polaris.ts:466`) and `reasonRouteHtml` (`polaris.ts:473`), and listed in the copy oracle's `UNREACHED_IN_FIXTURES` set (`polaris-copy.test.ts:297,299`, which also lists `label.deferred` — the row that names the arm this packet had missed). The revised recommendation: narrow slice 2's type-level prohibition to "an Unknown *carrying `reasons`*" (never the deferred arm), let the deferred arm render `label.deferred`/`label.no-route` as it already can, and treat this as two legal states at the type level — a populated route, or the declared no-route copy on either kind of routeless Unknown — the same count slice 2 already designs to, now correctly attributed. Minting `none-modelled` would still add a fourth spelling for a state the page can already render two ways; the owner may instead choose to mint it and retire `label.deferred`/`label.no-route`, which is the genuine choice this question now poses. |
+| Q3 | **May Syzygy generate a drafted owner-act packet from a gap row, and if so, into whose tree?** The observed repository's write surface is empty and stays empty; Syzygy's own `.syzygy/**` is a lawful write root under VIS-5; but a drafted act about the observed project's gaps would sit in the governance tree of a project that does not govern it. | **Hold slice 7 until this rules; recommended arm is (a) with a narrow new act.** Arm (a): the drafter emits the packet into Syzygy's own `.syzygy/governance/decisions/`, marked `DRAFT, binds nothing`, under a fresh narrow owner direction naming the effect, the claim classes eligible, and a ceiling on drafts. Arm (b): the drafter is pure and emits packet *data* on request, writing no file at all; an operator command renders it. Arm (c): decline. (a) is recommended because v1.md lines 30–31 make first-pass drafting for owner sign-off V0's literal first action on an under-declared project and VIS-4 permits drafting and nothing more — but it is not available without a gate, for two reasons this packet found and neither move stated. First, the adapter registry entry's `typedAuthority.writeSurface` is `[]` and `executeObservedCode` is `false`, and the 2026-09-02 implementation authorization's "What this does not authorize" section reads "No write, egress, execution, deployment, release, recovery, or mission effect on Butlers or on any other repository. The observer registry entry the owner adopted declares an empty write surface; that remains the bound" — so nothing may be written toward the observed project, and the drafted packet's subject is that project's gaps. Second, writing a governance artifact of the observing project *about* the observed project is a new effect no act in force names; the 2026-09-02 act's escalation trigger "any scope beyond the signed change" is the hook. Arm (b) needs no act and is a lawful partial: the pure drafter can be built and tested with no filesystem at all, which is what slice 7 sketches. |
+| Q4 | **The opening "what needs you" band: does it list every Unknown reason present, or only the owner-actionable subset?** Both arms are lawful; neither turns anything green. | **Every reason present, with the owner-actionable ones foremost.** L2-M2 proposed a closed actionable subset of four. On the retained capture the whole gap population is **one** reason over 12 claims (`excluded-content`), so a four-reason filter is untestable against today's evaluation and its counterexample test would have no negative case from real data [Observed: `data-polaris-gap` occurs once, `id="polaris-gap-excluded-content"`, and the list's own text reads "12 claim(s)"]. Listing every reason and ordering by the existing `foremost` array in `gapsList` (`apps/three-surface-poc/src/polaris.ts` lines 933–948, already ordering `missing-declaration` then `unconsented-source-or-provider`) reuses a tested ordering, keeps the band's denominator equal to the gaps section's, and needs no second closed constant to drift. The owner may prefer the filter if the band must never show a reason they cannot act on; say so and slice 3 adds the constant. |
+| Q5 | **Run the return path once (slice 6): is it authorized, is its existing write into the observed repository's tracker authorized, and what may it honestly be expected to produce?** | **Expectation: rule in advance that one edge narrows and two stay Unknown — that is a pass.** Measured at `a9f671e`: `relationship:work-to-code` (`model.ts` line 588) and `relationship:code-to-evidence` (line 597) are **unconditional `unknown(...)` literals** — no input reaches them. `workerChange` and `testArtifactVerification` are computed at lines 418–437 and carried as top-level model fields at lines 701–702, and **no relationship reads either** [Observed: a `grep -n` sweep for both identifiers over the file returns lines 30, 42, 124, 125, 418–433 and 701–702, none inside the relationship array]. The reason is deliberate and recorded in the file: `WORKER_CHANGE_SEAM` (comment 26–29, const 30–33) is "distinct from ARTIFACT_PATHS.code/test below", and `WORKER_CHANGE_INTENT_ID` (comment 35–41, const 42) is exported so Trajectory can name it "on the one place this evidence is honestly scoped to: the worker-change badge, never the identity-resolution entity graph above" — the same false-`Verified` wiring AGENTS.md records as already reverted once. Only `relationship:intent-to-work` is conditional (line 570, on `materialization.beadId`). The dossier's "What" bullet (not its "Why" bullet, corrected per review 1 N6) says the next evaluation narrows three edges; the code says one, deliberately, and the honest-reporting caveat this correction leans on is already recorded in both the dossier's own slice-6 bullet and L5-M7's slice plan — the new, valuable measurement is *which* edges and *why*, not that under-reporting was undisclosed. **Authorization is genuinely contested and this packet does not resolve it (review 1, F4).** Two readings, both quoting the record: **Reading A — authorized.** The 2026-08-29 mode direction (`THREE-SURFACE-POC-MODE-DIRECTION.md` lines 18–22) requires the experiment to "demonstrate ... human-triggered work, a worker-authored real code/test change ..."; the materialize mechanism was built under that direction, which predates and is a separate authorization lane from the 2026-09-02 PWB act, whose **body section "What the recorder reads this as" (lines 44–52)** says the recorder reads the owner's "Authorized" reply as "the separate implementation authorization that task 1.8 requires, and nothing wider", authorizing "**Implementation planning and implementation** of the signed `polaris-project-wide-butlers-model` change — tasks §2 through §5 of its `tasks.md` — as one bounded improvement cycle of the Three-Surface POC" (quoted in source order and with the tasks-range clause restored, corrected per review 2, G5: the earlier citation said "header", which is the comment block at lines 1–17 and carries none of this, and its ellipsis reversed the source order rather than eliding within it) — so its "does not authorize" bullets bound the *PWB* grant, not a retroactive revocation of the earlier, separately authorized mechanism. **Reading B — a breach.** `apps/three-surface-poc/src/materialize-action.ts:33` sets `targetRepoRoot: model.project.root` (the observed Butlers root); `packages/three-surface-poc-core/src/materialization.ts:12` sets `MATERIALIZATION_TARGET_BEAD_PREFIX = 'bu'`, the observed project's own prefix, not Syzygy's; and `defaultRunCreate` (lines 186–208) runs `execFileSync('bd', ['-C', repoRoot, 'create', ...])` — a mutation of the observed repository's Beads database. `PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` lines 70–72, quoted verbatim: "No write, egress, execution, deployment, release, recovery, or mission effect on Butlers or on any other repository. The observer registry entry the owner adopted declares an empty write surface; that remains the bound." Read as a general constraint on the POC's relation to Butlers rather than a PWB-task-scoped bullet, it forecloses running slice 6 today regardless of the 2026-08-29 direction, and it applies with the same force Q3 gives it against slice 7 — an argument this packet's own Gate 2 (VIS-5 paragraph) reads the opposite way when defending the same mechanism. **Recommended, [Inferred]: Reading A — rule the run authorized as an exercise of a pre-existing, separately authorized mechanism — with the counter-argument above stated for the owner, not resolved by this packet.** Slice 6 is conditional on this ruling: if the owner takes Reading B, slice 6 does not run until a continuation names the effect, the same arm Q3 offers for slice 7. |
+| Q6 | **`model.surfaces` declares Polaris presents 4 entities; the page presents 415 items and 713 claim tuples ([Observed: `data-claim-id="` occurs 713 times on the lane A tailnet capture; the pre-lane-A figure was 699 — recorded here per review 1, N9]). Make the field true by construction, or delete it?** Both arms are lawful; deletion has a cost the move does not name, stated here so the choice is made knowing it (reworded 2026-09-15 per review 3, H8, which superseded "Disclosed for confirmation: deletion has a cost the move does not name" — readable as the framing review 2's G4 already superseded). | **True by construction (L6-M4's descriptor), not deleted.** `model.surfaces` is the only place in the shared model that states the surface-to-content mapping. `renderPocPage` (`apps/three-surface-poc/src/routes.ts` lines 77–96) reads `model.surfaces`, `model.project`, `model.entities`, `model.capabilityId` and `model.evaluation` — five fields, and nothing else [Observed: a sweep of the literal `model.` over the file yields **13** hits over nine lines — 35, 78, 87, 89 (×4), 92 (×2), 127, 133, 171, 172 — of which the **five** outside `renderPocPage` (lines 77–96) are `model.entities` (35), `model.projectShape` (127) and one each at 133, 171 and 172; corrected per review 1, N5 and again per review 2, G10, which superseded "89 (×2) … the four outside": line 89 carries four occurrences (`model.project`, `model.entities`, `model.capabilityId` twice) and the enumeration that followed named five lines, not four — the evidence file's earlier "only other hit" claim named just line 127]. Deleting `model.surfaces` therefore deletes **the only input for the three surface panels**, not the home page's every input — the eyebrow, lede, heading, footer and exact tables survive on the other four fields (corrected per review 1, N5). Keeping it and making it derived is still the smaller step and lands slice 5's descriptor for free, and slice 5's own design already reads it that way. Note that one of the three entries is **already** derived — Orrery's `entityIds` and `relationshipIds` are `entities.map(…)` and `relationships.map(…)` at `packages/three-surface-poc-core/src/model.ts` lines **747–748** (corrected per review 1, N1) — so the defect is two hand-written lists, not three. |
+| Q7 | **Sequencing against M2 (`syzygy-dov.2`, P-69), M3 (`syzygy-dov.3`, P-70) and lane B (`syzygy-dov.17`, P-68); which M4 slices may start now; which authorization arm slices 4 and 5 rest on; and whether RFC2-26 is cleared for slices 3, 4 and 5 (the last limb widened 2026-09-15, review 5, K2, from "slices 4 and 5" once the clause was run over all eight slice rows).** | **Slices 1–2 after M3 slice 5; slice 3 only after the three-way opening-band reconciliation (below, revised per review 2, G2) *and* the RFC2-26 ruling this question asks for; slices 4 and 5 gated on that same RFC2-26 ruling; slice 6 as sequenced, conditional on Q5's authorization limb; slice 7 waits on Q3; slice 8 is deferred behind its own acts.** **Superseded 2026-09-15 (review 5, K1 and K2):** this recommendation read "Slices 1–2 after M3 slice 5; slice 3 only after the three-way opening-band reconciliation (below, revised per review 2, G2); slices 4–6 as sequenced; slice 7 waits on Q3; slice 8 is deferred behind its own acts." — the pre-review-4 answer for slices 4 and 5 left standing in the one line a reader acts on, a day after review 4 widened Gate 3's rows 4 and 5 and Q7's own body prose (K1), and carrying no RFC2-26 gate for slice 3 at all, because the test had been run over two of the eight slice rows (K2). No M4 slice opens a specification package, so none collides with P-68's pending PWB amendment. **Shared-file set, re-derived (review 1, F3) from both sibling packets' own Gate 3 tables, not asserted:** M2's Gate 3 (register row P-69) names `packages/three-surface-poc-core/src/model.ts` (its slices 2, 3), `apps/three-surface-poc/src/routes.ts` (slice 3), `apps/three-surface-poc/src/polaris.ts` (slices 1, 2 **and 6** — corrected per review 2, G9) and `apps/three-surface-poc/src/polaris-copy.ts` (slice 1), plus `packages/three-surface-poc-core/src/project-shape-model.ts` (slice 5). M4's own Gate 3 names `model.ts` (slices 1, 2, 4), `routes.ts` (slice 5), `polaris.ts` (slices 1, 3), `polaris-copy.ts` (slice 3) and `project-shape-model.ts` (slice 2). **The shared set with M2 is five files** — `model.ts`, `routes.ts`, `polaris.ts`, `project-shape-model.ts` and `polaris-copy.ts` [Observed, re-derived by hand this session from the two Gate 3 tables, with both denominators: M2's "Lives in" column names **9** distinct files (`polaris-copy.ts`, `polaris.ts`, `git-observation.ts`, `main.ts`, `model.ts`, `routes.ts`, `polaris-reading.ts`, `project-shape-model.ts` and the adapter-registry declaration JSON; its "copy-oracle test" and two "plus one test" phrases name no file), M4's names **13** (`model.ts`, `polaris.ts`, `orrery.ts`, `trajectory.ts`, `polaris-parity-sweep.test.ts`, `project-shape-model.ts`, `polaris-copy.ts`, `routes.ts`, `exact-tables.ts`, `routes.test.ts`, `capture-test-artifact-main.ts`, `scripts/check_governance.py`, `materialization.ts`), and the intersection is 5 of 9 against 5 of 13]. **Superseded 2026-09-15 (review 2, G1):** this sentence read "**The shared set with M2 is four files**" and the Collision section listed `polaris-copy.ts` among the M2 files "which M4 does not touch" — false, and contradicted thirty lines later in the same section, since M4 slice 3's own Gate 3 row names `polaris-copy.ts`. The fifth file is the sharpest of the five rather than an incidental: M2 slice 1 edits `polaris-copy.ts` lines 45–49 and M4 slice 3 adds the band's own rows to the same declared-copy array, and both are covered by the copy oracle in `apps/three-surface-poc/src/polaris-copy.test.ts`, whose `UNREACHED_IN_FIXTURES` set (line 296) each change must reconcile — **so M2 slice 1 and M4 slice 3 cannot land independently.** With M3 (register row P-70; cite it by row and by the two files, never by head — see review 2, G7) the shared set is **two** files, `polaris-copy.ts` and `polaris.ts`; M3's Gate 3 names `polaris.ts` in slices **1, 3, 5 and 6** and `polaris-copy.ts` in slices 3 and 5 (corrected per review 2, G9, which superseded "M3 slices 3 and 5 both edit `polaris.ts`"), not the one file this packet originally named. **The missed collision (F3(c)), widened to three packages (review 2, G2).** M2's slice 2, M3's slice 3 and M4's slice 3 all render into the **same region** — the opening band of `polaris.ts`, before the first catalog section — with three distinct payloads. M2 slice 2: an evaluation-currency disclosure carrying its own epistemic tuple (its Gate 3 row names "`polaris.ts` (the opening band)", its design body opens "Rendered in the opening band, before the first catalog section:", and its own honest target is that "the page's first human-visible instant moves from 58.0% depth into the opening band"). M3 slice 3, "One real Unknown in the first reading": the page's two existing whole-shape and class-level Unknown claims, oracled on "the first rendered Unknown precedes the first `data-polaris-group=\"catalog\"`". M4 slice 3, "The opening band": the `gapReasonCounts` projection, oracled on "the band's total equals the gaps section's total." **Superseded 2026-09-15 (review 2, G2), and this is a changed recommended answer, stated plainly:** this packet recommended "**One band, one owner, one oracle: M3 slice 3 should land first and M4 slice 3 should extend it**" — a two-way reconciliation derived from a pairing that never saw M2 slice 2, so it named the wrong population and pre-empted an ordering that is three-way. **Revised: one band, one owner, one oracle across all three packages.** The three payloads are distinct claims and none subsumes another, so they are three blocks and not one; but they are one *region*, and three independent "renders before the first catalog section" assertions are three oracles over a single piece of page order. So whichever of M2 slice 2, M3 slice 3 and M4 slice 3 lands first **builds the band container and owns its single ordering oracle** (the whole band precedes the first `data-polaris-group="catalog"` occurrence); the other two add a payload block inside that container plus their own payload-specific oracle (M3's first-rendered-Unknown, M4's band-total-equals-gaps-total), and neither builds a second band. The block order *within* the band is the owner's to set, not this packet's — a currency disclosure and an Unknown band are arguably separate regions, and if the owner rules them so, each still needs a stated position relative to the other two rather than three independent claims on "first". Reconcile explicitly before any of the three starts, and record the merged design in whichever packet lands last. **None of that schedules M4 slice 3: it is not built before Q7's RFC2-26 ruling either** (added 2026-09-15, review 7, M3 — this sentence restated the reconciliation rule with no gate on it, the shape review 6's L1 gated at the Collision section and at the prose handoff's Q7 paragraph, which took the same clause; it is editorial and not a repeat of L1 because this cell opens with the gate in its own bolded recommendation and closes with the K2 widening paragraph, so no reader reaches this sentence without it). **Authorization arm for slices 4 and 5 (F6):** both slices trace, on this packet's own Gate 3 account, to "the recorded-finding arm of the 2026-08-30 direction, naming L6-F5 / L6-F1" — an audit finding in `docs/pursuits/2026-09-13-vision-pursuit-data.json`, not in `docs/reviews/` as the direction's own worked example is written, and no requirement in either signed spec reaches the home route or `model.surfaces` [Observed, re-swept: 24 POC requirements, 17 PWB requirements, 0 whole-word `home` hits in the POC spec, 6 in the PWB spec all in the precedence table's `Home` column or the registry's governance-home field, 0 hits for the backticked `surfaces` or `model.surfaces` in either]. This reading is defensible — an L6 audit is a review/audit of the runnable POC in fresh context producing evidence-cited findings, which is the direction's own definition of a cycle's step (1) — but it is this packet's own [Inferred] reading, not something Q5 puts to the owner (Gate 3's and Gate 5's sentences claiming Q5 carries it are corrected below to point here instead). **Recommended, reworded 2026-09-15 (review 4, J2): rule the audit-finding reading acceptable for slices 4 and 5 — *and* rule the RFC2-26 test that reading does not by itself satisfy.** Because no requirement in either signed spec reaches the home route or `model.surfaces`, RFC2-26 makes that silence a bar and not a freedom: every observable consequence must map to an approved OpenSpec requirement and scenario, or carry a reviewed N/A judgment homed in `.syzygy/governance/decisions/` and honored through an effective owner act, failing which it is "unmapped and Unknown, never covered". Neither limb is available to slices 4 and 5 as designed — see Gate 5's "The RFC2-26 test for slices 4 and 5". So the owner gate is wider than this packet first stated: accepting the audit-finding trace disposes of *which authorization arm the work rides*, and clearing RFC2-26 needs, in addition, one of — an OpenSpec amendment supplying limb 1; a re-scoping of each slice until limb 2's "purely structural, no independently testable behavior" test fits; or a reviewed N/A judgment recorded in `.syzygy/governance/decisions/` and honored by an effective owner act. This packet does not call slices 4 and 5 unlawful; it puts the clause to the owner. **Widened 2026-09-15 (review 5, K2), and this is a changed recommended answer: slice 3 joins them.** Review 5 required the test to state its denominator and run over all eight Gate 3 slice rows rather than two. Run that way [Observed, this session; denominator: the eight slice rows of Gate 3's "The authorizing act, per slice" table, its ninth row proposing no slice], slices 1 and 2 clear limb 1 on named requirement-and-scenario pairs and **slice 3 does not**: no approved scenario in either signed spec reaches the opening band's own consequence, an aggregate of Unknown-reason counts. So the RFC2-26 ruling this question asks for covers **slices 3, 4 and 5**, not slices 4 and 5 alone, and slice 3's Gate 3 row is widened to match. Slice 6 schedules no implementation work and slices 7 and 8 are gated by act rather than by this clause; the per-slice working, with every requirement and scenario cited by line, is in Gate 5's "The RFC2-26 test for slices 4 and 5". **Superseded 2026-09-15 (review 4, J2):** this recommendation read "**Recommended: rule the audit-finding reading acceptable for slices 4 and 5**, on the basis stated, while naming it explicitly as the owner's call rather than assumed" — true as far as it went, and silent on the one contract clause in force that bears directly on it. M4's questions queue as **P-71**: main's last register note at `a9f671e` is P-67, and P-68, P-69 and P-70 exist only on `agent/syzygy-dov.17`, `agent/syzygy-dov.2` and `agent/syzygy-dov.3` respectively, so a reader following this packet's baseline to `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` finds none of the three [Observed: the register on main read this session; its last numbered row is P-53 and its text carries no P-6x row]. |
+
+## Gate 0 — Baseline
+
+| Pillar | Present | Constrains this request |
+|---|---|---|
+| Doctrine (heart-and-soul) | Yes, adopted: VIS-1…7, SEC-1…5 | VIS-1 (comprehension by simplifying presentation, never content), VIS-2 (no evidence means Unknown), VIS-4 (drafting is never adopting), VIS-5 (two write roots; Syzygy never writes code), plus the unnumbered "Not a documentation portal" paragraph at `.syzygy/governance/doctrine/vision.md` lines 61–64 and the success sentence at lines 234–236 |
+| Decisions (legends-and-lore) | Yes | `THREE-SURFACE-POC-MODE-DIRECTION.md` (2026-08-29, the required demonstrations and the in-force invariants); `THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md` (2026-08-30, which lifts the eight-item and one-review caps for cycle work and fixes the trace rule); `PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` (2026-09-02) and its 2026-09-05 continuation; P-52 (the eight-item cap question, superseded for cycle items by the 2026-08-30 direction and untouched here because M4 runs under `syzygy-dov.4`); the M1 ruling's sequencing sentence |
+| Specification (openspec) | Yes, signed and digest-bound: `openspec/changes/three-surface-poc-experience/` and `openspec/changes/polaris-project-wide-butlers-model/` | POC-REQ-020 (client-rendered facts are the model's facts), POC-REQ-060 (one epistemic encoding), POC-REQ-061 (the accessibility floor); PWB-REQ-010 (Polaris opens with the whole project), PWB-REQ-011 (progressive reachability), PWB-REQ-014 (bounded, anchored, non-authoritative narrative claims), PWB-REQ-020 (parity), PWB-REQ-004 (the closed project-fact population no slice enters). **No requirement in either spec governs the home route or `model.surfaces`** — see Gate 5 |
+| Topology (lay-and-land) | Candidate bundle only | Nothing beyond the core-versus-app placement already in force |
+| Craft (craft-and-care) | Yes, owner-approved | CC-TEST-5/6 oracles, rule-6 mutation evidence, retained evidence, independent raw review |
+
+## Gate 1 — Motif
+
+**Problem.** The intent surface has no owner action on it and no route to the
+one action that exists, and the Unknowns it renders most prominently are the
+ones it routes least.
+
+Three measurements say it, each with its denominator.
+
+1. **Zero cross-surface deep links, over the four served pages — a fifth,
+   unswept page already carries one.** Across the four served pages the
+   non-fragment hrefs are, in every case, exactly the four global-nav links
+   plus — on Polaris only — the exact-source routes: home 40 hrefs (36
+   fragments + 4 nav), Trajectory 304 (300 + 4), Orrery 23 (19 + 4), Polaris
+   1,089 (699 fragments + 386 `/polaris/source` routes + 4 nav) [Observed:
+   an `href="…"` attribute sweep of the four captures, bucketed by prefix
+   after stripping the query string; the three small pages are the
+   pre-lane-A captures and the Polaris figure is the retained lane A
+   tailnet capture]. **Widened to a fifth page (corrected per review 1,
+   N7):** the retained exact-source capture (the owner's loopback-daemon
+   capture, used again in measurement 2 below) was never censused for this
+   motif claim. Swept this session: 6 hrefs, 1 fragment, 5 non-fragment —
+   the four nav links plus
+   `/polaris#polaris-source-openspec-specs-switchboard-identity-spec-md`, a
+   non-fragment link into another page at a named anchor. Whether that
+   counts as "cross-surface" is arguable (the exact-source route is a
+   Polaris sub-route, so the link is Polaris → Polaris), but the product
+   already contains one working instance of the deep-link-into-an-anchor
+   mechanism slice 5 proposes — which strengthens slice 5's design rather
+   than weakening the motif. The 2026-08-29 direction names cross-surface
+   navigation among the things the experiment "must demonstrate"; what
+   exists, over the population actually measured, is a four-item nav bar
+   repeated five times plus the one anchor link just named.
+2. **The only action in the product sits at 99.1% of the second page.**
+   Across the five captured pages — home, Polaris, Trajectory, Orrery and one
+   exact-source page (the last from the owner's loopback-daemon capture at an
+   older evaluation, the only exact-source capture retained) — there is
+   exactly one `<form>` and exactly one `<button type="submit">`, both inside
+   `renderMaterializePanel`
+   (`apps/three-surface-poc/src/materialize-action.ts` lines 55–81; the form
+   at line 78 posts to `MATERIALIZE_HUMAN_PATH`, line 17). On the captured
+   Trajectory page that panel begins at character 242,386 of 244,506 and runs
+   2,120 characters to the end [Observed]. Polaris carries 0 forms and 1
+   button, and that button is `type="button"` — the expand-declaration
+   disclosure toggle; home, Orrery and the exact-source page carry 0 of each
+   [Observed].
+3. **Nine of twenty-two rendered Unknowns carry neither a closed reason nor
+   a route.** See the table under "Measurements". The nine cluster between
+   57.0% and 57.5% of the page — the entity list and the relationship list
+   of "One capability in depth" — while the thirteen that *are* routed sit
+   at 25.5%, 56.4–56.5%, 57.6%, 61.0% and then 95.7–98.7% [Observed].
+
+**Who.** The owner, for whom the page is the day's first stop or is nothing
+(`.syzygy/governance/doctrine/vision.md` lines 234–236: success is that the
+observatory "displaces the README-and-ad-hoc-investigation ritual as the
+owner's instinctive first stop"); and every agent reading `/api/poc` to
+learn which gaps are its own work and which are the owner's, which today it
+cannot do for nine of them
+because their reason is a free-text English sentence outside every closed
+vocabulary.
+
+**Success, falsifiable.**
+
+1. Every Unknown the POC renders on any surface carries a reason drawn from
+   RFC2-24's closed twelve and a route, or renders the already-declared "No
+   route declared" copy with its own stated reason. A sweep over the served
+   pages reports **the denominator per surface** and zero exceptions on
+   each — not one pooled figure, and over every marker family, not one
+   literal. The four per-surface denominators the census actually reports
+   (restated per review 4, J1) [Observed, re-derived this session;
+   predicate: literal occurrences of each class string; denominator: the
+   whole served page of each retained capture; each occurrence then
+   assigned to its enclosing tag]: `data-unknown-disclosure` elements —
+   Polaris **22**, Trajectory **0**, Orrery **0**; rendered
+   `epistemic-unknown` claim encodings — Polaris **0**, Trajectory
+   **299**, Orrery **9** (2, 301 and 11 raw, each less one stylesheet rule
+   and one legend key item); `provenance-none` spans — Polaris **0**,
+   Trajectory **0**, Orrery **9** against **0** style occurrences there;
+   and the home route, the fourth served page and outside this
+   three-surface invariant, at **9** rendered plus **1** style rule.
+   **Superseded 2026-09-15 (review 4, J1):** this parenthetical read
+   "corrected per review 1, F5, and re-partitioned per review 2, G3:
+   Trajectory and Orrery carry **299** and **9** rendered
+   `epistemic-unknown` claim encodings — 301 and 11 raw, each figure
+   including one stylesheet rule and one legend key item — and 0
+   disclosure elements, a population the original single-denominator sweep
+   could not see" — exact for the two literals it named, and blind to the
+   `provenance-none` family review 3's H1 established, which is precisely
+   the family this success statement has to reach.
+2. A reader who stops after the first reading knows what the project needs
+   from them: the count of Unknown claims by reason and the route for each
+   appears before the first catalog section, and each row links to the
+   existing `#polaris-gap-<reason>` anchor.
+3. `model.surfaces` states, for each surface, the population that surface
+   actually renders, and a served-page test asserts declared count equals
+   rendered population per surface with both denominators reported.
+4. The home page answers, above the fold, which evaluation is current and as
+   of when, what needs the owner, and which action is available now — with
+   every row a deep link into the surface that owns it. With no prior
+   evaluation the "what changed" region renders a named Unknown, never
+   "nothing changed".
+5. The materialize action has been run once end to end; the daemon stderr,
+   the `TestArtifactRecord` and the before/after tuples for all five Unknown
+   relationships are retained; and the record states plainly which edges
+   narrowed and which did not and why.
+6. No new epistemic vocabulary value exists anywhere in the implementation
+   that RFC2-24, RFC2-25 or the POC's own declared encoding table does not
+   already carry.
+
+**Motif.** *A gap the owner cannot act on is a gap the page has not finished
+rendering.* RFC2-24's own words for a condition outside the twelve are
+"named, expandable, **routed to its resolving action**"; nine of Polaris's
+twenty-two Unknowns are named and expandable and routed nowhere.
+
+**What M4 is not.** It is not a proposal to make Syzygy dispatch work. Every
+slice keeps dispatch human-triggered and keeps drafting separate from
+adopting. **Slices 1–5 and 7 write nothing to the observed repository;
+slice 6 does write there today (`bd -C <observed root> create`), and whether
+that write is authorized is Q5's own question, not a settled property of
+this packet's posture** (corrected per review 1, F4). It is not a re-opening
+of the
+page-size question, though it must state that question's arithmetic honestly
+[Observed, computed 2026-09-14 against the M1 ruling's Q3 row and the lane A
+measurement record
+`docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json`]: the page
+at the retained capture is 1,484,487 bytes through the tailnet mount and
+1,478,637 direct — 84,487 and 78,637 bytes **over** the M1
+ruling's restated working target (its words are "1.4 MB"; the lane A record's
+`q3Target.bytes` fixes it at 1,400,000 and that decimal figure is used here)
+and 612,665 / 618,515 bytes under the 2,097,152-byte response ceiling. Of
+that ceiling headroom the M1 ruling reserves 418–443 KB for the pending
+Butlers P-60/P-61 repairs, read as 418,000–443,000 bytes on the same decimal
+convention. Slice 1 adds a reason span and a route sentence to nine
+disclosures and slice 3 adds an opening band; both are measured in hundreds
+of bytes to low thousands [Inferred: a projection about unbuilt code, to be
+replaced by the before/after measurement Gate 6 requires].
+
+## Measurements on the retained capture
+
+All computed this session. Polaris figures are from the lane A tailnet
+capture (1,484,487 bytes; 1,481,819 decoded characters); home, Trajectory
+and Orrery figures are from the pre-lane-A captures and are marked. Counts
+are computed, never transcribed.
+
+### Routes on the machine channel
+
+| Measure | Value | Denominator |
+|---|---|---|
+| Objects carrying a `resolutionRoutes` field | 1,149 | the machine answer |
+| …with an empty array | 1,137 | 1,149 |
+| …with a non-empty array | 12 | 1,149 |
+| Of the 1,137 empty, how many are `Unknown` | **0** | 1,137 |
+| Of the 12 non-empty, how many are `Unknown` | **12** | 12 |
+| Distinct non-empty route rows | 1: reason `excluded-content`, route "Policy change by the owner, or accept the exclusion" | 12 |
+| `relationships` in the model | 9 | the machine answer |
+| …labelled `Unknown` | 5 | 9 |
+| …carrying a `resolutionRoutes` field at all | **0** | 9 |
+
+Method: a recursive walk of the parsed JSON collecting every object with a
+`resolutionRoutes` key, then a histogram of `epistemic.label` over that
+population. The 1,149 decompose as 439 fact claims, 415 item claims, 278
+source claims, 6 project-account claims, 9 class claims, the whole-shape
+claim and the proposed-work current-authority claim. **The same eleven
+figures hold, value for value, on the pre-lane-A machine capture** — a
+different Butlers revision eight hours earlier — so they are facts about the
+model's construction, not about the observed content [Observed: both
+captures measured by the identical script].
+
+This is the dossier's "1,137 of 1,149 route arrays empty" confirmed, and its
+reading corrected. `routesFor`
+(`packages/three-surface-poc-core/src/project-shape-model.ts` lines 150–154)
+returns `[]` when the label is not `Unknown` and otherwise one route per
+carried reason, taken from `UNKNOWN_REASON_ROUTES` (lines 89–102), whose
+twelve keys the module's own test proves equal to cap1-core's
+`UNKNOWN_REASONS`. So the empty array is the encoding of "this claim is
+Observed", and the routeless Unknowns are somewhere else entirely: the nine
+entity and relationship disclosures below, which carry no such field.
+
+### Unknown disclosures on the rendered page
+
+Every `data-unknown-disclosure` element on the retained capture, in document
+order, with whether its own element contains a `data-unknown-reason` value
+and the literal `Route:` [Observed; the predicate is "inside the same
+element, from the opening tag to the first matching closing tag of the same
+tag name"]. **Two offset conventions, both correct, named here per review
+3, H6.** The "Offset" column below gives the position of the enclosing
+element's opening angle bracket; Q1 and the review-2 disposition table give
+the position of the `data-unknown-disclosure` attribute itself, later by the
+length of the enclosing element's own opening tag, so the same first and last
+disclosures read 378,599 and 1,462,590 here and 378,631 and 1,462,622 there
+[Observed: both conventions re-derived this session on the lane A tailnet
+capture; predicate: for each of the 22 occurrences of the literal
+`data-unknown-disclosure`, the distance back to the nearest preceding opening
+angle bracket; denominator 22. The delta is **30** for the six disclosures
+opening `<p class="unknown-disclosure"`, **31** for the five opening
+`<li class="unknown-disclosure"` and **32** for the eleven opening
+`<div class="unknown-disclosure"`; 6 + 5 + 11 = 22 accounts for every element.
+The first and last are both `<div>`s, which is why both endpoints read 32.
+**Superseded 2026-09-15 (review 4, J4):** this read "the delta is 32 at both
+ends, over all 22 elements" — exact for the two endpoints, and false over the
+denominator it named]:
+
+| Offset | Depth | Disclosure key | Closed reason | Route rendered |
+|---|---|---|---|---|
+| 378,599 | 25.5% | claim:class:roster-identity | `excluded-content` | yes |
+| 836,380 | 56.4% | capability:whatsapp-transport-identity/doctrine | `missing-declaration` | yes |
+| 837,314 | 56.5% | capability:whatsapp-transport-identity/non-goals | `missing-declaration` | yes |
+| 844,800 | 57.0% | work:whatsapp-single-event-normalization | **none** | **no** |
+| 845,421 | 57.1% | evidence:focused-pytest | **none** | **no** |
+| 846,047 | 57.1% | runtime:live-satisfaction | **none** | **no** |
+| 846,650 | 57.1% | region:unmapped-code | **none** | **no** |
+| 850,888 | 57.4% | relationship:intent-to-work | **none** | **no** |
+| 851,228 | 57.4% | relationship:work-to-code | **none** | **no** |
+| 851,572 | 57.5% | relationship:code-to-evidence | **none** | **no** |
+| 851,904 | 57.5% | relationship:code-to-runtime | **none** | **no** |
+| 852,226 | 57.5% | relationship:capability-to-unmapped-region | **none** | **no** |
+| 853,157 | 57.6% | claim:project-shape | `excluded-content` | yes |
+| 903,530 | 61.0% | claim:source:about/lay-and-land/frontend.md | `excluded-content` | yes |
+| 1,418,068 | 95.7% | claim:source:roster/chronicler/butler.toml | `excluded-content` | yes |
+| 1,425,443 | 96.2% | claim:source:roster/education/butler.toml | `excluded-content` | yes |
+| 1,432,759 | 96.7% | claim:source:roster/general/butler.toml | `excluded-content` | yes |
+| 1,436,655 | 97.0% | claim:source:roster/health/butler.toml | `excluded-content` | yes |
+| 1,443,938 | 97.4% | claim:source:roster/lifestyle/butler.toml | `excluded-content` | yes |
+| 1,449,565 | 97.8% | claim:source:roster/qa/MANIFESTO.md | `excluded-content` | yes |
+| 1,455,213 | 98.2% | claim:source:roster/relationship/butler.toml | `excluded-content` | yes |
+| 1,462,590 | 98.7% | claim:source:roster/travel/butler.toml | `excluded-content` | yes |
+
+Totals: **22 disclosures, 13 routed, 9 not** [Observed]. Separately, the
+literal `Route:` occurs 18 times on the page and `data-unknown-reason="`
+occurs 16 times — 14 `excluded-content` and 2 `missing-declaration` — the
+difference from 13 being the gaps-list row and the per-cause sentences,
+which carry the reason or the route outside a disclosure element [Observed:
+both literals counted by `grep -F`-equivalent Python string count and by a
+`re.finditer` sweep, agreeing].
+
+**A note on the nine source-claim rows above.** They name observed-repository
+paths in plain prose, uncoded (`check_governance.py`'s CG-1b bars backticked
+Butlers paths only, so this passes mechanically); the evidence JSON
+deliberately genericizes the same nine rows to "source claim, one excluded
+source". Recorded here so a later reader does not mistake the two for
+different measurements (added per review 1, E2).
+
+### Where the actionable information sits
+
+| Measure | Value | Denominator |
+|---|---|---|
+| `<h2>` sections on Polaris | 7 | the page |
+| `<h3>` sections | 39 | the page |
+| "Unknown, by reason" — its position | **6th `<h3>` of the 7th `<h2>`**, at character 1,474,935 | 10 `<h3>` under that `<h2>`; 1,481,819 characters |
+| …its depth | **99.5%** | the page |
+| `data-polaris-gaps` attributes | 1, value `"1"` | the page |
+| `data-polaris-gap` rows inside it | 1, `id="polaris-gap-excluded-content"`, text "12 claim(s)" | the page |
+| "One capability in depth" (`<h2>` 6) span | characters 811,016–852,703 = 41,687 | 1,481,819 (**2.8%**) |
+| `<details>` elements | 359 | the page |
+| `<form>` elements | 0 | the page |
+| `<button>` elements | 1 | the page |
+
+The gaps list's own anchor already exists and is already linked: `gapId`
+(`apps/three-surface-poc/src/polaris.ts` line 136) mints
+`polaris-gap-<reason>` and line 145 wraps a reason span in a link to it when
+the reason is an active target. So slice 3's band needs no new anchor
+scheme, only a second rendering of the same projection higher up.
+
+### The home surface (pre-lane-A capture, renderer unchanged at `a9f671e`)
+
+| Measure | Value | Denominator |
+|---|---|---|
+| Bytes | 38,706 | — |
+| `href` occurrences | 40 | the page |
+| …fragments | 36, over 10 distinct targets | 40 |
+| …non-fragment | 4: home, Polaris, Trajectory, Orrery — the global nav | 40 |
+| `<form>` / `<button>` / `<input>` | 0 / 0 / 0 | the page |
+| `<h1>` | 1, the literal "One capability. Three honest views." | — |
+| `<h2>` | 5: Polaris, Trajectory, Orrery, Exact entities, Exact relationships | — |
+| The three surface panels, as characters | 6,438 (characters 7,632–14,070) | 38,682 decoded characters (**16.6%**) |
+| The exact tables, as characters | 24,612 (character 14,070 to end) | 38,682 (**63.6%**) |
+| `data-surface-entity` list items | 17 | — |
+| `data-entity-id` / `data-relationship-id` | 9 / 9 | — |
+| `epistemic-unknown` occurrences | 18 | — |
+
+The seventeen panel items are the 4 + 4 + 9 of `model.surfaces`, and each
+renders `<a href="#<entity id>">` — a fragment into the exact tables **on
+the same page**, never a link into the surface the panel names
+(`apps/three-surface-poc/src/routes.ts` lines 34–55). That is why the home
+page's non-fragment href count is 4.
+
+### The state of the return path
+
+Identical in both machine captures [Observed]:
+
+| Field | Value |
+|---|---|
+| `materializedBeadId` | `null` |
+| `workerChange` | `{"kind":"unknown","reason":"no materialized work item to observe git activity against"}` |
+| `testArtifactVerification` | `{"kind":"unknown","reason":"no observed changed-or-merged commit exists to bind test evidence against"}` |
+| `walkthroughJudgment.evaluation.outcome` | `{"kind":"absent","what":"no-run-record","detail":"walkthrough execution record missing","criterion":"unknown-never-met"}` |
+
+Audit finding **L5-F10**'s evidence list
+(`docs/pursuits/2026-09-13-vision-pursuit-data.json`) reports this state as
+`walkthroughJudgment.outcome`; the field is one level
+deeper, at `walkthroughJudgment.evaluation.outcome`, and carries the same
+four values [Observed]. (Corrected per review 1, N8: the shallower path is
+L5-F10's, not the dossier's — `walkthroughJudgment` does not occur anywhere
+in `docs/pursuits/2026-09-13-vision-pursuit.md`.)
+
+### Source citations re-verified at `a9f671e`
+
+The dossier's line numbers were taken at `f4589e2`. Every one below was
+re-read at `a9f671e` this session; where lane A moved it, both are given.
+
+| Citation | At `a9f671e` | Note |
+|---|---|---|
+| `packages/three-surface-poc-core/src/model.ts` `PocRelationship` | 80–88 | unchanged; the dossier's 80–88 holds |
+| …`PocSurface` | 90–96 | unchanged |
+| …`unknown()` helper | 305–307 | the free-prose constructor |
+| …`workerChange` / `testArtifactVerification` computation | 418–423 / 431–437 | carried to the model at 701–702 |
+| …the five Unknown relationships, by brace (corrected per review 1, N3 — one convention, stated) | 562–581, 582–590, 591–599, 600–608, 609–617 | whole five-block span 562–617; the dossier's "563–598" understates the end by nineteen lines, not one |
+| …`surfaces` literal | **710–750**; the file ends at **752** (corrected per review 1, N4 — closes at 750, not 749) | the dossier's "710–756" overruns the file by four lines |
+| …Orrery's derived id lists | **747–748** (corrected per review 1, N1 — not 745–746, which are `title:`/`question:`) | `entities.map` / `relationships.map` |
+| `packages/three-surface-poc-core/src/project-shape-model.ts` `UNKNOWN_REASON_ROUTES` | 89–102 | the dossier's 89–102 holds |
+| …`ResolutionRoute` | 115–118; used at 128 | the dossier's 115–128 spans both |
+| …`routesFor` | 150–154 | the empty-array rule |
+| `apps/three-surface-poc/src/materialize-action.ts` | 17, 55–81 (form at 78) | the dossier's 17 and 55–80 hold |
+| `packages/three-surface-poc-core/src/materialization.ts` | 9–10, 43–65 | the dossier's 9–12 and 43–65 hold |
+| `packages/three-surface-poc-core/src/owner-act-record.ts` | 1–18 header, 20–45 field types | the dossier's 1–45 holds |
+| `packages/three-surface-poc-core/src/test-artifact-verification.ts` | 11–19, 73 | the dossier's 11–19 and 73 hold |
+| `apps/three-surface-poc/src/capture-test-artifact.ts` | 3–7 | the dossier's 3–7 holds |
+| `apps/three-surface-poc/src/routes.ts` | `surfacePanel` 34–55, `renderPocPage` 77–96 | the dossier's 34–96 and 33–55 hold |
+| `apps/three-surface-poc/src/polaris.ts` `gapsList` | **933–948** (`gapReasonCounts` 922–931) | at `f4589e2` it was 916; lane A moved it +17, so the dossier's 916–931 no longer resolves |
+| `apps/three-surface-poc/src/governance-inputs.ts` | 36–41, 48–52 | the dossier's 36–52 spans both |
+
+## Gate 2 — Doctrine
+
+Cited by identifier and quoted from the defined location, per verification
+rule 8. VIS and RFC locations were resolved through `DIRECTIVE-REGISTER.md`
+and then read; the register carries no spec-requirement family, so POC-REQ
+and PWB-REQ clauses were located by heading sweep in their own spec files.
+
+**VIS-1 — Comprehensible truth first; never comprehensible fiction**
+(`.syzygy/governance/doctrine/vision.md`:82):
+
+> Comprehension is achieved by simplifying *presentation*, never *content*:
+> an honest view may aggregate, defer, or progressively disclose Unknowns,
+> but may never substitute a confident state for an Unknown one. *Honest
+> simplification:* collapsing forty Unknown-status modules into one region
+> labeled "Unknown ×40."
+
+The clause licenses slice 3 exactly: the opening band is an aggregate of
+Unknowns with a count and a route, which is the clause's own worked example,
+and it substitutes nothing.
+
+**VIS-2 — No evidence means Unknown, not success**
+(`.syzygy/governance/doctrine/vision.md`:96). Slice 6's expected result is
+governed by it: two edges staying Unknown after a real run is the correct
+output, and recording it as such is the requirement, not a failure to
+report.
+
+**VIS-4 — Humans steer the vision; agents shape within it**
+(`.syzygy/governance/doctrine/vision.md`:122):
+
+> Shape-defining deltas — heart-and-soul doctrine, craft-and-care standards,
+> topology, and RFC acceptance — require owner sign-off, every time; Syzygy
+> and its agents may draft them, never adopt them. … *Violation:* an agent
+> sprouting specs inside an ambiguous vision; an agent certifying its own
+> governing vision as unambiguous; an agent editing a spec to match code it
+> just wrote; treating RFC acceptance alone as opening the gate.
+
+**How each slice keeps it.** Slice 7's drafter emits a packet whose head
+says `DRAFT, binds nothing`, never writes an `## Effect` or `## Ceremony`
+section containing a performed phrase, never adds a row to
+`ACCEPTANCE-ACT-RECORD.md`, and is invoked by an operator command rather
+than by a request handler — the daemon writes no governance artifact on any
+route. Slice 6 runs a human-triggered POST that a human clicks; nothing in
+it is scheduled, polled or triggered by Syzygy. Slices 1–5 render and never
+write. The deferred slice 8 pair are the only ones that would extend the
+effect at all, and both are held behind their own act.
+
+**VIS-5 — Syzygy never writes code; direct writes are confined to two
+namespaces** (`.syzygy/governance/doctrine/vision.md`:141):
+
+> Syzygy's **direct project-content writes** touch only `openspec/**` … and
+> `.syzygy/**` … Syzygy may *read* declared implementation and evidence
+> sources anywhere; it may never directly create, modify, move, or delete
+> project content outside its two roots. Effects on every other authority —
+> version-control metadata such as commits and tags, configured
+> work-scheduler state, CI, runtime systems — occur only through **typed,
+> explicitly authorized adapters**, governed by each authority's own
+> contract.
+
+**Whether the materialize action is lawful under this clause is contested,
+not settled here** (corrected per review 1, F4): the registry entry quoted
+below is the *project-shape observer* (`authorityType: "version-control"`,
+`readAuthority` describing phase A/B reads only) and declares nothing about
+a work-scheduler adapter, so it is the wrong instrument to cite for either
+side of the question — it neither authorizes nor forbids the materialize
+mechanism, and what VIS-5 requires is that the
+work-scheduler effect occur "only through **typed, explicitly authorized
+adapters**, governed by each authority's own contract". The materialize
+mechanism *is* one such adapter in code; what is contested is whether any act
+authorizes it, which is exactly Q5. **Superseded 2026-09-15 (review 2, G8):**
+this sentence read "the two 'typed, explicitly authorized adapters' VIS-5
+requires are the mode direction (for the mechanism's original authorization)
+and, if the owner needs one, a continuation naming the effect" — but an owner
+direction is the authorization *for* an adapter, never an adapter itself, and
+VIS-5 names no number of adapters at all; the "two" in this paragraph's own
+heading is two write *namespaces*, `openspec/**` and `.syzygy/**`, a different
+pair entirely. The registry
+entry's five values, quoted accurately regardless: `writeSurface: []`,
+`databaseAccess: []`, `networkAccess: []`, `executeObservedCode: false` and
+`workingTreeRead: false` [Observed: the `typedAuthority` block of
+`.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`,
+whose top-level `status` field (a governance lifecycle marker) reads
+`candidate-amendment-no-effect-until-owner-act`
+— the entry's own effectiveness rests on a separate act, not stated here].
+Q5 puts the materialize question to the owner directly; see its two
+readings there. Q3 exists on the same footing: a drafted act file is a
+write, and the only root it could lawfully land in is Syzygy's own.
+
+**The escape property** is not a numbered clause. It is the unnumbered
+is/is-not paragraph at `.syzygy/governance/doctrine/vision.md` lines 61–64,
+in the adopted doctrine file, quoted in full:
+
+> **Not a documentation portal.** Rendering and drafting governance
+> artifacts is a means; the escape property is that intent changes produce
+> dispatched work. A Syzygy from which no work is ever dispatched has
+> failed, regardless of how good its documents look.
+
+Because it carries no VIS identifier, `DIRECTIVE-REGISTER.md` does not index
+it and it cannot be cited as `VIS-n`; it is adopted doctrine prose and is
+cited here by file and line [Observed: a `grep -F` for the literal
+"documentation portal" across `.syzygy/governance/` returns **11 hits over 8
+files** — the doctrine file once, RFC-0007's README and its candidate mirror
+once each, one retired revision once, two round-review files three times
+between them, and the two 2026-08-18 launch-gate administration records,
+JSON and Markdown, twice each. The doctrine file is the definition; the
+other seven are citers, and two of them are near-miss administrations that
+tested the vision against exactly this phrase].
+
+**Supporting clauses, quoted at their defined locations.**
+
+- **RFC2-24 — Twelve reasons, closed**, at line 92 of
+  `.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md`:
+  "Every Unknown claim instance carries exactly one primary reason from this
+  list (secondary reasons may annotate); the list changes only by amendment
+  to this RFC …" (elided: ", and covers Unknown states only —" and the three
+  sibling surface states). And, in the next paragraph (corrected per review
+  1, N12 — not "three paragraphs on"): "A condition genuinely not among
+  the twelve is disclosed as a **fact of the render** — named, expandable,
+  routed to its resolving action — never dressed as a reason; the honest
+  move is to amend this list, never to annotate outside it." **The clause's
+  own table and `UNKNOWN_REASON_ROUTES` are NOT word for word equal**
+  (corrected per review 1, F1 — the draft's claim here was false and is
+  slice 1's most consequential defect). Extracted and compared key by key
+  this session: of the twelve, **5 are identical**
+  (`stale-beyond-currency-bound`,
+  `unconsented-source-or-provider`, `excluded-content`,
+  `contradicted-pending-adjudication`, `reference-unresolvable`) and **7
+  differ** — `missing-declaration` (RFC adds "(v1.md)"), `missing-evidence`
+  ("Produce/capture" vs "Produce or capture"), `no-currency-bound-declared`
+  (RFC adds "[Observed — trust-and-evidence.md]"), `mapping-coverage-absent`
+  ("Run/declare" vs "Run or declare"), `challenge-suspended` (RFC adds
+  "(RFC2-13)"), `source-uncaptured-or-unreachable` ("observer/source" vs
+  "observer or source"), and `execution-blocked` (RFC adds the parenthetical
+  "(execution profile, consent, environment)"). Every difference is the
+  RFC's prose gaining a citation or connective the implementation's short
+  phrase drops — no route names a different resolving action — but the
+  values are not verbatim equal, and RFC6-14 requires the machine answer to
+  carry the reason **verbatim from the vocabulary**. Slice 1 renders its
+  route strings from `UNKNOWN_REASON_ROUTES` — the table the page already
+  renders — not from the RFC's own wording; see the corrected mapping table
+  below. So the route vocabulary M4 wants to extend to nine more disclosures
+  already exists, is already closed, and is already implemented, using the
+  implementation's spellings; slice 1 is a widening of *coverage*, not of
+  vocabulary or of spelling. Whether a `PocRelationship` is an "Unknown
+  claim instance" in the clause's sense is the one thing this packet does
+  not decide [Unknown]: the clause says "claim", the POC's relationships are
+  typed `PocRelationship` and not `ProjectShapeClaim`, and no clause this
+  packet found settles it. Slice 1 therefore rests on POC-REQ-060, which
+  reaches every epistemic encoding on the three surfaces whatever the object
+  is called, and cites RFC2-24 for the vocabulary it borrows.
+- **RFC2-25 — Six tiers, closed** (same file, line 153) and **RFC2-23 —
+  Six degradation states, closed** (line 70) are named here only to record
+  that no slice adds a member to either [Observed: no slice below assigns a
+  tier or a degradation state].
+- **RFC2-9**, at line 187 of
+  `.syzygy/governance/contracts/rfcs/RFC-0002/snapshot-and-evaluation-core.md`,
+  and **RFC2-10** (line 209) govern currency and freshness. **No M4 slice
+  touches either**; they are M2's subject, and they are named here so a
+  reviewer can see the boundary: slice 1 adds a reason and a route to a
+  disclosure and assigns no freshness value.
+
+**Conflict check.** None found [Inferred, labelled per review 3, H9:
+checked slice by slice against all eight slice rows above; denominator 8].
+Every slice adds a disclosure or a route, or
+removes a hand-written list in favour of a derived one. None turns anything
+green, none folds an Unknown into a total, none establishes a claim, and
+slice 6's honest expected outcome is that two claims stay Unknown.
+
+## Gate 3 — Topology
+
+| Slice | Lives in | Governed artifact touched |
+|---|---|---|
+| 1 Routes on every Unknown | `packages/three-surface-poc-core/src/model.ts` (a reason-and-route field on `PocEpistemic`'s Unknown arm, populated from a closed table beside the entity and relationship literals); `apps/three-surface-poc/src/polaris.ts` (render through the existing `unknownLine` shape); `apps/three-surface-poc/src/orrery.ts` and `apps/three-surface-poc/src/trajectory.ts` (the same encoding, POC-REQ-060); `apps/three-surface-poc/src/polaris-parity-sweep.test.ts` (the denominator grows) | none |
+| 2 The machine form of a route | `packages/three-surface-poc-core/src/project-shape-model.ts` (widen `ResolutionRoute`, keep `route` verbatim as the prose field); `packages/three-surface-poc-core/src/model.ts` (the same type on the relationship arm) | none |
+| 3 The opening band | `apps/three-surface-poc/src/polaris.ts` (a second rendering of `gapReasonCounts`, reusing `gapId`), `apps/three-surface-poc/src/polaris-copy.ts` (the band's own copy rows) | none |
+| 4 `model.surfaces` true by construction | `packages/three-surface-poc-core/src/model.ts` lines 90–96 and 710–750; each renderer imports its descriptor | none |
+| 5 Home as the day-opening | `apps/three-surface-poc/src/routes.ts` lines 34–96, `apps/three-surface-poc/src/exact-tables.ts`, `apps/three-surface-poc/src/routes.test.ts` — **and these are exactly where the fourth Unknown encoding lives** (recorded per review 3, H1): the `provenance-none` span at `exact-tables.ts` line 10 and its only style rule at `routes.ts` line 73, inside `HOME_STYLE` (declared line 57, used at line 90 only). Slice 5 must not rewrite either without closing that encoding, and Q1's re-specified shared marker is what closes it | none |
+| 6 Run the return path once | no source file; `docs/evidence/` gains one record | none |
+| 7 Drafted-act generator | a new pure module in `packages/three-surface-poc-core/src/`; an operator entry point beside `apps/three-surface-poc/src/capture-test-artifact-main.ts`; `scripts/check_governance.py` registration | **potentially `.syzygy/governance/decisions/`** — the output, see Q3 |
+| 8 (deferred) Packet per claim; the queue | `packages/three-surface-poc-core/src/materialization.ts` lines 9–65 | none directly; the effect is new |
+
+Boundaries crossed: none new [Inferred, labelled per review 3, H9: checked
+against all eight slice rows above; denominator 8]. Slice 1's route table
+sits beside the
+relationship and entity literals in the same module that already constructs
+them; slice 2 widens a type `packages/three-surface-poc-core` already owns.
+Slice 7 is the only slice that would give the core package a filesystem
+dependency, and the design keeps it pure precisely so it does not.
+
+Not touched by any slice [Inferred, labelled per review 3, H9: checked
+against all eight slice rows above; denominator 8]: the body-read authority
+gate, the observation
+pipeline's classification, extraction and coverage stages, the registry's
+`resourceLimits` and `typedAuthority` values, the response ceilings, the
+consent act's pair and content class, the signed PWB specification text and
+the signed POC specification text.
+
+### The authorizing act, per slice
+
+| Slice | Owner act needed | Named act, and the trigger test |
+|---|---|---|
+| 1 Routes on every Unknown | **No** | Rides `.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` (2026-09-05). No escalation trigger of `PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` ("Escalation triggers", lines 86–94) is crossed: no doctrine or contract change, no PWB spec amendment, no security/privacy/retention change, no registry-envelope change, no observation at all — the slice reads nothing new and renders a value the model already holds. It traces to POC-REQ-060 under the 2026-08-30 direction's trace rule |
+| 2 Machine route form | **No** | Same continuation. It adds fields to a payload no act binds. If a reviewer reads a route as a "disclosure Polaris presents" under PWB-REQ-020 — this packet's own reading is that it is, see Gate 5 — the slice must render it in both channels, which it does; that is conformance, not amendment |
+| 3 Opening band | **No act found for the continuation itself; an RFC2-26 gate is open — see Q7** (widened 2026-09-15, review 5, K2; the cell read "**No**") | Same continuation. PWB-REQ-010's opening order is preserved by placing the band after the project account and before the first catalog, and the existing outline oracle asserts it — but **preserving a requirement is not mapping to one**. The band's own observable consequence is an aggregate of Unknown-reason counts, inside two of RFC2-26's enumerated classes, and no approved scenario in either signed spec reaches it; see Gate 5's RFC2-26 test for the five requirements read, four of them as candidate mappings, and why each falls short (corrected 2026-09-15, review 6, L5, which superseded "the four requirements checked": the cell and the evidence record both name five — PWB-REQ-010, PWB-REQ-011, PWB-REQ-007, POC-REQ-032 and PWB-REQ-012, the last a constraint the band must satisfy rather than a candidate mapping) |
+| 4 `model.surfaces` | **No act found for the continuation itself; an RFC2-26 gate is open — see Q7** (widened 2026-09-15, review 4, J2; the cell read "**No**") | Same continuation. **No requirement governs this field** (Gate 5), so it traces to the recorded-finding arm of the 2026-08-30 direction, naming L6-F5. **That arm alone does not clear RFC2-26**, which makes the absence of a requirement a bar rather than a freedom and which neither limb of this slice satisfies as designed; the clause is put to the owner at Q7 and quoted at Gate 5. **This reading is this packet's own [Inferred] argument, not something any question puts to the owner as drafted; Q7 now carries it explicitly** (corrected per review 1, F6) |
+| 5 Home as day-opening | **No act found for the continuation itself; an RFC2-26 gate is open — see Q7** (widened 2026-09-15, review 4, J2; the cell read "**No**") | Same continuation, on the same recorded-finding arm naming L6-F1. **Q7, not Q5, carries this reading** (corrected per review 1, F6 — Q5 asks only about slice 6's run). **The same RFC2-26 gate applies**, and more squarely: four of this slice's answers fall inside the clause's own enumerated consequence classes. Quoted and worked through at Gate 5 |
+| 6 Run the return path once | **Contested — see Q5** | `.syzygy/governance/decisions/THREE-SURFACE-POC-MODE-DIRECTION.md` lines 18–22 name the demonstration; the same file's invariant list (lines 26–32) keeps dispatch human-triggered; `THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md` lifts the item and review caps for cycle work. The run adds no mechanism and reads no new source, but it writes to the observed repository's Beads database via `bd -C <observed root> create` — **not** merely "through the adapter the 2026-09-02 act's own prohibition list already contemplates," which reads as a general prohibition on exactly that write (corrected per review 1, F4). Q5 puts both readings to the owner rather than assuming either |
+| 7 Drafted-act generator | **Yes, on arm (a) — none on arm (b)** | **No act found** that authorizes Syzygy to write a governance artifact about the observed project into its own decisions directory. The hook is the 2026-09-02 act's "any scope beyond the signed change". Arm (b) — a pure drafter returning packet data, with no file written — crosses no trigger and rides the continuation |
+| 8 Packet per claim; the queue | **Yes, both** | Each needs an owner act naming the effect, the claim classes eligible and the ceiling. L5-M5's own text warns that RFC-0010's propose-only shape (RFC10-7) is Wave D1 and that `DEFERRED-WAVE-POSTURE.md` forbids offering a C/D wave act while the posture stands, so the act must be narrow and may cite RFC10-7 only as design precedent. Not designed here |
+| A poller, watcher or scheduler, had one been proposed | **None found** | and none is proposed. Every action in M4 is clicked by a human or typed by an operator |
+
+P-52 is untouched: all slices run under `syzygy-dov.4`, the pursuit bead, so
+no ninth POC bead is filed. The 2026-08-30 improvement-cycles direction lifts
+the eight-item cap for cycle items in any case; this packet neither relies on
+that lifting nor disputes P-52's row.
+
+## Gate 4 — Design sketch, per slice
+
+### Slice 1 — A reason and a route on every Unknown (medium; no act)
+
+The nine routeless disclosures get the treatment the thirteen already have.
+`PocEpistemic`'s Unknown arm (`packages/three-surface-poc-core/src/model.ts`
+line 305's constructor) gains two fields beside its free-prose `reason`: the
+closed RFC2-24 reason, and the route. The prose stays and becomes the
+*basis* sentence — nothing the page says today is deleted.
+
+The mapping, proposed, one row per disclosure, each reason taken from
+RFC2-24's twelve and each route taken **verbatim from
+`UNKNOWN_REASON_ROUTES`**
+(`packages/three-surface-poc-core/src/project-shape-model.ts` lines 89–102)
+— the table the page already renders through `routesFor` —
+**not from RFC2-24's own prose**, which differs from the implementation on
+7 of 12 route strings (Gate 2, corrected per review 1, F1). Rendering the
+RFC's wording here while the existing thirteen disclosures render
+`UNKNOWN_REASON_ROUTES`'s wording would put two different route sentences
+for the same reason on one page, which is POC-REQ-060's own falsifier — the
+exact defect Q1 asks the owner to rule a non-conformance:
+
+| Disclosure | Proposed reason | Route (`UNKNOWN_REASON_ROUTES`, verbatim) |
+|---|---|---|
+| work:whatsapp-single-event-normalization | `missing-evidence` | Produce or capture evidence |
+| evidence:focused-pytest | `missing-evidence` | Produce or capture evidence |
+| runtime:live-satisfaction | `missing-evidence` | Produce or capture evidence |
+| region:unmapped-code | `mapping-coverage-absent` | Run or declare the mapping |
+| relationship:intent-to-work | `missing-evidence` | Produce or capture evidence |
+| relationship:work-to-code | `missing-evidence` | Produce or capture evidence |
+| relationship:code-to-evidence | `missing-evidence` | Produce or capture evidence |
+| relationship:code-to-runtime | `missing-evidence` | Produce or capture evidence |
+| relationship:capability-to-unmapped-region | `mapping-coverage-absent` | Run or declare the mapping |
+
+If the owner instead wants the page to render RFC2-24's own prose, that is a
+separate change touching all twelve existing route strings as well as these
+nine, and must be proposed as one change, not mixed with slice 1.
+
+Seven of the nine land on one reason, which is honest and unhelpful on its
+own; the *action* route is what makes them different, and that is the second
+half of the slice. Beside the closed route, `relationship:intent-to-work`
+gains an `actionRoute` naming the materialize panel — the one lawful action
+that exists — rendered mount-prefix-aware through
+`withMountPrefix` (`apps/three-surface-poc/src/tailnet.ts`). Following the
+link writes nothing: the panel is the read-only exact preview
+(`apps/three-surface-poc/src/materialize-action.ts` lines 55–81, whose own
+copy says "Nothing is written until the button below is explicitly clicked;
+Syzygy never triggers this on its own"). The other eight carry no
+`actionRoute`, because no route inside the POC leads anywhere for them; the
+closed route sentence is what they get, and the band in slice 3 counts them.
+
+**The same encoding on all three surfaces.** POC-REQ-060's scenario is
+"WHEN the same Unknown relationship appears on Polaris, Trajectory, and
+Orrery, THEN all three render it with the declared Unknown encoding from the
+shared token set". The five Unknown relationships appear on Orrery
+(`relationshipIds` of the Orrery surface include all nine) and three of them
+on Trajectory, so slice 1 lands in three renderers or in none.
+
+**Tests, restated per surface (corrected per review 1, F5).** The sweep as
+originally specified — every `data-unknown-disclosure` element carries a
+`data-unknown-reason` — has denominator **22 on Polaris and 0 on Trajectory
+and Orrery**, because those two surfaces never emit a
+disclosure wrapper at all. **Superseded 2026-09-15 (review 3, H1):** this
+read "because those two surfaces render **every Unknown** through the bare
+`epistemic-unknown` class alone". The predicate actually run counts
+occurrences of one class literal, not those surfaces' rendered Unknown
+population: **299** and **9** rendered `epistemic-unknown` claim encodings,
+from 301 and 11 raw occurrences less one stylesheet rule and one legend key
+item each (measured this session, re-partitioned per review 2, G3) — **plus a
+fourth family the two-literal census never reached**, the `provenance-none`
+span of `apps/three-surface-poc/src/exact-tables.ts` line 10, at **9**
+rendered occurrences on Orrery and **0** on Polaris and Trajectory
+[predicate: literal occurrences of the string `provenance-none`; denominator:
+the whole served page; each occurrence assigned to its enclosing tag]. A
+sweep with a zero denominator on two of three surfaces passes vacuously
+there and cannot discharge POC-REQ-060's three-surface invariant. Slice 1
+must therefore also make Trajectory and Orrery emit the same
+`data-unknown-disclosure`/`data-unknown-reason` marker pair Polaris does
+(the shared five relationships already appear on both), after which the
+sweep's denominator is reported **per surface** — Polaris's 22, plus
+Trajectory's and Orrery's own disclosure counts once the slice lands — and
+zero exceptions is asserted against each denominator separately, never
+pooled into one figure. **The re-specified shared marker must cover the
+`provenance-none` rendering as well** (added per review 3, H1): its nine
+Orrery spans encode exactly the nine Unknowns this slice is about, so a sweep
+blind to them passes on every published denominator while POC-REQ-060's
+falsifier still stands. Rule-6 mutants: blank one disclosure's reason on
+each surface and confirm that surface's sweep fails; change one reason to a
+thirteenth value and confirm it fails; **re-emit one `provenance-none` span
+in place of the shared marker on an Orrery row and confirm the cross-surface
+sweep fails** (review 3, H1); delete the `actionRoute` and confirm
+the capability-detail test fails.
+
+### Slice 2 — The machine form of a route (medium; no act)
+
+`ResolutionRoute` becomes
+`{ reason, prose, actor, verb, target }`, where `prose` carries today's
+string **verbatim** so no rendered sentence changes, `actor` is one of
+`owner | operator | agent`, `verb` is a short closed set, and `target` names
+what the action is aimed at (an artifact path, an act identity, a policy, an
+evaluation, or external work). The same type goes on the relationship arm,
+so one widened type serves slice 1 and slice 2 — L5-M4's own note that the
+two moves should build the type once, not twice.
+
+**What the slice does not do, per Q2 (corrected per review 1, F2).** It does
+not add a `none-modelled` value. It makes the empty array unrepresentable on
+an Unknown **that carries `reasons`** — narrower than "an Unknown" at large,
+because cap1-core's `EpistemicState`
+(`packages/cap1-core/src/epistemic.ts:50-67`) also has a third arm,
+`{ label: 'Unknown', basis: 'deferred' }`, with no
+`reasons` field; the type-level prohibition must not make that modelled arm
+unrepresentable. It leaves the empty array as the only legal value on an
+Observed claim, and leaves `label.no-route` and its sibling `label.deferred`
+(`polaris-copy.ts:192-193`, both listed in `UNREACHED_IN_FIXTURES` at
+`polaris-copy.test.ts:297,299`) where they are, rendering either routeless
+Unknown arm's fallback. If the owner rules the other way on Q2 and mints
+`none-modelled`, both `UNREACHED_IN_FIXTURES` entries must be reconciled in
+the same change, or the oracle will assert one or both rows are still
+unreachable and fail.
+
+**Parity.** Every route the page renders must be in the machine answer under
+the same claim or relationship id. PWB-REQ-020's enumerated population
+includes "disclosure Polaris presents", and a rendered route is one, so the
+sweep's `unknown-disclosure` and `unknown-relationships` families
+(`apps/three-surface-poc/src/polaris-parity-sweep.test.ts` lines 431–452)
+grow a route family beside them [Inferred: this packet's reading of the
+enumeration; if a reviewer reads a route as outside the enumerated
+population, the slice's parity obligation narrows and nothing else changes].
+Per the project's own rule, the check is per tuple against the machine claim
+by id and over both id sets — never `tuples === distinct ids`.
+
+**Where that obligation comes from (stated per review 3, H4).**
+PWB-REQ-020's own **Mutation proof** bullet is the source of slice 2's
+per-class injection duty — not this project's general practice — and it is
+the bullet elided from the quotation in Gate 5 above. At
+`openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md`
+lines 920–923, quoted verbatim: "for each fact, authority-state,
+judgment-state and disclosure marker class, independently inject a missing,
+duplicated, changed, collapsed and wrong-evaluation marker and confirm the
+comparator fails before restoration; report both channel denominators for
+every run." Slice 2 adds a new disclosure marker class and therefore inherits
+that clause directly; Gate 6 item 3 (rule-6 mutants per guard branch) and
+item 4 (both denominators) are how it is discharged.
+
+### Slice 3 — The opening band (medium; act — see Gate 3 and Q7)
+
+*Heading corrected 2026-09-15 (review 6, L3), superseding "(medium; no
+act)": Gate 3's row 3 records an open RFC2-26 gate for this slice, and one
+of the three routes for clearing it is a reviewed N/A judgment honored by an
+effective owner act.*
+
+A band placed after the project account and before the first catalog
+section, rendering the same `gapReasonCounts` projection the gaps section
+already renders, every row linking to the existing `#polaris-gap-<reason>`
+anchor and carrying the reason's route. On the retained capture that band
+would have one row — `excluded-content`, 12 claims, "Policy change by the
+owner, or accept the exclusion" — and, after slice 1, rows for the
+relationship and entity Unknowns beside it, with the materialize link on
+the one that has it.
+
+**One count, two renderings, one denominator.** The band must not be a
+second projection that can drift: it takes the same map and the same
+ordering function, and a test asserts the band's total equals the gaps
+section's total on every fixture. A counterexample fixture whose only
+Unknown reason is `source-uncaptured-or-unreachable` must render that reason
+in the band too, under Q4's recommended arm, and must render it *last*.
+
+**Byte cost.** The band is the gaps list rendered twice, plus a heading and
+a lede. On the retained capture the whole gaps `<ul>` is roughly 2 KB
+including the per-cause sentences; the band would carry the generic routes
+without the per-cause expansion, so low single-digit KB [Inferred; Gate 6
+requires the measured figure before and after].
+
+**PWB-REQ-010 and PWB-REQ-011 hold.** The band displaces no category and
+adds no reading: PWB-REQ-011's promise is that a reader who stops after the
+first reading is left with a true coarser account, and a count of Unknowns
+by reason is coarser and true. The existing outline oracle asserts the
+heading order is unchanged.
+
+### Slice 4 — `model.surfaces` true by construction (medium; act — see Gate 3 and Q7)
+
+*Heading corrected 2026-09-15 (review 6, L3), superseding "(medium; no
+act)": Gate 3's row 4 records an open RFC2-26 gate for this slice, and one
+of the three routes for clearing it is a reviewed N/A judgment honored by an
+effective owner act.*
+
+`PocSurface` gains a `renders` block: the route, the question, the state
+(`desired | execution | observed`), the content root the surface projects,
+and the count and denominator it renders. Each of the four renderers imports
+its own descriptor for its eyebrow, question and denominator. Polaris's and
+Trajectory's hand-written `entityIds` lists are derived from the same source
+the renderers read, the way Orrery's already are
+(`packages/three-surface-poc-core/src/model.ts` lines 747–748, corrected
+per review 1, N1). A served-page
+test asserts, per surface, that the declared count equals the rendered
+population, reporting both denominators.
+
+Keep both shapes for one commit, old derived from new, then delete the
+hand-written lists once no renderer reads them.
+
+### Slice 5 — Home as the day-opening (medium; act — see Gate 3 and Q7)
+
+*Heading corrected 2026-09-15 (review 6, L3), superseding "(medium; no
+act)": Gate 3's row 5 records an open RFC2-26 gate for this slice, and one
+of the three routes for clearing it is a reviewed N/A judgment honored by an
+effective owner act.*
+
+`renderPocPage` (`apps/three-surface-poc/src/routes.ts` lines 77–96) stops
+being an index of the three surfaces. It answers four questions, each row a
+deep link into the surface that owns it: which evaluation is current and as
+of when; what needs the owner (slice 3's band, same projection, third
+rendering, same total); which action is available right now (the materialize
+panel's status and a link to it — never the form itself, which stays on
+Trajectory where the exact preview is); and, when a previous evaluation
+exists, what changed since it.
+
+**The two literals go.** The `<h1>` "One capability. Three honest views."
+and the `lede` derived from `model.capabilityId` both describe a product
+whose Polaris page now answers a different question entirely; they are
+replaced by the descriptor's own question from slice 4.
+
+**The exact tables stay**, one level down, as the no-script and parity
+backstop. `apps/three-surface-poc/src/routes.test.ts` lines 188–243 already
+sweeps the home page for entity-id and relationship-id set equality against
+the model, asserts every fragment href resolves to a rendered id, and
+compares `visibleParityTuples(html)` to `parityTuples(wireModel)`; the
+sweep's denominator grows rather than forking, and the fragment-resolution
+assertion is what keeps VIS-7's "every rendered internal link resolves"
+true as rows become deep links.
+
+**Counterexample.** With no prior evaluation the "what changed" region
+renders a named Unknown with its reason and route, never "nothing changed".
+That is the slice's rule-6 mutant: make it render an empty diff and confirm
+the test fails.
+
+**Depends on slices 3 and 4.** The home page should hold no truth of its
+own; it is their composition.
+
+### Slice 6 — Run the return path once (medium; no new act; Q5 confirms)
+
+Run the built chain on the one seam it was designed for: a human clicks
+materialize on Trajectory; a human-launched agent does the bounded work on
+`WORKER_CHANGE_SEAM`; an operator runs the capture step
+(`apps/three-surface-poc/src/capture-test-artifact.ts`, whose own comment at
+lines 3–7 records that `main.ts` never imports it, so SEC-3 holds); the next
+evaluation is taken.
+
+**What the run is expected to produce, stated before it runs.**
+
+| Signal | Before | Expected after | Why |
+|---|---|---|---|
+| `materializedBeadId` | `null` | the Bead id | `resolveMaterializationEpistemic` confirms the id against live-observed work items, never from the record file alone |
+| `relationship:intent-to-work` | Unknown | **Observed** | `model.ts` line 570 is conditional on `materialization.beadId` |
+| `workerChange` | `kind: unknown` | `kind: observed` | `observeWorkerChange` at lines 418–423 takes the bead id and the seam |
+| `testArtifactVerification` | `kind: unknown` | a verified or failed record | lines 431–437 bind it to the observed commit |
+| `relationship:work-to-code` | Unknown | **Unknown** | line 588 is an unconditional literal; no input reaches it, deliberately |
+| `relationship:code-to-evidence` | Unknown | **Unknown** | line 597, same |
+| `walkthroughJudgment…criterion` | `unknown-never-met` | unchanged by this run | it is the cold-open walkthrough, a different artifact |
+
+The last two rows are the point. The dossier's M4 **"What" bullet** (not its
+"Why" bullet — corrected per review 1, N6) expects three edges to narrow;
+the code says one will, and says why in its own comments at `model.ts`
+lines 26–42 (comment 26–29, const 30–33 for the seam; comment 35–41, const
+42 for its intent — corrected per review 1, N2): the worker-change seam and
+its intent are deliberately distinct from the identity-resolution graph, and
+wiring one into the other is the false-`Verified` change AGENTS.md records
+as already reverted once. The honest-reporting caveat this measurement
+leans on is not new to this packet — it is already recorded in both the
+dossier's own slice-6 bullet ("report honestly if an edge stays Unknown")
+and L5-M7's slice plan ("Report honestly if an edge stays Unknown: that is
+the measurement, not a failure") — what this packet adds is the specific
+measurement of *which* edges and *why*, confirmed by an identifier sweep
+this session with zero overlap between the worker-change/test-artifact
+identifiers and the relationships array (corrected per review 1, N6, which
+found the earlier framing implied the caveat itself was new). **The honest
+result of the run is therefore a record that one edge narrowed, two did
+not, and the two that did not are correctly scoped elsewhere** — which is
+itself the strongest available evidence that the model does not manufacture
+propagation. Q5 asks the owner to rule that this counts as the
+demonstration before the run, not after.
+
+**What is retained.** The daemon stderr (the fresh-checkout verdict requires
+it empty), the `TestArtifactRecord`, the before/after machine captures, and
+the before/after tuple for all five Unknown relationships. Per v1.md lines
+119–120 (corrected per review 1, N13) the V0 agent-consumption artifact is
+"the named workflows and the commits/sessions that used them", and the
+criterion at lines 118–119 says "a workflow written
+solely to satisfy this criterion does not count" — so the work must be a
+real tracked task, not a demonstration written for the run.
+
+**This slice builds nothing.** If any step needs a code change to complete,
+that is a finding and the slice stops and reports it.
+
+### Slice 7 — A drafted owner act, never performed (large; act on arm (a))
+
+A pure function in `packages/three-surface-poc-core/src/` taking (a set of
+claims sharing one reason, the target authority artifact, the act type) and
+returning the packet as **data**: subject, the exact ceremony phrase the
+owner would write, the frozen digest of the artifact the act would bind, and
+the enumerated claim ids whose epistemic state the act would change and to
+what. No filesystem in the pure layer. The inverse of
+`packages/three-surface-poc-core/src/owner-act-record.ts`, whose parser
+already turns an act record into typed fields and whose own header says it
+"owns NO notion of validity" — the drafter owns none either.
+
+**On arm (b), that is the whole slice** and it needs no act: the packet is
+returned on request and printed by an operator command, and nothing is
+written.
+
+**On arm (a),** an operator command writes it into
+`.syzygy/governance/decisions/` with a `DRAFT, binds nothing` head, and
+three things must happen in the same change or CG-7d cannot see the packet
+go stale: the phrase is registered in `scripts/check_governance.py`'s
+`_act_subjects()`, its packet copies are registered in
+`ACT_DIGEST_COPY_FILES` from an existence-gated activation function, and a
+counterexample test asserts that a drafted packet carrying an accepted or
+performed banner makes `check_governance.py` fail.
+
+**Neither arm of slice 7 itself writes toward the observed repository** —
+this sentence is about slice 7's drafter only, and does not extend to slice
+6's existing materialize mechanism, whose own write is Q5's question
+(corrected per review 1, F4, which found the draft's parallel sentences
+read as a property of the whole packet). The registry entry cited for
+slice 7 is the project-shape observer, not a work-scheduler adapter (see
+Gate 2, VIS-5 and N10); its write surface is empty and stays empty for
+*this* slice regardless of how Q5 resolves.
+
+### Slice 8 — Deferred: the packet per claim and the queue (large; acts)
+
+Named here so the funnel is complete, and not designed. L2-M4 would replace
+`buildMaterializationPacket`'s hard-coded title, description, `externalRef`
+and `governingIntent`
+(`packages/three-surface-poc-core/src/materialization.ts` lines 43–65) with
+a function of a selected claim; note that
+`MaterializationGoverningIntent.requirementId` is a **literal type** at line
+15, so the change widens a type, not just a value, and the frozen fixture
+for the existing target must stay byte-identical so the current
+demonstration's evidence survives. L5-M5 would generalize that into an
+append-only queue with a released/unreleased state. Both are held behind
+their own owner acts, and this packet recommends they stay held until slices
+1–6 have run and the return path has produced its one real record — because
+a queue of packets aimed at claims is worth much less before anyone knows
+what one packet's round trip actually produces.
+
+### Design bar for the human surface
+
+No new interaction beyond one band, one set of deep links and one link to an
+existing panel. PWB-REQ-016 comprehension without vision or a pointing
+device holds: every route and every band row is text in reading order, never
+colour. POC-REQ-061's floor holds: no fragment target moves inside a
+`<details>` (the project's own recorded trap), keyboard paths stay complete,
+direct and tailnet forms stay at parity, and the no-JS path stays complete.
+Every new copy string is distinctive enough that a substring oracle cannot
+match it by coincidence — the recorded `None` failure.
+
+## Gate 5 — Specification
+
+**Slices 1, 2, 3 and 6: no spec delta. Each is conformance with text that
+already binds — except that for slice 3 no spec delta is not the same as a
+mapping: preserving PWB-REQ-010 and PWB-REQ-011 is not mapping to them, and
+the band's own consequence maps to no approved requirement-and-scenario
+pair; see the RFC2-26 test below.** **Qualified 2026-09-15 (review 6, L2):**
+this lead sentence ended at "text that already binds", which is the exact
+inference the same gate's RFC2-26 test withdraws for slice 3.
+
+Slice 1 is POC-REQ-060 conformance. The requirement is quoted verbatim from
+`openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md`
+lines 927–946 (range corrected per review 3, H4 from "lines 927–945", which
+stopped one line short of the falsifier's second limb) — **the cited range is
+the requirement's own span; the normative text quoted below begins at line
+931, after the `### Requirement:` heading at 927 and the Group/Form line at
+929** (convention stated 2026-09-15, review 5, K6, and applied at all three
+quotation sites in this gate, which had used one formula for two different
+spans) — with one elision marked:
+
+> The three surfaces SHALL draw from one declared set of design tokens, and
+> SHALL encode epistemic states (Observed, Unknown, and their reasons)
+> identically wherever they appear. Scope of quantification: every epistemic
+> encoding across the three surfaces.
+>
+> - **Case (sweep)**: a checker enumerates every epistemic encoding on all
+>   three surfaces — the denominator is that population — and compares each
+>   against the declared token/encoding table.
+> - **Observable**: identical states render with identical declared
+>   encodings on every surface.
+>
+> *… elided here (marked per review 3, H4): **Oracle** at lines 941–942 —
+> per-encoding equality with the declared table over the exhausted
+> population, the table being a checked-in declaration — and **Oracle
+> independence** at 943–944, the declared table as the expected value against
+> a sweep that reads served output …*
+>
+> - **Falsifier**: one surface encoding Unknown (or Observed) differently
+>   from the declared table, or a surface styling epistemic state ad hoc.
+
+Nine disclosures encoding Unknown as bare prose while thirteen encode it as
+a reason span plus a route is one surface encoding Unknown two ways, which
+is the falsifier's first limb. Widened per review 1 (F5): Trajectory and
+Orrery encode the same five relationships a *third* way, through the bare
+`epistemic-unknown` class with no disclosure wrapper at all (**299** and
+**9** rendered claim encodings, from 301 and 11 raw occurrences less one
+stylesheet rule and one legend key item each — re-partitioned per review 2,
+G3) — a second instance of the same falsifier, over
+the requirement's full three-surface scope of quantification. A **third**
+instance, added per review 3, H1: the `provenance-none` span
+(`apps/three-surface-poc/src/exact-tables.ts` line 10) encodes the same nine
+Orrery objects a fourth way, under a class the declared token table
+(`apps/three-surface-poc/src/design-tokens.ts` line 25) does not carry, and
+with its only style rule (`apps/three-surface-poc/src/routes.ts` line 73)
+reaching the home route alone — so one epistemic assertion renders with the
+declared Unknown colour on one served page and with no declared encoding on
+another [Observed, this session: 9 rendered spans and 0 style occurrences on
+the retained Orrery capture, 9 spans plus 1 rule on home, 0 on Polaris and
+Trajectory]. The spec
+already requires the repair, on all three surfaces.
+
+Slice 2 is POC-REQ-020 and PWB-REQ-020 conformance. PWB-REQ-020 is quoted
+verbatim from
+`openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md`
+lines 902–926 — again the requirement's own span, the normative text quoted
+below beginning at line 906, after the heading at 902 and the Group/Form
+line at 904 (review 5, K6) — with one elision marked
+(restated 2026-09-15 per review 4,
+J3: this introduction read "with one elision marked (per review 3, H4)" while
+the blockquote carried **two** — the second being PWB-REQ-020's **Case
+(sweep)** bullet at source lines 912–914, dropped with no ellipsis and no
+mention, and the very bullet `:749-758` relies on for slice 2's parity
+obligation. The bullet is restored verbatim below, so the true count is again
+one):
+
+> Every project-shape identity, statement, source anchor, coverage state,
+> denominator, contradiction, body-read authority state and
+> walkthrough-judgment state or disclosure Polaris presents SHALL be
+> recoverable from the same evaluation in the machine answer, preserving
+> multiplicity and exact provenance state.
+>
+> - **Case (sweep)**: enumerate every project-shape parity marker on Polaris
+>   and every corresponding machine-answer fact at one evaluation, including
+>   every PWB-REQ-005 authority state and PWB-REQ-022 judgment state and
+>   disclosure.
+> - **Observable**: both populations contain equivalent multisets.
+>
+> *… elided here (marked per review 3, H4): **Oracle** at lines 916–917,
+> **Oracle independence** at 918–919, and **Mutation proof** at 920–923 —
+> the last of which is quoted in full and relied on under slice 2 below,
+> because it is the source of that slice's per-class injection obligation …*
+>
+> - **Falsifier**: one fact, authority state, judgment state or disclosure
+>   is missing, duplicated, changed, collapsed or associated with a
+>   different evaluation in either channel.
+
+A rendered route is a disclosure Polaris presents, so it must appear in both
+channels under the same id and the same evaluation — which is what slice 2
+builds, so the invariant is satisfied rather than amended [Inferred: the
+reading of "disclosure" this packet relies on].
+
+Slice 3 preserves PWB-REQ-010 and PWB-REQ-011 and adds no claim of its own,
+but **preserving a requirement is not mapping to one**: the band's
+consequence, an aggregate of Unknown-reason counts, reaches no approved
+scenario in either signed spec, so slice 3 carries an open RFC2-26 gate —
+see the RFC2-26 test below and Gate 3's row 3. Slice
+6 adds no code at all. **Qualified 2026-09-15 (review 6, L2):** this read
+"Slice 3 is PWB-REQ-010 and PWB-REQ-011 conformance and adds no claim; slice
+6 adds no code at all."
+
+**PWB-REQ-004 is not entered by any slice.** Its closed population is quoted
+verbatim from lines 491–498 of the same file (range corrected per review 3,
+H4 from "lines 490–498"; line 490 is blank). Here the cited range is the
+**quoted text's** own span, which is what H4 corrected it to and which is
+exact to the byte — the one of the three sites that already followed the
+convention K6 asked for:
+
+> The POC SHALL admit project facts only from this closed population:
+> `item:<class>:<declared-key>` and `count:<class>` for each of
+> PWB-REQ-002's nine extraction classes; `catalog-count:<catalog-key>` for
+> each of the nine literal V1 catalog headings; and `project-account:<key>`
+> for `purpose`, `promises`, `refusals`, `architecture`, `v1-scope` and
+> `v1-success`. Every declaration SHALL be emitted by the extractor assigned
+> to an admitted source; an injected or unrecognized fact, class, key,
+> catalog or account key SHALL mint nothing.
+
+No slice mints a project fact. A resolution route is an attribute of an
+existing claim's epistemic state, in none of the four admitted forms, and is
+emitted by no extractor; the band's counts are counts of existing claims,
+not new declarations; the home page renders facts the model already carries.
+Were the owner or a reviewer to read a route or a band count as a project
+fact, slice 2 or slice 3 would acquire a PWB-REQ-004 delta and would queue
+behind P-68, and this packet says so here rather than discovering it later.
+
+**Slices 4 and 5 have no spec delta because no requirement reaches them —
+and that is itself a finding.** A heading sweep of both signed spec files
+finds **no requirement governing the home route or the `surfaces` field**
+[Observed, three sweeps with their denominators: `grep -c "^### Requirement"`
+returns **24** on the POC spec and **17** on the PWB spec; a case-insensitive
+whole-word search for `home` returns **0** hits in the POC spec and **6** in
+the PWB spec, enumerated 2026-09-15 (review 5, K5) as PWB spec lines 247
+and 277, the registry's governance-home field; 510 and 518, the precedence
+table's `Home` column and its semantic text; and 511 and 523, the
+layer-home rules that table governs — none of them the `/` route
+(**restated 2026-09-15, review 5, K5:** this read "all six are the
+precedence table's `Home` column or the registry's 'governance home'
+field", a closed two-way partition that lines 511 and 523 do not fit; the
+load-bearing conclusion is unchanged, and the six were re-derived this
+session [predicate: `(?i)\bhome\b`; denominator: each whole spec file] at 0
+and 6); and a search
+for the field name as the spec would write it — the backticked literal
+`surfaces`, or the string `model.surfaces` — returns **0** in both files.
+The word "surfaces" does occur throughout both, always as "the three
+surfaces", the human noun, never the model field]. The
+three surfaces are specified; the fourth served page is not. So slices 4 and
+5 trace to the 2026-08-30 direction's other arm — "Improvement-cycle work
+must trace to POC-REQ-001..061 or to a recorded review finding" — naming
+findings L6-F1 and L6-F5. **Q7 puts that reading to the owner** (corrected
+per review 1, F6: Q5 asks only whether slice 6's run and its write are
+authorized; it carries no limb about slices 4 or 5, and Q7 is where the
+recorded-finding reading is now stated as an explicit, owner-facing choice).
+The consequence a reviewer should see: that silence means no oracle but
+`routes.test.ts` protects the home route. **Withdrawn 2026-09-15 (review 4,
+J2):** this sentence also read "changing the home page freely is lawful today
+precisely because nothing specifies it". That inference is the one RFC2-26
+forecloses — see "The RFC2-26 test for slices 4 and 5" below. The silence is
+not a freedom; under RFC2-26 it is an affirmative bar until one of two limbs
+is satisfied, and which way the clause falls is the owner's to rule, not this
+packet's to assume.
+
+**Slice 7's output is a governance artifact, and the spec is silent there
+too.** Nothing in either spec governs what Syzygy may draft into its own
+decisions directory; that is doctrine and act territory, which is why Q3 is
+an act question and not a spec question.
+
+**Both specifications are digest-bound. No slice edits spec text.** A slice
+that comes to want spec text stops and routes through CC-REV-2 and a new
+owner act, as a question to the owner, never as a plan step.
+
+### The RFC2-26 test for slices 4 and 5 (added per review 4, J2)
+
+**Extended 2026-09-15 to all eight Gate 3 slice rows (review 5, K2).** The
+heading is left as review 4 wrote it, because four cross-references name it
+literally; the test below is no longer confined to the two slices it names.
+
+The finding just above — that no requirement reaches the home route or
+`model.surfaces` — does not end the analysis. RFC-0002 carries a clause that
+turns exactly that silence into a bar, and this packet did not reach it in
+three reviews [Observed: before this repair the identifier `RFC2-26` occurred
+**0** times in this file, by a literal sweep over the whole file; the RFC-0002
+clauses cited were RFC2-9 ×1, RFC2-10 ×2, RFC2-13 ×1, RFC2-23 ×1, RFC2-24 ×18
+and RFC2-25 ×2]. RFC-0002 is an accepted design contract in force
+(`PROJECT-STATUS.md` line 147 records Wave A, RFC 0001–0006, 19 modules, as
+**ACCEPTED**, act performed 2026-08-17). Quoted verbatim at the defined
+clause,
+`.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md` lines
+196–221 (verification rule 8) — **the whole clause, both paragraphs**
+(**restated 2026-09-15, review 5, K2:** this introduction read "lines
+196–210", which is exact for the clause's first paragraph and stopped
+unmarked halfway through the clause. Read at source this session, the clause
+sits under the `###` heading "Authority boundary at the OpenSpec seam
+(binding phase rule)" at line 194 and runs 196 through 221 in two
+paragraphs, 196–210 and 212–221, with the next `##` heading at line 223;
+`DIRECTIVE-REGISTER.md` line 260 defines `RFC2-26` at line 196 of that file
+[Observed]. The second paragraph is reproduced below with its words verbatim,
+rewrapped only to fit this packet's column bar):
+
+> **RFC2-26.** This contract schedules nothing: **it is not a specification of
+> record from which implementation work may be scheduled**. No implementation
+> work for user-observable consequences of this contract — evaluation and
+> snapshot displays, claim and challenge rendering, Unknown-reason and
+> rendering-tier presentation, reconciliation-chain and gap surfaces, API
+> answers over epistemic state — may be scheduled solely from this RFC. Before
+> implementation, every observable consequence either maps to an approved
+> OpenSpec requirement and scenario in the governance root's `openspec/**`
+> plane, or carries a reviewed N/A judgment proving it purely structural with
+> no independently testable behavior. **The reviewed N/A judgment's home and
+> gate.** A reviewed N/A judgment is a recorded owner judgment homed in
+> `decisions/` (RFC3-15), and the judgment is honored only through an
+> effective owner act under RFC3-16(a), in state (1) or state (2), with that
+> state
+> rendered; absent or invalid acts map nothing and leave the consequence
+> unmapped and Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2).
+>
+> **Rows are per observable consequence, not per clause.** A clause with five
+> observable consequences and one mapped requirement is not covered; the
+> matrix discloses the consequences it enumerates for each clause, so a
+> complete-looking matrix over under-enumerated consequences is a defect of
+> the matrix. At surface specification a clause-to-requirement coverage matrix
+> over RFC2-1..RFC2-26 is produced — **that matrix is review material, never
+> authority**. This clause creates no OpenSpec content now (none may exist
+> during bootstrap). This clause binds the whole RFC 0002 package, not this
+> module alone. (Shape-parallel with RFC6-28, RFC7-38, RFC8-32, RFC9-52,
+> RFC10-16, RFC11-12.)
+
+**Which limb each slice relies on, stated plainly rather than assumed.**
+
+- **Slice 5, home as the day-opening.** Its four answers are an
+  evaluation-currency display; an Unknown-reason and gap surface (slice 3's
+  band, same projection, third rendering); a materialize status; and, when a
+  previous evaluation exists, a reconciliation-chain surface whose
+  counterexample "renders a named Unknown with its reason and route". Four of
+  RFC2-26's own enumerated consequence classes. **Limb 1, mapping to an
+  approved requirement and scenario, is unavailable**: the three sweeps above
+  find no requirement in either signed spec reaching the home route. **Limb 2,
+  a reviewed N/A judgment, is unavailable as designed**: that limb requires
+  the consequence be "purely structural with no independently testable
+  behavior",
+  and this slice is specified with its own oracle and a rule-6 counterexample.
+- **Slice 4, `model.surfaces` declares its own population.** Each surface
+  declares the count and denominator it renders and a served-page test asserts
+  declared equals rendered — an API answer over epistemic state. **Limb 1 is
+  unavailable** on the same sweeps: no requirement names the field. **Limb 2
+  is unavailable as designed** for the same reason as slice 5 — the slice's
+  whole
+  content is the testable assertion S6 states.
+
+Neither limb is therefore available to either slice as this packet designs
+them, and RFC2-26's effect rule says the consequence is then "unmapped and
+Unknown, never covered."
+
+**The test's denominator, and the test run over every slice (added
+2026-09-15, review 5, K2).** The two bullets above run RFC2-26 over two
+slices and state no denominator. The population is the **eight** slice rows
+of Gate 3's "The authorizing act, per slice" table, slices 1 through 8;
+that table's ninth row, "A poller, watcher or scheduler, had one been
+proposed", proposes no slice and is outside the denominator [Observed,
+denominator 8, counted this session over that table]. Run over all eight,
+naming each slice's RFC2-26 consequence class and — for slices 1, 2, 3 and
+6 — the approved requirement **and** scenario each observable consequence
+maps to, every citation read at source in the two signed specs this session:
+
+| Slice | RFC2-26 consequence class | Approved requirement **and** scenario | Limb 1 |
+|---|---|---|---|
+| 1 Routes on every Unknown | "Unknown-reason and rendering-tier presentation"; "claim and challenge rendering" | (a) *the same encoding on all three surfaces* — **POC-REQ-060**, `openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` line 927, scenario **"Unknown looks the same everywhere"** at line 948, quoted verbatim: "**WHEN** the same Unknown relationship appears on Polaris, Trajectory, and Orrery / **THEN** all three render it with the declared Unknown encoding from the shared token set". (b) *a closed reason and its route on each Unknown* — **PWB-REQ-007**, `openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md` line 439, whose requirement text reads "Unknown reasons SHALL use RFC2-24 values verbatim and expose their resolution routes", scenario **"Missing current evidence remains explicit Unknown"** at line 470, quoted verbatim: "**WHEN** a declared project fact lacks evidence under its current currency bound / **THEN** its claim renders Unknown with the exact primary reason and route / **AND** its tier, freshness and evaluation identity remain visible" | **Available** for (a), exactly. **Available for (b) only on a reading** [Inferred]: PWB-REQ-007 quantifies over "every project entity and project-fact claim", and five of slice 1's nine unrouted Unknowns are relationship claims of the POC identity graph rather than project-shape facts. Whether that population reaches them is the owner's to read; no other requirement carrying a scenario was found for a reason-and-route on a relationship Unknown — POC-REQ-052's scenario (POC spec line 872) is about proximity-invented edges and POC-REQ-053's about entity routes to exact sources |
+| 2 The machine form of a route | "API answers over epistemic state" | *a rendered route recoverable in the machine answer at the same evaluation* — **POC-REQ-020**, POC spec line 377, scenario **"Surface and machine answer agree"** at line 400 ("**WHEN** a surface renders N marked facts at evaluation E / **THEN** all N appear with equal values in `GET /api/poc` for E, and the check reports N as its denominator"); and **PWB-REQ-020**, PWB spec line 902, scenario **"Complete model has wire parity"** at line 928 | **Available**, on both — subject to this packet's own already disclosed [Inferred] reading that a rendered route is "a disclosure Polaris presents" under PWB-REQ-020. The slice's other half, narrowing the type-level prohibition to an Unknown carrying `reasons`, changes no rendered sentence (`prose` carries today's string verbatim), adds no machine field and leaves `label.deferred`/`label.no-route` where they are, so it enumerates no observable consequence of its own and needs neither limb [Observed, from slice 2's own design above] |
+| 3 The opening band | "Unknown-reason … presentation"; "reconciliation-chain and gap surfaces" | **None found.** PWB-REQ-010 (PWB spec line 596) and PWB-REQ-011 (line 632) are the two this gate cites, and the band preserves both — but their scenarios ("WhatsApp is a drill-down, not the project account" at line 615; "Capability reaches exact requirements" at line 651; "Consented baseline requirement renders verbatim" at line 657) govern opening order and progressive depth, not a gap-reason aggregate. PWB-REQ-007's requirement text does reach aggregates ("Aggregates SHALL disclose label, tier, freshness and separate primary/secondary reason counts without a headline status") but its one scenario (line 470) is the per-claim case — and the clause's own second paragraph, now quoted above, says a clause with several observable consequences and one mapped requirement is not covered. POC-REQ-032 (POC spec line 574), scenario "Unknown disclosed in the narrative" at line 599, requires the Unknown disclosed **in place** in the narrative flow, which an opening aggregate is not. PWB-REQ-012's scenario at line 705 permits "gaps" as a heading concept — a constraint the band must satisfy, never a mapping. [Absence predicate and denominator, added 2026-09-15, review 6, L4: `^### Requirement:` and `^#### Scenario:` at line start; denominator both signed spec files whole — **41** approved requirements and **55** scenarios (POC spec 24 and 24, PWB spec 17 and 31). Every one of the 55 scenario headings was read this session and then the bodies of every candidate; none states an aggregate of Unknown-reason counts in the opening. The five requirements named above are the candidates, and each is exact at source: PWB-REQ-010 (596) one scenario at 615; PWB-REQ-011 (632) two at 651 and 657; PWB-REQ-007 (439) one at 470; POC-REQ-032 (574) one at 599; PWB-REQ-012 (679) one at 705. **A sixth candidate was read 2026-09-15 (review 7, M2), which supersedes "The five requirements named above are the candidates" as a closed list:** PWB-REQ-002, PWB spec line **115**, scenario "Declared shape reconciles" at **142**, whose THEN/AND read "**THEN** Polaris accounts for all D items exactly once / **AND** every category reports modeled, Unknown and contradicted counts that sum to its denominator" — the one approved requirement-and-scenario pair in either signed spec that requires *rendered aggregate* modeled/Unknown/contradicted counts, and so the nearest candidate this cell had not named. **It still does not map to slice 3**, on two independent grounds read at source this session: it partitions the *extraction categories* into the three coverage states, where slice 3's band partitions *RFC2-24 gap reasons* (`gapReasonCounts`) — a different projection over a different population; and its Observable, "per-category identities and reconciling counts are visible in the machine answer and reachable from Polaris", is satisfied today by the existing gaps section, which is reachable from Polaris and asserts no opening position, so it carries no opening-position claim for the band to conform to. **Limb 1 therefore remains unavailable and the recommended answer is unchanged** [Observed; the five above and this sixth are the six requirements read, over the 41/55 denominator stated at the head of this bracket]] | **Unavailable.** Limb 2 is unavailable as designed for the same reason as slices 4 and 5: the slice is specified with its own oracle ("the band's total equals the gaps section's total") and a counterexample fixture, so it is not "purely structural with no independently testable behavior". Slice 3 therefore carries the same open RFC2-26 gate, and Gate 3's row 3 and Q7 are widened to say so |
+| 4 `model.surfaces` true by construction | "API answers over epistemic state" | **None** — the three sweeps above find no requirement naming the field | **Unavailable**, both limbs; unchanged from the bullet above |
+| 5 Home as the day-opening | evaluation and snapshot display; Unknown-reason and gap surface; materialize status; reconciliation-chain surface — four of the clause's own classes | **None** — the three sweeps above find no requirement reaching the home route | **Unavailable**, both limbs; unchanged from the bullet above |
+| 6 Run the return path once | **None.** RFC2-26 bars scheduling *implementation work* from this RFC; this slice builds nothing ("This slice builds nothing", Gate 4) and renders no new consequence — the one edge it moves is rendered by code already built, under requirements that already bind | n/a | n/a. Slice 6's gate is Q5's authorization limb, which this test neither widens nor narrows |
+| 7 Drafted-act generator | **None identified.** Its output is a governance artifact in Syzygy's own decisions tree, not a rendering of epistemic state, so no enumerated consequence class of RFC-0002 was found to fit it | n/a | n/a. Slice 7's gate is Q3's act question, unchanged |
+| 8 (deferred) Packet per claim; the queue | **[Unknown].** Not designed in this packet, so its observable consequences are not enumerated and the test cannot honestly be run over it | n/a | n/a. Slice 8 is deferred behind its own acts, unchanged |
+
+**What the extended test changes, and what it does not.** It changes one
+thing: **slice 3 joins slices 4 and 5 under the open RFC2-26 gate**, which is
+a changed recommended answer and is disclosed in Q7, in Gate 3's row 3, in
+the funnel summary's G5, Acts, Open-questions and Recommended-handoff lines,
+in the prose handoff's Q7, Q4 and Q6 paragraphs, in the Collision section, in
+the evidence record, in the register note and P-71 row, and in PR #38, body
+edited 2026-09-15 [Observed at that date; a PR body is editable later]
+(the last item given its identifier and date 2026-09-15, review 7, M5,
+which superseded the bare "and in the pull request" — a present-tense
+claim about an artifact outside the three reviewed here, carrying no
+identifier, no date and no epistemic label, which a read-only reviewer
+cannot check from these bytes; narrowed 2026-09-15, review 6, L1, which
+superseded "in the recommended handoff": at review 5's commit only the
+funnel summary's Recommended-handoff line and the prose handoff's Q6
+paragraph carried it).
+It changes nothing
+for slices 1, 2, 6, 7 and 8. **This packet still calls no slice unlawful**:
+it names, per slice, the clause's consequence class and whether an approved
+requirement-and-scenario pair was found, and puts the ruling to the owner.
+Two of the mappings above rest on readings this packet states rather than
+resolves — slice 1's limb (b) population, and the packet's own reading that
+a rendered route is a disclosure Polaris presents — and both are labelled
+where they occur [Inferred].
+
+**This packet does not conclude that slices 4 and 5 are unlawful**, and the
+owner's choice is preserved rather than pre-empted [Inferred: the clause's
+scope is "user-observable consequences **of this contract**", which is itself
+a reading the owner may take narrowly; and even where limb 2 is unavailable
+*as designed*, the route exists — a slice may be re-scoped until "purely
+structural" fits, an OpenSpec amendment may supply limb 1, or a reviewed N/A
+judgment may be recorded in `.syzygy/governance/decisions/` and honored by an
+effective owner
+act; and the clause's own scope sentence is now in view beside that reading
+— line 221, quoted above, says "this clause binds the whole RFC 0002
+package, not this module alone", which is the half review 5 (K2) found
+unquoted while the narrow-scope route out was offered]. What review 4
+established is narrower and is [Observed]: the packet
+asserted these slices' lawfulness on a ground this clause contradicts, and
+never ran the test. Q7's authorization limb now carries the clause, so the
+owner rules it instead of inheriting it.
+
+### New WHEN/THEN scenarios (for the beads' acceptance contract, not the spec)
+
+**S1 — Every rendered Unknown carries a closed reason and a route.**
+WHEN any of the three surfaces renders an Unknown disclosure, THEN that
+disclosure carries a reason from RFC2-24's closed twelve and either its
+route or the declared "No route declared" copy, AND a sweep over the served
+pages reports **its denominator per surface** and zero exceptions on each
+(corrected per review 1, F5 — not one pooled denominator across surfaces
+whose disclosure population today runs 22, 0 and 0; corrected again per review
+2, G11, which read "differs by two orders of magnitude" — a ratio that is
+undefined against a zero denominator, and one borrowed from the
+`epistemic-unknown` family Q1 has just said may not be pooled with this one).
+
+**S1b — The `provenance-none` rendering is inside the sweep, with its own
+oracle.** (Added per review 4, J1.) WHEN a surface renders an Unknown
+through the `provenance-none` span of
+`apps/three-surface-poc/src/exact-tables.ts` line 10 — an epistemic
+encoding in no declared token table, emitted on an empty `provenance`
+array — THEN that rendering carries the same shared Unknown marker pair
+the re-specified sweep of S1 runs over, AND the sweep's oracle asserts,
+per surface and against that surface's own denominator, that the count of
+`provenance-none` occurrences not carrying the shared marker is zero, AND
+a rule-6 mutant re-emits one such span in place of the shared marker on an
+Orrery row and the cross-surface sweep fails. Today's denominators
+[Observed, re-derived this session over the whole served page of each
+retained capture]: Polaris **0**, Trajectory **0**, Orrery **9** rendered
+against **0** style occurrences, and the home route **9** rendered plus
+**1** style rule. S1 quantifies over "an Unknown **disclosure**", which
+this span is not and cannot become without slice 1; S1b is what makes the
+fourth family falsifiable rather than merely censused.
+
+**S2 — The one available action is reachable from the Unknown that names
+it.** WHEN `relationship:intent-to-work` renders Unknown because the
+materialization step has not run, THEN its disclosure carries a link to the
+materialize panel, mount-prefix correct on both host forms, AND following
+that link writes nothing and changes no model field.
+
+**S3 — An empty route array never means an unrouted Unknown.**
+WHEN a claim or relationship is labelled Unknown **and carries `reasons`**
+(corrected per review 1, F2 — not every Unknown; the `basis: 'deferred'` arm
+carries no `reasons` and is out of this scenario's scope), THEN its
+resolution-route array is non-empty, AND when it is labelled Observed, THEN
+the array is empty; a type-level test and a machine-answer sweep assert both
+directions with their denominators.
+
+**S4 — The band and the gaps section cannot disagree.**
+WHEN the opening band renders N Unknown claims across R reasons, THEN the
+"Unknown, by reason" section renders the same N across the same R, AND a
+test asserts equality of both totals and of the reason sets on every
+fixture.
+
+**S5 — A reason with no route still renders.**
+WHEN a fixture carries an Unknown whose reason has no route in the closed
+table, THEN the page renders the declared "No route declared" copy with the
+reason beside it, never an omission, AND the copy oracle's unreachable-row
+set no longer lists that row.
+
+**S6 — A declared surface count equals its rendered population.**
+WHEN a surface is served at evaluation E, THEN the count its descriptor
+declares equals the population it renders, AND the test reports both
+denominators per surface.
+
+**S7 — The home page states what needs the owner.**
+WHEN the home page is served, THEN it names the current evaluation and its
+as-of instant, the Unknown counts by reason with their routes, and the one
+available action, each row a link that resolves; AND no rendered internal
+link on the page is dangling.
+
+**S8 — With no prior evaluation, "changed" is a named Unknown.**
+WHEN no previous evaluation exists, THEN the home page's "what changed"
+region renders Unknown with its reason and route, AND never the sentence
+"nothing changed".
+
+**S9 — The return path runs, and the record says which edges moved.**
+WHEN the materialize action, the worker change and the operator capture step
+have each run once, THEN the next evaluation records, for all five Unknown
+relationships, the before and after label; AND the record states that
+`relationship:work-to-code` and `relationship:code-to-evidence` remain
+Unknown, and cites the seam-scoping comment that makes that correct.
+
+**S10 — A drafted act is never a performed act.**
+WHEN the drafter produces a packet, THEN the packet's head says it binds
+nothing, it carries no performed ceremony phrase and no acceptance-record
+row, AND `scripts/check_governance.py` fails if a drafted packet ever
+carries an accepted or performed banner.
+
+**S11 — No GET writes anything.**
+WHEN any surface or machine route is requested, THEN no governance artifact,
+work item or record is written, AND a test asserts the state directory and
+the governance tree are byte-identical before and after a full sweep of
+every route.
+
+**Out of scope, explicitly.** Amending either specification; amending
+doctrine; any background timer, poller or watcher; any second repository;
+any write toward the observed repository; a machine-channel *release*
+action of any kind; scoring or judging the owner's walkthrough answers; the
+catalog-route question the M1 ruling left closed; and the freshness and
+currency work, which is M2's.
+
+## Collision and sequencing
+
+**Corrected this session (review 1, F3).** The draft's Q7 said "the one
+shared file with M2 is none" while this section said, of M2, "the one
+shared file is `project-shape-model.ts`" — a direct self-contradiction
+inside one packet. The true set, re-derived from both sibling packets' own
+Gate 3 tables rather than asserted:
+
+**With M2 (`syzygy-dov.2`, register row P-69, PR #36).** M2's Gate 3 names
+`packages/three-surface-poc-core/src/model.ts`
+(its slices 2, 3), `apps/three-surface-poc/src/routes.ts` (slice 3, the
+`/api/poc` and `/api/poc/polaris` handlers, cited near line 227+, outside
+M4's touched region of that file),
+`apps/three-surface-poc/src/polaris.ts` (slices 1, 2 **and 6** — line 357's
+`claimStatesBlock` freshness group is slice 1, the opening band is slice 2,
+and lines 506–510's reading block is slice 6; corrected per review 2, G9,
+which superseded the attribution "slices 1, 2" against regions that are in
+fact slices 1 and 6),
+`apps/three-surface-poc/src/polaris-copy.ts` (slice 1, lines 45–49, plus the
+copy-oracle test) and
+`packages/three-surface-poc-core/src/project-shape-model.ts` (slice 5,
+lines 162–193), plus `git-observation.ts`, `main.ts`,
+`polaris-reading.ts` and the adapter-registry declaration JSON, which M4 does
+not touch. **Superseded 2026-09-15 (review 2, G1):** this list placed
+`polaris-copy.ts` among the files "which M4 does not touch" and the sentence
+below read "**M4 shares four files with M2, not none:**" — both false, and the
+first was contradicted thirty lines below by this section's own sentence that
+M4 slice 3 adds band copy rows to that file. **M4 shares five files with M2,
+not four and not none** [Observed, re-derived by hand this session: M2's Gate
+3 names 9 distinct files, M4's names 13, the intersection is 5]:
+`polaris-copy.ts` (M2 slice 1's lines 45–49 and M4 slice 3's band rows are
+**rows of the same declared-copy array**, reconciled by the same copy oracle's
+`UNREACHED_IN_FIXTURES` set at line 296 of
+`apps/three-surface-poc/src/polaris-copy.test.ts` — the one genuine **shared
+copy-oracle reconciliation site** of the five, so M2 slice 1 and M4 slice 3
+cannot land independently),
+`model.ts` (M4 slices 1, 2, 4 — cited regions 90–96, 305,
+562–617, 710–750, none overlapping M2's cited `model.ts` lines 100–110),
+`routes.ts` (M4 slice 5, lines 34–96 — outside M2's cited handler region),
+`polaris.ts` (M4 slices 1, 3 — the `unknownLine` render and
+`gapReasonCounts`/`gapsList` at 922–948, outside M2's cited lines 357 and
+506–510) and `project-shape-model.ts` (M4 slice 2 widens `ResolutionRoute`
+at 115–118 and `routesFor` at 150–154, adjacent to but not overlapping M2's
+162–193). Every pairing above is adjacent by the line ranges each packet
+itself cites; this repair did not re-audit every future edit inside those
+files, so treat "adjacent, not overlapping" as holding for the cited
+regions, not as a guarantee against the eventual diffs.
+
+**The copy-array site, renamed 2026-09-15 (review 3, H7).** The
+`polaris-copy.ts` entry above read "the one genuine **merge-conflict site**
+of the five". The two edits sit 143 lines apart in that array — M2 slice 1's
+cited region is lines 45–49, and M4 slice 3 adds rows beside
+`label.deferred` / `label.no-route` at 192–193 — so they do not textually
+conflict [Observed: both regions read this session]. The coupling that does
+hold, and that carries the sequencing conclusion unchanged, is the one named
+in the entry itself: both changes must reconcile the same
+`UNREACHED_IN_FIXTURES` set, and M2's Gate 3 slice-1 row names the
+copy-oracle test.
+
+The one shared
+*concept* is M2's `evidence` block on the machine payload and M4's route
+fields: both grow `/api/poc`, and both must land in the parity sweep's
+denominator rather than forking it. **M2's Q7 and M4's Q2 are the same
+shape of question** — what an implementation does when a closed vocabulary
+has no member for a state — and the owner should notice that this packet
+now recommends *narrowing* an existing arm (review 1, F2) rather than
+choosing between minting and an existing value outright; the two questions
+still turn on RFC2-10's and RFC2-24's identical "never dressed as" sentence
+and the owner may want to rule them together.
+
+**With M3 (`syzygy-dov.3`, register row P-70; cite it by register row P-70
+and by the two files, never by head — this packet named a head three times
+while saying not to, and review 2's G7 found that head already stale: the M3
+worktree has moved twice since, and M3's
+Gate 3 table, slice 3 design and slice 3 oracle are unchanged across the
+move; the head this sentence used to name is removed here per review 3, H3,
+which found review 2's G7 disposition claiming that removal while the head
+still stood).** M3's slice 5
+generates the freshness, tier and challenge encoding tables and its slice 6
+adds a render-disclosure family; both touch
+`apps/three-surface-poc/src/polaris-copy.ts` and
+`apps/three-surface-poc/src/polaris.ts` lines 346–361. M4 slice 1 adds a
+reason and a route to nine disclosures and M4 slice 3 adds band copy rows —
+in the same two files. **The real overlap is M3's "one declared encoding
+table" and M4's "nine disclosures that do not use it".** They are the same
+finding from two sides: M3 builds the table, M4 supplies the nine rows that
+must be in it. **M3 should land slice 5 before M4 slice 1**, so slice 1
+populates a generated table rather than a hand-written one; if M4 goes
+first, M3's table must absorb nine rows it did not plan for.
+
+**A second, head-on duplicate (review 1, F3(c); widened from two packages to
+three by review 2, G2): M2 slice 2, M3 slice 3 and M4 slice 3 all render into
+the same region — the opening band, in the same function of `polaris.ts`.**
+M2's slice 2 renders an evaluation-currency disclosure there (its Gate 3 row
+names "`polaris.ts` (the opening band)"; its design body opens "Rendered in
+the opening band, before the first catalog section:"), which this packet's
+earlier account attributed to M2 slice 2 without ever locating it — citing
+instead line 357 and lines 506–510, which are M2's slices 1 and 6 — so the
+collision analysis that exists to catch exactly this never reached it.
+M3's slice 3, "One real Unknown in the first reading," renders the page's
+two existing whole-shape and class-level Unknown claims before the first
+catalog group, oracled on "the first rendered Unknown precedes the first
+`data-polaris-group=\"catalog\"`" occurrence. M4's slice 3, "The opening
+band," renders the `gapReasonCounts` projection after the project account
+and before the first catalog section, oracled on "the band's total equals
+the gaps section's total." Both are opening-band designs in `polaris.ts`,
+both touch `polaris-copy.ts` for their own copy rows, and M4's own earlier
+account of the collision named only M3's slices 5 and 6, never slice 3.
+**Superseded 2026-09-15 (review 2, G2).** This section recommended:
+"**Recommendation: one band, one owner, one oracle.** M3 slice 3 should land
+first, exactly as designed; M4 slice 3 should then extend that band with the
+gaps-derived rows … and its oracle becomes the union of both." That
+recommendation was derived from a two-way pairing that never saw M2 slice 2,
+so it is replaced — **a changed recommended answer, stated plainly.**
+**Revised recommendation: one band, one owner, one oracle across all three
+packages.** The three payloads (currency disclosure, the two existing Unknown
+claims, the `gapReasonCounts` projection) are distinct claims and stay three
+blocks; the *region* is one, so whichever of M2 slice 2, M3 slice 3 and M4
+slice 3 lands first builds the band container and owns its single ordering
+oracle — the whole band precedes the first `data-polaris-group="catalog"`
+occurrence — and the other two add a payload block plus their own
+payload-specific oracle (M3's first-rendered-Unknown, M4's
+band-total-equals-gaps-total). None of the three builds a second band, and
+none of the three keeps an independent claim on "first". The block order
+inside the band is the owner's to set: if the owner rules that a currency
+disclosure and an Unknown band are separate regions, each region still needs
+a stated position relative to the others rather than three separate
+first-position assertions. **None of that schedules M4 slice 3: it is not
+built before Q7's RFC2-26 ruling either**, whichever of the three ends up
+owning the container (added 2026-09-15, review 6, L1 — this section carried
+the reconciliation rule with no RFC2-26 gate, review 5's K2 having reached
+Q7, Gate 3, Gate 5, the sequencing order and the funnel summary but not
+here). This packet no longer recommends an unconditional
+M3-slice-3-first order for the band, and says so in the handoff; its
+recommendation that **M3 slice 5 land before M4 slice 1** is a different
+finding and is unchanged.
+
+**With lane B (`agent/syzygy-dov.17`, PR #35, register row P-68).** Lane B
+is a semantic-delta package amending PWB-REQ-007, 014 and 020 so that a
+tuple field uniform across an enclosing scope may be carried once on the
+scope. **No M4 slice writes a tuple field**, so the hoist does not reach
+them. One interaction is worth naming: if lane B's scoping is later extended
+to *disclosure* attributes, slice 1's nine new `data-unknown-reason` values
+would become hoist candidates in a page where seven of nine carry the same
+reason — and a hoisted reason with a differently-routed disclosure beneath
+it is exactly lane B's own over-asserting-scope falsifier. Record it in
+`syzygy-dov.17`'s notes; nothing blocks today.
+
+**The order (corrected per review 1, F3, and again per review 2, G2, which
+superseded step (3)'s "M3 slice 3, landing the one opening band; then M4
+slice 3 as an *extension* of that band, not a second one" — that step named
+two of the three packages that write the band).** (1) Rule P-68; open no spec
+package meanwhile — M4 opens none, so this does not gate it. (2) M3 slice 5,
+then M4 slice 1 and slice 2 together, since they share the widened type.
+(3) The opening band, once, across M2 slice 2, M3 slice 3 and M4 slice 3: the
+first of the three to land builds the container and the single ordering
+oracle, and the other two add payload blocks inside it — the order among the
+three is the owner's (Q7), and M4 slice 3 does not start before it is
+ruled — nor before Q7's RFC2-26 ruling, which review 5 (K2) extended to
+slice 3.
+Note that M2 slice 1 and M4 slice 3 also share the declared-copy array in
+`polaris-copy.ts` (review 2, G1), so those two are sequenced by the same
+ruling. Then slice 4, then slice 5 — the home page is the composition of the
+two before it and should be built last — **and neither starts before Q7's
+RFC2-26 ruling**, in the same shape step (4) gates slice 6 on Q5 and step (5)
+gates slice 7 on Q3. **Superseded 2026-09-15 (review 5, K1):** this step read
+"Then slice 4, then slice 5 — the home page is the composition of the two
+before it and should be built last", with no gate, after review 4 had
+already widened Gate 3's rows 4 and 5. (4) M4 slice 6 at any time **once Q5's
+authorization limb is ruled**; its value is highest early, because its
+result is an input to every later judgment about whether the loop works.
+(5) Slice 7 only after Q3; slice 8 only after its own acts.
+
+## Gate 6 — Engineering bar
+
+Acceptance, in the M1, M2, M3 and P-63 shape:
+
+1. **Retained measurement, before and after**, direct and tailnet host
+   forms, at a named Syzygy commit and Butlers revision, in `docs/evidence/`,
+   from a private daemon on port 0 with its own state directory, never the
+   loopback daemon, on a committed clean tree. Note the constraint recorded in
+   AGENTS.md: the daemon serves only the registered locator, so a repaired
+   Butlers page cannot be measured from a scratch clone. The M4 numbers to
+   record: the disclosure census per surface with its own denominator
+   (Polaris 22 today, 13 routed; Trajectory and Orrery measured separately
+   at 0 disclosure elements and 299/9 rendered `epistemic-unknown` claim
+   encodings respectively — 301/11 raw, each less one stylesheet rule and one
+   legend key item — until slice 1 gives them the marker; corrected per review
+   1, F5 and re-partitioned per review 2, G3, so a one-surface figure is never
+   offered for the three-surface invariant, and raw and rendered counts are
+   always published together), **the `provenance-none` census per surface —
+   Polaris 0, Trajectory 0, Orrery 9 rendered against 0 style occurrences,
+   home 9 rendered plus 1 style rule, added per review 3, H1** — the href
+   census per surface with its buckets,
+   the home page's byte size and composition, the band's byte cost, and the
+   page's byte size on both forms against the 1,400,000-byte working target
+   and the 2,097,152-byte ceiling.
+2. **Every M1 invariant equal before and after** except the ones M4
+   deliberately changes: claim id set, item and source populations, and zero
+   dangling fragment targets stay equal; the href census, the disclosure
+   census and the home page's composition are expected to move, and the
+   evidence file records both sides. Computed by script, never transcribed.
+3. **Rule-6 mutation evidence for every new guard branch**: each of slice 1's
+   nine route rows (blank one, confirm the sweep fails); a thirteenth reason
+   value; slice 2's empty-array-on-Unknown prohibition; slice 3's
+   band-equals-gaps invariant (change one total, confirm it fails); the
+   `provenance-none` re-emit mutant slice 1's Tests and scenario S1b
+   carry — re-emit one `provenance-none` span in place of the shared
+   marker on an Orrery row and confirm the cross-surface sweep fails
+   (added per review 4, J1, which found this list still enumerating the
+   two-literal population review 3's H1 superseded); slice 4's
+   declared-equals-rendered assertion; slice 5's no-prior-evaluation
+   counterexample; slice 7's drafted-packet banner check. Each mutant's
+   `old`/`new` fragment and the commit it ran at are recorded — ids and
+   outcomes alone are not re-runnable — and a mutant that throws at describe
+   time reports zero tests and scores as survived, so fixtures are built in
+   `beforeAll`.
+4. **Both parity sweeps with both denominators**: the Polaris sweep's
+   `unknown-disclosure`, `unknown-relationships` and the new route family,
+   per tuple against the machine claim by id and over both id sets; and
+   `routes.test.ts`'s home-page tuple comparison, whose denominator slice 5
+   grows.
+5. **Preflight populations, keyboard, no-JS and browser tests**, the app
+   suite twice and the full suite pass; build the core package
+   (`tsc -b packages/three-surface-poc-core`) before the app typecheck, or
+   the app reports phantom errors.
+6. **Slice 6's evidence is the run itself**: the daemon stderr (empty, per
+   the fresh-checkout verdict), the `TestArtifactRecord`, the before and
+   after machine captures with their sha256s, and the five-relationship
+   before/after table including the two that stay Unknown.
+7. **Independent review in fresh context** before close, raw retained as a
+   `-RAW.md` file — the only suffix `check_governance.py` exempts from CG-1b
+   and CG-15 — and a re-issued raw is a second `-RAW.md` file, never an
+   overwrite.
+8. **Conformance expected values hard-coded**, never imported from the
+   module under test; every new copy label distinctive enough that a
+   substring match cannot succeed by coincidence.
+
+**Anchor convention in the review sections below (stated 2026-09-15, review
+5, K4).** A `:NNN` anchor inside a review section is a line number **at that
+review's own reviewed commit**, named in that section's file table — never in
+the current bytes. The packet grew between passes, so those anchors do not
+resolve here, and they are kept because a disposition is a record of what a
+named session read. Where a disposition speaks in the present tense about
+what the packet *now* carries, it names the section or heading instead.
+
+## Review 1 and repairs (2026-09-14)
+
+An independent fresh-context review of this packet (read-only; only the
+artifact, its governing references and the questionnaire invariant) is
+retained verbatim at
+`docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-RAW.md` (47636 bytes, sha256
+`6983034196c706c213e2a939e0ca7dfe4c3f75f958378403fbd115112c2966ec`,
+computed by `sha256sum` this session). It reviewed the packet at 83557
+bytes, sha256
+`8a28fadc7765f4715360bae36c8d0fbe312308a4657c42c3db086fe29862d7e4`, and the
+evidence record at 25070 bytes, sha256
+`ae753f560bfe04a65f49418fcd59d1d390cf36c75a12e902ccdb65764843d11d`, on
+commit `61bd43b0498393495b71c4e8f43bf9fb51d89596` with both files
+untracked. Its verdict word, copied exactly: **REVISE — six blocking,
+fourteen non-blocking, two editorial**. Every one of the twenty-two
+findings was re-derived against source and the retained captures — not
+assumed correct — before being applied; where re-derivation is unusually
+substantial (F1's key-by-key route comparison, F2's `routesFor`/
+`EpistemicState` read, F3's shared-file recount against both sibling
+packets' own Gate 3 tables, F4's write-target read against the 2026-09-02
+act, F5's per-surface disclosure sweep) the method and result are quoted in
+the repaired text itself, not only here. Every edit below was made after
+that review, so by verification rule 10 the review binds the bytes it
+names and not these; a second fresh-context review follows, and its raw
+will be a second `-RAW.md` file, never an overwrite.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| F1 RFC2-24's table and `UNKNOWN_REASON_ROUTES` are not word for word equal; slice 1's mapping table used the RFC's prose | blocking | Re-derived and confirmed (5 of 12 identical, 7 differ, extracted and compared this session): the "word for word" claim replaced with the measured split and method in Gate 2; slice 1's mapping table rewritten to use `UNKNOWN_REASON_ROUTES`'s own strings; a note added that rendering the RFC's prose instead is a separate, twelve-value change |
+| F2 Q2's "unreachable by construction" is false; `routesFor` has two return-`[]` branches and cap1-core's `EpistemicState` already models a routeless Unknown | blocking | Re-derived and confirmed (`routesFor` quoted with both branches; `EpistemicState`'s `basis: 'deferred'` arm quoted; `label.deferred` found in `UNREACHED_IN_FIXTURES` beside `label.no-route`): Q2 rewritten as a genuine choice; slice 2's design and S3 narrowed to "Unknown carrying `reasons`" so the deferred arm stays representable |
+| F3 the sequencing answer's collision analysis is wrong in both directions and misses M3 slice 3 duplicating M4 slice 3 | blocking | Re-derived and confirmed (M2 and M4 share four files, not none or one; M3 and M4 share two files; M3 slice 3 and M4 slice 3 are the same opening band, read from the `m3wt` worktree on 2026-09-14 at that session's committed head with a review-3 repair uncommitted, read-only — the head literal routed to register row P-70 on 2026-09-15 per review 4, J9, keeping the fact of what that session read; an earlier wording here named the wrong head): Q7 and the Collision section rewritten with the corrected file sets and an explicit one-band recommendation; sequencing order updated |
+| F4 slice 6 writes into the observed repository; the packet asserted "writes nothing" while its own Q3 argument would forbid the same write | blocking | Re-derived and confirmed (`materialize-action.ts:33`, `materialization.ts:12,186-208`, PWB act lines 70-72 quoted): Q5 rewritten with both readings quoted and a stated counter-argument, recommendation labeled [Inferred]; slice 6 made conditional; the "writes nothing" sentences and the VIS-5 "this is why it's lawful" paragraph corrected to state the question rather than assume an answer |
+| F5 slice 1's sweep has denominator 0 on two of three surfaces; POC-REQ-060 quantifies over all three | blocking | Re-derived and confirmed (Trajectory 0 disclosure / 301 `epistemic-unknown`; Orrery 0 / 11; measured this session on the retained captures): Q1, slice 1's design and Tests, Success criterion 1, S1 and the Gate 6 numbers list all restated per surface with their own denominators |
+| F6 Q5 is credited with a "recorded review finding" reading for slices 4-5 that it does not carry | blocking | Re-derived and confirmed (Q5's text carries no such limb; the 2026-08-30 direction's trace rule quoted): the reading moved to Q7 as an explicit limb; the two "Q5 puts that reading to the owner" sentences corrected to point to Q7 |
+| F7 (N1) Orrery's derived id lists are at lines 747–748, not 745–746, repeated three times | non-blocking | Re-derived and confirmed: corrected in the source-citation table, Q6, slice 4's design text and the evidence JSON |
+| F8 (N2) the two seam citations are off by one at both ends | non-blocking | Re-derived and confirmed (comment 26–29, const 30–33; comment 35–41, const 42): corrected in Q5's text and the evidence JSON |
+| F9 (N3) the five relationship ranges mix two conventions and the dossier correction understates the end by nineteen lines, not one | non-blocking | Re-derived and confirmed (brace ranges 562–581, 582–590, 591–599, 600–608, 609–617; whole span 562–617): one convention stated, correct span given |
+| F10 (N4) the `surfaces` literal closes at line 750, not 749 | non-blocking | Re-derived and confirmed: corrected in the source-citation table and the Gate 3 topology table |
+| F11 (N5) `model.surfaces` is one of five fields `renderPocPage` reads, and the evidence JSON's hit-count claim was wrong by three | non-blocking | Re-derived and confirmed (hits at 35, 78, 87, 89×2, 92×2, 127, 133, 171, 172): Q6 restated to "the only input for the three surface panels"; the evidence JSON's sweep note corrected |
+| F12 (N6) the "dossier overstates" correction is misattributed to the "Why" bullet and reads as if the caveat itself were new | non-blocking | Re-derived and confirmed (line 205, the "What" bullet; both the dossier's slice-6 bullet and L5-M7 already carry the caveat): slice 6's design text corrected on both points |
+| F13 (N7) "zero cross-surface deep links" is measured over four pages while a fifth, uncensused page carries one | non-blocking | Re-derived and confirmed (6 hrefs on the exact-source capture, 1 fragment, 5 non-fragment including the anchor link): Gate 1 measurement 1 restated with the fifth page's census and the existing-instance note |
+| F14 (N8) the `walkthroughJudgment.outcome` path is misattributed to "the dossier", which never names the field | non-blocking | Re-derived and confirmed (`walkthroughJudgment` has zero occurrences in the dossier `.md`; it is in L5-F10's evidence list): attributed to L5-F10 |
+| F15 (N9) Q6's "713 claim tuples" has no evidence-file entry | non-blocking | Re-derived and confirmed (713 on the lane A tailnet capture, denominator the whole page; 699 pre-lane-A): recorded in a new evidence JSON field with the 699→713 movement noted |
+| F16 (N10) the registry file cited for the write surface carries a candidate governance-lifecycle status and is the wrong instrument for the work-scheduler question | non-blocking | Re-derived and confirmed (top-level governance-lifecycle status field reads `candidate-amendment-no-effect-until-owner-act`; `typedAuthority` inside `entries[0]`): the VIS-5 paragraph rewritten to state both facts |
+| F17 (N11) "a fourth vocabulary" and "three vocabularies" are unenumerated rhetorical counts | non-blocking | Re-derived and confirmed: resolved by Q2's full rewrite, which states the two legal states explicitly rather than counting vocabularies |
+| F18 (N12) "three paragraphs on" is the next paragraph, and the RFC2-24 quote elides a continuation without an ellipsis | non-blocking | Re-derived and confirmed (the "fact of the render" sentence is in the paragraph starting at line 98, immediately after 92–96): corrected to "the next paragraph"; an ellipsis and the elided fragment added |
+| F19 (N13) v1.md's artifact phrase spans lines 119–120, not 116–119 | non-blocking | Re-derived and confirmed: corrected in slice 6's design text and the recommended handoff, in both places |
+| F20 (N14) the capture provenance table leaves Orrery's byte size blank | non-blocking | Re-derived and confirmed (37,048 bytes, matching the evidence JSON and `wc -c`): filled in |
+| F21 five lines exceed 78 columns; the H1 is the one line a repair could shorten | editorial | Re-derived and confirmed: no repair applied to the H1, for consistency with the M2 and M3 sibling packets' own H1s (99 and comparable characters), also left unshortened; the path-span lines remain unfixable by AGENTS.md's own rule against reflowing a code span. **Superseded 2026-09-15 (review 3, H5):** this disposition said "five lines" and "the four path-span lines", figures read from review 1 rather than re-derived as the packet grew. Re-derived over the current bytes after every review-3 edit [predicate: lines that are outside fenced code blocks and are not table rows — a table row being a line whose first non-space character is a pipe — and whose length exceeds 78 characters; denominator: 1,657 lines, the whole file]: **7** — line 1, the H1, at 126 characters and disclosed here, plus six path-span lines at 10, 493, 568, 764, 975 and 1023. **Re-derived 2026-09-15 (review 4), last in that pass and after every other edit in it, over the grown file** [same predicate; denominator: **1,879** lines, the whole file]: still **7**, and the same seven lines — line 1, the H1, at 126 characters, plus the six path-span lines, which the review-4 edits moved to **10, 529, 604, 800, 1011 and 1059**. The count held only because every prose line this pass first wrote above 78 columns was reflowed before the figure was taken, iteratively until the sweep reported these seven; the reflows changed no word, figure or code span, and none broke a code span [Observed: no non-fence line in the file carries an odd backtick count]. The review-3 line numbers above are kept as that pass recorded them. **Re-derived 2026-09-15 (review 5), last in that pass and after every other edit in it, over the grown file** [same predicate; denominator: **2,064** lines, the whole file]: still **7**, and the same seven lines — line 1, the H1, at 126 characters, plus the six path-span lines, which the review-5 edits moved to **10, 540, 615, 811, 1022 and 1074**. The count held again only because every prose line this pass first wrote above 78 columns was reflowed before the figure was taken, iteratively until the sweep reported these seven; the reflows changed no word, figure or code span, and none broke a code span [Observed: no non-fence line in the file carries an odd backtick count]. **Re-derived 2026-09-15 (review 6), last in that pass and after every other edit in it, over the grown file** [same predicate; denominator: **2,197** lines, the whole file]: **8**, and the count moved for the first time since review 3. Seven are the seven carried forward — line 1, the H1, at 126 characters, plus the six path-span lines, which the review-6 edits moved to **10, 540, 615, 811, 1042 and 1094**. The eighth is **855**, the Gate 4 heading for slice 4, at 85 characters: review 6's L3 replaced "(medium; no act)" with "(medium; act — see Gate 3 and Q7)" on a heading that already carried the `model.surfaces` code span, and a heading can be neither wrapped nor reflowed without breaking that span. The slice-3 and slice-5 headings took the same correction and stayed under the bar. Every prose line this pass first wrote above 78 columns was reflowed before the figure was taken, iteratively until the sweep reported these eight; the reflows changed no word, figure or code span [Observed: no non-fence line in the file carries an odd backtick count]. **Re-derived 2026-09-15 (review 7), last in that pass and after every other edit in it, over the grown file** [same predicate; denominator: **2,288** lines, the whole file]: still **8**, and the same eight lines — line 1, the H1, at 126 characters, the six path-span lines at **10, 540, 615, 811, 1042 and 1094**, and the slice-4 Gate 4 heading at **855**, all seven of the carried-forward lines and the review-6 addition unmoved, because every line this pass added above the bar sits in a table row or inside the fenced funnel summary, both outside the predicate, and the one prose line it first wrote at 87 columns was reflowed before the figure was taken — changing no word, figure or code span [Observed: no non-fence line in the file carries an odd backtick count] |
+| F22 the nine source-claim rows name Butlers paths in plain prose while the evidence JSON genericizes the same rows | editorial | Re-derived and confirmed: one clarifying sentence added after the disclosure table |
+
+**Recommended answers changed (stated plainly, none hidden).**
+Q1 widened from Polaris-only to all three surfaces, with a remedy note about
+the marker gap. Q2 changed from "do not mint `none-modelled`" argued as
+contract-determined with one lawful arm, to a genuine choice recommending
+"do not mint `none-modelled`; name and route the existing
+`basis: 'deferred'` arm instead." Q5 gained a new, contested authorization
+limb (two readings quoted, recommended answer labeled [Inferred] with a
+counter-argument) that the draft did not carry at all; its expectation limb
+is unchanged. Q6's recommendation is unchanged but its supporting claim is
+corrected. Q7 widened from a sequencing-only question to also carry the
+corrected file-intersection set, the M3/M4 slice-3 reconciliation, and the
+slices 4–5 authorization-arm reading the draft had wrongly folded into Q5.
+Q3 and Q4 are unchanged.
+
+## Review 2 and repairs (2026-09-15)
+
+A second independent fresh-context review of the repaired packet (read-only;
+only the artifact, its governing references and the acceptance criteria) is
+retained verbatim at
+`docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-2-RAW.md` (39050 bytes, sha256
+`a7b3782882e41cf954e1dda326f502e20eceea4acd05732625de9f9ee2654649`, computed
+by `wc -c` and `sha256sum` this session, never transcribed). It reviewed
+commit `6218726`, at which the three artifacts hashed as follows — recomputed
+this session with `git show 6218726:<path> | sha256sum`:
+
+| File reviewed | Bytes | sha256 |
+|---|---|---|
+| `docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md` | 116002 | `95e72b30a7d496e963ae6a244dd421bd720d317fae126a3c027b07e0a4ee3d5b` |
+| `docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json` | 31201 | `54b22be504c58483a9d52bab26e4e89f62766eccc167bbc9eb8a8a10009e8f23` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 29879 | `7ff5bc37abe5f152bb9d02d6b891bcb24e8db47b141804485ada6e8106b87e97` |
+
+Its verdict word, copied exactly: **REVISE**. Its counts, as the raw states
+them: **blocking 4, non-blocking 5, editorial 2** — G1–G4 blocking, G5–G9
+non-blocking, G10–G11 editorial. Every finding was re-derived against source
+and the retained captures this session before being applied; none was applied
+on the review's say-so, and the re-derivation method is stated in the repaired
+text itself wherever it is load-bearing. Superseded wording is quoted and
+dated in place rather than deleted.
+
+| Finding | Severity | Re-derivation | Disposition |
+|---|---|---|---|
+| G1 the M2 shared-file set is one file short and the Collision section contradicts itself about `polaris-copy.ts` | blocking | **CONFIRMED.** Both Gate 3 "Lives in" columns intersected by hand this session with both denominators: M2 names **9** distinct files, M4 names **13**, the intersection is **5** — `model.ts`, `routes.ts`, `polaris.ts`, `project-shape-model.ts`, `polaris-copy.ts`. The review states M4's denominator as twelve; this pass enumerates thirteen (both `scripts/check_governance.py` and `capture-test-artifact-main.ts` appear in slice 7's row, and the review appears to have taken one of the two as an adjacency rather than a named file). The difference does not touch the intersection, and every one of the thirteen is enumerated in Q7 so a reader can re-derive it. M4 slice 3's own Gate 3 row names `polaris-copy.ts`, which the packet listed as untouched thirty lines above its own sentence saying M4 slice 3 edits it | Applied. Five files at Q7 and in the Collision section with both denominators published; `polaris-copy.ts` removed from the "M4 does not touch" list; the declared-copy array named as the site M2 slice 1 and M4 slice 3 share under one copy oracle, so those two cannot land independently; register row corrected. **Renamed 2026-09-15 (review 3, H7):** this cell called it "the merge-conflict site"; the two edits sit 143 lines apart in that array (M2 slice 1 at lines 45–49, M4 slice 3 beside `label.deferred` / `label.no-route` at 192–193) and do not textually conflict, so it is the **shared copy-oracle reconciliation site**. The sequencing conclusion is unchanged |
+| G2 M2 slice 2 is a third opening-band design and the one-band recommendation does not see it | blocking | **CONFIRMED.** M2's Gate 3 slice-2 row names "`polaris.ts` (the opening band)"; its slice-2 design body opens "Rendered in the opening band, before the first catalog section:" and gives the currency-disclosure block; its own honest target names the band; three further mentions treat it as slice 2's. The packet attributed M2's `polaris.ts` to "slices 1, 2" and then cited line 357 and lines 506–510, which are M2's slices 1 and **6**, so slice 2's region was attributed and never located | Applied, **and it changed a recommended answer** — stated plainly in Q7, in the Collision section, in the funnel summary, in the handoff and in the register row. The reconciliation is now three-way: one band container, one ordering oracle owned by whichever of M2 slice 2 / M3 slice 3 / M4 slice 3 lands first, three payload blocks each with its own payload oracle. The M2 `polaris.ts` region citation is corrected to slices 1, 2 and 6 |
+| G3 Q1's cross-family reconciliation sentence is false, the Polaris figure is `null` in the record, and the published denominators count a stylesheet rule as a rendered encoding | blocking | **CONFIRMED.** Predicate: literal occurrences of the string `epistemic-unknown`; denominator: the whole served page; then every occurrence assigned to its enclosing tag. Polaris **2** on both lane A forms (offsets 2,809 and 1,481,343 tailnet / 2,809 and 1,475,493 direct) — one `<style>` rule, one legend key item, and an element-inner sweep of all 22 `data-unknown-disclosure` elements (offsets 378,631 through 1,462,622) finds **0**. Trajectory **301** = 1 + 1 + 299; Orrery **11** = 1 + 1 + 9; home **18** = 1 + 1 + 9 `epistemic-label` spans + 7 bare Unknown spans. The partition accounts for every occurrence on every page | Applied. The "including Polaris's own 22 disclosures" clause superseded in place; raw and rendered counts published together with the difference named, at Q1, Success 1, S1 and the Gate 6 numbers list; the record's `null` replaced with the measured 2 plus the full partition. **Superseded 2026-09-15 (review 3, H2):** this cell went on to say **"'Largest of the three' re-checked and still holds:** 299 + 9 = **308** rendered claim encodings across the two surfaces, against Polaris's 13 routed and 9 bare-prose disclosures" — a ranking across two marker families that count different objects, which Q1's own next sentence forbids. Restated at Q1 as what was measured: each surface's Unknowns are encoded by a marker the other two do not share, reported per family and unranked. **And superseded again by review 3, H1:** the two-literal census reached neither the requirement's full population — see the review-3 section below for the fourth family |
+| G4 Q6's preamble calls a lawful arm unlawful, in Q2's minting language | blocking | **CONFIRMED.** Neither Q6 arm mints a vocabulary value; the phrase is Q2's, about `none-modelled`. Gate 0, Gate 3's slice-4 row and Gate 5 all state that no requirement in either signed spec governs the home route or `model.surfaces`, and Gate 5 drew the consequence — changing the home page freely is lawful today precisely because nothing specifies it. The Q6 row itself already carried deletion honestly. **Superseded 2026-09-15 (review 4, J2):** Gate 5 no longer draws that consequence — it is withdrawn there and in the Q6 preamble, because RFC2-26 makes the silence a bar and not a freedom. G4's own repair stands (no lawful arm is called unlawful); only its ground moved | Applied. The preamble sentence is quoted, dated and superseded; Q6 is restated as a genuine engineering choice put to the owner *because* no requirement reaches the field, with the minting clause returned to Q2 alone. The recommended answer (true by construction) is **unchanged** |
+| G5 Reading A's quotation of the 2026-09-02 authorization is in the wrong place and spliced out of source order | non-blocking | **CONFIRMED.** The act's header is the comment block at lines 1–17 and contains none of it; the text is the body section "What the recorder reads this as", lines 44–52, where "and nothing wider" closes line 48 and "**Implementation planning and implementation**" opens line 50, and the elided clause is the tasks range that bounds the grant | Applied. Cited as the body section at lines 44–52, quoted in source order, tasks-range clause restored. The substance of Reading A is unchanged |
+| G6 the register row ends with a collision the packet's own Collision section denies | non-blocking | **CONFIRMED.** `UNKNOWN_REASON_ROUTES` is declared at `packages/three-surface-poc-core/src/project-shape-model.ts` line 89 and closes at 102. M2 slice 5 cites 162–193 — the freshness and tier constants at 167–169 and the `claim` / `observedClaim` / `unknownClaim` constructors at 171–195. M4 slice 2 cites 115–118 and 150–154. Neither edits 89–102, exactly as the packet's Collision section says | Applied in the register row: the shared file and the shared `claim()` construction site at line 176 (`resolutionRoutes: routesFor(epistemic)`) replace the false reason, and the copy-array and opening-band collisions are named beside it. The conclusion — rule P-69, P-70 and P-71 together — is unchanged |
+| G7 the M3 head is cited three times contrary to the sentence citing it, and is already stale | non-blocking | **CONFIRMED, and now doubly so.** The `m3wt` worktree has moved twice past `b34fca7` since this packet named it. That head remained an ancestor of the M3 worktree's head **as review 2 found it** (restated 2026-09-15, review 5, K7, which superseded a present-tense claim that that head "remains an ancestor of that worktree's head" — the literal is deliberately not re-emitted here, under this packet's own rule to cite M3 by register row P-70 and by the two files, never by head; a present-tense claim about a sibling worktree's current state goes stale on its next rebase). M3's Gate 3 table, slice-3 design and slice-3 oracle are unchanged across the move, so G2's and this packet's slice-3 findings stand on current bytes | Applied to Q7. **Restated 2026-09-15 (review 3, H3):** this disposition read "Applied. Head mentions removed from the Collision section and from Q7 … One head mention remains, in the review-1 disposition table" — false about the Collision section, where the head survived in live prose one screen above this table. True count when review 3 swept it [predicate: literal occurrences of the seven-character short head; denominator: the whole packet file]: **4 occurrences over 3 lines** — one in the Collision section (live prose), one in the review-1 disposition table and two in this row; and **2** in the evidence record, both inside its review-1 block. The Collision-section mention is removed in the review-3 pass, leaving **3 over 2 lines**, every one of them a historical record of what a named repair session read, preserved deliberately for that reason (restated 2026-09-15, review 4, J9, which superseded "which may not be rewritten": this packet is not digest-bound, so the constraint is editorial judgment and not prohibition — and the review-4 pass acted on it, routing the review-1 disposition mention by register row P-70 while keeping the fact of what that session read, which leaves **2 over 1 line**). M3 is routed by register row P-70 and by the two files, as this packet's own sentence always said |
+| G8 Gate 2 calls two owner directions "the two typed, explicitly authorized adapters VIS-5 requires" | non-blocking | **CONFIRMED.** VIS-5 (`.syzygy/governance/doctrine/vision.md` lines 141–152) requires effects on every other authority to occur "only through **typed, explicitly authorized adapters**, governed by each authority's own contract". It names no number of adapters; the "two" in the paragraph's own heading is two write namespaces | Applied. The sentence is quoted, dated and superseded; the paragraph now says VIS-5 requires the work-scheduler effect to run through a typed adapter governed by that authority's contract, that the materialize mechanism is one such adapter in code, and that what is contested is whether any act authorizes it — which is Q5 |
+| G9 the slice attributions the re-derivation rests on are wrong for both siblings | non-blocking | **CONFIRMED.** M3's Gate 3 names `polaris.ts` in slices **1, 3, 5 and 6**, not "3 and 5". M2's `polaris.ts` belongs to slices **1, 2 and 6**, not "1, 2" | Applied in Q7 and in the Collision section, with M2 slice 2's region (the opening band) named. Neither correction changes the two-file M3 set; the M2 set changes by G1, not by G9 |
+| G10 the `model.` hit arithmetic in Q6 is off in two places | editorial | **CONFIRMED.** Counted per line at `6218726`: 35:1, 78:1, 87:1, **89:4**, 92:2, 127:1, 133:1, 171:1, 172:1 — **13** occurrences over nine lines. `renderPocPage` spans lines 77–96, so **five** lines lie outside it, not four | Applied. The load-bearing claim — `model.surfaces` is the only input for the three surface panels — is re-derived and unchanged |
+| G11 "two orders of magnitude" describes the wrong marker family | editorial | **CONFIRMED.** The disclosure populations are 22, 0 and 0; the ratio is undefined, and the 301/11 that would give roughly two orders of magnitude belong to the family Q1 has just said may not be pooled with this one | Applied. S1 now reads "runs 22, 0 and 0", with the superseded clause quoted and dated |
+
+**Recommended answers changed after review 2 (stated plainly, none hidden).**
+**One: Q7's opening-band reconciliation**, from a two-way "M3 slice 3 lands
+first and M4 slice 3 extends it" to a three-way "one container, one ordering
+oracle owned by whichever of M2 slice 2, M3 slice 3 and M4 slice 3 lands
+first; three payload blocks, each with its own payload oracle; the block order
+within the band is the owner's." Q7's shared-file figure also moves from four
+files to five, and the sequencing order's step (3) is rewritten to match. Q1,
+Q2, Q3, Q4, Q5 and Q6 keep the recommendations they carried into this review;
+Q1's figures and Q6's framing and arithmetic were corrected without changing
+which arm each recommends, and Q5's Reading A keeps its substance with its
+citation repaired.
+
+By verification rule 10, review 2 binds the bytes it names — the three digests
+in the table above, at commit `6218726` — and not these. Every edit in this
+section and above was made after it, so the repaired bytes are **uncovered
+until a third review confirmed them** — which has since happened; see
+"Review 3 and repairs (2026-09-15)" below, and read this paragraph as
+review 2's position and not the current one (re-tensed 2026-09-15 per
+review 7, M4). That raw is a third `-RAW.md` file, never an overwrite of
+either retained one.
+
+## Review 3 and repairs (2026-09-15)
+
+A third independent fresh-context review of the twice-repaired packet
+(read-only; only the artifact, its governing references and the acceptance
+criteria) is retained verbatim at
+`docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-3-RAW.md` (31656 bytes, sha256
+`ebce963f86f302940cc78f98dbe91325ae5c7b0ffa88e423b1fe05669035ccfe`, computed
+by `wc -c` and `sha256sum` this session, never transcribed). It reviewed
+commit `f911a45`, at which the three artifacts hashed as follows — recomputed
+this session with `git show f911a45:<path> | sha256sum`:
+
+| File reviewed | Bytes | sha256 |
+|---|---|---|
+| `docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md` | 139094 | `09116fcfc1fb21127670813196b297705b2a7862edb18dd4fb713391899f0750` |
+| `docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json` | 38933 | `d7a7aaffd5a1e5a8fd5dc8a3997c9f56e72b4b762bdec42f108886acb7d5b7ed` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 32781 | `38ee2b8e01a2fd483caad90e0a07867a779edf7db1cef5deb7e09065a1eb8f9c` |
+
+Its verdict word, copied exactly: **REVISE**. Its counts, as the raw states
+them: **blocking 1, non-blocking 3, editorial 5 — nine findings, H1–H9**.
+Every finding was re-derived against source and the retained captures this
+session before being applied; none was applied on the review's say-so, and
+the re-derivation method is stated in the repaired text itself wherever it is
+load-bearing. Superseded wording is quoted and dated in place rather than
+deleted. The raw's own G1–G11 verification table (G7 PARTIAL, the rest
+REPAIRED) and its F1–F22 regression spot-check are read and carried here: G7
+becomes H3 and F21 becomes H5; no other regression was found.
+
+| Finding | Severity | Re-derivation | Disposition |
+|---|---|---|---|
+| H1 a fourth Unknown encoding on Orrery sits outside both censused marker families, inside POC-REQ-060's own population | blocking | **CONFIRMED.** Counted this session [predicate: literal occurrences of the string `provenance-none`; denominator: the whole served page of each retained capture; then every occurrence assigned to its enclosing tag]: Polaris tailnet **0**, Polaris direct **0**, Trajectory **0**, Orrery **9** rendered spans with **0** inside `<style>`, home **10** = 1 stylesheet rule + 9 rendered spans. The nine Orrery spans' enclosing `<tr>` ids are `work:whatsapp-single-event-normalization`, `evidence:focused-pytest`, `runtime:live-satisfaction`, `region:unmapped-code`, `relationship:intent-to-work`, `relationship:work-to-code`, `relationship:code-to-evidence`, `relationship:code-to-runtime` and `relationship:capability-to-unmapped-region` — exactly the nine objects Q1 asks about. Source read at HEAD: `apps/three-surface-poc/src/exact-tables.ts` line 10 emits the span on an empty `provenance` array; `apps/three-surface-poc/src/design-tokens.ts` line 25 declares `className: 'epistemic-unknown'` and never names `provenance-none`; its only style rule is `apps/three-surface-poc/src/routes.ts` line 73 inside `HOME_STYLE`, which is declared at line 57 of that file and used once, as `extraStyle` at line 90 (the home route); `apps/three-surface-poc/src/orrery.ts` imports `exactTablesSection` at line 4 and calls it at lines 125 and 151 without it. POC-REQ-060's falsifier, quoted from `openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` lines 945–946: "one surface encoding Unknown (or Observed) differently from the declared table, or a surface styling epistemic state ad hoc". Both limbs are met | Applied. `provenance-none` added as a **fourth census family** at Q1 with per-surface denominators and the Orrery-versus-home style asymmetry; "every Unknown" replaced at Q1 and in slice 1's Tests with the predicate actually run, the superseded wording quoted and dated; "at least three encodings" corrected to four; Q1's recommendation and slice 1's Tests now require the re-specified shared marker to cover this rendering, with a rule-6 mutant for it; Gate 3's slice-5 row records that `exact-tables.ts` and `routes.ts` lines 34–96 are where the encoding lives; Gate 5 and the Gate 6 numbers list carry it; the record gains a `provenance_none_census` block. **The recommended answer does not change** — see the paragraph below the table |
+| H2 "largest of the three" is the cross-family comparison the next sentence forbids | non-blocking | **CONFIRMED.** The two terms count different objects: 308 counts `epistemic-unknown` spans on Trajectory and Orrery, while 13 and 9 count `data-unknown-disclosure` elements on Polaris — and Q1's own next sentence says the two families "are still not directly comparable … never combined into one total". Review 2's G11 removed "two orders of magnitude" for this reason and the superlative attached to it survived | Applied. The ranking is quoted, dated and superseded at Q1 and in the review-2 G3 disposition row, and restated as what was measured — each surface's Unknowns are encoded by a marker the other two do not share, reported per family and unranked. The record's `largest_of_three_recheck` field carries the same supersession. No recommended answer moves: the remedy turns on the zero-denominator fact |
+| H3 G7's disposition says the head mention was removed from the Collision section; it is still there | non-blocking | **CONFIRMED.** Counted this session [predicate: literal occurrences of the seven-character short M3 head; denominator: the whole file]: **4 over 3 lines** of the packet — the Collision section's live prose, the review-1 disposition row and twice in the review-2 G7 row — plus **2** in the evidence record, both inside its review-1 block. The finding's substance was re-derived independently and holds: that head is an ancestor of the m3wt head and M3's Gate 3 table, slice-3 design and slice-3 oracle are unchanged across the move | Applied. The Collision-section mention is removed (the sentence carries its meaning without it, and the removal is noted in place), leaving **3 over 2 lines**, each a historical record of what a named repair session read. **Restated 2026-09-15 (review 4, J9):** this called the remainders "not rewritable"; they are preserved deliberately, because each records what that session read — not because this packet is digest-bound, which it is not. Review 4 re-counted them [same predicate; denominator the whole packet file]: **3 over 2 lines** (one in the review-1 disposition row, two in the review-2 G7 row) and **1** in the evidence record. The review-4 pass routes the review-1 disposition mention by register row P-70 while keeping the fact, leaving **2 over 1 line**. Review 2's G7 disposition is restated to the true count and says which mentions are historical; the record's own G7 field is corrected the same way |
+| H4 two blockquotes introduced as "quoted verbatim" silently elide intermediate bullets | non-blocking | **CONFIRMED** at source. POC-REQ-060 read at spec lines 925–948: Oracle is 941–942, Oracle independence 943–944, and the Falsifier's second limb is line **946**, one past the cited range. PWB-REQ-020 read at 900–927: Oracle 916–917, Oracle independence 918–919, **Mutation proof** 920–923. PWB-REQ-004 read at 488–500: line 490 is blank and the clause runs **491–498** | Applied. Both elisions are marked with an ellipsis naming exactly what was elided and where; the POC-REQ-060 range is extended to 946 and the PWB-REQ-004 range corrected to 491–498, each with the superseded range quoted; and slice 2 now quotes PWB-REQ-020's Mutation proof bullet in full and states that it — not the project's general practice — is the source of the slice's per-class injection obligation, discharged by Gate 6 items 3 and 4 |
+| H5 F21's over-78-column count is now six, not five | editorial | **CONFIRMED that the recorded figure had drifted**, and re-derived last, after every other review-3 edit. The count this pass reports is its own, with the predicate and denominator stated in the F21 disposition itself; it is not the review's figure, because the review measured bytes this pass has since changed | Applied in the F21 disposition, with the superseded "five lines" / "the four path-span lines" quoted and dated. Every over-78 line but the H1 is a single unbreakable path code span, which AGENTS.md's own rule forbids reflowing |
+| H6 two offset conventions for the same population, unstated | editorial | **CONFIRMED**, both correct. Re-derived on the lane A tailnet capture: the 22 `data-unknown-disclosure` attributes sit at offsets 378,631 through 1,462,622 and their enclosing elements' opening brackets at 378,599 through 1,462,590 — a delta of exactly 32 at both ends | Applied. One sentence above the disclosure table names both conventions, says which is which, and gives the delta. **Superseded 2026-09-15 (review 4, J4):** the sentence as applied generalised that endpoint delta over all 22 elements, which is false; it now carries the partition — 30 for six, 31 for five, 32 for eleven — with its predicate and denominator |
+| H7 "merge-conflict site" overstates the mechanism the packet itself describes | editorial | **CONFIRMED.** M2 slice 1's cited region in `apps/three-surface-poc/src/polaris-copy.ts` is lines 45–49; M4 slice 3 adds rows beside `label.deferred` and `label.no-route` at 192–193 — 143 lines apart, so the two edits do not textually conflict. The coupling that does hold is the shared `UNREACHED_IN_FIXTURES` set at `apps/three-surface-poc/src/polaris-copy.test.ts` line 296 | Applied. Renamed to the **shared copy-oracle reconciliation site** in the packet, the record and the register note, with the superseded name quoted and dated. The sequencing conclusion — M2 slice 1 and M4 slice 3 cannot land independently — is unchanged |
+| H8 Q6's question cell keeps the framing G4 superseded | editorial | **CONFIRMED.** "Disclosed for confirmation" reads either way, and a fresh reader meets the row before the preamble that review 2's G4 repaired | Applied. Q6 now opens "Both arms are lawful; deletion has a cost the move does not name, stated here so the choice is made knowing it", with the superseded phrase quoted and dated |
+| H9 three absence and all-claims carry no predicate, denominator or label | editorial | **CONFIRMED.** The conflict check, the boundaries-crossed sentence and the not-touched-by-any-slice sentence each quantify over the eight slice rows one screen above and each was unlabelled, while the packet labels substantive claims everywhere else | Applied. Each carries an `[Inferred]` label naming the eight-slice denominator it was checked against |
+
+**Recommended answers changed after review 3: none.** H1 is blocking and it
+widens Q1's remedy — the shared marker the sweep is re-specified over must
+cover the `provenance-none` rendering, with its own rule-6 mutant — but it
+does not move which arm Q1 recommends. The recommendation turns on the
+zero-denominator fact (Trajectory and Orrery emit 0 `data-unknown-disclosure`
+elements, so the sweep as originally specified passes vacuously there), and
+the fourth family neither creates nor removes that fact; it enlarges the
+population the repaired sweep has to reach [Observed: the four censused
+per-surface denominators, re-derived this session]. Q2 through Q7 keep the
+recommendations they carried into this review; Q1's, Q6's and Q7's supporting
+figures, framing and naming were corrected without changing any arm.
+
+By verification rule 10, review 3 binds the bytes it names — the three digests
+in the table above, at commit `f911a45` — and not these. Every edit in this
+section and above was made after it, so the repaired bytes are **uncovered
+until a fourth review confirmed them** — which it has now done; see "Review 4
+and repairs (2026-09-15)" below, and read this paragraph as review 3's
+position and not the current one (re-tensed 2026-09-15 per review 4). That
+raw is a fourth `-RAW.md`
+file, never an overwrite of any retained one.
+
+## Review 4 and repairs (2026-09-15)
+
+A fourth independent fresh-context review of the thrice-repaired packet
+(read-only; only the artifact, its governing references and the acceptance
+criteria) is retained verbatim at
+`docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-4-RAW.md` (37790 bytes, sha256
+`5f3e9c458b9b2cc7d0372a7e22ef25e7cc0e72bd1fa1c3c003448acc7af17783`, computed
+by `wc -c` and `sha256sum` this session, never transcribed). It reviewed
+commit `181797a`, at which the three artifacts hashed as follows — recomputed
+this session with `git show 181797a:<path> | sha256sum`:
+
+| File reviewed | Bytes | sha256 |
+|---|---|---|
+| `docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md` | 162860 | `267278fae7af380383eeeec2adc73c44c025c3963f1829ee8d1fdf8aee567411` |
+| `docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json` | 49243 | `d2ebbeae3e3cdaf493ae95abbb902329b4b73d44b1f680e7a0e1401a6e842a61` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 35850 | `a2f7d338a8728e859fb8e11728b885bbbf77d47a3414c24a7c76c217805d5916` |
+
+Its verdict word, copied exactly: **REVISE**. Its counts, as the raw states
+them: **blocking 2, non-blocking 3, editorial 4 — nine findings, J1–J9**.
+Every finding was re-derived this session against source, the two signed
+specs, the RFC-0002 module, the register's own stated counting method and the
+retained captures before being applied; none was applied on the review's
+say-so, and the re-derivation method is stated in the repaired text itself
+wherever it is load-bearing. Superseded wording is quoted and dated in place
+rather than deleted.
+
+**Its verification of the review-3 repairs, carried here as it states them:
+6 REPAIRED and 3 PARTIAL over 9.** REPAIRED — H2 (the cross-family ranking is
+withdrawn and no ranking survives), H3 (3 head occurrences over 2 lines, none
+in the Collision section, 1 in the record), H5 (the over-78 count re-derived
+at 7, matching the published line numbers), H7 (the copy-oracle reconciliation
+site renamed, the 143-line separation re-derived), H8 (Q6's cell reopened with
+the superseded framing quoted), H9 (all three sites labelled with predicate
+and denominator). PARTIAL — H1 (eight sites carry the fourth family; S1,
+Gate 6 item 3 and Gate 1's Success 1 did not — J1), H4 (three of four
+quotations verbatim; the PWB-REQ-020 blockquote gained a second, unmarked
+elision — J3), H6 (the sentence and its four endpoint figures are exact; its
+universal over 22 is not — J4). The raw also records **G7, PARTIAL at review
+3, as now complete**, and found no other regression across F1–F22 and G1–G11.
+
+| Finding | Severity | Re-derivation | Disposition |
+|---|---|---|---|
+| J1 the H1 repair never reaches the acceptance contract; S1, Gate 6 item 3 and Gate 1's Success 1 still encode the two-literal population | blocking | **CONFIRMED.** Swept this session [predicate: literal occurrences of the string `provenance-none`; denominator: the whole packet file]: **20 occurrences over 11 lines** — 91, 589, 698, 701, 712, 717, 1009, 1363, 1557, 1569, 1591 — and **none** inside `:117-185` (Gate 1's success statement), `:1104-1146` (the WHEN/THEN scenarios) or `:1375-1384` (Gate 6 item 3). The raw writes those eleven lines as "eleven occurrences"; the line set is exact and the occurrence total is 20, which does not move the finding. The three sites were read in full and each still states the two-literal population. The censuses were re-derived independently on the retained captures: Polaris **0** on both lane A forms, Trajectory **0**, Orrery **9** rendered against **0** style occurrences, home **9** plus **1** style rule | Applied at all three sites. **Which acceptance text now carries the fourth family, enumerated:** Gate 1's Success 1 (the four per-surface denominators, with the two-literal parenthetical quoted and dated in place); the new scenario **S1b**, which names the `provenance-none` rendering, its source site and its own oracle and mutant; Gate 6 item 3 (the re-emit mutant added to the rule-6 list); and, unchanged from review 3, **Q1's own acceptance cell**, **Gate 3's slice-5 row**, **slice 1's "Tests, restated per surface" subsection**, **Gate 5's slice-1 POC-REQ-060 passage**, Gate 6 item 1 and the funnel summary (de-anchored 2026-09-15 per review 5, K4, which superseded the present-tense line anchors "Q1 at `:91`, slice 1's Tests at `:698-719`, Gate 5 at `:1009-1018`": all three are `181797a`'s, none resolves in the current bytes, and a present-tense enumeration may not carry a past commit's line numbers). **Which does not, and deliberately:** S1 itself, whose subject is "an Unknown **disclosure**" — a marker class this span is not and cannot join without slice 1, which is why S1b exists beside it rather than S1 being widened into two subjects; and the Gate 1 success criteria 2–5, S2–S7 and Gate 6 items 1–2 and 4–6, none of which quantifies over an epistemic marker family |
+| J2 RFC2-26 is never reached, and the "lawful because nothing specifies it" sentence inverts it for slices 4 and 5 | blocking | **CONFIRMED.** The identifier `RFC2-26` occurred **0** times in the packet before this repair [literal sweep, whole file]. The clause was read verbatim at `.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md` lines 196–210 and the raw's quotation matches it word for word, its single ellipsis eliding "in state (1) or state (2), with that state rendered" (the raw cites the range as 196–206; the clause's first paragraph closes at 210, and this packet quotes 196–210). RFC-0002's force re-checked at `PROJECT-STATUS.md` line 147: Wave A **ACCEPTED**, act performed 2026-08-17. The three relying sites were read: `:1091-1093` (Gate 5's consequence), `:80-82` (the Q6 preamble, which quotes it), Gate 3's rows 4 and 5 (both "Owner act needed: **No**") and Q7's recommendation at `:97` | Applied on the raw's arm (a). Gate 5 gains the subsection "The RFC2-26 test for slices 4 and 5", quoting the clause at its lines (verification rule 8) and stating for each slice which limb it relies on and why neither is available as designed. The "lawful because nothing specifies it" sentence is withdrawn at both sites, quoted and dated in place. Gate 3's rows 4 and 5 are widened from "**No**" to name the open RFC2-26 gate, the superseded cell text kept. **This is a changed recommended answer and it is stated as one:** Q7's slices-4-and-5 limb now asks the owner to rule the audit-finding reading *and* the RFC2-26 test that reading does not by itself satisfy, naming the three routes that could clear it, with the superseded recommendation quoted and dated. The register note, the P-71 row's Q7 text and its sources cell carry the same change. **The owner's choice is preserved:** the packet does not call slices 4 and 5 unlawful; it puts the clause to them |
+| J3 the repaired PWB-REQ-020 blockquote introduces a second, unmarked elision | non-blocking | **CONFIRMED** at source. `openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md` read this session at lines 896–932: the **Case (sweep)** bullet is 912–914, Observable 915, Oracle 916–917, Oracle independence 918–919, Mutation proof 920–923, Falsifier 924–926. The blockquote ran requirement text → Observable → marked ellipsis → Falsifier, with Case (sweep) absent and unmentioned under an introduction reading "one elision marked" | Applied. The bullet is restored verbatim rather than merely marked, since `:749-758` argues slice 2's parity obligation from its enumerated population; the introduction now says so and the true count is again one. The record's `review3.disposition_summary.H4` is corrected on its line, its earlier wording quoted |
+| J4 H6's repair states a universal that is false over the population it names | non-blocking | **CONFIRMED**, value for value. Re-derived on the retained lane A *after* capture `polaris-tailnet.html` [predicate: for each of the 22 occurrences of the literal `data-unknown-disclosure`, the distance back to the nearest preceding opening angle bracket; denominator 22]: **30** for the 6 opening `<p class="unknown-disclosure"`, **31** for the 5 opening `<li class="unknown-disclosure"`, **32** for the 11 opening `<div class="unknown-disclosure"`; 6 + 5 + 11 = 22. First and last are both `<div>`s, so both endpoints read 32 and the four endpoint figures stand | Applied. The sentence at `:279-283` now gives the partition with its predicate and denominator and supersedes the universal in place; the record's `review3.disposition_summary.H6` carries the same partition and supersession |
+| J5 the register states a closed count of four encodings where the packet states a floor | non-blocking | **CONFIRMED.** The P-71 row read "— **four** encodings for one label [Observed, each against its own denominator]"; the packet's Q1 at `:91` reads "at least four". Each family's own count is measured; the count *of families* has no denominator, because the census method is literal-matching per family and three consecutive reviews each found a family the previous census had missed (F5 one surface for three, G3 a stylesheet rule and a legend item, H1 a whole family outside both literals) | Applied. "At least four" restored in the row, with the closed figure quoted and dated as superseded and the reason stated: no sweep has yet enumerated POC-REQ-060's own population, which is itself part of what Q1 asks the owner to rule. The raw's own search for a fifth family, which found none surviving inspection, is noted but not relied on — it is a search, not a denominator |
+| J6 a superseded machine field carries no supersession note while its sibling does | editorial | **CONFIRMED.** `review1.re_derived_before_applying.file_intersections.M4_and_M2_shared_files` holds **four** paths; `review2.re_derived_before_applying.G1_shared_file_intersection` states the intersection is five and names `apps/three-surface-poc/src/polaris-copy.ts` as the fifth, as do the packet, the Collision section and the register row | Applied. A `note_2026_09_15` is added inside `file_intersections`, in the style of the sibling `three_surface_disclosure_counts` note, naming the fifth file and the corrected field; the historical array is kept unedited |
+| J7 the record's G6 summary says 88–102 where source, packet and register say 89–102 | editorial | **CONFIRMED** at source. `packages/three-surface-poc-core/src/project-shape-model.ts` line 88 is the third line of the preceding comment; line 89 opens `export const UNKNOWN_REASON_ROUTES`; the closing `};` is line 102 | Applied on its line, the earlier figure kept and the correction dated |
+| J8 the register note's count is dated a day before the note it closes | editorial | **CONFIRMED.** Re-derived this session by the register's own stated method [predicate: split the file on `## ` headings, then match at line start a table row whose first cell is `P-` followed by anything but a cell break]: acceptance-act section **5**, launch-scope reading aid **0**, open section **22** including the sub-lettered P-25(c) — **27** in all, exactly the published figures. The defect is the as-of date alone | Applied. The sentence is re-dated to **2026-09-15**, the session that last edited the file, with the predicate and the 22 enumerated row ids stated inline and the earlier date quoted in place |
+| J9 two dated short-head mentions remain, and "not rewritable" overstates the constraint | editorial | **CONFIRMED.** Counted this session [predicate: literal occurrences of the seven-character short M3 head; denominator: the whole file]: **3 occurrences over 2 lines** of the packet (1436 ×1, 1504 ×2), **1** in the evidence record and **0** in the register | Applied. The review-1 disposition mention at `:1436` is routed by register row P-70, keeping the fact of what that session read and dropping the head literal, leaving **2 over 1 line**. "Not rewritable" and "which may not be rewritten" are both restated as preserved deliberately, because each records what that session read — this packet is not digest-bound, so the constraint is editorial judgment, not prohibition |
+
+**Recommended answers changed after review 4: one — Q7's.** Its slices-4-and-5
+limb previously read "**Recommended: rule the audit-finding reading acceptable
+for slices 4 and 5**, on the basis stated, while naming it explicitly as the
+owner's call rather than assumed." It now asks the owner to rule that reading
+**and** the RFC2-26 test it does not by itself satisfy, naming the three
+routes that could clear the clause — an OpenSpec amendment supplying limb 1, a
+re-scoping until limb 2's "purely structural" test fits, or a reviewed N/A
+judgment recorded in `.syzygy/governance/decisions/` and honored by an
+effective owner act. Q6's preamble is reworded off the same withdrawn
+sentence: its arms are now described as unconstrained by any requirement, with
+the schedulability question routed to Q7, rather than as lawful on Gate 5's
+ground. **Q1 through Q5 keep the recommendations they carried into this
+review**; Q1's acceptance text was widened by J1 without moving its arm, which
+turns on the zero-denominator fact the fourth family neither creates nor
+removes.
+
+By verification rule 10, review 4 binds the bytes it names — the three digests
+in the table above, at commit `181797a` — and not these. Every edit in this
+section and above was made after it, so the repaired bytes are **uncovered
+until a fifth review confirmed them** — which has since happened; see
+"Review 5 and repairs (2026-09-15)" below, and read this paragraph as
+review 4's position and not the current one (re-tensed 2026-09-15 per
+review 7, M4). That raw is a fifth `-RAW.md` file, never an overwrite of
+any retained one.
+
+## Review 5 and repairs (2026-09-15)
+
+A fifth independent fresh-context review of the four-times-repaired packet
+(read-only; only the artifact, its governing references and the acceptance
+criteria) is retained verbatim at
+`docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-5-RAW.md` (31406 bytes, sha256
+`14f49e290bc55424690e9717830d9bbd5ea9bf4befa13659a7552199f8a6a43e`, computed
+by `wc -c` and `sha256sum` this session, never transcribed). It reviewed
+commit
+`e134a12`, at which the three artifacts hashed as follows — recomputed
+this session with `git show e134a12:<path> | sha256sum`:
+
+| File reviewed | Bytes | sha256 |
+|---|---|---|
+| `docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md` | 190003 | `403def26d19e348e5b29f8874ef49f636d26de7de80fa0c05aaca7ab00362bad` |
+| `docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json` | 60920 | `30b2b2cd27b8646eb5732d6007e4c78d9cad57330ef663e45a7b84c9fa21fbe7` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 40852 | `751d3edbed9573c5f5d43bb1d2a38ad4aa8bf53ed01c8d9139003cecf41f45f3` |
+
+Its verdict word, copied exactly: **REVISE**. Its counts, as the raw states
+them: **blocking 2, non-blocking 1, editorial 4 — seven findings, K1–K7**.
+Every finding was re-derived this session against source — the RFC-0002
+module, `DIRECTIVE-REGISTER.md`, the two signed specs and the packet's own
+bytes — before being applied; none was applied on the review's say-so, and
+the re-derivation method is stated in the repaired text itself wherever it is
+load-bearing. Superseded wording is quoted and dated in place rather than
+deleted.
+
+**Its verification of the review-4 repairs, carried here as it states them:
+8 REPAIRED and 1 PARTIAL over 9.** REPAIRED — J1, J3, J4, J5, J6, J7, J8 and
+J9. PARTIAL — J2: the RFC2-26 subsection exists, the clause is quoted word for
+word against source lines 196–210, RFC-0002's force is re-checked at
+`PROJECT-STATUS.md`, the withdrawn sentence is quoted and dated at both sites,
+Gate 3's rows 4 and 5 are widened with the superseded cells kept, each slice's
+limb is stated and neither slice is called unlawful — but the clause is
+truncated at 210 with no mark though it runs to 221, the test is run over two
+of eight slices with no stated denominator, and the repair never reached the
+funnel summary, the sequencing order, Q7's own bolded recommendation or the
+handoff. The raw also records **H1, H4 and H6 — PARTIAL at review 4 — as now
+complete**, and **G7 as complete**, and found no other regression across
+F1–F22, G1–G11 and H1–H9.
+
+| Finding | Severity | Re-derivation | Disposition |
+|---|---|---|---|
+| K1 the J2 repair never reaches the funnel summary, the sequencing order, Q7's own bolded recommendation or the handoff | blocking | **CONFIRMED.** All seven named sites read this session at `e134a12`, and each carries the pre-review-4 answer: the funnel summary's Acts line ("Acts: slices 1-5 and 7 none (the 2026-09-05 continuation)"), its G5 line ("slices 4-5 trace to recorded findings L6-F1/L6-F5, a reading Q7 now puts to the owner explicitly"), its Open-questions line, its G6 Bar line ("this is review 2, pending, after review 1's repair" — four raws were retained and the pass under way was the fifth), Q7's own bolded recommendation ("slices 4–6 as sequenced", in the same sentence that gates slice 6 on Q5 and slice 7 on Q3), the sequencing order's slice-4/5 step ("Then slice 4, then slice 5 … should be built last", no gate) and the handoff's Q6 paragraph ("Build them in that order"). **Swept for any other live site still stating the pre-review-4 limb** [predicate: the literal strings `as sequenced`, `slices 1-5 and 7 none`, `trace to recorded findings`, `2026-09-05 continuation`, `recorded-finding` and `this is review 2`; denominator: the whole packet, the whole evidence record and the whole register, every line of each]: **one further live site the finding does not name** — the funnel summary's own Recommended-handoff line, "then M4 slices 4, 5 in order", equally ungated — and **no others**. Every remaining `recorded-finding` occurrence (Gate 3 rows 4 and 5, Gate 5, Q7's body) already carries the RFC2-26 bar; the register's one "as sequenced" sits inside the P-71 row's Q7 text and is repaired with it; the occurrences in the review-1 and review-2 sections are that pass's own record and are left as written | Applied at all eight sites, each with its superseded wording quoted and dated in place. The G6 Bar line is restated to the true position: five raws retained, this pass following review 5 and itself pending a sixth |
+| K2 the RFC2-26 quotation stops unmarked halfway through the clause, and the test is run over two of eight slices with no denominator | blocking | **CONFIRMED**, both halves, at source. `DIRECTIVE-REGISTER.md` line 260 defines `RFC2-26` at `.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md` line 196. Read there this session: the `###` heading "Authority boundary at the OpenSpec seam (binding phase rule)" is line 194, the clause runs **196 through 221** in two paragraphs — 196–210, a blank 211, 212–221 — and the next `##` heading is line 223. The packet's blockquote reproduced 196–210 and stopped with no ellipsis and no mention. The subsection's test named slices 4 and 5 only and stated no denominator anywhere | Applied. The blockquote is extended to line 221, its words verbatim from source and rewrapped only to fit this packet's column bar; the introduction's line figure is restated with "196–210" quoted and dated; and the clause's own scope sentence is named beside the narrow-scope reading it had been sitting opposite. The test now states its denominator — the **eight** slice rows of Gate 3's "The authorizing act, per slice" table, that table's ninth row proposing no slice — and is run over all eight. **Result:** slices 1 and 2 map to named approved requirement-**and**-scenario pairs; **slice 3 does not**; slices 4 and 5 remain unmapped on both limbs; slice 6 schedules no implementation work; slices 7 and 8 are gated by act rather than by this clause, and slice 8's consequences are not enumerated at all [Unknown]. Slice 3's Gate 3 row is widened from "**No**" with the superseded cell kept, and **Q7's ruling now covers slices 3, 4 and 5** — a changed recommended answer, disclosed in Q7, Gate 3, Gate 5, the funnel summary's G5, Acts, Open-questions and Recommended-handoff lines, the prose handoff's Q6 paragraph, the evidence record, the register note and P-71 row, and PR #38, body edited 2026-09-15 [Observed at that date; a PR body is editable later] (the last item given its identifier and date 2026-09-15, review 7, M5, which superseded the bare "and the pull request", a site outside the three reviewed artifacts named with no identifier, date or label; narrowed 2026-09-15, review 6, L1, which superseded "the funnel summary, the recommended handoff": at review 5's own commit the prose handoff's Q7 and Q4 paragraphs and the Collision section's reconciliation rule carried no gate, and they are repaired in this pass, not that one) |
+| K3 Q6's preamble routes "either arm" to Q7 while only the derive arm is analysed | non-blocking | **CONFIRMED.** The preamble closes "whether either may be *scheduled* is the RFC2-26 question Q7 now puts to the owner", and the subsection's limb bullets cover slice 4 (the derive arm) and slice 5 only. The deletion arm appears in no limb analysis anywhere in the packet | Applied. One sentence scopes the test to the derive arm and states deletion's own limbs [Inferred]: deleting the field removes the three surface panels it feeds and adds no new behavior, so limb 2's "purely structural with no independently testable behavior" is plausibly reachable for deletion in a way it is not for slice 4 — but limb 2 still needs a reviewed N/A judgment homed in `.syzygy/governance/decisions/` and honored by an effective owner act, so deletion is not free of the clause either |
+| K4 the review-4 disposition enumerates what the packet "now carries" using the reviewed commit's line anchors | editorial | **CONFIRMED.** J1's disposition names "Q1 at `:91`, slice 1's Tests at `:698-719`, Gate 5 at `:1009-1018`" in the present tense; those are `181797a`'s anchors and none resolves in the current bytes, where line 91 is mid-sentence in the Q6/Q7 preamble. No sentence in the packet stated the convention | Applied. A convention sentence is added above the review-1 section: a `:NNN` anchor inside a review section is a line number at that review's own reviewed commit, never in the current bytes. J1's three present-tense anchors are replaced by section and heading names, with the superseded anchors quoted. The past-tense anchors in J2, J3, J4 and J9 and in the record's `review2.disposition_summary.G6` are left as those passes wrote them, which the convention now explains |
+| K5 Gate 5's `home` sweep publishes a closed partition two of its six hits do not fit | editorial | **CONFIRMED**, value for value. Re-run this session [predicate: `(?i)\bhome\b`; denominator: each whole spec file]: **0** in the POC spec and **6** in the PWB spec, exactly as published. Enumerated, the six are PWB spec lines 247, 277, 510, 511, 518 and 523. Lines 511 ("every layer/home is unique") and 523 ("the lowest-numbered expanded home with at least one admitted source") are layer-home rule prose and fit neither published category | Applied. The partition is restated as three categories over all six — the registry's governance-home field (247, 277), the precedence table's `Home` column and its semantic text (510, 518), and the layer-home rules that table governs (511, 523) — with the superseded two-way partition quoted and dated. The load-bearing conclusion is unchanged: none of the six is the `/` route |
+| K6 three spec quotations, two citation conventions, under one formula | editorial | **CONFIRMED** at source. POC-REQ-060: `### Requirement:` heading at POC spec line 927, Group/Form at 929, the quoted normative text begins at **931**, falsifier ends 946. PWB-REQ-020: heading 902, Group/Form 904, quoted text begins **906**, falsifier ends 926. PWB-REQ-004: heading 487, Group/Form 489, quoted text **491–498** — exact to the byte, because H4 corrected it to the quotation's own span | Applied. The convention is stated once and named at each of the three sites: the cited range is the requirement's own span for POC-REQ-060 and PWB-REQ-020, with the line the quotation begins at given explicitly, and the quoted text's own span for PWB-REQ-004, the one site that already followed it |
+| K7 two M3 short-head literals remain on one line, where one records the fact | editorial | **CONFIRMED.** Counted this session [predicate: literal occurrences of the seven-character short M3 head; denominator: the whole file]: **2 occurrences over 1 line** in the packet — the review-2 G7 disposition row — **1** in the evidence record and **0** in the register, exactly as J9's disposition states, so J9 is repaired as written. The second occurrence was a present-tense claim about the sibling worktree's current state | Applied. Restated as what review 2 found, with the superseded present-tense sentence quoted and dated. Re-counted after the edit [same predicate; denominator: the whole file, each file]: **1** in the packet, **1** in the evidence record, **0** in the register |
+
+**Recommended answers changed after review 5: one — Q7's, for the second
+consecutive pass.** Review 4 widened Q7's slices-4-and-5 limb to carry
+RFC2-26. Review 5's K2 required that clause to be quoted whole and run with a
+stated denominator; run over all eight Gate 3 slice rows it puts a third slice
+under the same open gate — **slice 3, the opening band**, because no approved
+scenario in either signed spec reaches an aggregate of Unknown-reason counts
+in the opening, while slices 1 and 2 do map to named requirement-and-scenario
+pairs. Q7's recommendation now reads: slices 1–2 after M3 slice 5; slice 3
+only after the three-way opening-band reconciliation **and** the RFC2-26
+ruling this question asks for; slices 4 and 5 gated on that same RFC2-26
+ruling; slice 6 as sequenced, conditional on Q5's authorization limb; slice 7
+waits on Q3; slice 8 deferred behind its own acts. **Q1 through Q6 keep the
+recommendations they carried into this review**: K1 carried review 4's Q7
+change into the eight operative texts that had not received it, and K3 through
+K7 moved no arm.
+
+By verification rule 10, review 5 binds the bytes it names — the three digests
+in the table above, at commit `e134a12` — and not these. Every edit in this
+section and above was made after it, so the repaired bytes are **uncovered
+until a sixth review confirmed them** — which has since happened; see
+"Review 6 and repairs (2026-09-15)" below, and read this paragraph as
+review 5's position and not the current one (re-tensed 2026-09-15 per
+review 7, M4). That raw is a sixth `-RAW.md` file, never an overwrite of
+any retained one.
+
+## Review 6 and repairs (2026-09-15)
+
+A sixth independent fresh-context review of the five-times-repaired packet
+(read-only; only the artifact, its governing references and the acceptance
+criteria) is retained verbatim at
+`docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-6-RAW.md` (26182 bytes, sha256
+`4d2035caa450bf5cdcfb220c2b0d3891459a3a05edc28c467eb01c75982f6abd`, computed
+by `wc -c` and `sha256sum` this session, never transcribed). It reviewed
+commit
+`1dd5639`, at which the three artifacts hashed as follows — recomputed
+this session with `git show 1dd5639:<path> | sha256sum`:
+
+| File reviewed | Bytes | sha256 |
+|---|---|---|
+| `docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md` | 220411 | `ef4528a37399f15107e45ffa9589596250ce46ac382f500760a32e1a7cbc41fb` |
+| `docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json` | 71802 | `cbbdeca05ce1a01419522ceb9aa9b85a1f2218a5320e45aad542282795666e5e` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 44722 | `5a3131af1a79d4e8cc7fc3791056a11c2ac9b64ac8453f3fd8ea3b51466cc11a` |
+
+Its verdict word, copied exactly: **REVISE**. Its counts, as the raw states
+them: **blocking 1, non-blocking 3, editorial 2 — six findings, L1–L6**.
+Every finding was re-derived this session against source — the two signed
+specs, the register row and the packet's own bytes — before being applied;
+none was applied on the review's say-so, and one, the register note's
+eight-site list, was checked and found **true of the bytes**, so nothing was
+changed there. Superseded wording is quoted and dated in place rather than
+deleted.
+
+**Its verification of the review-5 repairs, carried here as it states them:
+6 REPAIRED and 1 PARTIAL over 7.** REPAIRED — K2, K3, K4, K5, K6 and K7.
+PARTIAL — K1: all eight sites the finding named carry the gate with the
+superseded wording quoted and dated, and the six-literal sweep re-run over
+all three whole files reproduces the packet's published result exactly — but
+the review-5 change that repair was carrying never reached the prose
+`## Recommended handoff`, where two paragraphs schedule slice 3, and two
+live disclosure sentences said it had. That is L1. The raw also records no
+regression across F1–F22, G1–G11, H1–H9 and J1–J9, and re-derives every
+published byte count, digest, census and offset partition value for value.
+
+| Finding | Severity | Re-derivation | Disposition |
+|---|---|---|---|
+| L1 the review-5 slice-3 gate never reaches the prose `## Recommended handoff` | blocking | **CONFIRMED** at source. The handoff's Q7 paragraph ("the first of M2 slice 2, M3 slice 3 and M4 slice 3 to land builds the band container and its single ordering oracle") and its Q4 paragraph ("slice 3's band lists every reason present … and its total is asserted equal to the gaps section's on every fixture") carried no RFC2-26 gate, while the Q6 paragraph two paragraphs later ended "**Neither is built before Q7's RFC2-26 ruling**" with its own superseded wording quoted and dated. The two disclosure sentences the finding names — the K2 disposition row and Gate 5's "What the extended test changes" paragraph — both claimed the change reached "the recommended handoff", true of the funnel summary's code-block line and false of the section a reader reaches by that name. **The register note's site list, also named, is NOT a false claim**: it enumerates the eight sites K1 repaired and says "the recommended handoff's Q6 paragraph", which is exactly the part of that section review 5 touched; it is left as that pass wrote it | Applied at three scheduling sites and two disclosure sentences. The Q7 and Q4 handoff paragraphs now carry the gate in the shape the Q6 paragraph uses, with the added wording dated and the superseded paragraph ends described. A third live site the finding does not name — the Collision section's revised reconciliation rule, which likewise says whichever of the three lands first builds the container — was found by the sweep below and carries the gate too. The two disclosure sentences are narrowed to name the funnel summary's four lines and the prose handoff's paragraphs individually, superseded wording quoted and dated |
+| L2 Gate 5's lead sentence and its one-line slice-3 treatment present slice 3 as covered conformance | non-blocking | **CONFIRMED.** Gate 5 opened "**Slices 1, 2, 3 and 6: no spec delta. Each is conformance with text that already binds.**" and treated slice 3 in one sentence, "Slice 3 is PWB-REQ-010 and PWB-REQ-011 conformance and adds no claim" — while the same gate's RFC2-26 table, ninety-odd lines later, finds slice 3's own consequence maps to no approved requirement-and-scenario pair, and Gate 3's row 3 states the distinction in this packet's own words, "**preserving a requirement is not mapping to one**" | Applied at both sentences. "No spec delta" stands; the inference the RFC2-26 test withdraws is qualified at the sentence rather than left to a later subsection, with both superseded sentences quoted and dated |
+| L3 Gate 4's headings for slices 3, 4 and 5 still read "no act" | non-blocking | **CONFIRMED.** The three design headings read "(medium; no act)" while Gate 3's rows for the same three now read "**No act found for the continuation itself; an RFC2-26 gate is open — see Q7**", and one of the three routes the packet offers for clearing that gate is a reviewed N/A judgment honored by an effective owner act. **Checked before editing** [predicate: the literal `](#`; denominator: the whole packet and the whole register]: **0** occurrences in either file, so no anchor or href targets these headings and changing them breaks no link. **Re-run 2026-09-15 (review 7, M1)**, same predicate by `grep -F`, over both whole files at commit `4b431fb`: **1** in the packet and **0** in the register — and the single packet hit is this cell's own code span, the bytes in which the predicate is written. At `1dd5639`, the commit "Checked before editing" refers to, the same predicate returns **0** in both (`git show 1dd5639:<path> | grep -c -F`). The published 0 is therefore true of the bytes it was taken at and is not reproducible at this commit by the predicate as stated; the conclusion about anchors and hrefs is unaffected, because the one hit is a predicate, not a link [Observed, both figures run this session] | Applied. The three headings read "(medium; act — see Gate 3 and Q7)", each with a one-line dated note beneath quoting the superseded parenthetical. The slice-4 heading is 85 characters and is the one line this pass added above the 78-column bar; it carries a code span and cannot be reflowed, and it is enumerated in the F21 disposition |
+| L4 the slice-3 "None found" cell states no denominator for its population | non-blocking | **CONFIRMED**, and the conclusion re-derived here rather than accepted [predicate: `^### Requirement:` and `^#### Scenario:` at line start; denominator: both signed spec files whole]. POC spec **24** requirements and **24** scenarios; PWB spec **17** and **31** — **41** and **55** in all. Every one of the 55 scenario headings was read this session, then the bodies of every candidate; none states an aggregate of Unknown-reason counts in the opening. Each of the cell's five figures is exact at source: PWB-REQ-010 at 596 with one scenario at 615; PWB-REQ-011 at 632 with two at 651 and 657; PWB-REQ-007 at 439 with one at 470; POC-REQ-032 at 574 with one at 599; PWB-REQ-012 at 679 with one at 705 | Applied. One bracket in the cell carries the predicate, the 41/55 denominator, the fact that every scenario heading was read, and the five candidates with their line numbers. Mirrored in the evidence record's new `review6` block; review 5's own `K2_all_slice_test` values are left untouched, since they are that review's record |
+| L5 Gate 3's row 3 sends the reader to "the four requirements checked"; the cell discusses five | editorial | **CONFIRMED.** Gate 5's slice-3 cell names PWB-REQ-010, PWB-REQ-011, PWB-REQ-007, POC-REQ-032 and PWB-REQ-012, and the evidence record's `slice_3` field enumerates the same five. Four is defensible only on the reading that PWB-REQ-012 is a constraint rather than a candidate mapping, which the cell states but the cross-reference did not | Applied. The cross-reference reads "the five requirements read, four of them as candidate mappings", names the five and says which is the constraint, with the superseded "four" quoted and dated |
+| L6 the P-71 row's Q5 question drops the packet's first clause | editorial | **CONFIRMED.** The packet's Q5 asks three things, beginning "is it authorized"; the register row asked two, dropping whether the *run* is authorized as distinct from the write — the clause Reading A and Reading B actually differ about, present in the row's recommendation body but not in its question line | Applied. The row's Q5 question carries all three clauses in the packet's order, with the superseded two-clause question quoted and dated, and the change is named in the register note's review-6 paragraph |
+
+**Recommended answers changed after review 6: none.** L1 is blocking, but it
+changes no arm and no recommendation: it carries an **existing** answer —
+slice 3 under the same open RFC2-26 gate as slices 4 and 5, decided after
+review 5's K2 — into three live sites that answer had not reached, and
+narrows two sentences that had claimed it already reached them. L2 through
+L6 qualify, route, measure or correct a count; none moves a recommended
+answer either. **Q1 through Q7 keep the recommendations they carried into
+this review.**
+
+**The slice-3 scheduling sweep L1 asked for, which no string sweep could do.**
+An omission carries no literal, so every site that schedules or builds slice
+3 was enumerated by hand and classified [predicate: lines matching
+`(?i)slice 3\b` or the literal `M4 slice 3`; denominator: every line of the
+packet, the evidence record and the register at `1dd5639` — 2,064 + 1,083 +
+321 = **3,468** lines; **60** lines match, 51 in the packet, 6 in the record
+and 3 in the register]. All 60 were read and classified, and the three
+buckets close: **10** lines carry a live instruction that schedules or
+builds M4 slice 3, over **7** distinct sites — Q7's bolded recommendation
+(`:119`), the sequencing order's step (3) (`:1566-1571`), the funnel
+summary's Recommended-handoff line (`:2002`), the prose handoff's Q7
+(`:2019`) and Q4 (`:2024`) paragraphs, the Collision section's revised
+reconciliation rule (`:1534-1535`), and the P-71 row's Q7 recommendation.
+**Four of the seven already carried the RFC2-26 gate** — the three review 5
+reached and the register row; **three did not** — the two handoff paragraphs
+L1 names and the Collision rule it does not — and all three are repaired in
+this pass. **23** lines are historical: a superseded sentence quoted and
+dated in place, or a review section's own record of what an earlier pass
+found. **27** state what the band is, which file it touches, or that its
+gate is open, and schedule nothing. 10 + 23 + 27 = 60. No live scheduling
+site is left ungated [Observed, this session; anchors are line numbers at
+`1dd5639`, per the convention above].
+
+By verification rule 10, review 6 binds the bytes it names — the three
+digests in the table above, at commit `1dd5639` — and not these. Every edit
+in this section and above was made after it, so the repaired bytes are
+**uncovered until a seventh review confirmed them** — which has since
+happened; see "Review 7 and repairs (2026-09-15)" below, and read this
+paragraph as review 6's position and not the current one (re-tensed
+2026-09-15 per review 7, M4). That raw is a seventh `-RAW.md` file, never
+an overwrite of any retained one.
+
+## Review 7 and repairs (2026-09-15)
+
+A seventh independent fresh-context review of the six-times-repaired packet
+(read-only; only the artifact, its governing references and the acceptance
+criteria) is retained verbatim at
+`docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-7-RAW.md` (24884 bytes, sha256
+`af47eef81c8d074319624bbfa38caad0ba03f9e63f5092b53b25dcf361318bdc`, computed
+by `wc -c` and `sha256sum` this session, never transcribed). It reviewed
+commit `4b431fb`, at which the three artifacts hashed as follows —
+recomputed this session with `git show 4b431fb:<path> | sha256sum`:
+
+| File reviewed | Bytes | sha256 |
+|---|---|---|
+| `docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md` | 236948 | `dae20e6538d5cbf692165f91ffb348f976ef92eb60d405924310b4ad049bc30e` |
+| `docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json` | 80636 | `4844e9a10d33425d00b6dc3a3269f42ee60a89a5124e6c152409f569ebee7011` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 47510 | `c272f73b6f4ebfcfe21b799ab5f904d02bba94a9580f824e762a59ffd68942af` |
+
+Its verdict word, copied exactly: **CONFIRM WITH EXCEPTIONS**. Its counts, as
+the raw states them: **blocking 0, non-blocking 1, editorial 4 — five
+findings, M1–M5**. It is the first of the seven retained raws to close with
+no blocking finding [Observed; denominator the seven `…M4…-RAW.md` files
+under `docs/reviews/`, whose blocking counts in order are 6, 4, 1, 2, 2, 1
+and 0].
+
+**Its verification of the review-6 repairs, carried here as it states them:
+6 REPAIRED over 6.** L1, L2, L3, L4, L5 and L6 — REPAIRED, none partial and
+none outstanding. It also records **K1, PARTIAL at review 6, as now
+complete**: the only respect in which K1 fell short was L1's three sites and
+two sentences, and all five are repaired. It records no regression across
+F1–F22, G1–G11, H1–H9, J1–J9 and K1–K7. Every load-bearing figure in it was
+re-derived rather than read: the slice-3 site sweep re-run at both commits
+(60 hits over 3,468 lines at `1dd5639`, 79 over 3,730 at `4b431fb`, all 79
+classified by hand into **8** distinct live scheduling sites, every one
+gated); the 41/55 signed-spec population; each candidate's requirement and
+scenario line; RFC2-26 compared word for word against source 196–221, no
+elision; the four capture censuses and the 30/31/32 offset partition; the
+machine walk (1,149 / 1,137 / 12); the six retained raws' byte counts; and
+the three review-6 reviewed-file digests at `1dd5639`, value for value.
+
+Every exception was re-derived this session against source before being
+applied; none was applied on the review's say-so. One — **M4** — was found
+**overstated in one of the four paragraphs it names**, and is applied to the
+three that carry the defect rather than to all four; the overstatement is
+recorded below instead of being applied. Superseded wording is quoted and
+dated in place rather than deleted.
+
+| Finding | Severity | Re-derivation | Disposition |
+|---|---|---|---|
+| M1 the L3 disposition's anchor zero-claim is falsified by the sentence that states it | editorial | **CONFIRMED.** Re-run this session over both whole files at `4b431fb` [the L3 cell's own predicate — the literal it names, by `grep -F`; denominator: the whole packet and the whole register]: **1** in the packet, **0** in the register, and the single packet hit is the L3 cell itself, the code span in which the predicate is written. At `1dd5639`, the commit the cell's "**Checked before editing**" refers to, the same predicate returns **0** in both (`git show 1dd5639:<path> \| grep -c -F`). So the published figure is honest about when it was taken and is nonetheless one a reader re-running the stated predicate at this commit cannot reproduce, the one hit they get being the claim's own bytes | Applied in the L3 cell. The published **0** and its "**Checked before editing**" framing stand unedited; a dated clause beside them publishes the 1/0 figure at `4b431fb`, names the one hit as that cell's own code span, gives the `1dd5639` figure, and states that the conclusion about anchors and hrefs is unaffected because the hit is a predicate and not a link |
+| M2 the slice-3 "None found" cell enumerates five candidates and omits PWB-REQ-002 | non-blocking | **CONFIRMED** at source, both halves. PWB-REQ-002 is at PWB spec line **115** and its scenario "Declared shape reconciles" at **142**; the scenario's THEN/AND read "**THEN** Polaris accounts for all D items exactly once / **AND** every category reports modeled, Unknown and contradicted counts that sum to its denominator", and its Observable is "per-category identities and reconciling counts are visible in the machine answer and reachable from Polaris" — an approved requirement-and-scenario pair requiring rendered aggregate modeled/Unknown/contradicted counts, the class slice 3's band sits in, and the nearest candidate the cell did not name. The cell does name five and does close its bracket "The five requirements named above are the candidates" | Applied in the cell, and mirrored in the evidence record's new `review7` block **only** — review 6's `L4_signed_spec_population` values are that review's own record and are untouched. One sentence names PWB-REQ-002 as the sixth candidate read and why it does not map, on two independent grounds: it partitions extraction **categories** into the three coverage states where slice 3's band partitions RFC2-24 **gap reasons**, a different projection over a different population; and its Observable is satisfied today by the existing gaps section, which is reachable from Polaris and asserts no opening position. The closed "five … are the candidates" wording is kept and dated in place. **Limb 1 remains unavailable, and the conclusion and the recommended answer are unchanged** |
+| M3 the Q7 cell restates the reconciliation rule ungated at the sentence | editorial | **CONFIRMED.** The Q7 cell carries "So whichever of M2 slice 2, M3 slice 3 and M4 slice 3 lands first **builds the band container and owns its single ordering oracle** … Reconcile explicitly before any of the three starts" with no gate on the sentence, while the two sites review 6's L1 repaired each took one — the Collision section ("**None of that schedules M4 slice 3: it is not built before Q7's RFC2-26 ruling either**") and the prose handoff's Q7 paragraph ("**M4 slice 3 is not built before both that reconciliation and Q7's RFC2-26 ruling**"). It is editorial and not a repeat of L1 because the same cell opens with the gate in its bolded recommendation and closes with the K2 widening paragraph, so the sentence is bracketed by the gate; L1's site had no gate anywhere in its section | Applied. The Q7 cell's reconciliation sentence now carries the Collision section's clause word for word, dated 2026-09-15 per review 7, M3, with the reason the finding is editorial stated beside it |
+| M4 the packet's rule-10 paragraphs are never re-tensed, while the register's parallel paragraphs are | editorial | **CONFIRMED for three of the four paragraphs the finding names; NOT CONFIRMED for the fourth**, checked line by line this session [predicate: the literal "uncovered"; denominator: the whole packet at `4b431fb` — **5** hits, in the review-2, review-3, review-4, review-5 and review-6 rule-10 paragraphs]. The review-2, review-4 and review-5 paragraphs read "uncovered until a third / fifth / sixth review confirms them" untensed, as the finding says. **The review-3 paragraph is already re-tensed**: it reads "uncovered until a fourth review confirmed them — which it has now done; see 'Review 4 and repairs (2026-09-15)' below … (re-tensed 2026-09-15 per review 4)". So the finding's "all four" is one too many, and that one is recorded here rather than applied. The register's shape is confirmed at its three parallel paragraphs: "— which has since happened; see the next paragraph (re-tensed 2026-09-15 per review N)" | Applied to the three that carry the defect, **and** to review 6's own paragraph, which this pass's retention of review 7 has now discharged and which the finding could not have named. Four paragraphs re-tensed in the register's shape, each naming the review section that discharged it and dated 2026-09-15 per review 7, M4. The review-3 paragraph is left exactly as review 4 wrote it |
+| M5 "and in the pull request" names a disclosure site outside the reviewed bytes, unlabelled | editorial | **CONFIRMED** at both sites. Gate 5's "What the extended test changes" paragraph ended its disclosure list "in the register note and P-71 row, and in the pull request" — the phrase wrapped across two lines — and the K2 disposition row ended "the register note and P-71 row, and the pull request". Every other item in both lists is a named site inside one of the three reviewed artifacts and checkable from their bytes; the last carried no identifier, no date and no epistemic label, and a read-only reviewer cannot verify it | Applied at both sites, taking the identifier-and-date arm rather than dropping the clause, so the disclosure is not silently narrowed. Both now read "and in PR #38, body edited 2026-09-15 [Observed at that date; a PR body is editable later]", in the shape the sibling references (`syzygy-dov.2`, P-69, PR #36) already use. The superseded bare wording is quoted and dated at each site |
+
+**Recommended answers changed after review 7: none, stated explicitly.** All
+five exceptions are presentational or evidentiary. M1 and M4 date a claim
+about coverage rather than move one; M3 repeats a gate the same cell already
+states twice; M5 gives a disclosure site its identifier; and M2 adds a sixth
+requirement to a read population while re-deriving — and leaving
+unchanged — the conclusion that slice 3's limb 1 is unavailable and that
+slice 3 stays under the open RFC2-26 gate. **Q1 through Q7 keep the
+recommendations they carried into this review, word for word.**
+
+By verification rule 10, review 7 binds the bytes it names — the three
+digests in the table above, at commit `4b431fb` — and not these. Every edit
+in this section and above was made after it, so the five exception repairs
+are **uncovered until an eighth review confirms them**; that raw will be an
+eighth `-RAW.md` file, never an overwrite of any retained one. Subject to
+that, and on review 7's confirmation of the `4b431fb` bytes — CONFIRM WITH
+EXCEPTIONS, no blocking finding, no recommended answer moved and the
+review-6 repairs verified 6 REPAIRED over 6 — **this packet stands at the
+owner gate**: P-71 is ready to be ruled.
+
+## Funnel summary
+
+```
+## Feature Request: M4 - Close the owner loop: a route from every Unknown, home as the day-opening, and run the return path once
+Size: medium (slices 1-6) / large (slice 7, and the deferred slice 8 pair)
+Baseline: Syzygy a9f671e; capture = lane A after/tailnet, 1,484,487 bytes, Butlers 2e3bac97790b
+- G1 Motif: 9 of 22 rendered Unknowns on Polaris carry no closed reason and no route; Trajectory (299 rendered, 301 raw) and Orrery (9 rendered, 11 raw) carry a third, unmeasured-until-now encoding with no disclosure wrapper at all (re-partitioned per review 2, G3: raw less one stylesheet rule and one legend key item), and Orrery carries a fourth - the provenance-none span, 9 rendered against 0 style occurrences on that surface and 1 style rule on home, in no declared token table (added per review 3, H1); zero cross-surface deep links over four pages, one anchor deep-link found on a fifth, uncensused page; the product's one submit button sits at 99.1% of the second page [Observed: capture sweeps, denominators stated per surface]
+- G2 Doctrine: aligned - VIS-1 (aggregate Unknowns, never substitute), VIS-2, VIS-4 (draft, never adopt - stated per slice), VIS-5 (two write roots; the materialize action's write is Q5's contested question, not a settled lawful-adapter reading), vision.md 61-64 the escape property (unnumbered doctrine prose), RFC2-24's closed twelve, 5 of 12 identical to UNKNOWN_REASON_ROUTES and 7 differing in prose only (review 1, F1)
+- G3 Topology: apps/three-surface-poc + packages/three-surface-poc-core; no new boundary; no governed artifact touched by slices 1-5 or 7; slice 6 already writes into the observed repository's Beads database today and whether that write is authorized is Q5's question; slice 7's output is the only *new* write and it is gated
+- G4 Design: closed reason + route (UNKNOWN_REASON_ROUTES's own wording, not RFC2-24's prose) on all nine unrouted Polaris Unknowns, extended to Trajectory/Orrery's marker; the materialize link on the one edge that has one; a machine route form with actor/verb/target, narrowing the empty-array prohibition to Unknown-with-reasons so the modelled `basis: 'deferred'` arm stays representable; one opening band across M2 slice 2, M3 slice 3 and M4 slice 3 - one container, one ordering oracle, three payload blocks (revised per review 2, G2); model.surfaces derived; home rewritten as their composition; the return path run once, conditional on Q5; a pure act drafter
+- G5 Spec: no delta - POC-REQ-060 already requires slice 1 (over all three surfaces), PWB-REQ-020 already requires slice 2's parity; PWB-REQ-004 untouched; and NO requirement governs the home route or model.surfaces, so slices 4-5 trace to recorded findings L6-F1/L6-F5 - a reading Q7 puts to the owner, and one that does not by itself clear RFC2-26, which turns that silence into a bar until every observable consequence maps to an approved OpenSpec requirement AND scenario or carries a reviewed N/A judgment honored by an effective owner act. Run over all eight Gate 3 slice rows (review 5, K2; denominator 8): slices 1 and 2 map to named requirement-and-scenario pairs, slice 3 does NOT - no approved scenario reaches its gap-reason band - so slice 3 now carries the same open gate as slices 4 and 5; slice 6 schedules no implementation work; slices 7 and 8 are gated by act, not by this clause (superseded 2026-09-15, review 5, K1/K2: this line read "so slices 4-5 trace to recorded findings L6-F1/L6-F5, a reading Q7 now puts to the owner explicitly")
+- G6 Bar: retained before/after measurement per surface, rule-6 mutants per guard branch, both parity sweeps with both denominators, independent review (seven raws are retained under docs/reviews/; this pass follows review 7, verdict copied exactly CONFIRM WITH EXCEPTIONS, and its five exception repairs are uncovered until an eighth - restated 2026-09-15, review 7, which superseded "six raws are retained under docs/reviews/; this pass follows review 6, verdict copied exactly REVISE, and is itself pending a seventh", itself a review-6 restatement of "five raws are retained under docs/reviews/; this pass follows review 5 ... and is itself pending a sixth", itself a review-5 restatement of "this is review 2, pending, after review 1's repair", a line frozen at the second pass while its neighbours were carried forward)
+Acts: no act found beyond the 2026-09-05 continuation for any of slices 1-5 or 7, and slices 3, 4 and 5 additionally carry an OPEN RFC2-26 gate - see Q7 and Gate 5's RFC2-26 test (widened 2026-09-15, review 5, K1/K2; this read "Acts: slices 1-5 and 7 none (the 2026-09-05 continuation)", the exact formulation review 4 had already widened at Gate 3 rows 4 and 5); slice 6 contested between the 2026-08-29 direction (authorized) and the 2026-09-02 act's write prohibition (breach) - see Q5; slice 7 one narrow act on arm (a), none on arm (b); slice 8 two acts, deferred; a poller: none found and none sought
+Open questions: Q1-Q7 above (Q5 widened to cover slice 6's write; Q7 widened to cover the M2/M3 file collisions, the slices 4-5 authorization reading and, after review 5's all-eight-slice RFC2-26 test (K2), the RFC2-26 gate over slices 3, 4 and 5 - superseded 2026-09-15: this read "Q7 widened to cover the M2/M3 file collisions and the slices 4-5 authorization reading"); queued as P-71 (P-68 lane B, P-69 M2, P-70 M3, each on its own branch)
+Sign-off: pending - the owner's
+Recommended handoff: Q1 "a non-conformance, per-surface sweep" and Q2 "narrow the prohibition, do not mint none-modelled" -> run slices 1 and 2 together after M3 slice 5; then the one opening band across M2 slice 2, M3 slice 3 and M4 slice 3, then M4 slices 4, 5 in order - the band and both of those slices only after Q7's RFC2-26 ruling (added 2026-09-15, review 5, K1/K2; this read "then M4 slices 4, 5 in order" with no gate); run slice 6 once Q5's authorization limb is ruled; hold slice 7 for Q3 and slice 8 for its acts
+```
+
+## Recommended handoff
+
+**If Q1 and Q2 are answered as recommended:** file no new bead. Build slices
+1 and 2 as one change under `syzygy-dov.4`, after M3's slice 5 lands so the
+nine new rows populate a generated encoding table rather than a hand-written
+one, and extend slice 1's sweep to Trajectory and Orrery per Q1's scope
+correction. Slice 1 alone closes the POC-REQ-060 breach that L2-F2 and
+L6-F5 named and puts the product's one action one click from the Unknown
+that describes its absence. Slice 2 narrows its type-level prohibition to
+an Unknown carrying `reasons`, per Q2's corrected reading, rather than every
+Unknown.
+
+**If Q7's opening-band reconciliation is accepted (revised per review 2, G2
+from a two-way M3/M4 reconciliation to a three-way one):** the first of M2
+slice 2, M3 slice 3 and M4 slice 3 to land builds the band container and its
+single ordering oracle; the other two add payload blocks inside it, each with
+its own payload oracle. One band, one ordering oracle, three payloads — never
+three bands and never three claims on "first". **M4 slice 3 is not built
+before both that reconciliation and Q7's RFC2-26 ruling** — the
+reconciliation settles who owns the container, not whether M4's payload
+block may be scheduled. **Added 2026-09-15 (review 6, L1):** this paragraph
+ended at the three-payloads sentence, a scheduling instruction under which
+M4 slice 3 could be the first of the three to land, carrying none of the
+RFC2-26 gate review 5 (K2) had already added to Q7, Gate 3, Gate 5, the
+sequencing order and the funnel summary.
+
+**If Q4 is answered as recommended:** slice 3's band lists every reason
+present, ordered by the existing `foremost` array, and its total is asserted
+equal to the gaps section's on every fixture. If the owner prefers the
+four-reason filter, the slice adds one closed constant and one counterexample
+fixture, and the packet's warning stands: today's evaluation cannot exercise
+the filter's negative case. **Either way the slice is not built before
+Q7's RFC2-26 ruling** — Q4 settles what the band lists, not whether the band
+may be scheduled. **Added 2026-09-15 (review 6, L1):** this paragraph ended
+at the filter's negative case, an ungated build instruction for the one
+slice review 5 (K2) had just put under the same open gate as slices 4
+and 5.
+
+**If Q5 is answered as recommended (both the expectation and the
+authorization-reading limbs):** run slice 6 early and independently of
+everything else, and record its result honestly — one edge narrowed, two
+correctly did not. If the owner takes Q5's Reading B instead, hold slice 6
+for the continuation that reading requires, and run the rest of M4
+regardless — no other slice depends on it. That record is the V0
+agent-consumption artifact v1.md
+lines 119–120 asks for (corrected per review 1, N13), and it is also the
+only evidence anyone will have
+about whether the rest of M4 is worth building.
+
+**If Q6 is answered as recommended:** slice 4 lands the descriptor and slice
+5 composes the home page from it and from slice 3. Build them in that order;
+the home page should hold no truth of its own. **Neither is built before
+Q7's RFC2-26 ruling** — Q6 settles which arm is right, not whether the work
+may be scheduled. **Superseded 2026-09-15 (review 5, K1):** this paragraph
+ended at "the home page should hold no truth of its own", an
+unconditional build instruction for the two slices review 4 had just told
+the owner may be unschedulable.
+
+**If Q3 is answered as arm (b) or deferred:** build the pure drafter anyway.
+It needs no act, it is independently testable, and it is the half of slice 7
+that carries the design risk. The file-writing half is a twenty-line
+operator command that can wait for the act.
+
+**If Q1 is answered the other way** — that the nine bare-prose Unknowns are
+the accepted shape of the entity-and-relationship graph — then slice 1
+narrows to the single `actionRoute` on `relationship:intent-to-work`, slice
+2 loses its relationship arm, and the POC records a permanent, disclosed
+divergence between how it encodes a project-shape Unknown and how it encodes
+a graph Unknown. That is a coherent outcome and should be written down as
+one, in `.syzygy/governance/decisions/`, rather than left as silence — and
+it would mean POC-REQ-060's falsifier is met on every served page, which the
+owner should rule on explicitly rather than inherit.
