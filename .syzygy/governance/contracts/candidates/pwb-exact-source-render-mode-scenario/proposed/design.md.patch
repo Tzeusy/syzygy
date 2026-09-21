@@ -1,0 +1,28 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/openspec/changes/polaris-project-wide-butlers-model/design.md
+--- a/openspec/changes/polaris-project-wide-butlers-model/design.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
+@@ -268,2 +268,24 @@
+ consent amendment and act.
++
++The same reasoning carries to every other source this evaluation admitted as
++a classified blob. Each is the same kind of exact Git object, selected by the
++same signed population and covered by the same consent class, so serving it
++reads no wider class and asks for no new class. What differs is the reading
++unit. A baseline `openspec/specs/*/spec.md` source has requirement sections
++to select, and a route that finds none there can only refuse; every other
++admitted source declares no such sections, so its reading unit is the whole
++admitted body. The route therefore carries exactly two render modes —
++`requirement-sections` and `whole-body` — chosen by the source's own class
++and never by the reader. The set is closed: a third mode would be a third
++reading unit, which is a new specification question, not a rendering detail.
++
++Nothing in that carry reaches a withheld source. A source whose record
++outcome is excluded has no admitted body to serve, so it keeps its identity,
++its content digest and its fixed exclusion reason, stays in every denominator
++and is refused in both modes. The gates do not move either: every mode runs
++the same authority, exact-object, secret and inert-content checks against the
++complete transient body before any of it is encoded, and a failure leaves
++that body Unknown with its reason. Scroll anchors are presentation only —
++they let a citation land on the unit it names, and never decide what the
++route serves or stand in for any anchor identity.
+ 
