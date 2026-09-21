@@ -637,21 +637,59 @@ and their dispositions:
 | F3 — the doctrine test omitted VIS-4, the one doctrine clause naming retention as a gating trigger | note | accepted | "The doctrine test": VIS-4's human-gated-class sentence is quoted at `vision.md` lines 131–133, with the distinction between its specification gate and the continuation act's implementation-posture gate stated |
 | F4 — "six keys" could be read as five top-level keys plus a nested `counts` object | note | accepted | "What the record would hold": the envelope's six top-level keys are now tabulated by name, invariant I3 asserts key-set equality over exactly those six, and "What is the drafter's and not yours" §1 marks the shape as the drafter's |
 
-`[Observed]` The sweeps behind that table, re-run over the repaired bytes
-in this session, with their denominators: 13 blockquote blocks in the
-file, of which 12 are attributed quotes and all 12 match their cited
-source bytes exactly (three of them as disclosed truncations that begin
-or end mid-line at a sentence boundary), the thirteenth being this
-packet's own banner; 11 attributed inline quotations, all 11 present
-byte-for-byte in both this file and the source they name; 0 lines over 78
-columns outside a table row or a fenced block, and 0 non-fence lines with
-an odd inline backtick count, over all 658 lines; 0 sixty-four-character
-and 0 forty-character hex strings; 0 mentions of the observed
-repository's name or paths; and `check_governance.py` at **32 OK, 20
-WARN, 0 FAIL (52 checks)**, with no OK, WARN or FAIL line naming this
-file.
+`[Observed]` The sweeps behind that table, re-derived by script over the
+repaired bytes in this session, each with its denominator and its
+counting rule:
+
+- **Blockquotes.** 13 contiguous blocks of `>`-prefixed lines. 12 are
+  attributed quotes and all 12 match their cited source bytes exactly
+  after whitespace collapse — **four** of them as disclosed truncations
+  that begin or end mid-line at a sentence boundary: the VIS-5 opening,
+  the VIS-5 *Violation* clause, the `trust-and-evidence.md` evidence
+  definition, and the VIS-4 sentence. The thirteenth block is this
+  packet's own candidate banner.
+- **Inline quotations, under a stated rule.** Fenced blocks and
+  blockquote lines are removed; the remaining prose's double-quote marks
+  are paired in document order; a pair counts as one attributed inline
+  quotation when its span runs to **five words or more** and appears
+  verbatim, whitespace-collapsed, in a file this packet names. The unit
+  is the quoted span, not the citation event: a phrase quoted at two
+  places counts twice, and two fragments of one clause in one sentence
+  count twice. Under that rule — 35 matched pairs in the file; 15 of
+  five words or more, of which **10 are attributed and all 10 match
+  their source exactly**, the other 5 being this packet's own section
+  names and invariant text; and 20 pairs of four words or fewer, which
+  are section names, single words and short phrases. A membership test
+  over the same corpus reaches 16 of those 20, mostly by coincidence
+  (`all`, `zero`, `retention`), which is why the counted unit starts at
+  five words rather than at one.
+- **Shape.** 0 lines over 78 columns outside a table row or a fenced
+  block, and 0 non-fence lines with an odd inline backtick count, over
+  all 695 lines; 0 sixty-four-character and 0 forty-character hex
+  strings; 0 mentions of the observed repository's name or paths.
+- **Checks.** `check_governance.py` at **32 OK, 20 WARN, 0 FAIL (52
+  checks)**, with no OK, WARN or FAIL line naming this file, and
+  `--selftest` at 255 fixtures, 0 failing.
 
 `[Observed]` Verification rule 10: these repairs changed the bytes the
-review confirmed, so that review confirms commit `4ddb193` and not this
-one. It is retained as the record of the findings, never edited, and a
-confirmation of the repaired bytes is a separate review.
+first review confirmed, so that review confirms commit `4ddb193` and not
+this one. It is retained as the record of the findings, never edited, and
+a confirmation of the repaired bytes is a separate review.
+
+**The confirmation review.** That separate review ran against commit
+`fab7fb3` and returned **CONFIRM WITH EXCEPTIONS**, notes only; its raw
+output is retained unchanged at
+`docs/reviews/R-POLARIS-RETENTION-POSTURE-PACKET-CONFIRMATION-RAW.md`
+(CC-REV-6), and the verdict word is copied from it. Its dispositions:
+
+| Finding | Severity | Disposition | Where repaired |
+|---|---|---|---|
+| N1 — the `[Observed]` sweep sentence miscounted its own denominators on two measures: three disclosed mid-line truncations where there are four, and 658 lines where there are 657 | note | accepted | the sweep list above, re-derived by script after the edit that changed the line count, not hand-counted |
+| N2 — the inline-quotation figure rested on no stated counting rule, so it could not be re-derived (the reviewer's own count landed between 12 and 14) | note | accepted | the sweep list's second bullet now states the pairing rule, the five-word floor and the span-not-event unit, and gives the population and both remainders |
+| N3 — informational: no new defect from the F1–F4 repairs; banner, epistemic labels, wrap, code spans, digests and the rule-10 sentence all hold | note | acknowledged, no edit | nothing to repair |
+
+`[Observed]` Verification rule 10 again, one level up: the N1 and N2
+corrections postdate the confirmation, so that confirmation confirms
+`fab7fb3` and not these bytes. Both raws are retained unchanged; neither
+is edited by this packet, and the counts above were re-derived after the
+edit that changed them rather than carried over.
