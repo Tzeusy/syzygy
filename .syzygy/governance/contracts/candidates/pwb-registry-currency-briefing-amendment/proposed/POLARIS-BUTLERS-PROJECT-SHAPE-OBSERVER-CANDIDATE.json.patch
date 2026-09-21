@@ -1,0 +1,103 @@
+diff --git a/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json b/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+index 0366267..08785b8 100644
+--- a/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
++++ b/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+@@ -1,13 +1,13 @@
+ {
+   "schemaVersion": 1,
+-  "registryVersion": "1.1.0-candidate.1",
++  "registryVersion": "1.2.0-candidate.1",
+   "status": "candidate-amendment-no-effect-until-owner-act",
+   "governanceHome": ".syzygy/governance/declarations/adapter-registry",
+   "project": "project:syzygy",
+   "entries": [
+     {
+       "observerId": "polaris-butlers-project-shape",
+-      "observerVersion": "1.1.0-candidate.1",
++      "observerVersion": "1.2.0-candidate.1",
+       "discoveryVersion": "pwb-discovery-v2-candidate.1",
+       "role": "adapter",
+       "implementationId": "three-surface-poc-core/project-shape-observer",
+@@ -268,7 +268,8 @@
+         "maxIndexDepth": 4,
+         "maxParsePassesPerSource": 16,
+         "maxHumanResponseBytes": 2097152,
+-        "maxMachineResponseBytes": 8388608
++        "maxMachineResponseBytes": 8388608,
++        "maxBriefingResponseBytes": 20480
+       },
+       "resourceLimitSemantics": {
+         "maxSources": "the complete revision-bound manifest; an excess preserves every tree-known source identity but admits no source body and makes every dependent fact Unknown",
+@@ -278,8 +279,72 @@
+         "maxParsePassesPerSource": "one unit is one complete traversal of one decoded source by a pass in parsePassIdentities; a helper traversal is charged to its named caller pass, repeating a pass counts again, and an unregistered traversal is forbidden; elapsed wall-clock time is not an input",
+         "maxHumanResponseBytes": "the final encoded HTTP body for each Polaris HTML response",
+         "maxMachineResponseBytes": "the final encoded HTTP body for each authenticated Polaris machine JSON response",
++        "maxBriefingResponseBytes": "the final encoded HTTP body for each authenticated derived read-only machine view response that serves one named subject composed from an evaluation already served under maxMachineResponseBytes; it is a separate and tighter ceiling, never a share of that one, and a view without its own declared ceiling is not served",
+         "breachResult": "source and input breaches retain the complete population and make dependent facts Unknown; final-output breaches emit only a bounded typed failure carrying evaluation identity, limit identity, declared value, observed value and population counts; no truncated or success-shaped model is emitted; PWB-REQ-021 readiness is false"
+       },
++      "currencyBounds": [
++        {
++          "claimClass": "project-account-section",
++          "maxAgeMs": 31536000000
++        },
++        {
++          "claimClass": "principle",
++          "maxAgeMs": 31536000000
++        },
++        {
++          "claimClass": "success-criterion",
++          "maxAgeMs": 31536000000
++        },
++        {
++          "claimClass": "catalog-entry",
++          "maxAgeMs": 7776000000
++        },
++        {
++          "claimClass": "design-contract",
++          "maxAgeMs": 15552000000
++        },
++        {
++          "claimClass": "baseline-spec",
++          "maxAgeMs": 15552000000
++        },
++        {
++          "claimClass": "topology-component",
++          "maxAgeMs": 7776000000
++        },
++        {
++          "claimClass": "craft-policy",
++          "maxAgeMs": 15552000000
++        },
++        {
++          "claimClass": "roster-identity",
++          "maxAgeMs": 2592000000
++        },
++        {
++          "claimClass": "project-fact-declaration",
++          "maxAgeMs": 7776000000
++        },
++        {
++          "claimClass": "project-account-statement",
++          "maxAgeMs": 31536000000
++        },
++        {
++          "claimClass": "source-coverage",
++          "maxAgeMs": 7776000000
++        },
++        {
++          "claimClass": "project-shape",
++          "maxAgeMs": 2592000000
++        }
++      ],
++      "currencyBoundSemantics": {
++        "measuredFrom": "one row declares the maximum age of the evidence behind a claim of that class, measured from the committer instant of the exact Git object the declaration was extracted from",
++        "measuredTo": "the age is computed to the evaluation's own as-of instant and to no other coordinate; the judge reads no wall clock, so two runs of one identified evaluation agree on every freshness state, and the passage of time changes a claim only through a new identified evaluation",
++        "claimClassAssignment": "each of the nine extraction-class rows governs both the item:<class>:<declared-key> claims of that class and that class's own aggregate; project-fact-declaration governs the closed count:<class>, catalog-count:<catalog-key> and project-account:<key> fact families; project-account-statement governs the six project-account statements; source-coverage governs one admitted source at its repository-relative path; and project-shape governs the single whole-shape aggregate",
++        "undeclaredClass": "a claim whose class has no row here never leaves Unknown: the judge returns its no-bound-declared arm and the claim renders Unknown with the closed reason no-currency-bound-declared; this array is the only place a bound is declared and an implementation constant, default or fallback bound repairs nothing",
++        "outOfBoundResult": "evidence older than its class's bound at the as-of instant, evidence whose instant cannot be read, and evidence dated after the as-of instant all render Unknown with the closed reason stale-beyond-currency-bound and a distinct machine-readable basis; none of the three supports a current or favourable answer",
++        "outsideTheseBounds": "these rows cover project-shape claims only; a disclosed fact of the render that carries no freshness value is not a claim class, takes no row here, and acquires no bound by default",
++        "boundChange": "a value in this array is declared by an exact owner act over this entry and by nothing else; no implementation may mint, widen, narrow or default one, and a bound present in the tree without an effective owner act does not unblock its class"
++      },
+       "parsePassIdentities": [
+         "utf8-and-nul-validation",
+         "secret-private-key-fragments",
