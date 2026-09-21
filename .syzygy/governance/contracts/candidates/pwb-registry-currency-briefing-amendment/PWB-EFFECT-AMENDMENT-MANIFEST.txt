@@ -1,0 +1,9 @@
+# PWB REGISTRY CURRENCY-AND-BRIEFING EFFECT AMENDMENT MANIFEST
+# This row binds only by the owner act that takes its digest as the
+# argument of a superseding adopt-registry-entry act; until that act is
+# performed it binds nothing.
+# 1 artifact; the row hashes the PROPOSED bytes: the current bytes of the
+# subject with proposed/*.patch applied. It matches the tree only after
+# --apply, the adoption step.
+# The subject's current bytes stay the argument of the act in force.
+5fbef79751f52f2e6cfbbbaa6e2d33993926627461346246e00a6cace7ac8ae2  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
