@@ -41,6 +41,12 @@ status: "record — candidate material, binds nothing"
 # prints. It is the phrase minus its argument.
 
 current_phrases:
+  - id: pwb-scoped-attributes-amendment
+    label: "SIGN OFF PWB SCOPED-ATTRIBUTES AMENDMENT"
+    form: accept
+    argument: sha256
+    subject: ".syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt"
+    note: "candidate successor to the performed 2026-09-05 PWB truth-and-readiness amendment (lane B, P-68); its rows hash proposed bytes and bind nothing until the act; not offered to the owner until the RFC-0007 successor ceremony exists and a fresh review confirms the package"
   - id: pwb-truth-readiness-amendment
     label: "SIGN OFF PWB TRUTH-AND-READINESS AMENDMENT"
     form: accept
