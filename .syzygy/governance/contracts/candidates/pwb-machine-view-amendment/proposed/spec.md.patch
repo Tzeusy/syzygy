@@ -1,0 +1,45 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+index 543469d..8110290 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -903,6 +903,40 @@
+ 
+ Group: Parity. Form: **invariant**.
+ 
++This requirement compares the human surface against the *machine answer*: the
++authenticated project-wide machine response at one evaluation. Two closed
++categories of derived, read-only machine view are served beside that answer.
++Neither category is the machine answer, the recoverability comparison below
++ranges over neither, and a route this specification does not name is a member
++of neither.
++
++A **derived read-only machine view** composes only values already reachable
++from the machine answer at the same evaluation, mints no project fact, writes
++nothing, is served only to machine-credentialed clients in every mount form,
++and subtracts nothing: the complete fact set stays served by the machine
++answer at that same evaluation. Every value such a view serves SHALL be
++independently verified as derivable from the machine answer's own bytes at
++that evaluation, by a checker that imports no rendering code. The members of
++this category are the Polaris presentation view, `GET /api/poc/polaris`,
++served under the machine-JSON ceiling the adapter-registry entry already
++declares, and the agent briefing view, `GET /api/poc/briefing`, served under a
++byte ceiling of its own.
++
++A **generated editorial draft view** composes only the recorded bytes of one
++identified generation run over sources that run was already admitted to read,
++mints no project fact, writes nothing, sends no source or draft byte outside
++the observing project, and is served only to machine-credentialed clients in
++every mount form. It carries no project-shape identity, statement, source
++anchor, coverage state, denominator or contradiction, and so contributes to
++neither multiset compared below. The member of this category is the
++generation draft view, `GET /polaris/draft/<runId>`.
++
++A member served under a byte ceiling of its own SHALL NOT be served before the
++adapter-registry entry's resource envelope declares that ceiling. A route
++enters either category only by a later amendment to this specification naming
++it as a member. A route in neither category is neither admitted nor forbidden
++by this requirement.
++
+ Every project-shape identity, statement, source anchor, coverage state,
+ denominator, contradiction, body-read authority state and walkthrough-judgment
+ state or disclosure Polaris presents SHALL be recoverable from the same
