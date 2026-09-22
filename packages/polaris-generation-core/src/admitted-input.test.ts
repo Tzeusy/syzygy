@@ -4,6 +4,11 @@ import {
   type AdmittedSource, type ExcludedSource,
 } from './admitted-input.js';
 
+// Hard-coded, not imported from provider-draft.ts's SOURCE_TEXT_MAX_LENGTH: this
+// literal is the independent expectation that admitted-input.ts's bound must
+// match sourceSchema's, not a tautology against the shared constant itself.
+const SOURCE_TEXT_UPPER_BOUND = 100_000;
+
 const selected: AdmittedSource[] = [
   { sourceId: 'purpose', text: 'Reduce recurring mental labor.' },
   { sourceId: 'mechanism', text: 'Observations feed a plan.' },
@@ -62,6 +67,48 @@ describe('admitted-input source population', () => {
     expect(() => admitSourcePopulation(selected, [{ sourceId: 'x', reason: 'unresolved', detail: '' }])).toThrow(SourcePopulationError);
   });
 
+  it('rejects a selected sourceId containing whitespace, matching sourceSchema\'s handle pattern', () => {
+    expect(() => admitSourcePopulation([{ sourceId: 'has space', text: 'x' }])).toThrow(SourcePopulationError);
+    try {
+      admitSourcePopulation([{ sourceId: 'has space', text: 'x' }]);
+    } catch (error) {
+      expect((error as SourcePopulationError).code).toBe('invalid-source-id');
+    }
+  });
+
+  it('rejects a pattern-invalid selected sourceId whose first character the handle pattern forbids', () => {
+    // sourceSchema's handle pattern is ^[A-Za-z0-9][A-Za-z0-9_.:-]*$: a leading
+    // underscore is a legal later character but never a legal first one.
+    expect(() => admitSourcePopulation([{ sourceId: '_leading-underscore', text: 'x' }])).toThrow(SourcePopulationError);
+    try {
+      admitSourcePopulation([{ sourceId: '_leading-underscore', text: 'x' }]);
+    } catch (error) {
+      expect((error as SourcePopulationError).code).toBe('invalid-source-id');
+    }
+  });
+
+  it('accepts a selected sourceId exactly at the handle length bound and rejects one character over it', () => {
+    const atBound = admitSourcePopulation([{ sourceId: 'x'.repeat(100), text: 'x' }]);
+    expect(sourcePopulationDenominator(atBound)).toEqual({ selected: 1, excluded: 0, total: 1 });
+    try {
+      admitSourcePopulation([{ sourceId: 'x'.repeat(101), text: 'x' }]);
+      throw new Error('expected throw');
+    } catch (error) {
+      expect((error as SourcePopulationError).code).toBe('invalid-source-id');
+    }
+  });
+
+  it('accepts a selected source text exactly at the upper bound and rejects one character over it', () => {
+    const atBound = admitSourcePopulation([{ sourceId: 'x', text: 'a'.repeat(SOURCE_TEXT_UPPER_BOUND) }]);
+    expect(sourcePopulationDenominator(atBound)).toEqual({ selected: 1, excluded: 0, total: 1 });
+    expect(() => admitSourcePopulation([{ sourceId: 'x', text: 'a'.repeat(SOURCE_TEXT_UPPER_BOUND + 1) }])).toThrow(SourcePopulationError);
+    try {
+      admitSourcePopulation([{ sourceId: 'x', text: 'a'.repeat(SOURCE_TEXT_UPPER_BOUND + 1) }]);
+    } catch (error) {
+      expect((error as SourcePopulationError).code).toBe('text-too-long');
+    }
+  });
+
   it('reports the exact failure code for each rejection kind', () => {
     const codes: Record<string, unknown> = {};
     for (const [label, thunk] of [
@@ -69,6 +116,8 @@ describe('admitted-input source population', () => {
       ['empty-text', () => admitSourcePopulation([{ sourceId: 'x', text: '' }])],
       ['empty-detail', () => admitSourcePopulation(selected, [{ sourceId: 'x', reason: 'unresolved', detail: '' }])],
       ['duplicate-source-id', () => admitSourcePopulation([...selected, selected[0]!])],
+      ['invalid-source-id', () => admitSourcePopulation([{ sourceId: 'has space', text: 'x' }])],
+      ['text-too-long', () => admitSourcePopulation([{ sourceId: 'x', text: 'a'.repeat(SOURCE_TEXT_UPPER_BOUND + 1) }])],
     ] as const) {
       try { thunk(); throw new Error('expected throw'); }
       catch (error) { codes[label] = (error as SourcePopulationError).code; }
@@ -78,6 +127,8 @@ describe('admitted-input source population', () => {
       'empty-text': 'empty-text',
       'empty-detail': 'empty-detail',
       'duplicate-source-id': 'duplicate-source-id',
+      'invalid-source-id': 'invalid-source-id',
+      'text-too-long': 'text-too-long',
     });
   });
 });
