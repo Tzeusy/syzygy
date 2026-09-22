@@ -94,14 +94,21 @@ function main(): void {
   };
 
   const record = {
-    subject: 'N8 slice 1 (syzygy-u05.8) — synthetic second-project corpus coverage matrix',
+    subject: 'N8 slice 2 (syzygy-u05.8) — repairFor narrowing re-run of the synthetic second-project corpus coverage matrix',
     bead: 'syzygy-u05.8',
     releasedBy: 'syzygy-dca (owner gate, closed)',
     dossier: 'docs/pursuits/2026-09-22-vision-pursuit.md §N8',
+    predecessor: 'docs/evidence/pwb-n8-synthetic-corpus-coverage-matrix-2026-09-23.json (N8 slice 1, PR #63)',
     generatedAt: new Date().toISOString(),
     generator: 'apps/three-surface-poc/src/pwb-n8-synthetic-corpus-coverage-matrix-main.ts',
     method:
-      'In-process run of the unmodified extractClass literal grammar (packages/three-surface-poc-core/src/project-shape-extraction.ts) against three synthetic corpora compiled into the package as fixtures. Zero egress: no network call, no real repository read, no new consent. The pipeline was not changed to make any fixture pass; an unextracted cell is retained as Unknown with its own failure reason, never coerced to zero.',
+      'In-process run of the unmodified extractClass literal grammar (packages/three-surface-poc-core/src/project-shape-extraction.ts) against the same three synthetic corpora compiled into the package as fixtures. Zero egress: no network call, no real repository read, no new consent. The pipeline was not changed to make any fixture pass; an unextracted cell is retained as Unknown with its own failure reason, never coerced to zero.',
+    slice2Change:
+      "Only packages/three-surface-poc-core/src/synthetic-corpus-coverage.ts's repairFor classifier changed (per the confirmed slice-1 review's advisory, corrected in the slice-2 review): a target-class failure is labeled repairKind:'code-path' only when its failure reason is 'malformed-list', 'malformed-row', or 'malformed-toml' (a genuine shape mismatch — the third covers roster-identity, the one TOML-shaped class), never for 'missing-heading', 'ambiguous-leading-label', or any other reason on that class, which are fixture-authoring defects rather than pipeline-generality findings. project-shape-extraction.ts and project-shape-manifest.ts (the actual grammar and admission gates) are unchanged.",
+    slice2Result:
+      "[Observed] This re-run's 27-cell matrix is unchanged from slice 1's, cell for cell: all three real corpora's own target-class failures were already 'malformed-list'/'malformed-row', which the narrowing still classifies 'code-path', so the narrowing is a defensive correctness fix with no visible movement in this matrix. It is validated instead by ad hoc test fixtures in synthetic-corpus-coverage.test.ts (never added to SYNTHETIC_CORPORA) that trigger 'missing-heading' and 'ambiguous-leading-label' on the 'principle' target class (asserting repairKind is undefined, where the pre-narrowing classifier would have labeled 'code-path') and a 'malformed-toml' fixture on the 'roster-identity' target class (asserting repairKind is 'code-path', a genuine shape mismatch the earlier two-reason set would have wrongly left unclassified).",
+    slice2GovernanceStop:
+      "[Observed] The slice's other half, 'container-shape rows' (admitting a new container shape via a profile row), was investigated and not built: project-shape-extraction.ts's per-class basename/heading/shape gates (e.g. principle -> vision.md, H2 'Non-Negotiable Rules', top-level decimal list) are the literal PWB-REQ-002 \"Reader definitions\" text in openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md — independently confirmed against that file's own text for 'principle', matching the extractor exactly. (No test in this package proves the per-class admission basenames byte-equal to any registry or policy JSON: project-shape-manifest.test.ts's registry/policy comparison covers only PWB_DISCOVERY_VERSION, PWB_ROOT_INDEX_PATH, and PWB_INDEX_DEPTH, never the nine per-class basenames; the spec-text citation alone is the verified anchor for this finding.) Admitting a new container shape is therefore a governed-plane change needing a PWB-REQ-002 spec amendment (CC-REV-2) plus a registry/policy amendment act, not an implementation-plane change; it stays undone here.",
     classes: EXTRACTION_CLASSES,
     denominator: {
       corpora: SYNTHETIC_CORPORA.length,

@@ -509,7 +509,10 @@ quotes.
 
 ## Migration / supersession plan
 
-In order. Steps 1–3 are drafting and review; only step 5 is an owner act.
+In order. Steps 1–3 are drafting and review; steps 4 and 5 are two
+separate owner acts, and only step 5 is performed over this package's
+manifest. (The earlier wording read "only step 5 is an owner act", which
+step 4 contradicts; round 5 finding R5-1.)
 
 1. **Review**, CC-REV-1 full class in CC-REV-4 fresh context, against a frozen
    commit; raw output retained verbatim under `docs/reviews/` with a
@@ -574,7 +577,9 @@ in `REVIEW-BRIEF.md`. CC-TEST-6's mutation bar applies to the builder, whose
 `--selftest` holds the fixtures.
 
 **Reviewer:** a fresh-context session with no authoring context, per round
-(three so far: 2026-09-21, and two on 2026-09-23). The reviewer must not
+(for the rounds run so far and their dates see §Review below; this sentence
+no longer restates a count, which read "three so far: 2026-09-21, and two on
+2026-09-23" and went stale at round 4, round 5 finding R5-3). The reviewer must not
 have authored this change or shared its session; this draft's author has
 run no review of it and has written none. (First draft: "not yet assigned".)
 
@@ -757,3 +762,45 @@ until a round 5 reads them.
 
 **Author's standing:** the lead session that commissioned round 4 authored
 these two repairs, and therefore may run no review of them.
+
+### Round 5 — fourth confirmation review, over the round-4 repairs
+
+**Reviewed bytes:** commit `cd1fbd3`, with the manifest digest quoted in
+`OWNER-DECISION-PACKET.md`. **Reviewer:** a fresh-context session with no
+authoring context, commissioned 2026-09-23 with the four prior raws and
+`REVIEW-BRIEF.md`, and asked in addition for an exhaustive internal
+cross-reference sweep with a denominator, because each earlier round had found
+this defect class one instance at a time. **Verdict of record:** `CONFIRM
+WITH EXCEPTIONS`, copied exactly from
+`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-4-RAW.md`, retained
+verbatim and never edited (CC-REV-6).
+
+R4-1 and R4-2 were found repaired, and the quoted superseded text was found
+byte-exact. All twelve `REVIEW-BRIEF.md` criteria were judged satisfied. The
+builder's `--check` and `--selftest` and `check_governance.py` reproduced with
+no FAIL, and the manifest digest matches the packet quote and the registered
+subject. **Rule 10:** the repairs below edited `SEMANTIC-DELTA.md`,
+`IMPACT-LEDGER.md` and `OWNER-DECISION-PACKET.md` after that commit. None of
+those files is a manifest row, and no patch or manifest byte moved.
+
+**Dispositions**, finding by finding (the raw's numbers, prefixed R5-):
+
+- **R5-1 (non-blocking) — "only step 5 is an owner act" contradicted step 4
+  and the packet's "Two acts" section.** **Accepted and repaired**: the
+  sentence now says that steps 4 and 5 are two separate owner acts, and that
+  only step 5 is performed over this manifest. The superseded wording is
+  quoted at the site.
+- **R5-2 (non-blocking) — three citer counts in `IMPACT-LEDGER.md` were
+  stale.** **Accepted and repaired**, re-derived at `66da9f2` by byte-literal
+  match over all 1,440 tracked files: `/api/poc/briefing` 25,
+  `/polaris/draft` 15, `maxBriefingResponseBytes` 24. The reviewer's figures
+  were 25, 15 and 24 at `cd1fbd3`. "No registry file names it" is narrowed to
+  *installed* registry files, because the sibling candidate's proposed patch
+  names it. Each count now carries its commit and predicate, together with a
+  note that the population is live.
+- **R5-3 (non-blocking) — the review-plan sentence counted three rounds.**
+  **Accepted and repaired**: it now routes to §Review instead of restating a
+  count. This is the same repair shape as R4-2.
+
+**Author's standing:** the lead session that commissioned rounds 4 and 5
+authored these repairs, and therefore may run no review of them.

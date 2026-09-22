@@ -172,6 +172,11 @@ CAMPAIGNS = (
         "N4 page honesty",
         r"R-PWB-N4-.*\.md",
     ),
+    campaign(
+        "n11-drift-sweep",
+        "N11 drift sweep",
+        r"R-PWB-N11-.*\.md",
+    ),
 )
 
 
