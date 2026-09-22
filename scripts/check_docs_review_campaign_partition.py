@@ -149,6 +149,11 @@ CAMPAIGNS = (
         "P-69 Q7a missing-currency gate",
         r"R-PWB-MISSING-CURRENCY-.*\.md",
     ),
+    campaign(
+        "n8-generality",
+        "N8 generality measurement",
+        r"R-PWB-N8-.*\.md",
+    ),
 )
 
 
