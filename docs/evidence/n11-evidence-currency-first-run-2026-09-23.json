@@ -1,0 +1,1658 @@
+{
+  "instrument": "scripts/check_evidence_currency.py",
+  "measuredOn": {
+    "resolvedCommit": "44c51b54054b7181e63f71917380faaa302a2df2",
+    "rev": "HEAD"
+  },
+  "populationA_readingPlanAnchors": {
+    "anchors": [
+      {
+        "name": "ARCHITECTURE_READING_PLAN",
+        "reason": "subject is Butlers repository body content (project-account key 'architecture'), fetched live via the daemon observation pipeline and never stored in the Syzygy git tree; this sweep never reads Butlers repository bodies",
+        "statementSha256": "b6a02d08b19dbd0dee09f15076494fa6bbe4346e6009e07dff28c01fa2b5036c",
+        "status": "not-measured"
+      },
+      {
+        "name": "V1_READING_PLAN",
+        "reason": "subject is Butlers repository body content (project-account key 'v1-scope'), fetched live via the daemon observation pipeline and never stored in the Syzygy git tree; this sweep never reads Butlers repository bodies",
+        "statementSha256": "58cd64a8abe3491deb4ed3caa3996c82792734e2e64ad84041d06495ba770357",
+        "status": "not-measured"
+      }
+    ],
+    "file": "apps/three-surface-poc/src/polaris-reading-plan.ts",
+    "found": 2,
+    "rev": "44c51b54054b7181e63f71917380faaa302a2df2"
+  },
+  "populationB_evidenceRecords": {
+    "carriesDigestKey": 81,
+    "current": 6,
+    "denominator": 106,
+    "drift": 38,
+    "records": [
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/orrery-height-repaired-browser-2026-09-09.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/orrery-height-rule6-2026-09-09.json",
+        "inTreeCount": 0,
+        "leafCount": 2,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-editorial-mutations-2026-09-09.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-editorial-reading-plans-2026-09-09.json",
+        "inTreeCount": 0,
+        "leafCount": 4,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-existing-orrery-browser-2026-09-09.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-generator-adoption-clone-validation-2026-09-12.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 7,
+        "file": "docs/evidence/polaris-generator-approval-offer-2026-09-12.json",
+        "inTreeCount": 615,
+        "leafCount": 615,
+        "matchCount": 608,
+        "reason": "7/615 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 615,
+        "status": "drift"
+      },
+      {
+        "driftCount": 1,
+        "file": "docs/evidence/polaris-generator-approval-tool-validation-2026-09-12.json",
+        "inTreeCount": 3,
+        "leafCount": 3,
+        "matchCount": 2,
+        "reason": "1/3 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 3,
+        "status": "drift"
+      },
+      {
+        "driftCount": 1,
+        "file": "docs/evidence/polaris-generator-concrete-offer-validation-2026-09-12.json",
+        "inTreeCount": 4,
+        "leafCount": 4,
+        "matchCount": 3,
+        "reason": "1/4 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 4,
+        "status": "drift"
+      },
+      {
+        "driftCount": 1,
+        "file": "docs/evidence/polaris-generator-current-scope-2026-09-12.json",
+        "inTreeCount": 21,
+        "leafCount": 21,
+        "matchCount": 20,
+        "reason": "1/21 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 21,
+        "status": "drift"
+      },
+      {
+        "driftCount": 1,
+        "file": "docs/evidence/polaris-generator-format-validation-2026-09-12.json",
+        "inTreeCount": 2,
+        "leafCount": 2,
+        "matchCount": 1,
+        "reason": "1/2 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 2,
+        "status": "drift"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-generator-host-overlap-2026-09-12.json",
+        "inTreeCount": 3,
+        "leafCount": 3,
+        "matchCount": 3,
+        "reason": "3/3 in-tree subject digest(s) match current bytes",
+        "resolvedCount": 3,
+        "status": "current"
+      },
+      {
+        "driftCount": 4,
+        "file": "docs/evidence/polaris-generator-no-signal-delta-impact-2026-09-09.json",
+        "inTreeCount": 141,
+        "leafCount": 164,
+        "matchCount": 137,
+        "reason": "4/141 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 163,
+        "status": "drift"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-generator-no-signal-mapping-search-2026-09-09.json",
+        "inTreeCount": 0,
+        "leafCount": 1,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 1,
+        "file": "docs/evidence/polaris-generator-non7-current-binding-bridge-2026-09-12.json",
+        "inTreeCount": 79,
+        "leafCount": 80,
+        "matchCount": 78,
+        "reason": "1/79 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 80,
+        "status": "drift"
+      },
+      {
+        "driftCount": 10,
+        "file": "docs/evidence/polaris-generator-resumption-inventory-2026-09-12.json",
+        "inTreeCount": 18,
+        "leafCount": 19,
+        "matchCount": 8,
+        "reason": "10/18 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 19,
+        "status": "drift"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-generator-review-subject-2026-09-12.json",
+        "inTreeCount": 23,
+        "leafCount": 23,
+        "matchCount": 23,
+        "reason": "23/23 in-tree subject digest(s) match current bytes",
+        "resolvedCount": 23,
+        "status": "current"
+      },
+      {
+        "driftCount": 1,
+        "file": "docs/evidence/polaris-generator-rfc1-4-coverage-2026-09-12-v2.json",
+        "inTreeCount": 15,
+        "leafCount": 15,
+        "matchCount": 14,
+        "reason": "1/15 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 15,
+        "status": "drift"
+      },
+      {
+        "driftCount": 141,
+        "file": "docs/evidence/polaris-generator-rfc1-4-coverage-2026-09-12.json",
+        "inTreeCount": 448,
+        "leafCount": 448,
+        "matchCount": 307,
+        "reason": "141/448 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 448,
+        "status": "drift"
+      },
+      {
+        "driftCount": 17,
+        "file": "docs/evidence/polaris-generator-rfc5-6-8-9-coverage-2026-09-12.json",
+        "inTreeCount": 582,
+        "leafCount": 1147,
+        "matchCount": 565,
+        "reason": "17/582 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 582,
+        "status": "drift"
+      },
+      {
+        "driftCount": 17,
+        "file": "docs/evidence/polaris-generator-rfc5-6-8-9-coverage-v2-2026-09-12.json",
+        "inTreeCount": 583,
+        "leafCount": 1148,
+        "matchCount": 566,
+        "reason": "17/583 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 583,
+        "status": "drift"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-generator-rfc7-coverage-2026-09-12.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-generator-rfc7-coverage-v2-2026-09-12.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-generator-rfc7-coverage-v3-2026-09-12.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 2,
+        "file": "docs/evidence/polaris-generator-rfc7-coverage-v4-2026-09-12.json",
+        "inTreeCount": 24,
+        "leafCount": 24,
+        "matchCount": 22,
+        "reason": "2/24 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 24,
+        "status": "drift"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-generator-rfc7-coverage-v5-2026-09-12.json",
+        "inTreeCount": 24,
+        "leafCount": 24,
+        "matchCount": 24,
+        "reason": "24/24 in-tree subject digest(s) match current bytes",
+        "resolvedCount": 24,
+        "status": "current"
+      },
+      {
+        "driftCount": 5,
+        "file": "docs/evidence/polaris-m10-machine-contract-funnel-2026-09-15.json",
+        "inTreeCount": 6,
+        "leafCount": 11,
+        "matchCount": 1,
+        "reason": "5/6 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 6,
+        "status": "drift"
+      },
+      {
+        "driftCount": 5,
+        "file": "docs/evidence/polaris-m11-operability-funnel-2026-09-15.json",
+        "inTreeCount": 7,
+        "leafCount": 10,
+        "matchCount": 2,
+        "reason": "5/7 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 7,
+        "status": "drift"
+      },
+      {
+        "driftCount": 4,
+        "file": "docs/evidence/polaris-m12-retained-evaluations-funnel-2026-09-15.json",
+        "inTreeCount": 6,
+        "leafCount": 11,
+        "matchCount": 2,
+        "reason": "4/6 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 6,
+        "status": "drift"
+      },
+      {
+        "driftCount": 5,
+        "file": "docs/evidence/polaris-m13-navigation-scale-funnel-2026-09-15.json",
+        "inTreeCount": 6,
+        "leafCount": 12,
+        "matchCount": 1,
+        "reason": "5/6 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 8,
+        "status": "drift"
+      },
+      {
+        "driftCount": 3,
+        "file": "docs/evidence/polaris-m14-provenance-depth-funnel-2026-09-17.json",
+        "inTreeCount": 3,
+        "leafCount": 6,
+        "matchCount": 0,
+        "reason": "3/3 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 4,
+        "status": "drift"
+      },
+      {
+        "driftCount": 5,
+        "file": "docs/evidence/polaris-m15-pipeline-truthfulness-funnel-2026-09-17.json",
+        "inTreeCount": 5,
+        "leafCount": 6,
+        "matchCount": 0,
+        "reason": "5/5 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 5,
+        "status": "drift"
+      },
+      {
+        "driftCount": 2,
+        "file": "docs/evidence/polaris-m16-renderer-visual-system-funnel-2026-09-17.json",
+        "inTreeCount": 3,
+        "leafCount": 5,
+        "matchCount": 1,
+        "reason": "2/3 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 3,
+        "status": "drift"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-m2-evidence-currency-funnel-2026-09-14.json",
+        "inTreeCount": 0,
+        "leafCount": 9,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 1,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 5,
+        "file": "docs/evidence/polaris-m3-honest-encoding-funnel-2026-09-14.json",
+        "inTreeCount": 12,
+        "leafCount": 29,
+        "matchCount": 7,
+        "reason": "5/12 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 17,
+        "status": "drift"
+      },
+      {
+        "driftCount": 18,
+        "file": "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json",
+        "inTreeCount": 18,
+        "leafCount": 33,
+        "matchCount": 0,
+        "reason": "18/18 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 26,
+        "status": "drift"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-m5-agent-briefing-funnel-2026-09-14.json",
+        "inTreeCount": 0,
+        "leafCount": 18,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 5,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 4,
+        "file": "docs/evidence/polaris-m6-generator-honesty-funnel-2026-09-15.json",
+        "inTreeCount": 16,
+        "leafCount": 19,
+        "matchCount": 12,
+        "reason": "4/16 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 16,
+        "status": "drift"
+      },
+      {
+        "driftCount": 7,
+        "file": "docs/evidence/polaris-m7-generation-loop-funnel-2026-09-15.json",
+        "inTreeCount": 8,
+        "leafCount": 10,
+        "matchCount": 1,
+        "reason": "7/8 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 8,
+        "status": "drift"
+      },
+      {
+        "driftCount": 7,
+        "file": "docs/evidence/polaris-m8-portability-funnel-2026-09-15.json",
+        "inTreeCount": 8,
+        "leafCount": 12,
+        "matchCount": 1,
+        "reason": "7/8 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 8,
+        "status": "drift"
+      },
+      {
+        "driftCount": 4,
+        "file": "docs/evidence/polaris-m9-one-identity-funnel-2026-09-15.json",
+        "inTreeCount": 6,
+        "leafCount": 10,
+        "matchCount": 2,
+        "reason": "4/6 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 6,
+        "status": "drift"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-manifesto-example-mutation-2026-09-09.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-manifesto-repair-report-2026-09-09.json",
+        "inTreeCount": 0,
+        "leafCount": 10,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-no-signal-draft-relocation-2026-09-12.json",
+        "inTreeCount": 0,
+        "leafCount": 1,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 1,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-pipeline-synthetic-verification-2026-09-13.json",
+        "inTreeCount": 17,
+        "leafCount": 17,
+        "matchCount": 17,
+        "reason": "17/17 in-tree subject digest(s) match current bytes",
+        "resolvedCount": 17,
+        "status": "current"
+      },
+      {
+        "driftCount": 3,
+        "file": "docs/evidence/polaris-source-index-reading-2026-09-09.json",
+        "inTreeCount": 3,
+        "leafCount": 4,
+        "matchCount": 0,
+        "reason": "3/3 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 3,
+        "status": "drift"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-understanding-adoption-clone-validation-2026-09-13.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-understanding-adoption-manifest-2026-09-13.json",
+        "inTreeCount": 13,
+        "leafCount": 13,
+        "matchCount": 13,
+        "reason": "13/13 in-tree subject digest(s) match current bytes",
+        "resolvedCount": 13,
+        "status": "current"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/polaris-understanding-amendment-validation-2026-09-13.json",
+        "inTreeCount": 8,
+        "leafCount": 8,
+        "matchCount": 8,
+        "reason": "8/8 in-tree subject digest(s) match current bytes",
+        "resolvedCount": 8,
+        "status": "current"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-c4-fact-precedence-grammar-mutation-run-2026-09-05.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-c5-readiness-verbatim-mutation-run-2026-09-05.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-c6-polaris-parity-mutation-run-2026-09-05.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-c7-fresh-demo-readiness-mutation-run-2026-09-05.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-declared-home-seed-mutation-run-2026-09-08-ordering.json",
+        "inTreeCount": 0,
+        "leafCount": 1,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-declared-home-seed-mutation-run-2026-09-08-tree-rule.json",
+        "inTreeCount": 0,
+        "leafCount": 1,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-declared-home-seed-mutation-run-2026-09-08.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-laneb-strict-scope-estimate-2026-09-14.json",
+        "inTreeCount": 0,
+        "leafCount": 2,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 2,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json",
+        "inTreeCount": 0,
+        "leafCount": 9,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 8,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 2,
+        "file": "docs/evidence/pwb-mutation-run-2026-09-03.json",
+        "inTreeCount": 6,
+        "leafCount": 6,
+        "matchCount": 4,
+        "reason": "2/6 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 6,
+        "status": "drift"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-owner-walkthrough-readiness-2026-09-09.json",
+        "inTreeCount": 0,
+        "leafCount": 4,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 1,
+        "file": "docs/evidence/pwb-p2-4-classification-mutation-run-2026-09-04.json",
+        "inTreeCount": 1,
+        "leafCount": 1,
+        "matchCount": 0,
+        "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 1,
+        "status": "drift"
+      },
+      {
+        "driftCount": 1,
+        "file": "docs/evidence/pwb-p2-5-extraction-mutation-run-2026-09-04.json",
+        "inTreeCount": 1,
+        "leafCount": 1,
+        "matchCount": 0,
+        "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 1,
+        "status": "drift"
+      },
+      {
+        "driftCount": 1,
+        "file": "docs/evidence/pwb-p2-6-coverage-mutation-run-2026-09-04.json",
+        "inTreeCount": 1,
+        "leafCount": 1,
+        "matchCount": 0,
+        "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 1,
+        "status": "drift"
+      },
+      {
+        "driftCount": 1,
+        "file": "docs/evidence/pwb-p2-7-model-mutation-run-2026-09-04.json",
+        "inTreeCount": 1,
+        "leafCount": 1,
+        "matchCount": 0,
+        "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 1,
+        "status": "drift"
+      },
+      {
+        "driftCount": 1,
+        "file": "docs/evidence/pwb-p3-5-tuple-mutation-run-2026-09-04.json",
+        "inTreeCount": 1,
+        "leafCount": 1,
+        "matchCount": 0,
+        "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 1,
+        "status": "drift"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p3-6-narrative-mutation-run-2026-09-04.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p3-7-bands-mutation-run-2026-09-04.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p3-8-reachability-mutation-run-2026-09-04.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-1-judgment-mutation-run-2026-09-04.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 6,
+        "file": "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04-parity-markers.json",
+        "inTreeCount": 8,
+        "leafCount": 8,
+        "matchCount": 2,
+        "reason": "6/8 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 8,
+        "status": "drift"
+      },
+      {
+        "driftCount": 18,
+        "file": "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04.json",
+        "inTreeCount": 26,
+        "leafCount": 26,
+        "matchCount": 8,
+        "reason": "18/26 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 26,
+        "status": "drift"
+      },
+      {
+        "driftCount": 6,
+        "file": "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-06-parity-markers.json",
+        "inTreeCount": 8,
+        "leafCount": 8,
+        "matchCount": 2,
+        "reason": "6/8 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 8,
+        "status": "drift"
+      },
+      {
+        "driftCount": 8,
+        "file": "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-09-named-absent-file-dropped.json",
+        "inTreeCount": 26,
+        "leafCount": 26,
+        "matchCount": 18,
+        "reason": "8/26 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 26,
+        "status": "drift"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-4-accessibility-browser-run-2026-09-04.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-4-accessibility-mutation-run-2026-09-04.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-04.json",
+        "inTreeCount": 0,
+        "leafCount": 13,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 4,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-05.json",
+        "inTreeCount": 0,
+        "leafCount": 385,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 189,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-06-gen2-reviewer.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-06-gen2.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-06.json",
+        "inTreeCount": 0,
+        "leafCount": 385,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 189,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-08-declared-homes.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-08.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-confirmation.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-editorial-reviewed.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-editorial.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-final.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-manifesto-catalog.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-manifesto-complete.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-manifesto-final.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-manifesto.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-product-reading-final.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-product-reading.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-readiness.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-10-guide-navigation.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-10-reading-assets-final.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-10-reading-assets-repaired.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-10-reading-assets.json",
+        "inTreeCount": 0,
+        "leafCount": 19,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 6,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-10-visible-diagrams-final.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-10-visible-diagrams.json",
+        "inTreeCount": 0,
+        "leafCount": 389,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 191,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 1,
+        "file": "docs/evidence/pwb-p4-6-walkthrough-inputs-mutation-run-2026-09-04.json",
+        "inTreeCount": 1,
+        "leafCount": 1,
+        "matchCount": 0,
+        "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+        "resolvedCount": 1,
+        "status": "drift"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-p63-polaris-trim-measurement-2026-09-07.json",
+        "inTreeCount": 0,
+        "leafCount": 9,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 9,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-readiness-review-mutations-2026-09-09.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-recon-gen1-reviewer-mutation-run-2026-09-06.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-recon-gen2-gate-mutation-run-2026-09-06.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-recon-gen2-repair-mutation-run-2026-09-06.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftCount": 0,
+        "file": "docs/evidence/pwb-recon-gen2-reviewer-mutation-run-2026-09-06.json",
+        "inTreeCount": 0,
+        "leafCount": 0,
+        "matchCount": 0,
+        "reason": "no-subject-digest-key",
+        "resolvedCount": 0,
+        "status": "unknown"
+      }
+    ],
+    "unknown": 62
+  },
+  "populationC_mutationRecords": {
+    "denominator": 31,
+    "records": [
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 2,
+          "matchCount": 0,
+          "reason": "digest key(s) present but no subject resolved to an in-tree path",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/orrery-height-rule6-2026-09-09.json",
+        "mutantFragmentDenominator": 3,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 3
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/polaris-editorial-mutations-2026-09-09.json",
+        "mutantFragmentDenominator": 4,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 4,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/polaris-manifesto-example-mutation-2026-09-09.json",
+        "mutantFragmentDenominator": 1,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 1,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-c4-fact-precedence-grammar-mutation-run-2026-09-05.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-c5-readiness-verbatim-mutation-run-2026-09-05.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-c6-polaris-parity-mutation-run-2026-09-05.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-c7-fresh-demo-readiness-mutation-run-2026-09-05.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 1,
+          "matchCount": 0,
+          "reason": "digest key(s) present but no subject resolved to an in-tree path",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-declared-home-seed-mutation-run-2026-09-08-ordering.json",
+        "mutantFragmentDenominator": 5,
+        "mutantFragments": {
+          "moved-on": 1,
+          "still-present": 4,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 1,
+          "matchCount": 0,
+          "reason": "digest key(s) present but no subject resolved to an in-tree path",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-declared-home-seed-mutation-run-2026-09-08-tree-rule.json",
+        "mutantFragmentDenominator": 3,
+        "mutantFragments": {
+          "moved-on": 3,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-declared-home-seed-mutation-run-2026-09-08.json",
+        "mutantFragmentDenominator": 5,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 5,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 2,
+          "inTreeCount": 6,
+          "leafCount": 6,
+          "matchCount": 4,
+          "reason": "2/6 in-tree subject digest(s) mismatch current bytes",
+          "resolvedCount": 6,
+          "status": "drift"
+        },
+        "file": "docs/evidence/pwb-mutation-run-2026-09-03.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 1,
+          "inTreeCount": 1,
+          "leafCount": 1,
+          "matchCount": 0,
+          "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+          "resolvedCount": 1,
+          "status": "drift"
+        },
+        "file": "docs/evidence/pwb-p2-4-classification-mutation-run-2026-09-04.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 1,
+          "inTreeCount": 1,
+          "leafCount": 1,
+          "matchCount": 0,
+          "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+          "resolvedCount": 1,
+          "status": "drift"
+        },
+        "file": "docs/evidence/pwb-p2-5-extraction-mutation-run-2026-09-04.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 1,
+          "inTreeCount": 1,
+          "leafCount": 1,
+          "matchCount": 0,
+          "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+          "resolvedCount": 1,
+          "status": "drift"
+        },
+        "file": "docs/evidence/pwb-p2-6-coverage-mutation-run-2026-09-04.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 1,
+          "inTreeCount": 1,
+          "leafCount": 1,
+          "matchCount": 0,
+          "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+          "resolvedCount": 1,
+          "status": "drift"
+        },
+        "file": "docs/evidence/pwb-p2-7-model-mutation-run-2026-09-04.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 1,
+          "inTreeCount": 1,
+          "leafCount": 1,
+          "matchCount": 0,
+          "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+          "resolvedCount": 1,
+          "status": "drift"
+        },
+        "file": "docs/evidence/pwb-p3-5-tuple-mutation-run-2026-09-04.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-p3-6-narrative-mutation-run-2026-09-04.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-p3-7-bands-mutation-run-2026-09-04.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-p3-8-reachability-mutation-run-2026-09-04.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-p4-1-judgment-mutation-run-2026-09-04.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 6,
+          "inTreeCount": 8,
+          "leafCount": 8,
+          "matchCount": 2,
+          "reason": "6/8 in-tree subject digest(s) mismatch current bytes",
+          "resolvedCount": 8,
+          "status": "drift"
+        },
+        "file": "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04-parity-markers.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 18,
+          "inTreeCount": 26,
+          "leafCount": 26,
+          "matchCount": 8,
+          "reason": "18/26 in-tree subject digest(s) mismatch current bytes",
+          "resolvedCount": 26,
+          "status": "drift"
+        },
+        "file": "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 6,
+          "inTreeCount": 8,
+          "leafCount": 8,
+          "matchCount": 2,
+          "reason": "6/8 in-tree subject digest(s) mismatch current bytes",
+          "resolvedCount": 8,
+          "status": "drift"
+        },
+        "file": "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-06-parity-markers.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 8,
+          "inTreeCount": 26,
+          "leafCount": 26,
+          "matchCount": 18,
+          "reason": "8/26 in-tree subject digest(s) mismatch current bytes",
+          "resolvedCount": 26,
+          "status": "drift"
+        },
+        "file": "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-09-named-absent-file-dropped.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-p4-4-accessibility-mutation-run-2026-09-04.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 1,
+          "inTreeCount": 1,
+          "leafCount": 1,
+          "matchCount": 0,
+          "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+          "resolvedCount": 1,
+          "status": "drift"
+        },
+        "file": "docs/evidence/pwb-p4-6-walkthrough-inputs-mutation-run-2026-09-04.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-readiness-review-mutations-2026-09-09.json",
+        "mutantFragmentDenominator": 2,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 2,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-recon-gen1-reviewer-mutation-run-2026-09-06.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-recon-gen2-gate-mutation-run-2026-09-06.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-recon-gen2-repair-mutation-run-2026-09-06.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      },
+      {
+        "digest": {
+          "driftCount": 0,
+          "inTreeCount": 0,
+          "leafCount": 0,
+          "matchCount": 0,
+          "reason": "no-subject-digest-key",
+          "resolvedCount": 0,
+          "status": "unknown"
+        },
+        "file": "docs/evidence/pwb-recon-gen2-reviewer-mutation-run-2026-09-06.json",
+        "mutantFragmentDenominator": 0,
+        "mutantFragments": {
+          "moved-on": 0,
+          "still-present": 0,
+          "subject-unresolved": 0
+        }
+      }
+    ]
+  }
+}
