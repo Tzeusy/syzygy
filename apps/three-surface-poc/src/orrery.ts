@@ -2,6 +2,7 @@ import { escapeHtml } from '@syzygy/cap1-daemon';
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
 import { exactTablesSection } from './exact-tables.js';
+import { substrateEvaluationFooter } from './evaluation-footer.js';
 import { pageShell } from './page-shell.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 
@@ -165,10 +166,31 @@ export function renderOrreryPage(model: PocModel, mountPrefix = ''): string {
     lede: 'A deterministic spatial map over observed directory structure and declared capability-to-code mappings. Unmapped code stays visibly Unknown.',
     extraStyle: ORRERY_STYLE,
     body,
-    footer:
-      orrery.kind === 'observed'
-        ? `Code-structure revision <code>${escapeHtml(orrery.revision)}</code>.`
-        : 'Code-structure region: Unknown.',
+    footer: substrateEvaluationFooter({
+      model,
+      escapeHtml,
+      revisionOf: 'the observed code structure (git tree)',
+      revision: orrery.kind === 'observed' ? orrery.revision : null,
+      skewChecks:
+        orrery.kind === 'observed'
+          ? [
+              {
+                label: "this surface's code-structure revision",
+                observed: orrery.revision,
+                expected: model.project.revision,
+              },
+              ...(model.codeStructure.kind === 'observed'
+                ? [
+                    {
+                      label: "this surface's code-structure capture instant",
+                      observed: model.codeStructure.capturedAt,
+                      expected: model.evaluation.asOf,
+                    },
+                  ]
+                : []),
+            ]
+          : [],
+    }),
     escapeHtml,
     mountPrefix,
   });

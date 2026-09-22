@@ -52,7 +52,27 @@ export const DESIGN_TOKENS_CSS = `
     --cyan: #78e1d1;
     --amber: #f1b85b;
     --unknown: #f3c56f;
-    --focus: #f1b85b;
+    /* Its own token (N4; S11-F2): was an alias of --amber, so a focus ring
+       was visually indistinguishable from an amber Observed/notice accent.
+       Reuses the --cyan value literally, the hue this token set already
+       spends on interactivity (a, .wi-title:hover/:focus-visible), so focus
+       reads as "you are here, interactive" and never as "this is amber
+       semantic content". */
+    --focus: #78e1d1;
+    /* The Polaris reading column's declared measure (N4; S11-F3): resolves
+       the 66ch/74ch .reading-prose contradiction in polaris.ts (POLARIS_STYLE
+       declares 66ch at line ~1342, then redeclares 74ch at line ~1403, so the
+       later cascade rule — 74ch — is what actually renders and is also the
+       value every other reading-layout rule in that stylesheet already uses:
+       .band, .claim-section, .group, header, .capability-guide, etc.).
+       docs/POLARIS-READING-LAYOUT.md line 3 states no literal ch number
+       ("Polaris uses a wider editorial column..."), so the doc alone cannot
+       settle the two numbers; 74ch is the wider of the pair and the one that
+       already wins, so it is the value this token declares as canonical.
+       polaris.ts is out of scope for this change (owned by another slice) —
+       this token does not delete the duplicate 66ch declaration there; it
+       only names the resolved value for any surface reading this file. */
+    --measure-reading: 74ch;
     --font-serif: Georgia, 'Times New Roman', serif;
     --font-mono: 'Courier New', ui-monospace, monospace;
     --space-1: .5rem;

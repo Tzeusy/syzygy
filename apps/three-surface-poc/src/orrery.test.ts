@@ -128,4 +128,63 @@ describe('Orrery', () => {
     const second = renderOrreryPage(model);
     expect(second).toBe(first);
   });
+
+  describe('footer: composite evaluation identity and substrate revision (N4)', () => {
+    it('prints the same composite evaluation identity Polaris renders, plus what this surface\'s revision is a revision of', () => {
+      const model = buildFixtureModel(cleanups);
+      if (model.orrery.kind !== 'observed') throw new Error('unreachable');
+      const html = renderOrreryPage(model);
+
+      expect(html).toContain(`Evaluation <code>${model.evaluation.snapshot}</code>`);
+      expect(html).toContain(`as of <code>${model.evaluation.asOf}</code>`);
+      expect(html).toContain(
+        `<code data-parity-field="surface-substrate-revision">${model.orrery.revision}</code>`,
+      );
+      expect(html).toContain('is a revision of the observed code structure (git tree)');
+      // No skew in the default fixture: orrery.revision === project.revision
+      // and codeStructure.capturedAt === evaluation.asOf by construction.
+      expect(html).not.toContain('data-parity-field="evaluation-skew"');
+    });
+
+    it('renders an explicit Skew line when this surface\'s code-structure revision differs from the composite project revision (mutation check)', () => {
+      const model = buildFixtureModel(cleanups);
+      if (model.orrery.kind !== 'observed') throw new Error('unreachable');
+      const skewed = {
+        ...model,
+        orrery: { ...model.orrery, revision: '0000000000000000000000000000000000dead' },
+      };
+      const html = renderOrreryPage(skewed);
+      expect(html).toContain('<strong data-parity-field="evaluation-skew">Skew</strong>');
+      expect(html).toContain('this surface&#39;s code-structure revision');
+      expect(html).toContain('<code>0000000000000000000000000000000000dead</code>');
+      expect(html).toContain(`not <code>${model.project.revision}</code>`);
+    });
+
+    it('renders an explicit Skew line when the code-structure capture instant answers at a different evaluation (mutation check)', () => {
+      const model = buildFixtureModel(cleanups);
+      if (model.codeStructure.kind !== 'observed') throw new Error('unreachable');
+      const skewed = {
+        ...model,
+        codeStructure: { ...model.codeStructure, capturedAt: '2020-01-01T00:00:00Z' },
+      };
+      const html = renderOrreryPage(skewed);
+      expect(html).toContain('<strong data-parity-field="evaluation-skew">Skew</strong>');
+      expect(html).toContain('this surface&#39;s code-structure capture instant');
+      expect(html).toContain('<code>2020-01-01T00:00:00Z</code>');
+    });
+
+    it('names the substrate Unknown, never a fabricated revision, when orrery is unobserved', () => {
+      const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
+      const model = buildPocModel({
+        seeds: BUTLERS_POC_SEEDS,
+        repoRoot,
+        repositoryRevision: '0000000000000000000000000000000000dead',
+        observerRevision: revision,
+        evaluation: { snapshot: 'butlers@unreadable', asOf: '2026-08-30T12:00:00Z' },
+      });
+      const html = renderOrreryPage(model);
+      expect(html).toContain('Unknown — this surface has no observed substrate revision to name.');
+      expect(html).not.toContain('data-parity-field="surface-substrate-revision"');
+    });
+  });
 });
