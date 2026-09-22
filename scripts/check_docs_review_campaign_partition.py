@@ -154,6 +154,11 @@ CAMPAIGNS = (
         "N8 generality measurement",
         r"R-PWB-N8-.*\.md",
     ),
+    campaign(
+        "n4-page-honesty",
+        "N4 page honesty",
+        r"R-PWB-N4-.*\.md",
+    ),
 )
 
 
