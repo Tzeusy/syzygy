@@ -231,26 +231,69 @@ describe('byLimit — headroom against all seven declared limits (N3 slice 1)', 
     ledger.chargePass('p', 'utf8-and-nul-validation');
     ledger.chargePass('p', 'markdown-code-context-mask');
     const { byLimit } = ledger.summary();
-    expect(byLimit.maxTotalBytes).toEqual({ limit: 'maxTotalBytes', declared: 100, observed: 40, remaining: 60 });
-    expect(byLimit.maxParsePassesPerSource).toEqual({ limit: 'maxParsePassesPerSource', declared: 5, observed: 2, remaining: 3 });
+    expect(byLimit.maxTotalBytes).toEqual({ limit: 'maxTotalBytes', declared: 100, observed: { state: 'observed', value: 40 }, remaining: { state: 'observed', value: 60 } });
+    expect(byLimit.maxParsePassesPerSource).toEqual({ limit: 'maxParsePassesPerSource', declared: 5, observed: { state: 'observed', value: 2 }, remaining: { state: 'observed', value: 3 } });
   });
 
-  it('the five limits this ledger never counts itself report 0 with no recorded breach', () => {
+  it('maxBytesPerSource reads the largest body this ledger has actually charged, not a 0 standing in for "never counted"', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    ledger.chargeBody('a', OID_A, 5);
+    ledger.chargeBody('b', OID_B, 12);
+    const { byLimit } = ledger.summary();
+    expect(byLimit.maxBytesPerSource).toEqual({
+      limit: 'maxBytesPerSource',
+      declared: PWB_RESOURCE_LIMITS.maxBytesPerSource,
+      observed: { state: 'observed', value: 12 },
+      remaining: { state: 'observed', value: PWB_RESOURCE_LIMITS.maxBytesPerSource - 12 },
+    });
+  });
+
+  it('maxSources reads sourcesTraversed, never contradicting it in the same summary, before any breach is recorded', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    ledger.chargePass('a', 'utf8-and-nul-validation');
+    ledger.chargePass('b', 'utf8-and-nul-validation');
+    const summary = ledger.summary();
+    expect(summary.sourcesTraversed).toBe(2);
+    expect(summary.byLimit.maxSources).toEqual({
+      limit: 'maxSources',
+      declared: PWB_RESOURCE_LIMITS.maxSources,
+      observed: { state: 'observed', value: summary.sourcesTraversed },
+      remaining: { state: 'observed', value: PWB_RESOURCE_LIMITS.maxSources - summary.sourcesTraversed },
+    });
+  });
+
+  it('maxIndexDepth reads the fixed, always-known PWB_INDEX_DEPTH constant, never a silent 0', () => {
     const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
     const { byLimit } = ledger.summary();
-    for (const limit of ['maxSources', 'maxBytesPerSource', 'maxIndexDepth', 'maxHumanResponseBytes', 'maxMachineResponseBytes'] as const) {
-      expect(byLimit[limit]).toEqual({ limit, declared: PWB_RESOURCE_LIMITS[limit], observed: 0, remaining: PWB_RESOURCE_LIMITS[limit] });
+    expect(byLimit.maxIndexDepth).toEqual({
+      limit: 'maxIndexDepth',
+      declared: PWB_RESOURCE_LIMITS.maxIndexDepth,
+      observed: { state: 'observed', value: 3 },
+      remaining: { state: 'observed', value: PWB_RESOURCE_LIMITS.maxIndexDepth - 3 },
+    });
+  });
+
+  it('the two response ceilings this ledger never touches report Unknown, never a false 0', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    const { byLimit } = ledger.summary();
+    for (const limit of ['maxHumanResponseBytes', 'maxMachineResponseBytes'] as const) {
+      const usage = byLimit[limit];
+      expect(usage.declared).toBe(PWB_RESOURCE_LIMITS[limit]);
+      expect(usage.observed.state).toBe('unknown');
+      expect(usage.remaining.state).toBe('unknown');
+      if (usage.observed.state === 'unknown') expect(usage.observed.reason.length).toBeGreaterThan(0);
     }
   });
 
-  it('a recorded breach is the only evidence those five limits carry: the highest observed value wins and remaining goes negative', () => {
-    const ledger = createResourceLedger(limits({ maxSources: 10, maxIndexDepth: 4 }));
+  it('a recorded breach can raise maxSources and maxBytesPerSource above what this ledger charged directly, and remaining goes negative', () => {
+    const ledger = createResourceLedger(limits({ maxSources: 10, maxBytesPerSource: 10 }));
+    ledger.chargePass('a', 'utf8-and-nul-validation');
     ledger.recordBreach({ limit: 'maxSources', declared: 10, observed: 11, path: 'a' });
     ledger.recordBreach({ limit: 'maxSources', declared: 10, observed: 13, path: 'b' });
-    ledger.recordBreach({ limit: 'maxIndexDepth', declared: 4, observed: 5 });
+    ledger.recordBreach({ limit: 'maxBytesPerSource', declared: 10, observed: 20, path: 'huge' });
     const { byLimit } = ledger.summary();
-    expect(byLimit.maxSources).toEqual({ limit: 'maxSources', declared: 10, observed: 13, remaining: -3 });
-    expect(byLimit.maxIndexDepth).toEqual({ limit: 'maxIndexDepth', declared: 4, observed: 5, remaining: -1 });
+    expect(byLimit.maxSources).toEqual({ limit: 'maxSources', declared: 10, observed: { state: 'observed', value: 13 }, remaining: { state: 'observed', value: -3 } });
+    expect(byLimit.maxBytesPerSource).toEqual({ limit: 'maxBytesPerSource', declared: 10, observed: { state: 'observed', value: 20 }, remaining: { state: 'observed', value: -10 } });
   });
 
   it('carries all seven declared identities, never an eighth', () => {
@@ -265,6 +308,20 @@ describe('byLimit — headroom against all seven declared limits (N3 slice 1)', 
       'maxTotalBytes',
     ]);
   });
+
+  // Rule 6: mutate the Unknown branch and confirm a test fails. Mutation:
+  // in resource-ledger.ts's `observationFor`, the `maxHumanResponseBytes`
+  // / `maxMachineResponseBytes` case changed from
+  // `{ state: 'unknown', reason: '...' }` to `{ state: 'observed', value: 0 }`
+  // (i.e. reverting to the pre-repair silent-zero behavior this describe
+  // block exists to forbid) — run and reverted by hand; recorded here
+  // because the mutated file is not committed. Result: the "response
+  // ceilings... report Unknown" test above fails two assertions
+  // (`usage.observed.state` reads `'observed'` instead of `'unknown'`) for
+  // both `maxHumanResponseBytes` and `maxMachineResponseBytes`, and the
+  // `usage.observed.reason` branch is never reached because `toBe('unknown')`
+  // already fails first — confirming the test is sensitive to the Unknown
+  // state, not vacuous.
 });
 
 describe('cost — a pure derived record, no new observation (N3 slice 1)', () => {
@@ -378,11 +435,13 @@ describe('guard: maxPassesOnOneSource stays inside its declared margin (N3 slice
 
   it('a registry pass identity charged to the worst source pushes it past the margin: the guard fails, naming the source and its passes', () => {
     // Mutation: 'about/README.md' real 14-pass sequence gains a 15th
-    // charge, 'project-account-extraction' — standing in for a future
-    // registry pass identity that would also apply to this source (per
-    // L11-F2's WHY: M2, M14, M15 or lane B). old fragment: the 14-entry
-    // array ending in 'fact-and-precedence-extraction'. new fragment: the
-    // same 14 plus 'project-account-extraction' appended.
+    // charge, 'project-account-extraction' — an already-registered pass
+    // identity (`PARSE_PASS_IDENTITIES`, charged elsewhere for the account
+    // section) newly applying to this source, standing in for how a 15th
+    // charge could arrive here (per L11-F2's WHY: M2, M14, M15 or lane B).
+    // old fragment: the 14-entry array ending in
+    // 'fact-and-precedence-extraction'. new fragment: the same 14 plus
+    // 'project-account-extraction' appended.
     const mutatedSequences: Readonly<Record<string, readonly ParsePassIdentity[]>> = {
       ...WORST_SOURCE_PASS_SEQUENCES,
       'about/README.md': [...ABOUT_README_SEQUENCE, 'project-account-extraction'],
