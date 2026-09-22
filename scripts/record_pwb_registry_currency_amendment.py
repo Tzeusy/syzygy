@@ -22,6 +22,18 @@ to the argument, and writes the dedicated record and one aggregate section
 of `ACCEPTANCE-ACT-RECORD.md`. `--check` re-derives both after adoption.
 `--selftest` mutates each predicate and requires it to fail closed.
 
+The confirmation raw is bound by its head, not its path: its first four
+non-blank lines must carry `Reviewed commit: <40 hex>`, `Manifest SHA-256:
+<argument>` and `Verdict: CONFIRM`, where the argument is the manifest's one
+row — the proposed-bytes digest the reviewer re-derives by script (rule 3)
+and the owner speaks. This is the form the sibling
+`record_pwb_behavior_amendment_acts.py` requires. Round 1 of this package's
+confirmation put the manifest *file's* digest on that line and satisfied the
+2026-09-22 recorder; rounds 2 and 3 put the row there, and the recorder was
+re-pinned to round 3 on 2026-09-23 (`syzygy-qxz`), so a raw carrying the
+file digest is now rejected. The file digest is still recorded, from the
+bytes the frozen subject carries, not from the raw.
+
 At adoption the performing change also adds, in `check_governance.py`, the
 new `PWB_EFFECT_AMENDMENT_ACTS` row (new record path, act-time digest), the
 existence-gated copy registration of the new record, and the record's own
@@ -47,13 +59,13 @@ DECISIONS = pathlib.Path(".syzygy/governance/decisions")
 AGGREGATE_REL = DECISIONS / "ACCEPTANCE-ACT-RECORD.md"
 OWNER_PACKET = packet.CANDIDATE / "OWNER-DECISION-PACKET.md"
 CONFIRMATION_REVIEW_REL = pathlib.Path(
-    "docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-CONFIRMATION-RAW.md"
+    "docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-CONFIRMATION-3-RAW.md"
 )
 #: The commit on main carrying the package bytes (manifest, patch, packet)
 #: the offered argument is derived from. Re-set, never hand-edited, whenever
 #: the patch or an owner value changes.
-FROZEN_SUBJECT = "9d741859dceee935f256b99ebb68e095545b868b"
-PACKET_HEAD = "9d741859dceee935f256b99ebb68e095545b868b"
+FROZEN_SUBJECT = "4b59e39f501bae2a7ffbbe9dad5c76df2a8f85e5"
+PACKET_HEAD = "4b59e39f501bae2a7ffbbe9dad5c76df2a8f85e5"
 ACT_TYPE = "adopt-registry-entry"
 ACT_LABEL = "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY"
 RECORD_REL = DECISIONS / "PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md"
@@ -111,7 +123,8 @@ def validate_artifact(
     the digest of its proposed bytes. `applied=True` (after adoption): the
     subject hashes to the argument. In both states the manifest row equals
     the argument and the frozen subject carries the manifest bytes.
-    Returns the manifest's SHA-256, which the confirmation review binds.
+    Returns the manifest's SHA-256, recorded beside the argument; the
+    confirmation review binds the argument itself (see the module docstring).
     """
     if not SHA_RE.fullmatch(argument):
         raise ValueError("owner argument is not a 64-hex SHA-256")
@@ -178,9 +191,12 @@ def validate_packet(
     if review_override is None and not review_path.is_file():
         raise ValueError(f"missing confirmation review: {CONFIRMATION_REVIEW_REL.as_posix()}")
     review = review_override if review_override is not None else review_path.read_text()
-    head = review.splitlines()[:4]
-    if f"Manifest SHA-256: {manifest_sha}" not in head:
-        raise ValueError("confirmation review does not bind the offered effect manifest")
+    head = [line for line in review.splitlines() if line.strip()][:4]
+    if f"Manifest SHA-256: {argument}" not in head:
+        raise ValueError(
+            "confirmation review head does not bind the owner argument "
+            "(the effect manifest's proposed-bytes row)"
+        )
     if "Verdict: CONFIRM" not in head:
         raise ValueError("confirmation review head does not carry the exact verdict CONFIRM")
     reviewed = REVIEWED_COMMIT_RE.search("\n".join(head))
@@ -252,7 +268,8 @@ Frozen provenance:
 - owner-packet head: `{PACKET_HEAD}`;
 - effect manifest SHA-256: `{manifest_sha}`;
 - confirmation review: `{CONFIRMATION_REVIEW_REL.as_posix()}`, verdict
-  `CONFIRM`, bound to that manifest digest; the raw names reviewed commit
+  `CONFIRM`, its head bound to the argument above (the manifest row, which
+  the raw re-derived by script); the raw names reviewed commit
   `{reviewed}` [Observed — the raw's own line; binding is by digest]; and
 - recording tag: `{tag_for(date)}`, on the commit carrying this act record.
 
@@ -317,7 +334,7 @@ def render_aggregate_block(argument: str, date: str, manifest_sha: str) -> str:
 | Supersession | the {PREDECESSOR_DATE} `{ACT_TYPE}` act recorded at `{PREDECESSOR_REL.as_posix()}`; that act, its digest and its tag remain immutable history |
 | Frozen subject / packet head | `{FROZEN_SUBJECT}` / `{PACKET_HEAD}` |
 | Effect manifest | `{packet.OUT.as_posix()}`, SHA-256 `{manifest_sha}` |
-| Review outcome | `{CONFIRMATION_REVIEW_REL.as_posix()}`: `CONFIRM`, bound to that manifest digest |
+| Review outcome | `{CONFIRMATION_REVIEW_REL.as_posix()}`: `CONFIRM`, its head bound to the argument (the manifest row) |
 | Recording | `{RECORD_REL.as_posix()}`; annotated tag `{tag_for(date)}` on the commit carrying these records |
 
 Effective status: this one amended artifact is **effective owner authority —
@@ -465,10 +482,20 @@ def selftest() -> int:
     results.append(("packet bytes the packet head lacks rejected",
                     rejects(validate_packet, "packet-head commit does not carry",
                             ROOT, exact, manifest_sha, packet_override=drifted)))
-    unbound = review.replace(f"Manifest SHA-256: {manifest_sha}", "Manifest SHA-256: " + "0" * 64, 1)
-    results.append(("review not binding the effect manifest rejected",
-                    rejects(validate_packet, "does not bind the offered effect manifest",
+    assert f"Manifest SHA-256: {exact}" in review, "fixture raw lacks the argument line"
+    unbound = review.replace(f"Manifest SHA-256: {exact}", "Manifest SHA-256: " + "0" * 64, 1)
+    results.append(("review not binding the owner argument rejected",
+                    rejects(validate_packet, "does not bind the owner argument",
                             ROOT, exact, manifest_sha, review_override=unbound)))
+    file_digest = review.replace(f"Manifest SHA-256: {exact}", f"Manifest SHA-256: {manifest_sha}", 1)
+    results.append(("review binding the manifest file's digest instead of the argument rejected",
+                    rejects(validate_packet, "does not bind the owner argument",
+                            ROOT, exact, manifest_sha, review_override=file_digest)))
+    assert "\nVerdict: CONFIRM\n" in review, "fixture raw lacks a verdict line"
+    displaced = review.replace("\nVerdict: CONFIRM\n", "\nReviewer note: none\n\nVerdict: CONFIRM\n", 1)
+    results.append(("verdict displaced past the fourth non-blank head line rejected",
+                    rejects(validate_packet, "exact verdict CONFIRM",
+                            ROOT, exact, manifest_sha, review_override=displaced)))
     wrong_verdict = review.replace("Verdict: CONFIRM", "Verdict: CONFIRM WITH EXCEPTIONS", 1)
     results.append(("review verdict other than CONFIRM rejected",
                     rejects(validate_packet, "exact verdict CONFIRM",

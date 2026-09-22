@@ -156,7 +156,7 @@ Last compacted 2026-09-05; C5 seams, recorder notes and the docs-estate
 lessons added the same day; the second through fifth docs-pass lessons
 added 2026-09-06; the ceiling, locator, extractor and regex lessons
 added 2026-09-07; the CG-22 phrase, digest-bound review and run-form
-sweep lessons added 2026-09-23.
+sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
 
 ### Architecture
 
@@ -597,6 +597,17 @@ sweep lessons added 2026-09-23.
   rebase-merged branch is unreachable from `main` (`git merge-base
   --is-ancestor` fails), so a commit pin would refuse forever. Cite the
   commit as provenance only.
+- **Say which digest the raw's head must carry, in the brief and the
+  recorder docstring.** "Manifest SHA-256" names two things when the act
+  argument is the subject's digest rather than the manifest's: round 1 of
+  the registry confirmation put the manifest *file's* sha there, rounds 2
+  and 3 the manifest *row* (the proposed-bytes digest, which the reviewer
+  re-derives by script), and the recorder, written to round 1, refused a
+  CONFIRM over the row. Also a blank line after the title pushes `Verdict:`
+  past a literal four-line head. The registry recorder now binds the
+  argument over the first four non-blank lines (the sibling behaviour
+  recorder's form, 2026-09-23, `syzygy-qxz`); a recorder's head contract
+  is a predicate the brief must quote, never a convention reviewers infer.
 - CG-22 accepts a status qualifier only as one of its exact listed phrases
   ("governance lifecycle", "state plane", …) within the whitespace-normalized
   window; the hyphenated adjective form ("governance-lifecycle") does not
