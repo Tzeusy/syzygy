@@ -1,0 +1,25 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+index 543469d..0000000 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -469,3 +469,20 @@
+ 
++#### Scenario: No effective currency bound is disclosed outside freshness
++
++- **WHEN** a project claim's class has no currency-bound declaration with
++  effective owner-act provenance at the evaluation's as-of instant
++- **THEN** the claim renders `Unknown` with primary reason
++  `no-currency-bound-declared`, exposes the exact resolution route `Declare
++  the bound in quality policy`, and retains its tier, challenge state,
++  semantic claim identity and evaluation identity
++- **AND** the missing effective bound is disclosed as a named, expandable fact
++  of the render outside the claim's freshness slot; no `fresh`, `stale`,
++  `broken`, `superseded` or fifth value is minted, inferred or force-fit for
++  that condition
++- **AND** for this condition only, that outside-slot disclosure is the complete
++  presentation where this requirement otherwise names freshness; every other
++  tuple obligation remains, and no aggregate absorbs the claim into a current
++  or favourable value, omits its primary reason count or hides its route
++
+ #### Scenario: Missing current evidence remains explicit Unknown
+ 
