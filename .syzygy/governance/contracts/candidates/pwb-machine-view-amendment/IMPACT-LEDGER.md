@@ -115,11 +115,26 @@ pending against the same eleven subjects.
   second must be regenerated with `--write` against the tree after the first
   lands, and its packet's quoted manifest digest updated before the second
   act.
-  As of 2026-09-23 the sibling population is three
-  (`pwb-exact-source-render-mode-scenario/` and `pwb-opening-band-scenario/`
-  patch the same subjects; the builder composes against scoped-attributes
-  only), so "second" reads as "each one signed after the first". This is arithmetic, not disagreement: neither package's prose touches
-  the other's sentences.
+  Re-derived at `76b4beb` (2026-09-23): **five** candidates under
+  `.syzygy/governance/contracts/candidates/` carry a `proposed/spec.md.patch`
+  against the PWB `spec.md` — this one, `pwb-scoped-attributes-amendment/`,
+  `pwb-exact-source-render-mode-scenario/`, `pwb-opening-band-scenario/` and
+  `pwb-missing-currency-disclosure-scenario/` — so "second" reads as "each
+  one signed after the first". (An earlier sentence here counted three on
+  the same date; the fourth sibling had landed before it was committed,
+  §Review round 3 F6.) The builder composes against scoped-attributes only.
+  This package's patch was also composed with each of the other three in
+  both orders this session, by `git apply` in a scratch tree, each pair to
+  one digest [Observed]. Two limits on "regenerate": `--write` repairs the
+  generated `Source:` line only and does not make a sibling's
+  *specification* patch apply (among the siblings, missing-currency applied
+  before scoped-attributes fails; every order with scoped-attributes first
+  composes to one digest [Observed]); and the order itself is the owner's,
+  fixed in
+  `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md`
+  §6 with lane B last, which this package cites and does not restate. This
+  is arithmetic, not disagreement: neither package's prose touches the
+  other's sentences.
 
 ## Every citing file
 

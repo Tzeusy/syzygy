@@ -6,15 +6,18 @@ proposed bytes are the patches under `proposed/` over the current tree,
 printed by `python3 scripts/build_pwb_machine_view_amendment.py --diff`;
 nothing in `openspec/` is changed on the reviewed commit.
 
-**Two rounds have been run against this brief** (the first draft said here
-"This is the first round. No review has been run against these bytes").
-Round 1 returned CONFIRM WITH EXCEPTIONS
+**Three rounds have been run against this brief** (the first draft said
+here "This is the first round. No review has been run against these
+bytes"). Round 1 returned CONFIRM WITH EXCEPTIONS
 (`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-RAW.md`); round 2, over the repaired
 bytes at `9d74185`, returned CONFIRM WITH EXCEPTIONS
-(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-RAW.md`). Dispositions
-of both are in `SEMANTIC-DELTA.md` §Review; the repairs after each round
-edited prose only and are not covered by that round's verdict (rule 10).
-This brief stays live as the commission for any further round.
+(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-RAW.md`); round 3, over
+the repaired bytes at `76b4beb`, returned CONFIRM WITH EXCEPTIONS
+(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-2-RAW.md`).
+Dispositions of all three are in `SEMANTIC-DELTA.md` §Review; the repairs
+after each round edited prose only and are not covered by that round's
+verdict (rule 10). This brief stays live as the commission for any further
+round.
 
 Required baseline:
 

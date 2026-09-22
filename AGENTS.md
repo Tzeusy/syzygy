@@ -155,7 +155,8 @@ tailscale `--set-path` finding live in `bd memories` — do not re-add them.
 Last compacted 2026-09-05; C5 seams, recorder notes and the docs-estate
 lessons added the same day; the second through fifth docs-pass lessons
 added 2026-09-06; the ceiling, locator, extractor and regex lessons
-added 2026-09-07.
+added 2026-09-07; the CG-22 phrase, digest-bound review and run-form
+sweep lessons added 2026-09-23.
 
 ### Architecture
 
@@ -350,7 +351,12 @@ added 2026-09-07.
   sweep matching the full identifier misses every continuation and produces a
   false absence (it produced one, on a page written the day before). An
   absence claim's denominator must cover the *forms* an identifier occurs in,
-  not only the records searched (rule 9).
+  not only the records searched (rule 9). A predicate published in words
+  ("followed by a bare `010`") and run over one member returned 0 / 0 where
+  the run form `PWB-REQ-001/002/003/004/005/010` returns six files, five
+  with no literal at all (opening-band ledger, found 2026-09-23 one round
+  after the same section's first false absence): publish the regex, with
+  run length, separators and case, and re-run it at the stated commit.
 - The two in-force craft policies inside `policy-candidates/` are in the
   authority table above; the trap that is not is CC-IMPACT-7, which mandates a
   blind run against `SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md` by path *and*
@@ -464,11 +470,14 @@ added 2026-09-07.
   byte-compared by CI. A count of unbannered heads measures what a reader may
   open, never how much work is available; check what protects each file before
   costing a pass over a population.
-- `docs/README.md`'s review-campaign table is ten rows over every file in
-  `docs/reviews/`, each row carrying its last verdict of record and where the
-  findings landed. It is re-derived, not maintained: the count moved 88 → 90
-  within a day of being written, and again the same day, so rerun the
-  partition rather than trusting a row.
+- `docs/README.md`'s review-campaign table is one row per campaign over
+  every file in `docs/reviews/`, each row carrying its last verdict of record
+  and where the findings landed. It is re-derived, not maintained: the count
+  moved 88 → 90 within a day of being written, and again the same day, so
+  rerun `scripts/check_docs_review_campaign_partition.py` rather than
+  trusting a row. A new `-RAW.md` whose basename matches no campaign
+  pattern fails it as `unmatched`: add the pattern and the row in the same
+  commit as the raw.
 - **An index that routes by short name makes the files it routes read as
   orphans.** `contracts/candidates/reviews/DISPOSITIONS.md` sections are
   titled "rev10-boundary", "rev10-safety" — never the filename — so a sweep
@@ -577,7 +586,22 @@ added 2026-09-07.
 - A reviewer killed mid-write by a rate limit may already have a complete
   raw on disk: check the worktree before re-dispatching, and if the file is
   whole commit it verbatim (CC-REV-6) — a second reviewer run is a second
-  `-RAW.md`, never a replacement.
+  `-RAW.md`, never a replacement. Two lead sessions dispatched the same
+  confirmation review within minutes on 2026-09-23 and got different words
+  (REVISE and CONFIRM WITH EXCEPTIONS) over the same bytes: before
+  dispatching, read the gate bead's comments and `git ls-remote origin
+  'review/*'`; if it already happened, retain both raws (the second under a
+  distinct name) and let the disposition name both verdicts.
+- A recorder binds a review by the manifest digest in the raw's four-line
+  head, never by the raw's `Reviewed commit`: every review commit on a
+  rebase-merged branch is unreachable from `main` (`git merge-base
+  --is-ancestor` fails), so a commit pin would refuse forever. Cite the
+  commit as provenance only.
+- CG-22 accepts a status qualifier only as one of its exact listed phrases
+  ("governance lifecycle", "state plane", …) within the whitespace-normalized
+  window; the hyphenated adjective form ("governance-lifecycle") does not
+  qualify. A recorder that renders a bare `status` code span into a record
+  must carry the phrase in the same sentence.
 
 ## Beads Issue Tracker
 

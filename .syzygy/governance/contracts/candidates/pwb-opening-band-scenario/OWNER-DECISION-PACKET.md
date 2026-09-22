@@ -5,14 +5,24 @@
 > merged pull request, a review, a manifest, silence or a general "approved"
 > performs no act.
 
-Date: 2026-09-21 (first draft; repaired the same day). One fresh-context
-review has been run against `REVIEW-BRIEF.md` and returned **CONFIRM WITH
-EXCEPTIONS** with three notes and no blocking finding — raw output at
-`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md`, dispositions in
-`SEMANTIC-DELTA.md` §Review. All three notes are repaired in prose only: no
-patch byte, no manifest row and none of the five open questions moved, so
-the manifest digest below is unchanged. The verdict is bound to the commit
-the raw names, **not** to these repaired bytes (rule 10).
+Date: 2026-09-21 (first draft; repaired 2026-09-21 and 2026-09-23).
+**Status as of 2026-09-23:** three fresh-context reviews have run against
+`REVIEW-BRIEF.md` — round 1 **CONFIRM WITH EXCEPTIONS**
+(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md`); round 2, over
+the repaired bytes at `9d74185`, **REVISE**
+(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-RAW.md`);
+round 3, over the repaired bytes at `76b4beb`, **REVISE**
+(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-2-RAW.md`). A
+parallel independent round over the round-2 bytes returned **CONFIRM WITH
+EXCEPTIONS**
+(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-B-RAW.md`).
+Each word is copied exactly from its raw; `SEMANTIC-DELTA.md` §Review owns
+the dispositions. Every finding was repaired in prose only: no patch byte,
+no manifest row and no proposed sentence moved, so the manifest digest
+below is unchanged. Each verdict is bound to the commit its raw names,
+**not** to these repaired bytes (rule 10), which await a round 4. An
+earlier head here reported one review and one verdict; it had been stale
+since round 2 (round 3 finding 14).
 
 Warrant: your 2026-09-21 direction recorded in
 `.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`,
@@ -197,9 +207,9 @@ and
 `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json`.
 Each carries a `signedBy` value naming a pending exact owner act. This
 package edits neither, because the P-74 and P-78 rows each close by saying
-the registry entry is edited on no arm — P-78: "The registry entry **is**
+the registry entry is edited on no arm — P-78: "The registry entry is
 edited on no arm."; P-74: "The consent record, the registry entry and
-PWB-REQ-005 **are** edited on no arm." (each its own sentence; a whole-row
+PWB-REQ-005 are edited on no arm." (each its own sentence; a whole-row
 summary, not a sub-question ruling; an earlier draft tagged it "Q4" and
 that tag is withdrawn), and P-69 Q2(a) with P-72 Q2 travel as one superseding
 registry-entry act at gate bead `syzygy-dov.18`. That the repair belongs
@@ -213,12 +223,16 @@ words. `IMPACT-LEDGER.md` carries the full sweep.
 None of it performed by this package.
 
 1. Fresh-context review against `REVIEW-BRIEF.md`; raw output retained
-   verbatim, bytes frozen (rule 10). **Done twice** — round 1 CONFIRM WITH
-   EXCEPTIONS, three notes, all repaired in prose; round 2 (2026-09-23, over
-   the repaired bytes at `9d74185`) REVISE, two false sentences in the impact
-   ledger and five notes, all repaired in prose. Each verdict is bound to
-   the commit it reviewed; a round 3 over these bytes is the next step, and
-   only a round that confirms them lets a phrase be offered.
+   verbatim, bytes frozen (rule 10). **Done three times** — round 1 CONFIRM
+   WITH EXCEPTIONS, three notes, all repaired in prose; round 2 (2026-09-23,
+   over the repaired bytes at `9d74185`) REVISE, two false sentences in the
+   impact ledger and five notes, all repaired in prose; round 3 (2026-09-23,
+   over the repaired bytes at `76b4beb`) REVISE — a false attribution the
+   round-2 repair had introduced, a class-5 figure that did not partition,
+   and this packet's stale head — plus five notes, all repaired in prose.
+   Each verdict is bound to the commit it reviewed; a round 4 over these
+   bytes is the next step, and only a round that confirms them lets a phrase
+   be offered.
 2. You answer OQ-1 to OQ-5. An answer to OQ-2 or OQ-3 may change the
    proposed bytes, which would retire the review. **Done, 2026-09-23**:
    OQ-1 and OQ-2 in
@@ -233,7 +247,8 @@ None of it performed by this package.
 4. `--apply --at-adoption` writes the proposed bytes into the tree in the
    same change as the act record.
 5. Only then may slice 3 be scheduled, on your separate implementation
-   authorization. Slices 4 and 5 still need OQ-1 answered.
+   authorization. Slices 4 and 5 still need the
+   `syzygy-dov.26` amendment that the OQ-1 answer routes them to.
 
 Lane B and this package are independent offerings: either may be adopted
 first. The builder proves the two specification patches compose in **both**

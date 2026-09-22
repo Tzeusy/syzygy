@@ -9,8 +9,9 @@
 > could give the proposed bytes effect.
 
 **Baseline commit:** `a4a3451` (2026-09-21), the branch point of
-`agent/gate-opening-band-scenario`. Every figure below was produced at that
-commit plus this package's own untracked files, this session.
+`agent/gate-opening-band-scenario`. Every figure below was produced over the
+tracked files of that commit, this session, except where a paragraph names
+another population.
 
 **Subject:** one scenario added under PWB-REQ-010 in the signed PWB
 behavioral change. The delta is in `SEMANTIC-DELTA.md`; the proposed bytes
@@ -169,8 +170,8 @@ pins — this package's, lane B's, and the P-69 Q7a clarification alike
 This package does not edit either file, for two reasons. First, the owner
 ruled on 2026-09-21, in the P-74 and P-78 rows, that the adapter-registry
 entry is edited on no arm of those moves — P-78's row closes "The registry
-entry **is** edited on no arm." and P-74's closes "The consent record, the
-registry entry and PWB-REQ-005 **are** edited on no arm." (each quoted from
+entry is edited on no arm." and P-74's closes "The consent record, the
+registry entry and PWB-REQ-005 are edited on no arm." (each quoted from
 its own row; an earlier draft attributed P-78's sentence to both, §Review
 finding 9). Each sentence closes its row's "What it means" cell as a summary
 of the whole row, which answers several sub-questions; neither is scoped to
@@ -191,10 +192,16 @@ package that produced them quote the digests they bound at their own moment.
 They are correct about that moment and are never rewritten. This package
 cites them by path and quotes no act argument.
 
-### Class 5 — citers carrying no obligation this scenario changes (37 files)
+### Class 5 — citers carrying no obligation this scenario changes (39 files)
 
 The remainder of the 41 `PWB-REQ-010` citers (36 literal plus the five the
-continuation sweep adds, recounted 2026-09-23), by kind:
+continuation sweep adds): 41 less the two class-1 files, `spec.md` and
+`GOVERNING-DEPENDENCIES.md`, is **39** — no class-2, class-3 or class-4
+file carries the identifier at `a4a3451` except `CAPABILITY-COVERAGE.md`,
+which is counted below. Re-derived 2026-09-23 by re-running sweep 1 over
+the baseline tree and placing every hit in exactly one kind; an earlier
+heading said 37 and left two citers in no kind (§Review round 3, finding
+13). By kind, summing to 39:
 
 - **Implementation and tests (6):** `apps/three-surface-poc/src/polaris.ts`,
   `polaris-first-reading.test.ts`, `polaris-project-shape.test.ts`,
@@ -214,11 +221,19 @@ continuation sweep adds, recounted 2026-09-23), by kind:
   eleven.
 - **Design packets (2):** the M3 and M4 funnels. They are the drafting
   inputs, are read-only to this package, and are not edited by it.
-- **Retained raw reviews (11)** and **dated evidence records (12)**: never
-  edited, under CC-REV-6 and the evidence-record convention. One raw and
-  three evidence records reach this class only through the continuation
-  sweep. An adoption
+- **Retained raw reviews (11)** and **dated evidence records (12)** — the
+  ten `docs/evidence/*.json` hits and the two
+  `docs/pursuits/2026-09-13-*.json` harvest records: never edited, under
+  CC-REV-6 and the evidence-record convention. One raw and three evidence
+  records reach this class only through the continuation sweep. An adoption
   does not make them wrong; they are true of their own commits.
+- **The implementation plan and one dated review record (2):**
+  `docs/PWB-IMPLEMENTATION-PLAN.md` and
+  `docs/reviews/2026-09-09-polaris-editorial-repair.md`. The plan names the
+  requirement in its first-reading slice and moves only as owner-authorized
+  work advances; the dated record is true of its own commit and is not
+  edited. Both were swept from the first draft and placed in no kind until
+  2026-09-23 (§Review round 3, finding 13).
 - **The pending-decision register (1):**
   `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`. Registering
   this package's sign-off as a queue row is the coordinator's merge-time
@@ -279,8 +294,14 @@ B changes shape rather than going quietly stale.
 
 The P-69 Q7a clarification scenario to PWB-REQ-007 (gate bead
 `syzygy-dov.20`) and the P-75 Q1 three-surface package (gate bead
-`syzygy-dov.26`) are not drafted at this commit; both are named in
-`SEMANTIC-DELTA.md` as regions this package must not enter, which is why the
-scenario is hosted under PWB-REQ-010 and not under PWB-REQ-007 [Observed:
-the two gate rows; the non-overlap is a drafting choice, and open question
-OQ-2 puts the placement back to the owner].
+`syzygy-dov.26`) are not drafted at the baseline commit `a4a3451`. As of
+2026-09-23 the first is drafted, as the sibling candidate
+`pwb-missing-currency-disclosure-scenario/`, whose specification patch
+inserts under PWB-REQ-007 (`spec.md` line 469) and composes with this
+package's patch in both orders to one digest [Observed this session, by
+`git apply` in a scratch tree; the builder asserts lane B composition
+only]; the second is not. Both are named in `SEMANTIC-DELTA.md` as regions
+this package must not enter, which is why the scenario is hosted under
+PWB-REQ-010 and not under PWB-REQ-007 [Observed: the two gate rows; the
+non-overlap is a drafting choice, and open question OQ-2 put the placement
+back to the owner, who answered placement (A) on 2026-09-23].
