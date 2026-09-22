@@ -148,12 +148,14 @@ this entry and by nothing else.
 **3. `maxBriefingResponseBytes` — a third declared response ceiling.**
 Added to `resourceLimits` with its own `resourceLimitSemantics` sentence,
 placed after `maxMachineResponseBytes` and before `breachResult`, which is
-unchanged. The sentence says the ceiling covers the final encoded HTTP
-body of each authenticated derived read-only machine view response that
-serves one named subject composed from an evaluation already served under
-`maxMachineResponseBytes`; that it is a separate and tighter ceiling,
-never a share of that one; and that a view without its own declared
-ceiling is not served.
+unchanged. The sentence says the ceiling covers the final encoded HTTP body
+of each authenticated derived read-only machine view response whose required
+subject is one exact project-shape claim identified by its full claim id; any
+remaining fields are same-evaluation joins independently derivable from the
+machine answer already served under `maxMachineResponseBytes`. The ceiling is
+separate and tighter, never a share of that one, and a view without its own
+declared ceiling is not served. This is the proposed join to the now-present
+`syzygy-dov.22` candidate; it remains an owner choice and binds nothing here.
 
 **4. The version bump.** `registryVersion` and `observerVersion` both move
 from `1.1.0-candidate.1` to `1.2.0-candidate.1`: a minor bump, matching
@@ -219,15 +221,23 @@ the third ceiling is `PWB-REQ-006`'s requirement that a final-output sink
 have an explicit declared byte ceiling, together with P-72's ruling that
 no route is served before its ceiling is declared.
 
+The doctrine boundary is direct: `VIS-2` requires an undeclared or stale
+class to remain Unknown; `VIS-4` reserves performance of the superseding act
+to the owner; and `VIS-7` requires the as-of-bound result and its limit identity
+to remain deterministic and faithfully rendered. `CC-REV-2` makes the later
+adoption change indivisible with every authority byte this amendment
+invalidates; this candidate package deliberately performs none of that change.
+
 Method warrant: `NORMATIVE-CHANGE-WORKFLOW.md` and
 `SEMANTIC-DELTA-TEMPLATE.md` under
 `.syzygy/governance/contracts/candidates/policy-candidates/`. This delta
 stops at step 2 of that workflow: it is drafted and its blast radius is
-established. One independent review has since been run in fresh context by
-a different session, against the brief's own criteria; the `## Review`
-section below carries its verdict, the path to its raw output and the
-disposition of every finding. No review file lives inside this package,
-and no self-review was performed.
+established. Two independent reviews were run in fresh context against
+predecessor bytes; the `## Review` section below preserves their exact verdicts,
+raw paths and dispositions. The later sibling-package reconciliation changed
+the proposed semantics, so step 3 must run again after the owner fixes the
+reserved values. No review file lives inside this package, and no self-review
+was performed.
 
 ## Evidence or decision basis
 
@@ -353,7 +363,7 @@ the current bytes issues a second raw; this one is not overwritten.
 | F3 — `claimClassAssignment` names two populations with one shorthand | revise | **Repaired in the proposed bytes.** Every population is now named by its full claim id, and the sentence says in its own words that `claim:fact:project-account:<key>` and `claim:project-account:<key>` are different populations taking different rows. This changed the patch, so the manifest row was regenerated. |
 | F4 — PWB-REQ-004 does not define a claim-class vocabulary | note | **No change.** The finding is against the review instructions this session was given, not the package: `SEMANTIC-DELTA.md` and `REVIEW-BRIEF.md` both cite PWB-REQ-006/007 and verify the thirteen classes against the two source files, which is the reading the reviewer independently confirmed with zero set difference. |
 | F5 — the briefing-ceiling rationale mischaracterizes its measurement | note | **Repaired.** The packet row now states the measured figures (7,076 and 5,150 bytes) and that 20,480 is roughly 2.9x the larger — headroom, deliberately not a tight budget. The value itself is unchanged and remains the owner's. |
-| F6 — "named subject" is undefined until the sibling package lands | note | **Open, and stays open.** No text here can close it: the derived read-only machine view category is the sibling package's to define, and the reviewer confirmed by sweep that no such package is in the tree. Recorded as a sixth open question in `OWNER-DECISION-PACKET.md`; the answer to `REVIEW-BRIEF.md` criterion 6 depends entirely on that package's content, which this package does not assume. |
+| F6 — "named subject" is undefined until the sibling package lands | note | **Historical disposition at the reviewed commit: open.** The reviewer correctly found no sibling package at `3030668`. The sibling candidate now exists, so the current packet reconciles against its proposed briefing member and defines the required subject as one exact project-shape claim identified by its full claim id. That semantic repair changes the proposed patch and manifest, retires both earlier reviews, and remains an explicit owner choice before fresh review. |
 
 ### Confirmation review
 
@@ -372,10 +382,28 @@ under `proposed/` is byte-identical, so the manifest row did not move.
 | Note | Disposition |
 |---|---|
 | N1 — the nineteen-predicate net covered `structure_findings` exactly, as claimed, but not `check()`'s own three assertions | **Repaired by fixture, not by narrowing the sentence.** `check()` is decomposed into `patch_population_findings`, `noop_findings` and `manifest_findings`, which it now calls, and three predicates mutate each in turn: a second patch under `proposed/`, a patch that changes nothing, and an absent manifest. Each fixture also asserts the good input returns clean, so none is a tautology, and each runs through the helper the caller uses, so a fixture cannot drift from `check()`. The count is now twenty-two and the packet sentence says the net covers both functions. |
-| N2 — F6 is genuinely open at this commit, confirmed by a fresh sweep | **Confirmed open.** No change is available here: the derived read-only machine view category belongs to the sibling specification package, which the confirming reviewer re-swept for and did not find. Open question 6 in `OWNER-DECISION-PACKET.md` stands as written. |
+| N2 — F6 is genuinely open at this commit, confirmed by a fresh sweep | **Historical confirmation at `82cca27`.** The sweep was correct for that commit. The sibling candidate has since landed; the 2026-09-22 reconciliation described below supersedes this no-change disposition for the current candidate bytes. |
 
 **What neither review touched.** No finding reached the thirteen bound
 values, the ceiling value, the class population, the act boundary or the
 package's authority claims; the reviewer re-derived the manifest digest,
 the key-level delta, the class vocabulary and the no-registration argument
 independently and each survived.
+
+### 2026-09-22 sibling-package reconciliation
+
+The `syzygy-dov.22` candidate now exists at
+`.syzygy/governance/contracts/candidates/pwb-machine-view-amendment/`. Its
+proposed PWB-REQ-020 block names `/api/poc/briefing` as a closed derived
+read-only machine-view member but does not define the granularity of that
+member's required subject. This package now proposes one exact project-shape
+claim identified by its full claim id, with same-evaluation joined fields as
+derivable context rather than additional subjects. The builder checks that
+exact sentence and a dedicated mutation widens it back to `one named subject`
+to prove the check fails.
+
+This is a semantic change to the proposed registry bytes. The manifest row was
+regenerated mechanically. Both retained reviews remain valid evidence about
+their named commits and are retired for these current candidate bytes. A new
+fresh-context exact-byte review is required after the owner confirms or changes
+the fourteen numeric values and this subject/category join.
