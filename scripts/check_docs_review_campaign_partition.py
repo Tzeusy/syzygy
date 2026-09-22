@@ -22,6 +22,14 @@ from typing import Callable, Iterable
 REVIEW_PREFIX = "docs/reviews/"
 README = Path("docs/README.md")
 HELPER = Path("scripts/check_docs_review_campaign_partition.py")
+SVG_GRAPH_REVIEW_PATTERN = (
+    r"^R-POLARIS-SVG-GRAPH-DIAGRAMS-FEATURE-CANDIDATE"
+    r"(?:-REVIEW-[1-3])?-RAW\.md$"
+)
+MISSING_CURRENCY_REVIEW_PATTERN = (
+    r"^R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA"
+    r"(?:-CONFIRMATION)?-RAW\.md$"
+)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -132,6 +140,11 @@ CAMPAIGNS = (
         for number in range(2, 17)
     ),
     campaign(
+        "polaris-svg-graph-candidate",
+        "Polaris SVG graph feature candidate",
+        SVG_GRAPH_REVIEW_PATTERN,
+    ),
+    campaign(
         "retention-posture",
         "P-79 retention-posture gate",
         r"R-POLARIS-RETENTION-POSTURE-.*\.md",
@@ -147,7 +160,7 @@ CAMPAIGNS = (
     campaign(
         "missing-currency",
         "P-69 Q7a missing-currency gate",
-        r"R-PWB-MISSING-CURRENCY-.*\.md",
+        MISSING_CURRENCY_REVIEW_PATTERN,
     ),
     campaign(
         "n8-generality",
@@ -605,6 +618,28 @@ def selftest() -> None:
         assert "overlap" in str(error)
     else:
         raise AssertionError("overlap mutant survived")
+
+    fixtures += 1
+    svg_paths = [
+        "docs/reviews/R-POLARIS-SVG-GRAPH-DIAGRAMS-FEATURE-CANDIDATE-RAW.md",
+        "docs/reviews/R-POLARIS-SVG-GRAPH-DIAGRAMS-FEATURE-CANDIDATE-REVIEW-1-RAW.md",
+        "docs/reviews/R-POLARIS-SVG-GRAPH-DIAGRAMS-FEATURE-CANDIDATE-REVIEW-2-RAW.md",
+        "docs/reviews/R-POLARIS-SVG-GRAPH-DIAGRAMS-FEATURE-CANDIDATE-REVIEW-3-RAW.md",
+    ]
+    assert all(matches(path) == ["polaris-svg-graph-candidate"] for path in svg_paths)
+    assert not matches(
+        "docs/reviews/R-POLARIS-SVG-GRAPH-DIAGRAMS-FEATURE-CANDIDATE-REVIEW-4-RAW.md"
+    )
+
+    fixtures += 1
+    missing_currency_paths = [
+        "docs/reviews/R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA-RAW.md",
+        "docs/reviews/R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA-CONFIRMATION-RAW.md",
+    ]
+    assert all(matches(path) == ["missing-currency"] for path in missing_currency_paths)
+    assert not matches(
+        "docs/reviews/R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA-REVIEW-RAW.md"
+    )
 
     fixtures += 1
     sample = """| Campaign | Files | Recorded | What was under review | Last verdict of record, and where the findings landed |

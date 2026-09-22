@@ -78,6 +78,7 @@ the repair is a new disposition that cites it.
 | Polaris M14 funnel | 1 | 2026-09-17 | P-81 provenance-depth funnel | Review 1 ends `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-M14-PROVENANCE-DEPTH-FUNNEL-1-RAW.md:189`); findings landed in the M14 packet before owner ruling. |
 | Polaris M15 funnel | 1 | 2026-09-17 | P-82 pipeline-truthfulness funnel | Review 1 records `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-M15-PIPELINE-TRUTHFULNESS-FUNNEL-1-RAW.md:3`); findings landed in the M15 packet before owner ruling. |
 | Polaris M16 funnel | 1 | 2026-09-17 | P-83 renderer and visual-system funnel | Review 1 records `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-M16-RENDERER-VISUAL-SYSTEM-FUNNEL-1-RAW.md:1`); findings landed in the M16 packet before owner ruling. |
+| Polaris SVG graph feature candidate | 4 | 2026-09-23 | P-83 Q5 design-only SVG graph candidate | Review 3 is `CONFIRM` (`R-POLARIS-SVG-GRAPH-DIAGRAMS-FEATURE-CANDIDATE-REVIEW-3-RAW.md:1`); Reviews 1 and 2 are retained and dispositioned in the candidate, whose OWNER HOLD authorizes no implementation. |
 | P-79 retention-posture gate | 2 | 2026-09-22 | Retained-evaluations retention decision packet | The confirmation remains `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-RETENTION-POSTURE-PACKET-CONFIRMATION-RAW.md:4`); the candidate packet records its repaired and residual findings. |
 | P-81 exact-source gate | 2 | 2026-09-22 | Exact-source render-mode semantic delta | The confirmation is `CONFIRM` (`R-PWB-EXACT-SOURCE-RENDER-MODE-DELTA-CONFIRMATION-RAW.md:4`); repairs landed in the candidate package, which awaits its act. |
 | P-72 machine-view gate | 4 | 2026-09-22 → 2026-09-23 | Derived read-only machine-view semantic delta | The fourth review, over the round-3 repairs, is `CONFIRM WITH EXCEPTIONS` (`R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-3-RAW.md:4`); its two non-blocking findings are repaired in prose and dispositioned in the candidate package, which awaits a round 5 over the repaired bytes.
@@ -87,7 +88,7 @@ the repair is a new disposition that cites it.
 | N8 generality measurement | 1 | 2026-09-23 | Slice 1: synthetic second-project corpora and per-class coverage matrix (PR #63) | `CONFIRM` (`R-PWB-N8-SLICE1-REVIEW-RAW.md:19`); one advisory (narrow the `code-path` guard to shape-grammar failures before slice 2) is carried on the bead. |
 | N4 page honesty | 2 | 2026-09-23 | Slices 3-4: evaluation-identity footers on Trajectory and Orrery, `--focus`/`--measure-reading` tokens (PR #67) | `REVISE` (`R-PWB-N4-SLICES3-4-REVIEW-RAW.md:1`), repaired; confirmation `CONFIRM` (`R-PWB-N4-SLICES3-4-CONFIRMATION-RAW.md:6`). |
 
-The 47 rows partition the tracked directory at HEAD: 209 files, 209 assigned,
+The 48 rows partition the tracked directory at HEAD: 213 files, 213 assigned,
 no remainder [Observed — re-derived for HEAD dated 2026-09-23 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
