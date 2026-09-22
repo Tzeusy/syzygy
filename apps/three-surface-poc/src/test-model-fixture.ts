@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { BUTLERS_POC_SEEDS, buildPocModel, type PocModel, type ProjectShapeModelInput, type WalkthroughJudgmentInputs } from '@syzygy/three-surface-poc-core';
+import { BUTLERS_POC_SEEDS, buildPocModel, type PocEvaluationEvidence, type PocModel, type ProjectShapeModelInput, type WalkthroughJudgmentInputs } from '@syzygy/three-surface-poc-core';
 
 import { pwbReadinessTraversal } from './walkthrough-inputs.js';
 
@@ -140,6 +140,7 @@ export function buildFixtureModel(cleanups: string[], options: FixtureModelOptio
     repositoryRevision: revision,
     observerRevision: revision,
     evaluation: { snapshot: 'butlers@fixture', asOf: options.evaluationAsOf ?? '2026-08-30T12:00:00Z' },
+    evidence: fixtureEvidence(revision),
     runWorkItemQuery: (_repoRoot, sql) =>
       sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: doltRevision }]),
     ...(options.projectShape === undefined ? {} : { projectShape: options.projectShape }),
@@ -148,4 +149,24 @@ export function buildFixtureModel(cleanups: string[], options: FixtureModelOptio
     // pair is supplied, exactly as the daemon does.
     walkthroughReadiness: { traversal: pwbReadinessTraversal() },
   });
+}
+
+function fixtureEvidence(revision: string): PocEvaluationEvidence {
+  const observationInstant = '2026-08-30T12:00:00Z';
+  return {
+    pinnedRevision: revision,
+    pinnedCommitterInstant: '2026-08-24T00:00:00Z',
+    observationInstant,
+    probe: {
+      claimId: 'claim:currency-probe',
+      evaluationId: `evaluation:pwb-currency-probe:${observationInstant}`,
+      evaluationInstant: observationInstant,
+      epistemic: { label: 'Observed', tier: 'report-fact', challenge: 'unchallenged' },
+      pinnedRevision: revision,
+      currentRevision: revision,
+      changedSources: 0,
+      addedSources: 0,
+    },
+    currencyBounds: [],
+  };
 }

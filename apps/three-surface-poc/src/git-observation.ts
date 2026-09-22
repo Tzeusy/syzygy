@@ -17,6 +17,7 @@ export interface ResolvePwbRepositoryBindingOptions {
 
 export interface GitObservation {
   readonly revision: string;
+  readonly committerInstant: string;
   readonly worktreeMetadataDigest: string;
   readonly clean: boolean;
   readonly changedPaths: readonly string[];
@@ -59,6 +60,7 @@ function nulSeparatedPaths(record: string): readonly string[] {
 
 export function observeGitRepository(root: string): GitObservation {
   const revision = readGit(root, ['rev-parse', 'HEAD']).trim();
+  const committerInstant = readGit(root, ['show', '-s', '--format=%cI', revision]).trim();
   const worktreeRecord = readGit(root, [
     'status',
     '--porcelain=v1',
@@ -75,10 +77,51 @@ export function observeGitRepository(root: string): GitObservation {
   ];
   return {
     revision,
+    committerInstant,
     worktreeMetadataDigest: `sha256:${createHash('sha256').update(worktreeRecord).digest('hex')}`,
     clean: worktreeRecord.length === 0,
     changedPaths: [...new Set(changedPaths)].sort(),
   };
+}
+
+export interface GitHorizonObservation {
+  readonly pinnedRevision: string;
+  readonly currentRevision: string;
+  readonly currentCommitterInstant: string;
+  readonly changedSources: number;
+  readonly addedSources: number;
+}
+
+export interface ObserveGitHorizonOptions {
+  readonly runGit?: (root: string, args: readonly string[]) => string;
+}
+
+/** Compare revision metadata only; no source body is opened. */
+export function observeGitHorizon(
+  root: string,
+  pinnedRevision: string,
+  options: ObserveGitHorizonOptions = {},
+): GitHorizonObservation {
+  const runGit = options.runGit ?? readGit;
+  const currentRevision = runGit(root, ['rev-parse', 'HEAD']).trim();
+  const currentCommitterInstant = runGit(root, ['show', '-s', '--format=%cI', currentRevision]).trim();
+  if (currentRevision === pinnedRevision) {
+    return { pinnedRevision, currentRevision, currentCommitterInstant, changedSources: 0, addedSources: 0 };
+  }
+  const diff = runGit(root, ['diff', '--name-status', '--no-renames', '-z', `${pinnedRevision}..${currentRevision}`]);
+  const entries = diff.split('\0').filter((entry) => entry !== '');
+  let changedSources = 0;
+  let addedSources = 0;
+  const records = entries.some((entry) => entry.includes('\t'))
+    ? entries
+    : entries.filter((_entry, index) => index % 2 === 0);
+  for (const entry of records) {
+    const tab = entry.indexOf('\t');
+    const status = tab < 0 ? entry : entry.slice(0, tab);
+    if (status.startsWith('A')) addedSources += 1;
+    else changedSources += 1;
+  }
+  return { pinnedRevision, currentRevision, currentCommitterInstant, changedSources, addedSources };
 }
 
 export function pocObserverInputsAreClean(

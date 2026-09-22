@@ -1,0 +1,103 @@
+{
+  "kind": "pwb-m2-rule-6-mutation-evidence",
+  "testedCommit": "88dd4c7170a8e0208fd7f87ed46f984984d7922b",
+  "method": "Each exact old-to-new replacement was applied once to the named production file at testedCommit, the named Vitest command ran with --maxWorkers=1 --minWorkers=1 --testTimeout=30000, the source was restored byte-for-byte, and the clean baseline exited 0 while the mutant exited 1. Killed means the named test reached and rejected the mutation.",
+  "mutations": [
+    {
+      "id": "legend-unreachable-marker-removed",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "old": "' Not reachable at this evaluation: no claim freshness is judged against a currency bound; declare the bound and route freshness through the currency assessor.'",
+      "new": "''",
+      "test": "polaris-copy.test.ts — all-four freshness matrix",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=30000 apps/three-surface-poc/src/polaris-copy.test.ts --reporter=dot",
+      "baseline": { "exitCode": 0, "tests": "5 passed" },
+      "mutant": { "exitCode": 1, "tests": "1 failed, 4 passed" },
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "legend-used-state-keeps-marker",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "old": "const used = shapeClaims(model.projectShape).some((claim) => claim.epistemic.freshness === value)",
+      "new": "const used = false",
+      "test": "polaris-copy.test.ts — all-four freshness matrix",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=30000 apps/three-surface-poc/src/polaris-copy.test.ts --reporter=dot",
+      "baseline": { "exitCode": 0, "tests": "5 passed" },
+      "mutant": { "exitCode": 1, "tests": "1 failed, 4 passed" },
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "probe-identity-collapsed",
+      "file": "apps/three-surface-poc/src/production-reobserve.ts",
+      "old": "evaluationId: `evaluation:pwb-currency-probe:${observationInstant}`",
+      "new": "evaluationId: `evaluation:pwb-body-read:${observationInstant}`",
+      "test": "production-reobserve.test.ts — captured probe identity",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=30000 apps/three-surface-poc/src/production-reobserve.test.ts --reporter=dot",
+      "baseline": { "exitCode": 0, "tests": "4 passed" },
+      "mutant": { "exitCode": 1, "tests": "1 failed, 3 passed" },
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "probe-freshness-forced",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "old": "<span data-currency-probe-tuple>",
+      "new": "<span data-epistemic-freshness=\"fresh\" data-currency-probe-tuple>",
+      "test": "polaris-parity-sweep.test.ts — currency probe has no freshness field",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=30000 apps/three-surface-poc/src/polaris-parity-sweep.test.ts --reporter=dot",
+      "baseline": { "exitCode": 0, "tests": "48 passed" },
+      "mutant": { "exitCode": 1, "tests": "1 failed, 47 passed" },
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "wall-clock-rebuild-advances",
+      "file": "apps/three-surface-poc/src/production-reobserve.ts",
+      "old": "const asOf = capture.evidence.observationInstant;",
+      "new": "const asOf = new Date().toISOString();",
+      "test": "production-reobserve.test.ts — wall-clock byte/asOf stability",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=30000 apps/three-surface-poc/src/production-reobserve.test.ts --reporter=dot",
+      "baseline": { "exitCode": 0, "tests": "4 passed" },
+      "mutant": { "exitCode": 1, "tests": "2 failed, 2 passed" },
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "withdrawal-digest-reason-dropped",
+      "file": "apps/three-surface-poc/src/polaris-reading.ts",
+      "old": "if (createHash('sha256').update(text, 'utf8').digest('hex') !== plan.statementSha256) return failed('digest-mismatch');",
+      "new": "if (createHash('sha256').update(text, 'utf8').digest('hex') !== plan.statementSha256) return full;",
+      "test": "polaris-reading.test.ts — digest withdrawal",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=30000 apps/three-surface-poc/src/polaris-reading.test.ts --reporter=dot",
+      "baseline": { "exitCode": 0, "tests": "8 passed" },
+      "mutant": { "exitCode": 1, "tests": "3 failed, 5 passed" },
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "withdrawal-no-passages-reason-dropped",
+      "file": "apps/three-surface-poc/src/polaris-reading.ts",
+      "old": "if (plan.passages.length === 0) return failed('no-passages');",
+      "new": "if (plan.passages.length === 0) return full;",
+      "test": "polaris-reading.test.ts — no-passages withdrawal",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=30000 apps/three-surface-poc/src/polaris-reading.test.ts --reporter=dot",
+      "baseline": { "exitCode": 0, "tests": "8 passed" },
+      "mutant": { "exitCode": 1, "tests": "1 failed, 7 passed" },
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "withdrawal-malformed-reason-dropped",
+      "file": "apps/three-surface-poc/src/polaris-reading.ts",
+      "old": "if (!Number.isInteger(start) || !Number.isInteger(end) || start < previousEnd || end <= start || end > text.length) return failed('plan-malformed');",
+      "new": "if (!Number.isInteger(start) || !Number.isInteger(end) || start < previousEnd || end <= start || end > text.length) return full;",
+      "test": "polaris-reading.test.ts — plan-malformed withdrawal",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=30000 apps/three-surface-poc/src/polaris-reading.test.ts --reporter=dot",
+      "baseline": { "exitCode": 0, "tests": "8 passed" },
+      "mutant": { "exitCode": 1, "tests": "1 failed, 7 passed" },
+      "restored": true,
+      "outcome": "killed"
+    }
+  ]
+}

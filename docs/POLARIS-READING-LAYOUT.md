@@ -23,7 +23,10 @@ anchors. The original source explanations retain qualifications and remain the
 text equivalent of the visual relationships.
 
 The reading plan stores hashes and offsets rather than captured source bodies.
-A changed source or invalid selection falls back to the complete declaration.
+A changed source or invalid selection falls back to the complete declaration
+and announces the withdrawal reason (`digest-mismatch`, `no-passages`, or
+`plan-malformed`) beside it. A corrected reviewed digest can restore the
+condensed selection.
 The plan is presentation input, not adopted project intent or runtime evidence.
 The current Butlers plan is a curated proving case; source-to-plan generation
 and a reusable multi-project authoring workflow remain unfinished.

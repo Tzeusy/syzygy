@@ -202,6 +202,51 @@ function modelFor(variant: Variant): PocModel {
   }
 }
 
+const FRESHNESS_VALUES = ['fresh', 'stale', 'broken', 'superseded'] as const;
+type FreshnessValue = (typeof FRESHNESS_VALUES)[number];
+
+/** Independent structural census of the claims the project-shape model owns.
+ * This deliberately does not import the renderer's claim walker or copy. */
+function freshnessCounts(model: PocModel): Readonly<Record<FreshnessValue, number>> {
+  const counts: Record<FreshnessValue, number> = { fresh: 0, stale: 0, broken: 0, superseded: 0 };
+  const visit = (value: unknown): void => {
+    if (value === null || typeof value !== 'object') return;
+    if ('epistemic' in value) {
+      const epistemic = (value as { epistemic?: unknown }).epistemic;
+      if (epistemic !== null && typeof epistemic === 'object' && 'freshness' in epistemic) {
+        const freshness = (epistemic as { freshness?: unknown }).freshness;
+        if (typeof freshness === 'string' && FRESHNESS_VALUES.includes(freshness as FreshnessValue)) counts[freshness as FreshnessValue] += 1;
+      }
+    }
+    for (const child of Object.values(value)) visit(child);
+  };
+  visit(model.projectShape);
+  return counts;
+}
+
+/** Produces fixture states without copying the renderer's reachability logic. */
+function withEveryShapeClaimFreshness(model: PocModel, freshness: FreshnessValue): PocModel {
+  const clone = JSON.parse(JSON.stringify(model)) as unknown;
+  const rewrite = (value: unknown): void => {
+    if (value === null || typeof value !== 'object') return;
+    if ('epistemic' in value) {
+      const epistemic = (value as { epistemic?: unknown }).epistemic;
+      if (epistemic !== null && typeof epistemic === 'object' && 'freshness' in epistemic) {
+        (epistemic as { freshness: FreshnessValue }).freshness = freshness;
+      }
+    }
+    for (const child of Object.values(value)) rewrite(child);
+  };
+  rewrite((clone as { projectShape: unknown }).projectShape);
+  return clone as PocModel;
+}
+
+function freshnessGlossaryItem(html: string, freshness: FreshnessValue): string {
+  const item = html.match(new RegExp(`<li[^>]*>${freshness} — [^<]*</li>`))?.[0];
+  if (item === undefined) throw new Error(`freshness glossary item missing: ${freshness}`);
+  return item;
+}
+
 describe('Polaris copy roles (PWB-REQ-012)', () => {
   it('renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control', () => {
     const shapeKinds = new Set<string>();
@@ -223,6 +268,24 @@ describe('Polaris copy roles (PWB-REQ-012)', () => {
     }
     // The fixtures reach all four shape kinds, so the sweep covers every arm.
     expect([...shapeKinds].sort()).toEqual(['not-admitted', 'not-evaluated', 'observation-failed', 'observed']);
+  });
+
+  it('marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices', () => {
+    for (const variant of ['observed', 'unevaluated'] as const) {
+      for (const freshness of FRESHNESS_VALUES) {
+        const used = withEveryShapeClaimFreshness(modelFor(variant), freshness);
+        const unusedValue = FRESHNESS_VALUES.find((value) => value !== freshness) as FreshnessValue;
+        const unused = withEveryShapeClaimFreshness(modelFor(variant), unusedValue);
+        for (const model of [used, unused]) {
+          const counts = freshnessCounts(model);
+          const expectedMarker = counts[freshness] === 0;
+          expect(
+            freshnessGlossaryItem(renderPolarisPage(model), freshness).includes('Not reachable at this evaluation'),
+            `${variant}/${freshness}: ${JSON.stringify(counts)}`,
+          ).toBe(expectedMarker);
+        }
+      }
+    }
   });
 
   it('keeps no group lede and no connective prose between groups: each group header is one heading', () => {

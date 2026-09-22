@@ -91,6 +91,34 @@ export interface PocSurface {
   readonly relationshipIds: readonly string[];
 }
 
+/** The second, explicitly identified evaluation that compares the pinned
+ * repository revision with the current head. It is a disclosure about this
+ * render, never a project-shape claim or a freshness value. */
+export interface CurrencyProbe {
+  readonly claimId: 'claim:currency-probe';
+  readonly evaluationId: string;
+  readonly evaluationInstant: string;
+  readonly epistemic: {
+    readonly label: 'Observed';
+    readonly tier: 'report-fact';
+    readonly challenge: 'unchallenged';
+  };
+  readonly pinnedRevision: string;
+  readonly currentRevision: string;
+  readonly changedSources: number;
+  readonly addedSources: number;
+}
+
+/** Additive machine evidence block. `currencyBounds` stays empty until the
+ * separately gated owner-act slice 5; no assessCurrency call belongs here. */
+export interface PocEvaluationEvidence {
+  readonly pinnedRevision: string;
+  readonly pinnedCommitterInstant: string | null;
+  readonly observationInstant: string;
+  readonly probe: CurrencyProbe;
+  readonly currencyBounds: readonly [];
+}
+
 export interface PocModel {
   readonly schema: 'syzygy-three-surface-poc/v1';
   readonly evaluation: {
@@ -104,6 +132,7 @@ export interface PocModel {
     /** SHA-256 hex digest of the canonical observation inputs. */
     readonly inputsDigest: string;
     readonly asOf: string;
+    readonly evidence: PocEvaluationEvidence;
   };
   readonly project: {
     readonly name: string;
@@ -188,6 +217,9 @@ export interface BuildPocModelInput {
   readonly repositoryRevision: string;
   readonly observerRevision: string;
   readonly evaluation: { readonly snapshot: string; readonly asOf: string };
+  /** Additive evidence disclosure; absent callers receive a deterministic
+   * zero-drift probe for their pinned evaluation. */
+  readonly evidence?: PocEvaluationEvidence;
   /** Explicit implementation-plane seeds. Omitted means no seeded graph. */
   readonly seeds?: PocSeedInput;
   readonly runGit?: (repoRoot: string, args: readonly string[]) => string;
@@ -1011,6 +1043,22 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
     typeof seeds?.workerChangeIntentId === 'string' && seeds.workerChangeIntentId.trim() !== ''
       ? seeds.workerChangeIntentId
       : null;
+  const evidence: PocEvaluationEvidence = input.evidence ?? {
+    pinnedRevision: input.repositoryRevision,
+    pinnedCommitterInstant: null,
+    observationInstant: input.evaluation.asOf,
+    probe: {
+      claimId: 'claim:currency-probe',
+      evaluationId: `evaluation:pwb-currency-probe:${input.evaluation.asOf}`,
+      evaluationInstant: input.evaluation.asOf,
+      epistemic: { label: 'Observed', tier: 'report-fact', challenge: 'unchallenged' },
+      pinnedRevision: input.repositoryRevision,
+      currentRevision: input.repositoryRevision,
+      changedSources: 0,
+      addedSources: 0,
+    },
+    currencyBounds: [],
+  };
 
   const modelWithoutResponseIdentity: Omit<PocModel, 'responseIdentity'> & {
     readonly responseIdentity: ReturnType<typeof responseIdentityMetadata>;
@@ -1021,6 +1069,7 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
       snapshotLabel,
       inputsDigest: inputDigest,
       asOf: input.evaluation.asOf,
+      evidence,
     },
     project: {
       name: seeds?.project.displayName ?? 'Unknown project',

@@ -67,6 +67,7 @@ describe('Polaris machine presentation envelope (PWB-REQ-014; RFC7-2, RFC7-3)', 
     expect(envelope).toMatchObject({ kind: POLARIS_PRESENTATION_KIND, version: 1, presentation: 'presentation-artifact', citable: false });
     expect(envelope.kind).toBe('polaris-presentation');
     expect(envelope.evaluation).toEqual(model.evaluation);
+    expect(envelope.evidence).toEqual(model.evaluation.evidence);
     expect(envelope.project).toEqual({ revision: model.project.revision });
 
     const humanHtml = await (await fetch(`${baseUrl}${POLARIS_HUMAN_PATH}`)).text();

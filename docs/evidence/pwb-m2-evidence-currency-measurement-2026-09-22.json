@@ -1,0 +1,46 @@
+{
+  "kind": "pwb-m2-evidence-currency-measurement",
+  "capturedAt": "2026-09-22T17:15:48.949Z",
+  "syzygyRevision": "ae6a1b2af5560d3310b55d183aa8f443aa055f7",
+  "butlersRevision": "7aab8eb5d51859f3b2aafe45ffa68474b263963b",
+  "daemon": {
+    "host": "127.0.0.1",
+    "port": 37521,
+    "stateDir": "private temporary state directory",
+    "observation": "private daemon, port 0, explicit approved repository"
+  },
+  "routes": {
+    "direct": {
+      "path": "/polaris",
+      "host": "127.0.0.1",
+      "status": 200,
+      "bytes": 1507151,
+      "freshness": { "fresh": 729 },
+      "freshnessDenominator": 729,
+      "instantCount": 739,
+      "firstInstantByte": 34406,
+      "firstInstantFraction": 0.02282850225358972,
+      "probe": { "changedSources": 0, "addedSources": 0 }
+    },
+    "tailnet": {
+      "path": "/polaris",
+      "host": "tzeusy.parrot-hen.ts.net",
+      "status": 200,
+      "bytes": 1513061,
+      "freshness": { "fresh": 729 },
+      "freshnessDenominator": 729,
+      "instantCount": 739,
+      "firstInstantByte": 34481,
+      "firstInstantFraction": 0.02278890276069504,
+      "probe": { "changedSources": 0, "addedSources": 0 }
+    }
+  },
+  "machine": {
+    "apiPocStatus": 200,
+    "apiPocBytes": 5612467,
+    "apiPocPolarisStatus": 200,
+    "apiPocPolarisBytes": 655231,
+    "currencyBounds": []
+  },
+  "method": "curl direct and Host-headered tailnet forms; byte counts from curl and wc -c; freshness and instant counts from independent Python regex sweep"
+}

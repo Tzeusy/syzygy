@@ -19,6 +19,7 @@ export interface ProjectReading {
   readonly summary: string;
   readonly full: string;
   readonly condensed: boolean;
+  readonly withdrawalReason?: 'digest-mismatch' | 'no-passages' | 'plan-malformed';
   readonly chapters?: readonly ReadingChapter[];
   readonly figures?: readonly ReadingFigure[];
 }
@@ -41,16 +42,18 @@ export interface ReadingPlan {
  * No lexical heuristic decides whether a later paragraph is safe to omit. */
 export function applyReadingPlan(text: string, plan: ReadingPlan): ProjectReading {
   const full = { summary: text, full: text, condensed: false };
-  if (createHash('sha256').update(text, 'utf8').digest('hex') !== plan.statementSha256 || plan.passages.length === 0) return full;
+  const failed = (withdrawalReason: ProjectReading['withdrawalReason']): ProjectReading => ({ ...full, withdrawalReason });
+  if (createHash('sha256').update(text, 'utf8').digest('hex') !== plan.statementSha256) return failed('digest-mismatch');
+  if (plan.passages.length === 0) return failed('no-passages');
   let previousEnd = 0;
   for (const passage of plan.passages) {
     const { start, end } = passage;
-    if (!Number.isInteger(start) || !Number.isInteger(end) || start < previousEnd || end <= start || end > text.length) return full;
-    if ((start !== 0 && text[start - 1] !== '\n') || (end !== text.length && text[end] !== '\n')) return full;
-    if (passage.heading === true && text.slice(start, end).includes('\n')) return full;
-    if (passage.format === 'flow' && !/^```\n[^\n]+\n```$/.test(text.slice(start, end))) return full;
+    if (!Number.isInteger(start) || !Number.isInteger(end) || start < previousEnd || end <= start || end > text.length) return failed('plan-malformed');
+    if ((start !== 0 && text[start - 1] !== '\n') || (end !== text.length && text[end] !== '\n')) return failed('plan-malformed');
+    if (passage.heading === true && text.slice(start, end).includes('\n')) return failed('plan-malformed');
+    if (passage.format === 'flow' && !/^```\n[^\n]+\n```$/.test(text.slice(start, end))) return failed('plan-malformed');
     if (passage.relationships !== undefined) {
-      if (passage.heading || passage.format || passage.relationships.length === 0 || passage.relationships.length > 8) return full;
+      if (passage.heading || passage.format || passage.relationships.length === 0 || passage.relationships.length > 8) return failed('plan-malformed');
       let bodyEnd = start;
       for (const relationship of passage.relationships) {
         const { body, from, to } = relationship;
@@ -58,10 +61,10 @@ export function applyReadingPlan(text: string, plan: ReadingPlan): ProjectReadin
           || body.start < bodyEnd || body.end <= body.start || body.end > end
           || text.slice(bodyEnd, body.start).trim() !== ''
           || from.start < body.start || from.end <= from.start || from.end > body.end
-          || to.start < body.start || to.end <= to.start || to.end > body.end) return full;
+          || to.start < body.start || to.end <= to.start || to.end > body.end) return failed('plan-malformed');
         bodyEnd = body.end;
       }
-      if (text.slice(bodyEnd, end).trim() !== '') return full;
+      if (text.slice(bodyEnd, end).trim() !== '') return failed('plan-malformed');
     }
     previousEnd = end;
   }
@@ -69,14 +72,14 @@ export function applyReadingPlan(text: string, plan: ReadingPlan): ProjectReadin
   if (plan.figures !== undefined) {
     const ids = new Set<string>();
     const inBounds = ({ start, end }: SourceSpan): boolean => Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end > start && end <= text.length;
-    if (plan.figures.length === 0 || plan.figures.length > 8) return full;
+    if (plan.figures.length === 0 || plan.figures.length > 8) return failed('plan-malformed');
     for (const figure of plan.figures) {
       if (!/^[a-z][a-z0-9-]{0,63}$/.test(figure.id) || ids.has(figure.id)
         || !figure.title.trim() || figure.title.length > 100 || figure.title.includes('\n')
         || figure.nodes.length < 2 || figure.nodes.length > 6 || figure.evidence.length === 0
         || figure.evidence.some((span) => !inBounds(span) || (span.start > 0 && text[span.start - 1] !== '\n') || (span.end < text.length && text[span.end] !== '\n'))
         || figure.nodes.some((span) => !inBounds(span) || span.end - span.start > 80 || text.slice(span.start, span.end).trim() === ''
-          || !figure.evidence.some((evidence) => span.start >= evidence.start && span.end <= evidence.end))) return full;
+        || !figure.evidence.some((evidence) => span.start >= evidence.start && span.end <= evidence.end))) return failed('plan-malformed');
       ids.add(figure.id);
     }
     figures = plan.figures.map((figure) => ({ id: figure.id, title: figure.title,
@@ -85,7 +88,7 @@ export function applyReadingPlan(text: string, plan: ReadingPlan): ProjectReadin
   }
   let chapters: readonly ReadingChapter[] | undefined;
   if (plan.chapters !== undefined) {
-    if (plan.chapters.length === 0 || plan.chapters.length > 24) return full;
+    if (plan.chapters.length === 0 || plan.chapters.length > 24) return failed('plan-malformed');
     let end = 0;
     const ids = new Set<string>();
     for (const chapter of plan.chapters) {
@@ -96,11 +99,11 @@ export function applyReadingPlan(text: string, plan: ReadingPlan): ProjectReadin
         || (chapter.start !== 0 && text.slice(chapter.start - 2, chapter.start) !== '\n\n')
         || text.slice(chapter.start, chapter.headingEnd).trim() === ''
         || text.slice(chapter.start, chapter.headingEnd).includes('\n')
-        || text.slice(chapter.headingEnd, chapter.headingEnd + 2) !== '\n\n') return full;
+        || text.slice(chapter.headingEnd, chapter.headingEnd + 2) !== '\n\n') return failed('plan-malformed');
       ids.add(chapter.id);
       end = chapter.end;
     }
-    if (end !== text.length) return full;
+    if (end !== text.length) return failed('plan-malformed');
     chapters = plan.chapters.map(({ id, start, headingEnd, end }) => ({ id,
       title: text.slice(start, headingEnd), body: text.slice(headingEnd + 2, end) }));
   }

@@ -47,6 +47,8 @@ export const POLARIS_COPY = [
   { id: 'states.freshness.stale', role: 'epistemic-disclosure', kind: 'sentence', text: 'stale — older than the declared currency bound.' },
   { id: 'states.freshness.broken', role: 'epistemic-disclosure', kind: 'sentence', text: 'broken — its source changed since capture.' },
   { id: 'states.freshness.superseded', role: 'epistemic-disclosure', kind: 'sentence', text: 'superseded — a later evaluation replaced it.' },
+  { id: 'evidence.currency-probe', role: 'epistemic-disclosure', kind: 'heading', text: 'Evidence currency probe' },
+  { id: 'evidence.currency-probe-disclosure', role: 'epistemic-disclosure', kind: 'sentence', text: 'This probe compares the current repository head with the pinned evaluation; it is a render disclosure, not a project claim or freshness value.' },
   { id: 'states.challenge', role: 'epistemic-disclosure', kind: 'label', text: 'Challenge — whether anyone disputed it:' },
   { id: 'states.challenge.unchallenged', role: 'epistemic-disclosure', kind: 'sentence', text: 'unchallenged — no challenge is recorded; a recorded challenge suspends the claim.' },
   { id: 'states.strengthen', role: 'epistemic-disclosure', kind: 'sentence', text: 'To strengthen a claim: report-fact becomes gate-backed only through a retained gate artifact bound to the exact revision; an Unknown clears only by the route stated beside it. No summary rounds any state up.' },

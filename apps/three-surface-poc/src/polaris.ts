@@ -343,10 +343,22 @@ function onDemandCounts(claimId: string, text: string): string {
 /** The claim-state glossary (PWB-REQ-007; RFC2-25): every field of the
  * tuple beside each claim, in ordinary words, and the only routes that
  * strengthen a claim. One disclosure, once, described-by from every tuple. */
-function claimStatesBlock(): string {
+function claimStatesBlock(model: PocModel): string {
   const sentence = (id: PolarisCopyId): string => `<p${copyAttr(id)}>${copy(id)}</p>`;
   const group = (labelId: PolarisCopyId, ids: readonly PolarisCopyId[]): string =>
-    `<p${copyAttr(labelId)}>${copy(labelId)}</p><ul>${ids.map((id) => `<li${copyAttr(id)}>${copy(id)}</li>`).join('')}</ul>`;
+    `<p${copyAttr(labelId)}>${copy(labelId)}</p><ul>${ids.map((id) => {
+      if (labelId !== 'states.freshness') return `<li${copyAttr(id)}>${copy(id)}</li>`;
+      const value = id.slice('states.freshness.'.length);
+      const used = shapeClaims(model.projectShape).some((claim) => claim.epistemic.freshness === value);
+      const marker = used ? '' : value === 'stale'
+        ? ' Not reachable at this evaluation: no claim freshness is judged against a currency bound; declare the bound and route freshness through the currency assessor.'
+        : value === 'broken'
+          ? ' Not reachable at this evaluation: one pinned revision carries no earlier claim; a changed source belongs to a later evidence probe, not this freshness value. Route: re-observe the repository.'
+          : value === 'superseded'
+            ? ' Not reachable at this evaluation: no claim from an earlier evaluation is carried. Route: capture a new evaluation that carries the replacement.'
+            : ' Not reachable at this evaluation: no claim was captured at this evaluation. Route: capture an evaluation that carries the evidence.';
+      return `<li${copyAttr(id)}>${escapeHtml(copyText(id) + marker)}</li>`;
+    }).join('')}</ul>`;
   return `<details id="polaris-claim-states" class="claim-states" data-polaris-claim-states>
     <summary${copyAttr('label.claim-states')}>${copy('label.claim-states')}</summary>
     <p class="lede" id="polaris-claim-states-lede"${copyAttr('states.lede')}>${copy('states.lede')}</p>
@@ -358,6 +370,20 @@ function claimStatesBlock(): string {
     ${group('states.challenge', ['states.challenge.unchallenged'])}
     ${sentence('states.strengthen')}
   </details>`;
+}
+
+function currencyProbeBand(model: PocModel): string {
+  const evidence = model.evaluation.evidence;
+  const probe = evidence.probe;
+  const tuple = `${probe.epistemic.label} · ${probe.epistemic.tier} · unchallenged · probe ${probe.evaluationId}`;
+  return `<section class="currency-probe" data-polaris-currency-probe aria-labelledby="polaris-currency-probe-heading">
+    <h3 id="polaris-currency-probe-heading"${copyAttr('evidence.currency-probe')} data-presentation-artifact data-non-citable>${copy('evidence.currency-probe')}</h3>
+    <p${copyAttr('evidence.currency-probe-disclosure')} data-presentation-artifact data-non-citable>${copy('evidence.currency-probe-disclosure')}</p>
+    <p class="currency-probe-facts" data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable data-currency-probe-evaluation="${escapeHtml(probe.evaluationId)}" data-currency-probe-pinned="${escapeHtml(probe.pinnedRevision)}" data-currency-probe-current="${escapeHtml(probe.currentRevision)}" data-currency-probe-changed="${escapeHtml(String(probe.changedSources))}" data-currency-probe-added="${escapeHtml(String(probe.addedSources))}">
+      Evaluated at revision <code>${escapeHtml(probe.pinnedRevision)}</code>; observation <code>${escapeHtml(evidence.observationInstant)}</code>; probe <code>${escapeHtml(probe.evaluationId)}</code>. Since that revision, <strong>${escapeHtml(String(probe.changedSources))} sources changed</strong> and <strong>${escapeHtml(String(probe.addedSources))} were added</strong>.
+      <span data-currency-probe-tuple>${escapeHtml(tuple)}</span>
+    </p>
+  </section>`;
 }
 
 /** Progressive disclosure (PWB-REQ-011): an exhaustive population stays
@@ -503,13 +529,16 @@ function introductoryDiagram(shape: Extract<ProjectShape, { kind: 'observed' }>)
 }
 
 export function renderProjectReading(reading: ProjectReading, anchorId?: string): string {
+  const withdrawal = reading.withdrawalReason === undefined
+    ? ''
+    : `<p class="reading-withdrawal" data-reading-withdrawal="${escapeHtml(reading.withdrawalReason)}" data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable>Reviewed selection withdrawn: <code>${escapeHtml(reading.withdrawalReason)}</code>. The complete declaration is shown; re-review the selection against the current bytes before condensing it again.</p>`;
   const label = reading.condensed ? `<p class="excerpt-label"${copyAttr('label.selected-passages')}>${copy('label.selected-passages')}</p>` : '';
   const chapters = reading.chapters;
   const full = chapters !== undefined
     ? `<section class="component-library"><h4${copyAttr('label.component-guides')}>${copy('label.component-guides')}</h4><button type="button" class="expand-declaration" aria-expanded="false"${copyAttr('label.full-account')}>${copy('label.full-account')}</button><div class="component-guides">${chapters.map((chapter) => `<section id="polaris-guide-${escapeHtml(chapter.id)}" data-component-guide><details><summary>${escapeHtml(chapter.title)}</summary><div class="reading-prose">${renderPolarisMarkdown(chapter.body, anchorId)}</div></details></section>`).join('')}</div></section>`
     : reading.condensed ? `<details class="full-account"><summary${copyAttr('label.full-account')}>${copy('label.full-account')}</summary><div class="reading-prose">${renderPolarisMarkdown(reading.full, anchorId)}</div></details>` : '';
   const figures = (reading.figures ?? []).filter((figure) => figure.id !== 'core-loop').map((figure) => readingFigure(figure, anchorId)).join('');
-  return `${figures}${label}<div class="reading-prose">${renderPolarisMarkdown(reading.summary, anchorId)}</div>${full}`;
+  return `${figures}${withdrawal}${label}<div class="reading-prose">${renderPolarisMarkdown(reading.summary, anchorId)}</div>${full}`;
 }
 
 function accountStatement(statement: ProjectAccountStatement, revision: string): string {
@@ -1595,7 +1624,8 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     ${groupHeader('overview')}
     ${projectGroupBody(shape, 'overview')}
     <p class="notice"${copyAttr('notice')}>${copy('notice')} <a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p>
-    ${claimStatesBlock()}
+    ${claimStatesBlock(model)}
+    ${currencyProbeBand(model)}
     ${groupHeader('boundaries')}
     ${projectGroupBody(shape, 'boundaries')}
     ${groupHeader('v1')}

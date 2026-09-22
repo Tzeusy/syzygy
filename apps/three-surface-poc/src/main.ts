@@ -5,26 +5,22 @@ import { join, resolve } from 'node:path';
 
 import { createDaemon } from '@syzygy/cap1-daemon';
 import {
-  BUTLERS_POC_SEEDS,
-  buildPocModel,
-  evaluateBodyReadAuthority,
   PocObservationError,
-  readMaterializationRecordFile,
-  readTestArtifactRecordFile,
   type PocModel,
-  type ProjectShapeModelInput,
 } from '@syzygy/three-surface-poc-core';
 
 import { parsePocCli } from './cli.js';
-import { loadBodyReadAuthorityInputs } from './governance-inputs.js';
-import { pwbReadinessTraversal, walkthroughJudgmentInputsFor } from './walkthrough-inputs.js';
 import {
+  observeGitHorizon,
   observeGitRepository,
   pocObserverInputsAreClean,
   resolvePwbRepositoryBinding,
 } from './git-observation.js';
 import { launchAfterPwbRepositoryBinding } from './launcher.js';
 import { materializeRoutes } from './materialize-action.js';
+import { buildPocEvaluationEvidence, buildProductionPocModel, type PocRuntimeCapture } from './production-reobserve.js';
+import { reobserveRoutes } from './reobserve-action.js';
+import { createReobserveState } from './reobserve-state.js';
 import { pocRoutes } from './routes.js';
 import { gitBlobReaderFor, verbatimRouteReader } from './verbatim-route.js';
 
@@ -77,6 +73,7 @@ if (parsed.kind === 'help') {
         let repositoryRevision: string;
         let observerRevision: string;
         let workingTreeDigest: string;
+        let repositoryCommitterInstant: string;
         try {
           const repository = observeGitRepository(repoRoot);
           const observer = observeGitRepository(process.cwd());
@@ -84,6 +81,7 @@ if (parsed.kind === 'help') {
             throw new Error('observer-checkout-dirty');
           }
           repositoryRevision = repository.revision;
+          repositoryCommitterInstant = repository.committerInstant;
           observerRevision = observer.revision;
           workingTreeDigest = repository.worktreeMetadataDigest;
         } catch (cause) {
@@ -96,14 +94,17 @@ if (parsed.kind === 'help') {
           repositoryRevision = '';
           observerRevision = '';
           workingTreeDigest = '';
+          repositoryCommitterInstant = '';
         }
 
         if (repositoryRevision !== '' && observerRevision !== '') {
-          const snapshot = [
-            `${BUTLERS_POC_SEEDS.project.repositoryId}:${repositoryRevision}`,
-            `working-tree:${workingTreeDigest}`,
-            `observer:${observerRevision}`,
-          ].join('|');
+          const horizon = observeGitHorizon(repoRoot, repositoryRevision);
+          let capture: PocRuntimeCapture = {
+            repositoryRevision,
+            observerRevision,
+            workingTreeDigest,
+            evidence: buildPocEvaluationEvidence(new Date().toISOString(), repositoryRevision, repositoryCommitterInstant, horizon),
+          };
           const defaultStateDir = join(
             tmpdir(),
             'syzygy-three-surface-poc',
@@ -111,82 +112,33 @@ if (parsed.kind === 'help') {
           );
           const stateDir = resolve(parsed.config.stateDir ?? defaultStateDir);
 
-          function buildModel(): ReturnType<typeof buildPocModel> {
-            let materializationRecord;
-            try {
-              materializationRecord = readMaterializationRecordFile(stateDir);
-            } catch {
-              // A corrupt record must not crash startup or silently look
-              // unmaterialized — model.ts's own confirmation step already
-              // renders Unknown for a record that fails to resolve, so an
-              // unreadable record here is simply treated the same way: no
-              // positive claim is made without it.
-              materializationRecord = null;
-            }
-            let testArtifactRecord;
-            try {
-              testArtifactRecord = readTestArtifactRecordFile(stateDir);
-            } catch {
-              // Same fail-closed posture as the materialization record above:
-              // an unreadable ingested artifact must never be treated as
-              // "not yet ingested" (which would be silently more permissive).
-              testArtifactRecord = null;
-            }
-            const asOf = new Date().toISOString();
-            // PWB-REQ-005: the body-read authority gate is evaluated from the
-            // Syzygy governance tree (the daemon's working directory) before the
-            // model may read any project-shape body. If the governance inputs
-            // cannot even be loaded, no evaluation exists and the project shape
-            // stays `not-evaluated` (Unknown) with the failure named — never a
-            // synthetic admitting or rejecting evaluation.
-            let projectShape: ProjectShapeModelInput | undefined;
-            let projectShapeDetail: string | undefined;
-            try {
-              const authority = evaluateBodyReadAuthority(
-                loadBodyReadAuthorityInputs({
-                  repoRoot: process.cwd(),
-                  governanceRevision: observerRevision,
-                  evaluationId: `evaluation:pwb-body-read:${asOf}`,
-                  evaluationInstant: asOf,
-                }),
-              );
-              projectShape = { authority };
-            } catch (error: unknown) {
-              projectShapeDetail = `Body-read authority inputs could not be loaded from ${process.cwd()}: ${
-                error instanceof Error ? error.message : String(error)
-              }`;
-            }
-            // PWB-REQ-022: the cold-open walkthrough pair is evaluated from the
-            // same governance tree. An absent pair evaluates as `absent`
-            // (Unknown, never met); only a loader failure leaves the judgment
-            // `not-evaluated` with the failure named. The pair binds to the exact evaluation this build observes: the
-            // builder supplies the evaluation identity, the loader the Polaris
-            // surface version at the observer revision (a loader failure leaves
-            // both states `not-evaluated`, named).
-            const walkthroughJudgment = walkthroughJudgmentInputsFor({
-              repoRoot: process.cwd(),
-              governanceRevision: observerRevision,
-              evaluationId: `evaluation:pwb-walkthrough-judgment:${asOf}`,
-              evaluationInstant: asOf,
-            });
-            return buildPocModel({
-              seeds: BUTLERS_POC_SEEDS,
-              repoRoot,
-              repositoryRevision,
-              observerRevision,
-              evaluation: { snapshot, asOf },
-              materializationRecord,
-              testArtifactRecord,
-              projectShape,
-              ...(projectShapeDetail === undefined ? {} : { projectShapeDetail }),
-              walkthroughJudgment,
-              // PWB-REQ-021 readiness against this evaluation's own Polaris routes.
-              walkthroughReadiness: { traversal: pwbReadinessTraversal() },
-            });
-          }
+          const buildModel = (currentCapture = capture): PocModel => buildProductionPocModel({
+            capture: currentCapture,
+            repoRoot,
+            stateDir,
+            observerRoot: process.cwd(),
+          });
 
           try {
-            let model = buildModel();
+            let model = buildModel(capture);
+            const reobserver = createReobserveState({
+              capture,
+              model,
+              observe: async () => {
+                const nextRepository = observeGitRepository(repoRoot);
+                const nextObserver = observeGitRepository(process.cwd());
+                if (!pocObserverInputsAreClean(nextObserver)) throw new Error('POC runtime inputs are dirty; re-observation was refused');
+                const nextHorizon = observeGitHorizon(repoRoot, nextRepository.revision);
+                const asOf = new Date().toISOString();
+                return {
+                  repositoryRevision: nextRepository.revision,
+                  observerRevision: nextObserver.revision,
+                  workingTreeDigest: nextRepository.worktreeMetadataDigest,
+                  evidence: buildPocEvaluationEvidence(asOf, nextRepository.revision, nextRepository.committerInstant, nextHorizon),
+                };
+              },
+              build: buildModel,
+            });
             const start = await createDaemon({
               stateDir,
               port: parsed.config.port,
@@ -200,7 +152,17 @@ if (parsed.kind === 'help') {
                   targetRepoRoot: repoRoot,
                   stateDir: () => stateDir,
                   onMaterialized: () => {
-                    model = buildModel();
+                    model = buildModel(capture);
+                    reobserver.replace(capture, model);
+                  },
+                }),
+                ...reobserveRoutes({
+                  reobserve: async () => {
+                    const result = await reobserver.reobserve();
+                    if (result.kind === 'failed') return result;
+                    model = result.model;
+                    capture = reobserver.getCapture();
+                    return { kind: 'reobserved', evaluation: result.model.evaluation.snapshot };
                   },
                 }),
               ],
