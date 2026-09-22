@@ -166,4 +166,33 @@ describe('N8 slice 2 — repairFor narrowing: a target-class fixture defect is n
       expect(cell?.repairKind).toBe('code-path');
     }
   });
+
+  // Review of PR #73 (R-PWB-N8-SLICE2-REVIEW): the original two-reason
+  // SHAPE_MISMATCH_REASONS set wrongly called a malformed roster.toml a
+  // "fixture-authoring defect". `roster-identity` is the ninth extraction
+  // class and the only TOML-shaped one (extractRosterIdentity,
+  // project-shape-extraction.ts:548-575); a body admitted under
+  // `roster/*/butler.toml` that carries no `[butler]` table is a genuine
+  // container-shape mismatch, structurally identical to a bullet list where
+  // a decimal list is expected. This fixture is deliberately broken (no
+  // TOML table at all) and, like the fixtures above, is never added to
+  // `SYNTHETIC_CORPORA`.
+  const MALFORMED_TOML_FIXTURE: SyntheticCorpusFixture = {
+    id: 'roster-identity-malformed-toml-shape-mismatch',
+    description: 'Deliberately broken fixture: an admitted roster/*/butler.toml path whose body carries no [butler] TOML table at all (genuine shape mismatch, not a fixture defect).',
+    targetClass: 'roster-identity',
+    shape: 'plain key=value line with no TOML table header under an admitted roster/*/butler.toml path',
+    path: 'roster/alice/butler.toml',
+    text: ['name = "Alice"', ''].join('\n'),
+  };
+
+  it('a roster.toml body with no [butler] table fails "malformed-toml" and is labeled code-path, not a fixture defect', () => {
+    const row = runSyntheticCorpusCoverage(MALFORMED_TOML_FIXTURE);
+    const cell = row.cells.find((candidate) => candidate.class === 'roster-identity');
+    expect(cell?.outcome).toBe('unknown');
+    expect(cell?.failureReason).toBe('malformed-toml');
+    expect(cell?.failureDetail).toBe('no [butler] table');
+    expect(cell?.repairKind).toBe('code-path');
+    expect(cell?.repairNote).toContain('roster-identity');
+  });
 });
