@@ -121,10 +121,13 @@ export function renderOrreryPage(model: PocModel, mountPrefix = ''): string {
   let body: string;
 
   if (orrery.kind === 'unknown') {
-    const observedFileCount = orrery.observedFileCount ?? 0;
-    const mappedFileCount = orrery.mappedFileCount ?? 0;
-    const unmappedFileCount = orrery.unmappedFileCount ?? observedFileCount;
-    body = `<p class="unavailable-notice" data-unknown-disclosure="region:code-structure">Unknown — ${escapeHtml(orrery.reason)} The seed-backed map is unavailable; observed-file denominator: ${observedFileCount}; mapped: ${mappedFileCount}; unmapped: ${unmappedFileCount}. The exact tables below remain the honest record of what is known.</p>
+    const observedFileDenominator =
+      orrery.observedFileCount === undefined
+        ? 'Unknown (code structure was not observed)'
+        : String(orrery.observedFileCount);
+    const mappedFileCount = orrery.mappedFileCount === undefined ? 'Unknown' : String(orrery.mappedFileCount);
+    const unmappedFileCount = orrery.unmappedFileCount === undefined ? 'Unknown' : String(orrery.unmappedFileCount);
+    body = `<p class="unavailable-notice" data-unknown-disclosure="region:code-structure">Unknown — ${escapeHtml(orrery.reason)} The seed-backed map is unavailable; observed-file denominator: ${escapeHtml(observedFileDenominator)}; mapped: ${escapeHtml(mappedFileCount)}; unmapped: ${escapeHtml(unmappedFileCount)}. The exact tables below remain the honest record of what is known.</p>
     ${exactTablesSection(model)}`;
   } else {
     const island: OrreryDataIsland = {

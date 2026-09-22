@@ -84,11 +84,22 @@ export interface PocSeedInput {
   readonly orreryMappings: readonly OrreryDeclaredMapping[];
 }
 
+function deepFreeze<T>(value: T): T {
+  if (typeof value !== 'object' || value === null || Object.isFrozen(value)) {
+    return value;
+  }
+  Object.freeze(value);
+  for (const child of Object.values(value as Record<string, unknown>)) {
+    deepFreeze(child);
+  }
+  return value;
+}
+
 /**
  * The current Butlers proving-case seed.  It is the only default supplied by
  * the application; the model builder has no implicit fallback to it.
  */
-export const BUTLERS_POC_SEEDS: PocSeedInput = {
+export const BUTLERS_POC_SEEDS: PocSeedInput = deepFreeze({
   project: {
     repositoryId: 'repository:butlers-configured-poc',
     displayName: 'Butlers',
@@ -320,4 +331,4 @@ export const BUTLERS_POC_SEEDS: PocSeedInput = {
       capabilityId: 'capability:whatsapp-transport-identity',
     },
   ],
-};
+});

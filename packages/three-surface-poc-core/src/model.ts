@@ -225,11 +225,133 @@ function readinessPopulation(projectShape: ProjectShape): ReadinessPopulation {
 
 export class PocObservationError extends Error {
   constructor(
-    readonly kind: 'required-artifact-missing' | 'required-artifact-semantic-mismatch' | 'required-artifact-unreadable',
+    readonly kind:
+      | 'required-artifact-missing'
+      | 'required-artifact-semantic-mismatch'
+      | 'required-artifact-unreadable'
+      | 'invalid-seed-graph',
     readonly artifactPath?: string,
+    readonly detail?: string,
   ) {
-    super(artifactPath === undefined ? kind : `${kind}: ${artifactPath}`);
+    super([kind, artifactPath, detail].filter((part): part is string => part !== undefined).join(': '));
     this.name = 'PocObservationError';
+  }
+}
+
+const ENTITY_KIND_BY_ROLE: Readonly<Record<PocSeedEntity['role'], PocEntity['kind']>> = {
+  project: 'project',
+  capability: 'capability',
+  intent: 'intent',
+  code: 'code-region',
+  'test-definition': 'test-definition',
+  work: 'work-item',
+  'test-evidence': 'test-evidence',
+  runtime: 'runtime',
+  'unknown-region': 'unknown-region',
+};
+
+const RELATIONSHIP_KIND_BY_ROLE: Readonly<Record<PocSeedRelationship['role'], string>> = {
+  'project-to-capability': 'contains',
+  'capability-to-intent': 'governed-by',
+  'capability-to-code': 'mapped-to',
+  'capability-to-test-definition': 'mapped-to',
+  'intent-to-work': 'materializes-as',
+  'work-to-code': 'changes',
+  'code-to-evidence': 'verified-by',
+  'code-to-runtime': 'satisfies-at-runtime',
+  'capability-to-unmapped-region': 'coverage-unknown',
+};
+
+const SURFACE_IDS: ReadonlySet<PocSurface['id']> = new Set(['polaris', 'trajectory', 'orrery']);
+
+function duplicateValues(values: readonly string[], label: string, errors: string[]): void {
+  const seen = new Set<string>();
+  for (const value of values) {
+    if (seen.has(value)) errors.push(`${label} contains duplicate id ${value}`);
+    seen.add(value);
+  }
+}
+
+function deepFreeze<T>(value: T): T {
+  if (typeof value !== 'object' || value === null || Object.isFrozen(value)) return value;
+  Object.freeze(value);
+  for (const child of Object.values(value as Record<string, unknown>)) deepFreeze(child);
+  return value;
+}
+
+function validateSeedGraph(seeds: PocSeedInput): void {
+  const errors: string[] = [];
+  const entityIds = new Set<string>();
+  const relationshipIds = new Set<string>();
+  const capabilityIds = new Set<string>();
+
+  for (const entity of seeds.entities) {
+    if (entityIds.has(entity.id)) errors.push(`entities contains duplicate id ${entity.id}`);
+    entityIds.add(entity.id);
+    if (entity.id === '') errors.push('entities contains an empty id');
+    const expectedKind = ENTITY_KIND_BY_ROLE[entity.role];
+    if (expectedKind === undefined) {
+      errors.push(`entity ${entity.id} has unsupported role ${String(entity.role)}`);
+    } else if (entity.kind !== expectedKind) {
+      errors.push(`entity ${entity.id} role ${entity.role} requires kind ${expectedKind}, got ${entity.kind}`);
+    }
+    if (entity.role === 'capability') capabilityIds.add(entity.id);
+  }
+  if (capabilityIds.size === 0) errors.push('entities has no capability role');
+
+  for (const relationship of seeds.relationships) {
+    if (relationshipIds.has(relationship.id)) {
+      errors.push(`relationships contains duplicate id ${relationship.id}`);
+    }
+    relationshipIds.add(relationship.id);
+    if (relationship.id === '') errors.push('relationships contains an empty id');
+    const expectedKind = RELATIONSHIP_KIND_BY_ROLE[relationship.role];
+    if (expectedKind === undefined) {
+      errors.push(`relationship ${relationship.id} has unsupported role ${String(relationship.role)}`);
+    } else if (relationship.kind !== expectedKind) {
+      errors.push(`relationship ${relationship.id} role ${relationship.role} requires kind ${expectedKind}, got ${relationship.kind}`);
+    }
+    if (!entityIds.has(relationship.from)) {
+      errors.push(`relationship ${relationship.id} has dangling from endpoint ${relationship.from}`);
+    }
+    if (!entityIds.has(relationship.to)) {
+      errors.push(`relationship ${relationship.id} has dangling to endpoint ${relationship.to}`);
+    }
+  }
+
+  const surfaceIds = seeds.surfaces.map((surface) => surface.id);
+  duplicateValues(surfaceIds, 'surfaces', errors);
+  for (const requiredSurface of SURFACE_IDS) {
+    if (!surfaceIds.includes(requiredSurface)) errors.push(`surfaces is missing ${requiredSurface}`);
+  }
+  for (const surface of seeds.surfaces) {
+    if (!SURFACE_IDS.has(surface.id)) errors.push(`surface has unsupported id ${String(surface.id)}`);
+    duplicateValues(surface.entityIds, `surface ${surface.id} entityIds`, errors);
+    duplicateValues(surface.relationshipIds, `surface ${surface.id} relationshipIds`, errors);
+    for (const entityId of surface.entityIds) {
+      if (!entityIds.has(entityId)) errors.push(`surface ${surface.id} has dangling entity member ${entityId}`);
+    }
+    for (const relationshipId of surface.relationshipIds) {
+      if (!relationshipIds.has(relationshipId)) {
+        errors.push(`surface ${surface.id} has dangling relationship member ${relationshipId}`);
+      }
+    }
+  }
+
+  const mappingIds: string[] = [];
+  const mappingPaths: string[] = [];
+  for (const mapping of seeds.orreryMappings) {
+    mappingIds.push(mapping.id);
+    mappingPaths.push(mapping.path);
+    if (!capabilityIds.has(mapping.capabilityId)) {
+      errors.push(`Orrery mapping ${mapping.id} has dangling capability ${mapping.capabilityId}`);
+    }
+  }
+  duplicateValues(mappingIds, 'Orrery mappings', errors);
+  duplicateValues(mappingPaths, 'Orrery mapping paths', errors);
+
+  if (errors.length > 0) {
+    throw new PocObservationError('invalid-seed-graph', undefined, errors.join('; '));
   }
 }
 
@@ -569,12 +691,27 @@ function relationshipFromSeed(
 }
 
 function capabilityIdFromSeeds(seeds: PocSeedInput): string {
-  return seeds.entities.find((entity) => entity.role === 'capability')?.id ?? 'capability:unknown';
+  const capability = seeds.entities.find((entity) => entity.role === 'capability');
+  if (capability === undefined) {
+    throw new PocObservationError('invalid-seed-graph', undefined, 'entities has no capability role');
+  }
+  return capability.id;
 }
 
 function snapshotLabelFor(input: BuildPocModelInput, seeds: PocSeedInput | undefined): string {
   if (seeds === undefined) return input.evaluation.snapshot;
-  return input.evaluation.snapshot.replace(/^(?:butlers|Butlers)(?=[:@|])/, seeds.project.repositoryId);
+
+  // The caller supplies a human-facing label followed by an explicit
+  // revision/suffix delimiter.  Replace that label structurally; never infer
+  // repository identity from a project-name spelling.
+  const raw = input.evaluation.snapshot;
+  const at = raw.lastIndexOf('@');
+  if (at > 0 && at < raw.length - 1) return `${seeds.project.repositoryId}@${raw.slice(at + 1)}`;
+  const pipe = raw.lastIndexOf('|');
+  if (pipe > 0 && pipe < raw.length - 1) return `${seeds.project.repositoryId}|${raw.slice(pipe + 1)}`;
+  const colon = raw.lastIndexOf(':');
+  if (colon > 0 && colon < raw.length - 1) return `${seeds.project.repositoryId}:${raw.slice(colon + 1)}`;
+  return seeds.project.repositoryId;
 }
 
 function emptyProposedWork(input: BuildPocModelInput): ProposedWork {
@@ -605,8 +742,9 @@ function emptyProposedWork(input: BuildPocModelInput): ProposedWork {
 }
 
 export function buildPocModel(input: BuildPocModelInput): PocModel {
-  const repoRoot = resolve(input.repoRoot);
   const seeds = input.seeds;
+  if (seeds !== undefined) validateSeedGraph(seeds);
+  const repoRoot = resolve(input.repoRoot);
   const seedArtifacts =
     seeds === undefined
       ? undefined
@@ -734,10 +872,14 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
       ? {
           kind: 'unknown' as const,
           reason: 'No seed-backed capability-to-path mappings were supplied to this evaluation.',
-          observedFileCount: codeStructure.kind === 'observed' ? codeStructure.files.length : 0,
-          mappedFileCount: 0,
-          unmappedFileCount: codeStructure.kind === 'observed' ? codeStructure.files.length : 0,
-          totalFileCount: codeStructure.kind === 'observed' ? codeStructure.files.length : 0,
+          ...(codeStructure.kind === 'observed'
+            ? {
+                observedFileCount: codeStructure.files.length,
+                mappedFileCount: 0,
+                unmappedFileCount: codeStructure.files.length,
+                totalFileCount: codeStructure.files.length,
+              }
+            : {}),
         }
       : projectOrrery(codeStructure, seeds.orreryMappings);
   const trajectoryProjection =
@@ -745,7 +887,7 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
       ? {
           kind: 'unknown' as const,
           reason: 'No seed-backed work-item graph was supplied to this evaluation.',
-          observedItemCount: workItems.kind === 'observed' ? workItems.items.length : 0,
+          ...(workItems.kind === 'observed' ? { observedItemCount: workItems.items.length } : {}),
         }
       : projectTrajectory(workItems, {
           recentClosedWindow: RECENT_CLOSED_WINDOW,
@@ -868,17 +1010,26 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
     proposedWork,
     walkthroughJudgment,
     walkthroughReadiness,
-    surfaces:
+    surfaces: deepFreeze(
       seeds === undefined
         ? []
         : seeds.surfaces.map((surface) =>
             surface.id === 'orrery'
               ? {
-                  ...surface,
+                  id: surface.id,
+                  title: surface.title,
+                  question: surface.question,
                   entityIds: entities.map((entity) => entity.id),
                   relationshipIds: relationships.map((relationship) => relationship.id),
                 }
-              : surface,
+              : {
+                  id: surface.id,
+                  title: surface.title,
+                  question: surface.question,
+                  entityIds: [...surface.entityIds],
+                  relationshipIds: [...surface.relationshipIds],
+                },
           ),
+    ),
   };
 }

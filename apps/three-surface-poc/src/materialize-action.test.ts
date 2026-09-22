@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
-import { readMaterializationRecordFile } from '@syzygy/three-surface-poc-core';
+import { buildPocModel, readMaterializationRecordFile, type PocModel } from '@syzygy/three-surface-poc-core';
 
 import { TAILNET_HOST } from './browser-origin.js';
 import {
@@ -15,7 +15,7 @@ import {
 import { pocRoutes } from './routes.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { fetchWithHost } from './test-http-client.js';
-import { buildFixtureModel } from './test-model-fixture.js';
+import { buildFixtureModel, fixtureRepoWithGit } from './test-model-fixture.js';
 import { renderTrajectoryPage } from './trajectory.js';
 
 const cleanups: string[] = [];
@@ -59,16 +59,32 @@ describe('renderMaterializePanel', () => {
     const html = renderMaterializePanel(model, TAILNET_MOUNT_PREFIX);
     expect(html).toContain(`<form method="POST" action="${TAILNET_MOUNT_PREFIX}/trajectory/materialize">`);
   });
+
+  it('does not render a compiled materialization packet for an actual empty-seed model', () => {
+    const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
+    const model = buildPocModel({
+      repoRoot,
+      repositoryRevision: revision,
+      observerRevision: revision,
+      evaluation: { snapshot: 'empty-seed-materialization@rev', asOf: '2026-09-22T00:00:00Z' },
+    });
+
+    const html = renderMaterializePanel(model);
+    expect(html).toContain('data-unknown-disclosure="materialization"');
+    expect(html).not.toContain('<form');
+    expect(html).not.toContain('REQ-switchboard-identity-001');
+  });
 });
 
 describe('materializeRoutes', () => {
   async function startDaemon(options: {
     readonly stateDir: string;
+    readonly model?: PocModel;
     readonly onMaterialized?: () => void;
     readonly runQuery?: (repoRoot: string, sql: string) => string;
     readonly runCreate?: (repoRoot: string, packet: unknown, attribution: string) => string;
   }) {
-    let model = buildFixtureModel(cleanups);
+    let model = options.model ?? buildFixtureModel(cleanups);
     const targetRepoRoot = model.project.root;
     const start = await createDaemon({
       stateDir: join(tempDir('syzygy-poc-materialize-daemon-'), 'state'),
@@ -190,6 +206,36 @@ describe('materializeRoutes', () => {
     const html = await response.text();
     expect(html).toContain('bd CLI is not available');
     expect(readMaterializationRecordFile(dir)).toBeNull();
+  });
+
+  it('fails closed without invoking Beads when the actual model has no seed-backed materialization graph', async () => {
+    const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
+    const model = buildPocModel({
+      repoRoot,
+      repositoryRevision: revision,
+      observerRevision: revision,
+      evaluation: { snapshot: 'empty-seed-materialization@post', asOf: '2026-09-22T00:00:00Z' },
+    });
+    let queryCalls = 0;
+    let createCalls = 0;
+    const baseUrl = await startDaemon({
+      model,
+      stateDir: tempDir('syzygy-poc-materialize-empty-state-'),
+      runQuery: () => {
+        queryCalls += 1;
+        return JSON.stringify([]);
+      },
+      runCreate: () => {
+        createCalls += 1;
+        return JSON.stringify({ id: 'bu-should-not-exist' });
+      },
+    });
+
+    const response = await fetch(`${baseUrl}${MATERIALIZE_HUMAN_PATH}`, { method: 'POST' });
+    expect(response.status).toBe(502);
+    expect(await response.text()).toContain('seed-backed proposed-work graph was evaluated');
+    expect(queryCalls).toBe(0);
+    expect(createCalls).toBe(0);
   });
 
   it('states the Bead exists when it was created but only the local record write failed, instead of the generic no-Bead suffix (AC5)', async () => {

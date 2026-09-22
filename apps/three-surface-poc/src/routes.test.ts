@@ -270,8 +270,8 @@ describe('three-surface POC routes', () => {
       entities: [],
       relationships: [],
       surfaces: [],
-      trajectory: { kind: 'unknown', reason: 'No seed-backed work-item graph was supplied to this evaluation.', observedItemCount: 0 },
-      orrery: { kind: 'unknown', reason: 'No seed-backed capability-to-path mappings were supplied to this evaluation.', observedFileCount: 0, mappedFileCount: 0, unmappedFileCount: 0, totalFileCount: 0 },
+      trajectory: { kind: 'unknown', reason: 'No seed-backed work-item graph was supplied to this evaluation.' },
+      orrery: { kind: 'unknown', reason: 'No seed-backed capability-to-path mappings were supplied to this evaluation.' },
     };
     const { daemon, token } = await startPoc(empty);
     const baseUrl = `http://${daemon.host}:${daemon.port}`;

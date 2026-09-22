@@ -237,7 +237,10 @@ if (parsed.kind === 'help') {
             }
           } catch (cause) {
             if (cause instanceof PocObservationError) {
-              const suffix = cause.artifactPath === undefined ? '' : `: ${cause.artifactPath}`;
+              const suffix = [cause.artifactPath, cause.detail]
+                .filter((part): part is string => part !== undefined)
+                .map((part) => `: ${part}`)
+                .join('');
               process.stderr.write(`syzygy POC: observation failed (${cause.kind})${suffix}\n`);
             } else {
               process.stderr.write('syzygy POC: observation failed (unexpected-failure)\n');

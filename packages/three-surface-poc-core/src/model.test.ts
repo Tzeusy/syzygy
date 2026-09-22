@@ -654,7 +654,9 @@ describe('three-surface Butlers POC model', () => {
     expect(model.surfaces).toEqual([]);
     expect(model.project.name).toBe('Unknown project');
     expect(model.capabilityId).toBe('capability:unknown');
-    expect(model.trajectory).toMatchObject({ kind: 'unknown', observedItemCount: 0 });
+    expect(model.trajectory).toMatchObject({ kind: 'unknown' });
+    if (model.trajectory.kind !== 'unknown') throw new Error('unreachable');
+    expect(model.trajectory.observedItemCount).toBeUndefined();
     expect(model.orrery).toMatchObject({
       kind: 'unknown',
       observedFileCount: 1,
@@ -663,6 +665,47 @@ describe('three-surface Butlers POC model', () => {
       totalFileCount: 1,
     });
     expect(gitCalls).toEqual([['ls-tree', '-r', '-l', 'empty-seed-revision']]);
+  });
+
+  it('keeps an unobserved empty-seed Orrery denominator Unknown instead of inventing zero', () => {
+    const { repoRoot } = butlersGitFixture();
+    const model = buildPocModel({
+      repoRoot,
+      repositoryRevision: 'missing-code-structure-revision',
+      observerRevision: 'empty-seed-observer',
+      evaluation: { snapshot: 'empty-seed-unobserved', asOf: '2026-09-22T00:00:00Z' },
+      runGit: () => {
+        throw new Error('code structure unavailable');
+      },
+    });
+
+    expect(model.orrery).toEqual({
+      kind: 'unknown',
+      reason: 'No seed-backed capability-to-path mappings were supplied to this evaluation.',
+    });
+  });
+
+  it('owns returned surface membership arrays and keeps the exported seed graph isolated', () => {
+    const repoRoot = butlersFixture();
+    const input = {
+      seeds: BUTLERS_POC_SEEDS,
+      repoRoot,
+      repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
+      observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
+      evaluation: { snapshot: 'butlers@ownership', asOf: '2026-09-22T00:00:00Z' },
+    } as const;
+    const first = buildPocModel(input);
+    const firstPolaris = first.surfaces.find((surface) => surface.id === 'polaris');
+    if (firstPolaris === undefined) throw new Error('missing Polaris surface');
+    expect(Object.isFrozen(firstPolaris.entityIds)).toBe(true);
+    expect(Object.isFrozen(BUTLERS_POC_SEEDS.surfaces[0]?.entityIds)).toBe(true);
+    expect(() => (firstPolaris.entityIds as string[]).push('entity:mutated-only-in-first-build')).toThrow();
+
+    expect(BUTLERS_POC_SEEDS.surfaces[0]?.entityIds).not.toContain('entity:mutated-only-in-first-build');
+    const second = buildPocModel(input);
+    expect(second.surfaces.find((surface) => surface.id === 'polaris')?.entityIds).not.toContain(
+      'entity:mutated-only-in-first-build',
+    );
   });
 
   it('changes seeded display labels without changing graph identities or snapshot identity', () => {
@@ -688,6 +731,73 @@ describe('three-surface Butlers POC model', () => {
     expect(renamed.entities.find((entity) => entity.id === 'project:butlers')?.title).toBe('Staffers');
     expect(renamed.entities.find((entity) => entity.id === 'region:unmapped-code')?.title).toBe('Unmapped Staffers code');
     expect(renamed.relationships.find((relationship) => relationship.id === 'relationship:project-to-capability')?.statement).toBe('Staffers declares the selected capability.');
+  });
+
+  it('derives snapshot identity from an opaque repository id for non-Butlers display labels', () => {
+    const repoRoot = butlersFixture();
+    const staffersSeeds = {
+      ...BUTLERS_POC_SEEDS,
+      project: {
+        ...BUTLERS_POC_SEEDS.project,
+        repositoryId: 'repository:staffers',
+        displayName: 'Staffers',
+      },
+    } as const;
+    const model = buildPocModel({
+      seeds: staffersSeeds,
+      repoRoot,
+      repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
+      observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
+      evaluation: { snapshot: 'Staffers@rev', asOf: '2026-09-22T00:00:00Z' },
+    });
+
+    expect(model.evaluation.snapshotLabel).toBe('repository:staffers@rev');
+  });
+
+  it('rejects invalid public seed graphs before observation with typed failures', () => {
+    const baseInput = {
+      repoRoot: '/does/not/exist',
+      repositoryRevision: 'seed-validation-revision',
+      observerRevision: 'seed-validation-observer',
+      evaluation: { snapshot: 'seed-validation@rev', asOf: '2026-09-22T00:00:00Z' },
+    } as const;
+    const invalidSeeds = [
+      {
+        ...BUTLERS_POC_SEEDS,
+        entities: [...BUTLERS_POC_SEEDS.entities, BUTLERS_POC_SEEDS.entities[0]!],
+      },
+      {
+        ...BUTLERS_POC_SEEDS,
+        relationships: [
+          ...BUTLERS_POC_SEEDS.relationships,
+          { ...BUTLERS_POC_SEEDS.relationships[0]!, id: 'relationship:dangling', to: 'entity:missing' },
+        ],
+      },
+      {
+        ...BUTLERS_POC_SEEDS,
+        surfaces: BUTLERS_POC_SEEDS.surfaces.map((surface) =>
+          surface.id === 'trajectory'
+            ? { ...surface, entityIds: [...surface.entityIds, 'entity:missing'] }
+            : surface,
+        ),
+      },
+      {
+        ...BUTLERS_POC_SEEDS,
+        entities: BUTLERS_POC_SEEDS.entities.map((entity) =>
+          entity.role === 'code' ? { ...entity, kind: 'runtime' as const } : entity,
+        ),
+      },
+      {
+        ...BUTLERS_POC_SEEDS,
+        entities: BUTLERS_POC_SEEDS.entities.filter((entity) => entity.role !== 'capability'),
+      },
+    ] as const;
+
+    for (const seeds of invalidSeeds) {
+      expect(() => buildPocModel({ ...baseInput, seeds })).toThrowError(
+        expect.objectContaining({ kind: 'invalid-seed-graph' }),
+      );
+    }
   });
 
   it('rejects a seeded Orrery mapping that is absent from the observed inventory', () => {

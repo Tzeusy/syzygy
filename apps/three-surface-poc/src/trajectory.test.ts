@@ -132,7 +132,7 @@ describe('Trajectory', () => {
     expect(model.trajectory.kind).toBe('unknown');
     const html = renderTrajectoryPage(model);
     expect(html).toContain('data-unknown-disclosure="region:work-items"');
-    expect(html).toContain('Independently observed work-item denominator: 0.');
+    expect(html).toContain('Independently observed work-item denominator: Unknown (work items were not independently observed).');
     expect(html).not.toContain('class="board"');
     expect(html).toContain('Unknown project');
   });

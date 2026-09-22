@@ -102,6 +102,7 @@ describe('Orrery', () => {
     const html = renderOrreryPage(model);
     expect(html).toContain('data-unknown-disclosure="region:code-structure"');
     expect(html).not.toContain('id="orrery-canvas"');
+    expect(html).toContain('observed-file denominator: Unknown (code structure was not observed)');
   });
 
   it('renders an explicit denominator-bearing Unknown graph when no seeds are supplied', () => {
