@@ -260,7 +260,8 @@ this session.
   populations.
 - `apps/three-surface-poc/src/polaris.ts`, the `gapReasonCounts` function
   (lines 951–960 at `194f8cd`; 922–931 at the baseline `a4a3451`) — the
-  projection for finding R-3 below.
+  projection for OQ-3 below (an earlier bullet said "finding R-3"; round 6
+  finding 32).
 
 ---
 
@@ -581,12 +582,13 @@ CG-7d and CG-7e catch a stale copy once the package is registered.
 
 1. The package is reviewed in fresh context against `REVIEW-BRIEF.md`; the
    raw output is retained verbatim and the bytes it is bound to are frozen
-   (rule 10). **Done five times**: round 1 CONFIRM WITH EXCEPTIONS; round
+   (rule 10). **Done six times**: round 1 CONFIRM WITH EXCEPTIONS; round
    2, over the repaired bytes at `9d74185`, REVISE; round 3, over `76b4beb`,
    REVISE; round 4, over `194f8cd`, REVISE; round 5, over `7fd2db3`,
-   REVISE — dispositions for all in §Review — and the prose repairs that
-   followed each round left its verdict bound to the reviewed commit, not to
-   these bytes. A round 6 over these bytes is the next step.
+   REVISE; round 6, over `2c5745e`, REVISE — dispositions for all in
+   §Review — and the prose repairs that followed each round left its
+   verdict bound to the reviewed commit, not to these bytes. A round 7 over
+   these bytes is the next step.
 2. The owner answers the five open questions in `OWNER-DECISION-PACKET.md`.
    Answers to OQ-2 or OQ-3 may change the proposed bytes, which retires the
    review and needs a fresh one. **Done, 2026-09-23**, in the two plain
@@ -644,16 +646,24 @@ status paragraph moved in the same commit with its criteria byte-identical
 confirmation is bound to the reviewed bytes and not to these**. The repairs touch prose only
 — no byte of `proposed/spec.md.patch`, `proposed/GOVERNING-DEPENDENCIES.md.patch`
 or the manifest moved, so the manifest digest is unchanged. The reviewer's
-machine findings (items 2–10 and 13–16 of the raw) held at the round-1
-disposition commit; at the current bytes two of the fourteen do not: item
-9's continuation-form figure (0/0) is retracted by round 2 finding 4 below
-(the ledger now gives 6 files / 7 occurrences), and item 13's `polaris.ts`
-line range has moved (round 4 finding 21). The other twelve hold [Observed:
-builder `--check` and `--selftest` re-run after the repairs covers items 3
-and 4; the rest re-read at source in round 5]. An earlier sentence here
-said all fourteen "still hold at this commit"; it was true at `9d74185` and
-went false when the round-2 repair moved the ledger's figure (round 5
-finding 23). A
+machine findings (items 2–10 and 13–16 of the raw: thirteen items) held at
+the round-1 disposition commit; at the current bytes three do not hold as
+written: item 9's continuation-form figure (0/0) is retracted by round 2
+finding 4 below (the ledger now gives 6 files / 7 occurrences); item 13's
+`polaris.ts` line range has moved (round 4 finding 21); and item 15's three
+`check_governance.py` line pointers (1976, 2173 and 2300) moved to 2022,
+2236 and 2371 when the lane B registration landed at `9d74185`, its
+constants at 1518–1523 unmoved (round 6 finding 31) — the substance of 13
+and 15 holds, their pointers do not. The other ten hold [Observed: builder
+`--check`, `--selftest` and `--diff` re-run after the round-6 repairs cover
+items 3, 4 and 5, and the manifest re-hashed covers item 2; items 6, 7, 8,
+10, 14 and 16 were re-read at source by the round-5 reviewer]. Two earlier
+sentences here are superseded and kept marked: the first said all "still
+hold at this commit" — true at `9d74185`, false once the round-2 repair
+moved the ledger's figure (round 5 finding 23); the second, the round-5
+repair, said "two of the fourteen" do not and "the other twelve hold" —
+the population is thirteen, not fourteen, and item 15 fails the sentence's
+own moved-pointer test (round 6 finding 31). A
 reader who needs a confirmation over *these* bytes needs a fresh review; this
 section records the disposition, it does not extend the verdict.
 
@@ -969,6 +979,65 @@ until a round 6 reads them.
     prose; CG-7e and CG-15 pass on these bytes.
 
 **What no round-5 disposition changed.** No patch byte, no manifest row, no
+requirement, no scenario text, no ledger figure, and no owner answer.
+
+**Author's standing:** this draft's author dispositioned these findings and
+authored the repairs, and therefore may run no review of them.
+
+### Round 6 — re-review over the round-5 repairs
+
+**Reviewed bytes:** commit `2c5745e`, with the manifest digest quoted in
+`OWNER-DECISION-PACKET.md`. **Reviewer:** a fresh-context session with no
+authoring context, commissioned 2026-09-23 with the six earlier raws and
+their dispositions as input and `REVIEW-BRIEF.md` as its commission, asked
+to check each round-5 repair for truth and to repeat the cross-reference
+sweep with a denominator. **Verdict:** **REVISE**, copied exactly from the
+retained raw output. **Raw output:**
+`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-5-RAW.md`,
+retained verbatim and never edited (CC-REV-6).
+
+The reviewer found every round-5 range repair exact; swept 592 extracted
+pointers over the four prose files with none failing to resolve; found
+findings 1 to 30 dispositioned truthfully except the count inside the
+round-5 repair of 23; reproduced every ledger figure by two methods at
+`a4a3451`; found the manifest, both patches and the builder byte-identical
+across all six reviewed commits; composed the spec patch with all four
+sibling spec patches in both orders; ran `--diff` and matched it to the
+two patch files; and exercised nine scratch mutations. The REVISE rests on
+one new finding (31); findings 32 to 35 are notes. **Rule 10:** the
+repairs below edited `SEMANTIC-DELTA.md`, `OWNER-DECISION-PACKET.md` and
+`REVIEW-BRIEF.md` after that commit; `IMPACT-LEDGER.md` and every patch
+and manifest byte are unchanged. These bytes carry no confirmation until a
+round 7 reads them.
+
+**Dispositions**, finding by finding:
+
+31. **The round-5 repair of finding 23 excepted two items for moved
+    pointers and missed a third, and its bracket claimed a re-read the
+    round-5 raw does not record.** **Accepted and repaired.** Item 15's
+    three `check_governance.py` pointers moved at `9d74185` by the same
+    test that excepted item 13; the sentence now names all three, gives
+    the population as thirteen (items 2–10 and 13–16 — both the round-5
+    repair and the reviewer wrote fourteen, and neither count was
+    derived), and states per item what evidence covers the other ten,
+    with `--diff` re-run this session for item 5. The superseded round-5
+    wording is marked in place beside its predecessor.
+32. **The Evidence bullet for `gapReasonCounts` pointed at finding R-3
+    instead of OQ-3.** **Accepted and repaired**, with the earlier wording
+    marked.
+33. **The PWB-REQ-020 two-readings passage is a surfaced tension with
+    exact quotations, left to the owner.** **Noted, no change**: this is
+    the form round 5 finding 27 asked for.
+34. **The packet's date line said "repaired 2026-09-21" for dispositions
+    committed 2026-09-22 01:11 +0800.** **Accepted and repaired**: the
+    line now reads 2026-09-22 and 2026-09-23, with the earlier date
+    marked as the author's working date.
+35. **M4's Gate 5 table is headed "Limb 1" while its slice-3 cell discusses
+    limb 2.** **Noted, no change**: the inconsistency is the funnel's, and
+    the funnel is read-only to this package; the delta reports the header
+    faithfully.
+
+**What no round-6 disposition changed.** No patch byte, no manifest row, no
 requirement, no scenario text, no ledger figure, and no owner answer.
 
 **Author's standing:** this draft's author dispositioned these findings and
