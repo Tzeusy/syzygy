@@ -887,6 +887,16 @@ describe('one resource envelope across both phases (PWB-REQ-006, amended)', () =
       sourcesTraversed: 14,
       maxPassesOnOneSource: 14,
       breaches: [],
+      byLimit: {
+        maxSources: { limit: 'maxSources', declared: 512, observed: 0, remaining: 512 },
+        maxBytesPerSource: { limit: 'maxBytesPerSource', declared: 1048576, observed: 0, remaining: 1048576 },
+        maxTotalBytes: { limit: 'maxTotalBytes', declared: 16777216, observed: TOTAL, remaining: 16777216 - TOTAL },
+        maxIndexDepth: { limit: 'maxIndexDepth', declared: 4, observed: 0, remaining: 4 },
+        maxParsePassesPerSource: { limit: 'maxParsePassesPerSource', declared: 16, observed: 14, remaining: 2 },
+        maxHumanResponseBytes: { limit: 'maxHumanResponseBytes', declared: 2097152, observed: 0, remaining: 2097152 },
+        maxMachineResponseBytes: { limit: 'maxMachineResponseBytes', declared: 8388608, observed: 0, remaining: 8388608 },
+      },
+      cost: { bodiesRead: 14, bytes: TOTAL, parsePasses: 155, worstSourcePasses: 14 },
     });
     expect(shape.resourceUse.maxPassesOnOneSource).toBeLessThanOrEqual(PWB_RESOURCE_LIMITS.maxParsePassesPerSource);
     expect(shape.limitBreaches).toEqual([]);
