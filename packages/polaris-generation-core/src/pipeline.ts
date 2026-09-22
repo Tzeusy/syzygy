@@ -1,3 +1,4 @@
+import type { AdmittedSource } from './admitted-input.js';
 import { digestCanonicalJson, encodeCanonicalJson, type CanonicalJsonLimits } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
 import { promptForStage, type GenerationStage } from './prompts.js';
@@ -19,7 +20,11 @@ export interface PipelineRequest {
   readonly providerRoute: string;
   readonly startedAt: number;
   readonly budget: GenerationBudget;
-  readonly sources: unknown;
+  /** The admitted-input front door (./admitted-input.ts): only the `selected`
+   * projection of a caller's `SourcePopulation` ever reaches this field --
+   * excluded/unavailable/unresolved/deferred material is accounted there,
+   * never sent through the pipeline. See REQ-polaris-generation-030. */
+  readonly sources: readonly AdmittedSource[];
   readonly readerQuestions: unknown;
 }
 
