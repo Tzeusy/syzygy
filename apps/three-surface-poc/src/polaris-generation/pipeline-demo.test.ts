@@ -33,6 +33,7 @@ describe('concrete source-to-draft pipeline exercise', () => {
 
   it('reads the documented clean-install onramp and requires exactly seven synthetic output files', async () => {
     const readme = readFileSync(join(process.cwd(), 'packages/polaris-generation-core/README.md'), 'utf8');
+    expect(JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf8')).scripts['build:poc']).toContain('packages/polaris-generation-core');
     const command = readme.match(/npm ci\n(npm run poc:generator-demo -- --out [^\n]+)/)?.[1];
     expect(command).toBe('npm run poc:generator-demo -- --out /tmp/polaris-generator-demo-new');
     const output = mkdtempSync(join(process.cwd(), '.tmp-generator-onramp-'));

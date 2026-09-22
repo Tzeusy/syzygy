@@ -87,4 +87,15 @@ describe('intermediate draft preview', () => {
     duplicate.deepDives = [];
     expect(() => renderDraftPreview(duplicate, sources)).toThrow('duplicate-draft-handle');
   });
+
+  it('localizes unresolved asset absence with its reason and references', () => {
+    const d = fixture();
+    d.diagrams[0]!.disposition = { kind: 'unresolved', reason: 'renderer capability unavailable', references: ['architecture'] };
+    d.unresolved = [{ question: 'How does the relationship work?', reason: 'renderer capability unavailable', references: ['architecture'] }];
+    const html = renderDraftPreview(d, sources);
+    expect(html).toContain('data-asset-disposition="unresolved"');
+    expect(html).toContain('renderer capability unavailable');
+    expect(html).toContain('architecture');
+    expect(html).not.toContain('marker-end="url(#arrow-0)"');
+  });
 });
