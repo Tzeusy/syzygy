@@ -1,0 +1,18 @@
+# PWB MISSING-CURRENCY DISCLOSURE SCENARIO AMENDMENT MANIFEST
+# These rows bind only by the owner act that names this file's digest in
+# ACCEPTANCE-ACT-RECORD.md; until that act is performed they bind nothing.
+# 11 artifacts; rows sorted by codepoint path.
+# All rows take effect together or none do.
+# Rows hash the PROPOSED bytes: current bytes with proposed/*.patch
+# applied. They match the tree only after --apply, the adoption step.
+bd2504cb580ca73eeb2510481ca4665ee11e2127360fc0be12c104f347fb515f  openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml
+325f9e0cb4ed51c6c9123e5f2f95e8a62e270c62b60fed0e06f70b1dd3c3bc0c  openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+4e749483f97e1ac8a35234c06244b0ce132150fd80dda235e5a0bab8ab93a1c7  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
+3d86052180acdc585577c14095927dc88d795534873a1c357020d23e1333ccaa  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
+d5a2d7136b4ef6e1c848630e02ae1772063f2ba5918fd2c2965520728bb1f112  openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
+f28404be66a4241503f2214757d640361751934b2ab308dafeada5c6d2152e50  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0001-0003.md
+ec091e743cb95070b30980021f2b5bdf054128161a86f6f8a8bbdf7678ffbc29  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md
+6e480d6b94734abd41b15fbdcab1e6d7df9d60f68f0f3f5b0d66f98462728cd0  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md
+b89fae42697810692507b5a049aa66949a04afd95d1df1783e95d910e7bfb53e  openspec/changes/polaris-project-wide-butlers-model/design.md
+cf62aadb612e3ae3a77c1360ca020ba6be96465b9c7542e927bab956cfffd62d  openspec/changes/polaris-project-wide-butlers-model/proposal.md
+3568c1689a23740bc351d94530db8a37a6b6cdcfffbd52feaa9f8527a3c9b575  openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md

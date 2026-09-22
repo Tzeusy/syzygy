@@ -1,0 +1,22 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md b/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
+index ada47e4..0000000 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
+@@ -8,7 +8,7 @@
+ ## Effective population
+ 
+ Accepted RFC 0001–0009 clauses: **324**.
+-Effective consequence rows: **622** — 137 covered, 237 Unknown uncovered, 248 believed not applicable.
++Effective consequence rows: **622** — 132 covered, 242 Unknown uncovered, 248 believed not applicable.
+ 
+ Every accepted clause has at least one effective consequence row. A
+ `believed-not-applicable` row is an author/reviewer judgment, never an
+@@ -24,7 +24,7 @@
+ 
+ ## Repair overlay
+ 
+-`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `77f6b685f7a92eff39d874b92ed36b99e832ded16d1970f1242b6750641b5349`
++`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `4e749483f97e1ac8a35234c06244b0ce132150fd80dda235e5a0bab8ab93a1c7`
+ supersedes 71 base rows with 80 effective rows.
+ 
+ ## Verification
