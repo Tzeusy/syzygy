@@ -191,7 +191,9 @@ describe('Trajectory', () => {
     expect(card).not.toContain('Verification: Verified');
   });
 
-  it('renders Verified on the card only once a real matching test artifact is ingested (AC3, syzygy-0r9)', () => {
+  it.each(['REQ-alternate-governing-intent-007', 'REQ-alternate-governing-intent-008'] as const)(
+    'renders Verified on the card only once a real matching test artifact is ingested for governing intent %s (AC3, syzygy-0r9)',
+    (workerChangeIntentId) => {
     const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
     writeWorkerChangeSeam(repoRoot, 'x = 1\n');
     git(repoRoot, ['add', '-A']);
@@ -227,7 +229,7 @@ describe('Trajectory', () => {
     const alternateSeeds = {
       ...BUTLERS_POC_SEEDS,
       project: { ...BUTLERS_POC_SEEDS.project, displayName: 'Alternate project' },
-      workerChangeIntentId: 'REQ-alternate-governing-intent-007',
+      workerChangeIntentId,
     } as const;
 
     const model = buildPocModel({
@@ -264,7 +266,8 @@ describe('Trajectory', () => {
     expect(missingIdentityCard).toContain('Verification: Unknown — governing intent identity unavailable');
     expect(missingIdentityCard).not.toContain('Verification: Verified');
     expect(missingIdentityCard).not.toContain(BUTLERS_POC_SEEDS.workerChangeIntentId);
-  });
+    },
+  );
 
   it('calls out and highlights the demonstrated item, and separates Bead status from worker-change state (PRF-2, PRF-3)', () => {
     const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
