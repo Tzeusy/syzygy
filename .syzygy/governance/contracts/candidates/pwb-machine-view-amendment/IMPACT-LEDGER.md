@@ -85,14 +85,20 @@ touch, named so the owner can see the size of what the act sets up.
 | `apps/three-surface-poc/src/polaris-presentation-route.test.ts` | The derivability oracle the inserted text requires: every served value verified against the machine answer's bytes at the same evaluation, by a checker importing no rendering code | Two cases today — credential refusal with page-anchor citation, and typed failure under the machine ceiling. Neither is that oracle. **This file is not one of the 121**: it cites PWB-REQ-014, not PWB-REQ-020 [Observed] |
 | `apps/three-surface-poc/src/routes.ts` | Registers the one existing member; would register the briefing view and, later, the draft view | Member 1 registered `machine-credentialed` under `maxMachineResponseBytes`, in the direct and tailnet-mount forms |
 | `packages/three-surface-poc-core/src/project-shape-observation.ts` | Where the registry resource limits are read; a briefing ceiling would arrive here after the registry act | Two ceilings today |
-| A new briefing view module | Member 2 does not exist | `/api/poc/briefing` occurs in 12 tracked files, all under `docs/design/`, `docs/evidence/`, `docs/pursuits/` and `docs/reviews/` [Observed] |
-| A new draft view module | Category 2's member does not exist | `/polaris/draft` occurs in 4 tracked files, same four directories [Observed] |
+| A new briefing view module | Member 2 does not exist | `/api/poc/briefing` occurs in 25 of 1,440 tracked files at `66da9f2` (byte-literal match over `git ls-files`), none of them an installed registry file or implementation source [Observed]; the first draft's "12 tracked files, all under `docs/design/`, `docs/evidence/`, `docs/pursuits/` and `docs/reviews/`" went stale as sibling packages and raws landed (round 5 finding R5-2) |
+| A new draft view module | Category 2's member does not exist | `/polaris/draft` occurs in 15 of 1,440 tracked files at `66da9f2`, same predicate, none of them implementation source [Observed]; the first draft said 4 (R5-2) |
 
 ## The ceiling this delta depends on but does not mint
 
-`maxBriefingResponseBytes` occurs in **7** tracked files: the owner's ruling
-record, the decision history, one design funnel and four retained raw reviews
-[Observed, literal sweep this session]. **No registry file names it.** The
+`maxBriefingResponseBytes` occurs in **24** of 1,440 tracked files at
+`66da9f2` (byte-literal match over `git ls-files`) [Observed]: owner ruling
+and decision records, one design funnel, pursuit data, this package, the
+sibling registry-currency candidate (whose proposed patch would mint it, with
+its builder script) and retained raw reviews. **No installed registry file
+names it**; only that sibling's unperformed patch does. These counts are over
+a live population and go stale as files land; re-derive with the stated
+predicate rather than reading them. (The first draft said 7 files and "No
+registry file names it"; round 5 finding R5-2.) The
 inserted specification text therefore does not name it either: it says the
 adapter-registry entry's resource envelope must declare the member's ceiling
 before the member is served, and leaves the field identity to the registry
