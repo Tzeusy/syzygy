@@ -144,6 +144,11 @@ CAMPAIGNS = (
         "P-69/P-72 registry gate",
         r"R-PWB-REGISTRY-CURRENCY-.*\.md",
     ),
+    campaign(
+        "missing-currency",
+        "P-69 Q7a missing-currency gate",
+        r"R-PWB-MISSING-CURRENCY-.*\.md",
+    ),
 )
 
 
