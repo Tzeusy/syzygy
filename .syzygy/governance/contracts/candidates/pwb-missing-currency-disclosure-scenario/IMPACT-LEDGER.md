@@ -31,21 +31,31 @@ two decode and were swept. The skipped predicate is decode failure, not
 
 [Observed] Method 2 used fixed-string `git grep -F` against `HEAD` for the
 literal forms and reproduced each literal file/occurrence pair. Continuation
-forms were searched separately because this corpus writes both full and
-abbreviated identifier runs.
+forms were searched separately for `, 007`, `/007`, `..007` and `and 007`,
+then restricted to lines containing `PWB-REQ-`, because this corpus writes both
+full and abbreviated identifier runs.
 
 | Pattern | Files | Occurrences |
 |---|---:|---:|
 | `PWB-REQ-007` | 90 | 443 |
-| continuation forms ending in bare `007` after comma, slash, range or `and` | 3 | 3 |
+| continuation forms ending in bare `007` after comma, slash, ASCII range or `and` | 7 | 8 |
 | signed specification path | 65 | 142 |
 | generated-dependencies path | 18 | 32 |
 | `no-currency-bound-declared` | 54 | 78 |
 | `RFC2-10` | 77 | 352 |
 
-[Observed] The three continuation-form files are the `.18` registry semantic
-delta, its retained raw review, and the dated PWB P2-7 mutation record. They
-were inspected rather than silently excluded.
+[Observed] The seven continuation-form files and eight occurrences are:
+
+- the `.18` registry semantic delta and its retained raw review;
+- the dated PWB P2-7 mutation record;
+- `docs/design/POLARIS-M13-NAVIGATION-SCALE-FUNNEL.md:1065`;
+- `docs/design/POLARIS-M14-PROVENANCE-DEPTH-FUNNEL.md:108`;
+- `docs/reviews/2026-09-05-pwb-live-exact-head-packet.md:84`; and
+- `docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md:415-416`,
+  which carries two occurrences.
+
+They were inspected rather than silently excluded. The retained raw reviews
+are counted and classified as review evidence; they are never edited.
 
 ## The eleven subject rows
 
