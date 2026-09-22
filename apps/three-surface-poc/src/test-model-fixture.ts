@@ -89,10 +89,14 @@ export interface FixtureModelOptions {
   /** Supplied → the model's `walkthroughJudgment` is evaluated from the
    * pair; absent → `not-evaluated`. */
   readonly walkthroughJudgment?: WalkthroughJudgmentInputs;
+  /** Override the evaluation instant for determinism counterexamples. */
+  readonly evaluationAsOf?: string;
+  /** Reuse one repository so two evaluations differ only where the test asks. */
+  readonly fixtureRepo?: FixtureRepo;
 }
 
 export function buildFixtureModel(cleanups: string[], options: FixtureModelOptions = {}): PocModel {
-  const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
+  const { repoRoot, revision } = options.fixtureRepo ?? fixtureRepoWithGit(cleanups);
   const doltRevision = 'dolt-fixture-revision';
   const rows = [
     workItemRow('bu-open1', 'open', '2026-08-01T00:00:00Z', '2026-08-02T00:00:00Z', null, doltRevision),
@@ -135,7 +139,7 @@ export function buildFixtureModel(cleanups: string[], options: FixtureModelOptio
     repoRoot,
     repositoryRevision: revision,
     observerRevision: revision,
-    evaluation: { snapshot: 'butlers@fixture', asOf: '2026-08-30T12:00:00Z' },
+    evaluation: { snapshot: 'butlers@fixture', asOf: options.evaluationAsOf ?? '2026-08-30T12:00:00Z' },
     runWorkItemQuery: (_repoRoot, sql) =>
       sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: doltRevision }]),
     ...(options.projectShape === undefined ? {} : { projectShape: options.projectShape }),

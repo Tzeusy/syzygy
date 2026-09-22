@@ -30,6 +30,11 @@ import {
   type TestArtifactVerificationResult,
 } from './test-artifact-verification.js';
 import type { PocSeedEntity, PocSeedInput, PocSeedRelationship } from './poc-seeds.js';
+import {
+  buildResponseIdentity,
+  responseIdentityMetadata,
+  type ResponseIdentity,
+} from './response-identity.js';
 
 const RECENT_CLOSED_WINDOW = 50;
 
@@ -147,6 +152,8 @@ export interface PocModel {
    * of the PWB-REQ-022 outcome. `not-evaluated` when the builder was given
    * no run record or no traversal predicate. */
   readonly walkthroughReadiness: WalkthroughReadinessPresentation;
+  /** A canonical body identity with declared capture-instant exclusions. */
+  readonly responseIdentity: ResponseIdentity;
 }
 
 export type WalkthroughJudgmentInputsFor = (binding: {
@@ -1005,7 +1012,9 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
       ? seeds.workerChangeIntentId
       : null;
 
-  return {
+  const modelWithoutResponseIdentity: Omit<PocModel, 'responseIdentity'> & {
+    readonly responseIdentity: ReturnType<typeof responseIdentityMetadata>;
+  } = {
     schema: 'syzygy-three-surface-poc/v1',
     evaluation: {
       snapshot: `${snapshotLabel}|inputs:sha256:${inputDigest}`,
@@ -1055,5 +1064,8 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
                 },
           ),
     ),
+    responseIdentity: responseIdentityMetadata(),
   };
+  const responseIdentity = buildResponseIdentity(modelWithoutResponseIdentity);
+  return { ...modelWithoutResponseIdentity, responseIdentity };
 }

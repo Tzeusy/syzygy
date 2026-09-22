@@ -240,6 +240,7 @@ describe('three-surface POC routes', () => {
     expect(machineResponse.headers.get('content-type')).toBe('application/json');
     const wireModel = (await machineResponse.json()) as PocModel;
     expect(wireModel).toEqual(model);
+    expect(wireModel.responseIdentity).toEqual(model.responseIdentity);
     expect(visibleParityTuples(html)).toEqual(parityTuples(wireModel));
   });
 

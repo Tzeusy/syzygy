@@ -16,10 +16,11 @@ import { rmSync } from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import type { PocModel, ProjectShape, ProjectShapeClaim } from '@syzygy/three-surface-poc-core';
+import { responseIdentityPreimage } from '@syzygy/three-surface-poc-core';
 
 import { renderPolarisPage } from './polaris.js';
-import { buildFixtureModel } from './test-model-fixture.js';
-import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET, REJECTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
+import { buildFixtureModel, fixtureRepoWithGit } from './test-model-fixture.js';
+import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET, REJECTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 import { walkthroughJudgmentFixture, type JudgmentFixtureState } from './test-walkthrough-judgment-fixture.js';
 
 const cleanups: string[] = [];
@@ -282,6 +283,7 @@ function machineStrings(value: unknown, out = new Set<string>()): Set<string> {
 interface SweepResult {
   readonly reports: readonly FamilyReport[];
   readonly parityFields: readonly string[];
+  readonly machineOnlyReports: readonly { readonly family: string; readonly human: number; readonly machine: number }[];
 }
 
 function sweep(model: PocModel): SweepResult {
@@ -518,7 +520,13 @@ function sweep(model: PocModel): SweepResult {
   const judgmentSections = containers(html, 'data-judgment-state').map((section) => section.value);
   reports.push(compareMultisets('judgment-state', judgmentSections, [judgment.kind === 'not-evaluated' ? 'not-evaluated' : judgment.evaluation.outcome.kind]));
 
-  return { reports, parityFields: [...byField.keys()].sort() };
+  const machineOnlyReports = [
+    { family: 'response-identity:contentKey', human: 0, machine: machine.responseIdentity.contentKey === '' ? 0 : 1 },
+    { family: 'response-identity:excludes', human: 0, machine: machine.responseIdentity.excludes.length },
+    { family: 'response-identity:stableAcross', human: 0, machine: machine.responseIdentity.stableAcross.length },
+    { family: 'response-identity:varyingWith', human: 0, machine: machine.responseIdentity.varyingWith.length },
+  ];
+  return { reports, parityFields: [...byField.keys()].sort(), machineOnlyReports };
 }
 
 // ---------------------------------------------------------------------------
@@ -564,5 +572,50 @@ describe('PWB-REQ-020 exhaustive Polaris parity sweep', () => {
     // The traversed-path fixture repeats a path; both channels keep three.
     const traversed = leafMarkers(html, 'data-parity-field').filter((m) => m.attrs.get('data-parity-field') === 'judgment-traversed-path').map((m) => m.text);
     expect(traversed).toEqual(['/polaris', '/entry', '/polaris']);
+  });
+
+  it('declares response identity as four machine-only parity families with the real machine denominators', () => {
+    const { machineOnlyReports } = sweep(modelFor('observed', 'lawful-state-2'));
+    expect(machineOnlyReports).toEqual([
+      { family: 'response-identity:contentKey', human: 0, machine: 1 },
+      { family: 'response-identity:excludes', human: 0, machine: 25 },
+      { family: 'response-identity:stableAcross', human: 0, machine: 1 },
+      { family: 'response-identity:varyingWith', human: 0, machine: 3 },
+    ]);
+  });
+
+  it('resolves every declared exclusion on the complete observed fixture', () => {
+    const model = buildFixtureModel(cleanups, {
+      projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC) },
+      walkthroughJudgment: walkthroughJudgmentFixture('lawful-state-2'),
+    });
+    const preimage = responseIdentityPreimage(model);
+    expect(preimage.resolved).toHaveLength(25);
+    expect(preimage.resolved).toEqual([...model.responseIdentity.excludes]);
+  });
+
+  it('keeps the response identity stable when a complete evaluation changes only its as-of instant', () => {
+    const options = {
+      projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC) },
+      walkthroughJudgment: walkthroughJudgmentFixture('lawful-state-2'),
+    } as const;
+    const fixtureRepo = fixtureRepoWithGit(cleanups);
+    const first = buildFixtureModel(cleanups, { ...options, fixtureRepo, evaluationAsOf: '2026-08-30T12:00:00Z' });
+    const second = buildFixtureModel(cleanups, { ...options, fixtureRepo, evaluationAsOf: '2026-08-30T12:01:00Z' });
+    expect(JSON.stringify(first)).not.toBe(JSON.stringify(second));
+    expect(first.responseIdentity.contentKey).toBe(second.responseIdentity.contentKey);
+  });
+
+  it('distinguishes one project-shape byte while the legacy inputsDigest remains equal', () => {
+    const fixtureRepo = fixtureRepoWithGit(cleanups);
+    const changedTexts = {
+      ...PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC,
+      'about/heart-and-soul/vision.md': `${PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC['about/heart-and-soul/vision.md']}changed byte\n`,
+    };
+    const common = { fixtureRepo, evaluationAsOf: '2026-08-30T12:00:00Z', walkthroughJudgment: walkthroughJudgmentFixture('lawful-state-2') } as const;
+    const first = buildFixtureModel(cleanups, { ...common, projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC) } });
+    const second = buildFixtureModel(cleanups, { ...common, projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(changedTexts) } });
+    expect(first.evaluation.inputsDigest).toBe(second.evaluation.inputsDigest);
+    expect(first.responseIdentity.contentKey).not.toBe(second.responseIdentity.contentKey);
   });
 });
