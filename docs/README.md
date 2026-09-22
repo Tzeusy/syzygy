@@ -83,8 +83,9 @@ the repair is a new disposition that cites it.
 | P-72 machine-view gate | 1 | 2026-09-22 | Derived read-only machine-view semantic delta | The retained review says `CONFIRM WITH EXCEPTIONS` (`R-PWB-MACHINE-VIEW-DELTA-RAW.md:4`); findings remain dispositioned in the candidate package. |
 | P-71 opening-band gate | 1 | 2026-09-22 | Opening-band scenario delta | The retained review says `CONFIRM WITH EXCEPTIONS` (`R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md:4`); findings remain dispositioned in the candidate package. |
 | P-69/P-72 registry gate | 2 | 2026-09-22 | Currency-bound and briefing-ceiling registry amendment | The confirmation is `CONFIRM` (`R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-CONFIRMATION-RAW.md:4`); repairs landed in the candidate package, which awaits its act. |
+| P-69 Q7a missing-currency gate | 2 | 2026-09-23 | Missing-currency-bound disclosure scenario delta | The confirmation is `CONFIRM` (`R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA-CONFIRMATION-RAW.md:1`); repairs landed in the candidate package, which awaits its act and applies after lane B. |
 
-The 44 rows partition the tracked directory at HEAD: 195 files, 195 assigned,
+The 45 rows partition the tracked directory at HEAD: 197 files, 197 assigned,
 no remainder [Observed — re-derived for HEAD dated 2026-09-23 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
