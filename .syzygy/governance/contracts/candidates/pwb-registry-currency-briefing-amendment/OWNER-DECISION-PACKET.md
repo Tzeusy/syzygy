@@ -212,28 +212,57 @@ deciding something the drafting authorization does not cover.
    briefing-route breach under a third ceiling is a case its words did not
    anticipate. Whether M11's breach recording extends to the third ceiling
    is unresolved here.
+
+   **Answered.** `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OPEN-QUESTIONS-2026-09-23-DECISION.md`
+   §2 (question 1): yes, all three ceilings. M11's breach recording extends
+   to every ceiling the registry declares, including the briefing response
+   ceiling once the `.18` act adds it; P-78 Q4's "the two ceilings"
+   described the registry at the time of that ruling and does not limit
+   recording to two.
 2. **P-77 question 6 requires every new machine field in the parity sweep
    as its own family with a declared empty human denominator**, and the
    same row says the registry entry is edited on no M10 arm. The fields
    added here are registry fields, not machine-response fields, so on the
    reading this package holds they are outside that sweep. That reading is
    not confirmed.
+
+   **Answered.** `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OPEN-QUESTIONS-2026-09-23-DECISION.md`
+   §2 (question 2): confirmed — the currency bounds and the briefing
+   ceiling are registry configuration, not machine-response fields, and
+   stay outside P-77 Q6's parity sweep. A future machine field that
+   *serves* one of these values would be inside the sweep.
 3. **`status` and `adoptionStatus` in the subject remain candidate
    strings under a performed act.** Both carry the entry's governance
    lifecycle, and both are left byte-identical here. Whether a superseding
    act is the right occasion to move them is an owner question; this
    package deliberately does not move them, because doing so would widen
    the act argument for a reason the ruling never gave.
+
+   **Answered.** `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md`
+   §1 (packet open question 3): "Leave unchanged (Recommended)" — the
+   superseding act's argument does not widen to the lifecycle strings.
 4. **One existing check will go red at adoption without a defect behind
    it**: `scripts/build_pwb_truth_policy_amendment.py --check` hashes the
    subject's current bytes, which `--apply` moves. The comparable
    convention is that a superseded recorder fails its own `--check` by
    design, but that convention has not been extended to this builder by
    any ruling.
+
+   **Answered.** `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OPEN-QUESTIONS-2026-09-23-DECISION.md`
+   §2 (question 4): the change that applies the `.18` act also retires or
+   rebases `scripts/build_pwb_truth_policy_amendment.py`'s check, extending
+   the superseded-recorder convention to that builder by owner ruling. This
+   does not authorize editing any performed record.
 5. **Whether thirteen classes is permanently the complete set.** It is
    complete against today's two source files; nothing mechanically
    prevents a future class from being minted with no row, and the
    `undeclaredClass` sentence is what makes that safe rather than silent.
+
+   **Answered.** `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OPEN-QUESTIONS-2026-09-23-DECISION.md`
+   §2 (question 5): no — the thirteen classes are complete against today's
+   two source files but are not a closed set; a new claim class needs a
+   registry amendment, and until it has a row `undeclaredClass` keeps it
+   Unknown.
 6. **Whether the proposed single-subject/category join is the owner's.** The
    sibling candidate is now in the tree and proposes `/api/poc/briefing` as a
    closed derived read-only machine-view member, but it remains inert and its
@@ -244,6 +273,11 @@ deciding something the drafting authorization does not cover.
    both packages before either ceremony is offered. Raised originally as F6;
    this reconciliation changes the proposed bytes and retires both earlier
    reviews.
+
+   **Held, not answered.** `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OPEN-QUESTIONS-2026-09-23-DECISION.md`
+   §2 (question 6): the drafter's leaning — one claim id — goes to the
+   `.22` reviewer as input only; the owner decides when that review
+   returns. This question stays open.
 
 ## How to verify this package before acting
 
