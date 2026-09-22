@@ -29,7 +29,19 @@
  * (its `sourceSchema`); this module only gives that shape a name and a
  * static type at the front door, it does not change what that runtime
  * schema accepts.
+ *
+ * `validateStage` runs on the provider's *reply*, after `pipeline.ts`'s
+ * `stage()` has already sent the envelope carrying `selected`'s `sourceId`s
+ * and `text` to `ports.generate` -- the front door itself performed no
+ * shape check. `admitSourcePopulation` below fails closed here instead,
+ * applying `sourceSchema`'s own `sourceId` handle pattern and `text` upper
+ * bound (imported from ./provider-draft.ts, not duplicated) before any
+ * source is ever admitted.
  */
+
+import { SOURCE_ID_MAX_LENGTH, SOURCE_ID_PATTERN, SOURCE_TEXT_MAX_LENGTH } from './provider-draft.js';
+
+const sourceIdHandle = new RegExp(SOURCE_ID_PATTERN, 'u');
 
 /** Why material a caller considered was not admitted. Mirrors
  * REQ-polaris-generation-030's own four non-selection reasons verbatim:
@@ -59,7 +71,8 @@ export interface SourcePopulation {
 }
 
 export type SourcePopulationFailure =
-  | 'empty-source-id' | 'empty-text' | 'empty-detail' | 'duplicate-source-id';
+  | 'empty-source-id' | 'empty-text' | 'empty-detail' | 'duplicate-source-id'
+  | 'invalid-source-id' | 'text-too-long';
 
 /** Diagnostics deliberately contain no source content or ids beyond the code. */
 export class SourcePopulationError extends Error {
@@ -75,6 +88,15 @@ export class SourcePopulationError extends Error {
  * caller already decided to select or exclude -- it only validates the two
  * lists are well-formed and carry no id twice across the whole population,
  * so the denominator (`sourcePopulationDenominator`) is trustworthy.
+ *
+ * Each `selected` source's `sourceId` must additionally match `sourceSchema`'s
+ * own handle pattern (./provider-draft.ts's `SOURCE_ID_PATTERN`, length-bounded
+ * by `SOURCE_ID_MAX_LENGTH`; the regex itself already requires at least one
+ * character) and its `text` must not exceed `SOURCE_TEXT_MAX_LENGTH` -- the
+ * same pattern and bound `validateStage` enforces against `context.sources`,
+ * applied here before a source is ever admitted, so a shape `sourceSchema`
+ * would reject cannot first reach `ports.generate` through `pipeline.ts`'s
+ * `PipelineRequest.sources`.
  */
 export function admitSourcePopulation(
   selected: readonly AdmittedSource[],
@@ -83,7 +105,11 @@ export function admitSourcePopulation(
   const seen = new Set<string>();
   for (const source of selected) {
     if (source.sourceId.length === 0) throw new SourcePopulationError('empty-source-id');
+    if ([...source.sourceId].length > SOURCE_ID_MAX_LENGTH || !sourceIdHandle.test(source.sourceId)) {
+      throw new SourcePopulationError('invalid-source-id');
+    }
     if (source.text.length === 0) throw new SourcePopulationError('empty-text');
+    if ([...source.text].length > SOURCE_TEXT_MAX_LENGTH) throw new SourcePopulationError('text-too-long');
     if (seen.has(source.sourceId)) throw new SourcePopulationError('duplicate-source-id');
     seen.add(source.sourceId);
   }
