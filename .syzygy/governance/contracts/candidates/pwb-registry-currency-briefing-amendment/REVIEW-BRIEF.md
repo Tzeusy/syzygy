@@ -62,6 +62,12 @@ at its current bytes.
 - `.syzygy/governance/contracts/candidates/pwb-machine-view-amendment/`
   (`SEMANTIC-DELTA.md`, `OWNER-DECISION-PACKET.md` and `proposed/spec.md.patch`),
   for the inert sibling category proposal and its unresolved owner values.
+- `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md`
+  and
+  `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OPEN-QUESTIONS-2026-09-23-DECISION.md`,
+  the two 2026-09-23 owner decision records `OWNER-DECISION-PACKET.md`
+  cites for its open-questions dispositions, including the load-bearing
+  "Held, not answered" reading of question 6.
 
 **Deliberately withheld** — the design funnels under `docs/design/`. They
 are where these fields were designed and they recommend; the ruling record
@@ -81,15 +87,20 @@ Each is a yes/no question with the evidence that settles it.
    proposed change is the unified diff under `proposed/`, and that no act
    record, no superseded record and no manifest of a prior act is edited.
 3. **Does the package verify, and does its verification mean anything?**
-   Run `--check` and `--selftest`. `--selftest` mutates twenty-three
+   Run `--check` and `--selftest`. `--selftest` mutates twenty-four
    predicates in turn; confirm each mutation is one the package would
    actually be wrong about, not a tautology, and name any predicate the
    package asserts that no mutant covers.
 4. **Is the thirteen-class population complete and disjoint?** The delta
    claims the thirteen rows cover every claim identity the shape model
    mints and nothing else. Check it against the nine extraction classes
-   and the six claim-id families in the two source files, and say what a
-   class minted in future code would do.
+   and the six claim-id-constructing call sites in the two source files —
+   one of those six, `factClaim`, further splits into four internal
+   sub-shapes, one per `FACT_FAMILIES` entry in
+   `project-shape-coverage.ts` (`item`, `count`, `catalog-count`,
+   `project-account`), so a count of "families" that stops at six
+   undercounts the populations `claimClassAssignment` must assign — and
+   say what a class minted in future code would do.
 5. **Do the seven `currencyBoundSemantics` sentences say what `RFC2-9`
    and `RFC2-10` require, and do they say anything they must not?** In
    particular: does `undeclaredClass` correctly leave the claim Unknown

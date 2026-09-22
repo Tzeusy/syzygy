@@ -407,3 +407,27 @@ regenerated mechanically. Both retained reviews remain valid evidence about
 their named commits and are retired for these current candidate bytes. A new
 fresh-context exact-byte review is required after the owner confirms or changes
 the fourteen numeric values and this subject/category join.
+
+### Confirmation round 2
+
+A second, independent confirmation review was run against the reconciled
+bytes above. Raw output, stored verbatim and never edited:
+`docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-CONFIRMATION-2-RAW.md`
+(reviewed commit `869d21d`; the raw names its own manifest digest at its
+header, not repeated here per criterion 9).
+**Verdict, copied exactly: CONFIRM WITH EXCEPTIONS** (one revise, one note).
+
+| Finding | Class | Disposition |
+|---|---|---|
+| F1 — `currencyBoundSemantics.claimClassAssignment` omits the real fact family `claim:fact:item:<class>:<key>` | revise | **Repaired in the proposed bytes, taking the reviewer's first offered repair.** The sentence now names `claim:fact:item:<class>:<key>` as the item-identity twin of each extraction-class row's own `claim:item:` claims, governed by that same row's bound; `project-fact-declaration` now governs only the three remaining fact families. `REVIEW-BRIEF.md`'s "six claim-id families" framing (criterion 4) is updated to note that `factClaim` itself splits into four internal sub-shapes, one per `FACT_FAMILIES` entry. The builder gained a structural assertion (`CLAIM_FACT_ITEM_PHRASE`) that the sentence names this family, and a dedicated `--selftest` predicate mutates only that phrase and confirms the check fails; the printed count moved from twenty-three to twenty-four. This changed the patch, so the manifest row was regenerated. |
+| F2 — `REVIEW-BRIEF.md`'s "Governing references" omits the two 2026-09-23 owner decision records | note | **Repaired.** Both `POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md` and `POLARIS-GATE-PACKAGE-OPEN-QUESTIONS-2026-09-23-DECISION.md` are now listed in `REVIEW-BRIEF.md`'s "Governing references". |
+
+**Rule 10 — what this confirmation is bound to (dated 2026-09-23).** The raw
+above names commit `869d21d` and a manifest digest it computed over the
+bytes at that commit, quoted only in the raw itself. The F1 and F2 repairs
+above changed the proposed patch, `REVIEW-BRIEF.md` and the builder script,
+so the proposed bytes and the manifest row have both moved again since that
+raw was issued; confirmation round 2's raw covers the reviewed bytes, not
+these. **A confirmation round 3, in fresh context against the current
+candidate bytes, is required before this package is routed back to the
+owner.** This one is not overwritten.

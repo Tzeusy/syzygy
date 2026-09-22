@@ -63,6 +63,14 @@ BRIEFING_LIMIT_SEMANTICS = (
     "ceiling, never a share of that one, and a view without its own declared "
     "ceiling is not served"
 )
+#: The `claimClassAssignment` sentence must name this claim-id shape: the
+#: item-identity twin `factClaim` mints for every admitted item (F1,
+#: confirmation round 2). It is the fourth `FACT_FAMILIES` entry in
+#: `project-shape-coverage.ts` (`item`), one row earlier in the same closed
+#: list as the three families the sentence already named, and it is real,
+#: current and populated (`byIdentity` pushes the same reconciled item into
+#: both `items` and `facts`) — not future code the assignment may omit.
+CLAIM_FACT_ITEM_PHRASE = "claim:fact:item:<class>:<key>"
 #: The seven semantics keys the currency-bound block must declare.
 CURRENCY_SEMANTICS_KEYS = (
     "measuredFrom",
@@ -206,6 +214,11 @@ def structure_findings(body: bytes) -> list[str]:
         for key, sentence in bound_semantics.items():
             if not isinstance(sentence, str) or not sentence.strip():
                 findings.append(f"currencyBoundSemantics sentence is empty: {key}")
+        assignment = bound_semantics.get("claimClassAssignment")
+        if isinstance(assignment, str) and CLAIM_FACT_ITEM_PHRASE not in assignment:
+            findings.append(
+                "claimClassAssignment does not name the "
+                f"{CLAIM_FACT_ITEM_PHRASE} item-identity twin family")
     return findings
 
 
@@ -421,7 +434,7 @@ def selftest() -> int:
         print("SELFTEST FAILED: widened briefing subject semantics passed")
         return 1
 
-    # Predicates 15-20 mutate the parsed document and re-serialize, so each
+    # Predicates 15-21 mutate the parsed document and re-serialize, so each
     # one reaches the structural assertion under test rather than failing
     # earlier on JSON validity. Each names the assertion it covers.
     def mutate(fn) -> bytes:
@@ -445,6 +458,16 @@ def selftest() -> int:
         ("an empty currencyBoundSemantics sentence",
          lambda doc: doc["entries"][0]["currencyBoundSemantics"].__setitem__(
              CURRENCY_SEMANTICS_KEYS[0], "   ")),
+        # Predicate 21: claimClassAssignment must keep naming the
+        # claim:fact:item: item-identity twin family (F1, confirmation
+        # round 2) — dropping just that phrase, and nothing else in the
+        # sentence, must still be caught.
+        ("claimClassAssignment missing its claim:fact:item: family clause",
+         lambda doc: doc["entries"][0]["currencyBoundSemantics"].__setitem__(
+             "claimClassAssignment",
+             doc["entries"][0]["currencyBoundSemantics"][
+                 "claimClassAssignment"].replace(
+                     CLAIM_FACT_ITEM_PHRASE, "the item-identity twin family"))),
     )
     for label, fn in structural_mutants:
         mutant = mutate(fn)
@@ -453,7 +476,7 @@ def selftest() -> int:
             print(f"SELFTEST FAILED: {label} passed")
             return 1
 
-    # Predicates 21-23 cover the three assertions `check()` makes that
+    # Predicates 22-24 cover the three assertions `check()` makes that
     # `structure_findings` does not. Each is exercised through the helper
     # `check()` itself calls, so a fixture cannot drift from the caller.
     good_patches = patch_files()
@@ -473,12 +496,13 @@ def selftest() -> int:
         print("SELFTEST FAILED: an absent manifest passed")
         return 1
 
-    print("selftest: 23 predicates — subject drift, patch corruption, patch "
+    print("selftest: 24 predicates — subject drift, patch corruption, patch "
           "population, a no-op patch, manifest digest, path mutation and "
           "absence, both version bumps, limit semantics, the briefing "
           "ceiling's value and exact single-claim scope, claim-class population, "
           "duplication, row shape and bound value, the semantics block's type, "
-          "keys and empty sentences, entry count and JSON validity all fail closed")
+          "keys and empty sentences, entry count, the claim:fact:item: family "
+          "name and JSON validity all fail closed")
     return 0
 
 

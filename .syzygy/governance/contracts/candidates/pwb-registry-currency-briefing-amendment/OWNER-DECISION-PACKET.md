@@ -292,7 +292,7 @@ python3 scripts/check_governance.py
 
 `--check` proves the patch still applies to the bytes the act in force
 bound and that the manifest row is an exact regeneration over the result.
-`--selftest` mutates twenty-three predicates in turn and requires each to
+`--selftest` mutates twenty-four predicates in turn and requires each to
 fail closed; the count is the one the command prints. It covers every
 assertion `structure_findings` makes and all three `check()` makes on its
 own — the patch population under `proposed/`, a patch that changes
