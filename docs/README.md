@@ -86,9 +86,9 @@ the repair is a new disposition that cites it.
 | P-69 Q7a missing-currency gate | 2 | 2026-09-23 | Missing-currency-bound disclosure scenario delta | The confirmation is `CONFIRM` (`R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA-CONFIRMATION-RAW.md:1`); repairs landed in the candidate package, which awaits its act and applies after lane B. |
 | N8 generality measurement | 3 | 2026-09-23 | Slice 1: synthetic second-project corpora and per-class coverage matrix (PR #63); slice 2: `repairFor` narrowed to genuine shape mismatches (PR #73) | Slice 1 `CONFIRM` (`R-PWB-N8-SLICE1-REVIEW-RAW.md:19`); slice 2 `REVISE` (`R-PWB-N8-SLICE2-REVIEW-RAW.md:3`), repaired, then `CONFIRM` (`R-PWB-N8-SLICE2-CONFIRMATION-RAW.md:3`). |
 | N4 page honesty | 2 | 2026-09-23 | Slices 3-4: evaluation-identity footers on Trajectory and Orrery, `--focus`/`--measure-reading` tokens (PR #67) | `REVISE` (`R-PWB-N4-SLICES3-4-REVIEW-RAW.md:1`), repaired; confirmation `CONFIRM` (`R-PWB-N4-SLICES3-4-CONFIRMATION-RAW.md:6`). |
-| N11 drift sweep | 2 | 2026-09-23 | Slices 1 and 3: `scripts/check_evidence_currency.py` sha256 drift sweep and the typed pipeline failure code (PR #68) | `REVISE` (`R-PWB-N11-SLICES1-3-REVIEW-RAW.md:1`), repaired; confirmation `CONFIRM` (`R-PWB-N11-SLICES1-3-CONFIRMATION-RAW.md:3`). |
+| N11 drift sweep | 3 | 2026-09-23 | Slices 1 and 3: `scripts/check_evidence_currency.py` sha256 drift sweep and the typed pipeline failure code (PR #68); slice 2: scheduled generation-core mutation gate and rule-6 evidence run (PR #82) | Slices 1 and 3 `REVISE` (`R-PWB-N11-SLICES1-3-REVIEW-RAW.md:1`), repaired; confirmation `CONFIRM` (`R-PWB-N11-SLICES1-3-CONFIRMATION-RAW.md:3`). Slice 2 `CONFIRM` (`R-PWB-N11-SLICE2-REVIEW-RAW.md:3`). |
 
-The 48 rows partition the tracked directory at HEAD: 216 files, 216 assigned,
+The 48 rows partition the tracked directory at HEAD: 217 files, 217 assigned,
 no remainder [Observed — re-derived for HEAD dated 2026-09-23 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
