@@ -85,7 +85,7 @@ the repair is a new disposition that cites it.
 | P-69/P-72 registry gate | 2 | 2026-09-22 | Currency-bound and briefing-ceiling registry amendment | The confirmation is `CONFIRM` (`R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-CONFIRMATION-RAW.md:4`); repairs landed in the candidate package, which awaits its act. |
 
 The 44 rows partition the tracked directory at HEAD: 195 files, 195 assigned,
-no remainder [Observed — re-derived 2026-09-23 by
+no remainder [Observed — re-derived for HEAD dated 2026-09-23 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
 derives dates from `git log --diff-filter=A`]. These are navigation figures,

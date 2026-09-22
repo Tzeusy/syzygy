@@ -13,12 +13,15 @@ import json
 import re
 import subprocess
 import sys
+import tempfile
+from unittest import mock
 from pathlib import Path
-from typing import Iterable
+from typing import Callable, Iterable
 
 
 REVIEW_PREFIX = "docs/reviews/"
 README = Path("docs/README.md")
+HELPER = Path("scripts/check_docs_review_campaign_partition.py")
 
 
 @dataclasses.dataclass(frozen=True)
@@ -148,8 +151,54 @@ class PartitionError(RuntimeError):
     pass
 
 
-def git(*args: str) -> bytes:
-    return subprocess.check_output(("git", *args), stderr=subprocess.STDOUT)
+def git(*args: str, cwd: Path | None = None) -> bytes:
+    return subprocess.check_output(("git", *args), cwd=cwd, stderr=subprocess.STDOUT)
+
+
+def repository_root() -> Path:
+    return Path(git("rev-parse", "--show-toplevel").decode().strip()).resolve()
+
+
+def head_commit_date() -> str:
+    value = git("show", "-s", "--format=%cs", "HEAD").decode().strip()
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+        raise PartitionError(f"HEAD has invalid commit date: {value!r}")
+    return value
+
+
+def head_input_drift(repo_root: Path) -> list[str]:
+    output = git(
+        "diff",
+        "--name-only",
+        "-z",
+        "HEAD",
+        "--",
+        README.as_posix(),
+        REVIEW_PREFIX,
+        HELPER.as_posix(),
+        cwd=repo_root,
+    )
+    return sorted(
+        path.decode("utf-8", "surrogateescape") for path in output.split(b"\0") if path
+    )
+
+
+def assert_head_bound_inputs(readme_path: Path, repo_root: Path | None = None) -> None:
+    root = repo_root or repository_root()
+    supplied = (
+        readme_path if readme_path.is_absolute() else Path.cwd() / readme_path
+    ).resolve()
+    canonical = (root / README).resolve()
+    if supplied != canonical:
+        raise PartitionError(
+            f"check target must be the HEAD-bound {README.as_posix()}: {readme_path}"
+        )
+    drift = head_input_drift(root)
+    if drift:
+        raise PartitionError(
+            "check inputs differ from HEAD\n"
+            + "\n".join(f"HEAD input drift: {path}" for path in drift)
+        )
 
 
 def tracked_regular_paths() -> list[str]:
@@ -220,7 +269,15 @@ def partition(
 
 def add_date(path: str) -> str:
     output = (
-        git("log", "--follow", "--diff-filter=A", "--format=%cs", "--", path)
+        git(
+            "log",
+            "--follow",
+            "--diff-filter=A",
+            "--format=%cs",
+            "HEAD",
+            "--",
+            path,
+        )
         .decode()
         .splitlines()
     )
@@ -229,17 +286,25 @@ def add_date(path: str) -> str:
     return output[-1]
 
 
-def date_span(paths: Iterable[str]) -> str:
-    dates = sorted({add_date(path) for path in paths})
+def date_span(
+    paths: Iterable[str], add_date_for_path: Callable[[str], str] = add_date
+) -> str:
+    dates = sorted({add_date_for_path(path) for path in paths})
     if not dates:
         raise PartitionError("campaign has no paths")
     return dates[0] if len(dates) == 1 else f"{dates[0]} → {dates[-1]}"
 
 
-def report(paths: list[str]) -> dict[str, object]:
-    grouped = partition(paths)
+def report(
+    paths: list[str],
+    observed_date: str,
+    campaigns: Iterable[Campaign] = CAMPAIGNS,
+    add_date_for_path: Callable[[str], str] = add_date,
+) -> dict[str, object]:
+    campaigns = tuple(campaigns)
+    grouped = partition(paths, campaigns)
     rows = []
-    for item in CAMPAIGNS:
+    for item in campaigns:
         members = grouped[item.key]
         if not members:
             raise PartitionError(f"empty campaign: {item.key}")
@@ -248,7 +313,7 @@ def report(paths: list[str]) -> dict[str, object]:
                 "key": item.key,
                 "display": item.display,
                 "count": len(members),
-                "recorded": date_span(members),
+                "recorded": date_span(members, add_date_for_path=add_date_for_path),
                 "paths": members,
             }
         )
@@ -260,7 +325,7 @@ def report(paths: list[str]) -> dict[str, object]:
         "assigned": sum(int(row["count"]) for row in rows),
         "unmatched": [],
         "overlaps": {},
-        "observed_date": dt.date.today().isoformat(),
+        "observed_date": observed_date,
         "campaigns": rows,
     }
 
@@ -407,7 +472,8 @@ def check_readme(readme_path: Path, data: dict[str, object]) -> None:
     summary = re.search(
         r"The\s+(\d+)\s+rows\s+partition\s+the\s+tracked\s+directory\s+at\s+HEAD:\s+"
         r"(\d+)\s+files,\s+(\d+)\s+assigned,\s+no\s+remainder\s+"
-        r"\[Observed\s+—\s+re-derived\s+(\d{4}-\d{2}-\d{2})",
+        r"\[Observed\s+—\s+re-derived\s+for\s+HEAD\s+dated\s+"
+        r"(\d{4}-\d{2}-\d{2})",
         text,
     )
     if not summary:
@@ -548,6 +614,100 @@ def selftest() -> None:
     else:
         raise AssertionError("denominator-mismatch mutant survived")
 
+    fixtures += 1
+    fake_campaigns = (campaign("example", "example", r"R-EXAMPLE-RAW\.md"),)
+    fake_paths = ["docs/reviews/R-EXAMPLE-RAW.md"]
+
+    class EarlierAmbientDate(dt.date):
+        @classmethod
+        def today(cls) -> dt.date:
+            return cls(2026, 9, 22)
+
+    class LaterAmbientDate(dt.date):
+        @classmethod
+        def today(cls) -> dt.date:
+            return cls(2026, 9, 24)
+
+    with mock.patch.object(dt, "date", EarlierAmbientDate):
+        earlier = report(
+            fake_paths,
+            "2026-09-23",
+            campaigns=fake_campaigns,
+            add_date_for_path=lambda _path: "2026-09-20",
+        )
+    with mock.patch.object(dt, "date", LaterAmbientDate):
+        later = report(
+            fake_paths,
+            "2026-09-23",
+            campaigns=fake_campaigns,
+            add_date_for_path=lambda _path: "2026-09-20",
+        )
+    assert earlier == later and earlier["observed_date"] == "2026-09-23"
+
+    with tempfile.TemporaryDirectory(prefix="review-partition-selftest-") as scratch:
+        fixture_root = Path(scratch)
+        (fixture_root / "docs/reviews").mkdir(parents=True)
+        (fixture_root / "scripts").mkdir()
+        fixture_readme = fixture_root / README
+        fixture_review = fixture_root / "docs/reviews/R-EXAMPLE-RAW.md"
+        fixture_helper = fixture_root / HELPER
+        fixture_readme.write_text("clean README\n", encoding="utf-8")
+        fixture_review.write_text("CONFIRM\n", encoding="utf-8")
+        fixture_helper.write_text("# helper\n", encoding="utf-8")
+        subprocess.run(("git", "init", "-q"), cwd=fixture_root, check=True)
+        subprocess.run(
+            ("git", "config", "user.email", "selftest@example.invalid"),
+            cwd=fixture_root,
+            check=True,
+        )
+        subprocess.run(
+            ("git", "config", "user.name", "partition selftest"),
+            cwd=fixture_root,
+            check=True,
+        )
+        subprocess.run(("git", "add", "."), cwd=fixture_root, check=True)
+        subprocess.run(
+            ("git", "commit", "-q", "-m", "fixture"),
+            cwd=fixture_root,
+            check=True,
+        )
+        assert_head_bound_inputs(fixture_readme, fixture_root)
+
+        fixtures += 1
+        fixture_readme.write_text("dirty README\n", encoding="utf-8")
+        try:
+            assert_head_bound_inputs(fixture_readme, fixture_root)
+        except PartitionError as error:
+            assert "HEAD input drift: docs/README.md" in str(error)
+        else:
+            raise AssertionError("dirty-README mutant survived")
+        fixture_readme.write_text("clean README\n", encoding="utf-8")
+
+        fixtures += 1
+        fixture_review.write_text("REVISE\n", encoding="utf-8")
+        try:
+            assert_head_bound_inputs(fixture_readme, fixture_root)
+        except PartitionError as error:
+            assert "HEAD input drift: docs/reviews/R-EXAMPLE-RAW.md" in str(error)
+        else:
+            raise AssertionError("dirty-citation mutant survived")
+        fixture_review.write_text("CONFIRM\n", encoding="utf-8")
+
+        fixtures += 1
+        staged_review = fixture_root / "docs/reviews/R-STAGED-RAW.md"
+        staged_review.write_text("CONFIRM\n", encoding="utf-8")
+        subprocess.run(
+            ("git", "add", staged_review.relative_to(fixture_root).as_posix()),
+            cwd=fixture_root,
+            check=True,
+        )
+        try:
+            assert_head_bound_inputs(fixture_readme, fixture_root)
+        except PartitionError as error:
+            assert "HEAD input drift: docs/reviews/R-STAGED-RAW.md" in str(error)
+        else:
+            raise AssertionError("staged-denominator mutant survived")
+
     print(f"selftest PASS: {fixtures} fixtures")
 
 
@@ -561,9 +721,11 @@ def main() -> int:
     if args.selftest:
         selftest()
         return 0
+    if args.check:
+        assert_head_bound_inputs(args.check)
     paths = tracked_regular_paths()
-    data = report(paths)
-    if args.second_method:
+    data = report(paths, head_commit_date())
+    if args.check or args.second_method:
         second_method(paths)
     if args.check:
         check_readme(args.check, data)
