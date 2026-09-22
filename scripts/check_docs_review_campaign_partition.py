@@ -164,6 +164,16 @@ CAMPAIGNS = (
         "N11 drift sweep",
         r"R-PWB-N11-.*\.md",
     ),
+    campaign(
+        "n3-resource-ledger",
+        "N3 resource ledger",
+        r"R-PWB-N3-.*\.md",
+    ),
+    campaign(
+        "u05-16-admission",
+        "Polaris generation admission validation",
+        r"R-PWB-U05-16-.*\.md",
+    ),
 )
 
 
