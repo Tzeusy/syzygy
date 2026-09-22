@@ -1,0 +1,70 @@
+{
+  "kind": "pwb-m2-rule-6-mutation-evidence",
+  "testedCommit": "df9425d9212d080076133afa732ae40dd6b8e290",
+  "mutations": [
+    {
+      "id": "legend-unreachable-marker-removed",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "old": "const marker = used ? '' : value === 'stale'",
+      "new": "const marker = ''",
+      "test": "polaris-copy.test.ts dynamic freshness reachability",
+      "outcome": "killed"
+    },
+    {
+      "id": "legend-used-state-keeps-marker",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "old": "const used = shapeClaims(model.projectShape).some((claim) => claim.epistemic.freshness === value)",
+      "new": "const used = false",
+      "test": "polaris-copy.test.ts dynamic freshness reachability",
+      "outcome": "killed"
+    },
+    {
+      "id": "probe-identity-collapsed",
+      "file": "apps/three-surface-poc/src/main.ts",
+      "old": "evaluationId: `evaluation:pwb-currency-probe:${asOf}`",
+      "new": "evaluationId: `evaluation:pwb-body-read:${asOf}`",
+      "test": "polaris-parity-sweep.test.ts currency probe identity",
+      "outcome": "killed"
+    },
+    {
+      "id": "probe-freshness-forced",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "old": "<span data-currency-probe-tuple>",
+      "new": "<span data-epistemic-freshness=\"fresh\" data-currency-probe-tuple>",
+      "test": "polaris-parity-sweep.test.ts probe has no freshness field",
+      "outcome": "killed"
+    },
+    {
+      "id": "wall-clock-rebuild-advances",
+      "file": "apps/three-surface-poc/src/main.ts",
+      "old": "const asOf = currentCapture.evidence.observationInstant",
+      "new": "const asOf = new Date().toISOString()",
+      "test": "reobserve-state.test.ts capture reuse",
+      "outcome": "killed"
+    },
+    {
+      "id": "withdrawal-digest-reason-dropped",
+      "file": "apps/three-surface-poc/src/polaris-reading.ts",
+      "old": "return failed('digest-mismatch')",
+      "new": "return full",
+      "test": "polaris-reading.test.ts digest withdrawal",
+      "outcome": "killed"
+    },
+    {
+      "id": "withdrawal-no-passages-reason-dropped",
+      "file": "apps/three-surface-poc/src/polaris-reading.ts",
+      "old": "return failed('no-passages')",
+      "new": "return full",
+      "test": "polaris-reading.test.ts no-passages withdrawal",
+      "outcome": "killed"
+    },
+    {
+      "id": "withdrawal-malformed-reason-dropped",
+      "file": "apps/three-surface-poc/src/polaris-reading.ts",
+      "old": "return failed('plan-malformed')",
+      "new": "return full",
+      "test": "polaris-reading.test.ts plan-malformed withdrawal",
+      "outcome": "killed"
+    }
+  ]
+}
