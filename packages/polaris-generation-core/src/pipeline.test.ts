@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { runGenerationPipeline, type PipelinePorts, type PipelineRequest, type ProviderReply } from './pipeline.js';
+import { runGenerationPipeline, type AttemptOutcome, type PipelinePorts, type PipelineRequest, type ProviderReply } from './pipeline.js';
 
 const request = (): PipelineRequest => ({
   requestId: 'request-1', projectId: 'project-a', snapshotId: 'snapshot-1', providerRoute: 'synthetic', startedAt: Date.now(),
@@ -10,6 +10,7 @@ const request = (): PipelineRequest => ({
 function harness() {
   const sends: { stage: string; input: string }[] = [];
   const outcomes: string[] = [];
+  const fullOutcomes: AttemptOutcome[] = [];
   const late: unknown[] = [];
   const admitted = new Set<string>();
   const ports: PipelinePorts = {
@@ -27,11 +28,11 @@ function harness() {
       if (!data || typeof data !== 'object' || Object.keys(data).length !== 1 || (data as { stage?: unknown }).stage !== stage) throw Error('schema');
       return data;
     },
-    record: async (_, outcome) => { outcomes.push(outcome.kind); },
+    record: async (_, outcome) => { outcomes.push(outcome.kind); fullOutcomes.push(outcome); },
     lateReceipt: async (_, receipt) => { late.push(receipt); },
     fidelity: () => ({ blocking: false, findings: [] }),
   };
-  return { ports, sends, outcomes, late };
+  return { ports, sends, outcomes, fullOutcomes, late };
 }
 const signal = () => new AbortController().signal;
 afterEach(() => vi.useRealTimers());
@@ -83,6 +84,24 @@ describe('source to editorial draft pipeline', () => {
     expect(await runGenerationPipeline(request(), ports, signal())).toMatchObject({ status: 'stopped', reason: 'invalid-output' });
     expect(validate).not.toHaveBeenCalled();
     expect(h.outcomes).toEqual(['invalid-output']);
+    // The failure code is carried out of the catch, typed to the step that rejected the reply,
+    // rather than swallowed into a bare 'invalid-output' with no further detail.
+    expect(h.fullOutcomes).toEqual([{ kind: 'invalid-output', usageUnits: 1, reason: 'parse-failed', detail: 'Bounded JSON rejected: duplicate-key' }]);
+  });
+
+  it('carries the schema-rejection reason and message out of the bare catch, typed', async () => {
+    const h = harness();
+    const ports = { ...h.ports, validate: () => { throw Error('schema violation: missing field'); } };
+    expect(await runGenerationPipeline(request(), ports, signal())).toMatchObject({ status: 'stopped', reason: 'invalid-output' });
+    expect(h.fullOutcomes).toEqual([{ kind: 'invalid-output', usageUnits: 1, reason: 'schema-rejected', detail: 'schema violation: missing field' }]);
+  });
+
+  it('carries the canonical-encode rejection reason and message out of the bare catch, typed', async () => {
+    const h = harness();
+    // A validated value the encoder cannot represent (a Map has no canonical JSON form).
+    const ports = { ...h.ports, validate: () => new Map() };
+    expect(await runGenerationPipeline(request(), ports, signal())).toMatchObject({ status: 'stopped', reason: 'invalid-output' });
+    expect(h.fullOutcomes).toEqual([{ kind: 'invalid-output', usageUnits: 1, reason: 'encode-failed', detail: 'Canonical JSON rejected: unsupported-object' }]);
   });
 
   it('stops when calls or repairs are exhausted and when usage is unknown', async () => {
