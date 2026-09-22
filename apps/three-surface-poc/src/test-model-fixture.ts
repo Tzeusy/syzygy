@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { buildButlersPocModel, type PocModel, type ProjectShapeModelInput, type WalkthroughJudgmentInputs } from '@syzygy/three-surface-poc-core';
+import { BUTLERS_POC_SEEDS, buildPocModel, type PocModel, type ProjectShapeModelInput, type WalkthroughJudgmentInputs } from '@syzygy/three-surface-poc-core';
 
 import { pwbReadinessTraversal } from './walkthrough-inputs.js';
 
@@ -130,7 +130,8 @@ export function buildFixtureModel(cleanups: string[], options: FixtureModelOptio
     ),
   ];
 
-  return buildButlersPocModel({
+  return buildPocModel({
+    seeds: BUTLERS_POC_SEEDS,
     repoRoot,
     repositoryRevision: revision,
     observerRevision: revision,

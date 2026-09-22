@@ -5,11 +5,12 @@ import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
-  buildButlersPocModel,
+  buildPocModel,
   PocObservationError,
   type PocEntity,
   type PocRelationship,
 } from './model.js';
+import { BUTLERS_POC_SEEDS } from './poc-seeds.js';
 import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import type { TestArtifactRecord } from './test-artifact-verification.js';
 import { walkthroughEvaluationIdentity } from './walkthrough-readiness.js';
@@ -150,6 +151,7 @@ describe('three-surface Butlers POC model', () => {
   it('builds one deterministic provenance-backed graph with honest Unknowns', () => {
     const repoRoot = butlersFixture();
     const input = {
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
       observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
@@ -159,16 +161,16 @@ describe('three-surface Butlers POC model', () => {
       },
     } as const;
 
-    const first = buildButlersPocModel(input);
-    const second = buildButlersPocModel(input);
+    const first = buildPocModel(input);
+    const second = buildPocModel(input);
 
     expect(second).toEqual(first);
     expect(first.evaluation.snapshot).toMatch(
-      /^butlers@c1389423\|inputs:sha256:[0-9a-f]{64}$/,
+      /^repository:butlers-configured-poc@c1389423\|inputs:sha256:[0-9a-f]{64}$/,
     );
     // C3-5: both halves of the composite are structured fields of their
     // own — a machine consumer never splits the display string.
-    expect(first.evaluation.snapshotLabel).toBe('butlers@c1389423');
+    expect(first.evaluation.snapshotLabel).toBe('repository:butlers-configured-poc@c1389423');
     expect(first.evaluation.inputsDigest).toMatch(/^[0-9a-f]{64}$/);
     expect(first.evaluation.snapshot).toBe(
       `${first.evaluation.snapshotLabel}|inputs:sha256:${first.evaluation.inputsDigest}`,
@@ -242,20 +244,21 @@ describe('three-surface Butlers POC model', () => {
       'def canonical_identity():\n    return "changed-working-tree-bytes"\n',
       'utf8',
     );
-    const changedBytes = buildButlersPocModel(input);
+    const changedBytes = buildPocModel(input);
     expect(changedBytes.evaluation.snapshot).not.toBe(first.evaluation.snapshot);
   });
 
   it('carries the project shape on the one model: not-evaluated without an authority evaluation, observed with an admitting one (PWB 2.7)', () => {
     const repoRoot = butlersFixture();
     const baseInput = {
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
       observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
       evaluation: { snapshot: 'butlers@c1389423', asOf: '2026-09-04T09:00:00.000Z' },
     } as const;
 
-    const unevaluated = buildButlersPocModel({ ...baseInput, projectShapeDetail: 'no governance tree in this test' });
+    const unevaluated = buildPocModel({ ...baseInput, projectShapeDetail: 'no governance tree in this test' });
     expect(unevaluated.projectShape.kind).toBe('not-evaluated');
     expect(unevaluated.projectShape.authority).toBeUndefined();
     expect(unevaluated.projectShape.claim.epistemic).toEqual({
@@ -277,7 +280,7 @@ describe('three-surface Butlers POC model', () => {
       registry: { kind: 'absent', what: 'artifact-missing', artifactDigest: undefined },
       contradiction: { clause: 'RFC3-16(a)', definedTerm: 'authorization-bearing governance artifact', statement: 'No effective act.', failing: [] },
     };
-    const gated = buildButlersPocModel({
+    const gated = buildPocModel({
       ...baseInput,
       projectShape: { authority: rejecting, runGit: (args) => { gitCalls.push([...args]); throw new Error('must not run'); } },
     });
@@ -310,11 +313,11 @@ describe('three-surface Butlers POC model', () => {
           throw new Error(`unexpected git command ${args.join(' ')}`);
       }
     };
-    const observed = buildButlersPocModel({ ...baseInput, projectShape: { authority: admitting, runGit } });
+    const observed = buildPocModel({ ...baseInput, projectShape: { authority: admitting, runGit } });
     expect(observed.projectShape.kind).toBe('observed');
     // The walkthrough-judgment seam is handed this very evaluation's identity.
     const seen: string[] = [];
-    buildButlersPocModel({
+    buildPocModel({
       ...baseInput,
       projectShape: { authority: admitting, runGit },
       walkthroughJudgment: (binding) => {
@@ -346,13 +349,14 @@ describe('three-surface Butlers POC model', () => {
   it('resolves walkthrough-judgment inputs through a callback bound to the shape\u2019s own evaluation identity, and fails closed when the loader throws', () => {
     const repoRoot = butlersFixture();
     const baseInput = {
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
       observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
       evaluation: { snapshot: 'butlers@c1389423', asOf: '2026-09-04T09:00:00.000Z' },
     } as const;
     const seen: string[] = [];
-    const throwing = buildButlersPocModel({
+    const throwing = buildPocModel({
       ...baseInput,
       walkthroughJudgment: (binding) => {
         seen.push(binding.evaluationIdentity);
@@ -373,6 +377,7 @@ describe('three-surface Butlers POC model', () => {
   it('shows the materialized work item Observed only once the recorded Bead is confirmed present (AC4)', () => {
     const repoRoot = butlersFixture();
     const baseInput = {
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
       observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
@@ -401,7 +406,7 @@ describe('three-surface Butlers POC model', () => {
       },
     ];
 
-    const confirmed = buildButlersPocModel({
+    const confirmed = buildPocModel({
       ...baseInput,
       materializationRecord,
       runWorkItemQuery: (_repoRoot, sql) =>
@@ -429,7 +434,7 @@ describe('three-surface Butlers POC model', () => {
 
     // a record naming a Bead that is NOT present in the live-observed
     // work items must never be rendered as Observed (VIS-2, fail-closed)
-    const stale = buildButlersPocModel({
+    const stale = buildPocModel({
       ...baseInput,
       materializationRecord,
       runWorkItemQuery: (_repoRoot, sql) => (sql.includes('WHERE id LIKE') ? JSON.stringify([]) : JSON.stringify([{ revision: 'dolt-rev-3' }])),
@@ -440,7 +445,7 @@ describe('three-surface Butlers POC model', () => {
     );
 
     // no record at all: unchanged from the pre-existing default behaviour
-    const none = buildButlersPocModel(baseInput);
+    const none = buildPocModel(baseInput);
     const noneEntities = byId(none.entities);
     expect(noneEntities.get('work:whatsapp-single-event-normalization')?.epistemic).toEqual({
       label: 'Unknown',
@@ -451,6 +456,7 @@ describe('three-surface Butlers POC model', () => {
   it('words the intent-to-work basis by the record origin: created, reused, or the honest legacy both (PRF-4)', () => {
     const repoRoot = butlersFixture();
     const baseInput = {
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
       observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
@@ -480,7 +486,7 @@ describe('three-surface Butlers POC model', () => {
     const runWorkItemQuery = (_repoRoot: string, sql: string) =>
       sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: 'dolt-rev-2' }]);
     const basisFor = (materializationRecord: typeof record & { origin?: 'created' | 'reused' }) => {
-      const model = buildButlersPocModel({ ...baseInput, materializationRecord, runWorkItemQuery });
+      const model = buildPocModel({ ...baseInput, materializationRecord, runWorkItemQuery });
       const epistemic = byId(model.relationships).get('relationship:intent-to-work')?.epistemic;
       if (epistemic?.label !== 'Observed') throw new Error('expected Observed');
       return epistemic.basis;
@@ -503,7 +509,8 @@ describe('three-surface Butlers POC model', () => {
     rmSync(join(repoRoot, 'tests/core/test_identity.py'));
 
     expect(() =>
-      buildButlersPocModel({
+      buildPocModel({
+        seeds: BUTLERS_POC_SEEDS,
         repoRoot,
         repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
         observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
@@ -540,7 +547,8 @@ describe('three-surface Butlers POC model', () => {
       const repoRoot = butlersFixture();
       writeFileSync(join(repoRoot, mutation.path), mutation.contents, 'utf8');
       expect(() =>
-        buildButlersPocModel({
+        buildPocModel({
+          seeds: BUTLERS_POC_SEEDS,
           repoRoot,
           repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
           observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
@@ -563,6 +571,7 @@ describe('three-surface Butlers POC model', () => {
     const capturedAt = new Date(Date.parse(changedCommitAuthoredAt) + 60 * 60 * 1000).toISOString();
     const evaluationAsOf = new Date(Date.parse(capturedAt) + 60 * 60 * 1000).toISOString();
     const baseInput = {
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: changedCommit,
       observerRevision: changedCommit,
@@ -571,7 +580,7 @@ describe('three-surface Butlers POC model', () => {
       runWorkItemQuery: runWorkItemQueryFixture,
     } as const;
 
-    const withoutArtifact = buildButlersPocModel(baseInput);
+    const withoutArtifact = buildPocModel(baseInput);
     expect(withoutArtifact.workerChange.kind).toBe('observed');
     if (withoutArtifact.workerChange.kind !== 'observed') throw new Error('unreachable');
     expect(withoutArtifact.workerChange.state).toBe('changed-or-merged');
@@ -583,8 +592,11 @@ describe('three-surface Butlers POC model', () => {
     // whether the worker-change seam's own evidence is verified.
     const identityEntities = byId(withoutArtifact.entities);
     expect(identityEntities.get('evidence:focused-pytest')?.epistemic.label).toBe('Unknown');
+    const identityGraph = JSON.stringify({ entities: withoutArtifact.entities, relationships: withoutArtifact.relationships });
+    expect(identityGraph).not.toContain(BUTLERS_POC_SEEDS.workerChangeSeam.sourcePath);
+    expect(identityGraph).not.toContain(BUTLERS_POC_SEEDS.workerChangeSeam.testPath);
 
-    const verified = buildButlersPocModel({
+    const verified = buildPocModel({
       ...baseInput,
       testArtifactRecord: passingTestArtifactRecord(changedCommit, capturedAt),
     });
@@ -602,7 +614,7 @@ describe('three-surface Butlers POC model', () => {
 
     // Mismatch/failure case (AC4, AC6): a passing artifact bound to a
     // different commit must never render Verified.
-    const mismatched = buildButlersPocModel({
+    const mismatched = buildPocModel({
       ...baseInput,
       testArtifactRecord: passingTestArtifactRecord('a-different-commit-entirely', capturedAt),
     });
@@ -610,10 +622,95 @@ describe('three-surface Butlers POC model', () => {
 
     // A failing exit status must never be shown Verified even when the
     // commit and scope both match (AC4).
-    const failed = buildButlersPocModel({
+    const failed = buildPocModel({
       ...baseInput,
       testArtifactRecord: passingTestArtifactRecord(changedCommit, capturedAt, { exitCode: 1 }),
     });
     expect(failed.testArtifactVerification.kind).toBe('unknown');
+  });
+
+  it('builds an explicit Unknown model with no seeds and performs no seeded reads', () => {
+    const repoRoot = mkdtempSync(join(tmpdir(), 'syzygy-poc-empty-seeds-'));
+    cleanups.push(repoRoot);
+    const gitCalls: string[][] = [];
+    const runGit = (_root: string, args: readonly string[]): string => {
+      gitCalls.push([...args]);
+      if (args[0] === 'ls-tree') {
+        return `100644 blob ${'1'.repeat(40)} 1\tREADME.md\n`;
+      }
+      throw new Error(`unexpected non-structure read: ${args.join(' ')}`);
+    };
+
+    const model = buildPocModel({
+      repoRoot,
+      repositoryRevision: 'empty-seed-revision',
+      observerRevision: 'empty-seed-observer',
+      evaluation: { snapshot: 'empty-seed', asOf: '2026-09-22T00:00:00Z' },
+      runGit,
+    });
+
+    expect(model.entities).toEqual([]);
+    expect(model.relationships).toEqual([]);
+    expect(model.surfaces).toEqual([]);
+    expect(model.project.name).toBe('Unknown project');
+    expect(model.capabilityId).toBe('capability:unknown');
+    expect(model.trajectory).toMatchObject({ kind: 'unknown', observedItemCount: 0 });
+    expect(model.orrery).toMatchObject({
+      kind: 'unknown',
+      observedFileCount: 1,
+      mappedFileCount: 0,
+      unmappedFileCount: 1,
+      totalFileCount: 1,
+    });
+    expect(gitCalls).toEqual([['ls-tree', '-r', '-l', 'empty-seed-revision']]);
+  });
+
+  it('changes seeded display labels without changing graph identities or snapshot identity', () => {
+    const repoRoot = butlersFixture();
+    const baseInput = {
+      repoRoot,
+      repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
+      observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
+      evaluation: { snapshot: 'butlers@labels', asOf: '2026-09-22T00:00:00Z' },
+    } as const;
+    const renamedSeeds = {
+      ...BUTLERS_POC_SEEDS,
+      project: { ...BUTLERS_POC_SEEDS.project, displayName: 'Staffers' },
+    } as const;
+    const original = buildPocModel({ ...baseInput, seeds: BUTLERS_POC_SEEDS });
+    const renamed = buildPocModel({ ...baseInput, seeds: renamedSeeds });
+
+    expect(renamed.evaluation.snapshotLabel).toBe('repository:butlers-configured-poc@labels');
+    expect(renamed.evaluation.snapshotLabel).toBe(original.evaluation.snapshotLabel);
+    expect(renamed.entities.map((entity) => entity.id)).toEqual(original.entities.map((entity) => entity.id));
+    expect(renamed.relationships.map((relationship) => relationship.id)).toEqual(original.relationships.map((relationship) => relationship.id));
+    expect(renamed.project.name).toBe('Staffers');
+    expect(renamed.entities.find((entity) => entity.id === 'project:butlers')?.title).toBe('Staffers');
+    expect(renamed.entities.find((entity) => entity.id === 'region:unmapped-code')?.title).toBe('Unmapped Staffers code');
+    expect(renamed.relationships.find((relationship) => relationship.id === 'relationship:project-to-capability')?.statement).toBe('Staffers declares the selected capability.');
+  });
+
+  it('rejects a seeded Orrery mapping that is absent from the observed inventory', () => {
+    const { repoRoot, changedCommit } = butlersGitFixture();
+    const seeds = {
+      ...BUTLERS_POC_SEEDS,
+      orreryMappings: [...BUTLERS_POC_SEEDS.orreryMappings, {
+        id: 'code:unsupported',
+        path: 'src/missing/not-observed.py',
+        capabilityId: 'capability:whatsapp-transport-identity',
+      }],
+    } as const;
+    const model = buildPocModel({
+      repoRoot,
+      repositoryRevision: changedCommit,
+      observerRevision: changedCommit,
+      evaluation: { snapshot: 'butlers@unsupported-map', asOf: '2026-09-22T00:00:00Z' },
+      seeds,
+    });
+    expect(model.orrery.kind).toBe('unknown');
+    if (model.orrery.kind !== 'unknown') throw new Error('unreachable');
+    expect(model.orrery.reason).toContain('src/missing/not-observed.py');
+    expect(model.orrery.mappedFileCount).toBe(0);
+    expect(model.orrery.mappedFileCount! + model.orrery.unmappedFileCount!).toBe(model.orrery.totalFileCount);
   });
 });

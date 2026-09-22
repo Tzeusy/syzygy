@@ -1,6 +1,6 @@
 import { escapeHtml, type Route } from '@syzygy/cap1-daemon';
 import {
-  ARTIFACT_PATHS,
+  BUTLERS_POC_SEEDS,
   buildMaterializationPacket,
   clearMaterializationRecordFile,
   materializeWorkItem,
@@ -31,8 +31,8 @@ export const MATERIALIZE_ATTRIBUTION =
 export function buildTrajectoryMaterializationPacket(model: PocModel): MaterializationPacket {
   return buildMaterializationPacket({
     targetRepoRoot: model.project.root,
-    proposalPath: ARTIFACT_PATHS.proposal,
-    designPath: ARTIFACT_PATHS.design,
+    proposalPath: BUTLERS_POC_SEEDS.artifacts.proposal,
+    designPath: BUTLERS_POC_SEEDS.artifacts.design,
   });
 }
 

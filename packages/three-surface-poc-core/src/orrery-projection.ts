@@ -34,6 +34,11 @@ export interface OrreryProjectionObserved {
 export interface OrreryProjectionUnknown {
   readonly kind: 'unknown';
   readonly reason: string;
+  /** Denominator from the independent code-structure observation. */
+  readonly observedFileCount?: number;
+  readonly mappedFileCount?: number;
+  readonly unmappedFileCount?: number;
+  readonly totalFileCount?: number;
 }
 
 export type OrreryProjection = OrreryProjectionObserved | OrreryProjectionUnknown;
@@ -54,6 +59,19 @@ export function projectOrrery(
 ): OrreryProjection {
   if (structure.kind === 'unknown') {
     return { kind: 'unknown', reason: structure.reason };
+  }
+
+  const observedPaths = new Set(structure.files.map((file) => file.path));
+  const unsupportedMapping = declaredMappings.find((mapping) => !observedPaths.has(mapping.path));
+  if (unsupportedMapping !== undefined) {
+    return {
+      kind: 'unknown',
+      reason: `declared Orrery mapping ${unsupportedMapping.path} has no observed file at this revision`,
+      observedFileCount: structure.files.length,
+      mappedFileCount: 0,
+      unmappedFileCount: structure.files.length,
+      totalFileCount: structure.files.length,
+    };
   }
 
   const mappingByPath = new Map(declaredMappings.map((mapping) => [mapping.path, mapping]));

@@ -138,7 +138,7 @@ export interface LoadWalkthroughJudgmentInputsOptions extends LoadGovernanceInpu
   readonly binding: WalkthroughBinding;
 }
 
-/** The daemon's seam: `buildButlersPocModel` calls this with the exact
+/** The daemon's seam: `buildPocModel` calls this with the exact
  * evaluation identity of the shape it observed; the surface version is
  * the Polaris tree at the governance (observer) revision. */
 export function walkthroughJudgmentInputsFor(options: LoadGovernanceInputsOptions): WalkthroughJudgmentInputsFor {

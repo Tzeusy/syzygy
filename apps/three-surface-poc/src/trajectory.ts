@@ -1,7 +1,7 @@
 import { escapeHtml } from '@syzygy/cap1-daemon';
 import type { PocModel, WorkerChangeObserved } from '@syzygy/three-surface-poc-core';
 import type { TrajectoryColumn, TrajectoryLaneItem } from '@syzygy/three-surface-poc-core';
-import { WORKER_CHANGE_INTENT_ID, type TestArtifactVerificationResult } from '@syzygy/three-surface-poc-core';
+import { BUTLERS_POC_SEEDS, type TestArtifactVerificationResult } from '@syzygy/three-surface-poc-core';
 
 import {
   MATERIALIZE_PANEL_STYLE,
@@ -60,7 +60,7 @@ const WORKER_CHANGE_STATE_LABEL = {
 
 function verificationBadge(verification: TestArtifactVerificationResult): string {
   if (verification.kind === 'verified') {
-    return `<span class="epistemic epistemic-observed" data-parity-field="worker-change-verification" title="A captured, passing focused-pytest artifact bound to commit ${escapeHtml(verification.record.repositoryCommit)} and the governing intent ${escapeHtml(WORKER_CHANGE_INTENT_ID)}.">Verification: Verified — ${escapeHtml(verification.record.summary)}</span>`;
+    return `<span class="epistemic epistemic-observed" data-parity-field="worker-change-verification" title="A captured, passing focused-pytest artifact bound to commit ${escapeHtml(verification.record.repositoryCommit)} and the governing intent ${escapeHtml(BUTLERS_POC_SEEDS.workerChangeIntentId)}.">Verification: Verified — ${escapeHtml(verification.record.summary)}</span>`;
   }
   return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification" title="${escapeHtml(verification.reason)}">Verification: Not verified</span>`;
 }
@@ -138,7 +138,8 @@ export function renderTrajectoryPage(model: PocModel, mountPrefix = ''): string 
   const workerChange = model.workerChange.kind === 'observed' ? model.workerChange : null;
   let body: string;
   if (trajectory.kind === 'unknown') {
-    body = `<p class="unavailable-notice" data-unknown-disclosure="region:work-items">Unknown — ${escapeHtml(trajectory.reason)}. This is a distinct state from an observed-empty board: no board is rendered because the work-item region could not be observed.</p>`;
+    const observedItemCount = trajectory.observedItemCount ?? 0;
+    body = `<p class="unavailable-notice" data-unknown-disclosure="region:work-items">Unknown — ${escapeHtml(trajectory.reason)}. This is a distinct state from an observed-empty board: no board is rendered because the seeded work-item graph is unavailable. Independently observed work-item denominator: ${observedItemCount}.</p>`;
   } else {
     const byColumn = new Map<TrajectoryColumn, TrajectoryLaneItem[]>();
     for (const column of COLUMN_ORDER) {
@@ -189,7 +190,7 @@ export function renderTrajectoryPage(model: PocModel, mountPrefix = ''): string 
   return pageShell({
     title: 'Trajectory · Syzygy three-surface POC',
     current: 'trajectory',
-    eyebrow: `Trajectory · Butlers ${model.project.revision.slice(0, 12)}`,
+    eyebrow: `Trajectory · ${escapeHtml(model.project.name)} ${model.project.revision.slice(0, 12)}`,
     heading: 'Work and time, observed',
     lede: 'A board over the registered Beads Dolt database, columns from a declared status mapping, time from recorded instants only.',
     extraStyle: TRAJECTORY_STYLE,

@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
-import { buildButlersPocModel, type PocModel } from '@syzygy/three-surface-poc-core';
+import { BUTLERS_POC_SEEDS, buildPocModel, type PocModel } from '@syzygy/three-surface-poc-core';
 
 import { POC_MACHINE_PATH, pocRoutes, renderPocPage } from './routes.js';
 
@@ -43,7 +43,8 @@ function modelFixture(): PocModel {
     mkdirSync(dirname(absolutePath), { recursive: true });
     writeFileSync(absolutePath, contents, 'utf8');
   }
-  return buildButlersPocModel({
+  return buildPocModel({
+    seeds: BUTLERS_POC_SEEDS,
     repoRoot,
     repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
     observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
@@ -258,5 +259,27 @@ describe('three-surface POC routes', () => {
     expect(html).not.toContain('<img src=x>');
     expect(html).toContain('&lt;script&gt;alert(&quot;title&quot;)&lt;/script&gt;');
     expect(html).toContain('&lt;img src=x&gt;');
+  });
+
+  it('keeps empty-seed human and machine responses in parity', async () => {
+    const seeded = modelFixture();
+    const empty: PocModel = {
+      ...seeded,
+      project: { ...seeded.project, name: 'Unknown project' },
+      capabilityId: 'capability:unknown',
+      entities: [],
+      relationships: [],
+      surfaces: [],
+      trajectory: { kind: 'unknown', reason: 'No seed-backed work-item graph was supplied to this evaluation.', observedItemCount: 0 },
+      orrery: { kind: 'unknown', reason: 'No seed-backed capability-to-path mappings were supplied to this evaluation.', observedFileCount: 0, mappedFileCount: 0, unmappedFileCount: 0, totalFileCount: 0 },
+    };
+    const { daemon, token } = await startPoc(empty);
+    const baseUrl = `http://${daemon.host}:${daemon.port}`;
+    const html = await (await fetch(`${baseUrl}/`)).text();
+    const machineResponse = await fetch(`${baseUrl}${POC_MACHINE_PATH}`, { headers: { authorization: `Bearer ${token}` } });
+    expect(machineResponse.status).toBe(200);
+    const wireModel = (await machineResponse.json()) as PocModel;
+    expect(wireModel).toEqual(empty);
+    expect(visibleParityTuples(html)).toEqual(parityTuples(wireModel));
   });
 });

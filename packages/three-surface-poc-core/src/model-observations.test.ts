@@ -4,7 +4,8 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { buildButlersPocModel } from './model.js';
+import { buildPocModel } from './model.js';
+import { BUTLERS_POC_SEEDS } from './poc-seeds.js';
 
 const cleanups: string[] = [];
 
@@ -99,7 +100,8 @@ describe('shared model observation wiring', () => {
 
     // Planned: bead is materialized (confirmed present) but no matching
     // git activity has landed yet on the bounded seam.
-    const plannedModel = buildButlersPocModel({
+    const plannedModel = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: mergedRevision,
       observerRevision: mergedRevision,
@@ -130,7 +132,8 @@ describe('shared model observation wiring', () => {
     const changedRevision = git(repoRoot, ['rev-parse', 'HEAD']);
     git(repoRoot, ['update-ref', 'refs/remotes/origin/main', changedRevision]);
 
-    const changedModel = buildButlersPocModel({
+    const changedModel = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: changedRevision,
       observerRevision: changedRevision,
@@ -150,7 +153,8 @@ describe('shared model observation wiring', () => {
     ).toBe('Unknown');
 
     // No materialization at all: Unknown, distinct reason.
-    const unmaterializedModel = buildButlersPocModel({
+    const unmaterializedModel = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: changedRevision,
       observerRevision: changedRevision,
@@ -162,7 +166,6 @@ describe('shared model observation wiring', () => {
       reason: 'no materialized work item to observe git activity against',
     });
   });
-
 
   it('folds code-structure and work-item observations into the one shared model', () => {
     const { repoRoot, revision } = butlersFixtureWithGit();
@@ -183,7 +186,8 @@ describe('shared model observation wiring', () => {
           ])
         : JSON.stringify([{ revision: 'dolt-rev-fixture' }]);
 
-    const model = buildButlersPocModel({
+    const model = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: revision,
       observerRevision: revision,
@@ -223,7 +227,8 @@ describe('shared model observation wiring', () => {
     const { repoRoot, revision } = butlersFixtureWithGit();
     // Break git's ability to read the named revision without touching the
     // intent artifacts the earlier fail-closed checks require.
-    const model = buildButlersPocModel({
+    const model = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: '0000000000000000000000000000000000dead',
       observerRevision: revision,

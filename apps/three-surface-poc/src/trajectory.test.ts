@@ -3,7 +3,7 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { buildButlersPocModel, STATUS_TO_COLUMN } from '@syzygy/three-surface-poc-core';
+import { BUTLERS_POC_SEEDS, buildPocModel, STATUS_TO_COLUMN } from '@syzygy/three-surface-poc-core';
 
 import { renderTrajectoryPage } from './trajectory.js';
 import { buildFixtureModel, fixtureRepoWithGit } from './test-model-fixture.js';
@@ -83,7 +83,8 @@ describe('Trajectory', () => {
 
   it('renders the Unknown state distinctly from an empty-but-observed board (POC-REQ-013 rendering)', () => {
     const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
-    const unknownModel = buildButlersPocModel({
+    const unknownModel = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: revision,
       observerRevision: revision,
@@ -97,7 +98,8 @@ describe('Trajectory', () => {
     expect(unknownHtml).toContain('data-unknown-disclosure="region:work-items"');
     expect(unknownHtml).not.toContain('class="board"');
 
-    const emptyObservedModel = buildButlersPocModel({
+    const emptyObservedModel = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: revision,
       observerRevision: revision,
@@ -116,6 +118,23 @@ describe('Trajectory', () => {
     // ARIA); role="group" keeps the accessible name valid.
     expect(emptyHtml).toContain('class="board" role="group"');
     expect(emptyHtml).not.toContain('role="list"');
+  });
+
+  it('renders an explicit denominator-bearing Unknown graph when no seeds are supplied', () => {
+    const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
+    const model = buildPocModel({
+      repoRoot,
+      repositoryRevision: revision,
+      observerRevision: revision,
+      evaluation: { snapshot: 'empty-seed-trajectory', asOf: '2026-09-22T00:00:00Z' },
+    });
+    expect(model.entities).toEqual([]);
+    expect(model.trajectory.kind).toBe('unknown');
+    const html = renderTrajectoryPage(model);
+    expect(html).toContain('data-unknown-disclosure="region:work-items"');
+    expect(html).toContain('Independently observed work-item denominator: 0.');
+    expect(html).not.toContain('class="board"');
+    expect(html).toContain('Unknown project');
   });
 
   it('renders the observed worker-change lifecycle state on the matching card, never as verified (AC3/AC4)', () => {
@@ -149,7 +168,8 @@ describe('Trajectory', () => {
       },
     ];
 
-    const model = buildButlersPocModel({
+    const model = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: changedRevision,
       observerRevision: revision,
@@ -205,7 +225,8 @@ describe('Trajectory', () => {
     const capturedAt = new Date(Date.parse(changedCommitAuthoredAt) + 60 * 60 * 1000).toISOString();
     const evaluationAsOf = new Date(Date.parse(capturedAt) + 60 * 60 * 1000).toISOString();
 
-    const model = buildButlersPocModel({
+    const model = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: changedRevision,
       observerRevision: revision,
@@ -265,7 +286,8 @@ describe('Trajectory', () => {
         closed_at: null,
       },
     ];
-    const model = buildButlersPocModel({
+    const model = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: changedRevision,
       observerRevision: revision,
@@ -307,7 +329,8 @@ describe('Trajectory', () => {
     expect(demoCard).not.toContain('class="wi-status">External worker:');
 
     // no demonstrated item: neither callout variant renders
-    const noneModel = buildButlersPocModel({
+    const noneModel = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: changedRevision,
       observerRevision: revision,
@@ -348,7 +371,8 @@ describe('Trajectory', () => {
         closed_at: `2026-08-0${(i % 9) + 1}T0${i % 10}:00:00Z`,
       })),
     ];
-    const model = buildButlersPocModel({
+    const model = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: revision,
       observerRevision: revision,
