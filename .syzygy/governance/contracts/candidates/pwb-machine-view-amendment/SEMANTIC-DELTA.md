@@ -697,8 +697,8 @@ reads them.
   link, which the recorder's own docstring disclaims.** **Accepted and
   repaired** in the packet's adoption list: the recorder writes the
   dedicated record and the aggregate section, and the same change registers
-  the chain link in `check_governance.py`, which is what "How this would be
-  adopted" step 6 already said.
+  the chain link in `check_governance.py`, which is what "Migration /
+  supersession plan" step 6 already said.
 - **F9 (note) — the three ordering sections did not cite the owner's
   2026-09-23 landing-order answer.** **Accepted and repaired** with one
   sentence in each of the three ordering sections citing
@@ -713,3 +713,47 @@ reads them.
 
 **Author's standing:** this draft's author dispositioned these findings and
 authored the repairs, and therefore may run no review of them.
+
+### Round 4 — third confirmation review, over the round-3 repairs
+
+**Reviewed bytes:** commit `194f8cd`, with the manifest digest quoted in
+`OWNER-DECISION-PACKET.md`. **Reviewer:** a fresh-context session with no
+authoring context, commissioned 2026-09-23 by a lead session that neither
+drafted this package nor authored its round-3 repairs, with the three prior
+raws and `REVIEW-BRIEF.md` as its commission. **Verdict of record:**
+`CONFIRM WITH EXCEPTIONS`, copied exactly from
+`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-3-RAW.md`, retained
+verbatim and never edited (CC-REV-6).
+
+F6 through F9 were found repaired, each re-derived rather than read. The
+builder's `--check` and `--selftest` and `check_governance.py` reproduced
+with no FAIL, and the reviewer's act-argument digest equals this manifest
+file's own SHA-256. **Rule 10:** the two repairs below edited
+`SEMANTIC-DELTA.md` and `OWNER-DECISION-PACKET.md` after that commit. No
+patch or manifest byte moved, and these files are not rows of the manifest,
+so the act argument is unchanged. These bytes still carry no confirmation
+until a round 5 reads them.
+
+**Dispositions**, finding by finding (the raw's findings-summary numbers):
+
+- **R4-1 (non-blocking) — the round-3 F8 disposition named a heading that
+  does not exist.** It read "which is what \"How this would be adopted\" step
+  6 already said"; the step sits under "Migration / supersession plan".
+  **Accepted and repaired** in place, and the superseded wording is quoted
+  here. This is the same defect class as round 3's F7.
+- **R4-2 (non-blocking) — the packet's arm (a) said "Two rounds have run as
+  of 2026-09-23", contradicting its own status line.** **Accepted and
+  repaired**: the arm now points to the status line rather than restating a
+  count, so it cannot go stale again at the next round.
+- **The reviewer's reading on RFC6-21 (criterion 5, not a finding):** the
+  clause ("…endpoints always serve the full set."), literally, "reads more
+  naturally as a property of every endpoint than as "at least one endpoint
+  remains complete," which is the delta's narrow gloss — so the tension the
+  delta flags is real, not manufactured", but the reviewer did "not find the
+  wide reading compellingly *forced*". This is recorded here without
+  adjudication. The owner chose the narrow reading on 2026-09-23 and
+  left the reviewer free to find otherwise; no round has found the wide
+  reading forced, and the owner packet carries the note.
+
+**Author's standing:** the lead session that commissioned round 4 authored
+these two repairs, and therefore may run no review of them.

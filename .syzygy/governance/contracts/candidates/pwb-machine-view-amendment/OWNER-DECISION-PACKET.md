@@ -5,16 +5,22 @@
 > edit. A commit, a merged pull request, a review, a manifest, silence or a
 > general "approved" performs no act.
 
-Date: 2026-09-21 (first draft). **Status as of 2026-09-23:** reviewed three
+Date: 2026-09-21 (first draft). **Status as of 2026-09-23:** reviewed four
 times in fresh context — round 1 `CONFIRM WITH EXCEPTIONS`
 (`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-RAW.md`), round 2 over the repaired
 bytes at `9d74185` `CONFIRM WITH EXCEPTIONS`
 (`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-RAW.md`), round 3 over
 the repaired bytes at `76b4beb` `CONFIRM WITH EXCEPTIONS`
-(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-2-RAW.md`); each
+(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-2-RAW.md`), round 4
+over the repaired bytes at `194f8cd` `CONFIRM WITH EXCEPTIONS`
+(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-3-RAW.md`); each
 round's exceptions were prose, repaired after it, so the bytes you are
-reading carry no confirmation (rule 10) until a round confirms them. The
-first draft said here "no review has been run against these bytes, and no
+reading carry no confirmation (rule 10) until a round confirms them. Round
+4's reviewer wrote that `RFC6-21`'s clause, literally, "reads more
+naturally as a property of every endpoint" than as the narrow reading you
+chose, "so the tension the delta flags is real", but did "not find the wide
+reading compellingly *forced*"; no round has (see `SEMANTIC-DELTA.md`
+§Review, round 4). The first draft said here "no review has been run against these bytes, and no
 verdict exists for them"; true on 2026-09-21, superseded since.
 
 Ruling of record: **P-72** (question 1) and **P-76** (question 3), both ruled
@@ -145,9 +151,9 @@ settled. Arm (b) below is how you change any of them.
 
 **(a) Yes — as drafted.** Fresh-context review runs per `REVIEW-BRIEF.md`;
 findings are repaired; a sign-off phrase is offered to you only once a round
-confirms the repaired bytes and a recorder entry exists. (Two rounds have run
-as of 2026-09-23, see the date line; the patches and manifest never moved, so
-no regeneration was needed. The first draft of this arm read "send it to
+confirms the repaired bytes and a recorder entry exists. (For the rounds
+run so far see the status line at the head of this packet; the patches and
+manifest never moved, so no regeneration was needed. The first draft of this arm read "send it to
 fresh-context review as drafted … the manifest is regenerated", written
 before any round ran.)
 
