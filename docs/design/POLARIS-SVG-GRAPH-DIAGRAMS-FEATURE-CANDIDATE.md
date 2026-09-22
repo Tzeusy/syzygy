@@ -85,7 +85,8 @@ Each diagram input has:
 | `evaluationId` | Evaluation supplying every member | Exactly one; mixed-evaluation diagrams refuse visual rendering. |
 | `title` | Human label | Presentation only; never identity. |
 | `nodes` | Closed member population | Every member references an already-minted durable project, graph, claim, or anchor-target identity. |
-| `edges` | Closed relation population | Every edge carries an already-minted relation identity and references two member identities plus its declared relation kind. |
+| `edges` | Closed relationship-instance population | Every edge carries an already-minted model relationship-instance identity, its typed-relation class, and two member identities. |
+| `hierarchyRelationId` | Optional typed-relation class used as parent→child | Zero or one existing RFC1-25(d) typed-relation identifier; edge instances of this class are the sole hierarchy truth carrier. |
 | `roots` | Top-level hierarchy members | Derived from the parent relation; never separately authoritative. |
 | `filters` | Declared view scope | Rendered beside the graph and copied into the text form. |
 
@@ -107,7 +108,6 @@ Each node carries these required values:
   shorthand;
 - `anchorIds`: zero or more existing durable targets, with zero lawful only
   for explicitly non-normative framing;
-- `parentIdentity`: zero or one member identity for the hierarchy view; and
 - `provenance`: the captured anchor identities and evaluation identity from
   which this presentation member was derived.
 
@@ -117,27 +117,42 @@ diagram closed and leaves the complete text facts available.
 
 ### Edges
 
-Each edge carries:
+Each edge carries three deliberately separate concepts:
 
-- `identity`: the exact typed relation identity supplied by the model;
-- `edgeKey`: a deterministic DOM/fixture key over graph key and that relation
-  identity; it is not a replacement relation identity;
+- `relationshipInstanceId`: the exact model relationship-instance identity;
+  this owns graph membership and survives independently of every other
+  instance of the same typed relation;
+- `typedRelationId`: the `RFC1-25(d)` typed-relation class — relation name plus
+  ordered endpoint-domain pair — shared lawfully by many relationship
+  instances; and
+- `label`: presentation wording, never either identity.
+
+The remaining edge fields are:
+
+- `edgeKey`: a deterministic DOM/fixture key over graph key and
+  `relationshipInstanceId`; it is not a replacement relation identity;
 - `fromIdentity` and `toIdentity`: exact member identities;
-- `kind` and `label`: declared relation kind plus presentation label;
+- `kind`: semantic relation class copied from the typed relation;
 - `direction`: directed or explicitly undirected, never inferred from layout;
 - `claimRole`, `epistemic`, and `provenance`: the same honesty fields as a
-  node where the relation is itself claim-bearing; and
-- `hierarchy`: true only for the one parent relation used to derive nesting.
+  node where the relationship instance is itself claim-bearing.
 
 Layout never reverses an edge. A missing endpoint, undeclared relation kind,
-duplicate relation identity or edge key, or hierarchy node with two parents refuses visual
-rendering. Parallel relations stay separate in both SVG and text.
+duplicate relationship-instance identity or edge key, typed-relation metadata
+that disagrees with its registered class, or hierarchy node with two parents
+refuses visual rendering. Any number of distinct relationship instances may
+share one typed relation within the density budget; each stays separate in
+SVG, text, and parity.
 
 ### Hierarchy, fan-in, fan-out, and cycles
 
-- Hierarchy is a forest: zero or one parent per node and no cycle in the
-  hierarchy relation. A hierarchy cycle is invalid input, not a circular
-  layout challenge.
+- Hierarchy is derived only from relationship instances whose
+  `typedRelationId` equals the envelope's `hierarchyRelationId`. Nodes carry no
+  independent parent field and edges carry no independent hierarchy boolean.
+  The parent map and root set are derived values, never input truth.
+- The derived hierarchy is a forest: zero or one incoming hierarchy instance
+  per node and no hierarchy cycle. A hierarchy edge with a missing endpoint,
+  two parents, or a cycle is invalid input, not a layout challenge.
 - Non-hierarchy relations may have any fan-in or fan-out within the density
   budget. The view must not duplicate a node merely to make a tree easier to
   draw.
@@ -311,13 +326,25 @@ SVG path syntax are either escaped as labels or rejected by the typed input
 validator. The page's response ceiling remains the final authority: a diagram
 never bypasses, degrades, or reinterprets it.
 
-## Proposed budgets
+## Proposed populations and budgets
 
 These are owner-facing design values, not inherited authority. A build packet
 must confirm or replace each one and re-run the byte measurement against the
 then-current page.
 
-| Budget | Proposed hard limit | Failure behavior |
+Three populations stay distinct:
+
+1. **Complete semantic text:** every supplied node and relationship instance,
+   with no diagram-specific byte or density cap and no truncation.
+2. **Additive visual bytes:** SVG geometry plus its visual legend. Density and
+   the 24/96 KiB limits decide only whether these bytes are added.
+3. **Whole encoded response:** text, SVG when eligible, and every other page
+   byte under the registry's authoritative `maxHumanResponseBytes`. At the
+   reviewed baseline that ceiling is 2,097,152 bytes; the implementation must
+   re-read rather than copy it. A breach serves nothing, including no text-only
+   fallback.
+
+| Population or budget | Proposed hard limit | Failure behavior |
 |---|---:|---|
 | Diagrams per Polaris response | 4 | Additional figures render as complete text only, with a counted presentation notice. |
 | Nodes per diagram | 20 | SVG withheld; full text graph retained. |
@@ -326,36 +353,41 @@ then-current page.
 | Parallel edges per endpoint pair | 4 | SVG withheld; every relation remains in text. |
 | Node label | 64 Unicode scalar values, 3 wrapped lines | Long labels remain complete in text; SVG uses a visibly disclosed truncation. |
 | Relation label | 48 Unicode scalar values, 2 wrapped lines | Same rule as node labels. |
-| Encoded figure bytes | 24 KiB including SVG, legend, and complete text | Figure renders text only. |
-| Aggregate encoded diagram bytes | 96 KiB per response | Later SVGs render text only; the response ceiling still applies to the entire body. |
+| Complete semantic text | 100% of supplied nodes and relationship instances; no diagram cap | Never truncate or omit. If the whole response breaches its authoritative ceiling, serve nothing. |
+| Additive SVG plus visual legend | 24 KiB per figure | Withhold those visual bytes; complete text is unchanged. |
+| Aggregate additive SVG plus visual legends | 96 KiB per response | Withhold later visual bytes; complete text is unchanged. |
+| Whole encoded response | Registry `maxHumanResponseBytes` (2,097,152 bytes at reviewed baseline) | Existing bounded-response behavior serves nothing; never partial or success-shaped output. |
 | Script and external-resource requests | 0 | Any emitted script/resource reference fails the inertness oracle. |
 | SVG keyboard stops | 0 | Any focusable SVG descendant fails accessibility review. |
-| Visual/text graph difference | 0 missing or surplus node identities and edge keys | Parity test fails; no SVG is served. |
+| Visual/text graph difference | 0 missing or surplus node identities or relationship-instance identities | Parity test fails; no SVG is served. |
 | Layout serialization drift | 0 bytes for the same identified input and algorithm version | Determinism test fails. |
 
 The prior P-63 headroom measurement is historical evidence, not a reservation.
-The 96 KiB aggregate proposal is therefore not justified by “available
-headroom.” It is a bounded price to put before the owner, and the current page
-must be measured again from a clean committed tree before implementation.
+The 96 KiB additive proposal is therefore not justified by “available
+headroom.” It is a bounded visual price to put before the owner, not a cap on
+truth. The current page and complete text population must be measured again
+from a clean committed tree before implementation.
 
 ## Fixture matrix and independent oracle
 
 The fixtures are project-neutral and hand-authored. Expected node identities,
-edge keys, hierarchy parents, strongly connected components, roles, and
-provenance sets are literals in the test, never imported from renderer code.
+relationship-instance identities, typed-relation classes, derived hierarchy
+parents and roots, strongly connected components, roles, and provenance sets
+are literals in the test, never imported from renderer code.
 
 | Fixture | Must prove | Required counterexample |
 |---|---|---|
-| `chain` | Two directed edges, stable order | Reverse an edge; tuple oracle fails. |
-| `diamond` | One fan-out and one fan-in without node duplication | Duplicate the join node; identity multiset fails. |
-| `nested` | Six hierarchy levels and cross-level relation | Make layout parenthood replace the relation; edge set fails. |
+| `chain` | Two distinct relationship instances of one typed relation survive SVG, text, and parity | Collapse by typed-relation id; relationship-instance set fails. |
+| `diamond` | Four instances of one typed relation express fan-out and fan-in without node duplication | Collapse same-class edges or duplicate the join node; instance/identity sets fail. |
+| `hierarchy-authority` | Hierarchy edges alone derive six levels, one parent map, and one root set | Mutate the derived parent to disagree with its edge, name a missing parent endpoint, or render a child as a root; exact parent/root oracle fails. |
 | `cycle` | Three-node directed cycle plus incoming edge | Drop the closing edge or cycle label; SCC/text parity fails. |
 | `self-loop` | One explicit self-loop | Infer a loop on an isolated node; surplus edge fails. |
 | `parallel` | Two differently typed relations over one endpoint pair | Coalesce them; edge-key set fails. |
 | `same-label` | Two identities sharing one label stay separate | Key by label; node identity set fails. |
 | `roles` | All three claim roles and an Unknown tuple | Remove non-normative text cue or Unknown reason; role oracle fails. |
 | `hostile-text` | Markup-, script-, URL-, and path-shaped labels remain inert text | Any forbidden element/attribute or resource reference fails. |
-| `density-boundary` | Exact hard limits render SVG; limit plus one renders text only | Truncation or silent member loss fails. |
+| `density-boundary` | At the limit SVG is additive; limit plus one removes only SVG. Measure complete-text node/edge sets and bytes, additive visual bytes, and whole-response bytes before and after fallback | Any text-population/byte change, nonzero fallback SVG bytes, or unmeasured whole response fails. |
+| `response-ceiling` | Both visual and text-only forms are checked against the authoritative whole-response ceiling | Serving truncated text or any success-shaped body after a ceiling breach fails. |
 | `mobile-no-js` | 320 px, 400% zoom, scripts disabled, full graph usable | Horizontal document scroll or missing focus cue fails. |
 | `mixed-evaluation` | Visual renderer refuses mixed evaluations | Any SVG emitted fails. |
 | `literal-fence` | Complete admitted fence block reaches parser unchanged | Offset-stitched body or partial fence fails fidelity digest. |
@@ -364,12 +396,16 @@ The independent oracle reads the typed fixture and the rendered artifact by
 separate parsers. It compares:
 
 1. node identity sets and counts;
-2. edge keys and exact `(from, kind, to, direction)` tuples;
-3. parent maps and cycle component sets;
+2. relationship-instance identities, typed-relation ids, edge keys, and exact
+   `(from, typed relation, to, direction)` tuples;
+3. hierarchy edges against independently derived parent maps and root sets,
+   plus cycle component sets;
 4. roles, full epistemic tuples, and provenance targets;
 5. the SVG data representation against the semantic HTML representation;
 6. legend entries against encodings actually used; and
-7. forbidden markup, attributes, URLs, scripts, resources, and focus targets.
+7. complete-text bytes, additive SVG/legend bytes, and whole-response bytes as
+   three separate measurements before and after visual fallback; and
+8. forbidden markup, attributes, URLs, scripts, resources, and focus targets.
 
 The oracle imports neither the layout engine nor the SVG emitter. Coordinates
 are tested only for bounds, overlap, and deterministic serialization; they
@@ -393,7 +429,9 @@ re-run after a rebase or refactor.
   source-route links retain their ordinary idempotent navigation behavior.
 - **Defaults:** complete text is the default truth form; SVG is additive.
 - **Recovery:** invalid input, density, or layout removes only the SVG and says
-  why. It never removes nodes or edges from text.
+  why. It never removes nodes or edges from text. The separate whole-response
+  ceiling remains authoritative: its breach serves nothing, not a partial
+  text fallback.
 - **Habit:** frequent readers can follow existing source routes in the text
   form; no pointer-only gesture is required.
 
@@ -418,10 +456,11 @@ No build starts until all gates below are recorded in order.
    Any independently testable behavior with no exact scenario requires one
    coherent OpenSpec change under CC-REV-2 and owner sign-off; an RFC citation
    alone schedules nothing (`RFC1-33`).
-4. **Authority classification:** the owner confirms that `graphKey` and
-   `edgeKey` are presentation keys only and that no new kernel/anchor identity
-   is minted. Any identity-bearing alternative requires the owning RFC and
-   act before specification or code work.
+4. **Authority classification:** the owner confirms that model
+   `relationshipInstanceId` owns edge membership, `typedRelationId` names only
+   the RFC1-25(d) class, and `graphKey`/`edgeKey` are presentation keys only.
+   No new kernel/anchor identity is minted. Any identity-bearing alternative
+   requires the owning RFC and act before specification or code work.
 5. **Retention/security classification:** the chosen fence successor stores no
    source body and adds no read, URL, provider, egress, or active-content
    class. Any alternative that does changes security/privacy/retention posture
@@ -439,12 +478,30 @@ implementation, rollback is removal of the additive SVG view while retaining
 the complete text graph; no project identity, claim, evidence, or source body
 depends on the SVG.
 
-## Review status and brief
+## Review 1 and disposition
 
-**Pending. No independent design or accessibility verdict exists for these
-bytes.** The strict two-worker cap left no review slot during drafting. Inline
-application of the design and accessibility bars is author quality control,
-not independent review and does not satisfy gate 7.
+Raw output is retained verbatim at
+`docs/reviews/R-POLARIS-SVG-GRAPH-DIAGRAMS-FEATURE-CANDIDATE-RAW.md`.
+**Verdict, copied exactly: REVISE** — two blocking findings and one medium
+finding.
+
+The review is bound to commit
+`6e2c183744cecb3dcc1072f7a0a633a6ddc0aa83` and candidate SHA-256
+`ecabd87459a317ab9ad24fe88fe60281775194388571d7f1958bd1add0fb07da`.
+The repairs below change semantic bytes, so the verdict is evidence about that
+reviewed commit, not confirmation of this successor.
+
+| Finding | Disposition |
+|---|---|
+| F1 — typed-relation identity was used as edge-instance identity | **Repaired.** The contract now separates model `relationshipInstanceId` (membership), RFC1-25(d) `typedRelationId` (class), and `label` (presentation). `edgeKey` derives from the instance identity. The chain and diamond fixtures require multiple same-class instances to survive SVG, text, and parity. |
+| F2 — node parent and hierarchy edge were two truth carriers | **Repaired.** Nodes carry no parent input and edges carry no hierarchy boolean. One envelope `hierarchyRelationId` selects the typed relation; its model edge instances alone derive parent map and roots. The hierarchy fixture mutates disagreement, a missing parent endpoint, and a child rendered as root. |
+| F3 — visual byte limits also purported to bound complete text | **Repaired.** Complete semantic text is uncapped by diagram limits; 24/96 KiB govern additive SVG/legend only; the registry whole-response ceiling remains authoritative and serves nothing on breach. Density and ceiling fixtures measure complete text, additive visual bytes, and whole-response bytes separately before and after fallback. |
+
+## Confirmation status and review brief
+
+**Pending. No independent confirmation verdict exists for these repaired
+bytes.** Inline application of the design and accessibility bars is author
+quality control, not independent confirmation and does not satisfy gate 7.
 
 A fresh reviewer receives only this candidate and these governing references:
 P-83/Q5, `VIS-1`, `VIS-3`, `VIS-7`, `RFC1-9`, `RFC1-10`, `RFC1-25(d)`, `RFC1-33`,
@@ -452,16 +509,19 @@ P-83/Q5, `VIS-1`, `VIS-3`, `VIS-7`, `RFC1-9`, `RFC1-10`, `RFC1-25(d)`, `RFC1-33`
 `polaris-markdown.ts`, `polaris-reading.ts`, `polaris-narrative.ts`, and the
 separate draft-preview renderer. The reviewer answers:
 
-1. Can the contract express hierarchy, fan-in, fan-out, parallel edges,
-   self-loops, and directed cycles without minting or duplicating identity?
+1. Does the contract keep relationship-instance identity, RFC1-25(d)
+   typed-relation class, and presentation label distinct, with multiple
+   same-class chain/fan-in/fan-out instances surviving SVG, text, and parity?
 2. Does every visual encoding have a literal legend and complete same-graph
    text equivalent, including roles, epistemic state, and provenance?
-3. Are layout, graph identity, and authority cleanly separated?
+3. Are hierarchy edges the sole truth carrier, with parent maps and roots
+   derived and disagreement/missing-parent/false-root mutations killed?
 4. Do keyboard, focus, no-JS, zoom, reflow, contrast, and motion requirements
    meet WCAG 2.2 AA as a floor?
 5. Do hostile diagram values remain inert with zero markup, script, URL, or
    resource interpretation and zero new reads?
-6. Are every density and byte limit, fallback, fixture, and oracle falsifiable?
+6. Are complete text, additive SVG/legend bytes, and the authoritative
+   whole-response ceiling distinct and measured before/after fallback?
 7. Does the literal-fence successor correct the actual character-offset stitch
    site without falsely claiming the fence renderer is offset-based today?
 8. Do the owner/specification gates prevent this candidate from turning into
