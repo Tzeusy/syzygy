@@ -9,25 +9,35 @@ import type { GenerationStage } from './prompts.js';
 // escape them. This schema provides no executable markup or external link role.
 type Schema = { type: 'object'; properties: Record<string, Schema>; required: string[]; additionalProperties: false }
   | { type: 'array'; items: Schema; minItems: number; maxItems: number; uniqueItems?: boolean }
-  | { type: 'string'; minLength: number; maxLength: number; pattern?: string; enum?: string[] };
+  | { type: 'string'; minLength: number; maxLength: number; pattern?: string; enum?: string[] }
+  | { oneOf: readonly Schema[] };
 const text: Schema = { type: 'string', minLength: 1, maxLength: 8000 };
 const handle: Schema = { type: 'string', minLength: 1, maxLength: 100, pattern: '^[A-Za-z0-9][A-Za-z0-9_.:-]*$' };
 const list = (items: Schema, minItems = 0, maxItems = 200): Extract<Schema, { type: 'array' }> => ({ type: 'array', items, minItems, maxItems });
 const object = (properties: Record<string, Schema>): Schema => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
 const refs: Schema = { ...list(handle, 1), uniqueItems: true };
 const paragraph = object({ id: handle, text, sourceIds: refs });
-const inventory = object({ entries: list(object({ id: handle, sourceIds: refs, statement: text, kind: { ...text, enum: ['purpose', 'beneficiary', 'thesis', 'capability', 'choice', 'term', 'qualification', 'conflict', 'other'] } }), 1) });
-const plan = object({ sections: list(object({ id: handle, title: text, reason: text, sourceIds: refs }), 1, 30) });
+const disposition: Schema = { oneOf: [
+  object({ kind: { ...text, enum: ['produced'] }, assetIds: refs }),
+  object({ kind: { ...text, enum: ['omitted'] }, reason: text, references: refs }),
+  object({ kind: { ...text, enum: ['unresolved'] }, reason: text, references: refs }),
+] };
+const inventory = object({ entries: list(object({ id: handle, sourceIds: refs, statement: text, kind: { ...text, enum: ['purpose', 'beneficiary', 'thesis', 'capability', 'choice', 'term', 'qualification', 'conflict', 'other'] }, disposition }), 1) });
+const plan = object({ sections: list(object({ id: handle, title: text, reason: text, sourceIds: refs, disposition }), 1, 30) });
 const draft = object({
   title: text, introduction: paragraph,
-  sections: list(object({ id: handle, title: text, paragraphs: list(paragraph, 1, 30) }), 1, 30),
+  sections: list(object({ id: handle, title: text, paragraphs: list(paragraph, 1, 30), disposition }), 1, 30),
   diagrams: list(object({ id: handle, title: text, sectionId: handle,
     nodes: list(object({ id: handle, label: text, sourceIds: refs }), 1, 40),
     edges: list(object({ id: handle, from: handle, to: handle, label: text, sourceIds: refs }), 1, 80),
+    disposition,
   }), 0, 20),
-  deepDives: list(object({ id: handle, title: text, sectionId: handle, paragraphs: list(paragraph, 1, 30) }), 0, 30),
+  deepDives: list(object({ id: handle, title: text, sectionId: handle, paragraphs: list(paragraph, 1, 30), disposition }), 0, 30),
+  unresolved: list(object({ question: text, reason: text, references: refs }), 0, 100),
 });
-const fidelity = object({ inventoryIds: { ...list(handle, 1), uniqueItems: true }, blockIds: { ...list(handle, 1, 5000), uniqueItems: true },
+const inventoryCoverage = list(object({ entryId: handle, disposition: { ...text, enum: ['represented', 'justified-omission', 'unsupported', 'unresolved'] }, blockIds: list(handle, 0, 5000), reason: text }), 1, 5000);
+const blockSupport = list(object({ blockId: handle, verdict: { ...text, enum: ['supported', 'anchor-does-not-support', 'unresolved'] }, sourceIds: list(handle, 0, 200), reason: text }), 1, 5000);
+const fidelity = object({ inventoryCoverage, blockSupport,
   findings: list(object({ severity: { ...text, enum: ['blocking', 'advisory'] }, message: text, target: handle }), 0, 1000),
 });
 const schemas: Record<GenerationStage, Schema> = { inventory, plan, author: draft, edit: draft, repair: draft, fidelity };
@@ -38,6 +48,12 @@ export function stageSchema(stage: GenerationStage): { version: string; schema: 
 }
 
 function check(schema: Schema, value: unknown): void {
+  if ('oneOf' in schema) {
+    for (const candidate of schema.oneOf) {
+      try { check(candidate, value); return; } catch { /* try next closed arm */ }
+    }
+    throw new Error('invalid-disposition');
+  }
   if (schema.type === 'string') {
     if (typeof value !== 'string' || [...value].length < schema.minLength || [...value].length > schema.maxLength
       || (schema.pattern && !new RegExp(schema.pattern, 'u').test(value))
@@ -65,18 +81,25 @@ function check(schema: Schema, value: unknown): void {
 }
 
 export interface ProviderParagraph { id: string; text: string; sourceIds: string[] }
-export interface ProviderInventory { entries: { id: string; sourceIds: string[]; statement: string; kind: 'purpose' | 'beneficiary' | 'thesis' | 'capability' | 'choice' | 'term' | 'qualification' | 'conflict' | 'other' }[] }
-export interface ProviderPlan { sections: { id: string; title: string; reason: string; sourceIds: string[] }[] }
+export type AssetDisposition =
+  | { kind: 'produced'; assetIds: string[] }
+  | { kind: 'omitted'; reason: string; references: string[] }
+  | { kind: 'unresolved'; reason: string; references: string[] };
+export interface ProviderInventory { entries: { id: string; sourceIds: string[]; statement: string; kind: 'purpose' | 'beneficiary' | 'thesis' | 'capability' | 'choice' | 'term' | 'qualification' | 'conflict' | 'other'; disposition: AssetDisposition }[] }
+export interface ProviderPlan { sections: { id: string; title: string; reason: string; sourceIds: string[]; disposition: AssetDisposition }[] }
 export interface ProviderDraft {
   title: string;
   introduction: ProviderParagraph;
-  sections: { id: string; title: string; paragraphs: ProviderParagraph[] }[];
+  sections: { id: string; title: string; paragraphs: ProviderParagraph[]; disposition: AssetDisposition }[];
   diagrams: { id: string; title: string; sectionId: string;
     nodes: { id: string; label: string; sourceIds: string[] }[];
-    edges: { id: string; from: string; to: string; label: string; sourceIds: string[] }[] }[];
-  deepDives: { id: string; title: string; sectionId: string; paragraphs: ProviderParagraph[] }[];
+    edges: { id: string; from: string; to: string; label: string; sourceIds: string[] }[]; disposition: AssetDisposition }[];
+  deepDives: { id: string; title: string; sectionId: string; paragraphs: ProviderParagraph[]; disposition: AssetDisposition }[];
+  unresolved: { question: string; reason: string; references: string[] }[];
 }
-export interface ProviderReview { inventoryIds: string[]; blockIds: string[]; findings: { severity: 'blocking' | 'advisory'; message: string; target: string }[] }
+export interface ProviderInventoryCoverage { entryId: string; disposition: 'represented' | 'justified-omission' | 'unsupported' | 'unresolved'; blockIds: string[]; reason: string }
+export interface ProviderBlockSupport { blockId: string; verdict: 'supported' | 'anchor-does-not-support' | 'unresolved'; sourceIds: string[]; reason: string }
+export interface ProviderReview { inventoryCoverage: ProviderInventoryCoverage[]; blockSupport: ProviderBlockSupport[]; findings: { severity: 'blocking' | 'advisory'; message: string; target: string }[] }
 
 function unique(values: string[]): Set<string> {
   const set = new Set(values);
@@ -124,15 +147,27 @@ export function validateStage(stage: GenerationStage, value: unknown, context: R
     validateStage('author', context.draft, { sources: context.sources, plan: context.plan });
     const inv = context.inventory as ProviderInventory;
     const handles = draftHandles(context.draft as ProviderDraft);
-    same(data.inventoryIds, unique(inv.entries.map((entry) => entry.id)));
-    same(data.blockIds, handles.blocks);
-    const targets = new Set([...sources, ...handles.all, ...data.inventoryIds]);
+    same(data.inventoryCoverage.map((row) => row.entryId), unique(inv.entries.map((entry) => entry.id)));
+    same(data.blockSupport.map((row) => row.blockId), handles.blocks);
+    if (data.inventoryCoverage.some((row) => row.disposition !== 'represented' && row.reason.length === 0)) throw new Error('missing-coverage-reason');
+    if (data.inventoryCoverage.some((row) => row.disposition !== 'represented' && row.blockIds.length > 0)) throw new Error('invalid-coverage-blocks');
+    if (data.blockSupport.some((row) => row.verdict !== 'supported' && row.reason.length === 0)) throw new Error('missing-support-reason');
+    const targets = new Set([...sources, ...handles.all, ...data.inventoryCoverage.map((row) => row.entryId), ...data.blockSupport.map((row) => row.blockId)]);
     if (data.findings.some((finding) => !targets.has(finding.target))) throw new Error('unknown-finding-target');
   } else {
     const data = value as ProviderDraft;
     check(plan, context.plan);
     references(context.plan, sources);
     draftHandles(data);
+    const handles = draftHandles(data);
+    const planned = (context.plan as ProviderPlan).sections.flatMap((section) => section.disposition.kind === 'produced' ? section.disposition.assetIds : []);
+    const produced = [
+      ...planned,
+      ...data.sections.flatMap((section) => section.disposition.kind === 'produced' ? section.disposition.assetIds : []),
+      ...data.diagrams.flatMap((asset) => asset.disposition.kind === 'produced' ? asset.disposition.assetIds : []),
+      ...data.deepDives.flatMap((asset) => asset.disposition.kind === 'produced' ? asset.disposition.assetIds : []),
+    ];
+    if (produced.some((id) => !handles.all.has(id))) throw new Error('unknown-asset');
     const sections = unique(data.sections.map((s) => s.id));
     same([...sections], unique((context.plan as ProviderPlan).sections.map((s) => s.id)));
     for (const diagram of data.diagrams) {
@@ -148,5 +183,8 @@ export function validateStage(stage: GenerationStage, value: unknown, context: R
 export function reviewVerdict(review: unknown): { blocking: boolean; findings: unknown[] } {
   check(fidelity, review);
   const findings = (review as ProviderReview).findings;
-  return { blocking: findings.some((finding) => finding.severity === 'blocking'), findings: structuredClone(findings) };
+  const data = review as ProviderReview;
+  const coverageBlocking = data.inventoryCoverage.some((row) => row.disposition !== 'represented' && row.disposition !== 'justified-omission');
+  const supportBlocking = data.blockSupport.some((row) => row.verdict !== 'supported');
+  return { blocking: coverageBlocking || supportBlocking || findings.some((finding) => finding.severity === 'blocking'), findings: structuredClone(findings) };
 }

@@ -5,11 +5,12 @@ import { renderDraftPreview } from './draft-preview.js';
 function fixture(): ProviderDraft {
   return {
     title: 'A quieter everyday', introduction: { id: 'intro', text: 'Let recurring work take care of itself.', sourceIds: ['purpose'] },
-    sections: [{ id: 'architecture', title: 'How the pieces connect', paragraphs: [{ id: 'overview', text: 'Requests reach the planner, then the calendar.', sourceIds: ['architecture'] }] }],
+    sections: [{ id: 'architecture', title: 'How the pieces connect', paragraphs: [{ id: 'overview', text: 'Requests reach the planner, then the calendar.', sourceIds: ['architecture'] }], disposition: { kind: 'produced', assetIds: ['architecture'] } }],
     diagrams: [{ id: 'flow', title: 'From request to calendar', sectionId: 'architecture', nodes: [
       { id: 'planner', label: 'Planner', sourceIds: ['architecture'] }, { id: 'calendar', label: 'Calendar', sourceIds: ['architecture'] },
-    ], edges: [{ id: 'schedules', from: 'planner', to: 'calendar', label: 'Schedules an event', sourceIds: ['architecture'] }] }],
-    deepDives: [{ id: 'calendar-detail', title: 'Inside the calendar', sectionId: 'architecture', paragraphs: [{ id: 'detail', text: 'The calendar records scheduled events.', sourceIds: ['architecture'] }] }],
+    ], edges: [{ id: 'schedules', from: 'planner', to: 'calendar', label: 'Schedules an event', sourceIds: ['architecture'] }], disposition: { kind: 'produced', assetIds: ['flow'] } }],
+    deepDives: [{ id: 'calendar-detail', title: 'Inside the calendar', sectionId: 'architecture', paragraphs: [{ id: 'detail', text: 'The calendar records scheduled events.', sourceIds: ['architecture'] }], disposition: { kind: 'produced', assetIds: ['calendar-detail'] } }],
+    unresolved: [],
   };
 }
 const sources = [{ sourceId: 'purpose', text: 'Reduce recurring mental work.' }, { sourceId: 'architecture', text: 'Planner schedules events in the calendar.' }];

@@ -35,25 +35,26 @@ export async function runSyntheticProject(project: SyntheticProject) {
     { sourceId: 'mechanism', text: project.mechanism },
     { sourceId: 'qualification', text: project.qualification },
   ];
-  const inventory = { entries: sources.map((source, i) => ({ id: `entry-${i}`, sourceIds: [source.sourceId], statement: source.text, kind: i === 0 ? 'purpose' : i === 1 ? 'capability' : 'qualification' })) };
+  const inventory = { entries: sources.map((source, i) => ({ id: `entry-${i}`, sourceIds: [source.sourceId], statement: source.text, kind: i === 0 ? 'purpose' : i === 1 ? 'capability' : 'qualification', disposition: { kind: 'produced', assetIds: ['opening', 'mechanism-text', 'qualification-text'].slice(i, i + 1) } })) };
   const plan = { sections: [
-    { id: 'how', title: 'How the pieces connect', reason: 'Explain the central relationship.', sourceIds: ['mechanism'] },
-    { id: 'judgment', title: 'Where judgment stays', reason: 'Keep the material limit visible.', sourceIds: ['qualification'] },
+    { id: 'how', title: 'How the pieces connect', reason: 'Explain the central relationship.', sourceIds: ['mechanism'], disposition: { kind: 'produced', assetIds: ['how'] } },
+    { id: 'judgment', title: 'Where judgment stays', reason: 'Keep the material limit visible.', sourceIds: ['qualification'], disposition: { kind: 'produced', assetIds: ['judgment'] } },
   ] };
   const draft = {
     title: project.title,
     introduction: { id: 'opening', text: project.purpose, sourceIds: ['purpose'] },
     sections: [
-      { id: 'how', title: 'How the pieces connect', paragraphs: [{ id: 'mechanism-text', text: project.mechanism, sourceIds: ['mechanism'] }] },
-      { id: 'judgment', title: 'Where judgment stays', paragraphs: [{ id: 'qualification-text', text: project.qualification, sourceIds: ['qualification'] }] },
+      { id: 'how', title: 'How the pieces connect', paragraphs: [{ id: 'mechanism-text', text: project.mechanism, sourceIds: ['mechanism'] }], disposition: { kind: 'produced', assetIds: ['how'] } },
+      { id: 'judgment', title: 'Where judgment stays', paragraphs: [{ id: 'qualification-text', text: project.qualification, sourceIds: ['qualification'] }], disposition: { kind: 'produced', assetIds: ['judgment'] } },
     ],
     diagrams: [{ id: 'architecture', title: 'From observation to useful context', sectionId: 'how',
       nodes: [{ id: 'left', label: project.components[0], sourceIds: ['mechanism'] }, { id: 'right', label: project.components[1], sourceIds: ['mechanism'] }],
-      edges: [{ id: 'connection', from: 'left', to: 'right', label: 'feeds', sourceIds: ['mechanism'] }],
+      edges: [{ id: 'connection', from: 'left', to: 'right', label: 'feeds', sourceIds: ['mechanism'] }], disposition: { kind: 'produced', assetIds: ['architecture'] },
     }],
-    deepDives: [{ id: 'component-depth', title: `Inside ${project.components[1].toLowerCase()}`, sectionId: 'how', paragraphs: [{ id: 'depth-text', text: project.mechanism, sourceIds: ['mechanism'] }] }],
+    deepDives: [{ id: 'component-depth', title: `Inside ${project.components[1].toLowerCase()}`, sectionId: 'how', paragraphs: [{ id: 'depth-text', text: project.mechanism, sourceIds: ['mechanism'] }], disposition: { kind: 'produced', assetIds: ['component-depth'] } }],
+    unresolved: [],
   };
-  const review = { inventoryIds: inventory.entries.map(x => x.id), blockIds: ['opening', 'mechanism-text', 'qualification-text', 'left', 'right', 'connection', 'depth-text'], findings: [] };
+  const review = { inventoryCoverage: inventory.entries.map(entry => ({ entryId: entry.id, disposition: 'represented', blockIds: entry.disposition.assetIds, reason: 'represented' })), blockSupport: ['opening', 'mechanism-text', 'qualification-text', 'left', 'right', 'connection', 'depth-text'].map(blockId => ({ blockId, verdict: 'supported', sourceIds: ['mechanism'], reason: 'supported' })), findings: [] };
   const responses = { inventory, plan, author: draft, edit: draft, fidelity: review, repair: draft };
   const admitted = new Set<number>();
   const records: unknown[] = [];

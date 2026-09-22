@@ -3,19 +3,20 @@ import { stageSchema, validateStage, reviewVerdict } from './provider-draft.js';
 
 const sources = [{ sourceId: 's1', text: 'Purpose and architecture' }, { sourceId: 's2', text: 'A material qualification' }];
 const inventory = { entries: [
-  { id: 'i1', sourceIds: ['s1'], statement: 'Purpose', kind: 'purpose' },
-  { id: 'i2', sourceIds: ['s2'], statement: 'Qualification', kind: 'qualification' },
+  { id: 'i1', sourceIds: ['s1'], statement: 'Purpose', kind: 'purpose', disposition: { kind: 'produced', assetIds: ['intro'] } },
+  { id: 'i2', sourceIds: ['s2'], statement: 'Qualification', kind: 'qualification', disposition: { kind: 'produced', assetIds: ['detail-body'] } },
 ] };
-const plan = { sections: [{ id: 'section', title: 'How it works', reason: 'Explain relationships', sourceIds: ['s1', 's2'] }] };
+const plan = { sections: [{ id: 'section', title: 'How it works', reason: 'Explain relationships', sourceIds: ['s1', 's2'], disposition: { kind: 'produced', assetIds: ['section'] } }] };
 const paragraph = (id: string) => ({ id, text: 'Supported explanation', sourceIds: ['s1'] });
 const draft = { title: 'A manifesto', introduction: paragraph('intro'),
-  sections: [{ id: 'section', title: 'How it works', paragraphs: [paragraph('body')] }],
+  sections: [{ id: 'section', title: 'How it works', paragraphs: [paragraph('body')], disposition: { kind: 'produced', assetIds: ['section'] } }],
   diagrams: [{ id: 'diagram', title: 'Architecture', sectionId: 'section', nodes: [
     { id: 'n1', label: 'Input', sourceIds: ['s1'] }, { id: 'n2', label: 'Output', sourceIds: ['s1'] },
-  ], edges: [{ id: 'e1', from: 'n1', to: 'n2', label: 'Supplies', sourceIds: ['s1'] }] }],
-  deepDives: [{ id: 'detail', title: 'Why this choice?', sectionId: 'section', paragraphs: [paragraph('detail-body')] }],
+  ], edges: [{ id: 'e1', from: 'n1', to: 'n2', label: 'Supplies', sourceIds: ['s1'] }], disposition: { kind: 'produced', assetIds: ['diagram'] } }],
+  deepDives: [{ id: 'detail', title: 'Why this choice?', sectionId: 'section', paragraphs: [paragraph('detail-body')], disposition: { kind: 'produced', assetIds: ['detail'] } }],
+  unresolved: [],
 };
-const review = { inventoryIds: ['i1', 'i2'], blockIds: ['intro', 'body', 'n1', 'n2', 'e1', 'detail-body'], findings: [] };
+const review = { inventoryCoverage: [{ entryId: 'i1', disposition: 'represented', blockIds: ['intro'], reason: 'represented' }, { entryId: 'i2', disposition: 'represented', blockIds: ['detail-body'], reason: 'represented' }], blockSupport: ['intro', 'body', 'n1', 'n2', 'e1', 'detail-body'].map(blockId => ({ blockId, verdict: 'supported', sourceIds: ['s1'], reason: 'supported' })), findings: [] };
 const context = { sources, inventory, plan, draft };
 
 describe('provider-local intermediate validation', () => {
@@ -49,13 +50,34 @@ describe('provider-local intermediate validation', () => {
   });
 
   it('requires declared review coverage of inventory and every claim-bearing block', () => {
-    expect(() => validateStage('fidelity', { ...review, inventoryIds: ['i1'] }, context)).toThrow('incomplete-coverage');
-    for (const omitted of review.blockIds) {
-      expect(() => validateStage('fidelity', { ...review, blockIds: review.blockIds.filter(id => id !== omitted) }, context)).toThrow('incomplete-coverage');
+    expect(() => validateStage('fidelity', { ...review, inventoryCoverage: review.inventoryCoverage.slice(0, 1) }, context)).toThrow('incomplete-coverage');
+    for (const omitted of review.blockSupport) {
+      expect(() => validateStage('fidelity', { ...review, blockSupport: review.blockSupport.filter(row => row.blockId !== omitted.blockId) }, context)).toThrow('incomplete-coverage');
     }
     expect(() => validateStage('fidelity', { ...review, findings: [{ severity: 'blocking', message: 'Bad', target: 'missing' }] }, context)).toThrow('unknown-finding-target');
     expect(reviewVerdict({ ...review, findings: [{ severity: 'blocking', message: 'Lost qualification', target: 'i2' }] }).blocking).toBe(true);
     expect(reviewVerdict(review).blocking).toBe(false); // Declared coverage, not semantic proof.
+  });
+
+  it('requires exact asset dispositions and refuses invented produced identities', () => {
+    expect(() => validateStage('inventory', { entries: [{ ...inventory.entries[0]!, disposition: undefined }] }, context)).toThrow('invalid-disposition');
+    expect(() => validateStage('plan', { sections: [{ ...plan.sections[0]!, disposition: { kind: 'unresolved', reason: 'missing capability', assetIds: ['invented'] } }] }, context)).toThrow('invalid-disposition');
+    expect(() => validateStage('author', { ...draft, sections: [{ ...draft.sections[0]!, disposition: { kind: 'produced', assetIds: ['not-in-draft'] } }] }, context)).toThrow('unknown-asset');
+  });
+
+  it('renders unresolved dispositions as reviewable absence rather than output identity', () => {
+    const unresolved = {
+      ...draft,
+      diagrams: [{ ...draft.diagrams[0]!, disposition: { kind: 'unresolved', reason: 'renderer unavailable', references: ['s2'] } }],
+      unresolved: [{ question: 'How does the relationship work?', reason: 'renderer unavailable', references: ['s2'] }],
+    };
+    expect(() => validateStage('author', unresolved, context)).not.toThrow();
+  });
+
+  it('makes every negative coverage row block the fidelity verdict while all-positive rows proceed', () => {
+    expect(reviewVerdict(review).blocking).toBe(false);
+    expect(reviewVerdict({ ...review, inventoryCoverage: review.inventoryCoverage.map((row, index) => index === 0 ? { ...row, disposition: 'unsupported', reason: 'not supported' } : row) }).blocking).toBe(true);
+    expect(reviewVerdict({ ...review, blockSupport: review.blockSupport.map((row, index) => index === 0 ? { ...row, verdict: 'unresolved', reason: 'not supported' } : row) }).blocking).toBe(true);
   });
 
   it.each(['<script>alert(1)</script>', 'https://outside.test', 'x < y > z'])('preserves inert text for escaped rendering', title => {

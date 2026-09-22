@@ -52,8 +52,13 @@ review denominator are mechanical evidence, not proof of model quality.
 Run the controlled end-to-end example from the repository root:
 
 ```sh
+npm ci
 npm run poc:generator-demo -- --out /tmp/polaris-generator-demo-new
 ```
+
+This kit grants no source access, provider egress, authorship adoption or
+release. A real provider requires recorded per-project, provider and content
+consent under SEC-2; the synthetic command below makes no provider call.
 
 Use a fresh directory. The command creates two synthetic project previews, a
 changed-source variant, structured draft files and stage receipts. Responses and

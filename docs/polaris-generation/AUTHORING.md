@@ -71,6 +71,10 @@ itself a generated deep dive.
 
 ## Stage prompts
 
+This kit grants no source access, provider egress, authorship adoption or
+release. A real provider requires recorded per-project, provider and content
+consent under SEC-2.
+
 Use the common envelope from [artifacts and tools](ARTIFACTS-AND-TOOLS.md) with
 each prompt. Supply actual limits and allowlists; do not leave placeholders in a
 provider request. These prompts are project-neutral and versioned with the kit.
