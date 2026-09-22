@@ -1,7 +1,7 @@
 import { escapeHtml } from '@syzygy/cap1-daemon';
 import type { PocModel, WorkerChangeObserved } from '@syzygy/three-surface-poc-core';
 import type { TrajectoryColumn, TrajectoryLaneItem } from '@syzygy/three-surface-poc-core';
-import { BUTLERS_POC_SEEDS, type TestArtifactVerificationResult } from '@syzygy/three-surface-poc-core';
+import type { TestArtifactVerificationResult } from '@syzygy/three-surface-poc-core';
 
 import {
   MATERIALIZE_PANEL_STYLE,
@@ -58,9 +58,15 @@ const WORKER_CHANGE_STATE_LABEL = {
   'changed-or-merged': 'Changed / merged',
 } as const;
 
-function verificationBadge(verification: TestArtifactVerificationResult): string {
+function verificationBadge(
+  verification: TestArtifactVerificationResult,
+  governingIntentId: string | null,
+): string {
+  if (verification.kind === 'verified' && governingIntentId !== null) {
+    return `<span class="epistemic epistemic-observed" data-parity-field="worker-change-verification" title="A captured, passing focused-pytest artifact bound to commit ${escapeHtml(verification.record.repositoryCommit)} and the governing intent ${escapeHtml(governingIntentId)}.">Verification: Verified — ${escapeHtml(verification.record.summary)}</span>`;
+  }
   if (verification.kind === 'verified') {
-    return `<span class="epistemic epistemic-observed" data-parity-field="worker-change-verification" title="A captured, passing focused-pytest artifact bound to commit ${escapeHtml(verification.record.repositoryCommit)} and the governing intent ${escapeHtml(BUTLERS_POC_SEEDS.workerChangeIntentId)}.">Verification: Verified — ${escapeHtml(verification.record.summary)}</span>`;
+    return '<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification" title="The captured test artifact has no governing intent identity in this evaluation.">Verification: Unknown — governing intent identity unavailable</span>';
   }
   return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification" title="${escapeHtml(verification.reason)}">Verification: Not verified</span>`;
 }
@@ -68,6 +74,7 @@ function verificationBadge(verification: TestArtifactVerificationResult): string
 function workerChangeBadge(
   workerChange: WorkerChangeObserved | null,
   verification: TestArtifactVerificationResult,
+  governingIntentId: string | null,
 ): string {
   if (workerChange === null) {
     return '';
@@ -87,7 +94,7 @@ function workerChangeBadge(
     <span class="worker-change-label">External worker: ${escapeHtml(label)}</span>
     <span class="worker-change-note">Independent of the Bead status above: this row is the worker-change state observed from git on the bounded seam, not the Beads status.</span>
     ${detail === '' ? '' : `<span class="worker-change-detail">${detail}</span>`}
-    ${verificationBadge(verification)}
+    ${verificationBadge(verification, governingIntentId)}
   </div>`;
 }
 
@@ -96,6 +103,7 @@ function itemCard(
   range: { readonly earliest: string; readonly latest: string } | null,
   workerChange: WorkerChangeObserved | null,
   testArtifactVerification: TestArtifactVerificationResult,
+  governingIntentId: string | null,
   demonstrated: boolean,
 ): string {
   return `<li class="wi-card${demonstrated ? ' wi-card-demonstrated' : ''}" id="workitem-${escapeHtml(item.id)}" data-work-item-id="${escapeHtml(item.id)}">
@@ -104,7 +112,7 @@ function itemCard(
     <code class="wi-id" data-parity-field="work-item-id">${escapeHtml(item.id)}</code>
     <span class="wi-status" data-parity-field="work-item-status">${escapeHtml(item.status)}</span>
     <span class="epistemic epistemic-unknown" data-parity-field="work-item-verification" title="Activity is not verification: no test evidence has been ingested for this item.">Verification: Unknown</span>
-    ${workerChangeBadge(workerChange, testArtifactVerification)}
+    ${workerChangeBadge(workerChange, testArtifactVerification, governingIntentId)}
     ${laneBar(item, range)}
   </li>`;
 }
@@ -165,6 +173,7 @@ export function renderTrajectoryPage(model: PocModel, mountPrefix = ''): string 
               trajectory.timeRange,
               workerChange !== null && workerChange.beadId === item.id ? workerChange : null,
               model.testArtifactVerification,
+              model.governingIntentId,
               item.id === demonstratedId,
             ),
           )

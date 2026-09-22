@@ -224,9 +224,14 @@ describe('Trajectory', () => {
     ];
     const capturedAt = new Date(Date.parse(changedCommitAuthoredAt) + 60 * 60 * 1000).toISOString();
     const evaluationAsOf = new Date(Date.parse(capturedAt) + 60 * 60 * 1000).toISOString();
+    const alternateSeeds = {
+      ...BUTLERS_POC_SEEDS,
+      project: { ...BUTLERS_POC_SEEDS.project, displayName: 'Alternate project' },
+      workerChangeIntentId: 'REQ-alternate-governing-intent-007',
+    } as const;
 
     const model = buildPocModel({
-      seeds: BUTLERS_POC_SEEDS,
+      seeds: alternateSeeds,
       repoRoot,
       repositoryRevision: changedRevision,
       observerRevision: revision,
@@ -250,7 +255,15 @@ describe('Trajectory', () => {
     const card = cardBody(html, 'bu-verified-1');
     expect(card).toContain('Verification: Verified');
     expect(card).toContain('4 passed, 0 failed, 0 errored, 0 skipped in 0.5s');
+    expect(card).toContain(`the governing intent ${alternateSeeds.workerChangeIntentId}`);
+    expect(card).not.toContain(BUTLERS_POC_SEEDS.workerChangeIntentId);
     expect(card).not.toContain('Verification: Not verified');
+
+    const missingIdentityHtml = renderTrajectoryPage({ ...model, governingIntentId: null });
+    const missingIdentityCard = cardBody(missingIdentityHtml, 'bu-verified-1');
+    expect(missingIdentityCard).toContain('Verification: Unknown — governing intent identity unavailable');
+    expect(missingIdentityCard).not.toContain('Verification: Verified');
+    expect(missingIdentityCard).not.toContain(BUTLERS_POC_SEEDS.workerChangeIntentId);
   });
 
   it('calls out and highlights the demonstrated item, and separates Bead status from worker-change state (PRF-2, PRF-3)', () => {

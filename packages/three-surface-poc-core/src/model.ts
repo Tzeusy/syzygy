@@ -106,6 +106,10 @@ export interface PocModel {
     readonly revision: string;
   };
   readonly observerRevision: string;
+  /** The seed-supplied governing intent for the worker-change evidence seam.
+   * Null means that this evaluation supplied no usable identity; renderers
+   * must keep verification Unknown rather than borrowing a proving-case ID. */
+  readonly governingIntentId: string | null;
   readonly capabilityId: string;
   readonly entities: readonly PocEntity[];
   readonly relationships: readonly PocRelationship[];
@@ -701,17 +705,32 @@ function capabilityIdFromSeeds(seeds: PocSeedInput): string {
 function snapshotLabelFor(input: BuildPocModelInput, seeds: PocSeedInput | undefined): string {
   if (seeds === undefined) return input.evaluation.snapshot;
 
-  // The caller supplies a human-facing label followed by an explicit
-  // revision/suffix delimiter.  Replace that label structurally; never infer
-  // repository identity from a project-name spelling.
+  // A production snapshot already begins with the opaque repository identity
+  // and may contain several structured components. Preserve that complete
+  // label; parsing from the last delimiter would silently discard earlier
+  // components (for example the repository revision and working-tree digest).
   const raw = input.evaluation.snapshot;
-  const at = raw.lastIndexOf('@');
-  if (at > 0 && at < raw.length - 1) return `${seeds.project.repositoryId}@${raw.slice(at + 1)}`;
-  const pipe = raw.lastIndexOf('|');
-  if (pipe > 0 && pipe < raw.length - 1) return `${seeds.project.repositoryId}|${raw.slice(pipe + 1)}`;
-  const colon = raw.lastIndexOf(':');
-  if (colon > 0 && colon < raw.length - 1) return `${seeds.project.repositoryId}:${raw.slice(colon + 1)}`;
-  return seeds.project.repositoryId;
+  const repositoryId = seeds.project.repositoryId;
+  if (
+    raw === repositoryId ||
+    raw.startsWith(`${repositoryId}:`) ||
+    raw.startsWith(`${repositoryId}@`) ||
+    raw.startsWith(`${repositoryId}|`)
+  ) {
+    return raw;
+  }
+
+  // Test and non-daemon callers use a human-facing label followed by one
+  // explicit suffix delimiter. Replace only that leading label, preserving
+  // every remaining component in order.
+  const delimiter = ['@', '|', ':']
+    .map((candidate) => raw.indexOf(candidate))
+    .filter((index) => index > 0)
+    .sort((left, right) => left - right)[0];
+  if (delimiter !== undefined && delimiter < raw.length - 1) {
+    return `${repositoryId}${raw.slice(delimiter)}`;
+  }
+  return repositoryId;
 }
 
 function emptyProposedWork(input: BuildPocModelInput): ProposedWork {
@@ -981,6 +1000,10 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
           projectShape,
         });
   const snapshotLabel = snapshotLabelFor(input, seeds);
+  const governingIntentId =
+    typeof seeds?.workerChangeIntentId === 'string' && seeds.workerChangeIntentId.trim() !== ''
+      ? seeds.workerChangeIntentId
+      : null;
 
   return {
     schema: 'syzygy-three-surface-poc/v1',
@@ -996,6 +1019,7 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
       revision: input.repositoryRevision,
     },
     observerRevision: input.observerRevision,
+    governingIntentId,
     capabilityId,
     entities,
     relationships,

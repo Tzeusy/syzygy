@@ -754,6 +754,52 @@ describe('three-surface Butlers POC model', () => {
     expect(model.evaluation.snapshotLabel).toBe('repository:staffers@rev');
   });
 
+  it('preserves every production snapshot component for delimiter-rich opaque repository identities', () => {
+    const repoRoot = butlersFixture();
+    const repositoryRevision = 'a'.repeat(40);
+    const observerRevision = 'b'.repeat(40);
+    const workingTreeDigest = 'c'.repeat(64);
+    const delimiterRichRepositoryId = 'repository:staffers|blue@v2';
+    const seeds = {
+      ...BUTLERS_POC_SEEDS,
+      project: {
+        ...BUTLERS_POC_SEEDS.project,
+        repositoryId: delimiterRichRepositoryId,
+        displayName: 'Staffers Blue',
+      },
+    } as const;
+    const productionSnapshot = [
+      `${delimiterRichRepositoryId}:${repositoryRevision}`,
+      `working-tree:${workingTreeDigest}`,
+      `observer:${observerRevision}`,
+    ].join('|');
+
+    const first = buildPocModel({
+      seeds,
+      repoRoot,
+      repositoryRevision,
+      observerRevision,
+      evaluation: { snapshot: productionSnapshot, asOf: '2026-09-22T00:00:00Z' },
+    });
+    const second = buildPocModel({
+      seeds,
+      repoRoot,
+      repositoryRevision,
+      observerRevision,
+      evaluation: {
+        snapshot: productionSnapshot.replace(workingTreeDigest, 'd'.repeat(64)),
+        asOf: '2026-09-22T00:00:00Z',
+      },
+    });
+
+    expect(first.evaluation.snapshotLabel).toBe(productionSnapshot);
+    expect(first.evaluation.snapshotLabel).toContain(`${delimiterRichRepositoryId}:${repositoryRevision}`);
+    expect(first.evaluation.snapshotLabel).toContain(`working-tree:${workingTreeDigest}`);
+    expect(first.evaluation.snapshotLabel).toContain(`observer:${observerRevision}`);
+    expect(second.evaluation.snapshotLabel).not.toBe(first.evaluation.snapshotLabel);
+    expect(second.evaluation.snapshot).not.toBe(first.evaluation.snapshot);
+  });
+
   it('rejects invalid public seed graphs before observation with typed failures', () => {
     const baseInput = {
       repoRoot: '/does/not/exist',
