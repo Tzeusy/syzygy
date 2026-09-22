@@ -251,6 +251,14 @@ python3 scripts/build_polaris_project_wide_spec_dependencies.py --check
 python3 scripts/build_pwb_truth_policy_amendment.py --check
 python3 scripts/build_pwb_scoped_attributes_amendment.py --check   # lane B candidate package: manifest = exact regeneration, patches apply
 python3 scripts/build_pwb_scoped_attributes_amendment.py --selftest
+python3 scripts/build_pwb_machine_view_amendment.py --check   # P-72 candidate package: manifest = proposed bytes, composes with lane B
+python3 scripts/build_pwb_machine_view_amendment.py --selftest
+python3 scripts/build_pwb_opening_band_scenario.py --check   # P-71 candidate package: same terms
+python3 scripts/build_pwb_opening_band_scenario.py --selftest
+python3 scripts/build_pwb_exact_source_render_mode_amendment.py --check   # P-81 candidate package: same terms
+python3 scripts/build_pwb_exact_source_render_mode_amendment.py --selftest
+python3 scripts/build_pwb_registry_currency_briefing_amendment.py --check   # P-69/P-72 registry candidate: patch applies to bound bytes
+python3 scripts/build_pwb_registry_currency_briefing_amendment.py --selftest
 python3 scripts/build_three_surface_poc_spec_dependencies.py --check
 python3 scripts/build_directive_register.py --check     # every identifier -> its definition site
 python3 scripts/build_directive_register.py --selftest
@@ -260,7 +268,7 @@ python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
 ```
 
-The twenty-eight checks above are the same twenty-eight the hosted workflow runs
+The thirty-six checks above are the same thirty-six the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.

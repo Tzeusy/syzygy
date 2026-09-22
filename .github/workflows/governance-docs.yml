@@ -115,6 +115,30 @@ jobs:
       - name: build_pwb_scoped_attributes_amendment --selftest
         run: python3 scripts/build_pwb_scoped_attributes_amendment.py --selftest
 
+      - name: build_pwb_machine_view_amendment --check
+        run: python3 scripts/build_pwb_machine_view_amendment.py --check
+
+      - name: build_pwb_machine_view_amendment --selftest
+        run: python3 scripts/build_pwb_machine_view_amendment.py --selftest
+
+      - name: build_pwb_opening_band_scenario --check
+        run: python3 scripts/build_pwb_opening_band_scenario.py --check
+
+      - name: build_pwb_opening_band_scenario --selftest
+        run: python3 scripts/build_pwb_opening_band_scenario.py --selftest
+
+      - name: build_pwb_exact_source_render_mode_amendment --check
+        run: python3 scripts/build_pwb_exact_source_render_mode_amendment.py --check
+
+      - name: build_pwb_exact_source_render_mode_amendment --selftest
+        run: python3 scripts/build_pwb_exact_source_render_mode_amendment.py --selftest
+
+      - name: build_pwb_registry_currency_briefing_amendment --check
+        run: python3 scripts/build_pwb_registry_currency_briefing_amendment.py --check
+
+      - name: build_pwb_registry_currency_briefing_amendment --selftest
+        run: python3 scripts/build_pwb_registry_currency_briefing_amendment.py --selftest
+
       - name: build_three_surface_poc_spec_dependencies --check
         run: python3 scripts/build_three_surface_poc_spec_dependencies.py --check
 
