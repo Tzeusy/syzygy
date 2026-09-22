@@ -14,12 +14,13 @@ import { BUTLERS_POC_SEEDS } from './poc-seeds.js';
 import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import type { TestArtifactRecord } from './test-artifact-verification.js';
 import { walkthroughEvaluationIdentity } from './walkthrough-readiness.js';
+import { removeFixtureDirectory } from './test-cleanup.js';
 
 const cleanups: string[] = [];
 
 afterEach(() => {
   for (const directory of cleanups.splice(0)) {
-    rmSync(directory, { recursive: true, force: true });
+    removeFixtureDirectory(directory);
   }
 });
 
