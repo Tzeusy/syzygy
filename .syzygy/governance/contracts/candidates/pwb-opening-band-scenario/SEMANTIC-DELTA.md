@@ -180,7 +180,19 @@ Enumerated, because "I only touched X" is the field's stated failure mode.
 3. **PWB-REQ-020 is not amended.** Parity's population, oracle and mutation
    proof are unchanged; the new scenario states that the aggregate is inside
    that population, which PWB-REQ-020's own text already reaches through
-   "or disclosure Polaris presents".
+   "or disclosure Polaris presents". Two readings of that clause exist and
+   this package takes the wider one without amending the requirement: the
+   Case at spec lines 912–914 enumerates "every PWB-REQ-005 authority state
+   and PWB-REQ-022 judgment state and disclosure", and the M2 funnel itself
+   flags (lines 462–464) that on the narrower reading, where "disclosure"
+   attaches to the PWB-REQ-022 judgment state, a currency probe's facts
+   "fall outside the enumerated population entirely". On that narrower
+   reading the scenario's fourth bullet is a scope claim on a requirement
+   this package does not amend, and the package would need a PWB-REQ-020
+   amendment outside this category. The wider reading is the one under
+   which this change lands without touching PWB-REQ-020; it is named here,
+   not settled: an owner who holds the narrower reading should say so
+   before any act (round 5 finding 27).
 4. **PWB-REQ-011 and PWB-REQ-012 are not amended.** Progressive depth and the
    copy rules (six-word headings; the prohibited words `page`, `document`,
    `reading`, `section`, `movement`, `presentation`) continue to bind any
@@ -234,10 +246,11 @@ this session.
   cross-cutting readings section.
 - `docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md` — the question table's Q4,
   Q6 and Q7 cells (line 119 carries Q7); the slice 3, 4 and 5 designs (lines
-  820–914); Gate 5's subsection "The RFC2-26 test for slices 4 and 5" (line
+  820–913); Gate 5's subsection "The RFC2-26 test for slices 4 and 5" (line
   1210 onwards) with its eight-row table.
-- `docs/design/POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL.md` lines 441–480 — slice
-  2, the currency probe.
+- `docs/design/POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL.md` lines 441–513 —
+  slice 2, the currency probe; the two passages quoted below sit at 443–446
+  and 472–475.
 - `docs/design/POLARIS-M3-HONEST-ENCODING-FUNNEL.md` lines 903–935 — slice 3,
   "One real Unknown in the first reading".
 - `.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md`
@@ -356,8 +369,8 @@ taken.
 
 **OQ-1 — one scenario cannot supply RFC2-26 limb 1 for slices 4 and 5.**
 RFC2-26, quoted at the defined clause
-(`.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md` line
-196):
+(`.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md`
+lines 201–205, inside the clause defined at line 196):
 
 > Before implementation, every observable consequence either maps to an
 > approved OpenSpec requirement and scenario in the governance root's
@@ -369,8 +382,9 @@ sweeps above find no requirement naming the field" and slice 5's as "**None**
 — the three sweeps above find no requirement reaching the home route", both
 "**Unavailable**, both limbs". Slice 4's consequence is a declared surface
 population; slice 5's is the home route. Neither lies within this
-specification's subject, which its own proposal states as the declared shape
-of the configured project; and the sweeps behind those two cells returned zero
+specification's subject, which its own proposal states (paraphrased here,
+from `proposal.md` §Scope) as the declared shape of the configured project;
+and the sweeps behind those two cells returned zero
 whole-word `home` hits in the POC specification, six in this one (all in the
 precedence table's `Home` column or the registry governance-home field) and
 zero hits for `surfaces` or `model.surfaces` in either. **A scenario placed
@@ -567,12 +581,12 @@ CG-7d and CG-7e catch a stale copy once the package is registered.
 
 1. The package is reviewed in fresh context against `REVIEW-BRIEF.md`; the
    raw output is retained verbatim and the bytes it is bound to are frozen
-   (rule 10). **Done four times**: round 1 CONFIRM WITH EXCEPTIONS; round
+   (rule 10). **Done five times**: round 1 CONFIRM WITH EXCEPTIONS; round
    2, over the repaired bytes at `9d74185`, REVISE; round 3, over `76b4beb`,
-   REVISE; round 4, over `194f8cd`, REVISE — dispositions for all in
-   §Review — and the prose repairs that followed each round left its
-   verdict bound to the reviewed commit, not to these bytes. A round 5 over
-   these bytes is the next step.
+   REVISE; round 4, over `194f8cd`, REVISE; round 5, over `7fd2db3`,
+   REVISE — dispositions for all in §Review — and the prose repairs that
+   followed each round left its verdict bound to the reviewed commit, not to
+   these bytes. A round 6 over these bytes is the next step.
 2. The owner answers the five open questions in `OWNER-DECISION-PACKET.md`.
    Answers to OQ-2 or OQ-3 may change the proposed bytes, which retires the
    review and needs a fresh one. **Done, 2026-09-23**, in the two plain
@@ -629,9 +643,17 @@ status paragraph moved in the same commit with its criteria byte-identical
 (four files changed, not three — §Review round 2 finding 8), so **the
 confirmation is bound to the reviewed bytes and not to these**. The repairs touch prose only
 — no byte of `proposed/spec.md.patch`, `proposed/GOVERNING-DEPENDENCIES.md.patch`
-or the manifest moved, so the manifest digest is unchanged and the reviewer's
-machine findings (items 2–10 and 13–16 of the raw) still hold at this commit
-[Observed: builder `--check` and `--selftest` re-run after the repairs]. A
+or the manifest moved, so the manifest digest is unchanged. The reviewer's
+machine findings (items 2–10 and 13–16 of the raw) held at the round-1
+disposition commit; at the current bytes two of the fourteen do not: item
+9's continuation-form figure (0/0) is retracted by round 2 finding 4 below
+(the ledger now gives 6 files / 7 occurrences), and item 13's `polaris.ts`
+line range has moved (round 4 finding 21). The other twelve hold [Observed:
+builder `--check` and `--selftest` re-run after the repairs covers items 3
+and 4; the rest re-read at source in round 5]. An earlier sentence here
+said all fourteen "still hold at this commit"; it was true at `9d74185` and
+went false when the round-2 repair moved the ledger's figure (round 5
+finding 23). A
 reader who needs a confirmation over *these* bytes needs a fresh review; this
 section records the disposition, it does not extend the verdict.
 
@@ -879,6 +901,75 @@ These bytes carry no confirmation until a round 5 reads them.
 
 **What no round-4 disposition changed.** No patch byte, no manifest row, no
 requirement, no scenario text, and no owner answer.
+
+**Author's standing:** this draft's author dispositioned these findings and
+authored the repairs, and therefore may run no review of them.
+
+### Round 5 — re-review over the round-4 repairs
+
+**Reviewed bytes:** commit `7fd2db3`, with the manifest digest quoted in
+`OWNER-DECISION-PACKET.md`. **Reviewer:** a fresh-context session with no
+authoring context, commissioned 2026-09-23 with the five earlier raws and
+their dispositions as input and `REVIEW-BRIEF.md` as its commission, and
+asked for an exhaustive internal cross-reference sweep with a stated
+denominator. **Verdict:** **REVISE**, copied exactly from the retained raw
+output. **Raw output:**
+`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-4-RAW.md`,
+retained verbatim and never edited (CC-REV-6).
+
+The reviewer found all 22 prior findings dispositioned truthfully; swept
+496 extracted pointers over the four prose files and found every filename,
+commit token, section, finding, step, row and round reference resolving,
+with three line ranges imprecise (24–26); re-derived every ledger figure by
+two methods over 1,334 tracked blobs at `a4a3451` and found all reproduce;
+found the manifest, both patches and the builder byte-identical across all
+five reviewed commits; composed the spec patch with all four sibling spec
+patches in both orders; and caught eight scratch mutations. The REVISE
+rests on one new finding (23); findings 24 to 30 are notes. **Rule 10:**
+the repairs below edited `SEMANTIC-DELTA.md`, `OWNER-DECISION-PACKET.md`
+and `REVIEW-BRIEF.md` after that commit; `IMPACT-LEDGER.md` and every
+patch and manifest byte are unchanged. These bytes carry no confirmation
+until a round 6 reads them.
+
+**Dispositions**, finding by finding:
+
+23. **The round-1 section said all fourteen machine items of the round-1
+    raw "still hold at this commit"; two do not.** **Accepted and
+    repaired.** Item 9's continuation-form figure (0/0) was retracted by
+    round 2 finding 4 and item 13's `polaris.ts` range moved (round 4
+    finding 21); the sentence was true at `9d74185` and went false when
+    the round-2 repair moved the ledger's figure. It now anchors the claim
+    to the round-1 disposition commit, excepts the two items, and keeps the
+    superseded wording marked in place.
+24. **RFC2-26's quotation was pointed at the clause's opening line, not
+    the quoted sentence.** **Accepted and repaired**: lines 201–205, inside
+    the clause defined at line 196. The words were exact.
+25. **The M4 slice 3–5 range ended on slice 6's heading.** **Accepted and
+    repaired**: 820–913.
+26. **The M2 slice 2 range was a fragment of the slice.** **Accepted and
+    repaired**: 441–513, with the two quoted passages placed at 443–446
+    and 472–475.
+27. **The delta took the wider reading of PWB-REQ-020's population without
+    naming the narrower one the M2 funnel flags.** **Accepted and
+    repaired** at "What does NOT change" item 3: both readings are now
+    named with the funnel's own words and the spec Case quoted, the wider
+    reading is identified as the one this change lands under, and the
+    choice is left to the owner rather than settled here. No OQ-6 is
+    minted: OQ-1 to OQ-5 are answered by record and a sixth would reopen
+    the packet's answered set; the owner may raise one.
+28. **The packet's head banner did not itself name the act.** **Accepted
+    and repaired**: one sentence added to the banner naming the dedicated
+    amendment act on this manifest's digest; the lower paragraphs already
+    named it.
+29. **An unmarked paraphrase of the proposal's subject.** **Accepted and
+    repaired**: marked as a paraphrase with its source section named.
+30. **The current source digest appears in the declaration patch's removed
+    line while the ledger says it is reproduced in no prose.** **Accepted,
+    no change**: a unified diff carries the line it removes and is not
+    prose; CG-7e and CG-15 pass on these bytes.
+
+**What no round-5 disposition changed.** No patch byte, no manifest row, no
+requirement, no scenario text, no ledger figure, and no owner answer.
 
 **Author's standing:** this draft's author dispositioned these findings and
 authored the repairs, and therefore may run no review of them.
