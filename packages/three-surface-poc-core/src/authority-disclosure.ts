@@ -36,12 +36,62 @@ export interface AuthorityStateDisclosure {
   readonly invalidCase: string | undefined;
 }
 
+export interface AuthorityMayNot {
+  readonly id: string;
+  readonly statement: string;
+  readonly actIdentity: string;
+  readonly artifactDigest: string | undefined;
+}
+
+export const FIXED_MAY_NOT_IDS = Object.freeze([
+  'no-write-to-observed-repository',
+  'no-second-repository-or-wider-content-class',
+  'no-production-release-or-remote-access',
+  'no-edit-to-act-bound-artifact',
+  'no-doctrine-or-contract-change-or-syzygy-authored-code',
+  'no-independent-verification',
+] as const);
+
+const FIXED_MAY_NOT_STATEMENTS = Object.freeze([
+  'No write, egress, execution, deployment, release, recovery, or mission effect on Butlers or on any other repository.',
+  'No second repository, no wider content class, and no reading of Butlers content the secret-classification policy excludes or cannot classify.',
+  'No production release, broad remote access, or multi-user support.',
+  'No edit to any act-bound artifact.',
+  'No doctrine or contract change, no autonomous intent adoption, no Syzygy-authored implementation code, and no unattended agent coordination.',
+  'No independent verification; this authorization is a state-(1) human direction.',
+] as const);
+
+const IMPLEMENTATION_ACT_IDENTITY = 'PWB-IMPLEMENTATION-AUTHORIZATION-ACT' as const;
+
+function authorityMayNot(entry: AuthorityStateDisclosure): AuthorityMayNot {
+  const effectiveAct = entry.actIdentity ?? `PWB-REQ-005:${entry.authority}:no-effective-owner-act`;
+  const statement = entry.state === 'owner-adopted (bootstrap, uncorrelated)' || entry.state === 'Syzygy-verified'
+    ? `May not read outside the effective ${entry.authority} authority; ${entry.disclosure}`
+    : `May not read under the ${entry.authority} authority; ${entry.disclosure}`;
+  return {
+    id: `no-${entry.authority}-authority-breach`,
+    statement,
+    actIdentity: effectiveAct,
+    artifactDigest: entry.artifactDigest,
+  };
+}
+
+function fixedMayNot(): readonly AuthorityMayNot[] {
+  return FIXED_MAY_NOT_IDS.map((id, index) => ({
+    id,
+    statement: FIXED_MAY_NOT_STATEMENTS[index] as string,
+    actIdentity: IMPLEMENTATION_ACT_IDENTITY,
+    artifactDigest: undefined,
+  }));
+}
+
 export interface AuthorityDisclosure {
   readonly evaluationId: string;
   readonly evaluationInstant: string;
   readonly admits: boolean;
   readonly authorizationMode: BodyReadAuthorityEvaluation['authorizationMode'];
   readonly authorities: readonly AuthorityStateDisclosure[];
+  readonly mayNot: readonly AuthorityMayNot[];
   readonly contradiction: string | undefined;
 }
 
@@ -80,12 +130,14 @@ export function discloseAuthorityState(authority: AuthorityKind, state: Authorit
 }
 
 export function discloseAuthority(evaluation: BodyReadAuthorityEvaluation): AuthorityDisclosure {
+  const authorities = AUTHORITY_KINDS.map((kind) => discloseAuthorityState(kind, evaluation[kind]));
   return {
     evaluationId: evaluation.evaluationId,
     evaluationInstant: evaluation.evaluationInstant,
     admits: evaluation.admits,
     authorizationMode: evaluation.authorizationMode,
-    authorities: AUTHORITY_KINDS.map((kind) => discloseAuthorityState(kind, evaluation[kind])),
+    authorities,
+    mayNot: Object.freeze([...authorities.map(authorityMayNot), ...fixedMayNot()]),
     contradiction: evaluation.contradiction?.statement,
   };
 }

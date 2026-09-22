@@ -9,6 +9,7 @@ import { buildPocModel, readMaterializationRecordFile, type PocModel } from '@sy
 import { TAILNET_HOST } from './browser-origin.js';
 import {
   MATERIALIZE_HUMAN_PATH,
+  buildTrajectoryMaterializationPacket,
   materializeRoutes,
   renderMaterializePanel,
 } from './materialize-action.js';
@@ -40,6 +41,7 @@ describe('renderMaterializePanel', () => {
   it('previews the exact packet and target repository read-only, before any trigger (AC1)', () => {
     const model = buildFixtureModel(cleanups);
     const html = renderMaterializePanel(model);
+    expect(model.dispatch?.packet).toBe(buildTrajectoryMaterializationPacket(model));
     expect(html).toContain('data-parity-field="materialize-target-repo"');
     expect(html).toContain(model.project.root);
     expect(html).toContain('REQ-switchboard-identity-001');
@@ -121,17 +123,21 @@ describe('materializeRoutes', () => {
 
   it('creates exactly one Bead on trigger, persists the record, and calls onMaterialized (AC2)', async () => {
     const dir = tempDir('syzygy-poc-materialize-state-');
+    const fixtureModel = buildFixtureModel(cleanups);
     let refreshed = 0;
     let createCalls = 0;
+    let createdPacket: unknown;
     const baseUrl = await startDaemon({
       stateDir: dir,
+      model: fixtureModel,
       onMaterialized: () => {
         refreshed += 1;
       },
       runQuery: (_repoRoot, sql) =>
         sql.includes('external_ref') ? JSON.stringify([]) : JSON.stringify([{ revision: 'dolt-rev-http' }]),
-      runCreate: () => {
+      runCreate: (_repoRoot, packet) => {
         createCalls += 1;
+        createdPacket = packet;
         return JSON.stringify({ id: 'bu-http-materialized1' });
       },
     });
@@ -141,6 +147,7 @@ describe('materializeRoutes', () => {
     const html = await response.text();
     expect(html).toContain('bu-http-materialized1');
     expect(createCalls).toBe(1);
+    expect(createdPacket).toBe(fixtureModel.dispatch?.packet);
     expect(refreshed).toBe(1);
     expect(readMaterializationRecordFile(dir)?.beadId).toBe('bu-http-materialized1');
   });

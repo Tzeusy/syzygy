@@ -14,6 +14,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import {
+  FIXED_MAY_NOT_IDS,
   STATE_1_DISCLOSURE,
   discloseAuthority,
 } from './authority-disclosure.js';
@@ -519,6 +520,36 @@ describe('PWB-REQ-005 valid triples (8)', () => {
       }
     });
   }
+
+  it('projects three parsed authority constraints plus the six act-ordered fixed prohibitions', () => {
+    const evaluation = evaluateBodyReadAuthority(inputs());
+    const disclosure = discloseAuthority(evaluation);
+    expect(disclosure.mayNot).toHaveLength(9);
+    expect(disclosure.mayNot.slice(0, 3).map((entry) => entry.actIdentity)).toEqual([
+      AUTHORITIES.consent.actIdentity,
+      AUTHORITIES.policy.actIdentity,
+      AUTHORITIES.registry.actIdentity,
+    ]);
+    expect(disclosure.mayNot.slice(3).map((entry) => entry.id)).toEqual([...FIXED_MAY_NOT_IDS]);
+    expect(disclosure.mayNot.slice(3).every((entry) => entry.artifactDigest === undefined)).toBe(true);
+  });
+
+  it('registers the six fixed rows against the six bullets of the implementation act', () => {
+    const source = readFileSync(
+      resolve(process.cwd(), '.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md'),
+      'utf8',
+    );
+    const section = source.slice(source.indexOf('## What this does not authorize'), source.indexOf('## Escalation triggers'));
+    expect(section.match(/^-[ ]+.+$/gm)).toHaveLength(6);
+    expect(FIXED_MAY_NOT_IDS).toEqual([
+      'no-write-to-observed-repository',
+      'no-second-repository-or-wider-content-class',
+      'no-production-release-or-remote-access',
+      'no-edit-to-act-bound-artifact',
+      'no-doctrine-or-contract-change-or-syzygy-authored-code',
+      'no-independent-verification',
+    ]);
+  });
 });
 
 // ---------------------------------------------------------------------

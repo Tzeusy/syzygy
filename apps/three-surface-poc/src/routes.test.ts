@@ -1,13 +1,15 @@
 import { createHash } from 'node:crypto';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
-import { BUTLERS_POC_SEEDS, buildPocModel, type PocModel } from '@syzygy/three-surface-poc-core';
+import { BUTLERS_POC_SEEDS, buildPocModel, buildResponseIdentity, type PocModel } from '@syzygy/three-surface-poc-core';
 
 import { POC_MACHINE_PATH, pocRoutes, renderPocPage } from './routes.js';
+import { ADMITTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
+import { buildFixtureModel } from './test-model-fixture.js';
 
 const cleanups: string[] = [];
 const running: RunningDaemon[] = [];
@@ -220,9 +222,11 @@ function independentResponseKey(body: Record<string, unknown>): string {
 async function startPoc(model: PocModel): Promise<{
   readonly daemon: RunningDaemon;
   readonly token: string;
+  readonly stateDir: string;
 }> {
+  const stateDir = join(tempDir('syzygy-poc-route-state-'), 'state');
   const start = await createDaemon({
-    stateDir: join(tempDir('syzygy-poc-route-state-'), 'state'),
+    stateDir,
     routes: pocRoutes(() => model),
     port: 0,
   });
@@ -233,6 +237,7 @@ async function startPoc(model: PocModel): Promise<{
   return {
     daemon: start.daemon,
     token: readFileSync(start.daemon.credentialPath, 'utf8').trim(),
+    stateDir,
   };
 }
 
@@ -310,10 +315,63 @@ describe('three-surface POC routes', () => {
     );
   });
 
+  it('keeps GET read-only and byte-identical under five sequential and concurrent requests', async () => {
+    const model = modelFixture();
+    const { daemon, token, stateDir } = await startPoc(model);
+    const marker = join(stateDir, 'read-only-marker.txt');
+    writeFileSync(marker, 'GET must not mutate state\n', 'utf8');
+    const before = readFileSync(marker);
+    const beforeMtime = statSync(marker).mtimeMs;
+    const url = `http://${daemon.host}:${daemon.port}${POC_MACHINE_PATH}`;
+    const fetchMachine = async () => (await fetch(url, { headers: { authorization: `Bearer ${token}` } })).text();
+    const sequential = await Promise.all([fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine()]);
+    const concurrent = await Promise.all([fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine()]);
+    expect(new Set([...sequential, ...concurrent]).size).toBe(1);
+    expect(readFileSync(marker)).toEqual(before);
+    expect(statSync(marker).mtimeMs).toBe(beforeMtime);
+  });
+
+  it('recomputes response identity when dispatch or mayNot content changes', () => {
+    const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
+    if (model.dispatch === null) throw new Error('fixture should carry the packet');
+    const dispatched = JSON.parse(JSON.stringify(model)) as any;
+    dispatched.dispatch = {
+      dispatchState: 'dispatched',
+      packet: model.dispatch.packet,
+      beadId: 'bu-response-identity',
+      createdAt: '2026-09-23T00:00:00Z',
+    };
+    dispatched.responseIdentity = { ...model.responseIdentity, contentKey: '' };
+    expect(buildResponseIdentity(dispatched).contentKey).not.toBe(model.responseIdentity.contentKey);
+
+    const constrained = JSON.parse(JSON.stringify(model)) as any;
+    if (constrained.projectShape.kind === 'not-evaluated') throw new Error('fixture should carry authority');
+    constrained.projectShape.authority.mayNot = constrained.projectShape.authority.mayNot.map((row: any, index: number) => index === 0 ? { ...row, statement: `${row.statement} extra constraint` } : row);
+    constrained.responseIdentity = { ...model.responseIdentity, contentKey: '' };
+    expect(buildResponseIdentity(constrained).contentKey).not.toBe(model.responseIdentity.contentKey);
+  });
+
+  it('projects the same mayNot tuples in human Polaris and authenticated machine JSON', async () => {
+    const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
+    const { daemon, token } = await startPoc(model);
+    const html = await (await fetch(`http://${daemon.host}:${daemon.port}/polaris`)).text();
+    const machine = JSON.parse(await (await fetch(`http://${daemon.host}:${daemon.port}${POC_MACHINE_PATH}`, { headers: { authorization: `Bearer ${token}` } })).text()) as PocModel;
+    if (machine.projectShape.kind === 'not-evaluated') throw new Error('fixture should carry authority');
+    const human = [...html.matchAll(/<li data-authority-may-not-id="([^"]+)">([\s\S]*?)<\/li>/g)].map((match) => {
+      const row = match[2] ?? '';
+      const statement = /data-parity-field="authority-may-not-statement">([^<]*)</.exec(row)?.[1] ?? '';
+      const act = /data-parity-field="authority-may-not-act">([^<]*)</.exec(row)?.[1] ?? '';
+      const digest = /data-parity-field="authority-may-not-digest">([^<]*)</.exec(row)?.[1];
+      return [match[1], decodeHtmlText(statement), decodeHtmlText(act), digest === undefined ? undefined : decodeHtmlText(digest)];
+    });
+    expect(human).toEqual(machine.projectShape.authority.mayNot.map((row) => [row.id, row.statement, row.actIdentity, row.artifactDigest]));
+  });
+
   it('escapes observed text before rendering it into HTML', () => {
     const model = modelFixture();
     const injected: PocModel = {
       ...model,
+      dispatch: model.dispatch,
       entities: model.entities.map((entity, index) =>
         index === 0
           ? { ...entity, title: '<script>alert("title")</script>', detail: '<img src=x>' }
@@ -332,6 +390,7 @@ describe('three-surface POC routes', () => {
     const seeded = modelFixture();
     const empty: PocModel = {
       ...seeded,
+      dispatch: null,
       project: { ...seeded.project, name: 'Unknown project' },
       capabilityId: 'capability:unknown',
       entities: [],
