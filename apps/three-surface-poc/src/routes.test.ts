@@ -357,7 +357,7 @@ describe('three-surface POC routes', () => {
     const html = await (await fetch(`http://${daemon.host}:${daemon.port}/polaris`)).text();
     const machine = JSON.parse(await (await fetch(`http://${daemon.host}:${daemon.port}${POC_MACHINE_PATH}`, { headers: { authorization: `Bearer ${token}` } })).text()) as PocModel;
     if (machine.projectShape.kind === 'not-evaluated') throw new Error('fixture should carry authority');
-    const human = [...html.matchAll(/<li data-authority-may-not-id="([^"]+)">([\s\S]*?)<\/li>/g)].map((match) => {
+    const human = [...html.matchAll(/<li[^>]*data-authority-may-not-id="([^"]+)"[^>]*>([\s\S]*?)<\/li>/g)].map((match) => {
       const row = match[2] ?? '';
       const statement = /data-parity-field="authority-may-not-statement">([^<]*)</.exec(row)?.[1] ?? '';
       const act = /data-parity-field="authority-may-not-act">([^<]*)</.exec(row)?.[1] ?? '';
