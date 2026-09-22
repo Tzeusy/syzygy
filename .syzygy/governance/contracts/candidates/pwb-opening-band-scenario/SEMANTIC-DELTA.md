@@ -244,8 +244,9 @@ this session.
   clause (`DIRECTIVE-REGISTER.md` line 260 gives that definition site).
 - Both signed specifications, read for the requirement and scenario
   populations.
-- `apps/three-surface-poc/src/polaris.ts` lines 922–931 — the
-  `gapReasonCounts` projection, for finding R-3 below.
+- `apps/three-surface-poc/src/polaris.ts`, the `gapReasonCounts` function
+  (lines 951–960 at `194f8cd`; 922–931 at the baseline `a4a3451`) — the
+  projection for finding R-3 below.
 
 ---
 
@@ -269,7 +270,7 @@ the M4 summary of it.
 > renders. It carries its own identity, of the form
 > `evaluation:pwb-currency-probe:<instant>`, its own instant and its own tuple
 
-and, at line 473:
+and, at line 472:
 
 > **The probe's own freshness.** The probe claim carries no freshness value,
 > before slice 5 and after it. It is not a project-shape claim, so
@@ -298,7 +299,7 @@ and, at line 914:
 > already renders, every row linking to the existing `#polaris-gap-<reason>`
 > anchor and carrying the reason's route.
 
-and, at line 838:
+and, at line 836:
 
 > **One count, two renderings, one denominator.** The band must not be a
 > second projection that can drift: it takes the same map and the same
@@ -412,14 +413,15 @@ carried here unresolved, by design (rule 6).
 **OQ-3 — the designed band does not satisfy the clause it inherits.**
 PWB-REQ-007 requires an aggregate to disclose "separate primary/secondary
 reason counts". The projection party 3 reuses counts primary reasons only —
-`gapReasonCounts` in `apps/three-surface-poc/src/polaris.ts` lines 922–931
-reads `claim.epistemic.reasons.primary` and increments one map [Observed at
-source this session]. So the band as M4 designs it, rendering that map, would
-falsify the scenario's third bullet. This delta keeps the clause's words
-rather than the design's, which means the implementation must supply the
-secondary counts. The reading not taken: softening the third bullet to
-"reason counts" so that today's projection would pass — that would quietly
-narrow PWB-REQ-007 through a scenario under a different requirement.
+`gapReasonCounts` in `apps/three-surface-poc/src/polaris.ts` (lines 951–960 at
+`194f8cd`; 922–931 at `a4a3451`) reads `claim.epistemic.reasons.primary` and
+increments one map [Observed at source, re-read 2026-09-23]. So the band as M4
+designs it, rendering that map, would falsify the scenario's third bullet.
+This delta keeps the clause's words rather than the design's, which means the
+implementation must supply the secondary counts. The reading not taken:
+softening the third bullet to "reason counts" so that today's projection would
+pass — that would quietly narrow PWB-REQ-007 through a scenario under a
+different requirement.
 
 **OQ-4 — an opening aggregate against POC-REQ-032's "in place".** The
 three-surface specification's POC-REQ-032 says, quoted at
@@ -563,11 +565,12 @@ CG-7d and CG-7e catch a stale copy once the package is registered.
 
 1. The package is reviewed in fresh context against `REVIEW-BRIEF.md`; the
    raw output is retained verbatim and the bytes it is bound to are frozen
-   (rule 10). **Done twice**: round 1 CONFIRM WITH EXCEPTIONS; round 2,
-   over the repaired bytes at `9d74185`, REVISE — dispositions for both in
-   §Review — and the prose repairs that followed each round left its verdict
-   bound to the reviewed commit, not to these bytes. A round 3 over these
-   bytes is the next step.
+   (rule 10). **Done four times**: round 1 CONFIRM WITH EXCEPTIONS; round
+   2, over the repaired bytes at `9d74185`, REVISE; round 3, over `76b4beb`,
+   REVISE; round 4, over `194f8cd`, REVISE — dispositions for all in
+   §Review — and the prose repairs that followed each round left its
+   verdict bound to the reviewed commit, not to these bytes. A round 5 over
+   these bytes is the next step.
 2. The owner answers the five open questions in `OWNER-DECISION-PACKET.md`.
    Answers to OQ-2 or OQ-3 may change the proposed bytes, which retires the
    review and needs a fresh one. **Done, 2026-09-23**, in the two plain
@@ -774,8 +777,8 @@ five owner answers against their records. The REVISE rests on three new
 findings (11, 13, 14); findings 12 and 15–18 are notes. **Rule 10:** the
 repairs below edited `SEMANTIC-DELTA.md`, `IMPACT-LEDGER.md`,
 `OWNER-DECISION-PACKET.md` and `REVIEW-BRIEF.md` after that commit; no
-patch or manifest byte moved. These bytes carry no confirmation until a
-round 4 reads them.
+patch or manifest byte moved. These bytes carried no confirmation until a
+round 4 read them; it did, and returned REVISE (next section).
 
 **Dispositions**, finding by finding:
 
@@ -816,6 +819,63 @@ round 4 reads them.
     repaired**: "Round 1 verdict:".
 
 **What no round-3 disposition changed.** No patch byte, no manifest row, no
+requirement, no scenario text, and no owner answer.
+
+**Author's standing:** this draft's author dispositioned these findings and
+authored the repairs, and therefore may run no review of them.
+
+### Round 4 — re-review over the round-3 repairs
+
+**Reviewed bytes:** commit `194f8cd`, with the manifest digest quoted in
+`OWNER-DECISION-PACKET.md`. **Reviewer:** a fresh-context session with no
+authoring context, commissioned 2026-09-23 with the four earlier raws and
+their dispositions as input and `REVIEW-BRIEF.md` as its commission.
+**Verdict:** **REVISE**, copied exactly from the retained raw output. **Raw
+output:**
+`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-3-RAW.md`,
+retained verbatim and never edited (CC-REV-6).
+
+The reviewer found every round-3 item — finding 6 and findings 11 to 18 —
+discharged with truthful dispositions; reproduced every ledger figure by
+two methods; found the manifest, both patches and the builder
+byte-identical from `76b4beb` to `194f8cd`; composed the spec patch with
+all four sibling spec patches in both orders; regenerated the coverage
+views over the proposed spec and found them equal to the tree; and caught
+six scratch mutations. The REVISE rests on one new finding (20); findings
+19, 21 and 22 are notes. **Rule 10:** the repairs below edited
+`SEMANTIC-DELTA.md`, `IMPACT-LEDGER.md`, `OWNER-DECISION-PACKET.md` and
+`REVIEW-BRIEF.md` after that commit; no patch or manifest byte moved.
+These bytes carry no confirmation until a round 5 reads them.
+
+**Dispositions**, finding by finding:
+
+19. **Migration step 1 of this file still said "Done twice" and named a
+    round 3 as the next step.** **Accepted and repaired**: the step now
+    names all four rounds and their verdict words and says a round 5 is
+    the next step. The round-3 repair of finding 14 fixed the packet's
+    parallel step and missed this one.
+20. **A manifest row carries `PWB-REQ-010`, and the ledger said twice that
+    it does not.** **Accepted and repaired.** The round-3 repair had
+    written "no class-2, class-3 or class-4 file carries the identifier
+    except `CAPABILITY-COVERAGE.md`", widening the round-3 raw's own
+    class-3-and-4 sentence to class 2 without re-sweeping the eleven rows;
+    `contract-coverage-matrix/RFC-0007-0009.md` is manifest row 8 and
+    carries the literal four times at `a4a3451` [Observed — re-swept at
+    source]. The pre-existing kind sentence, "the first is a manifest row;
+    the other three are outside the bound eleven", was false for the same
+    file. Both sentences now name both class-2 citers and mark the earlier
+    text; no figure, kind count or placement moved — the file was already
+    counted once, in "generated coverage views (4)".
+21. **The `polaris.ts` line range for `gapReasonCounts` was stale at the
+    reviewed commit.** **Accepted and repaired** at both sites: the
+    function is cited by name with its range at `194f8cd` and at the
+    baseline, since the file moves under commits outside this package.
+22. **Two quoted line positions in the reconciliation section were off by
+    one and by two at every commit since drafting.** **Accepted and
+    repaired**: 472 and 836, re-read at source; the quoted words were
+    exact and are unchanged.
+
+**What no round-4 disposition changed.** No patch byte, no manifest row, no
 requirement, no scenario text, and no owner answer.
 
 **Author's standing:** this draft's author dispositioned these findings and

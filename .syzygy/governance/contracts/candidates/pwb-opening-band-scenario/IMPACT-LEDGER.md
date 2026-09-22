@@ -196,12 +196,17 @@ cites them by path and quotes no act argument.
 
 The remainder of the 41 `PWB-REQ-010` citers (36 literal plus the five the
 continuation sweep adds): 41 less the two class-1 files, `spec.md` and
-`GOVERNING-DEPENDENCIES.md`, is **39** — no class-2, class-3 or class-4
-file carries the identifier at `a4a3451` except `CAPABILITY-COVERAGE.md`,
-which is counted below. Re-derived 2026-09-23 by re-running sweep 1 over
-the baseline tree and placing every hit in exactly one kind; an earlier
-heading said 37 and left two citers in no kind (§Review round 3, finding
-13). By kind, summing to 39:
+`GOVERNING-DEPENDENCIES.md`, is **39**. Two class-2 files carry the
+identifier at `a4a3451` — `CAPABILITY-COVERAGE.md` once and
+`contract-coverage-matrix/RFC-0007-0009.md` four times — and both are
+counted below; neither class-3 file and no class-4 file carries it
+[Observed — the eleven manifest rows, both JSONs and the four history
+files each swept at `a4a3451`, round 4]. Re-derived 2026-09-23 by
+re-running sweep 1 over the baseline tree and placing every hit in exactly
+one kind; an earlier heading said 37 and left two citers in no kind
+(§Review round 3, finding 13), and the round-3 repair then said only
+`CAPABILITY-COVERAGE.md` was a class-2 citer (§Review round 4, finding
+20). By kind, summing to 39:
 
 - **Implementation and tests (6):** `apps/three-surface-poc/src/polaris.ts`,
   `polaris-first-reading.test.ts`, `polaris-project-shape.test.ts`,
@@ -217,8 +222,9 @@ heading said 37 and left two citers in no kind (§Review round 3, finding
   `CAPABILITY-COVERAGE.md`, `contract-coverage-matrix/RFC-0007-0009.md`,
   `contract-coverage-parts/RFC-0007-0009.md`, `tasks.md`. Their PWB-REQ-010
   rows key off the requirement, not its scenario count, so no row moves. The
-  first is a manifest row (class 2); the other three are outside the bound
-  eleven.
+  first two are manifest rows (class 2); the other two are outside the bound
+  eleven. An earlier sentence said the first alone was a row (§Review
+  round 4, finding 20).
 - **Design packets (2):** the M3 and M4 funnels. They are the drafting
   inputs, are read-only to this package, and are not edited by it.
 - **Retained raw reviews (11)** and **dated evidence records (12)** — the

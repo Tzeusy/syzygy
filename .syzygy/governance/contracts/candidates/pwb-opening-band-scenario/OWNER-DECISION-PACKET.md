@@ -6,13 +6,15 @@
 > performs no act.
 
 Date: 2026-09-21 (first draft; repaired 2026-09-21 and 2026-09-23).
-**Status as of 2026-09-23:** three fresh-context reviews have run against
+**Status as of 2026-09-23:** four fresh-context reviews have run against
 `REVIEW-BRIEF.md` — round 1 **CONFIRM WITH EXCEPTIONS**
 (`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md`); round 2, over
 the repaired bytes at `9d74185`, **REVISE**
 (`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-RAW.md`);
 round 3, over the repaired bytes at `76b4beb`, **REVISE**
-(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-2-RAW.md`). A
+(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-2-RAW.md`);
+round 4, over the repaired bytes at `194f8cd`, **REVISE**
+(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-3-RAW.md`). A
 parallel independent round over the round-2 bytes returned **CONFIRM WITH
 EXCEPTIONS**
 (`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-B-RAW.md`).
@@ -20,7 +22,7 @@ Each word is copied exactly from its raw; `SEMANTIC-DELTA.md` §Review owns
 the dispositions. Every finding was repaired in prose only: no patch byte,
 no manifest row and no proposed sentence moved, so the manifest digest
 below is unchanged. Each verdict is bound to the commit its raw names,
-**not** to these repaired bytes (rule 10), which await a round 4. An
+**not** to these repaired bytes (rule 10), which await a round 5. An
 earlier head here reported one review and one verdict; it had been stale
 since round 2 (round 3 finding 14).
 
@@ -229,10 +231,12 @@ None of it performed by this package.
    impact ledger and five notes, all repaired in prose; round 3 (2026-09-23,
    over the repaired bytes at `76b4beb`) REVISE — a false attribution the
    round-2 repair had introduced, a class-5 figure that did not partition,
-   and this packet's stale head — plus five notes, all repaired in prose.
-   Each verdict is bound to the commit it reviewed; a round 4 over these
-   bytes is the next step, and only a round that confirms them lets a phrase
-   be offered.
+   and this packet's stale head — plus five notes, all repaired in prose;
+   round 4 (2026-09-23, over the repaired bytes at `194f8cd`) REVISE — one
+   manifest row the impact ledger said carried no citation — plus three
+   notes, all repaired in prose. Each verdict is bound to the commit it
+   reviewed; a round 5 over these bytes is the next step, and only a round
+   that confirms them lets a phrase be offered.
 2. You answer OQ-1 to OQ-5. An answer to OQ-2 or OQ-3 may change the
    proposed bytes, which would retire the review. **Done, 2026-09-23**:
    OQ-1 and OQ-2 in
