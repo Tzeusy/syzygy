@@ -248,18 +248,49 @@ describe('byLimit — headroom against all seven declared limits (N3 slice 1)', 
     });
   });
 
-  it('maxSources reads sourcesTraversed, never contradicting it in the same summary, before any breach is recorded', () => {
+  it('maxSources is Unknown, never sourcesTraversed standing in for the manifest population, when nothing declares it', () => {
+    // sourcesTraversed (passes.size) is not the population maxSources
+    // breaches against (manifest.sources.length): a manifest may hold a
+    // path-only source this ledger never charges a pass to. Absent both a
+    // declareSourcePopulation call and a recorded breach, this ledger
+    // genuinely does not hold that population, so it must say Unknown
+    // rather than substitute the smaller, ledger-local sourcesTraversed
+    // count.
     const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
     ledger.chargePass('a', 'utf8-and-nul-validation');
     ledger.chargePass('b', 'utf8-and-nul-validation');
     const summary = ledger.summary();
     expect(summary.sourcesTraversed).toBe(2);
+    expect(summary.byLimit.maxSources.observed.state).toBe('unknown');
+    expect(summary.byLimit.maxSources.remaining.state).toBe('unknown');
+    if (summary.byLimit.maxSources.observed.state === 'unknown') {
+      expect(summary.byLimit.maxSources.observed.reason.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('maxSources reads the declared manifest population, not sourcesTraversed, for a fixture with a path-only source', () => {
+    // Three manifest sources ('a', 'b' and a path-only 'c' never traversed
+    // — the shape of `baseline-spec-tree`, which reads only the path
+    // string and is never charged a parse pass), but only two are charged
+    // a pass. declareSourcePopulation is the observation pipeline's
+    // unconditional call (`project-shape-observation.ts`, right after the
+    // manifest is derived) feeding in the same population the pipeline's
+    // own maxSources breach check compares against the limit
+    // (`manifest.sources.length`). The pinned invariant: observed equals
+    // that declared population, not the smaller sourcesTraversed count.
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    ledger.chargePass('a', 'utf8-and-nul-validation');
+    ledger.chargePass('b', 'utf8-and-nul-validation');
+    ledger.declareSourcePopulation(3);
+    const summary = ledger.summary();
+    expect(summary.sourcesTraversed).toBe(2);
     expect(summary.byLimit.maxSources).toEqual({
       limit: 'maxSources',
       declared: PWB_RESOURCE_LIMITS.maxSources,
-      observed: { state: 'observed', value: summary.sourcesTraversed },
-      remaining: { state: 'observed', value: PWB_RESOURCE_LIMITS.maxSources - summary.sourcesTraversed },
+      observed: { state: 'observed', value: 3 },
+      remaining: { state: 'observed', value: PWB_RESOURCE_LIMITS.maxSources - 3 },
     });
+    expect(summary.byLimit.maxSources.observed.state === 'observed' && summary.byLimit.maxSources.observed.value).not.toBe(summary.sourcesTraversed);
   });
 
   it('maxIndexDepth reads the fixed, always-known PWB_INDEX_DEPTH constant, never a silent 0', () => {

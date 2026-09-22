@@ -116,14 +116,24 @@ export type ResourceLimitObservation =
 //                            breach for a body larger than any charged
 //                            one (a body over the limit is never
 //                            counted into `bodies` at all).
-//   maxSources               this ledger's own count of distinct
-//                            sources it has charged at least one parse
-//                            pass to (`sourcesTraversed`) is real,
-//                            known evidence and is always used as the
-//                            floor; raised further by any recorded
-//                            breach carrying a higher manifest-wide
-//                            count (`manifest.sources.length`, which
-//                            this ledger does not itself hold).
+//   maxSources               the full manifest source population
+//                            (`manifest.sources.length`) — the same
+//                            population `project-shape-observation.ts`
+//                            itself compares against the declared limit
+//                            to decide a breach — declared to this
+//                            ledger once, unconditionally, by
+//                            `declareSourcePopulation`; a manifest
+//                            source the pipeline never traverses (e.g. a
+//                            path-only `baseline-spec-tree` entry) is
+//                            still a member of that population, so
+//                            `sourcesTraversed` (this ledger's own count
+//                            of sources charged at least one parse pass)
+//                            is not used here — it silently undercounts
+//                            whenever such a source is present. Raised
+//                            further by any recorded breach carrying a
+//                            higher count. Unknown only when neither the
+//                            population was ever declared nor a breach
+//                            was ever recorded.
 //   maxIndexDepth            a fixed, always-known constant
 //                            (`PWB_INDEX_DEPTH`) compared against the
 //                            declared limit by the caller — real,
@@ -184,6 +194,17 @@ export interface ResourceLedger {
   readonly breaches: readonly ResourceLimitBreach[];
   recordBreach(breach: ResourceLimitBreach): void;
 
+  // maxSources. The full manifest source population
+  // (`manifest.sources.length`), declared once, unconditionally — whether
+  // or not it exceeds the declared limit — by the observation pipeline
+  // right after the manifest is derived. This is the same population
+  // `project-shape-observation.ts` itself compares against the declared
+  // limit for breach purposes, so `summary()` can report `maxSources`'
+  // true usage even absent a breach, rather than substituting the smaller
+  // count of sources this ledger separately charged a parse pass to (some
+  // manifest sources are path-only and never traversed).
+  declareSourcePopulation(count: number): void;
+
   // maxTotalBytes. `projectBody` evaluates a declared size before the body
   // is opened and records a breach without counting; `chargeBody` counts
   // the bytes actually taken, once per (path, object id). Both return the
@@ -224,6 +245,9 @@ export function createResourceLedger(limits: PwbResourceLimits): ResourceLedger 
   const passes = new Map<string, number>();
   const byIdentity = new Map<ParsePassIdentity, number>(PARSE_PASS_IDENTITIES.map((pass) => [pass, 0]));
   const transient = new Map<string, TransientBody>();
+  // Undeclared until the observation pipeline calls `declareSourcePopulation`
+  // — distinct from a declared population of 0, which is real evidence.
+  let sourcePopulation: number | undefined;
 
   const recordBreach = (breach: ResourceLimitBreach): void => {
     breaches.push(breach);
@@ -258,6 +282,9 @@ export function createResourceLedger(limits: PwbResourceLimits): ResourceLedger 
     limits,
     breaches,
     recordBreach,
+    declareSourcePopulation: (count) => {
+      sourcePopulation = count;
+    },
     projectBody: evaluateBody,
     chargeBody: (path, objectId, byteLength) => {
       const breach = evaluateBody(path, objectId, byteLength);
@@ -313,7 +340,14 @@ export function createResourceLedger(limits: PwbResourceLimits): ResourceLedger 
           }
           case 'maxSources': {
             const breach = observedFromBreaches(limit);
-            return { state: 'observed', value: breach === undefined ? passes.size : Math.max(passes.size, breach) };
+            if (sourcePopulation === undefined && breach === undefined) {
+              return {
+                state: 'unknown',
+                reason:
+                  'the manifest source population (declareSourcePopulation) was never declared to this ledger and no maxSources breach was recorded, so the full population the limit is compared against is not evidence this ledger holds',
+              };
+            }
+            return { state: 'observed', value: Math.max(sourcePopulation ?? 0, breach ?? 0) };
           }
           case 'maxIndexDepth':
             // A fixed, always-known constant — real, static evidence, not
