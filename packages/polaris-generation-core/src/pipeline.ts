@@ -50,11 +50,27 @@ export interface ProviderReply {
 
 /** Which step inside the parse/validate/encode/digest chain rejected the reply.
  * Distinct from the pipeline-level 'invalid-output' StopReason: this is the
- * durable receipt's typed detail, not the caller-facing stop signal. */
+ * durable receipt's typed detail, not the caller-facing stop signal.
+ * 'digest-failed' is retained as its own typed value even though it is
+ * believed unreachable through this module's own call site (see the comment
+ * at the digest step inside runGenerationPipeline for why) -- it still needs
+ * a code so a future change to encodeCanonicalJson/digestCanonicalJson's
+ * contract has somewhere typed to report through, rather than an
+ * unhandled 'adapter-failure'. */
 export type InvalidOutputReason = 'parse-failed' | 'schema-rejected' | 'encode-failed' | 'digest-failed';
 
 export type AttemptOutcome =
   | { readonly kind: 'validated'; readonly outputDigest: string; readonly model: string | null; readonly usageUnits: number }
+  /** 'detail' is a diagnostic message, truncated to 200 characters, that becomes part of a
+   * durable receipt (see PipelinePorts.record). Contract: it must never carry the provider's
+   * raw reply body, any source/reader-question content, or a credential/secret -- only the
+   * failing step's own, hard-coded, content-free error message. This holds today because
+   * every 'detail' seen here originates from one of: parseBoundedJson/CanonicalJsonError
+   * (deterministic, code-only messages that never echo the bytes they reject -- see
+   * canonical-json.ts's 'Diagnostics deliberately contain no source values or property
+   * names'), or PipelinePorts.validate's own thrown message, whose contract (below) commits
+   * to the same never-echo-content discipline. A future validate() implementation or a new
+   * fallible step inserted into this chain must preserve that contract, not just truncate. */
   | { readonly kind: 'invalid-output'; readonly usageUnits: number | null; readonly reason: InvalidOutputReason; readonly detail: string }
   | { readonly kind: 'usage-uncertain' | 'effect-uncertain'; readonly usageUnits: number | null };
 
@@ -83,6 +99,10 @@ export interface PipelinePorts {
   }) => Promise<ProviderReply>;
   /** Closed schema, source-reference and screening validation. Throws on refusal.
    * Returns a validated data record, not an acceptance/permission assertion.
+   * Contract: a thrown message is retained (truncated to 200 chars) in the durable
+   * AttemptOutcome.detail below, so it must never quote the provider's raw reply body,
+   * a source's raw content, or any credential/secret -- name the failing field or rule
+   * only (e.g. "missing required field 'summary'"), never the offending value.
    */
   readonly validate: (stage: GenerationStage, value: unknown, context: Readonly<Record<string, unknown>>) => unknown;
   /** Durable, idempotent receipt; diagnostics contain no invalid output bodies. */
@@ -253,6 +273,20 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
         invalidOutputReason = 'encode-failed';
         const bytes = encodeCanonicalJson(validated, dataLimits(permit.maxOutputBytes));
         validated = JSON.parse(bytes);
+        // 'digest-failed' is believed unreachable here: digestCanonicalJson (below) re-runs
+        // encodeCanonicalJson on `validated` under the SAME `dataLimits(permit.maxOutputBytes)`
+        // limits the encode step just satisfied, and `validated` was reconstructed via
+        // JSON.parse(bytes) from that very encoder's own output -- a plain object/array tree
+        // with no Proxy, no foreign prototype, and (being a freshly built JSON.parse tree) no
+        // cycle. Canonical encoding is deterministic (sorted keys, ECMAScript JSON primitive
+        // spelling; see canonical-json.ts), so this second pass re-derives the identical
+        // `bytes` and therefore cannot exceed a byte/node/depth limit it already met, nor
+        // trigger an unsupported-object/property/cycle check that JSON.parse's own output can
+        // never produce. Left as a distinct, typed step (not merged into 'encode-failed' and
+        // not removed) because that guarantee belongs to encodeCanonicalJson/
+        // digestCanonicalJson's contract, not to this call site: if it ever changes, this
+        // still needs somewhere typed to report through rather than an unhandled
+        // 'adapter-failure'.
         invalidOutputReason = 'digest-failed';
         digest = digestCanonicalJson(validated, dataLimits(permit.maxOutputBytes)).digest;
         outputBytes += Buffer.byteLength(reply.body, 'utf8');
