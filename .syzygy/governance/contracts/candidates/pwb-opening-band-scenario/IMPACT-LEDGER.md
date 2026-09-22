@@ -53,10 +53,20 @@ reader can check and one they cannot.
 occurrence:
 
 1. the literal identifier `PWB-REQ-010`;
-2. a continuation-form pattern for it, matching a neighbouring requirement
-   identifier followed by a bare `010` after a comma, slash or space —
-   because the corpus writes identifier runs as `PWB-REQ-009, 010` and a
-   full-identifier sweep alone produces a false absence;
+2. a continuation-form pattern for it: a requirement identifier
+   `PWB-REQ-NNN` followed by a run of bare three-digit members, each
+   introduced by a slash, a comma and a space, or a space, with `010` as any
+   member — Python `re`, case-sensitive, no `DOTALL`, exactly
+   `PWB-REQ-\d{3}(?:(?:/|,\s|\s)\d{3})*?(?:/|,\s|\s)010\b` — because the
+   corpus writes identifier runs as `PWB-REQ-009, 010` and as
+   `PWB-REQ-001/002/003/004/005/010`, and a full-identifier sweep alone
+   produces a false absence. An earlier draft stated this pattern in words
+   only ("a neighbouring requirement identifier followed by a bare `010`")
+   and ran it over one member, which returns 0 files; the review of
+   2026-09-23 found that the run form the corpus actually uses returns six
+   (§Review finding 4). Re-run this session, 2026-09-23, at the baseline
+   commit, with a second method (`-l -F` for the literal, and the same
+   regex over `git ls-tree -r -z` blobs) agreeing on every figure;
 3. the patched specification path;
 4. the patched `GOVERNING-DEPENDENCIES.md` path;
 5. the specification's current source digest, as a 64-hex literal. The
@@ -82,13 +92,27 @@ declared rather than assumed away [Inferred].
 | Pattern | Files | Occurrences |
 |---|---|---|
 | `PWB-REQ-010` | 36 | 110 |
-| continuation forms of `PWB-REQ-010` | 0 | 0 |
+| continuation forms of `PWB-REQ-010` (the regex above) | 6 | 7 |
 | the patched specification path | 51 | 113 |
 | the patched `GOVERNING-DEPENDENCIES.md` path | 9 | 13 |
 | the specification's current source digest | 13 | 13 |
 
-The continuation sweep adds no file: every file it could have matched also
-matches the literal identifier [Observed].
+The continuation sweep adds **five** files the literal sweep misses; the
+sixth run-form file, `docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04.json`,
+carries both forms. The five, every occurrence the literal
+`PWB-REQ-001/002/003/004/005/010` or a shorter run ending the same way:
+`apps/three-surface-poc/src/pwb-mutation-sweep-main.ts`,
+`docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04-parity-markers.json`,
+`docs/evidence/pwb-p4-2-mutation-sweep-2026-09-06-parity-markers.json`,
+`docs/evidence/pwb-p4-2-mutation-sweep-2026-09-09-named-absent-file-dropped.json`
+and `docs/reviews/R-PWB-LIVE-EXACT-HEAD-ENGINEERING-RAW.md` (two
+occurrences). **The citer population is therefore 41 files, not 36**
+[Observed, 2026-09-23, both methods]. An earlier draft of this section
+reported 0 / 0 and "adds no file"; both were false for the run form, and the
+class 5 figures below moved with the recount. That the same section had to
+be repaired twice — once for an unenumerated skip set, once for a
+false absence — is why the predicate is now given as a regex a reader can
+run rather than as a sentence.
 
 ---
 
@@ -117,8 +141,15 @@ ride along.
 The other nine artifacts of the eleven-artifact PWB behavioral package. They
 are rows of `PWB-OPENING-BAND-SCENARIO-MANIFEST.txt` at their **current**
 bytes, because a manifest over a subset would let a silent edit to a sibling
-pass unnoticed. The builder's selftest asserts the population is closed: a
-new artifact appearing in the change directory fails `--check`.
+pass unnoticed. The builder's selftest asserts the population is closed in one sense only:
+`BEHAVIOR_SUBJECTS` is a hard-coded tuple of eleven distinct paths, the
+manifest hashes exactly those, and a change to any unpatched one fails
+`--check` (the selftest's byte-drift fixture). The builder never lists the
+change directory: a twelfth file appearing there is outside the bound
+subject and is not hashed, so it neither fails `--check` nor enters the
+manifest. An earlier draft claimed the opposite ("a new artifact appearing
+in the change directory fails `--check`"); the review of 2026-09-23
+falsified it with a one-line mutation (§Review finding 5) [Observed].
 
 ### Class 3 — digest-pinned elsewhere, staled by any amendment (2 files)
 
@@ -137,9 +168,13 @@ pins — this package's, lane B's, and the P-69 Q7a clarification alike
 
 This package does not edit either file, for two reasons. First, the owner
 ruled on 2026-09-21, in the P-74 and P-78 rows, that the adapter-registry
-entry "is edited on no arm" of those moves. That sentence closes each row's
-"What it means" cell as a summary of the whole row, which answers several
-sub-questions; it is **not** a sentence scoped to a numbered sub-question,
+entry is edited on no arm of those moves — P-78's row closes "The registry
+entry **is** edited on no arm." and P-74's closes "The consent record, the
+registry entry and PWB-REQ-005 **are** edited on no arm." (each quoted from
+its own row; an earlier draft attributed P-78's sentence to both, §Review
+finding 9). Each sentence closes its row's "What it means" cell as a summary
+of the whole row, which answers several sub-questions; neither is scoped to
+a numbered sub-question,
 and an earlier draft of this ledger tagged it "Q4" in both rows. The
 substance is the owner's; the per-question tag was this package's inference
 and has been withdrawn (§Review finding 3). Second, P-69 Q2(a) and P-72 Q2 travel
@@ -156,13 +191,16 @@ package that produced them quote the digests they bound at their own moment.
 They are correct about that moment and are never rewritten. This package
 cites them by path and quotes no act argument.
 
-### Class 5 — citers carrying no obligation this scenario changes (32 files)
+### Class 5 — citers carrying no obligation this scenario changes (37 files)
 
-The remainder of the 36 `PWB-REQ-010` citers, by kind:
+The remainder of the 41 `PWB-REQ-010` citers (36 literal plus the five the
+continuation sweep adds, recounted 2026-09-23), by kind:
 
-- **Implementation and tests (5):** `apps/three-surface-poc/src/polaris.ts`,
+- **Implementation and tests (6):** `apps/three-surface-poc/src/polaris.ts`,
   `polaris-first-reading.test.ts`, `polaris-project-shape.test.ts`,
-  `polaris.test.ts`, `pwb-mutation-sweep.ts`. Today's rendering satisfies
+  `polaris.test.ts`, `pwb-mutation-sweep.ts` and
+  `pwb-mutation-sweep-main.ts` (the last lists identifiers in run form and
+  carries no literal). Today's rendering satisfies
   the existing scenario and continues to satisfy it; the new scenario's
   antecedent is false of a page with no opening aggregate, so nothing here
   becomes non-conforming on adoption [Inferred — the mutation sweep was not
@@ -176,8 +214,10 @@ The remainder of the 36 `PWB-REQ-010` citers, by kind:
   eleven.
 - **Design packets (2):** the M3 and M4 funnels. They are the drafting
   inputs, are read-only to this package, and are not edited by it.
-- **Retained raw reviews (10)** and **dated evidence records (9)**: never
-  edited, under CC-REV-6 and the evidence-record convention. An adoption
+- **Retained raw reviews (11)** and **dated evidence records (12)**: never
+  edited, under CC-REV-6 and the evidence-record convention. One raw and
+  three evidence records reach this class only through the continuation
+  sweep. An adoption
   does not make them wrong; they are true of their own commits.
 - **The pending-decision register (1):**
   `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`. Registering
@@ -190,6 +230,14 @@ The remainder of the 36 `PWB-REQ-010` citers, by kind:
 ---
 
 ## Registration this package deliberately does not perform
+
+**As of 2026-09-23 this section describes the branch as drafted, not the
+tree.** The three edits below landed at the merge of PR #52 (`9d74185`,
+2026-09-22), with one deliberate exception: the successor-chain link is
+withheld until an act fixes the performance order (the note beside the
+opening-band constants in `scripts/check_governance.py` says so). The owners
+of that fact are `scripts/check_governance.py`, `PROJECT-STATUS.md` and
+`.github/workflows/governance-docs.yml`, not this page.
 
 Three edits are required before the governance battery can see this package
 go stale, and all three are left to merge time because two of them are
@@ -209,7 +257,8 @@ collide on:
 
 Exact insertion sites are listed in `OWNER-DECISION-PACKET.md`. Until they
 land, the builder's two commands were run by hand beside the canonical
-battery this session and both pass [Observed].
+battery this session and both pass [Observed]. (Landed 2026-09-22, chain
+link excepted, per the dated note at the head of this section.)
 
 ---
 

@@ -42,7 +42,9 @@ from recommends *Clarifying*, and that recommendation does not survive the
 template's own test.
 
 **Author:** the pursuit session for bead `syzygy-dov.22` (agents), drafting
-only. No reviewer has seen these bytes.
+only. Two fresh-context rounds have read earlier bytes of this file (§Review);
+no reviewer has seen these repaired ones. (First draft: "No reviewer has seen
+these bytes.", true on 2026-09-21.)
 
 **Date:** 2026-09-21 (first draft).
 
@@ -517,7 +519,12 @@ In order. Steps 1–3 are drafting and review; only step 5 is an owner act.
    A regeneration retires any review bound to the old bytes (rule 10).
 3. **Registration** of the act phrase and its packet digest copies in
    `scripts/check_governance.py` before the act exists, so CG-7d can see a
-   stale copy. The three edits are listed in `OWNER-DECISION-PACKET.md`.
+   stale copy. **Performed** at the merge of PR #52 (`9d74185`, 2026-09-22):
+   the label, directory, subject, act-record path, `_act_subjects()` entry
+   and the packet's digest-copy row are registered; the successor-chain
+   link is withheld until the act fixes the order. (The first draft said
+   "The three edits are listed in `OWNER-DECISION-PACKET.md`"; the packet
+   never listed them — round 2 finding F4.)
 4. **The registry act** (P-72 question 2, gate bead `syzygy-dov.18`), which
    mints the briefing ceiling in the adapter-registry entry. It is a separate
    owner act over a separate subject and may be performed before or after
@@ -528,14 +535,20 @@ In order. Steps 1–3 are drafting and review; only step 5 is an owner act.
 6. **At adoption, in the same logical change (CC-REV-2):** the builder's
    adoption mode writes the two patched subjects into the tree; the act
    record lands; the generated dependency declaration is already correct
-   because it is part of the applied bytes; `check_governance.py` and the
-   CI workflow gain this package's `--check` and `--selftest`.
+   because it is part of the applied bytes; `check_governance.py` gains the
+   successor-chain link and the recorder's `--check` joins the battery. The
+   builder's `--check` and `--selftest` are already in the PROJECT-STATUS
+   battery and the hosted workflow since `9d74185` (2026-09-22), not gained
+   at adoption as the first draft said.
 7. **Implementation** is a separate bead under a separate authorization.
    Adoption of this delta authorizes no route, no test and no registry edit.
 
-**Ordering against the sibling candidate.** The scoped-attributes candidate
+**Ordering against the sibling candidates.** The scoped-attributes candidate
 (`.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/`)
-is pending against the same eleven subjects. The two specification patches
+is pending against the same eleven subjects, and as of 2026-09-23 so are
+`pwb-exact-source-render-mode-scenario/` and `pwb-opening-band-scenario/`;
+the builder composes against scoped-attributes only, and "second" below
+generalizes to "each one signed after the first". The two specification patches
 compose in either order, and the builder's `--check` verifies both
 compositions on every run and confirms the composed specification's warrants
 still validate. The generated dependency declaration does not compose: both
@@ -552,9 +565,10 @@ with only the artifact, its governing references and the acceptance criteria
 in `REVIEW-BRIEF.md`. CC-TEST-6's mutation bar applies to the builder, whose
 `--selftest` holds the fixtures.
 
-**Reviewer:** not yet assigned. The reviewer must not have authored this
-change or shared its session; this draft's author has run no review of it and
-has written none.
+**Reviewer:** a fresh-context session with no authoring context, per round
+(two so far, 2026-09-21 and 2026-09-23). The reviewer must not have authored
+this change or shared its session; this draft's author has run no review of
+it and has written none. (First draft: "not yet assigned".)
 
 **Verdict of record:** `CONFIRM WITH EXCEPTIONS`, copied exactly from
 `docs/reviews/R-PWB-MACHINE-VIEW-DELTA-RAW.md`, a fresh-context review
@@ -591,3 +605,42 @@ commit, so the manifest digest did not move and the digest quoted in
 
 **Author's standing:** this draft's author dispositioned these findings and
 authored the repairs, and therefore may run no review of them.
+
+### Round 2 — confirmation review over the repaired bytes
+
+**Reviewed bytes:** commit `9d74185`, the merge of PR #52, with the manifest
+digest quoted in `OWNER-DECISION-PACKET.md`. **Reviewer:** a fresh-context
+session with no authoring context, commissioned 2026-09-23 with the round-1
+raw and its dispositions as input and `REVIEW-BRIEF.md` as its commission.
+**Verdict of record:** `CONFIRM WITH EXCEPTIONS`, copied exactly from
+`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-RAW.md`, retained
+verbatim and never edited (CC-REV-6).
+
+F1 and F2 are discharged by the reviewed bytes and the dispositions above
+were found truthful; the patches, manifest and quoted digest are
+byte-identical to round 1 and every machine check reproduced. The
+exceptions are three prose findings; none changes the change class, the
+act count, the proposed bytes or the manifest. **Rule 10:** the repairs
+below edited `OWNER-DECISION-PACKET.md`, `SEMANTIC-DELTA.md` and
+`REVIEW-BRIEF.md` after that commit; no patch or manifest byte moved. These
+bytes carry no confirmation until a round 3 reads them.
+
+**Dispositions**, finding by finding:
+
+- **F3 (revise, non-blocking) — five sentences said no review had
+  happened.** **Accepted and repaired at each sentence**, superseded text
+  quoted and dated: the packet's date line, arm (a) and the not-offered
+  reason; this file's author and reviewer lines; the brief's "first round"
+  paragraph. The not-offered reason is now the rule-10 form plus the absence
+  of a recorder entry.
+- **F4 (revise, non-blocking) — migration step 3 pointed at a list the
+  packet does not contain, and steps 3 and 6 described as future what the
+  tree had done.** **Accepted and repaired** in "How this would be adopted":
+  step 3 is marked performed at `9d74185` with what was registered and what
+  was withheld; step 6 now says what adoption still adds and that the
+  builder's checks are already in the battery.
+- **F5 (note) — three sibling candidates, ordering advice written for
+  two.** **Accepted and repaired** with one dated sentence in each of the
+  three places, generalizing "second" to "each one signed after the first";
+  the builder still composes against scoped-attributes only, which the
+  sentence says.

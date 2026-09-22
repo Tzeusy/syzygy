@@ -114,7 +114,11 @@ pending against the same eleven subjects.
   rewrite its single `Source:` digest line. Whichever package the owner signs
   second must be regenerated with `--write` against the tree after the first
   lands, and its packet's quoted manifest digest updated before the second
-  act. This is arithmetic, not disagreement: neither package's prose touches
+  act.
+  As of 2026-09-23 the sibling population is three
+  (`pwb-exact-source-render-mode-scenario/` and `pwb-opening-band-scenario/`
+  patch the same subjects; the builder composes against scoped-attributes
+  only), so "second" reads as "each one signed after the first". This is arithmetic, not disagreement: neither package's prose touches
   the other's sentences.
 
 ## Every citing file

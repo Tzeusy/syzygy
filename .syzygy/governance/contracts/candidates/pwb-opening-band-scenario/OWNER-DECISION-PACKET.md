@@ -197,9 +197,11 @@ and
 `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json`.
 Each carries a `signedBy` value naming a pending exact owner act. This
 package edits neither, because the P-74 and P-78 rows each close by saying
-the registry entry is edited on no arm (a whole-row summary, not a
-sub-question ruling; an earlier draft tagged it "Q4" and that tag is
-withdrawn), and P-69 Q2(a) with P-72 Q2 travel as one superseding
+the registry entry is edited on no arm — P-78: "The registry entry **is**
+edited on no arm."; P-74: "The consent record, the registry entry and
+PWB-REQ-005 **are** edited on no arm." (each its own sentence; a whole-row
+summary, not a sub-question ruling; an earlier draft tagged it "Q4" and
+that tag is withdrawn), and P-69 Q2(a) with P-72 Q2 travel as one superseding
 registry-entry act at gate bead `syzygy-dov.18`. That the repair belongs
 there is **[Inferred]** — no record read this session says so in those
 words. `IMPACT-LEDGER.md` carries the full sweep.
@@ -211,12 +213,20 @@ words. `IMPACT-LEDGER.md` carries the full sweep.
 None of it performed by this package.
 
 1. Fresh-context review against `REVIEW-BRIEF.md`; raw output retained
-   verbatim, bytes frozen (rule 10). **Done once** — CONFIRM WITH
-   EXCEPTIONS, three notes, all repaired in prose. The verdict is bound to
-   the reviewed commit; a confirmation over the repaired bytes would need a
-   fresh review, which is yours to require or waive.
-2. You answer OQ-1 to OQ-5. An answer to OQ-2 or OQ-3 changes the proposed
-   bytes and retires the review.
+   verbatim, bytes frozen (rule 10). **Done twice** — round 1 CONFIRM WITH
+   EXCEPTIONS, three notes, all repaired in prose; round 2 (2026-09-23, over
+   the repaired bytes at `9d74185`) REVISE, two false sentences in the impact
+   ledger and five notes, all repaired in prose. Each verdict is bound to
+   the commit it reviewed; a round 3 over these bytes is the next step, and
+   only a round that confirms them lets a phrase be offered.
+2. You answer OQ-1 to OQ-5. An answer to OQ-2 or OQ-3 may change the
+   proposed bytes, which would retire the review. **Done, 2026-09-23**:
+   OQ-1 and OQ-2 in
+   `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md`,
+   OQ-3 to OQ-5 in
+   `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OPEN-QUESTIONS-2026-09-23-DECISION.md`;
+   none changed a proposed byte, and OQ-5's block order is a design value
+   for the implementation slices, not a sentence this package writes.
 3. A dedicated amendment act of yours naming this manifest's digest, with a
    dedicated record and one aggregate section in `ACCEPTANCE-ACT-RECORD.md`,
    written by a recorder script.
@@ -234,6 +244,12 @@ patched twice, and the selftest asserts that collision.
 ---
 
 ## Registration at merge
+
+**As of 2026-09-23 this section describes the branch as drafted, not the
+tree.** The edits below landed at the merge of PR #52 (`9d74185`,
+2026-09-22), except the successor-chain link, deliberately withheld until an
+act fixes the performance order; `scripts/check_governance.py`,
+`PROJECT-STATUS.md` and the hosted workflow own that fact, not this page.
 
 Three edits were deliberately **not** made on this branch: two of them are
 coupled by CG-26 to a check-count sentence that every parallel package would
@@ -274,7 +290,8 @@ plus the CG-26-coupled check-count sentence.
 same two commands as two named CI steps.
 
 Until they land, both commands were run by hand beside the canonical battery
-this session and both pass [Observed]. `--check` reports that the manifest
+this session and both pass [Observed]. (They landed 2026-09-22; see the
+dated note at the head of this section.) `--check` reports that the manifest
 matches eleven proposed behavior subjects, that the proposed declaration
 equals its regeneration, and that the specification patch composes with lane
 B's in both orders.

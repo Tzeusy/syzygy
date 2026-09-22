@@ -5,8 +5,15 @@
 > edit. A commit, a merged pull request, a review, a manifest, silence or a
 > general "approved" performs no act.
 
-Date: 2026-09-21 (first draft; no review has been run against these bytes,
-and no verdict exists for them).
+Date: 2026-09-21 (first draft). **Status as of 2026-09-23:** reviewed twice
+in fresh context — round 1 `CONFIRM WITH EXCEPTIONS`
+(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-RAW.md`), round 2 over the repaired
+bytes at `9d74185` `CONFIRM WITH EXCEPTIONS`
+(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-RAW.md`); each round's
+exceptions were prose, repaired after it, so the bytes you are reading carry
+no confirmation (rule 10) until a round confirms them. The first draft said
+here "no review has been run against these bytes, and no verdict exists for
+them"; true on 2026-09-21, superseded since.
 
 Ruling of record: **P-72** (question 1) and **P-76** (question 3), both ruled
 arm A on 2026-09-21 in
@@ -134,9 +141,13 @@ settled. Arm (b) below is how you change any of them.
 
 **Does this package, as drafted, realize your P-72 and P-76 rulings?**
 
-**(a) Yes — send it to fresh-context review as drafted.** The review runs per
-`REVIEW-BRIEF.md`; findings are repaired; the manifest is regenerated; only
-then is a sign-off phrase offered to you.
+**(a) Yes — as drafted.** Fresh-context review runs per `REVIEW-BRIEF.md`;
+findings are repaired; a sign-off phrase is offered to you only once a round
+confirms the repaired bytes and a recorder entry exists. (Two rounds have run
+as of 2026-09-23, see the date line; the patches and manifest never moved, so
+no regeneration was needed. The first draft of this arm read "send it to
+fresh-context review as drafted … the manifest is regenerated", written
+before any round ran.)
 
 **(b) Yes, with named changes.** Name the rows in the table above you want
 different — a category name, a member, the route shape, the closure rule, or
@@ -160,9 +171,13 @@ SIGN OFF PWB MACHINE-VIEW AMENDMENT: 2a49a8d1d473d4347dadda1489488bc6556102c14e9
 ```
 
 It is written here so that the governance checks can see it go stale, and it
-is **not offered**: no fresh-context review has confirmed these bytes, and no
-recorder exists that would accept it. If you reply with this phrase now,
-nothing is performed.
+is **not offered**: the two fresh-context rounds confirm the commits they
+reviewed, not these repaired bytes (rule 10), and the behavior recorder
+(`scripts/record_pwb_behavior_amendment_acts.py`, added 2026-09-23) carries
+no entry for this package yet. If you reply with this phrase now, nothing is
+performed. (The first draft gave the reason as "no fresh-context review has
+confirmed these bytes, and no recorder exists"; the first half is now the
+rule-10 form above.)
 
 ## Two acts, and why their order is free
 
@@ -188,7 +203,10 @@ The sibling candidate
 `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/` is
 pending against the same eleven subjects. The two specification patches
 compose in either order and the builder verifies both compositions on every
-run. The generated dependency declaration does not compose — both packages
+run. As of 2026-09-23 two more candidates patch the same subjects
+(`pwb-exact-source-render-mode-scenario/`, `pwb-opening-band-scenario/`),
+which this builder does not compose against, so read "second" below as
+"each one signed after the first". The generated dependency declaration does not compose — both packages
 rewrite its one `Source:` digest line — so **whichever package you sign
 second must be regenerated against the tree after the first lands**, and its
 packet's quoted digest updated before its act. Neither package's prose
