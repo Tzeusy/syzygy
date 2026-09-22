@@ -4,7 +4,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-import { buildButlersPocModel } from './model.js';
+import { buildPocModel } from './model.js';
+import { BUTLERS_POC_SEEDS } from './poc-seeds.js';
 import { buildTestArtifactRecordFromJUnit } from './test-artifact-verification.js';
 
 // Gated exactly like the existing SYZYGY_POC_BUTLERS_REPO-gated live
@@ -56,7 +57,8 @@ describeLive('live real focused-pytest verification (SYZYGY_POC_BUTLERS_REPO gat
       // commit — the observer's own commit-discovery logic is covered by
       // worker-change-observation.test.ts; this proves the *composition*
       // with a genuinely captured artifact end-to-end.
-      const model = buildButlersPocModel({
+      const model = buildPocModel({
+        seeds: BUTLERS_POC_SEEDS,
         repoRoot,
         repositoryRevision: repositoryCommit,
         observerRevision: repositoryCommit,

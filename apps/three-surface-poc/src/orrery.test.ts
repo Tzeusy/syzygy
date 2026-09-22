@@ -1,7 +1,7 @@
 import { rmSync } from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { buildButlersPocModel } from '@syzygy/three-surface-poc-core';
+import { BUTLERS_POC_SEEDS, buildPocModel } from '@syzygy/three-surface-poc-core';
 
 import { renderOrreryPage } from './orrery.js';
 import { buildFixtureModel, fixtureRepoWithGit } from './test-model-fixture.js';
@@ -91,7 +91,8 @@ describe('Orrery', () => {
 
   it('renders Unknown with a reason, never an empty-but-green map, when code structure fails (POC-REQ-003 rendering)', () => {
     const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
-    const model = buildButlersPocModel({
+    const model = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
       repoRoot,
       repositoryRevision: '0000000000000000000000000000000000dead',
       observerRevision: revision,
@@ -101,6 +102,24 @@ describe('Orrery', () => {
     const html = renderOrreryPage(model);
     expect(html).toContain('data-unknown-disclosure="region:code-structure"');
     expect(html).not.toContain('id="orrery-canvas"');
+    expect(html).toContain('observed-file denominator: Unknown (code structure was not observed)');
+  });
+
+  it('renders an explicit denominator-bearing Unknown graph when no seeds are supplied', () => {
+    const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
+    const model = buildPocModel({
+      repoRoot,
+      repositoryRevision: revision,
+      observerRevision: revision,
+      evaluation: { snapshot: 'empty-seed-orrery', asOf: '2026-09-22T00:00:00Z' },
+    });
+    expect(model.orrery.kind).toBe('unknown');
+    if (model.orrery.kind !== 'unknown') throw new Error('unreachable');
+    const html = renderOrreryPage(model);
+    expect(html).toContain('data-unknown-disclosure="region:code-structure"');
+    expect(html).toContain(`observed-file denominator: ${model.codeStructure.kind === 'observed' ? model.codeStructure.files.length : 0}`);
+    expect(html).not.toContain('id="orrery-canvas"');
+    expect(html).not.toContain('data-parity-field="orrery-mapped-region"');
   });
 
   it('two renders of one observation produce identical layout-relevant data (POC-REQ-050)', () => {

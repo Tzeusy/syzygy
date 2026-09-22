@@ -1,6 +1,5 @@
 import { escapeHtml, type Route } from '@syzygy/cap1-daemon';
 import {
-  ARTIFACT_PATHS,
   buildMaterializationPacket,
   clearMaterializationRecordFile,
   materializeWorkItem,
@@ -28,12 +27,26 @@ const TRAJECTORY_BACK_PATH = '/trajectory' as const;
 export const MATERIALIZE_ATTRIBUTION =
   'syzygy-three-surface-poc:human-triggered-materialize-action' as const;
 
-export function buildTrajectoryMaterializationPacket(model: PocModel): MaterializationPacket {
-  return buildMaterializationPacket({
-    targetRepoRoot: model.project.root,
-    proposalPath: ARTIFACT_PATHS.proposal,
-    designPath: ARTIFACT_PATHS.design,
-  });
+function materializationPathsFromModel(
+  model: PocModel,
+): { readonly proposalPath: string; readonly designPath: string } | null {
+  const proposalPath = model.proposedWork.proposal.path;
+  if (proposalPath === '') return null;
+
+  const intent = model.entities.find((entity) => entity.kind === 'intent');
+  const designPath = intent?.provenance.find(
+    (provenance) =>
+      provenance.kind === 'repository-file' &&
+      provenance.source !== proposalPath &&
+      provenance.source !== model.proposedWork.delta.path,
+  )?.source;
+  return designPath === undefined ? null : { proposalPath, designPath };
+}
+
+export function buildTrajectoryMaterializationPacket(model: PocModel): MaterializationPacket | null {
+  const paths = materializationPathsFromModel(model);
+  if (paths === null) return null;
+  return buildMaterializationPacket({ targetRepoRoot: model.project.root, ...paths });
 }
 
 export function currentMaterializedBeadId(model: PocModel): string | null {
@@ -54,6 +67,13 @@ export const MATERIALIZE_PANEL_STYLE = `
 /** Preview panel — read-only, embedded on the Trajectory page (AC1). */
 export function renderMaterializePanel(model: PocModel, mountPrefix = ''): string {
   const packet = buildTrajectoryMaterializationPacket(model);
+  if (packet === null) {
+    return `
+      <section class="materialize-panel" aria-label="Materialization unavailable" data-materialize-panel>
+        <h2>Materialization unavailable</h2>
+        <p class="materialize-status epistemic epistemic-unknown" data-unknown-disclosure="materialization">Unknown — no seed-backed proposed-work graph was evaluated for this model, so the human-triggered materialization action is disabled.</p>
+      </section>`;
+  }
   const beadId = currentMaterializedBeadId(model);
 
   const status =
@@ -116,6 +136,12 @@ export interface MaterializeRoutesOptions {
 
 function runMaterialize(options: MaterializeRoutesOptions): MaterializeResult {
   const packet = buildTrajectoryMaterializationPacket(options.getModel());
+  if (packet === null) {
+    return {
+      kind: 'unknown',
+      reason: 'no seed-backed proposed-work graph was evaluated; materialization is disabled',
+    };
+  }
   const dir = options.stateDir();
   return materializeWorkItem({
     targetRepoRoot: options.targetRepoRoot,

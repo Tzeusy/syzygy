@@ -5,7 +5,8 @@ import { join, resolve } from 'node:path';
 
 import { createDaemon } from '@syzygy/cap1-daemon';
 import {
-  buildButlersPocModel,
+  BUTLERS_POC_SEEDS,
+  buildPocModel,
   evaluateBodyReadAuthority,
   PocObservationError,
   readMaterializationRecordFile,
@@ -99,7 +100,7 @@ if (parsed.kind === 'help') {
 
         if (repositoryRevision !== '' && observerRevision !== '') {
           const snapshot = [
-            `butlers:${repositoryRevision}`,
+            `${BUTLERS_POC_SEEDS.project.repositoryId}:${repositoryRevision}`,
             `working-tree:${workingTreeDigest}`,
             `observer:${observerRevision}`,
           ].join('|');
@@ -110,7 +111,7 @@ if (parsed.kind === 'help') {
           );
           const stateDir = resolve(parsed.config.stateDir ?? defaultStateDir);
 
-          function buildModel(): ReturnType<typeof buildButlersPocModel> {
+          function buildModel(): ReturnType<typeof buildPocModel> {
             let materializationRecord;
             try {
               materializationRecord = readMaterializationRecordFile(stateDir);
@@ -168,7 +169,8 @@ if (parsed.kind === 'help') {
               evaluationId: `evaluation:pwb-walkthrough-judgment:${asOf}`,
               evaluationInstant: asOf,
             });
-            return buildButlersPocModel({
+            return buildPocModel({
+              seeds: BUTLERS_POC_SEEDS,
               repoRoot,
               repositoryRevision,
               observerRevision,
@@ -235,7 +237,10 @@ if (parsed.kind === 'help') {
             }
           } catch (cause) {
             if (cause instanceof PocObservationError) {
-              const suffix = cause.artifactPath === undefined ? '' : `: ${cause.artifactPath}`;
+              const suffix = [cause.artifactPath, cause.detail]
+                .filter((part): part is string => part !== undefined)
+                .map((part) => `: ${part}`)
+                .join('');
               process.stderr.write(`syzygy POC: observation failed (${cause.kind})${suffix}\n`);
             } else {
               process.stderr.write('syzygy POC: observation failed (unexpected-failure)\n');

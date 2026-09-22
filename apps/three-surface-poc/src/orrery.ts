@@ -121,7 +121,13 @@ export function renderOrreryPage(model: PocModel, mountPrefix = ''): string {
   let body: string;
 
   if (orrery.kind === 'unknown') {
-    body = `<p class="unavailable-notice" data-unknown-disclosure="region:code-structure">Unknown — ${escapeHtml(orrery.reason)}. The exact tables below remain the honest record of what is known.</p>
+    const observedFileDenominator =
+      orrery.observedFileCount === undefined
+        ? 'Unknown (code structure was not observed)'
+        : String(orrery.observedFileCount);
+    const mappedFileCount = orrery.mappedFileCount === undefined ? 'Unknown' : String(orrery.mappedFileCount);
+    const unmappedFileCount = orrery.unmappedFileCount === undefined ? 'Unknown' : String(orrery.unmappedFileCount);
+    body = `<p class="unavailable-notice" data-unknown-disclosure="region:code-structure">Unknown — ${escapeHtml(orrery.reason)} The seed-backed map is unavailable; observed-file denominator: ${escapeHtml(observedFileDenominator)}; mapped: ${escapeHtml(mappedFileCount)}; unmapped: ${escapeHtml(unmappedFileCount)}. The exact tables below remain the honest record of what is known.</p>
     ${exactTablesSection(model)}`;
   } else {
     const island: OrreryDataIsland = {
@@ -154,7 +160,7 @@ export function renderOrreryPage(model: PocModel, mountPrefix = ''): string {
   return pageShell({
     title: 'Orrery · Syzygy three-surface POC',
     current: 'orrery',
-    eyebrow: `Orrery · Butlers ${model.project.revision.slice(0, 12)}`,
+    eyebrow: `Orrery · ${escapeHtml(model.project.name)} ${model.project.revision.slice(0, 12)}`,
     heading: 'Where the code lives',
     lede: 'A deterministic spatial map over observed directory structure and declared capability-to-code mappings. Unmapped code stays visibly Unknown.',
     extraStyle: ORRERY_STYLE,

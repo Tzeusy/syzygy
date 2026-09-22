@@ -1,4 +1,5 @@
 export * from './model.js';
+export * from './poc-seeds.js';
 export * from './code-structure.js';
 export * from './work-items.js';
 export * from './worker-change-observation.js';
