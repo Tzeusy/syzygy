@@ -34,7 +34,11 @@ export interface SubstrateFooterInput {
    * entry whose `observed` differs from `expected` renders as explicit
    * skew, never silently folded into the identity line above (N4: "if a
    * surface answers at a different evaluation than the others, render
-   * that skew explicitly"). */
+   * that skew explicitly"). Unreachable on the current `buildPocModel` path
+   * as of this writing — every instant and revision there derives from one
+   * shared input, so `observed === expected` always — and is exercised only
+   * by spread-overridden test fixtures; the check stays wired defensively
+   * for the day a surface's substrate is captured independently. */
   readonly skewChecks: readonly SubstrateSkewCheck[];
 }
 
