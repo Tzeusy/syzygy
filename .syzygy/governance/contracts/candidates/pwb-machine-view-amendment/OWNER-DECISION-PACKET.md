@@ -5,15 +5,17 @@
 > edit. A commit, a merged pull request, a review, a manifest, silence or a
 > general "approved" performs no act.
 
-Date: 2026-09-21 (first draft). **Status as of 2026-09-23:** reviewed twice
-in fresh context — round 1 `CONFIRM WITH EXCEPTIONS`
+Date: 2026-09-21 (first draft). **Status as of 2026-09-23:** reviewed three
+times in fresh context — round 1 `CONFIRM WITH EXCEPTIONS`
 (`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-RAW.md`), round 2 over the repaired
 bytes at `9d74185` `CONFIRM WITH EXCEPTIONS`
-(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-RAW.md`); each round's
-exceptions were prose, repaired after it, so the bytes you are reading carry
-no confirmation (rule 10) until a round confirms them. The first draft said
-here "no review has been run against these bytes, and no verdict exists for
-them"; true on 2026-09-21, superseded since.
+(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-RAW.md`), round 3 over
+the repaired bytes at `76b4beb` `CONFIRM WITH EXCEPTIONS`
+(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-2-RAW.md`); each
+round's exceptions were prose, repaired after it, so the bytes you are
+reading carry no confirmation (rule 10) until a round confirms them. The
+first draft said here "no review has been run against these bytes, and no
+verdict exists for them"; true on 2026-09-21, superseded since.
 
 Ruling of record: **P-72** (question 1) and **P-76** (question 3), both ruled
 arm A on 2026-09-21 in
@@ -189,7 +191,8 @@ rule-10 form above.)
    manifest bytes, applies the two patches with the builder's
    `--apply --at-adoption`, confirms every row now hashes the tree, writes
    the dedicated record and the aggregate section of
-   `ACCEPTANCE-ACT-RECORD.md`, and registers the chain link, in one change.
+   `ACCEPTANCE-ACT-RECORD.md`; the same change registers the chain link in
+   `check_governance.py`.
 
 Either may be performed first. If the behavior act is performed alone, the
 briefing view is named and may not be served. If the registry act is
@@ -203,14 +206,22 @@ The sibling candidate
 `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/` is
 pending against the same eleven subjects. The two specification patches
 compose in either order and the builder verifies both compositions on every
-run. As of 2026-09-23 two more candidates patch the same subjects
-(`pwb-exact-source-render-mode-scenario/`, `pwb-opening-band-scenario/`),
-which this builder does not compose against, so read "second" below as
-"each one signed after the first". The generated dependency declaration does not compose — both packages
-rewrite its one `Source:` digest line — so **whichever package you sign
-second must be regenerated against the tree after the first lands**, and its
-packet's quoted digest updated before its act. Neither package's prose
-touches the other's sentences, so this is a rebuild, not a disagreement.
+run. Re-derived at `76b4beb` (2026-09-23), five candidates carry a
+`proposed/spec.md.patch` against the PWB `spec.md` (this one, lane B,
+`pwb-exact-source-render-mode-scenario/`, `pwb-opening-band-scenario/` and
+`pwb-missing-currency-disclosure-scenario/`); this builder composes against
+lane B only, so read "second" below as "each one signed after the first".
+(An earlier sentence here counted three; it was false when committed,
+§Review round 3 F6.) The generated dependency declaration does not compose
+— both packages rewrite its one `Source:` digest line — so **whichever
+package you sign second must be regenerated against the tree after the
+first lands**, and its packet's quoted digest updated before its act.
+`--write` repairs that line only and does not make a sibling's
+specification patch apply. Neither package's prose touches the other's
+sentences, so this is a rebuild, not a disagreement. The order itself you
+have already fixed, in
+`.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md`
+§6; this packet cites it and does not restate it.
 
 ## How to check this packet
 

@@ -545,18 +545,26 @@ In order. Steps 1–3 are drafting and review; only step 5 is an owner act.
 
 **Ordering against the sibling candidates.** The scoped-attributes candidate
 (`.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/`)
-is pending against the same eleven subjects, and as of 2026-09-23 so are
-`pwb-exact-source-render-mode-scenario/` and `pwb-opening-band-scenario/`;
-the builder composes against scoped-attributes only, and "second" below
-generalizes to "each one signed after the first". The two specification patches
-compose in either order, and the builder's `--check` verifies both
-compositions on every run and confirms the composed specification's warrants
-still validate. The generated dependency declaration does not compose: both
+is pending against the same eleven subjects. Re-derived at `76b4beb`
+(2026-09-23), five candidates carry a `proposed/spec.md.patch` against the
+PWB `spec.md`: this one, scoped-attributes,
+`pwb-exact-source-render-mode-scenario/`, `pwb-opening-band-scenario/` and
+`pwb-missing-currency-disclosure-scenario/` (an earlier sentence here said
+three; it was false when committed, §Review round 3 F6). The builder
+composes against scoped-attributes only, and "second" below generalizes to
+"each one signed after the first". The two specification patches compose in
+either order, and the builder's `--check` verifies both compositions on
+every run and confirms the composed specification's warrants still
+validate. The generated dependency declaration does not compose: both
 packages rewrite its one `Source:` digest line, so **whichever package the
 owner signs second must be regenerated with `--write` against the tree after
-the first lands**, and its packet digest updated before the second act. This
-is mechanical, not a conflict of meaning: neither package's prose touches the
-other's sentences.
+the first lands**, and its packet digest updated before the second act;
+`--write` repairs that line only and does not make a sibling's
+specification patch apply. This is mechanical, not a conflict of meaning:
+neither package's prose touches the other's sentences. The order itself is
+the owner's, fixed in
+`.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md`
+§6, which this delta cites and does not restate.
 
 ## Review
 
@@ -566,9 +574,9 @@ in `REVIEW-BRIEF.md`. CC-TEST-6's mutation bar applies to the builder, whose
 `--selftest` holds the fixtures.
 
 **Reviewer:** a fresh-context session with no authoring context, per round
-(two so far, 2026-09-21 and 2026-09-23). The reviewer must not have authored
-this change or shared its session; this draft's author has run no review of
-it and has written none. (First draft: "not yet assigned".)
+(three so far: 2026-09-21, and two on 2026-09-23). The reviewer must not
+have authored this change or shared its session; this draft's author has
+run no review of it and has written none. (First draft: "not yet assigned".)
 
 **Verdict of record:** `CONFIRM WITH EXCEPTIONS`, copied exactly from
 `docs/reviews/R-PWB-MACHINE-VIEW-DELTA-RAW.md`, a fresh-context review
@@ -635,7 +643,9 @@ bytes carry no confirmation until a round 3 reads them.
   of a recorder entry.
 - **F4 (revise, non-blocking) — migration step 3 pointed at a list the
   packet does not contain, and steps 3 and 6 described as future what the
-  tree had done.** **Accepted and repaired** in "How this would be adopted":
+  tree had done.** **Accepted and repaired** in "Migration / supersession
+  plan" (an earlier disposition named a heading this file does not have,
+  round 3 F7):
   step 3 is marked performed at `9d74185` with what was registered and what
   was withheld; step 6 now says what adoption still adds and that the
   builder's checks are already in the battery.
@@ -644,3 +654,62 @@ bytes carry no confirmation until a round 3 reads them.
   three places, generalizing "second" to "each one signed after the first";
   the builder still composes against scoped-attributes only, which the
   sentence says.
+
+### Round 3 — second confirmation review, over the round-2 repairs
+
+**Reviewed bytes:** commit `76b4beb`, with the manifest digest quoted in
+`OWNER-DECISION-PACKET.md`. **Reviewer:** a fresh-context session with no
+authoring context, commissioned 2026-09-23 with the round-1 and round-2
+raws and their dispositions as input and `REVIEW-BRIEF.md` as its
+commission. **Verdict of record:** `CONFIRM WITH EXCEPTIONS`, copied
+exactly from `docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-2-RAW.md`,
+retained verbatim and never edited (CC-REV-6).
+
+F3 and F4 were found discharged with truthful dispositions and every quoted
+superseded sentence byte-equal to its source; F5's generalization was found
+present in all three places but its count false on arrival (F6). The
+patches, manifest and quoted digest are byte-identical to rounds 1 and 2;
+every machine check reproduced, with four mutations caught. **Rule 10:**
+the repairs below edited `OWNER-DECISION-PACKET.md`, `IMPACT-LEDGER.md`,
+`SEMANTIC-DELTA.md` and `REVIEW-BRIEF.md` after that commit; no patch or
+manifest byte moved. These bytes carry no confirmation until a round 4
+reads them.
+
+**Dispositions**, finding by finding:
+
+- **F6 (revise, non-blocking) — the F5 repair counted three siblings; the
+  tree at `76b4beb` held four, the fourth landed before the repair was
+  committed.** **Accepted and repaired** in all three places: the count is
+  restated as a re-derived figure with its predicate and commit (five
+  candidates carrying a `proposed/spec.md.patch` against the PWB `spec.md`,
+  at `76b4beb`, this one included), the superseded count is named at the
+  sentence, and the two limits the reviewer asked for are stated —
+  `--write` repairs only the generated `Source:` line, and the order is the
+  owner's. The composition figures the reviewer reported were re-derived
+  this session before being written (this package's patch with each of the
+  four siblings, both orders, one digest per pair; missing-currency before
+  scoped-attributes fails). The two over-long lines are wrapped.
+- **F7 (note) — the round-2 disposition of F4 named a heading that does not
+  exist.** **Accepted and repaired**: it now names "Migration / supersession
+  plan", the heading the repaired steps sit under, and says what it said
+  before.
+- **F8 (note) — the packet credited the recorder with registering the chain
+  link, which the recorder's own docstring disclaims.** **Accepted and
+  repaired** in the packet's adoption list: the recorder writes the
+  dedicated record and the aggregate section, and the same change registers
+  the chain link in `check_governance.py`, which is what "How this would be
+  adopted" step 6 already said.
+- **F9 (note) — the three ordering sections did not cite the owner's
+  2026-09-23 landing-order answer.** **Accepted and repaired** with one
+  sentence in each of the three ordering sections citing
+  `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md`
+  §6 by path; the order is not restated, because the record owns it.
+- **Open question 6, as the reviewer's note:** the package identifies the
+  briefing ceiling's subject at the level of route and evaluation and is
+  silent below that; whether one response is scoped to one claim id is not
+  decidable from these bytes. Recorded here as the reviewer's reading, not
+  as a decision; the question stays held for the owner in the 2026-09-23
+  open-questions record.
+
+**Author's standing:** this draft's author dispositioned these findings and
+authored the repairs, and therefore may run no review of them.

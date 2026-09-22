@@ -7,14 +7,20 @@
 > a review and carries no verdict. Only a dedicated owner act naming this
 > package's manifest digest could give the proposed bytes effect.
 
-**Two reviews have been run against this brief.** Round 1 returned CONFIRM
-WITH EXCEPTIONS on the commit its raw output names — three notes, no
-blocking finding; the raw is
+**Three reviews have been run against this brief.** Round 1 returned
+CONFIRM WITH EXCEPTIONS on the commit its raw output names — three notes,
+no blocking finding; the raw is
 `docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md`. Round 2, over the
 repaired bytes at `9d74185`, returned REVISE — two false sentences in
 `IMPACT-LEDGER.md` and five notes; the raw is
-`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-RAW.md`. The
-dispositions of both are in `SEMANTIC-DELTA.md` §Review. The repairs that
+`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-RAW.md`. Round
+3, over the repaired bytes at `76b4beb`, returned REVISE — three revise
+findings and five notes; the raw is
+`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-2-RAW.md`. A
+parallel independent round over the round-2 bytes returned CONFIRM WITH
+EXCEPTIONS
+(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-B-RAW.md`).
+The dispositions of all are in `SEMANTIC-DELTA.md` §Review. The repairs that
 followed each round edited prose only, and they are **not** covered by that
 round's verdict (rule 10). This brief stays live: it is the commission for any further
 review, including one over the repaired bytes. The drafting agent did not

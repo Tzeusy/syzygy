@@ -444,11 +444,13 @@ rules them so, each still needs a stated position relative to the other two
 rather than three independent claims on 'first'." Against that sits
 PWB-REQ-010's own signed sentence, that Polaris "SHALL **first** present
 Butlers' purpose, promises, non-goals, architecture, V1 scope and success
-criteria", and M2 slice 2's target as the M4 funnel's Q7 cell renders it,
-that "the page's first human-visible instant moves from 58.0% depth into the
-opening band" — M4's words, not M2's; M2's own are its step 4, "The first
-human-visible instant on the page appears before the first catalog section",
-and its 58.0% depth measurement (§Review finding 6). The scenario says only
+criteria", and M2 slice 2's own stated target, in its Q6 cell
+(`docs/design/POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL.md` line 50), that "the
+page's first human-visible instant moves from 58.0% depth into the opening
+band" — M2's words, which M4's Q7 cell (line 119) quotes as M2's "own honest
+target"; beside it sit M2's success criterion 4, "The first human-visible
+instant on the page appears before the first catalog section", and its
+58.0% depth measurement (§Review findings 6 and 11). The scenario says only
 that the aggregate "displaces and defers no project-level category of this
 requirement", which is compatible with either order and settles neither. The
 reading not taken: fixing an order in the specification, which would decide an
@@ -518,9 +520,9 @@ form the corpus writes (§Review finding 4).
   PWB truth-and-readiness amendment manifest. **Any** amendment to this
   specification stales both pins, this package's included; the owner has
   ruled, in the P-74 and P-78 rows, that the registry entry is edited on no
-  arm of those moves — P-78 closing "The registry entry **is** edited on no
+  arm of those moves — P-78 closing "The registry entry is edited on no
   arm." and P-74 "The consent record, the registry entry and PWB-REQ-005
-  **are** edited on no arm.", each row's own sentence (§Review finding 9),
+  are edited on no arm.", each row's own sentence (§Review finding 9),
   each closing its row's whole "What it means" cell, not one scoped to a
   numbered sub-question, so the "Q4" tag an earlier draft carried is
   withdrawn (§Review finding 3) while the ruling stands —
@@ -608,8 +610,8 @@ claim above is itself part of what is reviewed.
 **Reviewer:** a fresh-context session with no authoring context, per
 CC-REV-1. The drafting agent did not review its own work.
 
-**Verdict:** **CONFIRM WITH EXCEPTIONS**. The word is copied exactly from
-the retained raw output, never restated.
+**Round 1 verdict:** **CONFIRM WITH EXCEPTIONS**. The word is copied
+exactly from the retained raw output, never restated.
 
 **Raw output:** `docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md`,
 retained verbatim and never edited (CC-REV-6).
@@ -697,9 +699,14 @@ confirmation until a round 3 reads them.
    unpatched one fails) and that a twelfth file is outside the bound subject.
    No directory scan was added: the manifest is the bound subject, and a
    scan would make the act's argument depend on files it does not hash.
-6. **A paraphrase presented as a quotation (OQ-5).** **Accepted and
-   repaired.** The sentence is now attributed to the M4 funnel's Q7 cell, and
-   M2's own step-4 sentence is quoted beside it.
+6. **A paraphrase presented as a quotation (OQ-5).** **Accepted in round
+   2; that repair withdrawn in round 3.** The round-2 repair attributed the
+   sentence to the M4 funnel's Q7 cell as "M4's words, not M2's"; round 3
+   re-read the source and found the sentence in M2's own Q6 cell (line 50),
+   which M4 quotes, so the original attribution to M2 had been correct and
+   the repair made it false (round 3 finding 11). The sentence is now
+   attributed to M2 with its line, M4's quotation of it is noted, and M2's
+   success criterion 4 (not "step 4") is quoted beside it.
 7. **The registration sentences were stale at `9d74185`.** **Accepted and
    marked at the sentence.** `IMPACT-LEDGER.md` and `OWNER-DECISION-PACKET.md`
    now carry a dated note that the three edits landed at the merge of PR #52
@@ -710,9 +717,28 @@ confirmation until a round 3 reads them.
    byte-identical.
 9. **Quotation drift on "is edited on no arm" for P-74.** **Accepted and
    repaired** in all three prose files: each row's own closing sentence is
-   quoted, verbatim.
+   quoted. The `**is**` / `**are**` emphasis those quotations carried until
+   2026-09-23 was the round-2 raw's own rendering, not the record's, and is
+   dropped in all six sites (round 3 finding 12).
 10. **"changes the proposed bytes" overstated.** **Accepted and repaired.**
     `OWNER-DECISION-PACKET.md` now says "may change", matching this file.
+
+### A parallel independent round 2, retained beside it
+
+Added 2026-09-23 after round 3 was dispatched over `76b4beb`, so round 3's
+verdict does not cover this paragraph. A second lead session dispatched its
+own fresh-context confirmation over the same package bytes at main commit
+`dfb605c` (byte-identical to `9d74185` for this package) before the two
+sessions coordinated. Its raw is retained verbatim as
+`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-B-RAW.md`
+(CC-REV-6; a second reviewer run is a second file, never a replacement).
+**Verdict:** **CONFIRM WITH EXCEPTIONS**, copied exactly. Its finding A is
+the P-74 quotation drift that round 2's finding 9 also found, repaired
+above; its finding B is editorial and needs no change. It did not test the
+continuation-form sweep or the directory-scan sentence, so the two REVISE
+findings of round 2 stand as the verdict of record for that commit's bytes:
+two independent readers of the same bytes returned different words, and
+this file records both rather than the more favourable one.
 
 **What no round-2 disposition changed.** No patch byte, no manifest row, no
 requirement, no scenario text. All five open questions are now answered by
@@ -727,3 +753,70 @@ the `syzygy-dov.26` package; OQ-5 is a design value for slices 2 and 3
 (project-level categories first, then the band: currency probe, then the
 Unknown aggregate), which the scenario's wording is compatible with and
 which this package does not write into the specification.
+
+### Round 3 — re-review over the round-2 repairs
+
+**Reviewed bytes:** commit `76b4beb`, with the manifest digest quoted in
+`OWNER-DECISION-PACKET.md`. **Reviewer:** a fresh-context session with no
+authoring context, commissioned 2026-09-23 with the round-1 and round-2
+raws and their dispositions as input and `REVIEW-BRIEF.md` as its
+commission. **Verdict:** **REVISE**, copied exactly from the retained raw
+output. **Raw output:**
+`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-2-RAW.md`,
+retained verbatim and never edited (CC-REV-6).
+
+The reviewer found round-2 findings 4, 5, 7, 8 and 10 discharged with
+truthful dispositions, 9 discharged in substance, and 6 not discharged
+because the repair had replaced a correct attribution with a false one;
+reproduced every figure of finding 4 by two methods; found no byte of the
+patches, the manifest or the builder moved in three rounds; and checked the
+five owner answers against their records. The REVISE rests on three new
+findings (11, 13, 14); findings 12 and 15–18 are notes. **Rule 10:** the
+repairs below edited `SEMANTIC-DELTA.md`, `IMPACT-LEDGER.md`,
+`OWNER-DECISION-PACKET.md` and `REVIEW-BRIEF.md` after that commit; no
+patch or manifest byte moved. These bytes carry no confirmation until a
+round 4 reads them.
+
+**Dispositions**, finding by finding:
+
+11. **The round-2 repair for finding 6 turned a correct quotation into a
+    false attribution.** **Accepted and repaired**, above at OQ-5 and in
+    disposition 6: the sentence is M2's (Q6 cell, line 50), M4 quotes it,
+    and the "step 4" label now reads "success criterion 4". Verified at
+    source this session before the repair was written.
+12. **Emphasis markers inside verbatim quotations.** **Accepted and
+    repaired** in all six sites across the three prose files; disposition 9
+    no longer says "verbatim".
+13. **The class-5 remainder is 39 by the ledger's own arithmetic, stated
+    as 37.** **Accepted and repaired** in `IMPACT-LEDGER.md` class 5: the
+    41 citers were re-swept at `a4a3451` this session and every hit placed;
+    the remainder is stated as 41 less the two class-1 files, the paths
+    behind "dated evidence records (12)" are named, and the two unplaced
+    citers (`docs/PWB-IMPLEMENTATION-PLAN.md` and
+    `docs/reviews/2026-09-09-polaris-editorial-repair.md`) have a kind of
+    their own. The impact conclusion is unchanged: neither carries an
+    obligation the scenario changes.
+14. **The packet head reported one review and one verdict.** **Accepted and
+    repaired**: the head now names every round, its verdict word and its
+    raw, says this file owns the dispositions, and says a round 4 is what
+    the bytes await; step 1 of "What would happen next" is updated to match.
+15. **"Slices 4 and 5 still need OQ-1 answered."** **Accepted and
+    repaired** in the packet to the delta's form: they need the
+    `syzygy-dov.26` amendment the answer routes them to.
+16. **"Not drafted at this commit" was true at the baseline and stale as
+    the live state.** **Accepted and marked at the sentence**: the ledger
+    now says "at the baseline commit", names the sibling
+    `pwb-missing-currency-disclosure-scenario/` as drafted since, and states
+    the composition result, re-derived this session.
+17. **"Plus this package's own untracked files" could not be true of the
+    published figures.** **Accepted and repaired**: the sentence now says
+    the figures are over the tracked files of the baseline commit, except
+    where a paragraph names another population.
+18. **The §Review head's verdict was unqualified by round.** **Accepted and
+    repaired**: "Round 1 verdict:".
+
+**What no round-3 disposition changed.** No patch byte, no manifest row, no
+requirement, no scenario text, and no owner answer.
+
+**Author's standing:** this draft's author dispositioned these findings and
+authored the repairs, and therefore may run no review of them.
