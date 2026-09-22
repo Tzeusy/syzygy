@@ -7,12 +7,16 @@
 > a review and carries no verdict. Only a dedicated owner act naming this
 > package's manifest digest could give the proposed bytes effect.
 
-**One review has been run against this brief** and returned CONFIRM WITH
-EXCEPTIONS on the commit its raw output names — three notes, no blocking
-finding; the raw is `docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md`
-and the dispositions are in `SEMANTIC-DELTA.md` §Review. The repairs that
-followed it edited prose only, and they are **not** covered by that verdict
-(rule 10). This brief stays live: it is the commission for any further
+**Two reviews have been run against this brief.** Round 1 returned CONFIRM
+WITH EXCEPTIONS on the commit its raw output names — three notes, no
+blocking finding; the raw is
+`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md`. Round 2, over the
+repaired bytes at `9d74185`, returned REVISE — two false sentences in
+`IMPACT-LEDGER.md` and five notes; the raw is
+`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-RAW.md`. The
+dispositions of both are in `SEMANTIC-DELTA.md` §Review. The repairs that
+followed each round edited prose only, and they are **not** covered by that
+round's verdict (rule 10). This brief stays live: it is the commission for any further
 review, including one over the repaired bytes. The drafting agent did not
 review its own work — a self-review would satisfy neither CC-REV-1's
 independence nor the fresh-context rule.

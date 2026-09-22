@@ -444,8 +444,11 @@ rules them so, each still needs a stated position relative to the other two
 rather than three independent claims on 'first'." Against that sits
 PWB-REQ-010's own signed sentence, that Polaris "SHALL **first** present
 Butlers' purpose, promises, non-goals, architecture, V1 scope and success
-criteria", and M2 slice 2's stated target that "the page's first human-visible
-instant moves from 58.0% depth into the opening band". The scenario says only
+criteria", and M2 slice 2's target as the M4 funnel's Q7 cell renders it,
+that "the page's first human-visible instant moves from 58.0% depth into the
+opening band" — M4's words, not M2's; M2's own are its step 4, "The first
+human-visible instant on the page appears before the first catalog section",
+and its 58.0% depth measurement (§Review finding 6). The scenario says only
 that the aggregate "displaces and defers no project-level category of this
 requirement", which is compatible with either order and settles neither. The
 reading not taken: fixing an order in the specification, which would decide an
@@ -487,14 +490,16 @@ Second method: `git grep -l -F` over the same literals, union compared to the
 | Pattern | Files | Occurrences |
 |---|---|---|
 | `PWB-REQ-010` | 36 | 110 |
-| continuation forms of it | 0 | 0 |
+| continuation forms of it (the regex `IMPACT-LEDGER.md` states) | 6 | 7 |
 | the patched `spec.md` path | 51 | 113 |
 | the patched `GOVERNING-DEPENDENCIES.md` path | 9 | 13 |
 | the current `spec.md` digest | 13 | 13 |
 
-The continuation sweep adds no file over the full-identifier sweep; every
-file it would have matched also matches pattern 1 [Observed, both sweeps run
-this session].
+The continuation sweep adds five files over the full-identifier sweep, so
+the citer population is 41, not 36; `IMPACT-LEDGER.md` names them and states
+the regex [Observed, both sweeps re-run 2026-09-23 at the baseline commit].
+An earlier draft said "adds no file" (0 / 0), which was false for the run
+form the corpus writes (§Review finding 4).
 
 **What is affected, by class.**
 
@@ -512,10 +517,13 @@ this session].
   Both carry a `signedBy` value naming a pending exact owner act over the
   PWB truth-and-readiness amendment manifest. **Any** amendment to this
   specification stales both pins, this package's included; the owner has
-  ruled, in the P-74 and P-78 rows, that the registry entry "is edited on no
-  arm" of those moves — a sentence closing each row's whole "What it means"
-  cell, not one scoped to a numbered sub-question, so the "Q4" tag an earlier
-  draft carried is withdrawn (§Review finding 3) while the ruling stands —
+  ruled, in the P-74 and P-78 rows, that the registry entry is edited on no
+  arm of those moves — P-78 closing "The registry entry **is** edited on no
+  arm." and P-74 "The consent record, the registry entry and PWB-REQ-005
+  **are** edited on no arm.", each row's own sentence (§Review finding 9),
+  each closing its row's whole "What it means" cell, not one scoped to a
+  numbered sub-question, so the "Q4" tag an earlier draft carried is
+  withdrawn (§Review finding 3) while the ruling stands —
   and P-69 Q2(a) and P-72 Q2 travel together as one
   superseding registry-entry amendment act at gate bead `syzygy-dov.18`. So
   the repair belongs to that act, not to this package, and this package edits
@@ -553,12 +561,15 @@ CG-7d and CG-7e catch a stale copy once the package is registered.
 
 1. The package is reviewed in fresh context against `REVIEW-BRIEF.md`; the
    raw output is retained verbatim and the bytes it is bound to are frozen
-   (rule 10). **Done once**, verdict CONFIRM WITH EXCEPTIONS, dispositions
-   in §Review — and the prose repairs that followed left that verdict bound
-   to the reviewed commit, not to these bytes.
+   (rule 10). **Done twice**: round 1 CONFIRM WITH EXCEPTIONS; round 2,
+   over the repaired bytes at `9d74185`, REVISE — dispositions for both in
+   §Review — and the prose repairs that followed each round left its verdict
+   bound to the reviewed commit, not to these bytes. A round 3 over these
+   bytes is the next step.
 2. The owner answers the five open questions in `OWNER-DECISION-PACKET.md`.
    Answers to OQ-2 or OQ-3 may change the proposed bytes, which retires the
-   review and needs a fresh one.
+   review and needs a fresh one. **Done, 2026-09-23**, in the two plain
+   owner directions §Review round 2 cites; no proposed byte moved.
 3. The owner performs a dedicated amendment act naming this manifest's
    digest, with a dedicated record and one aggregate section in
    `ACCEPTANCE-ACT-RECORD.md`, written by a recorder script — never
@@ -606,8 +617,10 @@ retained verbatim and never edited (CC-REV-6).
 **Bytes the verdict is bound to (rule 10).** The raw names commit
 `59733d3` and the manifest digest quoted in `OWNER-DECISION-PACKET.md`. The
 three dispositions below edited `SEMANTIC-DELTA.md`, `IMPACT-LEDGER.md` and
-`OWNER-DECISION-PACKET.md` **after** that commit, so **the confirmation is
-bound to the reviewed bytes and not to these**. The repairs touch prose only
+`OWNER-DECISION-PACKET.md` **after** that commit, and `REVIEW-BRIEF.md`'s
+status paragraph moved in the same commit with its criteria byte-identical
+(four files changed, not three — §Review round 2 finding 8), so **the
+confirmation is bound to the reviewed bytes and not to these**. The repairs touch prose only
 — no byte of `proposed/spec.md.patch`, `proposed/GOVERNING-DEPENDENCIES.md.patch`
 or the manifest moved, so the manifest digest is unchanged and the reviewer's
 machine findings (items 2–10 and 13–16 of the raw) still hold at this commit
@@ -643,3 +656,74 @@ section records the disposition, it does not extend the verdict.
 **What no disposition changed.** No patch byte, no manifest row, no
 requirement, no scenario text, and none of the five open questions. OQ-1 to
 OQ-5 remain the owner's, unresolved.
+
+### Round 2 — confirmation review over the repaired bytes
+
+**Reviewed bytes:** commit `9d74185`, the merge of PR #52, with the manifest
+digest quoted in `OWNER-DECISION-PACKET.md`. **Reviewer:** a fresh-context
+session with no authoring context, commissioned on 2026-09-23 by the session
+that had dispositioned round 1, with the raw and dispositions of round 1 as
+its input and `REVIEW-BRIEF.md` as its commission. **Verdict:** **REVISE**,
+copied exactly from the retained raw output. **Raw output:**
+`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-RAW.md`,
+retained verbatim and never edited (CC-REV-6).
+
+The reviewer found all three round-1 findings discharged and their
+dispositions truthful, reproduced every machine figure, and confirmed that
+the OQ-2 answer the owner gave on 2026-09-23 (placement (A), recorded in
+`.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md`) changes no proposed byte. The verdict is REVISE on
+findings 4 and 5, two false sentences in `IMPACT-LEDGER.md`; findings 6–10
+are notes. **Bytes the verdict is bound to (rule 10):** the reviewed commit.
+The repairs below edited `IMPACT-LEDGER.md`, `SEMANTIC-DELTA.md`,
+`OWNER-DECISION-PACKET.md` and `REVIEW-BRIEF.md` after it; no byte of
+`proposed/spec.md.patch`, `proposed/GOVERNING-DEPENDENCIES.md.patch` or the
+manifest moved, so the manifest digest is unchanged. These bytes carry no
+confirmation until a round 3 reads them.
+
+**Dispositions**, finding by finding:
+
+4. **The continuation-form figure "0 / 0" and "adds no file" were false.**
+   **Accepted and repaired.** The predicate was stated in words and run over
+   one member; the corpus writes runs (`PWB-REQ-001/002/003/004/005/010`).
+   `IMPACT-LEDGER.md` now states the regex, gives the six run-form files
+   (five carry no literal), recounts the population to **41** and class 5 to
+   **37**, and this file's table and sentence move with it. Re-derived this
+   session at the baseline commit with a second method; the reviewer's
+   figures reproduce exactly [Observed].
+5. **"A new artifact appearing in the change directory fails `--check`" was
+   false.** **Accepted and repaired.** The builder hashes a hard-coded tuple
+   of eleven paths and never lists the directory. The sentence now states
+   what the selftest does assert (eleven named paths; any change to an
+   unpatched one fails) and that a twelfth file is outside the bound subject.
+   No directory scan was added: the manifest is the bound subject, and a
+   scan would make the act's argument depend on files it does not hash.
+6. **A paraphrase presented as a quotation (OQ-5).** **Accepted and
+   repaired.** The sentence is now attributed to the M4 funnel's Q7 cell, and
+   M2's own step-4 sentence is quoted beside it.
+7. **The registration sentences were stale at `9d74185`.** **Accepted and
+   marked at the sentence.** `IMPACT-LEDGER.md` and `OWNER-DECISION-PACKET.md`
+   now carry a dated note that the three edits landed at the merge of PR #52
+   with the chain link deliberately withheld, and name the files that own
+   that fact; the drafted text stays beneath, unedited.
+8. **§Review named three edited files; four changed.** **Accepted and
+   repaired** above: `REVIEW-BRIEF.md` is named, with its criteria
+   byte-identical.
+9. **Quotation drift on "is edited on no arm" for P-74.** **Accepted and
+   repaired** in all three prose files: each row's own closing sentence is
+   quoted, verbatim.
+10. **"changes the proposed bytes" overstated.** **Accepted and repaired.**
+    `OWNER-DECISION-PACKET.md` now says "may change", matching this file.
+
+**What no round-2 disposition changed.** No patch byte, no manifest row, no
+requirement, no scenario text. All five open questions are now answered by
+plain owner direction, performing no act: OQ-1 and OQ-2 in
+`.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md`
+and OQ-3 to OQ-5 in
+`.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OPEN-QUESTIONS-2026-09-23-DECISION.md`
+(both 2026-09-23). None of the answers changed a proposed byte: OQ-2 is
+placement (A), the drafted host; OQ-3 keeps PWB-REQ-007 and leaves the
+secondary counts to slice 3's code; OQ-4 routes the POC-REQ-032 question to
+the `syzygy-dov.26` package; OQ-5 is a design value for slices 2 and 3
+(project-level categories first, then the band: currency probe, then the
+Unknown aggregate), which the scenario's wording is compatible with and
+which this package does not write into the specification.
