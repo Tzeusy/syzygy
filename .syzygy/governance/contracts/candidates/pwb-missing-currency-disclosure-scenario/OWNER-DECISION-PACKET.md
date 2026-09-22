@@ -1,17 +1,18 @@
 # Owner decision packet — missing effective currency bound outside freshness
 
-> **Inert offering.** This packet performs nothing. It records no act,
+> **Inert draft.** This packet performs nothing. It records no act,
 > authorizes no implementation and changes no signed byte. A commit, review,
 > merged pull request, passing check, silence or general approval performs no
-> act. Only the exact phrase and digest below, after independent review, can
-> perform this one PWB specification amendment.
+> act. The phrase and digest below are retained only so governance checks can
+> detect drift; they are not offered until repaired exact bytes pass a fresh
+> independent review.
 
 Date: 2026-09-22. Gate bead: `syzygy-dov.20`.
 
 Warrant: your 2026-09-21 P-69 arm B/Q7a direction — disclose a missing
 RFC2-9 bound outside the freshness slot, keep the claim Unknown, and prepare a
 CC-REV-2 scenario to PWB-REQ-007 behind its own sign-off and act. That ruling
-is direction to draft, not the act offered here.
+is direction to draft, not an act. No act is offered here.
 
 Manifest: `PWB-MISSING-CURRENCY-DISCLOSURE-MANIFEST.txt`, eleven rows over the
 closed PWB behavior subject. Six rows hash proposed bytes and five current
@@ -23,7 +24,7 @@ Manifest SHA-256:
 The builder writes this digest. Any patch, manifest or subject change retires
 the argument and requires regeneration plus exact-byte review.
 
-## What is offered
+## What a reviewed successor would offer
 
 One Normative PWB amendment, despite the ruling's "clarification scenario"
 name:
@@ -44,15 +45,17 @@ The independent reviewer is asked explicitly to confirm or contradict the
 Normative classification. A classification of Clarifying would require a
 finding explaining how the compliance population does not change.
 
-## The exact owner act
+## Not yet offered: the sign-off phrase
 
-If, after reading the retained fresh review and dispositions, you choose to
-perform this amendment, the exact phrase is:
+The behavior act phrase for this manifest would be:
 
 `SIGN OFF PWB MISSING-CURRENCY DISCLOSURE SCENARIO: 42dd4f91314f7aed074f21095743ba7ed175ba9518a0d8766cf38d18568209d7`
 
-Anything else is not this act. The recorder must reject a digest that differs
-from the manifest then present and must prove each manifest row against the
+It is registered so governance checks see it go stale, but it is **not
+offered**: Review 1 returned `REVISE`, and the repaired exact bytes have not
+received fresh-context confirmation. If you reply with this phrase now,
+nothing is performed. A future recorder must reject a digest that differs from
+the manifest then present and must prove each manifest row against the
 post-apply tree.
 
 ## What this act would not do

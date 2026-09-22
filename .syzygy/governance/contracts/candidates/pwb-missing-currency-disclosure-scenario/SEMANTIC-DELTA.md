@@ -239,6 +239,22 @@ regeneration obligation, not a conflict resolved by choosing a stale patch.
 CC-REV-4 material normative amendment, CC-REV-6 retained findings, plus an
 independent classification decision.
 
-**Reviewer:** pending fresh-context review commissioned by `REVIEW-BRIEF.md`.
+### Review 1
 
-**Verdict:** pending. No verdict is inferred from passing scripts.
+- Raw: `docs/reviews/R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA-RAW.md`
+  (retained verbatim). Reviewed commit
+  `0bb7bee7bed3dcd72f1787351872149514a5eb71`; the raw records the reviewed
+  manifest SHA-256.
+- Verdict, copied exactly: **REVISE**.
+- F1, the continuation-form PWB-REQ-007 sweep reported three files and three
+  occurrences instead of seven files and eight occurrences: **accepted**.
+  The ledger states the exact predicate and enumerates every file; the retained
+  M13 raw review is counted and classified, never edited.
+- F2, the placement mutant changed the scenario heading and therefore failed
+  at the heading-count predicate before exercising placement: **accepted**.
+  The selftest now moves the complete, uniquely headed scenario block across
+  the requirement boundary so the placement predicate decides the mutant.
+
+These repairs retire Review 1 under verification rule 10. The repaired exact
+bytes require a fresh-context review; no owner sign-off is offered before that
+review confirms them.
