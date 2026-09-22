@@ -19,6 +19,20 @@ machine credential file's location. It never prints the credential value.
 Use `--port 0` for an ephemeral port or `--state-dir <path>` for an explicit
 local credential directory.
 
+## Evidence and re-observation
+
+Each evaluation carries an additive evidence block on the authenticated
+machine responses: the pinned revision and committer instant, the observation
+instant, and a currency probe comparing the pinned revision with the current
+Git head. Currency bounds remain empty until their separately gated owner act.
+The Polaris opening band presents the same probe identity and changed/added
+counts; the probe is a disclosure, not a project claim or freshness value.
+
+The daemon does not poll or advance its observation from the wall clock. To
+capture a new identified evaluation, POST to `/polaris/reobserve` from the
+same-origin human surface (or its tailnet-mounted path). Concurrent requests
+single-flight; a failed re-observation leaves the prior complete model served.
+
 ## First-slice walkthrough
 
 1. Open the printed human URL. Polaris shows the purpose and governing intent

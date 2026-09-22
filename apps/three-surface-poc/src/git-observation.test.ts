@@ -15,6 +15,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   observeGitRepository,
+  observeGitHorizon,
   PWB_APPROVED_REPOSITORY_LOCATOR,
   pocObserverInputsAreClean,
   resolvePwbRepositoryBinding,
@@ -143,5 +144,21 @@ describe('read-only Git observation', () => {
       expect(observation.changedPaths).toContain(protectedPath);
       expect(pocObserverInputsAreClean(observation)).toBe(false);
     }
+  });
+
+  it('computes a metadata-only changed/added horizon between revisions', () => {
+    const root = repositoryWithFile('src/example.ts');
+    const pinned = git(root, ['rev-parse', 'HEAD']);
+    mkdirSync(join(root, 'src', 'new'), { recursive: true });
+    writeFileSync(join(root, 'src', 'example.ts'), 'export const value = 2;\n', 'utf8');
+    writeFileSync(join(root, 'src', 'new', 'added.ts'), 'export const added = true;\n', 'utf8');
+    git(root, ['add', '-A']);
+    git(root, ['commit', '-qm', 'advance']);
+    const horizon = observeGitHorizon(root, pinned);
+    expect(horizon.pinnedRevision).toBe(pinned);
+    expect(horizon.currentRevision).not.toBe(pinned);
+    expect(horizon.currentCommitterInstant).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    expect(horizon.changedSources).toBe(1);
+    expect(horizon.addedSources).toBe(1);
   });
 });

@@ -574,6 +574,21 @@ describe('PWB-REQ-020 exhaustive Polaris parity sweep', () => {
     expect(traversed).toEqual(['/polaris', '/entry', '/polaris']);
   });
 
+  it('renders the currency probe without a freshness field and keeps its identity/counts aligned with the machine evidence block', () => {
+    const model = modelFor('observed', 'lawful-state-2');
+    const html = renderPolarisPage(model);
+    const evidence = model.evaluation.evidence;
+    const probe = evidence.probe;
+    const section = html.match(/<section class="currency-probe"[\s\S]*?<\/section>/)?.[0] ?? '';
+    expect(section).toContain(`data-currency-probe-evaluation="${probe.evaluationId}"`);
+    expect(section).toContain(`data-currency-probe-pinned="${probe.pinnedRevision}"`);
+    expect(section).toContain(`data-currency-probe-current="${probe.currentRevision}"`);
+    expect(section).toContain(`data-currency-probe-changed="${probe.changedSources}"`);
+    expect(section).toContain(`data-currency-probe-added="${probe.addedSources}"`);
+    expect(section).not.toContain('data-epistemic-freshness');
+    expect(evidence.currencyBounds).toEqual([]);
+  });
+
   it('declares response identity as four machine-only parity families with the real machine denominators', () => {
     const { machineOnlyReports } = sweep(modelFor('observed', 'lawful-state-2'));
     expect(machineOnlyReports).toEqual([

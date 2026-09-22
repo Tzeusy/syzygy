@@ -360,6 +360,20 @@ function claimStatesBlock(): string {
   </details>`;
 }
 
+function currencyProbeBand(model: PocModel): string {
+  const evidence = model.evaluation.evidence;
+  const probe = evidence.probe;
+  const tuple = `${probe.epistemic.label} · ${probe.epistemic.tier} · unchallenged · probe ${probe.evaluationId}`;
+  return `<section class="currency-probe" data-polaris-currency-probe aria-labelledby="polaris-currency-probe-heading">
+    <h3 id="polaris-currency-probe-heading"${copyAttr('evidence.currency-probe')} data-presentation-artifact data-non-citable>${copy('evidence.currency-probe')}</h3>
+    <p${copyAttr('evidence.currency-probe-disclosure')} data-presentation-artifact data-non-citable>${copy('evidence.currency-probe-disclosure')}</p>
+    <p class="currency-probe-facts" data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable data-currency-probe-evaluation="${escapeHtml(probe.evaluationId)}" data-currency-probe-pinned="${escapeHtml(probe.pinnedRevision)}" data-currency-probe-current="${escapeHtml(probe.currentRevision)}" data-currency-probe-changed="${escapeHtml(String(probe.changedSources))}" data-currency-probe-added="${escapeHtml(String(probe.addedSources))}">
+      Evaluated at revision <code>${escapeHtml(probe.pinnedRevision)}</code>; observation <code>${escapeHtml(evidence.observationInstant)}</code>; probe <code>${escapeHtml(probe.evaluationId)}</code>. Since that revision, <strong>${escapeHtml(String(probe.changedSources))} sources changed</strong> and <strong>${escapeHtml(String(probe.addedSources))} were added</strong>.
+      <span data-currency-probe-tuple>${escapeHtml(tuple)}</span>
+    </p>
+  </section>`;
+}
+
 /** Progressive disclosure (PWB-REQ-011): an exhaustive population stays
  * complete on the page, behind one native disclosure whose control names
  * the population and its count. Nothing is hidden by style; the reader
@@ -503,13 +517,16 @@ function introductoryDiagram(shape: Extract<ProjectShape, { kind: 'observed' }>)
 }
 
 export function renderProjectReading(reading: ProjectReading, anchorId?: string): string {
+  const withdrawal = reading.withdrawalReason === undefined
+    ? ''
+    : `<p class="reading-withdrawal" data-reading-withdrawal="${escapeHtml(reading.withdrawalReason)}" data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable>Reviewed selection withdrawn: <code>${escapeHtml(reading.withdrawalReason)}</code>. The complete declaration is shown; re-review the selection against the current bytes before condensing it again.</p>`;
   const label = reading.condensed ? `<p class="excerpt-label"${copyAttr('label.selected-passages')}>${copy('label.selected-passages')}</p>` : '';
   const chapters = reading.chapters;
   const full = chapters !== undefined
     ? `<section class="component-library"><h4${copyAttr('label.component-guides')}>${copy('label.component-guides')}</h4><button type="button" class="expand-declaration" aria-expanded="false"${copyAttr('label.full-account')}>${copy('label.full-account')}</button><div class="component-guides">${chapters.map((chapter) => `<section id="polaris-guide-${escapeHtml(chapter.id)}" data-component-guide><details><summary>${escapeHtml(chapter.title)}</summary><div class="reading-prose">${renderPolarisMarkdown(chapter.body, anchorId)}</div></details></section>`).join('')}</div></section>`
     : reading.condensed ? `<details class="full-account"><summary${copyAttr('label.full-account')}>${copy('label.full-account')}</summary><div class="reading-prose">${renderPolarisMarkdown(reading.full, anchorId)}</div></details>` : '';
   const figures = (reading.figures ?? []).filter((figure) => figure.id !== 'core-loop').map((figure) => readingFigure(figure, anchorId)).join('');
-  return `${figures}${label}<div class="reading-prose">${renderPolarisMarkdown(reading.summary, anchorId)}</div>${full}`;
+  return `${figures}${withdrawal}${label}<div class="reading-prose">${renderPolarisMarkdown(reading.summary, anchorId)}</div>${full}`;
 }
 
 function accountStatement(statement: ProjectAccountStatement, revision: string): string {
@@ -1596,6 +1613,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     ${projectGroupBody(shape, 'overview')}
     <p class="notice"${copyAttr('notice')}>${copy('notice')} <a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p>
     ${claimStatesBlock()}
+    ${currencyProbeBand(model)}
     ${groupHeader('boundaries')}
     ${projectGroupBody(shape, 'boundaries')}
     ${groupHeader('v1')}

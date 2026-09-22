@@ -11,6 +11,7 @@ import {
   PocObservationError,
   readMaterializationRecordFile,
   readTestArtifactRecordFile,
+  type PocEvaluationEvidence,
   type PocModel,
   type ProjectShapeModelInput,
 } from '@syzygy/three-surface-poc-core';
@@ -19,12 +20,14 @@ import { parsePocCli } from './cli.js';
 import { loadBodyReadAuthorityInputs } from './governance-inputs.js';
 import { pwbReadinessTraversal, walkthroughJudgmentInputsFor } from './walkthrough-inputs.js';
 import {
+  observeGitHorizon,
   observeGitRepository,
   pocObserverInputsAreClean,
   resolvePwbRepositoryBinding,
 } from './git-observation.js';
 import { launchAfterPwbRepositoryBinding } from './launcher.js';
 import { materializeRoutes } from './materialize-action.js';
+import { reobserveRoutes } from './reobserve-action.js';
 import { pocRoutes } from './routes.js';
 import { gitBlobReaderFor, verbatimRouteReader } from './verbatim-route.js';
 
@@ -77,6 +80,7 @@ if (parsed.kind === 'help') {
         let repositoryRevision: string;
         let observerRevision: string;
         let workingTreeDigest: string;
+        let repositoryCommitterInstant: string;
         try {
           const repository = observeGitRepository(repoRoot);
           const observer = observeGitRepository(process.cwd());
@@ -84,6 +88,7 @@ if (parsed.kind === 'help') {
             throw new Error('observer-checkout-dirty');
           }
           repositoryRevision = repository.revision;
+          repositoryCommitterInstant = repository.committerInstant;
           observerRevision = observer.revision;
           workingTreeDigest = repository.worktreeMetadataDigest;
         } catch (cause) {
@@ -96,14 +101,38 @@ if (parsed.kind === 'help') {
           repositoryRevision = '';
           observerRevision = '';
           workingTreeDigest = '';
+          repositoryCommitterInstant = '';
         }
 
         if (repositoryRevision !== '' && observerRevision !== '') {
-          const snapshot = [
-            `${BUTLERS_POC_SEEDS.project.repositoryId}:${repositoryRevision}`,
-            `working-tree:${workingTreeDigest}`,
-            `observer:${observerRevision}`,
-          ].join('|');
+          const horizon = observeGitHorizon(repoRoot, repositoryRevision);
+          const evidenceFor = (
+            asOf: string,
+            pinnedRevision: string,
+            pinnedCommitterInstant: string,
+            current: ReturnType<typeof observeGitHorizon>,
+          ): PocEvaluationEvidence => ({
+            pinnedRevision,
+            pinnedCommitterInstant,
+            observationInstant: asOf,
+            probe: {
+              claimId: 'claim:currency-probe',
+              evaluationId: `evaluation:pwb-currency-probe:${asOf}`,
+              evaluationInstant: asOf,
+              epistemic: { label: 'Observed', tier: 'report-fact', challenge: 'unchallenged' },
+              pinnedRevision,
+              currentRevision: current.currentRevision,
+              changedSources: current.changedSources,
+              addedSources: current.addedSources,
+            },
+            currencyBounds: [],
+          });
+          let capture = {
+            repositoryRevision,
+            observerRevision,
+            workingTreeDigest,
+            evidence: evidenceFor(new Date().toISOString(), repositoryRevision, repositoryCommitterInstant, horizon),
+          };
           const defaultStateDir = join(
             tmpdir(),
             'syzygy-three-surface-poc',
@@ -111,7 +140,7 @@ if (parsed.kind === 'help') {
           );
           const stateDir = resolve(parsed.config.stateDir ?? defaultStateDir);
 
-          function buildModel(): ReturnType<typeof buildPocModel> {
+          function buildModel(currentCapture = capture): ReturnType<typeof buildPocModel> {
             let materializationRecord;
             try {
               materializationRecord = readMaterializationRecordFile(stateDir);
@@ -132,7 +161,12 @@ if (parsed.kind === 'help') {
               // "not yet ingested" (which would be silently more permissive).
               testArtifactRecord = null;
             }
-            const asOf = new Date().toISOString();
+            const asOf = currentCapture.evidence.observationInstant;
+            const snapshot = [
+              `${BUTLERS_POC_SEEDS.project.repositoryId}:${currentCapture.repositoryRevision}`,
+              `working-tree:${currentCapture.workingTreeDigest}`,
+              `observer:${currentCapture.observerRevision}`,
+            ].join('|');
             // PWB-REQ-005: the body-read authority gate is evaluated from the
             // Syzygy governance tree (the daemon's working directory) before the
             // model may read any project-shape body. If the governance inputs
@@ -145,7 +179,7 @@ if (parsed.kind === 'help') {
               const authority = evaluateBodyReadAuthority(
                 loadBodyReadAuthorityInputs({
                   repoRoot: process.cwd(),
-                  governanceRevision: observerRevision,
+                  governanceRevision: currentCapture.observerRevision,
                   evaluationId: `evaluation:pwb-body-read:${asOf}`,
                   evaluationInstant: asOf,
                 }),
@@ -165,16 +199,17 @@ if (parsed.kind === 'help') {
             // both states `not-evaluated`, named).
             const walkthroughJudgment = walkthroughJudgmentInputsFor({
               repoRoot: process.cwd(),
-              governanceRevision: observerRevision,
+              governanceRevision: currentCapture.observerRevision,
               evaluationId: `evaluation:pwb-walkthrough-judgment:${asOf}`,
               evaluationInstant: asOf,
             });
             return buildPocModel({
               seeds: BUTLERS_POC_SEEDS,
               repoRoot,
-              repositoryRevision,
-              observerRevision,
+              repositoryRevision: currentCapture.repositoryRevision,
+              observerRevision: currentCapture.observerRevision,
               evaluation: { snapshot, asOf },
+              evidence: currentCapture.evidence,
               materializationRecord,
               testArtifactRecord,
               projectShape,
@@ -186,7 +221,7 @@ if (parsed.kind === 'help') {
           }
 
           try {
-            let model = buildModel();
+            let model = buildModel(capture);
             const start = await createDaemon({
               stateDir,
               port: parsed.config.port,
@@ -200,7 +235,30 @@ if (parsed.kind === 'help') {
                   targetRepoRoot: repoRoot,
                   stateDir: () => stateDir,
                   onMaterialized: () => {
-                    model = buildModel();
+                    model = buildModel(capture);
+                  },
+                }),
+                ...reobserveRoutes({
+                  reobserve: async () => {
+                    try {
+                      const nextRepository = observeGitRepository(repoRoot);
+                      const nextObserver = observeGitRepository(process.cwd());
+                      if (!pocObserverInputsAreClean(nextObserver)) return { kind: 'failed', reason: 'POC runtime inputs are dirty; re-observation was refused' };
+                      const nextHorizon = observeGitHorizon(repoRoot, nextRepository.revision);
+                      const asOf = new Date().toISOString();
+                      const nextCapture = {
+                        repositoryRevision: nextRepository.revision,
+                        observerRevision: nextObserver.revision,
+                        workingTreeDigest: nextRepository.worktreeMetadataDigest,
+                        evidence: evidenceFor(asOf, nextRepository.revision, nextRepository.committerInstant, nextHorizon),
+                      };
+                      const nextModel = buildModel(nextCapture);
+                      capture = nextCapture;
+                      model = nextModel;
+                      return { kind: 'reobserved', evaluation: nextModel.evaluation.snapshot };
+                    } catch (error: unknown) {
+                      return { kind: 'failed', reason: error instanceof Error ? error.message : String(error) };
+                    }
                   },
                 }),
               ],

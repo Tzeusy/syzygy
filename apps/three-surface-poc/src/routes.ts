@@ -27,6 +27,7 @@ export interface PolarisPresentationEnvelope {
   readonly presentation: 'presentation-artifact';
   readonly citable: false;
   readonly evaluation: PocModel['evaluation'];
+  readonly evidence: PocModel['evaluation']['evidence'];
   readonly project: { readonly revision: string };
   readonly narrative: ReturnType<typeof renderPolarisPresentation>['narrative'];
 }
@@ -169,6 +170,7 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
       presentation: 'presentation-artifact',
       citable: false,
       evaluation: model.evaluation,
+      evidence: model.evaluation.evidence,
       project: { revision: model.project.revision },
       narrative,
     };
