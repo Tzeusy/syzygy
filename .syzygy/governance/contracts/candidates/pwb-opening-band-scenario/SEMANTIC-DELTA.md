@@ -85,7 +85,8 @@ lines 596–630 (read at source this session):
 Two neighbouring clauses the new scenario cites without amending, quoted
 exactly from the same file.
 
-`PWB-REQ-007`'s aggregate sentence and its Observable (lines 444–458):
+`PWB-REQ-007`'s aggregate sentence and its Observable (lines 448–450 and
+457–458):
 
 > Aggregates SHALL disclose label, tier, freshness and separate primary/
 > secondary reason counts without a headline status, composite maturity or
@@ -390,9 +391,10 @@ This package hosts the scenario under PWB-REQ-010 and cites PWB-REQ-007 for
 the tuple. Three placements were considered and the trade-off is the owner's,
 not this package's: (a) under PWB-REQ-010, as drafted; (b) under PWB-REQ-007,
 which aligns clause and scenario for the tuple half but not for position, and
-which collides on the same lines as two other live changes — lane B's
-`proposed/spec.md.patch` hunks cover lines 450–471 and 473–483, which contain
-PWB-REQ-007's only scenario at line 470, and P-69 Q7a's clarification scenario
+which collides on the same lines as two other live changes — two of the
+three hunks of lane B's `proposed/spec.md.patch` cover lines 450–471 and
+473–483, which contain PWB-REQ-007's only scenario at line 470, and P-69
+Q7a's clarification scenario
 (gate `syzygy-dov.20`) is destined for the same requirement; (c) minting a new
 requirement, which would give the consequence its own clause and its own
 scenario but is not "one CC-REV-2 scenario" and would move the requirement
@@ -426,7 +428,7 @@ different requirement.
 **OQ-4 — an opening aggregate against POC-REQ-032's "in place".** The
 three-surface specification's POC-REQ-032 says, quoted at
 `openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md`
-line 578: "where the model is Unknown, the narrative SHALL disclose the
+lines 578–580: "where the model is Unknown, the narrative SHALL disclose the
 Unknown and its reason in place", with Observable "Unknown regions appear as
 disclosed Unknowns inside the narrative flow". The M4 funnel reads that as
 excluding an opening aggregate: "requires the Unknown disclosed **in place**
