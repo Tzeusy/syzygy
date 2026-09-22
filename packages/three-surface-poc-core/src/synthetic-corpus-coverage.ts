@@ -21,20 +21,30 @@
 //     grammar (`vision.md`, top-level decimal list) are the literal PWB-
 //     REQ-002 "Reader definitions" text in
 //     `openspec/changes/polaris-project-wide-butlers-model/specs/
-//     polaris-project-wide-butlers-model/spec.md`, and the same basenames
-//     are proven byte-equal to the act-bound registry/policy JSON
-//     (`project-shape-manifest.test.ts`). Admitting a new container shape
-//     is therefore a governed-plane change (a spec amendment plus a
-//     registry/policy amendment act), not an implementation-plane one, and
-//     stays undone here; this module still only reports the gap honestly.
+//     polaris-project-wide-butlers-model/spec.md` — independently confirmed
+//     against that file's line 33-34 for `principle`, matching the
+//     extractor exactly. (No test in this package proves the per-class
+//     admission basenames byte-equal to any registry or policy JSON;
+//     `project-shape-manifest.test.ts`'s registry/policy comparison covers
+//     only `PWB_DISCOVERY_VERSION`, `PWB_ROOT_INDEX_PATH`, and
+//     `PWB_INDEX_DEPTH`, never the nine per-class basenames — the spec-text
+//     citation is the only verified anchor and is sufficient on its own.)
+//     Admitting a new container shape is therefore a governed-plane change
+//     (a spec amendment plus a registry/policy amendment act), not an
+//     implementation-plane one, and stays undone here; this module still
+//     only reports the gap honestly.
 //   - 'code-path': the corpus's own target class *is* admitted by the
 //     basename gate, and its own grammar failure is a genuine shape
-//     mismatch (`malformed-list` or `malformed-row`: a bullet list where it
-//     expects a decimal list, a table where it expects a list, prose where
-//     it expects a table). Only new parsing logic closes this gap; no
-//     profile row can. Narrowed in N8 slice 2 to these two reasons only: a
-//     target-class failure for any other reason (a missing or duplicated
-//     heading, an ambiguous leading label, a malformed TOML table) is a
+//     mismatch: `malformed-list` or `malformed-row` (a bullet list where a
+//     decimal list is expected, a table where a list is expected, prose
+//     where a table is expected), or `malformed-toml` for the one
+//     TOML-shaped class (`roster-identity`; `extractRosterIdentity`,
+//     `project-shape-extraction.ts:548-575` — a non-TOML body under an
+//     admitted `roster/*/butler.toml` path fails "no [butler] table", the
+//     TOML analogue of "no top-level decimal list"). Only new parsing logic
+//     closes this gap; no profile row can. Narrowed in N8 slice 2 to these
+//     three reasons only: a target-class failure for any other reason (a
+//     missing or duplicated heading, an ambiguous leading label) is a
 //     defect in the fixture's own authoring, not a generality finding about
 //     the pipeline, and must not be labeled as one.
 // Every other failing cell (a class whose basename happens to match a
@@ -48,13 +58,16 @@ import { SYNTHETIC_CORPORA, type SyntheticCorpusFixture } from './fixtures/synth
 
 export type RepairKind = 'profile-row' | 'code-path';
 
-// The only two extraction failures a genuine shape mismatch can produce
-// (N8 slice 2): the line/table walker ran and found content, but not in the
-// grammar's expected list or row form. Any other failure reason on the
+// The extraction failures a genuine shape mismatch can produce (N8 slice
+// 2, corrected in review): the line/table/TOML walker ran and found
+// content, but not in the grammar's expected list, row, or TOML-table
+// form. `malformed-toml` covers `roster-identity`, the one TOML-shaped
+// class (project-shape-extraction.ts:548-575); every other class fails
+// `malformed-list` or `malformed-row`. Any other failure reason on the
 // target class itself (a misnamed or duplicated heading, an ambiguous
-// leading label, a malformed TOML table) is a fixture defect, not a
-// generality finding, and `repairFor` must not label it 'code-path'.
-const SHAPE_MISMATCH_REASONS = ['malformed-list', 'malformed-row'] as const;
+// leading label) is a fixture defect, not a generality finding, and
+// `repairFor` must not label it 'code-path'.
+const SHAPE_MISMATCH_REASONS = ['malformed-list', 'malformed-row', 'malformed-toml'] as const;
 
 export interface ClassCellResult {
   readonly class: ExtractionClass;
