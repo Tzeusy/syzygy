@@ -39,4 +39,3 @@ describe('re-observation state transition', () => {
     expect(state.get()).toEqual({ asOf: '2026-09-22T00:00:00Z', revision: 'rev-a', changed: 4 });
   });
 });
-

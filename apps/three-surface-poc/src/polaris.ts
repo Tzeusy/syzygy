@@ -356,7 +356,7 @@ function claimStatesBlock(model: PocModel): string {
           ? ' Not reachable at this evaluation: one pinned revision carries no earlier claim; a changed source belongs to a later evidence probe, not this freshness value. Route: re-observe the repository.'
           : value === 'superseded'
             ? ' Not reachable at this evaluation: no claim from an earlier evaluation is carried. Route: capture a new evaluation that carries the replacement.'
-            : '';
+            : ' Not reachable at this evaluation: no claim was captured at this evaluation. Route: capture an evaluation that carries the evidence.';
       return `<li${copyAttr(id)}>${escapeHtml(copyText(id) + marker)}</li>`;
     }).join('')}</ul>`;
   return `<details id="polaris-claim-states" class="claim-states" data-polaris-claim-states>
