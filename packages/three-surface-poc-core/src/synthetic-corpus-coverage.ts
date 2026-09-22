@@ -14,14 +14,29 @@
 //     grammar at all, because `project-shape-extraction.ts` gates that
 //     class on one literal basename or path pattern
 //     (`posixBasename(path) !== 'vision.md'`, and similarly for the other
-//     eight). A future container-shape profile row (N8 slice 2) could admit
-//     the path without a code change; the class's own grammar would still
-//     need to recognize what is actually there.
+//     eight). A container-shape profile row could in principle admit the
+//     path without a code change; the class's own grammar would still need
+//     to recognize what is actually there. N8 slice 2 (syzygy-u05.8)
+//     investigated building that row: `principle`'s admission basename and
+//     grammar (`vision.md`, top-level decimal list) are the literal PWB-
+//     REQ-002 "Reader definitions" text in
+//     `openspec/changes/polaris-project-wide-butlers-model/specs/
+//     polaris-project-wide-butlers-model/spec.md`, and the same basenames
+//     are proven byte-equal to the act-bound registry/policy JSON
+//     (`project-shape-manifest.test.ts`). Admitting a new container shape
+//     is therefore a governed-plane change (a spec amendment plus a
+//     registry/policy amendment act), not an implementation-plane one, and
+//     stays undone here; this module still only reports the gap honestly.
 //   - 'code-path': the corpus's own target class *is* admitted by the
-//     basename gate, but its line/table walker has no rule for this shape
-//     (a bullet list where it expects a decimal list, a table where it
-//     expects a list, prose where it expects a table). Only new parsing
-//     logic closes this gap; no profile row can.
+//     basename gate, and its own grammar failure is a genuine shape
+//     mismatch (`malformed-list` or `malformed-row`: a bullet list where it
+//     expects a decimal list, a table where it expects a list, prose where
+//     it expects a table). Only new parsing logic closes this gap; no
+//     profile row can. Narrowed in N8 slice 2 to these two reasons only: a
+//     target-class failure for any other reason (a missing or duplicated
+//     heading, an ambiguous leading label, a malformed TOML table) is a
+//     defect in the fixture's own authoring, not a generality finding about
+//     the pipeline, and must not be labeled as one.
 // Every other failing cell (a class whose basename happens to match a
 // corpus it was not authored for, so it fails on missing content rather
 // than a shape or basename question) carries its raw reason with no
@@ -32,6 +47,14 @@ import { extractClass, type ClassExtraction } from './project-shape-extraction.j
 import { SYNTHETIC_CORPORA, type SyntheticCorpusFixture } from './fixtures/synthetic-corpora.js';
 
 export type RepairKind = 'profile-row' | 'code-path';
+
+// The only two extraction failures a genuine shape mismatch can produce
+// (N8 slice 2): the line/table walker ran and found content, but not in the
+// grammar's expected list or row form. Any other failure reason on the
+// target class itself (a misnamed or duplicated heading, an ambiguous
+// leading label, a malformed TOML table) is a fixture defect, not a
+// generality finding, and `repairFor` must not label it 'code-path'.
+const SHAPE_MISMATCH_REASONS = ['malformed-list', 'malformed-row'] as const;
 
 export interface ClassCellResult {
   readonly class: ExtractionClass;
@@ -61,7 +84,7 @@ function repairFor(cls: ExtractionClass, corpus: SyntheticCorpusFixture, extract
       note: `"${cls}" admission is keyed to a literal basename or path pattern in project-shape-extraction.ts, not any shape signal in this corpus; a container-shape profile row could admit the path, but "${cls}"'s own grammar would still need to recognize what is there.`,
     };
   }
-  if (cls === corpus.targetClass) {
+  if (cls === corpus.targetClass && (SHAPE_MISMATCH_REASONS as readonly string[]).includes(extraction.failure.reason)) {
     return {
       kind: 'code-path',
       note: `the basename admits this source under "${cls}", but its line/table walker has no rule for the "${corpus.shape}" shape; only new parsing logic closes this, not a profile row.`,
