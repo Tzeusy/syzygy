@@ -84,8 +84,9 @@ the repair is a new disposition that cites it.
 | P-71 opening-band gate | 1 | 2026-09-22 | Opening-band scenario delta | The retained review says `CONFIRM WITH EXCEPTIONS` (`R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md:4`); findings remain dispositioned in the candidate package. |
 | P-69/P-72 registry gate | 2 | 2026-09-22 | Currency-bound and briefing-ceiling registry amendment | The confirmation is `CONFIRM` (`R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-CONFIRMATION-RAW.md:4`); repairs landed in the candidate package, which awaits its act. |
 | P-69 Q7a missing-currency gate | 2 | 2026-09-23 | Missing-currency-bound disclosure scenario delta | The confirmation is `CONFIRM` (`R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA-CONFIRMATION-RAW.md:1`); repairs landed in the candidate package, which awaits its act and applies after lane B. |
+| N8 generality measurement | 1 | 2026-09-23 | Slice 1: synthetic second-project corpora and per-class coverage matrix (PR #63) | `CONFIRM` (`R-PWB-N8-SLICE1-REVIEW-RAW.md:19`); one advisory (narrow the `code-path` guard to shape-grammar failures before slice 2) is carried on the bead. |
 
-The 45 rows partition the tracked directory at HEAD: 197 files, 197 assigned,
+The 46 rows partition the tracked directory at HEAD: 198 files, 198 assigned,
 no remainder [Observed — re-derived for HEAD dated 2026-09-23 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
