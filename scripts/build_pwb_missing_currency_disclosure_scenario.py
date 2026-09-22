@@ -409,14 +409,38 @@ def selftest() -> int:
         print("SELFTEST FAILED: manifest path-order mutation passed")
         return 1
     spec = proposed[SPEC]
+    scenario_start = spec.index((HEADING + "\n").encode())
+    scenario_end = spec.index((NEXT_SCENARIO + "\n").encode(), scenario_start)
+    scenario_block = spec[scenario_start:scenario_end]
+    without_scenario = spec[:scenario_start] + spec[scenario_end:]
+    next_requirement_start = without_scenario.index(NEXT_REQUIREMENT.encode())
+    next_requirement_heading_end = (
+        without_scenario.index(b"\n", next_requirement_start) + 1
+    )
+    misplaced_scenario = (
+        without_scenario[:next_requirement_heading_end]
+        + b"\n"
+        + scenario_block
+        + without_scenario[next_requirement_heading_end:]
+    )
+    placement_findings = scenario_findings(misplaced_scenario)
+    if (
+        misplaced_scenario.decode().count(HEADING) != 1
+        or scenario_block not in misplaced_scenario
+        or placement_findings
+        != ["disclosure scenario is not in the required PWB-REQ-007 position"]
+    ):
+        print(
+            "SELFTEST FAILED: placement mutation did not isolate the "
+            "required-position predicate"
+        )
+        return 1
     mutations = {
         "missing scenario": spec.replace((HEADING + "\n").encode(), b"", 1),
         "duplicate scenario": spec.replace(
             (HEADING + "\n").encode(), (HEADING + "\n" + HEADING + "\n").encode(), 1
         ),
-        "placement": spec.replace(
-            (HEADING + "\n").encode(), b"#### Scenario: misplaced\n", 1
-        ),
+        "placement": misplaced_scenario,
         "fabricated freshness": spec.replace(
             NO_FABRICATION.encode(),
             b"freshness `stale` is force-fit for this condition",
