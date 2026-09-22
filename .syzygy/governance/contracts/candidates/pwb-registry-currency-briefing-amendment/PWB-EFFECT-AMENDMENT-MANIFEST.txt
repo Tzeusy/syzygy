@@ -6,4 +6,4 @@
 # subject with proposed/*.patch applied. It matches the tree only after
 # --apply, the adoption step.
 # The subject's current bytes stay the argument of the act in force.
-5fbef79751f52f2e6cfbbbaa6e2d33993926627461346246e00a6cace7ac8ae2  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+5525b359ec1c38593e3bc466c7bd18e2b5c2fa34e3faae872c5bc7ee3dbd48ba  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json

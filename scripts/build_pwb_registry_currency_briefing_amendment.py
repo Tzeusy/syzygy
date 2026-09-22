@@ -54,6 +54,15 @@ PROPOSED_VERSION = "1.2.0-candidate.1"
 CURRENT_VERSION = "1.1.0-candidate.1"
 #: The new response ceiling this amendment mints.
 BRIEFING_LIMIT_KEY = "maxBriefingResponseBytes"
+BRIEFING_LIMIT_SEMANTICS = (
+    "the final encoded HTTP body for each authenticated derived read-only "
+    "machine view response whose required subject is one exact project-shape "
+    "claim identified by its full claim id and whose remaining fields are "
+    "same-evaluation joins independently derivable from the machine answer "
+    "already served under maxMachineResponseBytes; it is a separate and tighter "
+    "ceiling, never a share of that one, and a view without its own declared "
+    "ceiling is not served"
+)
 #: The seven semantics keys the currency-bound block must declare.
 CURRENCY_SEMANTICS_KEYS = (
     "measuredFrom",
@@ -158,6 +167,10 @@ def structure_findings(body: bytes) -> list[str]:
         if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
             findings.append(
                 f"{BRIEFING_LIMIT_KEY} is not a positive integer: {value!r}")
+        if semantics.get(BRIEFING_LIMIT_KEY) != BRIEFING_LIMIT_SEMANTICS:
+            findings.append(
+                f"{BRIEFING_LIMIT_KEY} semantics do not match the exact "
+                "single-claim machine-view scope")
         for key in limits:
             if key not in semantics:
                 findings.append(f"resource limit without a semantics sentence: {key}")
@@ -397,7 +410,18 @@ def selftest() -> int:
         print("SELFTEST FAILED: a zero briefing ceiling passed")
         return 1
 
-    # Predicates 14-19 mutate the parsed document and re-serialize, so each
+    # Predicate 14: the ceiling semantics are an exact cross-package boundary,
+    # not merely a non-empty sentence. Widening one claim to an unspecified
+    # subject would reopen the syzygy-dov.22 dependency this package records.
+    widened_scope = proposed.replace(
+        b"one exact project-shape claim identified by its full claim id",
+        b"one named subject", 1)
+    assert widened_scope != proposed
+    if not structure_findings(widened_scope):
+        print("SELFTEST FAILED: widened briefing subject semantics passed")
+        return 1
+
+    # Predicates 15-20 mutate the parsed document and re-serialize, so each
     # one reaches the structural assertion under test rather than failing
     # earlier on JSON validity. Each names the assertion it covers.
     def mutate(fn) -> bytes:
@@ -429,7 +453,7 @@ def selftest() -> int:
             print(f"SELFTEST FAILED: {label} passed")
             return 1
 
-    # Predicates 20-22 cover the three assertions `check()` makes that
+    # Predicates 21-23 cover the three assertions `check()` makes that
     # `structure_findings` does not. Each is exercised through the helper
     # `check()` itself calls, so a fixture cannot drift from the caller.
     good_patches = patch_files()
@@ -449,12 +473,12 @@ def selftest() -> int:
         print("SELFTEST FAILED: an absent manifest passed")
         return 1
 
-    print("selftest: 22 predicates — subject drift, patch corruption, patch "
+    print("selftest: 23 predicates — subject drift, patch corruption, patch "
           "population, a no-op patch, manifest digest, path mutation and "
           "absence, both version bumps, limit semantics, the briefing "
-          "ceiling's value, claim-class population, duplication, row shape "
-          "and bound value, the semantics block's type, keys and empty "
-          "sentences, entry count and JSON validity all fail closed")
+          "ceiling's value and exact single-claim scope, claim-class population, "
+          "duplication, row shape and bound value, the semantics block's type, "
+          "keys and empty sentences, entry count and JSON validity all fail closed")
     return 0
 
 
