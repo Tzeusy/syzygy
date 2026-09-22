@@ -84,11 +84,11 @@ the repair is a new disposition that cites it.
 | P-71 opening-band gate | 5 | 2026-09-22 → 2026-09-23 | Opening-band scenario delta | The fourth sequential review, over the round-3 repairs, is `REVISE` (`R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-3-RAW.md:4`); a parallel independent round over the round-2 bytes is retained beside it; findings remain dispositioned in the candidate package, which awaits a round 5. |
 | P-69/P-72 registry gate | 4 | 2026-09-22 → 2026-09-23 | Currency-bound and briefing-ceiling registry amendment | The third confirmation is `CONFIRM` (`R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-CONFIRMATION-3-RAW.md:5`), over the bytes that repair the second confirmation's F1 and F2; the candidate package awaits its act, with question 6 held for the owner. |
 | P-69 Q7a missing-currency gate | 2 | 2026-09-23 | Missing-currency-bound disclosure scenario delta | The confirmation is `CONFIRM` (`R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA-CONFIRMATION-RAW.md:1`); repairs landed in the candidate package, which awaits its act and applies after lane B. |
-| N8 generality measurement | 1 | 2026-09-23 | Slice 1: synthetic second-project corpora and per-class coverage matrix (PR #63) | `CONFIRM` (`R-PWB-N8-SLICE1-REVIEW-RAW.md:19`); one advisory (narrow the `code-path` guard to shape-grammar failures before slice 2) is carried on the bead. |
+| N8 generality measurement | 3 | 2026-09-23 | Slice 1: synthetic second-project corpora and per-class coverage matrix (PR #63); slice 2: `repairFor` narrowed to genuine shape mismatches (PR #73) | Slice 1 `CONFIRM` (`R-PWB-N8-SLICE1-REVIEW-RAW.md:19`); slice 2 `REVISE` (`R-PWB-N8-SLICE2-REVIEW-RAW.md:3`), repaired, then `CONFIRM` (`R-PWB-N8-SLICE2-CONFIRMATION-RAW.md:3`). |
 | N4 page honesty | 2 | 2026-09-23 | Slices 3-4: evaluation-identity footers on Trajectory and Orrery, `--focus`/`--measure-reading` tokens (PR #67) | `REVISE` (`R-PWB-N4-SLICES3-4-REVIEW-RAW.md:1`), repaired; confirmation `CONFIRM` (`R-PWB-N4-SLICES3-4-CONFIRMATION-RAW.md:6`). |
 | N11 drift sweep | 2 | 2026-09-23 | Slices 1 and 3: `scripts/check_evidence_currency.py` sha256 drift sweep and the typed pipeline failure code (PR #68) | `REVISE` (`R-PWB-N11-SLICES1-3-REVIEW-RAW.md:1`), repaired; confirmation `CONFIRM` (`R-PWB-N11-SLICES1-3-CONFIRMATION-RAW.md:3`). |
 
-The 48 rows partition the tracked directory at HEAD: 212 files, 212 assigned,
+The 48 rows partition the tracked directory at HEAD: 214 files, 214 assigned,
 no remainder [Observed — re-derived for HEAD dated 2026-09-23 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
