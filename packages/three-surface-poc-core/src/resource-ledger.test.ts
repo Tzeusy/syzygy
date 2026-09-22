@@ -14,6 +14,7 @@ import {
   createResourceLedger,
   isParsePassIdentity,
   type ParsePassIdentity,
+  type ResourceLedger,
 } from './resource-ledger.js';
 
 // Hand-typed from the amended registry entry.
@@ -214,5 +215,191 @@ describe('summary and breach order', () => {
     ledger.chargePass('q', 'phase-a-link-discovery');
     expect(summary.parsePasses).toBe(1);
     expect(ledger.limits).toEqual(limits({ maxTotalBytes: 1, maxParsePassesPerSource: 1 }));
+  });
+});
+
+// ---------------------------------------------------------------------
+// N3 slice 1: headroom against all seven declared limits, plus a derived
+// cost record. Both are pure projections of counters the ledger already
+// keeps (and, for the five limits it does not itself count, of breaches
+// its callers already record here) — no new observation, no new limit.
+
+describe('byLimit — headroom against all seven declared limits (N3 slice 1)', () => {
+  it('the two limits this ledger counts directly report their own running counter', () => {
+    const ledger = createResourceLedger(limits({ maxTotalBytes: 100, maxParsePassesPerSource: 5 }));
+    ledger.chargeBody('p', OID_A, 40);
+    ledger.chargePass('p', 'utf8-and-nul-validation');
+    ledger.chargePass('p', 'markdown-code-context-mask');
+    const { byLimit } = ledger.summary();
+    expect(byLimit.maxTotalBytes).toEqual({ limit: 'maxTotalBytes', declared: 100, observed: 40, remaining: 60 });
+    expect(byLimit.maxParsePassesPerSource).toEqual({ limit: 'maxParsePassesPerSource', declared: 5, observed: 2, remaining: 3 });
+  });
+
+  it('the five limits this ledger never counts itself report 0 with no recorded breach', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    const { byLimit } = ledger.summary();
+    for (const limit of ['maxSources', 'maxBytesPerSource', 'maxIndexDepth', 'maxHumanResponseBytes', 'maxMachineResponseBytes'] as const) {
+      expect(byLimit[limit]).toEqual({ limit, declared: PWB_RESOURCE_LIMITS[limit], observed: 0, remaining: PWB_RESOURCE_LIMITS[limit] });
+    }
+  });
+
+  it('a recorded breach is the only evidence those five limits carry: the highest observed value wins and remaining goes negative', () => {
+    const ledger = createResourceLedger(limits({ maxSources: 10, maxIndexDepth: 4 }));
+    ledger.recordBreach({ limit: 'maxSources', declared: 10, observed: 11, path: 'a' });
+    ledger.recordBreach({ limit: 'maxSources', declared: 10, observed: 13, path: 'b' });
+    ledger.recordBreach({ limit: 'maxIndexDepth', declared: 4, observed: 5 });
+    const { byLimit } = ledger.summary();
+    expect(byLimit.maxSources).toEqual({ limit: 'maxSources', declared: 10, observed: 13, remaining: -3 });
+    expect(byLimit.maxIndexDepth).toEqual({ limit: 'maxIndexDepth', declared: 4, observed: 5, remaining: -1 });
+  });
+
+  it('carries all seven declared identities, never an eighth', () => {
+    const { byLimit } = createResourceLedger(PWB_RESOURCE_LIMITS).summary();
+    expect(Object.keys(byLimit).sort()).toEqual([
+      'maxBytesPerSource',
+      'maxHumanResponseBytes',
+      'maxIndexDepth',
+      'maxMachineResponseBytes',
+      'maxParsePassesPerSource',
+      'maxSources',
+      'maxTotalBytes',
+    ]);
+  });
+});
+
+describe('cost — a pure derived record, no new observation (N3 slice 1)', () => {
+  it('mirrors the counters the ledger already tracks: bodies, bytes, parse passes, worst-source passes', () => {
+    const ledger = createResourceLedger(limits({ maxTotalBytes: 1000, maxParsePassesPerSource: 10 }));
+    ledger.chargeBody('a', OID_A, 5);
+    ledger.chargeBody('b', OID_B, 7);
+    ledger.chargePass('a', 'utf8-and-nul-validation');
+    ledger.chargePass('a', 'markdown-code-context-mask');
+    ledger.chargePass('a', 'active-html-svg-script-handler');
+    ledger.chargePass('b', 'utf8-and-nul-validation');
+    const { cost } = ledger.summary();
+    expect(cost).toEqual({ bodiesRead: 2, bytes: 12, parsePasses: 4, worstSourcePasses: 3 });
+  });
+
+  it('an empty ledger costs nothing', () => {
+    const { cost } = createResourceLedger(PWB_RESOURCE_LIMITS).summary();
+    expect(cost).toEqual({ bodiesRead: 0, bytes: 0, parsePasses: 0, worstSourcePasses: 0 });
+  });
+});
+
+// ---------------------------------------------------------------------
+// N3 slice 2: a build-time guard on maxPassesOnOneSource. L11-F2
+// [Observed]: the production worst source already spends 14 of the
+// declared 16 passes (a margin of 2), the most-consumed limit in the
+// system, and Syzygy's own near-term roadmap (M2, M14, M15, lane B) each
+// plausibly adds a pass. This guard recomputes the worst-source pass
+// count over the synthetic Butlers-shaped fixture corpus
+// (project-shape-model.test.ts's BASE_TEXTS) and fails — naming the
+// source and the pass identities charged to it — when any registry pass
+// identity would push a worst source past the declared margin.
+
+// Hand-typed, in charge order, from the real pipeline run over BASE_TEXTS
+// at PWB_RESOURCE_LIMITS (captured by instrumenting chargePass while
+// running project-shape-model.test.ts's "every body is taken from Git
+// once, counted once and validated once across both phases", whose
+// resourceUse.maxPassesOnOneSource is the same hand-typed 14): the three
+// sources tied for the worst load, each at 14 of the declared 16 passes.
+const PASS_BUDGET_MARGIN = 2;
+const ABOUT_README_SEQUENCE: readonly ParsePassIdentity[] = [
+  'utf8-and-nul-validation',
+  'secret-private-key-fragments',
+  'secret-known-token-formats',
+  'secret-credential-assignment',
+  'secret-credential-bearing-url',
+  'markdown-code-context-mask',
+  'active-html-svg-script-handler',
+  'unsafe-url-positions',
+  'phase-a-link-discovery',
+  'secret-private-key-fragments',
+  'secret-known-token-formats',
+  'secret-credential-assignment',
+  'secret-credential-bearing-url',
+  'fact-and-precedence-extraction',
+];
+const LEGENDS_README_SEQUENCE: readonly ParsePassIdentity[] = [
+  'utf8-and-nul-validation',
+  'secret-private-key-fragments',
+  'secret-known-token-formats',
+  'secret-credential-assignment',
+  'secret-credential-bearing-url',
+  'markdown-code-context-mask',
+  'active-html-svg-script-handler',
+  'unsafe-url-positions',
+  'phase-a-link-discovery',
+  'secret-private-key-fragments',
+  'secret-known-token-formats',
+  'secret-credential-assignment',
+  'secret-credential-bearing-url',
+  'declared-item-extraction',
+];
+const CRAFT_README_SEQUENCE: readonly ParsePassIdentity[] = LEGENDS_README_SEQUENCE;
+const WORST_SOURCE_PASS_SEQUENCES: Readonly<Record<string, readonly ParsePassIdentity[]>> = {
+  'about/README.md': ABOUT_README_SEQUENCE,
+  'about/legends-and-lore/README.md': LEGENDS_README_SEQUENCE,
+  'about/craft-and-care/README.md': CRAFT_README_SEQUENCE,
+};
+
+// Charges every hand-typed sequence onto a fresh ledger at the real
+// declared maxParsePassesPerSource (16).
+function ledgerAtWorstSources(sequences: Readonly<Record<string, readonly ParsePassIdentity[]>>): ResourceLedger {
+  const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+  for (const [path, sequence] of Object.entries(sequences)) {
+    for (const pass of sequence) {
+      const breach = ledger.chargePass(path, pass);
+      if (breach !== undefined) throw new Error(`fixture is already over the hard limit: ${path} at ${pass}`);
+    }
+  }
+  return ledger;
+}
+
+// The guard predicate: throws, naming the source(s) at the worst load and
+// the pass identities charged to each, when the worst source is not left
+// at least `margin` passes of headroom under the declared limit.
+function assertPassBudgetMargin(ledger: ResourceLedger, sequences: Readonly<Record<string, readonly ParsePassIdentity[]>>, margin: number): void {
+  const declared = ledger.limits.maxParsePassesPerSource;
+  const worst = ledger.summary().maxPassesOnOneSource;
+  if (worst <= declared - margin) return;
+  const atWorst = Object.entries(sequences).filter(([path]) => ledger.passesFor(path) === worst);
+  const detail = atWorst.map(([path, sequence]) => `${path} (${sequence.length} passes: ${sequence.join(', ')})`).join('; ');
+  throw new Error(`parse pass budget margin breached: worst source at ${worst} of ${declared} declared, margin ${margin} — ${detail}`);
+}
+
+describe('guard: maxPassesOnOneSource stays inside its declared margin (N3 slice 2)', () => {
+  it('today the worst source sits exactly at the margin — 14 of the declared 16, margin 2', () => {
+    const ledger = ledgerAtWorstSources(WORST_SOURCE_PASS_SEQUENCES);
+    expect(ledger.summary().maxPassesOnOneSource).toBe(14);
+    expect(PWB_RESOURCE_LIMITS.maxParsePassesPerSource - 14).toBe(PASS_BUDGET_MARGIN);
+    expect(() => assertPassBudgetMargin(ledger, WORST_SOURCE_PASS_SEQUENCES, PASS_BUDGET_MARGIN)).not.toThrow();
+  });
+
+  it('a registry pass identity charged to the worst source pushes it past the margin: the guard fails, naming the source and its passes', () => {
+    // Mutation: 'about/README.md' real 14-pass sequence gains a 15th
+    // charge, 'project-account-extraction' — standing in for a future
+    // registry pass identity that would also apply to this source (per
+    // L11-F2's WHY: M2, M14, M15 or lane B). old fragment: the 14-entry
+    // array ending in 'fact-and-precedence-extraction'. new fragment: the
+    // same 14 plus 'project-account-extraction' appended.
+    const mutatedSequences: Readonly<Record<string, readonly ParsePassIdentity[]>> = {
+      ...WORST_SOURCE_PASS_SEQUENCES,
+      'about/README.md': [...ABOUT_README_SEQUENCE, 'project-account-extraction'],
+    };
+    const ledger = ledgerAtWorstSources(mutatedSequences);
+    expect(ledger.summary().maxPassesOnOneSource).toBe(15);
+    let caught: unknown;
+    try {
+      assertPassBudgetMargin(ledger, mutatedSequences, PASS_BUDGET_MARGIN);
+    } catch (error) {
+      caught = error;
+    }
+    expect(caught).toBeInstanceOf(Error);
+    const message = (caught as Error).message;
+    expect(message).toContain('about/README.md');
+    expect(message).toContain('15 of 16 declared');
+    expect(message).toContain('project-account-extraction');
+    expect(message).toContain('fact-and-precedence-extraction');
   });
 });

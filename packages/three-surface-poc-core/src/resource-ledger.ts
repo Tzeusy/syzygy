@@ -78,6 +78,57 @@ export interface TransientBody {
   readonly text: string;
 }
 
+// The registry's seven declared limits, in the order `PwbResourceLimits`
+// names them — used only to iterate; it invents no eighth limit.
+export const DECLARED_RESOURCE_LIMIT_IDENTITIES = [
+  'maxSources',
+  'maxBytesPerSource',
+  'maxTotalBytes',
+  'maxIndexDepth',
+  'maxParsePassesPerSource',
+  'maxHumanResponseBytes',
+  'maxMachineResponseBytes',
+] as const satisfies readonly (keyof PwbResourceLimits)[];
+
+// One limit's headroom: what the registry declares, what this ledger has
+// observed toward it, and what is left. `maxTotalBytes` and
+// `maxParsePassesPerSource` are the two limits this ledger actively
+// counts, so their `observed` is that running counter (`totalBytes()` /
+// `maxPassesOnOneSource`). The other five (`maxSources`,
+// `maxBytesPerSource`, `maxIndexDepth`, `maxHumanResponseBytes`,
+// `maxMachineResponseBytes`) are evaluated and, on breach, recorded by
+// their callers via `recordBreach` — this ledger keeps no separate
+// running count for them, so `observed` is the highest value any breach
+// already recorded here carries for that limit, or 0 when none has been
+// recorded. `maxHumanResponseBytes`/`maxMachineResponseBytes` are the
+// final-response ceilings enforced entirely outside this ledger (the
+// reader budget, not the response ceiling), so they read 0 here unless a
+// breach is ever recorded against this ledger under that identity.
+// `remaining` is the plain difference, uncapped, so a breach shows as
+// negative rather than being clamped away.
+export interface ResourceLimitUsage {
+  readonly limit: keyof PwbResourceLimits;
+  readonly declared: number;
+  readonly observed: number;
+  readonly remaining: number;
+}
+
+// Derived cost figures this pure ledger can answer without any new
+// observation: bodies read and their bytes (maxTotalBytes' own counters),
+// parse passes performed and the worst single source's count
+// (maxParsePassesPerSource's own counters). Evaluation wall time, peak
+// memory, the arrival date implied by the observed rate, and the
+// generation-half figures (stage prompt bytes, corpus denominator) each
+// need an input this ledger does not hold (a clock, process memory, the
+// generation stage) and so are out of scope here — the registry itself
+// says elapsed wall-clock time is not an input to this ledger.
+export interface ResourceLedgerCostRecord {
+  readonly bodiesRead: number;
+  readonly bytes: number;
+  readonly parsePasses: number;
+  readonly worstSourcePasses: number;
+}
+
 export interface ResourceLedgerSummary {
   // Distinct (path, object id) bodies counted toward maxTotalBytes.
   readonly bodiesCounted: number;
@@ -87,6 +138,11 @@ export interface ResourceLedgerSummary {
   readonly sourcesTraversed: number;
   readonly maxPassesOnOneSource: number;
   readonly breaches: readonly ResourceLimitBreach[];
+  // Headroom against all seven declared limits and the derived cost
+  // record; both are pure projections of the fields above plus `breaches`
+  // — no new observation and no new limit.
+  readonly byLimit: Readonly<Record<keyof PwbResourceLimits, ResourceLimitUsage>>;
+  readonly cost: ResourceLedgerCostRecord;
 }
 
 export interface ResourceLedger {
@@ -194,14 +250,52 @@ export function createResourceLedger(limits: PwbResourceLimits): ResourceLedger 
     release: () => {
       transient.clear();
     },
-    summary: () => ({
-      bodiesCounted: bodies.size,
-      totalBytes: total,
-      parsePasses: [...byIdentity.values()].reduce((sum, count) => sum + count, 0),
-      passesByIdentity: Object.fromEntries(PARSE_PASS_IDENTITIES.map((pass) => [pass, byIdentity.get(pass) ?? 0])) as Record<ParsePassIdentity, number>,
-      sourcesTraversed: passes.size,
-      maxPassesOnOneSource: Math.max(0, ...passes.values()),
-      breaches: [...breaches],
-    }),
+    summary: () => {
+      const bodiesCounted = bodies.size;
+      const totalBytesNow = total;
+      const parsePasses = [...byIdentity.values()].reduce((sum, count) => sum + count, 0);
+      const maxPassesOnOneSource = Math.max(0, ...passes.values());
+      const breachesNow = [...breaches];
+
+      // Highest `observed` any recorded breach carries for `limit` — the
+      // only evidence this ledger holds for a limit it does not itself
+      // count. 0 when no breach for that limit has been recorded here.
+      const observedFromBreaches = (limit: keyof PwbResourceLimits): number =>
+        breachesNow.reduce((worst, breach) => (breach.limit === limit ? Math.max(worst, breach.observed) : worst), 0);
+
+      const observedFor = (limit: keyof PwbResourceLimits): number => {
+        if (limit === 'maxTotalBytes') return totalBytesNow;
+        if (limit === 'maxParsePassesPerSource') return maxPassesOnOneSource;
+        return observedFromBreaches(limit);
+      };
+
+      const byLimit = Object.fromEntries(
+        DECLARED_RESOURCE_LIMIT_IDENTITIES.map((limit) => {
+          const declared = limits[limit];
+          const observed = observedFor(limit);
+          const usage: ResourceLimitUsage = { limit, declared, observed, remaining: declared - observed };
+          return [limit, usage];
+        }),
+      ) as Record<keyof PwbResourceLimits, ResourceLimitUsage>;
+
+      const cost: ResourceLedgerCostRecord = {
+        bodiesRead: bodiesCounted,
+        bytes: totalBytesNow,
+        parsePasses,
+        worstSourcePasses: maxPassesOnOneSource,
+      };
+
+      return {
+        bodiesCounted,
+        totalBytes: totalBytesNow,
+        parsePasses,
+        passesByIdentity: Object.fromEntries(PARSE_PASS_IDENTITIES.map((pass) => [pass, byIdentity.get(pass) ?? 0])) as Record<ParsePassIdentity, number>,
+        sourcesTraversed: passes.size,
+        maxPassesOnOneSource,
+        breaches: breachesNow,
+        byLimit,
+        cost,
+      };
+    },
   };
 }
