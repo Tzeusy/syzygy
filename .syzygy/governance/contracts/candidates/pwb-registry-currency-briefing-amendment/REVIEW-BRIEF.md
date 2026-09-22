@@ -2,14 +2,16 @@
 
 > **Candidate — binds nothing.** This brief states what an independent
 > reviewer is to be given and what they are to decide. It is not a review
-> and carries no verdict of its own. Two reviews have since been run
-> against this package — a first review and a confirmation of its repairs.
+> and carries no verdict of its own. Two reviews were run against predecessor
+> bytes — a first review and a confirmation of its repairs.
 > Their raw output is
 > `docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-RAW.md` and
 > `docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-CONFIRMATION-RAW.md`,
 > and both dispositions are the `## Review` section of
 > `SEMANTIC-DELTA.md`; each is bound to the bytes it names, which later
-> repairs have since moved. Effect over the subject would come from one
+> repairs and the 2026-09-22 sibling-package reconciliation have since moved.
+> Neither is a review of the current candidate bytes. Effect over the subject
+> would come from one
 > superseding
 > `adopt-registry-entry` owner act and from nothing else.
 
@@ -20,8 +22,9 @@ Drafted to step 2 of
 and stopped there, as the drafting authorization requires. No self-review
 was performed at any point. The independent review named in the banner
 was run in fresh context by a different session and its findings were
-repaired; this brief is unchanged apart from the predicate count in
-criterion 3, which the repair moved.
+repaired. The current candidate then changed to reconcile the now-present
+`syzygy-dov.22` package. This brief prepares the required new exact-byte review;
+no current verdict exists.
 
 ## What the reviewer is given, and nothing else
 
@@ -56,6 +59,9 @@ at its current bytes.
   paths and the `CurrencyBoundDeclaration` shape.
 - `apps/three-surface-poc/src/routes.ts`, for the two current response
   ceilings and the closed identity union.
+- `.syzygy/governance/contracts/candidates/pwb-machine-view-amendment/`
+  (`SEMANTIC-DELTA.md`, `OWNER-DECISION-PACKET.md` and `proposed/spec.md.patch`),
+  for the inert sibling category proposal and its unresolved owner values.
 
 **Deliberately withheld** — the design funnels under `docs/design/`. They
 are where these fields were designed and they recommend; the ruling record
@@ -75,7 +81,7 @@ Each is a yes/no question with the evidence that settles it.
    proposed change is the unified diff under `proposed/`, and that no act
    record, no superseded record and no manifest of a prior act is edited.
 3. **Does the package verify, and does its verification mean anything?**
-   Run `--check` and `--selftest`. `--selftest` mutates twenty-two
+   Run `--check` and `--selftest`. `--selftest` mutates twenty-three
    predicates in turn; confirm each mutation is one the package would
    actually be wrong about, not a tautology, and name any predicate the
    package asserts that no mutant covers.
@@ -92,9 +98,10 @@ Each is a yes/no question with the evidence that settles it.
    without narrowing or widening it?
 6. **Does the third ceiling sit correctly against `PWB-REQ-006`?** The
    ruling minted it; the question for review is whether the sentence's
-   scope — a derived read-only machine view composed from an evaluation
-   already served under `maxMachineResponseBytes` — is exact enough that
-   an implementer cannot serve a fourth kind of body under it.
+   scope — one exact project-shape claim identified by its full claim id,
+   with only same-evaluation joins independently derivable from the machine
+   answer — matches the sibling candidate's briefing member and is exact
+   enough that an implementer cannot serve a fourth kind of body under it.
 7. **Is the impact ledger's method sound and its denominator honest?**
    Re-run both sweeps. Confirm the counts, the 43-file partition
    arithmetic, and that the stated remainders are the only ones.
@@ -117,8 +124,9 @@ Each is a yes/no question with the evidence that settles it.
   owner's numbers. A reviewer may say a value is internally inconsistent
   with a sentence in the same file, and should; a reviewer does not choose
   them.
-- The derived read-only machine view **category**, which a sibling
-  specification package declares.
+- Choosing the sibling candidate's owner-reserved category values. The reviewer
+  checks this package against the exact candidate bytes but does not choose or
+  adopt them.
 - The undeclared-class disclosure route, which a separate CC-REV-2
   clarification scenario owns.
 - Whether to perform the act. That is the owner's, and only the owner's.

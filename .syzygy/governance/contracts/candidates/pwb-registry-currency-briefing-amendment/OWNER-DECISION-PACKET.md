@@ -23,7 +23,10 @@ count and denominator; `REVIEW-BRIEF.md` says what an independent reviewer
 is to be given. **Two independent reviews have been run**, a first review
 and a confirmation of its repairs; both verdicts and every disposition are
 in the `## Review` section of `SEMANTIC-DELTA.md`, which names each raw.
-Each review is bound to the bytes it names, which later repairs moved.
+Each review is bound to the bytes it names. The 2026-09-22 reconciliation
+against the now-present `syzygy-dov.22` candidate changed the proposed ceiling
+semantics and therefore retires both reviews for the current candidate bytes.
+A fresh exact-byte review is required after the owner choices below are fixed.
 
 ## Every value here is the owner's
 
@@ -80,6 +83,28 @@ set it higher and the ceiling stops being a constraint and becomes
 decoration. Note that a breach of a response ceiling serves nothing and
 logs nothing — the 503 body of the breaching request is its only trace —
 so a ceiling set wrong is discovered by a reader, not by a check.
+
+## Exact owner choices required before review and ceremony
+
+The packet is decision-ready, not decided. The owner must explicitly answer
+all three lines below; a general approval or the 2026-09-21 ruling answers none
+of them.
+
+1. **Currency bounds:** confirm all thirteen proposed `maxAgeMs` values above,
+   or name every replacement value by claim class.
+2. **Briefing ceiling:** confirm `maxBriefingResponseBytes = 20480`, or name its
+   replacement value.
+3. **Single-subject/category join:** confirm or replace this proposed reading:
+   the `syzygy-dov.22` derived read-only machine-view member for the briefing
+   has one required subject, **one exact project-shape claim identified by its
+   full claim id**; any other fields in that response are same-evaluation joins
+   independently derivable from the machine answer and do not become additional
+   subjects. The ceiling applies to the complete encoded response body.
+
+For line 3, the alternatives are deliberately explicit: the owner may (a)
+confirm that reading, (b) name a coarser subject identity and its closed
+population, which requires both candidate packages to be regenerated and
+reviewed, or (c) decline the briefing member. No default is inferred.
 
 ## The act, if the owner chooses to perform it
 
@@ -161,7 +186,9 @@ further gates are named in the ruling record and neither is prepared here:
   nothing — which is why it is a separate, much lighter step, and why it
   is deliberately absent from this package rather than folded in.
 - **The derived read-only machine view specification package** (gate
-  `syzygy-dov.22`, drafted separately). It declares the *category*; this
+  `syzygy-dov.22`, present as the inert candidate
+  `.syzygy/governance/contracts/candidates/pwb-machine-view-amendment/`). It
+  proposes the *category* and names the briefing member; this
   package declares the *ceiling*. The dependency runs both ways and
   neither half is sufficient alone: **no route is served before its
   ceiling is declared**, and a ceiling whose sentence names a category no
@@ -207,13 +234,16 @@ deciding something the drafting authorization does not cover.
    complete against today's two source files; nothing mechanically
    prevents a future class from being minted with no row, and the
    `undeclaredClass` sentence is what makes that safe rather than silent.
-6. **What counts as the "one named subject" the third ceiling bounds.**
-   The sentence bounds the ceiling to a single-subject view built from an
-   already-served evaluation, but nothing yet pins whether a subject is
-   one claim id or something coarser. The category belongs to the sibling
-   specification package, which is not in the tree; until it lands this
-   stays open, and no wording here can close it. Raised as F6 by the
-   independent review and dispositioned in `SEMANTIC-DELTA.md`.
+6. **Whether the proposed single-subject/category join is the owner's.** The
+   sibling candidate is now in the tree and proposes `/api/poc/briefing` as a
+   closed derived read-only machine-view member, but it remains inert and its
+   owner-reserved values remain unresolved. This packet now proposes that the
+   member's one required subject is one exact project-shape claim identified by
+   its full claim id; same-evaluation joined fields remain derivable context,
+   not additional subjects. The owner must confirm or replace that reading in
+   both packages before either ceremony is offered. Raised originally as F6;
+   this reconciliation changes the proposed bytes and retires both earlier
+   reviews.
 
 ## How to verify this package before acting
 
@@ -228,7 +258,7 @@ python3 scripts/check_governance.py
 
 `--check` proves the patch still applies to the bytes the act in force
 bound and that the manifest row is an exact regeneration over the result.
-`--selftest` mutates twenty-two predicates in turn and requires each to
+`--selftest` mutates twenty-three predicates in turn and requires each to
 fail closed; the count is the one the command prints. It covers every
 assertion `structure_findings` makes and all three `check()` makes on its
 own — the patch population under `proposed/`, a patch that changes
