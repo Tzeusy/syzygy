@@ -28,6 +28,7 @@ import {
 import { launchAfterPwbRepositoryBinding } from './launcher.js';
 import { materializeRoutes } from './materialize-action.js';
 import { reobserveRoutes } from './reobserve-action.js';
+import { createReobserveState } from './reobserve-state.js';
 import { pocRoutes } from './routes.js';
 import { gitBlobReaderFor, verbatimRouteReader } from './verbatim-route.js';
 
@@ -222,6 +223,24 @@ if (parsed.kind === 'help') {
 
           try {
             let model = buildModel(capture);
+            const reobserver = createReobserveState({
+              capture,
+              model,
+              observe: async () => {
+                const nextRepository = observeGitRepository(repoRoot);
+                const nextObserver = observeGitRepository(process.cwd());
+                if (!pocObserverInputsAreClean(nextObserver)) throw new Error('POC runtime inputs are dirty; re-observation was refused');
+                const nextHorizon = observeGitHorizon(repoRoot, nextRepository.revision);
+                const asOf = new Date().toISOString();
+                return {
+                  repositoryRevision: nextRepository.revision,
+                  observerRevision: nextObserver.revision,
+                  workingTreeDigest: nextRepository.worktreeMetadataDigest,
+                  evidence: evidenceFor(asOf, nextRepository.revision, nextRepository.committerInstant, nextHorizon),
+                };
+              },
+              build: buildModel,
+            });
             const start = await createDaemon({
               stateDir,
               port: parsed.config.port,
@@ -236,29 +255,16 @@ if (parsed.kind === 'help') {
                   stateDir: () => stateDir,
                   onMaterialized: () => {
                     model = buildModel(capture);
+                    reobserver.replace(capture, model);
                   },
                 }),
                 ...reobserveRoutes({
                   reobserve: async () => {
-                    try {
-                      const nextRepository = observeGitRepository(repoRoot);
-                      const nextObserver = observeGitRepository(process.cwd());
-                      if (!pocObserverInputsAreClean(nextObserver)) return { kind: 'failed', reason: 'POC runtime inputs are dirty; re-observation was refused' };
-                      const nextHorizon = observeGitHorizon(repoRoot, nextRepository.revision);
-                      const asOf = new Date().toISOString();
-                      const nextCapture = {
-                        repositoryRevision: nextRepository.revision,
-                        observerRevision: nextObserver.revision,
-                        workingTreeDigest: nextRepository.worktreeMetadataDigest,
-                        evidence: evidenceFor(asOf, nextRepository.revision, nextRepository.committerInstant, nextHorizon),
-                      };
-                      const nextModel = buildModel(nextCapture);
-                      capture = nextCapture;
-                      model = nextModel;
-                      return { kind: 'reobserved', evaluation: nextModel.evaluation.snapshot };
-                    } catch (error: unknown) {
-                      return { kind: 'failed', reason: error instanceof Error ? error.message : String(error) };
-                    }
+                    const result = await reobserver.reobserve();
+                    if (result.kind === 'failed') return result;
+                    model = result.model;
+                    capture = reobserver.getCapture();
+                    return { kind: 'reobserved', evaluation: result.model.evaluation.snapshot };
                   },
                 }),
               ],

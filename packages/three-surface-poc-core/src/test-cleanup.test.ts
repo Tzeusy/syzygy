@@ -25,5 +25,17 @@ describe('fixture cleanup', () => {
     })).toThrow('permission denied');
     expect(attempts).toBe(1);
   });
-});
 
+  it('exhausts retryable cleanup failures at the exact total-call bound and preserves the original error', () => {
+    let attempts = 0;
+    const failure = Object.assign(new Error('directory remains busy'), { code: 'ENOTEMPTY' });
+    expect(() => removeFixtureDirectory('/tmp/fixture', {
+      maxAttempts: 2,
+      remove: () => {
+        attempts += 1;
+        throw failure;
+      },
+    })).toThrow(failure);
+    expect(attempts).toBe(2);
+  });
+});

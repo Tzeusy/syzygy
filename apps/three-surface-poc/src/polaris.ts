@@ -343,10 +343,22 @@ function onDemandCounts(claimId: string, text: string): string {
 /** The claim-state glossary (PWB-REQ-007; RFC2-25): every field of the
  * tuple beside each claim, in ordinary words, and the only routes that
  * strengthen a claim. One disclosure, once, described-by from every tuple. */
-function claimStatesBlock(): string {
+function claimStatesBlock(model: PocModel): string {
   const sentence = (id: PolarisCopyId): string => `<p${copyAttr(id)}>${copy(id)}</p>`;
   const group = (labelId: PolarisCopyId, ids: readonly PolarisCopyId[]): string =>
-    `<p${copyAttr(labelId)}>${copy(labelId)}</p><ul>${ids.map((id) => `<li${copyAttr(id)}>${copy(id)}</li>`).join('')}</ul>`;
+    `<p${copyAttr(labelId)}>${copy(labelId)}</p><ul>${ids.map((id) => {
+      if (labelId !== 'states.freshness') return `<li${copyAttr(id)}>${copy(id)}</li>`;
+      const value = id.slice('states.freshness.'.length);
+      const used = shapeClaims(model.projectShape).some((claim) => claim.epistemic.freshness === value);
+      const marker = used ? '' : value === 'stale'
+        ? ' Not reachable at this evaluation: no claim freshness is judged against a currency bound; declare the bound and route freshness through the currency assessor.'
+        : value === 'broken'
+          ? ' Not reachable at this evaluation: one pinned revision carries no earlier claim; a changed source belongs to a later evidence probe, not this freshness value. Route: re-observe the repository.'
+          : value === 'superseded'
+            ? ' Not reachable at this evaluation: no claim from an earlier evaluation is carried. Route: capture a new evaluation that carries the replacement.'
+            : '';
+      return `<li${copyAttr(id)}>${escapeHtml(copyText(id) + marker)}</li>`;
+    }).join('')}</ul>`;
   return `<details id="polaris-claim-states" class="claim-states" data-polaris-claim-states>
     <summary${copyAttr('label.claim-states')}>${copy('label.claim-states')}</summary>
     <p class="lede" id="polaris-claim-states-lede"${copyAttr('states.lede')}>${copy('states.lede')}</p>
@@ -1612,7 +1624,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     ${groupHeader('overview')}
     ${projectGroupBody(shape, 'overview')}
     <p class="notice"${copyAttr('notice')}>${copy('notice')} <a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p>
-    ${claimStatesBlock()}
+    ${claimStatesBlock(model)}
     ${currencyProbeBand(model)}
     ${groupHeader('boundaries')}
     ${projectGroupBody(shape, 'boundaries')}

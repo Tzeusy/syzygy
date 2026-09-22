@@ -225,6 +225,25 @@ describe('Polaris copy roles (PWB-REQ-012)', () => {
     expect([...shapeKinds].sort()).toEqual(['not-admitted', 'not-evaluated', 'observation-failed', 'observed']);
   });
 
+  it('derives freshness reachability from rendered tuples: unreachable markers disappear when a state becomes used', () => {
+    const unused = renderPolarisPage(modelFor('observed'));
+    const staleSentence = (html: string): string => html.match(/<li[^>]*>stale —[^<]*<\/li>/)?.[0] ?? '';
+    expect(staleSentence(unused)).toContain('Not reachable at this evaluation');
+    const model = JSON.parse(JSON.stringify(modelFor('observed'))) as PocModel;
+    if (model.projectShape.kind !== 'observed') throw new Error('expected observed fixture');
+    const used: PocModel = {
+      ...model,
+      projectShape: {
+        ...model.projectShape,
+        claim: {
+          ...model.projectShape.claim,
+        epistemic: { label: 'Unknown', reasons: { primary: 'stale-beyond-currency-bound', secondary: [] }, freshness: 'stale' },
+        },
+      },
+    };
+    expect(staleSentence(renderPolarisPage(used))).not.toContain('Not reachable at this evaluation');
+  });
+
   it('keeps no group lede and no connective prose between groups: each group header is one heading', () => {
     const html = renderPolarisPage(modelFor('observed'));
     const headers = [...html.matchAll(/<header class="group"[^>]*>([\s\S]*?)<\/header>/g)].map((match) => (match[1] as string).trim());
