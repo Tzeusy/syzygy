@@ -10,9 +10,11 @@
 // ever opens the `file://` pages the caller writes.
 
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+
+import { removeTemporaryDirectory, type TemporaryDirectoryCleanupOptions } from './temporary-directory.js';
 
 export interface AxNode {
   readonly nodeId: string;
@@ -225,6 +227,14 @@ function waitForDevToolsUrl(child: ChildProcess): Promise<string> {
   });
 }
 
+/** Removes the throwaway profile after Chrome has released its files. */
+export function removeBrowserProfile(
+  profile: string,
+  options?: TemporaryDirectoryCleanupOptions,
+): void {
+  removeTemporaryDirectory(profile, options);
+}
+
 /** Launches `executable` headless with a throwaway profile and connects. */
 export async function launchBrowser(executable: string): Promise<Browser> {
   const profile = mkdtempSync(join(tmpdir(), 'syzygy-poc-browser-'));
@@ -250,7 +260,7 @@ export async function launchBrowser(executable: string): Promise<Browser> {
     connection = await CdpConnection.open(await waitForDevToolsUrl(child));
   } catch (error) {
     child.kill('SIGKILL');
-    rmSync(profile, { recursive: true, force: true });
+    removeBrowserProfile(profile);
     throw error;
   }
   const versionInfo = await connection.send<{ readonly product: string }>('Browser.getVersion');
@@ -281,7 +291,7 @@ export async function launchBrowser(executable: string): Promise<Browser> {
         if (child.exitCode !== null) resolve();
         else child.once('exit', () => resolve());
       });
-      rmSync(profile, { recursive: true, force: true });
+      removeBrowserProfile(profile);
     },
   };
 }
