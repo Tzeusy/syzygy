@@ -8,6 +8,7 @@ import {
   currentMaterializedBeadId,
   renderMaterializePanel,
 } from './materialize-action.js';
+import { substrateEvaluationFooter } from './evaluation-footer.js';
 import { pageShell } from './page-shell.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 
@@ -207,10 +208,23 @@ export function renderTrajectoryPage(model: PocModel, mountPrefix = ''): string 
     lede: 'A board over the registered Beads Dolt database, columns from a declared status mapping, time from recorded instants only.',
     extraStyle: TRAJECTORY_STYLE,
     body,
-    footer:
-      trajectory.kind === 'observed'
-        ? `Beads Dolt revision <code>${escapeHtml(trajectory.doltRevision)}</code>.`
-        : 'Work-item region: Unknown.',
+    footer: substrateEvaluationFooter({
+      model,
+      escapeHtml,
+      revisionOf:
+        "the observed Beads work-item database (Dolt) — a substrate distinct from the git tree the evaluation's project revision names",
+      revision: trajectory.kind === 'observed' ? trajectory.doltRevision : null,
+      skewChecks:
+        trajectory.kind === 'observed' && model.workItems.kind === 'observed'
+          ? [
+              {
+                label: "this surface's work-item capture instant",
+                observed: model.workItems.capturedAt,
+                expected: model.evaluation.asOf,
+              },
+            ]
+          : [],
+    }),
     escapeHtml,
     mountPrefix,
   });

@@ -423,4 +423,54 @@ describe('Trajectory', () => {
     const falsified = model.trajectory.excludedCount + 3;
     expect(model.trajectory.renderedCount + falsified).not.toBe(model.trajectory.totalCount);
   });
+
+  describe('footer: composite evaluation identity and substrate revision (N4)', () => {
+    it('prints the same composite evaluation identity Polaris renders, plus what this surface\'s revision is a revision of', () => {
+      const model = buildFixtureModel(cleanups);
+      if (model.trajectory.kind !== 'observed') throw new Error('unreachable');
+      const html = renderTrajectoryPage(model);
+
+      // The identity is Polaris's own line — model.evaluation.snapshot / asOf
+      // — never a value this renderer computes independently.
+      expect(html).toContain(`Evaluation <code>${model.evaluation.snapshot}</code>`);
+      expect(html).toContain(`as of <code>${model.evaluation.asOf}</code>`);
+      expect(html).toContain(
+        `<code data-parity-field="surface-substrate-revision">${model.trajectory.doltRevision}</code>`,
+      );
+      expect(html).toContain('is a revision of the observed Beads work-item database (Dolt)');
+      // No skew in the default fixture (workItems.capturedAt === evaluation.asOf).
+      expect(html).not.toContain('data-parity-field="evaluation-skew"');
+    });
+
+    it('renders an explicit Skew line when the work-item capture instant answers at a different evaluation (mutation check)', () => {
+      const model = buildFixtureModel(cleanups);
+      if (model.workItems.kind !== 'observed') throw new Error('unreachable');
+      const skewed = {
+        ...model,
+        workItems: { ...model.workItems, capturedAt: '2020-01-01T00:00:00Z' },
+      };
+      const html = renderTrajectoryPage(skewed);
+      expect(html).toContain('<strong data-parity-field="evaluation-skew">Skew</strong>');
+      expect(html).toContain('this surface&#39;s work-item capture instant');
+      expect(html).toContain('<code>2020-01-01T00:00:00Z</code>');
+      expect(html).toContain(`not <code>${model.evaluation.asOf}</code>`);
+    });
+
+    it('names the substrate Unknown, never a fabricated revision, when trajectory is unobserved', () => {
+      const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
+      const model = buildPocModel({
+        seeds: BUTLERS_POC_SEEDS,
+        repoRoot,
+        repositoryRevision: revision,
+        observerRevision: revision,
+        evaluation: { snapshot: 'butlers@unreachable', asOf: '2026-08-30T12:00:00Z' },
+        runWorkItemQuery: () => {
+          throw new Error('connection refused');
+        },
+      });
+      const html = renderTrajectoryPage(model);
+      expect(html).toContain('Unknown — this surface has no observed substrate revision to name.');
+      expect(html).not.toContain('data-parity-field="surface-substrate-revision"');
+    });
+  });
 });
