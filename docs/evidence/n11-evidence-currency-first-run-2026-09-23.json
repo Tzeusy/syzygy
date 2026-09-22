@@ -1,8 +1,8 @@
 {
   "instrument": "scripts/check_evidence_currency.py",
   "measuredOn": {
-    "resolvedCommit": "44c51b54054b7181e63f71917380faaa302a2df2",
-    "rev": "HEAD"
+    "resolvedCommit": "23447f3587af50b2b36fcc2ef8079bcc0487c49f",
+    "rev": "23447f3587af50b2b36fcc2ef8079bcc0487c49f"
   },
   "populationA_readingPlanAnchors": {
     "anchors": [
@@ -21,16 +21,34 @@
     ],
     "file": "apps/three-surface-poc/src/polaris-reading-plan.ts",
     "found": 2,
-    "rev": "44c51b54054b7181e63f71917380faaa302a2df2"
+    "rev": "23447f3587af50b2b36fcc2ef8079bcc0487c49f"
   },
   "populationB_evidenceRecords": {
-    "carriesDigestKey": 81,
-    "current": 6,
-    "denominator": 106,
-    "drift": 38,
+    "carriesDigestKey": 82,
+    "current": 5,
+    "denominator": 107,
+    "drift": 39,
+    "driftRecordsHistoricalOnly": 4,
+    "driftRecordsWithActionableDrift": 35,
     "records": [
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
+        "file": "docs/evidence/n11-evidence-currency-first-run-2026-09-23.json",
+        "inTreeCount": 0,
+        "leafCount": 2,
+        "matchCount": 0,
+        "reason": "digest key(s) present but no subject resolved to an in-tree path",
+        "resolvedCount": 0,
+        "status": "unknown"
+      },
+      {
+        "driftActionableCount": 0,
+        "driftClass": null,
+        "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/orrery-height-repaired-browser-2026-09-09.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -40,7 +58,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/orrery-height-rule6-2026-09-09.json",
         "inTreeCount": 0,
         "leafCount": 2,
@@ -50,7 +71,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-editorial-mutations-2026-09-09.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -60,7 +84,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-editorial-reading-plans-2026-09-09.json",
         "inTreeCount": 0,
         "leafCount": 4,
@@ -70,7 +97,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-existing-orrery-browser-2026-09-09.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -80,7 +110,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-adoption-clone-validation-2026-09-12.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -90,57 +123,75 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 2,
+        "driftClass": "mixed",
         "driftCount": 7,
+        "driftHistoricalCount": 5,
         "file": "docs/evidence/polaris-generator-approval-offer-2026-09-12.json",
         "inTreeCount": 615,
         "leafCount": 615,
         "matchCount": 608,
-        "reason": "7/615 in-tree subject digest(s) mismatch current bytes",
+        "reason": "7/615 in-tree subject digest(s) mismatch current bytes (5 historical-by-design, 2 actionable)",
         "resolvedCount": 615,
         "status": "drift"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "actionable",
         "driftCount": 1,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-approval-tool-validation-2026-09-12.json",
         "inTreeCount": 3,
         "leafCount": 3,
         "matchCount": 2,
-        "reason": "1/3 in-tree subject digest(s) mismatch current bytes",
+        "reason": "1/3 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
         "resolvedCount": 3,
         "status": "drift"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "actionable",
         "driftCount": 1,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-concrete-offer-validation-2026-09-12.json",
         "inTreeCount": 4,
         "leafCount": 4,
         "matchCount": 3,
-        "reason": "1/4 in-tree subject digest(s) mismatch current bytes",
+        "reason": "1/4 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
         "resolvedCount": 4,
         "status": "drift"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "actionable",
         "driftCount": 1,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-current-scope-2026-09-12.json",
         "inTreeCount": 21,
         "leafCount": 21,
         "matchCount": 20,
-        "reason": "1/21 in-tree subject digest(s) mismatch current bytes",
+        "reason": "1/21 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
         "resolvedCount": 21,
         "status": "drift"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "actionable",
         "driftCount": 1,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-format-validation-2026-09-12.json",
         "inTreeCount": 2,
         "leafCount": 2,
         "matchCount": 1,
-        "reason": "1/2 in-tree subject digest(s) mismatch current bytes",
+        "reason": "1/2 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
         "resolvedCount": 2,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-host-overlap-2026-09-12.json",
         "inTreeCount": 3,
         "leafCount": 3,
@@ -150,17 +201,23 @@
         "status": "current"
       },
       {
+        "driftActionableCount": 4,
+        "driftClass": "actionable",
         "driftCount": 4,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-no-signal-delta-impact-2026-09-09.json",
         "inTreeCount": 141,
         "leafCount": 164,
         "matchCount": 137,
-        "reason": "4/141 in-tree subject digest(s) mismatch current bytes",
+        "reason": "4/141 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 4 actionable)",
         "resolvedCount": 163,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-no-signal-mapping-search-2026-09-09.json",
         "inTreeCount": 0,
         "leafCount": 1,
@@ -170,27 +227,36 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "actionable",
         "driftCount": 1,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-non7-current-binding-bridge-2026-09-12.json",
         "inTreeCount": 79,
         "leafCount": 80,
         "matchCount": 78,
-        "reason": "1/79 in-tree subject digest(s) mismatch current bytes",
+        "reason": "1/79 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
         "resolvedCount": 80,
         "status": "drift"
       },
       {
+        "driftActionableCount": 10,
+        "driftClass": "actionable",
         "driftCount": 10,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-resumption-inventory-2026-09-12.json",
         "inTreeCount": 18,
         "leafCount": 19,
         "matchCount": 8,
-        "reason": "10/18 in-tree subject digest(s) mismatch current bytes",
+        "reason": "10/18 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 10 actionable)",
         "resolvedCount": 19,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-review-subject-2026-09-12.json",
         "inTreeCount": 23,
         "leafCount": 23,
@@ -200,47 +266,62 @@
         "status": "current"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "actionable",
         "driftCount": 1,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-rfc1-4-coverage-2026-09-12-v2.json",
         "inTreeCount": 15,
         "leafCount": 15,
         "matchCount": 14,
-        "reason": "1/15 in-tree subject digest(s) mismatch current bytes",
+        "reason": "1/15 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
         "resolvedCount": 15,
         "status": "drift"
       },
       {
+        "driftActionableCount": 141,
+        "driftClass": "actionable",
         "driftCount": 141,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-rfc1-4-coverage-2026-09-12.json",
         "inTreeCount": 448,
         "leafCount": 448,
         "matchCount": 307,
-        "reason": "141/448 in-tree subject digest(s) mismatch current bytes",
+        "reason": "141/448 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 141 actionable)",
         "resolvedCount": 448,
         "status": "drift"
       },
       {
+        "driftActionableCount": 17,
+        "driftClass": "actionable",
         "driftCount": 17,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-rfc5-6-8-9-coverage-2026-09-12.json",
         "inTreeCount": 582,
         "leafCount": 1147,
         "matchCount": 565,
-        "reason": "17/582 in-tree subject digest(s) mismatch current bytes",
+        "reason": "17/582 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 17 actionable)",
         "resolvedCount": 582,
         "status": "drift"
       },
       {
+        "driftActionableCount": 17,
+        "driftClass": "actionable",
         "driftCount": 17,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-rfc5-6-8-9-coverage-v2-2026-09-12.json",
         "inTreeCount": 583,
         "leafCount": 1148,
         "matchCount": 566,
-        "reason": "17/583 in-tree subject digest(s) mismatch current bytes",
+        "reason": "17/583 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 17 actionable)",
         "resolvedCount": 583,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-rfc7-coverage-2026-09-12.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -250,7 +331,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-rfc7-coverage-v2-2026-09-12.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -260,7 +344,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-rfc7-coverage-v3-2026-09-12.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -270,17 +357,23 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 2,
+        "driftClass": "actionable",
         "driftCount": 2,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-rfc7-coverage-v4-2026-09-12.json",
         "inTreeCount": 24,
         "leafCount": 24,
         "matchCount": 22,
-        "reason": "2/24 in-tree subject digest(s) mismatch current bytes",
+        "reason": "2/24 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 2 actionable)",
         "resolvedCount": 24,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-generator-rfc7-coverage-v5-2026-09-12.json",
         "inTreeCount": 24,
         "leafCount": 24,
@@ -290,77 +383,101 @@
         "status": "current"
       },
       {
+        "driftActionableCount": 2,
+        "driftClass": "mixed",
         "driftCount": 5,
+        "driftHistoricalCount": 3,
         "file": "docs/evidence/polaris-m10-machine-contract-funnel-2026-09-15.json",
         "inTreeCount": 6,
         "leafCount": 11,
         "matchCount": 1,
-        "reason": "5/6 in-tree subject digest(s) mismatch current bytes",
+        "reason": "5/6 in-tree subject digest(s) mismatch current bytes (3 historical-by-design, 2 actionable)",
         "resolvedCount": 6,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": "historical-by-design",
         "driftCount": 5,
+        "driftHistoricalCount": 5,
         "file": "docs/evidence/polaris-m11-operability-funnel-2026-09-15.json",
         "inTreeCount": 7,
         "leafCount": 10,
         "matchCount": 2,
-        "reason": "5/7 in-tree subject digest(s) mismatch current bytes",
+        "reason": "5/7 in-tree subject digest(s) mismatch current bytes (5 historical-by-design, 0 actionable)",
         "resolvedCount": 7,
         "status": "drift"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "mixed",
         "driftCount": 4,
+        "driftHistoricalCount": 3,
         "file": "docs/evidence/polaris-m12-retained-evaluations-funnel-2026-09-15.json",
         "inTreeCount": 6,
         "leafCount": 11,
         "matchCount": 2,
-        "reason": "4/6 in-tree subject digest(s) mismatch current bytes",
+        "reason": "4/6 in-tree subject digest(s) mismatch current bytes (3 historical-by-design, 1 actionable)",
         "resolvedCount": 6,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": "historical-by-design",
         "driftCount": 5,
+        "driftHistoricalCount": 5,
         "file": "docs/evidence/polaris-m13-navigation-scale-funnel-2026-09-15.json",
         "inTreeCount": 6,
         "leafCount": 12,
         "matchCount": 1,
-        "reason": "5/6 in-tree subject digest(s) mismatch current bytes",
+        "reason": "5/6 in-tree subject digest(s) mismatch current bytes (5 historical-by-design, 0 actionable)",
         "resolvedCount": 8,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": "historical-by-design",
         "driftCount": 3,
+        "driftHistoricalCount": 3,
         "file": "docs/evidence/polaris-m14-provenance-depth-funnel-2026-09-17.json",
         "inTreeCount": 3,
         "leafCount": 6,
         "matchCount": 0,
-        "reason": "3/3 in-tree subject digest(s) mismatch current bytes",
+        "reason": "3/3 in-tree subject digest(s) mismatch current bytes (3 historical-by-design, 0 actionable)",
         "resolvedCount": 4,
         "status": "drift"
       },
       {
+        "driftActionableCount": 2,
+        "driftClass": "mixed",
         "driftCount": 5,
+        "driftHistoricalCount": 3,
         "file": "docs/evidence/polaris-m15-pipeline-truthfulness-funnel-2026-09-17.json",
         "inTreeCount": 5,
         "leafCount": 6,
         "matchCount": 0,
-        "reason": "5/5 in-tree subject digest(s) mismatch current bytes",
+        "reason": "5/5 in-tree subject digest(s) mismatch current bytes (3 historical-by-design, 2 actionable)",
         "resolvedCount": 5,
         "status": "drift"
       },
       {
+        "driftActionableCount": 2,
+        "driftClass": "actionable",
         "driftCount": 2,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-m16-renderer-visual-system-funnel-2026-09-17.json",
         "inTreeCount": 3,
         "leafCount": 5,
         "matchCount": 1,
-        "reason": "2/3 in-tree subject digest(s) mismatch current bytes",
+        "reason": "2/3 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 2 actionable)",
         "resolvedCount": 3,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-m2-evidence-currency-funnel-2026-09-14.json",
         "inTreeCount": 0,
         "leafCount": 9,
@@ -370,27 +487,36 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 5,
+        "driftClass": "actionable",
         "driftCount": 5,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-m3-honest-encoding-funnel-2026-09-14.json",
         "inTreeCount": 12,
         "leafCount": 29,
         "matchCount": 7,
-        "reason": "5/12 in-tree subject digest(s) mismatch current bytes",
+        "reason": "5/12 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 5 actionable)",
         "resolvedCount": 17,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": "historical-by-design",
         "driftCount": 18,
+        "driftHistoricalCount": 18,
         "file": "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json",
         "inTreeCount": 18,
         "leafCount": 33,
         "matchCount": 0,
-        "reason": "18/18 in-tree subject digest(s) mismatch current bytes",
+        "reason": "18/18 in-tree subject digest(s) mismatch current bytes (18 historical-by-design, 0 actionable)",
         "resolvedCount": 26,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-m5-agent-briefing-funnel-2026-09-14.json",
         "inTreeCount": 0,
         "leafCount": 18,
@@ -400,47 +526,62 @@
         "status": "unknown"
       },
       {
-        "driftCount": 4,
+        "driftActionableCount": 3,
+        "driftClass": "mixed",
+        "driftCount": 6,
+        "driftHistoricalCount": 3,
         "file": "docs/evidence/polaris-m6-generator-honesty-funnel-2026-09-15.json",
         "inTreeCount": 16,
         "leafCount": 19,
-        "matchCount": 12,
-        "reason": "4/16 in-tree subject digest(s) mismatch current bytes",
+        "matchCount": 10,
+        "reason": "6/16 in-tree subject digest(s) mismatch current bytes (3 historical-by-design, 3 actionable)",
         "resolvedCount": 16,
         "status": "drift"
       },
       {
+        "driftActionableCount": 2,
+        "driftClass": "mixed",
         "driftCount": 7,
+        "driftHistoricalCount": 5,
         "file": "docs/evidence/polaris-m7-generation-loop-funnel-2026-09-15.json",
         "inTreeCount": 8,
         "leafCount": 10,
         "matchCount": 1,
-        "reason": "7/8 in-tree subject digest(s) mismatch current bytes",
+        "reason": "7/8 in-tree subject digest(s) mismatch current bytes (5 historical-by-design, 2 actionable)",
         "resolvedCount": 8,
         "status": "drift"
       },
       {
+        "driftActionableCount": 2,
+        "driftClass": "mixed",
         "driftCount": 7,
+        "driftHistoricalCount": 5,
         "file": "docs/evidence/polaris-m8-portability-funnel-2026-09-15.json",
         "inTreeCount": 8,
         "leafCount": 12,
         "matchCount": 1,
-        "reason": "7/8 in-tree subject digest(s) mismatch current bytes",
+        "reason": "7/8 in-tree subject digest(s) mismatch current bytes (5 historical-by-design, 2 actionable)",
         "resolvedCount": 8,
         "status": "drift"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "mixed",
         "driftCount": 4,
+        "driftHistoricalCount": 3,
         "file": "docs/evidence/polaris-m9-one-identity-funnel-2026-09-15.json",
         "inTreeCount": 6,
         "leafCount": 10,
         "matchCount": 2,
-        "reason": "4/6 in-tree subject digest(s) mismatch current bytes",
+        "reason": "4/6 in-tree subject digest(s) mismatch current bytes (3 historical-by-design, 1 actionable)",
         "resolvedCount": 6,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-manifesto-example-mutation-2026-09-09.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -450,7 +591,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-manifesto-repair-report-2026-09-09.json",
         "inTreeCount": 0,
         "leafCount": 10,
@@ -460,7 +604,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-no-signal-draft-relocation-2026-09-12.json",
         "inTreeCount": 0,
         "leafCount": 1,
@@ -470,27 +617,36 @@
         "status": "unknown"
       },
       {
-        "driftCount": 0,
+        "driftActionableCount": 3,
+        "driftClass": "actionable",
+        "driftCount": 3,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-pipeline-synthetic-verification-2026-09-13.json",
         "inTreeCount": 17,
         "leafCount": 17,
-        "matchCount": 17,
-        "reason": "17/17 in-tree subject digest(s) match current bytes",
+        "matchCount": 14,
+        "reason": "3/17 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 3 actionable)",
         "resolvedCount": 17,
-        "status": "current"
+        "status": "drift"
       },
       {
+        "driftActionableCount": 3,
+        "driftClass": "actionable",
         "driftCount": 3,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-source-index-reading-2026-09-09.json",
         "inTreeCount": 3,
         "leafCount": 4,
         "matchCount": 0,
-        "reason": "3/3 in-tree subject digest(s) mismatch current bytes",
+        "reason": "3/3 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 3 actionable)",
         "resolvedCount": 3,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-understanding-adoption-clone-validation-2026-09-13.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -500,7 +656,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-understanding-adoption-manifest-2026-09-13.json",
         "inTreeCount": 13,
         "leafCount": 13,
@@ -510,7 +669,10 @@
         "status": "current"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/polaris-understanding-amendment-validation-2026-09-13.json",
         "inTreeCount": 8,
         "leafCount": 8,
@@ -520,7 +682,10 @@
         "status": "current"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-c4-fact-precedence-grammar-mutation-run-2026-09-05.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -530,7 +695,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-c5-readiness-verbatim-mutation-run-2026-09-05.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -540,7 +708,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-c6-polaris-parity-mutation-run-2026-09-05.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -550,7 +721,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-c7-fresh-demo-readiness-mutation-run-2026-09-05.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -560,7 +734,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-declared-home-seed-mutation-run-2026-09-08-ordering.json",
         "inTreeCount": 0,
         "leafCount": 1,
@@ -570,7 +747,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-declared-home-seed-mutation-run-2026-09-08-tree-rule.json",
         "inTreeCount": 0,
         "leafCount": 1,
@@ -580,7 +760,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-declared-home-seed-mutation-run-2026-09-08.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -590,7 +773,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-laneb-strict-scope-estimate-2026-09-14.json",
         "inTreeCount": 0,
         "leafCount": 2,
@@ -600,7 +786,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json",
         "inTreeCount": 0,
         "leafCount": 9,
@@ -610,17 +799,23 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 2,
+        "driftClass": "actionable",
         "driftCount": 2,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-mutation-run-2026-09-03.json",
         "inTreeCount": 6,
         "leafCount": 6,
         "matchCount": 4,
-        "reason": "2/6 in-tree subject digest(s) mismatch current bytes",
+        "reason": "2/6 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 2 actionable)",
         "resolvedCount": 6,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-owner-walkthrough-readiness-2026-09-09.json",
         "inTreeCount": 0,
         "leafCount": 4,
@@ -630,57 +825,75 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "actionable",
         "driftCount": 1,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p2-4-classification-mutation-run-2026-09-04.json",
         "inTreeCount": 1,
         "leafCount": 1,
         "matchCount": 0,
-        "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+        "reason": "1/1 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
         "resolvedCount": 1,
         "status": "drift"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "actionable",
         "driftCount": 1,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p2-5-extraction-mutation-run-2026-09-04.json",
         "inTreeCount": 1,
         "leafCount": 1,
         "matchCount": 0,
-        "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+        "reason": "1/1 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
         "resolvedCount": 1,
         "status": "drift"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "actionable",
         "driftCount": 1,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p2-6-coverage-mutation-run-2026-09-04.json",
         "inTreeCount": 1,
         "leafCount": 1,
         "matchCount": 0,
-        "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+        "reason": "1/1 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
         "resolvedCount": 1,
         "status": "drift"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "actionable",
         "driftCount": 1,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p2-7-model-mutation-run-2026-09-04.json",
         "inTreeCount": 1,
         "leafCount": 1,
         "matchCount": 0,
-        "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+        "reason": "1/1 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
         "resolvedCount": 1,
         "status": "drift"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "actionable",
         "driftCount": 1,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p3-5-tuple-mutation-run-2026-09-04.json",
         "inTreeCount": 1,
         "leafCount": 1,
         "matchCount": 0,
-        "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+        "reason": "1/1 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
         "resolvedCount": 1,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p3-6-narrative-mutation-run-2026-09-04.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -690,7 +903,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p3-7-bands-mutation-run-2026-09-04.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -700,7 +916,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p3-8-reachability-mutation-run-2026-09-04.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -710,7 +929,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-1-judgment-mutation-run-2026-09-04.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -720,47 +942,62 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 6,
+        "driftClass": "actionable",
         "driftCount": 6,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04-parity-markers.json",
         "inTreeCount": 8,
         "leafCount": 8,
         "matchCount": 2,
-        "reason": "6/8 in-tree subject digest(s) mismatch current bytes",
+        "reason": "6/8 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 6 actionable)",
         "resolvedCount": 8,
         "status": "drift"
       },
       {
+        "driftActionableCount": 18,
+        "driftClass": "actionable",
         "driftCount": 18,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04.json",
         "inTreeCount": 26,
         "leafCount": 26,
         "matchCount": 8,
-        "reason": "18/26 in-tree subject digest(s) mismatch current bytes",
+        "reason": "18/26 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 18 actionable)",
         "resolvedCount": 26,
         "status": "drift"
       },
       {
+        "driftActionableCount": 6,
+        "driftClass": "actionable",
         "driftCount": 6,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-06-parity-markers.json",
         "inTreeCount": 8,
         "leafCount": 8,
         "matchCount": 2,
-        "reason": "6/8 in-tree subject digest(s) mismatch current bytes",
+        "reason": "6/8 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 6 actionable)",
         "resolvedCount": 8,
         "status": "drift"
       },
       {
+        "driftActionableCount": 8,
+        "driftClass": "actionable",
         "driftCount": 8,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-09-named-absent-file-dropped.json",
         "inTreeCount": 26,
         "leafCount": 26,
         "matchCount": 18,
-        "reason": "8/26 in-tree subject digest(s) mismatch current bytes",
+        "reason": "8/26 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 8 actionable)",
         "resolvedCount": 26,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-4-accessibility-browser-run-2026-09-04.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -770,7 +1007,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-4-accessibility-mutation-run-2026-09-04.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -780,7 +1020,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-04.json",
         "inTreeCount": 0,
         "leafCount": 13,
@@ -790,7 +1033,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-05.json",
         "inTreeCount": 0,
         "leafCount": 385,
@@ -800,7 +1046,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-06-gen2-reviewer.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -810,7 +1059,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-06-gen2.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -820,7 +1072,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-06.json",
         "inTreeCount": 0,
         "leafCount": 385,
@@ -830,7 +1085,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-08-declared-homes.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -840,7 +1098,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-08.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -850,7 +1111,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-confirmation.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -860,7 +1124,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-editorial-reviewed.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -870,7 +1137,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-editorial.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -880,7 +1150,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-final.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -890,7 +1163,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-manifesto-catalog.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -900,7 +1176,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-manifesto-complete.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -910,7 +1189,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-manifesto-final.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -920,7 +1202,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-manifesto.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -930,7 +1215,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-product-reading-final.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -940,7 +1228,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-product-reading.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -950,7 +1241,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-readiness.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -960,7 +1254,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-10-guide-navigation.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -970,7 +1267,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-10-reading-assets-final.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -980,7 +1280,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-10-reading-assets-repaired.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -990,7 +1293,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-10-reading-assets.json",
         "inTreeCount": 0,
         "leafCount": 19,
@@ -1000,7 +1306,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-10-visible-diagrams-final.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -1010,7 +1319,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-10-visible-diagrams.json",
         "inTreeCount": 0,
         "leafCount": 389,
@@ -1020,17 +1332,23 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 1,
+        "driftClass": "actionable",
         "driftCount": 1,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p4-6-walkthrough-inputs-mutation-run-2026-09-04.json",
         "inTreeCount": 1,
         "leafCount": 1,
         "matchCount": 0,
-        "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+        "reason": "1/1 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
         "resolvedCount": 1,
         "status": "drift"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-p63-polaris-trim-measurement-2026-09-07.json",
         "inTreeCount": 0,
         "leafCount": 9,
@@ -1040,7 +1358,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-readiness-review-mutations-2026-09-09.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -1050,7 +1371,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-recon-gen1-reviewer-mutation-run-2026-09-06.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -1060,7 +1384,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-recon-gen2-gate-mutation-run-2026-09-06.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -1070,7 +1397,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-recon-gen2-repair-mutation-run-2026-09-06.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -1080,7 +1410,10 @@
         "status": "unknown"
       },
       {
+        "driftActionableCount": 0,
+        "driftClass": null,
         "driftCount": 0,
+        "driftHistoricalCount": 0,
         "file": "docs/evidence/pwb-recon-gen2-reviewer-mutation-run-2026-09-06.json",
         "inTreeCount": 0,
         "leafCount": 0,
@@ -1090,14 +1423,17 @@
         "status": "unknown"
       }
     ],
-    "unknown": 62
+    "unknown": 63
   },
   "populationC_mutationRecords": {
     "denominator": 31,
     "records": [
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 2,
           "matchCount": 0,
@@ -1115,7 +1451,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1133,7 +1472,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1151,7 +1493,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1169,7 +1514,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1187,7 +1535,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1205,7 +1556,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1223,7 +1577,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 1,
           "matchCount": 0,
@@ -1241,7 +1598,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 1,
           "matchCount": 0,
@@ -1259,7 +1619,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1277,11 +1640,14 @@
       },
       {
         "digest": {
+          "driftActionableCount": 2,
+          "driftClass": "actionable",
           "driftCount": 2,
+          "driftHistoricalCount": 0,
           "inTreeCount": 6,
           "leafCount": 6,
           "matchCount": 4,
-          "reason": "2/6 in-tree subject digest(s) mismatch current bytes",
+          "reason": "2/6 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 2 actionable)",
           "resolvedCount": 6,
           "status": "drift"
         },
@@ -1295,11 +1661,14 @@
       },
       {
         "digest": {
+          "driftActionableCount": 1,
+          "driftClass": "actionable",
           "driftCount": 1,
+          "driftHistoricalCount": 0,
           "inTreeCount": 1,
           "leafCount": 1,
           "matchCount": 0,
-          "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+          "reason": "1/1 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
           "resolvedCount": 1,
           "status": "drift"
         },
@@ -1313,11 +1682,14 @@
       },
       {
         "digest": {
+          "driftActionableCount": 1,
+          "driftClass": "actionable",
           "driftCount": 1,
+          "driftHistoricalCount": 0,
           "inTreeCount": 1,
           "leafCount": 1,
           "matchCount": 0,
-          "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+          "reason": "1/1 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
           "resolvedCount": 1,
           "status": "drift"
         },
@@ -1331,11 +1703,14 @@
       },
       {
         "digest": {
+          "driftActionableCount": 1,
+          "driftClass": "actionable",
           "driftCount": 1,
+          "driftHistoricalCount": 0,
           "inTreeCount": 1,
           "leafCount": 1,
           "matchCount": 0,
-          "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+          "reason": "1/1 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
           "resolvedCount": 1,
           "status": "drift"
         },
@@ -1349,11 +1724,14 @@
       },
       {
         "digest": {
+          "driftActionableCount": 1,
+          "driftClass": "actionable",
           "driftCount": 1,
+          "driftHistoricalCount": 0,
           "inTreeCount": 1,
           "leafCount": 1,
           "matchCount": 0,
-          "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+          "reason": "1/1 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
           "resolvedCount": 1,
           "status": "drift"
         },
@@ -1367,11 +1745,14 @@
       },
       {
         "digest": {
+          "driftActionableCount": 1,
+          "driftClass": "actionable",
           "driftCount": 1,
+          "driftHistoricalCount": 0,
           "inTreeCount": 1,
           "leafCount": 1,
           "matchCount": 0,
-          "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+          "reason": "1/1 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
           "resolvedCount": 1,
           "status": "drift"
         },
@@ -1385,7 +1766,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1403,7 +1787,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1421,7 +1808,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1439,7 +1829,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1457,11 +1850,14 @@
       },
       {
         "digest": {
+          "driftActionableCount": 6,
+          "driftClass": "actionable",
           "driftCount": 6,
+          "driftHistoricalCount": 0,
           "inTreeCount": 8,
           "leafCount": 8,
           "matchCount": 2,
-          "reason": "6/8 in-tree subject digest(s) mismatch current bytes",
+          "reason": "6/8 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 6 actionable)",
           "resolvedCount": 8,
           "status": "drift"
         },
@@ -1475,11 +1871,14 @@
       },
       {
         "digest": {
+          "driftActionableCount": 18,
+          "driftClass": "actionable",
           "driftCount": 18,
+          "driftHistoricalCount": 0,
           "inTreeCount": 26,
           "leafCount": 26,
           "matchCount": 8,
-          "reason": "18/26 in-tree subject digest(s) mismatch current bytes",
+          "reason": "18/26 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 18 actionable)",
           "resolvedCount": 26,
           "status": "drift"
         },
@@ -1493,11 +1892,14 @@
       },
       {
         "digest": {
+          "driftActionableCount": 6,
+          "driftClass": "actionable",
           "driftCount": 6,
+          "driftHistoricalCount": 0,
           "inTreeCount": 8,
           "leafCount": 8,
           "matchCount": 2,
-          "reason": "6/8 in-tree subject digest(s) mismatch current bytes",
+          "reason": "6/8 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 6 actionable)",
           "resolvedCount": 8,
           "status": "drift"
         },
@@ -1511,11 +1913,14 @@
       },
       {
         "digest": {
+          "driftActionableCount": 8,
+          "driftClass": "actionable",
           "driftCount": 8,
+          "driftHistoricalCount": 0,
           "inTreeCount": 26,
           "leafCount": 26,
           "matchCount": 18,
-          "reason": "8/26 in-tree subject digest(s) mismatch current bytes",
+          "reason": "8/26 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 8 actionable)",
           "resolvedCount": 26,
           "status": "drift"
         },
@@ -1529,7 +1934,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1547,11 +1955,14 @@
       },
       {
         "digest": {
+          "driftActionableCount": 1,
+          "driftClass": "actionable",
           "driftCount": 1,
+          "driftHistoricalCount": 0,
           "inTreeCount": 1,
           "leafCount": 1,
           "matchCount": 0,
-          "reason": "1/1 in-tree subject digest(s) mismatch current bytes",
+          "reason": "1/1 in-tree subject digest(s) mismatch current bytes (0 historical-by-design, 1 actionable)",
           "resolvedCount": 1,
           "status": "drift"
         },
@@ -1565,7 +1976,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1583,7 +1997,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1601,7 +2018,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1619,7 +2039,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
@@ -1637,7 +2060,10 @@
       },
       {
         "digest": {
+          "driftActionableCount": 0,
+          "driftClass": null,
           "driftCount": 0,
+          "driftHistoricalCount": 0,
           "inTreeCount": 0,
           "leafCount": 0,
           "matchCount": 0,
