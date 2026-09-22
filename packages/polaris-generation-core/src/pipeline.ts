@@ -48,9 +48,15 @@ export interface ProviderReply {
   readonly usageUnits: number | null;
 }
 
+/** Which step inside the parse/validate/encode/digest chain rejected the reply.
+ * Distinct from the pipeline-level 'invalid-output' StopReason: this is the
+ * durable receipt's typed detail, not the caller-facing stop signal. */
+export type InvalidOutputReason = 'parse-failed' | 'schema-rejected' | 'encode-failed' | 'digest-failed';
+
 export type AttemptOutcome =
   | { readonly kind: 'validated'; readonly outputDigest: string; readonly model: string | null; readonly usageUnits: number }
-  | { readonly kind: 'invalid-output' | 'usage-uncertain' | 'effect-uncertain'; readonly usageUnits: number | null };
+  | { readonly kind: 'invalid-output'; readonly usageUnits: number | null; readonly reason: InvalidOutputReason; readonly detail: string }
+  | { readonly kind: 'usage-uncertain' | 'effect-uncertain'; readonly usageUnits: number | null };
 
 /** Effect ports are trusted implementations, never fields supplied by a model. */
 export interface PipelinePorts {
@@ -239,15 +245,23 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
       usage += actualUsage;
       let validated: unknown;
       let digest: string;
+      let invalidOutputReason: InvalidOutputReason = 'parse-failed';
       try {
         const parsed = parseBoundedJson(reply.body, dataLimits(permit.maxOutputBytes));
+        invalidOutputReason = 'schema-rejected';
         validated = ports.validate(name, parsed, context);
+        invalidOutputReason = 'encode-failed';
         const bytes = encodeCanonicalJson(validated, dataLimits(permit.maxOutputBytes));
         validated = JSON.parse(bytes);
+        invalidOutputReason = 'digest-failed';
         digest = digestCanonicalJson(validated, dataLimits(permit.maxOutputBytes)).digest;
         outputBytes += Buffer.byteLength(reply.body, 'utf8');
-      } catch {
-        await bounded(() => ports.record(permit, { kind: 'invalid-output', usageUnits: actualUsage }), true);
+      } catch (error) {
+        // The step marker (set immediately before each fallible call) identifies which
+        // stage rejected the reply; the message is truncated so a diagnostic can never
+        // carry the invalid output body itself (PipelinePorts.record's contract).
+        const detail = (error instanceof Error ? error.message : String(error)).slice(0, 200);
+        await bounded(() => ports.record(permit, { kind: 'invalid-output', usageUnits: actualUsage, reason: invalidOutputReason, detail }), true);
         stop('invalid-output');
       }
       await bounded(() => ports.record(permit, { kind: 'validated', outputDigest: digest, model: reply.model, usageUnits: actualUsage }), true);
