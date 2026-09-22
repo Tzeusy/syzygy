@@ -469,19 +469,27 @@ No build starts until all gates below are recorded in order.
    implementation packet name exact files, dependencies, tests, byte ceiling,
    and rollback. This design and its PR are not that authorization.
 7. **Fresh exact-head review:** independent design and accessibility reviews
-   cover the final candidate bytes; raw output is retained verbatim, exact
-   verdict words are copied, and every finding is dispositioned. Any semantic
-   repair retires that review and receives confirmation.
+   cover the final candidate bytes; raw output is retained verbatim under a new
+   distinct filename ending exactly `-RAW.md`, exact verdict words are copied,
+   and every finding is dispositioned. Historical reconstruction and earlier
+   raw reviews are never overwritten. Any semantic repair retires that review
+   and receives confirmation.
 
 Rollback before implementation is deletion of this candidate. After a future
 implementation, rollback is removal of the additive SVG view while retaining
 the complete text graph; no project identity, claim, evidence, or source body
 depends on the SVG.
 
-## Review 1 and disposition
+## Review evidence routing
 
-Raw output is retained verbatim at
-`docs/reviews/R-POLARIS-SVG-GRAPH-DIAGRAMS-FEATURE-CANDIDATE-RAW.md`.
+The file
+`docs/reviews/R-POLARIS-SVG-GRAPH-DIAGRAMS-FEATURE-CANDIDATE-RAW.md`
+is a historical reconstruction written during the first correction pass. It
+is preserved byte-for-byte, but it is synthesized prose, not verbatim reviewer
+output and not a raw review record.
+
+The actual Review 1 output is retained verbatim at
+`docs/reviews/R-POLARIS-SVG-GRAPH-DIAGRAMS-FEATURE-CANDIDATE-REVIEW-1-RAW.md`.
 **Verdict, copied exactly: REVISE** — two blocking findings and one medium
 finding.
 
@@ -497,17 +505,33 @@ reviewed commit, not confirmation of this successor.
 | F2 — node parent and hierarchy edge were two truth carriers | **Repaired.** Nodes carry no parent input and edges carry no hierarchy boolean. One envelope `hierarchyRelationId` selects the typed relation; its model edge instances alone derive parent map and roots. The hierarchy fixture mutates disagreement, a missing parent endpoint, and a child rendered as root. |
 | F3 — visual byte limits also purported to bound complete text | **Repaired.** Complete semantic text is uncapped by diagram limits; 24/96 KiB govern additive SVG/legend only; the registry whole-response ceiling remains authoritative and serves nothing on breach. Density and ceiling fixtures measure complete text, additive visual bytes, and whole-response bytes separately before and after fallback. |
 
+## Review 2 and disposition
+
+The actual Review 2 output is retained verbatim at
+`docs/reviews/R-POLARIS-SVG-GRAPH-DIAGRAMS-FEATURE-CANDIDATE-REVIEW-2-RAW.md`.
+**Verdict, copied exactly: REVISE** — one blocking review-evidence finding.
+It is bound to commit
+`674cfaa4e81a022ecaadf742f027f874a0883276` and candidate SHA-256
+`303958396129b66810c50cfc1dec042077201f46b6905bf408529d3986294f54`.
+
+| Finding | Disposition |
+|---|---|
+| Review 1 was not retained verbatim | **Repaired without changing graph-design semantics.** The committed reconstruction remains untouched and is labeled honestly above. The supplied Review 1 and Review 2 outputs now live unchanged under distinct filenames ending exactly `-RAW.md`, and every candidate review reference routes to the actual files. This evidence-routing repair changes the candidate bytes, so Review 2 confirms the three design repairs at its tested commit but cannot confirm this successor. |
+
 ## Confirmation status and review brief
 
-**Pending. No independent confirmation verdict exists for these repaired
-bytes.** Inline application of the design and accessibility bars is author
-quality control, not independent confirmation and does not satisfy gate 7.
+**Pending. No independent confirmation verdict exists for these evidence-routed
+bytes.** Review 2 confirmed the three design repairs and returned one blocking
+review-evidence finding; that finding is dispositioned above. This routing
+change requires fresh exact-head confirmation under gate 7.
 
-A fresh reviewer receives only this candidate and these governing references:
-P-83/Q5, `VIS-1`, `VIS-3`, `VIS-7`, `RFC1-9`, `RFC1-10`, `RFC1-25(d)`, `RFC1-33`,
-`RFC6-17`, `RFC6-20`, `RFC6-22`, `PWB-REQ-014`, `PWB-REQ-020`, the current
-`polaris-markdown.ts`, `polaris-reading.ts`, `polaris-narrative.ts`, and the
-separate draft-preview renderer. The reviewer answers:
+A fresh reviewer receives this candidate, both actual raw reviews, and these
+governing references: P-83/Q5, `VIS-1`, `VIS-3`, `VIS-7`, `RFC1-9`,
+`RFC1-10`, `RFC1-25(d)`, `RFC1-33`, `RFC6-17`, `RFC6-20`, `RFC6-22`,
+`PWB-REQ-014`, `PWB-REQ-020`, the current `polaris-markdown.ts`,
+`polaris-reading.ts`, `polaris-narrative.ts`, and the separate draft-preview
+renderer. The historical reconstruction is supplied only to verify that it is
+preserved and no longer represented as raw evidence. The reviewer answers:
 
 1. Does the contract keep relationship-instance identity, RFC1-25(d)
    typed-relation class, and presentation label distinct, with multiple
