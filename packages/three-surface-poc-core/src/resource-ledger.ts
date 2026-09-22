@@ -29,6 +29,7 @@
 // reader, so one (path, object id) body is taken from Git once, counted
 // once and validated once; `release()` drops them once phase B has read.
 
+import { PWB_INDEX_DEPTH } from './project-shape-manifest.js';
 import type { PwbResourceLimits, ResourceLimitBreach } from './project-shape-observation.js';
 
 export const PARSE_PASS_IDENTITIES = [
@@ -90,27 +91,59 @@ export const DECLARED_RESOURCE_LIMIT_IDENTITIES = [
   'maxMachineResponseBytes',
 ] as const satisfies readonly (keyof PwbResourceLimits)[];
 
+// A limit's usage is either genuinely known (a real number, possibly a
+// true zero) or genuinely unmeasured — VIS-2: no evidence yields Unknown,
+// never a silent, indistinguishable-from-real zero. A consumer that reads
+// `.value` without checking `.state` cannot compile past the union.
+export type ResourceLimitObservation =
+  | { readonly state: 'observed'; readonly value: number }
+  | { readonly state: 'unknown'; readonly reason: string };
+
 // One limit's headroom: what the registry declares, what this ledger has
-// observed toward it, and what is left. `maxTotalBytes` and
-// `maxParsePassesPerSource` are the two limits this ledger actively
-// counts, so their `observed` is that running counter (`totalBytes()` /
-// `maxPassesOnOneSource`). The other five (`maxSources`,
-// `maxBytesPerSource`, `maxIndexDepth`, `maxHumanResponseBytes`,
-// `maxMachineResponseBytes`) are evaluated and, on breach, recorded by
-// their callers via `recordBreach` — this ledger keeps no separate
-// running count for them, so `observed` is the highest value any breach
-// already recorded here carries for that limit, or 0 when none has been
-// recorded. `maxHumanResponseBytes`/`maxMachineResponseBytes` are the
-// final-response ceilings enforced entirely outside this ledger (the
-// reader budget, not the response ceiling), so they read 0 here unless a
-// breach is ever recorded against this ledger under that identity.
-// `remaining` is the plain difference, uncapped, so a breach shows as
-// negative rather than being clamped away.
+// observed toward it, and what is left — each an explicit
+// `ResourceLimitObservation`, never a bare number that could be a real
+// zero or a discarded Unknown wearing the same shape.
+//
+//   maxTotalBytes            this ledger's own running counter
+//                            (`totalBytes()`).
+//   maxParsePassesPerSource  this ledger's own running counter
+//                            (`maxPassesOnOneSource`).
+//   maxBytesPerSource        the ledger already stores every charged
+//                            body's exact byte length in `bodies`; the
+//                            largest one charged is the true observed
+//                            value (`Math.max(0, ...bodies.values())`),
+//                            raised further if a caller ever recorded a
+//                            breach for a body larger than any charged
+//                            one (a body over the limit is never
+//                            counted into `bodies` at all).
+//   maxSources               this ledger's own count of distinct
+//                            sources it has charged at least one parse
+//                            pass to (`sourcesTraversed`) is real,
+//                            known evidence and is always used as the
+//                            floor; raised further by any recorded
+//                            breach carrying a higher manifest-wide
+//                            count (`manifest.sources.length`, which
+//                            this ledger does not itself hold).
+//   maxIndexDepth            a fixed, always-known constant
+//                            (`PWB_INDEX_DEPTH`) compared against the
+//                            declared limit by the caller — real,
+//                            static evidence, not a running count, but
+//                            never Unknown.
+//   maxHumanResponseBytes,   the final-response ceilings, enforced
+//   maxMachineResponseBytes entirely outside this ledger by
+//                            `apps/three-surface-poc/src/routes.ts`'s
+//                            `boundedResponse`, which never charges a
+//                            `ResourceLedger` — genuinely unmeasured
+//                            here, so `state: 'unknown'`, never `0`.
+//
+// `remaining` mirrors `observed`'s state: `declared - value` when known
+// (uncapped, so a breach shows as negative rather than clamped away),
+// `unknown` with the same reason when `observed` is unknown.
 export interface ResourceLimitUsage {
   readonly limit: keyof PwbResourceLimits;
   readonly declared: number;
-  readonly observed: number;
-  readonly remaining: number;
+  readonly observed: ResourceLimitObservation;
+  readonly remaining: ResourceLimitObservation;
 }
 
 // Derived cost figures this pure ledger can answer without any new
@@ -257,23 +290,52 @@ export function createResourceLedger(limits: PwbResourceLimits): ResourceLedger 
       const maxPassesOnOneSource = Math.max(0, ...passes.values());
       const breachesNow = [...breaches];
 
-      // Highest `observed` any recorded breach carries for `limit` — the
-      // only evidence this ledger holds for a limit it does not itself
-      // count. 0 when no breach for that limit has been recorded here.
-      const observedFromBreaches = (limit: keyof PwbResourceLimits): number =>
-        breachesNow.reduce((worst, breach) => (breach.limit === limit ? Math.max(worst, breach.observed) : worst), 0);
+      // Highest `observed` any recorded breach carries for `limit`, or
+      // `undefined` when this ledger has recorded no breach for it — never
+      // a 0 standing in for "no breach recorded."
+      const observedFromBreaches = (limit: keyof PwbResourceLimits): number | undefined =>
+        breachesNow.reduce<number | undefined>((worst, breach) => (breach.limit === limit ? Math.max(worst ?? breach.observed, breach.observed) : worst), undefined);
 
-      const observedFor = (limit: keyof PwbResourceLimits): number => {
-        if (limit === 'maxTotalBytes') return totalBytesNow;
-        if (limit === 'maxParsePassesPerSource') return maxPassesOnOneSource;
-        return observedFromBreaches(limit);
+      // The largest single body this ledger has actually charged; a body
+      // that breached `maxBytesPerSource` before this ledger ever counted
+      // it is not in `bodies`, so a recorded breach (below) can raise this.
+      const worstBodyBytes = Math.max(0, ...bodies.values());
+
+      const observationFor = (limit: keyof PwbResourceLimits): ResourceLimitObservation => {
+        switch (limit) {
+          case 'maxTotalBytes':
+            return { state: 'observed', value: totalBytesNow };
+          case 'maxParsePassesPerSource':
+            return { state: 'observed', value: maxPassesOnOneSource };
+          case 'maxBytesPerSource': {
+            const breach = observedFromBreaches(limit);
+            return { state: 'observed', value: breach === undefined ? worstBodyBytes : Math.max(worstBodyBytes, breach) };
+          }
+          case 'maxSources': {
+            const breach = observedFromBreaches(limit);
+            return { state: 'observed', value: breach === undefined ? passes.size : Math.max(passes.size, breach) };
+          }
+          case 'maxIndexDepth':
+            // A fixed, always-known constant — real, static evidence, not
+            // a running count this ledger keeps, but never Unknown.
+            return { state: 'observed', value: PWB_INDEX_DEPTH };
+          case 'maxHumanResponseBytes':
+          case 'maxMachineResponseBytes':
+            return {
+              state: 'unknown',
+              reason: 'the final-response ceiling is enforced entirely outside this ledger, by routes.ts\'s boundedResponse, which never charges a ResourceLedger',
+            };
+        }
       };
+
+      const remainingFor = (declared: number, observed: ResourceLimitObservation): ResourceLimitObservation =>
+        observed.state === 'observed' ? { state: 'observed', value: declared - observed.value } : { state: 'unknown', reason: observed.reason };
 
       const byLimit = Object.fromEntries(
         DECLARED_RESOURCE_LIMIT_IDENTITIES.map((limit) => {
           const declared = limits[limit];
-          const observed = observedFor(limit);
-          const usage: ResourceLimitUsage = { limit, declared, observed, remaining: declared - observed };
+          const observed = observationFor(limit);
+          const usage: ResourceLimitUsage = { limit, declared, observed, remaining: remainingFor(declared, observed) };
           return [limit, usage];
         }),
       ) as Record<keyof PwbResourceLimits, ResourceLimitUsage>;

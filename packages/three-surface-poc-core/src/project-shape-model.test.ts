@@ -888,13 +888,31 @@ describe('one resource envelope across both phases (PWB-REQ-006, amended)', () =
       maxPassesOnOneSource: 14,
       breaches: [],
       byLimit: {
-        maxSources: { limit: 'maxSources', declared: 512, observed: 0, remaining: 512 },
-        maxBytesPerSource: { limit: 'maxBytesPerSource', declared: 1048576, observed: 0, remaining: 1048576 },
-        maxTotalBytes: { limit: 'maxTotalBytes', declared: 16777216, observed: TOTAL, remaining: 16777216 - TOTAL },
-        maxIndexDepth: { limit: 'maxIndexDepth', declared: 4, observed: 0, remaining: 4 },
-        maxParsePassesPerSource: { limit: 'maxParsePassesPerSource', declared: 16, observed: 14, remaining: 2 },
-        maxHumanResponseBytes: { limit: 'maxHumanResponseBytes', declared: 2097152, observed: 0, remaining: 2097152 },
-        maxMachineResponseBytes: { limit: 'maxMachineResponseBytes', declared: 8388608, observed: 0, remaining: 8388608 },
+        // maxSources and maxBytesPerSource: no breach was recorded against
+        // either (breaches: [] above), so each reads this ledger's own
+        // real evidence — the 14 sources it traversed, and the largest of
+        // the 14 charged bodies (about/heart-and-soul/v1.md, 342 bytes;
+        // hand-typed from BODIES above).
+        maxSources: { limit: 'maxSources', declared: 512, observed: { state: 'observed', value: 14 }, remaining: { state: 'observed', value: 498 } },
+        maxBytesPerSource: { limit: 'maxBytesPerSource', declared: 1048576, observed: { state: 'observed', value: 342 }, remaining: { state: 'observed', value: 1048576 - 342 } },
+        maxTotalBytes: { limit: 'maxTotalBytes', declared: 16777216, observed: { state: 'observed', value: TOTAL }, remaining: { state: 'observed', value: 16777216 - TOTAL } },
+        maxIndexDepth: { limit: 'maxIndexDepth', declared: 4, observed: { state: 'observed', value: 3 }, remaining: { state: 'observed', value: 1 } },
+        maxParsePassesPerSource: { limit: 'maxParsePassesPerSource', declared: 16, observed: { state: 'observed', value: 14 }, remaining: { state: 'observed', value: 2 } },
+        // The two response ceilings are never touched by this ledger
+        // (enforced entirely outside it, in routes.ts's boundedResponse):
+        // genuinely Unknown, never a false 0.
+        maxHumanResponseBytes: {
+          limit: 'maxHumanResponseBytes',
+          declared: 2097152,
+          observed: { state: 'unknown', reason: "the final-response ceiling is enforced entirely outside this ledger, by routes.ts's boundedResponse, which never charges a ResourceLedger" },
+          remaining: { state: 'unknown', reason: "the final-response ceiling is enforced entirely outside this ledger, by routes.ts's boundedResponse, which never charges a ResourceLedger" },
+        },
+        maxMachineResponseBytes: {
+          limit: 'maxMachineResponseBytes',
+          declared: 8388608,
+          observed: { state: 'unknown', reason: "the final-response ceiling is enforced entirely outside this ledger, by routes.ts's boundedResponse, which never charges a ResourceLedger" },
+          remaining: { state: 'unknown', reason: "the final-response ceiling is enforced entirely outside this ledger, by routes.ts's boundedResponse, which never charges a ResourceLedger" },
+        },
       },
       cost: { bodiesRead: 14, bytes: TOTAL, parsePasses: 155, worstSourcePasses: 14 },
     });
