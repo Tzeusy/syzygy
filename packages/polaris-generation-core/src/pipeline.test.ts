@@ -4,7 +4,7 @@ import { runGenerationPipeline, type AttemptOutcome, type PipelinePorts, type Pi
 const request = (): PipelineRequest => ({
   requestId: 'request-1', projectId: 'project-a', snapshotId: 'snapshot-1', providerRoute: 'synthetic', startedAt: Date.now(),
   budget: { maxCalls: 10, maxInputBytes: 200_000, maxOutputBytes: 20_000, maxUsageUnits: 100, maxElapsedMs: 10_000, maxRepairCycles: 1, accountingPolicy: 'synthetic-units-v1' },
-  sources: [{ id: 'purpose', text: 'Reduce recurring mental labor.' }], readerQuestions: ['Why does this project exist?'],
+  sources: [{ sourceId: 'purpose', text: 'Reduce recurring mental labor.' }], readerQuestions: ['Why does this project exist?'],
 });
 
 function harness() {
