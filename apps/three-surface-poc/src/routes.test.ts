@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -166,6 +167,56 @@ function visibleParityTuples(html: string): string[] {
   return [...entityRows, ...relationshipRows].sort();
 }
 
+// Independent wire oracle for responseIdentity: deliberately separate from
+// the core walker's path grammar and canonicalJson implementation.
+function independentCanonicalJson(value: unknown): string {
+  const canonicalize = (candidate: unknown): unknown => {
+    if (Array.isArray(candidate)) return candidate.map(canonicalize);
+    if (candidate !== null && typeof candidate === 'object') {
+      const record = candidate as Record<string, unknown>;
+      return Object.fromEntries(
+        Object.keys(record)
+          .filter((key) => record[key] !== undefined)
+          .sort()
+          .map((key) => [key, canonicalize(record[key])]),
+      );
+    }
+    return candidate;
+  };
+  return JSON.stringify(canonicalize(value));
+}
+
+function independentDeletePath(root: Record<string, unknown>, path: string): boolean {
+  const segments = path.split('.').map((raw) => ({
+    key: raw.endsWith('[]') ? raw.slice(0, -2) : raw,
+    all: raw.endsWith('[]'),
+  }));
+  const remove = (value: unknown, index: number): boolean => {
+    if (value === null || typeof value !== 'object' || Array.isArray(value)) return false;
+    const record = value as Record<string, unknown>;
+    const segment = segments[index];
+    if (segment === undefined || !(segment.key in record)) return false;
+    if (index === segments.length - 1) {
+      delete record[segment.key];
+      return true;
+    }
+    const child = record[segment.key];
+    if (segment.all) {
+      if (!Array.isArray(child)) throw new Error(`independent path ${path} expected an array`);
+      return child.reduce((found, member) => remove(member, index + 1) || found, false);
+    }
+    return remove(child, index + 1);
+  };
+  return remove(root, 0);
+}
+
+function independentResponseKey(body: Record<string, unknown>): string {
+  const identity = body.responseIdentity as { contentKey?: string; readonly excludes: readonly string[] };
+  delete identity.contentKey;
+  for (const path of identity.excludes) independentDeletePath(body, path);
+  return `sha256:${createHash('sha256').update(independentCanonicalJson(body)).digest('hex')}`;
+}
+
 async function startPoc(model: PocModel): Promise<{
   readonly daemon: RunningDaemon;
   readonly token: string;
@@ -240,7 +291,23 @@ describe('three-surface POC routes', () => {
     expect(machineResponse.headers.get('content-type')).toBe('application/json');
     const wireModel = (await machineResponse.json()) as PocModel;
     expect(wireModel).toEqual(model);
+    expect(wireModel.responseIdentity).toEqual(model.responseIdentity);
     expect(visibleParityTuples(html)).toEqual(parityTuples(wireModel));
+  });
+
+  it('recomputes the authenticated served-body contentKey with an independent walker and canonicalizer', async () => {
+    const model = modelFixture();
+    const { daemon, token } = await startPoc(model);
+    const response = await fetch(`http://${daemon.host}:${daemon.port}${POC_MACHINE_PATH}`, {
+      headers: { authorization: `Bearer ${token}` },
+    });
+    expect(response.status).toBe(200);
+    const served = JSON.parse(await response.text()) as Record<string, unknown>;
+    const declared = (served.responseIdentity as { readonly excludes: readonly string[] }).excludes;
+    expect(declared).toHaveLength(25);
+    expect(independentResponseKey(served)).toBe(
+      (JSON.parse(JSON.stringify(model)) as PocModel).responseIdentity.contentKey,
+    );
   });
 
   it('escapes observed text before rendering it into HTML', () => {
