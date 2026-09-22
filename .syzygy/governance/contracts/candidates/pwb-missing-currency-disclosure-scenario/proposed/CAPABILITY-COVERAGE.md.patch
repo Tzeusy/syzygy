@@ -1,0 +1,13 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md b/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+index 517d698..0000000 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+@@ -20,7 +20,7 @@ Population: 31 positive obligations and refusals declared by `proposal.md`,
+ | 13 | Preserve project-wide human/machine parity | covered — PWB-REQ-020 |
+ | 14 | Make the exact nine-answer RFC7-30 whole-project population and Polaris-only readiness a POC criterion | covered — PWB-REQ-021 |
+ | 15 | Keep readiness separate while accepting valid state-(1) or state-(2) owner judgment with exact state visible and failing closed for exactly 84 present-invalid and 2 absent cases | covered — PWB-REQ-021, PWB-REQ-022 |
+-| 16 | Carry the complete epistemic tuple and closed Unknown reasons on every claim | covered — PWB-REQ-007 |
++| 16 | Carry the complete epistemic tuple and closed Unknown reasons on every claim, except disclose a missing effective currency bound outside the freshness slot without fabricating a value | covered — PWB-REQ-007 |
+ | 17 | Keep every narrative claim bounded, minimally anchored and non-authoritative | covered — PWB-REQ-014 |
+ | 18 | Preserve argument/contract/reality bands, verbatim intent and proposal separation in capability detail | covered — PWB-REQ-015 |
+ | 19 | Make every distinction and disclosure path nonvisual and keyboard-operable | covered — PWB-REQ-016 |

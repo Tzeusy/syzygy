@@ -1,0 +1,40 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md b/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
+index 77f6b68..0000000 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
+@@ -19,7 +19,7 @@
+ Each effective consequence has exactly one disposition. Rows that split a
+ broader audited consequence use distinct repair IDs and jointly supersede it.
+ 
+-Declared totals: **80 rows; 71 superseded base rows; 61 covered; 16 Unknown
++Declared totals: **80 rows; 71 superseded base rows; 56 covered; 21 Unknown
+ uncovered; 3 believed not applicable.**
+ 
+ | Repair consequence ID | Supersedes | Clause | Effective consequence | Disposition |
+@@ -48,21 +48,21 @@
+ | RFC2-10.r1 | RFC2-10.c1 | RFC2-10 | Freshness uses the closed vocabulary, is evaluation-deterministic and remains distinct from label/tier | unknown-uncovered |
+ | RFC2-24.r1 | RFC2-24.c1 | RFC2-24 | Unknown reasons use the closed twelve, one primary, closed secondaries, distinct routes and complete aggregate disclosure | covered:PWB-REQ-007 |
+ | RFC2-25.r1 | RFC2-25.c1 | RFC2-25 | Claim tiers retain their closed meanings and stay distinct from labels and sibling states | covered:PWB-REQ-007 |
+-| RFC6-14.r1 | RFC6-14.c2 | RFC6-14 | Every project claim carries label, tier, primary/secondary reasons and freshness | covered:PWB-REQ-007 |
++| RFC6-14.r1 | RFC6-14.c2 | RFC6-14 | Every project claim carries label, tier, primary/secondary reasons and freshness | unknown-uncovered |
+ | RFC6-14.r2 | RFC6-14.c3 | RFC6-14 | Project aggregates carry no headline epistemic status of their own | covered:PWB-REQ-007 |
+-| RFC6-14.r3 | RFC6-14.c4 | RFC6-14 | Machine answers retain the complete epistemic tuple and never fold Unknown into totals | covered:PWB-REQ-007 |
+-| RFC6-17.r1 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains label, tier, reason and freshness counts | covered:PWB-REQ-007 |
++| RFC6-14.r3 | RFC6-14.c4 | RFC6-14 | Machine answers retain the complete epistemic tuple and never fold Unknown into totals | unknown-uncovered |
++| RFC6-17.r1 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains label, tier, reason and freshness counts | unknown-uncovered |
+ | RFC6-17.r2 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains the used `unadopted-draft` sibling state | unknown-uncovered |
+ | RFC6-17.r5 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains challenge state carried by project claims | unknown-uncovered |
+ | RFC6-17.r6 | RFC6-17.c2 | RFC6-17 | Aggregate composition of reconciliation-chain and work states | believed-not-applicable |
+ | RFC6-17.r7 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains `dismissed-by-decision` sibling state | unknown-uncovered |
+ | RFC6-17.r8 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains `editorial-draft` sibling state | unknown-uncovered |
+ | RFC6-17.r3 | RFC6-17.c3 | RFC6-17 | Primary and secondary Unknown-reason counts remain distinct | covered:PWB-REQ-007 |
+-| RFC7-16.r1 | RFC7-16.c1 | RFC7-16 | Status is evaluation-bound and carries label, tier, reason and freshness with visible staleness | covered:PWB-REQ-007 |
++| RFC7-16.r1 | RFC7-16.c1 | RFC7-16 | Status is evaluation-bound and carries label, tier, reason and freshness with visible staleness | unknown-uncovered |
+ | RFC7-16.r2 | RFC7-16.c2 | RFC7-16 | Polaris renders no composite maturity, inferred-success headline or metric wall | covered:PWB-REQ-007 |
+ | RFC7-16.r3 | RFC7-16.c2 | RFC7-16 | Minimal density and drawer/Trajectory handoff for every status | unknown-uncovered |
+ | RFC7-16.r4 | RFC7-16.c2 | RFC7-16 | Default Polaris status presentation renders no trend or count wall | covered:PWB-REQ-007 |
+-| RFC7-33.r1 | RFC7-33.c3 | RFC7-33 | Label, tier, reason and freshness travel identically in human and machine views | covered:PWB-REQ-007 |
++| RFC7-33.r1 | RFC7-33.c3 | RFC7-33 | Label, tier, reason and freshness travel identically in human and machine views | unknown-uncovered |
+ | RFC7-1.r1 | RFC7-1.c3 | RFC7-1 | Polaris remains a non-authoritative projection | covered:PWB-REQ-014 |
+ | RFC7-2.r1 | RFC7-2.c1 | RFC7-2 | Every load-bearing narrative claim has exactly one anchored, non-normative or epistemically labeled role | covered:PWB-REQ-014 |
+ | RFC7-2.r2 | RFC7-2.c2 | RFC7-2 | Framing is explicitly non-normative | covered:PWB-REQ-014 |

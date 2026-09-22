@@ -1551,6 +1551,17 @@ PWB_OPENING_BAND_SUBJECT = (
     f"{PWB_OPENING_BAND_DIR}/PWB-OPENING-BAND-SCENARIO-MANIFEST.txt")
 PWB_OPENING_BAND_ACT = (
     f"{DECISIONS}/PWB-OPENING-BAND-SCENARIO-ACT.md")
+#: P-69 Q7a's outside-slot missing-currency disclosure scenario. Candidate
+#: registration watches the offered argument without asserting adoption order;
+#: an act adds the successor-chain link only when the owner performs it.
+PWB_MISSING_CURRENCY_LABEL = "SIGN OFF PWB MISSING-CURRENCY DISCLOSURE SCENARIO"
+PWB_MISSING_CURRENCY_DIR = (
+    f"{CANDIDATES}/pwb-missing-currency-disclosure-scenario")
+PWB_MISSING_CURRENCY_SUBJECT = (
+    f"{PWB_MISSING_CURRENCY_DIR}/"
+    "PWB-MISSING-CURRENCY-DISCLOSURE-MANIFEST.txt")
+PWB_MISSING_CURRENCY_ACT = (
+    f"{DECISIONS}/PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-ACT.md")
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -1613,6 +1624,7 @@ PWB_SCOPED_AMENDMENT_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_RENDER_MODE_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_MACHINE_VIEW_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_OPENING_BAND_SUBJECTS = PWB_STATE1_SUBJECTS
+PWB_MISSING_CURRENCY_SUBJECTS = PWB_STATE1_SUBJECTS
 #: Successor chain over the PWB behavioral package, in performance order.
 #: The latest validly performed link binds current bytes; every earlier
 #: link's rows are immutable act-time history.
@@ -2052,7 +2064,9 @@ def _act_subjects():
                        + r"\s*:\s*`?([0-9a-f]{64})"),
         ))
     for label, subject in ((PWB_MACHINE_VIEW_LABEL, PWB_MACHINE_VIEW_SUBJECT),
-                           (PWB_OPENING_BAND_LABEL, PWB_OPENING_BAND_SUBJECT)):
+                           (PWB_OPENING_BAND_LABEL, PWB_OPENING_BAND_SUBJECT),
+                           (PWB_MISSING_CURRENCY_LABEL,
+                            PWB_MISSING_CURRENCY_SUBJECT)):
         if not any(existing == label for existing, _rel, _pat in out):
             out.append((
                 label,
@@ -2270,6 +2284,8 @@ ACT_DIGEST_COPY_FILES = {
         (PWB_MACHINE_VIEW_LABEL,),
     f"{PWB_OPENING_BAND_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_OPENING_BAND_LABEL,),
+    f"{PWB_MISSING_CURRENCY_DIR}/OWNER-DECISION-PACKET.md":
+        (PWB_MISSING_CURRENCY_LABEL,),
     # The owner-act record quotes each performed act's exact phrase and
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
@@ -2413,8 +2429,14 @@ def _activate_pwb_opening_band_act_copy_registry():
         PWB_OPENING_BAND_LABEL, PWB_OPENING_BAND_ACT)
 
 
+def _activate_pwb_missing_currency_act_copy_registry():
+    _activate_pwb_candidate_act_copy_registry(
+        PWB_MISSING_CURRENCY_LABEL, PWB_MISSING_CURRENCY_ACT)
+
+
 _activate_pwb_machine_view_act_copy_registry()
 _activate_pwb_opening_band_act_copy_registry()
+_activate_pwb_missing_currency_act_copy_registry()
 
 
 def _activate_polaris_no_signal_act_copy_registry():
@@ -6294,7 +6316,11 @@ def selftest():
                               _activate_pwb_machine_view_act_copy_registry)),
             ("opening-band", (PWB_OPENING_BAND_LABEL, PWB_OPENING_BAND_SUBJECT,
                               PWB_OPENING_BAND_ACT,
-                              _activate_pwb_opening_band_act_copy_registry))):
+                              _activate_pwb_opening_band_act_copy_registry)),
+            ("missing-currency", (PWB_MISSING_CURRENCY_LABEL,
+                                  PWB_MISSING_CURRENCY_SUBJECT,
+                                  PWB_MISSING_CURRENCY_ACT,
+                                  _activate_pwb_missing_currency_act_copy_registry))):
         row = _selftest_pwb_act_copy_registry("valid", link)
         cases.append((f"CG-7e performed PWB {name} act registers both record copies",
                       row[0] == "OK" and row[2] == 2 and row[3] == 0))
