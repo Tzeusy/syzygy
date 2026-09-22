@@ -225,7 +225,7 @@ words. `IMPACT-LEDGER.md` carries the full sweep.
 None of it performed by this package.
 
 1. Fresh-context review against `REVIEW-BRIEF.md`; raw output retained
-   verbatim, bytes frozen (rule 10). **Done three times** — round 1 CONFIRM
+   verbatim, bytes frozen (rule 10). **Done four times** — round 1 CONFIRM
    WITH EXCEPTIONS, three notes, all repaired in prose; round 2 (2026-09-23,
    over the repaired bytes at `9d74185`) REVISE, two false sentences in the
    impact ledger and five notes, all repaired in prose; round 3 (2026-09-23,
