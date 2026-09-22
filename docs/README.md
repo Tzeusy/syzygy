@@ -86,8 +86,9 @@ the repair is a new disposition that cites it.
 | P-69 Q7a missing-currency gate | 2 | 2026-09-23 | Missing-currency-bound disclosure scenario delta | The confirmation is `CONFIRM` (`R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA-CONFIRMATION-RAW.md:1`); repairs landed in the candidate package, which awaits its act and applies after lane B. |
 | N8 generality measurement | 1 | 2026-09-23 | Slice 1: synthetic second-project corpora and per-class coverage matrix (PR #63) | `CONFIRM` (`R-PWB-N8-SLICE1-REVIEW-RAW.md:19`); one advisory (narrow the `code-path` guard to shape-grammar failures before slice 2) is carried on the bead. |
 | N4 page honesty | 2 | 2026-09-23 | Slices 3-4: evaluation-identity footers on Trajectory and Orrery, `--focus`/`--measure-reading` tokens (PR #67) | `REVISE` (`R-PWB-N4-SLICES3-4-REVIEW-RAW.md:1`), repaired; confirmation `CONFIRM` (`R-PWB-N4-SLICES3-4-CONFIRMATION-RAW.md:6`). |
+| N11 drift sweep | 2 | 2026-09-23 | Slices 1 and 3: `scripts/check_evidence_currency.py` sha256 drift sweep and the typed pipeline failure code (PR #68) | `REVISE` (`R-PWB-N11-SLICES1-3-REVIEW-RAW.md:1`), repaired; confirmation `CONFIRM` (`R-PWB-N11-SLICES1-3-CONFIRMATION-RAW.md:3`). |
 
-The 47 rows partition the tracked directory at HEAD: 209 files, 209 assigned,
+The 48 rows partition the tracked directory at HEAD: 211 files, 211 assigned,
 no remainder [Observed — re-derived for HEAD dated 2026-09-23 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
