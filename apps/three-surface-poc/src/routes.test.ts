@@ -323,10 +323,12 @@ describe('three-surface POC routes', () => {
     const before = readFileSync(marker);
     const beforeMtime = statSync(marker).mtimeMs;
     const url = `http://${daemon.host}:${daemon.port}${POC_MACHINE_PATH}`;
+    const expectedBody = JSON.stringify(model);
     const fetchMachine = async () => (await fetch(url, { headers: { authorization: `Bearer ${token}` } })).text();
     const sequential = await Promise.all([fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine()]);
     const concurrent = await Promise.all([fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine()]);
     expect(new Set([...sequential, ...concurrent]).size).toBe(1);
+    expect(sequential[0]).toBe(expectedBody);
     expect(readFileSync(marker)).toEqual(before);
     expect(statSync(marker).mtimeMs).toBe(beforeMtime);
   });

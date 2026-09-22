@@ -596,6 +596,7 @@ describe('PWB-REQ-005 invalid cases (195)', () => {
       expect(entry?.independentlyVerified).toBe(false);
       expect(entry?.invalidCase).toBe(caseId);
       expect(entry?.artifactDigest).toMatch(/^[0-9a-f]{64}$/);
+      expect(disclosure.mayNot.find((row) => row.id === `no-${authority}-authority-breach`)?.statement).toContain('May not');
       expect(disclosure.contradiction).toContain('RFC3-16(a)');
     });
   }
