@@ -5,7 +5,7 @@
 > edit. A commit, a merged pull request, a review, a manifest, silence or a
 > general "approved" performs no act.
 
-Date: 2026-09-21 (first draft). **Status as of 2026-09-23:** reviewed four
+Date: 2026-09-21 (first draft). **Status as of 2026-09-23:** reviewed five
 times in fresh context — round 1 `CONFIRM WITH EXCEPTIONS`
 (`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-RAW.md`), round 2 over the repaired
 bytes at `9d74185` `CONFIRM WITH EXCEPTIONS`
@@ -13,7 +13,9 @@ bytes at `9d74185` `CONFIRM WITH EXCEPTIONS`
 the repaired bytes at `76b4beb` `CONFIRM WITH EXCEPTIONS`
 (`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-2-RAW.md`), round 4
 over the repaired bytes at `194f8cd` `CONFIRM WITH EXCEPTIONS`
-(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-3-RAW.md`); each
+(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-3-RAW.md`), round 5
+over the repaired bytes at `cd1fbd3` `CONFIRM WITH EXCEPTIONS`
+(`docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-4-RAW.md`); each
 round's exceptions were prose, repaired after it, so the bytes you are
 reading carry no confirmation (rule 10) until a round confirms them. Round
 4's reviewer wrote that `RFC6-21`'s clause, literally, "reads more
