@@ -155,7 +155,7 @@ describe('one-listener POC restart on private fixture sockets', () => {
 
   it.each(['listener-owner-mismatch', 'listener-changed-after-signal'])(
     'hard-refuses %s after SIGTERM without spawning a successor', async code => {
-      const f = await startedFixture(true);
+      const f = await startedFixture('slow');
       const credentialBefore = readFileSync(join(f.stateDir, 'machine-credential.token'));
       let inspections = 0;
       await expect(restartOnePocListener({
