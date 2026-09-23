@@ -167,12 +167,17 @@ CAMPAIGNS = (
     campaign(
         "n3-resource-ledger",
         "N3 resource ledger",
-        r"R-PWB-N3-.*\.md",
+        r"R-PWB-(?:N3|U05-17)-.*\.md",
     ),
     campaign(
         "u05-16-admission",
         "Polaris generation admission validation",
         r"R-PWB-U05-16-.*\.md",
+    ),
+    campaign(
+        "edit-repair-deletion",
+        "P-73 edit/repair deletion gate",
+        r"R-POLARIS-EDIT-REPAIR-DELETION-.*\.md",
     ),
 )
 
