@@ -92,6 +92,15 @@
     "build": "npm run build:poc --silent and npm run build --silent passed",
     "typecheck": "npm run typecheck --silent passed",
     "governance": "python3 scripts/check_governance.py: 32 OK, 20 WARN, 0 FAIL; --selftest: 263 fixtures, 0 failing",
-    "diff": "git diff origin/main...HEAD --check passed at the source commit"
+    "diff": "git diff origin/main...HEAD --check passed at the source commit",
+    "hostedCorrection": {
+      "sourceCommit": "aa8cfa5b61d2cfb3bfe679f27e18fdbe3502c93c",
+      "finding": "PR #105 node-ci depth-1 checkout did not contain pinned historical commit 133106eb0f2564f1cefddd19d11985f1b2619397; two self-corpus tests failed at git cat-file -t while 1871 tests passed.",
+      "change": "node-ci actions/checkout now uses fetch-depth: 0, matching governance-docs checkout depth. The self-corpus test continues to require the same exact pinned commit and refuses an unavailable requested commit; it never substitutes HEAD. No build, typecheck, unit or system battery stage changed.",
+      "freshShallowCloneProof": "A new depth-1 clone of the M7 branch reported the pinned object missing. After unshallowing that same clone, git cat-file -t returned commit and its three original self-corpus tests passed. The fourth new test checks the unavailable-commit refusal in the local full-history checkout.",
+      "focused": "self-corpus.test.ts: 4 passed, 0 failed",
+      "full": "npm test -- --reporter=dot --maxWorkers=2: 1874 passed, 3 skipped, 0 failed at aa8cfa5b61d2cfb3bfe679f27e18fdbe3502c93c",
+      "governance": "python3 scripts/check_governance.py: 32 OK, 20 WARN, 0 FAIL; checkout-depth change leaves the workflow battery stage list unchanged"
+    }
   }
 }
