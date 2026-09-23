@@ -1,7 +1,9 @@
 {
   "kind": "polaris-generator-m6-rule-6-mutation-evidence",
   "testedCommit": "3ddb432",
-  "method": "Each exact old-to-new replacement was applied once to the named production/documentation file at testedCommit, the focused Vitest command ran with one worker and a 60s timeout, the source was restored byte-for-byte, and the baseline exited 0 while the mutant exited 1. No mutant produced zero tests or a describe-time error.",
+  "supersededBy": "polaris-generator-m6-reconciliation-mutation-evidence-2026-09-23.json",
+  "correction": "A 2026-09-23 replay found that disposition-schema-omitted removes a closing brace and fails during esbuild transform before any tests run. Its previous killed outcome and the no-zero-tests claim were invalid. The successor uses a syntactically valid replacement and reruns all eight mutants at the merged source commit; the other seven rows below retain their historical results.",
+  "method": "The original run applied each old-to-new replacement once to the named file at testedCommit, ran the recorded focused command and restored the source. The first mutant was invalid; the other seven results remain historical claims and are rechecked in the successor record.",
   "mutations": [
     {
       "id": "disposition-schema-omitted",
@@ -13,7 +15,7 @@
       "baselineExit": 0,
       "mutantExit": 1,
       "restored": true,
-      "outcome": "killed"
+      "outcome": "invalid-zero-tests"
     },
     {
       "id": "produced-asset-reference-invented",
