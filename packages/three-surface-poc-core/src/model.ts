@@ -85,6 +85,8 @@ export interface PocRelationship {
 
 export interface PocSurface {
   readonly id: 'polaris' | 'trajectory' | 'orrery';
+  /** Doctrine plane, distinct from an entity's epistemic label or work status. */
+  readonly state: 'desired' | 'execution' | 'observed';
   readonly title: string;
   readonly question: string;
   readonly entityIds: readonly string[];
@@ -309,6 +311,9 @@ const RELATIONSHIP_KIND_BY_ROLE: Readonly<Record<PocSeedRelationship['role'], st
 };
 
 const SURFACE_IDS: ReadonlySet<PocSurface['id']> = new Set(['polaris', 'trajectory', 'orrery']);
+const SURFACE_STATES: Readonly<Record<PocSurface['id'], PocSurface['state']>> = {
+  polaris: 'desired', trajectory: 'execution', orrery: 'observed',
+};
 
 function duplicateValues(values: readonly string[], label: string, errors: string[]): void {
   const seen = new Set<string>();
@@ -372,6 +377,9 @@ function validateSeedGraph(seeds: PocSeedInput): void {
   }
   for (const surface of seeds.surfaces) {
     if (!SURFACE_IDS.has(surface.id)) errors.push(`surface has unsupported id ${String(surface.id)}`);
+    if (surface.state !== SURFACE_STATES[surface.id]) {
+      errors.push(`surface ${surface.id} requires state ${SURFACE_STATES[surface.id]}, got ${String(surface.state)}`);
+    }
     duplicateValues(surface.entityIds, `surface ${surface.id} entityIds`, errors);
     duplicateValues(surface.relationshipIds, `surface ${surface.id} relationshipIds`, errors);
     for (const entityId of surface.entityIds) {
@@ -1119,6 +1127,7 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
             surface.id === 'orrery'
               ? {
                   id: surface.id,
+                  state: surface.state,
                   title: surface.title,
                   question: surface.question,
                   entityIds: entities.map((entity) => entity.id),
@@ -1126,6 +1135,7 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
                 }
               : {
                   id: surface.id,
+                  state: surface.state,
                   title: surface.title,
                   question: surface.question,
                   entityIds: [...surface.entityIds],

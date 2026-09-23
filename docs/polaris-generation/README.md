@@ -31,6 +31,7 @@ now runs inventory, plan, author, edit, fidelity and repair through explicit
 adapters. A synthetic operator command produces inspectable prose, relationship
 diagrams and component deep dives. It verifies the machinery; live provider
 integration, full owner controls and real-project quality proof remain unfinished.
+The current operator path calls no real model or provider.
 
 The agreed product direction is synthesized in the [formal understanding amendment](../../openspec/changes/polaris-manifesto-understanding-amendment/proposal.md): unfamiliar-repository discovery, consequential owner questions, supported understanding and argument, research repair, and independent evaluation. Its [design](../../openspec/changes/polaris-manifesto-understanding-amendment/design.md) carries the product vision; its behavioral requirements are the proposed specification home. The [original discussion packet](../design/polaris-product-understanding/README.md) remains the retained source, not a parallel implementation contract. The [owner adoption record](../../.syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md) now binds the formal amendment. Read it with the predecessor specification; its candidate-era banners are preserved at their reviewed bytes.
 

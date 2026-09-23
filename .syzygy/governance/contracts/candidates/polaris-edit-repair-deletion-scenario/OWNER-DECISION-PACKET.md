@@ -44,6 +44,11 @@ Two files, as proposed patches only (nothing is touched yet):
    makes that "178." This keeps a page you read for orientation from
    quietly going wrong the day this lands.
 
+The separately authorized P-76 sentence about the current no-model-called
+operator path is already in that status paragraph. It is current status, not
+part of this package's proposed patch. The patch still changes only `177` to
+`178`; open question 2 below remains yours to decide.
+
 Nothing else in the specification changes. No other requirement is touched.
 
 ## What the package does not change
@@ -98,16 +103,17 @@ Small, mechanical, reviewed the same way the two sibling packages (the
 The act phrase for this package's manifest would be:
 
 ```
-SIGN OFF POLARIS EDIT/REPAIR DELETION-ACCOUNT SCENARIO: 4ab06db2058d4ab43632d39706120f300b323c1a8c609c04a9944dcacbb59d12
+SIGN OFF POLARIS EDIT/REPAIR DELETION-ACCOUNT SCENARIO: 3055106206db93b3fb89787fe4d1b77d778b9961eec368298e9068db5b0579b9
 ```
 
 It is written here, following the sibling packages' convention, only so the
 governance checks (`check_governance.py`'s CG-7d/CG-7e) can see this exact
-digest go stale the moment the manifest changes. It is **not offered**: no
-review has confirmed these bytes yet, and no dedicated recorder script
-exists for this package. If you reply with this phrase now, nothing is
-performed — replying only after option (a) or (b) above and after this
-package has been through review is what starts the act.
+digest go stale the moment the manifest changes. It is **not offered**:
+independent review has confirmed the candidate manifest and proposed patches,
+but owner question 2 above remains unanswered. The selected arm must receive
+its own review, and a dedicated recorder must exist, before this phrase can
+be offered. Replying with it now performs nothing; no sign-off or patch
+application occurs here.
 
 ## What happens after a "yes"
 

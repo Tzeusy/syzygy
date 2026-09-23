@@ -3,19 +3,22 @@
 // (registry amendment act, 2026-09-05) under PWB-REQ-006 as amended.
 // A breach serves only a bounded typed failure; never a truncated page.
 
-import { rmSync } from 'node:fs';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import type { RouteContext, RouteResponse } from '@syzygy/cap1-daemon';
+import { createDaemon, type RouteContext, type RouteResponse } from '@syzygy/cap1-daemon';
 import { PWB_RESOURCE_LIMITS, type PocModel, type PwbResourceLimits } from '@syzygy/three-surface-poc-core';
 
 import { TAILNET_HOST } from './browser-origin.js';
-import { renderOrreryPage, ORRERY_HUMAN_PATH } from './orrery.js';
-import { renderPolarisPage, POLARIS_HUMAN_PATH } from './polaris.js';
-import { boundedResponse, POC_HUMAN_PATH, POC_MACHINE_PATH, pocRoutes, renderPocPage, type ResponseLimitFailure } from './routes.js';
+import { ORRERY_HUMAN_PATH } from './orrery.js';
+import { POLARIS_HUMAN_PATH } from './polaris.js';
+import { boundedResponse, POC_HUMAN_PATH, POC_MACHINE_PATH, pocRoutes, type ResponseLimitFailure } from './routes.js';
+import { ServedResponseRecorder } from './served-response-recorder.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { buildFixtureModel } from './test-model-fixture.js';
-import { renderTrajectoryPage, TRAJECTORY_HUMAN_PATH } from './trajectory.js';
+import { TRAJECTORY_HUMAN_PATH } from './trajectory.js';
 
 const cleanups: string[] = [];
 let model: PocModel;
@@ -53,6 +56,67 @@ function failureOf(body: string): ResponseLimitFailure {
 }
 
 describe('boundedResponse — the ceiling is measured on the final encoded body', () => {
+  it('logs a single safe response-limit outcome per real-socket human and machine 503', async () => {
+    const scratch = mkdtempSync(join(tmpdir(), 'syzygy-poc-limit-socket-'));
+    const stateDir = join(scratch, 'state');
+    cleanups.push(scratch);
+    const recorder = new ServedResponseRecorder();
+    const limits = { ...PWB_RESOURCE_LIMITS, maxHumanResponseBytes: 0, maxMachineResponseBytes: 0 };
+    const started = await createDaemon({ stateDir, routes: pocRoutes(() => model, limits, undefined, recorder), port: 0 });
+    if (!started.started) throw new Error(started.failure.kind);
+    const daemon = started.daemon;
+    const token = readFileSync(daemon.credentialPath, 'utf8').trim();
+    const lines: string[] = [];
+    const stderr = vi.spyOn(process.stderr, 'write').mockImplementation(chunk => { lines.push(String(chunk)); return true; });
+    try {
+      const base = `http://${daemon.host}:${daemon.port}`;
+      const human = await fetch(`${base}/`);
+      const machine = await fetch(`${base}${POC_MACHINE_PATH}`, { headers: { authorization: `Bearer ${token}` } });
+      expect(human.status).toBe(503);
+      expect(machine.status).toBe(503);
+      const failures = [failureOf(await human.text()), failureOf(await machine.text())];
+      const records = lines.map(line => JSON.parse(line) as Record<string, unknown>);
+      expect(records).toHaveLength(2);
+      for (const [index, record] of records.entries()) {
+        const failure = failures[index] as ResponseLimitFailure;
+        expect(record).toMatchObject({
+          reason: 'response-limit-breached', status: 503, contentType: 'application/json',
+          evaluation: { inputsDigest: failure.evaluation.inputsDigest, asOf: failure.evaluation.asOf },
+          limit: failure.limit, declared: failure.declared, observed: failure.observed,
+          population: failure.population, sequence: index + 1,
+        });
+      }
+      expect(records.map(record => record.route)).toEqual(['/', POC_MACHINE_PATH]);
+      expect(recorder.snapshot(model.evaluation).count).toBe(2);
+      expect(lines.join('')).not.toContain(token);
+    } finally {
+      stderr.mockRestore();
+      await daemon.close();
+    }
+  });
+
+  it('records concurrent and replayed final-output breaches once each and never clears them on success', async () => {
+    const recorder = new ServedResponseRecorder();
+    const body = 'héllo';
+    const limits = { ...PWB_RESOURCE_LIMITS, maxHumanResponseBytes: 5, maxMachineResponseBytes: 5 };
+    for (const limit of ['maxHumanResponseBytes', 'maxMachineResponseBytes'] as const) {
+      const breached = boundedResponse(model, limits, limit, 'text/plain', body, recorder);
+      expect(breached.status).toBe(503);
+      expect(breached.diagnostic).toMatchObject({ kind: 'response-limit-breached', limit, declared: 5, observed: 6, population: failureOf(breached.body).population });
+    }
+    expect(recorder.snapshot(model.evaluation)).toMatchObject({ count: 2, latest: { sequence: 2, limit: 'maxMachineResponseBytes' } });
+    const concurrent = await Promise.all(Array.from({ length: 8 }, async () =>
+      boundedResponse(model, limits, 'maxHumanResponseBytes', 'text/plain', body, recorder)));
+    expect(concurrent.map(response => response.diagnostic?.sequence)).toEqual([3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(boundedResponse(model, limits, 'maxMachineResponseBytes', 'text/plain', body, recorder).diagnostic?.sequence).toBe(11);
+    expect(boundedResponse(model, { ...limits, maxHumanResponseBytes: 6 }, 'maxHumanResponseBytes', 'text/plain', body, recorder).status).toBe(200);
+    expect(recorder.snapshot(model.evaluation).count).toBe(11);
+    const next = { ...model.evaluation, asOf: '2026-09-24T00:00:00Z' };
+    expect(recorder.snapshot(next).count).toBe(0);
+    expect(recorder.record({ evaluation: next, limit: 'maxHumanResponseBytes', declared: 5, observed: 6, population: { kind: 'unknown', reason: 'project shape not-evaluated' } }).sequence).toBe(1);
+    expect(recorder.snapshot(model.evaluation).count).toBe(0);
+  });
+
   it('limit − 1 breaches, limit and limit + 1 serve, for each ceiling', () => {
     const body = 'héllo'; // 6 bytes, 5 code units: the ceiling counts bytes
     expect(bytes(body)).toBe(6);
@@ -93,15 +157,39 @@ describe('boundedResponse — the ceiling is measured on the final encoded body'
 });
 
 describe('pocRoutes — every human HTML sink is bounded by maxHumanResponseBytes', () => {
-  const pages: readonly (readonly [string, (m: PocModel, prefix: string) => string])[] = [
-    [POC_HUMAN_PATH, (m, p) => renderPocPage(m, p)],
-    [POLARIS_HUMAN_PATH, renderPolarisPage],
-    [TRAJECTORY_HUMAN_PATH, renderTrajectoryPage],
-    [ORRERY_HUMAN_PATH, renderOrreryPage],
-  ];
+  const pages = [POC_HUMAN_PATH, POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH] as const;
 
-  it.each(pages)('%s: limit − 1 fails closed, limit and limit + 1 serve the page', (path, render) => {
-    const size = bytes(render(model, ''));
+  it('places one compact factual status line before main on each direct and tailnet page', () => {
+    for (const path of [...pages, ...pages.map(page => `${TAILNET_MOUNT_PREFIX}${page === '/' ? '' : page}`)]) {
+      const headers = path.startsWith(TAILNET_MOUNT_PREFIX) ? { host: TAILNET_HOST } : { host: '127.0.0.1:1' };
+      const response = route(path).handle(context(path, headers));
+      expect(response.status, path).toBe(200);
+      const lines = [...response.body.matchAll(/<p class="operability-status"[^>]*>[^<]*<\/p>/g)].map(match => match[0]);
+      expect(lines, path).toHaveLength(1);
+      const line = lines[0] as string;
+      expect(response.body.indexOf(line)).toBeLessThan(response.body.indexOf('<main'));
+      expect(line).toContain('data-human-status');
+      expect(line).toContain('data-eval=');
+      expect(line).toContain('data-breaches=');
+      expect(line).toContain('Unknown (not supplied)');
+      expect(bytes(line), path).toBeLessThan(400);
+      expect(line).not.toMatch(/credential value|healthy|age|href=| id=/i);
+    }
+    const recorder = new ServedResponseRecorder();
+    recorder.record({ evaluation: model.evaluation, limit: 'maxHumanResponseBytes', declared: 5, observed: 6, population: { kind: 'unknown', reason: 'project shape not-evaluated' } });
+    const home = pocRoutes(() => model, PWB_RESOURCE_LIMITS, undefined, recorder).find(candidate => candidate.path === POC_HUMAN_PATH);
+    if (home === undefined) throw new Error('home route missing');
+    const served = home.handle(context(POC_HUMAN_PATH));
+    if (served instanceof Promise) throw new Error('home route unexpectedly async');
+    const statusLine = /<p class="operability-status"[^>]*>[^<]*<\/p>/.exec(served.body)?.[0];
+    expect(statusLine).toContain('breaches input Unknown (no shape), served 1; human #1 6/5 B');
+    expect(bytes(statusLine as string)).toBeLessThan(400);
+  });
+
+  it.each(pages)('%s: limit − 1 fails closed, limit and limit + 1 serve the page', (path) => {
+    const reference = route(path).handle(context(path));
+    expect(reference.status).toBe(200);
+    const size = bytes(reference.body);
     expect(size).toBeGreaterThan(0);
     const at = (declared: number) => route(path, { ...PWB_RESOURCE_LIMITS, maxHumanResponseBytes: declared }).handle(context(path));
     const under = at(size - 1);
@@ -109,14 +197,14 @@ describe('pocRoutes — every human HTML sink is bounded by maxHumanResponseByte
     expect(under.contentType).toBe('application/json');
     expect(failureOf(under.body)).toMatchObject({ served: 'nothing', failure: 'response-limit-breached', limit: 'maxHumanResponseBytes', declared: size - 1, observed: size, readiness: false });
     expect(under.body).not.toContain('<html');
-    expect(at(size)).toEqual({ status: 200, contentType: 'text/html; charset=utf-8', body: render(model, '') });
+    expect(at(size)).toEqual(reference);
     expect(at(size + 1).status).toBe(200);
   });
 
   it('the tailnet mount (selected by Host) is measured on its own rendered body', () => {
     const path = `${TAILNET_MOUNT_PREFIX}/`;
-    const size = bytes(renderPocPage(model, TAILNET_MOUNT_PREFIX));
-    expect(size).not.toBe(bytes(renderPocPage(model, '')));
+    const size = bytes(route(path).handle(context(path, { host: TAILNET_HOST })).body);
+    expect(size).not.toBe(bytes(route(POC_HUMAN_PATH).handle(context(POC_HUMAN_PATH)).body));
     const at = (declared: number) => route(path, { ...PWB_RESOURCE_LIMITS, maxHumanResponseBytes: declared }).handle(context(path, { host: TAILNET_HOST }));
     expect(at(size - 1).status).toBe(503);
     expect(at(size).status).toBe(200);

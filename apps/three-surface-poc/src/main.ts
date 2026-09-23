@@ -22,6 +22,8 @@ import { buildPocEvaluationEvidence, buildProductionPocModel, type PocRuntimeCap
 import { reobserveRoutes } from './reobserve-action.js';
 import { createReobserveState } from './reobserve-state.js';
 import { pocRoutes } from './routes.js';
+import { ServedResponseRecorder } from './served-response-recorder.js';
+import { daemonStartDetail, gitObservationDetail, unexpectedObservationDetail } from './startup-detail.js';
 import { gitBlobReaderFor, verbatimRouteReader } from './verbatim-route.js';
 
 /** The exact binding a PWB-WALKTHROUGH-001 record must name for this
@@ -85,11 +87,7 @@ if (parsed.kind === 'help') {
           observerRevision = observer.revision;
           workingTreeDigest = repository.worktreeMetadataDigest;
         } catch (cause) {
-          process.stderr.write(
-            cause instanceof Error && cause.message === 'observer-checkout-dirty'
-              ? 'syzygy POC: POC runtime inputs have uncommitted changes\n'
-              : 'syzygy POC: a required git revision could not be observed\n',
-          );
+          process.stderr.write(`syzygy POC: ${gitObservationDetail(cause)}\n`);
           process.exitCode = 1;
           repositoryRevision = '';
           observerRevision = '';
@@ -121,6 +119,8 @@ if (parsed.kind === 'help') {
 
           try {
             let model = buildModel(capture);
+            const servedResponses = new ServedResponseRecorder();
+            let credentialProvision: 'minted' | 'reused' | undefined;
             const reobserver = createReobserveState({
               capture,
               model,
@@ -146,7 +146,7 @@ if (parsed.kind === 'help') {
                 // PWB-REQ-011 (amended): Polaris's transient exact-requirement
                 // route — the observed shape's own admitted baseline-spec object,
                 // read at render and never stored.
-                ...pocRoutes(() => model, undefined, (current) => ({ verbatim: verbatimRouteReader(current, gitBlobReaderFor(repoRoot)) })),
+                ...pocRoutes(() => model, undefined, (current) => ({ verbatim: verbatimRouteReader(current, gitBlobReaderFor(repoRoot)) }), servedResponses, () => credentialProvision),
                 ...materializeRoutes({
                   getModel: () => model,
                   targetRepoRoot: repoRoot,
@@ -168,10 +168,11 @@ if (parsed.kind === 'help') {
               ],
             });
             if (!start.started) {
-              process.stderr.write(`syzygy POC: daemon did not start (${start.failure.kind})\n`);
+              process.stderr.write(`syzygy POC: daemon did not start (${start.failure.kind}: ${daemonStartDetail(start.failure)})\n`);
               process.exitCode = 1;
             } else {
               const daemon = start.daemon;
+              credentialProvision = daemon.credentialProvision;
               process.stdout.write(
                 [
                   `Syzygy Three-Surface POC: http://${daemon.host}:${daemon.port}/`,
@@ -205,7 +206,7 @@ if (parsed.kind === 'help') {
                 .join('');
               process.stderr.write(`syzygy POC: observation failed (${cause.kind})${suffix}\n`);
             } else {
-              process.stderr.write('syzygy POC: observation failed (unexpected-failure)\n');
+              process.stderr.write(`syzygy POC: observation failed (${unexpectedObservationDetail(cause)})\n`);
             }
             process.exitCode = 1;
           }

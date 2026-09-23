@@ -1,0 +1,82 @@
+{
+  "kind": "pwb-m11-operability-rule-6-and-byte-evidence",
+  "testedCommit": "7fdf28dade84ddbba7faf2fdc5278a7e136d0197",
+  "method": "Each exact old fragment was replaced once at testedCommit, its named focused Vitest command executed one test and exited 1 at the intended assertion, and apply_patch restored the original bytes. After all six runs the source worktree was clean; focused baselines passed 22/22 app, 20/20 daemon and 33/33 core tests. No live POC listener or port 7478 was signaled. Restart tests used only ephemeral private fixture listeners and disposable state directories.",
+  "sourceSha256": {
+    "packages/cap1-daemon/src/server.ts": "055ec3f34728d48dc17445e821cdbf79002db60e4073fbd4edfc74e3f476b559",
+    "apps/three-surface-poc/src/routes.ts": "b7de9e036dc99386782f0d4709996a5d8822d7a54cb8becff89ff931dcad5d29",
+    "packages/three-surface-poc-core/src/walkthrough-readiness.ts": "a4012784b6de8994948caf01f10de669fe3689630333a59bb22a0492aabeb319",
+    "apps/three-surface-poc/src/page-shell.ts": "3117d3061872e497af98e46feed773527e4c035a9c5bc91eaa51f96bc58a9452",
+    "apps/three-surface-poc/src/restart.ts": "5d79d104964b30812af5b8962da5b7679c16b924d64d0b51da47a1817b51ab08",
+    "apps/three-surface-poc/src/startup-detail.ts": "2b41477077da787fb249d9c5f5090dbd17e75775bf4d0574f3081e465e15c20e",
+    "apps/three-surface-poc/src/main.ts": "fa75f8b8f16f610345bddfe9c74ab5bfa8594c0846e1d0924a3cffd479f027ff"
+  },
+  "mutations": [
+    {
+      "id": "unknown-route-diagnostic-silenced",
+      "file": "packages/cap1-daemon/src/server.ts",
+      "old": "emitNonSuccess({ method: 'UNKNOWN', route: null, pathLength: url.pathname.length, response, reason: 'unknown-route' });",
+      "new": "if (false) emitNonSuccess({ method: 'UNKNOWN', route: null, pathLength: url.pathname.length, response, reason: 'unknown-route' });",
+      "command": "npx vitest run --project @syzygy/cap1-daemon --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/cap1-daemon/src/server.test.ts -t 'writes one content-blind' --reporter=dot",
+      "predicate": "An unknown socket route logs exactly one safe 404 line with path length only.",
+      "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed"
+    },
+    {
+      "id": "served-ceiling-recorder-silenced",
+      "file": "apps/three-surface-poc/src/routes.ts",
+      "old": "const event = recorder?.record({ evaluation: model.evaluation, limit, declared, observed, population: failure.population });",
+      "new": "const event = undefined;",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/response-limits.test.ts -t 'records concurrent and replayed' --reporter=dot",
+      "predicate": "The boundedResponse seam records each breach and a monotonic event sequence.",
+      "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed"
+    },
+    {
+      "id": "served-readiness-projection-silenced",
+      "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+      "old": "if (servedCount === 0 || readiness.kind !== 'evaluated') return readiness;",
+      "new": "if (true) return readiness;",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/three-surface-poc-core/src/walkthrough-readiness.test.ts -t 'combines distinct input and served counts' --reporter=dot",
+      "predicate": "Input and served breaches appear once in the existing resource-breach readiness arm.",
+      "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed"
+    },
+    {
+      "id": "human-status-line-omitted",
+      "file": "apps/three-surface-poc/src/page-shell.ts",
+      "old": "${humanStatusLine(input.status, escapeHtml)}",
+      "new": "${''}",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/response-limits.test.ts -t 'places one compact factual status line' --reporter=dot",
+      "predicate": "Each direct and tailnet page has exactly one under-400-byte status line before main.",
+      "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed"
+    },
+    {
+      "id": "restart-multiple-listener-refusal-silenced",
+      "file": "apps/three-surface-poc/src/restart.ts",
+      "old": "if (rows.length !== 1) throw new RestartRefusal('multiple-listeners');",
+      "new": "if (rows.length === 0) throw new RestartRefusal('multiple-listeners');",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=20000 apps/three-surface-poc/src/restart.test.ts -t 'refuses an absent listener and ambiguous owner rows' --reporter=dot",
+      "predicate": "Two listener rows cannot be accepted as one private POC listener.",
+      "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed"
+    },
+    {
+      "id": "startup-credential-detail-unredacted",
+      "file": "apps/three-surface-poc/src/startup-detail.ts",
+      "old": "return reason;",
+      "new": "return failure.detail;",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/startup-detail.test.ts -t 'retains named credential' --reporter=dot",
+      "predicate": "Startup output retains the named failure without an arbitrary credential path.",
+      "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed"
+    }
+  ],
+  "privateDaemonMeasurement": {
+    "method": "Committed clean worktree; private daemon on port 0 and disposable state directory; HTTP requests counted UTF-8 response bytes. Tailnet request set the exact Host header explicitly. The daemon was closed with SIGTERM and its private state directory removed after measurement.",
+    "maxHumanResponseBytes": 2097152,
+    "statusLineBytes": 310,
+    "statusStyleBytes": 204,
+    "statusInsertionBytes": 514,
+    "responses": [
+      { "route": "/polaris", "status": 200, "encodedBytes": 1522630, "mountLinks": 0 },
+      { "route": "/butlers-syzygy/polaris", "status": 200, "encodedBytes": 1528540, "mountLinks": 394 }
+    ],
+    "realProjectProof": false
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "kind": "pwb-m11-status-role-successor-evidence",
+  "testedCommit": "eb0831864b5ab764b6d58e593720c16f9f66bb93",
+  "predecessor": {
+    "path": "docs/evidence/pwb-m11-status-correction-evidence-2026-09-23.json",
+    "sha256": "28749491e64f77ba65379c4c7709507ef802f3e437b2270e6a4dcd23a1dc602f",
+    "disposition": "Predecessor byte and page-shell hash measurements remain historical at its tested commit. The five non-page-shell mutations in the original M11 record remain bound to unchanged source blobs."
+  },
+  "sourceSha256": {
+    "apps/three-surface-poc/src/page-shell.ts": "a0cf5e6bf5189ba4a9b89479b94a72f3372324897f773348b20610b21365d75e"
+  },
+  "mutation": {
+    "id": "role-classified-human-status-line-omitted",
+    "file": "apps/three-surface-poc/src/page-shell.ts",
+    "old": "${humanStatusLine(input.status, escapeHtml)}",
+    "new": "${''}",
+    "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/response-limits.test.ts -t 'places one compact factual status line' --reporter=dot",
+    "baselineExit": 0,
+    "mutantExit": 1,
+    "testsRan": true,
+    "restored": true,
+    "outcome": "killed"
+  },
+  "roleGate": {
+    "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/response-limits.test.ts --reporter=dot",
+    "testsPassed": 26,
+    "testsFailed": 0
+  },
+  "privateDaemonMeasurement": {
+    "method": "Clean committed head; private daemon on port 0 and disposable state directory; HTTP requests counted UTF-8 response bytes. Tailnet request used the exact Host header. The daemon was SIGTERM-closed and state directory removed after measurement; no live POC listener or port 7478 was touched.",
+    "maxHumanResponseBytes": 2097152,
+    "statusLineBytes": 336,
+    "statusStyleBytes": 204,
+    "statusInsertionBytes": 540,
+    "responses": [
+      { "route": "/polaris", "status": 200, "encodedBytes": 1522656, "mountLinks": 0 },
+      { "route": "/butlers-syzygy/polaris", "status": 200, "encodedBytes": 1528566, "mountLinks": 394 }
+    ],
+    "realProjectProof": false
+  }
+}

@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, relative, sep } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { EvaluationIdentity } from '@syzygy/cap1-core';
 
@@ -87,6 +87,40 @@ function snapshotFiles(base: string): readonly string[] {
 }
 
 describe('RT3 — credential-classed admission at the transport', () => {
+  it('writes one content-blind JSONL diagnostic per non-2xx socket outcome and none for success', async () => {
+    const machine = machineRoute('/machine');
+    const routes: Route[] = [
+      machine.route,
+      { method: 'GET', path: '/origin', credentialClass: 'human-open', handle: () => ({ status: 403, contentType: 'application/json', body: '{"reason":"request-body-sentinel"}' }) },
+      { method: 'GET', path: '/failure', credentialClass: 'human-open', handle: () => { throw new Error('handler-secret-sentinel'); } },
+      { method: 'GET', path: '/success', credentialClass: 'human-open', handle: () => ({ status: 200, contentType: 'text/plain', body: 'ok' }) },
+    ];
+    const daemon = await startDaemon(join(tempDir('rt3-diagnostic-'), 'state'), routes);
+    const lines: string[] = [];
+    const stderr = vi.spyOn(process.stderr, 'write').mockImplementation((chunk) => { lines.push(String(chunk)); return true; });
+    try {
+      const base = `http://127.0.0.1:${daemon.port}`;
+      expect((await fetch(`${base}/unknown%3Cscript%3E?query-secret-sentinel`)).status).toBe(404);
+      expect((await fetch(`${base}/machine`, { headers: { authorization: 'Bearer credential-secret-sentinel' } })).status).toBe(401);
+      expect((await fetch(`${base}/origin`)).status).toBe(403);
+      expect((await fetch(`${base}/failure`)).status).toBe(500);
+      expect((await fetch(`${base}/success`)).status).toBe(200);
+    } finally {
+      stderr.mockRestore();
+    }
+    expect(lines).toHaveLength(4);
+    const events = lines.map(line => JSON.parse(line) as Record<string, unknown>);
+    expect(events.map(event => event.status)).toEqual([404, 401, 403, 500]);
+    expect(events.map(event => event.reason)).toEqual(['unknown-route', 'credential-refused', 'route-non-success', 'handler-failure']);
+    expect(events[0]).toMatchObject({ method: 'UNKNOWN', pathLength: '/unknown%3Cscript%3E'.length });
+    expect(events.slice(1).map(event => event.route)).toEqual(['/machine', '/origin', '/failure']);
+    expect(lines.every(line => line.endsWith('\n'))).toBe(true);
+    const logged = lines.join('');
+    for (const sentinel of ['script', 'query-secret-sentinel', 'credential-secret-sentinel', 'request-body-sentinel', 'handler-secret-sentinel']) {
+      expect(logged).not.toContain(sentinel);
+    }
+  });
+
   it.each([
     ['missing', undefined],
     ['scheme without separator', 'Bearer'],
@@ -294,6 +328,16 @@ describe('RT3 — the minimal root route', () => {
 });
 
 describe('RT3 — startup failure arms are named', () => {
+  it('a second private daemon on the same port reports a bind failure with an available code', async () => {
+    const first = await startDaemon(join(tempDir('rt3-bind-first-'), 'state'), []);
+    const second = await createDaemon({ stateDir: join(tempDir('rt3-bind-second-'), 'state'), routes: [], port: first.port });
+    expect(second.started).toBe(false);
+    if (!second.started) {
+      expect(second.failure.kind).toBe('bind-failed');
+      expect(second.failure.detail).toContain('EADDRINUSE');
+    }
+  });
+
   it('two routes on one (method, path) refuse to start, named', async () => {
     const route: Route = {
       method: 'GET',

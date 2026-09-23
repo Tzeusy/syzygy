@@ -10,6 +10,7 @@ import {
 } from '@syzygy/three-surface-poc-core';
 
 import { browserRequestAllowed } from './browser-origin.js';
+import { crossSurfaceLink } from './surface-links.js';
 import { mountPrefixForRequest, TAILNET_MOUNT_PREFIX, withMountPrefix } from './tailnet.js';
 
 export const MATERIALIZE_HUMAN_PATH = '/trajectory/materialize' as const;
@@ -75,6 +76,7 @@ export function renderMaterializePanel(model: PocModel, mountPrefix = ''): strin
         <dt>Type / priority</dt><dd data-parity-field="materialize-type-priority">${escapeHtml(packet.issueType)} / P${escapeHtml(String(packet.priority))}</dd>
         <dt>External reference</dt><dd data-parity-field="materialize-external-ref"><code>${escapeHtml(packet.externalRef)}</code></dd>
       </dl>
+      <p>${crossSurfaceLink({ model, className: 'governing-intent', sourceId: packet.governingIntent.requirementId, target: 'polaris', targetId: model.capabilityId, mountPrefix, label: 'Read the governing capability in Polaris' })}</p>
       ${status}
       <form method="POST" action="${escapeHtml(withMountPrefix(mountPrefix, MATERIALIZE_HUMAN_PATH))}">
         <button type="submit" data-parity-field="materialize-trigger">${beadId === null ? 'Materialize this work item' : 'Re-run materialize (idempotent)'}</button>

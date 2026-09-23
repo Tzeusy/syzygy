@@ -183,6 +183,9 @@ describe('three-surface Butlers POC model', () => {
       'trajectory',
       'orrery',
     ]);
+    expect(first.surfaces.map((surface) => surface.state)).toEqual([
+      'desired', 'execution', 'observed',
+    ]);
 
     const entities = byId(first.entities);
     expect(entities.get('intent:req-switchboard-identity-001')?.epistemic.label).toBe(
@@ -845,6 +848,23 @@ describe('three-surface Butlers POC model', () => {
             ? { ...surface, entityIds: [...surface.entityIds, 'entity:missing'] }
             : surface,
         ),
+      },
+      {
+        ...BUTLERS_POC_SEEDS,
+        surfaces: BUTLERS_POC_SEEDS.surfaces.map((surface) =>
+          surface.id === 'trajectory' ? { ...surface, state: 'observed' as const }
+            : surface.id === 'orrery' ? { ...surface, state: 'execution' as const } : surface,
+        ),
+      },
+      {
+        ...BUTLERS_POC_SEEDS,
+        surfaces: BUTLERS_POC_SEEDS.surfaces.map((surface) =>
+          surface.id === 'polaris' ? { ...surface, state: undefined as unknown as 'desired' } : surface,
+        ),
+      },
+      {
+        ...BUTLERS_POC_SEEDS,
+        surfaces: [...BUTLERS_POC_SEEDS.surfaces, BUTLERS_POC_SEEDS.surfaces[0]!],
       },
       {
         ...BUTLERS_POC_SEEDS,

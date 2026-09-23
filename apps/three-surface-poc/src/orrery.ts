@@ -3,7 +3,8 @@ import type { PocModel } from '@syzygy/three-surface-poc-core';
 
 import { exactTablesSection } from './exact-tables.js';
 import { substrateEvaluationFooter } from './evaluation-footer.js';
-import { pageShell } from './page-shell.js';
+import { pageShell, type HumanOperabilityStatus } from './page-shell.js';
+import { capabilityDeepDiveId, crossSurfaceHref } from './surface-links.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 
 export const ORRERY_HUMAN_PATH = '/orrery' as const;
@@ -22,6 +23,8 @@ interface OrreryDataIsland {
     readonly id: string;
     readonly path: string;
     readonly capabilityId: string;
+    readonly capabilityHref: string | null;
+    readonly capabilityTargetId: string;
     readonly sizeBytes: number;
   }[];
   readonly mappedFileCount: number;
@@ -101,6 +104,22 @@ const CLIENT_SCRIPT = `
     link.dataset.parityField = 'orrery-mapped-region';
     link.textContent = region.path;
     block.appendChild(link);
+    if (region.capabilityHref) {
+      var capabilityLink = document.createElement('a');
+      capabilityLink.href = region.capabilityHref;
+      capabilityLink.dataset.crossSurfaceClass = 'mapped-capability';
+      capabilityLink.dataset.crossSource = region.id;
+      capabilityLink.dataset.crossTarget = region.capabilityTargetId;
+      capabilityLink.textContent = 'Read capability in Polaris: ' + region.capabilityId;
+      capabilityLink.setAttribute('aria-label', capabilityLink.textContent);
+      block.appendChild(capabilityLink);
+    } else {
+      var unavailable = document.createElement('span');
+      unavailable.className = 'cross-surface-unavailable';
+      unavailable.dataset.crossSurfaceUnavailable = 'mapped-capability';
+      unavailable.textContent = 'Capability target unavailable in this evaluation: ' + region.capabilityId;
+      block.appendChild(unavailable);
+    }
     canvas.appendChild(block);
   });
 
@@ -118,7 +137,7 @@ const CLIENT_SCRIPT = `
 })();
 `;
 
-export function renderOrreryPage(model: PocModel, mountPrefix = ''): string {
+export function renderOrreryPage(model: PocModel, mountPrefix = '', status?: HumanOperabilityStatus): string {
   const orrery = model.orrery;
   let body: string;
 
@@ -135,7 +154,10 @@ export function renderOrreryPage(model: PocModel, mountPrefix = ''): string {
     const island: OrreryDataIsland = {
       revision: orrery.revision,
       districts: orrery.districts,
-      mappedRegions: orrery.mappedRegions,
+      mappedRegions: orrery.mappedRegions.map(region => ({ ...region,
+        capabilityHref: crossSurfaceHref(model, 'polaris', region.capabilityId, mountPrefix),
+        capabilityTargetId: capabilityDeepDiveId(region.capabilityId),
+      })),
       mappedFileCount: orrery.mappedFileCount,
       unmappedFileCount: orrery.unmappedFileCount,
       totalFileCount: orrery.totalFileCount,
@@ -167,6 +189,8 @@ export function renderOrreryPage(model: PocModel, mountPrefix = ''): string {
     lede: 'A deterministic spatial map over observed directory structure and declared capability-to-code mappings. Unmapped code stays visibly Unknown.',
     extraStyle: ORRERY_STYLE,
     body,
+    status,
+    surfacePlanes: model.surfaces,
     footer: substrateEvaluationFooter({
       model,
       escapeHtml,

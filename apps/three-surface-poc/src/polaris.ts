@@ -43,7 +43,7 @@ import {
   type VerbatimLeafReader,
   type VerbatimResolution,
 } from './capability-detail.js';
-import { pageShell } from './page-shell.js';
+import { pageShell, type HumanOperabilityStatus } from './page-shell.js';
 import { copyAttr, copyText, roleAttr, type PolarisCopyId } from './polaris-copy.js';
 import {
   NarrativeRegistry,
@@ -58,6 +58,7 @@ import {
   type PolarisViewState,
 } from './polaris-narrative.js';
 import { sourceRouteHref, sourceSlug } from './polaris-source.js';
+import { crossSurfaceLink } from './surface-links.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 
 export { sourceSlug };
@@ -225,8 +226,10 @@ function provenanceCitations(provenance: readonly PocProvenance[], anchors: read
   return ` <span class="citation">(${items})</span>`;
 }
 
-function entitySection(entity: PocEntity, blockAttrs = ` data-polaris-section="${escapeHtml(entity.id)}"`): string {
-  const title = `<h3 id="polaris-${escapeHtml(entity.id)}"${FACT}>${escapeHtml(entity.title)}</h3>`;
+function entitySection(entity: PocEntity, model: PocModel, blockAttrs = ` data-polaris-section="${escapeHtml(entity.id)}"`): string {
+  const link = crossSurfaceLink({ model, className: 'reality-entity', sourceId: entity.id, target: 'orrery', targetId: entity.id,
+    mountPrefix: activeMountPrefix, label: entity.title });
+  const title = `<h3 id="polaris-${escapeHtml(entity.id)}"${FACT}>${link}</h3>`;
   if (entity.epistemic.label === 'Observed') {
     const block = anchoredBlock(`block:${entity.id}`, [{ claimId: entity.id, anchors: entity.provenance.map(provenanceAnchor), captured: entityCaptured(entity.epistemic) }]);
     return `<section class="claim-section"${blockAttrs}>
@@ -268,7 +271,7 @@ function codeStructureSection(model: PocModel): string {
   }]);
   return `<section class="claim-section" data-polaris-section="region:code-structure">
     ${title}
-    <p${block.attrs}><span data-claim-provenance="region:code-structure">The configured project's code structure was inventoried at revision ${escapeHtml(cs.revision.slice(0, 12))}, covering ${cs.files.length} files.</span>
+    <p${block.attrs}><span data-claim-provenance="region:code-structure">The configured project's code structure was inventoried at revision ${escapeHtml(cs.revision.slice(0, 12))}, covering ${crossSurfaceLink({ model, className: 'code-count', sourceId: 'region:code-structure', target: 'orrery', targetId: null, mountPrefix: activeMountPrefix, label: `${cs.files.length} files` })}.</span>
     <span class="citation">(<cite data-parity-field="provenance-source"${anchorAttrs(block.anchors[0] as NarrativeAnchor)}>git-ls-tree</cite>@<code data-parity-field="provenance-revision">${escapeHtml(cs.revision.slice(0, 12))}</code>)</span></p>
   </section>`;
 }
@@ -289,7 +292,7 @@ function workItemsSection(model: PocModel): string {
   }]);
   return `<section class="claim-section" data-polaris-section="region:work-items">
     ${title}
-    <p${block.attrs}><span data-claim-provenance="region:work-items">${wi.items.length} work items under the registered prefix <code>${escapeHtml(wi.beadPrefix)}-</code> were read from the Beads Dolt database at revision ${escapeHtml(wi.doltRevision.slice(0, 12))}.</span>
+    <p${block.attrs}><span data-claim-provenance="region:work-items">${crossSurfaceLink({ model, className: 'work-count', sourceId: 'region:work-items', target: 'trajectory', targetId: null, mountPrefix: activeMountPrefix, label: `${wi.items.length} work items` })} under the registered prefix <code>${escapeHtml(wi.beadPrefix)}-</code> were read from the Beads Dolt database at revision ${escapeHtml(wi.doltRevision.slice(0, 12))}.</span>
     <span class="citation">(<cite data-parity-field="provenance-source"${anchorAttrs(block.anchors[0] as NarrativeAnchor)}>beads-dolt</cite>@<code data-parity-field="provenance-revision">${escapeHtml(wi.doltRevision.slice(0, 12))}</code>)</span></p>
   </section>`;
 }
@@ -1232,7 +1235,7 @@ function realityBand(dive: CapabilityDeepDive, model: PocModel, ledger: DeepDive
   const entitiesById = new Map(model.entities.map((entity) => [entity.id, entity]));
   const sections = model.entities
     .filter((entity) => entity.id === dive.capabilityId || dive.related.some((related) => related.id === entity.id))
-    .map((entity) => entitySection(entity, ledger.block('reality', entity.id)))
+    .map((entity) => entitySection(entity, model, ledger.block('reality', entity.id)))
     .join('');
   const relationshipList = dive.relationships.map((relationship) => relationshipBullet(relationship, entitiesById)).join('');
   return `<section class="band"${ledger.block('reality', `reality:${dive.capabilityId}`)}>
@@ -1562,12 +1565,12 @@ export interface PolarisRenderInputs {
 /** The presentation artifact and its machine form, from one capture: the
  * human page and the envelope `/api/poc/polaris` serves derive from the
  * same registry, so their block, anchor and band multisets are one. */
-export function renderPolarisPresentation(model: PocModel, mountPrefix = '', viewState: PolarisViewState = {}, inputs: PolarisRenderInputs = {}): { readonly html: string; readonly narrative: ReturnType<NarrativeRegistry['narrative']> } {
+export function renderPolarisPresentation(model: PocModel, mountPrefix = '', viewState: PolarisViewState = {}, inputs: PolarisRenderInputs = {}, status?: HumanOperabilityStatus): { readonly html: string; readonly narrative: ReturnType<NarrativeRegistry['narrative']> } {
   if (activeRegistry !== undefined) throw new Error('renderPolarisPage re-entered');
   activeRegistry = new NarrativeRegistry();
   activeViewState = viewState;
   try {
-    const html = renderPolarisBody(model, mountPrefix, activeRegistry, inputs);
+    const html = renderPolarisBody(model, mountPrefix, activeRegistry, inputs, status);
     return { html, narrative: activeRegistry.narrative() };
   } finally {
     activeRegistry = undefined;
@@ -1580,8 +1583,8 @@ export function renderPolarisPresentation(model: PocModel, mountPrefix = '', vie
   }
 }
 
-export function renderPolarisPage(model: PocModel, mountPrefix = '', viewState: PolarisViewState = {}, inputs: PolarisRenderInputs = {}): string {
-  return renderPolarisPresentation(model, mountPrefix, viewState, inputs).html;
+export function renderPolarisPage(model: PocModel, mountPrefix = '', viewState: PolarisViewState = {}, inputs: PolarisRenderInputs = {}, status?: HumanOperabilityStatus): string {
+  return renderPolarisPresentation(model, mountPrefix, viewState, inputs, status).html;
 }
 
 /** The four depths PWB-REQ-011 names — summary, catalog, detail, exact
@@ -1638,7 +1641,7 @@ export function exactSourceIdentities(shape: ProjectShape): ReadonlySet<string> 
     .map((source) => source.identity));
 }
 
-function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: NarrativeRegistry, inputs: PolarisRenderInputs): string {
+function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: NarrativeRegistry, inputs: PolarisRenderInputs, status?: HumanOperabilityStatus): string {
   const shape = model.projectShape;
   const revision = shape.kind === 'observed' ? shape.identity.revision : '';
   activeTargets = pageTargets(shape);
@@ -1692,6 +1695,8 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     body,
     sidebar: depthNav(shape, dives) + SECTION_NAV_SCRIPT,
     footer: `Evaluation <code>${escapeHtml(model.evaluation.snapshot)}</code> as of <code>${escapeHtml(model.evaluation.asOf)}</code>.`,
+    status,
+    surfacePlanes: model.surfaces,
     escapeHtml,
     mountPrefix,
   });

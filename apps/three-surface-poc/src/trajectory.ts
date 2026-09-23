@@ -9,7 +9,7 @@ import {
   renderMaterializePanel,
 } from './materialize-action.js';
 import { substrateEvaluationFooter } from './evaluation-footer.js';
-import { pageShell } from './page-shell.js';
+import { pageShell, type HumanOperabilityStatus } from './page-shell.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 
 export const TRAJECTORY_HUMAN_PATH = '/trajectory' as const;
@@ -142,7 +142,7 @@ const TRAJECTORY_STYLE = `
   ${MATERIALIZE_PANEL_STYLE}
 `;
 
-export function renderTrajectoryPage(model: PocModel, mountPrefix = ''): string {
+export function renderTrajectoryPage(model: PocModel, mountPrefix = '', status?: HumanOperabilityStatus): string {
   const trajectory = model.trajectory;
   const workerChange = model.workerChange.kind === 'observed' ? model.workerChange : null;
   let body: string;
@@ -208,6 +208,8 @@ export function renderTrajectoryPage(model: PocModel, mountPrefix = ''): string 
     lede: 'A board over the registered Beads Dolt database, columns from a declared status mapping, time from recorded instants only.',
     extraStyle: TRAJECTORY_STYLE,
     body,
+    status,
+    surfacePlanes: model.surfaces,
     footer: substrateEvaluationFooter({
       model,
       escapeHtml,
