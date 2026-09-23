@@ -93,13 +93,15 @@ describe('Polaris machine presentation envelope (PWB-REQ-014; RFC7-2, RFC7-3)', 
       expect(block.anchors.length).toBeGreaterThan(0);
     }
 
-    // The tailnet mount serves the identical envelope; the truth endpoint is
-    // unchanged: no narrative, the model as before.
+    // The tailnet mount serves the same narrative with its own self link;
+    // the truth endpoint still carries no presentation narrative.
     const tailnet = await fetch(`${baseUrl}${TAILNET_MOUNT_PREFIX}${POLARIS_PRESENTATION_PATH}`, { headers: { authorization: `Bearer ${token}` } });
     expect(tailnet.status).toBe(200);
-    expect(await tailnet.json()).toEqual(envelope);
+    const mounted = (await tailnet.json()) as PolarisPresentationEnvelope;
+    expect({ ...mounted, links: undefined }).toEqual({ ...envelope, links: undefined });
+    expect(mounted.links.filter((link) => link.self).map((link) => link.path)).toEqual([`${TAILNET_MOUNT_PREFIX}${POLARIS_PRESENTATION_PATH}`]);
     const truth = (await (await fetch(`${baseUrl}${POC_MACHINE_PATH}`, { headers: { authorization: `Bearer ${token}` } })).json()) as PocModel & { narrative?: unknown };
-    expect(truth).toEqual(model);
+    expect({ ...truth, links: undefined, responseIdentity: model.responseIdentity }).toEqual({ ...JSON.parse(JSON.stringify(model)), links: undefined });
     expect(truth.narrative).toBeUndefined();
   });
 
