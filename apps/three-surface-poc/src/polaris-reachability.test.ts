@@ -194,6 +194,8 @@ describe('Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7
       expect(shortcuts, variant).toBeDefined();
       const quickTargets = [...shortcuts!.matchAll(/<a href="#([^"]+)"/g)].map(match => match[1] as string);
       expect(quickTargets).toEqual(GROUP_IDS.map(id => `polaris-group-${id}`));
+      const beforeShortcuts = html.slice(html.indexOf('<body>'), html.indexOf('<nav class="quick-links"'));
+      expect(beforeShortcuts, `${variant}: shortcuts entered a disclosure`).not.toContain('<details');
       expect(html.indexOf('class="quick-links"')).toBeLessThan(html.indexOf('class="site-nav"'));
       expect(html.indexOf('class="quick-links"')).toBeLessThan(html.indexOf('<details class="contents-list"'));
       const beforeMain = html.slice(html.indexOf('<body>'), html.indexOf('<main id="main-content">'));
