@@ -1,0 +1,65 @@
+{
+  "subject": "syzygy-2pc private Chrome descendant drain under hosted-style contention",
+  "date": "2026-09-23",
+  "base": "a971361f1e66cc5cb0da6a3d06f51aaf96feac3a",
+  "testedCommit": "cd015fe74ff0263f471436d65e5a96652df2fd6c",
+  "hostedCounterexample": {
+    "pr": 111,
+    "nodeRun": 35839572878,
+    "result": "1922 passed, 1 failed, 3 skipped; unchanged missing-capability browser case failed because three private-session processes remained at the former 1000 ms drain deadline"
+  },
+  "diagnostic": {
+    "scratch": "/tmp/syzygy-2pc-diag.s3qsz6",
+    "command": "SYZYGY_2PC_DIAG=1 taskset -c 0 npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 apps/three-surface-poc/src/surface-routes.test.ts -t 'exhausts 13 runtime cross-surface links|withholds the post-script Orrery capability' --reporter=dot; eight concurrent processes, each with its own TMPDIR",
+    "instrumentation": "Temporary DEBUG-2pc traces recorded verified same-UID private session/group PID, start time, process state, and scan elapsed time. The instrumentation was removed before testedCommit; retained logs are in scratch.",
+    "launches": 24,
+    "groupsWithLiveDescendantAfterParentExit": 4,
+    "observedDescendants": [
+      { "group": 3067976, "pid": 3068328, "startTicks": "196241851", "state": "D", "liveScanMs": 339, "firstEmptyScanMs": 638, "secondEmptyScanMs": 864 },
+      { "group": 3068007, "pid": 3068395, "startTicks": "196241887", "state": "D", "liveScanMs": 267, "firstEmptyScanMs": 522, "secondEmptyScanMs": 787 },
+      { "group": 3067968, "pid": 3068297, "startTicks": "196241845", "state": "D", "liveScanMs": 336, "firstEmptyScanMs": 589, "secondEmptyScanMs": 800 },
+      { "group": 3067954, "pid": 3068240, "startTicks": "196241818", "state": "D", "liveScanMs": 397, "firstEmptyScanMs": 797, "secondEmptyScanMs": 1019 }
+    ],
+    "maxSecondEmptyScanMsAcrossAll24Groups": 1471,
+    "identityLimit": "Chrome helper argv did not carry --user-data-dir; the driver verified process group/session membership and same UID instead. Exact descendant exit instants lie between the live and first empty scans. The hosted run did not retain process identities or exit times."
+  },
+  "repair": {
+    "profileDrainMs": 3000,
+    "rationale": "Three seconds exceeds twice the 1471 ms loaded local maximum and leaves the direct/tailnet/missing-capability case-local 15/15/10 second bounds unchanged. It is a test-driver cleanup bound, not a global test timeout.",
+    "safety": "Only the verified launched child may be signaled; no group or descendant signal. A profile is removed only after two empty verified scans within the deadline. A live member, an ambiguous identity, or a late second empty scan retains the profile."
+  },
+  "deterministicRegression": {
+    "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 apps/three-surface-poc/src/cdp-browser.test.ts --reporter=dot",
+    "baseline": "11 passed, 0 failed",
+    "lateDescendant": "The launched parent is already exited; a transient empty scan is followed by a descendant through virtual 1200 ms; two later empty scans complete at virtual 2000 ms before profile removal.",
+    "failClosedCases": "A live-member timeout, a second empty scan after deadline, and uncertain process identity each retain the profile."
+  },
+  "mutation": {
+    "file": "apps/three-surface-poc/src/cdp-browser.ts",
+    "old": "const BROWSER_PROFILE_DRAIN_MS = 3_000;",
+    "new": "const BROWSER_PROFILE_DRAIN_MS = 1_000;",
+    "testedCommit": "cd015fe74ff0263f471436d65e5a96652df2fd6c",
+    "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 apps/three-surface-poc/src/cdp-browser.test.ts --reporter=verbose",
+    "result": "1 executing test failed on private browser profile still held by 1 process(es); 10 passed; exit 1",
+    "restored": true
+  },
+  "loadedProof": {
+    "command": "taskset -c 0 npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 apps/three-surface-poc/src/surface-routes.test.ts -t 'exhausts 13 runtime cross-surface links|withholds the post-script Orrery capability' --reporter=verbose; five sequential waves of four concurrent processes, each with isolated TMPDIR",
+    "runs": 20,
+    "intendedCasesPerRun": 3,
+    "result": "60 passed, 0 failed; each targeted invocation also reports 15 filtered skips",
+    "wallSeconds": { "min": 22.68, "median": 23.61, "p95": 23.89, "max": 23.95 },
+    "caseMilliseconds": {
+      "direct": { "min": 5101, "median": 5567, "p95": 5686, "max": 5766 },
+      "tailnet": { "min": 4650, "median": 4836, "p95": 5381, "max": 5434 },
+      "missingCapability": { "min": 3739, "median": 3966, "p95": 4180, "max": 4213 }
+    },
+    "immediateResidualProfiles": 0,
+    "delayedResidualProfilesAfterTwoSeconds": 0,
+    "independentEnumeration": "find across the scratch tree and direct fs.readdir of all 20 isolated TMPDIR roots both returned zero"
+  },
+  "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/cdp-browser.ts": "b59e9b8cde087c463918a353c77c835713b3dbf2cd40bc7284c79d3dc81537e9",
+    "apps/three-surface-poc/src/cdp-browser.test.ts": "d02c327df7e459540be15f7b100bc42de6e14ad02aa628fe64a40b9375f2a74c"
+  }
+}
