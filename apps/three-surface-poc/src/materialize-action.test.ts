@@ -1,10 +1,10 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
-import { buildPocModel, readMaterializationRecordFile, type PocModel } from '@syzygy/three-surface-poc-core';
+import { buildPocModel, readMaterializationRecordFile, type DispatchDisclosure, type PocModel } from '@syzygy/three-surface-poc-core';
 
 import { TAILNET_HOST } from './browser-origin.js';
 import {
@@ -13,7 +13,7 @@ import {
   materializeRoutes,
   renderMaterializePanel,
 } from './materialize-action.js';
-import { pocRoutes } from './routes.js';
+import { POC_MACHINE_PATH, pocRoutes } from './routes.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { fetchWithHost } from './test-http-client.js';
 import { buildFixtureModel, fixtureRepoWithGit } from './test-model-fixture.js';
@@ -37,6 +37,84 @@ function tempDir(prefix: string): string {
   return directory;
 }
 
+function decodeHtmlText(value: string): string {
+  return value
+    .replace(/<[^>]*>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+}
+
+function parityField(html: string, field: string): string {
+  const match = new RegExp(`data-parity-field="${field}">([\\s\\S]*?)<\\/dd>`).exec(html);
+  if (match?.[1] === undefined) throw new Error(`missing Trajectory parity field: ${field}`);
+  return decodeHtmlText(match[1]);
+}
+
+function assertDispatchParity(
+  html: string,
+  dispatch: DispatchDisclosure,
+): {
+  readonly top: readonly [number, number];
+  readonly leaves: readonly [number, number];
+  readonly state: readonly [number, number];
+  readonly machineOnly: readonly string[];
+} {
+  const governing = /^(\S+) \((.+)\)$/.exec(parityField(html, 'materialize-governing-intent'));
+  if (governing === null) throw new Error('malformed Trajectory governing-intent field');
+  const typePriority = /^(.+) \/ P(\d+)$/.exec(parityField(html, 'materialize-type-priority'));
+  if (typePriority === null) throw new Error('malformed Trajectory type-priority field');
+  const rendered = {
+    title: parityField(html, 'materialize-title'),
+    description: parityField(html, 'materialize-description'),
+    labels: parityField(html, 'materialize-labels').split(', '),
+    issueType: typePriority[1] as string,
+    priority: Number(typePriority[2]),
+    externalRef: parityField(html, 'materialize-external-ref'),
+    targetRepoRoot: parityField(html, 'materialize-target-repo'),
+    governingIntent: {
+      requirementId: governing[1] as string,
+      proposalPath: governing[2] as string,
+    },
+  };
+  const packet = dispatch.packet;
+  const expected = {
+    title: packet.title,
+    description: packet.description,
+    labels: [...packet.labels],
+    issueType: packet.issueType,
+    priority: packet.priority,
+    externalRef: packet.externalRef,
+    targetRepoRoot: packet.targetRepoRoot,
+    governingIntent: {
+      requirementId: packet.governingIntent.requirementId,
+      proposalPath: packet.governingIntent.proposalPath,
+    },
+  };
+  if (JSON.stringify(rendered) !== JSON.stringify(expected)) {
+    throw new Error(`Trajectory dispatch packet parity mismatch: ${JSON.stringify({ rendered, expected })}`);
+  }
+  const top = [Object.keys(rendered).length, Object.keys(packet).length] as const;
+  const leaves = [Object.keys(rendered).length - 1 + Object.keys(rendered.governingIntent).length,
+    Object.keys(packet).length - 1 + Object.keys(packet.governingIntent).length] as const;
+  const machineOnly = [
+    'dispatch.packet.targetBeadPrefix',
+    'dispatch.packet.governingIntent.designPath',
+  ];
+  let state: readonly [number, number] = [0, 0];
+  if (dispatch.dispatchState === 'dispatched') {
+    const beadId = /data-parity-field="materialize-status">Already materialized as <code>([^<]+)<\/code>/.exec(html)?.[1];
+    if (beadId === undefined || decodeHtmlText(beadId) !== dispatch.beadId) {
+      throw new Error(`Trajectory dispatch state parity mismatch: rendered=${beadId}, machine=${dispatch.beadId}`);
+    }
+    state = [1, 2] as const;
+    machineOnly.push('dispatch.createdAt');
+  }
+  return { top, leaves, state, machineOnly };
+}
+
 describe('renderMaterializePanel', () => {
   it('previews the exact packet and target repository read-only, before any trigger (AC1)', () => {
     const model = buildFixtureModel(cleanups);
@@ -48,6 +126,62 @@ describe('renderMaterializePanel', () => {
     expect(html).toContain('data-parity-field="materialize-status">Not yet materialized.');
     expect(html).toContain('<form method="POST" action="/trajectory/materialize">');
     expect(html).not.toMatch(/onclick=/);
+  });
+
+  it('matches decoded Trajectory fields to authenticated API dispatch with exact denominators and named machine-only values', async () => {
+    const model = buildFixtureModel(cleanups);
+    if (model.dispatch === null) throw new Error('fixture must carry dispatch');
+    const dispatched: DispatchDisclosure = Object.freeze({
+      dispatchState: 'dispatched',
+      packet: model.dispatch.packet,
+      beadId: 'bu-dispatch-parity',
+      createdAt: '2026-09-23T00:00:00Z',
+    });
+    const dispatchedModel: PocModel = {
+      ...model,
+      dispatch: dispatched,
+      materializedBeadId: dispatched.beadId,
+    };
+    const start = await createDaemon({
+      stateDir: join(tempDir('syzygy-poc-dispatch-parity-'), 'state'),
+      port: 0,
+      routes: pocRoutes(() => dispatchedModel),
+    });
+    if (!start.started) throw new Error(`daemon failed to start: ${start.failure.kind}`);
+    running.push(start.daemon);
+    const baseUrl = `http://${start.daemon.host}:${start.daemon.port}`;
+    const token = readFileSync(start.daemon.credentialPath, 'utf8').trim();
+    const trajectory = await fetch(`${baseUrl}/trajectory`);
+    const machineResponse = await fetch(`${baseUrl}${POC_MACHINE_PATH}`, {
+      headers: { authorization: `Bearer ${token}` },
+    });
+    expect(trajectory.status).toBe(200);
+    expect(machineResponse.status).toBe(200);
+    const html = await trajectory.text();
+    const machine = (await machineResponse.json()) as PocModel;
+    if (machine.dispatch?.dispatchState !== 'dispatched') throw new Error('API dispatched state missing');
+    expect(assertDispatchParity(html, machine.dispatch)).toEqual({
+      top: [8, 9],
+      leaves: [9, 11],
+      state: [1, 2],
+      machineOnly: [
+        'dispatch.packet.targetBeadPrefix',
+        'dispatch.packet.governingIntent.designPath',
+        'dispatch.createdAt',
+      ],
+    });
+
+    for (const packet of [
+      { ...machine.dispatch.packet, title: 'mutated API title' },
+      { ...machine.dispatch.packet, labels: ['mutated API label'] },
+      { ...machine.dispatch.packet, issueType: 'mutated API type', priority: 3 },
+      { ...machine.dispatch.packet, governingIntent: { ...machine.dispatch.packet.governingIntent, proposalPath: 'mutated API proposal' } },
+    ]) {
+      const divergentPacket: DispatchDisclosure = { ...machine.dispatch, packet };
+      expect(() => assertDispatchParity(html, divergentPacket)).toThrow('dispatch packet parity mismatch');
+    }
+    const divergentState: DispatchDisclosure = { ...machine.dispatch, beadId: 'bu-mutated-state' };
+    expect(() => assertDispatchParity(html, divergentState)).toThrow('dispatch state parity mismatch');
   });
 
   it('is embedded on the Trajectory page', () => {

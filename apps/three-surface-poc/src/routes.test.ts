@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -27,6 +27,26 @@ function tempDir(prefix: string): string {
   const directory = mkdtempSync(join(tmpdir(), prefix));
   cleanups.push(directory);
   return directory;
+}
+
+function stateDirectorySnapshot(root: string): readonly { path: string; kind: string; bytes?: string; mtimeNs: string }[] {
+  const entries: { path: string; kind: string; bytes?: string; mtimeNs: string }[] = [];
+  const visit = (relative: string): void => {
+    const absolute = join(root, relative);
+    const stat = lstatSync(absolute, { bigint: true });
+    const kind = stat.isDirectory() ? 'directory' : stat.isFile() ? 'file' : 'other';
+    entries.push({
+      path: relative || '.',
+      kind,
+      ...(stat.isFile() ? { bytes: readFileSync(absolute).toString('base64') } : {}),
+      mtimeNs: String(stat.mtimeNs),
+    });
+    if (stat.isDirectory()) {
+      for (const name of readdirSync(absolute).sort()) visit(join(relative, name));
+    }
+  };
+  visit('');
+  return entries;
 }
 
 function modelFixture(): PocModel {
@@ -320,17 +340,17 @@ describe('three-surface POC routes', () => {
     const { daemon, token, stateDir } = await startPoc(model);
     const marker = join(stateDir, 'read-only-marker.txt');
     writeFileSync(marker, 'GET must not mutate state\n', 'utf8');
-    const before = readFileSync(marker);
-    const beforeMtime = statSync(marker).mtimeMs;
+    const before = stateDirectorySnapshot(stateDir);
     const url = `http://${daemon.host}:${daemon.port}${POC_MACHINE_PATH}`;
     const expectedBody = JSON.stringify(model);
     const fetchMachine = async () => (await fetch(url, { headers: { authorization: `Bearer ${token}` } })).text();
-    const sequential = await Promise.all([fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine()]);
+    const sequential: string[] = [];
+    for (let index = 0; index < 5; index += 1) sequential.push(await fetchMachine());
+    expect(stateDirectorySnapshot(stateDir)).toEqual(before);
     const concurrent = await Promise.all([fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine()]);
     expect(new Set([...sequential, ...concurrent]).size).toBe(1);
     expect(sequential[0]).toBe(expectedBody);
-    expect(readFileSync(marker)).toEqual(before);
-    expect(statSync(marker).mtimeMs).toBe(beforeMtime);
+    expect(stateDirectorySnapshot(stateDir)).toEqual(before);
   });
 
   it('recomputes response identity when dispatch or mayNot content changes', () => {
@@ -362,9 +382,9 @@ describe('three-surface POC routes', () => {
     const human = [...html.matchAll(/<li[^>]*data-authority-may-not-id="([^"]+)"[^>]*>([\s\S]*?)<\/li>/g)].map((match) => {
       const row = match[2] ?? '';
       const statement = /data-parity-field="authority-may-not-statement">([^<]*)</.exec(row)?.[1] ?? '';
-      const act = /data-parity-field="authority-may-not-act">([^<]*)</.exec(row)?.[1] ?? '';
+      const act = /data-parity-field="authority-may-not-act">([^<]*)</.exec(row)?.[1];
       const digest = /data-parity-field="authority-may-not-digest">([^<]*)</.exec(row)?.[1];
-      return [match[1], decodeHtmlText(statement), decodeHtmlText(act), digest === undefined ? undefined : decodeHtmlText(digest)];
+      return [match[1], decodeHtmlText(statement), act === undefined ? undefined : decodeHtmlText(act), digest === undefined ? undefined : decodeHtmlText(digest)];
     });
     expect(human).toEqual(machine.projectShape.authority.mayNot.map((row) => [row.id, row.statement, row.actIdentity, row.artifactDigest]));
   });

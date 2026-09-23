@@ -15,6 +15,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   FIXED_MAY_NOT_IDS,
+  FIXED_MAY_NOT_STATEMENTS,
   STATE_1_DISCLOSURE,
   discloseAuthority,
 } from './authority-disclosure.js';
@@ -540,15 +541,25 @@ describe('PWB-REQ-005 valid triples (8)', () => {
       'utf8',
     );
     const section = source.slice(source.indexOf('## What this does not authorize'), source.indexOf('## Escalation triggers'));
-    expect(section.match(/^-[ ]+.+$/gm)).toHaveLength(6);
-    expect(FIXED_MAY_NOT_IDS).toEqual([
-      'no-write-to-observed-repository',
-      'no-second-repository-or-wider-content-class',
-      'no-production-release-or-remote-access',
-      'no-edit-to-act-bound-artifact',
-      'no-doctrine-or-contract-change-or-syzygy-authored-code',
-      'no-independent-verification',
-    ]);
+    const bullets: string[] = [];
+    for (const line of section.split('\n')) {
+      if (line.startsWith('- ')) bullets.push(line.slice(2));
+      else if (line.startsWith('  ') && bullets.length > 0) bullets[bullets.length - 1] += ` ${line.trim()}`;
+    }
+    const normalized = bullets.map((bullet) => bullet.replace(/`/g, '').replace(/\s+/g, ' ').trim());
+    const idFor = (statement: string): (typeof FIXED_MAY_NOT_IDS)[number] => {
+      if (statement.startsWith('No write, egress, execution,')) return 'no-write-to-observed-repository';
+      if (statement.startsWith('No second repository,')) return 'no-second-repository-or-wider-content-class';
+      if (statement.startsWith('No production release,')) return 'no-production-release-or-remote-access';
+      if (statement.startsWith('No edit to any act-bound artifact:')) return 'no-edit-to-act-bound-artifact';
+      if (statement.startsWith('No doctrine or contract change;')) return 'no-doctrine-or-contract-change-or-syzygy-authored-code';
+      if (statement.startsWith('No independent verification:')) return 'no-independent-verification';
+      throw new Error(`unregistered implementation-act prohibition: ${statement}`);
+    };
+    expect(normalized).toHaveLength(6);
+    expect(FIXED_MAY_NOT_IDS.map((id, index) => ({ id, statement: FIXED_MAY_NOT_STATEMENTS[index] }))).toEqual(
+      normalized.map((statement) => ({ id: idFor(statement), statement })),
+    );
   });
 });
 
@@ -596,7 +607,10 @@ describe('PWB-REQ-005 invalid cases (195)', () => {
       expect(entry?.independentlyVerified).toBe(false);
       expect(entry?.invalidCase).toBe(caseId);
       expect(entry?.artifactDigest).toMatch(/^[0-9a-f]{64}$/);
-      expect(disclosure.mayNot.find((row) => row.id === `no-${authority}-authority-breach`)?.statement).toContain('May not');
+      const mayNot = disclosure.mayNot.find((row) => row.id === `no-${authority}-authority-breach`);
+      expect(mayNot?.statement).toContain('May not');
+      expect(mayNot?.actIdentity).toBeUndefined();
+      expect(mayNot?.artifactDigest).toBe(entry?.artifactDigest);
       expect(disclosure.contradiction).toContain('RFC3-16(a)');
     });
   }
@@ -611,6 +625,9 @@ describe('PWB-REQ-005 absence and mechanics', () => {
     const evaluation = evaluateBodyReadAuthority(inputs({ consent: { artifact: { kind: 'missing' } } }));
     expect(evaluation.admits).toBe(false);
     expect(evaluation.consent).toEqual({ kind: 'absent', what: 'artifact-missing', artifactDigest: undefined });
+    const missingConsent = discloseAuthority(evaluation).mayNot.find((row) => row.id === 'no-consent-authority-breach');
+    expect(missingConsent?.actIdentity).toBeUndefined();
+    expect(missingConsent?.artifactDigest).toBeUndefined();
     const reads = spy();
     const observed = observeProjectShape({ authority: evaluation, read: reads.read });
     expect(reads.calls()).toBe(0);

@@ -343,7 +343,7 @@ function sweep(model: PocModel): SweepResult {
   expected.set('authority-disclosure', authority === undefined ? [] : authority.authorities.map((entry) => entry.disclosure));
   expected.set('authority-may-not-id', authority === undefined ? [] : authority.mayNot.map((entry) => entry.id));
   expected.set('authority-may-not-statement', authority === undefined ? [] : authority.mayNot.map((entry) => entry.statement));
-  expected.set('authority-may-not-act', authority === undefined ? [] : authority.mayNot.map((entry) => entry.actIdentity));
+  expected.set('authority-may-not-act', authority === undefined ? [] : authority.mayNot.flatMap((entry) => entry.actIdentity === undefined ? [] : [entry.actIdentity]));
   expected.set('authority-may-not-digest', authority === undefined ? [] : authority.mayNot.flatMap((entry) => entry.artifactDigest === undefined ? [] : [entry.artifactDigest]));
   // Discovery and degradation (PWB-RECON-02): one state marker per pillar,
   // one reason per Unknown pillar, the degradation state when there is one.

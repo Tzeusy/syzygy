@@ -39,7 +39,7 @@ export interface AuthorityStateDisclosure {
 export interface AuthorityMayNot {
   readonly id: string;
   readonly statement: string;
-  readonly actIdentity: string;
+  readonly actIdentity: string | undefined;
   readonly artifactDigest: string | undefined;
 }
 
@@ -52,26 +52,25 @@ export const FIXED_MAY_NOT_IDS = Object.freeze([
   'no-independent-verification',
 ] as const);
 
-const FIXED_MAY_NOT_STATEMENTS = Object.freeze([
-  'No write, egress, execution, deployment, release, recovery, or mission effect on Butlers or on any other repository.',
-  'No second repository, no wider content class, and no reading of Butlers content the secret-classification policy excludes or cannot classify.',
+export const FIXED_MAY_NOT_STATEMENTS = Object.freeze([
+  'No write, egress, execution, deployment, release, recovery, or mission effect on Butlers or on any other repository. The observer registry entry the owner adopted declares an empty write surface; that remains the bound.',
+  'No second repository, no wider content class, no reading of Butlers content the secret-classification policy excludes or cannot classify.',
   'No production release, broad remote access, or multi-user support.',
-  'No edit to any act-bound artifact.',
-  'No doctrine or contract change, no autonomous intent adoption, no Syzygy-authored implementation code, and no unattended agent coordination.',
-  'No independent verification; this authorization is a state-(1) human direction.',
+  'No edit to any act-bound artifact: the eleven signed PWB artifacts, the three effect-act subjects, the six signed three-surface-poc-experience artifacts, or the seven adopted Capability 1 artifacts. Spec changes route through CC-REV-2\'s amendment path and a new owner act.',
+  'No doctrine or contract change; no autonomous intent adoption; no Syzygy-authored implementation code; no unattended agent coordination.',
+  'No independent verification: this authorization, like the three effect acts, is a state-(1) human direction. A later Syzygy-verified state is a separate act.',
 ] as const);
 
 const IMPLEMENTATION_ACT_IDENTITY = 'PWB-IMPLEMENTATION-AUTHORIZATION-ACT' as const;
 
 function authorityMayNot(entry: AuthorityStateDisclosure): AuthorityMayNot {
-  const effectiveAct = entry.actIdentity ?? `PWB-REQ-005:${entry.authority}:no-effective-owner-act`;
   const statement = entry.state === 'owner-adopted (bootstrap, uncorrelated)' || entry.state === 'Syzygy-verified'
     ? `May not read outside the effective ${entry.authority} authority; ${entry.disclosure}`
     : `May not read under the ${entry.authority} authority; ${entry.disclosure}`;
   return {
     id: `no-${entry.authority}-authority-breach`,
     statement,
-    actIdentity: effectiveAct,
+    actIdentity: entry.actIdentity,
     artifactDigest: entry.artifactDigest,
   };
 }
