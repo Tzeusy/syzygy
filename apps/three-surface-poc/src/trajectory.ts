@@ -209,6 +209,7 @@ export function renderTrajectoryPage(model: PocModel, mountPrefix = '', status?:
     extraStyle: TRAJECTORY_STYLE,
     body,
     status,
+    surfacePlanes: model.surfaces,
     footer: substrateEvaluationFooter({
       model,
       escapeHtml,

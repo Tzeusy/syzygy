@@ -50,6 +50,7 @@ function surfacePanel(surface: PocSurface, model: PocModel): string {
 
   return `
     <section class="surface surface-${surface.id}" id="${surface.id}" data-surface-id="${surface.id}">
+      <div class="surface-state-label" data-surface-plane="${surface.id}">${escapeHtml(surface.state)} state</div>
       <div class="surface-kicker">${escapeHtml(surface.question)}</div>
       <h2>${escapeHtml(surface.title)}</h2>
       <ol class="surface-list">${items}</ol>
@@ -64,6 +65,7 @@ const HOME_STYLE = `
   .surface-orrery { grid-column: 2 / span 10; }
   .surface h2 { font-size: clamp(2rem, 4vw, 3.4rem); margin: .2rem 0 1rem; }
   .surface-kicker { color: var(--muted); font-size: .78rem; }
+  .surface-state-label { color: var(--cyan); font: .72rem/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: .06em; }
   .surface-list { padding: 0; margin: 0; list-style: none; counter-reset: item; }
   .surface-item { display: grid; grid-template-columns: minmax(11rem, 1fr) auto; gap: .4rem 1rem; padding: .8rem 0; border-top: 1px solid var(--line); }
   .surface-item small { grid-column: 1 / -1; color: var(--muted); }
@@ -93,6 +95,7 @@ export function renderPocPage(model: PocModel, mountPrefix = '', status?: HumanO
     body,
     footer: `Evaluation <code>${escapeHtml(model.evaluation.snapshot)}</code> as of <code>${escapeHtml(model.evaluation.asOf)}</code>. Machine facts: authenticated <code>GET ${POC_MACHINE_PATH}</code>.`,
     status,
+    surfacePlanes: model.surfaces,
     escapeHtml,
     mountPrefix,
   });

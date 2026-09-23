@@ -1,7 +1,24 @@
 import { DESIGN_TOKENS_CSS, legendHtml, skipLinkHtml } from './design-tokens.js';
+import type { PocSurface } from '@syzygy/three-surface-poc-core';
 import { withMountPrefix } from './tailnet.js';
 
 export type SurfaceRouteId = 'home' | 'polaris' | 'trajectory' | 'orrery';
+
+const STATE_PURPOSE: Readonly<Record<PocSurface['state'], string>> = {
+  desired: 'what this project is meant to be',
+  execution: 'what work is underway',
+  observed: 'what code and evidence show',
+};
+
+export function surfacePlanePhrase(surface: PocSurface): string {
+  return `${surface.title} · ${surface.state} state · ${STATE_PURPOSE[surface.state]}`;
+}
+
+function surfaceStateLegend(surfaces: readonly PocSurface[], escapeHtml: (value: string) => string): string {
+  if (surfaces.length === 0) return '<p class="state-plane-legend" data-surface-state-legend>Surface state mapping unavailable: no seed-backed surfaces were evaluated.</p>';
+  return `<p class="state-plane-legend" data-surface-state-legend aria-label="Surface state plane legend">${surfaces.map(surface =>
+    `<span data-surface-state-map="${escapeHtml(surface.id)}">${escapeHtml(surface.title)} holds the ${escapeHtml(surface.state)} state</span>`).join('; ')}.</p>`;
+}
 
 export interface HumanOperabilityStatus {
   readonly evaluationDigest: string | null;
@@ -60,6 +77,8 @@ export interface PageShellInput {
   readonly sidebar?: string;
   readonly footer: string;
   readonly status?: HumanOperabilityStatus;
+  /** One evaluated model table supplies the page phrase and all legend rows. */
+  readonly surfacePlanes?: readonly PocSurface[];
   readonly escapeHtml: (value: string) => string;
   /** The mount this page is being rendered under (`''` direct, or
    * `TAILNET_MOUNT_PREFIX` when reached via `tailscale serve`) — every
@@ -70,20 +89,23 @@ export interface PageShellInput {
 export function pageShell(input: PageShellInput): string {
   const escapeHtml = input.escapeHtml;
   const mountPrefix = input.mountPrefix ?? '';
+  const currentSurface = input.surfacePlanes?.find(surface => surface.id === input.current);
+  const eyebrow = currentSurface === undefined ? input.eyebrow : surfacePlanePhrase(currentSurface);
+  const stateLegend = input.surfacePlanes === undefined ? '' : surfaceStateLegend(input.surfacePlanes, escapeHtml);
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(input.title)}</title>
-  <style>${DESIGN_TOKENS_CSS}.operability-status{margin:.5rem auto 1rem;max-width:var(--content-width,90rem);padding:.4rem 1rem;border:1px solid var(--line);color:var(--muted);font:.75rem/1.45 var(--font-mono);overflow-wrap:anywhere}${input.extraStyle ?? ''}</style>
+  <style>${DESIGN_TOKENS_CSS}.operability-status{margin:.5rem auto 1rem;max-width:var(--content-width,90rem);padding:.4rem 1rem;border:1px solid var(--line);color:var(--muted);font:.75rem/1.45 var(--font-mono);overflow-wrap:anywhere}.state-plane-legend{color:var(--muted);font:.8rem/1.5 var(--font-mono);max-width:var(--content-width,90rem)}${input.extraStyle ?? ''}</style>
 </head>
 <body>
   ${skipLinkHtml('main-content')}
   ${input.readingLayout ? siteNav(input.current, mountPrefix, escapeHtml) : ''}
   ${input.sidebar === undefined ? '' : '<div class="reading-layout">'}
   <header>
-    <div class="eyebrow" data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${escapeHtml(input.eyebrow)}</div>
+    <div class="eyebrow" data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable${currentSurface === undefined ? '' : ` data-surface-plane="${escapeHtml(currentSurface.id)}"`}>${escapeHtml(eyebrow)}</div>
     <h1 data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${escapeHtml(input.heading)}</h1>
     <p class="lede" data-copy-role="scope-instruction" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${escapeHtml(input.lede)}</p>
   </header>
@@ -91,10 +113,10 @@ export function pageShell(input: PageShellInput): string {
   ${input.sidebar === undefined ? '' : `<aside class="reading-sidebar">${input.sidebar}</aside>`}
   ${input.readingLayout ? '' : siteNav(input.current, mountPrefix, escapeHtml)}
   <main id="main-content">
-    ${input.readingLayout ? '' : legendHtml(escapeHtml)}
+    ${input.readingLayout ? '' : legendHtml(escapeHtml) + stateLegend}
     ${input.body}
   </main>
-  <footer data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${input.readingLayout ? legendHtml(escapeHtml) : ''}${input.footer}</footer>
+  <footer data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${input.readingLayout ? legendHtml(escapeHtml) + stateLegend : ''}${input.footer}</footer>
   ${input.sidebar === undefined ? '' : '</div>'}
 </body>
 </html>`;

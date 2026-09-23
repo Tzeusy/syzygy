@@ -81,3 +81,44 @@ describe('cross-cutting: legend matches the declared encoding table on every sur
     }
   });
 });
+
+describe('cross-cutting: the three doctrine planes stay distinct from epistemic labels', () => {
+  const expected = [
+    { id: 'polaris', title: 'Polaris', state: 'desired', phrase: 'Polaris · desired state · what this project is meant to be' },
+    { id: 'trajectory', title: 'Trajectory', state: 'execution', phrase: 'Trajectory · execution state · what work is underway' },
+    { id: 'orrery', title: 'Orrery', state: 'observed', phrase: 'Orrery · observed state · what code and evidence show' },
+  ] as const;
+
+  function checkLegend(html: string): void {
+    const mappings = [...html.matchAll(/data-surface-state-map="([^"]+)">([^<]+)<\/span>/g)]
+      .map((match) => [match[1], match[2]]);
+    expect(mappings).toEqual(expected.map(({ id, title, state }) => [id, `${title} holds the ${state} state`]));
+  }
+
+  it('names each page plane once outside the legend and each home panel once', () => {
+    const model = buildFixtureModel(cleanups);
+    const rendered = pages(model);
+    expect(model.surfaces.map(({ id, state }) => [id, state])).toEqual(expected.map(({ id, state }) => [id, state]));
+    for (const page of rendered) checkLegend(page.html);
+    for (const plane of expected) {
+      const html = rendered.find((page) => page.name === plane.id)!.html;
+      expect([...html.matchAll(new RegExp(`data-surface-plane="${plane.id}"`, 'g'))]).toHaveLength(1);
+      expect(html).toContain(`>${plane.phrase}</div>`);
+      expect([...rendered[0]!.html.matchAll(new RegExp(`data-surface-plane="${plane.id}"`, 'g'))]).toHaveLength(1);
+      expect(rendered[0]!.html).toContain(`>${plane.state} state</div>`);
+    }
+    expect(rendered.map(page => (page.html.match(/data-surface-state-map=/g) ?? []).length)).toEqual([3, 3, 3, 3]);
+  });
+
+  it('detects a misspelled legend mapping and a swapped surface plane', () => {
+    const model = buildFixtureModel(cleanups);
+    const html = renderPolarisPage(model);
+    expect(() => checkLegend(html.replace('Polaris holds the desired state', 'Polaris holds the proposed state'))).toThrow();
+    const swapped = { ...model, surfaces: model.surfaces.map(surface =>
+      surface.id === 'trajectory' ? { ...surface, state: 'observed' as const }
+        : surface.id === 'orrery' ? { ...surface, state: 'execution' as const } : surface) };
+    const page = renderTrajectoryPage(swapped);
+    expect(page).not.toContain(`>${expected[1].phrase}</div>`);
+    expect(() => checkLegend(page)).toThrow();
+  });
+});
