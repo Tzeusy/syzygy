@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:net';
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -38,13 +38,22 @@ async function readRevision(port: number, timeoutMs = 5000): Promise<string> {
   throw new Error('private fixture listener did not start');
 }
 
-async function startedFixture(slow = false): Promise<{ root: string; repo: string; stateDir: string; port: number; pid: number }> {
+async function waitForMarker(marker: string, timeoutMs = 5000): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (!existsSync(marker)) {
+    if (Date.now() >= deadline) throw new Error(`private fixture did not write ${marker}`);
+    await new Promise(resolveWait => setTimeout(resolveWait, 10));
+  }
+}
+
+async function startedFixture(mode: 'normal' | 'slow' | 'held' = 'normal'): Promise<{ root: string; repo: string; stateDir: string; port: number; pid: number }> {
   const root = scratch();
   const repo = join(root, 'repo');
   const stateDir = join(root, 'state');
   mkdirSync(repo);
   writeFileSync(join(repo, 'revision'), 'old-revision');
-  if (slow) writeFileSync(join(repo, 'slow-stop'), 'yes');
+  if (mode === 'slow') writeFileSync(join(repo, 'slow-stop'), 'yes');
+  if (mode === 'held') writeFileSync(join(repo, 'hold-stop'), 'yes');
   const port = await freePort();
   const child = spawn(process.execPath, [fixture, '--repo', repo, '--state-dir', stateDir, '--port', String(port)], {
     cwd: process.cwd(), stdio: 'ignore',
@@ -55,17 +64,38 @@ async function startedFixture(slow = false): Promise<{ root: string; repo: strin
   return { root, repo, stateDir, port, pid: child.pid };
 }
 
+function isPrivateFixturePid(pid: number): boolean {
+  try {
+    const argv = readFileSync(`/proc/${pid}/cmdline`, 'utf8').split('\0');
+    return argv[1] === fixture && roots.some(root => argv.includes(join(root, 'repo')));
+  } catch { return false; }
+}
+
 afterEach(async () => {
-  for (const pid of pids.splice(0)) {
-    try { process.kill(pid, 'SIGTERM'); } catch { /* already stopped */ }
+  for (const root of roots) {
+    const repo = join(root, 'repo');
+    const release = join(repo, 'release-stop');
+    if (existsSync(join(repo, 'hold-stop')) && !existsSync(release)) writeFileSync(release, 'release');
   }
-  await new Promise(resolveWait => setTimeout(resolveWait, 300));
+  const ownedPids = [...pids];
+  for (const pid of ownedPids) {
+    if (isPrivateFixturePid(pid)) {
+      try { process.kill(pid, 'SIGTERM'); }
+      catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ESRCH') throw error; }
+    }
+  }
+  const deadline = Date.now() + 5000;
+  while (ownedPids.some(isPrivateFixturePid)) {
+    if (Date.now() >= deadline) throw new Error('private fixture listener did not stop during cleanup');
+    await new Promise(resolveWait => setTimeout(resolveWait, 25));
+  }
+  pids.splice(0);
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
 describe('one-listener POC restart on private fixture sockets', () => {
   it('waits through one vanished post-SIGTERM identity, then starts exactly one successor after socket absence', async () => {
-    const f = await startedFixture(true);
+    const f = await startedFixture('slow');
     const credentialBefore = readFileSync(join(f.stateDir, 'machine-credential.token'));
     writeFileSync(join(f.repo, 'revision'), 'new-revision');
     expect(await readRevision(f.port)).toBe('old-revision');
@@ -154,7 +184,7 @@ describe('one-listener POC restart on private fixture sockets', () => {
   });
 
   it('times out without SIGKILL or spawning a successor when SIGTERM close is slow', async () => {
-    const f = await startedFixture(true);
+    const f = await startedFixture('slow');
     await expect(restartOnePocListener({ port: f.port, expectedScript: fixture, timeoutMs: 100 }))
       .rejects.toMatchObject({ code: 'listener-close-timeout' });
     await new Promise(resolveWait => setTimeout(resolveWait, 350));
@@ -166,14 +196,32 @@ describe('one-listener POC restart on private fixture sockets', () => {
     writeFileSync(join(failed.repo, 'fail-next'), 'yes');
     await expect(restartOnePocListener({ port: failed.port, expectedScript: fixture, timeoutMs: 3000 }))
       .rejects.toMatchObject({ code: 'successor-failed' });
-    const concurrent = await startedFixture(true);
-    const first = restartOnePocListener({ port: concurrent.port, expectedScript: fixture, timeoutMs: 5000 });
-    await new Promise(resolveWait => setTimeout(resolveWait, 25));
-    await expect(restartOnePocListener({ port: concurrent.port, expectedScript: fixture, timeoutMs: 5000 }))
-      .rejects.toMatchObject({ code: 'restart-already-in-progress' });
-    const winner = await first;
-    pids.push(winner.newPid);
-    expect(await readRevision(concurrent.port)).toBe('old-revision');
+    const concurrent = await startedFixture('held');
+    writeFileSync(join(concurrent.repo, 'revision'), 'new-revision');
+    const first = restartOnePocListener({ port: concurrent.port, expectedScript: fixture, timeoutMs: 10_000 })
+      .then(result => ({ kind: 'succeeded' as const, result }), error => ({ kind: 'failed' as const, error }));
+    let winner: Awaited<ReturnType<typeof restartOnePocListener>> | undefined;
+    try {
+      await waitForMarker(join(concurrent.repo, 'shutdown-started'));
+      writeFileSync(join(concurrent.repo, 'hold-probe'), 'probe');
+      await waitForMarker(join(concurrent.repo, 'hold-ack'));
+      expect(await readRevision(concurrent.port)).toBe('old-revision');
+      const second = await restartOnePocListener({ port: concurrent.port, expectedScript: fixture, timeoutMs: 5000 })
+        .then(result => { pids.push(result.newPid); return { kind: 'succeeded' as const, result }; },
+          error => ({ kind: 'refused' as const, error }));
+      expect(second.kind).toBe('refused');
+      if (second.kind === 'refused') expect(second.error).toMatchObject({ code: 'restart-already-in-progress' });
+      expect(await readRevision(concurrent.port)).toBe('old-revision');
+    } finally {
+      writeFileSync(join(concurrent.repo, 'release-stop'), 'release');
+      const outcome = await first;
+      if (outcome.kind === 'failed') throw outcome.error;
+      winner = outcome.result;
+      pids.push(winner.newPid);
+    }
+    expect(winner.oldPid).toBe(concurrent.pid);
+    expect(winner.newPid).not.toBe(concurrent.pid);
+    expect(await readRevision(concurrent.port)).toBe('new-revision');
     expect(readdirSync(concurrent.stateDir)).toEqual(['machine-credential.token']);
   }, 20_000);
 });
