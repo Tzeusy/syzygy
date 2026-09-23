@@ -1,0 +1,41 @@
+{
+  "kind": "polaris-status-two-site-rule-6-evidence",
+  "testedCommit": "b2e481aca345c32691a7b3703e4053d3c823bc78",
+  "method": "At testedCommit each old fragment occurred exactly once. Each literal replacement ran one focused Vitest case, executed that test, exited 1 at its clause assertion, then was restored byte-for-byte with apply_patch. The restored baseline ran both cases and exited 0; the worktree was clean. The unperformed candidate builder --check again reported six subjects, two patched, zero mismatches and zero sibling collisions.",
+  "sourceSha256": {
+    "PROJECT-STATUS.md": "e78865bb2ed0c4ee4098b81ff66a66dad813f39f46023ccee152e6d7e69324b8",
+    "docs/polaris-generation/README.md": "e06e370c958fa57745a99b2cee55333c736b5f1fec3e3516ac07a558f696c8ab"
+  },
+  "mutations": [
+    {
+      "id": "status-no-model-clause-deleted",
+      "file": "PROJECT-STATUS.md",
+      "old": "The current operator path calls no real\nmodel or provider.",
+      "new": "The operator path is synthetic.",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 apps/three-surface-poc/src/polaris-status-boundary.test.ts -t 'PROJECT-STATUS.md' --reporter=dot",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "testsRan": true,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "kit-no-model-clause-deleted",
+      "file": "docs/polaris-generation/README.md",
+      "old": "The current operator path calls no real model or provider.",
+      "new": "The operator path is synthetic.",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 apps/three-surface-poc/src/polaris-status-boundary.test.ts -t 'docs/polaris-generation/README.md' --reporter=dot",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "testsRan": true,
+      "restored": true,
+      "outcome": "killed"
+    }
+  ],
+  "candidateState": {
+    "manifest": ".syzygy/governance/contracts/candidates/polaris-edit-repair-deletion-scenario/POLARIS-EDIT-REPAIR-DELETION-SCENARIO-MANIFEST.txt",
+    "performed": false,
+    "ownerQuestion2": "open",
+    "proposedStatusPatch": "one digit-only 177-to-178 patch; not applied"
+  }
+}

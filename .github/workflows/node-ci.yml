@@ -34,7 +34,12 @@ jobs:
   node:
     runs-on: ubuntu-latest
     steps:
+      # The M7 self-corpus test reads Git blobs at its recorded historical
+      # commit. A depth-1 PR checkout omits that object and changes the test
+      # denominator; retain reachable history rather than substitute HEAD.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:

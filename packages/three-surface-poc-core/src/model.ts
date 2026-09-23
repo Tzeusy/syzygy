@@ -186,6 +186,14 @@ export interface PocModel {
    * of the PWB-REQ-022 outcome. `not-evaluated` when the builder was given
    * no run record or no traversal predicate. */
   readonly walkthroughReadiness: WalkthroughReadinessPresentation;
+  /** Routes in the selected machine response, projected from the daemon's
+   * registered POC routes at serve time. Absent on an unserved model. */
+  readonly links?: readonly {
+    readonly path: string;
+    readonly method: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE';
+    readonly credentialClass: 'human-open' | 'machine-credentialed';
+    readonly self: boolean;
+  }[];
   /** A canonical body identity with declared capture-instant exclusions. */
   readonly responseIdentity: ResponseIdentity;
 }
