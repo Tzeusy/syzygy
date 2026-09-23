@@ -43,7 +43,7 @@ import {
   type VerbatimLeafReader,
   type VerbatimResolution,
 } from './capability-detail.js';
-import { pageShell } from './page-shell.js';
+import { pageShell, type HumanOperabilityStatus } from './page-shell.js';
 import { copyAttr, copyText, roleAttr, type PolarisCopyId } from './polaris-copy.js';
 import {
   NarrativeRegistry,
@@ -1562,12 +1562,12 @@ export interface PolarisRenderInputs {
 /** The presentation artifact and its machine form, from one capture: the
  * human page and the envelope `/api/poc/polaris` serves derive from the
  * same registry, so their block, anchor and band multisets are one. */
-export function renderPolarisPresentation(model: PocModel, mountPrefix = '', viewState: PolarisViewState = {}, inputs: PolarisRenderInputs = {}): { readonly html: string; readonly narrative: ReturnType<NarrativeRegistry['narrative']> } {
+export function renderPolarisPresentation(model: PocModel, mountPrefix = '', viewState: PolarisViewState = {}, inputs: PolarisRenderInputs = {}, status?: HumanOperabilityStatus): { readonly html: string; readonly narrative: ReturnType<NarrativeRegistry['narrative']> } {
   if (activeRegistry !== undefined) throw new Error('renderPolarisPage re-entered');
   activeRegistry = new NarrativeRegistry();
   activeViewState = viewState;
   try {
-    const html = renderPolarisBody(model, mountPrefix, activeRegistry, inputs);
+    const html = renderPolarisBody(model, mountPrefix, activeRegistry, inputs, status);
     return { html, narrative: activeRegistry.narrative() };
   } finally {
     activeRegistry = undefined;
@@ -1580,8 +1580,8 @@ export function renderPolarisPresentation(model: PocModel, mountPrefix = '', vie
   }
 }
 
-export function renderPolarisPage(model: PocModel, mountPrefix = '', viewState: PolarisViewState = {}, inputs: PolarisRenderInputs = {}): string {
-  return renderPolarisPresentation(model, mountPrefix, viewState, inputs).html;
+export function renderPolarisPage(model: PocModel, mountPrefix = '', viewState: PolarisViewState = {}, inputs: PolarisRenderInputs = {}, status?: HumanOperabilityStatus): string {
+  return renderPolarisPresentation(model, mountPrefix, viewState, inputs, status).html;
 }
 
 /** The four depths PWB-REQ-011 names — summary, catalog, detail, exact
@@ -1638,7 +1638,7 @@ export function exactSourceIdentities(shape: ProjectShape): ReadonlySet<string> 
     .map((source) => source.identity));
 }
 
-function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: NarrativeRegistry, inputs: PolarisRenderInputs): string {
+function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: NarrativeRegistry, inputs: PolarisRenderInputs, status?: HumanOperabilityStatus): string {
   const shape = model.projectShape;
   const revision = shape.kind === 'observed' ? shape.identity.revision : '';
   activeTargets = pageTargets(shape);
@@ -1692,6 +1692,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     body,
     sidebar: depthNav(shape, dives) + SECTION_NAV_SCRIPT,
     footer: `Evaluation <code>${escapeHtml(model.evaluation.snapshot)}</code> as of <code>${escapeHtml(model.evaluation.asOf)}</code>.`,
+    status,
     escapeHtml,
     mountPrefix,
   });

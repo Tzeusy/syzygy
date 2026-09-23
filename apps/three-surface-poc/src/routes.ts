@@ -1,14 +1,15 @@
 import { escapeHtml, type Route, type RouteResponse } from '@syzygy/cap1-daemon';
-import { PWB_RESOURCE_LIMITS, type PocEntity, type PocModel, type PocSurface, type PwbResourceLimits } from '@syzygy/three-surface-poc-core';
+import { PWB_RESOURCE_LIMITS, buildResponseIdentity, withServedResourceBreaches, type PocEntity, type PocModel, type PocSurface, type PwbResourceLimits } from '@syzygy/three-surface-poc-core';
 
 import { BROWSER_ORIGIN_REFUSAL, browserRequestAllowed } from './browser-origin.js';
 import { epistemicText, exactTablesSection } from './exact-tables.js';
 import { ORRERY_HUMAN_PATH, ORRERY_TAILNET_PATH, renderOrreryPage } from './orrery.js';
-import { pageShell } from './page-shell.js';
+import { pageShell, type HumanOperabilityStatus } from './page-shell.js';
 import { POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, renderPolarisPage, renderPolarisPresentation, type PolarisRenderInputs } from './polaris.js';
 import { POLARIS_SOURCE_PATH, POLARIS_SOURCE_TAILNET_PATH, renderPolarisSourcePage, SOURCE_IDENTITY_PARAM } from './polaris-source.js';
 import { mountPrefixForRequest, TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { renderTrajectoryPage, TRAJECTORY_HUMAN_PATH, TRAJECTORY_TAILNET_PATH } from './trajectory.js';
+import { ServedResponseRecorder } from './served-response-recorder.js';
 
 export { BROWSER_ORIGIN_REFUSAL } from './browser-origin.js';
 
@@ -75,7 +76,7 @@ const HOME_STYLE = `
   @media (max-width: 800px) { .surface-polaris, .surface-trajectory, .surface-orrery { grid-column: 1 / -1; margin-top: 0; } }
 `;
 
-export function renderPocPage(model: PocModel, mountPrefix = ''): string {
+export function renderPocPage(model: PocModel, mountPrefix = '', status?: HumanOperabilityStatus): string {
   const surfaces = model.surfaces.map((surface) => surfacePanel(surface, model)).join('');
   const body = `
     <p class="notice"><strong>POC, not product status.</strong> Desired, execution, and observed state remain distinct. Merge is not verification. Missing evidence is rendered Unknown.</p>
@@ -91,6 +92,7 @@ export function renderPocPage(model: PocModel, mountPrefix = ''): string {
     extraStyle: HOME_STYLE,
     body,
     footer: `Evaluation <code>${escapeHtml(model.evaluation.snapshot)}</code> as of <code>${escapeHtml(model.evaluation.asOf)}</code>. Machine facts: authenticated <code>GET ${POC_MACHINE_PATH}</code>.`,
+    status,
     escapeHtml,
     mountPrefix,
   });
@@ -135,11 +137,30 @@ export function responseLimitFailure(model: PocModel, limit: ResponseLimitIdenti
 }
 
 // Serves `body` only when its UTF-8 encoding fits the named ceiling.
-export function boundedResponse(model: PocModel, limits: PwbResourceLimits, limit: ResponseLimitIdentity, contentType: string, body: string): RouteResponse {
+export function boundedResponse(model: PocModel, limits: PwbResourceLimits, limit: ResponseLimitIdentity, contentType: string, body: string, recorder?: ServedResponseRecorder): RouteResponse {
   const observed = Buffer.byteLength(body, 'utf8');
   const declared = limits[limit];
   if (observed <= declared) return { status: 200, contentType, body };
-  return { status: RESPONSE_LIMIT_STATUS, contentType: 'application/json', body: JSON.stringify(responseLimitFailure(model, limit, declared, observed)) };
+  const failure = responseLimitFailure(model, limit, declared, observed);
+  const event = recorder?.record({ evaluation: model.evaluation, limit, declared, observed, population: failure.population });
+  return {
+    status: RESPONSE_LIMIT_STATUS,
+    contentType: 'application/json',
+    body: JSON.stringify(failure),
+    ...(event === undefined ? {} : { diagnostic: { kind: RESPONSE_LIMIT_FAILURE, ...event } as const }),
+  };
+}
+
+/** The served-side projection changes only presentation/readiness. Observation
+ * evidence and the PWB-REQ-022 judgment stay on their captured model. */
+export function withServedReadiness(model: PocModel, recorder: ServedResponseRecorder): PocModel {
+  const count = recorder.snapshot(model.evaluation).count;
+  if (count === 0 || model.walkthroughReadiness.kind !== 'evaluated') return model;
+  const inputCount = model.projectShape.kind === 'observed' ? model.projectShape.limitBreaches.length : null;
+  const readiness = withServedResourceBreaches(model.walkthroughReadiness.readiness, inputCount, count);
+  if (readiness === model.walkthroughReadiness.readiness) return model;
+  const projected: PocModel = { ...model, walkthroughReadiness: { kind: 'evaluated', readiness } };
+  return { ...projected, responseIdentity: buildResponseIdentity(projected) };
 }
 
 /** Render-time inputs for Polaris only (PWB-REQ-011's transient verbatim
@@ -148,21 +169,34 @@ export function boundedResponse(model: PocModel, limits: PwbResourceLimits, limi
  * disclosed as outside the consented class. */
 export type PolarisRenderInputsFor = (model: PocModel) => PolarisRenderInputs;
 
-export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = PWB_RESOURCE_LIMITS, polarisInputs?: PolarisRenderInputsFor): readonly Route[] {
-  const html = (model: PocModel, body: string): RouteResponse => boundedResponse(model, limits, 'maxHumanResponseBytes', 'text/html; charset=utf-8', body);
+export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = PWB_RESOURCE_LIMITS, polarisInputs?: PolarisRenderInputsFor, recorder = new ServedResponseRecorder(), credentialProvision?: () => 'minted' | 'reused' | undefined): readonly Route[] {
+  const servedModel = (): PocModel => withServedReadiness(getModel(), recorder);
+  const statusFor = (model: PocModel): HumanOperabilityStatus => {
+    const snapshot = recorder.snapshot(model.evaluation);
+    return {
+      evaluationDigest: model.evaluation.inputsDigest,
+      projectRevision: model.project.revision,
+      observerRevision: model.observerRevision,
+      credentialProvision: credentialProvision?.() ?? null,
+      inputBreaches: model.projectShape.kind === 'observed' ? model.projectShape.limitBreaches.length : null,
+      servedBreaches: snapshot.count,
+      latestBreach: snapshot.latest === null ? null : { limit: snapshot.latest.limit, sequence: snapshot.latest.sequence, declared: snapshot.latest.declared, observed: snapshot.latest.observed },
+    };
+  };
+  const html = (model: PocModel, body: string): RouteResponse => boundedResponse(model, limits, 'maxHumanResponseBytes', 'text/html; charset=utf-8', body, recorder);
   const humanHandle: Route['handle'] = ({ request }) => {
     if (!browserRequestAllowed(request.headers)) {
       return { status: 403, contentType: 'application/json', body: JSON.stringify(BROWSER_ORIGIN_REFUSAL) };
     }
-    const model = getModel();
-    return html(model, renderPocPage(model, mountPrefixForRequest(request.headers)));
+    const model = servedModel();
+    return html(model, renderPocPage(model, mountPrefixForRequest(request.headers), statusFor(model)));
   };
   const machineHandle: Route['handle'] = () => {
-    const model = getModel();
-    return boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(model));
+    const model = servedModel();
+    return boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(model), recorder);
   };
   const presentationHandle: Route['handle'] = () => {
-    const model = getModel();
+    const model = servedModel();
     const { narrative } = renderPolarisPresentation(model, '', {}, polarisInputs === undefined ? {} : polarisInputs(model));
     const envelope: PolarisPresentationEnvelope = {
       kind: POLARIS_PRESENTATION_KIND,
@@ -174,7 +208,7 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
       project: { revision: model.project.revision },
       narrative,
     };
-    return boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(envelope));
+    return boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(envelope), recorder);
   };
   // The exact-source route: human-open like the page, keyed by the source
   // identity in the query, rendering only revision/digest-verified text.
@@ -182,22 +216,22 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
     if (!browserRequestAllowed(request.headers)) {
       return { status: 403, contentType: 'application/json', body: JSON.stringify(BROWSER_ORIGIN_REFUSAL) };
     }
-    const model = getModel();
+    const model = servedModel();
     const identity = request.query.get(SOURCE_IDENTITY_PARAM) ?? '';
-    return html(model, renderPolarisSourcePage(model, identity, mountPrefixForRequest(request.headers), polarisInputs === undefined ? {} : polarisInputs(model)));
+    return html(model, renderPolarisSourcePage(model, identity, mountPrefixForRequest(request.headers), polarisInputs === undefined ? {} : polarisInputs(model), statusFor(model)));
   };
 
   function humanSurfaceRoutes(
     directPath: string,
     tailnetPath: string,
-    render: (model: PocModel, mountPrefix: string) => string,
+    render: (model: PocModel, mountPrefix: string, status: HumanOperabilityStatus) => string,
   ): readonly Route[] {
     const handle: Route['handle'] = ({ request }) => {
       if (!browserRequestAllowed(request.headers)) {
         return { status: 403, contentType: 'application/json', body: JSON.stringify(BROWSER_ORIGIN_REFUSAL) };
       }
-      const model = getModel();
-      return html(model, render(model, mountPrefixForRequest(request.headers)));
+      const model = servedModel();
+      return html(model, render(model, mountPrefixForRequest(request.headers), statusFor(model)));
     };
     return [
       { method: 'GET', path: directPath, credentialClass: 'human-open', handle },
@@ -219,7 +253,7 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
       credentialClass: 'human-open',
       handle: humanHandle,
     },
-    ...humanSurfaceRoutes(POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, (model, mountPrefix) => renderPolarisPage(model, mountPrefix, {}, polarisInputs === undefined ? {} : polarisInputs(model))),
+    ...humanSurfaceRoutes(POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, (model, mountPrefix, status) => renderPolarisPage(model, mountPrefix, {}, polarisInputs === undefined ? {} : polarisInputs(model), status)),
     { method: 'GET', path: POLARIS_SOURCE_PATH, credentialClass: 'human-open', handle: sourceHandle },
     { method: 'GET', path: POLARIS_SOURCE_TAILNET_PATH, credentialClass: 'human-open', handle: sourceHandle },
     ...humanSurfaceRoutes(TRAJECTORY_HUMAN_PATH, TRAJECTORY_TAILNET_PATH, renderTrajectoryPage),

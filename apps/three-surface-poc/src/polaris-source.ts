@@ -2,7 +2,7 @@ import { escapeHtml } from '@syzygy/cap1-daemon';
 import type { PocModel, ProjectShape } from '@syzygy/three-surface-poc-core';
 
 import { resolveVerbatim, type VerbatimLeafReader, type VerbatimResolution } from './capability-detail.js';
-import { pageShell } from './page-shell.js';
+import { pageShell, type HumanOperabilityStatus } from './page-shell.js';
 import { copyAttr, copyText, roleAttr } from './polaris-copy.js';
 import { TAILNET_MOUNT_PREFIX, withMountPrefix } from './tailnet.js';
 
@@ -110,7 +110,7 @@ const SOURCE_STYLE = `
 `;
 
 /** Renders the exact-source route for one identity as a full page. */
-export function renderPolarisSourcePage(model: PocModel, identity: string, mountPrefix = '', inputs: PolarisSourceRenderInputs = {}): string {
+export function renderPolarisSourcePage(model: PocModel, identity: string, mountPrefix = '', inputs: PolarisSourceRenderInputs = {}, status?: HumanOperabilityStatus): string {
   const resolved = resolveSourceRoute(model, identity, inputs.verbatim);
   const identityLine = identity === ''
     ? ''
@@ -138,6 +138,7 @@ export function renderPolarisSourcePage(model: PocModel, identity: string, mount
     extraStyle: SOURCE_STYLE,
     body: section,
     footer: `Evaluation <code>${escapeHtml(model.evaluation.snapshot)}</code> as of <code>${escapeHtml(model.evaluation.asOf)}</code>.`,
+    status,
     escapeHtml,
     mountPrefix,
   });

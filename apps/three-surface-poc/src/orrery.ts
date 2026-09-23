@@ -3,7 +3,7 @@ import type { PocModel } from '@syzygy/three-surface-poc-core';
 
 import { exactTablesSection } from './exact-tables.js';
 import { substrateEvaluationFooter } from './evaluation-footer.js';
-import { pageShell } from './page-shell.js';
+import { pageShell, type HumanOperabilityStatus } from './page-shell.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 
 export const ORRERY_HUMAN_PATH = '/orrery' as const;
@@ -118,7 +118,7 @@ const CLIENT_SCRIPT = `
 })();
 `;
 
-export function renderOrreryPage(model: PocModel, mountPrefix = ''): string {
+export function renderOrreryPage(model: PocModel, mountPrefix = '', status?: HumanOperabilityStatus): string {
   const orrery = model.orrery;
   let body: string;
 
@@ -167,6 +167,7 @@ export function renderOrreryPage(model: PocModel, mountPrefix = ''): string {
     lede: 'A deterministic spatial map over observed directory structure and declared capability-to-code mappings. Unmapped code stays visibly Unknown.',
     extraStyle: ORRERY_STYLE,
     body,
+    status,
     footer: substrateEvaluationFooter({
       model,
       escapeHtml,

@@ -15,6 +15,7 @@ import {
   READINESS_ARMS,
   evaluateWalkthroughJudgment,
   evaluateWalkthroughReadiness,
+  withServedResourceBreaches,
   parseAnswers,
   walkthroughEvaluationIdentity,
   JUDGMENT_CORRELATION_UNAVAILABLE,
@@ -276,6 +277,17 @@ describe('PWB-REQ-021 readiness arms (each makes readiness false)', () => {
     const result = evaluateWalkthroughReadiness(inputs(runRecordText(), { population }));
     expect(arms(result)).toEqual(['resource-breach']);
     expect(evaluated(result).findings[0]?.detail).toContain('1 PWB-REQ-006');
+  });
+
+  it('combines distinct input and served counts in the one existing resource-breach arm', () => {
+    const input = evaluateWalkthroughReadiness(inputs(runRecordText(), { population: { ...POPULATION, limitBreaches: 2 } }));
+    const served = withServedResourceBreaches(input, 2, 3);
+    expect(arms(served)).toEqual(['resource-breach']);
+    expect(evaluated(served).findings.filter(finding => finding.arm === 'resource-breach')).toEqual([
+      { arm: 'resource-breach', detail: 'PWB-REQ-006 breaches: input 2; served 3' },
+    ]);
+    expect(evaluated(input).findings[0]?.detail).toContain('2 PWB-REQ-006');
+    expect(withServedResourceBreaches(input, 2, 0)).toBe(input);
   });
 
   it('authority-unresolvable: a cited authority that is not admitted, absent, or not a backticked path', () => {

@@ -164,6 +164,26 @@ export type WalkthroughReadiness =
       readonly expected: WalkthroughBinding;
     };
 
+/** Served-response breaches sit outside the input ledger. Project their count
+ * into the existing resource-breach arm at render time, without changing the
+ * retained run record or the PWB-REQ-022 judgment. */
+export function withServedResourceBreaches(
+  readiness: WalkthroughReadiness,
+  inputCount: number | null,
+  servedCount: number,
+): WalkthroughReadiness {
+  if (servedCount === 0 || readiness.kind !== 'evaluated') return readiness;
+  const otherFindings = readiness.findings.filter(finding => finding.arm !== 'resource-breach');
+  return {
+    ...readiness,
+    ready: false,
+    findings: [
+      ...otherFindings,
+      { arm: 'resource-breach', detail: `PWB-REQ-006 breaches: input ${inputCount === null ? 'Unknown' : inputCount}; served ${servedCount}` },
+    ],
+  };
+}
+
 // ---------------------------------------------------------------------
 // Answers grammar (pure text → retained answers; no validity).
 //

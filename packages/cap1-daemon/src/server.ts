@@ -50,6 +50,19 @@ export interface RouteResponse {
   readonly status: number;
   readonly contentType: string;
   readonly body: string;
+  /** Trusted transport metadata for a bounded final response. Never sourced
+   * from request text or parsed out of a response body. */
+  readonly diagnostic?: {
+    readonly kind: 'response-limit-breached';
+    readonly evaluation: { readonly inputsDigest: string; readonly asOf: string };
+    readonly limit: 'maxHumanResponseBytes' | 'maxMachineResponseBytes';
+    readonly declared: number;
+    readonly observed: number;
+    readonly population:
+      | { readonly kind: 'counted'; readonly sources: number; readonly items: number; readonly facts: number; readonly exclusions: number }
+      | { readonly kind: 'unknown'; readonly reason: string };
+    readonly sequence: number;
+  };
 }
 
 export interface RouteContext {
@@ -123,12 +136,50 @@ function respond(res: http.ServerResponse, response: RouteResponse): void {
   res.end(response.body);
 }
 
-function respondJson(res: http.ServerResponse, status: number, body: unknown): void {
-  respond(res, {
-    status,
-    contentType: 'application/json',
-    body: JSON.stringify(body),
-  });
+function safeResponseDiagnostic(response: RouteResponse): Record<string, unknown> | undefined {
+  const diagnostic = response.diagnostic;
+  if (diagnostic?.kind !== 'response-limit-breached'
+    || !/^[0-9a-f]{64}$/.test(diagnostic.evaluation.inputsDigest)
+    || !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z$/.test(diagnostic.evaluation.asOf)
+    || !['maxHumanResponseBytes', 'maxMachineResponseBytes'].includes(diagnostic.limit)
+    || ![diagnostic.declared, diagnostic.observed, diagnostic.sequence].every(value => Number.isSafeInteger(value) && value >= 0)) return undefined;
+  const population = diagnostic.population;
+  const safePopulation = population.kind === 'counted'
+    && [population.sources, population.items, population.facts, population.exclusions].every(value => Number.isSafeInteger(value) && value >= 0)
+    ? { kind: 'counted', sources: population.sources, items: population.items, facts: population.facts, exclusions: population.exclusions }
+    : population.kind === 'unknown' && ['project shape not-evaluated', 'project shape not-admitted', 'project shape observation-failed'].includes(population.reason)
+      ? { kind: 'unknown', reason: population.reason }
+      : undefined;
+  if (safePopulation === undefined) return undefined;
+  return {
+    evaluation: { inputsDigest: diagnostic.evaluation.inputsDigest, asOf: diagnostic.evaluation.asOf },
+    limit: diagnostic.limit,
+    declared: diagnostic.declared,
+    observed: diagnostic.observed,
+    population: safePopulation,
+    sequence: diagnostic.sequence,
+  };
+}
+
+function emitNonSuccess(input: {
+  readonly method: Route['method'] | 'UNKNOWN';
+  readonly route: string | null;
+  readonly pathLength?: number;
+  readonly response: RouteResponse;
+  readonly reason: 'unknown-route' | 'credential-refused' | 'handler-failure' | 'route-non-success' | 'response-limit-breached';
+}): void {
+  if (input.response.status < 300 || input.response.status > 599) return;
+  const diagnostic = safeResponseDiagnostic(input.response);
+  process.stderr.write(`${JSON.stringify({
+    kind: 'daemon-http-outcome',
+    at: new Date().toISOString(),
+    method: input.method,
+    ...(input.route === null ? { pathLength: input.pathLength } : { route: input.route }),
+    status: input.response.status,
+    reason: diagnostic === undefined ? input.reason : 'response-limit-breached',
+    contentType: input.response.contentType === 'application/json' ? 'application/json' : 'other',
+    ...(diagnostic === undefined ? {} : diagnostic),
+  })}\n`);
 }
 
 /**
@@ -175,12 +226,14 @@ export async function createDaemon(options: DaemonOptions): Promise<DaemonStart>
     const route = registry.get(routeKey(method, url.pathname));
 
     if (route === undefined) {
-      respondJson(res, UNKNOWN_ROUTE_STATUS, {
+      const response: RouteResponse = { status: UNKNOWN_ROUTE_STATUS, contentType: 'application/json', body: JSON.stringify({
         served: 'nothing',
         reason: UNKNOWN_ROUTE_REASON,
         method,
         path: url.pathname,
-      });
+      }) };
+      emitNonSuccess({ method: 'UNKNOWN', route: null, pathLength: url.pathname.length, response, reason: 'unknown-route' });
+      respond(res, response);
       return;
     }
 
@@ -193,7 +246,9 @@ export async function createDaemon(options: DaemonOptions): Promise<DaemonStart>
       const credential = credentialFromAuthorizationHeader(req.headers.authorization);
       const result = verifyCredential(expectedToken, credential);
       if (!result.admitted) {
-        respondJson(res, REFUSAL_STATUS, REFUSAL_BODY);
+        const response: RouteResponse = { status: REFUSAL_STATUS, contentType: 'application/json', body: JSON.stringify(REFUSAL_BODY) };
+        emitNonSuccess({ method: route.method, route: route.path, response, reason: 'credential-refused' });
+        respond(res, response);
         return;
       }
       admission = result;
@@ -211,15 +266,18 @@ export async function createDaemon(options: DaemonOptions): Promise<DaemonStart>
 
     try {
       const response = await route.handle(context);
+      emitNonSuccess({ method: route.method, route: route.path, response, reason: 'route-non-success' });
       respond(res, response);
     } catch (cause) {
       // The handler returns a complete body or nothing (RouteResponse),
       // so no partial answer preceded this named failure.
-      respondJson(res, HANDLER_FAILURE_STATUS, {
+      const response: RouteResponse = { status: HANDLER_FAILURE_STATUS, contentType: 'application/json', body: JSON.stringify({
         served: 'nothing',
         reason: HANDLER_FAILURE_REASON,
         detail: cause instanceof Error ? cause.message : String(cause),
-      });
+      }) };
+      emitNonSuccess({ method: route.method, route: route.path, response, reason: 'handler-failure' });
+      respond(res, response);
     }
   }
 
