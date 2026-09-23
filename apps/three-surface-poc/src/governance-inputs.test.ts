@@ -23,9 +23,11 @@ import {
 import {
   PWB_ACT_RECORDS,
   PWB_AUTHORITY_ARTIFACTS,
+  PWB_OBSERVING_PROJECT,
   PWB_SUPERSEDED_ACT_RECORDS,
   loadBodyReadAuthorityInputs,
   pwbAuthorityExpectations,
+  pwbAuthorityExpectationsForProject,
 } from './governance-inputs.js';
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
@@ -93,7 +95,7 @@ function fakeTree(): FakeTree {
   return { files, tags, treePaths: new Set(Object.values(PWB_ACT_RECORDS)), taggedRecords, unreadablePaths: new Set(), invalidUtf8Paths: new Set(), vanishedPaths: new Set() };
 }
 
-function loaderFor(tree: FakeTree, fromGitTree = false) {
+function loaderFor(tree: FakeTree, fromGitTree = false, overrides: { readonly observingProject?: string } = {}) {
   const root = '/fake/root';
   const relative = (absolute: string): string => absolute.slice(`${root}/`.length);
   const bytesAt = (path: string): Uint8Array => {
@@ -108,6 +110,7 @@ function loaderFor(tree: FakeTree, fromGitTree = false) {
     repoRoot: root,
     evaluationId: 'eval-hermetic',
     evaluationInstant: EVALUATION_INSTANT,
+    ...overrides,
     ...(fromGitTree ? { governanceRevision: 'HEAD' } : {
       readFile: (absolute: string) => bytesAt(relative(absolute)),
       listDirectory: (absolute: string) => {
@@ -375,5 +378,38 @@ describe('loadBodyReadAuthorityInputs (real Syzygy governance tree)', () => {
       expect(reads).toBe(0);
     }
     expect(disclosure.authorities.every((entry) => entry.independentlyVerified === false)).toBe(true);
+  });
+});
+
+// N8 slice 4: the authority set is a lookup keyed by observed project, with
+// exactly one registered entry. An unknown project id must fail closed —
+// no authority is synthesized or borrowed from another project's entry.
+describe('pwbAuthorityExpectationsForProject (authority set keyed by observed project)', () => {
+  it('resolves the one registered project to the same expectations as the back-compat helper', () => {
+    const keyed = pwbAuthorityExpectationsForProject(PWB_OBSERVING_PROJECT, EVALUATION_INSTANT);
+    const legacy = pwbAuthorityExpectations(EVALUATION_INSTANT);
+    expect(keyed).toEqual(legacy);
+    expect(keyed.observingProject).toBe('project:syzygy');
+    expect(keyed.configuredRepository).toBe('repository:butlers-configured-poc');
+  });
+
+  it('fails closed for an unknown observing project: no default fallback to Butlers', () => {
+    expect(() => pwbAuthorityExpectationsForProject('project:some-other-project', EVALUATION_INSTANT)).toThrow(
+      /no body-read authority expectations are registered for observing project "project:some-other-project"/,
+    );
+  });
+
+  it('propagates the fail-closed error through loadBodyReadAuthorityInputs for an unregistered project', () => {
+    const tree = fakeTree();
+    expect(() =>
+      loaderFor(tree, false, { observingProject: 'project:unregistered' }),
+    ).toThrow(/no body-read authority expectations are registered for observing project "project:unregistered"/);
+  });
+
+  it('resolves the default (unspecified observingProject) the same as the explicit registered project', () => {
+    const tree = fakeTree();
+    const withDefault = evaluateBodyReadAuthority(loaderFor(tree));
+    const withExplicit = evaluateBodyReadAuthority(loaderFor(tree, false, { observingProject: PWB_OBSERVING_PROJECT }));
+    expect(withDefault).toEqual(withExplicit);
   });
 });

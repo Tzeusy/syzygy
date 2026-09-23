@@ -55,8 +55,14 @@ export const PWB_SUPERSEDED_ACT_RECORDS: Readonly<Record<Exclude<AuthorityKind, 
   registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md',
 };
 
-// The controlled evaluation input for the one consented Butlers slice.
-export function pwbAuthorityExpectations(evaluationInstant: string): BodyReadAuthorityExpectations {
+// The one project this daemon is authorized to observe on behalf of.
+export const PWB_OBSERVING_PROJECT = 'project:syzygy' as const;
+
+// Builds the controlled evaluation input for the one consented Butlers
+// slice, on behalf of `PWB_OBSERVING_PROJECT`. Kept as a standalone function
+// (rather than inlined into the lookup below) so the literal expectations
+// object stays exactly the bytes it always was.
+function pwbSyzygyButlersExpectations(evaluationInstant: string): BodyReadAuthorityExpectations {
   return {
     observingProject: 'project:syzygy',
     configuredRepository: 'repository:butlers-configured-poc',
@@ -110,11 +116,49 @@ export function pwbAuthorityExpectations(evaluationInstant: string): BodyReadAut
   };
 }
 
+// The authority set, keyed by observed (observing) project. Exactly one
+// entry exists: Syzygy observing its one consented Butlers slice. This is
+// the seam N8 slice 4 introduces — a project id that has no row here has no
+// authority at all, never a borrowed or default entry (see
+// `pwbAuthorityExpectationsForProject` below).
+const PWB_AUTHORITY_EXPECTATIONS_BY_PROJECT: ReadonlyMap<string, (evaluationInstant: string) => BodyReadAuthorityExpectations> = new Map([
+  [PWB_OBSERVING_PROJECT, pwbSyzygyButlersExpectations],
+]);
+
+// Resolves the controlled evaluation input for `observingProject`. An
+// unknown project id fails closed: no expectations object is synthesized
+// or borrowed from another project (in particular, never a fallback to the
+// Butlers entry) — the caller gets a thrown error instead, which its own
+// governance-inputs failure handling turns into a refused/Unknown read,
+// never an admitted one.
+export function pwbAuthorityExpectationsForProject(observingProject: string, evaluationInstant: string): BodyReadAuthorityExpectations {
+  const build = PWB_AUTHORITY_EXPECTATIONS_BY_PROJECT.get(observingProject);
+  if (build === undefined) {
+    throw new Error(`no body-read authority expectations are registered for observing project ${JSON.stringify(observingProject)}`);
+  }
+  return build(evaluationInstant);
+}
+
+// Back-compat convenience for the one registered project (Syzygy). Existing
+// callers that never named an observing project keep resolving to exactly
+// the same object as before this seam existed.
+export function pwbAuthorityExpectations(evaluationInstant: string): BodyReadAuthorityExpectations {
+  return pwbAuthorityExpectationsForProject(PWB_OBSERVING_PROJECT, evaluationInstant);
+}
+
 export interface LoadGovernanceInputsOptions {
   // Syzygy repository root (the directory containing `.syzygy/`).
   readonly repoRoot: string;
   readonly evaluationId: string;
   readonly evaluationInstant: string;
+  // Which project is doing the observing; keys the body-read authority
+  // expectations lookup (`pwbAuthorityExpectationsForProject`). Defaults to
+  // `PWB_OBSERVING_PROJECT`, the only registered entry, so existing callers
+  // that never named a project keep resolving to the same expectations as
+  // before this option existed. An id with no registered entry fails
+  // closed: `loadBodyReadAuthorityInputs` throws rather than falling back
+  // to the default project's expectations.
+  readonly observingProject?: string;
   // One exact Syzygy commit whose governance tree supplies every input.
   // Production passes the already-observed clean checkout revision.
   readonly governanceRevision?: string;
@@ -309,7 +353,7 @@ export function loadBodyReadAuthorityInputs(options: LoadGovernanceInputsOptions
     : gitTreeReaders(runGit, readGitBlob, repoRoot, options.governanceRevision);
   const read = options.readFile ?? tree?.read ?? ((path: string) => new Uint8Array(readFileSync(path)));
   const list = options.listDirectory ?? tree?.list ?? ((path: string) => readdirSync(path));
-  const expectations = pwbAuthorityExpectations(options.evaluationInstant);
+  const expectations = pwbAuthorityExpectationsForProject(options.observingProject ?? PWB_OBSERVING_PROJECT, options.evaluationInstant);
 
   const load = (kind: AuthorityKind): AuthorityInput => {
     const artifactPath = PWB_AUTHORITY_ARTIFACTS[kind];
