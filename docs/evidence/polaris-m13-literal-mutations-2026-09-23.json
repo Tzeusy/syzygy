@@ -1,7 +1,7 @@
 {
   "kind": "m13-literal-source-mutations",
-  "capturedAt": "2026-09-23T05:45:33.634Z",
-  "testedCommit": "4e2d96a76760707e4b13d6fbdd87e0f7405ad9c8",
+  "capturedAt": "2026-09-23T05:57:52.415Z",
+  "testedCommit": "6e4a885e42c1cafb89a016ded064dc969528732d",
   "baselineAndMutantRunSeparately": true,
   "records": [
     {
@@ -18,7 +18,7 @@
       ],
       "mustFail": "classifies each interpolated source control",
       "baseline": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/baseline-0.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/baseline-0.json",
         "exit": 0,
         "total": 7,
         "passed": 7,
@@ -26,7 +26,7 @@
         "failing": []
       },
       "mutant": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/mutant-0.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/mutant-0.json",
         "exit": 1,
         "total": 7,
         "passed": 5,
@@ -36,8 +36,8 @@
           "Polaris copy roles (PWB-REQ-012) gives every summary and native anchor a distinct accessible name unless its href is identical"
         ]
       },
-      "sourceSha256Before": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
-      "sourceSha256After": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
       "restored": true,
       "killed": true
     },
@@ -55,7 +55,7 @@
       ],
       "mustFail": "classifies each interpolated source control",
       "baseline": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/baseline-1.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/baseline-1.json",
         "exit": 0,
         "total": 7,
         "passed": 7,
@@ -63,7 +63,7 @@
         "failing": []
       },
       "mutant": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/mutant-1.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/mutant-1.json",
         "exit": 1,
         "total": 7,
         "passed": 6,
@@ -72,8 +72,8 @@
           "Polaris copy roles (PWB-REQ-012) classifies each interpolated source control and preserves exact-source href order and multiplicity"
         ]
       },
-      "sourceSha256Before": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
-      "sourceSha256After": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
       "restored": true,
       "killed": true
     },
@@ -92,7 +92,7 @@
       ],
       "mustFail": "classifies each interpolated source control",
       "baseline": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-source-route.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/baseline-2.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-source-route.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/baseline-2.json",
         "exit": 0,
         "total": 13,
         "passed": 13,
@@ -100,7 +100,7 @@
         "failing": []
       },
       "mutant": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-source-route.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/mutant-2.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-source-route.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/mutant-2.json",
         "exit": 1,
         "total": 13,
         "passed": 10,
@@ -111,8 +111,8 @@
           "Polaris exact-source route (PWB-REQ-011 as amended; RFC7-1, RFC7-13) links to the route from the page only for admitted baseline-spec identities: each source row, item row, current-authority citation and depth-list dive names the same href"
         ]
       },
-      "sourceSha256Before": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
-      "sourceSha256After": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
       "restored": true,
       "killed": true
     },
@@ -131,7 +131,7 @@
       ],
       "mustFail": "starts a shallowest ### one below its anchor",
       "baseline": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-markdown.test.ts apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/baseline-3.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-markdown.test.ts apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/baseline-3.json",
         "exit": 0,
         "total": 28,
         "passed": 28,
@@ -139,7 +139,7 @@
         "failing": []
       },
       "mutant": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-markdown.test.ts apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/mutant-3.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-markdown.test.ts apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/mutant-3.json",
         "exit": 1,
         "total": 28,
         "passed": 25,
@@ -169,7 +169,7 @@
       ],
       "mustFail": "preserves exact selected passages and the full declaration",
       "baseline": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-reading.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/baseline-4.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reading.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/baseline-4.json",
         "exit": 0,
         "total": 8,
         "passed": 8,
@@ -177,7 +177,7 @@
         "failing": []
       },
       "mutant": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-reading.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/mutant-4.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reading.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/mutant-4.json",
         "exit": 1,
         "total": 8,
         "passed": 7,
@@ -205,7 +205,7 @@
       ],
       "mustFail": "keeps every source record visible in six scoped columns",
       "baseline": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-project-shape.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/baseline-5.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-project-shape.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/baseline-5.json",
         "exit": 0,
         "total": 24,
         "passed": 24,
@@ -213,7 +213,7 @@
         "failing": []
       },
       "mutant": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-project-shape.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/mutant-5.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-project-shape.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/mutant-5.json",
         "exit": 1,
         "total": 24,
         "passed": 22,
@@ -223,8 +223,8 @@
           "Polaris project-level sequence (PWB-REQ-010) keeps every source record visible in six scoped columns with identity, rule, outcome, anchor and nonempty digest disclosure"
         ]
       },
-      "sourceSha256Before": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
-      "sourceSha256After": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
       "restored": true,
       "killed": true
     },
@@ -242,7 +242,7 @@
       ],
       "mustFail": "carries no pointer-only or layout-only affordance",
       "baseline": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/baseline-6.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/baseline-6.json",
         "exit": 0,
         "total": 9,
         "passed": 9,
@@ -250,7 +250,7 @@
         "failing": []
       },
       "mutant": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/mutant-6.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/mutant-6.json",
         "exit": 1,
         "total": 9,
         "passed": 8,
@@ -259,8 +259,8 @@
           "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules"
         ]
       },
-      "sourceSha256Before": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
-      "sourceSha256After": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
       "restored": true,
       "killed": true
     },
@@ -282,7 +282,7 @@
       ],
       "mustFail": "keeps each item population and the exclusions complete behind a native disclosure",
       "baseline": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-first-reading.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/baseline-7.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-first-reading.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/baseline-7.json",
         "exit": 0,
         "total": 8,
         "passed": 8,
@@ -290,7 +290,7 @@
         "failing": []
       },
       "mutant": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-first-reading.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/mutant-7.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-first-reading.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/mutant-7.json",
         "exit": 1,
         "total": 8,
         "passed": 7,
@@ -299,8 +299,8 @@
           "Polaris progressive disclosure (PWB-REQ-011 as amended; PWB-LIVE-13) keeps each item population and the exclusions complete behind a native disclosure whose control names the count, leaves the sources table open for fragment navigation, and hides nothing by style"
         ]
       },
-      "sourceSha256Before": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
-      "sourceSha256After": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
       "restored": true,
       "killed": true
     },
@@ -318,7 +318,7 @@
       ],
       "mustFail": "lists the four depths as native links in document order",
       "baseline": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/baseline-8.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/baseline-8.json",
         "exit": 0,
         "total": 9,
         "passed": 9,
@@ -326,7 +326,7 @@
         "failing": []
       },
       "mutant": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/mutant-8.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/mutant-8.json",
         "exit": 1,
         "total": 9,
         "passed": 8,
@@ -335,8 +335,8 @@
           "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) lists the four depths as native links in document order, reaching every group, catalog class, capability deep dive and evidence heading the state renders"
         ]
       },
-      "sourceSha256Before": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
-      "sourceSha256After": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
       "restored": true,
       "killed": true
     },
@@ -354,7 +354,7 @@
       ],
       "mustFail": "keeps seven group shortcuts among the first ten tabs",
       "baseline": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/baseline-9.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/baseline-9.json",
         "exit": 0,
         "total": 9,
         "passed": 9,
@@ -362,7 +362,7 @@
         "failing": []
       },
       "mutant": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/mutant-9.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/mutant-9.json",
         "exit": 1,
         "total": 9,
         "passed": 8,
@@ -390,7 +390,7 @@
       ],
       "mustFail": "gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count",
       "baseline": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-accessibility.browser.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/baseline-10.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-accessibility.browser.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/baseline-10.json",
         "exit": 0,
         "total": 14,
         "passed": 14,
@@ -398,7 +398,7 @@
         "failing": []
       },
       "mutant": {
-        "command": "npx vitest run apps/three-surface-poc/src/polaris-accessibility.browser.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-TAMRqQ/mutant-10.json",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-accessibility.browser.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-mNIObU/mutant-10.json",
         "exit": 1,
         "total": 14,
         "passed": 13,
@@ -407,8 +407,8 @@
           "Polaris keyboard, non-visual and contrast checks in a real browser gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count"
         ]
       },
-      "sourceSha256Before": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
-      "sourceSha256After": "c8f6a9f57b9876d24245a1e63b709381c83872b35c03e1179b322be59eab44b7",
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
       "restored": true,
       "killed": true
     }
