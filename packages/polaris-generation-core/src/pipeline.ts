@@ -37,6 +37,8 @@ export interface AttemptInput {
   readonly stage: GenerationStage;
   readonly ordinal: number;
   readonly inputDigest: string;
+  readonly permissionDigest: string;
+  readonly bindingDigest: string;
   readonly inputBytes: number;
   readonly deadline: number;
   readonly budget: GenerationBudget;
@@ -47,6 +49,13 @@ export interface DispatchPermit {
   readonly maxUsageUnits: number;
   readonly maxOutputBytes: number;
 }
+
+export type AdmissionDecision =
+  | { readonly kind: 'reserved'; readonly permit: DispatchPermit }
+  | { readonly kind: 'completed'; readonly permit: DispatchPermit; readonly bindingDigest: string;
+      readonly inputDigest: string; readonly outputDigest: string; readonly outputBytes: number;
+      readonly model: string | null; readonly usageUnits: number; readonly value: unknown }
+  | { readonly kind: 'refused'; readonly reason: 'in-flight' | 'uncertain' | 'identity-mismatch' | 'permission-withdrawn' | 'budget-exhausted' };
 
 export interface ProviderReply {
   readonly body: string;
@@ -66,7 +75,7 @@ export interface ProviderReply {
 export type InvalidOutputReason = 'parse-failed' | 'schema-rejected' | 'encode-failed' | 'digest-failed';
 
 export type AttemptOutcome =
-  | { readonly kind: 'validated'; readonly outputDigest: string; readonly model: string | null; readonly usageUnits: number }
+  | { readonly kind: 'validated'; readonly outputDigest: string; readonly model: string | null; readonly usageUnits: number; readonly outputBytes: number; readonly value: unknown }
   /** 'detail' is a diagnostic message, truncated to 200 characters, that becomes part of a
    * durable receipt (see PipelinePorts.record). Contract: it must never carry the provider's
    * raw reply body, any source/reader-question content, or a credential/secret -- only the
@@ -85,12 +94,15 @@ export interface PipelinePorts {
   readonly now: () => number;
   /** Checks snapshot bytes against owning sources, screening and effective policy. */
   readonly verifySources: (request: PipelineRequest) => Promise<boolean>;
-  /** Atomic durable reservation + exclusive dispatch admission, or refusal.
+  /** Current effective permission identity from a trusted authority adapter,
+   * never a caller approval flag or old cached positive answer. */
+  readonly permissionIdentity: (input: Omit<AttemptInput, 'permissionDigest' | 'bindingDigest'>) => Promise<string>;
+  /** Atomic durable reservation, verified completed reuse, or refusal.
    * Owns original deadline, cumulative reservations, immutable request binding,
    * fresh scheduler observation, execution warrant and consent evaluation.
-   * An already-dispatched identity MUST refuse; lease expiry cannot replay it.
+   * In-flight and uncertain identities MUST refuse; lease expiry cannot replay.
    */
-  readonly admit: (input: AttemptInput) => Promise<DispatchPermit | null>;
+  readonly admit: (input: AttemptInput) => Promise<AdmissionDecision>;
   /** Rechecks effect permission immediately before dispatch. */
   readonly permitted: (input: AttemptInput, permit: DispatchPermit) => Promise<boolean>;
   readonly releaseUnsent: (permit: DispatchPermit) => Promise<void>;
@@ -122,6 +134,7 @@ export interface PipelinePorts {
 export interface StageReceipt {
   readonly stage: GenerationStage;
   readonly attemptId: string;
+  readonly reused: boolean;
   readonly providerRoute: string;
   readonly model: string | null;
   readonly inputDigest: string;
@@ -234,14 +247,41 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
       const encoded = encodeCanonicalJson(envelope, dataLimits(budget.maxInputBytes));
       const size = Buffer.byteLength(encoded, 'utf8');
       if (inputBytes + size > budget.maxInputBytes || outputBytes >= budget.maxOutputBytes || usage >= budget.maxUsageUnits) stop('budget-exhausted');
-      const input: AttemptInput = {
+      const baseInput: Omit<AttemptInput, 'permissionDigest' | 'bindingDigest'> = {
         requestId: frozen.requestId, projectId: frozen.projectId, snapshotId: frozen.snapshotId,
         providerRoute: frozen.routes[name], stage: name, ordinal: calls,
         inputDigest: digestCanonicalJson(envelope, dataLimits(budget.maxInputBytes)).digest,
         inputBytes: size, deadline, budget,
       };
-      const permit = await bounded(() => ports.admit(input));
-      if (!permit) stop('admission-refused');
+      const permissionDigest = await bounded(() => ports.permissionIdentity(baseInput));
+      if (typeof permissionDigest !== 'string' || permissionDigest.length === 0) stop('admission-refused');
+      const bindingDigest = digestCanonicalJson({ ...baseInput, permissionDigest }, dataLimits(budget.maxInputBytes)).digest;
+      const input: AttemptInput = { ...baseInput, permissionDigest, bindingDigest };
+      const admission = await bounded(() => ports.admit(input));
+      if (admission.kind === 'refused') stop(admission.reason === 'uncertain' ? 'effect-uncertain' : admission.reason === 'budget-exhausted' ? 'budget-exhausted' : 'admission-refused');
+      const permit = admission.permit;
+      if (admission.kind === 'completed') {
+        if (admission.bindingDigest !== bindingDigest || admission.inputDigest !== input.inputDigest
+          || !Number.isSafeInteger(admission.usageUnits) || admission.usageUnits < 0
+          || !Number.isSafeInteger(admission.outputBytes) || admission.outputBytes < 0
+          || admission.usageUnits > permit.maxUsageUnits || admission.outputBytes > permit.maxOutputBytes
+          || usage + admission.usageUnits > budget.maxUsageUnits || outputBytes + admission.outputBytes > budget.maxOutputBytes) stop('admission-refused');
+        if (!await bounded(() => ports.permitted(input, permit))) stop('admission-refused');
+        let restored: unknown;
+        try {
+          restored = ports.validate(name, admission.value, context);
+          if (digestCanonicalJson(restored, dataLimits(permit.maxOutputBytes)).digest !== admission.outputDigest) stop('admission-refused');
+        } catch { stop('admission-refused'); }
+        calls++;
+        inputBytes += size;
+        usage += admission.usageUnits;
+        outputBytes += admission.outputBytes;
+        receipts.push({ stage: name, attemptId: permit.attemptId, reused: true, providerRoute: input.providerRoute, model: admission.model,
+          inputDigest: input.inputDigest, outputDigest: admission.outputDigest, promptVersion: prompt.version });
+        artifacts.push({ stage: name, value: restored });
+        check();
+        return restored;
+      }
       if (!Number.isSafeInteger(permit.maxUsageUnits) || permit.maxUsageUnits <= 0 || permit.maxUsageUnits > budget.maxUsageUnits - usage
         || !Number.isSafeInteger(permit.maxOutputBytes) || permit.maxOutputBytes <= 0 || permit.maxOutputBytes > budget.maxOutputBytes - outputBytes) {
         await bounded(() => ports.releaseUnsent(permit), true);
@@ -329,8 +369,9 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
         await bounded(() => ports.record(permit, { kind: 'invalid-output', usageUnits: actualUsage, reason: invalidOutputReason, detail }), true);
         stop('invalid-output');
       }
-      await bounded(() => ports.record(permit, { kind: 'validated', outputDigest: digest, model: reply.model, usageUnits: actualUsage }), true);
-      receipts.push({ stage: name, attemptId: permit.attemptId, providerRoute: input.providerRoute, model: reply.model, inputDigest: input.inputDigest, outputDigest: digest, promptVersion: prompt.version });
+      await bounded(() => ports.record(permit, { kind: 'validated', outputDigest: digest, model: reply.model,
+        usageUnits: actualUsage, outputBytes: Buffer.byteLength(reply.body, 'utf8'), value: validated }), true);
+      receipts.push({ stage: name, attemptId: permit.attemptId, reused: false, providerRoute: input.providerRoute, model: reply.model, inputDigest: input.inputDigest, outputDigest: digest, promptVersion: prompt.version });
       artifacts.push({ stage: name, value: validated });
       check();
       return validated;

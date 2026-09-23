@@ -21,6 +21,6 @@ export {
   type SourcePopulationFailure,
 } from './admitted-input.js';
 export { promptForStage, type GenerationStage } from './prompts.js';
-export { runGenerationPipeline, type PipelineRequest, type PipelinePorts, type PipelineResult, type GenerationBudget, type DispatchPermit, type AttemptInput, type AttemptOutcome, type InvalidOutputReason, type ProviderReply, type StageReceipt } from './pipeline.js';
+export { runGenerationPipeline, type PipelineRequest, type PipelinePorts, type PipelineResult, type GenerationBudget, type AdmissionDecision, type DispatchPermit, type AttemptInput, type AttemptOutcome, type InvalidOutputReason, type ProviderReply, type StageReceipt } from './pipeline.js';
 export { stageSchema, validateStage, reviewVerdict } from './provider-draft.js';
 export type { ProviderDraft, RequestedAsset } from './provider-draft.js';

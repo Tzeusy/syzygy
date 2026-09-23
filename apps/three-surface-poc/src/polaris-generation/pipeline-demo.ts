@@ -84,10 +84,11 @@ export async function runSyntheticProject(project: SyntheticProject) {
   };
   const ports: PipelinePorts = {
     now: () => Date.now(), verifySources: async () => true,
+    permissionIdentity: async () => 'synthetic-permission-v1',
     admit: async input => {
-      if (admitted.has(input.ordinal)) return null;
+      if (admitted.has(input.ordinal)) return { kind: 'refused', reason: 'in-flight' };
       admitted.add(input.ordinal);
-      return { attemptId: `${request.requestId}:${input.ordinal}`, maxUsageUnits: 5, maxOutputBytes: 10_000 };
+      return { kind: 'reserved', permit: { attemptId: `${request.requestId}:${input.ordinal}`, maxUsageUnits: 5, maxOutputBytes: 10_000 } };
     },
     permitted: async () => true, releaseUnsent: async () => undefined,
     responseSchema: stageSchema, validate: validateStage, fidelity: reviewVerdict,

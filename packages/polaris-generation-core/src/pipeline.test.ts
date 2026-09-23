@@ -25,11 +25,12 @@ function harness() {
   const admitted = new Set<string>();
   const ports: PipelinePorts = {
     now: () => Date.now(), verifySources: async () => true,
+    permissionIdentity: async () => 'fixture-permission-v1',
     admit: async input => {
       const id = `${input.requestId}:${input.ordinal}`;
-      if (admitted.has(id)) return null;
+      if (admitted.has(id)) return { kind: 'refused', reason: 'in-flight' };
       admitted.add(id);
-      return { attemptId: id, maxUsageUnits: 5, maxOutputBytes: 1000 };
+      return { kind: 'reserved', permit: { attemptId: id, maxUsageUnits: 5, maxOutputBytes: 1000 } };
     },
     permitted: async () => true, releaseUnsent: async () => undefined,
     responseSchema: stage => ({ version: 'test-record-v1', schema: { type: 'object', properties: { stage: { const: stage } }, required: ['stage'], additionalProperties: false } }),
@@ -48,6 +49,64 @@ const signal = () => new AbortController().signal;
 afterEach(() => vi.useRealTimers());
 
 describe('source to editorial draft pipeline', () => {
+  it('binds each stage route and model to its own receipt, including a repair, while equal routes remain valid', async () => {
+    const h = harness();
+    const routed = { ...request(), routes: { inventory: 'route-inventory', plan: 'route-plan', author: 'route-author', edit: 'route-edit', fidelity: 'route-review', repair: 'route-repair' } };
+    let reviews = 0;
+    const result = await runGenerationPipeline(routed, { ...h.ports, fidelity: () => ({ blocking: ++reviews === 1, findings: ['fix'] }) }, signal());
+    expect(result.status).toBe('awaiting-rendered-review');
+    expect(result.receipts.map(receipt => [receipt.stage, receipt.providerRoute, receipt.model])).toEqual([
+      ['inventory', 'route-inventory', 'synthetic-v1'], ['plan', 'route-plan', 'synthetic-v1'],
+      ['author', 'route-author', 'synthetic-v1'], ['edit', 'route-edit', 'synthetic-v1'],
+      ['fidelity', 'route-review', 'synthetic-v1'], ['repair', 'route-repair', 'synthetic-v1'],
+      ['fidelity', 'route-review', 'synthetic-v1'],
+    ]);
+    const equal = await runGenerationPipeline(request(), harness().ports, signal());
+    expect(equal.status).toBe('awaiting-rendered-review');
+    expect(new Set(equal.receipts.map(receipt => receipt.providerRoute))).toEqual(new Set(['synthetic']));
+  });
+
+  it('rejects a missing stage route before dispatch', async () => {
+    const h = harness();
+    const malformed = { ...request(), routes: { inventory: 'only-inventory' } as PipelineRequest['routes'] };
+    expect(await runGenerationPipeline(malformed, h.ports, signal())).toMatchObject({ status: 'stopped', reason: 'invalid-request' });
+    expect(h.sends).toEqual([]);
+  });
+
+  it('keeps the author plan out of the canonically encoded fidelity and repair envelopes', async () => {
+    const h = harness();
+    const sentinel = 'PLAN-HANDLE-NO-FIDELITY-LEAK-8e21';
+    const ports = { ...h.ports, validate: (stage: string, value: unknown) => stage === 'plan' ? { ...(value as object), sentinel } : value,
+      fidelity: (() => { let n = 0; return () => ({ blocking: ++n === 1, findings: ['repair'] }); })() };
+    expect((await runGenerationPipeline(request(), ports, signal())).status).toBe('awaiting-rendered-review');
+    expect(h.sends.find(send => send.stage === 'author')?.input).toContain(sentinel);
+    for (const stage of ['fidelity', 'repair']) {
+      const encoded = h.sends.find(send => send.stage === stage)?.input;
+      expect(encoded).toBeDefined();
+      expect(encoded).not.toContain(sentinel);
+      const contaminated = JSON.stringify({ ...JSON.parse(encoded!).inputs, plan: { sentinel } });
+      expect(contaminated).toContain(sentinel);
+    }
+  });
+
+  it('sends full corpus once and downstream only the spans cited by their inputs', async () => {
+    const h = harness();
+    const secondBody = 'SECOND-SOURCE-UNSELECTED-1f6b'.repeat(40);
+    const first = fixtureSource();
+    const secondBase = { repositoryId: first.repositoryId, revision: first.revision, path: 'synthetic/other.md', objectId: gitBlobObjectId(secondBody) };
+    const second: GenerationSource = { ...first, ...secondBase, sourceId: 'other', body: secondBody,
+      spans: [{ anchorId: generationAnchorId(secondBase, 0, Buffer.byteLength(secondBody)), start: 0, end: Buffer.byteLength(secondBody), text: secondBody }] };
+    const input = { ...request(), sources: [first, second] };
+    const ports = { ...h.ports, validate: (stage: string, value: unknown) => stage === 'plan' ? { ...(value as object), sourceIds: ['purpose'] } : value };
+    expect((await runGenerationPipeline(input, ports, signal())).status).toBe('awaiting-rendered-review');
+    expect(h.sends[0]?.input).toContain(secondBody);
+    expect(h.sends[1]?.input).not.toContain(secondBody);
+    expect(h.sends.find(send => send.stage === 'author')?.input).toContain('Reduce recurring mental labor.');
+    expect(h.sends.slice(1).every(send => !send.input.includes(secondBody))).toBe(true);
+    const leaked = h.sends[1]!.input.replace('"sources":', `"sources":[{"text":"${secondBody}"}],"unrelated":`);
+    expect(leaked).toContain(secondBody);
+  });
+
   it('executes independent inventory, planning, authoring, editing and source review with bound recipes', async () => {
     const h = harness();
     const result = await runGenerationPipeline(request(), h.ports, signal());
