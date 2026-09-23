@@ -118,10 +118,12 @@ export async function restartOnePocListener(options: RestartOptions): Promise<{ 
       let current: PocListener | null;
       try { current = inspect(options.port); }
       catch (error) {
-        // Linux may retain a closing socket for a moment after its process
-        // descriptor vanishes. Wait for absence; never treat it as permission
-        // to start a second listener while ownership is unknown.
-        if (!(error instanceof RestartRefusal) || error.code !== 'listener-owner-ambiguous') throw error;
+        // Linux may retain a closing socket after its process descriptor
+        // vanishes. `ss` may still report the PID just as /proc removes it.
+        // Neither unreadable identity nor missing owner proves socket absence:
+        // wait for the next inspection, bounded by the original deadline.
+        if (!(error instanceof RestartRefusal)
+          || (error.code !== 'listener-owner-ambiguous' && error.code !== 'listener-identity-unreadable')) throw error;
         if (Date.now() >= deadline) throw new RestartRefusal('listener-close-timeout');
         await pause(25);
         continue;
