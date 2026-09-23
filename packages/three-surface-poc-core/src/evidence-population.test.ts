@@ -49,6 +49,7 @@ describe('renderedClaimIdCount', () => {
   let pageWithDuplicates: string;
   let pageWithEscapedIds: string;
   let pageWithNoClaims: string;
+  let pageWithMixedEncodingOfSameId: string;
 
   beforeAll(() => {
     pageWithDuplicates = [
@@ -62,6 +63,18 @@ describe('renderedClaimIdCount', () => {
     ].join('\n');
     pageWithEscapedIds = '<span class="claim-tuple" data-claim-id="claim:fact:a &amp; b" data-epistemic-label="Unknown"></span>';
     pageWithNoClaims = '<main><p>No claim tuples on this page.</p></main>';
+    // The same underlying claim id, rendered once with its ampersand
+    // HTML-entity-escaped and once plain. A single-occurrence fixture (like
+    // pageWithEscapedIds above) cannot tell a correct decode from a deleted
+    // one, since a lone id's Set size is 1 either way -- this is the rule-6
+    // survivor the review found (deleting the `&amp;` -> `&` step in
+    // decodeHtmlAttr). With decoding intact both attribute values decode to
+    // the same string, so the distinct count is 1; without it the two raw
+    // attribute strings differ and the count becomes 2.
+    pageWithMixedEncodingOfSameId = [
+      '<span class="claim-tuple" data-claim-id="claim:fact:a &amp; b" data-epistemic-label="Unknown"></span>',
+      '<span class="claim-tuple" data-claim-id="claim:fact:a & b" data-epistemic-label="Unknown"></span>',
+    ].join('\n');
   });
 
   it('counts distinct claim ids once each, regardless of how many times a claim renders', () => {
@@ -70,6 +83,10 @@ describe('renderedClaimIdCount', () => {
 
   it('decodes HTML entities before counting, so an escaped id is not double-counted as a distinct value', () => {
     expect(renderedClaimIdCount(pageWithEscapedIds)).toBe(1);
+  });
+
+  it('decodes an entity-escaped and a plain rendering of the same id to one distinct value', () => {
+    expect(renderedClaimIdCount(pageWithMixedEncodingOfSameId)).toBe(1);
   });
 
   it('is zero on a page with no claim tuples', () => {
