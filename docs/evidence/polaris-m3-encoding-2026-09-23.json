@@ -1,0 +1,85 @@
+{
+  "task": "syzygy-dov.3.1 — P-70 M3 slices 1–4",
+  "capturedAt": "2026-09-23T02:04:07Z",
+  "baselineCommit": "bdb025c3bab5da7f26f93b7602d54cecf7eb9253",
+  "implementationCommit": "e9e4019c46b36f7b383d2eae47b09216aa248ebd",
+  "method": {
+    "model": "The same synthetic observed Butlers-shaped fixture on both commits, with the root precedence table removed to force an existing whole-shape Unknown. No live Butlers content was read.",
+    "serve": "npm ci and npm run build:poc in separate clean worktrees; private createDaemon with pocRoutes, port 0, a temporary state directory, direct fetch and Host-mounted tailnet fetch. Both responses were HTTP 200.",
+    "denominator": "In served body HTML after removing style and script: badges matching class epistemic epistemic-{observed,unknown}; claim-tuple spans; elements with data-unknown-disclosure. A separate test independently enumerates each family and expands nearest scope labels. Home is diagnostic and excluded from the POC-REQ-060 three-surface total.",
+    "byteUnit": "UTF-8 encoded response body bytes, without HTTP headers or compression"
+  },
+  "direct": {
+    "baseline": {
+      "home": { "bytes": 41011, "badge": 37, "tuple": 0, "disclosure": 0 },
+      "polaris": { "bytes": 174403, "badge": 2, "tuple": 48, "disclosure": 15, "freshness": { "fresh": 48 }, "openingUnknownBeforeCatalog": false, "proposedLabelsOutsideEncodingPopulation": 1 },
+      "trajectory": { "bytes": 18968, "badge": 7, "tuple": 0, "disclosure": 0 },
+      "orrery": { "bytes": 38070, "badge": 20, "tuple": 0, "disclosure": 0 }
+    },
+    "implementation": {
+      "home": { "bytes": 41893, "badge": 37, "tuple": 0, "disclosure": 0 },
+      "polaris": { "bytes": 177439, "badge": 2, "tuple": 49, "disclosure": 16, "freshness": { "fresh": 49 }, "openingUnknownBeforeCatalog": true, "proposedLabelsOutsideEncodingPopulation": 1 },
+      "trajectory": { "bytes": 19850, "badge": 7, "tuple": 0, "disclosure": 0 },
+      "orrery": { "bytes": 38969, "badge": 20, "tuple": 0, "disclosure": 0 }
+    },
+    "threeSurfaceEncodingPopulation": { "baseline": 92, "implementation": 94 },
+    "homeEncodingPopulationSeparate": { "baseline": 37, "implementation": 37 },
+    "byteDelta": { "home": 882, "polaris": 3036, "trajectory": 882, "orrery": 899 }
+  },
+  "tailnetHostMounted": {
+    "baselineBytes": { "home": 41071, "polaris": 174493, "trajectory": 19043, "orrery": 38130 },
+    "implementationBytes": { "home": 41953, "polaris": 177529, "trajectory": 19925, "orrery": 39029 },
+    "baselineFamiliesByPage": { "home": [37, 0, 0], "polaris": [2, 48, 15], "trajectory": [7, 0, 0], "orrery": [20, 0, 0] },
+    "implementationFamiliesByPage": { "home": [37, 0, 0], "polaris": [2, 49, 16], "trajectory": [7, 0, 0], "orrery": [20, 0, 0] },
+    "familyOrder": ["badge", "tuple", "disclosure"],
+    "implementationThreeSurfaceEncodingPopulation": 94,
+    "implementationPolarisFreshness": { "fresh": 49 },
+    "implementationOpeningUnknownBeforeCatalog": true,
+    "polarisHeadroomTo2097152ByteResponseCeiling": 1919623,
+    "polarisBelow1400000ByteWorkingTargetBy": 1222471,
+    "limit": "The headroom and working-target figures are for this synthetic fixture only; they do not establish a live Butlers page-size result."
+  },
+  "proposalToken": {
+    "value": "#aa90ee",
+    "CIE76DistanceFromUnknown": 97.01428070280313,
+    "CIE76DistanceFromAmber": 100.64944186711115,
+    "WCAGContrastAgainstVoid": 7.265528525276062,
+    "WCAGContrastAgainstPanel": 6.826467024457794,
+    "distanceFloor": 26.7,
+    "contrastFloor": 4.5
+  },
+  "verification": {
+    "focusedMutationTestsAtImplementationCommit": "30 passed, 0 failed across surface-routes, polaris-epistemic-tuples and design-tokens",
+    "fullSuiteAtImplementationCommit": "1838 passed, 3 skipped, 0 failed; npm test -- --reporter=dot --maxWorkers=2",
+    "browserAccessibilityAtImplementationCommit": "Six real-Chrome variants, 0 violations; minimum measured contrast 4.69:1 in observed variants and 5.09:1 in unavailable variants; keyboard activation and accessibility tree exercised",
+    "governance": "python3 scripts/check_governance.py: 32 OK, 20 WARN, 0 FAIL; --selftest: 263 fixtures, 0 failing",
+    "build": "npm run build:poc --silent passed; app tsc --noEmit passed after core and generation-core builds",
+    "knownFullRunNoise": "An uncapped concurrent full run had one 5-second production-reobserve test timeout. Its own 4-case file passed when rerun alone; the final capped-worker full run passed."
+  },
+  "mutations": {
+    "testedCommit": "e9e4019c46b36f7b383d2eae47b09216aa248ebd",
+    "commands": [
+      "npx vitest run apps/three-surface-poc/src/surface-routes.test.ts --reporter=dot",
+      "npx vitest run apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts --reporter=dot",
+      "npx vitest run apps/three-surface-poc/src/design-tokens.test.ts --reporter=dot"
+    ],
+    "note": "Each test executes a changed served-output fragment or production render and asserts that its independent oracle rejects it; mutants do not change a source file on disk.",
+    "killed": [
+      { "id": "badge-selector", "old": ".epistemic.epistemic-observed, ", "new": "", "oracle": "served family treatment" },
+      { "id": "tuple-selector", "old": ".claim-tuple[data-epistemic-label=\"Observed\"] { color:", "new": ".missing-tuple { color:", "oracle": "served tuple treatment" },
+      { "id": "disclosure-selector", "old": ", [data-unknown-disclosure] { color:", "new": " { color:", "oracle": "served disclosure treatment" },
+      { "id": "unknown-token", "old": "color: var(--unknown);", "new": "color: var(--observed);", "oracle": "hard-coded Unknown treatment" },
+      { "id": "unknown-symbol", "old": "content: \"? \";", "new": "content: \"\";", "oracle": "hard-coded Unknown symbol" },
+      { "id": "inline-ad-hoc", "old": "class=\"claim-tuple\"", "new": "class=\"claim-tuple\" style=\"color:red\"", "oracle": "no ad hoc inline treatment" },
+      { "id": "outside-family", "old": "</style>", "new": ".rogue { color: var(--unknown); }</style>", "oracle": "negative token sweep" },
+      { "id": "family-omission", "old": "encodingMembers(html)", "new": "encodingMembers(html).filter(member => member.family !== selectedFamily)", "oracle": "independent family enumeration", "cases": ["badge", "tuple", "disclosure"] },
+      { "id": "page-denominator", "old": "encoding element count", "new": "page count 1", "oracle": "independent element count" },
+      { "id": "opening-placement", "old": "opening band before catalog", "new": "opening band after catalog", "oracle": "first-reading position" },
+      { "id": "opening-member", "old": "whole-shape Unknown member in band", "new": "member omitted, count retained", "oracle": "reason, route, tuple and deep-link member" },
+      { "id": "opening-route", "old": "Owner adjudication", "new": "", "oracle": "claim route in opening band" },
+      { "id": "proposal-collision", "old": "--proposed: #aa90ee;", "new": "--proposed: #f3c56f;", "oracle": "CIE76 distance floor" },
+      { "id": "positive-without-freshness", "old": "Observed claim with fresh", "new": "Observed claim with freshness undefined", "oracle": "production claimTuple refusal" },
+      { "id": "item-label-forgery", "old": "data-epistemic-label=\"Unknown\"", "new": "data-epistemic-label=\"Observed\"", "oracle": "item-to-machine tuple comparison", "cases": ["missing-source", "contradicted-suspended"] }
+    ]
+  }
+}
