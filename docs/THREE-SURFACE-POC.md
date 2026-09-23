@@ -44,6 +44,10 @@ is preserved; inspect the named failure before a further attempt. A stale
 restart lock in the OS temporary directory is intentionally fail-closed and
 requires operator inspection before removal. The system tests exercise only
 private fixture listeners and disposable state directories.
+An unreadable identity before SIGTERM is refused. After SIGTERM, a brief loss
+of process identity while the old socket closes is treated as unknown ownership:
+the command waits for verified socket absence or the bounded timeout, never
+starts the successor merely because the identity could not be read.
 
 Each non-2xx daemon response writes one structured JSONL diagnostic to local
 stderr. The line contains only its status, registered route or unmatched path

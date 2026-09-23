@@ -1,0 +1,34 @@
+{
+  "kind": "pwb-m11-restart-identity-race-rule-6-evidence",
+  "testedCommit": "2f92ee7bfb7ac2a0651ae0120478e323c369f07a",
+  "sourceSha256": {
+    "apps/three-surface-poc/src/restart.ts": "58044c827a018e937967aebaab1548529fd6b9c3302c0455c68c329d35a06bda"
+  },
+  "cause": "After SIGTERM, ss can report the closing listener PID just as /proc removes the process. A previously readable listener then raises listener-identity-unreadable during the bounded close wait. The former handler tolerated listener-owner-ambiguous only and refused early; no successor was started.",
+  "method": "The exact old source fragment at testedCommit was replaced once by syntax-valid new text that removed only the post-SIGTERM unreadable-identity allowance. The focused Vitest command executed one real private-listener test and exited 1 at its injected third-inspection assertion. apply_patch restored the source; the complete restart suite then exited 0 with 8/8 tests and the worktree was clean.",
+  "mutation": {
+    "id": "post-sigterm-unreadable-identity-refused",
+    "file": "apps/three-surface-poc/src/restart.ts",
+    "old": "if (!(error instanceof RestartRefusal)\n          || (error.code !== 'listener-owner-ambiguous' && error.code !== 'listener-identity-unreadable')) throw error;",
+    "new": "if (!(error instanceof RestartRefusal)\n          || error.code !== 'listener-owner-ambiguous') throw error;",
+    "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=20000 apps/three-surface-poc/src/restart.test.ts -t 'waits through one vanished post-SIGTERM identity' --reporter=dot",
+    "predicate": "An unreadable identity only after SIGTERM is polled until socket absence or timeout; it never authorizes a successor while ownership remains unknown.",
+    "baselineExit": 0,
+    "mutantExit": 1,
+    "testsRan": true,
+    "restored": true,
+    "outcome": "killed"
+  },
+  "focusedLoad": {
+    "command": "12 concurrent-focused-suite replays in three waves of four; each ran all eight restart tests on private fixture ports with 30-second per-test timeout",
+    "suitesPassed": 12,
+    "suitesFailed": 0,
+    "testsPerSuite": 8
+  },
+  "safety": {
+    "privateEphemeralListenersOnly": true,
+    "disposableStateDirectoriesOnly": true,
+    "sigkillUsed": false,
+    "livePocOrPort7478Signaled": false
+  }
+}
