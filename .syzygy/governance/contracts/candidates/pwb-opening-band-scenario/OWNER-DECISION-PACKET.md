@@ -9,7 +9,7 @@
 Date: 2026-09-21 (first draft; repaired 2026-09-22 and 2026-09-23 — an
 earlier line said 2026-09-21 for the round-1 dispositions, the author's
 working date for a commit made after midnight; round 6 finding 34).
-**Status as of 2026-09-23:** six fresh-context reviews have run against
+**Status as of 2026-09-23:** nine fresh-context reviews have run against
 `REVIEW-BRIEF.md` — round 1 **CONFIRM WITH EXCEPTIONS**
 (`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md`); round 2, over
 the repaired bytes at `9d74185`, **REVISE**
@@ -21,7 +21,13 @@ round 4, over the repaired bytes at `194f8cd`, **REVISE**
 round 5, over the repaired bytes at `7fd2db3`, **REVISE**
 (`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-4-RAW.md`);
 round 6, over the repaired bytes at `2c5745e`, **REVISE**
-(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-5-RAW.md`). A
+(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-5-RAW.md`);
+round 7, over the repaired bytes at `d3d5d9d`, **REVISE**
+(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-6-RAW.md`);
+round 8, over the repaired bytes at `28086f6`, **CONFIRM WITH EXCEPTIONS**
+(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-7-RAW.md`);
+round 9, over the repaired bytes at `815785a`, **CONFIRM WITH EXCEPTIONS**
+(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-8-RAW.md`). A
 parallel independent round over the round-2 bytes returned **CONFIRM WITH
 EXCEPTIONS**
 (`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-B-RAW.md`).
@@ -29,7 +35,9 @@ Each word is copied exactly from its raw; `SEMANTIC-DELTA.md` §Review owns
 the dispositions. Every finding was repaired in prose only: no patch byte,
 no manifest row and no proposed sentence moved, so the manifest digest
 below is unchanged. Each verdict is bound to the commit its raw names,
-**not** to these repaired bytes (rule 10), which await a round 7. An
+**not** to these repaired bytes (rule 10), which await a round 10 — the
+round-8 and round-9 confirmations cover `28086f6` and `815785a`, and
+their six and two notes were repaired in prose after each. An
 earlier head here reported one review and one verdict; it had been stale
 since round 2 (round 3 finding 14).
 
@@ -88,7 +96,7 @@ three render into the region before the first catalog. The delta performs
 the reconciliation by quoting each party's own design text and deriving
 three agreements from it:
 
-1. **One region, one uniqueness rule.** Three independent "renders first"
+1. **One region, one uniqueness rule.** Three independent renders-first
    assertions are three oracles over one piece of page order. Only a
    specification can hold this: a convention agreed between three unadopted
    design packets binds nothing.
@@ -195,7 +203,7 @@ prohibition in the direction that lets this one land.
 
 Q7 reserves this to you expressly: "The block order *within* the band is the
 owner's to set, not this packet's". Against that sits PWB-REQ-010's signed
-"SHALL **first** present Butlers' purpose, promises, non-goals, architecture,
+"SHALL first present Butlers' purpose, promises, non-goals, architecture,
 V1 scope and success criteria", and M2 slice 2's stated intent to move the
 page's first human-visible instant into that region. The scenario says only
 that the aggregate "displaces and defers no project-level category of this
@@ -232,7 +240,7 @@ words. `IMPACT-LEDGER.md` carries the full sweep.
 None of it performed by this package.
 
 1. Fresh-context review against `REVIEW-BRIEF.md`; raw output retained
-   verbatim, bytes frozen (rule 10). **Done six times** — round 1 CONFIRM
+   verbatim, bytes frozen (rule 10). **Done nine times** — round 1 CONFIRM
    WITH EXCEPTIONS, three notes, all repaired in prose; round 2 (2026-09-23,
    over the repaired bytes at `9d74185`) REVISE, two false sentences in the
    impact ledger and five notes, all repaired in prose; round 3 (2026-09-23,
@@ -247,9 +255,17 @@ None of it performed by this package.
    notes, six repaired in prose and one needing no change; round 6
    (2026-09-23, over the repaired bytes at `2c5745e`) REVISE — the round-5
    repair's own count of the round-1 items that still hold — plus four
-   notes, two repaired in prose and two needing no change. Each verdict is
-   bound to the commit it reviewed; a round 7 over these bytes is the next
-   step, and only a round that confirms them lets a phrase be offered.
+   notes, two repaired in prose and two needing no change; round 7
+   (2026-09-23, over the repaired bytes at `d3d5d9d`) REVISE — the
+   round-6 repair's own commit attribution for one moved pointer — plus
+   three notes, all repaired in prose; round 8 (2026-09-23, over the
+   repaired bytes at `28086f6`) CONFIRM WITH EXCEPTIONS — no revise
+   finding, six notes, all repaired in prose; round 9 (2026-09-23, over
+   the repaired bytes at `815785a`) CONFIRM WITH EXCEPTIONS — no revise
+   finding, two notes, both repaired in prose. Each verdict is bound to
+   the commit it reviewed; a round 10 over these bytes is the next step,
+   and
+   only a round that confirms them lets a phrase be offered.
 2. You answer OQ-1 to OQ-5. An answer to OQ-2 or OQ-3 may change the
    proposed bytes, which would retire the review. **Done, 2026-09-23**:
    OQ-1 and OQ-2 in
@@ -298,9 +314,15 @@ collide on. They are listed here so they can be made once, at merge.
 - a fourth link in the PWB successor chain. **Its position is a sequencing
   decision, not a mechanical one**: the chain's latest validly performed
   link binds current bytes, so placing this package before or after lane B
-  asserts an adoption order. Recommended after lane B, matching P-68's
-  ordering and this package's separate gate bead; the owner may say
-  otherwise [Inferred].
+  asserts an adoption order. **The owner has said**, 2026-09-23, in
+  `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md`
+  §6: readiness order, lane B last — `.21`, then `.30`, then `.22`, then
+  lane B — and that record names this packet's earlier recommendation as
+  superseded by the answer, not edited. That recommendation, kept here as
+  superseded text: "Recommended after lane B, matching P-68's ordering and
+  this package's separate gate bead; the owner may say otherwise
+  [Inferred]" (round 7 finding 39). The composition claim above is
+  order-independent either way.
 - an entry in `_act_subjects()`;
 - a row in `ACT_DIGEST_COPY_FILES` for this packet, so CG-7d and CG-7e can
   see the manifest digest quoted above go stale;

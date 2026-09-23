@@ -887,9 +887,56 @@ describe('one resource envelope across both phases (PWB-REQ-006, amended)', () =
       sourcesTraversed: 14,
       maxPassesOnOneSource: 14,
       breaches: [],
+      byLimit: {
+        // maxBytesPerSource: no breach was recorded (breaches: [] above),
+        // so it reads this ledger's own real evidence — the largest of
+        // the 14 charged bodies (about/heart-and-soul/v1.md, 342 bytes;
+        // hand-typed from BODIES above).
+        //
+        // maxSources: also no breach, but its observed value is NOT the
+        // 14 sources this ledger traversed — BASE_TEXTS's manifest holds
+        // 15 sources (POPULATION's 15th entry, a path-only
+        // `baseline-spec-tree` source under openspec/specs/, asserted as
+        // `shape.counts.sources` below and at lines 454/931/949/987),
+        // never charged a parse pass because it is read by path alone.
+        // `declareSourcePopulation` (called unconditionally by
+        // `project-shape-observation.ts` right after the manifest is
+        // derived) feeds this ledger the true population, so `observed`
+        // is 15, matching the same population the pipeline's own
+        // maxSources breach check compares against the declared limit.
+        maxSources: { limit: 'maxSources', declared: 512, observed: { state: 'observed', value: 15 }, remaining: { state: 'observed', value: 497 } },
+        maxBytesPerSource: { limit: 'maxBytesPerSource', declared: 1048576, observed: { state: 'observed', value: 342 }, remaining: { state: 'observed', value: 1048576 - 342 } },
+        maxTotalBytes: { limit: 'maxTotalBytes', declared: 16777216, observed: { state: 'observed', value: TOTAL }, remaining: { state: 'observed', value: 16777216 - TOTAL } },
+        maxIndexDepth: { limit: 'maxIndexDepth', declared: 4, observed: { state: 'observed', value: 3 }, remaining: { state: 'observed', value: 1 } },
+        maxParsePassesPerSource: { limit: 'maxParsePassesPerSource', declared: 16, observed: { state: 'observed', value: 14 }, remaining: { state: 'observed', value: 2 } },
+        // The two response ceilings are never touched by this ledger
+        // (enforced entirely outside it, in routes.ts's boundedResponse):
+        // genuinely Unknown, never a false 0.
+        maxHumanResponseBytes: {
+          limit: 'maxHumanResponseBytes',
+          declared: 2097152,
+          observed: { state: 'unknown', reason: "the final-response ceiling is enforced entirely outside this ledger, by routes.ts's boundedResponse, which never charges a ResourceLedger" },
+          remaining: { state: 'unknown', reason: "the final-response ceiling is enforced entirely outside this ledger, by routes.ts's boundedResponse, which never charges a ResourceLedger" },
+        },
+        maxMachineResponseBytes: {
+          limit: 'maxMachineResponseBytes',
+          declared: 8388608,
+          observed: { state: 'unknown', reason: "the final-response ceiling is enforced entirely outside this ledger, by routes.ts's boundedResponse, which never charges a ResourceLedger" },
+          remaining: { state: 'unknown', reason: "the final-response ceiling is enforced entirely outside this ledger, by routes.ts's boundedResponse, which never charges a ResourceLedger" },
+        },
+      },
+      cost: { bodiesRead: 14, bytes: TOTAL, parsePasses: 155, worstSourcePasses: 14 },
     });
     expect(shape.resourceUse.maxPassesOnOneSource).toBeLessThanOrEqual(PWB_RESOURCE_LIMITS.maxParsePassesPerSource);
     expect(shape.limitBreaches).toEqual([]);
+    // Pins maxSources' observed value to the same population the pipeline
+    // compares against the declared limit for breach purposes
+    // (`manifest.sources.length`, surfaced here as `shape.counts.sources`)
+    // — not the smaller `sourcesTraversed`, which this fixture's path-only
+    // 15th source (a `baseline-spec-tree` entry) is excluded from.
+    expect(shape.counts.sources).toBe(15);
+    expect(shape.resourceUse.byLimit.maxSources.observed).toEqual({ state: 'observed', value: shape.counts.sources });
+    expect(shape.resourceUse.sourcesTraversed).not.toBe(shape.counts.sources);
   });
 
   it('maxTotalBytes is one cumulative counter: the exact total fits, one byte less refuses only the last body', () => {

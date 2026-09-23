@@ -541,6 +541,14 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
   if (derived.kind === 'invalid-input') return { kind: 'invalid-input', reason: derived.reason };
   const manifest = derived.manifest;
 
+  // Declared unconditionally, not only on breach, so the ledger's summary
+  // can report maxSources' true usage against the same population this
+  // breach check below compares against the limit — never the smaller
+  // count of sources this ledger separately charges a parse pass to (some
+  // manifest sources, e.g. a path-only `baseline-spec-tree` entry, are
+  // never traversed).
+  ledger.declareSourcePopulation(manifest.sources.length);
+
   if (PWB_INDEX_DEPTH > limits.maxIndexDepth) {
     ledger.recordBreach({ limit: 'maxIndexDepth', declared: limits.maxIndexDepth, observed: PWB_INDEX_DEPTH });
   }
