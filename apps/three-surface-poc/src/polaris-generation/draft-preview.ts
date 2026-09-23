@@ -68,6 +68,9 @@ export function renderDraftPreview(draft: ProviderDraft, sources: readonly { sou
   const intro = paragraph(draft.introduction);
   const sections = draft.sections.map((section, index) => {
     register(section.id);
+    if (section.disposition.kind !== 'produced') {
+      return `<section id="section-${index}" aria-labelledby="heading-${index}"><span class="eyebrow">${String(index + 1).padStart(2, '0')}</span><h2 id="heading-${index}">${escape(section.title)}</h2>${dispositionNotice(section)}</section>`;
+    }
     return `<section id="section-${index}" aria-labelledby="heading-${index}"><span class="eyebrow">${String(index + 1).padStart(2, '0')}</span><h2 id="heading-${index}">${escape(section.title)}</h2>${section.paragraphs.map(paragraph).join('')}${draft.diagrams.map((d, i) => d.sectionId === section.id ? diagram(d, i) : '').join('')}${draft.deepDives.map((d, i) => {
       if (d.sectionId !== section.id) return '';
       register(d.id);

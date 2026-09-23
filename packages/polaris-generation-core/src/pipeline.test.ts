@@ -4,7 +4,7 @@ import { runGenerationPipeline, type AttemptOutcome, type PipelinePorts, type Pi
 const request = (): PipelineRequest => ({
   requestId: 'request-1', projectId: 'project-a', snapshotId: 'snapshot-1', providerRoute: 'synthetic', startedAt: Date.now(),
   budget: { maxCalls: 10, maxInputBytes: 200_000, maxOutputBytes: 20_000, maxUsageUnits: 100, maxElapsedMs: 10_000, maxRepairCycles: 1, accountingPolicy: 'synthetic-units-v1' },
-  sources: [{ sourceId: 'purpose', text: 'Reduce recurring mental labor.' }], readerQuestions: ['Why does this project exist?'],
+  sources: [{ sourceId: 'purpose', text: 'Reduce recurring mental labor.' }], readerQuestions: ['Why does this project exist?'], requestedAssets: [],
 });
 
 function harness() {
@@ -44,7 +44,7 @@ describe('source to editorial draft pipeline', () => {
     expect(result.status).toBe('awaiting-rendered-review');
     expect(h.sends.map(x => x.stage)).toEqual(['inventory', 'plan', 'author', 'edit', 'fidelity']);
     const inventory = JSON.parse(h.sends[0]!.input);
-    expect(Object.keys(inventory.inputs).sort()).toEqual(['readerQuestions', 'sources']);
+    expect(Object.keys(inventory.inputs).sort()).toEqual(['readerQuestions', 'requestedAssets', 'sources']);
     expect(inventory.responseSchemaVersion).toBe('test-record-v1');
     const fidelity = JSON.parse(h.sends[4]!.input).inputs;
     expect(fidelity.sources).toEqual(request().sources);
@@ -75,6 +75,18 @@ describe('source to editorial draft pipeline', () => {
     await runGenerationPipeline(r, h.ports, signal());
     expect(await runGenerationPipeline(r, h.ports, signal())).toMatchObject({ status: 'stopped', reason: 'admission-refused' });
     expect(h.sends).toHaveLength(5);
+  });
+
+  it('rejects duplicate or malformed trusted asset requests before provider dispatch', async () => {
+    for (const requestedAssets of [
+      [{ id: 'diagram', kind: 'diagram', required: true }, { id: 'diagram', kind: 'diagram', required: false }],
+      [{ id: 'diagram', kind: 'diagram', required: 'yes' }],
+    ]) {
+      const h = harness();
+      expect(await runGenerationPipeline({ ...request(), requestedAssets: requestedAssets as PipelineRequest['requestedAssets'] }, h.ports, signal()))
+        .toMatchObject({ status: 'stopped', reason: 'invalid-request' });
+      expect(h.sends).toHaveLength(0);
+    }
   });
 
   it('rejects duplicate-key output before schema validation and never records its body', async () => {

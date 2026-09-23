@@ -98,4 +98,16 @@ describe('intermediate draft preview', () => {
     expect(html).toContain('architecture');
     expect(html).not.toContain('marker-end="url(#arrow-0)"');
   });
+
+  it('localizes an unresolved section without presenting its draft body as produced', () => {
+    const d = fixture();
+    d.sections[0]!.disposition = { kind: 'unresolved', reason: 'No authoring basis', references: ['architecture'] };
+    const html = renderDraftPreview(d, sources);
+    expect(html).toContain('id="section-0"');
+    expect(html).toContain('data-asset-disposition="unresolved"');
+    expect(html).toContain('No authoring basis');
+    expect(html).toContain('architecture');
+    expect(html).not.toContain('Requests reach the planner, then the calendar.');
+    expect(html).not.toContain('marker-end="url(#arrow-0)"');
+  });
 });

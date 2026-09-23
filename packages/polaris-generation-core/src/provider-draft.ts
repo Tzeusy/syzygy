@@ -10,6 +10,7 @@ import type { GenerationStage } from './prompts.js';
 type Schema = { type: 'object'; properties: Record<string, Schema>; required: string[]; additionalProperties: false }
   | { type: 'array'; items: Schema; minItems: number; maxItems: number; uniqueItems?: boolean }
   | { type: 'string'; minLength: number; maxLength: number; pattern?: string; enum?: string[] }
+  | { type: 'boolean' }
   | { oneOf: readonly Schema[] };
 
 /** The handle shape every id in this module's schemas (and, per admitted-input.ts's
@@ -28,6 +29,7 @@ const handle: Schema = { type: 'string', minLength: SOURCE_ID_MIN_LENGTH, maxLen
 const list = (items: Schema, minItems = 0, maxItems = 200): Extract<Schema, { type: 'array' }> => ({ type: 'array', items, minItems, maxItems });
 const object = (properties: Record<string, Schema>): Schema => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
 const refs: Schema = { ...list(handle, 1), uniqueItems: true };
+const requestedAssetsSchema = list(object({ id: handle, kind: { ...text, enum: ['section', 'diagram', 'deep-dive'] }, required: { type: 'boolean' } }), 0, 100);
 const paragraph = object({ id: handle, text, sourceIds: refs });
 const disposition: Schema = { oneOf: [
   object({ kind: { ...text, enum: ['produced'] }, assetIds: refs }),
@@ -72,6 +74,10 @@ function check(schema: Schema, value: unknown): void {
       || (schema.enum && !schema.enum.includes(value))) throw new Error('invalid-string');
     return;
   }
+  if (schema.type === 'boolean') {
+    if (typeof value !== 'boolean') throw new Error('invalid-boolean');
+    return;
+  }
   if (typeof value !== 'object' || value === null || types.isProxy(value)) throw new Error('invalid-structure');
   const descriptors = Object.getOwnPropertyDescriptors(value);
   if (Reflect.ownKeys(descriptors).some(key => typeof key !== 'string' || !('value' in descriptors[key]!))) throw new Error('invalid-property');
@@ -93,6 +99,7 @@ function check(schema: Schema, value: unknown): void {
 }
 
 export interface ProviderParagraph { id: string; text: string; sourceIds: string[] }
+export interface RequestedAsset { readonly id: string; readonly kind: 'section' | 'diagram' | 'deep-dive'; readonly required: boolean }
 export type AssetDisposition =
   | { kind: 'produced'; assetIds: string[] }
   | { kind: 'omitted'; reason: string; references: string[] }
@@ -128,8 +135,42 @@ function references(value: unknown, sources: Set<string>): void {
   } else if (value !== null && typeof value === 'object') {
     const record = value as Record<string, unknown>;
     if (Array.isArray(record.sourceIds) && record.sourceIds.some(id => !sources.has(id))) throw new Error('unknown-source');
+    if (Array.isArray(record.references) && record.references.some(id => !sources.has(id))) throw new Error('unknown-source');
     for (const child of Object.values(record)) references(child, sources);
   }
+}
+
+export function validateRequestedAssets(value: unknown): RequestedAsset[] {
+  check(requestedAssetsSchema, value);
+  const assets = value as RequestedAsset[];
+  unique(assets.map(asset => asset.id));
+  return structuredClone(assets);
+}
+
+function draftBlocks(value: ProviderDraft): Map<string, ProviderParagraph | ProviderDraft['diagrams'][number]['nodes'][number] | ProviderDraft['diagrams'][number]['edges'][number]> {
+  return new Map([
+    value.introduction,
+    ...value.sections.flatMap(section => section.paragraphs),
+    ...value.diagrams.flatMap(diagram => [...diagram.nodes, ...diagram.edges]),
+    ...value.deepDives.flatMap(deepDive => deepDive.paragraphs),
+  ].map(block => [block.id, block]));
+}
+
+function producedHandles(value: ProviderDraft): Set<string> {
+  return new Set([
+    value.introduction.id,
+    ...value.sections.flatMap(section => section.disposition.kind === 'produced' ? [section.id, ...section.paragraphs.map(p => p.id)] : []),
+    ...value.diagrams.flatMap(diagram => diagram.disposition.kind === 'produced' ? [diagram.id, ...diagram.nodes.map(n => n.id), ...diagram.edges.map(e => e.id)] : []),
+    ...value.deepDives.flatMap(deepDive => deepDive.disposition.kind === 'produced' ? [deepDive.id, ...deepDive.paragraphs.map(p => p.id)] : []),
+  ]);
+}
+
+function requestedDisposition(request: RequestedAsset, draft: ProviderDraft): AssetDisposition {
+  const collection = request.kind === 'section' ? draft.sections : request.kind === 'diagram' ? draft.diagrams : draft.deepDives;
+  const asset = collection.find(candidate => candidate.id === request.id);
+  if (asset === undefined) throw new Error('missing-requested-asset');
+  if (request.required && asset.disposition.kind === 'omitted') throw new Error('required-asset-omitted');
+  return asset.disposition;
 }
 function draftHandles(value: ProviderDraft): { all: Set<string>; blocks: Set<string> } {
   const blocks = [value.introduction, ...value.sections.flatMap(s => s.paragraphs),
@@ -141,6 +182,7 @@ function draftHandles(value: ProviderDraft): { all: Set<string>; blocks: Set<str
 
 export function validateStage(stage: GenerationStage, value: unknown, context: Record<string, unknown>): unknown {
   check(stageSchema(stage).schema, value);
+  const requestedAssets = validateRequestedAssets(context.requestedAssets);
   const sourceSchema = list(object({ sourceId: handle, text: { type: 'string', minLength: 1, maxLength: SOURCE_TEXT_MAX_LENGTH } }), 1);
   check(sourceSchema, context.sources);
   const sources = unique((context.sources as { sourceId: string; text: string }[]).map(s => s.sourceId));
@@ -151,35 +193,59 @@ export function validateStage(stage: GenerationStage, value: unknown, context: R
     same([...new Set<string>(data.entries.flatMap((entry) => entry.sourceIds))], sources);
   } else if (stage === 'plan') {
     const data = value as ProviderPlan;
-    validateStage('inventory', context.inventory, { sources: context.sources });
+    validateStage('inventory', context.inventory, { sources: context.sources, requestedAssets });
     unique(data.sections.map((section) => section.id));
+    for (const request of requestedAssets.filter(asset => asset.kind === 'section')) {
+      const section = data.sections.find(candidate => candidate.id === request.id);
+      if (section === undefined) throw new Error('missing-requested-asset');
+      if (request.required && section.disposition.kind === 'omitted') throw new Error('required-asset-omitted');
+    }
   } else if (stage === 'fidelity') {
     const data = value as ProviderReview;
-    validateStage('inventory', context.inventory, { sources: context.sources });
-    validateStage('author', context.draft, { sources: context.sources, plan: context.plan });
+    validateStage('inventory', context.inventory, { sources: context.sources, requestedAssets });
+    validateStage('author', context.draft, { sources: context.sources, plan: context.plan, inventory: context.inventory, requestedAssets });
     const inv = context.inventory as ProviderInventory;
     const handles = draftHandles(context.draft as ProviderDraft);
+    const blocks = draftBlocks(context.draft as ProviderDraft);
     same(data.inventoryCoverage.map((row) => row.entryId), unique(inv.entries.map((entry) => entry.id)));
     same(data.blockSupport.map((row) => row.blockId), handles.blocks);
     if (data.inventoryCoverage.some((row) => row.disposition !== 'represented' && row.reason.length === 0)) throw new Error('missing-coverage-reason');
     if (data.inventoryCoverage.some((row) => row.disposition !== 'represented' && row.blockIds.length > 0)) throw new Error('invalid-coverage-blocks');
+    for (const row of data.inventoryCoverage.filter(row => row.disposition === 'represented')) {
+      if (row.blockIds.length === 0) throw new Error('missing-coverage-block');
+      unique(row.blockIds);
+      const entry = inv.entries.find(candidate => candidate.id === row.entryId)!;
+      if (row.blockIds.some(id => !blocks.has(id) || !blocks.get(id)!.sourceIds.some(source => entry.sourceIds.includes(source)))) throw new Error('invalid-coverage-block');
+    }
     if (data.blockSupport.some((row) => row.verdict !== 'supported' && row.reason.length === 0)) throw new Error('missing-support-reason');
+    for (const row of data.blockSupport.filter(row => row.verdict === 'supported')) {
+      if (row.sourceIds.length === 0) throw new Error('missing-support-source');
+      unique(row.sourceIds);
+      if (row.sourceIds.some(source => !blocks.get(row.blockId)!.sourceIds.includes(source))) throw new Error('support-source-outside-block');
+    }
+    for (const request of requestedAssets) {
+      if (request.required && requestedDisposition(request, context.draft as ProviderDraft).kind === 'unresolved'
+        && !data.findings.some(finding => finding.target === request.id && finding.severity === 'blocking')) throw new Error('unresolved-required-asset');
+    }
     const targets = new Set([...sources, ...handles.all, ...data.inventoryCoverage.map((row) => row.entryId), ...data.blockSupport.map((row) => row.blockId)]);
     if (data.findings.some((finding) => !targets.has(finding.target))) throw new Error('unknown-finding-target');
   } else {
     const data = value as ProviderDraft;
     check(plan, context.plan);
+    validateStage('inventory', context.inventory, { sources: context.sources, requestedAssets });
     references(context.plan, sources);
     draftHandles(data);
-    const handles = draftHandles(data);
     const planned = (context.plan as ProviderPlan).sections.flatMap((section) => section.disposition.kind === 'produced' ? section.disposition.assetIds : []);
     const produced = [
+      ...(context.inventory as ProviderInventory).entries.flatMap(entry => entry.disposition.kind === 'produced' ? entry.disposition.assetIds : []),
       ...planned,
       ...data.sections.flatMap((section) => section.disposition.kind === 'produced' ? section.disposition.assetIds : []),
       ...data.diagrams.flatMap((asset) => asset.disposition.kind === 'produced' ? asset.disposition.assetIds : []),
       ...data.deepDives.flatMap((asset) => asset.disposition.kind === 'produced' ? asset.disposition.assetIds : []),
     ];
-    if (produced.some((id) => !handles.all.has(id))) throw new Error('unknown-asset');
+    const output = producedHandles(data);
+    if (produced.some((id) => !output.has(id))) throw new Error('unknown-asset');
+    for (const request of requestedAssets) requestedDisposition(request, data);
     const sections = unique(data.sections.map((s) => s.id));
     same([...sections], unique((context.plan as ProviderPlan).sections.map((s) => s.id)));
     for (const diagram of data.diagrams) {
@@ -196,6 +262,8 @@ export function reviewVerdict(review: unknown): { blocking: boolean; findings: u
   check(fidelity, review);
   const findings = (review as ProviderReview).findings;
   const data = review as ProviderReview;
+  if (data.inventoryCoverage.some(row => row.disposition === 'represented' && row.blockIds.length === 0)) throw new Error('missing-coverage-block');
+  if (data.blockSupport.some(row => row.verdict === 'supported' && row.sourceIds.length === 0)) throw new Error('missing-support-source');
   const coverageBlocking = data.inventoryCoverage.some((row) => row.disposition !== 'represented' && row.disposition !== 'justified-omission');
   const supportBlocking = data.blockSupport.some((row) => row.verdict !== 'supported');
   return { blocking: coverageBlocking || supportBlocking || findings.some((finding) => finding.severity === 'blocking'), findings: structuredClone(findings) };

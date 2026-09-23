@@ -2,6 +2,7 @@ import type { AdmittedSource } from './admitted-input.js';
 import { digestCanonicalJson, encodeCanonicalJson, type CanonicalJsonLimits } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
 import { promptForStage, type GenerationStage } from './prompts.js';
+import { validateRequestedAssets, type RequestedAsset } from './provider-draft.js';
 
 export interface GenerationBudget {
   readonly maxCalls: number;
@@ -26,6 +27,8 @@ export interface PipelineRequest {
    * never sent through the pipeline. See REQ-polaris-generation-030. */
   readonly sources: readonly AdmittedSource[];
   readonly readerQuestions: unknown;
+  /** Trusted operator request identities and requiredness, never model-supplied. */
+  readonly requestedAssets: readonly RequestedAsset[];
 }
 
 export interface AttemptInput {
@@ -170,6 +173,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
       || !Number.isSafeInteger(b.maxRepairCycles) || b.maxRepairCycles < 0
       || !Number.isSafeInteger(request.startedAt) || request.startedAt > ports.now()
       || !Number.isSafeInteger(request.startedAt + b.maxElapsedMs)) stop('invalid-request');
+    try { validateRequestedAssets(request.requestedAssets); } catch { stop('invalid-request'); }
     // Detach caller-owned mutable inputs before the first asynchronous boundary.
     const frozen = JSON.parse(encodeCanonicalJson(request, dataLimits(b.maxInputBytes))) as PipelineRequest;
     const budget = frozen.budget;
@@ -198,7 +202,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
     };
     check();
     if (!await bounded(() => ports.verifySources(frozen))) stop('source-refused');
-    const context: Record<string, unknown> = { sources: frozen.sources, readerQuestions: frozen.readerQuestions };
+    const context: Record<string, unknown> = { sources: frozen.sources, readerQuestions: frozen.readerQuestions, requestedAssets: frozen.requestedAssets };
     const stage = async (name: GenerationStage, inputs: Readonly<Record<string, unknown>>): Promise<unknown> => {
       check();
       if (calls >= budget.maxCalls) stop('budget-exhausted');
@@ -309,7 +313,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
       check();
       return validated;
     };
-    context.inventory = await stage('inventory', { sources: context.sources, readerQuestions: context.readerQuestions });
+    context.inventory = await stage('inventory', { sources: context.sources, readerQuestions: context.readerQuestions, requestedAssets: context.requestedAssets });
     context.plan = await stage('plan', context);
     context.draft = await stage('author', context);
     context.draft = await stage('edit', context);

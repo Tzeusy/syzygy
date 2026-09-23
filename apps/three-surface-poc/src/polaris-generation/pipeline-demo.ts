@@ -63,7 +63,7 @@ export async function runSyntheticProject(project: SyntheticProject) {
     deepDives: [{ id: 'component-depth', title: `Inside ${project.components[1].toLowerCase()}`, sectionId: 'how', paragraphs: [{ id: 'depth-text', text: project.mechanism, sourceIds: ['mechanism'] }], disposition: { kind: 'produced', assetIds: ['component-depth'] } }],
     unresolved: [],
   };
-  const review = { inventoryCoverage: inventory.entries.map(entry => ({ entryId: entry.id, disposition: 'represented', blockIds: entry.disposition.assetIds, reason: 'represented' })), blockSupport: ['opening', 'mechanism-text', 'qualification-text', 'left', 'right', 'connection', 'depth-text'].map(blockId => ({ blockId, verdict: 'supported', sourceIds: ['mechanism'], reason: 'supported' })), findings: [] };
+  const review = { inventoryCoverage: inventory.entries.map(entry => ({ entryId: entry.id, disposition: 'represented', blockIds: entry.disposition.assetIds, reason: 'represented' })), blockSupport: ['opening', 'mechanism-text', 'qualification-text', 'left', 'right', 'connection', 'depth-text'].map(blockId => ({ blockId, verdict: 'supported', sourceIds: [blockId === 'opening' ? 'purpose' : blockId === 'qualification-text' ? 'qualification' : 'mechanism'], reason: 'supported' })), findings: [] };
   const responses = { inventory, plan, author: draft, edit: draft, fidelity: review, repair: draft };
   const admitted = new Set<number>();
   const records: unknown[] = [];
@@ -71,6 +71,11 @@ export async function runSyntheticProject(project: SyntheticProject) {
   const request: PipelineRequest = {
     requestId: `synthetic-${project.id}-${snapshotDigest}`, projectId: project.id, snapshotId: snapshotDigest, providerRoute: 'synthetic-fixture', startedAt: Date.now(),
     sources, readerQuestions: ['Why does it exist?', 'How do the main pieces connect?', 'What remains a human judgment?'],
+    requestedAssets: [
+      { id: 'how', kind: 'section', required: true },
+      { id: 'architecture', kind: 'diagram', required: true },
+      { id: 'component-depth', kind: 'deep-dive', required: false },
+    ],
     budget: { maxCalls: 7, maxInputBytes: 500_000, maxOutputBytes: 100_000, maxUsageUnits: 100, maxElapsedMs: 30_000, maxRepairCycles: 1, accountingPolicy: 'synthetic-unit-v1' },
   };
   const ports: PipelinePorts = {

@@ -7,7 +7,7 @@ const inventory = { entries: [
   { id: 'i2', sourceIds: ['s2'], statement: 'Qualification', kind: 'qualification', disposition: { kind: 'produced', assetIds: ['detail-body'] } },
 ] };
 const plan = { sections: [{ id: 'section', title: 'How it works', reason: 'Explain relationships', sourceIds: ['s1', 's2'], disposition: { kind: 'produced', assetIds: ['section'] } }] };
-const paragraph = (id: string) => ({ id, text: 'Supported explanation', sourceIds: ['s1'] });
+const paragraph = (id: string) => ({ id, text: 'Supported explanation', sourceIds: [id === 'detail-body' ? 's2' : 's1'] });
 const draft = { title: 'A manifesto', introduction: paragraph('intro'),
   sections: [{ id: 'section', title: 'How it works', paragraphs: [paragraph('body')], disposition: { kind: 'produced', assetIds: ['section'] } }],
   diagrams: [{ id: 'diagram', title: 'Architecture', sectionId: 'section', nodes: [
@@ -16,8 +16,9 @@ const draft = { title: 'A manifesto', introduction: paragraph('intro'),
   deepDives: [{ id: 'detail', title: 'Why this choice?', sectionId: 'section', paragraphs: [paragraph('detail-body')], disposition: { kind: 'produced', assetIds: ['detail'] } }],
   unresolved: [],
 };
-const review = { inventoryCoverage: [{ entryId: 'i1', disposition: 'represented', blockIds: ['intro'], reason: 'represented' }, { entryId: 'i2', disposition: 'represented', blockIds: ['detail-body'], reason: 'represented' }], blockSupport: ['intro', 'body', 'n1', 'n2', 'e1', 'detail-body'].map(blockId => ({ blockId, verdict: 'supported', sourceIds: ['s1'], reason: 'supported' })), findings: [] };
-const context = { sources, inventory, plan, draft };
+const review = { inventoryCoverage: [{ entryId: 'i1', disposition: 'represented', blockIds: ['intro'], reason: 'represented' }, { entryId: 'i2', disposition: 'represented', blockIds: ['detail-body'], reason: 'represented' }], blockSupport: ['intro', 'body', 'n1', 'n2', 'e1', 'detail-body'].map(blockId => ({ blockId, verdict: 'supported', sourceIds: [blockId === 'detail-body' ? 's2' : 's1'], reason: 'supported' })), findings: [] };
+const requestedAssets = [{ id: 'section', kind: 'section', required: true }, { id: 'diagram', kind: 'diagram', required: true }, { id: 'detail', kind: 'deep-dive', required: false }];
+const context = { sources, inventory, plan, draft, requestedAssets };
 
 describe('provider-local intermediate validation', () => {
   it('accepts the complete staged path with serializable isolated schemas and outputs', () => {
@@ -78,6 +79,42 @@ describe('provider-local intermediate validation', () => {
     expect(reviewVerdict(review).blocking).toBe(false);
     expect(reviewVerdict({ ...review, inventoryCoverage: review.inventoryCoverage.map((row, index) => index === 0 ? { ...row, disposition: 'unsupported', reason: 'not supported' } : row) }).blocking).toBe(true);
     expect(reviewVerdict({ ...review, blockSupport: review.blockSupport.map((row, index) => index === 0 ? { ...row, verdict: 'unresolved', reason: 'not supported' } : row) }).blocking).toBe(true);
+  });
+
+  it('joins positive coverage to real blocks and each supported source to that block', () => {
+    const coverage = (blockIds: string[]) => ({ ...review, inventoryCoverage: [{ ...review.inventoryCoverage[0]!, blockIds }, review.inventoryCoverage[1]!] });
+    expect(() => validateStage('fidelity', coverage([]), context)).toThrow('missing-coverage-block');
+    expect(() => validateStage('fidelity', coverage(['ghost']), context)).toThrow('invalid-coverage-block');
+    expect(() => validateStage('fidelity', { ...review, inventoryCoverage: [review.inventoryCoverage[0]!, { ...review.inventoryCoverage[1]!, blockIds: ['intro'] }] }, context)).toThrow('invalid-coverage-block');
+    expect(() => validateStage('fidelity', { ...review, blockSupport: [{ ...review.blockSupport[0]!, sourceIds: ['s2'] }, ...review.blockSupport.slice(1)] }, context)).toThrow('support-source-outside-block');
+    expect(() => validateStage('fidelity', { ...review, blockSupport: [{ ...review.blockSupport[0]!, sourceIds: [] }, ...review.blockSupport.slice(1)] }, context)).toThrow('missing-support-source');
+    expect(() => reviewVerdict({ ...review, blockSupport: [{ ...review.blockSupport[0]!, sourceIds: [] }, ...review.blockSupport.slice(1)] })).toThrow('missing-support-source');
+  });
+
+  it('joins produced assets and disposition references to admitted bundle identities', () => {
+    const ghost = { ...inventory, entries: [{ ...inventory.entries[0]!, disposition: { kind: 'produced', assetIds: ['ghost'] } }, inventory.entries[1]!] };
+    expect(() => validateStage('author', draft, { ...context, inventory: ghost })).toThrow('unknown-asset');
+    const unknownReference = { entries: [{ ...inventory.entries[0]!, disposition: { kind: 'omitted', reason: 'No support', references: ['not-admitted'] } }, inventory.entries[1]!] };
+    expect(() => validateStage('inventory', unknownReference, context)).toThrow('unknown-source');
+    expect(() => validateStage('author', { ...draft, unresolved: [{ question: 'What is missing?', reason: 'No source', references: ['not-admitted'] }] }, context)).toThrow('unknown-source');
+  });
+
+  it('uses trusted request identity and requiredness for exact produced, omitted and unresolved dispositions', () => {
+    expect(() => validateStage('plan', { sections: [{ ...plan.sections[0]!, disposition: { kind: 'omitted', reason: 'Unavailable', references: ['s1'] } }] }, context)).toThrow('required-asset-omitted');
+    expect(() => validateStage('author', { ...draft, diagrams: [{ ...draft.diagrams[0]!, disposition: { kind: 'omitted', reason: 'Unavailable', references: ['s1'] } }] }, context)).toThrow('required-asset-omitted');
+    expect(() => validateStage('author', draft, { ...context, requestedAssets: [...requestedAssets, { id: 'missing', kind: 'diagram', required: true }] })).toThrow('missing-requested-asset');
+    const mixed = {
+      ...draft,
+      diagrams: [{ ...draft.diagrams[0]!, disposition: { kind: 'unresolved', reason: 'Renderer unavailable', references: ['s1'] } }],
+      deepDives: [{ ...draft.deepDives[0]!, disposition: { kind: 'omitted', reason: 'Optional depth', references: ['s2'] } }],
+    };
+    const mixedInventory = { entries: [inventory.entries[0]!, { ...inventory.entries[1]!, disposition: { kind: 'omitted', reason: 'Optional depth', references: ['s2'] } }] };
+    const mixedContext = { ...context, inventory: mixedInventory, draft: mixed };
+    expect(() => validateStage('author', mixed, mixedContext)).not.toThrow();
+    expect(() => validateStage('fidelity', review, mixedContext)).toThrow('unresolved-required-asset');
+    const blocked = { ...review, findings: [{ severity: 'blocking', message: 'Required visual unresolved', target: 'diagram' }] };
+    expect(() => validateStage('fidelity', blocked, mixedContext)).not.toThrow();
+    expect(reviewVerdict(blocked).blocking).toBe(true);
   });
 
   it.each(['<script>alert(1)</script>', 'https://outside.test', 'x < y > z'])('preserves inert text for escaped rendering', title => {
