@@ -106,11 +106,12 @@ afterEach(async () => {
   }
   cleanupObservations.push(remaining);
   pids.splice(0);
-  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+  for (const root of roots) rmSync(root, { recursive: true, force: true });
 });
 
 afterAll(() => {
   expect(cleanupObservations.every((remaining) => remaining.length === 0)).toBe(true);
+  expect(exactPrivateFixturePids()).toEqual([]);
 });
 
 describe('one-listener POC restart on private fixture sockets', () => {
