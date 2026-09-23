@@ -78,6 +78,7 @@ the repair is a new disposition that cites it.
 | Polaris M14 funnel | 1 | 2026-09-17 | P-81 provenance-depth funnel | Review 1 ends `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-M14-PROVENANCE-DEPTH-FUNNEL-1-RAW.md:189`); findings landed in the M14 packet before owner ruling. |
 | Polaris M15 funnel | 1 | 2026-09-17 | P-82 pipeline-truthfulness funnel | Review 1 records `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-M15-PIPELINE-TRUTHFULNESS-FUNNEL-1-RAW.md:3`); findings landed in the M15 packet before owner ruling. |
 | Polaris M16 funnel | 1 | 2026-09-17 | P-83 renderer and visual-system funnel | Review 1 records `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-M16-RENDERER-VISUAL-SYSTEM-FUNNEL-1-RAW.md:1`); findings landed in the M16 packet before owner ruling. |
+| Polaris SVG graph feature candidate | 4 | 2026-09-23 | P-83 Q5 design-only SVG graph candidate | Review 3 is `CONFIRM` (`R-POLARIS-SVG-GRAPH-DIAGRAMS-FEATURE-CANDIDATE-REVIEW-3-RAW.md:1`); Reviews 1 and 2 are retained and dispositioned in the candidate, whose OWNER HOLD authorizes no implementation. |
 | P-79 retention-posture gate | 2 | 2026-09-22 | Retained-evaluations retention decision packet | The confirmation remains `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-RETENTION-POSTURE-PACKET-CONFIRMATION-RAW.md:4`); the candidate packet records its repaired and residual findings. |
 | P-81 exact-source gate | 2 | 2026-09-22 | Exact-source render-mode semantic delta | The confirmation is `CONFIRM` (`R-PWB-EXACT-SOURCE-RENDER-MODE-DELTA-CONFIRMATION-RAW.md:4`); repairs landed in the candidate package, which awaits its act. |
 | P-72 machine-view gate | 6 | 2026-09-22 → 2026-09-23 | Derived read-only machine-view semantic delta | The sixth review, over the round-5 repairs, is `CONFIRM WITH EXCEPTIONS` (`R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-5-RAW.md:4`) with all twelve brief criteria satisfied and no new finding; its one exception is the `RFC6-21` reading the owner already chose, carried forward from rounds 1–5. Whether that exception still blocks offering the act phrase is an owner question.
@@ -91,7 +92,7 @@ the repair is a new disposition that cites it.
 | Polaris generation admission validation | 1 | 2026-09-23 | `syzygy-u05.16`: source-population admission in `polaris-generation-core` sharing the provider-draft source-id and length bounds (PR #90) | `CONFIRM` (`R-PWB-U05-16-REVIEW-RAW.md:3`). |
 | P-73 edit/repair deletion gate | 2 | 2026-09-23 | Edit/repair deletion scenario candidate package, `syzygy-dov.23` (PR #98, binds nothing) | `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-DELTA-REVIEW-RAW.md:3`), the P-73 quotation not byte-exact, repaired; confirmation `CONFIRM` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-DELTA-CONFIRMATION-RAW.md:3`). |
 
-The 51 rows partition the tracked directory at HEAD: 231 files, 231 assigned,
+The 52 rows partition the tracked directory at HEAD: 235 files, 235 assigned,
 no remainder [Observed — re-derived for HEAD dated 2026-09-23 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
