@@ -120,7 +120,7 @@ describe('Polaris exact-source route (PWB-REQ-011 as amended; RFC7-1, RFC7-13)',
     expect(html).not.toContain('## Purpose');
     expect(html).toContain(`href="/polaris#polaris-source-${sourceSlug(PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH)}"`);
     expect(html).toContain('>Back to its source row</a>');
-    expect(html).not.toContain('data-unknown-disclosure');
+    expect(html.replace(/<style>[\s\S]*?<\/style>/, '')).not.toContain('data-unknown-disclosure');
   });
 
   it('is Unknown with a stated reason and no bytes for an identity outside the population, an empty identity, and an unobserved shape', () => {

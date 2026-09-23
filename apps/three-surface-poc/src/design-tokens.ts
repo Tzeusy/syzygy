@@ -5,6 +5,7 @@ interface EpistemicEncoding {
   readonly className: string;
   readonly symbol: string;
   readonly description: string;
+  readonly token: '--observed' | '--unknown';
 }
 
 /**
@@ -19,14 +20,27 @@ export const EPISTEMIC_ENCODING: readonly EpistemicEncoding[] = [
     className: 'epistemic-observed',
     symbol: '●',
     description: 'A resolvable observation or governed artifact backs this claim.',
+    token: '--observed',
   },
   {
     label: 'Unknown',
     className: 'epistemic-unknown',
     symbol: '?',
     description: 'No verifying evidence exists yet; the reason is stated beside it.',
+    token: '--unknown',
   },
 ];
+
+/** One treatment for each live badge, project-shape tuple and Unknown disclosure. */
+export const EPISTEMIC_TREATMENTS_CSS = EPISTEMIC_ENCODING.map((entry) => {
+  const selectors = [
+    `.epistemic.${entry.className}`,
+    `.claim-tuple[data-epistemic-label="${entry.label}"]`,
+    ...(entry.label === 'Unknown' ? ['[data-unknown-disclosure]'] : []),
+  ];
+  const symbolSelectors = selectors.map((selector) => `${selector}::before`);
+  return `${selectors.join(', ')} { color: var(${entry.token}); }\n  ${symbolSelectors.join(', ')} { content: "${entry.symbol} "; }\n  [data-epistemic-scope-label="${entry.label}"] { --claim-color: var(${entry.token}); --claim-symbol: "${entry.symbol} "; }${entry.label === 'Unknown' ? '\n  [data-unknown-disclosure] { border-left: 3px solid var(--unknown); }\n  [data-unknown-disclosure] a { color: inherit; }' : ''}`;
+}).join('\n  ');
 
 export function epistemicClassName(label: PocEpistemicLabel): string {
   const encoding = EPISTEMIC_ENCODING.find((entry) => entry.label === label);
@@ -50,8 +64,10 @@ export const DESIGN_TOKENS_CSS = `
     --panel-raised: #102126;
     --line: #294248;
     --cyan: #78e1d1;
+    --observed: #78e1d1;
     --amber: #f1b85b;
     --unknown: #f3c56f;
+    --proposed: #aa90ee;
     /* Its own token (N4; S11-F2, repaired after independent review): the
        first cut aliased --focus to the --cyan literal (#78e1d1), which
        collides with --cyan's OWN semantic meaning — EPISTEMIC_ENCODING's
@@ -162,8 +178,9 @@ export const DESIGN_TOKENS_CSS = `
     letter-spacing: .05em;
     text-transform: uppercase;
   }
-  .epistemic-observed { color: var(--cyan); }
-  .epistemic-unknown { color: var(--unknown); background: #3d2f1322; }
+  ${EPISTEMIC_TREATMENTS_CSS}
+  .claim-tuple:not([data-epistemic-label]) { color: var(--claim-color); }
+  .claim-tuple:not([data-epistemic-label])::before { content: var(--claim-symbol); }
   .legend {
     list-style: none;
     padding: 0;
@@ -182,7 +199,7 @@ export const DESIGN_TOKENS_CSS = `
   tr:target { background: #1e383b; outline: 2px solid var(--cyan); outline-offset: -2px; }
   .kind { color: #9fc0c2; font-size: .74rem; }
   small { color: var(--muted); }
-  .unavailable-notice { color: var(--unknown); border: 1px dashed var(--unknown); padding: .75rem 1rem; }
+  .unavailable-notice { border: 1px dashed var(--line); padding: .75rem 1rem; }
   footer { padding: 2rem 0 4rem; border-top: 1px solid var(--line); color: var(--muted); }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -193,7 +210,7 @@ export const DESIGN_TOKENS_CSS = `
 export function legendHtml(escapeHtml: (value: string) => string): string {
   const items = EPISTEMIC_ENCODING.map(
     (entry) =>
-      `<li><span class="epistemic ${entry.className}">${escapeHtml(entry.symbol)} ${escapeHtml(entry.label)}</span> ${escapeHtml(entry.description)}</li>`,
+      `<li><span class="epistemic ${entry.className}">${escapeHtml(entry.label)}</span> ${escapeHtml(entry.description)}</li>`,
   ).join('');
   return `<ul class="legend" aria-label="Epistemic encoding legend" data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable>${items}</ul>`;
 }

@@ -301,17 +301,26 @@ function workItemsSection(model: PocModel): string {
  * label, tier, primary reason, secondary reasons, freshness, challenge state
  * and the evaluation it belongs to — as attributes so a sweep can compare
  * them field by field to the machine answer, and as text for the reader.
- * Absent tier or freshness renders as `unstated`, never as a default. */
+ * Absent tier is an explicit absence. Missing freshness has no fifth value:
+ * it stays outside the closed slot and can only accompany Unknown. */
 function claimTuple(claim: ProjectShapeClaim): string {
   const tier = claim.epistemic.tier ?? 'unstated';
-  const freshness = claim.epistemic.freshness ?? 'unstated';
   const epistemic = claim.epistemic;
+  const freshness = epistemic.freshness;
+  if (freshness === undefined && epistemic.label !== 'Unknown') {
+    throw new Error(`positive claim has no freshness: ${claim.claimId}`);
+  }
   const primary = 'reasons' in epistemic ? epistemic.reasons.primary : 'basis' in epistemic ? epistemic.basis : 'none';
   const secondary = 'reasons' in epistemic ? epistemic.reasons.secondary : [];
   const reasonText = epistemic.label === 'Unknown'
     ? ` (${escapeHtml(primary)}${secondary.length === 0 ? '' : `; ${secondary.map(escapeHtml).join(', ')}`})`
     : '';
-  return `<span class="claim-tuple" data-claim-id="${escapeHtml(claim.claimId)}" data-epistemic-label="${escapeHtml(epistemic.label)}" data-epistemic-tier="${escapeHtml(tier)}" data-epistemic-primary-reason="${escapeHtml(primary)}" data-epistemic-secondary-reasons="${escapeHtml(secondary.join(','))}" data-epistemic-freshness="${escapeHtml(freshness)}" data-challenge-state="${escapeHtml(claim.challenge)}" data-evaluation-id="${escapeHtml(claim.evaluationId)}" aria-describedby="polaris-claim-states-lede"${DISCLOSURE}>${escapeHtml(epistemic.label)}${reasonText} · ${escapeHtml(tier)} · ${escapeHtml(freshness)} · ${escapeHtml(claim.challenge)}</span>`;
+  const freshnessAttribute = freshness === undefined ? '' : ` data-epistemic-freshness="${escapeHtml(freshness)}"`;
+  const freshnessText = freshness === undefined ? '' : ` · ${escapeHtml(freshness)}`;
+  const absence = freshness === undefined
+    ? `<span class="freshness-absence" data-unknown-disclosure="${escapeHtml(claim.claimId)}:currency"${DISCLOSURE}>Currency bound not declared; this claim remains Unknown.</span>`
+    : '';
+  return `<span class="claim-tuple" data-claim-id="${escapeHtml(claim.claimId)}" data-epistemic-label="${escapeHtml(epistemic.label)}" data-epistemic-tier="${escapeHtml(tier)}" data-epistemic-primary-reason="${escapeHtml(primary)}" data-epistemic-secondary-reasons="${escapeHtml(secondary.join(','))}"${freshnessAttribute} data-challenge-state="${escapeHtml(claim.challenge)}" data-evaluation-id="${escapeHtml(claim.evaluationId)}" aria-describedby="polaris-claim-states-lede"${DISCLOSURE}>${escapeHtml(epistemic.label)}${reasonText} · ${escapeHtml(tier)}${freshnessText} · ${escapeHtml(claim.challenge)}</span>${absence}`;
 }
 
 /** PWB-REQ-007: an aggregate discloses its members' primary and secondary
@@ -1002,6 +1011,23 @@ function shapeClaims(shape: ProjectShape): readonly ProjectShapeClaim[] {
   ];
 }
 
+function openingUnknownBand(shape: ProjectShape): string {
+  const featured: readonly { readonly subject: string; readonly claim: ProjectShapeClaim; readonly target: string }[] = shape.kind === 'observed'
+    ? [
+        { subject: 'Whole project shape', claim: shape.claim, target: 'polaris-shape-sources' },
+        { subject: 'Roster identity', claim: shape.classes['roster-identity'].claim, target: 'polaris-class-roster-identity' },
+      ]
+    : [{ subject: 'Whole project shape', claim: shape.claim, target: 'polaris-shape-sources' }];
+  const unknowns = featured.filter(({ claim }) => claim.epistemic.label === 'Unknown');
+  if (unknowns.length === 0) return '';
+  const total = shapeClaims(shape).filter((claim) => claim.epistemic.label === 'Unknown').length;
+  const entries = unknowns.map(({ subject, claim, target }) => {
+    const reason = 'reasons' in claim.epistemic ? claim.epistemic.reasons.primary : 'deferred';
+    return `<li data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}><strong>${escapeHtml(subject)}</strong>: ${copy('label.unknown')} — ${unknownReasonRef(reason)}. ${copy('label.route')} ${escapeHtml(routeOf(claim, reason))}. <a href="#${target}"${SCOPE}>Inspect the full claim</a>${tupleLine(claim)}</li>`;
+  }).join('');
+  return `<section class="opening-unknown-band" data-opening-unknown-band${DISCLOSURE}><h2${SCOPE}>Unknown claims before the catalog</h2><p data-opening-unknown-count="${total}"${DISCLOSURE}>${total} Unknown claim(s) on this page; ${unknowns.length} shown here.</p><ul>${entries}</ul></section>`;
+}
+
 function shapeEvidence(shape: ProjectShape): string {
   if (shape.kind !== 'observed') {
     return `<section class="claim-section" data-polaris-section="shape:evidence">
@@ -1336,7 +1362,7 @@ const POLARIS_STYLE = `
   .scope-instruction { margin: 0 auto 1rem; }
   .citation { color: var(--muted); font-family: var(--font-mono); font-size: .82rem; }
   .citation a { color: inherit; }
-  .claim-tuple { font-family: var(--font-mono); font-size: .78rem; color: var(--muted); letter-spacing: .04em; }
+  .claim-tuple { font-family: var(--font-mono); font-size: .78rem; letter-spacing: .04em; }
   .tuple-line { margin-top: -.4rem; }
   .reason-counts { font-size: .95rem; }
   .reason-counts ul { padding-left: 1.2rem; }
@@ -1346,7 +1372,11 @@ const POLARIS_STYLE = `
   .population summary, .claim-states summary { cursor: pointer; color: var(--muted); font-size: .95rem; }
   .claim-states { max-width: 74ch; margin: 0 auto 2rem; padding: .5rem 1rem; border: 1px dashed var(--line); font-size: .95rem; }
   .claim-states ul { padding-left: 1.2rem; }
-  .unknown-disclosure { color: var(--unknown); border-left: 3px solid var(--unknown); padding-left: .9rem; }
+  .unknown-disclosure { padding-left: .9rem; }
+  .opening-unknown-band { max-width: 74ch; margin: 2rem auto; padding: 1rem; border: 1px solid var(--line); background: var(--panel); }
+  .opening-unknown-band h2 { margin: 0; font-size: 1.25rem; }
+  .opening-unknown-band ul { padding-left: 1.5rem; }
+  .opening-unknown-band li { margin: 1rem 0; }
   .table-scroll { overflow-x: auto; }
   .item-list { margin: 0; padding-left: 1.2rem; }
   .item-list li { margin: .35rem 0; overflow-wrap: anywhere; }
@@ -1357,8 +1387,8 @@ const POLARIS_STYLE = `
   .relationships { max-width: 74ch; margin: 0 auto 3rem; }
   .relationships ul { padding-left: 1.2rem; }
   .relationships li { margin-bottom: .5rem; }
-  .proposal { border-left: 4px solid var(--unknown); padding-left: 1rem; }
-  .proposal-label { font-family: var(--font-mono); font-size: .85rem; letter-spacing: .04em; text-transform: uppercase; color: var(--unknown); }
+  .proposal { border-left: 4px solid var(--proposed); padding-left: 1rem; }
+  .proposal-label { font-family: var(--font-mono); font-size: .85rem; letter-spacing: .04em; text-transform: uppercase; color: var(--proposed); }
   .proposal .adjacent { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); }
   .proposal h4 { margin: 0 0 .5rem; font-size: 1.05rem; }
 
@@ -1635,6 +1665,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     ${projectGroupBody(shape, 'v1')}
     ${groupHeader('architecture')}
     ${projectGroupBody(shape, 'architecture')}
+    ${openingUnknownBand(shape)}
     ${groupHeader('catalog')}
     ${projectGroupBody(shape, 'catalog')}
     ${groupHeader('capability-detail')}

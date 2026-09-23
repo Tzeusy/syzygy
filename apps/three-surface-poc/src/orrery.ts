@@ -54,8 +54,8 @@ const ORRERY_STYLE = `
   .orrery-block .block-label { font-family: var(--font-mono); font-size: .68rem; color: var(--muted); }
   .orrery-block.mapped { border-color: var(--cyan); }
   .orrery-block.mapped a { display: block; color: var(--cyan); text-decoration: none; font-size: .78rem; }
-  .orrery-block.unmapped { border-style: dashed; border-color: var(--unknown); }
-  .orrery-block.unmapped a { color: var(--unknown); font-size: .78rem; text-decoration: none; }
+  .orrery-block.unmapped { border-style: dashed; }
+  .orrery-block.unmapped a { font-size: .78rem; text-decoration: none; }
   .orrery-scope { max-width: 78ch; }
   .orrery-height-legend { color: var(--muted); font-size: .78rem; max-width: 78ch; margin: 0 0 1rem; }
 `;
@@ -107,10 +107,11 @@ const CLIENT_SCRIPT = `
   if (data.unmappedFileCount > 0) {
     var unmapped = document.createElement('div');
     unmapped.className = 'orrery-block unmapped';
+    unmapped.dataset.unknownDisclosure = data.unmappedRegionEntityId;
     var unmappedLink = document.createElement('a');
     unmappedLink.href = '#' + data.unmappedRegionEntityId;
     unmappedLink.dataset.parityField = 'orrery-unmapped-region';
-    unmappedLink.textContent = 'Unmapped (' + data.unmappedFileCount + ' files)';
+    unmappedLink.textContent = 'Unknown — Unmapped (' + data.unmappedFileCount + ' files)';
     unmapped.appendChild(unmappedLink);
     canvas.appendChild(unmapped);
   }

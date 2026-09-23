@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import type { BodyReadAuthorityEvaluation, GitRunner } from '@syzygy/three-surface-poc-core';
+import { itemClaim, type BodyReadAuthorityEvaluation, type GitRunner, type PocModel } from '@syzygy/three-surface-poc-core';
 
 /**
  * An in-memory Butlers-shaped tree for surface tests that need the shared
@@ -194,6 +194,22 @@ export const PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET: Readonly<Record<string, st
   ...PROJECT_SHAPE_FIXTURE_TEXTS,
   'about/craft-and-care/README.md': `${CRAFT_README}\ntoken AKIA${'A'.repeat(16)} ${SECRET_SENTINEL}\n`,
 };
+
+/** The admitted extraction grammar cannot produce an item from an absent
+ * source, or duplicate one identity across sources. Force the two coverage
+ * states at the model-to-renderer seam without opening another repository. */
+export function projectShapeItemStateFixture(model: PocModel, state: 'unknown' | 'contradicted'): PocModel {
+  const shape = model.projectShape;
+  if (shape.kind !== 'observed') throw new Error('item-state fixture needs an observed shape');
+  const item = shape.items.find((candidate) => candidate.class === 'principle');
+  if (item === undefined) throw new Error('fixture has no principle item');
+  const anchors = state === 'unknown'
+    ? [{ path: 'about/heart-and-soul/missing-source.md', line: 1 }]
+    : [...item.anchors, { path: 'about/heart-and-soul/competing-source.md', line: 1 }];
+  const unknownReason = state === 'unknown' ? 'source-uncaptured-or-unreachable' : 'contradicted-pending-adjudication';
+  const changed = { ...item, state, anchors, unknownReason, claim: itemClaim({ ...item, state, anchors, unknownReason }, new Map(), item.claim.evaluationId) };
+  return { ...model, projectShape: { ...shape, items: shape.items.map((candidate) => candidate === item ? changed : candidate) } };
+}
 
 const encoder = new TextEncoder();
 

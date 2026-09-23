@@ -1,0 +1,164 @@
+{
+  "task": "syzygy-dov.3.1 — P-70 M3 slices 1–4",
+  "capturedAt": "2026-09-23T02:04:07Z",
+  "baselineCommit": "bdb025c3bab5da7f26f93b7602d54cecf7eb9253",
+  "implementationCommit": "e9e4019c46b36f7b383d2eae47b09216aa248ebd",
+  "method": {
+    "model": "The same synthetic observed Butlers-shaped fixture on both commits, with the root precedence table removed to force an existing whole-shape Unknown. No live Butlers content was read.",
+    "serve": "npm ci and npm run build:poc in separate clean worktrees; private createDaemon with pocRoutes, port 0, a temporary state directory, direct fetch and Host-mounted tailnet fetch. Both responses were HTTP 200.",
+    "denominator": "Historical server-body census only: after removing style and script, badges matching class epistemic epistemic-{observed,unknown}; claim-tuple spans; elements with data-unknown-disclosure. This predicate misses Orrery's post-script unmapped node; the correction's browser census below owns the complete runtime denominator. Home is separate.",
+    "byteUnit": "UTF-8 encoded response body bytes, without HTTP headers or compression"
+  },
+  "direct": {
+    "baseline": {
+      "home": { "bytes": 41011, "badge": 37, "tuple": 0, "disclosure": 0 },
+      "polaris": { "bytes": 174403, "badge": 2, "tuple": 48, "disclosure": 15, "freshness": { "fresh": 48 }, "openingUnknownBeforeCatalog": false, "proposedLabelsOutsideEncodingPopulation": 1 },
+      "trajectory": { "bytes": 18968, "badge": 7, "tuple": 0, "disclosure": 0 },
+      "orrery": { "bytes": 38070, "badge": 20, "tuple": 0, "disclosure": 0 }
+    },
+    "implementation": {
+      "home": { "bytes": 41893, "badge": 37, "tuple": 0, "disclosure": 0 },
+      "polaris": { "bytes": 177439, "badge": 2, "tuple": 49, "disclosure": 16, "freshness": { "fresh": 49 }, "openingUnknownBeforeCatalog": true, "proposedLabelsOutsideEncodingPopulation": 1 },
+      "trajectory": { "bytes": 19850, "badge": 7, "tuple": 0, "disclosure": 0 },
+      "orrery": { "bytes": 38969, "badge": 20, "tuple": 0, "disclosure": 0 }
+    },
+    "serverBodyEncodingPopulation": { "baseline": 92, "implementation": 94 },
+    "homeEncodingPopulationSeparate": { "baseline": 37, "implementation": 37 },
+    "byteDelta": { "home": 882, "polaris": 3036, "trajectory": 882, "orrery": 899 }
+  },
+  "tailnetHostMounted": {
+    "baselineBytes": { "home": 41071, "polaris": 174493, "trajectory": 19043, "orrery": 38130 },
+    "implementationBytes": { "home": 41953, "polaris": 177529, "trajectory": 19925, "orrery": 39029 },
+    "baselineFamiliesByPage": { "home": [37, 0, 0], "polaris": [2, 48, 15], "trajectory": [7, 0, 0], "orrery": [20, 0, 0] },
+    "implementationFamiliesByPage": { "home": [37, 0, 0], "polaris": [2, 49, 16], "trajectory": [7, 0, 0], "orrery": [20, 0, 0] },
+    "familyOrder": ["badge", "tuple", "disclosure"],
+    "implementationThreeSurfaceServerBodyEncodingPopulation": 94,
+    "implementationPolarisFreshness": { "fresh": 49 },
+    "implementationOpeningUnknownBeforeCatalog": true,
+    "polarisHeadroomTo2097152ByteResponseCeiling": 1919623,
+    "polarisBelow1400000ByteWorkingTargetBy": 1222471,
+    "limit": "The headroom and working-target figures are for this synthetic fixture only; they do not establish a live Butlers page-size result."
+  },
+  "registeredButlers": {
+    "capture": "[Observed] Two separate clean Syzygy worktrees served the registered Butlers repository through private daemons, each on port 0 with a fresh temporary state directory. The same Butlers HEAD, walkthrough evaluation and working-tree metadata were observed within 22 seconds. Raw response bodies and credential values were not retained; only in-memory projections were printed. Both daemons stopped and their credential directories were removed after capture.",
+    "procedure": "npm ci and build:poc in each worktree; node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir <private temp>; GET direct loopback and Host: tzeusy.parrot-hen.ts.net for each page; authenticated GET /api/poc with the private credential read without printing it",
+    "baselineSyzygyCommit": "bdb025c3bab5da7f26f93b7602d54cecf7eb9253",
+    "implementationSyzygyCommit": "f098874754f09c9174940b107fb181c3e590e74a",
+    "butlersRevisionBoth": "5802fcba23ea8fcd47741f5dbe9045aef6cbafbb",
+    "walkthroughEvaluationIdentityBoth": "pwb-eval-b51a17a46d2e67dbf7212cd4",
+    "workingTreeMetadataDigestBoth": "sha256:434274a4adaab6ff76acbc2f98c4b69e4b1461469a800419e14c26a794014aac",
+    "asOf": { "baseline": "2026-09-23T02:39:04.686Z", "implementation": "2026-09-23T02:39:26.122Z" },
+    "allStatuses": 200,
+    "direct": {
+      "baseline": {
+        "home": { "bytes": 41183, "badge": 37, "tuple": 0, "disclosure": 0 },
+        "polaris": { "bytes": 1515456, "badge": 2, "tuple": 729, "disclosure": 22, "freshness": { "fresh": 729 }, "openingUnknownBeforeCatalog": false, "proposedLabelsOutsideEncodingPopulation": 1 },
+        "trajectory": { "bytes": 265633, "badge": 326, "tuple": 0, "disclosure": 0 },
+        "orrery": { "bytes": 39980, "badge": 20, "tuple": 0, "disclosure": 0 }
+      },
+      "implementation": {
+        "home": { "bytes": 42065, "badge": 37, "tuple": 0, "disclosure": 0 },
+        "polaris": { "bytes": 1522113, "badge": 2, "tuple": 731, "disclosure": 24, "freshness": { "fresh": 731 }, "openingUnknownBeforeCatalog": true, "openingUnknownCount": 12, "proposedLabelsOutsideEncodingPopulation": 1 },
+        "trajectory": { "bytes": 266515, "badge": 326, "tuple": 0, "disclosure": 0 },
+        "orrery": { "bytes": 40891, "badge": 20, "tuple": 0, "disclosure": 0 }
+      },
+      "byteDelta": { "home": 882, "polaris": 6657, "trajectory": 882, "orrery": 911 }
+    },
+    "tailnetHostMounted": {
+      "baselineBytes": { "home": 41243, "polaris": 1521366, "trajectory": 265708, "orrery": 40040 },
+      "implementationBytes": { "home": 42125, "polaris": 1528023, "trajectory": 266590, "orrery": 40951 },
+      "baselineServerBodyFamiliesByPage": { "home": [37, 0, 0], "polaris": [2, 729, 22], "trajectory": [326, 0, 0], "orrery": [20, 0, 0] },
+      "implementationServerBodyFamiliesByPage": { "home": [37, 0, 0], "polaris": [2, 731, 24], "trajectory": [326, 0, 0], "orrery": [20, 0, 0] },
+      "familyOrder": ["badge", "tuple", "disclosure"],
+      "byteDeltaEachHost": { "home": 882, "polaris": 6657, "trajectory": 882, "orrery": 911 },
+      "polarisMarginTo2097152ByteCeilingAfter": 569129,
+      "polarisBytesAbove1400000WorkingTargetBefore": 121366,
+      "polarisBytesAbove1400000WorkingTargetAfter": 128023
+    },
+    "threeSurfaceServerBodyEncodingPopulation": { "baseline": 1099, "implementation": 1103 },
+    "threeSurfaceBrowserRuntimeMarkedEncodingPopulation": { "baseline": 1099, "implementation": 1104 },
+    "browserRuntimePopulationDerivation": "The 02:39 same-window server-body pair is 1099→1103. Browser execution adds one Orrery unmapped block in both versions. The baseline block lacks data-unknown-disclosure, so its marked-family count stays 1099; the corrected block carries the marker, so the complete three-surface marked-family count is 1104. The browser-level test enumerates every live element across all three surfaces by both selector and TreeWalker after scripts and compares computed color and symbol. The separate 02:42 live Chrome sweep confirms that Polaris and Trajectory gain no post-script family elements; it is not used for the paired byte or population totals because external work-item state changed between its two captures.",
+    "orreryRuntime": {
+      "unmappedBlocksBoth": 1,
+      "baselineMarkedDisclosures": 0,
+      "implementationMarkedDisclosures": 1,
+      "implementationTextNamesUnknown": true,
+      "implementationComputedColor": "rgb(243, 197, 111)",
+      "implementationComputedBeforeContent": "\"? \"",
+      "browserForms": ["direct", "tailnet Host-mounted served HTML"]
+    },
+    "earlierWindowReconciliation": "The 02:12 UTC server-only pair reported 1098→1102; the fresh 02:39 UTC pair reports 1099→1103 because Trajectory has 326 badges on both heads rather than 325. That extra badge is a changed live work-item state between windows, not Orrery's runtime disclosure. Only the fresh pair is used for current baseline/head deltas.",
+    "homeEncodingPopulationSeparate": { "baseline": 37, "implementation": 37 },
+    "machine": {
+      "responseBytesBoth": 5653768,
+      "ceilingBytes": 8388608,
+      "sourceCountBoth": 283,
+      "itemCountBoth": 426,
+      "factCountBoth": 450,
+      "unknownItemCountBoth": 0
+    },
+    "scopeLimit": "Only one registered Butlers revision and its 02:39 same-window clean-tree response sizes were used for the paired figures. The new opening band repeats two existing Unknown claims, so tuple/disclosure counts rise without a new machine claim or source read. The baseline has an Orrery unmapped block, but it lacked a declared Unknown marker and treatment; the implementation adds exactly one runtime disclosure to the browser population."
+  },
+  "runtimeCorrection": {
+    "correctedAt": "2026-09-23T02:44:19Z",
+    "sourceCommit": "f098874754f09c9174940b107fb181c3e590e74a",
+    "finding": "The previous served-HTML sweep stripped scripts, so it reported zero Orrery disclosures although the corrected post-script DOM contains one unmapped-region Unknown. The earlier 1098→1102 registered figures were server-only and from a different live work-item window; they are not the corrected browser denominator.",
+    "browserPredicate": "After Page.loadEventFired, enumerate every body element in Chrome with TreeWalker: .epistemic badges, .claim-tuple spans, and data-unknown-disclosure elements. Independently query those three selector families and compare counts, each element's computed color and ::before symbol to hard-coded Observed/Unknown treatments. Require every .orrery-block.unmapped node to carry a matching data-unknown-disclosure identity and visible Unknown text.",
+    "sameWindowOrrery": {
+      "baseline": { "unmappedBlocks": 1, "markedUnknownDisclosures": 0, "visibleUnknownText": false, "computedColor": "rgb(223, 233, 231)", "computedBeforeContent": "none" },
+      "implementation": { "unmappedBlocks": 1, "markedUnknownDisclosures": 1, "visibleUnknownText": true, "computedColor": "rgb(243, 197, 111)", "computedBeforeContent": "\"? \"" }
+    },
+    "laterFullBrowserCrossCheck": "At 02:42 UTC, a separate direct/tailnet Chrome sweep over Home, Polaris, Trajectory and Orrery confirmed server=post-script family counts on Home, Polaris and Trajectory and a one-disclosure Orrery increment only on the corrected head. Butlers HEAD and walkthrough evaluation stayed the same. External work-item badges differed (baseline 325, head 324) and the Butlers working-tree metadata digest changed, so this later sweep is behavior-only and supplies no paired byte or total-population figure.",
+    "killedMutation": {
+      "testedCommit": "f098874754f09c9174940b107fb181c3e590e74a",
+      "command": "npx vitest run apps/three-surface-poc/src/surface-routes.test.ts apps/three-surface-poc/src/orrery.browser.test.ts --reporter=dot",
+      "old": "unmapped.dataset.unknownDisclosure = data.unmappedRegionEntityId;",
+      "new": "",
+      "outcome": "The browser test removes that exact served-script fragment, executes the mutant in Chrome, finds one .orrery-block.unmapped and zero matching Unknown markers, and verifies the runtime census rejects it."
+    }
+  },
+  "proposalToken": {
+    "value": "#aa90ee",
+    "CIE76DistanceFromUnknown": 97.01428070280313,
+    "CIE76DistanceFromAmber": 100.64944186711115,
+    "WCAGContrastAgainstVoid": 7.265528525276062,
+    "WCAGContrastAgainstPanel": 6.826467024457794,
+    "distanceFloor": 26.7,
+    "contrastFloor": 4.5
+  },
+  "verification": {
+    "focusedMutationTestsAtImplementationCommit": "30 passed, 0 failed across surface-routes, polaris-epistemic-tuples and design-tokens",
+    "fullSuiteAtImplementationCommit": "1838 passed, 3 skipped, 0 failed; npm test -- --reporter=dot --maxWorkers=2",
+    "browserAccessibilityAtImplementationCommit": "Six real-Chrome variants, 0 violations; minimum measured contrast 4.69:1 in observed variants and 5.09:1 in unavailable variants; keyboard activation and accessibility tree exercised",
+    "governance": "python3 scripts/check_governance.py: 32 OK, 20 WARN, 0 FAIL; --selftest: 263 fixtures, 0 failing",
+    "build": "npm run build:poc --silent passed; app tsc --noEmit passed after core and generation-core builds",
+    "knownFullRunNoise": "An uncapped concurrent full run had one 5-second production-reobserve test timeout. Its own 4-case file passed when rerun alone; the final capped-worker full run passed.",
+    "correction": "At f098874, the focused served-route and Orrery Chrome tests passed 15/15, npm run build:poc and app typecheck passed; the capped-worker full suite passed 1839 tests with 3 skipped, 0 failed; governance reported 0 FAIL. The browser test executed both direct and Host-mounted served HTML after scripts and killed the removed-runtime-marker mutation."
+  },
+  "mutations": {
+    "testedCommit": "e9e4019c46b36f7b383d2eae47b09216aa248ebd",
+    "commands": [
+      "npx vitest run apps/three-surface-poc/src/surface-routes.test.ts --reporter=dot",
+      "npx vitest run apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts --reporter=dot",
+      "npx vitest run apps/three-surface-poc/src/design-tokens.test.ts --reporter=dot"
+    ],
+    "note": "Each test executes a changed served-output fragment or production render and asserts that its independent oracle rejects it; mutants do not change a source file on disk.",
+    "killed": [
+      { "id": "badge-selector", "old": ".epistemic.epistemic-observed, ", "new": "", "oracle": "served family treatment" },
+      { "id": "tuple-selector", "old": ".claim-tuple[data-epistemic-label=\"Observed\"] { color:", "new": ".missing-tuple { color:", "oracle": "served tuple treatment" },
+      { "id": "disclosure-selector", "old": ", [data-unknown-disclosure] { color:", "new": " { color:", "oracle": "served disclosure treatment" },
+      { "id": "unknown-token", "old": "color: var(--unknown);", "new": "color: var(--observed);", "oracle": "hard-coded Unknown treatment" },
+      { "id": "unknown-symbol", "old": "content: \"? \";", "new": "content: \"\";", "oracle": "hard-coded Unknown symbol" },
+      { "id": "inline-ad-hoc", "old": "class=\"claim-tuple\"", "new": "class=\"claim-tuple\" style=\"color:red\"", "oracle": "no ad hoc inline treatment" },
+      { "id": "outside-family", "old": "</style>", "new": ".rogue { color: var(--unknown); }</style>", "oracle": "negative token sweep" },
+      { "id": "family-omission", "old": "encodingMembers(html)", "new": "encodingMembers(html).filter(member => member.family !== selectedFamily)", "oracle": "independent family enumeration", "cases": ["badge", "tuple", "disclosure"] },
+      { "id": "page-denominator", "old": "encoding element count", "new": "page count 1", "oracle": "independent element count" },
+      { "id": "opening-placement", "old": "opening band before catalog", "new": "opening band after catalog", "oracle": "first-reading position" },
+      { "id": "opening-member", "old": "whole-shape Unknown member in band", "new": "member omitted, count retained", "oracle": "reason, route, tuple and deep-link member" },
+      { "id": "opening-route", "old": "Owner adjudication", "new": "", "oracle": "claim route in opening band" },
+      { "id": "proposal-collision", "old": "--proposed: #aa90ee;", "new": "--proposed: #f3c56f;", "oracle": "CIE76 distance floor" },
+      { "id": "positive-without-freshness", "old": "Observed claim with fresh", "new": "Observed claim with freshness undefined", "oracle": "production claimTuple refusal" },
+      { "id": "item-label-forgery", "old": "data-epistemic-label=\"Unknown\"", "new": "data-epistemic-label=\"Observed\"", "oracle": "item-to-machine tuple comparison", "cases": ["missing-source", "contradicted-suspended"] }
+    ]
+  }
+}

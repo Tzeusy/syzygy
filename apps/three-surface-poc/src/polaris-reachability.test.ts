@@ -405,7 +405,9 @@ describe('Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7
       const css = styles(html);
       let checked = 0;
       for (const [cls, words] of COLOURED) {
-        expect(css, cls).toMatch(new RegExp(`\\.${cls}[^{]*\\{[^}]*(color|border)`));
+        expect(css, cls).toMatch(cls === 'unknown-disclosure'
+          ? /\[data-unknown-disclosure\][^{]*\{[^}]*(color|border)/
+          : new RegExp(`\\.${cls}[^{]*\\{[^}]*(color|border)`));
         const found = elements(html, (tag, open) => tag !== 'style' && classesOf(open).includes(cls));
         expect(found.length, `${variant} ${cls}`).toBeGreaterThan(0);
         for (const element of found) {

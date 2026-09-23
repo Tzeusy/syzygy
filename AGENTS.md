@@ -202,6 +202,12 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
 - Polaris guide links open synchronously on click; ignore the matching queued
   hashchange so it cannot undo a later collapse. Browser tests must await the
   actual hashchange and cover same-fragment clicks and history traversal.
+- For scope-hoisted epistemic tuples, inherited CSS custom properties carry
+  color and symbol from the nearest scope. Competing ancestor descendant
+  selectors let an outer Unknown treatment override an inner Observed scope.
+- A served-HTML census misses elements created by Orrery's inline script;
+  enumerate the post-script DOM in Chrome when claiming a full surface
+  encoding population, and assert each runtime Unknown has its disclosure.
 - Polaris reading selections are metadata-only offsets bound to the exact
   extracted declaration digest and an independent fidelity review. Source
   drift must render the full declaration; keyword-based omission can drop
