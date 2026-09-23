@@ -252,7 +252,7 @@ interface DisposableBrowserProcess {
 }
 
 const BROWSER_CLOSE_GRACE_MS = 1_000;
-const BROWSER_PROFILE_DRAIN_MS = 1_000;
+const BROWSER_PROFILE_DRAIN_MS = 3_000;
 
 interface PrivateBrowserGroup {
   readonly id: number;
@@ -328,6 +328,7 @@ interface BrowserCleanupOptions {
   readonly closeGraceMs?: number;
   readonly profileDrainMs?: number;
   readonly groupProcesses?: (group: PrivateBrowserGroup) => readonly number[];
+  readonly now?: () => number;
 }
 
 /** Browser.close may never acknowledge a protocol request. The browser is a
@@ -360,7 +361,8 @@ export async function closeDisposableBrowser(
   connection.close();
   if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
   await exited;
-  const drainDeadline = Date.now() + (options.profileDrainMs ?? BROWSER_PROFILE_DRAIN_MS);
+  const now = options.now ?? Date.now;
+  const drainDeadline = now() + (options.profileDrainMs ?? BROWSER_PROFILE_DRAIN_MS);
   const groupProcesses = options.groupProcesses ?? livePrivateBrowserMembers;
   let emptyScans = 0;
   while (true) {
@@ -368,8 +370,11 @@ export async function closeDisposableBrowser(
     emptyScans = live.length === 0 ? emptyScans + 1 : 0;
     // A second scan closes the /proc enumeration race with a child that is
     // being forked while the first scan walks entries.
+    if (now() > drainDeadline) {
+      if (live.length > 0) throw new Error(`private browser profile still held by ${live.length} process(es)`);
+      throw new Error('private browser profile drain did not verify two empty scans before deadline');
+    }
     if (emptyScans >= 2) break;
-    if (Date.now() >= drainDeadline) throw new Error(`private browser profile still held by ${live.length} process(es)`);
     await new Promise(resolve => setTimeout(resolve, 25));
   }
   (options.removeProfile ?? removeBrowserProfile)(profile);
