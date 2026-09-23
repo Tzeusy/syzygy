@@ -1,0 +1,58 @@
+{
+  "kind": "polaris-generator-m6-output-match-correction-evidence",
+  "testedCommit": "f84dfe209ea118c4f5fe750d694f4120a8622c44",
+  "scope": "PR #85 review correction: a requested diagram cannot claim a section or any other unrelated same-bundle handle as its produced output. This is typed reference integrity, not semantic support entailment.",
+  "sourceSha256": {
+    "packages/polaris-generation-core/src/provider-draft.ts": "759e040bd3b0c968db05213dae03c69a098bd5cf416401fd730814639910c318",
+    "packages/polaris-generation-core/src/provider-draft.test.ts": "d435fe5f5ebba67625f1e2907259672fc0a2ff4763dc45933f174bc6796cbf18"
+  },
+  "mutation": {
+    "id": "requested-produced-output-wrong-kind-accepted",
+    "file": "packages/polaris-generation-core/src/provider-draft.ts",
+    "old": "if (disposition.kind === 'produced' && disposition.assetIds.some(id => !requestedOutputHandles(output).has(id))) {",
+    "new": "if (disposition.kind === 'produced' && disposition.assetIds.some(id => false)) {",
+    "command": "npx vitest run --project @syzygy/polaris-generation-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/polaris-generation-core/src/provider-draft.test.ts -t 'uses trusted request identity' --reporter=dot",
+    "oldFragmentCount": 1,
+    "baselineExit": 0,
+    "baselineTestsPassed": 1,
+    "mutantExit": 1,
+    "mutantTestsFailed": 1,
+    "failure": "The required diagram with produced.assetIds ['section'] no longer throws requested-asset-output-mismatch.",
+    "restored": true,
+    "restoredSourceSha256": "759e040bd3b0c968db05213dae03c69a098bd5cf416401fd730814639910c318",
+    "outcome": "killed"
+  },
+  "verification": {
+    "focusedCoreTests": { "passed": 14, "failed": 0 },
+    "fullSuite": { "passed": 1829, "skipped": 3, "failed": 0, "testTimeoutMs": 30000 },
+    "buildPoc": "pass",
+    "typecheck": "pass",
+    "governance": { "ok": 32, "warn": 20, "fail": 0 },
+    "governanceSelftest": { "fixtures": 263, "failing": 0 },
+    "diffCheck": "pass"
+  },
+  "syntheticReplay": {
+    "command": "npm run poc:generator-demo -- --out <fresh-output-directory>",
+    "reportSha256": "32f8644d1217e8d8dcb4e856f000a3fadb9ca89fb750c087639483c5377abd63",
+    "repeatRuns": 2,
+    "reportBytesIdenticalAcrossRuns": true,
+    "outputFiles": [
+      "archive.html",
+      "archive.json",
+      "garden-changed.html",
+      "garden-changed.json",
+      "garden.html",
+      "garden.json",
+      "report.json"
+    ],
+    "runs": [
+      { "project": "garden", "status": "awaiting-rendered-review", "stageReceipts": 5 },
+      { "project": "archive", "status": "awaiting-rendered-review", "stageReceipts": 5 },
+      { "project": "garden-changed", "status": "awaiting-rendered-review", "stageReceipts": 5 }
+    ],
+    "realProvider": false,
+    "realProjectProof": false,
+    "providerCalls": 0,
+    "providerCallBasis": "The demo injects only the synthetic-scripted-response-v1 generate port and constructs no real provider adapter."
+  }
+}
