@@ -16,16 +16,16 @@ export interface HumanOperabilityStatus {
 /** One compact, non-verdict summary. Prefixes are labeled as prefixes; full
  * identities remain on the existing detailed surface. */
 export function humanStatusLine(status: HumanOperabilityStatus | undefined, escapeHtml: (value: string) => string): string {
-  const evaluation = status?.evaluationDigest === undefined || status.evaluationDigest === null ? 'Unknown (no evaluation)' : `sha256:${status.evaluationDigest.slice(0, 12)} prefix`;
-  const project = status?.projectRevision === undefined || status.projectRevision === null ? 'Unknown (no project revision)' : `${status.projectRevision.slice(0, 12)} prefix`;
-  const observer = status?.observerRevision === undefined || status.observerRevision === null ? 'Unknown (no observer revision)' : `${status.observerRevision.slice(0, 12)} prefix`;
-  const credential = status?.credentialProvision ?? 'Unknown (no provision record)';
-  const input = status?.inputBreaches === undefined || status.inputBreaches === null ? 'Unknown (shape unavailable)' : String(status.inputBreaches);
-  const served = status?.servedBreaches === undefined || status.servedBreaches === null ? 'Unknown (recorder unavailable)' : String(status.servedBreaches);
+  const evaluation = status?.evaluationDigest === undefined || status.evaluationDigest === null ? 'Unknown (absent)' : `sha256:${status.evaluationDigest.slice(0, 12)}…`;
+  const project = status?.projectRevision === undefined || status.projectRevision === null ? 'Unknown (no project rev)' : `${status.projectRevision.slice(0, 12)}…`;
+  const observer = status?.observerRevision === undefined || status.observerRevision === null ? 'Unknown (no observer rev)' : `${status.observerRevision.slice(0, 12)}…`;
+  const credential = status?.credentialProvision ?? 'Unknown (not supplied)';
+  const input = status?.inputBreaches === undefined || status.inputBreaches === null ? 'Unknown (no shape)' : String(status.inputBreaches);
+  const served = status?.servedBreaches === undefined || status.servedBreaches === null ? 'Unknown (no recorder)' : String(status.servedBreaches);
   const latest = status?.latestBreach === null || status?.latestBreach === undefined
     ? ''
-    : `; last ${status.latestBreach.limit === 'maxHumanResponseBytes' ? 'human' : 'machine'} #${status.latestBreach.sequence} ${status.latestBreach.observed}/${status.latestBreach.declared} B`;
-  return `<p class="operability-status" data-human-status data-eval="${escapeHtml(status?.evaluationDigest ?? 'unknown')}" data-breaches="${escapeHtml(served)}" data-copy-role="epistemic-disclosure">Evaluation ${escapeHtml(evaluation)}; project ${escapeHtml(project)}; observer ${escapeHtml(observer)}; credential ${escapeHtml(credential)}; breaches input ${escapeHtml(input)}, served ${escapeHtml(served)}${latest}</p>`;
+    : `; ${status.latestBreach.limit === 'maxHumanResponseBytes' ? 'human' : 'machine'} #${status.latestBreach.sequence} ${status.latestBreach.observed}/${status.latestBreach.declared} B`;
+  return `<p class="operability-status" data-human-status data-eval="${escapeHtml(status?.evaluationDigest?.slice(0, 12) ?? 'unknown')}" data-breaches="${status?.servedBreaches ?? 'unknown'}" data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable>Eval ${escapeHtml(evaluation)}; project ${escapeHtml(project)}; observer ${escapeHtml(observer)}; credential ${escapeHtml(credential)}; breaches input ${escapeHtml(input)}, served ${escapeHtml(served)}${latest}</p>`;
 }
 
 const NAV_ITEMS: readonly { readonly id: SurfaceRouteId; readonly href: string; readonly label: string }[] = [
