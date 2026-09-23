@@ -55,7 +55,9 @@ disclosures use its color and symbol; their visible words carry the meaning
 when color or generated content is unavailable. A tuple may carry its label
 locally or inherit the nearest `data-epistemic-scope-label`. The route sweep
 counts each rendered encoding on Polaris, Trajectory and Orrery; Home is a
-separate diagnostic. A proposal uses the distinct `--proposed` token and
+separate diagnostic. The browser census runs after scripts, so Orrery's
+unmapped region participates as an Unknown disclosure even though its block
+is created after the server response. A proposal uses the distinct `--proposed` token and
 retains “Proposed change — not current authority.”
 
 Before the catalog, a conditional band exposes existing Unknown whole-shape

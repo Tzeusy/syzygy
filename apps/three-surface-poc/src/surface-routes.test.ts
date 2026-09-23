@@ -1,12 +1,14 @@
-import { rmSync } from 'node:fs';
+import { rmSync, writeFileSync } from 'node:fs';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
 
 import { TAILNET_HOST } from './browser-origin.js';
+import { findBrowserExecutable, launchBrowser, type BrowserPage } from './cdp-browser.js';
 import { ORRERY_HUMAN_PATH } from './orrery.js';
 import { POLARIS_HUMAN_PATH, renderPolarisPage } from './polaris.js';
 import { POC_HUMAN_PATH, pocRoutes } from './routes.js';
@@ -18,6 +20,7 @@ import { TRAJECTORY_HUMAN_PATH } from './trajectory.js';
 
 const cleanups: string[] = [];
 const running: RunningDaemon[] = [];
+const browserExecutable = findBrowserExecutable();
 
 afterEach(async () => {
   for (const daemon of running.splice(0)) {
@@ -124,6 +127,70 @@ function verifyEncodingPopulation(html: string, checkTokenExclusivity = true, om
   return counts;
 }
 
+interface BrowserEncodingCensus {
+  readonly query: Record<Family, number>;
+  readonly walked: Record<Family, number>;
+  readonly unmapped: number;
+  readonly markedUnmapped: number;
+  readonly treatmentFailures: readonly string[];
+  readonly unnamedUnknowns: number;
+}
+
+/** Enumerates the actual post-script DOM and computed treatments in Chrome. */
+async function browserEncodingCensus(page: BrowserPage): Promise<BrowserEncodingCensus> {
+  return page.evaluate<BrowserEncodingCensus>(`(() => {
+    const query = {
+      badge: document.querySelectorAll('.epistemic.epistemic-observed, .epistemic.epistemic-unknown').length,
+      tuple: document.querySelectorAll('.claim-tuple').length,
+      disclosure: document.querySelectorAll('[data-unknown-disclosure]').length,
+    };
+    const walked = { badge: 0, tuple: 0, disclosure: 0 };
+    const treatmentFailures = [];
+    let unnamedUnknowns = 0;
+    const nodes = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+    while (nodes.nextNode()) {
+      const element = nodes.currentNode;
+      const badge = element.classList.contains('epistemic') &&
+        (element.classList.contains('epistemic-observed') || element.classList.contains('epistemic-unknown'));
+      const tuple = element.classList.contains('claim-tuple');
+      const disclosure = element.hasAttribute('data-unknown-disclosure');
+      const family = badge ? 'badge' : tuple ? 'tuple' : disclosure ? 'disclosure' : undefined;
+      if (!family) continue;
+      walked[family]++;
+      const label = badge ? (element.classList.contains('epistemic-observed') ? 'Observed' : 'Unknown')
+        : tuple ? (element.getAttribute('data-epistemic-label') || element.closest('[data-epistemic-scope-label]')?.getAttribute('data-epistemic-scope-label'))
+        : 'Unknown';
+      const color = getComputedStyle(element).color;
+      const symbol = getComputedStyle(element, '::before').content;
+      const expectedColor = label === 'Observed' ? 'rgb(120, 225, 209)' : 'rgb(243, 197, 111)';
+      const expectedSymbol = label === 'Observed' ? '●' : '?';
+      if ((label !== 'Observed' && label !== 'Unknown') || color !== expectedColor || !symbol.includes(expectedSymbol)) {
+        treatmentFailures.push(family + ':' + (label || 'missing'));
+      }
+      if (element.classList.contains('orrery-block') && element.classList.contains('unmapped') && !element.textContent.includes('Unknown')) unnamedUnknowns++;
+    }
+    const unmapped = [...document.querySelectorAll('.orrery-block.unmapped')];
+    return {
+      query,
+      walked,
+      unmapped: unmapped.length,
+      markedUnmapped: unmapped.filter((element) => element.getAttribute('data-unknown-disclosure') === element.querySelector('a')?.getAttribute('href')?.slice(1)).length,
+      treatmentFailures,
+      unnamedUnknowns,
+    };
+  })()`);
+}
+
+function verifyRuntimeCensus(server: Record<Family, number>, runtime: BrowserEncodingCensus, orrery: boolean): void {
+  expect(runtime.query).toEqual(runtime.walked);
+  expect(runtime.treatmentFailures).toEqual([]);
+  expect(runtime.unnamedUnknowns).toBe(0);
+  expect(runtime.query.badge).toBe(server.badge);
+  expect(runtime.query.tuple).toBe(server.tuple);
+  expect(runtime.query.disclosure).toBe(server.disclosure + (orrery ? runtime.unmapped : 0));
+  expect(runtime.markedUnmapped).toBe(runtime.unmapped);
+}
+
 describe('surface routes', () => {
   it('serves Polaris, Trajectory, and Orrery as human-open, same-origin-guarded pages', async () => {
     const model = buildFixtureModel(cleanups);
@@ -177,6 +244,59 @@ describe('surface routes', () => {
     expect(surfaces.find(({ path }) => path === POLARIS_HUMAN_PATH)?.counts.tuple).toBeGreaterThan(40);
     expect(counts.find(({ path }) => path === '/')?.counts.badge).toBeGreaterThan(0);
   });
+
+  it.skipIf(browserExecutable === undefined)('counts the post-JavaScript DOM on all three served surfaces and kills an unmarked Orrery region', async () => {
+    const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
+    if (model.orrery.kind !== 'observed' || model.orrery.unmappedFileCount < 1) throw new Error('fixture needs an unmapped Orrery region');
+    const start = await createDaemon({
+      stateDir: join(tempDir('syzygy-poc-runtime-state-'), 'state'),
+      routes: pocRoutes(() => model),
+      port: 0,
+    });
+    if (!start.started) throw new Error(`daemon failed to start: ${start.failure.kind}`);
+    running.push(start.daemon);
+    const baseUrl = `http://${start.daemon.host}:${start.daemon.port}`;
+    const browser = await launchBrowser(browserExecutable as string);
+    const page = await browser.newPage();
+    const directory = tempDir('syzygy-poc-runtime-pages-');
+    try {
+      let total = 0;
+      let serverTotal = 0;
+      for (const form of ['direct', 'tailnet'] as const) {
+        for (const path of [POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH]) {
+          const response = form === 'direct' ? await fetch(`${baseUrl}${path}`)
+            : await fetchWithHost(`${baseUrl}${path}`, TAILNET_HOST, { origin: `https://${TAILNET_HOST}` });
+          expect(response.status).toBe(200);
+          const html = await response.text();
+          const server = verifyEncodingPopulation(html);
+          const file = join(directory, `${form}-${path.slice(1)}.html`);
+          writeFileSync(file, html);
+          await page.navigate(pathToFileURL(file).href);
+          const runtime = await browserEncodingCensus(page);
+          verifyRuntimeCensus(server, runtime, path === ORRERY_HUMAN_PATH);
+          total += Object.values(runtime.query).reduce((a, b) => a + b, 0);
+          serverTotal += Object.values(server).reduce((a, b) => a + b, 0);
+          if (path !== ORRERY_HUMAN_PATH) continue;
+          expect(runtime.unmapped).toBe(1);
+          expect(runtime.query.disclosure).toBe(server.disclosure + 1);
+          const oldFragment = 'unmapped.dataset.unknownDisclosure = data.unmappedRegionEntityId;';
+          expect(html).toContain(oldFragment);
+          const mutant = html.replace(oldFragment, '');
+          const mutantFile = join(directory, `${form}-orrery-unmarked.html`);
+          writeFileSync(mutantFile, mutant);
+          await page.navigate(pathToFileURL(mutantFile).href);
+          const unmarked = await browserEncodingCensus(page);
+          expect(() => verifyRuntimeCensus(server, unmarked, true)).toThrow();
+          expect(unmarked.unmapped).toBe(1);
+          expect(unmarked.markedUnmapped).toBe(0);
+        }
+      }
+      expect(total).toBe(serverTotal + 2);
+    } finally {
+      await page.close();
+      await browser.close();
+    }
+  }, 45_000);
 
   it.each([
     ['wrong Unknown token', (html: string) => html.replace('color: var(--unknown);', 'color: var(--observed);')],

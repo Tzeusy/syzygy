@@ -111,7 +111,7 @@ const CLIENT_SCRIPT = `
     var unmappedLink = document.createElement('a');
     unmappedLink.href = '#' + data.unmappedRegionEntityId;
     unmappedLink.dataset.parityField = 'orrery-unmapped-region';
-    unmappedLink.textContent = 'Unmapped (' + data.unmappedFileCount + ' files)';
+    unmappedLink.textContent = 'Unknown — Unmapped (' + data.unmappedFileCount + ' files)';
     unmapped.appendChild(unmappedLink);
     canvas.appendChild(unmapped);
   }
