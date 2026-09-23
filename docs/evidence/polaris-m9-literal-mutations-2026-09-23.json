@@ -1,0 +1,492 @@
+{
+  "kind": "m9-literal-source-mutations",
+  "capturedAt": "2026-09-23T04:37:49.645Z",
+  "testedCommit": "8719d60cdb5cda1c1df58b41062564078fef6a8c",
+  "baselineAndMutantRunSeparately": true,
+  "records": [
+    {
+      "id": "cross-fragment-dangles",
+      "file": "apps/three-surface-poc/src/surface-links.ts",
+      "tests": [
+        "apps/three-surface-poc/src/surface-routes.test.ts",
+        "apps/three-surface-poc/src/polaris-reachability.test.ts"
+      ],
+      "old": "return `polaris-deep-dive-${sourceSlug(capabilityId)}`;",
+      "new": "return 'polaris-deep-dive-missing-target';",
+      "mustFail": [
+        "exhausts 13 runtime cross-surface links over five classes and fetches every direct target"
+      ],
+      "mustPass": [
+        "resolves every internal link to exactly one id in every shape state"
+      ],
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/surface-routes.test.ts apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/baseline-0.json",
+        "exit": 0,
+        "total": 25,
+        "passed": 25,
+        "failed": 0,
+        "failing": [],
+        "passing": [
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) resolves every internal link to exactly one id in every shape state (no dangling link on any path)",
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) lists the four depths as native links in document order, reaching every group, catalog class, capability deep dive and evidence heading the state renders",
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) follows every catalog category from the depth list to an item row to an exact source row whose identity equals the machine answer (PWB-REQ-011 sweep)",
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) gives every contradiction and every Unknown reason a text entry with an id, links each reason mention to its gaps entry and each contradicted declaration to its exact source, matching the machine multisets (PWB-REQ-020)",
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules",
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) rejects focusable or interactive decorative arrows, including their descendants",
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) names every coloured state in text: each element of a colour-bearing class carries the words that state means",
+          "surface routes serves Polaris, Trajectory, and Orrery as human-open, same-origin-guarded pages",
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every direct target",
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every tailnet target",
+          "surface routes withholds hrefs and discloses unavailable targets instead of defaulting identities",
+          "surface routes withholds the post-script Orrery capability href when that exact capability is absent",
+          "surface routes exhausts every served badge, tuple and Unknown disclosure on the three surfaces; Home is a separate diagnostic (POC-REQ-060)",
+          "surface routes counts the post-JavaScript DOM on all three served surfaces and kills an unmarked Orrery region",
+          "surface routes rejects wrong Unknown token",
+          "surface routes rejects missing Unknown symbol",
+          "surface routes rejects missing badge selector",
+          "surface routes rejects missing local tuple selector",
+          "surface routes rejects missing Unknown disclosure selector",
+          "surface routes rejects ad hoc inline tuple color",
+          "surface routes rejects epistemic token outside the three families",
+          "surface routes rejects a checker that drops any one family or substitutes page count for element count",
+          "surface routes resolves a tuple without a local label from its nearest declaring scope",
+          "surface routes serves the exact state-(1) authority sentence on Polaris both directly and through the tailnet Host mount (PWB-REQ-005; PWB-RECON-01)",
+          "surface routes nav links stay inside the current mount — root-relative for direct loopback access, prefixed for the tailnet-Host-headered request `tailscale serve` actually forwards"
+        ]
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/surface-routes.test.ts apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/mutant-0.json",
+        "exit": 1,
+        "total": 25,
+        "passed": 23,
+        "failed": 2,
+        "failing": [
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every direct target",
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every tailnet target"
+        ],
+        "passing": [
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) resolves every internal link to exactly one id in every shape state (no dangling link on any path)",
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) lists the four depths as native links in document order, reaching every group, catalog class, capability deep dive and evidence heading the state renders",
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) follows every catalog category from the depth list to an item row to an exact source row whose identity equals the machine answer (PWB-REQ-011 sweep)",
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) gives every contradiction and every Unknown reason a text entry with an id, links each reason mention to its gaps entry and each contradicted declaration to its exact source, matching the machine multisets (PWB-REQ-020)",
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules",
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) rejects focusable or interactive decorative arrows, including their descendants",
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) names every coloured state in text: each element of a colour-bearing class carries the words that state means",
+          "surface routes serves Polaris, Trajectory, and Orrery as human-open, same-origin-guarded pages",
+          "surface routes withholds hrefs and discloses unavailable targets instead of defaulting identities",
+          "surface routes withholds the post-script Orrery capability href when that exact capability is absent",
+          "surface routes exhausts every served badge, tuple and Unknown disclosure on the three surfaces; Home is a separate diagnostic (POC-REQ-060)",
+          "surface routes counts the post-JavaScript DOM on all three served surfaces and kills an unmarked Orrery region",
+          "surface routes rejects wrong Unknown token",
+          "surface routes rejects missing Unknown symbol",
+          "surface routes rejects missing badge selector",
+          "surface routes rejects missing local tuple selector",
+          "surface routes rejects missing Unknown disclosure selector",
+          "surface routes rejects ad hoc inline tuple color",
+          "surface routes rejects epistemic token outside the three families",
+          "surface routes rejects a checker that drops any one family or substitutes page count for element count",
+          "surface routes resolves a tuple without a local label from its nearest declaring scope",
+          "surface routes serves the exact state-(1) authority sentence on Polaris both directly and through the tailnet Host mount (PWB-REQ-005; PWB-RECON-01)",
+          "surface routes nav links stay inside the current mount — root-relative for direct loopback access, prefixed for the tailnet-Host-headered request `tailscale serve` actually forwards"
+        ]
+      },
+      "sourceSha256Before": "e78222e236f3c706e8498c85781529947a295a64a68e1f1bd478b142a4c0e84f",
+      "sourceSha256After": "e78222e236f3c706e8498c85781529947a295a64a68e1f1bd478b142a4c0e84f",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "mounted-prefix-omitted",
+      "file": "apps/three-surface-poc/src/surface-links.ts",
+      "tests": [
+        "apps/three-surface-poc/src/surface-routes.test.ts"
+      ],
+      "old": "withMountPrefix(mountPrefix, ROUTES[target])",
+      "new": "ROUTES[target]",
+      "mustFail": [
+        "exhausts 13 runtime cross-surface links over five classes and fetches every tailnet target"
+      ],
+      "mustPass": [
+        "exhausts 13 runtime cross-surface links over five classes and fetches every direct target"
+      ],
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/surface-routes.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/baseline-1.json",
+        "exit": 0,
+        "total": 18,
+        "passed": 18,
+        "failed": 0,
+        "failing": [],
+        "passing": [
+          "surface routes serves Polaris, Trajectory, and Orrery as human-open, same-origin-guarded pages",
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every direct target",
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every tailnet target",
+          "surface routes withholds hrefs and discloses unavailable targets instead of defaulting identities",
+          "surface routes withholds the post-script Orrery capability href when that exact capability is absent",
+          "surface routes exhausts every served badge, tuple and Unknown disclosure on the three surfaces; Home is a separate diagnostic (POC-REQ-060)",
+          "surface routes counts the post-JavaScript DOM on all three served surfaces and kills an unmarked Orrery region",
+          "surface routes rejects wrong Unknown token",
+          "surface routes rejects missing Unknown symbol",
+          "surface routes rejects missing badge selector",
+          "surface routes rejects missing local tuple selector",
+          "surface routes rejects missing Unknown disclosure selector",
+          "surface routes rejects ad hoc inline tuple color",
+          "surface routes rejects epistemic token outside the three families",
+          "surface routes rejects a checker that drops any one family or substitutes page count for element count",
+          "surface routes resolves a tuple without a local label from its nearest declaring scope",
+          "surface routes serves the exact state-(1) authority sentence on Polaris both directly and through the tailnet Host mount (PWB-REQ-005; PWB-RECON-01)",
+          "surface routes nav links stay inside the current mount — root-relative for direct loopback access, prefixed for the tailnet-Host-headered request `tailscale serve` actually forwards"
+        ]
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/surface-routes.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/mutant-1.json",
+        "exit": 1,
+        "total": 18,
+        "passed": 17,
+        "failed": 1,
+        "failing": [
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every tailnet target"
+        ],
+        "passing": [
+          "surface routes serves Polaris, Trajectory, and Orrery as human-open, same-origin-guarded pages",
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every direct target",
+          "surface routes withholds hrefs and discloses unavailable targets instead of defaulting identities",
+          "surface routes withholds the post-script Orrery capability href when that exact capability is absent",
+          "surface routes exhausts every served badge, tuple and Unknown disclosure on the three surfaces; Home is a separate diagnostic (POC-REQ-060)",
+          "surface routes counts the post-JavaScript DOM on all three served surfaces and kills an unmarked Orrery region",
+          "surface routes rejects wrong Unknown token",
+          "surface routes rejects missing Unknown symbol",
+          "surface routes rejects missing badge selector",
+          "surface routes rejects missing local tuple selector",
+          "surface routes rejects missing Unknown disclosure selector",
+          "surface routes rejects ad hoc inline tuple color",
+          "surface routes rejects epistemic token outside the three families",
+          "surface routes rejects a checker that drops any one family or substitutes page count for element count",
+          "surface routes resolves a tuple without a local label from its nearest declaring scope",
+          "surface routes serves the exact state-(1) authority sentence on Polaris both directly and through the tailnet Host mount (PWB-REQ-005; PWB-RECON-01)",
+          "surface routes nav links stay inside the current mount — root-relative for direct loopback access, prefixed for the tailnet-Host-headered request `tailscale serve` actually forwards"
+        ]
+      },
+      "sourceSha256Before": "e78222e236f3c706e8498c85781529947a295a64a68e1f1bd478b142a4c0e84f",
+      "sourceSha256After": "e78222e236f3c706e8498c85781529947a295a64a68e1f1bd478b142a4c0e84f",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "work-count-member-deleted",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "tests": [
+        "apps/three-surface-poc/src/surface-routes.test.ts"
+      ],
+      "old": "crossSurfaceLink({ model, className: 'work-count', sourceId: 'region:work-items', target: 'trajectory', targetId: null, mountPrefix: activeMountPrefix, label: `${wi.items.length} work items` })",
+      "new": "escapeHtml(`${wi.items.length} work items`)",
+      "mustFail": [
+        "exhausts 13 runtime cross-surface links over five classes and fetches every direct target"
+      ],
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/surface-routes.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/baseline-2.json",
+        "exit": 0,
+        "total": 18,
+        "passed": 18,
+        "failed": 0,
+        "failing": [],
+        "passing": [
+          "surface routes serves Polaris, Trajectory, and Orrery as human-open, same-origin-guarded pages",
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every direct target",
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every tailnet target",
+          "surface routes withholds hrefs and discloses unavailable targets instead of defaulting identities",
+          "surface routes withholds the post-script Orrery capability href when that exact capability is absent",
+          "surface routes exhausts every served badge, tuple and Unknown disclosure on the three surfaces; Home is a separate diagnostic (POC-REQ-060)",
+          "surface routes counts the post-JavaScript DOM on all three served surfaces and kills an unmarked Orrery region",
+          "surface routes rejects wrong Unknown token",
+          "surface routes rejects missing Unknown symbol",
+          "surface routes rejects missing badge selector",
+          "surface routes rejects missing local tuple selector",
+          "surface routes rejects missing Unknown disclosure selector",
+          "surface routes rejects ad hoc inline tuple color",
+          "surface routes rejects epistemic token outside the three families",
+          "surface routes rejects a checker that drops any one family or substitutes page count for element count",
+          "surface routes resolves a tuple without a local label from its nearest declaring scope",
+          "surface routes serves the exact state-(1) authority sentence on Polaris both directly and through the tailnet Host mount (PWB-REQ-005; PWB-RECON-01)",
+          "surface routes nav links stay inside the current mount — root-relative for direct loopback access, prefixed for the tailnet-Host-headered request `tailscale serve` actually forwards"
+        ]
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/surface-routes.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/mutant-2.json",
+        "exit": 1,
+        "total": 18,
+        "passed": 16,
+        "failed": 2,
+        "failing": [
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every direct target",
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every tailnet target"
+        ],
+        "passing": [
+          "surface routes serves Polaris, Trajectory, and Orrery as human-open, same-origin-guarded pages",
+          "surface routes withholds hrefs and discloses unavailable targets instead of defaulting identities",
+          "surface routes withholds the post-script Orrery capability href when that exact capability is absent",
+          "surface routes exhausts every served badge, tuple and Unknown disclosure on the three surfaces; Home is a separate diagnostic (POC-REQ-060)",
+          "surface routes counts the post-JavaScript DOM on all three served surfaces and kills an unmarked Orrery region",
+          "surface routes rejects wrong Unknown token",
+          "surface routes rejects missing Unknown symbol",
+          "surface routes rejects missing badge selector",
+          "surface routes rejects missing local tuple selector",
+          "surface routes rejects missing Unknown disclosure selector",
+          "surface routes rejects ad hoc inline tuple color",
+          "surface routes rejects epistemic token outside the three families",
+          "surface routes rejects a checker that drops any one family or substitutes page count for element count",
+          "surface routes resolves a tuple without a local label from its nearest declaring scope",
+          "surface routes serves the exact state-(1) authority sentence on Polaris both directly and through the tailnet Host mount (PWB-REQ-005; PWB-RECON-01)",
+          "surface routes nav links stay inside the current mount — root-relative for direct loopback access, prefixed for the tailnet-Host-headered request `tailscale serve` actually forwards"
+        ]
+      },
+      "sourceSha256Before": "acbe637df2aa856c093ecf29c41be1fd728d347f00179636423a80a3562d2a99",
+      "sourceSha256After": "acbe637df2aa856c093ecf29c41be1fd728d347f00179636423a80a3562d2a99",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "orrery-runtime-member-deleted",
+      "file": "apps/three-surface-poc/src/orrery.ts",
+      "tests": [
+        "apps/three-surface-poc/src/surface-routes.test.ts"
+      ],
+      "old": "block.appendChild(capabilityLink);",
+      "new": "if (false) block.appendChild(capabilityLink);",
+      "mustFail": [
+        "exhausts 13 runtime cross-surface links over five classes and fetches every direct target"
+      ],
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/surface-routes.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/baseline-3.json",
+        "exit": 0,
+        "total": 18,
+        "passed": 18,
+        "failed": 0,
+        "failing": [],
+        "passing": [
+          "surface routes serves Polaris, Trajectory, and Orrery as human-open, same-origin-guarded pages",
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every direct target",
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every tailnet target",
+          "surface routes withholds hrefs and discloses unavailable targets instead of defaulting identities",
+          "surface routes withholds the post-script Orrery capability href when that exact capability is absent",
+          "surface routes exhausts every served badge, tuple and Unknown disclosure on the three surfaces; Home is a separate diagnostic (POC-REQ-060)",
+          "surface routes counts the post-JavaScript DOM on all three served surfaces and kills an unmarked Orrery region",
+          "surface routes rejects wrong Unknown token",
+          "surface routes rejects missing Unknown symbol",
+          "surface routes rejects missing badge selector",
+          "surface routes rejects missing local tuple selector",
+          "surface routes rejects missing Unknown disclosure selector",
+          "surface routes rejects ad hoc inline tuple color",
+          "surface routes rejects epistemic token outside the three families",
+          "surface routes rejects a checker that drops any one family or substitutes page count for element count",
+          "surface routes resolves a tuple without a local label from its nearest declaring scope",
+          "surface routes serves the exact state-(1) authority sentence on Polaris both directly and through the tailnet Host mount (PWB-REQ-005; PWB-RECON-01)",
+          "surface routes nav links stay inside the current mount — root-relative for direct loopback access, prefixed for the tailnet-Host-headered request `tailscale serve` actually forwards"
+        ]
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/surface-routes.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/mutant-3.json",
+        "exit": 1,
+        "total": 18,
+        "passed": 16,
+        "failed": 2,
+        "failing": [
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every direct target",
+          "surface routes exhausts 13 runtime cross-surface links over five classes and fetches every tailnet target"
+        ],
+        "passing": [
+          "surface routes serves Polaris, Trajectory, and Orrery as human-open, same-origin-guarded pages",
+          "surface routes withholds hrefs and discloses unavailable targets instead of defaulting identities",
+          "surface routes withholds the post-script Orrery capability href when that exact capability is absent",
+          "surface routes exhausts every served badge, tuple and Unknown disclosure on the three surfaces; Home is a separate diagnostic (POC-REQ-060)",
+          "surface routes counts the post-JavaScript DOM on all three served surfaces and kills an unmarked Orrery region",
+          "surface routes rejects wrong Unknown token",
+          "surface routes rejects missing Unknown symbol",
+          "surface routes rejects missing badge selector",
+          "surface routes rejects missing local tuple selector",
+          "surface routes rejects missing Unknown disclosure selector",
+          "surface routes rejects ad hoc inline tuple color",
+          "surface routes rejects epistemic token outside the three families",
+          "surface routes rejects a checker that drops any one family or substitutes page count for element count",
+          "surface routes resolves a tuple without a local label from its nearest declaring scope",
+          "surface routes serves the exact state-(1) authority sentence on Polaris both directly and through the tailnet Host mount (PWB-REQ-005; PWB-RECON-01)",
+          "surface routes nav links stay inside the current mount — root-relative for direct loopback access, prefixed for the tailnet-Host-headered request `tailscale serve` actually forwards"
+        ]
+      },
+      "sourceSha256Before": "a59839eeac26070655add493a93b34e5d166de8fd14c711eb7086142e42799db",
+      "sourceSha256After": "a59839eeac26070655add493a93b34e5d166de8fd14c711eb7086142e42799db",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "seed-state-validation-disabled",
+      "file": "packages/three-surface-poc-core/src/model.ts",
+      "tests": [
+        "packages/three-surface-poc-core/src/model.test.ts"
+      ],
+      "old": "if (surface.state !== SURFACE_STATES[surface.id]) {",
+      "new": "if (false) {",
+      "mustFail": [
+        "rejects invalid public seed graphs before observation with typed failures"
+      ],
+      "baseline": {
+        "command": "npx vitest run packages/three-surface-poc-core/src/model.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/baseline-4.json",
+        "exit": 0,
+        "total": 16,
+        "passed": 16,
+        "failed": 0,
+        "failing": [],
+        "passing": [
+          "three-surface Butlers POC model builds one deterministic provenance-backed graph with honest Unknowns",
+          "three-surface Butlers POC model carries the project shape on the one model: not-evaluated without an authority evaluation, observed with an admitting one (PWB 2.7)",
+          "three-surface Butlers POC model resolves walkthrough-judgment inputs through a callback bound to the shape’s own evaluation identity, and fails closed when the loader throws",
+          "three-surface Butlers POC model shows the materialized work item Observed only once the recorded Bead is confirmed present (AC4)",
+          "three-surface Butlers POC model words the intent-to-work basis by the record origin: created, reused, or the honest legacy both (PRF-4)",
+          "three-surface Butlers POC model fails closed when a required mapped artifact is absent",
+          "three-surface Butlers POC model fails closed when the selected intent no longer carries its approval contract",
+          "three-surface Butlers POC model shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)",
+          "three-surface Butlers POC model builds an explicit Unknown model with no seeds and performs no seeded reads",
+          "three-surface Butlers POC model keeps an unobserved empty-seed Orrery denominator Unknown instead of inventing zero",
+          "three-surface Butlers POC model owns returned surface membership arrays and keeps the exported seed graph isolated",
+          "three-surface Butlers POC model changes seeded display labels without changing graph identities or snapshot identity",
+          "three-surface Butlers POC model derives snapshot identity from an opaque repository id for non-Butlers display labels",
+          "three-surface Butlers POC model preserves every production snapshot component for delimiter-rich opaque repository identities",
+          "three-surface Butlers POC model rejects invalid public seed graphs before observation with typed failures",
+          "three-surface Butlers POC model rejects a seeded Orrery mapping that is absent from the observed inventory"
+        ]
+      },
+      "mutant": {
+        "command": "npx vitest run packages/three-surface-poc-core/src/model.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/mutant-4.json",
+        "exit": 1,
+        "total": 16,
+        "passed": 15,
+        "failed": 1,
+        "failing": [
+          "three-surface Butlers POC model rejects invalid public seed graphs before observation with typed failures"
+        ],
+        "passing": [
+          "three-surface Butlers POC model builds one deterministic provenance-backed graph with honest Unknowns",
+          "three-surface Butlers POC model carries the project shape on the one model: not-evaluated without an authority evaluation, observed with an admitting one (PWB 2.7)",
+          "three-surface Butlers POC model resolves walkthrough-judgment inputs through a callback bound to the shape’s own evaluation identity, and fails closed when the loader throws",
+          "three-surface Butlers POC model shows the materialized work item Observed only once the recorded Bead is confirmed present (AC4)",
+          "three-surface Butlers POC model words the intent-to-work basis by the record origin: created, reused, or the honest legacy both (PRF-4)",
+          "three-surface Butlers POC model fails closed when a required mapped artifact is absent",
+          "three-surface Butlers POC model fails closed when the selected intent no longer carries its approval contract",
+          "three-surface Butlers POC model shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)",
+          "three-surface Butlers POC model builds an explicit Unknown model with no seeds and performs no seeded reads",
+          "three-surface Butlers POC model keeps an unobserved empty-seed Orrery denominator Unknown instead of inventing zero",
+          "three-surface Butlers POC model owns returned surface membership arrays and keeps the exported seed graph isolated",
+          "three-surface Butlers POC model changes seeded display labels without changing graph identities or snapshot identity",
+          "three-surface Butlers POC model derives snapshot identity from an opaque repository id for non-Butlers display labels",
+          "three-surface Butlers POC model preserves every production snapshot component for delimiter-rich opaque repository identities",
+          "three-surface Butlers POC model rejects a seeded Orrery mapping that is absent from the observed inventory"
+        ]
+      },
+      "sourceSha256Before": "d0451cf0b8a39f43635d8fd3ed78439671dad391f1b08ceba306966952e9d99c",
+      "sourceSha256After": "d0451cf0b8a39f43635d8fd3ed78439671dad391f1b08ceba306966952e9d99c",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "trajectory-state-projection-swapped",
+      "file": "packages/three-surface-poc-core/src/model.ts",
+      "tests": [
+        "apps/three-surface-poc/src/cross-cutting.test.ts"
+      ],
+      "old": ": {\n                  id: surface.id,\n                  state: surface.state,\n                  title: surface.title,",
+      "new": ": {\n                  id: surface.id,\n                  state: surface.id === 'trajectory' ? 'observed' : surface.state,\n                  title: surface.title,",
+      "mustFail": [
+        "names each page plane once outside the legend and each home panel once"
+      ],
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/cross-cutting.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/baseline-5.json",
+        "exit": 0,
+        "total": 6,
+        "passed": 6,
+        "failed": 0,
+        "failing": [],
+        "passing": [
+          "cross-cutting: no runtime fetch of external executable code (POC-REQ-021) sweeps every served page for a script reference to a foreign origin",
+          "cross-cutting: legend matches the declared encoding table on every surface (POC-REQ-060/061) every surface renders a legend entry for each declared epistemic encoding, and vice versa",
+          "cross-cutting: legend matches the declared encoding table on every surface (POC-REQ-060/061) carries a skip link and keyboard-focusable native elements only for interactivity",
+          "cross-cutting: legend matches the declared encoding table on every surface (POC-REQ-060/061) respects reduced-motion preference identically across surfaces",
+          "cross-cutting: the three doctrine planes stay distinct from epistemic labels names each page plane once outside the legend and each home panel once",
+          "cross-cutting: the three doctrine planes stay distinct from epistemic labels detects a misspelled legend mapping and a swapped surface plane"
+        ]
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/cross-cutting.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/mutant-5.json",
+        "exit": 1,
+        "total": 6,
+        "passed": 5,
+        "failed": 1,
+        "failing": [
+          "cross-cutting: the three doctrine planes stay distinct from epistemic labels names each page plane once outside the legend and each home panel once"
+        ],
+        "passing": [
+          "cross-cutting: no runtime fetch of external executable code (POC-REQ-021) sweeps every served page for a script reference to a foreign origin",
+          "cross-cutting: legend matches the declared encoding table on every surface (POC-REQ-060/061) every surface renders a legend entry for each declared epistemic encoding, and vice versa",
+          "cross-cutting: legend matches the declared encoding table on every surface (POC-REQ-060/061) carries a skip link and keyboard-focusable native elements only for interactivity",
+          "cross-cutting: legend matches the declared encoding table on every surface (POC-REQ-060/061) respects reduced-motion preference identically across surfaces",
+          "cross-cutting: the three doctrine planes stay distinct from epistemic labels detects a misspelled legend mapping and a swapped surface plane"
+        ]
+      },
+      "sourceSha256Before": "d0451cf0b8a39f43635d8fd3ed78439671dad391f1b08ceba306966952e9d99c",
+      "sourceSha256After": "d0451cf0b8a39f43635d8fd3ed78439671dad391f1b08ceba306966952e9d99c",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "legend-plane-spelling-changed",
+      "file": "apps/three-surface-poc/src/page-shell.ts",
+      "tests": [
+        "apps/three-surface-poc/src/cross-cutting.test.ts"
+      ],
+      "old": "holds the ${escapeHtml(surface.state)} state",
+      "new": "holds a ${escapeHtml(surface.state)} state",
+      "mustFail": [
+        "names each page plane once outside the legend and each home panel once"
+      ],
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/cross-cutting.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/baseline-6.json",
+        "exit": 0,
+        "total": 6,
+        "passed": 6,
+        "failed": 0,
+        "failing": [],
+        "passing": [
+          "cross-cutting: no runtime fetch of external executable code (POC-REQ-021) sweeps every served page for a script reference to a foreign origin",
+          "cross-cutting: legend matches the declared encoding table on every surface (POC-REQ-060/061) every surface renders a legend entry for each declared epistemic encoding, and vice versa",
+          "cross-cutting: legend matches the declared encoding table on every surface (POC-REQ-060/061) carries a skip link and keyboard-focusable native elements only for interactivity",
+          "cross-cutting: legend matches the declared encoding table on every surface (POC-REQ-060/061) respects reduced-motion preference identically across surfaces",
+          "cross-cutting: the three doctrine planes stay distinct from epistemic labels names each page plane once outside the legend and each home panel once",
+          "cross-cutting: the three doctrine planes stay distinct from epistemic labels detects a misspelled legend mapping and a swapped surface plane"
+        ]
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/cross-cutting.test.ts --reporter=json --outputFile=/tmp/syzygy-m9-mutation-slZwhD/mutant-6.json",
+        "exit": 1,
+        "total": 6,
+        "passed": 5,
+        "failed": 1,
+        "failing": [
+          "cross-cutting: the three doctrine planes stay distinct from epistemic labels names each page plane once outside the legend and each home panel once"
+        ],
+        "passing": [
+          "cross-cutting: no runtime fetch of external executable code (POC-REQ-021) sweeps every served page for a script reference to a foreign origin",
+          "cross-cutting: legend matches the declared encoding table on every surface (POC-REQ-060/061) every surface renders a legend entry for each declared epistemic encoding, and vice versa",
+          "cross-cutting: legend matches the declared encoding table on every surface (POC-REQ-060/061) carries a skip link and keyboard-focusable native elements only for interactivity",
+          "cross-cutting: legend matches the declared encoding table on every surface (POC-REQ-060/061) respects reduced-motion preference identically across surfaces",
+          "cross-cutting: the three doctrine planes stay distinct from epistemic labels detects a misspelled legend mapping and a swapped surface plane"
+        ]
+      },
+      "sourceSha256Before": "198d0f6f6f5a6e7070a6dd541b5ae71107465f3d654085dcb6add9427d2b9a4c",
+      "sourceSha256After": "198d0f6f6f5a6e7070a6dd541b5ae71107465f3d654085dcb6add9427d2b9a4c",
+      "restored": true,
+      "killed": true
+    }
+  ],
+  "summary": {
+    "planned": 7,
+    "killedAndRestored": 7
+  }
+}
