@@ -1,0 +1,40 @@
+{
+  "kind": "pwb-m11-restart-incomplete-identity-race-rule-6-evidence",
+  "testedCommit": "227899f09b95320314a4940da439b9aa0debba30",
+  "sourceSha256BeforeAndAfter": {
+    "apps/three-surface-poc/src/restart.ts": "a48e32d0eb080381b07f96e66758c7ea8132fa4d9322a3f8f1869f2743cabbe7",
+    "apps/three-surface-poc/src/restart.test.ts": "893ebbc855a7fb7e583c81f7420f07d5172dc863df479f16adbea1151af4c530"
+  },
+  "cause": "After SIGTERM, ss can report a closing listener while /proc/cmdline has already emptied. inspectPocPort then raises listener-identity-incomplete during the bounded close wait. That is unknown ownership, not verified socket absence or authority to spawn.",
+  "focusedBaseline": {
+    "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=30000 apps/three-surface-poc/src/restart.test.ts --reporter=verbose",
+    "result": "12 passed, 0 failed"
+  },
+  "mutation": {
+    "id": "post-sigterm-incomplete-identity-refused",
+    "file": "apps/three-surface-poc/src/restart.ts",
+    "old": "&& error.code !== 'listener-identity-incomplete')) throw error;",
+    "new": "&& error.code !== 'listener-identity-unreadable')) throw error;",
+    "syntaxValid": "npm run build:poc --silent passed with mutant present",
+    "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=30000 apps/three-surface-poc/src/restart.test.ts -t 'waits through one vanished post-SIGTERM identity' --reporter=verbose",
+    "predicate": "An incomplete identity only after SIGTERM is polled until socket absence or the original timeout; it never permits a successor while ownership remains unknown.",
+    "baselineExit": 0,
+    "mutantExit": 1,
+    "mutantResult": "1 test executed and failed with listener-identity-incomplete at injected post-signal inspection 4; 11 tests skipped",
+    "restored": true,
+    "outcome": "killed"
+  },
+  "focusedLoad": {
+    "command": "five waves of four concurrent Vitest processes, each selecting the real private-listener transient post-SIGTERM test with a 30-second per-test timeout",
+    "testedCommit": "227899f09b95320314a4940da439b9aa0debba30",
+    "suitesPassed": 20,
+    "suitesFailed": 0,
+    "testsExecutedPerSuite": 1
+  },
+  "safety": {
+    "privateEphemeralListenersOnly": true,
+    "disposableStateDirectoriesOnly": true,
+    "sigkillUsed": false,
+    "livePocOrPort7478Signaled": false
+  }
+}
