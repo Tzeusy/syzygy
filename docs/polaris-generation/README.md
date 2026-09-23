@@ -49,7 +49,7 @@ The agreed product direction is synthesized in the [formal understanding amendme
    layer to render Unknown on absent or withdrawn consent. This would permit
    only its named effects; it would not adopt prose, authorize a repository
    write, release Syzygy, or satisfy REQ-014's two-real-project and reader
-   proof. The current operator path calls no real model or provider.
+   proof.
 5. Freeze the evaluation questions below before generating. Review the actual
    page, including its middle, deep dives and source routes.
 
