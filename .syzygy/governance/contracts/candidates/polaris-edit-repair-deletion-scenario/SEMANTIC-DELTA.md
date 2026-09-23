@@ -12,7 +12,18 @@
 ## Owner warrant, quoted verbatim
 
 From `.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`
-(dated 2026-09-21), the P-73 row:
+(dated 2026-09-21), the P-73 row at
+line 61, copied byte for byte (one unwrapped table row, so it overruns the
+78-column wrap):
+
+```text
+| **P-73** (M6) | **A** — Q1 implementation; Q2 defer the support discriminant; Q3 fail closed; Q4 regenerate the example with a separated illustrative block; Q5 install line plus fresh-install battery assertion in `build:poc`; Q6 the generator implementation act covers slices 1, 2, 3, 5; slice 4 once its CC-REV-2 scenario for the edit-stage deletion is signed off. | Slices 1, 2, 3, 5 under `POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md`, implementation-plane files only; no schema, prompt or kit file inside a bound package is edited; no provider egress or new source read. **This record is the direction naming slice 4**: it proceeds only after that scenario is signed off (drafting may start at once and binds nothing). | Ready `.6.1`, `.6.2`; blocked `.6.3` on gate `.23`. |
+```
+
+*Superseded 2026-09-23, kept for the record:* this section first carried the
+row re-wrapped as a quotation with its outer `| … |` delimiters dropped while
+calling it verbatim (review finding 16, `R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-DELTA-REVIEW-RAW.md`). Every cell's
+text was identical; the delimiters were not. That rendering was:
 
 > **P-73** (M6) | **A** — Q1 implementation; Q2 defer the support
 > discriminant; Q3 fail closed; Q4 regenerate the example with a separated
