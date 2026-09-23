@@ -1,0 +1,30 @@
+{
+  "kind": "m9-slices-1-2-served-measurement",
+  "capturedAtUtc": "2026-09-23T04:41:35Z",
+  "baselineCommit": "86bbddc48f84f9d46afaf3a86144c2a1eb42e3b1",
+  "implementationCommit": "78d2aad4eef8b8023ae0e7fa6e2cd8459d6e1b24",
+  "registeredRepositoryRevision": "5802fcba23ea8fcd47741f5dbe9045aef6cbafbb",
+  "evaluationIdentity": "pwb-eval-b51a17a46d2e67dbf7212cd4",
+  "captureMethod": "Two private loopback daemons from independently clean, committed Syzygy worktrees ran concurrently against the same registered Butlers revision. The head and baseline daemons each printed the same full observed repository revision and evaluation identity; their surface versions differ by implementation commit. Each row is one curl --output /dev/null --write-out http_code/size_download response; tailnet adds Host and Origin tzeusy.parrot-hen.ts.net while keeping the backend path unprefixed, matching the deployed mount behavior. The final paired eight-route sweep ran in one local command after both listeners started. Both were stopped by SIGINT afterward. No machine credential value or response body was retained here.",
+  "declaredMaxHumanResponseBytes": 2097152,
+  "allResponsesHttp200": true,
+  "routes": [
+    { "form": "direct", "path": "/", "baselineBytes": 42608, "headBytes": 43460, "deltaBytes": 852, "headroomBytes": 2053692 },
+    { "form": "direct", "path": "/polaris", "baselineBytes": 1522656, "headBytes": 1525755, "deltaBytes": 3099, "headroomBytes": 571397 },
+    { "form": "direct", "path": "/trajectory", "baselineBytes": 263263, "headBytes": 264140, "deltaBytes": 877, "headroomBytes": 1833012 },
+    { "form": "direct", "path": "/orrery", "baselineBytes": 41434, "headBytes": 42997, "deltaBytes": 1563, "headroomBytes": 2054155 },
+    { "form": "tailnet", "path": "/", "baselineBytes": 42668, "headBytes": 43520, "deltaBytes": 852, "headroomBytes": 2053632 },
+    { "form": "tailnet", "path": "/polaris", "baselineBytes": 1528566, "headBytes": 1531830, "deltaBytes": 3264, "headroomBytes": 565322 },
+    { "form": "tailnet", "path": "/trajectory", "baselineBytes": 263338, "headBytes": 264230, "deltaBytes": 892, "headroomBytes": 1832922 },
+    { "form": "tailnet", "path": "/orrery", "baselineBytes": 41494, "headBytes": 43072, "deltaBytes": 1578, "headroomBytes": 2054080 }
+  ],
+  "fixtureRuntimeOracle": {
+    "method": "surface-routes.test.ts serves direct and Host-mounted pages from one fixture model, independently walks native anchors after Orrery JavaScript runs, then fetches every target and requires each fragment exactly once outside details",
+    "perFormLinkDenominator": 13,
+    "classes": { "work-count": 1, "code-count": 1, "reality-entity": 9, "governing-intent": 1, "mapped-capability": 1 },
+    "unmarkedOrDangling": 0,
+    "browserExecuted": true,
+    "sourceMutationEvidence": "polaris-m9-literal-mutations-2026-09-23.json"
+  },
+  "boundary": "The 13-link census is a synthetic served fixture with one mapped capability, not a claim that an arbitrary future project has exactly 13 links. The private-daemon table measures bytes and ceiling headroom for the registered Butlers evaluation, not a browser comprehension verdict or production deployment."
+}
