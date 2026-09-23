@@ -535,6 +535,20 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   `docs/reviews/*-RAW.md` are skipped since 2026-09-21 (reviewer `Anchor:`
   lines, uneditable under CC-REV-6), the same population
   `check_governance._is_raw_review` exempts; any other `-RAW.md` still counts.
+- **The `docs/README.md` partition count races between sessions.** A
+  rebase-merge never re-runs CI against the other branch's count, so two raws
+  landing minutes apart each pass at N+1 and leave main at N+1 with N+2 files
+  (2026-09-22, repaired by #89). Rebase onto the latest main, re-run
+  `check_docs_review_campaign_partition.py` immediately before merging, and
+  again on main after; treat the count sentence like the CG-26 triple — one
+  integration edit per batch of raws.
+- `gh pr checks --watch` exits at once when no checks are registered yet;
+  poll until `gh pr checks` lists rows, then watch, then merge with
+  `--match-head-commit`.
+- A README row quoting a raw's verdict copies it from the raw file (line
+  cited), never from the reviewing agent's summary message.
+- Candidate-package prose files are not manifest rows: a prose repair keeps
+  the act digest unchanged but still needs a review round.
 
 ### Known gaps
 
