@@ -6,6 +6,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { proveSelfCorpus, readSelfCorpus } from './self-corpus.js';
 
+// The same historical governed commit bound by the dated M7 evidence. Hosted
+// checkout must retain it; substituting HEAD would change the denominator.
 const PINNED_MAIN = '133106eb0f2564f1cefddd19d11985f1b2619397';
 const cleanups: string[] = [];
 afterEach(() => { for (const path of cleanups.splice(0)) rmSync(path, { recursive: true, force: true }); });
@@ -37,6 +39,10 @@ describe('zero-egress Syzygy self-corpus proof', () => {
     expect(report.realProjectProof).toBe(false);
     expect(report.unmetReq014).toContain('two separately admitted real projects');
   }, 30_000);
+
+  it('refuses a requested pinned commit that is unavailable rather than substituting HEAD', () => {
+    expect(() => readSelfCorpus(process.cwd(), '0'.repeat(40))).toThrow();
+  });
 
   it('does not read a local or untracked file even when it lies in the allowed-looking path', () => {
     const root = mkdtempSync(join(tmpdir(), 'syzygy-self-corpus-fixture-'));
