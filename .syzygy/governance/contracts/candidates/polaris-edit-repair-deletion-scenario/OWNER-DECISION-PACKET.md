@@ -108,11 +108,12 @@ SIGN OFF POLARIS EDIT/REPAIR DELETION-ACCOUNT SCENARIO: 3055106206db93b3fb89787f
 
 It is written here, following the sibling packages' convention, only so the
 governance checks (`check_governance.py`'s CG-7d/CG-7e) can see this exact
-digest go stale the moment the manifest changes. It is **not offered**: no
-review has confirmed these bytes yet, and no dedicated recorder script
-exists for this package. If you reply with this phrase now, nothing is
-performed — replying only after option (a) or (b) above and after this
-package has been through review is what starts the act.
+digest go stale the moment the manifest changes. It is **not offered**:
+independent review has confirmed the candidate manifest and proposed patches,
+but owner question 2 above remains unanswered. The selected arm must receive
+its own review, and a dedicated recorder must exist, before this phrase can
+be offered. Replying with it now performs nothing; no sign-off or patch
+application occurs here.
 
 ## What happens after a "yes"
 
