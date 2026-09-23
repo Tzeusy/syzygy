@@ -1,10 +1,20 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { runGenerationPipeline, type AttemptOutcome, type PipelinePorts, type PipelineRequest, type ProviderReply } from './pipeline.js';
+import { generationAnchorId, gitBlobObjectId, type GenerationSource } from './generation-source.js';
+
+const fixtureSource = (): GenerationSource => {
+  const body = 'Reduce recurring mental labor.';
+  const base = { repositoryId: 'synthetic:project-a', revision: 'a'.repeat(40), path: 'synthetic/purpose.md', objectId: gitBlobObjectId(body) };
+  const end = Buffer.byteLength(body);
+  return { ...base, sourceId: 'purpose', evaluationId: 'evaluation:fixture', classificationBasis: 'body', exclusion: { excluded: false }, body,
+    spans: [{ anchorId: generationAnchorId(base, 0, end), start: 0, end, text: body }] };
+};
 
 const request = (): PipelineRequest => ({
-  requestId: 'request-1', projectId: 'project-a', snapshotId: 'snapshot-1', providerRoute: 'synthetic', startedAt: Date.now(),
+  requestId: 'request-1', projectId: 'project-a', snapshotId: 'snapshot-1',
+  routes: { inventory: 'synthetic', plan: 'synthetic', author: 'synthetic', edit: 'synthetic', fidelity: 'synthetic', repair: 'synthetic' }, startedAt: Date.now(),
   budget: { maxCalls: 10, maxInputBytes: 200_000, maxOutputBytes: 20_000, maxUsageUnits: 100, maxElapsedMs: 10_000, maxRepairCycles: 1, accountingPolicy: 'synthetic-units-v1' },
-  sources: [{ sourceId: 'purpose', text: 'Reduce recurring mental labor.' }], readerQuestions: ['Why does this project exist?'], requestedAssets: [],
+  sources: [fixtureSource()], readerQuestions: ['Why does this project exist?'], requestedAssets: [],
 });
 
 function harness() {
@@ -44,12 +54,13 @@ describe('source to editorial draft pipeline', () => {
     expect(result.status).toBe('awaiting-rendered-review');
     expect(h.sends.map(x => x.stage)).toEqual(['inventory', 'plan', 'author', 'edit', 'fidelity']);
     const inventory = JSON.parse(h.sends[0]!.input);
-    expect(Object.keys(inventory.inputs).sort()).toEqual(['readerQuestions', 'requestedAssets', 'sources']);
+    expect(Object.keys(inventory.inputs).sort()).toEqual(['readerQuestions', 'requestedAssets', 'sourcePopulation', 'sources']);
     expect(inventory.responseSchemaVersion).toBe('test-record-v1');
     const fidelity = JSON.parse(h.sends[4]!.input).inputs;
-    expect(fidelity.sources).toEqual(request().sources);
+    expect(fidelity.sources).toEqual([]);
     expect(fidelity.inventory).toEqual({ stage: 'inventory' });
     expect(fidelity.draft).toEqual({ stage: 'edit' });
+    expect(fidelity).not.toHaveProperty('plan');
     expect(result.receipts).toHaveLength(5);
     expect(h.outcomes).toEqual(Array(5).fill('validated'));
   });

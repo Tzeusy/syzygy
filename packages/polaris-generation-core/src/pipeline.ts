@@ -1,4 +1,4 @@
-import type { AdmittedSource } from './admitted-input.js';
+import { quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
 import { digestCanonicalJson, encodeCanonicalJson, type CanonicalJsonLimits } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
 import { promptForStage, type GenerationStage } from './prompts.js';
@@ -18,14 +18,12 @@ export interface PipelineRequest {
   readonly requestId: string;
   readonly projectId: string;
   readonly snapshotId: string;
-  readonly providerRoute: string;
+  readonly routes: Readonly<Record<GenerationStage, string>>;
   readonly startedAt: number;
   readonly budget: GenerationBudget;
-  /** The admitted-input front door (./admitted-input.ts): only the `selected`
-   * projection of a caller's `SourcePopulation` ever reaches this field --
-   * excluded/unavailable/unresolved/deferred material is accounted there,
-   * never sent through the pipeline. See REQ-polaris-generation-030. */
-  readonly sources: readonly AdmittedSource[];
+  /** Complete counted population; only validated body spans may cross a
+   * provider stage boundary. Permission is still a trusted port decision. */
+  readonly sources: readonly GenerationSource[];
   readonly readerQuestions: unknown;
   /** Trusted operator request identities and requiredness, never model-supplied. */
   readonly requestedAssets: readonly RequestedAsset[];
@@ -124,6 +122,8 @@ export interface PipelinePorts {
 export interface StageReceipt {
   readonly stage: GenerationStage;
   readonly attemptId: string;
+  readonly providerRoute: string;
+  readonly model: string | null;
   readonly inputDigest: string;
   readonly outputDigest: string;
   readonly promptVersion: string;
@@ -168,14 +168,19 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
   const stop: (reason: StopReason) => never = (reason) => { throw new PipelineStop(reason); };
   try {
     const b = request.budget;
-    if (![request.requestId, request.projectId, request.snapshotId, request.providerRoute, b.accountingPolicy].every(x => typeof x === 'string' && x.length > 0)
+    if (![request.requestId, request.projectId, request.snapshotId, b.accountingPolicy].every(x => typeof x === 'string' && x.length > 0)
       || ![b.maxCalls, b.maxInputBytes, b.maxOutputBytes, b.maxUsageUnits, b.maxElapsedMs].every(x => Number.isSafeInteger(x) && x > 0)
       || !Number.isSafeInteger(b.maxRepairCycles) || b.maxRepairCycles < 0
       || !Number.isSafeInteger(request.startedAt) || request.startedAt > ports.now()
       || !Number.isSafeInteger(request.startedAt + b.maxElapsedMs)) stop('invalid-request');
+    if (Object.keys(request.routes ?? {}).sort().join(',') !== 'author,edit,fidelity,inventory,plan,repair'
+      || Object.values(request.routes).some(route => typeof route !== 'string' || route.length === 0)) stop('invalid-request');
+    try { validateGenerationSources(request.sources); } catch { stop('invalid-request'); }
     try { validateRequestedAssets(request.requestedAssets); } catch { stop('invalid-request'); }
     // Detach caller-owned mutable inputs before the first asynchronous boundary.
-    const frozen = JSON.parse(encodeCanonicalJson(request, dataLimits(b.maxInputBytes))) as PipelineRequest;
+    let frozen: PipelineRequest;
+    try { frozen = JSON.parse(encodeCanonicalJson(request, dataLimits(b.maxInputBytes))) as PipelineRequest; }
+    catch { stop('budget-exhausted'); }
     const budget = frozen.budget;
     const deadline = frozen.startedAt + budget.maxElapsedMs;
     const check = (): void => {
@@ -202,7 +207,24 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
     };
     check();
     if (!await bounded(() => ports.verifySources(frozen))) stop('source-refused');
-    const context: Record<string, unknown> = { sources: frozen.sources, readerQuestions: frozen.readerQuestions, requestedAssets: frozen.requestedAssets };
+    const admitted = quotableGenerationSources(frozen.sources);
+    if (admitted.length === 0 || admitted.length > 200) stop('source-refused');
+    const sourcePopulation = frozen.sources.map(source => ({ sourceId: source.sourceId, classificationBasis: source.classificationBasis,
+      excluded: source.exclusion.excluded, ...(source.exclusion.excluded ? { reason: source.exclusion.reason } : {}) }));
+    const context: Record<string, unknown> = { sources: admitted, readerQuestions: frozen.readerQuestions, requestedAssets: frozen.requestedAssets };
+    const citedSpans = (value: unknown): readonly { readonly sourceId: string; readonly anchorId: string; readonly text: string }[] => {
+      const referenced = new Set<string>();
+      const visit = (node: unknown): void => {
+        if (Array.isArray(node)) for (const item of node) visit(item);
+        else if (node !== null && typeof node === 'object') {
+          const record = node as Record<string, unknown>;
+          if (Array.isArray(record.sourceIds)) for (const id of record.sourceIds) if (typeof id === 'string') referenced.add(id);
+          for (const child of Object.values(record)) visit(child);
+        }
+      };
+      visit(value);
+      return frozen.sources.filter(source => referenced.has(source.sourceId)).flatMap(source => source.spans.map(span => ({ sourceId: source.sourceId, anchorId: span.anchorId, text: span.text })));
+    };
     const stage = async (name: GenerationStage, inputs: Readonly<Record<string, unknown>>): Promise<unknown> => {
       check();
       if (calls >= budget.maxCalls) stop('budget-exhausted');
@@ -214,7 +236,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
       if (inputBytes + size > budget.maxInputBytes || outputBytes >= budget.maxOutputBytes || usage >= budget.maxUsageUnits) stop('budget-exhausted');
       const input: AttemptInput = {
         requestId: frozen.requestId, projectId: frozen.projectId, snapshotId: frozen.snapshotId,
-        providerRoute: frozen.providerRoute, stage: name, ordinal: calls,
+        providerRoute: frozen.routes[name], stage: name, ordinal: calls,
         inputDigest: digestCanonicalJson(envelope, dataLimits(budget.maxInputBytes)).digest,
         inputBytes: size, deadline, budget,
       };
@@ -308,21 +330,21 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
         stop('invalid-output');
       }
       await bounded(() => ports.record(permit, { kind: 'validated', outputDigest: digest, model: reply.model, usageUnits: actualUsage }), true);
-      receipts.push({ stage: name, attemptId: permit.attemptId, inputDigest: input.inputDigest, outputDigest: digest, promptVersion: prompt.version });
+      receipts.push({ stage: name, attemptId: permit.attemptId, providerRoute: input.providerRoute, model: reply.model, inputDigest: input.inputDigest, outputDigest: digest, promptVersion: prompt.version });
       artifacts.push({ stage: name, value: validated });
       check();
       return validated;
     };
-    context.inventory = await stage('inventory', { sources: context.sources, readerQuestions: context.readerQuestions, requestedAssets: context.requestedAssets });
-    context.plan = await stage('plan', context);
-    context.draft = await stage('author', context);
-    context.draft = await stage('edit', context);
-    let review = await stage('fidelity', context);
+    context.inventory = await stage('inventory', { sources: context.sources, sourcePopulation, readerQuestions: context.readerQuestions, requestedAssets: context.requestedAssets });
+    context.plan = await stage('plan', { sources: sourcePopulation, readerQuestions: context.readerQuestions, inventory: context.inventory, requestedAssets: context.requestedAssets });
+    context.draft = await stage('author', { sources: citedSpans(context.plan), readerQuestions: context.readerQuestions, inventory: context.inventory, plan: context.plan, requestedAssets: context.requestedAssets });
+    context.draft = await stage('edit', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, plan: context.plan, draft: context.draft, requestedAssets: context.requestedAssets });
+    let review = await stage('fidelity', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, draft: context.draft, requestedAssets: context.requestedAssets });
     let verdict = ports.fidelity(review);
     for (let repairs = 0; verdict.blocking; repairs++) {
       if (repairs >= budget.maxRepairCycles) stop('repair-exhausted');
-      context.draft = await stage('repair', { ...context, findings: verdict.findings });
-      review = await stage('fidelity', context);
+      context.draft = await stage('repair', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, draft: context.draft, findings: verdict.findings, requestedAssets: context.requestedAssets });
+      review = await stage('fidelity', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, draft: context.draft, requestedAssets: context.requestedAssets });
       verdict = ports.fidelity(review);
     }
     check();

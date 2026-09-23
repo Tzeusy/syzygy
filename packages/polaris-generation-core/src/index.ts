@@ -8,6 +8,7 @@ export {
 } from './canonical-json.js';
 
 export { parseBoundedJson, BoundedJsonError } from './parse-json.js';
+export { generationSourceIdentity, generationAnchorId, gitBlobObjectId, validateGenerationSources, quotableGenerationSources, GenerationSourceError, type GenerationSource, type GenerationSourceFailure } from './generation-source.js';
 export {
   admitSourcePopulation,
   admittedSources,

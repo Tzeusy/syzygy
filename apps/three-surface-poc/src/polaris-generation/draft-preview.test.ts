@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { ProviderDraft } from '@syzygy/polaris-generation-core';
 import { renderDraftPreview } from './draft-preview.js';
+import { syntheticGenerationSource } from './synthetic-source.js';
 
 function fixture(): ProviderDraft {
   return {
@@ -13,9 +14,41 @@ function fixture(): ProviderDraft {
     unresolved: [],
   };
 }
-const sources = [{ sourceId: 'purpose', text: 'Reduce recurring mental work.' }, { sourceId: 'architecture', text: 'Planner schedules events in the calendar.' }];
+const revision = 'a'.repeat(40);
+const sources = [syntheticGenerationSource('preview', revision, 'purpose', 'Reduce recurring mental work.'),
+  syntheticGenerationSource('preview', revision, 'architecture', 'Planner schedules events in the calendar.')];
 
 describe('intermediate draft preview', () => {
+  it('binds citation hrefs to source anchors, independent of list position', () => {
+    const hrefs = (html: string): string[] => [...html.matchAll(/class="sources">([^<]*<a[^>]*>[^<]*<\/a>[^<]*)<\/span>/g)]
+      .flatMap(match => [...match[1]!.matchAll(/href="([^"]+)"/g)].map(link => link[1]!));
+    const before = hrefs(renderDraftPreview(fixture(), sources));
+    const shuffled = hrefs(renderDraftPreview(fixture(), [...sources].reverse()));
+    expect(before).toEqual(shuffled);
+    expect(before.length).toBeGreaterThan(3);
+    expect(before.every(href => href.startsWith('#source-') && !/#source-\d+$/.test(href))).toBe(true);
+    const changed = syntheticGenerationSource('preview', revision, 'purpose', 'Reduce recurring mental work, with a new qualification.');
+    const after = hrefs(renderDraftPreview(fixture(), [changed, sources[1]!]));
+    expect(after[0]).not.toBe(before[0]);
+    expect(after.slice(1)).toEqual(before.slice(1));
+  });
+
+  it('counts path-only sources without giving them a citation or fabricated text', () => {
+    const pathOnly = { ...sources[0]!, sourceId: 'unread', path: 'synthetic/unread.md', classificationBasis: 'path-only' as const, body: undefined, spans: [] };
+    const html = renderDraftPreview(fixture(), [...sources, pathOnly]);
+    expect(html).toContain('synthetic/unread.md');
+    expect(html).toContain('path-only; body not read');
+    const forged = fixture();
+    forged.introduction.sourceIds = ['unread'];
+    expect(() => renderDraftPreview(forged, [...sources, pathOnly])).toThrow('unquotable-source');
+    expect(() => renderDraftPreview(fixture(), [{ ...pathOnly, spans: sources[0]!.spans }])).toThrow('unquotable-source');
+  });
+
+  it('refuses a source whose anchor is not bound to its object and offsets', () => {
+    expect(() => renderDraftPreview(fixture(), [{ ...sources[0]!, spans: [{ ...sources[0]!.spans[0]!, anchorId: 'source-0' }] }, sources[1]!]))
+      .toThrow('invalid-anchor');
+  });
+
   it('renders navigation, actual directed SVG, textual relationships, optional deep dives and exact sources', () => {
     const html = renderDraftPreview(fixture(), sources);
     expect(html).toContain('Pipeline draft preview — not reviewed or adopted');
@@ -56,7 +89,7 @@ describe('intermediate draft preview', () => {
     d.diagrams[0]!.edges[0]!.label = hostile;
     d.deepDives[0]!.title = hostile;
     d.deepDives[0]!.paragraphs[0]!.text = hostile;
-    const html = renderDraftPreview(d, sources.map(s => ({ ...s, text: hostile })));
+    const html = renderDraftPreview(d, sources.map(s => syntheticGenerationSource('preview', revision, s.sourceId, hostile)));
     expect(html).toContain('&lt;script src=&quot;https://evil.test/a&quot;&gt;');
     expect(html).not.toMatch(/<(?:script|img|iframe|link|object|embed)\b/i);
     expect(html).not.toMatch(/\shref="(?!#)|\ssrc="/i);
