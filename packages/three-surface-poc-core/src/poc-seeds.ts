@@ -266,6 +266,7 @@ export const BUTLERS_POC_SEEDS: PocSeedInput = deepFreeze({
   surfaces: [
     {
       id: 'polaris',
+      state: 'desired',
       title: 'Polaris',
       question: 'What is this capability supposed to be?',
       entityIds: [
@@ -282,6 +283,7 @@ export const BUTLERS_POC_SEEDS: PocSeedInput = deepFreeze({
     },
     {
       id: 'trajectory',
+      state: 'execution',
       title: 'Trajectory',
       question: 'What work and verification exist?',
       entityIds: [
@@ -298,6 +300,7 @@ export const BUTLERS_POC_SEEDS: PocSeedInput = deepFreeze({
     },
     {
       id: 'orrery',
+      state: 'observed',
       title: 'Orrery',
       question: 'Where do intent, work, code, tests, and Unknown regions live?',
       entityIds: [
