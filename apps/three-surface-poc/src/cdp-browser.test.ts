@@ -7,12 +7,13 @@ describe('disposable browser shutdown', () => {
     const events: string[] = [];
     let onExit: (() => void) | undefined;
     let signalCode: NodeJS.Signals | null = null;
+    let requestedTimeout: number | undefined;
     const connection = {
       close: () => { events.push('socket-closed'); },
       send: (_method: string, _params?: unknown, _sessionId?: string, timeoutMs?: number) => {
         events.push('protocol-close-requested');
-        expect(timeoutMs).toBe(5);
-        return new Promise<never>((_resolve, reject) => setTimeout(() => reject(new Error('no acknowledgement')), timeoutMs));
+        requestedTimeout = timeoutMs;
+        return new Promise<never>((_resolve, reject) => setTimeout(() => reject(new Error('no acknowledgement')), timeoutMs ?? 0));
       },
     };
     const child: Parameters<typeof closeDisposableBrowser>[1] = {
@@ -28,6 +29,7 @@ describe('disposable browser shutdown', () => {
     await closeDisposableBrowser(connection, child, '/tmp/private-browser-profile', {
       removeProfile: () => { events.push('profile-removed'); }, closeGraceMs: 5, profileProcesses: () => [],
     });
+    expect(requestedTimeout).toBe(5);
     expect(events).toEqual(['protocol-close-requested', 'socket-closed', 'SIGKILL', 'profile-removed']);
   });
 
