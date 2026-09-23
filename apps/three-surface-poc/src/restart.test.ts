@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:net';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, readlinkSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { afterAll, afterEach, describe, expect, it } from 'vitest';
@@ -11,6 +11,33 @@ const fixture = resolve('apps/three-surface-poc/src/test-fixtures/restart-listen
 const roots: string[] = [];
 const pids: number[] = [];
 const cleanupObservations: number[][] = [];
+const ownerUid = process.getuid?.();
+
+interface ProcessIdentity {
+  readonly pid: number;
+  readonly uid: number;
+  readonly started: string | undefined;
+  readonly argv: readonly string[] | undefined;
+  readonly cwd: string | undefined;
+}
+
+interface ProcessReaders {
+  readonly stat: (path: string) => { readonly uid: number };
+  readonly readFile: (path: string) => string;
+  readonly readlink: (path: string) => string;
+}
+
+const defaultProcessReaders: ProcessReaders = {
+  stat: path => statSync(path),
+  readFile: path => readFileSync(path, 'utf8'),
+  readlink: path => readlinkSync(path),
+};
+
+class PrivateFixtureCleanupRefusal extends Error {
+  constructor(readonly code: 'private-process-identity-unreadable' | 'private-process-identity-changed', message: string) {
+    super(message);
+  }
+}
 
 function scratch(): string {
   const root = mkdtempSync(join(tmpdir(), 'syzygy-private-restart-'));
@@ -65,25 +92,93 @@ async function startedFixture(mode: 'normal' | 'slow' | 'held' = 'normal'): Prom
   return { root, repo, stateDir, port, pid: child.pid };
 }
 
-function exactPrivateFixturePids(): number[] {
-  const matches: number[] = [];
-  for (const entry of readdirSync('/proc')) {
+function readProcessIdentity(pid: number, readers: ProcessReaders = defaultProcessReaders): ProcessIdentity | undefined {
+  const proc = `/proc/${pid}`;
+  let stat: { readonly uid: number };
+  try {
+    stat = readers.stat(proc);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined;
+    throw new PrivateFixtureCleanupRefusal('private-process-identity-unreadable', `cannot stat ${proc}`);
+  }
+  if (ownerUid === undefined || stat.uid !== ownerUid) return { pid, uid: stat.uid, started: undefined, argv: undefined, cwd: undefined };
+  try {
+    const statText = readers.readFile(`${proc}/stat`);
+    const fields = statText.slice(statText.lastIndexOf(')') + 2).trim().split(/\s+/);
+    const started = fields[19];
+    if (started === undefined) throw new Error('process identity incomplete');
+    if (fields[0] === 'Z') return undefined;
+    const argv = readers.readFile(`${proc}/cmdline`).split('\0').filter(Boolean);
+    if (argv.length === 0) throw new Error('process identity incomplete');
+    if (argv[1] !== fixture) return { pid, uid: stat.uid, started, argv, cwd: undefined };
+    const cwd = readers.readlink(`${proc}/cwd`);
+    if (cwd === undefined) throw new Error('process identity incomplete');
+    return { pid, uid: stat.uid, started, argv, cwd };
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined;
+    if (error instanceof PrivateFixtureCleanupRefusal) throw error;
+    throw new PrivateFixtureCleanupRefusal('private-process-identity-unreadable', `cannot read identity for ${proc}`);
+  }
+}
+
+function exactPrivateFixtureProcesses(
+  entries: readonly string[] = readdirSync('/proc'),
+  readIdentity: (pid: number) => ProcessIdentity | undefined = readProcessIdentity,
+): ProcessIdentity[] {
+  if (ownerUid === undefined) throw new PrivateFixtureCleanupRefusal('private-process-identity-unreadable', 'process UID is unavailable');
+  const matches: ProcessIdentity[] = [];
+  for (const entry of entries) {
     if (!/^\d+$/.test(entry)) continue;
-    try {
-      const argv = readFileSync(`/proc/${entry}/cmdline`, 'utf8').split('\0').filter(Boolean);
-      if (argv[1] !== fixture) continue;
-      const repoIndex = argv.indexOf('--repo');
-      const stateIndex = argv.indexOf('--state-dir');
-      const repo = repoIndex >= 0 ? argv[repoIndex + 1] : undefined;
-      const stateDir = stateIndex >= 0 ? argv[stateIndex + 1] : undefined;
-      if (repo === undefined || stateDir === undefined) continue;
-      if (roots.some(root => repo === join(root, 'repo') && stateDir === join(root, 'state'))) matches.push(Number(entry));
-    } catch {
-      // A process can disappear while /proc is being enumerated. Unknown
-      // rows are never signaled; only an exact argv/repo/state match is safe.
-    }
+    const identity = readIdentity(Number(entry));
+    if (identity === undefined || identity.uid !== ownerUid || identity.argv === undefined || identity.cwd === undefined || identity.started === undefined) continue;
+    if (identity.argv[1] !== fixture || identity.cwd !== process.cwd()) continue;
+    const repoIndex = identity.argv.indexOf('--repo');
+    const stateIndex = identity.argv.indexOf('--state-dir');
+    const repo = repoIndex >= 0 ? identity.argv[repoIndex + 1] : undefined;
+    const stateDir = stateIndex >= 0 ? identity.argv[stateIndex + 1] : undefined;
+    if (repo === undefined || stateDir === undefined) continue;
+    if (roots.some(root => repo === join(root, 'repo') && stateDir === join(root, 'state'))) matches.push(identity);
   }
   return matches;
+}
+
+function sameProcessIdentity(first: ProcessIdentity, second: ProcessIdentity): boolean {
+  return first.pid === second.pid
+    && first.uid === second.uid
+    && first.started === second.started
+    && first.cwd === second.cwd
+    && JSON.stringify(first.argv) === JSON.stringify(second.argv);
+}
+
+async function drainPrivateFixtureProcesses(options: {
+  readonly scan?: () => ProcessIdentity[];
+  readonly readIdentity?: (pid: number) => ProcessIdentity | undefined;
+  readonly signal?: (pid: number, signal: NodeJS.Signals) => void;
+  readonly sleep?: () => Promise<void>;
+  readonly timeoutMs?: number;
+} = {}): Promise<void> {
+  const scan = options.scan ?? (() => exactPrivateFixtureProcesses());
+  const readIdentity = options.readIdentity ?? readProcessIdentity;
+  const signal = options.signal ?? ((pid, value) => process.kill(pid, value));
+  const sleep = options.sleep ?? (() => new Promise(resolveWait => setTimeout(resolveWait, 25)));
+  const deadline = Date.now() + (options.timeoutMs ?? 5000);
+  while (true) {
+    const remaining = scan();
+    if (remaining.length === 0) return;
+    for (const candidate of remaining) {
+      const current = readIdentity(candidate.pid);
+      if (current === undefined) continue;
+      if (!sameProcessIdentity(candidate, current)) {
+        throw new PrivateFixtureCleanupRefusal('private-process-identity-changed', `PID ${candidate.pid} changed generation before signal`);
+      }
+      try { signal(candidate.pid, 'SIGTERM'); }
+      catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== 'ESRCH') throw error;
+      }
+    }
+    if (Date.now() >= deadline) throw new Error(`private fixture processes did not drain: ${remaining.map(({ pid }) => pid).join(',')}`);
+    await sleep();
+  }
 }
 
 afterEach(async () => {
@@ -92,26 +187,15 @@ afterEach(async () => {
     const release = join(repo, 'release-stop');
     if (existsSync(join(repo, 'hold-stop')) && !existsSync(release)) writeFileSync(release, 'release');
   }
-  const deadline = Date.now() + 5000;
-  let remaining: number[] = [];
-  while (true) {
-    remaining = exactPrivateFixturePids();
-    if (remaining.length === 0) break;
-    for (const pid of remaining) {
-      try { process.kill(pid, 'SIGTERM'); }
-      catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ESRCH') throw error; }
-    }
-    if (Date.now() >= deadline) throw new Error(`private fixture processes did not drain: ${remaining.join(',')}`);
-    await new Promise(resolveWait => setTimeout(resolveWait, 25));
-  }
-  cleanupObservations.push(remaining);
+  await drainPrivateFixtureProcesses();
+  cleanupObservations.push([]);
   pids.splice(0);
   for (const root of roots) rmSync(root, { recursive: true, force: true });
 });
 
 afterAll(() => {
   expect(cleanupObservations.every((remaining) => remaining.length === 0)).toBe(true);
-  expect(exactPrivateFixturePids()).toEqual([]);
+  expect(exactPrivateFixtureProcesses()).toEqual([]);
 });
 
 describe('one-listener POC restart on private fixture sockets', () => {
@@ -222,6 +306,47 @@ describe('one-listener POC restart on private fixture sockets', () => {
     expect(() => listenerPidFromSs(row.replace('pid=123', 'fd=123'), port)).toThrow('listener-owner-ambiguous');
   });
 
+  it('refuses unreadable same-UID process identity and retains the scratch root', () => {
+    const uid = ownerUid;
+    if (uid === undefined) throw new Error('process UID is unavailable');
+    const root = scratch();
+    const unreadable = Object.assign(new Error('permission denied'), { code: 'EACCES' });
+    let refusal: unknown;
+    try {
+      readProcessIdentity(4242, {
+        stat: () => ({ uid }),
+        readFile: () => { throw unreadable; },
+        readlink: () => process.cwd(),
+      });
+    } catch (error) {
+      refusal = error;
+    }
+    expect(refusal).toMatchObject({ code: 'private-process-identity-unreadable' });
+    expect(existsSync(root)).toBe(true);
+  });
+
+  it('refuses PID reuse before signaling a changed process generation', async () => {
+    const uid = ownerUid;
+    if (uid === undefined) throw new Error('process UID is unavailable');
+    const original: ProcessIdentity = {
+      pid: 4242,
+      uid,
+      started: 'generation-one',
+      argv: [process.execPath, fixture, '--repo', '/tmp/private-repo', '--state-dir', '/tmp/private-state', '--port', '4242'],
+      cwd: process.cwd(),
+    };
+    const reused: ProcessIdentity = { ...original, started: 'generation-two' };
+    let signals = 0;
+    await expect(drainPrivateFixtureProcesses({
+      scan: () => [original],
+      readIdentity: () => reused,
+      signal: () => { signals += 1; },
+      sleep: async () => {},
+      timeoutMs: 100,
+    })).rejects.toMatchObject({ code: 'private-process-identity-changed' });
+    expect(signals).toBe(0);
+  });
+
   it('refuses a listener generation changed between inspection and SIGTERM', async () => {
     const f = await startedFixture();
     const argv = [process.execPath, fixture, '--repo', f.repo, '--state-dir', f.stateDir, '--port', String(f.port)];
@@ -254,7 +379,7 @@ describe('one-listener POC restart on private fixture sockets', () => {
       },
     })).rejects.toMatchObject({ code: 'successor-identity-mismatch' });
     expect(successorPid).toBeDefined();
-    expect(exactPrivateFixturePids()).toContain(successorPid);
+    expect(exactPrivateFixtureProcesses().map(({ pid }) => pid)).toContain(successorPid);
   });
 
   it('reports a failed successor and lets a concurrent loser fail before signaling', async () => {
