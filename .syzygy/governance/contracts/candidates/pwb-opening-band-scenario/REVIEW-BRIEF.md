@@ -7,7 +7,7 @@
 > a review and carries no verdict. Only a dedicated owner act naming this
 > package's manifest digest could give the proposed bytes effect.
 
-**Seven reviews have been run against this brief.** Round 1 returned
+**Eight reviews have been run against this brief.** Round 1 returned
 CONFIRM WITH EXCEPTIONS on the commit its raw output names — three notes,
 no blocking finding; the raw is
 `docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md`. Round 2, over the
@@ -28,7 +28,10 @@ revise finding and four notes; the raw is
 `docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-5-RAW.md`.
 Round 7, over the repaired bytes at `d3d5d9d`, returned REVISE — one
 revise finding and three notes; the raw is
-`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-6-RAW.md`. A
+`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-6-RAW.md`.
+Round 8, over the repaired bytes at `28086f6`, returned CONFIRM WITH
+EXCEPTIONS — no revise finding and six notes; the raw is
+`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-7-RAW.md`. A
 parallel independent round over the round-2 bytes returned CONFIRM WITH
 EXCEPTIONS
 (`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-B-RAW.md`).
