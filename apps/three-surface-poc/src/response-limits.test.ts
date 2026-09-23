@@ -217,8 +217,25 @@ describe('pocRoutes — every human HTML sink is bounded by maxHumanResponseByte
 });
 
 describe('pocRoutes — the machine JSON sink is bounded by maxMachineResponseBytes', () => {
+  it('does not turn a matching validator into a 304 when the complete body breaches its ceiling', () => {
+    const full = route(POC_MACHINE_PATH).handle(context(POC_MACHINE_PATH));
+    expect(full.status).toBe(200);
+    const etag = full.revalidation?.etag;
+    expect(etag).toMatch(/^W\/"sha256:[0-9a-f]{64}"$/);
+    const size = bytes(full.body);
+    const recorder = new ServedResponseRecorder();
+    const candidate = pocRoutes(() => model, { ...PWB_RESOURCE_LIMITS, maxMachineResponseBytes: size - 1 }, undefined, recorder)
+      .find((entry) => entry.path === POC_MACHINE_PATH);
+    if (candidate === undefined) throw new Error('machine route missing');
+    const result = candidate.handle(context(POC_MACHINE_PATH, { 'if-none-match': etag as string }));
+    if (result instanceof Promise) throw new Error('POC route unexpectedly async');
+    expect(result.status).toBe(503);
+    expect(result.revalidation).toBeUndefined();
+    expect(failureOf(result.body)).toMatchObject({ failure: 'response-limit-breached', observed: size, declared: size - 1, readiness: false });
+    expect(recorder.snapshot(model.evaluation).count).toBe(1);
+  });
   it.each([POC_MACHINE_PATH, `${TAILNET_MOUNT_PREFIX}${POC_MACHINE_PATH}`])('%s: limit − 1 fails closed, limit and limit + 1 serve the model', (path) => {
-    const body = JSON.stringify(model);
+    const body = route(path).handle(context(path, {})).body;
     const size = bytes(body);
     const at = (declared: number) => route(path, { ...PWB_RESOURCE_LIMITS, maxMachineResponseBytes: declared }).handle(context(path, {}));
     const under = at(size - 1);
@@ -226,7 +243,7 @@ describe('pocRoutes — the machine JSON sink is bounded by maxMachineResponseBy
     expect(bytes(under.body)).toBeLessThan(size);
     expect(failureOf(under.body)).toMatchObject({ served: 'nothing', limit: 'maxMachineResponseBytes', declared: size - 1, observed: size, evaluation: model.evaluation, readiness: false });
     expect(under.body).not.toContain('"surfaces"');
-    expect(at(size)).toEqual({ status: 200, contentType: 'application/json', body });
+    expect(at(size)).toMatchObject({ status: 200, contentType: 'application/json', body });
     expect(at(size + 1).status).toBe(200);
   });
 

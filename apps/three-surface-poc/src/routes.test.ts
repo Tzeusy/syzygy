@@ -1,13 +1,15 @@
 import { createHash } from 'node:crypto';
 import { lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { request as httpRequest } from 'node:http';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
+import { createDaemon, type Route, type RunningDaemon } from '@syzygy/cap1-daemon';
 import { BUTLERS_POC_SEEDS, buildPocModel, buildResponseIdentity, type PocModel } from '@syzygy/three-surface-poc-core';
 
-import { POC_MACHINE_PATH, pocRoutes, renderPocPage } from './routes.js';
+import { POC_MACHINE_PATH, POLARIS_PRESENTATION_PATH, pocRoutes, renderPocPage } from './routes.js';
+import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { ADMITTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 
@@ -262,6 +264,141 @@ async function startPoc(model: PocModel): Promise<{
 }
 
 describe('three-surface POC routes', () => {
+  it('projects all 15 registered route tuples into both machine answers, with one request-form self', async () => {
+    const model = modelFixture();
+    const { daemon, token } = await startPoc(model);
+    const base = `http://${daemon.host}:${daemon.port}`;
+    const routes = pocRoutes(() => model);
+    const expected = routes.map(({ path, method, credentialClass }) => JSON.stringify([path, method, credentialClass])).sort();
+    expect(expected).toHaveLength(15);
+    const forms = [
+      { path: POC_MACHINE_PATH, host: undefined, self: POC_MACHINE_PATH },
+      { path: POC_MACHINE_PATH, host: 'tzeusy.parrot-hen.ts.net', self: `${TAILNET_MOUNT_PREFIX}${POC_MACHINE_PATH}` },
+      { path: `${TAILNET_MOUNT_PREFIX}${POC_MACHINE_PATH}`, host: undefined, self: `${TAILNET_MOUNT_PREFIX}${POC_MACHINE_PATH}` },
+      { path: POLARIS_PRESENTATION_PATH, host: undefined, self: POLARIS_PRESENTATION_PATH },
+      { path: POLARIS_PRESENTATION_PATH, host: 'tzeusy.parrot-hen.ts.net', self: `${TAILNET_MOUNT_PREFIX}${POLARIS_PRESENTATION_PATH}` },
+    ];
+    const truthKeys: string[] = [];
+    for (const form of forms) {
+      const served = form.host === undefined
+        ? await fetch(`${base}${form.path}`, { headers: { authorization: `Bearer ${token}` } }).then(async (response) => ({ status: response.status, body: await response.text() }))
+        : await new Promise<{ status: number; body: string }>((resolve, reject) => {
+          const request = httpRequest(`${base}${form.path}`, { headers: { authorization: `Bearer ${token}`, host: form.host } }, (response) => {
+            const chunks: Buffer[] = [];
+            response.on('data', (chunk: Buffer) => chunks.push(chunk));
+            response.on('end', () => resolve({ status: response.statusCode ?? 0, body: Buffer.concat(chunks).toString('utf8') }));
+          });
+          request.on('error', reject);
+          request.end();
+        });
+      expect(served.status).toBe(200);
+      const body = JSON.parse(served.body) as { links: NonNullable<PocModel['links']> };
+      expect(body.links.map(({ path, method, credentialClass }) => JSON.stringify([path, method, credentialClass])).sort()).toEqual(expected);
+      expect(body.links.filter((link) => link.self).map((link) => link.path), `${form.path} Host=${form.host ?? 'direct'}`).toEqual([form.self]);
+      if (form.path.endsWith(POC_MACHINE_PATH)) truthKeys.push((JSON.parse(served.body) as PocModel).responseIdentity.contentKey);
+    }
+    expect(truthKeys).toHaveLength(3);
+    expect(truthKeys[0]).not.toBe(truthKeys[1]);
+    expect(truthKeys[1]).toBe(truthKeys[2]);
+  });
+
+  it('derives links and response identity from the live registered array, including an injected route and order', async () => {
+    const model = modelFixture();
+    const routes = pocRoutes(() => model) as Route[];
+    routes.reverse();
+    routes.push({ method: 'GET', path: '/injected', credentialClass: 'human-open', handle: () => ({ status: 200, contentType: 'text/plain', body: 'injected' }) });
+    const stateDir = join(tempDir('syzygy-poc-route-injected-'), 'state');
+    const start = await createDaemon({ stateDir, routes, port: 0 });
+    if (!start.started) throw new Error(start.failure.kind);
+    running.push(start.daemon);
+    const token = readFileSync(start.daemon.credentialPath, 'utf8').trim();
+    const response = await fetch(`http://${start.daemon.host}:${start.daemon.port}${POC_MACHINE_PATH}`, { headers: { authorization: `Bearer ${token}` } });
+    expect(response.status).toBe(200);
+    const served = JSON.parse(await response.text()) as PocModel & { links: NonNullable<PocModel['links']> };
+    expect(served.links).toHaveLength(16);
+    expect(served.links.map(({ path }) => path)).toEqual(routes.map(({ path }) => path));
+    expect(served.links.at(-1)).toEqual({ path: '/injected', method: 'GET', credentialClass: 'human-open', self: false });
+    expect(served.links.filter(({ self }) => self)).toHaveLength(1);
+    expect(served.responseIdentity.contentKey).not.toBe(model.responseIdentity.contentKey);
+    expect(independentResponseKey(JSON.parse(JSON.stringify(served)) as Record<string, unknown>)).toBe(served.responseIdentity.contentKey);
+  });
+
+  it('revalidates only the complete bounded /api/poc representation, after credential admission', async () => {
+    const initial = modelFixture();
+    let current: PocModel = initial;
+    let handled = 0;
+    const stateDir = join(tempDir('syzygy-poc-conditional-state-'), 'state');
+    const start = await createDaemon({ stateDir, routes: pocRoutes(() => { handled += 1; return current; }), port: 0 });
+    if (!start.started) throw new Error(start.failure.kind);
+    running.push(start.daemon);
+    const token = readFileSync(start.daemon.credentialPath, 'utf8').trim();
+    const base = `http://${start.daemon.host}:${start.daemon.port}`;
+    const url = `${base}${POC_MACHINE_PATH}`;
+    const auth = { authorization: `Bearer ${token}` };
+    const first = await fetch(url, { headers: auth });
+    const firstBody = await first.text();
+    const etag = first.headers.get('etag');
+    expect(first.status).toBe(200);
+    expect(etag).toBe(`W/"${(JSON.parse(firstBody) as PocModel).responseIdentity.contentKey}"`);
+    expect(first.headers.get('cache-control')).toBe('private, no-cache');
+    const beforeRefusal = handled;
+    for (const authorization of [undefined, 'Bearer wrong']) {
+      const refused = await fetch(url, { headers: { 'if-none-match': etag as string, ...(authorization === undefined ? {} : { authorization }) } });
+      expect(refused.status).toBe(401);
+      expect(refused.headers.get('etag')).toBeNull();
+    }
+    expect(handled).toBe(beforeRefusal);
+    const stderr = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+    try {
+      for (const condition of [etag as string, `"other", "${(JSON.parse(firstBody) as PocModel).responseIdentity.contentKey}"`, '*']) {
+        const cached = await fetch(url, { headers: { ...auth, 'if-none-match': condition } });
+        expect(cached.status).toBe(304);
+        expect(await cached.text()).toBe('');
+        expect(cached.headers.get('etag')).toBe(etag);
+        expect(cached.headers.get('cache-control')).toBe('private, no-cache');
+      }
+      expect(stderr).not.toHaveBeenCalled();
+    } finally { stderr.mockRestore(); }
+    for (const condition of ['invalid', 'W/"unterminated', '"other"', '*, "other"']) {
+      const response = await fetch(url, { headers: { ...auth, 'if-none-match': condition } });
+      expect(response.status).toBe(200);
+      expect(await response.text()).toBe(firstBody);
+    }
+    const presentation = await fetch(`${base}${POLARIS_PRESENTATION_PATH}`, { headers: { ...auth, 'if-none-match': etag as string } });
+    expect(presentation.status).toBe(200);
+    expect(presentation.headers.get('etag')).toBeNull();
+    current = { ...initial, evaluation: { ...initial.evaluation, asOf: '2026-08-29T12:01:00Z' } };
+    const recaptured = await fetch(url, { headers: { ...auth, 'if-none-match': etag as string } });
+    expect(recaptured.status).toBe(304);
+    expect(await recaptured.text()).toBe('');
+    expect((JSON.parse(firstBody) as PocModel).evaluation.asOf).toBe(initial.evaluation.asOf);
+    current = { ...initial, project: { ...initial.project, name: `${initial.project.name} changed` } };
+    const changed = await fetch(url, { headers: { ...auth, 'if-none-match': etag as string } });
+    expect(changed.status).toBe(200);
+    expect(changed.headers.get('etag')).not.toBe(etag);
+  });
+
+  it('refuses a stale validator after a project-shape fact changes while inputsDigest stays fixed', async () => {
+    const baseline = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
+    if (baseline.projectShape.kind !== 'observed') throw new Error('fixture must observe shape');
+    const firstFact = baseline.projectShape.facts[0];
+    if (firstFact === undefined) throw new Error('fixture must carry a fact');
+    let current: PocModel = baseline;
+    const stateDir = join(tempDir('syzygy-poc-fact-conditional-'), 'state');
+    const started = await createDaemon({ stateDir, routes: pocRoutes(() => current), port: 0 });
+    if (!started.started) throw new Error(started.failure.kind);
+    running.push(started.daemon);
+    const token = readFileSync(started.daemon.credentialPath, 'utf8').trim();
+    const url = `http://${started.daemon.host}:${started.daemon.port}${POC_MACHINE_PATH}`;
+    const first = await fetch(url, { headers: { authorization: `Bearer ${token}` } });
+    expect(first.status).toBe(200);
+    const etag = first.headers.get('etag') as string;
+    current = { ...baseline, projectShape: { ...baseline.projectShape, facts: [{ ...firstFact, fact: { ...firstFact.fact, fact: `${firstFact.fact.fact}-changed` } }, ...baseline.projectShape.facts.slice(1)] } };
+    expect(current.evaluation.inputsDigest).toBe(baseline.evaluation.inputsDigest);
+    const changed = await fetch(url, { headers: { authorization: `Bearer ${token}`, 'if-none-match': etag } });
+    expect(changed.status).toBe(200);
+    expect(changed.headers.get('etag')).not.toBe(etag);
+  });
   it('serves one model through human and authenticated machine views', async () => {
     const model = modelFixture();
     const { daemon, token } = await startPoc(model);
@@ -315,8 +452,8 @@ describe('three-surface POC routes', () => {
     expect(machineResponse.status).toBe(200);
     expect(machineResponse.headers.get('content-type')).toBe('application/json');
     const wireModel = (await machineResponse.json()) as PocModel;
-    expect(wireModel).toEqual(model);
-    expect(wireModel.responseIdentity).toEqual(model.responseIdentity);
+    expect({ ...wireModel, links: undefined, responseIdentity: model.responseIdentity }).toEqual({ ...JSON.parse(JSON.stringify(model)), links: undefined });
+    expect(wireModel.links).toHaveLength(15);
     expect(visibleParityTuples(html)).toEqual(parityTuples(wireModel));
   });
 
@@ -330,9 +467,9 @@ describe('three-surface POC routes', () => {
     const served = JSON.parse(await response.text()) as Record<string, unknown>;
     const declared = (served.responseIdentity as { readonly excludes: readonly string[] }).excludes;
     expect(declared).toHaveLength(25);
-    expect(independentResponseKey(served)).toBe(
-      (JSON.parse(JSON.stringify(model)) as PocModel).responseIdentity.contentKey,
-    );
+    const servedKey = (served.responseIdentity as { readonly contentKey: string }).contentKey;
+    expect(independentResponseKey(served)).toBe(servedKey);
+    expect(servedKey).not.toBe(model.responseIdentity.contentKey);
   });
 
   it('keeps GET read-only and byte-identical under five sequential and concurrent requests', async () => {
@@ -342,14 +479,17 @@ describe('three-surface POC routes', () => {
     writeFileSync(marker, 'GET must not mutate state\n', 'utf8');
     const before = stateDirectorySnapshot(stateDir);
     const url = `http://${daemon.host}:${daemon.port}${POC_MACHINE_PATH}`;
-    const expectedBody = JSON.stringify(model);
     const fetchMachine = async () => (await fetch(url, { headers: { authorization: `Bearer ${token}` } })).text();
     const sequential: string[] = [];
     for (let index = 0; index < 5; index += 1) sequential.push(await fetchMachine());
     expect(stateDirectorySnapshot(stateDir)).toEqual(before);
     const concurrent = await Promise.all([fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine(), fetchMachine()]);
     expect(new Set([...sequential, ...concurrent]).size).toBe(1);
-    expect(sequential[0]).toBe(expectedBody);
+    expect(JSON.parse(sequential[0] as string).links).toHaveLength(15);
+    const etag = `W/"${(JSON.parse(sequential[0] as string) as PocModel).responseIdentity.contentKey}"`;
+    const revalidated = await fetch(url, { headers: { authorization: `Bearer ${token}`, 'if-none-match': etag } });
+    expect(revalidated.status).toBe(304);
+    expect(await revalidated.text()).toBe('');
     expect(stateDirectorySnapshot(stateDir)).toEqual(before);
   });
 
@@ -427,7 +567,7 @@ describe('three-surface POC routes', () => {
     const machineResponse = await fetch(`${baseUrl}${POC_MACHINE_PATH}`, { headers: { authorization: `Bearer ${token}` } });
     expect(machineResponse.status).toBe(200);
     const wireModel = (await machineResponse.json()) as PocModel;
-    expect(wireModel).toEqual(empty);
+    expect({ ...wireModel, links: undefined, responseIdentity: empty.responseIdentity }).toEqual({ ...JSON.parse(JSON.stringify(empty)), links: undefined });
     expect(visibleParityTuples(html)).toEqual(parityTuples(wireModel));
   });
 });
