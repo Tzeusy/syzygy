@@ -202,6 +202,10 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
 - Polaris guide links open synchronously on click; ignore the matching queued
   hashchange so it cannot undo a later collapse. Browser tests must await the
   actual hashchange and cover same-fragment clicks and history traversal.
+- Generator source requests may carry a full body and its identical full-file
+  span. Canonically validate the untrusted record before inspecting it, then
+  drop only that verified duplicate before budgeting the frozen request;
+  keeping both made a 2 MB sufficient-budget run fail before any stage.
 - For scope-hoisted epistemic tuples, inherited CSS custom properties carry
   color and symbol from the nearest scope. Competing ancestor descendant
   selectors let an outer Unknown treatment override an inner Observed scope.
