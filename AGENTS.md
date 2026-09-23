@@ -542,6 +542,20 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   `check_docs_review_campaign_partition.py` immediately before merging, and
   again on main after; treat the count sentence like the CG-26 triple — one
   integration edit per batch of raws.
+- **A repair that copies a reviewer's figure, commit or population inherits
+  the reviewer's error, and rule 10 charges a round for each one.** Rounds
+  5–9 of the P-71 opening-band review each faulted the previous round's
+  repair: "fourteen" for a population of thirteen; a moved-pointer commit
+  taken from the raw instead of `git show <commit>:scripts/check_governance.py`;
+  "every cited source blob unchanged" without the raw's own restriction to
+  eight files; "round-1 item 16" for a list the round-7 raw built from items
+  11 and 16. Before a count, a commit or a population goes into a
+  disposition, re-derive it from the file at the commit named and write the
+  population beside it. Every prose repair retires the confirmation, so three
+  consecutive CONFIRM WITH EXCEPTIONS with notes only (6, 2, 1 over
+  `28086f6`, `815785a`, `80c4b52`) never reached a bare CONFIRM: agree a
+  stopping rule (repair, dispatch nothing, ask the owner) before round 3,
+  not after round 10.
 - `gh pr checks --watch` exits at once when no checks are registered yet;
   poll until `gh pr checks` lists rows, then watch, then merge with
   `--match-head-commit`.
