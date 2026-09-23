@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { closeDisposableBrowser, removeBrowserProfile } from './cdp-browser.js';
+import { closeDisposableBrowser, removeBrowserProfile, withBrowserPage, type BrowserPage } from './cdp-browser.js';
 
 const privateGroup = { id: 123, uid: process.getuid?.() ?? 0, leaderStart: '1' };
 
@@ -115,6 +115,33 @@ describe('disposable browser shutdown', () => {
         profileDrainMs: 200,
       });
     expect(events).toEqual(['socket-closed', 'profile-removed']);
+  });
+});
+
+describe('browser page lifetime', () => {
+  it('closes the private browser when newPage rejects before a page exists', async () => {
+    const events: string[] = [];
+    const browser = {
+      executable: 'fixture', version: 'fixture',
+      newPage: async () => { events.push('new-page-failed'); throw new Error('target-creation-failed'); },
+      close: async () => { events.push('browser-closed'); },
+    };
+    await expect(withBrowserPage('fixture', async () => undefined, async () => browser))
+      .rejects.toThrow('target-creation-failed');
+    expect(events).toEqual(['new-page-failed', 'browser-closed']);
+  });
+
+  it('closes the private browser even when page.close rejects', async () => {
+    const events: string[] = [];
+    const page = { close: async () => { events.push('page-close-failed'); throw new Error('target-close-failed'); } } as unknown as BrowserPage;
+    const browser = {
+      executable: 'fixture', version: 'fixture',
+      newPage: async () => page,
+      close: async () => { events.push('browser-closed'); },
+    };
+    await expect(withBrowserPage('fixture', async () => { events.push('assertions-complete'); }, async () => browser))
+      .rejects.toThrow('target-close-failed');
+    expect(events).toEqual(['assertions-complete', 'page-close-failed', 'browser-closed']);
   });
 });
 

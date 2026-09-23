@@ -432,3 +432,22 @@ export async function launchBrowser(executable: string): Promise<Browser> {
     },
   };
 }
+
+/** Own the complete page lifetime once Chrome has launched. A failed target
+ * creation still closes the browser; a failed target close cannot skip the
+ * private child/session drain in browser.close(). */
+export async function withBrowserPage<T>(
+  executable: string,
+  use: (page: BrowserPage) => Promise<T>,
+  launch: (path: string) => Promise<Browser> = launchBrowser,
+): Promise<T> {
+  const browser = await launch(executable);
+  let page: BrowserPage | undefined;
+  try {
+    page = await browser.newPage();
+    return await use(page);
+  } finally {
+    try { if (page !== undefined) await page.close(); }
+    finally { await browser.close(); }
+  }
+}

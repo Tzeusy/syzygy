@@ -8,7 +8,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
 
 import { TAILNET_HOST } from './browser-origin.js';
-import { findBrowserExecutable, launchBrowser, type BrowserPage } from './cdp-browser.js';
+import { findBrowserExecutable, withBrowserPage, type BrowserPage } from './cdp-browser.js';
 import { ORRERY_HUMAN_PATH } from './orrery.js';
 import { renderOrreryPage } from './orrery.js';
 import { POLARIS_HUMAN_PATH, renderPolarisPage } from './polaris.js';
@@ -252,11 +252,9 @@ describe('surface routes', () => {
     if (!start.started) throw new Error(`daemon failed to start: ${start.failure.kind}`);
     running.push(start.daemon);
     const baseUrl = `http://${start.daemon.host}:${start.daemon.port}`;
-    const browser = await launchBrowser(browserExecutable as string);
-    const page = await browser.newPage();
     const directory = tempDir('syzygy-cross-links-pages-');
     const expected = { 'work-count': 1, 'code-count': 1, 'reality-entity': 9, 'governing-intent': 1, 'mapped-capability': 1 };
-    try {
+    await withBrowserPage(browserExecutable as string, async page => {
         const mount = form === 'direct' ? '' : TAILNET_MOUNT_PREFIX;
         const request = (path: string) => form === 'direct' ? fetch(`${baseUrl}${path}`)
           : fetchWithHost(`${baseUrl}${path}`, TAILNET_HOST, { origin: `https://${TAILNET_HOST}` });
@@ -329,8 +327,8 @@ describe('surface routes', () => {
         // Readable capture for the dated size evidence, from the same served
         // evaluation and exactly the three-surface link population above.
         process.stdout.write(`[M9 cross links] ${JSON.stringify({ form, links: links.length, classes, sizes })}\n`);
-    } finally { await page.close(); await browser.close(); }
-  });
+    });
+  }, 15_000);
 
   it('withholds hrefs and discloses unavailable targets instead of defaulting identities', () => {
     const model = buildFixtureModel(cleanups);
@@ -353,9 +351,7 @@ describe('surface routes', () => {
     const missing = { ...model, entities: model.entities.filter(entity => entity.id !== model.capabilityId) };
     const file = join(tempDir('syzygy-missing-capability-'), 'orrery.html');
     writeFileSync(file, renderOrreryPage(missing));
-    const browser = await launchBrowser(browserExecutable as string);
-    const page = await browser.newPage();
-    try {
+    await withBrowserPage(browserExecutable as string, async page => {
       await page.navigate(pathToFileURL(file).href);
       const result = await page.evaluate(`(() => ({
         hrefs: document.querySelectorAll('.orrery-block.mapped a[data-cross-surface-class="mapped-capability"]').length,
@@ -363,8 +359,8 @@ describe('surface routes', () => {
         exactTableLinks: document.querySelectorAll('.orrery-block.mapped a[data-parity-field="orrery-mapped-region"]').length,
       }))()`);
       expect(result).toEqual({ hrefs: 0, unavailable: 1, exactTableLinks: 1 });
-    } finally { await page.close(); await browser.close(); }
-  });
+    });
+  }, 10_000);
 
   it('exhausts every served badge, tuple and Unknown disclosure on the three surfaces; Home is a separate diagnostic (POC-REQ-060)', async () => {
     const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
@@ -404,10 +400,8 @@ describe('surface routes', () => {
     if (!start.started) throw new Error(`daemon failed to start: ${start.failure.kind}`);
     running.push(start.daemon);
     const baseUrl = `http://${start.daemon.host}:${start.daemon.port}`;
-    const browser = await launchBrowser(browserExecutable as string);
-    const page = await browser.newPage();
     const directory = tempDir('syzygy-poc-runtime-pages-');
-    try {
+    await withBrowserPage(browserExecutable as string, async page => {
       let total = 0;
       let serverTotal = 0;
       for (const form of ['direct', 'tailnet'] as const) {
@@ -440,10 +434,7 @@ describe('surface routes', () => {
         }
       }
       expect(total).toBe(serverTotal + 2);
-    } finally {
-      await page.close();
-      await browser.close();
-    }
+    });
   }, 45_000);
 
   it.each([
