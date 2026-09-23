@@ -1,0 +1,62 @@
+{
+  "kind": "pwb-m13-slices-1-4-clean-tree-served-measurement",
+  "capturedAtUtc": "2026-09-23T06:03:07Z",
+  "baselineCommit": "31b5e94cd8bd41236c62fbdc13708d4f7fb4bbbf",
+  "headCommit": "b3de137a5703dfb1181bbedcc04e0c94072a75cb",
+  "registeredButlersRevision": "5802fcba23ea8fcd47741f5dbe9045aef6cbafbb",
+  "registeredWorkingTreeDigest": "434274a4adaab6ff76acbc2f98c4b69e4b1461469a800419e14c26a794014aac",
+  "matchedDoltRevision": "4isod4ghl0nefbnpc68k1tc1qkg20j54",
+  "pwbEvaluationIdentity": "pwb-eval-b51a17a46d2e67dbf7212cd4",
+  "method": "Two private loopback daemons from clean committed Syzygy worktrees used the registered Butlers source gate. Their first captures encountered different Beads revisions, so both private daemons re-observed concurrently through their existing human-open route. Authenticated machine metadata then matched on Butlers Git revision, working-tree digest, Dolt revision, 7624 work items and 283 project-shape sources; full evaluation identities still differ by observer commit, as expected. Final paired direct and mounted-form requests used curl --output /dev/null --write-out http_code/size_download. Mounted form sets the real tailnet Host and Origin headers while the backend receives the unprefixed route. The invalid first Node-fetch Host-override probe returned HTTP 403 and is excluded from the final measurement. No credential value, response body or Butlers content is retained here.",
+  "declaredMaxHumanResponseBytes": 2097152,
+  "allFinalResponsesHttp200": true,
+  "routes": [
+    { "form": "direct", "path": "/", "baselineBytes": 43460, "headBytes": 43463, "deltaBytes": 3, "headroomBytes": 2053689 },
+    { "form": "direct", "path": "/polaris", "baselineBytes": 1525755, "headBytes": 1529777, "deltaBytes": 4022, "headroomBytes": 567375 },
+    { "form": "direct", "path": "/trajectory", "baselineBytes": 264137, "headBytes": 264140, "deltaBytes": 3, "headroomBytes": 1833012 },
+    { "form": "direct", "path": "/orrery", "baselineBytes": 42997, "headBytes": 43000, "deltaBytes": 3, "headroomBytes": 2054152 },
+    { "form": "tailnet", "path": "/", "baselineBytes": 43520, "headBytes": 43523, "deltaBytes": 3, "headroomBytes": 2053629 },
+    { "form": "tailnet", "path": "/polaris", "baselineBytes": 1531830, "headBytes": 1535852, "deltaBytes": 4022, "headroomBytes": 561300 },
+    { "form": "tailnet", "path": "/trajectory", "baselineBytes": 264227, "headBytes": 264230, "deltaBytes": 3, "headroomBytes": 1832922 },
+    { "form": "tailnet", "path": "/orrery", "baselineBytes": 43072, "headBytes": 43075, "deltaBytes": 3, "headroomBytes": 2054077 }
+  ],
+  "polarisPopulationDirectAndMounted": {
+    "baseline": { "sourceRows": 283, "claimTuples": 731, "summaries": 364, "anchors": 1121, "h2h3Targets": 47, "outlineLinks": 35, "earlyGroupLinks": 0, "exactSourceRouteLinks": 390 },
+    "head": { "sourceRows": 283, "claimTuples": 731, "summaries": 81, "anchors": 1166, "h2h3Targets": 57, "outlineLinks": 73, "earlyGroupLinks": 7, "exactSourceRouteLinks": 390 },
+    "method": "Server HTML tags and mounted exact-route href attributes counted independently of renderer functions; browser tests additionally inspect the post-script DOM, native Tab order and no-script copy. The decrease of 283 summary controls reflects removal of each per-row source-record details, not a loss of 283 source records."
+  },
+  "machinePopulationCheck": {
+    "baselineAndHeadClaimOccurrences": 1175,
+    "baselineAndHeadSortedClaimIdMultisetSha256": "6e10a8f33ec70de426f006ca18ba67ee9527d8127cd47929a0710409680d9991",
+    "baselineAndHeadSourcePathOrderSha256": "b85214794fb19ae02b9909ea34a7844df640624f66f8df5616fe8018dff23813",
+    "sourceCount": 283,
+    "itemCount": 426,
+    "factCount": 450,
+    "method": "Both authenticated machine bodies were parsed in process; only counts and SHA-256 over sorted claim-id occurrences and ordered source paths were emitted. Observer/evaluation-specific fields were excluded from these two population digests."
+  },
+  "directPolarisByteAttribution": {
+    "baseline": { "sourceRowsBytes": 609814, "sourceTableBytes": 610402, "outlineBytes": 8746, "quickLinksBytes": 0, "stylesheetBytes": 21810 },
+    "head": { "sourceRowsBytes": 592092, "sourceTableBytes": 593141, "outlineBytes": 17041, "quickLinksBytes": 1391, "stylesheetBytes": 21965 },
+    "sourceRowsDeltaBytes": -17722,
+    "sourceTableDeltaBytes": -17261,
+    "outlineDeltaBytes": 8295,
+    "quickLinksDeltaBytes": 1391,
+    "stylesheetDeltaBytes": 155,
+    "otherBodyDeltaBytes": 11903,
+    "netBodyDeltaBytes": 4022,
+    "preTrimHeadDirectBytes": 1585943,
+    "preTrimHeadMountedBytes": 1592018,
+    "trimSavedBytesPerForm": 56166,
+    "interpretation": "The source table genuinely shrank after eliminating repeated per-row role attributes and field captions, while retaining its six scoped columns, every identity/tuple marker and no-body-read text. The whole Polaris response still grew by 4022 bytes because the fuller outline, seven shortcuts and subject-bearing labels are new. The pre-trim probe was a separate earlier window with a different Beads revision, so only the final re-observed pair supports the all-route same-window delta claim."
+  },
+  "fixtureOracle": {
+    "sourcePopulation": 17,
+    "exactSourceLinks": 8,
+    "orderedExactHrefIdentitySha256BeforeAndAfter": "7e8907a1f45c543a49bd06c6a442b05e455630077a47e7b7fa504fa505a3ea60",
+    "accessibleSummaryControls": 39,
+    "accessibleAnchorControls": 144,
+    "conflictingAccessibleNames": 0,
+    "mutationRecord": "polaris-m13-literal-mutations-2026-09-23.json"
+  },
+  "boundary": "This is a bounded non-release Butlers POC measurement, not a product-completion or production-network claim. The tailnet form was simulated locally with Host/Origin; it was not an external tailnet request. Actual catalog filtering/pagination remains out of scope."
+}
