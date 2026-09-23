@@ -1,0 +1,106 @@
+{
+  "kind": "polaris-m7-synthetic-verification-successor",
+  "capturedAt": "2026-09-23T03:44:14Z",
+  "issue": "syzygy-dov.7.1",
+  "sourceCommit": "237e925e00fd09984ed20b34e6a204b783e0afb8",
+  "baseCommit": "6746a0722e667e9cae2c725d796c269c356d8127",
+  "ownerRuling": "P-76, recorded in POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md: git-tree-entry as RFC7-10 fifth class; Syzygy may read its own pinned tracked governed tree; zero egress; REQ-008 completed reuse with in-flight and uncertain replay prohibition retained.",
+  "profile": {
+    "name": "syzygy-self-governance-markdown-v1",
+    "pinnedGovernedCommit": "133106eb0f2564f1cefddd19d11985f1b2619397",
+    "readMethod": "git ls-tree -r -z --full-tree at the explicit commit, then git cat-file blob by each selected object id; no working-tree, untracked, second-project or network read",
+    "selectedPredicate": "Top-level .md under doctrine; recursive .md under decisions; .md one directory below contracts/rfcs/ under an RFC-* directory",
+    "trackedUnderThreeRoots": 115,
+    "markdownUnderThreeRoots": 113,
+    "selected": 111,
+    "excludedMarkdown": 2,
+    "excludedPaths": [
+      ".syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md",
+      ".syzygy/governance/contracts/rfcs/RFC-0006-cross-surface-selection-query-drawer.md"
+    ],
+    "rawBytes": 1409173,
+    "characters": 1400697,
+    "largestSourceCharacters": 76530,
+    "sourcesOver100000Characters": 0,
+    "identityDigest": "dbb5485df805bf7b0c4362a0881e77b125f71ba5e4cbc02dea4c79c5381479d8",
+    "independentRecount": "git ls-tree -r -l at the same commit, filtered by the stated predicate with rg and summed from Git's object-size column with awk: 111 files, 1409173 bytes, largest object 77037 bytes, 0 over 100000 bytes. The executable uses -z and decodes each selected blob; the second method uses object metadata, not that decoder."
+  },
+  "runs": {
+    "oneMegabyte": { "maxInputBytes": 1000000, "status": "stopped", "reason": "budget-exhausted", "stageAdmissions": 0, "scriptedStageCalls": 0, "truncatedSources": 0 },
+    "sufficient": {
+      "maxInputBytes": 2000000,
+      "status": "awaiting-rendered-review",
+      "scriptedStageCalls": 5,
+      "stageInputs": [
+        { "stage": "inventory", "providerRoute": "scripted-inventory", "inputBytes": 1453039 },
+        { "stage": "plan", "providerRoute": "scripted-plan", "inputBytes": 47710 },
+        { "stage": "author", "providerRoute": "scripted-author", "inputBytes": 77188 },
+        { "stage": "edit", "providerRoute": "scripted-edit", "inputBytes": 77238 },
+        { "stage": "fidelity", "providerRoute": "scripted-independent-review", "inputBytes": 71280 }
+      ],
+      "cumulativeInputBytes": 1726455,
+      "interpretation": "The full 1409173-byte raw corpus is offered in inventory once. Later envelopes contain metadata, inventory and only the two source spans selected by the scripted plan. The five-stage run is an interface and accounting proof, not an independent fidelity judgment."
+    },
+    "oneSourcePerturbation": {
+      "kind": "synthetic-in-memory-successor; no second tracked commit is claimed",
+      "changedSourcePath": ".syzygy/governance/contracts/rfcs/RFC-0002/README.md",
+      "changedBlockIds": ["intro"],
+      "unchangedBlockIds": ["account-paragraph"],
+      "changedCitationCount": 1,
+      "unchangedCitationCount": 1,
+      "scriptedStageCalls": 5,
+      "stageInputBytes": [1453075, 47668, 77182, 77190, 71232]
+    }
+  },
+  "lifecycle": {
+    "adapter": "private file-backed scripted port under a temporary state directory; no default provider client or live scheduler adapter",
+    "resume": "Four verified completed stages were reused after a before-fidelity stop; the resumed run made exactly one new fidelity send. Receipts retained stage, route, model and reused flag.",
+    "refusals": ["changed request/project/snapshot/route/source binding", "changed current permission identity", "forged completed artifact digest", "in-flight duplicate", "uncertain dispatch with missing receipt and expired lease field"],
+    "concurrency": "Two starts for one stage emitted exactly one scripted send; distinct request identities retained separate journal files.",
+    "maximumReservation": "An uncertain attempt retained its 5-unit and 10000-byte reservation; missing receipt and expired lease did not unlock replay."
+  },
+  "mutationsAndCounterexamples": {
+    "testedSourceCommit": "237e925e00fd09984ed20b34e6a204b783e0afb8",
+    "kinds": [
+      { "predicate": "citation order", "old": "sources in purpose, architecture order", "new": "sources reversed", "result": "The rendered href list stayed byte-identical and no index-shaped #source-0 href remained; an index citation would fail this oracle.", "test": "draft-preview.test.ts: binds citation hrefs to source anchors" },
+      { "predicate": "path-only quotation", "old": "path-only spans: []", "new": "path-only spans: [body span]", "result": "unquotable-source", "test": "generation-source.test.ts and draft-preview.test.ts path-only cases" },
+      { "predicate": "object binding", "old": "Git blob object id of the supplied body", "new": "40 b characters with the original body", "result": "object-mismatch", "test": "generation-source.test.ts forged object case" },
+      { "predicate": "anchor offsets", "old": "0 through exact UTF-8 byte length", "new": "end offset 2 with unchanged text", "result": "body-mismatch", "test": "generation-source.test.ts offset case" },
+      { "predicate": "fidelity plan isolation", "old": "fidelity encoded inputs omit plan", "new": "insert plan sentinel PLAN-HANDLE-NO-FIDELITY-LEAK-8e21", "result": "Original canonical bytes exclude the sentinel, while the positive-control contaminated envelope contains it; an actual plan leak fails the original assertion.", "test": "pipeline.test.ts: keeps the author plan out" },
+      { "predicate": "six stage routes", "old": "all six stage route entries", "new": "inventory entry only", "result": "invalid-request before any send", "test": "pipeline.test.ts: rejects a missing stage route" },
+      { "predicate": "one-time corpus charge", "old": "request serializes body plus identical full-file span", "new": "strip only the verified duplicate body after canonical validation", "result": "The old source at pre-rebase commit 2fd33b630f22d9134ae0374e43f28ed53fd3e88b stopped budget-exhausted before any stage under 2 MB; the corrected source at this record's tested commit completes five stages with 1726455 billed input bytes.", "test": "self-corpus.test.ts 1 MB/2 MB behavior" },
+      { "predicate": "source cap", "old": "200 quotable sources", "new": "201st distinct quotable source", "result": "source-refused before any send", "test": "pipeline.test.ts: refuses a 201st source" },
+      { "predicate": "no truncation", "old": "same 111 full source bodies at a 2 MB budget", "new": "same bodies at a 1 MB budget", "result": "budget-exhausted with zero sends and unchanged source identity digest", "test": "self-corpus.test.ts: 1 MB refusal" },
+      { "predicate": "perturbation locality", "old": "pinned first source body/object identity", "new": "synthetic in-memory qualification prefixed to that one body with a new object and anchor identity", "result": "Only intro and its citation moved; account-paragraph and its citation stayed fixed.", "test": "self-corpus.test.ts: isolate one source perturbation" },
+      { "predicate": "completed reuse", "old": "recorded matching request and artifact digest", "new": "changed current permission or forged artifact digest", "result": "admission-refused with no new send", "test": "durable-lifecycle.test.ts: changed binding and artifact" },
+      { "predicate": "uncertain replay", "old": "uncertain journal record retains maximum reservation", "new": "remove late receipt and set leaseExpiresAt: 0", "result": "effect-uncertain; still exactly one original send", "test": "durable-lifecycle.test.ts: uncertain maximum reserved" }
+    ]
+  },
+  "authorityAndLimits": {
+    "realProviderCalls": 0,
+    "networkCalls": 0,
+    "zeroEffectBasis": "The only generation effect port installed by the self-corpus command is the in-process scripted responder. The reader invokes only local git cat-file/ls-tree; the command imports no network/provider adapter. These zeros describe that constructed path, not a universal instrumented count for other processes.",
+    "realProjectProof": false,
+    "unmetReq014": ["two separately admitted real projects", "actual model generation", "real changed-source regeneration", "independent full-source fidelity", "cold-reader comprehension and visual judgment"],
+    "futureEgress": "The generator kit states provider and content consent from SEC-2; route and retention as proposed additional controls; REQ-001 withdrawal refusal; and the effects that such an act would not authorize. No act artifact or provider adapter was created.",
+    "statusSentenceRemainder": "PROJECT-STATUS.md was not edited: it is a PATCHED row in the unperformed syzygy-dov.23 edit/repair scenario manifest. An M7-only edit would invalidate that prepared package. The generator kit carries the current no-provider-call sentence; the status-page sentence awaits the M6 package disposition."
+  },
+  "verification": {
+    "sourceFiles": "The 21 implementation and documentation paths in git diff --name-only 6746a0722e667e9cae2c725d796c269c356d8127...237e925e00fd09984ed20b34e6a204b783e0afb8 are commit-bound; no governed path or M3 renderer/design/reading-layout path is in that diff.",
+    "focusedGenerator": "13 test files, 142 passed, 0 failed at the source commit",
+    "full": "npm test -- --reporter=dot --maxWorkers=2: 1873 passed, 3 skipped, 0 failed at the source commit",
+    "build": "npm run build:poc --silent and npm run build --silent passed",
+    "typecheck": "npm run typecheck --silent passed",
+    "governance": "python3 scripts/check_governance.py: 32 OK, 20 WARN, 0 FAIL; --selftest: 263 fixtures, 0 failing",
+    "diff": "git diff origin/main...HEAD --check passed at the source commit",
+    "hostedCorrection": {
+      "sourceCommit": "aa8cfa5b61d2cfb3bfe679f27e18fdbe3502c93c",
+      "finding": "PR #105 node-ci depth-1 checkout did not contain pinned historical commit 133106eb0f2564f1cefddd19d11985f1b2619397; two self-corpus tests failed at git cat-file -t while 1871 tests passed.",
+      "change": "node-ci actions/checkout now uses fetch-depth: 0, matching governance-docs checkout depth. The self-corpus test continues to require the same exact pinned commit and refuses an unavailable requested commit; it never substitutes HEAD. No build, typecheck, unit or system battery stage changed.",
+      "freshShallowCloneProof": "A new depth-1 clone of the M7 branch reported the pinned object missing. After unshallowing that same clone, git cat-file -t returned commit and its three original self-corpus tests passed. The fourth new test checks the unavailable-commit refusal in the local full-history checkout.",
+      "focused": "self-corpus.test.ts: 4 passed, 0 failed",
+      "full": "npm test -- --reporter=dot --maxWorkers=2: 1874 passed, 3 skipped, 0 failed at aa8cfa5b61d2cfb3bfe679f27e18fdbe3502c93c",
+      "governance": "python3 scripts/check_governance.py: 32 OK, 20 WARN, 0 FAIL; checkout-depth change leaves the workflow battery stage list unchanged"
+    }
+  }
+}

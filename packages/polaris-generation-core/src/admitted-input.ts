@@ -6,11 +6,10 @@
  * requires the generator to "expose the selected project boundary and
  * audience, admitted source classes, ... inspected and selected material,
  * and reasons relevant material is excluded, unavailable, unresolved or
- * deferred by budget" before claiming source coverage. Today's pipeline
- * front door (`PipelineRequest.sources` in ./pipeline.ts) carries that
- * material as `unknown` -- an untyped population with no produced
- * denominator, the gap the 2026-09-22 vision-pursuit dossier's L3-F1
- * names as "no front door means no denominator".
+ * deferred by budget" before claiming source coverage. The later
+ * GenerationSource seam in ./generation-source.ts binds material to its
+ * repository/object/evaluation; this flat population remains a caller-side
+ * selection and accounting boundary, never provider authority.
  *
  * This module is the pure port type that names the seam: a `SourcePopulation`
  * is every source a caller considered, partitioned into what was admitted
@@ -24,16 +23,12 @@
  * second-project reads or provider egress"; "must be reconciled and adopted
  * before new observable implementation") and is out of this seam's scope.
  *
- * `selected` uses the exact `{ sourceId, text }` shape `validateStage` in
- * ./provider-draft.ts already enforces at runtime against `context.sources`
- * (its `sourceSchema`); this module only gives that shape a name and a
- * static type at the front door, it does not change what that runtime
- * schema accepts.
+ * `selected` uses the `{ sourceId, text }` shape `validateStage` checks at
+ * the provider-local validation seam. Callers must form validated
+ * GenerationSource records before constructing a PipelineRequest.
  *
- * `validateStage` runs on the provider's *reply*, after `pipeline.ts`'s
- * `stage()` has already sent the envelope carrying `selected`'s `sourceId`s
- * and `text` to `ports.generate` -- the front door itself performed no
- * shape check. `admitSourcePopulation` below fails closed here instead,
+ * `validateStage` runs on a provider-local *reply*. `admitSourcePopulation`
+ * fails closed before this flat selection is converted to bound sources,
  * applying `sourceSchema`'s own `sourceId` handle pattern and `text` upper
  * bound (imported from ./provider-draft.ts, not duplicated) before any
  * source is ever admitted.
@@ -48,7 +43,7 @@ const sourceIdHandle = new RegExp(SOURCE_ID_PATTERN, 'u');
  * "excluded, unavailable, unresolved or deferred by budget". */
 export type SourceExclusionReason = 'excluded' | 'unavailable' | 'unresolved' | 'deferred-by-budget';
 
-/** One admitted source: inspected, selected, and sent to the model. */
+/** One caller-selected flat source, before observation binding. */
 export interface AdmittedSource {
   readonly sourceId: string;
   readonly text: string;
@@ -94,9 +89,8 @@ export class SourcePopulationError extends Error {
  * by `SOURCE_ID_MAX_LENGTH`; the regex itself already requires at least one
  * character) and its `text` must not exceed `SOURCE_TEXT_MAX_LENGTH` -- the
  * same pattern and bound `validateStage` enforces against `context.sources`,
- * applied here before a source is ever admitted, so a shape `sourceSchema`
- * would reject cannot first reach `ports.generate` through `pipeline.ts`'s
- * `PipelineRequest.sources`.
+ * applied here before a source is converted to a GenerationSource. This flat
+ * selection alone cannot reach `ports.generate`.
  */
 export function admitSourcePopulation(
   selected: readonly AdmittedSource[],
@@ -122,9 +116,8 @@ export function admitSourcePopulation(
   return { selected, excluded };
 }
 
-/** The admitted sources, and only the admitted sources, in original order --
- * exactly what a pipeline front door may place on `PipelineRequest.sources`.
- * Excluded material never reaches this projection or the model. */
+/** The caller-selected flat sources in original order. Each must separately
+ * gain an observation-bound GenerationSource before a pipeline request. */
 export function admittedSources(population: SourcePopulation): readonly AdmittedSource[] {
   return population.selected;
 }
