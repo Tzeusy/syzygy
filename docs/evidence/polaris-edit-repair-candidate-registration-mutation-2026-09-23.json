@@ -1,0 +1,46 @@
+{
+  "subject": "syzygy-xch candidate-stage CG-7d/CG-7e registration absence and presence",
+  "date": "2026-09-23",
+  "testedCommit": "e3e410317879d5f3f07b44d1e0b59a1282305a23",
+  "sourceSha256BeforeAndAfter": {
+    "scripts/check_governance.py": "d3a584ba48b6aac3575f185f675b6b19bb30dbf6f711b91d8615c1b8c352cbd8"
+  },
+  "retainedRawReviewSha256": "a0222fddfe5cb6b7a99c8339bdd17f556b1ec7476a2de91667c0937c40638aa1",
+  "baseline": {
+    "command": "python3 scripts/check_governance.py --selftest",
+    "result": "265 fixtures, 0 failing",
+    "absentFixture": "Package directory and owner packet exist in scratch, but the package manifest is absent: zero candidate subject entries and zero packet-copy entries.",
+    "presentFixture": "Adding the package manifest in scratch yields exactly one candidate subject and the named owner-packet copy row."
+  },
+  "mutations": [
+    {
+      "id": "candidate-subject-gate-disabled",
+      "file": "scripts/check_governance.py",
+      "old": "if (_polaris_edit_repair_candidate_exists()\n            and not any(existing == POLARIS_EDIT_REPAIR_LABEL\n                        for existing, _rel, _pat in out)):",
+      "new": "if not any(existing == POLARIS_EDIT_REPAIR_LABEL\n               for existing, _rel, _pat in out):",
+      "syntaxCheck": "python3 -m py_compile scripts/check_governance.py passed",
+      "command": "python3 scripts/check_governance.py --selftest",
+      "result": "265 fixtures, 1 failing: absent edit-repair manifest registers no candidate phrase or packet; present fixture passed",
+      "testsExecuted": true,
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "candidate-packet-copy-gate-disabled",
+      "file": "scripts/check_governance.py",
+      "old": "if not _polaris_edit_repair_candidate_exists(root):",
+      "new": "if False:",
+      "syntaxCheck": "python3 -m py_compile scripts/check_governance.py passed",
+      "command": "python3 scripts/check_governance.py --selftest",
+      "result": "265 fixtures, 1 failing: absent edit-repair manifest registers no candidate phrase or packet; present fixture passed",
+      "testsExecuted": true,
+      "killed": true,
+      "restored": true
+    }
+  ],
+  "nonGoals": {
+    "proposedPatchesApplied": false,
+    "ownerActPerformed": false,
+    "pwbSuccessorChainEdited": false
+  }
+}

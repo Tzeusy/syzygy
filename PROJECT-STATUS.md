@@ -41,7 +41,10 @@ projects, including source-change regeneration. Existing Butlers presentation
 and synthetic checks do not prove this outcome. Project reads, provider egress
 and output writes remain separately admitted. The older single-project POC
 boundary below still describes the existing PWB runtime, not this new generator's
-full authorized implementation target.
+full authorized implementation target. The current operator path calls no real
+model or provider. No model has been called on that path; the honesty layer and
+independent review remain the current critical path, without provider/effect
+authority.
 
 ## Lifecycle stage
 

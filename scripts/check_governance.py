@@ -2034,6 +2034,12 @@ POLARIS_EDIT_REPAIR_ACT = (
     f"{DECISIONS}/POLARIS-EDIT-REPAIR-DELETION-SCENARIO-ACT.md")
 
 
+def _polaris_edit_repair_candidate_exists(root=None):
+    """The unperformed package registers only after its own manifest exists."""
+    return os.path.isfile(os.path.join(
+        ROOT if root is None else root, POLARIS_EDIT_REPAIR_SUBJECT))
+
+
 def _act_subjects():
     out = []
     for e in registry_current():
@@ -2081,15 +2087,22 @@ def _act_subjects():
     for label, subject in ((PWB_MACHINE_VIEW_LABEL, PWB_MACHINE_VIEW_SUBJECT),
                            (PWB_OPENING_BAND_LABEL, PWB_OPENING_BAND_SUBJECT),
                            (PWB_MISSING_CURRENCY_LABEL,
-                            PWB_MISSING_CURRENCY_SUBJECT),
-                           (POLARIS_EDIT_REPAIR_LABEL,
-                            POLARIS_EDIT_REPAIR_SUBJECT)):
+                            PWB_MISSING_CURRENCY_SUBJECT)):
         if not any(existing == label for existing, _rel, _pat in out):
             out.append((
                 label,
                 subject,
                 re.compile(re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})"),
             ))
+    if (_polaris_edit_repair_candidate_exists()
+            and not any(existing == POLARIS_EDIT_REPAIR_LABEL
+                        for existing, _rel, _pat in out)):
+        out.append((
+            POLARIS_EDIT_REPAIR_LABEL,
+            POLARIS_EDIT_REPAIR_SUBJECT,
+            re.compile(re.escape(POLARIS_EDIT_REPAIR_LABEL)
+                       + r"\s*:\s*`?([0-9a-f]{64})"),
+        ))
     out.append((POLARIS_NO_SIGNAL_LABEL, POLARIS_NO_SIGNAL_SUBJECT,
                 re.compile(re.escape(POLARIS_NO_SIGNAL_LABEL)
                            + r"\s*:\s*`?([0-9a-f]{64})")))
@@ -2303,8 +2316,6 @@ ACT_DIGEST_COPY_FILES = {
         (PWB_OPENING_BAND_LABEL,),
     f"{PWB_MISSING_CURRENCY_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_MISSING_CURRENCY_LABEL,),
-    f"{POLARIS_EDIT_REPAIR_DIR}/OWNER-DECISION-PACKET.md":
-        (POLARIS_EDIT_REPAIR_LABEL,),
     # The owner-act record quotes each performed act's exact phrase and
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
@@ -2315,6 +2326,20 @@ ACT_DIGEST_COPY_FILES = {
     GENERAL_BOOTSTRAP_ACT:
         (CC_SPEC_LABEL, GENERAL_BOOTSTRAP_LABEL),
 }
+
+
+def _activate_polaris_edit_repair_candidate_copy_registry(registry=None,
+                                                          root=None):
+    """Register the unperformed packet copy only with its own manifest."""
+    if not _polaris_edit_repair_candidate_exists(root):
+        return
+    if registry is None:
+        registry = ACT_DIGEST_COPY_FILES
+    registry[f"{POLARIS_EDIT_REPAIR_DIR}/OWNER-DECISION-PACKET.md"] = (
+        POLARIS_EDIT_REPAIR_LABEL,)
+
+
+_activate_polaris_edit_repair_candidate_copy_registry()
 
 
 def _activate_pwb_state1_act_copy_registry():
@@ -6309,6 +6334,15 @@ def selftest():
                   row[0] == "FAIL"
                   and any("exact act-time quotation" in d for d in row[4])))
 
+    absent = _selftest_polaris_edit_repair_candidate_registration(False)
+    cases.append(("CG-7d/7e absent edit-repair manifest registers no candidate phrase or packet",
+                  absent == (0, {})))
+    present = _selftest_polaris_edit_repair_candidate_registration(True)
+    cases.append(("CG-7d/7e present edit-repair manifest registers phrase and packet once",
+                  present == (1, {
+                      f"{POLARIS_EDIT_REPAIR_DIR}/OWNER-DECISION-PACKET.md":
+                          (POLARIS_EDIT_REPAIR_LABEL,)})))
+
     row = _selftest_pwb_act_copy_registry("valid")
     cases.append(("CG-7e performed PWB act registers both record copies",
                   row[0] == "OK" and row[2] == 2 and row[3] == 0))
@@ -6852,6 +6886,39 @@ def _selftest_cg7e_wrong_historical():
         _ActSubjects._cache.update(cache)
         ROOT = keep
         shutil.rmtree(d, ignore_errors=True)
+
+
+def _selftest_polaris_edit_repair_candidate_registration(present):
+    import tempfile
+    global ROOT
+    keep_root = ROOT
+    keep_registry = dict(_PHRASE_REGISTRY_CACHE)
+    try:
+        with tempfile.TemporaryDirectory(prefix="cg7-edit-repair-candidate-") as d:
+            ROOT = d
+            _PHRASE_REGISTRY_CACHE[d] = ({"current_phrases": []}, [])
+            package = os.path.join(d, POLARIS_EDIT_REPAIR_DIR)
+            os.makedirs(package)
+            packet = os.path.join(package, "OWNER-DECISION-PACKET.md")
+            with open(packet, "w", encoding="utf-8") as fh:
+                fh.write(f"{POLARIS_EDIT_REPAIR_LABEL}: {'a' * 64}\n")
+            if present:
+                with open(os.path.join(d, POLARIS_EDIT_REPAIR_SUBJECT),
+                          "w", encoding="utf-8") as fh:
+                    fh.write("synthetic candidate manifest\n")
+            subjects = [row for row in _act_subjects()
+                        if row[0] == POLARIS_EDIT_REPAIR_LABEL]
+            copies = {}
+            _activate_polaris_edit_repair_candidate_copy_registry(copies)
+            if subjects and (subjects[0][1] != POLARIS_EDIT_REPAIR_SUBJECT
+                             or subjects[0][2].search(
+                                 f"{POLARIS_EDIT_REPAIR_LABEL}: {'a' * 64}") is None):
+                return -1, copies
+            return len(subjects), copies
+    finally:
+        ROOT = keep_root
+        _PHRASE_REGISTRY_CACHE.clear()
+        _PHRASE_REGISTRY_CACHE.update(keep_registry)
 
 
 def _selftest_pwb_act_copy_registry(kind, link=None):
