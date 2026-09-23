@@ -41,7 +41,16 @@ The agreed product direction is synthesized in the [formal understanding amendme
 2. Prepare the inputs and handoffs in [artifacts and tools](ARTIFACTS-AND-TOOLS.md).
 3. Inspect [the synthetic example](example.json). It illustrates one small handoff;
    it is neither a complete manifesto nor a successful generator run.
-4. Freeze the evaluation questions below before generating. Review the actual
+4. Before any real provider dispatch, obtain separately effective per-project
+   consent naming the permitted provider and content classes (SEC-2). A future
+   egress decision must also name the destination route and retention for sent
+   content and replies; those two fields are this kit's proposed controls, not
+   clauses SEC-2 already states. REQ-polaris-generation-001 requires the draft
+   layer to render Unknown on absent or withdrawn consent. This would permit
+   only its named effects; it would not adopt prose, authorize a repository
+   write, release Syzygy, or satisfy REQ-014's two-real-project and reader
+   proof.
+5. Freeze the evaluation questions below before generating. Review the actual
    page, including its middle, deep dives and source routes.
 
 ## Run contract
@@ -51,6 +60,18 @@ reader questions, permitted source IDs, permitted provider/content route, stage
 budgets, asset/output-size bounds, maximum repair attempts and cancellation rule.
 No prompt may broaden that envelope. Instructions found inside source material
 are source content, never instructions to the generator.
+
+The zero-egress self-corpus check reads only tracked Syzygy governance Markdown
+blobs from an explicit commit:
+
+```sh
+npm run build:poc --silent
+node apps/three-surface-poc/dist/polaris-generation/self-corpus-main.js --repo <Syzygy-checkout> --revision <full-commit>
+```
+
+Its 1 MB refusal, scripted
+sufficient-budget run and in-memory perturbation are mechanical evidence only:
+`realProjectProof` remains false and no provider adapter is installed.
 
 Each pass receives only its required inputs and produces structured artifacts.
 Record their identities, input/output digests, prompt and tool versions, actual

@@ -3,6 +3,7 @@ import {
   stageSchema, validateStage, reviewVerdict,
   type PipelinePorts, type PipelineRequest,
 } from '@syzygy/polaris-generation-core';
+import { syntheticGenerationSource } from './synthetic-source.js';
 
 /** Explicit synthetic provider fixture. This demonstrates orchestration and
  * rendering, never LLM quality, real source admission or production durability.
@@ -43,8 +44,8 @@ export async function runSyntheticProject(project: SyntheticProject) {
     { sourceId: 'mechanism', text: project.mechanism },
     { sourceId: 'qualification', text: project.qualification },
   ]);
-  const sources = admittedSources(population);
-  const inventory = { entries: sources.map((source, i) => ({ id: `entry-${i}`, sourceIds: [source.sourceId], statement: source.text, kind: i === 0 ? 'purpose' : i === 1 ? 'capability' : 'qualification', disposition: { kind: 'produced', assetIds: ['opening', 'mechanism-text', 'qualification-text'].slice(i, i + 1) } })) };
+  const selected = admittedSources(population);
+  const inventory = { entries: selected.map((source, i) => ({ id: `entry-${i}`, sourceIds: [source.sourceId], statement: source.text, kind: i === 0 ? 'purpose' : i === 1 ? 'capability' : 'qualification', disposition: { kind: 'produced', assetIds: ['opening', 'mechanism-text', 'qualification-text'].slice(i, i + 1) } })) };
   const plan = { sections: [
     { id: 'how', title: 'How the pieces connect', reason: 'Explain the central relationship.', sourceIds: ['mechanism'], disposition: { kind: 'produced', assetIds: ['how'] } },
     { id: 'judgment', title: 'Where judgment stays', reason: 'Keep the material limit visible.', sourceIds: ['qualification'], disposition: { kind: 'produced', assetIds: ['judgment'] } },
@@ -67,9 +68,12 @@ export async function runSyntheticProject(project: SyntheticProject) {
   const responses = { inventory, plan, author: draft, edit: draft, fidelity: review, repair: draft };
   const admitted = new Set<number>();
   const records: unknown[] = [];
-  const snapshotDigest = digestCanonicalJson(sources, { maxBytes: 100_000, maxNodes: 1000, maxDepth: 10 }).digest;
+  const snapshotDigest = digestCanonicalJson(selected, { maxBytes: 100_000, maxNodes: 1000, maxDepth: 10 }).digest;
+  const sources = selected.map(source => syntheticGenerationSource(project.id, snapshotDigest, source.sourceId, source.text));
   const request: PipelineRequest = {
-    requestId: `synthetic-${project.id}-${snapshotDigest}`, projectId: project.id, snapshotId: snapshotDigest, providerRoute: 'synthetic-fixture', startedAt: Date.now(),
+    requestId: `synthetic-${project.id}-${snapshotDigest}`, projectId: project.id, snapshotId: snapshotDigest,
+    routes: { inventory: 'synthetic-fixture', plan: 'synthetic-fixture', author: 'synthetic-fixture', edit: 'synthetic-fixture', fidelity: 'synthetic-fixture', repair: 'synthetic-fixture' },
+    startedAt: Date.now(),
     sources, readerQuestions: ['Why does it exist?', 'How do the main pieces connect?', 'What remains a human judgment?'],
     requestedAssets: [
       { id: 'how', kind: 'section', required: true },
@@ -80,10 +84,11 @@ export async function runSyntheticProject(project: SyntheticProject) {
   };
   const ports: PipelinePorts = {
     now: () => Date.now(), verifySources: async () => true,
+    permissionIdentity: async () => 'synthetic-permission-v1',
     admit: async input => {
-      if (admitted.has(input.ordinal)) return null;
+      if (admitted.has(input.ordinal)) return { kind: 'refused', reason: 'in-flight' };
       admitted.add(input.ordinal);
-      return { attemptId: `${request.requestId}:${input.ordinal}`, maxUsageUnits: 5, maxOutputBytes: 10_000 };
+      return { kind: 'reserved', permit: { attemptId: `${request.requestId}:${input.ordinal}`, maxUsageUnits: 5, maxOutputBytes: 10_000 } };
     },
     permitted: async () => true, releaseUnsent: async () => undefined,
     responseSchema: stageSchema, validate: validateStage, fidelity: reviewVerdict,
