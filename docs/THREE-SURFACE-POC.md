@@ -44,8 +44,9 @@ is preserved; inspect the named failure before a further attempt. A stale
 restart lock in the OS temporary directory is intentionally fail-closed and
 requires operator inspection before removal. The system tests exercise only
 private fixture listeners and disposable state directories.
-An unreadable identity before SIGTERM is refused. After SIGTERM, a brief loss
-of process identity while the old socket closes is treated as unknown ownership:
+An unreadable or incomplete identity before SIGTERM is refused. After SIGTERM,
+a brief loss or incompleteness of process identity while the old socket closes
+is treated as unknown ownership:
 the command waits for verified socket absence or the bounded timeout, never
 starts the successor merely because the identity could not be read.
 

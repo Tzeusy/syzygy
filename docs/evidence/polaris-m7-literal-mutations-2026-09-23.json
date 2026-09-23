@@ -1,0 +1,195 @@
+{
+  "kind": "m7-literal-source-mutations",
+  "capturedAt": "2026-09-23T04:14:29.319Z",
+  "testedCommit": "940ae0138f49893eeaade3ce01afdf8a2a8e3e2c",
+  "baselineAndMutantRunSeparately": true,
+  "records": [
+    {
+      "id": "citation-back-to-list-index",
+      "file": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+      "test": "apps/three-surface-poc/src/polaris-generation/draft-preview.test.ts",
+      "mustFail": "binds citation hrefs to source anchors, independent of list position",
+      "old": "const href = routeForAnchor?.(source, anchorId) ?? `#${localAnchor(anchorId)}`;",
+      "new": "const href = routeForAnchor?.(source, anchorId) ?? `#source-${sources.indexOf(source)}`;",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-generation/draft-preview.test.ts --reporter=json --outputFile=/tmp/syzygy-m7-mutation-6bh3oa/baseline-0.json",
+        "exit": 0,
+        "total": 10,
+        "passed": 10,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-generation/draft-preview.test.ts --reporter=json --outputFile=/tmp/syzygy-m7-mutation-6bh3oa/mutant-0.json",
+        "exit": 1,
+        "total": 10,
+        "passed": 8,
+        "failed": 2,
+        "failing": [
+          "intermediate draft preview binds citation hrefs to source anchors, independent of list position",
+          "intermediate draft preview renders navigation, actual directed SVG, textual relationships, optional deep dives and exact sources"
+        ]
+      },
+      "sourceSha256Before": "67ddcdd477a0bf362ddfbfe3278e2a5dda163a56368fdb762f3795353bf2a4ec",
+      "sourceSha256After": "67ddcdd477a0bf362ddfbfe3278e2a5dda163a56368fdb762f3795353bf2a4ec",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "uncertain-and-in-flight-replay",
+      "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.ts",
+      "test": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+      "mustFail": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+      "old": "return { kind: 'refused', reason: prior.state === 'reserved' ? 'in-flight' : 'uncertain' };",
+      "new": "return { kind: 'reserved', permit: prior.permit };",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts --reporter=json --outputFile=/tmp/syzygy-m7-mutation-6bh3oa/baseline-1.json",
+        "exit": 0,
+        "total": 4,
+        "passed": 4,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts --reporter=json --outputFile=/tmp/syzygy-m7-mutation-6bh3oa/mutant-1.json",
+        "exit": 1,
+        "total": 4,
+        "passed": 2,
+        "failed": 2,
+        "failing": [
+          "durable scripted lifecycle port keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+          "durable scripted lifecycle port admits at most one concurrent dispatch and keeps distinct run artifacts separate"
+        ]
+      },
+      "sourceSha256Before": "1a88d88cbd3b7871f1f94310e2fe237ae4fd063b28a2301e1cfa9343aeae83a7",
+      "sourceSha256After": "1a88d88cbd3b7871f1f94310e2fe237ae4fd063b28a2301e1cfa9343aeae83a7",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "source-object-binding-disabled",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "test": "packages/polaris-generation-core/src/generation-source.test.ts",
+      "mustFail": "rejects forged object binding, offset drift, duplicate anchors and unknown-byte spans",
+      "old": "if (gitBlobObjectId(body, objectId.length === 40 ? 'sha1' : 'sha256') !== objectId) fail('object-mismatch');",
+      "new": "if (false) fail('object-mismatch');",
+      "baseline": {
+        "command": "npx vitest run packages/polaris-generation-core/src/generation-source.test.ts --reporter=json --outputFile=/tmp/syzygy-m7-mutation-6bh3oa/baseline-2.json",
+        "exit": 0,
+        "total": 4,
+        "passed": 4,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run packages/polaris-generation-core/src/generation-source.test.ts --reporter=json --outputFile=/tmp/syzygy-m7-mutation-6bh3oa/mutant-2.json",
+        "exit": 1,
+        "total": 4,
+        "passed": 3,
+        "failed": 1,
+        "failing": [
+          "evaluation-bound generation sources rejects forged object binding, offset drift, duplicate anchors and unknown-byte spans"
+        ]
+      },
+      "sourceSha256Before": "705eae29b69307b0342a82b14a30a6f6f8f27b6daaaa3175d1394f84dcaecad7",
+      "sourceSha256After": "705eae29b69307b0342a82b14a30a6f6f8f27b6daaaa3175d1394f84dcaecad7",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "fidelity-receives-author-plan",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "test": "packages/polaris-generation-core/src/pipeline.test.ts",
+      "mustFail": "keeps the author plan out of the canonically encoded fidelity and repair envelopes",
+      "old": "let review = await stage('fidelity', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, draft: context.draft, requestedAssets: context.requestedAssets });",
+      "new": "let review = await stage('fidelity', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, plan: context.plan, draft: context.draft, requestedAssets: context.requestedAssets });",
+      "baseline": {
+        "command": "npx vitest run packages/polaris-generation-core/src/pipeline.test.ts --reporter=json --outputFile=/tmp/syzygy-m7-mutation-6bh3oa/baseline-3.json",
+        "exit": 0,
+        "total": 21,
+        "passed": 21,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run packages/polaris-generation-core/src/pipeline.test.ts --reporter=json --outputFile=/tmp/syzygy-m7-mutation-6bh3oa/mutant-3.json",
+        "exit": 1,
+        "total": 21,
+        "passed": 19,
+        "failed": 2,
+        "failing": [
+          "source to editorial draft pipeline keeps the author plan out of the canonically encoded fidelity and repair envelopes",
+          "source to editorial draft pipeline executes independent inventory, planning, authoring, editing and source review with bound recipes"
+        ]
+      },
+      "sourceSha256Before": "c84b3558e258d9086a8145d456571ec63b24422b245d93c6a5610cf6ed84cefa",
+      "sourceSha256After": "c84b3558e258d9086a8145d456571ec63b24422b245d93c6a5610cf6ed84cefa",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "stage-route-completeness-disabled",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "test": "packages/polaris-generation-core/src/pipeline.test.ts",
+      "mustFail": "rejects a missing stage route before dispatch",
+      "old": "if (Object.keys(request.routes ?? {}).sort().join(',') !== 'author,edit,fidelity,inventory,plan,repair'",
+      "new": "if (false",
+      "baseline": {
+        "command": "npx vitest run packages/polaris-generation-core/src/pipeline.test.ts --reporter=json --outputFile=/tmp/syzygy-m7-mutation-6bh3oa/baseline-4.json",
+        "exit": 0,
+        "total": 21,
+        "passed": 21,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run packages/polaris-generation-core/src/pipeline.test.ts --reporter=json --outputFile=/tmp/syzygy-m7-mutation-6bh3oa/mutant-4.json",
+        "exit": 1,
+        "total": 21,
+        "passed": 20,
+        "failed": 1,
+        "failing": [
+          "source to editorial draft pipeline rejects a missing stage route before dispatch"
+        ]
+      },
+      "sourceSha256Before": "c84b3558e258d9086a8145d456571ec63b24422b245d93c6a5610cf6ed84cefa",
+      "sourceSha256After": "c84b3558e258d9086a8145d456571ec63b24422b245d93c6a5610cf6ed84cefa",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "corpus-charged-twice",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "test": "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts",
+      "mustFail": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+      "old": "encodeCanonicalJson(compact, dataLimits(b.maxInputBytes))",
+      "new": "encodeCanonicalJson(detached, dataLimits(b.maxInputBytes))",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts --reporter=json --outputFile=/tmp/syzygy-m7-mutation-6bh3oa/baseline-5.json",
+        "exit": 0,
+        "total": 4,
+        "passed": 4,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts --reporter=json --outputFile=/tmp/syzygy-m7-mutation-6bh3oa/mutant-5.json",
+        "exit": 1,
+        "total": 4,
+        "passed": 3,
+        "failed": 1,
+        "failing": [
+          "zero-egress Syzygy self-corpus proof refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation"
+        ]
+      },
+      "sourceSha256Before": "c84b3558e258d9086a8145d456571ec63b24422b245d93c6a5610cf6ed84cefa",
+      "sourceSha256After": "c84b3558e258d9086a8145d456571ec63b24422b245d93c6a5610cf6ed84cefa",
+      "restored": true,
+      "killed": true
+    }
+  ],
+  "summary": {
+    "planned": 6,
+    "killedAndRestored": 6
+  }
+}
