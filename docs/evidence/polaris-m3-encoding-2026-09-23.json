@@ -39,6 +39,54 @@
     "polarisBelow1400000ByteWorkingTargetBy": 1222471,
     "limit": "The headroom and working-target figures are for this synthetic fixture only; they do not establish a live Butlers page-size result."
   },
+  "registeredButlers": {
+    "capture": "[Observed] Two separate clean Syzygy worktrees served the registered Butlers repository through private daemons, each on port 0 with a fresh temporary state directory. The same Butlers HEAD and working-tree metadata were observed within ten seconds. Raw response bodies and credential values were not retained; only the in-memory projections below were printed. Both daemons stopped and their credential directories were removed after capture.",
+    "procedure": "npm ci and build:poc in each worktree; node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir <private temp>; GET direct loopback and Host: tzeusy.parrot-hen.ts.net for each page; authenticated GET /api/poc with the private credential read without printing it",
+    "baselineSyzygyCommit": "bdb025c3bab5da7f26f93b7602d54cecf7eb9253",
+    "implementationSyzygyCommit": "4be41c46ec4d9ee97fd865dd1c1eea3ba4cc3461",
+    "butlersRevisionBoth": "5802fcba23ea8fcd47741f5dbe9045aef6cbafbb",
+    "walkthroughEvaluationIdentityBoth": "pwb-eval-b51a17a46d2e67dbf7212cd4",
+    "workingTreeMetadataDigestBoth": "sha256:434274a4adaab6ff76acbc2f98c4b69e4b1461469a800419e14c26a794014aac",
+    "asOf": { "baseline": "2026-09-23T02:12:17.676Z", "implementation": "2026-09-23T02:12:27.192Z" },
+    "allStatuses": 200,
+    "direct": {
+      "baseline": {
+        "home": { "bytes": 41183, "badge": 37, "tuple": 0, "disclosure": 0 },
+        "polaris": { "bytes": 1515456, "badge": 2, "tuple": 729, "disclosure": 22, "freshness": { "fresh": 729 }, "openingUnknownBeforeCatalog": false, "proposedLabelsOutsideEncodingPopulation": 1 },
+        "trajectory": { "bytes": 264831, "badge": 325, "tuple": 0, "disclosure": 0 },
+        "orrery": { "bytes": 39980, "badge": 20, "tuple": 0, "disclosure": 0 }
+      },
+      "implementation": {
+        "home": { "bytes": 42065, "badge": 37, "tuple": 0, "disclosure": 0 },
+        "polaris": { "bytes": 1522113, "badge": 2, "tuple": 731, "disclosure": 24, "freshness": { "fresh": 731 }, "openingUnknownBeforeCatalog": true, "openingUnknownCount": 12, "proposedLabelsOutsideEncodingPopulation": 1 },
+        "trajectory": { "bytes": 265713, "badge": 325, "tuple": 0, "disclosure": 0 },
+        "orrery": { "bytes": 40879, "badge": 20, "tuple": 0, "disclosure": 0 }
+      },
+      "byteDelta": { "home": 882, "polaris": 6657, "trajectory": 882, "orrery": 899 }
+    },
+    "tailnetHostMounted": {
+      "baselineBytes": { "home": 41243, "polaris": 1521366, "trajectory": 264906, "orrery": 40040 },
+      "implementationBytes": { "home": 42125, "polaris": 1528023, "trajectory": 265788, "orrery": 40939 },
+      "baselineFamiliesByPage": { "home": [37, 0, 0], "polaris": [2, 729, 22], "trajectory": [325, 0, 0], "orrery": [20, 0, 0] },
+      "implementationFamiliesByPage": { "home": [37, 0, 0], "polaris": [2, 731, 24], "trajectory": [325, 0, 0], "orrery": [20, 0, 0] },
+      "familyOrder": ["badge", "tuple", "disclosure"],
+      "byteDeltaEachHost": { "home": 882, "polaris": 6657, "trajectory": 882, "orrery": 899 },
+      "polarisMarginTo2097152ByteCeilingAfter": 569129,
+      "polarisBytesAbove1400000WorkingTargetBefore": 121366,
+      "polarisBytesAbove1400000WorkingTargetAfter": 128023
+    },
+    "threeSurfaceEncodingPopulation": { "baseline": 1098, "implementation": 1102 },
+    "homeEncodingPopulationSeparate": { "baseline": 37, "implementation": 37 },
+    "machine": {
+      "responseBytesBoth": 5652888,
+      "ceilingBytes": 8388608,
+      "sourceCountBoth": 283,
+      "itemCountBoth": 426,
+      "factCountBoth": 450,
+      "unknownItemCountBoth": 0
+    },
+    "scopeLimit": "Only one registered Butlers revision and its same-window clean-tree response sizes were measured. The new opening band repeats two existing Unknown claims, so tuple/disclosure counts rise without a new machine claim or source read."
+  },
   "proposalToken": {
     "value": "#aa90ee",
     "CIE76DistanceFromUnknown": 97.01428070280313,
