@@ -289,7 +289,11 @@ and, at line 472:
 
 > **The probe's own freshness.** The probe claim carries no freshness value,
 > before slice 5 and after it. It is not a project-shape claim, so
-> PWB-REQ-007's complete-tuple requirement does not reach it.
+> PWB-REQ-007's complete-tuple requirement does not reach it, and RFC2-10's
+> disclosure route is exactly what it is: a fact of the render.
+
+(The quotation earlier ended at "does not reach it." with a period the
+source does not have and no elision mark; round 9 finding 47.)
 
 **Party 2 — M3 slice 3, one real Unknown in the first reading.** From
 `docs/design/POLARIS-M3-HONEST-ENCODING-FUNNEL.md` line 905 onwards:
@@ -582,15 +586,17 @@ CG-7d and CG-7e catch a stale copy once the package is registered.
 
 1. The package is reviewed in fresh context against `REVIEW-BRIEF.md`; the
    raw output is retained verbatim and the bytes it is bound to are frozen
-   (rule 10). **Done eight times**: round 1 CONFIRM WITH EXCEPTIONS;
+   (rule 10). **Done nine times**: round 1 CONFIRM WITH EXCEPTIONS;
    round 2, over the repaired bytes at `9d74185`, REVISE; round 3, over
    `76b4beb`, REVISE; round 4, over `194f8cd`, REVISE; round 5, over
    `7fd2db3`, REVISE; round 6, over `2c5745e`, REVISE; round 7, over
    `d3d5d9d`, REVISE; round 8, over `28086f6`, CONFIRM WITH EXCEPTIONS
-   (six notes, no revise finding) — dispositions for all in §Review — and
-   the prose repairs that followed each round, this one included, left
-   its verdict bound to the reviewed commit, not to these bytes. A round
-   9 over these bytes is the next step; only a round that confirms the
+   (six notes, no revise finding); round 9, over `815785a`, CONFIRM WITH
+   EXCEPTIONS (two notes, no revise finding) — dispositions for all in
+   §Review — and the prose repairs that followed each round, this one
+   included, left its verdict bound to the reviewed commit, not to these
+   bytes. A round 10 over these bytes is the next step; only a round that
+   confirms the
    bytes it reads lets the owner be offered a phrase, and the offering is
    the owner's to make.
 2. The owner answers the five open questions in `OWNER-DECISION-PACKET.md`.
@@ -1084,7 +1090,10 @@ The reviewer re-derived the round-1 population as thirteen and confirmed
 three items do not hold as written and ten do; resolved 1,026 extracted
 pointers over the four prose files with none unresolved; reproduced every
 ledger figure by two methods; found every quotation byte-exact and the
-eight sources round-1 item 16 names unchanged in blob since `59733d3`
+eight sources the round-7 raw's item-16 row lists (round-1 items 11 and
+16's sources; the round-8 repair wrote "round-1 item 16 names", a list
+of seven that omits the ruling record — round 9 finding 46) unchanged
+in blob since `59733d3`
 (the two files cited by commit, `polaris.ts` and `check_governance.py`,
 excepted; an earlier sentence here said "every cited source blob
 unchanged since `59733d3`", the raw's words without the raw's own
@@ -1162,13 +1171,14 @@ finding; findings 40 to 45 are notes, the first of them the reviewer's
 `OWNER-DECISION-PACKET.md` and `REVIEW-BRIEF.md` after that commit;
 `IMPACT-LEDGER.md` and every patch and manifest byte are unchanged. These
 bytes carry no confirmation until a round 9 reads them; the round-8
-CONFIRM WITH EXCEPTIONS is bound to `28086f6` alone.
+CONFIRM WITH EXCEPTIONS is bound to `28086f6` alone. (Round 9 did, over
+`815785a`, and returned CONFIRM WITH EXCEPTIONS — see the next section.)
 
 **Dispositions**, finding by finding:
 
 40. **The round-7 summary said "every cited source blob unchanged since
     `59733d3`", the raw's words without the raw's own restriction to the
-    eight sources round-1 item 16 names.** **Accepted and repaired.** Over
+    eight sources its item-16 row lists.** **Accepted and repaired.** Over
     every source the delta cites the sentence was false: `polaris.ts` and
     `check_governance.py` have different blobs at `59733d3` and `28086f6`,
     and the two 2026-09-23 owner-direction records did not exist at
@@ -1176,7 +1186,11 @@ CONFIRM WITH EXCEPTIONS is bound to `28086f6` alone.
     exception (the two files cited by commit), and keeps the earlier
     wording marked in place. This is the same error class as findings 23,
     31 and 36 — a reviewer's sentence copied without its population — and
-    it is the fourth time this section has carried it.
+    it is the fourth time this section has carried it. (The repair and
+    this heading first attributed the eight to "round-1 item 16", which
+    names seven files; the ruling record is round-1 item 11, and the
+    eight are the round-7 raw's own item-16 row — round 9 finding 46,
+    the same class one step further removed.)
 41. **Emphasis markers inside verbatim quotations at three sites** (the
     class round 3 finding 12 repaired at six others). **Accepted and
     repaired**: the asterisks around "first" (delta, PWB-REQ-010 quotation;
@@ -1206,6 +1220,61 @@ CONFIRM WITH EXCEPTIONS is bound to `28086f6` alone.
 requirement, no scenario text, no ledger figure, and no owner answer. No
 finding in this round is a false per-commit value; all six are population,
 markup or verb precision in prose the earlier rounds wrote.
+
+**Author's standing:** this draft's author dispositioned these findings and
+authored the repairs, and therefore may run no review of them.
+
+### Round 9 — re-review over the round-8 repairs
+
+**Reviewed bytes:** commit `815785a`, with the manifest digest quoted in
+`OWNER-DECISION-PACKET.md`. **Reviewer:** a fresh-context session with no
+authoring context, commissioned 2026-09-23 with the nine earlier raws and
+their dispositions as input and `REVIEW-BRIEF.md` as its commission, asked
+to check each round-8 repair at its site against `git show 28086f6`, every
+figure the round-8 section attributes to the round-8 raw, every per-commit
+claim at the commit named, and every count word against a stated
+population. **Verdict:** **CONFIRM WITH EXCEPTIONS**, copied exactly from
+the retained raw output. **Raw output:** `docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-8-RAW.md`, retained verbatim and
+never edited (CC-REV-6).
+
+The reviewer found every round-8 note repaired at the site its disposition
+names, each new sentence true and each superseded fragment quoting its
+predecessor exactly; read the per-commit anchors at seven commits from
+`59733d3` to `815785a` and the bound files' blob ids at twelve; ran the
+builder's three modes and thirteen scratch mutations; reproduced every
+ledger figure by two methods over 1,334 blobs; resolved 701 extracted
+pointers over 2,043 lines with none unresolved; composed the spec patch
+with all four sibling patches in both orders; and found findings 1 to 45
+dispositioned truthfully. The verdict rests on no revise finding; findings
+46 and 47 are notes. **Rule 10:** the repairs below edited
+`SEMANTIC-DELTA.md`, `OWNER-DECISION-PACKET.md` and `REVIEW-BRIEF.md`
+after that commit; `IMPACT-LEDGER.md` and every patch and manifest byte are
+unchanged. These bytes carry no confirmation until a round 10 reads them;
+the round-9 CONFIRM WITH EXCEPTIONS is bound to `815785a` alone.
+
+**Dispositions**, finding by finding:
+
+46. **The round-8 repair attributed the eight unchanged sources to
+    "round-1 item 16", a list of seven that omits the ruling record (round-1
+    item 11); the eight are the round-7 raw's own item-16 row.** **Accepted
+    and repaired** at both sites: the population is now attributed to the
+    round-7 raw's row and to round-1 items 11 and 16 together, with the
+    earlier attribution kept marked. The blob-unchanged claim holds over
+    both the seven and the eight. This is the population-copying class of
+    findings 23, 31, 36 and 40, one step further removed: the round-8 raw
+    itself made the attribution and the repair copied it.
+47. **The M2 quotation at line 472 ended "does not reach it." where the
+    source continues with a comma.** **Accepted and repaired**: the
+    quotation now carries the rest of M2's sentence, and a sentence beneath
+    it records the earlier ending. The delta's inline re-use in R-3, which
+    closes before any punctuation, was exact and is unchanged.
+
+**What no round-9 disposition changed.** No patch byte, no manifest row, no
+requirement, no scenario text, no ledger figure, and no owner answer. The
+two non-finding observations in the raw (one wrapped code span at the
+finding-36 marker, and a builder-code mutation outside rule 6's input
+scope) are recorded here and left as they are: the span renders and its
+basename is intact, and the selftest's fixtures are inputs, not code.
 
 **Author's standing:** this draft's author dispositioned these findings and
 authored the repairs, and therefore may run no review of them.
