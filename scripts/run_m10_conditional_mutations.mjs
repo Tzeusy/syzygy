@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
 const tests = [
@@ -89,4 +89,21 @@ for (const mutation of mutations) {
 }
 const after = spawnSync('git', ['status', '--porcelain'], { encoding: 'utf8' });
 if (after.status !== 0 || after.stdout.trim() !== '') throw new Error('mutation run left a dirty worktree');
-process.stdout.write(`${JSON.stringify({ testedCommit, command: 'node scripts/run_m10_conditional_mutations.mjs', tests, baseline: baselineSummary, results }, null, 2)}\n`);
+const report = {
+  capturedAt: new Date().toISOString(),
+  task: 'syzygy-dov.10.2 — P-77 route links and weak conditional GET',
+  testedCommit,
+  command: 'node scripts/run_m10_conditional_mutations.mjs --write-evidence',
+  tests,
+  baseline: baselineSummary,
+  results,
+  scope: 'Synthetic real-socket route and ceiling tests only; no registered repository body read, provider call, or governed artifact changed.',
+};
+if (process.argv[2] === '--write-evidence') {
+  const path = 'docs/evidence/poc-m10-conditional-mutations-2026-09-23.json';
+  if (existsSync(path)) throw new Error(`refusing to overwrite ${path}`);
+  writeFileSync(path, `${JSON.stringify(report, null, 2)}\n`);
+  process.stdout.write(`${path}: ${results.length} killed mutants at ${testedCommit}\n`);
+} else {
+  process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+}
