@@ -541,7 +541,10 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   (2026-09-22, repaired by #89). Rebase onto the latest main, re-run
   `check_docs_review_campaign_partition.py` immediately before merging, and
   again on main after; treat the count sentence like the CG-26 triple — one
-  integration edit per batch of raws.
+  integration edit per batch of raws. A clean rebase proves nothing: two
+  branches that each rewrote the count line to the same stale number merge
+  with no conflict (both said 236 over 237 files on 2026-09-23), so
+  re-derive after every rebase even when git reports success.
 - **A repair that copies a reviewer's figure, commit or population inherits
   the reviewer's error, and rule 10 charges a round for each one.** Rounds
   5–9 of the P-71 opening-band review each faulted the previous round's
