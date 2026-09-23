@@ -3,13 +3,14 @@ import { createServer } from 'node:net';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, describe, expect, it } from 'vitest';
 
 import { inspectPocPort, listenerPidFromSs, restartOnePocListener, RestartRefusal, type PocListener } from './restart.js';
 
 const fixture = resolve('apps/three-surface-poc/src/test-fixtures/restart-listener.mjs');
 const roots: string[] = [];
 const pids: number[] = [];
+const cleanupObservations: number[][] = [];
 
 function scratch(): string {
   const root = mkdtempSync(join(tmpdir(), 'syzygy-private-restart-'));
@@ -64,11 +65,25 @@ async function startedFixture(mode: 'normal' | 'slow' | 'held' = 'normal'): Prom
   return { root, repo, stateDir, port, pid: child.pid };
 }
 
-function isPrivateFixturePid(pid: number): boolean {
-  try {
-    const argv = readFileSync(`/proc/${pid}/cmdline`, 'utf8').split('\0');
-    return argv[1] === fixture && roots.some(root => argv.includes(join(root, 'repo')));
-  } catch { return false; }
+function exactPrivateFixturePids(): number[] {
+  const matches: number[] = [];
+  for (const entry of readdirSync('/proc')) {
+    if (!/^\d+$/.test(entry)) continue;
+    try {
+      const argv = readFileSync(`/proc/${entry}/cmdline`, 'utf8').split('\0').filter(Boolean);
+      if (argv[1] !== fixture) continue;
+      const repoIndex = argv.indexOf('--repo');
+      const stateIndex = argv.indexOf('--state-dir');
+      const repo = repoIndex >= 0 ? argv[repoIndex + 1] : undefined;
+      const stateDir = stateIndex >= 0 ? argv[stateIndex + 1] : undefined;
+      if (repo === undefined || stateDir === undefined) continue;
+      if (roots.some(root => repo === join(root, 'repo') && stateDir === join(root, 'state'))) matches.push(Number(entry));
+    } catch {
+      // A process can disappear while /proc is being enumerated. Unknown
+      // rows are never signaled; only an exact argv/repo/state match is safe.
+    }
+  }
+  return matches;
 }
 
 afterEach(async () => {
@@ -77,20 +92,25 @@ afterEach(async () => {
     const release = join(repo, 'release-stop');
     if (existsSync(join(repo, 'hold-stop')) && !existsSync(release)) writeFileSync(release, 'release');
   }
-  const ownedPids = [...pids];
-  for (const pid of ownedPids) {
-    if (isPrivateFixturePid(pid)) {
+  const deadline = Date.now() + 5000;
+  let remaining: number[] = [];
+  while (true) {
+    remaining = exactPrivateFixturePids();
+    if (remaining.length === 0) break;
+    for (const pid of remaining) {
       try { process.kill(pid, 'SIGTERM'); }
       catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ESRCH') throw error; }
     }
-  }
-  const deadline = Date.now() + 5000;
-  while (ownedPids.some(isPrivateFixturePid)) {
-    if (Date.now() >= deadline) throw new Error('private fixture listener did not stop during cleanup');
+    if (Date.now() >= deadline) throw new Error(`private fixture processes did not drain: ${remaining.join(',')}`);
     await new Promise(resolveWait => setTimeout(resolveWait, 25));
   }
+  cleanupObservations.push(remaining);
   pids.splice(0);
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
+
+afterAll(() => {
+  expect(cleanupObservations.every((remaining) => remaining.length === 0)).toBe(true);
 });
 
 describe('one-listener POC restart on private fixture sockets', () => {
@@ -218,6 +238,22 @@ describe('one-listener POC restart on private fixture sockets', () => {
       .rejects.toMatchObject({ code: 'listener-close-timeout' });
     await new Promise(resolveWait => setTimeout(resolveWait, 350));
     expect(readdirSync(f.stateDir)).toEqual(['machine-credential.token']);
+  });
+
+  it('discovers an unreturned successor after a post-spawn identity refusal', async () => {
+    const f = await startedFixture();
+    let successorPid: number | undefined;
+    await expect(restartOnePocListener({
+      port: f.port, expectedScript: fixture, timeoutMs: 5000,
+      inspect: port => {
+        const current = inspectPocPort(port);
+        if (current === null || current.pid === f.pid) return current;
+        successorPid = current.pid;
+        return { ...current, argv: [...current.argv, '--unexpected-successor-argument'] };
+      },
+    })).rejects.toMatchObject({ code: 'successor-identity-mismatch' });
+    expect(successorPid).toBeDefined();
+    expect(exactPrivateFixturePids()).toContain(successorPid);
   });
 
   it('reports a failed successor and lets a concurrent loser fail before signaling', async () => {
