@@ -254,35 +254,71 @@ interface DisposableBrowserProcess {
 const BROWSER_CLOSE_GRACE_MS = 1_000;
 const BROWSER_PROFILE_DRAIN_MS = 1_000;
 
-function liveProfileProcesses(profile: string): number[] {
-  const flag = `--user-data-dir=${profile}`;
+interface PrivateBrowserGroup {
+  readonly id: number;
+  readonly uid: number;
+  readonly leaderStart: string;
+}
+
+function processStat(value: string): { readonly state: string; readonly group: number; readonly session: number; readonly started: string } {
+  const end = value.lastIndexOf(')');
+  const fields = end < 0 ? [] : value.slice(end + 2).trim().split(/\s+/);
+  const group = Number(fields[2]);
+  const session = Number(fields[3]);
+  if (fields.length < 20 || !Number.isSafeInteger(group) || !Number.isSafeInteger(session) || !fields[19]) {
+    throw new Error('cannot verify private browser process group');
+  }
+  return { state: fields[0] as string, group, session, started: fields[19] as string };
+}
+
+/** detached:true gives this Chrome a new session and process group. Capture
+ * the launched leader before any cleanup; a later PID alone is insufficient. */
+function privateBrowserGroup(child: ChildProcess): PrivateBrowserGroup {
+  const id = child.pid;
   const uid = process.getuid?.();
-  if (uid === undefined) throw new Error('cannot verify private browser process owner');
+  if (id === undefined || uid === undefined) throw new Error('cannot verify private browser group identity');
+  let owner: number;
+  let identity: ReturnType<typeof processStat>;
+  try {
+    owner = statSync(`/proc/${id}`).uid;
+    identity = processStat(readFileSync(`/proc/${id}/stat`, 'utf8'));
+  } catch { throw new Error('cannot verify private browser group identity'); }
+  if (owner !== uid || identity.group !== id || identity.session !== id || identity.state === 'Z') {
+    throw new Error('browser did not enter its private process group');
+  }
+  return { id, uid, leaderStart: identity.started };
+}
+
+function vanished(cause: unknown): boolean {
+  const code = cause !== null && typeof cause === 'object' && 'code' in cause ? String(cause.code) : '';
+  return code === 'ENOENT' || code === 'ESRCH';
+}
+
+/** Browser helpers can omit --user-data-dir or rewrite their entire argv into
+ * one field. Session membership, including a changed child process group,
+ * is the observable boundary of this one detached Chrome launch. */
+function livePrivateBrowserMembers(group: PrivateBrowserGroup): number[] {
   const live: number[] = [];
   for (const entry of readdirSync('/proc', { withFileTypes: true })) {
     if (!entry.isDirectory() || !/^\d+$/.test(entry.name)) continue;
     const proc = `/proc/${entry.name}`;
-    let argv: string[];
-    try { argv = readFileSync(`${proc}/cmdline`, 'utf8').split('\0').filter(Boolean); }
-    catch {
-      if (!existsSync(proc)) continue;
-      let owner: number;
-      try { owner = statSync(proc).uid; }
-      catch { continue; }
-      if (owner === uid) throw new Error('cannot verify private browser process command');
-      continue;
-    }
-    if (!argv.includes(flag)) continue;
-    let owner: number;
-    let stat: string;
-    try { owner = statSync(proc).uid; stat = readFileSync(`${proc}/stat`, 'utf8'); }
-    catch {
-      if (!existsSync(proc)) continue;
+    let identity: ReturnType<typeof processStat>;
+    try { identity = processStat(readFileSync(`${proc}/stat`, 'utf8')); }
+    catch (cause) {
+      if (vanished(cause) || !existsSync(proc)) continue;
+      try { if (statSync(proc).uid !== group.uid) continue; }
+      catch (statCause) { if (vanished(statCause)) continue; }
       throw new Error('cannot verify private browser process identity');
     }
-    if (owner !== uid) throw new Error('private browser profile held by different owner');
-    const state = stat.slice(stat.lastIndexOf(')') + 2)[0];
-    if (state !== 'Z' && state !== 'X') live.push(Number(entry.name));
+    if (identity.group !== group.id && identity.session !== group.id) continue;
+    let owner: number;
+    try { owner = statSync(proc).uid; }
+    catch (cause) { if (vanished(cause)) continue; throw new Error('cannot verify private browser process owner'); }
+    if (owner !== group.uid || identity.session !== group.id) throw new Error('private browser group membership changed');
+    if (Number(entry.name) === group.id && identity.started !== group.leaderStart) {
+      throw new Error('private browser group leader identity changed');
+    }
+    if (identity.state !== 'Z' && identity.state !== 'X') live.push(Number(entry.name));
   }
   return live;
 }
@@ -291,7 +327,7 @@ interface BrowserCleanupOptions {
   readonly removeProfile?: (path: string) => void;
   readonly closeGraceMs?: number;
   readonly profileDrainMs?: number;
-  readonly profileProcesses?: (profile: string) => readonly number[];
+  readonly groupProcesses?: (group: PrivateBrowserGroup) => readonly number[];
 }
 
 /** Browser.close may never acknowledge a protocol request. The browser is a
@@ -301,6 +337,7 @@ export async function closeDisposableBrowser(
   connection: { close(): void; send(method: string, params?: unknown, sessionId?: string, timeoutMs?: number): Promise<unknown> },
   child: DisposableBrowserProcess,
   profile: string,
+  group: PrivateBrowserGroup,
   options: BrowserCleanupOptions = {},
 ): Promise<void> {
   const closeGraceMs = options.closeGraceMs ?? BROWSER_CLOSE_GRACE_MS;
@@ -324,10 +361,14 @@ export async function closeDisposableBrowser(
   if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
   await exited;
   const drainDeadline = Date.now() + (options.profileDrainMs ?? BROWSER_PROFILE_DRAIN_MS);
-  const profileProcesses = options.profileProcesses ?? liveProfileProcesses;
+  const groupProcesses = options.groupProcesses ?? livePrivateBrowserMembers;
+  let emptyScans = 0;
   while (true) {
-    const live = profileProcesses(profile);
-    if (live.length === 0) break;
+    const live = groupProcesses(group);
+    emptyScans = live.length === 0 ? emptyScans + 1 : 0;
+    // A second scan closes the /proc enumeration race with a child that is
+    // being forked while the first scan walks entries.
+    if (emptyScans >= 2) break;
     if (Date.now() >= drainDeadline) throw new Error(`private browser profile still held by ${live.length} process(es)`);
     await new Promise(resolve => setTimeout(resolve, 25));
   }
@@ -352,17 +393,25 @@ export async function launchBrowser(executable: string): Promise<Browser> {
       '--window-size=1280,2000',
       'about:blank',
     ],
-    { stdio: ['ignore', 'ignore', 'pipe'] },
+    { stdio: ['ignore', 'ignore', 'pipe'], detached: true },
   );
+  let group: PrivateBrowserGroup;
+  try { group = privateBrowserGroup(child); }
+  catch (error) {
+    if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
+    // The launched group's identity was not established. Retain its profile.
+    throw error;
+  }
   let connection: CdpConnection;
   try {
     connection = await CdpConnection.open(await waitForDevToolsUrl(child));
   } catch (error) {
-    child.kill('SIGKILL');
-    removeBrowserProfile(profile);
+    await closeDisposableBrowser({ close: () => undefined, send: async () => { throw new Error('CDP unavailable'); } }, child, profile, group);
     throw error;
   }
-  const versionInfo = await connection.send<{ readonly product: string }>('Browser.getVersion');
+  let versionInfo: { readonly product: string };
+  try { versionInfo = await connection.send<{ readonly product: string }>('Browser.getVersion'); }
+  catch (error) { await closeDisposableBrowser(connection, child, profile, group); throw error; }
   return {
     executable,
     version: versionInfo.product,
@@ -379,7 +428,7 @@ export async function launchBrowser(executable: string): Promise<Browser> {
       return new CdpPage(connection, sessionId, targetId);
     },
     async close(): Promise<void> {
-      await closeDisposableBrowser(connection, child, profile);
+      await closeDisposableBrowser(connection, child, profile, group);
     },
   };
 }

@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { closeDisposableBrowser, removeBrowserProfile } from './cdp-browser.js';
 
+const privateGroup = { id: 123, uid: process.getuid?.() ?? 0, leaderStart: '1' };
+
 describe('disposable browser shutdown', () => {
   it('closes an unresponsive protocol socket, kills the child, then removes its profile', async () => {
     const events: string[] = [];
@@ -26,8 +28,8 @@ describe('disposable browser shutdown', () => {
         return true;
       },
     };
-    await closeDisposableBrowser(connection, child, '/tmp/private-browser-profile', {
-      removeProfile: () => { events.push('profile-removed'); }, closeGraceMs: 5, profileProcesses: () => [],
+    await closeDisposableBrowser(connection, child, '/tmp/private-browser-profile', privateGroup, {
+      removeProfile: () => { events.push('profile-removed'); }, closeGraceMs: 5, groupProcesses: () => [],
     });
     expect(requestedTimeout).toBe(5);
     expect(events).toEqual(['protocol-close-requested', 'socket-closed', 'SIGKILL', 'profile-removed']);
@@ -51,8 +53,8 @@ describe('disposable browser shutdown', () => {
       },
       close: () => { events.push('socket-closed'); },
     };
-    await closeDisposableBrowser(connection, child, '/tmp/private-browser-profile', {
-      removeProfile: () => { events.push('profile-removed'); }, closeGraceMs: 100, profileProcesses: () => [],
+    await closeDisposableBrowser(connection, child, '/tmp/private-browser-profile', privateGroup, {
+      removeProfile: () => { events.push('profile-removed'); }, closeGraceMs: 100, groupProcesses: () => [],
     });
     expect(events).toEqual(['protocol-close-acknowledged', 'child-exited', 'socket-closed', 'profile-removed']);
   });
@@ -66,11 +68,11 @@ describe('disposable browser shutdown', () => {
       kill: () => { throw new Error('child already exited'); },
     };
     await closeDisposableBrowser({ close: () => { events.push('socket-closed'); }, send: async () => ({}) }, child,
-      '/tmp/private-browser-profile', { removeProfile: () => { events.push('profile-removed'); }, profileProcesses: () => [] });
+      '/tmp/private-browser-profile', privateGroup, { removeProfile: () => { events.push('profile-removed'); }, groupProcesses: () => [] });
     expect(events).toEqual(['socket-closed', 'profile-removed']);
   });
 
-  it('waits for exact private profile users before removal and retains the profile on drain timeout', async () => {
+  it('waits for private Chrome group members before removal and retains the profile on drain timeout', async () => {
     const events: string[] = [];
     const exited: Parameters<typeof closeDisposableBrowser>[1] = {
       exitCode: 0, signalCode: null,
@@ -79,19 +81,40 @@ describe('disposable browser shutdown', () => {
     };
     let scans = 0;
     const connection = { close: () => { events.push('socket-closed'); }, send: async () => ({}) };
-    await closeDisposableBrowser(connection, exited, '/tmp/private-browser-profile', {
+    await closeDisposableBrowser(connection, exited, '/tmp/private-browser-profile', privateGroup, {
       closeGraceMs: 5, profileDrainMs: 100,
-      profileProcesses: () => ++scans === 1 ? [123] : [],
+      groupProcesses: () => ++scans === 1 ? [123] : [],
       removeProfile: () => { events.push('profile-removed'); },
     });
-    expect(scans).toBe(2);
+    expect(scans).toBe(3);
     expect(events).toEqual(['socket-closed', 'profile-removed']);
-    await expect(closeDisposableBrowser(connection, exited, '/tmp/private-browser-profile', {
+    await expect(closeDisposableBrowser(connection, exited, '/tmp/private-browser-profile', privateGroup, {
       closeGraceMs: 5, profileDrainMs: 1,
-      profileProcesses: () => [123],
+      groupProcesses: () => [123],
       removeProfile: () => { events.push('wrong-removal'); },
     })).rejects.toThrow('private browser profile still held');
     expect(events).not.toContain('wrong-removal');
+  });
+
+  it('retains an already-exited parent profile through a transient empty scan and recreated descendant', async () => {
+    const events: string[] = [];
+    const exited: Parameters<typeof closeDisposableBrowser>[1] = {
+      exitCode: 0, signalCode: null,
+      once: () => { throw new Error('parent exit already observed'); },
+      kill: () => { throw new Error('only the disposable parent may be signaled'); },
+    };
+    const members = [[123], [], [456], [], []];
+    let scans = 0;
+    await closeDisposableBrowser({ close: () => events.push('socket-closed'), send: async () => ({}) }, exited,
+      '/tmp/private-browser-profile', privateGroup, {
+        groupProcesses: group => {
+          expect(group).toBe(privateGroup);
+          return members[scans++] ?? [];
+        },
+        removeProfile: () => { expect(scans).toBe(5); events.push('profile-removed'); },
+        profileDrainMs: 200,
+      });
+    expect(events).toEqual(['socket-closed', 'profile-removed']);
   });
 });
 
