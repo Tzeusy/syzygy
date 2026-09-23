@@ -10,7 +10,7 @@
 // ever opens the `file://` pages the caller writes.
 
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
-import { mkdtempSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -99,14 +99,14 @@ class CdpConnection {
     });
   }
 
-  send<T>(method: string, params: unknown = {}, sessionId?: string): Promise<T> {
+  send<T>(method: string, params: unknown = {}, sessionId?: string, timeoutMs = COMMAND_TIMEOUT_MS): Promise<T> {
     const id = this.nextId;
     this.nextId += 1;
     return new Promise<T>((resolve, reject) => {
       const timer = setTimeout(() => {
         this.pending.delete(id);
-        reject(new Error(`CDP: ${method} timed out after ${COMMAND_TIMEOUT_MS}ms`));
-      }, COMMAND_TIMEOUT_MS);
+        reject(new Error(`CDP: ${method} timed out after ${timeoutMs}ms`));
+      }, timeoutMs);
       this.pending.set(id, {
         resolve: (value) => {
           clearTimeout(timer);
@@ -117,7 +117,12 @@ class CdpConnection {
           reject(error);
         },
       });
-      this.socket.send(JSON.stringify({ id, method, params, ...(sessionId === undefined ? {} : { sessionId }) }));
+      try { this.socket.send(JSON.stringify({ id, method, params, ...(sessionId === undefined ? {} : { sessionId }) })); }
+      catch (error) {
+        this.pending.delete(id);
+        clearTimeout(timer);
+        reject(error);
+      }
     });
   }
 
@@ -139,6 +144,10 @@ class CdpConnection {
   }
 
   close(): void {
+    for (const [id, waiter] of this.pending) {
+      this.pending.delete(id);
+      waiter.reject(new Error('CDP connection closed'));
+    }
     this.socket.close();
   }
 }
@@ -242,23 +251,87 @@ interface DisposableBrowserProcess {
   once(event: 'exit', listener: () => void): unknown;
 }
 
+const BROWSER_CLOSE_GRACE_MS = 1_000;
+const BROWSER_PROFILE_DRAIN_MS = 1_000;
+
+function liveProfileProcesses(profile: string): number[] {
+  const flag = `--user-data-dir=${profile}`;
+  const uid = process.getuid?.();
+  if (uid === undefined) throw new Error('cannot verify private browser process owner');
+  const live: number[] = [];
+  for (const entry of readdirSync('/proc', { withFileTypes: true })) {
+    if (!entry.isDirectory() || !/^\d+$/.test(entry.name)) continue;
+    const proc = `/proc/${entry.name}`;
+    let argv: string[];
+    try { argv = readFileSync(`${proc}/cmdline`, 'utf8').split('\0').filter(Boolean); }
+    catch {
+      if (!existsSync(proc)) continue;
+      let owner: number;
+      try { owner = statSync(proc).uid; }
+      catch { continue; }
+      if (owner === uid) throw new Error('cannot verify private browser process command');
+      continue;
+    }
+    if (!argv.includes(flag)) continue;
+    let owner: number;
+    let stat: string;
+    try { owner = statSync(proc).uid; stat = readFileSync(`${proc}/stat`, 'utf8'); }
+    catch {
+      if (!existsSync(proc)) continue;
+      throw new Error('cannot verify private browser process identity');
+    }
+    if (owner !== uid) throw new Error('private browser profile held by different owner');
+    const state = stat.slice(stat.lastIndexOf(')') + 2)[0];
+    if (state !== 'Z' && state !== 'X') live.push(Number(entry.name));
+  }
+  return live;
+}
+
+interface BrowserCleanupOptions {
+  readonly removeProfile?: (path: string) => void;
+  readonly closeGraceMs?: number;
+  readonly profileDrainMs?: number;
+  readonly profileProcesses?: (profile: string) => readonly number[];
+}
+
 /** Browser.close may never acknowledge a protocol request. The browser is a
- * disposable local fixture, so terminate it directly and remove its profile
- * only after the child is confirmed exited. */
+ * disposable local fixture, so a bounded graceful request is followed by a
+ * hard stop when needed. Remove its profile only after confirmed child exit. */
 export async function closeDisposableBrowser(
-  connection: { close(): void },
+  connection: { close(): void; send(method: string, params?: unknown, sessionId?: string, timeoutMs?: number): Promise<unknown> },
   child: DisposableBrowserProcess,
   profile: string,
-  removeProfile: (path: string) => void = removeBrowserProfile,
+  options: BrowserCleanupOptions = {},
 ): Promise<void> {
+  const closeGraceMs = options.closeGraceMs ?? BROWSER_CLOSE_GRACE_MS;
   const exited = new Promise<void>((resolve) => {
     if (child.exitCode !== null || child.signalCode !== null) resolve();
     else child.once('exit', () => resolve());
   });
+  const deadline = Date.now() + closeGraceMs;
+  let acknowledged = false;
+  try {
+    await connection.send('Browser.close', {}, undefined, closeGraceMs);
+    acknowledged = true;
+  } catch { /* a missing acknowledgement never blocks cleanup */ }
+  const remaining = deadline - Date.now();
+  if (acknowledged && remaining > 0 && child.exitCode === null && child.signalCode === null) {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    await Promise.race([exited, new Promise<void>(resolve => { timer = setTimeout(resolve, remaining); })]);
+    if (timer !== undefined) clearTimeout(timer);
+  }
   connection.close();
   if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
   await exited;
-  removeProfile(profile);
+  const drainDeadline = Date.now() + (options.profileDrainMs ?? BROWSER_PROFILE_DRAIN_MS);
+  const profileProcesses = options.profileProcesses ?? liveProfileProcesses;
+  while (true) {
+    const live = profileProcesses(profile);
+    if (live.length === 0) break;
+    if (Date.now() >= drainDeadline) throw new Error(`private browser profile still held by ${live.length} process(es)`);
+    await new Promise(resolve => setTimeout(resolve, 25));
+  }
+  (options.removeProfile ?? removeBrowserProfile)(profile);
 }
 
 /** Launches `executable` headless with a throwaway profile and connects. */
