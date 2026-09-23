@@ -88,22 +88,39 @@ describe('disposable browser shutdown', () => {
     });
     expect(scans).toBe(3);
     expect(events).toEqual(['socket-closed', 'profile-removed']);
+    let timeoutScans = 0;
     await expect(closeDisposableBrowser(connection, exited, '/tmp/private-browser-profile', privateGroup, {
-      closeGraceMs: 5, profileDrainMs: 1,
-      groupProcesses: () => [123],
+      closeGraceMs: 5, profileDrainMs: 1000,
+      now: () => timeoutScans * 400,
+      groupProcesses: () => { timeoutScans += 1; return [123]; },
       removeProfile: () => { events.push('wrong-removal'); },
     })).rejects.toThrow('private browser profile still held');
+    expect(timeoutScans).toBe(3);
+    expect(events).not.toContain('wrong-removal');
+    let lateEmptyScans = 0;
+    await expect(closeDisposableBrowser(connection, exited, '/tmp/private-browser-profile', privateGroup, {
+      profileDrainMs: 1000,
+      now: () => lateEmptyScans * 600,
+      groupProcesses: () => { lateEmptyScans += 1; return []; },
+      removeProfile: () => { events.push('wrong-removal'); },
+    })).rejects.toThrow('did not verify two empty scans before deadline');
+    expect(lateEmptyScans).toBe(2);
+    expect(events).not.toContain('wrong-removal');
+    await expect(closeDisposableBrowser(connection, exited, '/tmp/private-browser-profile', privateGroup, {
+      groupProcesses: () => { throw new Error('cannot verify private browser process identity'); },
+      removeProfile: () => { events.push('wrong-removal'); },
+    })).rejects.toThrow('cannot verify private browser process identity');
     expect(events).not.toContain('wrong-removal');
   });
 
-  it('retains an already-exited parent profile through a transient empty scan and recreated descendant', async () => {
+  it('retains an already-exited parent profile through a late descendant beyond the former one-second drain', async () => {
     const events: string[] = [];
     const exited: Parameters<typeof closeDisposableBrowser>[1] = {
       exitCode: 0, signalCode: null,
       once: () => { throw new Error('parent exit already observed'); },
       kill: () => { throw new Error('only the disposable parent may be signaled'); },
     };
-    const members = [[123], [], [456], [], []];
+    const members = [[], [456], [456], [], []];
     let scans = 0;
     await closeDisposableBrowser({ close: () => events.push('socket-closed'), send: async () => ({}) }, exited,
       '/tmp/private-browser-profile', privateGroup, {
@@ -112,7 +129,7 @@ describe('disposable browser shutdown', () => {
           return members[scans++] ?? [];
         },
         removeProfile: () => { expect(scans).toBe(5); events.push('profile-removed'); },
-        profileDrainMs: 200,
+        now: () => scans * 400,
       });
     expect(events).toEqual(['socket-closed', 'profile-removed']);
   });
