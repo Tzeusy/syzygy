@@ -90,7 +90,7 @@ the repair is a new disposition that cites it.
 | N3 resource ledger | 3 | 2026-09-23 | Slices 1-2: per-limit ledger summary, declared source-population cost and typed Unknown limit observations (PR #81) | `REVISE` (`R-PWB-N3-SLICES1-2-REVIEW-RAW.md:3`), repaired; confirmation `REVISE` (`R-PWB-N3-SLICES1-2-CONFIRMATION-RAW.md:3`), repaired; second confirmation `CONFIRM WITH EXCEPTIONS` (`R-PWB-N3-SLICES1-2-CONFIRMATION-2-RAW.md:3`) — the untested population/breach fold, filed as `syzygy-u05.17`. |
 | Polaris generation admission validation | 1 | 2026-09-23 | `syzygy-u05.16`: source-population admission in `polaris-generation-core` sharing the provider-draft source-id and length bounds (PR #90) | `CONFIRM` (`R-PWB-U05-16-REVIEW-RAW.md:3`). |
 
-The 50 rows partition the tracked directory at HEAD: 219 files, 219 assigned,
+The 50 rows partition the tracked directory at HEAD: 224 files, 224 assigned,
 no remainder [Observed — re-derived for HEAD dated 2026-09-23 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
