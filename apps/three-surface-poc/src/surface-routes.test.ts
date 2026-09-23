@@ -282,6 +282,7 @@ describe('surface routes', () => {
         const classes = Object.fromEntries(Object.keys(expected).map(key => [key, links.filter(link => link.className === key).length]));
         expect(classes).toEqual(expected);
         expect(new Set(links.map(link => `${link.className}:${link.source}:${link.target}`)).size).toBe(13);
+        const runtimeTargets = new Map<string, { html: string; fragments: { href: string; id: string }[] }>();
         for (const link of links) {
           expect(link.href.startsWith(`${mount}/`), `${form} ${link.className} mount`).toBe(true);
           expect(link.insideDetails, link.href).toBe(false);
@@ -302,14 +303,28 @@ describe('surface routes', () => {
           expect(link.target).toBe(fragment);
           const ids = [...targetHtml.matchAll(/\sid="([^"]+)"/g)].filter(match => match[1] === fragment);
           expect(ids, `${form} dangling/duplicate ${link.href}`).toHaveLength(1);
-          const targetFile = join(directory, `${form}-target-${links.indexOf(link)}.html`);
-          writeFileSync(targetFile, targetHtml);
+          const existing = runtimeTargets.get(targetPath);
+          if (existing !== undefined) {
+            expect(targetHtml, `${form} target changed between fetches ${link.href}`).toBe(existing.html);
+            existing.fragments.push({ href: link.href, id: fragment });
+          } else runtimeTargets.set(targetPath, { html: targetHtml, fragments: [{ href: link.href, id: fragment }] });
+        }
+        expect(runtimeTargets.size, `${form} distinct fragment target pages`).toBe(2);
+        for (const [targetPath, target] of runtimeTargets) {
+          const targetFile = join(directory, `${form}-target-${targetPath.slice(1)}.html`);
+          writeFileSync(targetFile, target.html);
           await page.navigate(pathToFileURL(targetFile).href);
-          const insideDetails = await page.evaluate(`(() => {
-            const matches = [...document.querySelectorAll('[id]')].filter(node => node.id === ${JSON.stringify(fragment)});
-            return matches.length !== 1 || !!matches[0].closest('details');
+          const results = await page.evaluate<readonly boolean[]>(`(() => {
+            const fragments = ${JSON.stringify(target.fragments.map(fragment => fragment.id))};
+            return fragments.map(id => {
+              const matches = [...document.querySelectorAll('[id]')].filter(node => node.id === id);
+              return matches.length !== 1 || !!matches[0].closest('details');
+            });
           })()`);
-          expect(insideDetails, `${form} target hidden in details ${link.href}`).toBe(false);
+          expect(results).toHaveLength(target.fragments.length);
+          for (const [index, fragment] of target.fragments.entries()) {
+            expect(results[index], `${form} target hidden in details ${fragment.href}`).toBe(false);
+          }
         }
         // Readable capture for the dated size evidence, from the same served
         // evaluation and exactly the three-surface link population above.

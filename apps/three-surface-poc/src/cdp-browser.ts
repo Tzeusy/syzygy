@@ -235,6 +235,32 @@ export function removeBrowserProfile(
   removeTemporaryDirectory(profile, options);
 }
 
+interface DisposableBrowserProcess {
+  readonly exitCode: number | null;
+  readonly signalCode: NodeJS.Signals | null;
+  kill(signal: NodeJS.Signals): boolean;
+  once(event: 'exit', listener: () => void): unknown;
+}
+
+/** Browser.close may never acknowledge a protocol request. The browser is a
+ * disposable local fixture, so terminate it directly and remove its profile
+ * only after the child is confirmed exited. */
+export async function closeDisposableBrowser(
+  connection: { close(): void },
+  child: DisposableBrowserProcess,
+  profile: string,
+  removeProfile: (path: string) => void = removeBrowserProfile,
+): Promise<void> {
+  const exited = new Promise<void>((resolve) => {
+    if (child.exitCode !== null || child.signalCode !== null) resolve();
+    else child.once('exit', () => resolve());
+  });
+  connection.close();
+  if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
+  await exited;
+  removeProfile(profile);
+}
+
 /** Launches `executable` headless with a throwaway profile and connects. */
 export async function launchBrowser(executable: string): Promise<Browser> {
   const profile = mkdtempSync(join(tmpdir(), 'syzygy-poc-browser-'));
@@ -280,18 +306,7 @@ export async function launchBrowser(executable: string): Promise<Browser> {
       return new CdpPage(connection, sessionId, targetId);
     },
     async close(): Promise<void> {
-      try {
-        await connection.send('Browser.close');
-      } catch {
-        // The process is killed below either way.
-      }
-      connection.close();
-      child.kill('SIGKILL');
-      await new Promise<void>((resolve) => {
-        if (child.exitCode !== null) resolve();
-        else child.once('exit', () => resolve());
-      });
-      removeBrowserProfile(profile);
+      await closeDisposableBrowser(connection, child, profile);
     },
   };
 }

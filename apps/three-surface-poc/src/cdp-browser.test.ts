@@ -1,6 +1,43 @@
 import { describe, expect, it } from 'vitest';
 
-import { removeBrowserProfile } from './cdp-browser.js';
+import { closeDisposableBrowser, removeBrowserProfile } from './cdp-browser.js';
+
+describe('disposable browser shutdown', () => {
+  it('closes an unresponsive protocol socket, kills the child, then removes its profile', async () => {
+    const events: string[] = [];
+    let onExit: (() => void) | undefined;
+    let signalCode: NodeJS.Signals | null = null;
+    const connection = {
+      close: () => { events.push('socket-closed'); },
+      send: () => { events.push('protocol-close-requested'); return new Promise<never>(() => {}); },
+    };
+    const child: Parameters<typeof closeDisposableBrowser>[1] = {
+      exitCode: null,
+      get signalCode() { return signalCode; },
+      once: (event, listener) => { expect(event).toBe('exit'); onExit = listener; },
+      kill: (signal) => {
+        events.push(signal);
+        queueMicrotask(() => { signalCode = signal; onExit?.(); });
+        return true;
+      },
+    };
+    await closeDisposableBrowser(connection, child, '/tmp/private-browser-profile', () => { events.push('profile-removed'); });
+    expect(events).toEqual(['socket-closed', 'SIGKILL', 'profile-removed']);
+  });
+
+  it('cleans a child whose signal exit was already observed without waiting for a second exit event', async () => {
+    const events: string[] = [];
+    const child: Parameters<typeof closeDisposableBrowser>[1] = {
+      exitCode: null,
+      signalCode: 'SIGKILL',
+      once: () => { throw new Error('exit already observed'); },
+      kill: () => { throw new Error('child already exited'); },
+    };
+    await closeDisposableBrowser({ close: () => { events.push('socket-closed'); } }, child,
+      '/tmp/private-browser-profile', () => { events.push('profile-removed'); });
+    expect(events).toEqual(['socket-closed', 'profile-removed']);
+  });
+});
 
 describe('browser profile cleanup', () => {
   it('retries transient ENOTEMPTY failures and succeeds within the bound', () => {
