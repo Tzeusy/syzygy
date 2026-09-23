@@ -1,0 +1,34 @@
+{
+  "subject": "syzygy-gsw exact scratch-root cleanup for unreturned successors",
+  "date": "2026-09-23",
+  "testedCommit": "a0b6e96388bbe40fd4d606a61572981ac4658d3c",
+  "base": "a971361f1e66cc5cb0da6a3d06f51aaf96feac3a",
+  "scope": [
+    "apps/three-surface-poc/src/restart.test.ts",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs"
+  ],
+  "deterministicRegression": {
+    "test": "discovers an unreturned successor after a post-spawn identity refusal",
+    "command": "npx vitest run apps/three-surface-poc/src/restart.test.ts --maxWorkers=1 --minWorkers=1 --testTimeout=60000 --reporter=dot",
+    "result": "13 passed, 0 failed",
+    "predicate": "A successor rejected after spawn is found by exact fixture argv/repo/state discovery before teardown removes its scratch root."
+  },
+  "mutation": {
+    "id": "scratch-root-process-discovery-removed",
+    "file": "apps/three-surface-poc/src/restart.test.ts",
+    "old": "remaining = exactPrivateFixturePids();",
+    "new": "remaining = [];",
+    "command": "npx vitest run apps/three-surface-poc/src/restart.test.ts -t 'discovers an unreturned successor after a post-spawn identity refusal' --maxWorkers=1 --minWorkers=1 --testTimeout=60000 --reporter=verbose",
+    "expectedPredicate": "afterAll exact-scratch-root process census is empty after every teardown",
+    "baselineExit": 0,
+    "baselineResult": "13 tests passed, 0 failed",
+    "mutantExit": 1,
+    "mutantResult": "1 selected test passed; afterAll failed because the unreturned successor remained in the exact census",
+    "outcome": "killed",
+    "restored": true
+  },
+  "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/restart.test.ts": "97903b39917bb1bd58a4a6dcf05c7e34d6eef6a02bada31eaeba1dccad4fbfe9",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47"
+  }
+}
