@@ -41,7 +41,7 @@
 | File | Current sha256 | Proposed (post-apply) sha256 |
 |---|---|---|
 | `openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md` | `b7c95f57ca5f67a18570b7124d20b223dff99aea2a936efef76d5940a400f93f` | `abea545df981ef1d4838146f57816135d06bdf01f8ef0fabca238bbcbcfe54ad` |
-| `PROJECT-STATUS.md` | `e7b35f8da778938d489fd559142f33b36da592ea0c50b29e07f6803e7b015f75` | `fe2b88ee81ecd8fc91349c4607b9318896780d60ed712c6ff5f7be3ed50bef94` |
+| `PROJECT-STATUS.md` | `e78865bb2ed0c4ee4098b81ff66a66dad813f39f46023ccee152e6d7e69324b8` | `819197d6994d668e315f32f4f119a727c1a851953098746f100bc195930e7fc7` |
 
 Both digests are computed by
 `scripts/build_polaris_edit_repair_deletion_scenario.py`'s `render_manifest()`

@@ -1,0 +1,74 @@
+{
+  "kind": "syzygy-bul-browser-ci-correction-proof",
+  "testedCommit": "a9822139c4ae9a962cd1c7557504194c3241e129",
+  "predecessor": {
+    "path": "docs/evidence/syzygy-bul-browser-cleanup-2026-09-23.json",
+    "sha256": "4a53228de2f58ee58a25b31235b704a5d167eacc526bfdc7f1b8d6bcf0d6c684",
+    "scope": "Its 80 independent-process zero-profile proof remains historical at d741f7f. This successor measures the three browser cases inside full-suite execution and closes their page-creation/page-close cleanup paths."
+  },
+  "sourceSha256": {
+    "apps/three-surface-poc/src/cdp-browser.ts": "cddaa2f8711609c7f673f832312a6fdbbd60161607b38cc713ff3500f4857d88",
+    "apps/three-surface-poc/src/cdp-browser.test.ts": "7c6277b06ce259538ac27cde131fde60258d26481f58e966e502c21224cf19af",
+    "apps/three-surface-poc/src/surface-routes.test.ts": "9421e77381eec61be0fc206762c8742ffa3b0157348a30fece07df60a1b8002e"
+  },
+  "hostedFiveSecondFailures": [
+    { "pr": 112, "runId": 35828843228, "head": "d5949f50980fcd61f3fa88fe6d34d933007d5022", "directMsAtTimeout": 5033, "tailnetMsAtTimeout": 5006, "missingCapabilityMsAtTimeout": 5006, "suite": "1875 passed, 3 failed, 3 skipped" },
+    { "pr": 107, "runId": 35829286308, "head": "77b655d", "finding": "The direct 13-link case independently reached the default five-second timeout; the restart suite passed. This is a separate branch, not an M9 source change." }
+  ],
+  "completeLocalFullSuiteMeasurements": [
+    {
+      "head": "d5949f50980fcd61f3fa88fe6d34d933007d5022",
+      "command": "TMPDIR=/tmp/syzygy-bul-ci-load.PQHiUs npm test -- --reporter=verbose --testTimeout=30000",
+      "diagnosticOnly": "The global 30000ms bound was used only to measure complete cases and was not committed.",
+      "directMs": 1562, "tailnetMs": 2683, "missingCapabilityMs": 1832,
+      "suite": "1877 passed, 1 failed, 3 skipped; unrelated restart fixture reported successor-start-timeout instead of listener-close-timeout"
+    },
+    {
+      "head": "a9822139c4ae9a962cd1c7557504194c3241e129",
+      "command": "TMPDIR=/tmp/syzygy-bul-ci-load2.4sr3Gc npm test -- --reporter=verbose",
+      "directMs": 1664, "tailnetMs": 1706, "missingCapabilityMs": 1810,
+      "suite": "1878 passed, 2 failed, 3 skipped; only production-reobserve's two existing five-second cases timed out",
+      "privateProfilesAfterRun": 0
+    }
+  ],
+  "caseLocalBudgets": {
+    "directMs": 15000,
+    "tailnetMs": 15000,
+    "missingCapabilityMs": 10000,
+    "reason": "The complete local full-suite durations are below three seconds, but hosted runs censored the two 13-link cases and the independently repeated short case at the old 5000ms limit. These case-local bounds leave room for runner scheduling and disposable Chrome startup/teardown under hosted contention. No global timeout, skip, target reduction or assertion change was committed; terminal exact-head hosted CI decides whether the bounds are sufficient."
+  },
+  "cleanup": {
+    "behavior": "withBrowserPage launches the disposable browser, creates its page inside the cleanup scope, and always attempts browser.close even if newPage or page.close rejects. The existing private-session descendant drain remains the browser-close implementation.",
+    "affectedCases": "Both direct/tailnet 13-link cases and the missing-capability case use this scope. The adjacent post-JS encoding case shares it without a timeout change.",
+    "failurePathTests": [
+      { "case": "newPage rejects", "baseline": "passed", "sourceMutant": "move newPage before try", "mutant": "one test failed because browser.close was absent", "restored": true },
+      { "case": "page.close rejects", "baseline": "passed", "sourceMutant": "replace nested finally with sequential close", "mutant": "one test failed because browser.close was absent", "restored": true }
+    ]
+  },
+  "exactMutationProof": {
+    "scratchClone": "/tmp/syzygy-bul-page-mut.EI9FTm/repo",
+    "testedCommit": "a9822139c4ae9a962cd1c7557504194c3241e129",
+    "cdpSourceSha256Restored": "cddaa2f8711609c7f673f832312a6fdbbd60161607b38cc713ff3500f4857d88",
+    "pageCreationScope": {
+      "file": "apps/three-surface-poc/src/cdp-browser.ts",
+      "old": "let page: BrowserPage | undefined;\n  try {\n    page = await browser.newPage();\n    return await use(page);",
+      "new": "const page = await browser.newPage();\n  try {\n    return await use(page);",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/cdp-browser.test.ts -t 'browser page lifetime' --maxWorkers=1 --minWorkers=1 --reporter=dot",
+      "baseline": "2 passed, 0 failed",
+      "mutant": "1 failed, 1 passed; newPage-rejection assertion observed missing browser.close",
+      "restored": true
+    },
+    "pageCloseFallback": {
+      "file": "apps/three-surface-poc/src/cdp-browser.ts",
+      "old": "try { if (page !== undefined) await page.close(); }\n    finally { await browser.close(); }",
+      "new": "if (page !== undefined) await page.close();\n    await browser.close();",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/cdp-browser.test.ts -t 'browser page lifetime' --maxWorkers=1 --minWorkers=1 --reporter=dot",
+      "baseline": "2 passed, 0 failed",
+      "mutant": "1 failed, 1 passed; page-close-rejection assertion observed missing browser.close",
+      "restored": true
+    },
+    "m9LiteralRunner": "node scripts/run_m9_literal_mutations.mjs at the same tested commit: 7 of 7 source mutants killed with tests executing and original source hashes restored; generated record remained in the scratch clone.",
+    "missingCapabilityUnavailableMarker": "At the same tested commit, the post-script missing-capability test passed at baseline, failed with unavailable=0 instead of 1 when its exact marker assignment was made inert, and the Orrery source hash was restored."
+  },
+  "scope": "No product renderer, route, model, governed artifact, live POC process or unrelated restart implementation was changed. Scratch profiles from the predecessor run remain untouched."
+}

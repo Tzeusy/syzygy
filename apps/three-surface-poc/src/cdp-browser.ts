@@ -10,7 +10,7 @@
 // ever opens the `file://` pages the caller writes.
 
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
-import { mkdtempSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -99,14 +99,14 @@ class CdpConnection {
     });
   }
 
-  send<T>(method: string, params: unknown = {}, sessionId?: string): Promise<T> {
+  send<T>(method: string, params: unknown = {}, sessionId?: string, timeoutMs = COMMAND_TIMEOUT_MS): Promise<T> {
     const id = this.nextId;
     this.nextId += 1;
     return new Promise<T>((resolve, reject) => {
       const timer = setTimeout(() => {
         this.pending.delete(id);
-        reject(new Error(`CDP: ${method} timed out after ${COMMAND_TIMEOUT_MS}ms`));
-      }, COMMAND_TIMEOUT_MS);
+        reject(new Error(`CDP: ${method} timed out after ${timeoutMs}ms`));
+      }, timeoutMs);
       this.pending.set(id, {
         resolve: (value) => {
           clearTimeout(timer);
@@ -117,7 +117,12 @@ class CdpConnection {
           reject(error);
         },
       });
-      this.socket.send(JSON.stringify({ id, method, params, ...(sessionId === undefined ? {} : { sessionId }) }));
+      try { this.socket.send(JSON.stringify({ id, method, params, ...(sessionId === undefined ? {} : { sessionId }) })); }
+      catch (error) {
+        this.pending.delete(id);
+        clearTimeout(timer);
+        reject(error);
+      }
     });
   }
 
@@ -139,6 +144,10 @@ class CdpConnection {
   }
 
   close(): void {
+    for (const [id, waiter] of this.pending) {
+      this.pending.delete(id);
+      waiter.reject(new Error('CDP connection closed'));
+    }
     this.socket.close();
   }
 }
@@ -235,6 +244,137 @@ export function removeBrowserProfile(
   removeTemporaryDirectory(profile, options);
 }
 
+interface DisposableBrowserProcess {
+  readonly exitCode: number | null;
+  readonly signalCode: NodeJS.Signals | null;
+  kill(signal: NodeJS.Signals): boolean;
+  once(event: 'exit', listener: () => void): unknown;
+}
+
+const BROWSER_CLOSE_GRACE_MS = 1_000;
+const BROWSER_PROFILE_DRAIN_MS = 1_000;
+
+interface PrivateBrowserGroup {
+  readonly id: number;
+  readonly uid: number;
+  readonly leaderStart: string;
+}
+
+function processStat(value: string): { readonly state: string; readonly group: number; readonly session: number; readonly started: string } {
+  const end = value.lastIndexOf(')');
+  const fields = end < 0 ? [] : value.slice(end + 2).trim().split(/\s+/);
+  const group = Number(fields[2]);
+  const session = Number(fields[3]);
+  if (fields.length < 20 || !Number.isSafeInteger(group) || !Number.isSafeInteger(session) || !fields[19]) {
+    throw new Error('cannot verify private browser process group');
+  }
+  return { state: fields[0] as string, group, session, started: fields[19] as string };
+}
+
+/** detached:true gives this Chrome a new session and process group. Capture
+ * the launched leader before any cleanup; a later PID alone is insufficient. */
+function privateBrowserGroup(child: ChildProcess): PrivateBrowserGroup {
+  const id = child.pid;
+  const uid = process.getuid?.();
+  if (id === undefined || uid === undefined) throw new Error('cannot verify private browser group identity');
+  let owner: number;
+  let identity: ReturnType<typeof processStat>;
+  try {
+    owner = statSync(`/proc/${id}`).uid;
+    identity = processStat(readFileSync(`/proc/${id}/stat`, 'utf8'));
+  } catch { throw new Error('cannot verify private browser group identity'); }
+  if (owner !== uid || identity.group !== id || identity.session !== id || identity.state === 'Z') {
+    throw new Error('browser did not enter its private process group');
+  }
+  return { id, uid, leaderStart: identity.started };
+}
+
+function vanished(cause: unknown): boolean {
+  const code = cause !== null && typeof cause === 'object' && 'code' in cause ? String(cause.code) : '';
+  return code === 'ENOENT' || code === 'ESRCH';
+}
+
+/** Browser helpers can omit --user-data-dir or rewrite their entire argv into
+ * one field. Session membership, including a changed child process group,
+ * is the observable boundary of this one detached Chrome launch. */
+function livePrivateBrowserMembers(group: PrivateBrowserGroup): number[] {
+  const live: number[] = [];
+  for (const entry of readdirSync('/proc', { withFileTypes: true })) {
+    if (!entry.isDirectory() || !/^\d+$/.test(entry.name)) continue;
+    const proc = `/proc/${entry.name}`;
+    let identity: ReturnType<typeof processStat>;
+    try { identity = processStat(readFileSync(`${proc}/stat`, 'utf8')); }
+    catch (cause) {
+      if (vanished(cause) || !existsSync(proc)) continue;
+      try { if (statSync(proc).uid !== group.uid) continue; }
+      catch (statCause) { if (vanished(statCause)) continue; }
+      throw new Error('cannot verify private browser process identity');
+    }
+    if (identity.group !== group.id && identity.session !== group.id) continue;
+    let owner: number;
+    try { owner = statSync(proc).uid; }
+    catch (cause) { if (vanished(cause)) continue; throw new Error('cannot verify private browser process owner'); }
+    if (owner !== group.uid || identity.session !== group.id) throw new Error('private browser group membership changed');
+    if (Number(entry.name) === group.id && identity.started !== group.leaderStart) {
+      throw new Error('private browser group leader identity changed');
+    }
+    if (identity.state !== 'Z' && identity.state !== 'X') live.push(Number(entry.name));
+  }
+  return live;
+}
+
+interface BrowserCleanupOptions {
+  readonly removeProfile?: (path: string) => void;
+  readonly closeGraceMs?: number;
+  readonly profileDrainMs?: number;
+  readonly groupProcesses?: (group: PrivateBrowserGroup) => readonly number[];
+}
+
+/** Browser.close may never acknowledge a protocol request. The browser is a
+ * disposable local fixture, so a bounded graceful request is followed by a
+ * hard stop when needed. Remove its profile only after confirmed child exit. */
+export async function closeDisposableBrowser(
+  connection: { close(): void; send(method: string, params?: unknown, sessionId?: string, timeoutMs?: number): Promise<unknown> },
+  child: DisposableBrowserProcess,
+  profile: string,
+  group: PrivateBrowserGroup,
+  options: BrowserCleanupOptions = {},
+): Promise<void> {
+  const closeGraceMs = options.closeGraceMs ?? BROWSER_CLOSE_GRACE_MS;
+  const exited = new Promise<void>((resolve) => {
+    if (child.exitCode !== null || child.signalCode !== null) resolve();
+    else child.once('exit', () => resolve());
+  });
+  const deadline = Date.now() + closeGraceMs;
+  let acknowledged = false;
+  try {
+    await connection.send('Browser.close', {}, undefined, closeGraceMs);
+    acknowledged = true;
+  } catch { /* a missing acknowledgement never blocks cleanup */ }
+  const remaining = deadline - Date.now();
+  if (acknowledged && remaining > 0 && child.exitCode === null && child.signalCode === null) {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    await Promise.race([exited, new Promise<void>(resolve => { timer = setTimeout(resolve, remaining); })]);
+    if (timer !== undefined) clearTimeout(timer);
+  }
+  connection.close();
+  if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
+  await exited;
+  const drainDeadline = Date.now() + (options.profileDrainMs ?? BROWSER_PROFILE_DRAIN_MS);
+  const groupProcesses = options.groupProcesses ?? livePrivateBrowserMembers;
+  let emptyScans = 0;
+  while (true) {
+    const live = groupProcesses(group);
+    emptyScans = live.length === 0 ? emptyScans + 1 : 0;
+    // A second scan closes the /proc enumeration race with a child that is
+    // being forked while the first scan walks entries.
+    if (emptyScans >= 2) break;
+    if (Date.now() >= drainDeadline) throw new Error(`private browser profile still held by ${live.length} process(es)`);
+    await new Promise(resolve => setTimeout(resolve, 25));
+  }
+  (options.removeProfile ?? removeBrowserProfile)(profile);
+}
+
 /** Launches `executable` headless with a throwaway profile and connects. */
 export async function launchBrowser(executable: string): Promise<Browser> {
   const profile = mkdtempSync(join(tmpdir(), 'syzygy-poc-browser-'));
@@ -253,17 +393,25 @@ export async function launchBrowser(executable: string): Promise<Browser> {
       '--window-size=1280,2000',
       'about:blank',
     ],
-    { stdio: ['ignore', 'ignore', 'pipe'] },
+    { stdio: ['ignore', 'ignore', 'pipe'], detached: true },
   );
+  let group: PrivateBrowserGroup;
+  try { group = privateBrowserGroup(child); }
+  catch (error) {
+    if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
+    // The launched group's identity was not established. Retain its profile.
+    throw error;
+  }
   let connection: CdpConnection;
   try {
     connection = await CdpConnection.open(await waitForDevToolsUrl(child));
   } catch (error) {
-    child.kill('SIGKILL');
-    removeBrowserProfile(profile);
+    await closeDisposableBrowser({ close: () => undefined, send: async () => { throw new Error('CDP unavailable'); } }, child, profile, group);
     throw error;
   }
-  const versionInfo = await connection.send<{ readonly product: string }>('Browser.getVersion');
+  let versionInfo: { readonly product: string };
+  try { versionInfo = await connection.send<{ readonly product: string }>('Browser.getVersion'); }
+  catch (error) { await closeDisposableBrowser(connection, child, profile, group); throw error; }
   return {
     executable,
     version: versionInfo.product,
@@ -280,18 +428,26 @@ export async function launchBrowser(executable: string): Promise<Browser> {
       return new CdpPage(connection, sessionId, targetId);
     },
     async close(): Promise<void> {
-      try {
-        await connection.send('Browser.close');
-      } catch {
-        // The process is killed below either way.
-      }
-      connection.close();
-      child.kill('SIGKILL');
-      await new Promise<void>((resolve) => {
-        if (child.exitCode !== null) resolve();
-        else child.once('exit', () => resolve());
-      });
-      removeBrowserProfile(profile);
+      await closeDisposableBrowser(connection, child, profile, group);
     },
   };
+}
+
+/** Own the complete page lifetime once Chrome has launched. A failed target
+ * creation still closes the browser; a failed target close cannot skip the
+ * private child/session drain in browser.close(). */
+export async function withBrowserPage<T>(
+  executable: string,
+  use: (page: BrowserPage) => Promise<T>,
+  launch: (path: string) => Promise<Browser> = launchBrowser,
+): Promise<T> {
+  const browser = await launch(executable);
+  let page: BrowserPage | undefined;
+  try {
+    page = await browser.newPage();
+    return await use(page);
+  } finally {
+    try { if (page !== undefined) await page.close(); }
+    finally { await browser.close(); }
+  }
 }
