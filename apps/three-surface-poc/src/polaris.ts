@@ -879,9 +879,9 @@ function sourceRow(source: ProjectShapeSource, index: number, revision: string):
   const denominator = source.itemDenominator.kind === 'known'
     ? `${source.itemDenominator.value} item(s)`
     : `${copyText('label.unknown')} — ${source.itemDenominator.unknown.unknownReason}`;
-  const identityColumn = `<span class="source-record-label"${copyAttr('label.source-record')}>${copy('label.source-record')} — ${escapeHtml(source.path)}</span><br>${identityCell}`;
-  const ruleColumn = `<b>${copy('table.rule')}:</b> ${escapeHtml(source.rule)}<br><b>${copy('table.pillar')}:</b> ${source.pillar === undefined ? '<span>not declared</span>' : escapeHtml(source.pillar)}`;
-  const outcomeColumn = `<b>${copy('table.outcome')}:</b> ${escapeHtml(outcome)}<br><b>${copy('table.anchor')}:</b> ${escapeHtml(anchorText(source.anchor))}<br><b>${copy('table.digest')}:</b> ${digest === undefined ? `<small${copyAttr('sentence.no-body-read')}>${copy('sentence.no-body-read')}</small>` : `<code data-parity-field="shape-source-digest">${escapeHtml(shortDigest(digest))}</code>`}`;
+  const identityColumn = `<span class="source-record-label">${copy('label.source-record')} — ${escapeHtml(source.path)}</span><br>${identityCell}`;
+  const ruleColumn = `${escapeHtml(source.rule)} · ${source.pillar === undefined ? 'no pillar declared' : escapeHtml(source.pillar)}`;
+  const outcomeColumn = `${escapeHtml(outcome)} · ${escapeHtml(anchorText(source.anchor))} · ${digest === undefined ? `<small${copyAttr('sentence.no-body-read')}>${copy('sentence.no-body-read')}</small>` : `<code data-parity-field="shape-source-digest">${escapeHtml(shortDigest(digest))}</code>`}`;
   return `<tr id="polaris-source-${escapeHtml(sourceSlug(source.path))}" data-polaris-source="${escapeHtml(source.claim.claimId)}"${block?.attrs ?? FACT}><td>${index + 1}</td><td><code data-parity-field="shape-source-path">${escapeHtml(source.path)}</code>${activeExactSources.has(source.identity) ? `<br>${exactTextLink(source.identity, source.path)}` : ''}</td><td>${identityColumn}</td><td>${ruleColumn}</td><td>${outcomeColumn}</td><td>${source.claim.epistemic.label === 'Observed' ? `<span data-claim-provenance="${escapeHtml(source.claim.claimId)}">${escapeHtml(denominator)}</span>` : unknownRoutes(source.claim, '')}<br>${claimTuple(source.claim)}</td></tr>`;
 }
 

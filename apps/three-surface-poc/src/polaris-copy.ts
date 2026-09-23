@@ -126,7 +126,8 @@ export const POLARIS_COPY = [
   { id: 'label.complete-catalog', role: 'action-label', kind: 'label', text: 'Explore the complete catalog' },
   { id: 'label.browse-source-records', role: 'scope-instruction', kind: 'sentence', text: 'Browse the source records below. Scroll within the table for the full list.' },
   { id: 'label.component-guides', role: 'scope-instruction', kind: 'label', text: 'Explore the design' },
-  { id: 'label.source-record', role: 'scope-instruction', kind: 'label', text: 'Source record' },
+  // After hoisting, this names a factual source row rather than a disclosure control.
+  { id: 'label.source-record', role: 'project-fact', kind: 'label', text: 'Source record' },
   { id: 'label.source-notes', role: 'action-label', kind: 'label', text: 'Sources' },
   { id: 'label.full-account', role: 'action-label', kind: 'label', text: 'Read the complete declaration' },
   { id: 'label.show-items', role: 'action-label', kind: 'label', text: 'Show items' },
@@ -170,11 +171,6 @@ export const POLARIS_COPY = [
   { id: 'table.source-identity', role: 'project-fact', kind: 'label', text: 'Source identity' },
   { id: 'table.rule-and-pillar', role: 'project-fact', kind: 'label', text: 'Rule and pillar' },
   { id: 'table.outcome-anchor-digest', role: 'project-fact', kind: 'label', text: 'Outcome, anchor and digest' },
-  { id: 'table.rule', role: 'project-fact', kind: 'label', text: 'Rule' },
-  { id: 'table.pillar', role: 'project-fact', kind: 'label', text: 'Pillar' },
-  { id: 'table.outcome', role: 'project-fact', kind: 'label', text: 'Outcome' },
-  { id: 'table.anchor', role: 'project-fact', kind: 'label', text: 'Anchor' },
-  { id: 'table.digest', role: 'project-fact', kind: 'label', text: 'Digest' },
   { id: 'table.items', role: 'project-fact', kind: 'label', text: 'Items' },
 
   { id: 'sentence.no-items', role: 'project-fact', kind: 'sentence', text: 'No items of this class were declared by any admitted source.' },

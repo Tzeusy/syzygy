@@ -266,9 +266,10 @@ describe('Polaris copy roles (PWB-REQ-012)', () => {
     const labels = [...html.matchAll(/<span class="source-record-label"([^>]*)>([^<]*)<\/span>/g)];
     expect(labels).toHaveLength(sources.length);
     for (const [index, label] of labels.entries()) {
-      expect(label[1]).toContain('data-copy-role="scope-instruction"');
+      expect(label[1]).not.toContain('data-copy-role=');
       expect(decode(label[2] as string)).toBe(`Source record — ${sources[index]!.path}`);
     }
+    expect(sweep(html).strings.filter(entry => entry.text.startsWith('Source record — ')).every(entry => entry.role === 'project-fact')).toBe(true);
     const identities = sourceRouteIdentities(html);
     expect(identities).toHaveLength(8);
     expect(createHash('sha256').update(identities.join('\n')).digest('hex'))
