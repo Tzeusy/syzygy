@@ -370,3 +370,17 @@ Open questions: Q1, Q2, Q3 above (P-67)
 Sign-off: pending — the owner's, by ruling P-67
 Recommended handoff: Q1 yes → execute lane A under syzygy-dov.1 in the P-63 shape; Q2 → draft the lane B package after the lane A measurement; Q3 → record the restated target in the bead
 ```
+
+### 2026-09-23 note — no persistent M1 measurement script
+
+M1 page-size records to date (including the ones cited above) were each
+produced by an ad hoc capture-and-measure pass; no persistent script owns
+this family, so a future record's population accounting depends on whoever
+writes it remembering to include one. There is no tooling gap this note can
+close by itself, so it discloses the gap instead: any new M1 (or related
+Polaris page-size) evidence record must carry a `population` block derived
+with `derivePopulationBlock` in
+`packages/three-surface-poc-core/src/evidence-population.ts` — computed from
+retained, digest-matched bytes, or recorded as `{"state":"unknown","reason":
+"..."}` per VIS-2 when no such bytes exist. This note is candidate design
+material like the rest of this document and binds nothing by itself.

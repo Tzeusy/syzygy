@@ -1,0 +1,86 @@
+{
+  "kind": "measurement",
+  "task": "N3 slice 4 (bead syzygy-u05.3): population block in the M1 measurement script and evidence shape -- re-measured and recorded beside the lane A record",
+  "date": "2026-09-23",
+  "ruling": "Adds a population block {itemCount, claimIdCount, butlersRevision} to the M1 measurement family so a reader can attribute /polaris page-byte growth to population growth without reconstructing it by hand. Computed by the new pure module packages/three-surface-poc-core/src/evidence-population.ts (derivePopulationBlock), unit-tested with hard-coded literal expectations (packages/three-surface-poc-core/src/evidence-population.test.ts, 8/8 passing) and confirmed by rule-6 mutation (two separate mutations of the computation each produced a failing test, reverted). model.ts, polaris.ts and routes.ts were not touched; the module only consumes their already-serialized runtime output (the parsed GET /api/poc JSON body's projectShape.counts.items, and the distinct data-claim-id values actually rendered in the /polaris HTML). docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json (the lane A record) is retained unedited, per AGENTS.md's historical-evidence rule; this is a new record beside it, not a rewrite.",
+  "labels": ["pwb", "polaris", "m1", "evidence-population", "N3", "syzygy-u05.3"],
+  "method": "One private daemon, one capture: `node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir <scratch>` from a committed, clean worktree root (never port 7478, per AGENTS.md's '/polaris needs a committed, clean tree' lesson). Curled /polaris direct and with `Host: tzeusy.parrot-hen.ts.net` (tailnet form), and the machine-credentialed GET /api/poc envelope. The population block was derived offline from the three captured files by importing the built packages/three-surface-poc-core/dist/evidence-population.js and calling derivePopulationBlock({ projectShape: apiPoc.projectShape, polarisHtml, butlersRevision }) once per HTML form; the Butlers revision was cross-checked independently against `git -C /home/tze/GitHub/butlers rev-parse HEAD`, which matched the daemon's own 'Observed revision' startup line.",
+  "measurementScript": "#!/usr/bin/env bash\n# usage: measure-population.sh <syzygy-worktree>\n# Extends the M1 measurement script (docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json) with the population block: same daemon invocation and capture shape, one added offline derivation step.\nset -u\nWT=\"$1\"\nS=$SESSION_SCRATCHPAD/m1-population\nmkdir -p \"$S\"\nSTATE=\"$S/state\"; rm -rf \"$STATE\"; mkdir -p \"$STATE\"\ncd \"$WT\"\ngit status --short  # must be empty before launching\nnode apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir \"$STATE\" > \"$S/daemon.log\" 2>&1 &\nPID=$!\nfor i in $(seq 1 180); do\n  if grep -q 'Syzygy Three-Surface POC: http' \"$S/daemon.log\" 2>/dev/null; then break; fi\n  if ! kill -0 $PID 2>/dev/null; then echo \"daemon died\"; cat \"$S/daemon.log\"; exit 1; fi\n  sleep 1\ndone\nURL=$(grep -o 'http://[^ ]*/' \"$S/daemon.log\" | head -1)\ngrep -E 'Observed revision' \"$S/daemon.log\"\ncurl -s -o \"$S/polaris-direct.html\" -w \"direct status=%{http_code} bytes=%{size_download}\\n\" \"${URL}polaris\"\ncurl -s -o \"$S/polaris-tailnet.html\" -H 'Host: tzeusy.parrot-hen.ts.net' -w \"tailnet status=%{http_code} bytes=%{size_download}\\n\" \"${URL}polaris\"\nTOKEN_FILE=$(find \"$STATE\" -name 'machine-credential.token' | head -1)\ncurl -s -o \"$S/api-poc.json\" -H \"Authorization: Bearer $(cat \"$TOKEN_FILE\")\" -w \"machine status=%{http_code} bytes=%{size_download}\\n\" \"${URL}api/poc\"\nkill $PID; wait $PID 2>/dev/null\necho \"syzygy=$(git -C \"$WT\" rev-parse HEAD) butlers=$(git -C /home/tze/GitHub/butlers rev-parse HEAD)\"\nnode -e \"\nconst { readFileSync } = require('node:fs');\nconst { derivePopulationBlock } = require('$WT/packages/three-surface-poc-core/dist/evidence-population.js');\nconst apiPoc = JSON.parse(readFileSync('$S/api-poc.json', 'utf8'));\nconst direct = readFileSync('$S/polaris-direct.html', 'utf8');\nconst tailnet = readFileSync('$S/polaris-tailnet.html', 'utf8');\nconst butlersRevision = require('node:child_process').execSync('git -C /home/tze/GitHub/butlers rev-parse HEAD').toString().trim();\nconsole.log('direct', JSON.stringify(derivePopulationBlock({ projectShape: apiPoc.projectShape, polarisHtml: direct, butlersRevision })));\nconsole.log('tailnet', JSON.stringify(derivePopulationBlock({ projectShape: apiPoc.projectShape, polarisHtml: tailnet, butlersRevision })));\n\"\n",
+  "invariantsScript": "#!/usr/bin/env python3\n# Confirms both /polaris forms (direct, tailnet) carry the identical claim-tuple population -- so the population block does not depend on which host form was captured. Reads the two captured HTML files and counts distinct `data-claim-id` attribute values with the same regex the shipped module uses (\\sdata-claim-id=\"([^\"]*)\") after decoding the five standard HTML entities, then asserts the two sets are equal and that itemCount from projectShape.counts.items matches the module's modelItemCount() on both forms.\nimport json, re, sys\n\nCLAIM_ID = re.compile(r'\\sdata-claim-id=\"([^\"]*)\"')\n\n\ndef decode(s):\n    return (s.replace('&quot;', '\"').replace('&#39;', \"'\").replace('&lt;', '<').replace('&gt;', '>').replace('&amp;', '&'))\n\n\ndef ids(html):\n    return {decode(m.group(1)) for m in CLAIM_ID.finditer(html)}\n\n\ndirect = open(sys.argv[1]).read()\ntailnet = open(sys.argv[2]).read()\napi_poc = json.load(open(sys.argv[3]))\n\nd_ids, t_ids = ids(direct), ids(tailnet)\nassert d_ids == t_ids, f'direct/tailnet claim-id populations differ: {len(d_ids)} vs {len(t_ids)}'\n\nshape = api_poc['projectShape']\nmodel_items = shape['counts']['items'] if shape.get('kind') == 'observed' and shape.get('counts') else 0\nprint(f'distinct claim ids (both forms): {len(d_ids)}')\nprint(f'model itemCount: {model_items}')\n",
+  "butlers": {
+    "revision": "27bf71b0709b20970f4d3731d8e6f020f58b8a9f",
+    "observedVia": "daemon startup log 'Observed revision' line, cross-checked against `git -C /home/tze/GitHub/butlers rev-parse HEAD`; both agreed",
+    "note": "[Observed] Butlers working tree carried uncommitted local modifications at capture time (confirmed via `git -C /home/tze/GitHub/butlers status --short`); irrelevant here because the observer's cleanliness gate (pocObserverInputsAreClean in apps/three-surface-poc/src/main.ts) checks only the Syzygy observer worktree (process.cwd()), never the observed Butlers repository, and the PWB pipeline reads Butlers content via git-object-reader from committed objects at the resolved revision, not the working tree."
+  },
+  "syzygy": {
+    "measuredAtCommit": "0326aa8cdb8a64c4cee31dc185da10ec5643248a",
+    "branch": "agent/syzygy-u05.3-slice4",
+    "note": "Worktree was committed and clean (`git status --short` empty) before the daemon was launched, per AGENTS.md's 'Measuring /polaris needs a committed, clean tree' lesson. Cited as provenance only: the branch was rebased onto a moved origin/main after the daemon capture (the original measurement commit was dd01b58b3297a2bbb3190ef335ba33c0f04c7462, content-identical for every file this measurement built or read -- packages/three-surface-poc-core/src/evidence-population.ts, index.ts and their dist output -- and is now unreachable from this branch; per AGENTS.md's rebase-merge lesson, a rebase-renamed commit does not invalidate the measurement it names)."
+  },
+  "captures": {
+    "polaris-direct.html": {
+      "bytes": 1509602,
+      "sha256": "7381c910f801bb46ca0c36154f6d95b0082dd61ef72707fb1ff6ca00909e9ac8"
+    },
+    "polaris-tailnet.html": {
+      "bytes": 1515512,
+      "sha256": "acbb974799c51b7c40946053e689f137134f34764f2fc08b3901f1726cae100d"
+    },
+    "api-poc.json": {
+      "bytes": 5617564,
+      "sha256": "90a67f107825ac7d5d78afa8239bdfdd722097f9d67585d63ad155c06814e5fa"
+    }
+  },
+  "population": {
+    "itemCount": 426,
+    "claimIdCount": 719,
+    "butlersRevision": "27bf71b0709b20970f4d3731d8e6f020f58b8a9f",
+    "derivedFrom": {
+      "itemCount": "GET /api/poc response body's projectShape.counts.items (projectShape.kind == 'observed')",
+      "claimIdCount": "distinct data-claim-id attribute values rendered in /polaris HTML, decoded and de-duplicated; identical (719) on both the direct and tailnet-Host capture forms",
+      "butlersRevision": "caller-supplied, read from the daemon's 'Observed revision' startup line and cross-checked against `git -C /home/tze/GitHub/butlers rev-parse HEAD`"
+    },
+    "modelCountsFull": {
+      "sources": 283,
+      "sourcesWithKnownItemDenominator": 274,
+      "sourcesWithUnknownDenominator": 9,
+      "items": 426,
+      "modeled": 426,
+      "unknown": 0,
+      "contradicted": 0,
+      "facts": 450,
+      "contradictedFacts": 0,
+      "rulesDeclared": 7,
+      "rulesApplied": 1,
+      "exclusions": 9
+    },
+    "comparisonToLaneA": "[Inferred] The lane A record (2026-09-13, Butlers revision 2e3bac97790b4bd8906dcac63eadb5642a0bb1ac) reported /polaris page sizes but no item or claim-id population figures, so this record cannot compute a numeric population delta against it; it establishes the population block format and its first measured values at the current Butlers revision (27bf71b0709b20970f4d3731d8e6f020f58b8a9f, ten days and an unknown number of intervening Butlers commits after lane A's) for that comparison to be made against in a future measurement."
+  },
+  "result": {
+    "polarisDirectBytes": 1509602,
+    "polarisTailnetBytes": 1515512,
+    "apiPocBytes": 5617564,
+    "note": "[Observed] Page sizes recorded here are informational context for the population block only; this record does not re-run or supersede the lane A trim/ceiling measurement."
+  },
+  "verification": {
+    "unitTests": "packages/three-surface-poc-core/src/evidence-population.test.ts: 8/8 passing (vitest), hard-coded literal expected values, fixtures built in beforeAll",
+    "rule6Mutations": [
+      "mutated modelItemCount to return shape.counts.items + 1 -> 2 tests failed as expected -> reverted -> 8/8 pass",
+      "mutated renderedClaimIdCount to count with an array instead of a Set (removing de-duplication) -> 1 test failed as expected ('expected 3 to be 2') -> reverted -> 8/8 pass"
+    ],
+    "typecheck": [
+      "npx tsc -b packages/three-surface-poc-core: clean",
+      "npx tsc --noEmit -p apps/three-surface-poc: clean (after building packages/cap1-daemon and packages/polaris-generation-core project references on the fresh checkout)"
+    ],
+    "fullTestSuite": "npm test: 1804 passed, 3 skipped, 139 test files; one transient timeout in apps/three-surface-poc/src/production-reobserve.test.ts unrelated to this change, confirmed non-reproducing by an isolated re-run (4/4 passed)",
+    "governance": "python3 scripts/check_governance.py: 32 OK, 20 WARN, 0 FAIL (all WARNs pre-existing and advisory, unrelated to this change)",
+    "evidenceCurrency": "python3 scripts/check_evidence_currency.py: exit 0; read-only report of pre-existing drift across unrelated historical records, none newly introduced by this change"
+  },
+  "nonGoalsHonoured": [
+    "model.ts, polaris.ts and routes.ts were not modified; the population computation only reads their already-serialized runtime output",
+    "docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json was not edited",
+    "measurement used port 0 with a private state dir, never port 7478",
+    "no new Butlers content class was read; the population block is derived from data the daemon's existing pipeline already computes and serves"
+  ],
+  "review": "Not yet reviewed; recorded per bead syzygy-u05.3 slice 4 direction to re-measure and record beside the lane A record."
+}

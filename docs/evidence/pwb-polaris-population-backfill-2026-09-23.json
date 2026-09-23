@@ -1,0 +1,139 @@
+{
+  "kind": "backfill-disclosure",
+  "task": "N3 slice 4 repair (bead syzygy-u05.3), PR #96 review finding 1 (blocking): the ten pre-existing docs/evidence/*.json records that cite the /polaris direct capture had no population block and the gap was undisclosed. This record adds the disclosure and, per record, either a derived population block or an explicit Unknown with reason -- never a guess, never a zero standing in for 'not measured' (VIS-2).",
+  "date": "2026-09-23",
+  "ruling": "None of the ten pre-existing records named below is edited by this repair. AGENTS.md: 'history stays as captured'; this is one new record beside them, matching the convention already set by docs/evidence/pwb-m1-polaris-lane-a-population-2026-09-23.json (added earlier in this same PR, itself carrying a population block and therefore excluded from the ten addressed here).",
+  "labels": ["pwb", "polaris", "population-backfill", "N3", "syzygy-u05.3"],
+  "sweep": {
+    "predicate": "grep -lF '\"polaris-direct.html\"' docs/evidence/*.json",
+    "reRunThisSession": true,
+    "reRunAtCommit": "25874a4390dfa2c15b18f3b3b0b2be14c189fab7",
+    "totalMatches": 11,
+    "totalMatchesNote": "11 = the 10 pre-existing records addressed here, plus docs/evidence/pwb-m1-polaris-lane-a-population-2026-09-23.json, which already carries its own population block and is not one of the ten.",
+    "confirmedNoPopulationKey": "python3, `'population' in json.load(open(f))`, run against all 10 pre-existing paths this session: False for every one (10/10).",
+    "recordCount": 10
+  },
+  "digestBindingCheck": {
+    "method": "For each of the 10 records, sha256 the current bytes this session and grep -rlF the digest and the basename across docs, .syzygy, scripts (excluding the file itself); also grep every docs/reviews/*-RAW.md for a 64-hex digest appearing within two lines of the record's basename, and compare each such digest to the record's current sha256.",
+    "currentByteDigestCitations": "0 of 10 (no file's current sha256 is cited anywhere in docs, .syzygy or scripts) -- consistent with AGENTS.md rule 10 ('zero digest citers does not mean never bound').",
+    "priorReviewDigestConfirmations": "6 of the 10 (polaris-m10-machine-contract-funnel, polaris-m13-navigation-scale-funnel, polaris-m4-owner-loop-funnel, polaris-m5-agent-briefing-funnel, polaris-m9-one-identity-funnel, pwb-m1-polaris-lane-a-measurement) each have one or more docs/reviews/*-RAW.md files that quote a 64-hex sha256 for the same path; every quoted digest found differs from the file's current bytes -- each record was reviewed and digest-confirmed at an earlier state, then edited afterward (a later edit retires the confirmation, per rule 10). The remaining 4 (polaris-m14-provenance-depth-funnel, polaris-m16-renderer-visual-system-funnel, pwb-laneb-strict-scope-estimate, pwb-p63-polaris-trim-measurement) returned no digest quoted for the record's own path within this sweep's window (pwb-laneb has no review raw at all; the m14 and m16 raws quote capture-file digests, not the evidence record's own).",
+    "disclosureOnly": "This check changes nothing; it is stated so a later reader does not read '0 current citers' as 'never reviewed'."
+  },
+  "records": [
+    {
+      "recordPath": "docs/evidence/polaris-m10-machine-contract-funnel-2026-09-15.json",
+      "population": {
+        "itemCount": { "state": "unknown", "reason": "No retained bytes in this repository match any digest named in the record (see itemClaimIdSweep below); itemCount cannot be derived without re-observing, which this repair does not do." },
+        "claimIdCount": { "state": "unknown", "reason": "Same as itemCount: no retained polaris-direct.html/polaris-tailnet.html/api-poc.json bytes exist for this record's captures to run derivePopulationBlock's renderedClaimIdCount over." },
+        "butlersRevision": "2e3bac97790b4bd8906dcac63eadb5642a0bb1ac"
+      },
+      "butlersRevisionStatedAt": "captures_used.lane_a_after_capture.butlers_revision, the sub-object whose files list includes \"polaris-direct.html\""
+    },
+    {
+      "recordPath": "docs/evidence/polaris-m13-navigation-scale-funnel-2026-09-15.json",
+      "population": {
+        "itemCount": { "state": "unknown", "reason": "No retained bytes in this repository match any digest named in the record; itemCount cannot be derived without re-observing." },
+        "claimIdCount": { "state": "unknown", "reason": "No retained polaris-direct.html bytes for this record's capture to run renderedClaimIdCount over." },
+        "butlersRevision": "2e3bac97790b4bd8906dcac63eadb5642a0bb1ac"
+      },
+      "butlersRevisionStatedAt": "captures.post_trim.provenance, quoted verbatim: \"the lane A 'after' capture; Syzygy 2ef68f5, Butlers 2e3bac97790b4bd8906dcac63eadb5642a0bb1ac; recorded in docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json\""
+    },
+    {
+      "recordPath": "docs/evidence/polaris-m14-provenance-depth-funnel-2026-09-17.json",
+      "population": {
+        "itemCount": { "state": "unknown", "reason": "No retained bytes in this repository match any digest named in the record; itemCount cannot be derived without re-observing." },
+        "claimIdCount": { "state": "unknown", "reason": "No retained polaris-direct.html bytes for this record's capture to run renderedClaimIdCount over." },
+        "butlersRevision": "2e3bac97790b4bd8906dcac63eadb5642a0bb1ac"
+      },
+      "butlersRevisionStatedAt": "captures.post_trim.provenance, quoted verbatim: \"the lane A 'after' capture; Syzygy 2ef68f5, Butlers 2e3bac97790b4bd8906dcac63eadb5642a0bb1ac; recorded in docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json\""
+    },
+    {
+      "recordPath": "docs/evidence/polaris-m16-renderer-visual-system-funnel-2026-09-17.json",
+      "population": {
+        "itemCount": { "state": "unknown", "reason": "No retained bytes in this repository match any digest named in the record; itemCount cannot be derived without re-observing." },
+        "claimIdCount": { "state": "unknown", "reason": "No retained polaris-direct.html bytes for this record's capture to run renderedClaimIdCount over." },
+        "butlersRevision": { "state": "unknown", "reason": "The record's own bytes name no Butlers revision anywhere (checked with a case-insensitive sweep for 'butler' across the whole file this session: the only hit is the unrelated sentence 'no Butlers body was read'). captures.polaris-direct.html.capture describes the file only by role ('post-trim direct /polaris capture; the lane A 'after' human page'), never by restating the revision hash." }
+      }
+    },
+    {
+      "recordPath": "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json",
+      "population": {
+        "itemCount": { "state": "unknown", "reason": "No retained bytes in this repository match any digest named in the record; itemCount cannot be derived without re-observing." },
+        "claimIdCount": { "state": "unknown", "reason": "No retained polaris-direct.html bytes for this record's capture to run renderedClaimIdCount over." },
+        "butlersRevision": "2e3bac97790b4bd8906dcac63eadb5642a0bb1ac"
+      },
+      "butlersRevisionStatedAt": "captures.lane_a_after.provenance, quoted verbatim: \"retained lane A 'after' captures; Butlers evaluation revision 2e3bac97790b4bd8906dcac63eadb5642a0bb1ac, committed 2026-09-13T10:31:11Z, captured 2026-09-13T13:33:24.295Z; observer 2ef68f5b28307003e8fc38668986765ab0f884b5\""
+    },
+    {
+      "recordPath": "docs/evidence/polaris-m5-agent-briefing-funnel-2026-09-14.json",
+      "population": {
+        "itemCount": { "state": "unknown", "reason": "No retained bytes in this repository match any digest named in the record; itemCount cannot be derived without re-observing." },
+        "claimIdCount": { "state": "unknown", "reason": "No retained polaris-direct.html bytes for this record's own claim-tuple population to run renderedClaimIdCount over; polaris-direct.html appears in this record only as a companion sha256 entry, not as measured HTML." },
+        "butlersRevision": "2e3bac97790b"
+      },
+      "butlersRevisionStatedAt": "capture.provenance, quoted verbatim: \"retained lane A 'after' capture, Butlers evaluation revision 2e3bac97790b (committed 2026-09-13T10:31:11Z), captured 2026-09-13T13:33:24.295Z\" -- recorded here exactly as the source record states it, a 12-hex-character prefix, not the full 40-character revision; not padded or completed by this backfill."
+    },
+    {
+      "recordPath": "docs/evidence/polaris-m9-one-identity-funnel-2026-09-15.json",
+      "population": {
+        "itemCount": { "state": "unknown", "reason": "No retained bytes in this repository match any digest named in the record; itemCount cannot be derived without re-observing." },
+        "claimIdCount": { "state": "unknown", "reason": "No retained polaris-direct.html bytes for this record's capture to run renderedClaimIdCount over." },
+        "butlersRevision": "2e3bac97790b4bd8906dcac63eadb5642a0bb1ac"
+      },
+      "butlersRevisionStatedAt": "captures_used.lane_a_after_capture.provenance, quoted verbatim: \"[Observed] private daemon on lane A's post-trim tree; observed Butlers revision 2e3bac97790b4bd8906dcac63eadb5642a0bb1ac; walkthrough surface version polaris@baee0208e8c0; from scratchpad/m1/measure/after/daemon.log\""
+    },
+    {
+      "recordPath": "docs/evidence/pwb-laneb-strict-scope-estimate-2026-09-14.json",
+      "population": {
+        "itemCount": { "state": "unknown", "reason": "No retained bytes in this repository match any digest named in the record; itemCount cannot be derived without re-observing." },
+        "claimIdCount": { "state": "unknown", "reason": "No retained polaris-direct.html bytes for this record's capture to run renderedClaimIdCount over." },
+        "butlersRevision": { "state": "unknown", "reason": "The record's own bytes name no Butlers revision anywhere (a case-insensitive sweep for 'butler' across the whole file this session returns only the unrelated key plusButlersRepairsMax). inputs.polaris-direct.html only asserts sameAsLaneARecordAfterCapture: true against the same sha256 as the lane A record's file -- an equivalence claim, not a restated revision." }
+      }
+    },
+    {
+      "recordPath": "docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json",
+      "population": {
+        "itemCount": { "state": "unknown", "reason": "No retained bytes in this repository match any digest named in the record; itemCount cannot be derived without re-observing." },
+        "claimIdCount": { "state": "unknown", "reason": "No retained polaris-direct.html bytes for this record's capture to run renderedClaimIdCount over." },
+        "butlersRevision": "2e3bac97790b4bd8906dcac63eadb5642a0bb1ac"
+      },
+      "butlersRevisionStatedAt": "butlers.revision, the top-level field"
+    },
+    {
+      "recordPath": "docs/evidence/pwb-p63-polaris-trim-measurement-2026-09-07.json",
+      "population": {
+        "itemCount": { "state": "unknown", "reason": "No retained bytes in this repository match any digest named in the record; itemCount cannot be derived without re-observing." },
+        "claimIdCount": { "state": "unknown", "reason": "No retained polaris-direct.html bytes for this record's capture to run renderedClaimIdCount over." },
+        "butlersRevision": "03f9ae74a8ebcc57ce7d82e61697bd860eddec7d"
+      },
+      "butlersRevisionStatedAt": "butlers.revision, the top-level field; this is a different, earlier Butlers revision than the lane A after capture used by the other nine records -- the P-63 trim measurement (2026-09-07) predates lane A (2026-09-13) and is not restated here as equal to it."
+    }
+  ],
+  "itemClaimIdSweep": {
+    "method": "Every 64-hex-character (sha256-length) string appearing anywhere in the 10 records' bytes was collected and cross-checked this session against a sha256 of every file tracked by git in the repository (git ls-files, hashed one at a time).",
+    "distinctDigestsInTheTenRecords": 97,
+    "trackedFilesInRepository": 1463,
+    "matchesFound": 24,
+    "matchesAreCaptureFiles": false,
+    "matchesAreNote": "All 24 matches are docs/reviews/*-RAW.md files, two docs/design/*.md files, and two apps/three-surface-poc/src/*.ts source files -- files the records cite as review or method context, never the polaris-direct.html/polaris-tailnet.html/api-poc.json capture bytes the population figures would need to be recomputed from. No capture file's bytes are retained under version control anywhere in this repository (the records themselves say so: captures live under a session scratchpad, never committed).",
+    "conclusion": "itemCount and claimIdCount are Unknown for all 10 records, not zero and not guessed, per VIS-2. This is the sweep with a denominator that AGENTS.md rule 9 requires for the absence claim above."
+  },
+  "measurementScriptDisclosure": "No persistent M1 (or other Polaris page-size) measurement script exists in this repository; each of the 10 records above, and every earlier M1-family record, was produced by an ad hoc capture-and-measure pass whose author decided by hand what to record. This is why the population gap existed silently for ten records rather than being caught by a shared tool. Disclosed at docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md (2026-09-23 note, appended by this same repair; that document is candidate design material, confirmed not digest-bound before editing -- sha256 of its pre-edit bytes was d38df844f0f27d14d29475c59486e59f7cd66b0bf9de62eb2d885941939b36af with 0 digest citers across docs, .syzygy and scripts) and here: any future M1/Polaris page-size evidence record must include a population block computed with derivePopulationBlock (packages/three-surface-poc-core/src/evidence-population.ts), or an explicit per-field Unknown with a reason, never a silent gap.",
+  "verification": {
+    "sweepsRunThisSession": [
+      "grep -lF '\"polaris-direct.html\"' docs/evidence/*.json -> 11 matches, 10 addressed here",
+      "python3 population-key check over the 10 paths -> 'population' absent in all 10",
+      "python3 sha256 + grep -rlF digest/basename sweep over the 10 paths against docs, .syzygy, scripts -> 0 current-byte digest citations, path citations present for all 10",
+      "python3 sweep of docs/reviews/*-RAW.md for a 64-hex digest within 2 lines of each record's basename, compared to current sha256 -> 6 of 10 carry a stale (pre-edit) digest confirmation; see digestBindingCheck",
+      "python3 97-digest cross-check against sha256 of all 1463 git-tracked files -> 24 matches, none are capture bytes; see itemClaimIdSweep"
+    ],
+    "noOriginalRecordEdited": "Confirmed by this repair's own diff: the 10 recordPath files above are not listed as changed."
+  },
+  "nonGoalsHonoured": [
+    "None of the 10 pre-existing records was edited",
+    "No new Butlers or Polaris observation was taken; every figure above is derived from bytes already committed to this repository or explicitly marked Unknown",
+    "model.ts, polaris.ts and routes.ts were not touched by this backfill",
+    "No itemCount or claimIdCount was estimated, inferred from an unrelated count field (e.g. claim-tuple census totals, which measure occurrences rather than distinct ids), or otherwise guessed"
+  ],
+  "review": "Not yet reviewed; recorded per PR #96 review finding 1 (verdict REVISE) as a disclosure-only backfill beside the 10 unedited originals."
+}

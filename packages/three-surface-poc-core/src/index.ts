@@ -28,3 +28,4 @@ export * from './walkthrough-readiness.js';
 export * from './response-identity.js';
 export * from './fixtures/synthetic-corpora.js';
 export * from './synthetic-corpus-coverage.js';
+export * from './evidence-population.js';
