@@ -31,6 +31,30 @@ export interface PolarisPresentationEnvelope {
   readonly evidence: PocModel['evaluation']['evidence'];
   readonly project: { readonly revision: string };
   readonly narrative: ReturnType<typeof renderPolarisPresentation>['narrative'];
+  readonly links: NonNullable<PocModel['links']>;
+}
+
+/** RFC 9110 weak comparison: a strong member matches a weak selected tag.
+ * Malformed conditions are ignored, never promoted to a cache hit. */
+function ifNoneMatchMatches(value: string | string[] | undefined, selected: string): boolean {
+  if (value === undefined) return false;
+  const raw = Array.isArray(value) ? value.join(',') : value;
+  if (raw.trim() === '*') return true;
+  const members: string[] = [];
+  let start = 0;
+  let quoted = false;
+  for (let index = 0; index < raw.length; index += 1) {
+    if (raw[index] === '"') quoted = !quoted;
+    if (raw[index] === ',' && !quoted) {
+      members.push(raw.slice(start, index).trim());
+      start = index + 1;
+    }
+  }
+  if (quoted) return false;
+  members.push(raw.slice(start).trim());
+  if (members.some((member) => !/^(?:W\/)?"[\x21\x23-\x7e\x80-\xff]*"$/.test(member))) return false;
+  const opaque = (tag: string): string => tag.startsWith('W/') ? tag.slice(2) : tag;
+  return members.some((member) => opaque(member) === opaque(selected));
 }
 
 function surfacePanel(surface: PocSurface, model: PocModel): string {
@@ -173,6 +197,13 @@ export function withServedReadiness(model: PocModel, recorder: ServedResponseRec
 export type PolarisRenderInputsFor = (model: PocModel) => PolarisRenderInputs;
 
 export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = PWB_RESOURCE_LIMITS, polarisInputs?: PolarisRenderInputsFor, recorder = new ServedResponseRecorder(), credentialProvision?: () => 'minted' | 'reused' | undefined): readonly Route[] {
+  const linksFor = (request: Parameters<Route['handle']>[0]['request']): NonNullable<PocModel['links']> => {
+    const mount = mountPrefixForRequest(request.headers);
+    const selfPath = mount !== '' && !request.path.startsWith(mount) ? `${mount}${request.path}` : request.path;
+    const links = routes.map(({ path, method, credentialClass }) => ({ path, method, credentialClass, self: path === selfPath && method === request.method }));
+    if (links.filter((link) => link.self).length !== 1) throw new Error('machine route has no unique self link');
+    return links;
+  };
   const servedModel = (): PocModel => withServedReadiness(getModel(), recorder);
   const statusFor = (model: PocModel): HumanOperabilityStatus => {
     const snapshot = recorder.snapshot(model.evaluation);
@@ -194,11 +225,18 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
     const model = servedModel();
     return html(model, renderPocPage(model, mountPrefixForRequest(request.headers), statusFor(model)));
   };
-  const machineHandle: Route['handle'] = () => {
-    const model = servedModel();
-    return boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(model), recorder);
+  const machineHandle: Route['handle'] = ({ request }) => {
+    const projected = { ...servedModel(), links: linksFor(request) };
+    const model: PocModel = { ...projected, responseIdentity: buildResponseIdentity(projected) };
+    const full = boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(model), recorder);
+    if (full.status !== 200) return full;
+    const etag = `W/"${model.responseIdentity.contentKey}"`;
+    const revalidation = { etag, cacheControl: 'private, no-cache' } as const;
+    return ifNoneMatchMatches(request.headers['if-none-match'], etag)
+      ? { status: 304, contentType: full.contentType, body: '', revalidation }
+      : { ...full, revalidation };
   };
-  const presentationHandle: Route['handle'] = () => {
+  const presentationHandle: Route['handle'] = ({ request }) => {
     const model = servedModel();
     const { narrative } = renderPolarisPresentation(model, '', {}, polarisInputs === undefined ? {} : polarisInputs(model));
     const envelope: PolarisPresentationEnvelope = {
@@ -210,6 +248,7 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
       evidence: model.evaluation.evidence,
       project: { revision: model.project.revision },
       narrative,
+      links: linksFor(request),
     };
     return boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(envelope), recorder);
   };
@@ -242,7 +281,7 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
     ];
   }
 
-  return [
+  const routes: readonly Route[] = [
     { method: 'GET', path: POC_HUMAN_PATH, credentialClass: 'human-open', handle: humanHandle },
     {
       method: 'GET',
@@ -276,4 +315,5 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
     { method: 'GET', path: POLARIS_PRESENTATION_PATH, credentialClass: 'machine-credentialed', handle: presentationHandle },
     { method: 'GET', path: `${TAILNET_MOUNT_PREFIX}${POLARIS_PRESENTATION_PATH}`, credentialClass: 'machine-credentialed', handle: presentationHandle },
   ];
+  return routes;
 }

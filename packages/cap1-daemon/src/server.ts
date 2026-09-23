@@ -50,6 +50,8 @@ export interface RouteResponse {
   readonly status: number;
   readonly contentType: string;
   readonly body: string;
+  /** Only the POC machine validator may populate these transport headers. */
+  readonly revalidation?: { readonly etag: string; readonly cacheControl: 'private, no-cache' };
   /** Trusted transport metadata for a bounded final response. Never sourced
    * from request text or parsed out of a response body. */
   readonly diagnostic?: {
@@ -132,7 +134,13 @@ function routeKey(method: string, path: string): string {
 }
 
 function respond(res: http.ServerResponse, response: RouteResponse): void {
-  res.writeHead(response.status, { 'content-type': response.contentType });
+  res.writeHead(response.status, {
+    'content-type': response.contentType,
+    ...(response.revalidation === undefined ? {} : {
+      etag: response.revalidation.etag,
+      'cache-control': response.revalidation.cacheControl,
+    }),
+  });
   res.end(response.body);
 }
 
@@ -168,7 +176,7 @@ function emitNonSuccess(input: {
   readonly response: RouteResponse;
   readonly reason: 'unknown-route' | 'credential-refused' | 'handler-failure' | 'route-non-success' | 'response-limit-breached';
 }): void {
-  if (input.response.status < 300 || input.response.status > 599) return;
+  if (input.response.status < 300 || input.response.status === 304 || input.response.status > 599) return;
   const diagnostic = safeResponseDiagnostic(input.response);
   process.stderr.write(`${JSON.stringify({
     kind: 'daemon-http-outcome',

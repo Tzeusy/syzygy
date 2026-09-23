@@ -19,6 +19,7 @@ import type { PocModel, ProjectShape, ProjectShapeClaim } from '@syzygy/three-su
 import { responseIdentityPreimage } from '@syzygy/three-surface-poc-core';
 
 import { renderPolarisPage } from './polaris.js';
+import { POC_MACHINE_PATH, POLARIS_PRESENTATION_PATH, pocRoutes } from './routes.js';
 import { buildFixtureModel, fixtureRepoWithGit } from './test-model-fixture.js';
 import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET, REJECTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 import { walkthroughJudgmentFixture, type JudgmentFixtureState } from './test-walkthrough-judgment-fixture.js';
@@ -288,7 +289,16 @@ interface SweepResult {
 
 function sweep(model: PocModel): SweepResult {
   const html = renderPolarisPage(model);
-  const machine = JSON.parse(JSON.stringify(model)) as PocModel;
+  const routes = pocRoutes(() => model);
+  const served = (path: string): Record<string, unknown> => {
+    const route = routes.find((candidate) => candidate.path === path);
+    if (route === undefined) throw new Error(`missing machine route ${path}`);
+    const answer = route.handle({ request: { method: 'GET', path, query: new URLSearchParams(), headers: {} } });
+    if (answer instanceof Promise || answer.status !== 200) throw new Error(`machine route ${path} did not serve a body`);
+    return JSON.parse(answer.body) as Record<string, unknown>;
+  };
+  const machine = served(POC_MACHINE_PATH) as unknown as PocModel;
+  const presentation = served(POLARIS_PRESENTATION_PATH);
   const shape = machine.projectShape;
   const reports: FamilyReport[] = [];
 
@@ -529,6 +539,8 @@ function sweep(model: PocModel): SweepResult {
     { family: 'response-identity:excludes', human: 0, machine: machine.responseIdentity.excludes.length },
     { family: 'response-identity:stableAcross', human: 0, machine: machine.responseIdentity.stableAcross.length },
     { family: 'response-identity:varyingWith', human: 0, machine: machine.responseIdentity.varyingWith.length },
+    { family: 'route-links:poc', human: 0, machine: machine.links?.length ?? 0 },
+    { family: 'route-links:polaris-presentation', human: 0, machine: Array.isArray(presentation.links) ? presentation.links.length : 0 },
   ];
   return { reports, parityFields: [...byField.keys()].sort(), machineOnlyReports };
 }
@@ -593,13 +605,15 @@ describe('PWB-REQ-020 exhaustive Polaris parity sweep', () => {
     expect(evidence.currencyBounds).toEqual([]);
   });
 
-  it('declares response identity as four machine-only parity families with the real machine denominators', () => {
+  it('declares response identity and both route-link fields as machine-only parity families with real denominators', () => {
     const { machineOnlyReports } = sweep(modelFor('observed', 'lawful-state-2'));
     expect(machineOnlyReports).toEqual([
       { family: 'response-identity:contentKey', human: 0, machine: 1 },
       { family: 'response-identity:excludes', human: 0, machine: 25 },
       { family: 'response-identity:stableAcross', human: 0, machine: 1 },
       { family: 'response-identity:varyingWith', human: 0, machine: 3 },
+      { family: 'route-links:poc', human: 0, machine: 15 },
+      { family: 'route-links:polaris-presentation', human: 0, machine: 15 },
     ]);
   });
 
