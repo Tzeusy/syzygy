@@ -1,0 +1,29 @@
+{
+  "kind": "polaris-generator-m6-reconciliation-synthetic-evidence",
+  "testedCommit": "b77f01ffddefa25049b00ec778201231d5ce5a3d",
+  "environment": "Fresh local clone of testedCommit with npm ci and a new output directory.",
+  "command": "npm run poc:generator-demo -- --out <fresh-directory>",
+  "sourceSha256": {
+    "apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts": "4a15950bf6d071fe7512e86841560da764a1ac629717957ace21d63453944fbe",
+    "packages/polaris-generation-core/src/provider-draft.ts": "85dff3b9d4a4d0e094340e4aaa0815e224fb1396cd28e26cad4d14e104e7007f",
+    "packages/polaris-generation-core/src/admitted-input.ts": "ee883a4d998bf3559e6ee4d064b0be250be31ebfb86cd48d1a402edf12943894"
+  },
+  "outputFiles": [
+    "archive.html",
+    "archive.json",
+    "garden-changed.html",
+    "garden-changed.json",
+    "garden.html",
+    "garden.json",
+    "report.json"
+  ],
+  "runs": [
+    { "project": "garden", "status": "awaiting-rendered-review", "stageReceipts": 5 },
+    { "project": "archive", "status": "awaiting-rendered-review", "stageReceipts": 5 },
+    { "project": "garden-changed", "status": "awaiting-rendered-review", "stageReceipts": 5 }
+  ],
+  "providerCalls": 0,
+  "realProvider": false,
+  "realProjectProof": false,
+  "limitations": "All three runs use local scripted responses and admitted synthetic fixture sources. The output proves deterministic validation, dispositions, coverage and preview plumbing, not real source support, provider egress, author adoption or release."
+}
