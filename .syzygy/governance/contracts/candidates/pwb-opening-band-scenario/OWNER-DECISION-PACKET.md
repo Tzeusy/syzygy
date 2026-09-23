@@ -9,7 +9,7 @@
 Date: 2026-09-21 (first draft; repaired 2026-09-22 and 2026-09-23 — an
 earlier line said 2026-09-21 for the round-1 dispositions, the author's
 working date for a commit made after midnight; round 6 finding 34).
-**Status as of 2026-09-23:** eight fresh-context reviews have run against
+**Status as of 2026-09-23:** nine fresh-context reviews have run against
 `REVIEW-BRIEF.md` — round 1 **CONFIRM WITH EXCEPTIONS**
 (`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-RAW.md`); round 2, over
 the repaired bytes at `9d74185`, **REVISE**
@@ -25,7 +25,9 @@ round 6, over the repaired bytes at `2c5745e`, **REVISE**
 round 7, over the repaired bytes at `d3d5d9d`, **REVISE**
 (`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-6-RAW.md`);
 round 8, over the repaired bytes at `28086f6`, **CONFIRM WITH EXCEPTIONS**
-(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-7-RAW.md`). A
+(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-7-RAW.md`);
+round 9, over the repaired bytes at `815785a`, **CONFIRM WITH EXCEPTIONS**
+(`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-8-RAW.md`). A
 parallel independent round over the round-2 bytes returned **CONFIRM WITH
 EXCEPTIONS**
 (`docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-B-RAW.md`).
@@ -33,9 +35,9 @@ Each word is copied exactly from its raw; `SEMANTIC-DELTA.md` §Review owns
 the dispositions. Every finding was repaired in prose only: no patch byte,
 no manifest row and no proposed sentence moved, so the manifest digest
 below is unchanged. Each verdict is bound to the commit its raw names,
-**not** to these repaired bytes (rule 10), which await a round 9 — the
-round-8 confirmation covers `28086f6`, and its six notes were repaired
-in prose after it. An
+**not** to these repaired bytes (rule 10), which await a round 10 — the
+round-8 and round-9 confirmations cover `28086f6` and `815785a`, and
+their six and two notes were repaired in prose after each. An
 earlier head here reported one review and one verdict; it had been stale
 since round 2 (round 3 finding 14).
 
@@ -238,7 +240,7 @@ words. `IMPACT-LEDGER.md` carries the full sweep.
 None of it performed by this package.
 
 1. Fresh-context review against `REVIEW-BRIEF.md`; raw output retained
-   verbatim, bytes frozen (rule 10). **Done eight times** — round 1 CONFIRM
+   verbatim, bytes frozen (rule 10). **Done nine times** — round 1 CONFIRM
    WITH EXCEPTIONS, three notes, all repaired in prose; round 2 (2026-09-23,
    over the repaired bytes at `9d74185`) REVISE, two false sentences in the
    impact ledger and five notes, all repaired in prose; round 3 (2026-09-23,
@@ -258,8 +260,11 @@ None of it performed by this package.
    round-6 repair's own commit attribution for one moved pointer — plus
    three notes, all repaired in prose; round 8 (2026-09-23, over the
    repaired bytes at `28086f6`) CONFIRM WITH EXCEPTIONS — no revise
-   finding, six notes, all repaired in prose. Each verdict is bound to the
-   commit it reviewed; a round 9 over these bytes is the next step, and
+   finding, six notes, all repaired in prose; round 9 (2026-09-23, over
+   the repaired bytes at `815785a`) CONFIRM WITH EXCEPTIONS — no revise
+   finding, two notes, both repaired in prose. Each verdict is bound to
+   the commit it reviewed; a round 10 over these bytes is the next step,
+   and
    only a round that confirms them lets a phrase be offered.
 2. You answer OQ-1 to OQ-5. An answer to OQ-2 or OQ-3 may change the
    proposed bytes, which would retire the review. **Done, 2026-09-23**:
