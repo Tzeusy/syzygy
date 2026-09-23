@@ -11,6 +11,6 @@
 a59294d4a19eb9b5542fb2f13425521484bc3009a76ca991cfbd736266b71079  .syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md  # REFERENCE
 0ddd791ce1764b66800306207a7eb2f53be8cd4827c7b15f498d3fcaf7aa9cf5  .syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md  # REFERENCE
 e1e465cd913f6a9f9fee4a8e3c9b3a985e4e28e0c81b904b9bbdcefb0099c958  .syzygy/governance/policies/craft-and-care/review-and-documentation.md  # REFERENCE
-fe2b88ee81ecd8fc91349c4607b9318896780d60ed712c6ff5f7be3ed50bef94  PROJECT-STATUS.md  # PATCHED
+819197d6994d668e315f32f4f119a727c1a851953098746f100bc195930e7fc7  PROJECT-STATUS.md  # PATCHED
 a8199646c3b7953e8c4101d70d0307813dd1b3927d0b403f76c22d280dd6a89b  openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md  # REFERENCE
 abea545df981ef1d4838146f57816135d06bdf01f8ef0fabca238bbcbcfe54ad  openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md  # PATCHED
