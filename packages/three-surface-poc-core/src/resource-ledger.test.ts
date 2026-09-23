@@ -355,6 +355,84 @@ describe('byLimit — headroom against all seven declared limits (N3 slice 1)', 
   // state, not vacuous.
 });
 
+// ---------------------------------------------------------------------
+// syzygy-u05.17: pin the maxSources and maxBytesPerSource population/
+// charged-value-vs-recorded-breach folds directly. R-PWB-N3-SLICES1-2-
+// CONFIRMATION-2-RAW.md (line ~190) found a mutation to the maxSources
+// fold — `Math.max(sourcePopulation ?? 0, breach ?? 0)` — survived all
+// 1780 tests: replacing it with `sourcePopulation ?? breach ?? 0` (first
+// operand wins whenever it is declared, never compared against a larger
+// breach) agrees with every existing test, because no existing test
+// declares a population *and* records a breach with a different,
+// independently larger or smaller value for the same limit. The tests
+// below do exactly that, in both directions, for maxSources and for the
+// analogous maxBytesPerSource fold (`breach === undefined ? worstBodyBytes
+// : Math.max(worstBodyBytes, breach)`), plus each side alone.
+
+describe('maxSources fold — declared population vs recorded breach (syzygy-u05.17)', () => {
+  it('a breach independently larger than the declared population wins', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    ledger.declareSourcePopulation(5);
+    ledger.recordBreach({ limit: 'maxSources', declared: PWB_RESOURCE_LIMITS.maxSources, observed: 20, path: 'x' });
+    const { byLimit } = ledger.summary();
+    expect(byLimit.maxSources.observed).toEqual({ state: 'observed', value: 20 });
+  });
+
+  it('a declared population independently larger than the recorded breach wins', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    ledger.declareSourcePopulation(50);
+    ledger.recordBreach({ limit: 'maxSources', declared: PWB_RESOURCE_LIMITS.maxSources, observed: 10, path: 'x' });
+    const { byLimit } = ledger.summary();
+    expect(byLimit.maxSources.observed).toEqual({ state: 'observed', value: 50 });
+  });
+
+  it('the declared population alone, no breach ever recorded', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    ledger.declareSourcePopulation(7);
+    const { byLimit } = ledger.summary();
+    expect(byLimit.maxSources.observed).toEqual({ state: 'observed', value: 7 });
+  });
+
+  it('a recorded breach alone, the population never declared', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    ledger.recordBreach({ limit: 'maxSources', declared: PWB_RESOURCE_LIMITS.maxSources, observed: 9, path: 'x' });
+    const { byLimit } = ledger.summary();
+    expect(byLimit.maxSources.observed).toEqual({ state: 'observed', value: 9 });
+  });
+});
+
+describe('maxBytesPerSource fold — largest charged body vs recorded breach (syzygy-u05.17)', () => {
+  it('a breach independently larger than any charged body wins', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    ledger.chargeBody('p', OID_A, 5);
+    ledger.recordBreach({ limit: 'maxBytesPerSource', declared: PWB_RESOURCE_LIMITS.maxBytesPerSource, observed: 50, path: 'huge' });
+    const { byLimit } = ledger.summary();
+    expect(byLimit.maxBytesPerSource.observed).toEqual({ state: 'observed', value: 50 });
+  });
+
+  it('the largest charged body independently larger than the recorded breach wins', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    ledger.chargeBody('p', OID_A, 50);
+    ledger.recordBreach({ limit: 'maxBytesPerSource', declared: PWB_RESOURCE_LIMITS.maxBytesPerSource, observed: 5, path: 'small' });
+    const { byLimit } = ledger.summary();
+    expect(byLimit.maxBytesPerSource.observed).toEqual({ state: 'observed', value: 50 });
+  });
+
+  it('a charged body alone, no breach ever recorded', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    ledger.chargeBody('p', OID_A, 6);
+    const { byLimit } = ledger.summary();
+    expect(byLimit.maxBytesPerSource.observed).toEqual({ state: 'observed', value: 6 });
+  });
+
+  it('a recorded breach alone, no body ever charged', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    ledger.recordBreach({ limit: 'maxBytesPerSource', declared: PWB_RESOURCE_LIMITS.maxBytesPerSource, observed: 8, path: 'huge' });
+    const { byLimit } = ledger.summary();
+    expect(byLimit.maxBytesPerSource.observed).toEqual({ state: 'observed', value: 8 });
+  });
+});
+
 describe('cost — a pure derived record, no new observation (N3 slice 1)', () => {
   it('mirrors the counters the ledger already tracks: bodies, bytes, parse passes, worst-source passes', () => {
     const ledger = createResourceLedger(limits({ maxTotalBytes: 1000, maxParsePassesPerSource: 10 }));
