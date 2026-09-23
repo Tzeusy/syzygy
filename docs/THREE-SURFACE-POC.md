@@ -72,6 +72,21 @@ single-flight; a failed re-observation leaves the prior complete model served.
 
 ## First-slice walkthrough
 
+The three surface headers identify distinct planes: Polaris presents desired
+state, Trajectory execution state, and Orrery observed state. The home panels
+and each page's separate surface-state legend derive those names from the
+shared model. They are not Observed/Unknown evidence labels or a claim that
+work completion verifies intent.
+
+Cross-surface links connect the two Polaris region counts, its nine
+reality-band entities, Trajectory's governing-intent preview, and Orrery's
+mapped capability to their existing human targets. The Orrery spatial block
+keeps its exact-table link as well. Links use native anchors and the current
+direct or tailnet mount; if the same evaluation lacks a target, the renderer
+shows an unavailable disclosure without an href. The served-page test checks
+the complete 13-link fixture population and fetches every target in both
+forms, including the Orrery link created after its local script runs.
+
 1. Open the printed human URL. Polaris shows the purpose and governing intent
    for WhatsApp transport identity normalization.
 2. Confirm the live-runtime relationship is visibly Unknown. Repository state

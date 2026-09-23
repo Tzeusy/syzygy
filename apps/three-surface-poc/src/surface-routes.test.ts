@@ -10,6 +10,7 @@ import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
 import { TAILNET_HOST } from './browser-origin.js';
 import { findBrowserExecutable, launchBrowser, type BrowserPage } from './cdp-browser.js';
 import { ORRERY_HUMAN_PATH } from './orrery.js';
+import { renderOrreryPage } from './orrery.js';
 import { POLARIS_HUMAN_PATH, renderPolarisPage } from './polaris.js';
 import { POC_HUMAN_PATH, pocRoutes } from './routes.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
@@ -17,6 +18,7 @@ import { fetchWithHost } from './test-http-client.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import { ADMITTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 import { TRAJECTORY_HUMAN_PATH } from './trajectory.js';
+import { renderTrajectoryPage } from './trajectory.js';
 
 const cleanups: string[] = [];
 const running: RunningDaemon[] = [];
@@ -35,6 +37,32 @@ function tempDir(prefix: string): string {
   const directory = mkdtempSync(join(tmpdir(), prefix));
   cleanups.push(directory);
   return directory;
+}
+
+interface CrossLink {
+  readonly href: string;
+  readonly className: string;
+  readonly source: string;
+  readonly target: string;
+  readonly text: string;
+  readonly accessibleName: string;
+  readonly tabIndex: number;
+  readonly insideDetails: boolean;
+}
+
+/** A second population method walks every native anchor in the runtime DOM,
+ * independent of the link marker emitted by the renderer. */
+async function runtimeCrossLinks(page: BrowserPage): Promise<{ readonly all: number; readonly unmarked: number; readonly links: readonly CrossLink[] }> {
+  return page.evaluate(`(() => {
+    const route = /^\\/(?:butlers-syzygy\\/)?(?:polaris|trajectory|orrery)(?:#|$)/;
+    const all = [...document.querySelectorAll('a[href]')].filter(a => !a.closest('.site-nav') && route.test(a.getAttribute('href') || ''));
+    const marked = [...document.querySelectorAll('a[data-cross-surface-class]')];
+    return { all: all.length, unmarked: all.filter(a => !a.hasAttribute('data-cross-surface-class')).length,
+      links: marked.map(a => ({ href: a.getAttribute('href'), className: a.dataset.crossSurfaceClass,
+        source: a.dataset.crossSource, target: a.dataset.crossTarget, text: a.textContent.trim(),
+        accessibleName: a.getAttribute('aria-label') || '', tabIndex: a.tabIndex,
+        insideDetails: !!a.closest('details') })) };
+  })()`);
 }
 
 type Family = 'badge' | 'tuple' | 'disclosure';
@@ -216,6 +244,111 @@ describe('surface routes', () => {
       });
       expect(rebound.status).toBe(403);
     }
+  });
+
+  it.skipIf(browserExecutable === undefined).each(['direct', 'tailnet'] as const)('exhausts 13 runtime cross-surface links over five classes and fetches every %s target', async (form) => {
+    const model = buildFixtureModel(cleanups);
+    const start = await createDaemon({ stateDir: join(tempDir('syzygy-cross-links-state-'), 'state'), routes: pocRoutes(() => model), port: 0 });
+    if (!start.started) throw new Error(`daemon failed to start: ${start.failure.kind}`);
+    running.push(start.daemon);
+    const baseUrl = `http://${start.daemon.host}:${start.daemon.port}`;
+    const browser = await launchBrowser(browserExecutable as string);
+    const page = await browser.newPage();
+    const directory = tempDir('syzygy-cross-links-pages-');
+    const expected = { 'work-count': 1, 'code-count': 1, 'reality-entity': 9, 'governing-intent': 1, 'mapped-capability': 1 };
+    try {
+        const mount = form === 'direct' ? '' : TAILNET_MOUNT_PREFIX;
+        const request = (path: string) => form === 'direct' ? fetch(`${baseUrl}${path}`)
+          : fetchWithHost(`${baseUrl}${path}`, TAILNET_HOST, { origin: `https://${TAILNET_HOST}` });
+        const links: CrossLink[] = [];
+        const sizes: Record<string, number> = {};
+        for (const path of ['/', POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH]) {
+          const response = await request(path);
+          expect(response.status, `${form} ${path}`).toBe(200);
+          const html = await response.text();
+          sizes[path] = Buffer.byteLength(html, 'utf8');
+          if (path === '/') continue;
+          expect(html).toContain('a:focus-visible');
+          expect(html).toContain('@media (prefers-reduced-motion: reduce)');
+          const file = join(directory, `${form}-${path.slice(1)}.html`);
+          writeFileSync(file, html);
+          await page.navigate(pathToFileURL(file).href);
+          const census = await runtimeCrossLinks(page);
+          expect(census.unmarked, `${form} ${path} unmarked native links`).toBe(0);
+          expect(census.links.length, `${form} ${path} marked population`).toBe(census.all);
+          links.push(...census.links);
+        }
+        expect(links.length, `${form} cross-surface denominator`).toBe(13);
+        const classes = Object.fromEntries(Object.keys(expected).map(key => [key, links.filter(link => link.className === key).length]));
+        expect(classes).toEqual(expected);
+        expect(new Set(links.map(link => `${link.className}:${link.source}:${link.target}`)).size).toBe(13);
+        for (const link of links) {
+          expect(link.href.startsWith(`${mount}/`), `${form} ${link.className} mount`).toBe(true);
+          expect(link.insideDetails, link.href).toBe(false);
+          expect(link.tabIndex, link.href).toBe(0);
+          expect(link.text.length, link.href).toBeGreaterThan(3);
+          const url = new URL(link.href, baseUrl);
+          const targetPath = url.pathname.slice(mount.length);
+          expect([POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH]).toContain(targetPath);
+          expect(link.accessibleName, link.href).toContain(targetPath.slice(1)[0]!.toUpperCase() + targetPath.slice(2));
+          const targetResponse = await request(targetPath);
+          expect(targetResponse.status, `${form} target ${link.href}`).toBe(200);
+          const targetHtml = await targetResponse.text();
+          if (url.hash === '') {
+            expect(link.target).toBe(targetPath.slice(1));
+            continue;
+          }
+          const fragment = decodeURIComponent(url.hash.slice(1));
+          expect(link.target).toBe(fragment);
+          const ids = [...targetHtml.matchAll(/\sid="([^"]+)"/g)].filter(match => match[1] === fragment);
+          expect(ids, `${form} dangling/duplicate ${link.href}`).toHaveLength(1);
+          const targetFile = join(directory, `${form}-target-${links.indexOf(link)}.html`);
+          writeFileSync(targetFile, targetHtml);
+          await page.navigate(pathToFileURL(targetFile).href);
+          const insideDetails = await page.evaluate(`(() => {
+            const matches = [...document.querySelectorAll('[id]')].filter(node => node.id === ${JSON.stringify(fragment)});
+            return matches.length !== 1 || !!matches[0].closest('details');
+          })()`);
+          expect(insideDetails, `${form} target hidden in details ${link.href}`).toBe(false);
+        }
+        // Readable capture for the dated size evidence, from the same served
+        // evaluation and exactly the three-surface link population above.
+        process.stdout.write(`[M9 cross links] ${JSON.stringify({ form, links: links.length, classes, sizes })}\n`);
+    } finally { await page.close(); await browser.close(); }
+  });
+
+  it('withholds hrefs and discloses unavailable targets instead of defaulting identities', () => {
+    const model = buildFixtureModel(cleanups);
+    const withoutOrrery = { ...model, surfaces: model.surfaces.filter(surface => surface.id !== 'orrery') };
+    const polaris = renderPolarisPage(withoutOrrery);
+    expect(polaris).toContain('data-cross-surface-unavailable="reality-entity"');
+    expect(polaris).toContain('data-cross-surface-unavailable="code-count"');
+    expect(polaris).not.toMatch(/<a[^>]+data-cross-surface-class="reality-entity"/);
+    const withoutCapability = { ...model, entities: model.entities.filter(entity => entity.id !== model.capabilityId) };
+    const trajectory = renderTrajectoryPage(withoutCapability);
+    const orrery = renderOrreryPage(withoutCapability);
+    expect(trajectory).toContain('data-cross-surface-unavailable="governing-intent"');
+    expect(trajectory).not.toMatch(/<a[^>]+data-cross-surface-class="governing-intent"/);
+    expect(orrery).toContain('"capabilityHref":null');
+    expect(orrery).not.toContain('"capabilityHref":"/polaris#');
+  });
+
+  it.skipIf(browserExecutable === undefined)('withholds the post-script Orrery capability href when that exact capability is absent', async () => {
+    const model = buildFixtureModel(cleanups);
+    const missing = { ...model, entities: model.entities.filter(entity => entity.id !== model.capabilityId) };
+    const file = join(tempDir('syzygy-missing-capability-'), 'orrery.html');
+    writeFileSync(file, renderOrreryPage(missing));
+    const browser = await launchBrowser(browserExecutable as string);
+    const page = await browser.newPage();
+    try {
+      await page.navigate(pathToFileURL(file).href);
+      const result = await page.evaluate(`(() => ({
+        hrefs: document.querySelectorAll('.orrery-block.mapped a[data-cross-surface-class="mapped-capability"]').length,
+        unavailable: document.querySelectorAll('.orrery-block.mapped [data-cross-surface-unavailable="mapped-capability"]').length,
+        exactTableLinks: document.querySelectorAll('.orrery-block.mapped a[data-parity-field="orrery-mapped-region"]').length,
+      }))()`);
+      expect(result).toEqual({ hrefs: 0, unavailable: 1, exactTableLinks: 1 });
+    } finally { await page.close(); await browser.close(); }
   });
 
   it('exhausts every served badge, tuple and Unknown disclosure on the three surfaces; Home is a separate diagnostic (POC-REQ-060)', async () => {
