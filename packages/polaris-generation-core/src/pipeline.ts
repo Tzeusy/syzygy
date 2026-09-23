@@ -1,5 +1,5 @@
 import { quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
-import { digestCanonicalJson, encodeCanonicalJson, type CanonicalJsonLimits } from './canonical-json.js';
+import { CanonicalJsonError, digestCanonicalJson, encodeCanonicalJson, type CanonicalJsonLimits } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
 import { promptForStage, type GenerationStage } from './prompts.js';
 import { validateRequestedAssets, type RequestedAsset } from './provider-draft.js';
@@ -188,12 +188,24 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
       || !Number.isSafeInteger(request.startedAt + b.maxElapsedMs)) stop('invalid-request');
     if (Object.keys(request.routes ?? {}).sort().join(',') !== 'author,edit,fidelity,inventory,plan,repair'
       || Object.values(request.routes).some(route => typeof route !== 'string' || route.length === 0)) stop('invalid-request');
-    try { validateGenerationSources(request.sources); } catch { stop('invalid-request'); }
     try { validateRequestedAssets(request.requestedAssets); } catch { stop('invalid-request'); }
-    // Detach caller-owned mutable inputs before the first asynchronous boundary.
+    // Canonicalize before inspecting nested caller-owned records: this rejects
+    // getters/proxies and detaches them before the first asynchronous boundary.
+    let detached: PipelineRequest;
+    try { detached = JSON.parse(encodeCanonicalJson(request, dataLimits(Math.max(b.maxInputBytes, 4_000_000)))) as PipelineRequest; }
+    catch (error) { stop(error instanceof CanonicalJsonError && error.code === 'byte-limit' ? 'budget-exhausted' : 'invalid-request'); }
+    try { validateGenerationSources(detached.sources); } catch { stop('invalid-request'); }
+    // A full-file span already retains the exact verified body. Do not bill a
+    // second copy; partial spans keep the owning body for validation.
+    const compact = { ...detached, sources: detached.sources.map(source => {
+      if (source.body === undefined || source.spans.length !== 1 || source.spans[0]?.start !== 0
+        || source.spans[0]?.end !== Buffer.byteLength(source.body)) return source;
+      const { body: _verifiedBody, ...bound } = source;
+      return bound;
+    }) };
     let frozen: PipelineRequest;
-    try { frozen = JSON.parse(encodeCanonicalJson(request, dataLimits(b.maxInputBytes))) as PipelineRequest; }
-    catch { stop('budget-exhausted'); }
+    try { frozen = JSON.parse(encodeCanonicalJson(compact, dataLimits(b.maxInputBytes))) as PipelineRequest; }
+    catch (error) { stop(error instanceof CanonicalJsonError && error.code === 'byte-limit' ? 'budget-exhausted' : 'invalid-request'); }
     const budget = frozen.budget;
     const deadline = frozen.startedAt + budget.maxElapsedMs;
     const check = (): void => {
@@ -244,7 +256,9 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
       const prompt = promptForStage(name);
       const schema = ports.responseSchema(name);
       const envelope = { promptVersion: prompt.version, system: prompt.system, responseSchemaVersion: schema.version, responseSchema: schema.schema, inputs };
-      const encoded = encodeCanonicalJson(envelope, dataLimits(budget.maxInputBytes));
+      let encoded: string;
+      try { encoded = encodeCanonicalJson(envelope, dataLimits(budget.maxInputBytes)); }
+      catch (error) { stop(error instanceof CanonicalJsonError && error.code === 'byte-limit' ? 'budget-exhausted' : 'invalid-request'); }
       const size = Buffer.byteLength(encoded, 'utf8');
       if (inputBytes + size > budget.maxInputBytes || outputBytes >= budget.maxOutputBytes || usage >= budget.maxUsageUnits) stop('budget-exhausted');
       const baseInput: Omit<AttemptInput, 'permissionDigest' | 'bindingDigest'> = {

@@ -31,7 +31,8 @@ it.skipIf(executable === undefined)('renders the pipeline draft with working dia
         expect(await page.evaluate('document.querySelector(".deep-dive details").open')).toBe(true);
         await page.evaluate('document.querySelector("main .sources a").focus()');
         await page.press('Enter');
-        expect(await page.evaluate('location.hash')).toBe('#source-0');
+        expect(await page.evaluate('location.hash === document.querySelector("main .sources a").getAttribute("href")')).toBe(true);
+        expect(await page.evaluate('location.hash')).not.toBe('#source-0');
         const tree = await page.axTree();
         expect(tree.some(node => !node.ignored && node.role === 'heading' && node.name === syntheticProjects[0]!.title)).toBe(true);
         expect(tree.some(node => !node.ignored && node.role === 'image' && node.name === 'From observation to useful context')).toBe(true);

@@ -21,7 +21,7 @@ export function renderDraftPreview(draft: ProviderDraft, sources: readonly Gener
   if (sourceIndex.size !== sources.length) throw new Error('duplicate-source');
   const localAnchor = (anchorId: string): string => `source-${createHash('sha256').update(anchorId).digest('hex').slice(0, 24)}`;
   const sourceAnchor = (source: GenerationSource): string => {
-    if (source.exclusion.excluded || source.classificationBasis !== 'body' || source.body === undefined || source.spans.length === 0) throw new Error('unquotable-source');
+    if (source.exclusion.excluded || source.classificationBasis !== 'body' || source.spans.length === 0) throw new Error('unquotable-source');
     if (source.spans.length !== 1) throw new Error('ambiguous-source-anchor');
     return source.spans[0]!.anchorId;
   };
@@ -92,7 +92,7 @@ export function renderDraftPreview(draft: ProviderDraft, sources: readonly Gener
   const contents = `<ol><li><a href="#manifesto">Introduction</a></li>${draft.sections.map((s, i) => `<li><a href="#section-${i}">${escape(s.title)}</a></li>`).join('')}<li><a href="#sources">Exact source text</a></li></ol>`;
   const unresolved = draft.unresolved.map(item => `<aside class="unresolved-asset" data-asset-disposition="unresolved"><strong>${escape(item.question)}</strong>: ${escape(item.reason)} <span class="asset-references">(${escape(item.references.join(', '))})</span></aside>`).join('');
   const sourceList = sources.map(source => {
-    const quotable = !source.exclusion.excluded && source.classificationBasis === 'body' && source.body !== undefined && source.spans.length === 1;
+    const quotable = !source.exclusion.excluded && source.classificationBasis === 'body' && source.spans.length === 1;
     const id = quotable ? localAnchor(source.spans[0]!.anchorId) : `source-unavailable-${createHash('sha256').update(source.sourceId).digest('hex').slice(0, 24)}`;
     const reason = source.exclusion.excluded ? source.exclusion.reason : source.classificationBasis === 'path-only' ? 'path-only; body not read' : 'body unavailable for citation';
     return `<article class="source-item" id="${id}"><h3>${escape(source.path)}</h3>${quotable ? `<div class="exact-source">${escape(source.spans[0]!.text)}</div>` : `<p>Source counted; exact text unavailable: ${escape(reason)}.</p>`}</article>`;

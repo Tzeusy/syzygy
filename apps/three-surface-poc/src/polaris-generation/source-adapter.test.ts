@@ -30,6 +30,7 @@ describe('PWB-to-generator projection', () => {
       spans: [{ anchorId: generationAnchorId(base, 0, Buffer.byteLength(body)), start: 0, end: Buffer.byteLength(body), text: body }] };
     expect(generationSourceRoute(source)).toBe(`/polaris/source?identity=repository%3Afixture%40${'a'.repeat(40)}%3Aintent%2Fone.md%23${base.objectId}`);
     expect(generationSourceRoute(source, '/butlers-syzygy')).toBe(`/butlers-syzygy/polaris/source?identity=repository%3Afixture%40${'a'.repeat(40)}%3Aintent%2Fone.md%23${base.objectId}`);
-    expect(generationSourceRoute({ ...source, exclusion: { excluded: true, reason: 'excluded-content' }, body: undefined, spans: [] })).toBeUndefined();
+    const { body: _body, ...withoutBody } = source;
+    expect(generationSourceRoute({ ...withoutBody, exclusion: { excluded: true, reason: 'excluded-content' }, spans: [] })).toBeUndefined();
   });
 });

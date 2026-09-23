@@ -155,10 +155,12 @@ function perturbed(corpus: SelfCorpus): SelfCorpus {
 export async function proveSelfCorpus(repoRoot: string, revision: string) {
   const corpus = readSelfCorpus(repoRoot, revision);
   const exhausted = await runScripted(corpus, 1_000_000);
-  const sufficient = await runScripted(corpus, 8_000_000);
-  const successor = await runScripted(perturbed(corpus), 8_000_000);
+  const sufficient = await runScripted(corpus, 2_000_000);
+  const successor = await runScripted(perturbed(corpus), 2_000_000);
   if (exhausted.status !== 'stopped' || exhausted.reason !== 'budget-exhausted' || exhausted.scriptedCalls !== 0) throw new Error('budget-probe-failed');
-  if (sufficient.status !== 'awaiting-rendered-review' || successor.status !== 'awaiting-rendered-review') throw new Error('scripted-proof-incomplete');
+  if (sufficient.status !== 'awaiting-rendered-review' || successor.status !== 'awaiting-rendered-review') {
+    throw new Error(`scripted-proof-incomplete:${sufficient.reason ?? sufficient.status}:${sufficient.stageInputs.map(item => item.stage).join(',')}:${successor.reason ?? successor.status}:${successor.stageInputs.map(item => item.stage).join(',')}`);
+  }
   const first = sufficient.draft!, changed = successor.draft!;
   const citationHrefs = (html: string): readonly string[] => [...html.matchAll(/class="sources">\s*<a href="([^"]+)"/gu)].map(match => match[1]!);
   const beforeHrefs = citationHrefs(sufficient.preview!), afterHrefs = citationHrefs(successor.preview!);

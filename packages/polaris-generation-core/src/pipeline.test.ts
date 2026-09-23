@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { runGenerationPipeline, type AttemptOutcome, type PipelinePorts, type PipelineRequest, type ProviderReply } from './pipeline.js';
+import { runGenerationPipeline, type AttemptInput, type AttemptOutcome, type PipelinePorts, type PipelineRequest, type ProviderReply } from './pipeline.js';
 import { generationAnchorId, gitBlobObjectId, type GenerationSource } from './generation-source.js';
 
 const fixtureSource = (): GenerationSource => {
@@ -22,11 +22,13 @@ function harness() {
   const outcomes: string[] = [];
   const fullOutcomes: AttemptOutcome[] = [];
   const late: unknown[] = [];
+  const attempts: AttemptInput[] = [];
   const admitted = new Set<string>();
   const ports: PipelinePorts = {
     now: () => Date.now(), verifySources: async () => true,
     permissionIdentity: async () => 'fixture-permission-v1',
     admit: async input => {
+      attempts.push(input);
       const id = `${input.requestId}:${input.ordinal}`;
       if (admitted.has(id)) return { kind: 'refused', reason: 'in-flight' };
       admitted.add(id);
@@ -43,7 +45,7 @@ function harness() {
     lateReceipt: async (_, receipt) => { late.push(receipt); },
     fidelity: () => ({ blocking: false, findings: [] }),
   };
-  return { ports, sends, outcomes, fullOutcomes, late };
+  return { ports, sends, outcomes, fullOutcomes, late, attempts };
 }
 const signal = () => new AbortController().signal;
 afterEach(() => vi.useRealTimers());
@@ -103,8 +105,36 @@ describe('source to editorial draft pipeline', () => {
     expect(h.sends[1]?.input).not.toContain(secondBody);
     expect(h.sends.find(send => send.stage === 'author')?.input).toContain('Reduce recurring mental labor.');
     expect(h.sends.slice(1).every(send => !send.input.includes(secondBody))).toBe(true);
+    expect(h.attempts.map(attempt => attempt.inputBytes)).toEqual(h.sends.map(send => Buffer.byteLength(send.input)));
     const leaked = h.sends[1]!.input.replace('"sources":', `"sources":[{"text":"${secondBody}"}],"unrelated":`);
     expect(leaked).toContain(secondBody);
+  });
+
+  it('counts a path-only source in inventory but never offers its body or support handle to the provider', async () => {
+    const h = harness();
+    const first = fixtureSource();
+    const { body: _body, ...withoutBody } = first;
+    const pathOnly: GenerationSource = { ...withoutBody, sourceId: 'path-only', path: 'synthetic/path-only.md',
+      spans: [], classificationBasis: 'path-only' };
+    const result = await runGenerationPipeline({ ...request(), sources: [first, pathOnly] }, h.ports, signal());
+    expect(result.status, result.status === 'stopped' ? result.reason : '').toBe('awaiting-rendered-review');
+    const inventory = JSON.parse(h.sends[0]!.input).inputs;
+    expect(inventory.sourcePopulation).toHaveLength(2);
+    expect(inventory.sourcePopulation[1]).toMatchObject({ sourceId: 'path-only', classificationBasis: 'path-only' });
+    expect(inventory.sources).toEqual([{ sourceId: 'purpose', text: 'Reduce recurring mental labor.' }]);
+  });
+
+  it('refuses a 201st quotable source instead of silently truncating the corpus', async () => {
+    const h = harness();
+    const sources = Array.from({ length: 201 }, (_, i): GenerationSource => {
+      const first = fixtureSource();
+      const base = { repositoryId: first.repositoryId, revision: first.revision, path: `synthetic/source-${i}.md`, objectId: first.objectId as string };
+      return { ...first, ...base, sourceId: `source-${i}`,
+        spans: [{ ...first.spans[0]!, anchorId: generationAnchorId(base, 0, Buffer.byteLength(first.body!)) }] };
+    });
+    expect(await runGenerationPipeline({ ...request(), sources, budget: { ...request().budget, maxInputBytes: 1_000_000 } }, h.ports, signal()))
+      .toMatchObject({ status: 'stopped', reason: 'source-refused' });
+    expect(h.sends).toHaveLength(0);
   });
 
   it('executes independent inventory, planning, authoring, editing and source review with bound recipes', async () => {

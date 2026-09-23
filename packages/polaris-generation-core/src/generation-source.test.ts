@@ -24,14 +24,16 @@ describe('evaluation-bound generation sources', () => {
 
   it('counts path-only, excluded and unavailable sources while withholding their bytes and anchors', () => {
     const quoted = source();
-    const pathOnly: GenerationSource = { ...quoted, sourceId: 'path-only', path: 'intent/path-only.md', classificationBasis: 'path-only', body: undefined, spans: [] };
-    const excluded: GenerationSource = { ...quoted, sourceId: 'excluded', path: 'intent/secret.md', exclusion: { excluded: true, reason: 'excluded-content' }, body: undefined, spans: [] };
-    const unavailable: GenerationSource = { ...quoted, sourceId: 'unavailable', path: 'intent/missing.md', objectId: null, exclusion: { excluded: true, reason: 'source-unavailable' }, body: undefined, spans: [] };
+    const { body: _body, ...withoutBody } = quoted;
+    const pathOnly: GenerationSource = { ...withoutBody, sourceId: 'path-only', path: 'intent/path-only.md', classificationBasis: 'path-only', spans: [] };
+    const excluded: GenerationSource = { ...withoutBody, sourceId: 'excluded', path: 'intent/secret.md', exclusion: { excluded: true, reason: 'excluded-content' }, spans: [] };
+    const unavailable: GenerationSource = { ...withoutBody, sourceId: 'unavailable', path: 'intent/missing.md', objectId: null, exclusion: { excluded: true, reason: 'source-unavailable' }, spans: [] };
     const population = [quoted, pathOnly, excluded, unavailable];
     expect(validateGenerationSources(population)).toHaveLength(4);
     expect(quotableGenerationSources(population)).toEqual([{ sourceId: 'purpose', text: body }]);
     expect(() => validateGenerationSources([{ ...pathOnly, spans: quoted.spans }])).toThrow('unquotable-source');
     expect(() => validateGenerationSources([{ ...excluded, body }])).toThrow('unquotable-source');
+    expect(() => validateGenerationSources([{ ...quoted, extra: 'unreviewed' } as GenerationSource])).toThrow('invalid-source');
   });
 
   it('rejects forged object binding, offset drift, duplicate anchors and unknown-byte spans', () => {

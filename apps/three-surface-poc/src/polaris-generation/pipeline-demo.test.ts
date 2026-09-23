@@ -64,4 +64,11 @@ describe('concrete source-to-draft pipeline exercise', () => {
       expect(readFileSync(join(process.cwd(), file), 'utf8'), file).toContain(boundary);
     }
   });
+
+  it('names the future egress decision fields and current no-provider-call boundary without treating them as an act', () => {
+    const kit = readFileSync(join(process.cwd(), 'docs/polaris-generation/README.md'), 'utf8');
+    expect(kit).toContain('A future\n   egress decision must also name the destination route and retention for sent\n   content and replies');
+    expect(kit).toContain('The current operator path calls no real model or provider.');
+    expect(kit).toContain('it would not adopt prose, authorize a repository');
+  });
 });

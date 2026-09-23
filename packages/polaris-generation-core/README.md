@@ -34,12 +34,26 @@ schema bytes. `parseBoundedJson` refuses duplicate keys, malformed responses and
 byte/depth/node overflow before stage validation. `validateStage` checks closed
 fields, source references, requested section identities, diagram endpoints and
 review population declarations. These checks cannot establish semantic truth.
+`GenerationSource` binds each countable source to repository, revision, Git
+object and evaluation identities. Only a body-backed, validated byte span
+can be quoted; path-only, excluded and unavailable rows remain in the
+denominator. Preview citations derive from validated anchors, so reordering
+sources cannot renumber them. The PWB model is projected by an app adapter
+without re-reading its released source bodies.
 The operator supplies `requestedAssets` with stable IDs, kinds and requiredness;
 the pipeline rejects malformed requests before dispatch. Validators join those
 requests and positive review references to the same draft and admitted inputs.
 
 The controller requires explicit source-verification, lifecycle/admission,
 provider, validation and receipt adapters. It has no default network client.
+Requests name six stage routes, and receipts retain the route and reported
+model for each attempt. Fidelity and repair envelopes omit the author plan;
+after inventory, only source spans cited by the stage input travel in an
+envelope. The private scripted adapter persists exclusive reservations and
+validated checkpoints outside a governed tree. Completed stages are reused
+only under matching input, route, permission and artifact bindings. In-flight
+and uncertain attempts remain reserved; neither a missing receipt nor an
+expired lease permits replay. This is not a live effect host.
 Real adapters must atomically bind immutable request inputs, enforce cumulative
 reservations across restarts and concurrent callers, and re-evaluate authority.
 A stalled adapter is bounded by cancellation/deadline; a late admission or lost

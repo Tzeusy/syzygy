@@ -34,7 +34,8 @@ describe('intermediate draft preview', () => {
   });
 
   it('counts path-only sources without giving them a citation or fabricated text', () => {
-    const pathOnly = { ...sources[0]!, sourceId: 'unread', path: 'synthetic/unread.md', classificationBasis: 'path-only' as const, body: undefined, spans: [] };
+    const { body: _body, ...withoutBody } = sources[0]!;
+    const pathOnly = { ...withoutBody, sourceId: 'unread', path: 'synthetic/unread.md', classificationBasis: 'path-only' as const, spans: [] };
     const html = renderDraftPreview(fixture(), [...sources, pathOnly]);
     expect(html).toContain('synthetic/unread.md');
     expect(html).toContain('path-only; body not read');

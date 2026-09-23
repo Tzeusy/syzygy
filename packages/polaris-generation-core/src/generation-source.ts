@@ -51,14 +51,21 @@ export function gitBlobObjectId(body: string, algorithm: 'sha1' | 'sha256' = 'sh
 /** Validates one closed source population before any stage can dispatch. */
 export function validateGenerationSources(value: readonly GenerationSource[]): readonly GenerationSource[] {
   if (value.length === 0) fail('invalid-source');
+  const sourceKeys = new Set(['sourceId', 'repositoryId', 'revision', 'path', 'objectId', 'evaluationId', 'classificationBasis', 'exclusion', 'body', 'spans']);
+  const spanKeys = new Set(['anchorId', 'start', 'end', 'text']);
   const sourceIds = new Set<string>();
   const identities = new Set<string>();
   const anchorIds = new Set<string>();
   for (const source of value) {
+    if (source === null || typeof source !== 'object' || Object.keys(source).some(key => !sourceKeys.has(key))
+      || (Object.hasOwn(source, 'body') && source.body === undefined)
+      || source.exclusion === null || typeof source.exclusion !== 'object'
+      || Object.keys(source.exclusion).some(key => !['excluded', 'reason'].includes(key))
+      || (source.exclusion.excluded === false && Object.hasOwn(source.exclusion, 'reason'))) fail('invalid-source');
     if (!handle.test(source.sourceId) || source.sourceId.length > SOURCE_ID_MAX_LENGTH
-      || !source.repositoryId || !source.evaluationId || !/^[0-9a-f]{40,64}$/u.test(source.revision)
+      || !/^[A-Za-z0-9:_-]+$/u.test(source.repositoryId) || !source.evaluationId || !/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/u.test(source.revision)
       || (source.objectId !== null && !hexObjectId.test(source.objectId)) || source.path.startsWith('/')
-      || source.path.split('/').some(part => part === '' || part === '.' || part === '..')
+      || source.path.split('/').some(part => part === '' || part === '.' || part === '..') || source.path.includes('\0')
       || source.path.includes('\\') || !['body', 'path-only'].includes(source.classificationBasis)
       || typeof source.exclusion?.excluded !== 'boolean' || !Array.isArray(source.spans)) fail('invalid-source');
     const identity = source.objectId === null
@@ -73,16 +80,17 @@ export function validateGenerationSources(value: readonly GenerationSource[]): r
       if (source.exclusion.excluded && !source.exclusion.reason) fail('invalid-source');
       continue;
     }
-    if (source.body === undefined) {
-      if (source.spans.length !== 0) fail('unquotable-source');
-      continue;
-    }
+    if (source.body === undefined && source.spans.length === 0) continue;
     const objectId = source.objectId;
     if (objectId === null) throw new GenerationSourceError('invalid-source');
-    const bytes = Buffer.from(source.body, 'utf8');
-    if ([...source.body].length > SOURCE_TEXT_MAX_LENGTH) fail('source-too-long');
-    if (gitBlobObjectId(source.body, objectId.length === 40 ? 'sha1' : 'sha256') !== objectId) fail('object-mismatch');
+    const body = source.body ?? (source.spans.length === 1 && source.spans[0]?.start === 0 ? source.spans[0].text : undefined);
+    if (body === undefined) throw new GenerationSourceError('unquotable-source');
+    const bytes = Buffer.from(body, 'utf8');
+    if ([...body].length > SOURCE_TEXT_MAX_LENGTH) fail('source-too-long');
+    if (gitBlobObjectId(body, objectId.length === 40 ? 'sha1' : 'sha256') !== objectId) fail('object-mismatch');
     for (const span of source.spans) {
+      if (span === null || typeof span !== 'object' || Object.keys(span).some(key => !spanKeys.has(key))
+        || typeof span.anchorId !== 'string' || typeof span.text !== 'string') fail('invalid-anchor');
       if (!Number.isSafeInteger(span.start) || !Number.isSafeInteger(span.end)
         || span.start < 0 || span.end <= span.start || span.end > bytes.length) fail('invalid-anchor');
       const slice = bytes.subarray(span.start, span.end);
@@ -102,6 +110,7 @@ export function validateGenerationSources(value: readonly GenerationSource[]): r
  * count remains available separately, including excluded and path-only rows. */
 export function quotableGenerationSources(sources: readonly GenerationSource[]): readonly { readonly sourceId: string; readonly text: string }[] {
   validateGenerationSources(sources);
-  return sources.flatMap(source => source.body !== undefined && source.spans.length > 0
-    ? [{ sourceId: source.sourceId, text: source.body }] : []);
+  return sources.flatMap(source => source.spans.length === 1 && source.spans[0]?.start === 0
+    && source.spans[0]?.end === Buffer.byteLength(source.spans[0]?.text ?? '')
+    ? [{ sourceId: source.sourceId, text: source.spans[0]!.text }] : []);
 }
