@@ -1,0 +1,36 @@
+{
+  "kind": "pwb-m11-status-copy-correction-evidence",
+  "testedCommit": "17e28556e115daec913cf8d10d5243777064eff1",
+  "predecessor": {
+    "path": "docs/evidence/pwb-m11-operability-evidence-2026-09-23.json",
+    "sha256": "d6c3d827badedef373a268d19a3710f3cddab1e1b39e85f9d4de27998cc6890a",
+    "disposition": "The predecessor's five non-page-shell mutation results remain bound to unchanged source blobs at its tested commit. Its page-shell hash and byte measurement are historical after this copy-role correction."
+  },
+  "sourceSha256": {
+    "apps/three-surface-poc/src/page-shell.ts": "41244b72a39ca77a2ce5e43bb83c3093999bf7d4a63bcc2f905a49ae5b0ad8f6"
+  },
+  "mutation": {
+    "id": "corrected-human-status-line-omitted",
+    "file": "apps/three-surface-poc/src/page-shell.ts",
+    "old": "${humanStatusLine(input.status, escapeHtml)}",
+    "new": "${''}",
+    "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/response-limits.test.ts -t 'places one compact factual status line' --reporter=dot",
+    "baselineExit": 0,
+    "mutantExit": 1,
+    "testsRan": true,
+    "restored": true,
+    "outcome": "killed"
+  },
+  "privateDaemonMeasurement": {
+    "method": "Committed clean worktree; private daemon on port 0 and disposable state directory; HTTP requests counted UTF-8 response bytes. Tailnet request set the exact Host header. The daemon was SIGTERM-closed after measurement; no live listener or port 7478 was touched.",
+    "maxHumanResponseBytes": 2097152,
+    "statusLineBytes": 328,
+    "statusStyleBytes": 204,
+    "statusInsertionBytes": 532,
+    "responses": [
+      { "route": "/polaris", "status": 200, "encodedBytes": 1522648, "mountLinks": 0 },
+      { "route": "/butlers-syzygy/polaris", "status": 200, "encodedBytes": 1528558, "mountLinks": 394 }
+    ],
+    "realProjectProof": false
+  }
+}

@@ -12,6 +12,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { PWB_RESOURCE_LIMITS, type PocModel } from '@syzygy/three-surface-poc-core';
 
 import { renderPolarisPage } from './polaris.js';
+import { withServedReadiness } from './routes.js';
+import { ServedResponseRecorder } from './served-response-recorder.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET, REJECTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 import { fixtureAnswers, walkthroughJudgmentFixture, type FixtureAnswer, type JudgmentFixtureState } from './test-walkthrough-judgment-fixture.js';
@@ -98,6 +100,32 @@ describe('PWB-REQ-021 readiness traversal (production predicate)', () => {
 });
 
 describe('PWB-REQ-021 readiness on Polaris', () => {
+  it('projects served breaches into the existing resource-breach arm without changing input evidence or judgment', () => {
+    const model = modelFor({ shape: 'observed', judgment: 'lawful-state-1', traversed: ['/polaris', ROOT_EXACT_SOURCE] });
+    expect(readinessOf(model).kind === 'evaluated' && readinessOf(model).ready).toBe(true);
+    if (model.projectShape.kind !== 'observed') throw new Error('fixture shape missing');
+    const recorder = new ServedResponseRecorder();
+    recorder.record({
+      evaluation: model.evaluation,
+      limit: 'maxHumanResponseBytes',
+      declared: 1,
+      observed: 2,
+      population: { kind: 'counted', ...model.projectShape.counts },
+    });
+    const projected = withServedReadiness(model, recorder);
+    expect(armsOf(projected)).toEqual(['resource-breach']);
+    const servedReadiness = readinessOf(projected);
+    if (servedReadiness.kind !== 'evaluated') throw new Error('fixture readiness missing');
+    expect(servedReadiness.ready).toBe(false);
+    expect(servedReadiness.findings.find(f => f.arm === 'resource-breach')?.detail).toContain('input 0; served 1');
+    expect(projected.responseIdentity.contentKey).not.toBe(model.responseIdentity.contentKey);
+    expect(projected.evaluation.evidence).toEqual(model.evaluation.evidence);
+    expect(projected.projectShape).toEqual(model.projectShape);
+    expect(projected.walkthroughJudgment).toEqual(model.walkthroughJudgment);
+    expect(state(renderPolarisPage(projected))).toBe('not-ready');
+    expect(readinessOf(model).kind === 'evaluated' && readinessOf(model).ready).toBe(true);
+  });
+
   it('is ready for a Polaris-only record whose nine answers anchor into the observed shape, and the judgment stays its own fact', () => {
     const model = modelFor({ shape: 'observed', judgment: 'lawful-state-1', traversed: ['/polaris', ROOT_EXACT_SOURCE] });
     const readiness = readinessOf(model);

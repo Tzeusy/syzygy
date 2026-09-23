@@ -3,6 +3,31 @@ import { withMountPrefix } from './tailnet.js';
 
 export type SurfaceRouteId = 'home' | 'polaris' | 'trajectory' | 'orrery';
 
+export interface HumanOperabilityStatus {
+  readonly evaluationDigest: string | null;
+  readonly projectRevision: string | null;
+  readonly observerRevision: string | null;
+  readonly credentialProvision: 'minted' | 'reused' | null;
+  readonly inputBreaches: number | null;
+  readonly servedBreaches: number | null;
+  readonly latestBreach: { readonly limit: 'maxHumanResponseBytes' | 'maxMachineResponseBytes'; readonly sequence: number; readonly declared: number; readonly observed: number } | null;
+}
+
+/** One compact, non-verdict summary. Prefixes are labeled as prefixes; full
+ * identities remain on the existing detailed surface. */
+export function humanStatusLine(status: HumanOperabilityStatus | undefined, escapeHtml: (value: string) => string): string {
+  const evaluation = status?.evaluationDigest === undefined || status.evaluationDigest === null ? 'Unknown (absent)' : `sha256:${status.evaluationDigest.slice(0, 12)}…`;
+  const project = status?.projectRevision === undefined || status.projectRevision === null ? 'Unknown (no project rev)' : `${status.projectRevision.slice(0, 12)}…`;
+  const observer = status?.observerRevision === undefined || status.observerRevision === null ? 'Unknown (no observer rev)' : `${status.observerRevision.slice(0, 12)}…`;
+  const credential = status?.credentialProvision ?? 'Unknown (not supplied)';
+  const input = status?.inputBreaches === undefined || status.inputBreaches === null ? 'Unknown (no shape)' : String(status.inputBreaches);
+  const served = status?.servedBreaches === undefined || status.servedBreaches === null ? 'Unknown (no recorder)' : String(status.servedBreaches);
+  const latest = status?.latestBreach === null || status?.latestBreach === undefined
+    ? ''
+    : `; ${status.latestBreach.limit === 'maxHumanResponseBytes' ? 'human' : 'machine'} #${status.latestBreach.sequence} ${status.latestBreach.observed}/${status.latestBreach.declared} B`;
+  return `<p class="operability-status" data-human-status data-eval="${escapeHtml(status?.evaluationDigest?.slice(0, 12) ?? 'unknown')}" data-breaches="${status?.servedBreaches ?? 'unknown'}" data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable>Eval ${escapeHtml(evaluation)}; project ${escapeHtml(project)}; observer ${escapeHtml(observer)}; credential ${escapeHtml(credential)}; breaches input ${escapeHtml(input)}, served ${escapeHtml(served)}${latest}</p>`;
+}
+
 const NAV_ITEMS: readonly { readonly id: SurfaceRouteId; readonly href: string; readonly label: string }[] = [
   { id: 'home', href: '/', label: 'Overview' },
   { id: 'polaris', href: '/polaris', label: 'Polaris' },
@@ -34,6 +59,7 @@ export interface PageShellInput {
   readonly body: string;
   readonly sidebar?: string;
   readonly footer: string;
+  readonly status?: HumanOperabilityStatus;
   readonly escapeHtml: (value: string) => string;
   /** The mount this page is being rendered under (`''` direct, or
    * `TAILNET_MOUNT_PREFIX` when reached via `tailscale serve`) — every
@@ -50,7 +76,7 @@ export function pageShell(input: PageShellInput): string {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(input.title)}</title>
-  <style>${DESIGN_TOKENS_CSS}${input.extraStyle ?? ''}</style>
+  <style>${DESIGN_TOKENS_CSS}.operability-status{margin:.5rem auto 1rem;max-width:var(--content-width,90rem);padding:.4rem 1rem;border:1px solid var(--line);color:var(--muted);font:.75rem/1.45 var(--font-mono);overflow-wrap:anywhere}${input.extraStyle ?? ''}</style>
 </head>
 <body>
   ${skipLinkHtml('main-content')}
@@ -61,6 +87,7 @@ export function pageShell(input: PageShellInput): string {
     <h1 data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${escapeHtml(input.heading)}</h1>
     <p class="lede" data-copy-role="scope-instruction" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${escapeHtml(input.lede)}</p>
   </header>
+  ${humanStatusLine(input.status, escapeHtml)}
   ${input.sidebar === undefined ? '' : `<aside class="reading-sidebar">${input.sidebar}</aside>`}
   ${input.readingLayout ? '' : siteNav(input.current, mountPrefix, escapeHtml)}
   <main id="main-content">

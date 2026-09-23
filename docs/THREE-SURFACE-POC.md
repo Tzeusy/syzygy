@@ -19,6 +19,39 @@ machine credential file's location. It never prints the credential value.
 Use `--port 0` for an ephemeral port or `--state-dir <path>` for an explicit
 local credential directory.
 
+## Restart one local POC listener
+
+For a POC started from this checkout with an explicit, nonzero `--port` and
+`--state-dir`, run from the same Syzygy checkout:
+
+```sh
+npm run poc:restart -- --port <that-poc-port>
+```
+
+The command finds exactly one listener on `127.0.0.1` at that port, verifies
+that its process is this checkout's built POC with the original repository,
+state directory, port and arguments, and checks the same process generation
+again before signaling. It sends one SIGTERM, waits for the socket to close,
+then starts one successor with the identical arguments and state directory.
+This local operator command requires Linux `ss` and `/proc` process metadata.
+It verifies the successor and unchanged credential bytes. It does not use
+SIGKILL, a pidfile, an automatic retry, or a Butlers write. Use
+`--timeout-ms <100..30000>` for a bounded wait other than the 10-second default.
+
+An absent, multiple, changed or unidentifiable listener, a timeout, a failed
+successor, or a simultaneous restart attempt is a refusal. The state directory
+is preserved; inspect the named failure before a further attempt. A stale
+restart lock in the OS temporary directory is intentionally fail-closed and
+requires operator inspection before removal. The system tests exercise only
+private fixture listeners and disposable state directories.
+
+Each non-2xx daemon response writes one structured JSONL diagnostic to local
+stderr. The line contains only its status, registered route or unmatched path
+length, closed reason and safe response-limit fields; it never includes a
+credential, request content or handler exception text. Human pages expose a
+compact evaluation and breach line below the header. It is an execution
+disclosure, not a health verdict or a new machine status route.
+
 ## Evidence and re-observation
 
 Each evaluation carries an additive evidence block on the authenticated
