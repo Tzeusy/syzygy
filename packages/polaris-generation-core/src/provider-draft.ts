@@ -11,8 +11,20 @@ type Schema = { type: 'object'; properties: Record<string, Schema>; required: st
   | { type: 'array'; items: Schema; minItems: number; maxItems: number; uniqueItems?: boolean }
   | { type: 'string'; minLength: number; maxLength: number; pattern?: string; enum?: string[] }
   | { oneOf: readonly Schema[] };
+
+/** The handle shape every id in this module's schemas (and, per admitted-input.ts's
+ * front door, every admitted source's `sourceId`) must satisfy. Exported so
+ * admitSourcePopulation can fail closed on the exact same pattern and length bound
+ * this module enforces at `validateStage`, instead of duplicating the literals. */
+export const SOURCE_ID_PATTERN = '^[A-Za-z0-9][A-Za-z0-9_.:-]*$';
+export const SOURCE_ID_MIN_LENGTH = 1;
+export const SOURCE_ID_MAX_LENGTH = 100;
+/** The upper bound `sourceSchema` (below) places on an admitted source's `text`,
+ * exported for the same reason: one definition, shared with admitted-input.ts. */
+export const SOURCE_TEXT_MAX_LENGTH = 100_000;
+
 const text: Schema = { type: 'string', minLength: 1, maxLength: 8000 };
-const handle: Schema = { type: 'string', minLength: 1, maxLength: 100, pattern: '^[A-Za-z0-9][A-Za-z0-9_.:-]*$' };
+const handle: Schema = { type: 'string', minLength: SOURCE_ID_MIN_LENGTH, maxLength: SOURCE_ID_MAX_LENGTH, pattern: SOURCE_ID_PATTERN };
 const list = (items: Schema, minItems = 0, maxItems = 200): Extract<Schema, { type: 'array' }> => ({ type: 'array', items, minItems, maxItems });
 const object = (properties: Record<string, Schema>): Schema => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
 const refs: Schema = { ...list(handle, 1), uniqueItems: true };
@@ -129,7 +141,7 @@ function draftHandles(value: ProviderDraft): { all: Set<string>; blocks: Set<str
 
 export function validateStage(stage: GenerationStage, value: unknown, context: Record<string, unknown>): unknown {
   check(stageSchema(stage).schema, value);
-  const sourceSchema = list(object({ sourceId: handle, text: { type: 'string', minLength: 1, maxLength: 100000 } }), 1);
+  const sourceSchema = list(object({ sourceId: handle, text: { type: 'string', minLength: 1, maxLength: SOURCE_TEXT_MAX_LENGTH } }), 1);
   check(sourceSchema, context.sources);
   const sources = unique((context.sources as { sourceId: string; text: string }[]).map(s => s.sourceId));
   references(value, sources);

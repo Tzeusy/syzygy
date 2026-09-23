@@ -1,4 +1,8 @@
-import { digestCanonicalJson, runGenerationPipeline, stageSchema, validateStage, reviewVerdict, type PipelinePorts, type PipelineRequest } from '@syzygy/polaris-generation-core';
+import {
+  admitSourcePopulation, admittedSources, digestCanonicalJson, runGenerationPipeline,
+  stageSchema, validateStage, reviewVerdict,
+  type PipelinePorts, type PipelineRequest,
+} from '@syzygy/polaris-generation-core';
 
 /** Explicit synthetic provider fixture. This demonstrates orchestration and
  * rendering, never LLM quality, real source admission or production durability.
@@ -30,11 +34,16 @@ export const syntheticProjects: readonly SyntheticProject[] = [
 ];
 
 export async function runSyntheticProject(project: SyntheticProject) {
-  const sources = [
+  // Admitted-input front door (packages/polaris-generation-core/src/admitted-input.ts,
+  // N8 slice 3): this synthetic demo selects all three fixture sources and
+  // excludes none, so the population's `selected` projection is exactly the
+  // flat array this call site always built -- same objects, same order.
+  const population = admitSourcePopulation([
     { sourceId: 'purpose', text: project.purpose },
     { sourceId: 'mechanism', text: project.mechanism },
     { sourceId: 'qualification', text: project.qualification },
-  ];
+  ]);
+  const sources = admittedSources(population);
   const inventory = { entries: sources.map((source, i) => ({ id: `entry-${i}`, sourceIds: [source.sourceId], statement: source.text, kind: i === 0 ? 'purpose' : i === 1 ? 'capability' : 'qualification', disposition: { kind: 'produced', assetIds: ['opening', 'mechanism-text', 'qualification-text'].slice(i, i + 1) } })) };
   const plan = { sections: [
     { id: 'how', title: 'How the pieces connect', reason: 'Explain the central relationship.', sourceIds: ['mechanism'], disposition: { kind: 'produced', assetIds: ['how'] } },

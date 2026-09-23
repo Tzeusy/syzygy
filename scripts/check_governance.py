@@ -2017,6 +2017,21 @@ POLARIS_GENERATOR_APPROVAL_ACTS = tuple(
 POLARIS_UNDERSTANDING_LABEL = "ADOPT POLARIS UNDERSTANDING AMENDMENT"
 POLARIS_UNDERSTANDING_SUBJECT = "docs/evidence/polaris-understanding-adoption-manifest-2026-09-13.json"
 POLARIS_UNDERSTANDING_ACT = f"{DECISIONS}/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md"
+#: The P-73 (M6 slice 4) edit/repair deletion-account scenario, drafted
+#: 2026-09-23 per bead syzygy-dov.23 and registered before its own act
+#: exists, so CG-7d can see the argument go stale rather than never seeing
+#: it. Its manifest hashes proposed bytes (its two proposed/*.patch files
+#: applied to a scratch tree), never the real openspec/PROJECT-STATUS.md
+#: bytes, which this candidate package never edits in place. Deliberately
+#: not a PWB_SUCCESSOR_CHAIN entry: it amends the Polaris generation
+#: specification, not the PWB behavior population, and asserts no adoption
+#: order beyond its own single act.
+POLARIS_EDIT_REPAIR_LABEL = "SIGN OFF POLARIS EDIT/REPAIR DELETION-ACCOUNT SCENARIO"
+POLARIS_EDIT_REPAIR_DIR = f"{CANDIDATES}/polaris-edit-repair-deletion-scenario"
+POLARIS_EDIT_REPAIR_SUBJECT = (
+    f"{POLARIS_EDIT_REPAIR_DIR}/POLARIS-EDIT-REPAIR-DELETION-SCENARIO-MANIFEST.txt")
+POLARIS_EDIT_REPAIR_ACT = (
+    f"{DECISIONS}/POLARIS-EDIT-REPAIR-DELETION-SCENARIO-ACT.md")
 
 
 def _act_subjects():
@@ -2066,7 +2081,9 @@ def _act_subjects():
     for label, subject in ((PWB_MACHINE_VIEW_LABEL, PWB_MACHINE_VIEW_SUBJECT),
                            (PWB_OPENING_BAND_LABEL, PWB_OPENING_BAND_SUBJECT),
                            (PWB_MISSING_CURRENCY_LABEL,
-                            PWB_MISSING_CURRENCY_SUBJECT)):
+                            PWB_MISSING_CURRENCY_SUBJECT),
+                           (POLARIS_EDIT_REPAIR_LABEL,
+                            POLARIS_EDIT_REPAIR_SUBJECT)):
         if not any(existing == label for existing, _rel, _pat in out):
             out.append((
                 label,
@@ -2286,6 +2303,8 @@ ACT_DIGEST_COPY_FILES = {
         (PWB_OPENING_BAND_LABEL,),
     f"{PWB_MISSING_CURRENCY_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_MISSING_CURRENCY_LABEL,),
+    f"{POLARIS_EDIT_REPAIR_DIR}/OWNER-DECISION-PACKET.md":
+        (POLARIS_EDIT_REPAIR_LABEL,),
     # The owner-act record quotes each performed act's exact phrase and
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
@@ -2363,6 +2382,27 @@ def _activate_pwb_truth_amendment_act_copy_registry():
 
 
 _activate_pwb_truth_amendment_act_copy_registry()
+
+
+def _activate_polaris_edit_repair_act_copy_registry():
+    """Same transition rule as the sibling candidate acts, for this one.
+
+    `POLARIS-EDIT-REPAIR-DELETION-SCENARIO-ACT.md` does not exist yet (this
+    package is drafted, not signed off); this function is therefore a no-op
+    today. Once the dedicated act file exists, it and the aggregate record
+    must both carry the exact current manifest-file digest, or CG-7e fails
+    closed on the first drift.
+    """
+    if not os.path.isfile(os.path.join(ROOT, POLARIS_EDIT_REPAIR_ACT)):
+        return
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+    if POLARIS_EDIT_REPAIR_LABEL not in labels:
+        ACT_DIGEST_COPY_FILES[aggregate] = labels + (POLARIS_EDIT_REPAIR_LABEL,)
+    ACT_DIGEST_COPY_FILES[POLARIS_EDIT_REPAIR_ACT] = (POLARIS_EDIT_REPAIR_LABEL,)
+
+
+_activate_polaris_edit_repair_act_copy_registry()
 
 
 def _activate_pwb_scoped_amendment_act_copy_registry():
