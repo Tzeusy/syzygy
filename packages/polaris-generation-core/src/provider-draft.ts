@@ -165,12 +165,50 @@ function producedHandles(value: ProviderDraft): Set<string> {
   ]);
 }
 
+type RequestedAssetOutput =
+  | { kind: 'section'; asset: ProviderDraft['sections'][number] }
+  | { kind: 'diagram'; asset: ProviderDraft['diagrams'][number] }
+  | { kind: 'deep-dive'; asset: ProviderDraft['deepDives'][number] };
+
+function requestedAssetOutput(request: RequestedAsset, draft: ProviderDraft): RequestedAssetOutput {
+  switch (request.kind) {
+    case 'section': {
+      const asset = draft.sections.find(candidate => candidate.id === request.id);
+      if (asset === undefined) throw new Error('missing-requested-asset');
+      return { kind: request.kind, asset };
+    }
+    case 'diagram': {
+      const asset = draft.diagrams.find(candidate => candidate.id === request.id);
+      if (asset === undefined) throw new Error('missing-requested-asset');
+      return { kind: request.kind, asset };
+    }
+    case 'deep-dive': {
+      const asset = draft.deepDives.find(candidate => candidate.id === request.id);
+      if (asset === undefined) throw new Error('missing-requested-asset');
+      return { kind: request.kind, asset };
+    }
+  }
+}
+
+function requestedOutputHandles(output: RequestedAssetOutput): Set<string> {
+  switch (output.kind) {
+    case 'section':
+      return new Set([output.asset.id, ...output.asset.paragraphs.map(paragraph => paragraph.id)]);
+    case 'diagram':
+      return new Set([output.asset.id, ...output.asset.nodes.map(node => node.id), ...output.asset.edges.map(edge => edge.id)]);
+    case 'deep-dive':
+      return new Set([output.asset.id, ...output.asset.paragraphs.map(paragraph => paragraph.id)]);
+  }
+}
+
 function requestedDisposition(request: RequestedAsset, draft: ProviderDraft): AssetDisposition {
-  const collection = request.kind === 'section' ? draft.sections : request.kind === 'diagram' ? draft.diagrams : draft.deepDives;
-  const asset = collection.find(candidate => candidate.id === request.id);
-  if (asset === undefined) throw new Error('missing-requested-asset');
-  if (request.required && asset.disposition.kind === 'omitted') throw new Error('required-asset-omitted');
-  return asset.disposition;
+  const output = requestedAssetOutput(request, draft);
+  const disposition = output.asset.disposition;
+  if (request.required && disposition.kind === 'omitted') throw new Error('required-asset-omitted');
+  if (disposition.kind === 'produced' && disposition.assetIds.some(id => !requestedOutputHandles(output).has(id))) {
+    throw new Error('requested-asset-output-mismatch');
+  }
+  return disposition;
 }
 function draftHandles(value: ProviderDraft): { all: Set<string>; blocks: Set<string> } {
   const blocks = [value.introduction, ...value.sections.flatMap(s => s.paragraphs),

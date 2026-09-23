@@ -102,6 +102,7 @@ describe('provider-local intermediate validation', () => {
   it('uses trusted request identity and requiredness for exact produced, omitted and unresolved dispositions', () => {
     expect(() => validateStage('plan', { sections: [{ ...plan.sections[0]!, disposition: { kind: 'omitted', reason: 'Unavailable', references: ['s1'] } }] }, context)).toThrow('required-asset-omitted');
     expect(() => validateStage('author', { ...draft, diagrams: [{ ...draft.diagrams[0]!, disposition: { kind: 'omitted', reason: 'Unavailable', references: ['s1'] } }] }, context)).toThrow('required-asset-omitted');
+    expect(() => validateStage('author', { ...draft, diagrams: [{ ...draft.diagrams[0]!, disposition: { kind: 'produced', assetIds: ['section'] } }] }, context)).toThrow('requested-asset-output-mismatch');
     expect(() => validateStage('author', draft, { ...context, requestedAssets: [...requestedAssets, { id: 'missing', kind: 'diagram', required: true }] })).toThrow('missing-requested-asset');
     const mixed = {
       ...draft,
