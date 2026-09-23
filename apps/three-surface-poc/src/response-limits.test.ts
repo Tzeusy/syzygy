@@ -169,9 +169,9 @@ describe('pocRoutes — every human HTML sink is bounded by maxHumanResponseByte
       const line = lines[0] as string;
       expect(response.body.indexOf(line)).toBeLessThan(response.body.indexOf('<main'));
       expect(line).toContain('data-human-status');
-      expect(line).toContain('data-status-evaluation=');
-      expect(line).toContain('data-status-breaches=');
-      expect(line).toContain('Unknown (provision unavailable)');
+      expect(line).toContain('data-eval=');
+      expect(line).toContain('data-breaches=');
+      expect(line).toContain('Unknown (no provision record)');
       expect(bytes(line), path).toBeLessThan(400);
       expect(line).not.toMatch(/credential value|healthy|age|href=| id=/i);
     }
@@ -182,7 +182,7 @@ describe('pocRoutes — every human HTML sink is bounded by maxHumanResponseByte
     const served = home.handle(context(POC_HUMAN_PATH));
     if (served instanceof Promise) throw new Error('home route unexpectedly async');
     const statusLine = /<p class="operability-status"[^>]*>[^<]*<\/p>/.exec(served.body)?.[0];
-    expect(statusLine).toContain('breaches input Unknown (shape unavailable), served 1; last human #1 6/5 bytes');
+    expect(statusLine).toContain('breaches input Unknown (shape unavailable), served 1; last human #1 6/5 B');
     expect(bytes(statusLine as string)).toBeLessThan(400);
   });
 
