@@ -74,6 +74,8 @@ export interface PageShellInput {
   readonly extraStyle?: string;
   readonly readingLayout?: boolean;
   readonly body: string;
+  /** Early, native page shortcuts; Polaris uses these before the global nav. */
+  readonly earlyLinks?: string;
   readonly sidebar?: string;
   readonly footer: string;
   readonly status?: HumanOperabilityStatus;
@@ -102,6 +104,7 @@ export function pageShell(input: PageShellInput): string {
 </head>
 <body>
   ${skipLinkHtml('main-content')}
+  ${input.earlyLinks ?? ''}
   ${input.readingLayout ? siteNav(input.current, mountPrefix, escapeHtml) : ''}
   ${input.sidebar === undefined ? '' : '<div class="reading-layout">'}
   <header>

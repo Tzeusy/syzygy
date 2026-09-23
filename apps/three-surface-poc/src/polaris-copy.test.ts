@@ -1,10 +1,12 @@
 import { rmSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
 import { POLARIS_COPY } from './polaris-copy.js';
 import { renderPolarisSourcePage } from './polaris-source.js';
+import { sourceRouteIdentities } from './polaris-source.js';
 import { renderPolarisPage, renderProjectReading } from './polaris.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import { walkthroughJudgmentFixture } from './test-walkthrough-judgment-fixture.js';
@@ -202,6 +204,12 @@ function modelFor(variant: Variant): PocModel {
   }
 }
 
+function multiSourceModel(): PocModel {
+  const texts = { ...PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC,
+    'openspec/specs/beta/spec.md': '# Beta\n\n### Requirement: Beta\n\n- SHALL remain bounded.\n' };
+  return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(texts) } });
+}
+
 const FRESHNESS_VALUES = ['fresh', 'stale', 'broken', 'superseded'] as const;
 type FreshnessValue = (typeof FRESHNESS_VALUES)[number];
 
@@ -248,6 +256,56 @@ function freshnessGlossaryItem(html: string, freshness: FreshnessValue): string 
 }
 
 describe('Polaris copy roles (PWB-REQ-012)', () => {
+  it('classifies each interpolated source control and preserves exact-source href order and multiplicity', () => {
+    const model = multiSourceModel();
+    if (model.projectShape.kind !== 'observed') throw new Error('fixture must observe source population');
+    const html = renderPolarisPage(model);
+    expect(sweep(html).violations).toEqual([]);
+    const sources = model.projectShape.sources;
+    expect(sources).toHaveLength(17);
+    const labels = [...html.matchAll(/<span class="source-record-label"([^>]*)>([^<]*)<\/span>/g)];
+    expect(labels).toHaveLength(sources.length);
+    for (const [index, label] of labels.entries()) {
+      expect(label[1]).toContain('data-copy-role="scope-instruction"');
+      expect(decode(label[2] as string)).toBe(`Source record — ${sources[index]!.path}`);
+    }
+    const identities = sourceRouteIdentities(html);
+    expect(identities).toHaveLength(8);
+    expect(createHash('sha256').update(identities.join('\n')).digest('hex'))
+      .toBe('7e8907a1f45c543a49bd06c6a442b05e455630077a47e7b7fa504fa505a3ea60');
+    const paths = new Map(sources.map(source => [source.identity, source.path]));
+    const links = [...html.matchAll(/<a href="[^"]*\/polaris\/source\?identity=[^"]+"([^>]*)>([^<]+)<\/a>/g)];
+    expect(links).toHaveLength(identities.length);
+    for (const [index, link] of links.entries()) {
+      expect(link[1]).toContain('data-copy-role="action-label"');
+      expect(decode(link[2] as string)).toBe(`Exact text — ${paths.get(identities[index]!)}`);
+    }
+  });
+  it('gives every summary and native anchor a distinct accessible name unless its href is identical', () => {
+    const html = renderPolarisPage(multiSourceModel())
+      .replace(/<head>[\s\S]*?<\/head>/g, '')
+      .replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '');
+    const controls = [...html.matchAll(/<(summary|a)\b([^>]*)>([\s\S]*?)<\/\1>/g)].map((match, index) => {
+      const attributes = match[2] as string;
+      const visible = decode((match[3] as string).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim());
+      const accessible = /\saria-label="([^"]+)"/.exec(attributes)?.[1];
+      const href = /\shref="([^"]+)"/.exec(attributes)?.[1];
+      return { tag: match[1], name: accessible === undefined ? visible : decode(accessible),
+        target: href === undefined ? `summary:${index}` : decode(href) };
+    });
+    const summaries = controls.filter(control => control.tag === 'summary');
+    const anchors = controls.filter(control => control.tag === 'a');
+    expect(summaries).toHaveLength(39);
+    expect(anchors).toHaveLength(144);
+    const byName = new Map<string, Set<string>>();
+    for (const control of controls) {
+      expect(control.name).not.toBe('');
+      const targets = byName.get(control.name) ?? new Set<string>();
+      targets.add(control.target);
+      byName.set(control.name, targets);
+    }
+    expect([...byName].filter(([, targets]) => targets.size > 1).map(([name]) => name)).toEqual([]);
+  });
   it('renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control', () => {
     const shapeKinds = new Set<string>();
     for (const variant of VARIANTS) {

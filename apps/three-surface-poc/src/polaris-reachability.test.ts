@@ -186,6 +186,45 @@ function machineGapCounts(shape: ProjectShape): Map<string, number> {
 const VARIANTS: readonly Variant[] = ['unevaluated', 'rejected', 'observed', 'secret'];
 
 describe('Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34)', () => {
+  it('keeps seven group shortcuts among the first ten tabs and a complete native outline without script', () => {
+    for (const variant of VARIANTS) {
+      const model = modelFor(variant);
+      const html = renderPolarisPage(model);
+      const shortcuts = /<nav class="quick-links"[^>]*>([\s\S]*?)<\/nav>/.exec(html)?.[1];
+      expect(shortcuts, variant).toBeDefined();
+      const quickTargets = [...shortcuts!.matchAll(/<a href="#([^"]+)"/g)].map(match => match[1] as string);
+      expect(quickTargets).toEqual(GROUP_IDS.map(id => `polaris-group-${id}`));
+      expect(html.indexOf('class="quick-links"')).toBeLessThan(html.indexOf('class="site-nav"'));
+      expect(html.indexOf('class="quick-links"')).toBeLessThan(html.indexOf('<details class="contents-list"'));
+      const beforeMain = html.slice(html.indexOf('<body>'), html.indexOf('<main id="main-content">'));
+      const firstAnchors = [...beforeMain.matchAll(/<a\b[^>]*href="([^"]+)"/g)].map(match => match[1] as string);
+      expect(firstAnchors.slice(0, 8)).toEqual(['#main-content', ...quickTargets.map(id => `#${id}`)]);
+      const nav = depthNav(html);
+      const outlineLinks = [...nav.inner.matchAll(/<a href="([^"]+)"/g)];
+      expect(outlineLinks.length, variant).toBeGreaterThan(15);
+      expect(nav.inner).toContain(`data-outline-hidden-count>${outlineLinks.length} links in outline</span>`);
+      const withoutScript = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '');
+      expect([...withoutScript.matchAll(/<tr[^>]*data-polaris-source=/g)]).toHaveLength(model.projectShape.kind === 'observed' ? model.projectShape.sources.length : 0);
+      expect([...withoutScript.matchAll(/<h[23]\b[^>]*\bid="[^"]+"/g)]).toHaveLength([...html.matchAll(/<h[23]\b[^>]*\bid="[^"]+"/g)].length);
+      const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)].map(match => match[1] as string);
+      expect(scripts.join('\n')).not.toMatch(/localStorage|sessionStorage|document\.cookie|indexedDB|history\.(?:pushState|replaceState)/);
+    }
+  });
+
+  it('keeps every rendered heading at most one level below its predecessor', () => {
+    for (const variant of VARIANTS) {
+      const html = renderPolarisPage(modelFor(variant));
+      const headings = [...html.matchAll(/<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/g)]
+        .map(match => ({ level: Number(match[1]), text: (match[2] as string).replace(/<[^>]+>/g, '').trim() }));
+      if (variant === 'observed') expect(headings).toHaveLength(65);
+      expect(headings.length, variant).toBeGreaterThan(20);
+      for (let index = 1; index < headings.length; index += 1) {
+        expect(headings[index]!.level, `${variant}: ${headings[index - 1]!.text} → ${headings[index]!.text}`)
+          .toBeLessThanOrEqual(headings[index - 1]!.level + 1);
+      }
+    }
+  });
+
   it('resolves every internal link to exactly one id in every shape state (no dangling link on any path)', () => {
     for (const variant of VARIANTS) {
       const html = renderPolarisPage(modelFor(variant));
@@ -229,6 +268,9 @@ describe('Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7
       if (observedShape) for (const cls of CATALOG_CLASS_IDS) expected.add(`polaris-class-${cls}`);
       for (const entity of model.entities) if (entity.kind === 'capability') expected.add(`polaris-deep-dive-${entity.id.replace(/[^A-Za-z0-9]+/g, '-')}`);
       for (const part of EVIDENCE_IDS) if (observedShape || part === 'sources' || part === 'gaps') expected.add(`polaris-shape-${part}`);
+      const headings = [...html.matchAll(/<h[23]\b[^>]*\bid="([^"]+)"/g)].map(match => match[1] as string);
+      expect(headings.length, `${variant}: heading denominator`).toBeGreaterThan(15);
+      for (const id of headings) expected.add(id);
       expect(new Set(targets)).toEqual(expected);
       expect(targets.length).toBe(expected.size);
     }

@@ -169,9 +169,52 @@ describe('Polaris project-level sequence (PWB-REQ-010)', () => {
     expect(html).toContain('14 of 15 source bodies readable; 1 path-only source identities;');
     expect(html).not.toContain('15 of 15 sources readable');
     const baselineRow = /data-polaris-source="claim:source:openspec\/specs\/alpha\/spec\.md"[\s\S]*?<\/tr>/.exec(html)?.[0] ?? '';
-    expect(baselineRow).toContain('path-only · blob');
+    expect(baselineRow).toMatch(/<b>Outcome:<\/b> path-only<br><b>Anchor:<\/b> blob/);
     expect(baselineRow).toContain('no body read');
     expect(baselineRow).not.toContain('body-classified');
+  });
+
+  it('keeps every source record visible in six scoped columns with identity, rule, outcome, anchor and nonempty digest disclosure', () => {
+    const { model, shape } = observedModel();
+    const html = renderPolarisPage(model);
+    const table = /<div[^>]*data-source-index[^>]*>(<table>[\s\S]*?<\/table>)<\/div>/.exec(html)?.[1];
+    expect(table).toBeDefined();
+    expect(table).toContain('<table><thead><tr>');
+    expect([...table!.matchAll(/<th scope="col"/g)]).toHaveLength(6);
+    const rows = [...table!.matchAll(/<tr id="polaris-source-[^"]+" data-polaris-source="([^"]+)"[^>]*>([\s\S]*?)<\/tr>/g)];
+    expect(rows).toHaveLength(15);
+    expect(rows.length).toBe(shape.sources.length);
+    const verify = (rowHtml: string, source: typeof shape.sources[number], index: number): void => {
+      const cells = [...rowHtml.matchAll(/<td>([\s\S]*?)<\/td>/g)].map(match => match[1] as string);
+      expect(cells, source.path).toHaveLength(6);
+      expect(cells[0]).toBe(String(index + 1));
+      expect(cells[1]).toContain(`data-parity-field="shape-source-path">${source.path}</code>`);
+      expect(cells[2]).toContain(`Source record — ${source.path}`);
+      expect(cells[2]).toContain(source.identity);
+      expect(cells[3]).toContain(`Rule:</b> ${source.rule}`);
+      expect(cells[3]).toContain(source.pillar ?? 'not declared');
+      const outcome = source.record.outcome === 'classified' ? source.record.basis === 'path-only' ? 'path-only' : 'body-classified' : source.record.outcome;
+      expect(cells[4]).toContain(`Outcome:</b> ${outcome}`);
+      const anchor = source.anchor.kind === 'blob' ? `blob ${source.anchor.objectId.slice(0, 12)}`
+        : source.anchor.kind === 'not-a-blob' ? `${source.anchor.type} (mode ${source.anchor.mode})` : 'missing at revision';
+      expect(cells[4]).toContain(`Anchor:</b> ${anchor}`);
+      const digest = source.claim.support[0]?.contentDigest;
+      if (digest === undefined) {
+        expect(cells[4]).toContain('Digest:</b> <small');
+        expect(cells[4]).toContain('>no body read</small>');
+        expect(cells[4]).not.toContain('shape-source-digest');
+      } else expect(cells[4]).toContain(`data-parity-field="shape-source-digest">${digest.replace(/^sha256:/, '').slice(0, 12)}</code>`);
+      expect(cells[5]).toContain('class="claim-tuple"');
+    };
+    rows.forEach((row, index) => {
+      expect(row[1]).toBe(shape.sources[index]!.claim.claimId);
+      verify(row[2] as string, shape.sources[index]!, index);
+    });
+    const pathOnly = shape.sources.findIndex(source => source.claim.support[0]?.contentDigest === undefined);
+    expect(pathOnly).toBeGreaterThan(-1);
+    expect(() => verify((rows[pathOnly]![2] as string).replace('>no body read</small>', '></small>'), shape.sources[pathOnly]!, pathOnly)).toThrow();
+    const first = rows[0]![2] as string;
+    expect(() => verify(first.replace(shape.sources[0]!.identity, shape.sources[1]!.identity), shape.sources[0]!, 0)).toThrow();
   });
 });
 
