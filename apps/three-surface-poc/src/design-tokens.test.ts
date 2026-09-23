@@ -10,6 +10,41 @@ function tokenValue(css: string, name: string): string {
   return match[1].trim();
 }
 
+function rgb(hex: string): readonly [number, number, number] {
+  const parts = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
+  if (parts === null) throw new Error(`not an RGB color: ${hex}`);
+  return [1, 2, 3].map((i) => Number.parseInt(parts[i] as string, 16) / 255) as unknown as readonly [number, number, number];
+}
+
+function linear(channel: number): number {
+  return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+}
+
+function luminance(hex: string): number {
+  const [r, g, b] = rgb(hex).map(linear);
+  return 0.2126 * (r as number) + 0.7152 * (g as number) + 0.0722 * (b as number);
+}
+
+function contrast(a: string, b: string): number {
+  const values = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return ((values[0] as number) + 0.05) / ((values[1] as number) + 0.05);
+}
+
+// sRGB D65 -> CIE L*a*b*, with the CIE 1976 Euclidean distance.
+function lab(hex: string): readonly [number, number, number] {
+  const [r, g, b] = rgb(hex).map(linear);
+  const x = (0.4124564 * (r as number) + 0.3575761 * (g as number) + 0.1804375 * (b as number)) / 0.95047;
+  const y = (0.2126729 * (r as number) + 0.7151522 * (g as number) + 0.0721750 * (b as number));
+  const z = (0.0193339 * (r as number) + 0.1191920 * (g as number) + 0.9503041 * (b as number)) / 1.08883;
+  const f = (v: number): number => v > 0.008856 ? Math.cbrt(v) : 7.787 * v + 16 / 116;
+  return [116 * f(y) - 16, 500 * (f(x) - f(y)), 200 * (f(y) - f(z))];
+}
+
+function deltaE76(a: string, b: string): number {
+  const first = lab(a), second = lab(b);
+  return Math.hypot(...first.map((value, i) => value - (second[i] as number)));
+}
+
 /**
  * Finds the `.{className} { ... }` rule body in the token stylesheet and
  * resolves its `color: var(--x)` reference to that token's own value.
@@ -21,7 +56,7 @@ function tokenValue(css: string, name: string): string {
  */
 function epistemicClassColor(css: string, className: string): string {
   const escaped = className.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-  const ruleMatch = new RegExp(`\\.${escaped}\\s*\\{([^}]*)\\}`).exec(css);
+  const ruleMatch = new RegExp(`\\.epistemic\\.${escaped}[^{}]*\\{([^}]*)\\}`).exec(css);
   if (ruleMatch?.[1] === undefined) {
     throw new Error(`no CSS rule found for .${className}`);
   }
@@ -115,5 +150,16 @@ describe('design tokens (N4 S11-F2, S11-F3)', () => {
 
   it('declares a single canonical --measure-reading token at 74ch (the value slice 2 wires into polaris.ts to converge its duplicate 66ch/74ch .reading-prose declarations — this token declares the value, it does not by itself resolve the contradiction)', () => {
     expect(tokenValue(DESIGN_TOKENS_CSS, '--measure-reading')).toBe('74ch');
+  });
+
+  it('keeps proposal treatment distinct from epistemic Unknown and notice amber, with readable foreground contrast', () => {
+    const proposed = tokenValue(DESIGN_TOKENS_CSS, '--proposed');
+    expect(deltaE76(proposed, tokenValue(DESIGN_TOKENS_CSS, '--unknown'))).toBeGreaterThanOrEqual(26.7);
+    expect(deltaE76(proposed, tokenValue(DESIGN_TOKENS_CSS, '--amber'))).toBeGreaterThanOrEqual(26.7);
+    for (const ground of ['--void', '--panel'] as const) {
+      expect(contrast(proposed, tokenValue(DESIGN_TOKENS_CSS, ground))).toBeGreaterThanOrEqual(4.5);
+    }
+    const collision = DESIGN_TOKENS_CSS.replace('--proposed: #aa90ee;', '--proposed: #f3c56f;');
+    expect(deltaE76(tokenValue(collision, '--proposed'), tokenValue(collision, '--unknown'))).toBeLessThan(26.7);
   });
 });

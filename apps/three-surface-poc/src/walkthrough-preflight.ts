@@ -186,10 +186,21 @@ function exactRequirement(model: PocModel, shape: Observed, html: string, routes
 
 function unknowns(shape: ProjectShape, html: string): { readonly failure: string | undefined; readonly visible: number; readonly machine: number } {
   const machineUnknowns = presentedShapeClaims(shape).filter((claim) => claim.epistemic.label === 'Unknown');
-  const visible = count(html, 'data-epistemic-label="Unknown"');
+  const byId = new Map(presentedShapeClaims(shape).map((claim) => [claim.claimId, claim.epistemic.label]));
+  const visibleIds = new Set<string>();
   const problems: string[] = [];
+  for (const match of html.matchAll(/<span class="claim-tuple"[^>]*>/g)) {
+    const tag = match[0];
+    const id = /\sdata-claim-id="([^"]*)"/.exec(tag)?.[1];
+    const label = /\sdata-epistemic-label="([^"]*)"/.exec(tag)?.[1];
+    if (id !== undefined && byId.get(id) === 'Unknown') {
+      if (label !== 'Unknown') problems.push(`${id}: rendered label ${label ?? 'missing'} differs from model Unknown`);
+      else visibleIds.add(id);
+    }
+  }
+  const visible = visibleIds.size;
   if (visible < 1) problems.push('no Unknown is visible on the page');
-  if (visible !== machineUnknowns.length) problems.push(`${visible} visible vs ${machineUnknowns.length} in the model`);
+  for (const claim of machineUnknowns) if (!visibleIds.has(claim.claimId)) problems.push(`${claim.claimId}: Unknown not visible`);
   for (const claim of machineUnknowns) {
     // A deferred Unknown states no reason by design; every other Unknown
     // must carry its primary reason (RFC2-24).

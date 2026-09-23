@@ -46,3 +46,28 @@ explanations; source drift removes both figures and their navigation links.
 
 For the reusable LLM-assisted authoring process and current tooling gaps, see
 the [Polaris generation kit](polaris-generation/README.md).
+
+## Honest encodings in the first reading
+
+The Observed and Unknown treatment is declared once in the app's
+`EPISTEMIC_ENCODING` table. Badges, project-shape tuples and Unknown
+disclosures use its color and symbol; their visible words carry the meaning
+when color or generated content is unavailable. A tuple may carry its label
+locally or inherit the nearest `data-epistemic-scope-label`. The route sweep
+counts each rendered encoding on Polaris, Trajectory and Orrery; Home is a
+separate diagnostic. A proposal uses the distinct `--proposed` token and
+retains “Proposed change — not current authority.”
+
+Before the catalog, a conditional band exposes existing Unknown whole-shape
+and roster-identity claims with their reason, route, tuple and deep link. Its
+count covers all Unknown project-shape claims, including members deeper on the
+page. The item-state fixture exercises missing-source Unknown and contradicted
+Unknown at the suspended tier without a new repository read. These are
+synthetic renderer counterexamples: the current extraction grammar cannot
+emit either item state from the admitted Butlers fixture.
+
+Freshness remains the closed four-value field. If it is absent, an Unknown
+claim shows a separate currency disclosure; an Observed claim is refused.
+The disclosure is not a fifth freshness value or a route to the gated
+currency-bound assessment. Tier, freshness and challenge treatment tables
+and the full proposal legend are later work.

@@ -1,5 +1,5 @@
 import { rmSync } from 'node:fs';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import type { PocModel, ProjectShape, ProjectShapeClaim } from '@syzygy/three-surface-poc-core';
 
@@ -8,7 +8,9 @@ import { buildFixtureModel } from './test-model-fixture.js';
 import {
   ADMITTING_AUTHORITY,
   PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET,
+  PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE,
   REJECTING_AUTHORITY,
+  projectShapeItemStateFixture,
   projectShapeFixtureGit,
 } from './test-project-shape-fixture.js';
 
@@ -38,7 +40,7 @@ const REASONS = [
   'reference-unresolvable',
   'execution-blocked',
 ] as const;
-const FRESHNESS = ['fresh', 'stale', 'unknown-currency', 'no-bound', 'unstated'] as const;
+const FRESHNESS = ['fresh', 'stale', 'unknown-currency', 'no-bound'] as const;
 const CHALLENGE = ['unchallenged'] as const;
 /** Words an aggregate must never use about itself: headline status,
  * composite maturity, inferred success, trends or percentages. */
@@ -81,6 +83,86 @@ function modelFor(variant: Variant): PocModel {
 }
 
 const TUPLE_FIELDS = ['data-claim-id', 'data-epistemic-label', 'data-epistemic-tier', 'data-epistemic-primary-reason', 'data-epistemic-secondary-reasons', 'data-epistemic-freshness', 'data-challenge-state', 'data-evaluation-id'] as const;
+
+describe('first-reading and item-level Unknown counterexamples (M3)', () => {
+  let base: PocModel;
+  beforeAll(() => { base = modelFor('observed'); });
+
+  it('puts an existing whole-shape Unknown with its reason, route, tuple and deep link before the catalog', () => {
+    const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE) } });
+    const html = renderPolarisPage(model);
+    const bandBlock = /<section class="opening-unknown-band"[\s\S]*?<\/section>/.exec(html)?.[0];
+    if (bandBlock === undefined) throw new Error('opening band missing');
+    const verify = (candidate: string): void => {
+      const bandStart = candidate.indexOf('data-opening-unknown-band');
+      const catalogStart = candidate.indexOf('data-polaris-group="catalog"');
+      expect(bandStart).toBeGreaterThan(0);
+      expect(catalogStart).toBeGreaterThan(bandStart);
+      const band = candidate.slice(bandStart, catalogStart);
+      expect(band).toContain('data-unknown-disclosure="claim:project-shape"');
+      expect(band).toContain('contradicted-pending-adjudication');
+      expect(band).toContain('Owner adjudication');
+      expect(band).toContain('data-claim-id="claim:project-shape"');
+      expect(band).toContain('href="#polaris-shape-sources"');
+      expect(band).toMatch(/data-opening-unknown-count="[1-9][0-9]*"/);
+    };
+    verify(html);
+    for (const mutant of [
+      html.replace(bandBlock, '') + bandBlock,
+      html.replace(bandBlock, bandBlock.replace(/<li data-unknown-disclosure="claim:project-shape"[\s\S]*?<\/li>/, '')),
+      html.replace(bandBlock, bandBlock.replace('Owner adjudication', '')),
+      html.replace(bandBlock, bandBlock.replace('href="#polaris-shape-sources"', 'href="#missing"')),
+    ]) expect(() => verify(mutant)).toThrow();
+  });
+
+  for (const state of ['unknown', 'contradicted'] as const) {
+    it(`renders a ${state} item with machine-equal Unknown reason, route and tuple`, () => {
+      const model = projectShapeItemStateFixture(base, state);
+      if (model.projectShape.kind !== 'observed') throw new Error('fixture shape unavailable');
+      const item = model.projectShape.items.find((candidate) => candidate.class === 'principle' && candidate.state === state);
+      if (item === undefined || item.claim.epistemic.label !== 'Unknown' || !('reasons' in item.claim.epistemic)) throw new Error('fixture item unavailable');
+      const html = renderPolarisPage(model);
+      const start = html.indexOf(`data-polaris-item="${item.claim.claimId}"`);
+      expect(start).toBeGreaterThan(-1);
+      const end = html.indexOf('</li>', start);
+      const row = html.slice(start, end);
+      const reason = item.claim.epistemic.reasons.primary;
+      const route = item.claim.resolutionRoutes.find((entry) => entry.reason === reason)?.route;
+      expect(route).toBeTruthy();
+      expect(row).toContain(`data-unknown-disclosure="${item.claim.claimId}"`);
+      expect(row).toContain(reason);
+      expect(row).toContain(`Route: ${route}`);
+      expect(row).toContain(`data-claim-id="${item.claim.claimId}" data-epistemic-label="Unknown"`);
+      expect(row).toContain('data-epistemic-freshness="fresh"');
+      expect(attribute(row, 'data-epistemic-tier')).toBe(state === 'contradicted' ? 'suspended' : 'unstated');
+      const forged = row.replace('data-epistemic-label="Unknown"', 'data-epistemic-label="Observed"');
+      expect(attribute(forged, 'data-epistemic-label')).not.toBe(item.claim.epistemic.label);
+    });
+  }
+
+  it('keeps missing freshness outside the four-value slot, discloses absence and refuses a positive claim', () => {
+    const fixture = projectShapeItemStateFixture(base, 'unknown');
+    if (fixture.projectShape.kind !== 'observed') throw new Error('fixture shape unavailable');
+    const shape = fixture.projectShape;
+    const item = shape.items.find((candidate) => candidate.state === 'unknown');
+    if (item === undefined) throw new Error('unknown item missing');
+    const absent = { ...item, claim: { ...item.claim, epistemic: { ...item.claim.epistemic, freshness: undefined } } };
+    const withItem = (replacement: typeof item): PocModel => ({ ...fixture, projectShape: { ...shape, items: shape.items.map((candidate) => candidate === item ? replacement : candidate) } });
+    const html = renderPolarisPage(withItem(absent));
+    const tag = [...html.matchAll(/<span class="claim-tuple"[^>]*>/g)].map((match) => match[0]).find((candidate) => attribute(candidate, 'data-claim-id') === item.claim.claimId);
+    expect(tag).toBeDefined();
+    expect(tag).not.toContain('data-epistemic-freshness=');
+    expect(html).toContain(`data-unknown-disclosure="${item.claim.claimId}:currency"`);
+    expect(html).toContain('Currency bound not declared; this claim remains Unknown.');
+    expect(html).not.toContain('data-epistemic-freshness="unstated"');
+    const originalShape = base.projectShape;
+    if (originalShape.kind !== 'observed') throw new Error('observed base unavailable');
+    const observed = originalShape.items.find((candidate) => candidate.class === 'principle' && candidate.state === 'modeled');
+    if (observed === undefined) throw new Error('observed item unavailable');
+    const positive = { ...observed, claim: { ...observed.claim, epistemic: { label: 'Observed' as const, tier: 'report-fact' as const, freshness: undefined } } };
+    expect(() => renderPolarisPage({ ...base, projectShape: { ...originalShape, items: originalShape.items.map((candidate) => candidate === observed ? positive : candidate) } })).toThrow('positive claim has no freshness');
+  });
+});
 
 describe('Polaris complete epistemic tuples (PWB-REQ-007; RFC2-24, RFC6-14, RFC7-16)', () => {
   it('renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state', () => {
@@ -129,7 +211,7 @@ describe('Polaris complete epistemic tuples (PWB-REQ-007; RFC2-24, RFC6-14, RFC7
         if (claim === undefined) continue;
         expect(label).toBe(claim.epistemic.label);
         expect(tier).toBe(claim.epistemic.tier ?? 'unstated');
-        expect(freshness).toBe(claim.epistemic.freshness ?? 'unstated');
+        expect(freshness).toBe(claim.epistemic.freshness);
         expect(challenge).toBe(claim.challenge);
         expect(evaluationId).toBe(claim.evaluationId);
         if ('reasons' in claim.epistemic) {

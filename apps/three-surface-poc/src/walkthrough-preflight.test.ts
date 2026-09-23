@@ -253,7 +253,7 @@ describe('walkthrough preflight: one counterexample per limb', () => {
     {
       name: 'an Unknown the page shows as Observed',
       limb: 'unknown-invisible',
-      mutate: (b) => ({ ...b, polarisHtml: replaceOnce(b.polarisHtml, 'data-epistemic-label="Unknown"', 'data-epistemic-label="Observed"') }),
+      mutate: (b) => ({ ...b, polarisHtml: b.polarisHtml.replace(/(<span class="claim-tuple"[^>]*?)data-epistemic-label="Unknown"/, '$1data-epistemic-label="Observed"') }),
     },
     {
       name: 'an Unknown with no resolution route',
