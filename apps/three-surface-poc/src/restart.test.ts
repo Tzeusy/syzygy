@@ -21,6 +21,16 @@ interface ProcessIdentity {
   readonly cwd: string | undefined;
 }
 
+interface ProcessProvenance {
+  readonly pid: number;
+  readonly uid: number;
+  readonly started: string | undefined;
+  readonly state: string | undefined;
+  readonly ppid: number | undefined;
+  readonly processGroup: number | undefined;
+  readonly session: number | undefined;
+}
+
 interface ProcessReaders {
   readonly stat: (path: string) => { readonly uid: number };
   readonly readFile: (path: string) => string;
@@ -92,6 +102,49 @@ async function startedFixture(mode: 'normal' | 'slow' | 'held' = 'normal'): Prom
   return { root, repo, stateDir, port, pid: child.pid };
 }
 
+function readProcessProvenance(pid: number, readers: ProcessReaders = defaultProcessReaders): ProcessProvenance | undefined {
+  const proc = `/proc/${pid}`;
+  let stat;
+  try {
+    stat = readers.stat(proc);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined;
+    throw new PrivateFixtureCleanupRefusal('private-process-identity-unreadable', `cannot stat ${proc}`);
+  }
+  if (ownerUid === undefined || stat.uid !== ownerUid) {
+    return { pid, uid: stat.uid, started: undefined, state: undefined, ppid: undefined, processGroup: undefined, session: undefined };
+  }
+  try {
+    const statText = readers.readFile(`${proc}/stat`);
+    const fields = statText.slice(statText.lastIndexOf(')') + 2).trim().split(/\s+/);
+    const state = fields[0];
+    const started = fields[19];
+    const ppid = Number(fields[1]);
+    const processGroup = Number(fields[2]);
+    const session = Number(fields[3]);
+    if (state === undefined || started === undefined
+      || !Number.isSafeInteger(ppid) || !Number.isSafeInteger(processGroup) || !Number.isSafeInteger(session)) {
+      throw new Error('process provenance incomplete');
+    }
+    if (state === 'Z') return undefined;
+    return { pid, uid: stat.uid, started, state, ppid, processGroup, session };
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined;
+    if (error instanceof PrivateFixtureCleanupRefusal) throw error;
+    throw new PrivateFixtureCleanupRefusal('private-process-identity-unreadable', `cannot read provenance for ${proc}`);
+  }
+}
+
+function readPrivateChildPids(): number[] {
+  try {
+    return readFileSync(`/proc/${process.pid}/task/${process.pid}/children`, 'utf8')
+      .trim().split(/\s+/).filter(Boolean).map(Number).filter(Number.isSafeInteger);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
+    throw new PrivateFixtureCleanupRefusal('private-process-identity-unreadable', 'cannot read private child provenance');
+  }
+}
+
 function readProcessIdentity(pid: number, readers: ProcessReaders = defaultProcessReaders): ProcessIdentity | undefined {
   const proc = `/proc/${pid}`;
   let stat: { readonly uid: number };
@@ -126,15 +179,26 @@ function readProcessIdentity(pid: number, readers: ProcessReaders = defaultProce
   }
 }
 
-function exactPrivateFixtureProcesses(
-  entries: readonly string[] = readdirSync('/proc'),
-  readIdentity: (pid: number) => ProcessIdentity | undefined = readProcessIdentity,
-): ProcessIdentity[] {
+function exactPrivateFixtureProcesses(options: {
+  readonly knownPids?: readonly number[];
+  readonly childPids?: readonly number[];
+  readonly readIdentity?: (pid: number) => ProcessIdentity | undefined;
+  readonly readProvenance?: (pid: number) => ProcessProvenance | undefined;
+} = {}): ProcessIdentity[] {
   if (ownerUid === undefined) throw new PrivateFixtureCleanupRefusal('private-process-identity-unreadable', 'process UID is unavailable');
+  const knownPids = new Set(options.knownPids ?? pids);
+  const readProvenance = options.readProvenance ?? readProcessProvenance;
+  const candidatePids = new Set(knownPids);
+  for (const pid of options.childPids ?? readPrivateChildPids()) {
+    if (knownPids.has(pid)) continue;
+    const provenance = readProvenance(pid);
+    if (provenance === undefined || provenance.uid !== ownerUid) continue;
+    if (provenance.ppid === process.pid && provenance.processGroup === pid && provenance.session === pid) candidatePids.add(pid);
+  }
+  const readIdentity = options.readIdentity ?? readProcessIdentity;
   const matches: ProcessIdentity[] = [];
-  for (const entry of entries) {
-    if (!/^\d+$/.test(entry)) continue;
-    const identity = readIdentity(Number(entry));
+  for (const pid of candidatePids) {
+    const identity = readIdentity(pid);
     if (identity === undefined || identity.uid !== ownerUid || identity.argv === undefined || identity.cwd === undefined || identity.started === undefined) continue;
     if (identity.argv[1] !== fixture || identity.cwd !== process.cwd()) continue;
     const repoIndex = identity.argv.indexOf('--repo');
@@ -336,12 +400,32 @@ describe('one-listener POC restart on private fixture sockets', () => {
       readlink: () => process.cwd(),
     };
     await expect(drainPrivateFixtureProcesses({
-      scan: () => exactPrivateFixtureProcesses(['4242'], pid => readProcessIdentity(pid, readers)),
+      scan: () => exactPrivateFixtureProcesses({ knownPids: [4242], childPids: [], readIdentity: pid => readProcessIdentity(pid, readers) }),
       signal: () => { signals += 1; },
       timeoutMs: 100,
     })).rejects.toMatchObject({ code: 'private-process-identity-unreadable' });
     expect(signals).toBe(0);
     expect(existsSync(root)).toBe(true);
+  });
+
+  it('ignores unreadable out-of-scope child churn before cmdline inspection', () => {
+    const uid = ownerUid;
+    if (uid === undefined) throw new Error('process UID is unavailable');
+    let identityReads = 0;
+    const outOfScope = exactPrivateFixtureProcesses({
+      knownPids: [],
+      childPids: [4243],
+      readProvenance: () => ({
+        pid: 4243, uid, started: 'unrelated-generation', state: 'S', ppid: process.pid,
+        processGroup: process.pid, session: process.pid,
+      }),
+      readIdentity: () => {
+        identityReads += 1;
+        throw new PrivateFixtureCleanupRefusal('private-process-identity-unreadable', 'out-of-scope cmdline churn');
+      },
+    });
+    expect(outOfScope).toEqual([]);
+    expect(identityReads).toBe(0);
   });
 
   it('refuses PID reuse before signaling a changed process generation', async () => {
