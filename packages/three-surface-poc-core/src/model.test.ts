@@ -432,6 +432,13 @@ describe('three-surface Butlers POC model', () => {
     expect(confirmedRelationships.get('relationship:work-to-code')?.epistemic.label).toBe(
       'Unknown',
     );
+    expect(confirmed.dispatch).toMatchObject({
+      dispatchState: 'dispatched',
+      beadId: 'bu-materialized1',
+      createdAt: '2026-08-30T00:00:00Z',
+    });
+    expect(confirmed.dispatch && Object.isFrozen(confirmed.dispatch)).toBe(true);
+    expect(confirmed.dispatch && Object.isFrozen(confirmed.dispatch.packet)).toBe(true);
 
     // a record naming a Bead that is NOT present in the live-observed
     // work items must never be rendered as Observed (VIS-2, fail-closed)
@@ -444,6 +451,7 @@ describe('three-surface Butlers POC model', () => {
     expect(staleEntities.get('work:whatsapp-single-event-normalization')?.epistemic.label).toBe(
       'Unknown',
     );
+    expect(stale.dispatch?.dispatchState).toBe('undispatched');
 
     // no record at all: unchanged from the pre-existing default behaviour
     const none = buildPocModel(baseInput);
@@ -452,6 +460,16 @@ describe('three-surface Butlers POC model', () => {
       label: 'Unknown',
       reason: 'No POC work item has been materialized.',
     });
+    expect(none.dispatch?.dispatchState).toBe('undispatched');
+
+    const alternate = buildPocModel({
+      ...baseInput,
+      seeds: {
+        ...BUTLERS_POC_SEEDS,
+        project: { ...BUTLERS_POC_SEEDS.project, repositoryId: 'repository:alternate' },
+      },
+    });
+    expect(alternate.dispatch).toBeNull();
   });
 
   it('words the intent-to-work basis by the record origin: created, reused, or the honest legacy both (PRF-4)', () => {

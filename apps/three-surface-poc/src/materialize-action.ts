@@ -1,6 +1,5 @@
 import { escapeHtml, type Route } from '@syzygy/cap1-daemon';
 import {
-  buildMaterializationPacket,
   clearMaterializationRecordFile,
   materializeWorkItem,
   readMaterializationRecordFile,
@@ -27,26 +26,8 @@ const TRAJECTORY_BACK_PATH = '/trajectory' as const;
 export const MATERIALIZE_ATTRIBUTION =
   'syzygy-three-surface-poc:human-triggered-materialize-action' as const;
 
-function materializationPathsFromModel(
-  model: PocModel,
-): { readonly proposalPath: string; readonly designPath: string } | null {
-  const proposalPath = model.proposedWork.proposal.path;
-  if (proposalPath === '') return null;
-
-  const intent = model.entities.find((entity) => entity.kind === 'intent');
-  const designPath = intent?.provenance.find(
-    (provenance) =>
-      provenance.kind === 'repository-file' &&
-      provenance.source !== proposalPath &&
-      provenance.source !== model.proposedWork.delta.path,
-  )?.source;
-  return designPath === undefined ? null : { proposalPath, designPath };
-}
-
 export function buildTrajectoryMaterializationPacket(model: PocModel): MaterializationPacket | null {
-  const paths = materializationPathsFromModel(model);
-  if (paths === null) return null;
-  return buildMaterializationPacket({ targetRepoRoot: model.project.root, ...paths });
+  return model.dispatch?.packet ?? null;
 }
 
 export function currentMaterializedBeadId(model: PocModel): string | null {

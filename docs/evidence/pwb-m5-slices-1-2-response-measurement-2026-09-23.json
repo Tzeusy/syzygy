@@ -1,0 +1,150 @@
+{
+  "kind": "pwb-m5-slices-1-2-response-measurement",
+  "date": "2026-09-23",
+  "scope": "M5 slices 1-2 only: dispatch and authority.mayNot, before the evidence-only successor commit. The briefing route is slice 3 and was not measured.",
+  "warrant": "docs/design/POLARIS-M5-AGENT-BRIEFING-FUNNEL.md Gate 6 items 1-2; bead syzygy-dov.5.1 acceptance criterion 16",
+  "labels": "Measurements and comparisons below are Observed from two private daemons. The net response-byte change is measured, not a per-field serialization allocation.",
+  "inputs": {
+    "beforeSyzygyCommit": "194f8cd1e90877842786d7adae9df10893ed2495",
+    "beforeRole": "PR merge base, detached clean local clone",
+    "afterSyzygyCommit": "189d132a585b09e4d41cabe6ee9a72ac6d1e5bb8",
+    "afterRole": "PR #78 implementation head, detached clean review checkout",
+    "butlersRevisionBoth": "5802fcba23ea8fcd47741f5dbe9045aef6cbafbb",
+    "walkthroughEvaluationIdentityBoth": "pwb-eval-b51a17a46d2e67dbf7212cd4",
+    "dispatchStateMeasured": "undispatched"
+  },
+  "procedure": {
+    "preparationEachCheckout": [
+      "npm ci --silent",
+      "npm run build:poc --silent"
+    ],
+    "beforeWorkingDirectory": "/tmp/syzygy-pr78-review.ketLxD/baseline",
+    "beforeDaemonCommand": "node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir /tmp/syzygy-pr78-review.ketLxD/baseline-state",
+    "afterWorkingDirectory": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-0n7-review2",
+    "afterDaemonCommand": "node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir /tmp/syzygy-pr78-review.ketLxD/state",
+    "beforeUrl": "http://127.0.0.1:34987/",
+    "afterUrl": "http://127.0.0.1:44031/",
+    "hostForms": [
+      "direct: loopback Host from the ephemeral daemon URL",
+      "tailnet: Host: tzeusy.parrot-hen.ts.net against the same loopback URL"
+    ],
+    "humanRequest": "curl --silent --show-error --output /dev/null --write-out '%{http_code} %{size_download}' [--header 'Host: tzeusy.parrot-hen.ts.net'] '<daemon-url><route>'",
+    "machineRequest": "same curl form for /api/poc, with Authorization: Bearer read from the private state directory's machine-credential.token; the token value was never printed",
+    "responseSizeUnit": "curl size_download bytes over the full encoded HTTP response body; all requests used GET",
+    "privateDaemonLifecycle": "one daemon per clean checkout, each on port 0 with its own scratch state directory; both shut down after capture; port 7478 was never contacted",
+    "captures": "Raw HTTP bodies and credential values were not retained. The measurement transcript and comparison commands were kept in review scratch; this record retains their results and reproduction method."
+  },
+  "ceilingsBytes": {
+    "human": 2097152,
+    "machine": 8388608
+  },
+  "responses": [
+    {
+      "route": "/api/poc",
+      "ceiling": "machine",
+      "beforeDirect": { "status": 200, "bytes": 5634328 },
+      "afterDirect": { "status": 200, "bytes": 5638119 },
+      "beforeTailnetHost": { "status": 200, "bytes": 5634328 },
+      "afterTailnetHost": { "status": 200, "bytes": 5638119 },
+      "netAddedBytesEachHost": 3791,
+      "afterMarginBytesEachHost": 2750489
+    },
+    {
+      "route": "/polaris",
+      "ceiling": "human",
+      "beforeDirect": { "status": 200, "bytes": 1509602 },
+      "afterDirect": { "status": 200, "bytes": 1515456 },
+      "beforeTailnetHost": { "status": 200, "bytes": 1515512 },
+      "afterTailnetHost": { "status": 200, "bytes": 1521366 },
+      "netAddedBytesEachHost": 5854,
+      "afterDirectMarginBytes": 581696,
+      "afterTailnetMarginBytes": 575786
+    },
+    {
+      "route": "/trajectory",
+      "ceiling": "human",
+      "beforeDirect": { "status": 200, "bytes": 252735 },
+      "afterDirect": { "status": 200, "bytes": 252735 },
+      "beforeTailnetHost": { "status": 200, "bytes": 252810 },
+      "afterTailnetHost": { "status": 200, "bytes": 252810 },
+      "netAddedBytesEachHost": 0,
+      "afterDirectMarginBytes": 1844417,
+      "afterTailnetMarginBytes": 1844342
+    },
+    {
+      "route": "/",
+      "ceiling": "human",
+      "beforeDirect": { "status": 200, "bytes": 41183 },
+      "afterDirect": { "status": 200, "bytes": 41183 },
+      "beforeTailnetHost": { "status": 200, "bytes": 41243 },
+      "afterTailnetHost": { "status": 200, "bytes": 41243 },
+      "netAddedBytesEachHost": 0,
+      "afterDirectMarginBytes": 2055969,
+      "afterTailnetMarginBytes": 2055909
+    }
+  ],
+  "populationParity": {
+    "beforeAndAfterCounts": {
+      "projectShapeSources": 283,
+      "projectShapeItems": 426,
+      "projectShapeFacts": 450,
+      "projectShapeExclusions": 9,
+      "entities": 9,
+      "relationships": 9,
+      "workItems": 5
+    },
+    "identityComparison": "The original projection compared sorted source identities, item class/key pairs, fact keys and project-shape counts, but its claimIds arm measured only the root claim. It does not prove the full claim-ID-set invariant. The complete same-revision comparison is retained in completeClaimIdSet below.",
+    "identityProjectionCommand": "jq -S -c '{sourceIds:[.projectShape.sources[].identity]|sort,itemKeys:[.projectShape.items[]|[.class,.key]]|sort,factKeys:[.projectShape.facts[].fact.fact]|sort,claimIds:[.projectShape.claim.claimId],counts:.projectShape.counts}' | sha256sum",
+    "completeClaimIdSet": {
+      "beforeSyzygyCommit": "194f8cd1e90877842786d7adae9df10893ed2495",
+      "afterSyzygyCommit": "189d132a585b09e4d41cabe6ee9a72ac6d1e5bb8",
+      "afterSourceAtRetainedCommit": "34cd30de31d1f7e77bbacd0b81b46ffb59faf167 differs from the measured after commit only by this evidence record",
+      "butlersRevisionBoth": "5802fcba23ea8fcd47741f5dbe9045aef6cbafbb",
+      "walkthroughEvaluationIdentityBoth": "pwb-eval-b51a17a46d2e67dbf7212cd4",
+      "capture": "Rebuilt the clean comparator and implementation checkouts with npm ci and build:poc, then served GET /api/poc from separate private daemons on port 0 with fresh state directories. Both daemons observed the named Butlers HEAD and reported the named walkthrough evaluation identity. The API bodies and machine credential values were not retained; only the projection results below were retained. The daemons were shut down after capture.",
+      "projection": "For each observed projectShape, concatenate claimId from the root claim, every projectAccount claim, every source claim, every item claim, every class aggregate claim and every fact claim. Reject duplicates. Sort the strings with ECMAScript Array.sort, JSON.stringify the sorted array, and SHA-256 hash its UTF-8 bytes.",
+      "carrierCountsBoth": {
+        "root": 1,
+        "projectAccount": 6,
+        "sources": 283,
+        "items": 426,
+        "classes": 9,
+        "facts": 450
+      },
+      "beforeDenominator": 1175,
+      "afterDenominator": 1175,
+      "beforeSha256": "961655acfa8165d5888edea139cea6e90fc249294c36cc6517ff1070ffa768c8",
+      "afterSha256": "961655acfa8165d5888edea139cea6e90fc249294c36cc6517ff1070ffa768c8",
+      "exactEqualSet": true,
+      "independentCrossCheck": "A separate recursive walk collected every string-valued claimId property below projectShape, without using the six carrier lists. Both bodies had 1,175 raw occurrences and 1,175 unique IDs; their sorted-array digests matched the explicit carrier projection byte-for-byte.",
+      "mutationSensitivity": "Changing projectShape.sources[0].claim.claimId in memory changed the complete sorted-array digest on both bodies; the original root-only projection would not detect this mutation.",
+      "captureLimitation": "Butlers HEAD matched the recorded revision, but its live worktree had a pre-existing .gitignore modification and two untracked temporary Beads export files. Both private daemons observed that same live worktree. This recapture establishes the claim-ID-set comparison only; the earlier response-size and link values are preserved from their original capture, not reasserted as new measurements."
+    },
+    "afterMayNotRows": 9,
+    "afterMayNotComposition": "3 authority-derived plus 6 implementation-act rows",
+    "afterDispatchPacketKeys": 9
+  },
+  "polarisLinkParity": {
+    "method": "Count href attributes and href values starting with # from each HTML body; compare each fragment to the set of id attributes; count href values containing /polaris/source and values starting with /butlers-syzygy/.",
+    "beforeAndAfterDirect": {
+      "links": 1106,
+      "fragmentLinks": 712,
+      "danglingFragmentTargets": 0,
+      "sourceLinks": 390,
+      "mountPrefixedLinks": 0
+    },
+    "beforeAndAfterTailnetHost": {
+      "links": 1106,
+      "fragmentLinks": 712,
+      "danglingFragmentTargets": 0,
+      "sourceLinks": 390,
+      "mountPrefixedLinks": 394
+    }
+  },
+  "limitations": [
+    "The before/after net byte changes are not separately attributable to dispatch and mayNot without a field-level serialization experiment.",
+    "No dispatched record was present in these private state directories; dispatched-state behavior is covered by the focused tests, not this measurement.",
+    "The ephemeral URLs and observation instants are not durable endpoints or fixed inputs for an exact-byte recapture; the named commits and Butlers revision identify the compared code and repository snapshot.",
+    "The slice-3 briefing route and its three-subject size measurement are outside this slices-1-2 record."
+  ]
+}

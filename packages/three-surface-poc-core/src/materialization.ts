@@ -29,6 +29,49 @@ export interface MaterializationPacket {
   readonly governingIntent: MaterializationGoverningIntent;
 }
 
+/** The one read-only dispatch disclosure beside proposedWork. The packet is
+ * shared by the Trajectory preview, the human-triggered POST and the machine
+ * model; no consumer rebuilds it from presentation fields. */
+export type DispatchDisclosure =
+  | {
+      readonly dispatchState: 'undispatched';
+      readonly packet: MaterializationPacket;
+    }
+  | {
+      readonly dispatchState: 'dispatched';
+      readonly packet: MaterializationPacket;
+      readonly beadId: string;
+      readonly createdAt: string;
+    };
+
+export const MATERIALIZATION_SUPPORTED_REPOSITORY_ID =
+  'repository:butlers-configured-poc' as const;
+
+export interface BuildDispatchDisclosureInput extends BuildMaterializationPacketInput {
+  readonly seedRepositoryId: string;
+  readonly materializedBeadId: string | null;
+  readonly materializedCreatedAt: string | null;
+}
+
+/** Build the packet once in the core model from the same observed roots and
+ * intent paths that the human action uses. Unsupported seed sets never fall
+ * back to the Butlers packet. */
+export function buildDispatchDisclosure(
+  input: BuildDispatchDisclosureInput,
+): DispatchDisclosure | null {
+  if (input.seedRepositoryId !== MATERIALIZATION_SUPPORTED_REPOSITORY_ID) return null;
+  const packet = buildMaterializationPacket(input);
+  if (input.materializedBeadId === null || input.materializedCreatedAt === null) {
+    return { dispatchState: 'undispatched', packet };
+  }
+  return {
+    dispatchState: 'dispatched',
+    packet,
+    beadId: input.materializedBeadId,
+    createdAt: input.materializedCreatedAt,
+  };
+}
+
 export interface BuildMaterializationPacketInput {
   readonly targetRepoRoot: string;
   readonly proposalPath: string;

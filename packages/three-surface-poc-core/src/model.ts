@@ -7,7 +7,7 @@ import { observeWorkItems, type WorkItemsResult } from './work-items.js';
 import { observeWorkerChange, type WorkerChangeResult } from './worker-change-observation.js';
 import { projectOrrery, type OrreryProjection } from './orrery-projection.js';
 import { projectTrajectory, type TrajectoryProjection } from './trajectory-projection.js';
-import type { MaterializationRecord } from './materialization.js';
+import { buildDispatchDisclosure, type DispatchDisclosure, type MaterializationRecord } from './materialization.js';
 import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import { gitRunnerFor, type GitRunner, type PwbResourceLimits } from './project-shape-observation.js';
 import { buildProjectShape, unevaluatedProjectShape, type ProjectShape } from './project-shape-model.js';
@@ -167,6 +167,9 @@ export interface PocModel {
   readonly projectShape: ProjectShape;
   /** PWB-REQ-013: the one followed OpenSpec change as a distinct type, with its lifecycle and the current authority it would amend. */
   readonly proposedWork: ProposedWork;
+  /** The exact materialization packet and its observed dispatch state, or
+   * null when this evaluation has no supported seed-backed work graph. */
+  readonly dispatch: DispatchDisclosure | null;
   /** PWB-REQ-021/022: the owner's cold-open walkthrough judgment as the
    * PWB-REQ-022 evaluator carried it — lawful (state (1) or (2), verdict
    * carried), unlawful (no verdict), absent (no pair) — or `not-evaluated`
@@ -456,6 +459,7 @@ interface MaterializationEpistemic {
   /** From the record's origin field; null for pre-origin records, where
    * only "created or reused" can be honestly claimed. */
   readonly origin: 'created' | 'reused' | null;
+  readonly createdAt: string | null;
   readonly provenance: readonly PocProvenance[];
 }
 
@@ -475,6 +479,7 @@ function resolveMaterializationEpistemic(
       epistemic: unknown('No POC work item has been materialized.'),
       beadId: null,
       origin: null,
+      createdAt: null,
       provenance: [],
     };
   }
@@ -483,6 +488,7 @@ function resolveMaterializationEpistemic(
       epistemic: unknown('A materialization record exists but work items could not be observed to confirm it.'),
       beadId: null,
       origin: null,
+      createdAt: null,
       provenance: [],
     };
   }
@@ -492,6 +498,7 @@ function resolveMaterializationEpistemic(
       epistemic: unknown('A materialization record names a Bead that was not found among the observed work items.'),
       beadId: null,
       origin: null,
+      createdAt: null,
       provenance: [],
     };
   }
@@ -499,6 +506,7 @@ function resolveMaterializationEpistemic(
     epistemic: observed(`The materialized Bead ${found.id} was confirmed present in the observed work items.`),
     beadId: found.id,
     origin: record.origin ?? null,
+    createdAt: record.createdAt,
     provenance: [
       {
         kind: 'materialization-record',
@@ -1038,6 +1046,17 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
           codeStructure,
           projectShape,
         });
+  const dispatch =
+    seeds === undefined || seedArtifacts === undefined
+      ? null
+      : buildDispatchDisclosure({
+          seedRepositoryId: seeds.project.repositoryId,
+          targetRepoRoot: repoRoot,
+          proposalPath: seedArtifacts.proposal.path,
+          designPath: seedArtifacts.design.path,
+          materializedBeadId: materialization.beadId,
+          materializedCreatedAt: materialization.createdAt,
+        });
   const snapshotLabel = snapshotLabelFor(input, seeds);
   const governingIntentId =
     typeof seeds?.workerChangeIntentId === 'string' && seeds.workerChangeIntentId.trim() !== ''
@@ -1090,6 +1109,7 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
     materializedBeadId: materialization.beadId,
     projectShape,
     proposedWork,
+    dispatch: dispatch === null ? null : deepFreeze(dispatch),
     walkthroughJudgment,
     walkthroughReadiness,
     surfaces: deepFreeze(

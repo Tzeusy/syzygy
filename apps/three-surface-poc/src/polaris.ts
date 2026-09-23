@@ -741,7 +741,10 @@ function authorityLine(authority: AuthorityDisclosure): string {
   const entries = authority.authorities
     .map((entry) => `<span data-parity-field="authority-state" data-authority="${escapeHtml(entry.authority)}">${escapeHtml(entry.authority)} — ${escapeHtml(entry.state)}</span> (<span data-parity-field="authority-disclosure" data-authority="${escapeHtml(entry.authority)}">${escapeHtml(entry.disclosure)}</span>)`)
     .join('; ');
-  return `<p${DISCLOSURE} data-authority-evaluation><small>${copy('label.authority')} ${entries} (<span data-parity-field="authority-mode">${escapeHtml(authority.authorizationMode)}</span>), ${copy('label.evaluated-as')} <code data-parity-field="authority-evaluation-id">${escapeHtml(authority.evaluationId)}</code>.</small></p>`;
+  const mayNot = authority.mayNot
+    .map((row) => `<li data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable data-authority-may-not-id="${escapeHtml(row.id)}"><code data-parity-field="authority-may-not-id">${escapeHtml(row.id)}</code>: <span data-parity-field="authority-may-not-statement">${escapeHtml(row.statement)}</span>${row.actIdentity === undefined ? '' : ` <span data-parity-field="authority-may-not-act">${escapeHtml(row.actIdentity)}</span>`}${row.artifactDigest === undefined ? '' : ` <code data-parity-field="authority-may-not-digest">${escapeHtml(row.artifactDigest)}</code>`}</li>`)
+    .join('');
+  return `<p${DISCLOSURE} data-authority-evaluation><small>${copy('label.authority')} ${entries} (<span data-parity-field="authority-mode">${escapeHtml(authority.authorizationMode)}</span>), ${copy('label.evaluated-as')} <code data-parity-field="authority-evaluation-id">${escapeHtml(authority.evaluationId)}</code>.</small></p><ul class="authority-may-not-list">${mayNot}</ul>`;
 }
 
 /** PWB-REQ-021/022 on the one surface: the owner's cold-open walkthrough

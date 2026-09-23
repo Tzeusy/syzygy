@@ -1,0 +1,127 @@
+{
+  "kind": "pwb-m5-slices-1-2-rule-6-mutation-evidence",
+  "testedCommit": "048dec7",
+  "method": "Each exact old-to-new replacement was applied once to the named production file at testedCommit, the named focused Vitest command ran with one worker and a 60s test timeout, the source was restored byte-for-byte, and the clean baseline exited 0 while the mutant exited 1. Killed means the named predicate reached and rejected the mutation; no mutant produced zero tests or a describe-time error.",
+  "mutations": [
+    {
+      "id": "dispatch-packet-divergence",
+      "file": "apps/three-surface-poc/src/materialize-action.ts",
+      "old": "return model.dispatch?.packet ?? null;",
+      "new": "return model.dispatch === null ? null : { ...model.dispatch.packet, title: 'mutated dispatch packet' };",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/materialize-action.test.ts --reporter=dot",
+      "predicate": "Trajectory preview and POST consume the exact same core packet object/value.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "dispatch-state-inconsistent",
+      "file": "packages/three-surface-poc-core/src/materialization.ts",
+      "old": "return { dispatchState: 'undispatched', packet };",
+      "new": "return { dispatchState: 'dispatched', packet, beadId: 'mutated-state', createdAt: '2026-09-23T00:00:00Z' };",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/three-surface-poc-core/src/model.test.ts --reporter=dot",
+      "predicate": "Confirmed records are dispatched while absent/stale records remain undispatched.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "get-side-state-mutation",
+      "file": "apps/three-surface-poc/src/routes.ts",
+      "old": "const model = getModel();\n    return boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(model));",
+      "new": "const model = getModel();\n    (model as unknown as { responseIdentity: { contentKey: string } }).responseIdentity.contentKey = 'mutated-by-get';\n    return boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(model));",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/routes.test.ts --reporter=dot",
+      "predicate": "Five sequential/concurrent authenticated GETs preserve the original model body and state marker.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "authority-derived-row-removed",
+      "file": "packages/three-surface-poc-core/src/authority-disclosure.ts",
+      "old": "mayNot: Object.freeze([...authorities.map(authorityMayNot), ...fixedMayNot()]),",
+      "new": "mayNot: Object.freeze([...fixedMayNot()]),",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/three-surface-poc-core/src/body-read-authority.test.ts --reporter=dot",
+      "predicate": "All three parsed authority-derived rows remain in valid and invalid/absent disclosures.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "authority-row-softened",
+      "file": "packages/three-surface-poc-core/src/authority-disclosure.ts",
+      "old": "`May not read under the ${entry.authority} authority; ${entry.disclosure}`",
+      "new": "`May read under the ${entry.authority} authority; ${entry.disclosure}`",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/three-surface-poc-core/src/body-read-authority.test.ts --reporter=dot",
+      "predicate": "Invalid authority rows harden to a May-not statement rather than soften permission.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "fixed-id-replaced-same-count",
+      "file": "packages/three-surface-poc-core/src/authority-disclosure.ts",
+      "old": "'no-independent-verification',",
+      "new": "'no-independent-verification-replaced',",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/three-surface-poc-core/src/body-read-authority.test.ts --reporter=dot",
+      "predicate": "The fixed six prohibition IDs match the act-derived ordered registration exactly.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "fixed-id-order-swapped",
+      "file": "packages/three-surface-poc-core/src/authority-disclosure.ts",
+      "old": "  'no-doctrine-or-contract-change-or-syzygy-authored-code',\n  'no-independent-verification',",
+      "new": "  'no-independent-verification',\n  'no-doctrine-or-contract-change-or-syzygy-authored-code',",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/three-surface-poc-core/src/body-read-authority.test.ts --reporter=dot",
+      "predicate": "The fixed prohibition order follows the six implementation-act bullets.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "polaris-api-maynot-divergence",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "old": "escapeHtml(row.statement)",
+      "new": "escapeHtml(row.statement.replace('May not', 'May read'))",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/routes.test.ts --reporter=dot",
+      "predicate": "Human Polaris mayNot tuples equal authenticated API mayNot tuples.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "response-identity-dispatch-omitted",
+      "file": "packages/three-surface-poc-core/src/response-identity.ts",
+      "old": "  omitSelfField(value);\n  const resolved: string[] = [];",
+      "new": "  omitSelfField(value);\n  delete (value as Record<string, unknown>).dispatch;\n  const resolved: string[] = [];",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/routes.test.ts --reporter=dot",
+      "predicate": "Independent responseIdentity contentKey changes when dispatch state/content changes.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "response-identity-maynot-omitted",
+      "file": "packages/three-surface-poc-core/src/response-identity.ts",
+      "old": "  omitSelfField(value);\n  const resolved: string[] = [];",
+      "new": "  omitSelfField(value);\n  const shape = (value as Record<string, unknown>).projectShape as Record<string, unknown> | undefined;\n  const authority = shape?.authority as Record<string, unknown> | undefined;\n  if (authority !== undefined) delete authority.mayNot;\n  const resolved: string[] = [];",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/routes.test.ts --reporter=dot",
+      "predicate": "Independent responseIdentity contentKey changes when mayNot content changes.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    }
+  ]
+}

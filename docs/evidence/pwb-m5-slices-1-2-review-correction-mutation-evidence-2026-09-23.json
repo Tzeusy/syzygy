@@ -1,0 +1,55 @@
+{
+  "kind": "pwb-m5-slices-1-2-review-correction-rule-6-mutation-evidence",
+  "testedCommit": "524ff593097ed2101b6d0356150a80ae96d20012",
+  "method": "At testedCommit, each exact old fragment was replaced by the new fragment once. The named focused Vitest command ran with one worker and a 60s timeout. Each mutant exited 1 with the named behavior assertion failing; after each run, the exact source fragment was restored. Both focused suites then passed on the clean testedCommit bytes: app 19/19 and core 221/221. The placeholder mutant injects a write at the test's getModel boundary because pocRoutes has no state-directory parameter; it verifies the full-directory observer against an otherwise byte-identical GET response.",
+  "mutations": [
+    {
+      "id": "get-creates-placeholder-state-file",
+      "file": "apps/three-surface-poc/src/routes.test.ts",
+      "old": "    routes: pocRoutes(() => model),",
+      "new": "    routes: pocRoutes(() => { writeFileSync(join(stateDir, 'get-placeholder.txt'), 'written by GET'); return model; }),",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/routes.test.ts -t 'keeps GET read-only' --reporter=dot",
+      "predicate": "Recursive state-directory population, file bytes and nanosecond mtimes remain identical after five sequential authenticated GETs.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "absent-act-synthetic-identity",
+      "file": "packages/three-surface-poc-core/src/authority-disclosure.ts",
+      "old": "    actIdentity: entry.actIdentity,",
+      "new": "    actIdentity: entry.actIdentity ?? `PWB-REQ-005:${entry.authority}:no-effective-owner-act`,",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/three-surface-poc-core/src/body-read-authority.test.ts -t 'missing consent artifact' --reporter=dot",
+      "predicate": "An absent authority has no act identity; a derived row cannot invent a substitute identifier.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "fixed-prohibition-statement-softened",
+      "file": "packages/three-surface-poc-core/src/authority-disclosure.ts",
+      "old": "  'No production release, broad remote access, or multi-user support.',",
+      "new": "  'No production release or multi-user support.',",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/three-surface-poc-core/src/body-read-authority.test.ts -t 'registers the six fixed rows' --reporter=dot",
+      "predicate": "The ordered fixed ID and statement pairs match the six parsed implementation-act bullets.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "trajectory-label-omitted",
+      "file": "apps/three-surface-poc/src/materialize-action.ts",
+      "old": "        <dt>Labels</dt><dd data-parity-field=\"materialize-labels\">${escapeHtml(packet.labels.join(', '))}</dd>",
+      "new": "        <dt>Labels</dt><dd data-parity-field=\"materialize-labels\">${escapeHtml(packet.labels.slice(0, 1).join(', '))}</dd>",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/materialize-action.test.ts -t 'matches decoded Trajectory fields' --reporter=dot",
+      "predicate": "Decoded Trajectory label values match the independently served authenticated API dispatch packet.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    }
+  ]
+}
