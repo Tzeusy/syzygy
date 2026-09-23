@@ -1,0 +1,37 @@
+{
+  "kind": "polaris-generator-m6-reconciliation-rule-6-evidence",
+  "testedCommit": "b77f01ffddefa25049b00ec778201231d5ce5a3d",
+  "environment": "Fresh local clone of testedCommit; npm ci; focused Vitest commands with one worker and a 60-second test timeout.",
+  "priorRecord": {
+    "path": "docs/evidence/polaris-generator-m6-mutation-evidence-2026-09-23.json",
+    "sha256": "203390db1eed95ae60bd7cc700aca6105ac94fc5e18b2b3c622e56bdb5ba8bfa",
+    "disposition": "The prior disposition-schema-omitted replacement failed during esbuild transform with zero tests. That row is invalid and is replaced here; the other seven literal replacements are reused unchanged."
+  },
+  "method": "For each priorRecord mutation, require exactly one old-fragment occurrence. Run its recorded command once on baseline source and once after a single literal replacement. For disposition-schema-omitted only, use correctedNew below. Require baseline exit 0, mutant exit 1, at least one executed test, and byte-identical source restoration. The scripts and source changes are confined to a disposable clone; the worktree under review was not mutated.",
+  "correctedNew": {
+    "id": "disposition-schema-omitted",
+    "old": "kind: { ...text, enum: ['purpose', 'beneficiary', 'thesis', 'capability', 'choice', 'term', 'qualification', 'conflict', 'other'] }, disposition }),",
+    "new": "kind: { ...text, enum: ['purpose', 'beneficiary', 'thesis', 'capability', 'choice', 'term', 'qualification', 'conflict', 'other'] } }),"
+  },
+  "sourceSha256": {
+    "packages/polaris-generation-core/src/provider-draft.ts": "85dff3b9d4a4d0e094340e4aaa0815e224fb1396cd28e26cad4d14e104e7007f",
+    "apps/three-surface-poc/src/polaris-generation/draft-preview.ts": "2387aad270d1d46a5f18539d152e8dfba489f2efb714c6a61ea8ace4b6171439",
+    "packages/polaris-generation-core/README.md": "088cf45f0523f733c317a82417283c2720fa80ef404c839f6d8d93dea595ab10",
+    "package.json": "4576dab3bfe4cf077fad903cb54cfd93e14ffddc5d139bfb4e73a3e0b9454964",
+    "docs/polaris-generation/AUTHORING.md": "23859f32eb87c87f9b6417d1bd7b5e57167310779638e7c42b395d51569f23b4",
+    "apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts": "4a15950bf6d071fe7512e86841560da764a1ac629717957ace21d63453944fbe",
+    "packages/polaris-generation-core/src/admitted-input.ts": "ee883a4d998bf3559e6ee4d064b0be250be31ebfb86cd48d1a402edf12943894"
+  },
+  "results": [
+    { "id": "disposition-schema-omitted", "fragmentCount": 1, "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed" },
+    { "id": "produced-asset-reference-invented", "fragmentCount": 1, "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed" },
+    { "id": "unresolved-preview-silenced", "fragmentCount": 1, "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed" },
+    { "id": "inventory-coverage-subset", "fragmentCount": 1, "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed" },
+    { "id": "coverage-readiness-silence", "fragmentCount": 1, "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed" },
+    { "id": "readme-install-removed", "fragmentCount": 1, "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed" },
+    { "id": "build-poc-generator-omitted", "fragmentCount": 1, "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed" },
+    { "id": "sec2-boundary-omitted", "fragmentCount": 1, "baselineExit": 0, "mutantExit": 1, "testsRan": true, "restored": true, "outcome": "killed" }
+  ],
+  "realProjectProof": false,
+  "providerCalls": 0
+}

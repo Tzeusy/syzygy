@@ -34,6 +34,9 @@ schema bytes. `parseBoundedJson` refuses duplicate keys, malformed responses and
 byte/depth/node overflow before stage validation. `validateStage` checks closed
 fields, source references, requested section identities, diagram endpoints and
 review population declarations. These checks cannot establish semantic truth.
+The operator supplies `requestedAssets` with stable IDs, kinds and requiredness;
+the pipeline rejects malformed requests before dispatch. Validators join those
+requests and positive review references to the same draft and admitted inputs.
 
 The controller requires explicit source-verification, lifecycle/admission,
 provider, validation and receipt adapters. It has no default network client.
@@ -52,8 +55,16 @@ review denominator are mechanical evidence, not proof of model quality.
 Run the controlled end-to-end example from the repository root:
 
 ```sh
+npm ci
 npm run poc:generator-demo -- --out /tmp/polaris-generator-demo-new
 ```
+
+If dependencies are absent, the demo stops with an `npm ci` instruction before
+attempting a build.
+
+This kit grants no source access, provider egress, authorship adoption or
+release. A real provider requires recorded per-project, provider and content
+consent under SEC-2; the synthetic command below makes no provider call.
 
 Use a fresh directory. The command creates two synthetic project previews, a
 changed-source variant, structured draft files and stage receipts. Responses and

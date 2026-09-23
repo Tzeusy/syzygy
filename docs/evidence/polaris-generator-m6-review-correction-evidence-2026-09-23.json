@@ -1,0 +1,95 @@
+{
+  "kind": "polaris-generator-m6-review-correction-evidence",
+  "testedCommit": "eed646b26e2c6aad2f3ed9be571fc2bf031012b7",
+  "scope": "F1-F4 correction on the integrated PR #85 head; prior M6 mutation and synthetic records remain historical at their own tested commits.",
+  "method": "At testedCommit each exact old fragment was replaced once with new in the named file. The named focused Vitest command executed one test, exited 1 at the intended behavioral assertion, and the source fragment was restored byte-for-byte with apply_patch. After all restorations, the source worktree was clean; focused baseline suites passed 29/29 core and 11/11 app tests. The onramp baseline cloned the committed source, exercised the missing-install diagnosis, then ran npm ci, build:poc and the README command in an isolated checkout.",
+  "sourceSha256": {
+    "packages/polaris-generation-core/src/provider-draft.ts": "f5aab2a7db60379ef85fcdc0098e21210db511fbc3157139520c2593020d248c",
+    "packages/polaris-generation-core/src/pipeline.ts": "fbd14daa313d400a321c677652524f4fe48840394e5766ff3821701fe1df0647",
+    "apps/three-surface-poc/src/polaris-generation/draft-preview.ts": "77bd946eb8fc81be0c4498314991d0026a30bb3e9686da5c32d64750bd6a3737",
+    "apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts": "d16a514bc7a914c26d378d3b7e18018e381fb9bf2079f0d71d79fdf6cc7ee6b0",
+    "packages/polaris-generation-core/README.md": "417b4c395238ef577b4198c3f1addd1f41c03bca7d3d4c42a0bfb74235443261",
+    "package.json": "61840db22de72a0e14c0fcd644ccabca94ed52b6c4a5503c0f1be172145cb6dd",
+    "scripts/check_generator_install.mjs": "c5a8f54538dae47d1b7dce2e2026a5d0f663fb5bc7b6f12621cf3c5d542f0819"
+  },
+  "mutations": [
+    {
+      "id": "positive-support-escapes-block",
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "old": "if (row.sourceIds.some(source => !blocks.get(row.blockId)!.sourceIds.includes(source))) throw new Error('support-source-outside-block');",
+      "new": "if (row.sourceIds.some(source => false)) throw new Error('support-source-outside-block');",
+      "command": "npx vitest run --project @syzygy/polaris-generation-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/polaris-generation-core/src/provider-draft.test.ts -t 'joins positive coverage' --reporter=dot",
+      "predicate": "A positive support row cannot cite an admitted source outside its own draft block.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "testsRan": true,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "inventory-produced-ghost-ignored",
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "old": "...(context.inventory as ProviderInventory).entries.flatMap(entry => entry.disposition.kind === 'produced' ? entry.disposition.assetIds : []),",
+      "new": "...[],",
+      "command": "npx vitest run --project @syzygy/polaris-generation-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/polaris-generation-core/src/provider-draft.test.ts -t 'joins produced assets' --reporter=dot",
+      "predicate": "An inventory-produced asset must resolve to an actual output in the same draft bundle.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "testsRan": true,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "required-asset-omission-accepted",
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "old": "if (request.required && asset.disposition.kind === 'omitted') throw new Error('required-asset-omitted');",
+      "new": "if (false && asset.disposition.kind === 'omitted') throw new Error('required-asset-omitted');",
+      "command": "npx vitest run --project @syzygy/polaris-generation-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/polaris-generation-core/src/provider-draft.test.ts -t 'uses trusted request identity' --reporter=dot",
+      "predicate": "A trusted required diagram cannot be omitted by provider output.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "testsRan": true,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "unresolved-section-preview-silenced",
+      "file": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+      "old": "if (section.disposition.kind !== 'produced') {",
+      "new": "if (false) {",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/polaris-generation/draft-preview.test.ts -t 'localizes an unresolved section' --reporter=dot",
+      "predicate": "The preview shows an unresolved section's reason instead of its unproduced body.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "testsRan": true,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "readme-install-step-replaced",
+      "file": "packages/polaris-generation-core/README.md",
+      "old": "npm ci\nnpm run poc:generator-demo -- --out /tmp/polaris-generator-demo-new",
+      "new": "npm install\nnpm run poc:generator-demo -- --out /tmp/polaris-generator-demo-new",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=180000 apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts -t 'runs the README command' --reporter=dot",
+      "predicate": "The documented onramp requires npm ci and the test executes the extracted command after installation and build.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "testsRan": true,
+      "restored": true,
+      "outcome": "killed"
+    }
+  ],
+  "syntheticReplay": {
+    "command": "npm run poc:generator-demo -- --out <fresh-output-directory>",
+    "environment": "Committed testedCommit source; output in a fresh temporary directory, removed after inspection.",
+    "outputFiles": ["archive.html", "archive.json", "garden-changed.html", "garden-changed.json", "garden.html", "garden.json", "report.json"],
+    "runs": [
+      { "project": "garden", "status": "awaiting-rendered-review", "stageReceipts": 5 },
+      { "project": "archive", "status": "awaiting-rendered-review", "stageReceipts": 5 },
+      { "project": "garden-changed", "status": "awaiting-rendered-review", "stageReceipts": 5 }
+    ],
+    "realProvider": false,
+    "providerCalls": 0,
+    "realProjectProof": false
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "kind": "polaris-generator-m6-rule-6-mutation-evidence",
+  "testedCommit": "3ddb432",
+  "supersededBy": "polaris-generator-m6-reconciliation-mutation-evidence-2026-09-23.json",
+  "correction": "A 2026-09-23 replay found that disposition-schema-omitted removes a closing brace and fails during esbuild transform before any tests run. Its previous killed outcome and the no-zero-tests claim were invalid. The successor uses a syntactically valid replacement and reruns all eight mutants at the merged source commit; the other seven rows below retain their historical results.",
+  "method": "The original run applied each old-to-new replacement once to the named file at testedCommit, ran the recorded focused command and restored the source. The first mutant was invalid; the other seven results remain historical claims and are rechecked in the successor record.",
+  "mutations": [
+    {
+      "id": "disposition-schema-omitted",
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "old": "kind: { ...text, enum: ['purpose', 'beneficiary', 'thesis', 'capability', 'choice', 'term', 'qualification', 'conflict', 'other'] }, disposition }),",
+      "new": "kind: { ...text, enum: ['purpose', 'beneficiary', 'thesis', 'capability', 'choice', 'term', 'qualification', 'conflict', 'other'] }),",
+      "command": "npx vitest run --project @syzygy/polaris-generation-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/polaris-generation-core/src/provider-draft.test.ts --reporter=dot",
+      "predicate": "Every requested inventory asset retains a required disposition row.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "invalid-zero-tests"
+    },
+    {
+      "id": "produced-asset-reference-invented",
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "old": "if (produced.some((id) => !handles.all.has(id))) throw new Error('unknown-asset');",
+      "new": "if (false && produced.some((id) => !handles.all.has(id))) throw new Error('unknown-asset');",
+      "command": "npx vitest run --project @syzygy/polaris-generation-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/polaris-generation-core/src/provider-draft.test.ts --reporter=dot",
+      "predicate": "Produced disposition assetIds resolve to same-bundle output handles.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "unresolved-preview-silenced",
+      "file": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+      "old": "const diagram = (d: Diagram, index: number): string => {\n    register(d.id);\n    if (d.disposition.kind !== 'produced') return dispositionNotice(d);",
+      "new": "const diagram = (d: Diagram, index: number): string => {\n    register(d.id);\n    if (false) return dispositionNotice(d);",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/polaris-generation/draft-preview.test.ts --reporter=dot",
+      "predicate": "Unresolved assets remain visibly localized with reason/references and no rendered output.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "inventory-coverage-subset",
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "old": "same(data.inventoryCoverage.map((row) => row.entryId), unique(inv.entries.map((entry) => entry.id)));",
+      "new": "same(data.inventoryCoverage.map((row) => row.entryId), new Set(data.inventoryCoverage.map((row) => row.entryId)));",
+      "command": "npx vitest run --project @syzygy/polaris-generation-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/polaris-generation-core/src/provider-draft.test.ts --reporter=dot",
+      "predicate": "Missing inventory coverage rows fail closed instead of shrinking the denominator.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "coverage-readiness-silence",
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "old": "const coverageBlocking = data.inventoryCoverage.some((row) => row.disposition !== 'represented' && row.disposition !== 'justified-omission');",
+      "new": "const coverageBlocking = false;",
+      "command": "npx vitest run --project @syzygy/polaris-generation-core --maxWorkers=1 --minWorkers=1 --testTimeout=60000 packages/polaris-generation-core/src/provider-draft.test.ts --reporter=dot",
+      "predicate": "Unsupported/unresolved inventory coverage and block support prevent readiness.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "readme-install-removed",
+      "file": "packages/polaris-generation-core/README.md",
+      "old": "npm ci\nnpm run poc:generator-demo -- --out /tmp/polaris-generator-demo-new",
+      "new": "npm run poc:generator-demo -- --out /tmp/polaris-generator-demo-new",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts --reporter=dot",
+      "predicate": "The documented onramp explicitly includes npm ci and produces the seven-file synthetic output.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "build-poc-generator-omitted",
+      "file": "package.json",
+      "old": "packages/three-surface-poc-core packages/polaris-generation-core apps/three-surface-poc",
+      "new": "packages/three-surface-poc-core apps/three-surface-poc",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts --reporter=dot",
+      "predicate": "The fresh-install onramp assertion detects build:poc dropping generation core.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    },
+    {
+      "id": "sec2-boundary-omitted",
+      "file": "docs/polaris-generation/AUTHORING.md",
+      "old": "This kit grants no source access, provider egress, authorship adoption or release. A real provider requires recorded per-project, provider and content consent under SEC-2.",
+      "new": "A real provider requires recorded consent under SEC-2.",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts --reporter=dot",
+      "predicate": "The distinctive complete SEC-2 boundary remains at all three operator sites.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "restored": true,
+      "outcome": "killed"
+    }
+  ]
+}

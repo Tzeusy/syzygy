@@ -7,6 +7,8 @@ satisfy the adopted narrative, provenance, security and lifecycle contracts.
 
 ## Per-stage envelope
 
+This kit grants no source access, provider egress, authorship adoption or release. A real provider requires recorded per-project, provider and content consent under SEC-2.
+
 A request identifies `runId`, `stageId`, `attempt`, project, audience, frozen
 input bundle, allowed source/claim/asset IDs, prompt version, accepted output
 kind/version, authorized provider route, tool allowlist and explicit budgets.

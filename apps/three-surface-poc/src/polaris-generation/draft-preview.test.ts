@@ -5,11 +5,12 @@ import { renderDraftPreview } from './draft-preview.js';
 function fixture(): ProviderDraft {
   return {
     title: 'A quieter everyday', introduction: { id: 'intro', text: 'Let recurring work take care of itself.', sourceIds: ['purpose'] },
-    sections: [{ id: 'architecture', title: 'How the pieces connect', paragraphs: [{ id: 'overview', text: 'Requests reach the planner, then the calendar.', sourceIds: ['architecture'] }] }],
+    sections: [{ id: 'architecture', title: 'How the pieces connect', paragraphs: [{ id: 'overview', text: 'Requests reach the planner, then the calendar.', sourceIds: ['architecture'] }], disposition: { kind: 'produced', assetIds: ['architecture'] } }],
     diagrams: [{ id: 'flow', title: 'From request to calendar', sectionId: 'architecture', nodes: [
       { id: 'planner', label: 'Planner', sourceIds: ['architecture'] }, { id: 'calendar', label: 'Calendar', sourceIds: ['architecture'] },
-    ], edges: [{ id: 'schedules', from: 'planner', to: 'calendar', label: 'Schedules an event', sourceIds: ['architecture'] }] }],
-    deepDives: [{ id: 'calendar-detail', title: 'Inside the calendar', sectionId: 'architecture', paragraphs: [{ id: 'detail', text: 'The calendar records scheduled events.', sourceIds: ['architecture'] }] }],
+    ], edges: [{ id: 'schedules', from: 'planner', to: 'calendar', label: 'Schedules an event', sourceIds: ['architecture'] }], disposition: { kind: 'produced', assetIds: ['flow'] } }],
+    deepDives: [{ id: 'calendar-detail', title: 'Inside the calendar', sectionId: 'architecture', paragraphs: [{ id: 'detail', text: 'The calendar records scheduled events.', sourceIds: ['architecture'] }], disposition: { kind: 'produced', assetIds: ['calendar-detail'] } }],
+    unresolved: [],
   };
 }
 const sources = [{ sourceId: 'purpose', text: 'Reduce recurring mental work.' }, { sourceId: 'architecture', text: 'Planner schedules events in the calendar.' }];
@@ -85,5 +86,28 @@ describe('intermediate draft preview', () => {
     duplicate.diagrams = [];
     duplicate.deepDives = [];
     expect(() => renderDraftPreview(duplicate, sources)).toThrow('duplicate-draft-handle');
+  });
+
+  it('localizes unresolved asset absence with its reason and references', () => {
+    const d = fixture();
+    d.diagrams[0]!.disposition = { kind: 'unresolved', reason: 'renderer capability unavailable', references: ['architecture'] };
+    d.unresolved = [{ question: 'How does the relationship work?', reason: 'renderer capability unavailable', references: ['architecture'] }];
+    const html = renderDraftPreview(d, sources);
+    expect(html).toContain('data-asset-disposition="unresolved"');
+    expect(html).toContain('renderer capability unavailable');
+    expect(html).toContain('architecture');
+    expect(html).not.toContain('marker-end="url(#arrow-0)"');
+  });
+
+  it('localizes an unresolved section without presenting its draft body as produced', () => {
+    const d = fixture();
+    d.sections[0]!.disposition = { kind: 'unresolved', reason: 'No authoring basis', references: ['architecture'] };
+    const html = renderDraftPreview(d, sources);
+    expect(html).toContain('id="section-0"');
+    expect(html).toContain('data-asset-disposition="unresolved"');
+    expect(html).toContain('No authoring basis');
+    expect(html).toContain('architecture');
+    expect(html).not.toContain('Requests reach the planner, then the calendar.');
+    expect(html).not.toContain('marker-end="url(#arrow-0)"');
   });
 });

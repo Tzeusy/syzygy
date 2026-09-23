@@ -12,7 +12,7 @@
     "test": "vitest run",
     "test:system": "npm run build && vitest run --config packages/cap1-system/vitest.config.ts",
     "build": "tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core",
-    "build:poc": "tsc -b --force packages/cap1-core packages/cap1-daemon packages/three-surface-poc-core apps/three-surface-poc",
+    "build:poc": "tsc -b --force packages/cap1-core packages/cap1-daemon packages/three-surface-poc-core packages/polaris-generation-core apps/three-surface-poc",
     "poc": "npm run build:poc --silent && node apps/three-surface-poc/dist/main.js",
     "poc:capture-test-artifact": "npm run build:poc --silent && node apps/three-surface-poc/dist/capture-test-artifact-main.js",
     "poc:pwb-mutation-run": "npm run build:poc --silent && node apps/three-surface-poc/dist/pwb-mutation-run-main.js",
@@ -22,7 +22,7 @@
     "poc:pwb-n8-coverage-matrix": "npm run build:poc --silent && node apps/three-surface-poc/dist/pwb-n8-synthetic-corpus-coverage-matrix-main.js",
     "typecheck": "tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core",
     "test:polaris-generation": "vitest run --project @syzygy/polaris-generation-core",
-    "poc:generator-demo": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/pipeline-demo-main.js",
+    "poc:generator-demo": "node scripts/check_generator_install.mjs && npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/pipeline-demo-main.js",
     "poc:generation-mutation-run": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/generation-mutation-run-main.js"
   },
   "devDependencies": {
