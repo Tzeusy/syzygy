@@ -95,10 +95,19 @@ Small, mechanical, reviewed the same way the two sibling packages (the
 
 ## Not yet offered: the sign-off phrase
 
-No sign-off phrase is proposed here. Following the sibling packages'
-convention, that phrase is offered only once you've indicated which option
-above you're taking, so it names the option you actually chose rather than
-guessing it in advance.
+The act phrase for this package's manifest would be:
+
+```
+SIGN OFF POLARIS EDIT/REPAIR DELETION-ACCOUNT SCENARIO: 4ab06db2058d4ab43632d39706120f300b323c1a8c609c04a9944dcacbb59d12
+```
+
+It is written here, following the sibling packages' convention, only so the
+governance checks (`check_governance.py`'s CG-7d/CG-7e) can see this exact
+digest go stale the moment the manifest changes. It is **not offered**: no
+review has confirmed these bytes yet, and no dedicated recorder script
+exists for this package. If you reply with this phrase now, nothing is
+performed — replying only after option (a) or (b) above and after this
+package has been through review is what starts the act.
 
 ## What happens after a "yes"
 
