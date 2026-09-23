@@ -105,11 +105,12 @@ describe('one-listener POC restart on private fixture sockets', () => {
       inspect: port => {
         inspections += 1;
         if (inspections === 3) throw new RestartRefusal('listener-identity-unreadable');
+        if (inspections === 4) throw new RestartRefusal('listener-identity-incomplete');
         return inspectPocPort(port);
       },
     });
     pids.push(result.newPid);
-    expect(inspections).toBeGreaterThan(3);
+    expect(inspections).toBeGreaterThan(4);
     expect(result.oldPid).toBe(f.pid);
     expect(result.newPid).not.toBe(f.pid);
     expect(await readRevision(f.port)).toBe('new-revision');
@@ -117,36 +118,64 @@ describe('one-listener POC restart on private fixture sockets', () => {
     expect(readdirSync(f.stateDir)).toEqual(['machine-credential.token']);
   }, 15_000);
 
-  it('refuses an unreadable identity before SIGTERM and leaves the old listener serving', async () => {
-    const f = await startedFixture();
-    let inspections = 0;
-    await expect(restartOnePocListener({
-      port: f.port, expectedScript: fixture, timeoutMs: 1000,
-      inspect: port => {
-        inspections += 1;
-        if (inspections === 2) throw new RestartRefusal('listener-identity-unreadable');
-        return inspectPocPort(port);
-      },
-    })).rejects.toMatchObject({ code: 'listener-identity-unreadable' });
-    expect(inspections).toBe(2);
-    expect(await readRevision(f.port)).toBe('old-revision');
-  });
+  it.each(['listener-identity-unreadable', 'listener-identity-incomplete'])(
+    'refuses a %s identity before SIGTERM and leaves the old listener serving', async code => {
+      const f = await startedFixture();
+      let inspections = 0;
+      await expect(restartOnePocListener({
+        port: f.port, expectedScript: fixture, timeoutMs: 1000,
+        inspect: port => {
+          inspections += 1;
+          if (inspections === 2) throw new RestartRefusal(code);
+          return inspectPocPort(port);
+        },
+      })).rejects.toMatchObject({ code });
+      expect(inspections).toBe(2);
+      expect(await readRevision(f.port)).toBe('old-revision');
+    },
+  );
 
-  it('times out with no successor while post-SIGTERM identity stays unreadable', async () => {
-    const f = await startedFixture();
-    let inspections = 0;
-    await expect(restartOnePocListener({
-      port: f.port, expectedScript: fixture, timeoutMs: 150,
-      inspect: port => {
-        inspections += 1;
-        if (inspections > 2) throw new RestartRefusal('listener-identity-unreadable');
-        return inspectPocPort(port);
-      },
-    })).rejects.toMatchObject({ code: 'listener-close-timeout' });
-    expect(inspections).toBeGreaterThan(2);
-    await expect(fetch(`http://127.0.0.1:${f.port}/`)).rejects.toThrow();
-    expect(readdirSync(f.stateDir)).toEqual(['machine-credential.token']);
-  });
+  it.each(['listener-identity-unreadable', 'listener-identity-incomplete'])(
+    'times out with no successor while post-SIGTERM identity stays %s', async code => {
+      const f = await startedFixture();
+      let inspections = 0;
+      await expect(restartOnePocListener({
+        port: f.port, expectedScript: fixture, timeoutMs: 150,
+        inspect: port => {
+          inspections += 1;
+          if (inspections > 2) throw new RestartRefusal(code);
+          return inspectPocPort(port);
+        },
+      })).rejects.toMatchObject({ code: 'listener-close-timeout' });
+      expect(inspections).toBeGreaterThan(2);
+      await expect(fetch(`http://127.0.0.1:${f.port}/`)).rejects.toThrow();
+      expect(readdirSync(f.stateDir)).toEqual(['machine-credential.token']);
+    },
+  );
+
+  it.each(['listener-owner-mismatch', 'listener-changed-after-signal'])(
+    'hard-refuses %s after SIGTERM without spawning a successor', async code => {
+      const f = await startedFixture(true);
+      const credentialBefore = readFileSync(join(f.stateDir, 'machine-credential.token'));
+      let inspections = 0;
+      await expect(restartOnePocListener({
+        port: f.port, expectedScript: fixture, timeoutMs: 1000,
+        inspect: port => {
+          inspections += 1;
+          if (inspections === 3) {
+            if (code === 'listener-owner-mismatch') throw new RestartRefusal(code);
+            const current = inspectPocPort(port);
+            if (current === null) throw new Error('private listener closed before changed-identity inspection');
+            return { ...current, started: `${current.started}-changed` };
+          }
+          return inspectPocPort(port);
+        },
+      })).rejects.toMatchObject({ code });
+      expect(inspections).toBe(3);
+      expect(readFileSync(join(f.stateDir, 'machine-credential.token'))).toEqual(credentialBefore);
+      expect(readdirSync(f.stateDir)).toEqual(['machine-credential.token']);
+    },
+  );
 
   it('closes one listener, reuses credential bytes and state dir, and serves only the new fixture revision', async () => {
     const f = await startedFixture();

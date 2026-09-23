@@ -1,0 +1,55 @@
+{
+  "kind": "syzygy-bul-private-browser-cleanup-proof",
+  "testedCommit": "d741f7fbe16ef5f7fd3b221e010fe9e627455f50",
+  "sourceSha256": {
+    "apps/three-surface-poc/src/cdp-browser.ts": "56e39aa346ad2f5ed392b5ec7cba73b9ca48318681aa8d586ce57ae80588d110",
+    "apps/three-surface-poc/src/cdp-browser.test.ts": "76fe3d1142b1805f8b0044a3eabcd9cfafd89670e3197bee8336a4c0158917d5",
+    "apps/three-surface-poc/src/surface-routes.test.ts": "772f62a8f76a61b0cd867747c0125082409d746de5ee24be4d9de1b11b4f552a"
+  },
+  "priorFailure": {
+    "preservedScratch": "/tmp/syzygy-bul-exact-xBzjm9",
+    "browserAssertions": "80 of 80 passed at the default 5-second case timeout",
+    "residualProfiles": 4,
+    "residualRuns": [17, 18, 19, 20],
+    "disposition": "The four profile directories reappeared after the earlier exact-argv drain. They were retained unchanged; that drain did not establish descendant exit."
+  },
+  "diagnosis": {
+    "scratch": "/tmp/syzygy-bul-pgrp.n2bZiB",
+    "privateLaunch": "Disposable Chrome launched detached, creating a new session and process group whose ID was its PID. No live POC listener, port 7478, unrelated Chrome, or process group was signaled.",
+    "observations": [
+      "A fresh launch had 12 same-UID private-session members before close. Chrome rewrote each command line into one space-containing field, so none contained --user-data-dir=<profile> as an exact argv element; three helper processes mentioned no profile path at all.",
+      "After Browser.close was acknowledged and the launched parent exited, one same-session non-zombie helper without a profile argument remained at the first scan and drained by 25 ms. The old exact-argv predicate would have reported no profile users during that interval."
+    ],
+    "safetyBoundary": "The fix observes only the launched detached session's same-UID /proc members, including helpers in another process group within that session. It sends no process-group signal; SIGKILL remains limited to the launched child after the bounded close attempt. Unreadable or mismatched membership and a drain timeout retain the profile. Two consecutive empty scans are required before removal."
+  },
+  "loadedProof": {
+    "scratch": "/tmp/syzygy-bul-80.6PERmI/proof.json",
+    "command": "80 independent npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/surface-routes.test.ts -t <one named browser case> --maxWorkers=1 --minWorkers=1 --reporter=json --outputFile=<isolated-run>/vitest.json; four concurrent processes, each with its own TMPDIR and the unchanged default 5-second case timeout",
+    "iterations": 80,
+    "concurrency": 4,
+    "cases": [
+      { "name": "direct 13-link target oracle", "runs": 27, "passed": 27, "minWallMs": 3656, "maxWallMs": 4461 },
+      { "name": "tailnet 13-link target oracle", "runs": 27, "passed": 27, "minWallMs": 3690, "maxWallMs": 4232 },
+      { "name": "post-script missing-capability oracle", "runs": 26, "passed": 26, "minWallMs": 3655, "maxWallMs": 4228 }
+    ],
+    "privateProfilesImmediatelyAfterEachRun": 0,
+    "privateProfilesAfter500MsEachRun": 0,
+    "privateProfilesInIndependentFinalSweep": 0,
+    "assertionScope": "The two long cases retain 13 links, five classes, every target GET/200, unique fragments outside details, direct/tailnet mount, native focus and names. The short case retains no href, one unavailable disclosure and the exact-table link when capability is missing."
+  },
+  "mutationProof": {
+    "scratchClone": "/tmp/syzygy-bul-mutation.5RD6Fb/repo",
+    "testedCommit": "d741f7fbe16ef5f7fd3b221e010fe9e627455f50",
+    "existingM9LiteralRunner": "node scripts/run_m9_literal_mutations.mjs: seven exact source mutants killed with tests executing; all seven source blobs restored byte-for-byte. The generated record was confined to the scratch clone.",
+    "missingCapabilityUnavailableMarker": {
+      "file": "apps/three-surface-poc/src/orrery.ts",
+      "old": "unavailable.dataset.crossSurfaceUnavailable = 'mapped-capability';",
+      "new": "if (false) unavailable.dataset.crossSurfaceUnavailable = 'mapped-capability';",
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/surface-routes.test.ts -t 'withholds the post-script Orrery capability href when that exact capability is absent' --maxWorkers=1 --minWorkers=1 --reporter=dot",
+      "baseline": "1 passed, 0 failed",
+      "mutant": "1 test executed and failed: unavailable=0, expected 1; hrefs=0 and exactTableLinks=1 remained unchanged",
+      "restoredSha256": "a59839eeac26070655add493a93b34e5d166de8fd14c711eb7086142e42799db"
+    }
+  },
+  "nonGoals": "No production renderer, route, model or governed byte changed; no global test timeout or skip was added, and no live data action was taken."
+}

@@ -46,9 +46,11 @@
    Does the third clause's "valid and is distinguishable in the record from
    a repair that changed content" avoid conflating "nothing needed fixing"
    with "something was silently dropped"?
-4. **PROJECT-STATUS.md patch is the only change to that file.** Confirm the
+4. **PROJECT-STATUS.md proposed patch remains digit-only.** Confirm the
    patch's single hunk changes only the digit "177" to "178" on the cited
-   line and nothing else in the file.
+   line. The separately authorized P-76 no-model-called sentence already
+   changed current status bytes; it is outside this proposed patch and does
+   not answer the owner's open question 2.
 5. **Manifest is honest.** Run
    `python3 scripts/build_polaris_edit_repair_deletion_scenario.py --check`
    and read its stdout (not just its exit code, per verification rule 4):
@@ -61,11 +63,12 @@
    builder's `_fixture_root`/mutation code, that the mutation it applies
    really is the one it claims and not a no-op that happens to still
    raise for an unrelated reason.
-7. **No governed byte was edited in place.** `git status` and `git diff
-   --stat` against `origin/main` for this branch must show the spec file
-   and `PROJECT-STATUS.md` themselves as **unchanged**; only new files
-   (this package's directory, the builder script, and
-   `check_governance.py`'s registration additions) may appear.
+7. **No adopted specification or performed act was edited in place.**
+   `git diff` against the base must show the amendment spec and performed
+   acts unchanged. The current status page may differ only by the authorized
+   P-76 sentence; the scenario-count digit remains `177` until an owner act.
+   The unperformed candidate package may refresh its manifest and unbound
+   explanation files, never the retained raw reviews.
 8. **CG-7d/CG-7h registration.** Confirm
    `scripts/check_governance.py`'s `_act_subjects()` and
    `ACT_DIGEST_COPY_FILES` carry an entry for this package's act phrase,
