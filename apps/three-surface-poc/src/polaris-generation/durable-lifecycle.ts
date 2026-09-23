@@ -15,6 +15,7 @@ export interface ScriptedLifecycleOptions {
   readonly validate: PipelinePorts['validate'];
   readonly fidelity: PipelinePorts['fidelity'];
   readonly scriptedGenerate: (input: Parameters<PipelinePorts['generate']>[0]) => Promise<ProviderReply>;
+  readonly maxAttemptOutputBytes?: number;
   readonly now?: () => number;
 }
 
@@ -66,7 +67,7 @@ export function createDurableScriptedLifecycle(options: ScriptedLifecycleOptions
       try { fd = openSync(lock, 'wx', 0o600); }
       catch { return { kind: 'refused', reason: 'uncertain' }; }
       try {
-        const permit: DispatchPermit = { attemptId: attemptId(input), maxUsageUnits: Math.min(5, input.budget.maxUsageUnits), maxOutputBytes: Math.min(10_000, input.budget.maxOutputBytes) };
+        const permit: DispatchPermit = { attemptId: attemptId(input), maxUsageUnits: Math.min(5, input.budget.maxUsageUnits), maxOutputBytes: Math.min(options.maxAttemptOutputBytes ?? 10_000, input.budget.maxOutputBytes) };
         const path = fileFor(permit);
         if (existsSync(path)) {
           let prior: JournalEntry;
