@@ -586,19 +586,27 @@ CG-7d and CG-7e catch a stale copy once the package is registered.
 
 1. The package is reviewed in fresh context against `REVIEW-BRIEF.md`; the
    raw output is retained verbatim and the bytes it is bound to are frozen
-   (rule 10). **Done nine times**: round 1 CONFIRM WITH EXCEPTIONS;
+   (rule 10). **Done ten times**: round 1 CONFIRM WITH EXCEPTIONS;
    round 2, over the repaired bytes at `9d74185`, REVISE; round 3, over
    `76b4beb`, REVISE; round 4, over `194f8cd`, REVISE; round 5, over
    `7fd2db3`, REVISE; round 6, over `2c5745e`, REVISE; round 7, over
    `d3d5d9d`, REVISE; round 8, over `28086f6`, CONFIRM WITH EXCEPTIONS
    (six notes, no revise finding); round 9, over `815785a`, CONFIRM WITH
-   EXCEPTIONS (two notes, no revise finding) — dispositions for all in
-   §Review — and the prose repairs that followed each round, this one
-   included, left its verdict bound to the reviewed commit, not to these
-   bytes. A round 10 over these bytes is the next step; only a round that
-   confirms the
-   bytes it reads lets the owner be offered a phrase, and the offering is
-   the owner's to make.
+   EXCEPTIONS (two notes, no revise finding); round 10, over `80c4b52`,
+   CONFIRM WITH EXCEPTIONS (one note, no revise finding) — dispositions
+   for all in §Review — and the prose repairs that followed each round,
+   this one included, left its verdict bound to the reviewed commit, not
+   to these bytes. **No round 11 is dispatched by this draft's author.**
+   Rounds 8, 9 and 10 each confirmed the bytes they read with notes only
+   (six, two, one), and each note was repaired in prose after, which
+   under rule 10 leaves the current bytes without a confirmation of their
+   own. Whether three consecutive confirmations over successive commits,
+   every note dispositioned and repaired in §Review, satisfy this gate,
+   or a further round over the final bytes is required, is the owner's
+   to say; the question is put to the owner beside the machine-view
+   package's exception question and is recorded on bead `syzygy-dov.21`.
+   Only a confirmation the owner accepts lets a phrase be offered, and
+   the offering is the owner's to make.
 2. The owner answers the five open questions in `OWNER-DECISION-PACKET.md`.
    Answers to OQ-2 or OQ-3 may change the proposed bytes, which retires the
    review and needs a fresh one. **Done, 2026-09-23**, in the two plain
@@ -1250,7 +1258,9 @@ dispositioned truthfully. The verdict rests on no revise finding; findings
 `SEMANTIC-DELTA.md`, `OWNER-DECISION-PACKET.md` and `REVIEW-BRIEF.md`
 after that commit; `IMPACT-LEDGER.md` and every patch and manifest byte are
 unchanged. These bytes carry no confirmation until a round 10 reads them;
-the round-9 CONFIRM WITH EXCEPTIONS is bound to `815785a` alone.
+the round-9 CONFIRM WITH EXCEPTIONS is bound to `815785a` alone. (Round
+10 did, over `80c4b52`, and returned CONFIRM WITH EXCEPTIONS — see the
+next section.)
 
 **Dispositions**, finding by finding:
 
@@ -1271,10 +1281,67 @@ the round-9 CONFIRM WITH EXCEPTIONS is bound to `815785a` alone.
 
 **What no round-9 disposition changed.** No patch byte, no manifest row, no
 requirement, no scenario text, no ledger figure, and no owner answer. The
-two non-finding observations in the raw (one wrapped code span at the
-finding-36 marker, and a builder-code mutation outside rule 6's input
+two non-finding observations in the raw (one wrapped code span in the
+round-1 §Review paragraph's evidence bracket, the bracket the round-7
+finding-36 repair wrote, sixteen lines before the finding-36 marker —
+an earlier locator here said "at the finding-36 marker", round 10
+finding 48 — and a builder-code mutation outside rule 6's input
 scope) are recorded here and left as they are: the span renders and its
 basename is intact, and the selftest's fixtures are inputs, not code.
 
 **Author's standing:** this draft's author dispositioned these findings and
 authored the repairs, and therefore may run no review of them.
+
+### Round 10 — re-review over the round-9 repairs
+
+**Reviewed bytes:** commit `80c4b52`, with the manifest digest quoted in
+`OWNER-DECISION-PACKET.md`. **Reviewer:** a fresh-context session with no
+authoring context, commissioned 2026-09-23 with the ten earlier raws and
+their dispositions as input and `REVIEW-BRIEF.md` as its commission, asked
+to check both round-9 repairs at their sites against `git show 815785a`,
+every figure the round-9 section attributes to the round-9 raw, every
+per-commit claim at the commit named, and every count word against a
+stated population. **Verdict:** **CONFIRM WITH EXCEPTIONS**, copied
+exactly from the retained raw output. **Raw output:** `docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-9-RAW.md`, retained
+verbatim and never edited (CC-REV-6).
+
+The reviewer found both round-9 repairs at their sites, true, and quoting
+their predecessors exactly; read the per-commit anchors in
+`check_governance.py` at eight commits from `59733d3` to `80c4b52` and
+found every per-commit value true, noting that `4c3716a` moved the anchors
+again at `80c4b52` while no package sentence claims a current line; found
+every figure the round-9 section attributes to the round-9 raw in that
+raw; ran the builder's three modes, sixteen scratch mutations and the
+hand-reproduced collision; reproduced every ledger figure by two methods
+over 1,334 blobs; resolved 662 extracted pointers and 33 line-pointer
+targets over 2,120 lines with none unresolved; and found findings 1 to 47
+dispositioned truthfully. The verdict rests on no revise finding; finding
+48 is a note, and the raw says the package may go to the owner with it
+recorded. **Rule 10:** the repair below edited `SEMANTIC-DELTA.md`,
+`OWNER-DECISION-PACKET.md` and `REVIEW-BRIEF.md` after that commit;
+`IMPACT-LEDGER.md` and every patch and manifest byte are unchanged. The
+round-10 CONFIRM WITH EXCEPTIONS is bound to `80c4b52` alone; whether a
+round 11 over these bytes is required is put to the owner (step 1 above).
+
+**Dispositions**, finding by finding:
+
+48. **The round-9 section located the wrapped code span "at the finding-36
+    marker"; it sits sixteen lines earlier, in the round-1 §Review
+    paragraph's evidence bracket, which the round-7 finding-36 repair
+    wrote.** **Accepted and repaired**: the locator now names the bracket
+    and its author round, with the earlier locator kept marked. The object
+    was correctly identified and the span is left as it is.
+
+**What no round-10 disposition changed.** No patch byte, no manifest row,
+no requirement, no scenario text, no ledger figure, and no owner answer.
+The raw's four non-finding observations are recorded here and left as they
+are: the brief's "reviews … against this brief" counts the ten numbered
+rounds and names the parallel round B in its next sentence; the round-9
+raw's "raw line 65" for round-1 item 11 (the item is at line 85) was never
+copied into this package; the `+41` anchor move at `80c4b52` is claimed by
+no package sentence; and the thirty-second candidate directory that landed
+at `c83f9a6` patches a different specification, so the four-sibling
+composition population and the ledger's drafting claim still hold.
+
+**Author's standing:** this draft's author dispositioned this finding and
+authored the repair, and therefore may run no review of it.
