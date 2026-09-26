@@ -1,0 +1,25 @@
+{
+  "subject": "syzygy-gsw provenance narrowing after current-main integration",
+  "date": "2026-09-23",
+  "testedCommit": "0956464e4addf4a9fd7f20fde2cb189f4f3f39d4",
+  "base": "9162d622d67e3cba17c9691a5f19c3a8e4d2eded",
+  "integratedMainChange": "syzygy-2pc browser private-drain commit; restart teardown source unchanged",
+  "loadedReplay": {
+    "waves": 5,
+    "processesPerWave": 4,
+    "iterations": 20,
+    "selectedTest": "reports a failed successor and lets a concurrent loser fail before signaling",
+    "testsPerProcess": 16,
+    "result": "20 passed, 0 failed"
+  },
+  "scopeProof": [
+    "candidate discovery uses known fixture PIDs and direct-child stat provenance",
+    "unrelated child churn is excluded before cmdline inspection",
+    "private unreadable identity retains scratch and sends no signal",
+    "UID/start-time/argv/cwd are revalidated before SIGTERM"
+  ],
+  "sourceDigests": {
+    "apps/three-surface-poc/src/restart.test.ts": "6ee0719f4a40ec21fece8d7dd380a95be2a0805a702d228d8efd6cb3f85687ae",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47"
+  }
+}

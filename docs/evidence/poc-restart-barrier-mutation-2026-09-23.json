@@ -1,0 +1,34 @@
+{
+  "subject": "syzygy-gsw private restart fixture close-phase barrier",
+  "date": "2026-09-23",
+  "testedCommit": "9c1e6b23ce57565dd24b0f51a0746710b962351a",
+  "sourceDigestsBeforeAndAfter": {
+    "apps/three-surface-poc/src/restart.test.ts": "0bbaf4d9f9562f210082c6a2d52a35589fb2ef4a0f74a2bf19a2987c78f36ba9",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47"
+  },
+  "focusedBaseline": {
+    "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=30000 apps/three-surface-poc/src/restart.test.ts --reporter=dot",
+    "result": "8 passed, 0 failed"
+  },
+  "parallelTargetedReplay": {
+    "command": "four concurrent npx vitest run processes per wave, five waves, each with the focusedBaseline command plus -t 'reports a failed successor and lets a concurrent loser fail before signaling'",
+    "result": "20 passed, 0 failed; each process executed the selected test"
+  },
+  "mutation": {
+    "id": "fixture-releases-on-probe-instead-of-release",
+    "file": "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs",
+    "old": "if (existsSync(join(repo, 'release-stop'))) {",
+    "new": "if (existsSync(join(repo, 'hold-probe'))) {",
+    "syntaxCheck": "node --check apps/three-surface-poc/src/test-fixtures/restart-listener.mjs: passed",
+    "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=30000 apps/three-surface-poc/src/restart.test.ts -t 'reports a failed successor and lets a concurrent loser fail before signaling' --reporter=verbose",
+    "result": "1 test executed, 1 failed: private fixture did not write hold-ack at restart.test.ts:207; exit 1",
+    "restored": true,
+    "killed": true
+  },
+  "separateLoadedSweepFinding": {
+    "scope": "unmodified older slow-stop test, not the new hold-stop branch",
+    "runs": "full restart.test.ts: 19/20, then 20/20, then 37/40 under four-way load",
+    "failure": "listener-identity-incomplete at restart.ts:119 during post-SIGTERM close wait; diagnostic replay observed inspection 6 after two pre-signal inspections and the injected unreadable inspection 3",
+    "followUp": "syzygy-tn6; production restart.ts is unchanged here"
+  }
+}

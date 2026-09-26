@@ -1,0 +1,48 @@
+{
+  "subject": "syzygy-gsw fail-closed teardown process identity",
+  "date": "2026-09-23",
+  "testedCommit": "836cd06a54f2da2aa60898f7d82b350a8e302dca",
+  "base": "a971361f1e66cc5cb0da6a3d06f51aaf96feac3a",
+  "focusedIterations": 20,
+  "focusedTestsPerIteration": 15,
+  "focusedResult": "20 passed, 0 failed",
+  "identityContract": [
+    "ENOENT disappearance is the only vanished proof",
+    "zombie state is the only empty-command-line vanished proof",
+    "persistent unreadable identity retains scratch roots and sends no signal",
+    "UID, start-time, argv, and cwd are revalidated before SIGTERM",
+    "a PID generation seen earlier in the drain cannot silently change"
+  ],
+  "mutations": [
+    {
+      "id": "unreadable-identity-fails-open",
+      "file": "apps/three-surface-poc/src/restart.test.ts",
+      "old": "throw new PrivateFixtureCleanupRefusal('private-process-identity-unreadable', `cannot read identity for ${proc}`);",
+      "new": "return undefined;",
+      "command": "npx vitest run apps/three-surface-poc/src/restart.test.ts -t 'refuses unreadable same-UID process identity' --maxWorkers=1 --minWorkers=1 --testTimeout=60000 --reporter=verbose",
+      "expectedPredicate": "Persistent unreadable same-UID identity refuses teardown, sends no signal, and retains scratch.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "mutantResult": "promise resolved instead of rejecting",
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "pid-generation-check-removed",
+      "file": "apps/three-surface-poc/src/restart.test.ts",
+      "old": "&& first.started === second.started",
+      "new": "&& true",
+      "command": "npx vitest run apps/three-surface-poc/src/restart.test.ts -t 'refuses PID reuse before signaling' --maxWorkers=1 --minWorkers=1 --testTimeout=60000 --reporter=verbose",
+      "expectedPredicate": "A changed process start-time generation is refused before any signal.",
+      "baselineExit": 0,
+      "mutantExit": 1,
+      "mutantResult": "drain timeout did not produce private-process-identity-changed",
+      "outcome": "killed",
+      "restored": true
+    }
+  ],
+  "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/restart.test.ts": "4efe8d83875ff0c37a96c566442f17bc24c8ff90813beb63419beea3cc144c07",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47"
+  }
+}
