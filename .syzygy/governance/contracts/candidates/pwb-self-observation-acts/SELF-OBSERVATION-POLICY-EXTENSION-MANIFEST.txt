@@ -1,0 +1,6 @@
+# SYZYGY SELF-OBSERVATION POLICY EXTENSION MANIFEST
+# This row binds only by the owner act `APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY` that takes its
+# digest as argument; until that act is performed it binds nothing.
+# 1 artifact; the row hashes the subject's current bytes with proposed/*.patch applied; the current bytes stay the argument of the act in force.
+# It matches the tree only after --apply at adoption.
+d93a7754089f46bc768a5d907a7f76c151fb2b5583f67bd939f83bd2106f6ba2  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json

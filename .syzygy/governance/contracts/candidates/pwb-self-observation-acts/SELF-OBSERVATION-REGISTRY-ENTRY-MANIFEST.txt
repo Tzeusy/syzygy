@@ -1,0 +1,6 @@
+# SYZYGY SELF-OBSERVATION REGISTRY ENTRY MANIFEST
+# This row binds only by the owner act `ADOPT POLARIS SYZYGY SELF PROJECT-SHAPE OBSERVER REGISTRY ENTRY` that takes its
+# digest as argument; until that act is performed it binds nothing.
+# 1 artifact; the row hashes the drafted file under proposed/, installed byte-for-byte at adoption.
+# It matches the tree only after --apply at adoption.
+2218911c7b04bd1b5084d3c2a5e8da22735039cd9cb7e4d800b70e276f4fb912  .syzygy/governance/declarations/adapter-registry/POLARIS-SYZYGY-SELF-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
