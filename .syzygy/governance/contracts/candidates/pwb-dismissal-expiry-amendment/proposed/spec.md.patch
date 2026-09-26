@@ -1,0 +1,89 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+index 543469d..ca2f61b 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -452,2 +452,29 @@ metric walls or count walls; coverage counts remain available on demand.
+ 
++A claim MAY carry the `dismissed-by-decision` sibling surface state, and only
++under a dismissal record: an attributed human decision that names the
++dismissed claim's semantic Claim identity and the primary reason it dismisses,
++states a reason and an expiry instant, is committed to the governed plane, and
++is bound as an identified input of every evaluation that reads it. Only a
++claim whose label is Unknown MAY be dismissed, and never one whose primary
++reason is `contradicted-pending-adjudication`, which leaves only by owner
++adjudication. Nothing else dismisses a claim: not a view preference, a query
++parameter, browser or daemon state, an owner note or a model assertion. A
++dismissal is in effect at an evaluation only when, at that evaluation's as-of
++instant, its expiry instant has not passed and its reason is current; its
++reason is current only while the claim's primary reason is still the one the
++record dismissed. The evaluation SHALL decide this from its own as-of instant
++and never from the instant a page or answer is read, so a dismissal lapses
++only through a new identified evaluation. While a dismissal is in effect, the
++sibling state replaces the claim's status rendering and never its facts: the
++claim's label, tier, primary and secondary reasons, resolution route,
++freshness, challenge state, claim identity and evaluation identity stay
++visible and unchanged beside the dismissal's reason, expiry instant, author
++and record identity, identically in the human and machine views. A dismissal
++SHALL not change any tuple value, render as a positive, resolved, aligned or
++current state, or count as resolved or favourable in any aggregate;
++aggregates SHALL count dismissed members separately and expand to them. A
++record that lacks an author, reason or expiry instant, names no claim the
++evaluation carries, or names a claim it may not dismiss dismisses nothing,
++and the evaluation discloses it as a refused record.
++
+ - **Case (sweep)**: enumerate every project entity, claim and aggregate across
+@@ -455,3 +482,5 @@ metric walls or count walls; coverage counts remain available on demand.
+   admitted label, tier, reason, freshness, challenge and sibling state plus
+-  out-of-vocabulary and missing-currency cases.
++  out-of-vocabulary and missing-currency cases, and dismissal records that
++  are in effect, lapse between the two evaluations, outlive a change of the
++  dismissed primary reason, or are refused.
+ - **Observable**: human and machine views expose identical complete tuples;
+@@ -462,3 +491,5 @@ metric walls or count walls; coverage counts remain available on demand.
+   separation, aggregate label/tier/freshness/reason counts and supports links;
+-  zero invalid, missing or folded values decides.
++  decide each dismissal record against each evaluation's own as-of instant
++  with the checker's own statement of the rule; zero invalid, missing or
++  folded values decides.
+ - **Oracle independence**: the checker hard-codes the accepted vocabularies and
+@@ -467,3 +498,6 @@ metric walls or count walls; coverage counts remain available on demand.
+   absent/out of vocabulary, a reason has no route, Unknown is folded into a
+-  total, or an aggregate claims its own headline status.
++  total, an aggregate claims its own headline status, or a dismissal changes
++  a tuple value, takes effect without a governed-plane record, lapses or
++  persists by reading time rather than by evaluation, hides the dismissed
++  claim's facts, or counts as resolved or favourable in an aggregate.
+ 
+@@ -475,2 +509,25 @@ metric walls or count walls; coverage counts remain available on demand.
+ 
++#### Scenario: A dismissal lapses only through a new evaluation
++
++- **WHEN** a dismissal record for an Unknown claim states an expiry instant,
++  one evaluation's as-of instant falls before that instant and a second
++  evaluation's as-of instant falls after it
++- **THEN** the first evaluation renders the claim `dismissed-by-decision`
++  beside its unchanged tuple and the dismissal's reason, expiry instant,
++  author and record identity, and reading the first evaluation again after
++  the expiry instant has passed renders the same claim state
++- **AND** the second evaluation renders the claim without the sibling state
++  and with the same tuple values
++
++#### Scenario: A dismissal replaces the rendering, never the facts
++
++- **WHEN** a dismissal is in effect for a claim
++- **THEN** the human and machine views carry the same sibling state and the
++  same complete tuple, and no aggregate counts the claim as resolved or
++  favourable
++- **AND** a record without an author, reason or expiry instant, a record
++  naming a claim whose primary reason is `contradicted-pending-adjudication`,
++  and a record whose dismissed primary reason no longer matches each dismiss
++  nothing and are disclosed as refused records
++
+ ```yaml
+@@ -478,4 +535,4 @@ warrants:
+   primary: VIS-2
+-  doctrine: [VIS-1, VIS-2, VIS-7]
+-  contracts: [RFC1-18, RFC1-19, RFC1-24, RFC2-9, RFC2-10, RFC2-23, RFC2-24, RFC2-25, RFC6-14, RFC6-17, RFC7-16, RFC7-33]
++  doctrine: [VIS-1, VIS-2, VIS-6, VIS-7]
++  contracts: [RFC1-18, RFC1-19, RFC1-20, RFC1-24, RFC1-25, RFC2-1, RFC2-9, RFC2-10, RFC2-15, RFC2-23, RFC2-24, RFC2-25, RFC6-14, RFC6-17, RFC7-16, RFC7-33]
+   policies: [CC-BAR-3, CC-BAR-4, CC-TEST-5, CC-TEST-6]

@@ -1,0 +1,23 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md b/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+index 4a01f83..bb8eac0 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+@@ -1,6 +1,6 @@
+ # Capability coverage — polaris-project-wide-butlers-model
+ 
+-Population: 31 positive obligations and refusals declared by `proposal.md`,
++Population: 32 positive obligations and refusals declared by `proposal.md`,
+ `design.md` and the specification's Purpose definitions.
+ 
+ | # | Declared obligation or refusal | Disposition |
+@@ -36,8 +36,9 @@ Population: 31 positive obligations and refusals declared by `proposal.md`,
+ | 29 | Use one cumulative phase-A-plus-phase-B byte ledger and deterministic parse-work units | covered — PWB-REQ-006 |
+ | 30 | Bound human and machine encoded outputs separately and never truncate into success-shaped output | covered — PWB-REQ-006 |
+ | 31 | Refuse to treat answer-readiness failures as unlawful owner acts or as new PWB-REQ-022 denominator arms | covered — PWB-REQ-021, PWB-REQ-022 |
++| 32 | Admit an attributed, reasoned, expiring governed-plane dismissal of an Unknown claim, decided at each evaluation's as-of instant, replacing the rendering and never the facts | covered — PWB-REQ-007 |
+ 
+-Totals: 25 covered, 6 lawfully out of scope, 0 Unknown/unresolved; 31 total.
++Totals: 26 covered, 6 lawfully out of scope, 0 Unknown/unresolved; 32 total.
+ 
+ This table is author-produced and requires confirmation by a fresh reviewer as
+ required by CC-SPEC-11.
