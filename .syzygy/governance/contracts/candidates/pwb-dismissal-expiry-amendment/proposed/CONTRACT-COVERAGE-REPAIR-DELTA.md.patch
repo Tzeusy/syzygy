@@ -1,0 +1,39 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md b/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
+index cd70fe9..bb02f97 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
+@@ -19,8 +19,8 @@ silently downgrades.
+ Each effective consequence has exactly one disposition. Rows that split a
+ broader audited consequence use distinct repair IDs and jointly supersede it.
+ 
+-Declared totals: **80 rows; 71 superseded base rows; 61 covered; 16 Unknown
+-uncovered; 3 believed not applicable.**
++Declared totals: **88 rows; 76 superseded base rows; 67 covered; 16 Unknown
++uncovered; 5 believed not applicable.**
+ 
+ | Repair consequence ID | Supersedes | Clause | Effective consequence | Disposition |
+ |---|---|---|---|---|
+@@ -55,7 +55,7 @@ uncovered; 3 believed not applicable.**
+ | RFC6-17.r2 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains the used `unadopted-draft` sibling state | unknown-uncovered |
+ | RFC6-17.r5 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains challenge state carried by project claims | unknown-uncovered |
+ | RFC6-17.r6 | RFC6-17.c2 | RFC6-17 | Aggregate composition of reconciliation-chain and work states | believed-not-applicable |
+-| RFC6-17.r7 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains `dismissed-by-decision` sibling state | unknown-uncovered |
++| RFC6-17.r7 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains `dismissed-by-decision` sibling state | covered:PWB-REQ-007 |
+ | RFC6-17.r8 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains `editorial-draft` sibling state | unknown-uncovered |
+ | RFC6-17.r3 | RFC6-17.c3 | RFC6-17 | Primary and secondary Unknown-reason counts remain distinct | covered:PWB-REQ-007 |
+ | RFC7-16.r1 | RFC7-16.c1 | RFC7-16 | Status is evaluation-bound and carries label, tier, reason and freshness with visible staleness | covered:PWB-REQ-007 |
+@@ -104,6 +104,14 @@ uncovered; 3 believed not applicable.**
+ | RFC7-32.r3 | RFC7-32.c2 | RFC7-32 | At least one release-milestone walkthrough is nonvisual or keyboard-only | believed-not-applicable |
+ | RFC7-34.r1 | RFC7-34.c1 | RFC7-34 | Every distinction is recoverable without color, position or layout | covered:PWB-REQ-016 |
+ | RFC7-34.r2 | RFC7-34.c2 | RFC7-34 | Every disclosure and anchor path is operable without a pointing device | covered:PWB-REQ-016 |
++| RFC1-20.r1 | RFC1-20.c1 | RFC1-20 | An Unknown claim leaves only by factual resolution or a reasoned, expiring, never-green dismissal decided at the evaluation's as-of instant | covered:PWB-REQ-007 |
++| RFC1-25.r1 | RFC1-25.c14 | RFC1-25 | `dismisses` keeps its exact authority semantics: a decision with mandatory reason and expiry, rendered dismissed by decision, never green | covered:PWB-REQ-007 |
++| RFC1-25.r2 | RFC1-25.c14 | RFC1-25 | `challenges` and `adjudicates` keep their exact authority semantics | believed-not-applicable |
++| RFC2-1.r2 | RFC2-1.c12 | RFC2-1 | Decisions affecting precedence are identified inputs | unknown-uncovered |
++| RFC2-1.r3 | RFC2-1.c12 | RFC2-1 | Recorded dismissal decisions, with reason and expiry, are identified evaluation inputs | covered:PWB-REQ-007 |
++| RFC2-15.r1 | RFC2-15.c2 | RFC2-15 | A claim leaves only by evidence or an attributed, reasoned, expiring governed-plane dismissal, and dismissed facts stay visible beside it | covered:PWB-REQ-007 |
++| RFC6-14.r4 | RFC6-14.c5 | RFC6-14 | The `dismissed-by-decision` sibling state travels beside the unchanged epistemic tuple | covered:PWB-REQ-007 |
++| RFC6-14.r5 | RFC6-14.c5 | RFC6-14 | `challenge-pending`, `unadopted-draft` and `editorial-draft` travel beside the epistemic tuple | believed-not-applicable |
+ 
+ ## Verification rule
+ 
