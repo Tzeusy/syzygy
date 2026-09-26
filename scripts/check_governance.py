@@ -2040,6 +2040,47 @@ def _polaris_edit_repair_candidate_exists(root=None):
         ROOT if root is None else root, POLARIS_EDIT_REPAIR_SUBJECT))
 
 
+#: P-74 question 3: three separate owner acts for a test-only
+#: self-observation (`syzygy-dov.25`). Acts 1 (consent) and 2 (second
+#: registry entry) mint new phrases whose subjects are new files, drafted
+#: whole under `proposed/`; the packet quotes each argument and each label
+#: registers only while its own drafted subject exists. At adoption each
+#: subject moves to its installed path. Act 3 (the policy extension) reuses
+#: the performed `approve-policy` label over the same subject and is
+#: deliberately not registered here: its amendment row needs the act record
+#: and the act-time digest, and its post-patch digest must differ from the
+#: subject's current hash while it is a candidate. Deliberately not a
+#: PWB_SUCCESSOR_CHAIN entry: none of the three amends the PWB behavior
+#: population.
+PWB_SELF_OBSERVATION_DIR = f"{CANDIDATES}/pwb-self-observation-acts"
+PWB_SELF_OBSERVATION_ACTS = (
+    ("CONSENT TO SYZYGY SELF PROJECT-SHAPE OBSERVATION",
+     f"{PWB_SELF_OBSERVATION_DIR}/proposed/"
+     "SYZYGY-SELF-PROJECT-SHAPE-OBSERVATION-CONSENT.md",
+     f"{DECISIONS}/PWB-SELF-OBSERVATION-CONSENT-ACT.md"),
+    ("ADOPT POLARIS SYZYGY SELF PROJECT-SHAPE OBSERVER REGISTRY ENTRY",
+     f"{PWB_SELF_OBSERVATION_DIR}/proposed/"
+     "POLARIS-SYZYGY-SELF-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+     f"{DECISIONS}/PWB-SELF-OBSERVER-REGISTRY-ENTRY-ACT.md"),
+)
+#: Each label's manifest names its label and carries its argument, so it is a
+#: copy too; the policy-extension manifest names a label but no argument of it.
+PWB_SELF_OBSERVATION_MANIFESTS = {
+    "CONSENT TO SYZYGY SELF PROJECT-SHAPE OBSERVATION":
+        f"{PWB_SELF_OBSERVATION_DIR}/SELF-OBSERVATION-CONSENT-MANIFEST.txt",
+    "ADOPT POLARIS SYZYGY SELF PROJECT-SHAPE OBSERVER REGISTRY ENTRY":
+        f"{PWB_SELF_OBSERVATION_DIR}/"
+        "SELF-OBSERVATION-REGISTRY-ENTRY-MANIFEST.txt",
+}
+
+
+def _pwb_self_observation_present(root=None):
+    """The labels whose drafted subject exists; each registers on its own."""
+    base = ROOT if root is None else root
+    return tuple(label for label, subject, _act in PWB_SELF_OBSERVATION_ACTS
+                 if os.path.isfile(os.path.join(base, subject)))
+
+
 def _act_subjects():
     out = []
     for e in registry_current():
@@ -2103,6 +2144,12 @@ def _act_subjects():
             re.compile(re.escape(POLARIS_EDIT_REPAIR_LABEL)
                        + r"\s*:\s*`?([0-9a-f]{64})"),
         ))
+    present = _pwb_self_observation_present()
+    for label, subject, _act in PWB_SELF_OBSERVATION_ACTS:
+        if (label in present
+                and not any(existing == label for existing, _rel, _pat in out)):
+            out.append((label, subject, re.compile(
+                re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
     out.append((POLARIS_NO_SIGNAL_LABEL, POLARIS_NO_SIGNAL_SUBJECT,
                 re.compile(re.escape(POLARIS_NO_SIGNAL_LABEL)
                            + r"\s*:\s*`?([0-9a-f]{64})")))
@@ -2342,6 +2389,22 @@ def _activate_polaris_edit_repair_candidate_copy_registry(registry=None,
 _activate_polaris_edit_repair_candidate_copy_registry()
 
 
+def _activate_pwb_self_observation_candidate_copy_registry(registry=None,
+                                                           root=None):
+    """Register the unperformed packet for each label whose subject exists."""
+    present = _pwb_self_observation_present(root)
+    if not present:
+        return
+    if registry is None:
+        registry = ACT_DIGEST_COPY_FILES
+    registry[f"{PWB_SELF_OBSERVATION_DIR}/OWNER-DECISION-PACKET.md"] = present
+    for label in present:
+        registry[PWB_SELF_OBSERVATION_MANIFESTS[label]] = (label,)
+
+
+_activate_pwb_self_observation_candidate_copy_registry()
+
+
 def _activate_pwb_state1_act_copy_registry():
     """Require both performed-record copies once the dedicated act exists.
 
@@ -2428,6 +2491,25 @@ def _activate_polaris_edit_repair_act_copy_registry():
 
 
 _activate_polaris_edit_repair_act_copy_registry()
+
+
+def _activate_pwb_self_observation_act_copy_registry():
+    """Same transition rule, for self-observation acts 1 and 2.
+
+    Neither act file exists yet, so this is a no-op today. Once one does, it
+    and the aggregate record must both carry that act's exact argument.
+    """
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    for label, _subject, act in PWB_SELF_OBSERVATION_ACTS:
+        if not os.path.isfile(os.path.join(ROOT, act)):
+            continue
+        labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+        if label not in labels:
+            ACT_DIGEST_COPY_FILES[aggregate] = labels + (label,)
+        ACT_DIGEST_COPY_FILES[act] = (label,)
+
+
+_activate_pwb_self_observation_act_copy_registry()
 
 
 def _activate_pwb_scoped_amendment_act_copy_registry():
@@ -6343,6 +6425,22 @@ def selftest():
                       f"{POLARIS_EDIT_REPAIR_DIR}/OWNER-DECISION-PACKET.md":
                           (POLARIS_EDIT_REPAIR_LABEL,)})))
 
+    both = tuple(label for label, _s, _a in PWB_SELF_OBSERVATION_ACTS)
+    packet = f"{PWB_SELF_OBSERVATION_DIR}/OWNER-DECISION-PACKET.md"
+    absent = _selftest_pwb_self_observation_registration(())
+    cases.append(("CG-7d/7e absent self-observation subjects register no phrase or packet",
+                  absent == (0, {})))
+    present = _selftest_pwb_self_observation_registration(both)
+    manifests = PWB_SELF_OBSERVATION_MANIFESTS
+    cases.append(("CG-7d/7e present self-observation subjects register both phrases, the packet and each manifest once",
+                  present == (2, {packet: both,
+                                  manifests[both[0]]: both[:1],
+                                  manifests[both[1]]: both[1:]})))
+    one = _selftest_pwb_self_observation_registration(both[:1])
+    cases.append(("CG-7d/7e one self-observation subject registers only its own phrase and manifest",
+                  one == (1, {packet: both[:1],
+                              manifests[both[0]]: both[:1]})))
+
     row = _selftest_pwb_act_copy_registry("valid")
     cases.append(("CG-7e performed PWB act registers both record copies",
                   row[0] == "OK" and row[2] == 2 and row[3] == 0))
@@ -6914,6 +7012,42 @@ def _selftest_polaris_edit_repair_candidate_registration(present):
                              or subjects[0][2].search(
                                  f"{POLARIS_EDIT_REPAIR_LABEL}: {'a' * 64}") is None):
                 return -1, copies
+            return len(subjects), copies
+    finally:
+        ROOT = keep_root
+        _PHRASE_REGISTRY_CACHE.clear()
+        _PHRASE_REGISTRY_CACHE.update(keep_registry)
+
+
+def _selftest_pwb_self_observation_registration(labels):
+    import tempfile
+    global ROOT
+    keep_root = ROOT
+    keep_registry = dict(_PHRASE_REGISTRY_CACHE)
+    try:
+        with tempfile.TemporaryDirectory(prefix="cg7-self-observation-") as d:
+            ROOT = d
+            _PHRASE_REGISTRY_CACHE[d] = ({"current_phrases": []}, [])
+            package = os.path.join(d, PWB_SELF_OBSERVATION_DIR, "proposed")
+            os.makedirs(package)
+            with open(os.path.join(package, "..", "OWNER-DECISION-PACKET.md"),
+                      "w", encoding="utf-8") as fh:
+                for label, _s, _a in PWB_SELF_OBSERVATION_ACTS:
+                    fh.write(f"{label}: {'a' * 64}\n")
+            for label, subject, _act in PWB_SELF_OBSERVATION_ACTS:
+                if label in labels:
+                    with open(os.path.join(d, subject), "w",
+                              encoding="utf-8") as fh:
+                        fh.write("synthetic drafted subject\n")
+            wanted = {label: subject
+                      for label, subject, _a in PWB_SELF_OBSERVATION_ACTS}
+            subjects = [row for row in _act_subjects() if row[0] in wanted]
+            copies = {}
+            _activate_pwb_self_observation_candidate_copy_registry(copies)
+            for label, rel, pattern in subjects:
+                if (rel != wanted[label]
+                        or pattern.search(f"{label}: {'a' * 64}") is None):
+                    return -1, copies
             return len(subjects), copies
     finally:
         ROOT = keep_root
