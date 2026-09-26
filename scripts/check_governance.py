@@ -1562,6 +1562,15 @@ PWB_MISSING_CURRENCY_SUBJECT = (
     "PWB-MISSING-CURRENCY-DISCLOSURE-MANIFEST.txt")
 PWB_MISSING_CURRENCY_ACT = (
     f"{DECISIONS}/PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-ACT.md")
+#: P-79 Q5's dismissal-with-expiry amendment to PWB-REQ-007. Registered the
+#: same way: packet copy watched now, act records once they exist, and no
+#: successor-chain link until an act fixes the performance order.
+PWB_DISMISSAL_EXPIRY_LABEL = "SIGN OFF PWB DISMISSAL-EXPIRY AMENDMENT"
+PWB_DISMISSAL_EXPIRY_DIR = f"{CANDIDATES}/pwb-dismissal-expiry-amendment"
+PWB_DISMISSAL_EXPIRY_SUBJECT = (
+    f"{PWB_DISMISSAL_EXPIRY_DIR}/PWB-DISMISSAL-EXPIRY-MANIFEST.txt")
+PWB_DISMISSAL_EXPIRY_ACT = (
+    f"{DECISIONS}/PWB-DISMISSAL-EXPIRY-AMENDMENT-ACT.md")
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -1625,6 +1634,7 @@ PWB_RENDER_MODE_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_MACHINE_VIEW_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_OPENING_BAND_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_MISSING_CURRENCY_SUBJECTS = PWB_STATE1_SUBJECTS
+PWB_DISMISSAL_EXPIRY_SUBJECTS = PWB_STATE1_SUBJECTS
 #: Successor chain over the PWB behavioral package, in performance order.
 #: The latest validly performed link binds current bytes; every earlier
 #: link's rows are immutable act-time history.
@@ -2087,7 +2097,9 @@ def _act_subjects():
     for label, subject in ((PWB_MACHINE_VIEW_LABEL, PWB_MACHINE_VIEW_SUBJECT),
                            (PWB_OPENING_BAND_LABEL, PWB_OPENING_BAND_SUBJECT),
                            (PWB_MISSING_CURRENCY_LABEL,
-                            PWB_MISSING_CURRENCY_SUBJECT)):
+                            PWB_MISSING_CURRENCY_SUBJECT),
+                           (PWB_DISMISSAL_EXPIRY_LABEL,
+                            PWB_DISMISSAL_EXPIRY_SUBJECT)):
         if not any(existing == label for existing, _rel, _pat in out):
             out.append((
                 label,
@@ -2316,6 +2328,8 @@ ACT_DIGEST_COPY_FILES = {
         (PWB_OPENING_BAND_LABEL,),
     f"{PWB_MISSING_CURRENCY_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_MISSING_CURRENCY_LABEL,),
+    f"{PWB_DISMISSAL_EXPIRY_DIR}/OWNER-DECISION-PACKET.md":
+        (PWB_DISMISSAL_EXPIRY_LABEL,),
     # The owner-act record quotes each performed act's exact phrase and
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
@@ -2499,9 +2513,15 @@ def _activate_pwb_missing_currency_act_copy_registry():
         PWB_MISSING_CURRENCY_LABEL, PWB_MISSING_CURRENCY_ACT)
 
 
+def _activate_pwb_dismissal_expiry_act_copy_registry():
+    _activate_pwb_candidate_act_copy_registry(
+        PWB_DISMISSAL_EXPIRY_LABEL, PWB_DISMISSAL_EXPIRY_ACT)
+
+
 _activate_pwb_machine_view_act_copy_registry()
 _activate_pwb_opening_band_act_copy_registry()
 _activate_pwb_missing_currency_act_copy_registry()
+_activate_pwb_dismissal_expiry_act_copy_registry()
 
 
 def _activate_polaris_no_signal_act_copy_registry():
@@ -6394,7 +6414,11 @@ def selftest():
             ("missing-currency", (PWB_MISSING_CURRENCY_LABEL,
                                   PWB_MISSING_CURRENCY_SUBJECT,
                                   PWB_MISSING_CURRENCY_ACT,
-                                  _activate_pwb_missing_currency_act_copy_registry))):
+                                  _activate_pwb_missing_currency_act_copy_registry)),
+            ("dismissal-expiry", (PWB_DISMISSAL_EXPIRY_LABEL,
+                                  PWB_DISMISSAL_EXPIRY_SUBJECT,
+                                  PWB_DISMISSAL_EXPIRY_ACT,
+                                  _activate_pwb_dismissal_expiry_act_copy_registry))):
         row = _selftest_pwb_act_copy_registry("valid", link)
         cases.append((f"CG-7e performed PWB {name} act registers both record copies",
                       row[0] == "OK" and row[2] == 2 and row[3] == 0))
@@ -6402,6 +6426,13 @@ def selftest():
         cases.append((f"CG-7e performed PWB {name} act requires aggregate record copy",
                       row[0] == "FAIL"
                       and any(PERFORMED_ACT_RECORD in d for d in row[4])))
+
+    registered, activated = _selftest_pwb_candidate_act_absent(
+        PWB_DISMISSAL_EXPIRY_LABEL, PWB_DISMISSAL_EXPIRY_DIR,
+        _activate_pwb_dismissal_expiry_act_copy_registry)
+    cases.append(("CG-7e unperformed PWB dismissal-expiry act watches the "
+                  "packet copy and registers no act-record copy",
+                  registered and activated == {}))
 
     for act in POLARIS_GENERATOR_APPROVAL_ACTS:
         link = (POLARIS_GENERATOR_APPROVAL_LABEL, POLARIS_GENERATOR_APPROVAL_SUBJECT,
@@ -6919,6 +6950,32 @@ def _selftest_polaris_edit_repair_candidate_registration(present):
         ROOT = keep_root
         _PHRASE_REGISTRY_CACHE.clear()
         _PHRASE_REGISTRY_CACHE.update(keep_registry)
+
+
+def _selftest_pwb_candidate_act_absent(label, candidate_dir, activate):
+    """Before its act exists, a candidate's phrase and packet copy are
+    registered and its activation adds nothing (the absent half of the
+    present/absent fixture; the present half is the "valid" row)."""
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp(prefix="cg7e-pwb-absent-selftest-")
+    global ROOT
+    keep = ROOT
+    current_files = dict(ACT_DIGEST_COPY_FILES)
+    try:
+        registered = (
+            ACT_DIGEST_COPY_FILES.get(
+                f"{candidate_dir}/OWNER-DECISION-PACKET.md") == (label,)
+            and any(existing == label for existing, _rel, _pat in _act_subjects()))
+        ROOT = d
+        ACT_DIGEST_COPY_FILES.clear()
+        activate()
+        return registered, dict(ACT_DIGEST_COPY_FILES)
+    finally:
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES.update(current_files)
+        ROOT = keep
+        shutil.rmtree(d, ignore_errors=True)
 
 
 def _selftest_pwb_act_copy_registry(kind, link=None):
