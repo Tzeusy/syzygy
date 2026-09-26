@@ -1,0 +1,135 @@
+{
+  "kind": "pwb-m13-current-base-paired-private-daemon-measurement",
+  "capturedAtUtc": "2026-09-23T08:48:03.041Z",
+  "baselineCommit": "a971361f1e66cc5cb0da6a3d06f51aaf96feac3a",
+  "headCommit": "2e118c186e6dea09657c8639ddd317965ede49d0",
+  "method": "Two concurrent private port-0 daemons from clean committed Syzygy trees observed the registered Butlers repository. Direct and tailnet-host-mounted requests used raw HTTP with the Host/Origin pair; only counts and response sizes were retained. No response body or credential value was retained.",
+  "matchedEvaluation": {
+    "baseline": {
+      "projectRevision": "5802fcba23ea8fcd47741f5dbe9045aef6cbafbb",
+      "asOf": "2026-09-23T08:47:36.128Z",
+      "doltRevision": "5t9o49ciqrs6fi4r6teeirrpn3lkn67q",
+      "workItemCount": 7640,
+      "sources": 283,
+      "items": 426,
+      "facts": 450
+    },
+    "head": {
+      "projectRevision": "5802fcba23ea8fcd47741f5dbe9045aef6cbafbb",
+      "asOf": "2026-09-23T08:47:36.133Z",
+      "doltRevision": "5t9o49ciqrs6fi4r6teeirrpn3lkn67q",
+      "workItemCount": 7640,
+      "sources": 283,
+      "items": 426,
+      "facts": 450
+    }
+  },
+  "declaredMaxHumanResponseBytes": 2097152,
+  "routes": [
+    {
+      "form": "direct",
+      "path": "/",
+      "baselineBytes": 43460,
+      "headBytes": 43463,
+      "deltaBytes": 3,
+      "headroomBytes": 2053689,
+      "above1400000By": 0
+    },
+    {
+      "form": "direct",
+      "path": "/polaris",
+      "baselineBytes": 1525755,
+      "headBytes": 1529777,
+      "deltaBytes": 4022,
+      "headroomBytes": 567375,
+      "above1400000By": 129777
+    },
+    {
+      "form": "direct",
+      "path": "/trajectory",
+      "baselineBytes": 266447,
+      "headBytes": 266450,
+      "deltaBytes": 3,
+      "headroomBytes": 1830702,
+      "above1400000By": 0
+    },
+    {
+      "form": "direct",
+      "path": "/orrery",
+      "baselineBytes": 42997,
+      "headBytes": 43000,
+      "deltaBytes": 3,
+      "headroomBytes": 2054152,
+      "above1400000By": 0
+    },
+    {
+      "form": "tailnet-host-mounted",
+      "path": "/",
+      "baselineBytes": 43520,
+      "headBytes": 43523,
+      "deltaBytes": 3,
+      "headroomBytes": 2053629,
+      "above1400000By": 0
+    },
+    {
+      "form": "tailnet-host-mounted",
+      "path": "/polaris",
+      "baselineBytes": 1531830,
+      "headBytes": 1535852,
+      "deltaBytes": 4022,
+      "headroomBytes": 561300,
+      "above1400000By": 135852
+    },
+    {
+      "form": "tailnet-host-mounted",
+      "path": "/trajectory",
+      "baselineBytes": 266537,
+      "headBytes": 266540,
+      "deltaBytes": 3,
+      "headroomBytes": 1830612,
+      "above1400000By": 0
+    },
+    {
+      "form": "tailnet-host-mounted",
+      "path": "/orrery",
+      "baselineBytes": 43072,
+      "headBytes": 43075,
+      "deltaBytes": 3,
+      "headroomBytes": 2054077,
+      "above1400000By": 0
+    }
+  ],
+  "polarisPopulations": [
+    {
+      "form": "direct",
+      "baseline": {
+        "sourceRows": 283,
+        "claimTuples": 731,
+        "summaries": 364,
+        "exactSourceRouteLinks": 390
+      },
+      "head": {
+        "sourceRows": 283,
+        "claimTuples": 731,
+        "summaries": 81,
+        "exactSourceRouteLinks": 390
+      }
+    },
+    {
+      "form": "tailnet-host-mounted",
+      "baseline": {
+        "sourceRows": 283,
+        "claimTuples": 731,
+        "summaries": 364,
+        "exactSourceRouteLinks": 390
+      },
+      "head": {
+        "sourceRows": 283,
+        "claimTuples": 731,
+        "summaries": 81,
+        "exactSourceRouteLinks": 390
+      }
+    }
+  ],
+  "caveat": "One same-window registered revision/evaluation pair. This is a bounded non-release POC measurement; the tailnet form was locally simulated, not a remote tailnet request."
+}
