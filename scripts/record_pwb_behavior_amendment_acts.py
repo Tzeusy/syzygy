@@ -31,6 +31,41 @@ can leave a branch-head commit reachable from no ref.
 The successor-chain link and the existence-gated copy registrations in
 `check_governance.py` are the performing change's to add; this script
 prints what it knows and edits no check.
+
+Confirmation-review head contract. `validate_packet` reads only the first
+four lines of the confirmation review (blank lines count as lines; nothing
+below line 4 is read) and accepts exactly one of two cases, per
+`.syzygy/governance/decisions/POLARIS-GATE-SITTING-2026-09-26-DECISION.md`
+§1 ("When a confirmation review clears a package's bytes"):
+
+- **Case (a) — CONFIRM.** The head carries an exact line `Verdict: CONFIRM`,
+  an exact line `Manifest SHA-256: <the offered argument>`, and a line
+  matching `Reviewed commit: <40-hex sha>`. Unchanged from before this
+  decision; a CONFIRM-only act's rendered bytes are byte-identical to what
+  this script rendered before this change (see `--selftest`).
+- **Case (b) — CONFIRM WITH EXCEPTIONS, notes only.** The head carries an
+  exact line `Verdict: CONFIRM WITH EXCEPTIONS`, the same
+  `Manifest SHA-256:` and `Reviewed commit:` lines as case (a), AND the
+  `Act` entry names a `disposition_record` path, AND that disposition
+  record (read directly from the tree; never git-blob-pinned) satisfies
+  every one of:
+    - it exists;
+    - it carries an exact line `Reviewed record: <the raw's repo path,
+      exactly as `act.confirmation_review` names it>`;
+    - it carries an exact line `Manifest SHA-256: <the offered argument>`;
+    - it carries an exact line `Revise-severity findings: 0` (any other
+      digit, or the line's absence, refuses — this is the only accepted
+      zero-count line form);
+    - it dispositions every numbered finding of the raw: read each text's
+      own line-leading markers `^(\d+)\.\s` (MULTILINE); the raw's finding
+      count N is the longest unbroken run 1..N starting at 1 (0 if line
+      `1.` never opens a line); the disposition's own line-leading markers
+      must equal the exact set `{1, ..., N}` — not a superset or a subset.
+  Any other combination (a REVISE-style verdict, a missing or malformed
+  disposition, a digest mismatch, a nonzero revise count, an unmatched
+  finding, or case (b) with no `disposition_record` configured on the Act)
+  refuses with a specific error. No `ACTS` entry currently names a
+  `disposition_record`; wiring one is a later, separately reviewed change.
 """
 
 from __future__ import annotations
@@ -42,6 +77,7 @@ import pathlib
 import re
 import subprocess
 import sys
+import tempfile
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -51,13 +87,31 @@ DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 ROW_RE = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
 REVIEWED_COMMIT_RE = re.compile(r"^Reviewed commit: ([0-9a-f]{40})\s*$", re.MULTILINE)
+FINDING_MARK_RE = re.compile(r"^(\d+)\.\s", re.MULTILINE)
+CONFIRM_LINE = "Verdict: CONFIRM"
+EXCEPTIONS_LINE = "Verdict: CONFIRM WITH EXCEPTIONS"
 EXPECTED_ROWS = 11
+
+
+def _numbered_markers(text: str) -> set[int]:
+    """The set of numbers that open a line as `<n>. ` (MULTILINE)."""
+    return {int(n) for n in FINDING_MARK_RE.findall(text)}
+
+
+def _raw_finding_count(text: str) -> int:
+    """The longest unbroken run 1..N of `_numbered_markers`, starting at 1;
+    0 if a line `1. ` never opens a line."""
+    seen = _numbered_markers(text)
+    n = 0
+    while (n + 1) in seen:
+        n += 1
+    return n
 
 
 class Act:
     def __init__(self, act_type, builder, label, record_name, identity, title,
                  frozen_subject, packet_head, confirmation_review, tag_stem,
-                 effect, not_authorized):
+                 effect, not_authorized, disposition_record=None):
         self.act_type = act_type
         self.builder = builder
         self.label = label
@@ -70,6 +124,12 @@ class Act:
         self.tag_stem = tag_stem
         self.effect = effect
         self.not_authorized = not_authorized
+        # Case (b) only (POLARIS-GATE-SITTING-2026-09-26-DECISION.md §1): the
+        # disposition record a CONFIRM WITH EXCEPTIONS verdict is bound to.
+        # None means this Act accepts only case (a), CONFIRM.
+        self.disposition_record = (
+            pathlib.Path(disposition_record) if disposition_record is not None else None
+        )
         self._module = None
 
     @property
@@ -217,13 +277,56 @@ def validate_subject(
     return rows
 
 
+def validate_disposition(
+    root: pathlib.Path, act: Act, argument: str, review: str,
+    disposition_override: bytes | None = None,
+) -> pathlib.Path:
+    """Stage 2b (case (b) only) — a notes-only CONFIRM WITH EXCEPTIONS verdict
+    is bound to a disposition record beside the package
+    (POLARIS-GATE-SITTING-2026-09-26-DECISION.md §1), never by editing the
+    reviewed bytes. See the module docstring for the exact predicate. Returns
+    the disposition record's path, relative to `root`.
+    """
+    if act.disposition_record is None:
+        raise ValueError(
+            "confirmation review head carries CONFIRM WITH EXCEPTIONS but this "
+            "act names no disposition record"
+        )
+    disposition_path = root / act.disposition_record
+    if disposition_override is None and not disposition_path.is_file():
+        raise ValueError(
+            f"missing disposition record: {act.disposition_record.as_posix()}"
+        )
+    text = (disposition_override.decode() if disposition_override is not None
+            else disposition_path.read_text())
+    lines = text.splitlines()
+    if f"Reviewed record: {act.confirmation_review.as_posix()}" not in lines:
+        raise ValueError("disposition record does not name the reviewed raw's exact path")
+    if f"Manifest SHA-256: {argument}" not in lines:
+        raise ValueError("disposition record does not bind the offered manifest digest")
+    if "Revise-severity findings: 0" not in lines:
+        raise ValueError("disposition record does not state zero revise-severity findings")
+    expected = set(range(1, _raw_finding_count(review) + 1))
+    actual = _numbered_markers(text)
+    if actual != expected:
+        raise ValueError(
+            f"disposition record findings {sorted(actual)} do not match the "
+            f"raw's numbered findings {sorted(expected)}"
+        )
+    return act.disposition_record
+
+
 def validate_packet(
     root: pathlib.Path, act: Act, argument: str,
     packet_override: bytes | None = None, review_override: str | None = None,
-) -> str:
+    disposition_override: bytes | None = None,
+) -> tuple[str, str, pathlib.Path | None]:
     """Stage 2 — the owner was shown this phrase, and a review confirmed these bytes.
 
-    Returns the reviewed commit the raw states (provenance, not binding).
+    Accepts exactly the two head cases the module docstring states. Returns
+    `(reviewed_commit, verdict, disposition_record_or_None)`; the reviewed
+    commit is provenance, not binding, and `disposition_record` is set only
+    for a case-(b) verdict.
     """
     packet_path = root / act.packet
     if packet_override is None and not packet_path.is_file():
@@ -241,26 +344,55 @@ def validate_packet(
     head = lines[:4]
     if f"Manifest SHA-256: {argument}" not in head:
         raise ValueError("confirmation review does not bind the offered manifest digest")
-    if "Verdict: CONFIRM" not in head:
-        raise ValueError("confirmation review head does not carry the exact verdict CONFIRM")
+    if CONFIRM_LINE in head:
+        verdict = "CONFIRM"
+    elif EXCEPTIONS_LINE in head:
+        verdict = "CONFIRM WITH EXCEPTIONS"
+    else:
+        raise ValueError(
+            "confirmation review head does not carry an accepted exact verdict "
+            "line (Verdict: CONFIRM or Verdict: CONFIRM WITH EXCEPTIONS)"
+        )
     reviewed = REVIEWED_COMMIT_RE.search("\n".join(head))
     if not reviewed:
         raise ValueError("confirmation review head does not name its reviewed commit")
-    return reviewed.group(1)
+    disposition_record = None
+    if verdict == "CONFIRM WITH EXCEPTIONS":
+        disposition_record = validate_disposition(
+            root, act, argument, review, disposition_override=disposition_override,
+        )
+    return reviewed.group(1), verdict, disposition_record
 
 
 def validate(root: pathlib.Path, act: Act, argument: str, applied: bool):
     rows = validate_subject(root, act, argument, applied)
-    reviewed = validate_packet(root, act, argument)
-    return rows, reviewed
+    reviewed, verdict, disposition_record = validate_packet(root, act, argument)
+    return rows, reviewed, verdict, disposition_record
 
 
 def tag_for(act: Act, date: str) -> str:
     return f"{act.tag_stem}-signed-{date}"
 
 
-def render_act(act: Act, argument: str, date: str, rows, reviewed: str) -> str:
+def render_act(act: Act, argument: str, date: str, rows, reviewed: str,
+               verdict: str = "CONFIRM",
+               disposition_rel: pathlib.Path | None = None) -> str:
     artifact_table = "\n".join(f"| `{path}` | `{sha}` |" for sha, path in rows)
+    if disposition_rel is None:
+        review_bullet = (
+            f"- confirmation review: `{act.confirmation_review.as_posix()}`, verdict\n"
+            f"  `{verdict}`, bound to this manifest digest; the raw names reviewed commit\n"
+            f"  `{reviewed}` [Observed — the raw's own line; binding is by digest]; and"
+        )
+    else:
+        review_bullet = (
+            f"- confirmation review: `{act.confirmation_review.as_posix()}`, verdict\n"
+            f"  `{verdict}`, bound to this manifest digest; the raw names reviewed commit\n"
+            f"  `{reviewed}` [Observed — the raw's own line; binding is by digest];\n"
+            f"- disposition record: `{disposition_rel.as_posix()}`, dispositioning\n"
+            f"  the review's notes under the `{verdict}` verdict, never by editing\n"
+            f"  the reviewed bytes; and"
+        )
     return f"""# Owner act — {act.title}
 
 Date: {date}
@@ -298,9 +430,7 @@ Frozen provenance:
 
 - frozen subject (manifest and packet bytes): `{act.frozen_subject}`;
 - owner-packet head: `{act.packet_head}`;
-- confirmation review: `{act.confirmation_review.as_posix()}`, verdict
-  `CONFIRM`, bound to this manifest digest; the raw names reviewed commit
-  `{reviewed}` [Observed — the raw's own line; binding is by digest]; and
+{review_bullet}
 - recording tag: `{tag_for(act, date)}`, on the commit carrying this act record.
 
 ## Effect
@@ -338,7 +468,12 @@ def aggregate_heading(act: Act, date: str) -> str:
     return f"## PWB behavior amendment — {act.act_type} — performed {date}"
 
 
-def render_aggregate_block(act: Act, argument: str, date: str) -> str:
+def render_aggregate_block(act: Act, argument: str, date: str,
+                           verdict: str = "CONFIRM",
+                           disposition_rel: pathlib.Path | None = None) -> str:
+    review_row = f"`{act.confirmation_review.as_posix()}`: `{verdict}`, bound to this manifest digest"
+    if disposition_rel is not None:
+        review_row += f"; disposition: `{disposition_rel.as_posix()}`"
     return f"""{aggregate_heading(act, date)}
 
 **Phrase, exactly as written by the owner (in-interaction, {date}):**
@@ -354,7 +489,7 @@ def render_aggregate_block(act: Act, argument: str, date: str) -> str:
 | Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
 | A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
 | Frozen subject / packet head | `{act.frozen_subject}` / `{act.packet_head}` |
-| Review outcome | `{act.confirmation_review.as_posix()}`: `CONFIRM`, bound to this manifest digest |
+| Review outcome | {review_row} |
 | Ceremony verification | {EXPECTED_ROWS} of {EXPECTED_ROWS} manifest rows verified against the tree after the package's patches were applied; manifest digest equals the phrase `[Observed, this act]` |
 | Supersession | the latest link over the eleven-artifact PWB behavior population; every earlier act's rows remain immutable history |
 | Recording | `{act.record.as_posix()}`; annotated tag `{tag_for(act, date)}` on the commit carrying these records |
@@ -371,7 +506,7 @@ this act.
 
 def expected_outputs(root: pathlib.Path, act: Act, argument: str, date: str,
                      applied: bool) -> dict[pathlib.Path, str]:
-    rows, reviewed = validate(root, act, argument, applied)
+    rows, reviewed, verdict, disposition_record = validate(root, act, argument, applied)
     aggregate = (root / AGGREGATE_REL).read_text()
     heading = aggregate_heading(act, date)
     occurrences = aggregate.count(heading)
@@ -379,8 +514,9 @@ def expected_outputs(root: pathlib.Path, act: Act, argument: str, date: str,
         raise ValueError("aggregate record contains duplicate sections for this act")
     prefix = aggregate.split(heading, 1)[0].rstrip() if occurrences else aggregate.rstrip()
     return {
-        act.record: render_act(act, argument, date, rows, reviewed),
-        AGGREGATE_REL: prefix + "\n\n" + render_aggregate_block(act, argument, date),
+        act.record: render_act(act, argument, date, rows, reviewed, verdict, disposition_record),
+        AGGREGATE_REL: prefix + "\n\n" + render_aggregate_block(
+            act, argument, date, verdict, disposition_record),
     }
 
 
@@ -412,8 +548,10 @@ def record(root: pathlib.Path, act: Act, argument: str, date: str, check: bool) 
         dedicated = root / act.record
         if not dedicated.is_file() or dedicated.read_text() != outputs[act.record]:
             drift.append(act.record)
+        _, _, verdict, disposition_record = validate(root, act, argument, applied=True)
         aggregate = (root / AGGREGATE_REL).read_text()
-        if aggregate.count(render_aggregate_block(act, argument, date)) != 1:
+        if aggregate.count(render_aggregate_block(
+                act, argument, date, verdict, disposition_record)) != 1:
             drift.append(AGGREGATE_REL)
         for rel in drift:
             print(f"recorded act differs from regeneration: {rel.as_posix()}")
@@ -445,6 +583,154 @@ def record(root: pathlib.Path, act: Act, argument: str, date: str, check: bool) 
         print(f"wrote {rel.as_posix()}")
     print(registration_notes(act, argument, date))
     return 0
+
+
+class _FixtureAct:
+    """A minimal stand-in exposing only what `validate_packet` reads. Used
+    solely to exercise the case-(b) disposition predicate without adding a
+    `disposition_record` to any real `ACTS` entry (POLARIS-GATE-SITTING-
+    2026-09-26-DECISION.md §1: "wiring a real package is a later step")."""
+
+    def __init__(self, label, packet, packet_head, confirmation_review,
+                 disposition_record=None):
+        self.label = label
+        self.packet = packet
+        self.packet_head = packet_head
+        self.confirmation_review = confirmation_review
+        self.disposition_record = disposition_record
+
+
+def selftest_disposition() -> list[tuple[str, bool]]:
+    """Case (b) mutation fixtures, built entirely under a temp directory
+    (never the tracked tree). Exercises every refusal condition the module
+    docstring's case (b) lists, plus one positive fixture."""
+    results = []
+
+    def rejects(fn, needle, *args, **kwargs):
+        try:
+            fn(*args, **kwargs)
+        except ValueError as exc:
+            return needle in str(exc)
+        return False
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = pathlib.Path(tmp)
+        rel_packet = pathlib.Path("PACKET.md")
+        rel_review = pathlib.Path("REVIEW-RAW.md")
+        rel_disposition = pathlib.Path("DISPOSITION.md")
+        argument = "c" * 64
+
+        act = _FixtureAct("FIXTURE CASE-B LABEL", rel_packet, "0" * 40, rel_review)
+
+        (root / rel_packet).write_text(f"# Packet\n\n{phrase_for(act, argument)}\n")
+        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+        subprocess.run(["git", "config", "user.email", "fixture@example.invalid"],
+                       cwd=root, check=True)
+        subprocess.run(["git", "config", "user.name", "Fixture"], cwd=root, check=True)
+        subprocess.run(["git", "add", rel_packet.as_posix()], cwd=root, check=True)
+        subprocess.run(["git", "commit", "-q", "-m", "fixture packet"], cwd=root, check=True)
+        act.packet_head = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, check=True,
+        ).stdout.strip()
+
+        review_text = (
+            "# Review — fixture (round 1, confirmation)\n"
+            f"Reviewed commit: {'b' * 40}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Verdict: CONFIRM WITH EXCEPTIONS\n"
+            "\n"
+            "## Findings\n"
+            "\n"
+            "1. First finding, notes only.\n"
+            "2. Second finding, notes only.\n"
+        )
+
+        good_disposition = (
+            "# Disposition — fixture\n"
+            f"Reviewed record: {rel_review.as_posix()}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Revise-severity findings: 0\n"
+            "\n"
+            "1. Accepted as noted; no repair needed.\n"
+            "2. Owner already ruled on this; dispositioned by that ruling.\n"
+        )
+
+        results.append((
+            "case-b: no disposition_record configured on the Act rejected",
+            rejects(validate_packet, "names no disposition record",
+                    root, act, argument, review_override=review_text,
+                    disposition_override=good_disposition.encode())))
+
+        act.disposition_record = rel_disposition
+
+        try:
+            reviewed, verdict, disposition = validate_packet(
+                root, act, argument, review_override=review_text,
+                disposition_override=good_disposition.encode())
+            positive_ok = (verdict == "CONFIRM WITH EXCEPTIONS"
+                          and disposition == rel_disposition
+                          and reviewed == "b" * 40)
+        except ValueError as exc:
+            positive_ok = False
+            print(f"  (case-b positive fixture failure: {exc})")
+        results.append((
+            "case-b: valid CONFIRM WITH EXCEPTIONS with matching disposition accepted",
+            positive_ok))
+
+        results.append((
+            "case-b: missing disposition record file rejected",
+            rejects(validate_packet, "missing disposition record",
+                    root, act, argument, review_override=review_text)))
+
+        bad_path = good_disposition.replace(
+            f"Reviewed record: {rel_review.as_posix()}",
+            "Reviewed record: some/other/RAW.md", 1)
+        results.append((
+            "case-b: disposition naming the wrong raw path rejected",
+            rejects(validate_packet, "does not name the reviewed raw's exact path",
+                    root, act, argument, review_override=review_text,
+                    disposition_override=bad_path.encode())))
+
+        bad_digest = good_disposition.replace(
+            f"Manifest SHA-256: {argument}", "Manifest SHA-256: " + "d" * 64, 1)
+        results.append((
+            "case-b: disposition digest mismatch rejected",
+            rejects(validate_packet, "does not bind the offered manifest digest",
+                    root, act, argument, review_override=review_text,
+                    disposition_override=bad_digest.encode())))
+
+        nonzero_revise = good_disposition.replace(
+            "Revise-severity findings: 0", "Revise-severity findings: 1", 1)
+        results.append((
+            "case-b: nonzero revise-severity count rejected",
+            rejects(validate_packet, "does not state zero revise-severity findings",
+                    root, act, argument, review_override=review_text,
+                    disposition_override=nonzero_revise.encode())))
+
+        missing_finding = good_disposition.replace(
+            "2. Owner already ruled on this; dispositioned by that ruling.\n", "")
+        results.append((
+            "case-b: disposition missing one of the raw's numbered findings rejected",
+            rejects(validate_packet, "do not match the raw's numbered findings",
+                    root, act, argument, review_override=review_text,
+                    disposition_override=missing_finding.encode())))
+
+        extra_finding = good_disposition + "3. An extra disposition the raw never raised.\n"
+        results.append((
+            "case-b: disposition naming an extra finding beyond the raw's rejected",
+            rejects(validate_packet, "do not match the raw's numbered findings",
+                    root, act, argument, review_override=review_text,
+                    disposition_override=extra_finding.encode())))
+
+        revise_review = review_text.replace(
+            "Verdict: CONFIRM WITH EXCEPTIONS", "Verdict: REVISE", 1)
+        results.append((
+            "case-b: REVISE verdict rejected outright even with a valid disposition present",
+            rejects(validate_packet, "does not carry an accepted exact verdict line",
+                    root, act, argument, review_override=revise_review,
+                    disposition_override=good_disposition.encode())))
+
+    return results
 
 
 def selftest() -> int:
@@ -480,7 +766,8 @@ def selftest() -> int:
                                 manifest_override=mutated_manifest)))
         staged = False
         try:
-            staged = bool(validate_packet(ROOT, act, exact))
+            reviewed_commit, staged_verdict, staged_disposition = validate_packet(ROOT, act, exact)
+            staged = bool(reviewed_commit) and staged_verdict == "CONFIRM" and staged_disposition is None
         except ValueError as exc:
             print(f"  ({act.act_type} packet-stage failure: {exc})")
         results.append((f"{act.act_type}: packet and confirmation review bind the argument", staged))
@@ -497,14 +784,38 @@ def selftest() -> int:
         results.append((f"{act.act_type}: review not binding the manifest rejected",
                         rejects(validate_packet, "does not bind the offered manifest",
                                 ROOT, act, exact, review_override=unbound)))
-        wrong_verdict = review.replace("Verdict: CONFIRM", "Verdict: CONFIRM WITH EXCEPTIONS", 1)
-        results.append((f"{act.act_type}: review verdict other than CONFIRM rejected",
-                        rejects(validate_packet, "exact verdict CONFIRM",
-                                ROOT, act, exact, review_override=wrong_verdict)))
+        exceptions_verdict = review.replace("Verdict: CONFIRM", "Verdict: CONFIRM WITH EXCEPTIONS", 1)
+        results.append((
+            f"{act.act_type}: CONFIRM WITH EXCEPTIONS rejected when this act "
+            "names no disposition record",
+            rejects(validate_packet, "names no disposition record",
+                    ROOT, act, exact, review_override=exceptions_verdict)))
+        revise_verdict = review.replace("Verdict: CONFIRM", "Verdict: REVISE", 1)
+        results.append((f"{act.act_type}: REVISE verdict rejected outright",
+                        rejects(validate_packet, "does not carry an accepted exact verdict line",
+                                ROOT, act, exact, review_override=revise_verdict)))
         buried = "\n".join(["# heading", "", ""] + review.splitlines())
         results.append((f"{act.act_type}: review markers outside the four-line head rejected",
                         rejects(validate_packet, "does not bind the offered manifest",
                                 ROOT, act, exact, review_override=buried)))
+        rows_pre, reviewed_pre, verdict_pre, disposition_pre = validate(ROOT, act, exact, False)
+        rendered_act = render_act(act, exact, "2026-09-26", rows_pre, reviewed_pre,
+                                  verdict_pre, disposition_pre)
+        rendered_aggregate = render_aggregate_block(act, exact, "2026-09-26",
+                                                     verdict_pre, disposition_pre)
+        results.append((
+            f"{act.act_type}: CONFIRM-only render_act byte-identical to the "
+            "pre-case-(b) baseline",
+            digest(rendered_act.encode())
+            == "4dcbd3c2a74a2cfffa0bc1fb4832419906380a4dc2a267f64066f86cb60248ee",
+        ))
+        results.append((
+            f"{act.act_type}: CONFIRM-only render_aggregate_block byte-identical "
+            "to the pre-case-(b) baseline",
+            digest(rendered_aggregate.encode())
+            == "7967bf357378235ee4da53e68bb47f8a48f7fc984be90dd3bc029a2e5bb71241",
+        ))
+    results.extend(selftest_disposition())
     failing = 0
     for name, passed in results:
         failing += 0 if passed else 1
