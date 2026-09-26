@@ -2314,6 +2314,12 @@ ACT_DIGEST_COPY_FILES = {
         (PWB_MACHINE_VIEW_LABEL,),
     f"{PWB_OPENING_BAND_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_OPENING_BAND_LABEL,),
+    # The round-11 disposition record beside the package carries the offered
+    # argument on its recorder-readable `Manifest SHA-256:` line
+    # (POLARIS-GATE-SITTING-2026-09-26-DECISION.md §1); it goes stale the
+    # moment the manifest moves, which is rule 10 made visible.
+    f"{PWB_OPENING_BAND_DIR}/ROUND-11-DISPOSITIONS.md":
+        (PWB_OPENING_BAND_LABEL,),
     f"{PWB_MISSING_CURRENCY_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_MISSING_CURRENCY_LABEL,),
     # The owner-act record quotes each performed act's exact phrase and
