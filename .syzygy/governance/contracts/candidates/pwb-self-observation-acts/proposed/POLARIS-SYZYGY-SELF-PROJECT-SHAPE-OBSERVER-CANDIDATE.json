@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "registryVersion": "1.0.0-candidate.1",
+  "status": "candidate-no-effect-until-owner-act",
+  "governanceHome": ".syzygy/governance/declarations/adapter-registry",
+  "project": "project:syzygy",
+  "entries": [
+    {
+      "observerId": "polaris-syzygy-self-project-shape",
+      "observerVersion": "1.0.0-candidate.1",
+      "discoveryVersion": "pwb-discovery-v2-candidate.1",
+      "purpose": "test-only conformance fixture (M8 slice 6): measures the project-shape pipeline against this repository's own tracked tree at one fixed Git revision; serves no surface",
+      "role": "adapter",
+      "implementationId": "three-surface-poc-core/project-shape-observer",
+      "implementationVersion": "1.0.0",
+      "contractId": "RFC-0004/general-contract",
+      "contractVersion": "sha256:b21fc950103964c34e2f9b2d78c97ac8e03720f311738e0e6323afb29b8d6f0e",
+      "contractVersionSource": "accepted RFC-0004/general-contract.md as amended by the 2026-09-01 general trusted-bootstrap transaction (CONTRACT-AMENDMENT-MANIFEST.txt row)",
+      "governingBehaviorContract": {
+        "id": "polaris-project-wide-butlers-model",
+        "version": "sha256:42d073cdeaf7fa7940c5e822b05213267ec1d0064faaaad092f21d264b76a2b1",
+        "signedBy": "the PWB behavior acts in force when this entry is acted on; this value is regenerated after every PWB specification act that lands first"
+      },
+      "subject": {
+        "observingProject": "project:syzygy",
+        "observedRepository": "repository:syzygy"
+      },
+      "authorizationModes": [
+        "independently-verified",
+        "owner-trusted-bootstrap"
+      ],
+      "authorizationModeDerivation": "every artifact must have a current exact digest-bound owner act; independently-verified only when all three acts verify through A1; owner-trusted-bootstrap when at least one valid act remains owner-adopted bootstrap and the others are valid state-(1) or state-(2) acts; every other combination rejects before body reads",
+      "provenanceDisclosure": "Observation uses owner-trusted records; independent audit is not configured.",
+      "implementation": "none yet; a conformance module under packages/three-surface-poc-core/src/ would be added by M8 slice 6 only after all three self-observation acts exist",
+      "implementationStatus": "no implementation reads this entry; adopting it authorizes no code change by itself",
+      "surfaceExposure": {
+        "servedRoutes": [],
+        "cache": false,
+        "log": false,
+        "storedEvaluation": false,
+        "walkthroughRecord": false,
+        "rule": "the page and machine answer are built only as in-memory values inside the conformance test process and are never served, cached, logged or written anywhere"
+      },
+      "inputClasses": [
+        {
+          "class": "git-revision",
+          "identityScheme": "git-object-id"
+        },
+        {
+          "class": "repository-locator-mapping",
+          "identityScheme": "opaque-repository-id-plus-normalized-approved-locator"
+        },
+        {
+          "class": "git-object-database",
+          "identityScheme": "repository-id-plus-resolved-git-common-dir"
+        },
+        {
+          "class": "governing-behavior-contract",
+          "identityScheme": "contract-id-plus-sha256-content-digest"
+        },
+        {
+          "class": "git-tree-entry",
+          "identityScheme": "repository-id-plus-revision-plus-repository-relative-path-plus-object-id"
+        },
+        {
+          "class": "git-blob",
+          "identityScheme": "repository-id-plus-blob-object-id"
+        },
+        {
+          "class": "project-shape-source-manifest",
+          "identityScheme": "sha256-content-digest"
+        },
+        {
+          "class": "observation-consent",
+          "identityScheme": "record-id-plus-provenance-state"
+        },
+        {
+          "class": "secret-classification-policy",
+          "identityScheme": "policy-id-plus-version-plus-content-digest-plus-provenance-state"
+        },
+        {
+          "class": "observer-registry-entry",
+          "identityScheme": "observer-id-plus-version-plus-content-digest-plus-provenance-state"
+        },
+        {
+          "class": "resource-limits",
+          "identityScheme": "canonical-json-sha256"
+        }
+      ],
+      "outputFactClasses": [
+        {
+          "class": "project-account-statement",
+          "identityScheme": "section-plus-declared-key"
+        },
+        {
+          "class": "project-shape-source-manifest",
+          "identityScheme": "repository-id-plus-revision-plus-discovery-version-plus-sha256-content-digest"
+        },
+        {
+          "class": "declared-catalog-item",
+          "identityScheme": "item-class-plus-declared-key"
+        },
+        {
+          "class": "source-coverage",
+          "identityScheme": "repository-relative-path-at-git-revision"
+        },
+        {
+          "class": "contradiction",
+          "identityScheme": "claim-identity-plus-sorted-source-anchors"
+        },
+        {
+          "class": "project-fact-declaration",
+          "identityScheme": "closed-fact-identity-plus-declaration-source-anchor"
+        },
+        {
+          "class": "precedence-rule",
+          "identityScheme": "root-precedence-table-anchor-plus-layer-ordinal"
+        },
+        {
+          "class": "content-exclusion",
+          "identityScheme": "content-digest-plus-policy-version-plus-redaction-class"
+        },
+        {
+          "class": "unknown",
+          "identityScheme": "claim-identity-plus-closed-reason"
+        }
+      ],
+      "determinismClass": "derivation-deterministic",
+      "determinism": "same exact inputs produce byte-equivalent deterministic facts",
+      "typedAuthority": {
+        "authorityType": "version-control",
+        "questions": [
+          "What currently exists?"
+        ],
+        "readAuthority": "within this repository's own Git object database at the one fixed revision the conformance fixture names, phase A reads only the root index the secret-classification policy's self-observation scope names, the further indexes this profile declares, and Git tree metadata needed to derive the manifest; phase B reads only normalized repository-relative paths addressed as exact Git objects in that revision-bound manifest",
+        "writeSurface": [],
+        "databaseAccess": [],
+        "networkAccess": [],
+        "executeObservedCode": false,
+        "workingTreeRead": false
+      },
+      "observationGrammar": {
+        "factFamilies": [
+          "item:<class>:<declared-key>",
+          "count:<class>",
+          "catalog-count:<catalog-key>",
+          "project-account:<key>"
+        ],
+        "fixedClassKeys": [
+          "project-account-section",
+          "principle",
+          "success-criterion",
+          "catalog-entry",
+          "design-contract",
+          "baseline-spec",
+          "topology-component",
+          "craft-policy",
+          "roster-identity"
+        ],
+        "fixedCatalogKeys": [],
+        "fixedProjectAccountKeys": [
+          "purpose",
+          "promises",
+          "refusals",
+          "architecture",
+          "v1-scope",
+          "v1-success"
+        ],
+        "rootSummary": null,
+        "precedence": null,
+        "profileNote": "this repository declares no catalog, no root summary and no precedence table in the grammar this observer reads, so this profile declares none; every catalog-count, root-summary and precedence-dependent claim is Unknown rather than borrowed from another profile"
+      },
+      "resourceLimits": {
+        "maxSources": 512,
+        "maxBytesPerSource": 1048576,
+        "maxTotalBytes": 16777216,
+        "maxIndexDepth": 4,
+        "maxParsePassesPerSource": 16,
+        "maxHumanResponseBytes": 2097152,
+        "maxMachineResponseBytes": 8388608
+      },
+      "resourceLimitSemantics": {
+        "maxSources": "the complete revision-bound manifest; an excess preserves every tree-known source identity but admits no source body and makes every dependent fact Unknown",
+        "maxBytesPerSource": "the exact UTF-8 blob before classification or parsing; the limit plus one byte is never passed to an extractor",
+        "maxTotalBytes": "one cumulative counter across phase A and phase B; count each repository-relative-path plus object-id body once and never reset between phases",
+        "maxIndexDepth": "the complete root-to-pillar discovery traversal",
+        "maxParsePassesPerSource": "one unit is one complete traversal of one decoded source by a pass in parsePassIdentities; a helper traversal is charged to its named caller pass, repeating a pass counts again, and an unregistered traversal is forbidden; elapsed wall-clock time is not an input",
+        "maxHumanResponseBytes": "the final encoded body of each Polaris HTML page the conformance test renders in memory; this entry serves no HTTP response",
+        "maxMachineResponseBytes": "the final encoded body of each Polaris machine JSON answer the conformance test renders in memory; this entry serves no HTTP response",
+        "breachResult": "source and input breaches retain the complete population and make dependent facts Unknown; final-output breaches emit only a bounded typed failure carrying evaluation identity, limit identity, declared value, observed value and population counts; no truncated or success-shaped model is emitted; PWB-REQ-021 readiness is false"
+      },
+      "parsePassIdentities": [
+        "utf8-and-nul-validation",
+        "secret-private-key-fragments",
+        "secret-known-token-formats",
+        "secret-credential-assignment",
+        "secret-credential-bearing-url",
+        "markdown-code-context-mask",
+        "active-html-svg-script-handler",
+        "unsafe-url-positions",
+        "phase-a-link-discovery",
+        "project-account-extraction",
+        "declared-item-extraction",
+        "fact-and-precedence-extraction"
+      ],
+      "admissionFailureMapping": {
+        "missingConsent": "unconsented-source-or-provider",
+        "mismatchedStaleRevokedOrUnattributedConsent": "unconsented-source-or-provider",
+        "missingSecretPolicy": "missing-declaration",
+        "mismatchedStaleRevokedOrUnattributedSecretPolicy": "source-uncaptured-or-unreachable",
+        "missingRegistryEntry": "source-uncaptured-or-unreachable",
+        "mismatchedStaleRevokedOrUnattributedRegistryEntry": "source-uncaptured-or-unreachable"
+      },
+      "failureStates": {
+        "gitCaptureFailed": {
+          "degradationState": "Observer failed",
+          "unknownReason": "source-uncaptured-or-unreachable"
+        },
+        "sourceMissingOrUnreadable": {
+          "degradationState": "Source unreachable",
+          "unknownReason": "source-uncaptured-or-unreachable"
+        },
+        "someSourcesUncapturedOrOverLimit": {
+          "degradationState": "Partial snapshot",
+          "unknownReason": "source-uncaptured-or-unreachable"
+        },
+        "secretMatchedOrUnclassifiable": {
+          "degradationState": "Excluded content",
+          "unknownReason": "excluded-content"
+        },
+        "consentWithdrawn": {
+          "degradationState": "Consent withdrawn",
+          "unknownReason": "unconsented-source-or-provider"
+        }
+      },
+      "claimStateMapping": {
+        "unresolvedContradiction": "contradicted-pending-adjudication"
+      },
+      "adoptionStatus": "candidate-unadopted"
+    }
+  ]
+}
