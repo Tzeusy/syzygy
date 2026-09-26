@@ -62,6 +62,7 @@ the repair is a new disposition that cites it.
 | Polaris generator authority and recorder | 7 | 2026-09-12 | Authority staging, offer, recorder, and final readiness | The last pairing confirmation is `CONFIRMED` for AR-3 (`R-POLARIS-GENERATOR-AUTHORITY-PAIRING-CONFIRMATION-2026-09-12-RAW.md:3`); AR-1 remains the recorded phase/refusal disposition. |
 | Polaris understanding amendment | 3 | 2026-09-13 | Product clarification and formal amendment synthesis | The formal synthesis is `ready for formal owner review` (`R-POLARIS-UNDERSTANDING-FORMAL-SPEC-2026-09-13-RAW.md:3`); adoption remains owned by its act. |
 | PWB M1 lane A | 1 | 2026-09-13 | Polaris page-size lane-A evidence | The review ends `CONFIRMED WITH FINDINGS` (`R-PWB-M1-POLARIS-LANE-A-RAW.md:477`); its should-fix items landed in the lane-A branch. |
+| Recorder notes-only verdict | 1 | 2026-09-26 | `record_pwb_behavior_amendment_acts.py` accepts a notes-only `CONFIRM WITH EXCEPTIONS` bound to a disposition record, per the 2026-09-26 gate-sitting direction §1 (PR #118) | `CONFIRM WITH EXCEPTIONS` (`R-PWB-RECORDER-NOTES-ONLY-REVIEW-RAW.md:1`), notes only; notes 7 (numbered-finding count reads inside code fences) and 8 (disposition read live, unpinned) are dispositioned to `syzygy-qqt` as preconditions before any package is wired. |
 | P-68 scoped-attributes package | 4 | 2026-09-14 | Scoped epistemic-attributes semantic delta | Review 4 ends `CONFIRM WITH EXCEPTIONS` (`R-PWB-SCOPED-ATTRIBUTES-DELTA-4-RAW.md:489`); findings landed in the candidate package, which binds nothing without its act. |
 | Polaris M2 funnel | 6 | 2026-09-14 | P-69 evidence-currency funnel | Review 6 ends `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-6-RAW.md:327`); findings landed in the M2 packet before owner ruling. |
 | Polaris M3 funnel | 7 | 2026-09-14 → 2026-09-15 | P-70 honest-encoding funnel | Review 7 ends `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-M3-HONEST-ENCODING-FUNNEL-7-RAW.md:336`); findings landed in the M3 packet before owner ruling. |
@@ -92,7 +93,7 @@ the repair is a new disposition that cites it.
 | Polaris generation admission validation | 1 | 2026-09-23 | `syzygy-u05.16`: source-population admission in `polaris-generation-core` sharing the provider-draft source-id and length bounds (PR #90) | `CONFIRM` (`R-PWB-U05-16-REVIEW-RAW.md:3`). |
 | P-73 edit/repair deletion gate | 4 | 2026-09-23 | Edit/repair deletion scenario candidate package, `syzygy-dov.23` (PR #98; status-page registration PR #107; binds nothing) | `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-DELTA-REVIEW-RAW.md:3`), the P-73 quotation not byte-exact, repaired; confirmation `CONFIRM` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-DELTA-CONFIRMATION-RAW.md:3`). Registration: `REVISE` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-REGISTRATION-REVIEW-RAW.md:1`), repaired; confirmation `CONFIRM` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-REGISTRATION-CONFIRMATION-RAW.md:1`). |
 
-The 52 rows partition the tracked directory at HEAD: 239 files, 239 assigned,
+The 53 rows partition the tracked directory at HEAD: 240 files, 240 assigned,
 no remainder [Observed — re-derived for HEAD dated 2026-09-26 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
