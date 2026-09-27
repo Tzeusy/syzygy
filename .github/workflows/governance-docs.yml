@@ -142,6 +142,12 @@ jobs:
       - name: build_three_surface_poc_spec_dependencies --check
         run: python3 scripts/build_three_surface_poc_spec_dependencies.py --check
 
+      - name: record_three_surface_poc_readability_successor --check
+        run: python3 scripts/record_three_surface_poc_readability_successor.py --check
+
+      - name: record_three_surface_poc_readability_successor --selftest
+        run: python3 scripts/record_three_surface_poc_readability_successor.py --selftest
+
       # The directive register: every governing identifier and its definition
       # site, across all five trees. --check fails when a clause moves, is
       # renumbered against CC-REV-7, or gains a definition the page has not

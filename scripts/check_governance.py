@@ -146,7 +146,9 @@ CHECK_OWNERS = {
     "CG-7": ("record: `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md` "
              "§1-§2 — an act binds exactly the bytes its digest argument "
              "names. RFC3-16 is cited *by* that record and is itself "
-             "candidate, so the record is the anchor, not the clause"),
+             "candidate, so the record is the anchor, not the clause. "
+             "The POC successor additionally enforces VIS-4 and the "
+             "original POC sign-off plus later coverage act's exact rows"),
     "CG-8": ("report-only — charter §7.3/§11.4 figures; never fails"),
     "CG-9": ("mechanical — two copies of an authority artifact make \"which "
              "one binds\" undecidable. **No clause states the one-home rule**; "
@@ -2085,6 +2087,22 @@ POLARIS_EDIT_REPAIR_SUBJECT = (
     f"{POLARIS_EDIT_REPAIR_DIR}/POLARIS-EDIT-REPAIR-DELETION-SCENARIO-MANIFEST.txt")
 POLARIS_EDIT_REPAIR_ACT = (
     f"{DECISIONS}/POLARIS-EDIT-REPAIR-DELETION-SCENARIO-ACT.md")
+POC_READABILITY_LABEL = "SIGN OFF THREE-SURFACE POC READABILITY SUCCESSOR"
+POC_READABILITY_SUBJECT = (
+    f"{CANDIDATES}/three-surface-poc-readability-successor/"
+    "THREE-SURFACE-POC-READABILITY-SUCCESSOR-MANIFEST.txt")
+POC_READABILITY_PACKET = (
+    f"{CANDIDATES}/three-surface-poc-readability-successor/"
+    "RECORDER-AND-ACT-PACKET.md")
+POC_READABILITY_ACT = (
+    f"{DECISIONS}/THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md")
+
+
+def _poc_readability_exists(root=None):
+    base = ROOT if root is None else root
+    return any(os.path.isfile(os.path.join(base, relative)) for relative in (
+        POC_READABILITY_SUBJECT, POC_READABILITY_ACT,
+        "scripts/record_three_surface_poc_readability_successor.py"))
 
 
 def _polaris_edit_repair_candidate_exists(root=None):
@@ -2154,6 +2172,15 @@ def _act_subjects():
             POLARIS_EDIT_REPAIR_LABEL,
             POLARIS_EDIT_REPAIR_SUBJECT,
             re.compile(re.escape(POLARIS_EDIT_REPAIR_LABEL)
+                       + r"\s*:\s*`?([0-9a-f]{64})"),
+        ))
+    if (_poc_readability_exists()
+            and not any(existing == POC_READABILITY_LABEL
+                        for existing, _rel, _pat in out)):
+        out.append((
+            POC_READABILITY_LABEL,
+            POC_READABILITY_SUBJECT,
+            re.compile(re.escape(POC_READABILITY_LABEL)
                        + r"\s*:\s*`?([0-9a-f]{64})"),
         ))
     for label, subject, _act, _activate, _paths in CONTRACT_SUCCESSOR_CHAIN:
@@ -2400,6 +2427,22 @@ def _activate_polaris_edit_repair_candidate_copy_registry(registry=None,
 
 
 _activate_polaris_edit_repair_candidate_copy_registry()
+
+
+def _activate_poc_readability_copies(registry=None, root=None):
+    base = ROOT if root is None else root
+    registry = ACT_DIGEST_COPY_FILES if registry is None else registry
+    if os.path.isfile(os.path.join(base, POC_READABILITY_PACKET)):
+        registry[POC_READABILITY_PACKET] = (POC_READABILITY_LABEL,)
+    if os.path.isfile(os.path.join(base, POC_READABILITY_ACT)):
+        aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+        labels = registry.get(aggregate, ())
+        if POC_READABILITY_LABEL not in labels:
+            registry[aggregate] = labels + (POC_READABILITY_LABEL,)
+        registry[POC_READABILITY_ACT] = (POC_READABILITY_LABEL,)
+
+
+_activate_poc_readability_copies()
 
 
 def _activate_pwb_state1_act_copy_registry():
@@ -3522,6 +3565,34 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
     res.add("FAIL" if findings else "OK",
             "CG-7h  performed bootstrap transaction subjects remain exact",
             examined, len(findings), "predicate", details=findings + details)
+
+
+def cg7i_poc_readability_successor(res, root=None):
+    """Existence-gated exact successor check; no candidate means no claim."""
+    base = ROOT if root is None else root
+    aggregate = os.path.join(base, DECISIONS, "ACCEPTANCE-ACT-RECORD.md")
+    marker_present = (os.path.isfile(aggregate) and
+                      "THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT" in
+                      open(aggregate, encoding="utf-8").read())
+    if not _poc_readability_exists(base) and not marker_present:
+        res.add("WARN", "CG-7i  POC readability successor state", 0, 0,
+                "signed subject", note="candidate/recorder/record absent; "
+                "no successor claim")
+        return
+    script = os.path.join(base, "scripts", "record_three_surface_poc_readability_successor.py")
+    if not os.path.isfile(script):
+        res.add("FAIL", "CG-7i  POC readability successor state", 6, 1,
+                "signed subject", details=["candidate or act present without portable recorder"])
+        return
+    done = subprocess.run([sys.executable, script, "--check"], cwd=base,
+                          capture_output=True, text=True)
+    output = (done.stdout + done.stderr).strip()
+    good = done.returncode == 0 and any(state in done.stdout for state in
+                                         ("candidate-unperformed", "performed-exact"))
+    res.add("OK" if good else "FAIL", "CG-7i  POC readability successor state",
+            6, 0 if good else 1, "signed subject",
+            note=output if good else None,
+            details=[] if good else [output or "recorder check produced no state"])
 
 
 # --------------------------------------------------------------- CG-8
@@ -5332,6 +5403,11 @@ def selftest():
             self.rows.append((status, name, examined, n, details or []))
 
     cases = []
+
+    # The CG-7i fixture uses a disposable Git clone and the real recorder;
+    # synthetic result objects cannot prove the signed-byte state predicate.
+    from test_three_surface_poc_readability_recorder import governance_fixtures
+    cases.extend(governance_fixtures())
 
     c = Cap(); cg13_dependency_graph(c, modules=[])
     cases.append(("CG-13 empty corpus warns, never passes",
@@ -8816,6 +8892,7 @@ def main():
     cg6_accepted_homes(res)
     cg7_manifest(existing, res)
     cg7h_general_bootstrap_act(res)
+    cg7i_poc_readability_successor(res)
     cg8_budgets(existing, res)
     cg9_duplicate_homes(existing, res)
     cg10_pending_asof(existing, res)
