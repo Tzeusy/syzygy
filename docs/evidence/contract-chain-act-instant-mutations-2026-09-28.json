@@ -1,0 +1,267 @@
+{
+  "record": "rule-6 mutation evidence: CG-7h act-instant ordering, restyle packet-copy registration selftest and CG-26 battery wiring (review R-TREE-STYLE-TOOLING-2 notes N2 and N5; syzygy-73e.12, syzygy-73e.13)",
+  "date": "2026-09-28",
+  "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5",
+  "method": "Scratch clone of branch tooling/contract-restyle-followups checked out at `commit`. For each mutant the `old` fragment (asserted to occur exactly once in `file`) was replaced by `new`, the named selftest or live check was run, and the file was restored from saved bytes and its sha256 re-checked; `git status --porcelain` was empty after the last mutant. A selftest mutant is killed when the selftest exits non-zero with at least one named failing fixture; a live-check mutant (CG-26 wiring) is killed when the live battery exits non-zero with a FAIL row.",
+  "baseline": {
+    "python3 scripts/check_governance.py --selftest": "321 fixtures, 0 failing — a check that cannot fail is not a check",
+    "python3 scripts/check_governance.py": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted"
+  },
+  "totals": {
+    "mutants": 15,
+    "killed": 15,
+    "survived": 0
+  },
+  "restored_byte_identical": true,
+  "mutants": [
+    {
+      "id": "M-instant-order",
+      "finding": "N2",
+      "file": "scripts/check_governance.py",
+      "old": "performed_later_earlier = [b for b, t in later_timed if t < instant]",
+      "new": "performed_later_earlier = [b for b, t in later_timed if False]",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "321 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h restyle link inserted-later rejected"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-instant-equal",
+      "finding": "N2",
+      "file": "scripts/check_governance.py",
+      "old": "same_instant = [b for b, t in later_timed if t == instant]",
+      "new": "same_instant = [b for b, t in later_timed if False]",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "321 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h restyle link inserted-same-instant rejected"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-instant-problem-reported",
+      "finding": "N2",
+      "file": "scripts/check_governance.py",
+      "old": "        if instant_problem:\n",
+      "new": "        if False:\n",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "321 fixtures, 6 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h restyle link inserted-no-instant rejected",
+        "CG-7h restyle link inserted-instant-disagrees rejected",
+        "CG-7h restyle link instant-impossible rejected",
+        "CG-7h restyle link instant-malformed-line rejected",
+        "CG-7h restyle link instant-absent rejected",
+        "CG-7h restyle link aggregate-no-instant rejected"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-instant-absent-no-problem",
+      "finding": "N2",
+      "file": "scripts/check_governance.py",
+      "old": "    if not lines and position is None:\n",
+      "new": "    if not lines:\n",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "321 fixtures, 2 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h restyle link inserted-no-instant rejected",
+        "CG-7h restyle link instant-absent rejected"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-instant-real-second",
+      "finding": "N2",
+      "file": "scripts/check_governance.py",
+      "old": "        datetime.strptime(m.group(1), \"%Y-%m-%dT%H:%M:%SZ\")\n",
+      "new": "        m.group(1)\n",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "321 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h restyle link instant-impossible rejected"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-instant-line-form",
+      "finding": "N2",
+      "file": "scripts/check_governance.py",
+      "old": "    m = ACT_INSTANT_LINE.fullmatch(lines[0])\n",
+      "new": "    m = re.fullmatch(r\"Act instant: (.*)\", lines[0])\n",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "321 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h restyle link instant-malformed-line rejected"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-instant-aggregate-present",
+      "finding": "N2",
+      "file": "scripts/check_governance.py",
+      "old": "        return None, (\"aggregate section carries no `Act instant:` line above \"\n                      \"its act phrase\")\n",
+      "new": "        return m.group(1), None\n",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "321 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h restyle link aggregate-no-instant rejected"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-instant-aggregate-agrees",
+      "finding": "N2",
+      "file": "scripts/check_governance.py",
+      "old": "    if above[-1] != lines[0]:\n",
+      "new": "    if False:\n",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "321 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h restyle link inserted-instant-disagrees rejected"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-instant-old-semantics",
+      "finding": "N2",
+      "file": "scripts/check_governance.py",
+      "old": "    lines = [line for line in dedicated.splitlines()\n             if line.startswith(\"Act instant:\")]\n",
+      "new": "    return None, None\n    lines = [line for line in dedicated.splitlines()\n             if line.startswith(\"Act instant:\")]\n",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "321 fixtures, 8 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h restyle link inserted-later rejected",
+        "CG-7h restyle link inserted-same-instant rejected",
+        "CG-7h restyle link inserted-no-instant rejected",
+        "CG-7h restyle link inserted-instant-disagrees rejected",
+        "CG-7h restyle link instant-impossible rejected",
+        "CG-7h restyle link instant-malformed-line rejected",
+        "CG-7h restyle link instant-absent rejected",
+        "CG-7h restyle link aggregate-no-instant rejected"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-packet-import-call",
+      "finding": "N5",
+      "file": "scripts/check_governance.py",
+      "old": "\n_activate_contract_restyle_packet_copy_registry()\n",
+      "new": "\npass\n",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "321 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7e tracked restyle packet is registered at import"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-packet-root-ignored",
+      "finding": "N5",
+      "file": "scripts/check_governance.py",
+      "old": "if not os.path.isfile(os.path.join(root or ROOT, CONTRACT_RESTYLE_PACKET)):",
+      "new": "if not os.path.isfile(os.path.join(ROOT, CONTRACT_RESTYLE_PACKET)):",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "321 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7e restyle packet absent under the given root registers nothing"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-packet-registry-ignored",
+      "finding": "N5",
+      "file": "scripts/check_governance.py",
+      "old": "    if registry is None:\n        registry = ACT_DIGEST_COPY_FILES\n    registry[CONTRACT_RESTYLE_PACKET]",
+      "new": "    if True:\n        registry = ACT_DIGEST_COPY_FILES\n    registry[CONTRACT_RESTYLE_PACKET]",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "321 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7e restyle packet present under the given root registers exactly its copy into the given registry"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-battery-hosted-recorder-dropped",
+      "finding": "CG-26",
+      "file": ".github/workflows/governance-docs.yml",
+      "old": "        run: python3 scripts/record_contract_readability_restyle.py --check\n",
+      "new": "",
+      "check": "python3 scripts/check_governance.py",
+      "exit": 1,
+      "check_summary": "31 OK, 20 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+      "failing_rows": [
+        "FAIL  CG-26  published battery and hosted battery are one list — 40 checks examined, 2 findings — 40 published, 39 hosted, 39 shared"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-battery-published-builder-dropped",
+      "finding": "CG-26",
+      "file": "PROJECT-STATUS.md",
+      "old": "python3 scripts/build_contract_readability_restyle.py --check   # restyle candidate package: manifest = exact regeneration\n",
+      "new": "",
+      "check": "python3 scripts/check_governance.py",
+      "exit": 1,
+      "check_summary": "31 OK, 20 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+      "failing_rows": [
+        "FAIL  CG-26  published battery and hosted battery are one list — 40 checks examined, 2 findings — 39 published, 40 hosted, 39 shared"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    },
+    {
+      "id": "M-battery-count-word",
+      "finding": "CG-26",
+      "file": "PROJECT-STATUS.md",
+      "old": "The forty checks above are the same forty",
+      "new": "The thirty-eight checks above are the same thirty-eight",
+      "check": "python3 scripts/check_governance.py",
+      "exit": 1,
+      "check_summary": "31 OK, 20 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+      "failing_rows": [
+        "FAIL  CG-26  published battery and hosted battery are one list — 40 checks examined, 2 findings — 40 published, 40 hosted, 40 shared"
+      ],
+      "outcome": "killed",
+      "commit": "53375ef4766259a964cfeb546c8699370b7d2aa5"
+    }
+  ],
+  "live_probe": {
+    "what": "Review N2's bypass reproduced on a scratch clone at `commit`: restyle recorded with record_contract_readability_restyle.py --record (instant 2026-09-28T10:00:00Z) and applied with build_contract_readability_restyle.py --apply --at-adoption; then a two-row no-signal manifest binding bytes never installed, its dedicated record, and an aggregate section inserted at ACCEPTANCE-ACT-RECORD.md line 11, both carrying `Act instant: 2026-09-28T11:00:00Z`.",
+    "after_restyle_only": {
+      "this_commit": "OK CG-7h 133 predicates, 0 findings"
+    },
+    "after_insertion": {
+      "parent_commit_check_governance": "OK CG-7h 137 predicates, 0 findings (the bypass, as the raw recorded)",
+      "this_commit": "FAIL CG-7h 137 predicates, 31 findings: no-signal act instant 2026-09-28T11:00:00Z is after later chain link `ADOPT CONTRACT READABILITY RESTYLE`; the restyle then names the broken predecessor; 29 installed-byte findings"
+    },
+    "residual": "With both instants rewritten to 2026-09-28T09:00:00Z (backdated before the restyle) this commit reports OK CG-7h 137/0: a forged earlier instant is indistinguishable from genuine history without git history or an aggregate prefix digest."
+  }
+}
