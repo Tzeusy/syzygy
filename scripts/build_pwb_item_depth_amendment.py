@@ -6,6 +6,10 @@ therefore applies the candidate's ``proposed/*.patch`` files only in a scratch
 tree, hashes those proposed bytes, and never edits ``openspec/**`` unless an
 adoption recorder explicitly invokes ``--apply --at-adoption``.  A candidate
 commit, review, manifest, or merge performs no owner act.
+
+Adoption mode first constructs and validates the complete proposed-byte map in
+scratch. It writes no signed subject until every patch, manifest, dependency
+and sibling-composition predicate has passed.
 """
 
 from __future__ import annotations
@@ -177,9 +181,15 @@ def semantic_findings(
         "### Requirement: PWB-REQ-015 — Item detail preserves authority bands and exact intent",
         "Every item in the complete declared `catalog-entry` population",
         "in order, an `argument` band marked",
-        "contract band SHALL collapse\n"
-        "to one honest absence",
-        "SHALL NOT infer a mapping from a label, basename, similarity or generated",
+        "Each contract band SHALL carry an item-to-intent relation claim",
+        "fixed relation role `governing-intent`",
+        "SHALL NOT change or borrow the item's",
+        "RFC2-24 reason `missing-declaration`",
+        "`contradicted-pending-adjudication` and the owner-adjudication route",
+        "SHALL NOT infer a relation from a label, basename, similarity or generated",
+        "relation claim's complete PWB-REQ-007 tuple",
+        "Only an item detail for a matching declared capability may render",
+        "A non-capability item detail SHALL render no",
         "and a `reality` band sourced only from the\n"
         "shared model",
         "catalog-to-detail-to-exact-source path SHALL preserve the item's stable",
@@ -191,7 +201,8 @@ def semantic_findings(
             findings.append(f"proposed spec expected one {fragment!r}, found {count}")
     forbidden = (
         "### Requirement: PWB-REQ-015 — Capability detail preserves authority bands",
-        "infer a mapping from a label, basename, similarity or generated prose. Draft capabilities SHALL remain unadopted. Proposed deltas SHALL be adjacent",
+        "one honest absence carrying the item's Unknown reason",
+        "Every item detail may render active or proposed OpenSpec work",
     )
     for fragment in forbidden:
         if fragment in spec:
@@ -301,8 +312,11 @@ def selftest() -> int:
 
     semantic_mutants = {
         "missing item population": ("Every item in the complete declared `catalog-entry` population", "Every item in the declared item population"),
-        "guessed mapping": ("SHALL NOT infer a mapping", "MAY infer a mapping"),
-        "missing honest absence": ("contract band SHALL collapse\nto one honest absence", "contract band MAY be omitted"),
+        "guessed relation": ("SHALL NOT infer a relation", "MAY infer a relation"),
+        "unstable relation identity": ("fixed relation role `governing-intent`", "route-selected relation role"),
+        "borrowed item tuple": ("SHALL NOT change or borrow the item's", "MAY borrow the item's"),
+        "invalid relation reason": ("RFC2-24 reason `missing-declaration`", "reason `mapping-ambiguous`"),
+        "non-capability proposal": ("A non-capability item detail SHALL render no", "A non-capability item detail MAY render"),
         "reordered bands": ("in order, an `argument` band marked", "in order, a `reality` band marked"),
         "second reality model": ("and a `reality` band sourced only from the\nshared model", "and a `reality` band sourced from a surface model"),
     }
@@ -335,10 +349,38 @@ def selftest() -> int:
     cases.append(("signed-byte drift", bool(semantic_findings(proposed, moved_signed))))
 
     with tempfile.TemporaryDirectory() as temp:
-        broken = pathlib.Path(temp) / "spec.md.patch"
+        temp_root = pathlib.Path(temp)
+        broken = temp_root / "spec.md.patch"
         broken.write_text("not a patch\n", encoding="utf-8")
         broken_findings, _ = check([broken])
         cases.append(("corrupt patch", bool(broken_findings)))
+
+        real_patches = patch_files()
+        late_patch = real_patches[-1]
+        broken_late = temp_root / late_patch.name
+        broken_late.write_text(
+            late_patch.read_text(encoding="utf-8").replace(
+                " Group: Presentation. Form: **invariant**.",
+                " Group: deliberately-invalid-late-context.",
+                1,
+            ),
+            encoding="utf-8",
+        )
+        mirror = temp_root / "adoption-mirror"
+        before: dict[pathlib.Path, bytes] = {}
+        for rel in PATCHED:
+            before[rel] = (ROOT / rel).read_bytes()
+            target = mirror / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(before[rel])
+        refused = apply_at_adoption(
+            patches=[*real_patches[:-1], broken_late], write_root=mirror,
+        )
+        after = {rel: (mirror / rel).read_bytes() for rel in PATCHED}
+        cases.append((
+            "late patch failure writes no adoption target",
+            refused == 1 and after == before,
+        ))
 
     siblings = active_sibling_spec_patches()
     cases.append(("missing sibling denominator", bool(composition_findings(siblings=[]))))
@@ -369,13 +411,24 @@ def write() -> int:
     return 0
 
 
-def apply_at_adoption() -> int:
-    for patch in patch_files():
-        code, error = apply_patch(ROOT, patch)
-        if code != 0:
-            print(f"refusing partial adoption: {patch.name}: {error}")
-            return 1
-    print("applied proposed PWB item-depth bytes; owner-act recorder must finish atomically")
+def apply_at_adoption(
+    patches: list[pathlib.Path] | None = None,
+    write_root: pathlib.Path = ROOT,
+) -> int:
+    findings, proposed = check(patches)
+    if findings or proposed is None:
+        print("refusing adoption before any write:")
+        for finding in findings:
+            print(f"  {finding}")
+        return 1
+    for rel in sorted(PATCHED, key=lambda path: path.as_posix()):
+        target = write_root / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(proposed[rel])
+    print(
+        "applied preflighted PWB item-depth bytes; owner-act recorder must "
+        "finish atomically"
+    )
     return 0
 
 

@@ -6,6 +6,13 @@
 Baseline: `66114ac771872898cb9f90c3129076b10ee8f64b`, the clean worktree head
 assigned to `syzygy-dov.14.2` on 2026-09-27.
 
+[Observed] Refreshed against `origin/main` `3c915991fbb0eebc38f8daaaea4d05679914b6b8`
+on 2026-09-28. D5 and D6 restyle doctrine without changing the VIS identifiers
+this candidate cites, and CC-REV-8 now governs this candidate's form. None of
+the eleven PWB behavior subjects changed between the baseline and that head, so
+the proposal patches retain the same predecessor bytes; their proposed bytes
+and manifest are regenerated after the semantic repairs below.
+
 ## Discovery method
 
 [Observed] Two methods ran over all **1,542** paths returned by
@@ -41,6 +48,10 @@ bytes.
 
 ## Reached authority
 
+- **PWB-REQ-007 — reached, unchanged.** The item-to-intent relation is a
+  separate claim with its own stable semantic identity, evaluation instance,
+  complete tuple, RFC2-24 reason and route. It never changes or borrows the
+  catalog item's tuple.
 - **PWB-REQ-011 — reached, unchanged.** Its progressive path already starts
   from every catalog category and follows a declared item through each
   available depth. The proposed detail adds an available depth without changing
@@ -52,8 +63,16 @@ bytes.
 - **PWB-REQ-016 — reached, unchanged.** The item-detail path remains textually
   recoverable and keyboard operable; later implementation owes its browser and
   nonvisual sweep.
-- **PWB-REQ-020 — reached, unchanged.** The proposal requires the same item
-  identity, epistemic tuple and band/proposal distinctions in both channels.
+- **PWB-REQ-013 — reached, unchanged.** Proposal material remains confined to
+  matching declared capability detail. A non-capability item detail renders no
+  proposal material even when the source population contains a proposal.
+- **PWB-REQ-020 — reached, unchanged.** The proposal requires the same item and
+  governing-intent relation identities, their separate epistemic tuples and
+  band/proposal distinctions in both channels.
+- **RFC2-24, RFC6-14 and RFC6-22 — reached, unchanged.** An absent relation
+  uses `missing-declaration`; mutually exclusive relations use
+  `contradicted-pending-adjudication`; each keeps the existing route and both
+  channels carry the exact tuple. No reason or parity exception is minted.
 - **RFC7-12…19/26/27/29/33/34 — reached, unchanged.** The amendment applies
   their existing exactness, band, emptiness, proposal, typed-authority, parity
   and operability rules to the complete declared item population. It mints no
@@ -72,6 +91,12 @@ PR #124 adds the container-shape PWB-REQ-002 candidate. They are not baseline
 files and therefore cannot be permanent builder inputs. Before review, fetch
 their current patches and repeat the same two-order composition check.
 
+[Observed] Refreshed 2026-09-28: this repaired spec patch composes to identical
+bytes in both orders with PR #121 head
+`2b29d6197e9e414033814875ae3a0d4024c92bf7` and PR #124 head
+`5e7a55d1b2a759433976f374a15cade34a0fffae`; both PRs remained open. These are
+review inputs, never permanent builder inputs.
+
 The owner direction in
 `POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md` fixes
 `.21 → .30 → .22 → lane B`; it does not place this package. This candidate
@@ -87,8 +112,8 @@ not semantic precedence.
 
 | Surface | Later consequence after an act and fresh authorization |
 |---|---|
-| `packages/three-surface-poc-core/src/project-shape-model.ts` | carry declared item-to-intent relations without inference |
-| `apps/three-surface-poc/src/capability-detail.ts` | generalize the one capability derivation to item details and honest absence |
+| `packages/three-surface-poc-core/src/project-shape-model.ts` | carry a separate fixed-role item-to-intent relation identity and tuple without changing the item tuple |
+| `apps/three-surface-poc/src/capability-detail.ts` | generalize the one capability derivation to item details, relation-specific honest absence and capability-only proposals |
 | `apps/three-surface-poc/src/polaris.ts` | link every declared catalog item and render its three bands |
 | `apps/three-surface-poc/src/routes.ts`, `surface-links.ts` | locate detail by stable item identity without making URL identity |
 | presentation/parity/reachability/accessibility tests | enumerate the full item denominator and both channels |
@@ -105,9 +130,14 @@ set is not exactly the five subjects above, a patch no longer applies, the
 manifest differs, generated dependencies drift, required semantics disappear,
 the signed requirement was edited in place, or a sibling composition becomes
 order-dependent. `--write` is deterministic over identical inputs; `--check`
-is read-only. `--apply` refuses without `--at-adoption` and belongs only inside
-a future dedicated owner-act recorder.
+is read-only. `--apply` refuses without `--at-adoption`, constructs and checks
+the complete proposed-byte map before its first real write, and belongs only
+inside a future dedicated owner-act recorder. A corrupted late patch therefore
+leaves every adoption target byte unchanged.
 
 Per the repository's CG-26 integration rule, this draft does not independently
 edit the coupled PROJECT-STATUS battery, hosted workflow or count sentence.
 Those lines are batched once when candidate builders are integrated.
+
+CC-REV-8 is a form rule, not a new semantic warrant. The semantic delta's
+answer-first relation diagram repeats the repaired text and adds no claim.

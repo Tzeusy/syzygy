@@ -4,6 +4,41 @@
  > nothing here quotes or paraphrases any clause.
  >
 -> Source: `spec.md` sha256 `42d073cdeaf7fa7940c5e822b05213267ec1d0064faaaad092f21d264b76a2b1` — 17 requirement(s), 96 distinct authorities.
-+> Source: `spec.md` sha256 `e28f53f42a9e0e07cc4159f4a88ddf3f78865a15ed6d62a1fd0b1a57d3731738` — 17 requirement(s), 96 distinct authorities.
++> Source: `spec.md` sha256 `014421a0189b09744ed960557a870d9029af7bb32d4053b2f08635d745d604ae` — 17 requirement(s), 96 distinct authorities.
 
  ## doctrine (8)
+@@ -22,5 +22,5 @@
+ | `VIS-3` | PWB-REQ-010, PWB-REQ-011, PWB-REQ-012, PWB-REQ-016, PWB-REQ-021 |
+ | `VIS-4` | PWB-REQ-005, PWB-REQ-013, PWB-REQ-015, PWB-REQ-022 |
+-| `VIS-7` | PWB-REQ-001, PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-006, PWB-REQ-007, PWB-REQ-011, PWB-REQ-014, PWB-REQ-016, PWB-REQ-020 |
++| `VIS-7` | PWB-REQ-001, PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-006, PWB-REQ-007, PWB-REQ-011, PWB-REQ-014, PWB-REQ-015, PWB-REQ-016, PWB-REQ-020 |
+
+ ## contracts (68)
+@@ -42,5 +42,5 @@
+ | `RFC2-10` | PWB-REQ-007 |
+ | `RFC2-23` | PWB-REQ-002, PWB-REQ-003, PWB-REQ-006, PWB-REQ-007 |
+-| `RFC2-24` | PWB-REQ-007 |
++| `RFC2-24` | PWB-REQ-007, PWB-REQ-015 |
+ | `RFC2-25` | PWB-REQ-007 |
+ | `RFC3-7` | PWB-REQ-005 |
+@@ -64,5 +64,5 @@
+ | `RFC5-19` | PWB-REQ-006 |
+ | `RFC6-13` | PWB-REQ-020 |
+-| `RFC6-14` | PWB-REQ-007, PWB-REQ-020 |
++| `RFC6-14` | PWB-REQ-007, PWB-REQ-015, PWB-REQ-020 |
+ | `RFC6-15` | PWB-REQ-001, PWB-REQ-020 |
+ | `RFC6-16` | PWB-REQ-002 |
+@@ -70,5 +70,5 @@
+ | `RFC6-20` | PWB-REQ-011 |
+ | `RFC6-21` | PWB-REQ-011 |
+-| `RFC6-22` | PWB-REQ-020 |
++| `RFC6-22` | PWB-REQ-015, PWB-REQ-020 |
+ | `RFC6-23` | PWB-REQ-020 |
+ | `RFC6-27` | PWB-REQ-003 |
+@@ -113,5 +113,5 @@
+ | `CC-TEST-3` | PWB-REQ-001 |
+ | `CC-TEST-5` | PWB-REQ-002, PWB-REQ-007, PWB-REQ-014, PWB-REQ-015, PWB-REQ-016, PWB-REQ-020 |
+-| `CC-TEST-6` | PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-005, PWB-REQ-006, PWB-REQ-007 |
++| `CC-TEST-6` | PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-005, PWB-REQ-006, PWB-REQ-007, PWB-REQ-015 |
+
+ ## decisions (2)
