@@ -139,6 +139,15 @@ jobs:
       - name: build_pwb_registry_currency_briefing_amendment --selftest
         run: python3 scripts/build_pwb_registry_currency_briefing_amendment.py --selftest
 
+      # The contract readability restyle: the candidate package regenerates
+      # exactly, and its act recorder reports "not performed" (exit 0) until
+      # the owner's act is recorded, then verifies both records.
+      - name: build_contract_readability_restyle --check
+        run: python3 scripts/build_contract_readability_restyle.py --check
+
+      - name: record_contract_readability_restyle --check
+        run: python3 scripts/record_contract_readability_restyle.py --check
+
       - name: build_three_surface_poc_spec_dependencies --check
         run: python3 scripts/build_three_surface_poc_spec_dependencies.py --check
 

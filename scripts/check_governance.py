@@ -82,6 +82,7 @@ a report-only observation) · FAIL (findings that fail the run).
 """
 
 import argparse
+from datetime import datetime
 import hashlib
 import os
 import re
@@ -2610,9 +2611,15 @@ _activate_contract_restyle_packet_copy_registry()
 #: order, so a later link overrides an earlier one for a shared path. An
 #: earlier link need not be performed (a gap is allowed only when it has no
 #: records at all); one with records that fail validation blocks every later
-#: link, and one whose aggregate record falls after a later link's is
-#: rejected as performed out of order. Candidate manifests without both
-#: records never override anything.
+#: link, and one performed after a later link is rejected as performed out
+#: of order: by aggregate position (first line naming the label) *and* by
+#: act instant. Each performed link's dedicated record must carry exactly one
+#: full-line `Act instant: YYYY-MM-DDTHH:MM:SSZ`, repeated as the nearest
+#: `Act instant:` line above its phrase in the aggregate (the form
+#: `record_contract_readability_restyle.py` writes; a no-signal recorder must
+#: write the same). A missing, malformed, duplicated or disagreeing instant,
+#: or an instant equal to a later link's, fails closed. Candidate manifests
+#: without both records never override anything.
 CONTRACT_SUCCESSOR_CHAIN = (
     (POLARIS_NO_SIGNAL_LABEL, POLARIS_NO_SIGNAL_SUBJECT,
      POLARIS_NO_SIGNAL_ACT, _activate_polaris_no_signal_act_copy_registry,
@@ -3079,6 +3086,48 @@ def cg7d_quoted_elsewhere(paths, res, act_subjects=None,
             note=note, details=findings + subject_details)
 
 
+#: A contract successor link's recorded act instant: a UTC second, the form
+#: every dedicated act recorder writes.
+ACT_INSTANT_LINE = re.compile(
+    r"Act instant: ([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)")
+
+
+def _contract_link_instant(dedicated, aggregate_lines, position):
+    """`(instant, problem)` for one contract successor link's act instant.
+
+    The dedicated record must carry exactly one full-line
+    `Act instant: YYYY-MM-DDTHH:MM:SSZ` naming a real UTC second, and the
+    aggregate's nearest `Act instant:` line above the link's first label line
+    must repeat it: the aggregate section is the dedicated record's copy, so
+    the two agree or the act is unordered. Any other shape yields
+    `(None, problem)` — a missing or ambiguous instant never orders an act.
+    Returns `(None, None)` when the link carries no records at all.
+    """
+    lines = [line for line in dedicated.splitlines()
+             if line.startswith("Act instant:")]
+    if not lines and position is None:
+        return None, None
+    if len(lines) != 1:
+        return None, (f"dedicated record carries {len(lines)} `Act instant:` "
+                      f"lines, expected exactly one")
+    m = ACT_INSTANT_LINE.fullmatch(lines[0])
+    if not m:
+        return None, f"malformed act instant line {lines[0]!r}"
+    try:
+        datetime.strptime(m.group(1), "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError:
+        return None, f"act instant {m.group(1)} is not a real UTC second"
+    above = [line for line in aggregate_lines[:position or 0]
+             if line.startswith("Act instant:")]
+    if position is None or not above:
+        return None, ("aggregate section carries no `Act instant:` line above "
+                      "its act phrase")
+    if above[-1] != lines[0]:
+        return None, (f"aggregate act instant {above[-1]!r} differs from the "
+                      f"dedicated record's {lines[0]!r}")
+    return m.group(1), None
+
+
 def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                                manifest_body=None, transaction_digest=None,
                                policy_digest=None, contract_manifest_body=None,
@@ -3117,8 +3166,12 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
     row, and every row a bootstrap row); its two records must each carry
     exactly one bare full-line `LABEL: <sha256>` agreeing with the
     manifest's actual digest. Chain order is adoption order: a link whose
-    first aggregate record line falls after a later link's is a finding
-    (performed out of order), never silently shadowed. Valid links fold into
+    first aggregate record line falls after a later link's, or whose act
+    instant (`_contract_link_instant`) is after or equal to a later link's,
+    is a finding (performed out of order, or ambiguously ordered), never
+    silently shadowed; a link without a single well-formed instant agreeing
+    across both records is itself a finding, since the aggregate's position
+    alone can be forged by a mid-file insertion. Valid links fold into
     the current-byte expectations in chain order (a later link overrides an
     earlier one per path); the installed and mirror loops then verify
     current bytes against the fold. Every earlier link with records that
@@ -3378,11 +3431,15 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         # line naming the link's label, or None when the aggregate has none.
         position = next((index for index, line in enumerate(aggregate_lines)
                          if label in line), None)
+        instant, instant_problem = _contract_link_instant(
+            link_dedicated, aggregate_lines, position)
         link_states.append((label, subject, act_rel, link_paths, link_dedicated,
-                            link_body, link_digest, mentions, position))
+                            link_body, link_digest, mentions, position,
+                            instant, instant_problem))
     broken = []
     for index, (label, subject, act_rel, link_paths, link_dedicated, link_body,
-                link_digest, mentions, position) in enumerate(link_states):
+                link_digest, mentions, position, instant,
+                instant_problem) in enumerate(link_states):
         if not (any(mentions) or link_dedicated):
             continue
         phrase = re.compile(re.escape(label) + r": ([0-9a-f]{64})")
@@ -3411,6 +3468,30 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                 f"{', '.join(f'`{b}`' for b in performed_before)} were "
                 f"performed; chain order is adoption order, so an act "
                 f"performed out of order cannot take effect")
+        # Aggregate position alone is forgeable by a mid-file insertion, so
+        # adoption order is also judged by each link's recorded act instant.
+        # A missing, malformed, duplicated or disagreeing instant cannot be
+        # ordered and fails closed; an equal instant is an ambiguous order.
+        if instant_problem:
+            findings.append(f"{act_rel} — `{label}` {instant_problem}; "
+                            f"adoption order cannot be established")
+        later_timed = [
+            (later[0], later[9]) for later in link_states[index + 1:]
+            if instant is not None and later[9] is not None]
+        performed_later_earlier = [b for b, t in later_timed if t < instant]
+        if performed_later_earlier:
+            findings.append(
+                f"{act_rel} — `{label}` act instant {instant} is after later "
+                f"chain link(s) "
+                f"{', '.join(f'`{b}`' for b in performed_later_earlier)}; "
+                f"chain order is adoption order, so an act performed out of "
+                f"order cannot take effect")
+        same_instant = [b for b, t in later_timed if t == instant]
+        if same_instant:
+            findings.append(
+                f"{act_rel} — `{label}` act instant {instant} equals later "
+                f"chain link(s) {', '.join(f'`{b}`' for b in same_instant)}; "
+                f"adoption order is ambiguous")
         for where, values, link_mentions in zip(
                 (PERFORMED_ACT_RECORD, act_rel), records, mentions):
             if any(not phrase.fullmatch(line) for line in link_mentions):
@@ -6673,6 +6754,18 @@ def selftest():
                   present == (1, {
                       f"{POLARIS_EDIT_REPAIR_DIR}/OWNER-DECISION-PACKET.md":
                           (POLARIS_EDIT_REPAIR_LABEL,)})))
+    absent, present = _selftest_contract_restyle_packet_registration()
+    cases.append(("CG-7e restyle packet absent under the given root registers "
+                  "nothing", absent == {}))
+    cases.append(("CG-7e restyle packet present under the given root registers "
+                  "exactly its copy into the given registry",
+                  present == {"selftest/OTHER.md": ("OTHER LABEL",),
+                              CONTRACT_RESTYLE_PACKET:
+                                  (CONTRACT_RESTYLE_LABEL,)}))
+    cases.append(("CG-7e tracked restyle packet is registered at import",
+                  os.path.isfile(os.path.join(ROOT, CONTRACT_RESTYLE_PACKET))
+                  and ACT_DIGEST_COPY_FILES.get(CONTRACT_RESTYLE_PACKET)
+                  == (CONTRACT_RESTYLE_LABEL,)))
 
     row = _selftest_pwb_act_copy_registry("valid")
     cases.append(("CG-7e performed PWB act registers both record copies",
@@ -6984,6 +7077,10 @@ def selftest():
                   and any("superseded by " + CONTRACT_RESTYLE_SUBJECT in d
                           and "[historical] " + POLARIS_NO_SIGNAL_SUBJECT in d
                           for d in row[4])))
+    row = _selftest_cg7h("restyle-inserted-earlier")
+    cases.append(("CG-7h no-signal section above the restyle with an earlier "
+                  "act instant passes at 111 as superseded history",
+                  row[0] == "OK" and row[2] == 111 and row[3] == 0))
     row = _selftest_cg7h("restyle-candidate-inert")
     cases.append(("CG-7h unrecorded restyle candidate over bootstrap bytes "
                   "examines only the bootstrap population",
@@ -7005,6 +7102,23 @@ def selftest():
         "both-earlier-bytes": "installed `rfcs/RFC-0008/state-vocabulary-and-cost.md` hashes to",
         "candidate-no-records": f"installed `{GENERAL_BOOTSTRAP_CONTRACT_PATHS[0]}` hashes to",
         "after-invalid-no-signal": "earlier chain link(s)",
+        "inserted-later": (f"`{POLARIS_NO_SIGNAL_LABEL}` act instant "
+                           f"2026-09-25T00:00:00Z is after later chain link(s) "
+                           f"`{CONTRACT_RESTYLE_LABEL}`"),
+        "inserted-same-instant": (f"equals later chain link(s) "
+                                  f"`{CONTRACT_RESTYLE_LABEL}`; adoption "
+                                  f"order is ambiguous"),
+        "inserted-no-instant": (f"`{POLARIS_NO_SIGNAL_LABEL}` dedicated record "
+                                f"carries 0 `Act instant:` lines"),
+        "inserted-instant-disagrees": (
+            f"`{POLARIS_NO_SIGNAL_LABEL}` aggregate act instant "
+            f"'Act instant: 2026-09-25T00:00:00Z' differs"),
+        "instant-impossible": "is not a real UTC second",
+        "instant-malformed-line": "malformed act instant line",
+        "instant-absent": (f"`{CONTRACT_RESTYLE_LABEL}` dedicated record "
+                           f"carries 0 `Act instant:` lines"),
+        "aggregate-no-instant": (f"`{CONTRACT_RESTYLE_LABEL}` aggregate "
+                                 f"section carries no `Act instant:` line"),
         "three-link-cascade": (f"{THIRD_LINK[2]} — contract successor recorded "
                                f"while earlier chain link(s) "
                                f"`{POLARIS_NO_SIGNAL_LABEL}`, "
@@ -7292,6 +7406,23 @@ def _selftest_cg7e_wrong_historical(review_copy=None, valid=False):
         _ActSubjects._cache.update(cache)
         ROOT = keep
         shutil.rmtree(d, ignore_errors=True)
+
+
+def _selftest_contract_restyle_packet_registration():
+    """`(absent, present)` registries from a temp root without, then with,
+    the restyle packet: exercises the activation's `registry`/`root`
+    parameters without touching the live registry or the real tree."""
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="cg7-restyle-packet-") as d:
+        absent = {}
+        _activate_contract_restyle_packet_copy_registry(absent, d)
+        packet = os.path.join(d, CONTRACT_RESTYLE_PACKET)
+        os.makedirs(os.path.dirname(packet))
+        with open(packet, "w", encoding="utf-8") as fh:
+            fh.write(f"{CONTRACT_RESTYLE_LABEL}: {'a' * 64}\n")
+        present = {"selftest/OTHER.md": ("OTHER LABEL",)}
+        _activate_contract_restyle_packet_copy_registry(present, d)
+    return absent, present
 
 
 def _selftest_polaris_edit_repair_candidate_registration(present):
@@ -7807,18 +7938,38 @@ def _selftest_cg7h(kind):
     def contract_body_of(rows):
         return "".join(f"{sha}  {path}\n" for sha, path in rows)
 
-    def link(label, rows, records="both", set_current=True, recorded=None):
+    # Each performed link gets the next act instant unless told otherwise,
+    # so links recorded in call order are also timed in call order.
+    link_clock = [0]
+
+    def link(label, rows, records="both", set_current=True, recorded=None,
+             instant=None, aggregate_instant=None, insert_before=None):
         nonlocal performed
         body = contract_body_of(rows)
         link_digest = digest(body)
         phrase = f"{label}: {recorded or link_digest}\n"
+        link_clock[0] += 1
+        instant = instant or f"2026-09-{10 + link_clock[0]:02d}T00:00:00Z"
+        instant_line = f"Act instant: {instant}\n" if instant != "none" else ""
+        aggregate_line = (instant_line if aggregate_instant is None
+                          else "" if aggregate_instant == "none"
+                          else f"Act instant: {aggregate_instant}\n")
         if set_current:
             for sha, path in rows:
                 current[f"{CONTRACT_ROOT}/{path}"] = sha
                 current[f"{CANDIDATES}/{path}"] = sha
         if records in ("both", "aggregate"):
-            performed += phrase
-        dedicated_body = phrase if records in ("both", "dedicated") else ""
+            section = aggregate_line + phrase
+            if insert_before is None:
+                performed += section
+            else:
+                # A section spliced in above an existing one: the aggregate is
+                # no longer append-only, so aggregate position misleads.
+                head, sep, tail = performed.partition(insert_before)
+                assert sep, insert_before
+                performed = head + section + sep + tail
+        dedicated_body = (instant_line + phrase
+                          if records in ("both", "dedicated") else "")
         contract_inputs[label] = (dedicated_body, body, link_digest)
         return phrase, body, link_digest
 
@@ -7856,10 +8007,11 @@ def _selftest_cg7h(kind):
             contract_body += "not a digest row\n"
         contract_digest = digest(contract_body)
         contract_phrase = f"{POLARIS_NO_SIGNAL_LABEL}: {contract_digest}\n"
+        contract_instant = "Act instant: 2026-09-10T00:00:00Z\n"
         contract_dedicated = ""
         if kind != "contract-candidate-only":
-            performed += contract_phrase
-            contract_dedicated = contract_phrase
+            performed += contract_instant + contract_phrase
+            contract_dedicated = contract_instant + contract_phrase
         if kind == "contract-no-dedicated":
             contract_dedicated = ""
         elif kind == "contract-no-aggregate":
@@ -7950,21 +8102,61 @@ def _selftest_cg7h(kind):
         records = {"restyle-one-record": "aggregate",
                    "restyle-candidate-no-records": "none",
                    "restyle-candidate-inert": "none"}.get(kind, "both")
-        link(CONTRACT_RESTYLE_LABEL, restyle_rows, records=records,
-             set_current=kind != "restyle-candidate-inert",
-             recorded=mismatched if kind == "restyle-digest-mismatch" else None)
+        restyle_instant = {
+            "restyle-instant-impossible": "2026-02-30T00:00:00Z",
+            "restyle-instant-malformed-line": "2026-09-20",
+            "restyle-instant-absent": "none",
+        }.get(kind, "2026-09-20T00:00:00Z")
+        restyle_phrase, _b, _d = link(
+            CONTRACT_RESTYLE_LABEL, restyle_rows, records=records,
+            set_current=kind != "restyle-candidate-inert",
+            recorded=mismatched if kind == "restyle-digest-mismatch" else None,
+            instant=restyle_instant,
+            aggregate_instant=("none" if kind == "restyle-aggregate-no-instant"
+                               else None))
+        restyle_section = f"Act instant: {restyle_instant}\n" + restyle_phrase
+        # The out-of-order bypass: the restyle is performed, then a no-signal
+        # section is spliced into the aggregate *above* it, so aggregate
+        # position reads as chain order. The act instants still tell.
+        inserted = {
+            # recorded later than the restyle, never installed
+            "restyle-inserted-later": ("2026-09-25T00:00:00Z", None, False),
+            # same instant as the restyle: order is ambiguous
+            "restyle-inserted-same-instant": ("2026-09-20T00:00:00Z", None,
+                                              False),
+            # no instant at all: cannot be ordered
+            "restyle-inserted-no-instant": ("none", None, False),
+            # dedicated claims earlier, aggregate section says later
+            "restyle-inserted-instant-disagrees": (
+                "2026-09-15T00:00:00Z", "2026-09-25T00:00:00Z", False),
+            # genuinely earlier: legitimate history, restyle supersedes it
+            "restyle-inserted-earlier": ("2026-09-15T00:00:00Z", None, True),
+        }
+        if kind in inserted:
+            ns_instant, ns_aggregate, ns_bytes = inserted[kind]
+            link(POLARIS_NO_SIGNAL_LABEL, no_signal_rows, set_current=ns_bytes,
+                 instant=ns_instant, aggregate_instant=ns_aggregate,
+                 insert_before=restyle_section)
+            if ns_bytes:
+                # restyle is later and supersedes; current bytes are its own
+                for sha, path in restyle_rows:
+                    current[f"{CONTRACT_ROOT}/{path}"] = sha
+                    current[f"{CANDIDATES}/{path}"] = sha
         if kind in ("restyle-shadow", "restyle-shadow-nsbytes"):
             # The restyle is performed first; the no-signal act is recorded
             # afterwards (with or without installing its bytes). Chain order
             # says no-signal comes first, so the later act must not read as
-            # valid, silently shadowed history.
+            # valid, silently shadowed history. Its instant is earlier, so
+            # only the aggregate-position predicate can catch this one.
             link(POLARIS_NO_SIGNAL_LABEL, no_signal_rows,
-                 set_current=kind == "restyle-shadow-nsbytes")
+                 set_current=kind == "restyle-shadow-nsbytes",
+                 instant="2026-09-15T00:00:00Z")
         if kind == "restyle-three-link-cascade":
             # A synthetic third link after an invalid no-signal link (one
             # record) and a valid restyle link: it must name the invalid
             # no-signal link, not only its immediate predecessor.
-            link(THIRD_LINK[0], [(digest("third"), POLARIS_NO_SIGNAL_PATHS[0])])
+            link(THIRD_LINK[0], [(digest("third"), POLARIS_NO_SIGNAL_PATHS[0])],
+                 instant="2026-09-27T00:00:00Z")
         target = POLARIS_NO_SIGNAL_PATHS[0]
         if kind == "restyle-current-drift":
             current[f"{CONTRACT_ROOT}/{target}"] = mismatched
