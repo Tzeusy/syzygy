@@ -1,0 +1,90 @@
+{
+  "kind": "three-surface-poc-readability-cli-rule-6-mutation-evidence",
+  "capturedAt": "2026-09-27T17:36:36.087288+00:00",
+  "testedCommit": "b483e1e75d57afd58f2b35e89181359de86cf48c",
+  "method": "The public CLI ran in two isolated scratch repositories with the exact final-patch corruption recorded below. The current builder had to reject the removed apply command with all six signed subjects byte-identical. The exact serial writer fragments from sourceCommit were then restored; that mutant had to change the first three subjects before the corrupted final patch failed. No live signed subject was written.",
+  "mutation": {
+    "id": "historical-serial-apply-partial-write",
+    "sourceCommit": "5db2853e1613d34940e6c33aeb7eaf39a04de98c",
+    "file": "scripts/build_three_surface_poc_readability_successor.py",
+    "command": [
+      "--apply",
+      "--at-adoption"
+    ],
+    "patchCorruption": {
+      "file": ".syzygy/governance/contracts/candidates/three-surface-poc-readability-successor/proposed/spec.md.patch",
+      "old": "@@ -967,12 +981,13 @@\n\n Group: Cross-cutting experience. Form: **invariant**.",
+      "new": "@@ -967,12 +981,13 @@\n\n Group: Corrupted. Form: **invariant**."
+    },
+    "sourceReplacements": [
+      {
+        "old": "def main(argv: list[str]) -> int:\n",
+        "new": "def apply_at_adoption() -> int:\n    for patch in patch_files():\n        code, error = apply_patch(ROOT, patch)\n        if code != 0:\n            print(f\"refusing partial adoption: {patch.name}: {error}\")\n            return 1\n    print(\"applied proposed readability successor; owner-act recorder must finish atomically\")\n    return 0\n\n\ndef main(argv: list[str]) -> int:\n"
+      },
+      {
+        "old": "    parser.add_argument(\"--write\", action=\"store_true\")\n    parser.add_argument(\"--selftest-evidence\", type=pathlib.Path)\n    args = parser.parse_args(argv)\n",
+        "new": "    parser.add_argument(\"--write\", action=\"store_true\")\n    parser.add_argument(\"--apply\", action=\"store_true\")\n    parser.add_argument(\"--at-adoption\", action=\"store_true\")\n    parser.add_argument(\"--selftest-evidence\", type=pathlib.Path)\n    args = parser.parse_args(argv)\n"
+      },
+      {
+        "old": "    if args.write:\n        return write()\n    if args.diff:\n",
+        "new": "    if args.write:\n        return write()\n    if args.apply:\n        if not args.at_adoption:\n            print(\"refusing: --apply requires --at-adoption and an owner-act recorder\")\n            return 2\n        return apply_at_adoption()\n    if args.diff:\n"
+      }
+    ]
+  },
+  "current": {
+    "exit": 2,
+    "stdout": "",
+    "stderr": "usage: build_three_surface_poc_readability_successor.py [-h] [--check]\n                                                        [--selftest] [--diff]\n                                                        [--write]\n                                                        [--selftest-evidence SELFTEST_EVIDENCE]\nbuild_three_surface_poc_readability_successor.py: error: unrecognized arguments: --apply --at-adoption\n",
+    "before": {
+      "openspec/changes/three-surface-poc-experience/.openspec.yaml": "9187547d8cc17017ebd44132527d2d5e096d1ef9705de80cc4f1cf34531f6976",
+      "openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md": "f29a01f6a5725f4ac7085fa04a62de757fd16153d507ae5e415ae0b501fdc0a4",
+      "openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md": "4bdcf6c6dbd07aad7d44fb1d6fbb9ae37ea56bed2ed66532231cdc37a71c1da4",
+      "openspec/changes/three-surface-poc-experience/design.md": "0847bf5f78155712c13535a3de4a25be300ee6a726b5199e84e318103c28695c",
+      "openspec/changes/three-surface-poc-experience/proposal.md": "6459f56cba26e0bc38c71a4a93ea571aa11eabdc847c96c81f8afcf30b72eddb",
+      "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md": "f0eda5b9ec8766e2b4b961fb2940c4ece7aa97b1c397e10d570abb04f5dd960e"
+    },
+    "after": {
+      "openspec/changes/three-surface-poc-experience/.openspec.yaml": "9187547d8cc17017ebd44132527d2d5e096d1ef9705de80cc4f1cf34531f6976",
+      "openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md": "f29a01f6a5725f4ac7085fa04a62de757fd16153d507ae5e415ae0b501fdc0a4",
+      "openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md": "4bdcf6c6dbd07aad7d44fb1d6fbb9ae37ea56bed2ed66532231cdc37a71c1da4",
+      "openspec/changes/three-surface-poc-experience/design.md": "0847bf5f78155712c13535a3de4a25be300ee6a726b5199e84e318103c28695c",
+      "openspec/changes/three-surface-poc-experience/proposal.md": "6459f56cba26e0bc38c71a4a93ea571aa11eabdc847c96c81f8afcf30b72eddb",
+      "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md": "f0eda5b9ec8766e2b4b961fb2940c4ece7aa97b1c397e10d570abb04f5dd960e"
+    },
+    "changedSubjects": [],
+    "predicateHeld": true
+  },
+  "historicalSerialApply": {
+    "exit": 1,
+    "stdout": "refusing partial adoption: spec.md.patch: error: patch failed: openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md:967\nerror: openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md: patch does not apply\n",
+    "stderr": "",
+    "before": {
+      "openspec/changes/three-surface-poc-experience/.openspec.yaml": "9187547d8cc17017ebd44132527d2d5e096d1ef9705de80cc4f1cf34531f6976",
+      "openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md": "f29a01f6a5725f4ac7085fa04a62de757fd16153d507ae5e415ae0b501fdc0a4",
+      "openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md": "4bdcf6c6dbd07aad7d44fb1d6fbb9ae37ea56bed2ed66532231cdc37a71c1da4",
+      "openspec/changes/three-surface-poc-experience/design.md": "0847bf5f78155712c13535a3de4a25be300ee6a726b5199e84e318103c28695c",
+      "openspec/changes/three-surface-poc-experience/proposal.md": "6459f56cba26e0bc38c71a4a93ea571aa11eabdc847c96c81f8afcf30b72eddb",
+      "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md": "f0eda5b9ec8766e2b4b961fb2940c4ece7aa97b1c397e10d570abb04f5dd960e"
+    },
+    "after": {
+      "openspec/changes/three-surface-poc-experience/.openspec.yaml": "9187547d8cc17017ebd44132527d2d5e096d1ef9705de80cc4f1cf34531f6976",
+      "openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md": "f29a01f6a5725f4ac7085fa04a62de757fd16153d507ae5e415ae0b501fdc0a4",
+      "openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md": "f8b66a710f9e3242f79b26b9c02eb4f44c55cd8368b517cd856da80b2ecbe1c5",
+      "openspec/changes/three-surface-poc-experience/design.md": "6d39ea6f6111abaea32c74ce96c975ae53e077485f0ed8f7c97545e64d7ba295",
+      "openspec/changes/three-surface-poc-experience/proposal.md": "0650a6a3bc50158dc793802b9dcd40057b3199b3f7e9f8341a5bdc79cbea941a",
+      "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md": "f0eda5b9ec8766e2b4b961fb2940c4ece7aa97b1c397e10d570abb04f5dd960e"
+    },
+    "changedSubjects": [
+      "openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md",
+      "openspec/changes/three-surface-poc-experience/design.md",
+      "openspec/changes/three-surface-poc-experience/proposal.md"
+    ],
+    "predicateHeld": false
+  },
+  "expectedHistoricalChangedSubjects": [
+    "openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md",
+    "openspec/changes/three-surface-poc-experience/design.md",
+    "openspec/changes/three-surface-poc-experience/proposal.md"
+  ],
+  "outcome": "killed"
+}
