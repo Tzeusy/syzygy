@@ -1,9 +1,10 @@
-> **Candidate — binds nothing, and nothing here has been applied.** This is
-> a drafted proposal for the argument of owner act **4**, which has never
-> been performed. `.syzygy/intent/OVERVIEW.md` is byte-unchanged; no word of
-> it was edited to write this. An agent may draft a delta, never adopt one
-> (VIS-4); the workflow this form sits inside is
-> [`NORMATIVE-CHANGE-WORKFLOW.md`](policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md).
+> **Applied; binds nothing.** Both edits below are in
+> `.syzygy/intent/OVERVIEW.md`, installed on 2026-09-27 as part of the page's
+> readability rewrite (owner direction of that date). That rewrite re-issued
+> the argument of owner act **4**, which remains unperformed; the act-4 row of
+> [`FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`](FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md)
+> carries the current argument. The text below is the delta as drafted on
+> 2026-09-07.
 
 # Semantic delta OVW-1 — repair the two claims the public overview makes about doctrine and about current capability
 
