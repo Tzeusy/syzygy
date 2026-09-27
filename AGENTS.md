@@ -615,11 +615,13 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   `syzygy-eau` CG-7e missed it too: it only asked whether the current digest
   appears *somewhere* in the file, so a stale bare `Manifest SHA-256:` copy
   passed beside a correct phrase-linked one. CG-7e now checks every bare
-  `<qualifier> SHA-256:` heading (`BARE_DIGEST_HEADING`: 24 copies over 9
-  spellings, only 4 of them the literal one) against that file's own
-  declared digests; the two headings that name a container manifest's own
-  digest are checked exemptions, hashed live. A new bare spelling that does
-  not end in `SHA-256:` is invisible again. A rule-6 mutation
+  digest *heading* — a line-start label ending `sha256`/`SHA-256` in any
+  case, colon optional (`BARE_DIGEST_HEADING`: 29 copies in 22 files over
+  12 spellings, only 4 the literal one; two review rounds each found the
+  sweep narrower than claimed) — against that file's own declared digests;
+  the two container-manifest headings are checked exemptions, hashed live.
+  A digest cited inline mid-sentence is not a heading and stays unchecked
+  (3 in `pwb-effect-acts/OWNER-SIGNOFF-PACKET.md`). A rule-6 mutation
   must still rewrite *every* copy (`sed s///g`), not the first match — a
   `str.replace(..., 1)` hit an unregistered copy and reported a false pass.
 - **CG-26 is one coupled triple: register it once, at merge.** Several

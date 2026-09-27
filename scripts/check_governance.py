@@ -2646,8 +2646,17 @@ _activate_pwb_effect_amendment_act_copy_registries()
 #: DIGEST) found the identical corruption-masking bug live in 15 further
 #: bare copies under every qualified spelling above, plus 5 more this
 #: review then found under "Exact digest (SHA-256):" in the performed PWB
-#: effect-act records — 24 bare copies in 19 of the 39 registered files
-#: (4 literal "Manifest SHA-256:", 20 qualified). The label text is captured
+#: effect-act records. Its confirmation review (R-CG7E-BARE-DIGEST-
+#: CONFIRMATION) found 5 more the uppercase, colon-terminated form missed:
+#: a lowercase `sha256:` (one as a list item, one after a backticked
+#: filename) and three bare `SHA-256 <digest>` lines with no colon. So the
+#: label may follow a list/quote marker, may be backticked, may be empty,
+#: `sha256`/`SHA-256` in any case, colon optional — 29 bare copies in 22 of
+#: the 39 registered files over 12 spellings, 4 of them literal "Manifest
+#: SHA-256:". Not headings, so deliberately unmatched: a digest cited inline
+#: mid-sentence ("… (SHA-256 `<digest>`)", "verdict `CONFIRM`, sha256
+#: `<digest>`"), which names a review raw or container file, not an act
+#: argument (3 such in `pwb-effect-acts/OWNER-SIGNOFF-PACKET.md`). The label text is captured
 #: (group 1) so each match is validated against *that file's own* declared
 #: digests (`allowed_bare`), never the whole corpus's recognized set — a
 #: different file's correct digest must not excuse this one, and this
@@ -2656,7 +2665,8 @@ _activate_pwb_effect_amendment_act_copy_registries()
 #: prose ("the SHA-256 argument binds…", "SHA-256 of the artifact itself")
 #: and table cells ("| SHA-256 |", "SHA-256 of `path`,") never match.
 BARE_DIGEST_HEADING = re.compile(
-    r"^[ \t]*\**([A-Z][A-Za-z0-9 /()'.-]{0,60}?)SHA-256\)?:\**[ \t]*"
+    r"^[ \t]*(?:[-*+>][ \t]+)?\**"
+    r"((?:[A-Za-z`][A-Za-z0-9 /()'.`_-]{0,60}?)?)(?i:sha-?256)\)?:?\**[ \t]*"
     r"(?:\n[ \t]*)*[`*]{0,3}([0-9a-f]{64})[`*]{0,3}",
     re.M)
 
@@ -2767,7 +2777,8 @@ def cg7e_act_digest_copies(paths, res):
             for m in BARE_DIGEST_HEADING.finditer(body):
                 heading_raw, bare = m.group(1), m.group(2)
                 heading = heading_raw.strip().rstrip("(").strip().lower()
-                shown = m.group(0).split(":", 1)[0].strip(" \t*") + ":"
+                shown = re.sub(r"[\s`*]+$", "", body[m.start():m.start(2)]
+                               ).strip(" \t*-+>")
                 if bare in allowed_bare:
                     continue
                 line_no = body[:m.start()].count("\n") + 1
@@ -6439,7 +6450,10 @@ def selftest():
             ("qualified-stale", "Behavior manifest SHA-256:"),
             ("offer-stale", "Exact offer SHA-256:"),
             ("second-label-stale", "Policy SHA-256:"),
-            ("bold-stale", "Registry SHA-256:")):
+            ("bold-stale", "Registry SHA-256:"),
+            ("lower-item-stale", "Transaction-manifest sha256:"),
+            ("backtick-label-stale", "`synthetic-manifest.txt` sha256:"),
+            ("no-colon-stale", "SHA-256")):
         row = _selftest_cg7e_bare_manifest_copy(kind)
         cases.append((f"CG-7e mutated bare `{shown}` copy fails despite a "
                       f"correct phrase line ({kind})",
@@ -6448,7 +6462,8 @@ def selftest():
                       and f"bare `{shown}` copy" in bare_findings(row)[0]))
 
     for kind in ("correct", "second-label-correct", "bold-correct",
-                 "paren-correct", "exempt-correct", "prose"):
+                 "paren-correct", "exempt-correct", "prose",
+                 "no-colon-correct"):
         row = _selftest_cg7e_bare_manifest_copy(kind)
         cases.append((f"CG-7e bare heading copy passes ({kind})",
                       row[0] == "OK" and row[3] == 0))
@@ -7188,6 +7203,12 @@ def _selftest_cg7e_bare_manifest_copy(kind):
             "exempt-correct": f"Effect manifest SHA-256: `{container}`\n",
             "exempt-drift": f"Effect manifest SHA-256: `{container}`\n",
             "prose": f"the SHA-256 of that file is `{mutate(argument)}`.\n",
+            "lower-item-stale":
+                f"- Transaction-manifest sha256:\n  `{mutate(argument)}`.\n",
+            "backtick-label-stale":
+                f"`synthetic-manifest.txt` sha256:\n`{mutate(argument)}`.\n",
+            "no-colon-stale": f"SHA-256 `{mutate(argument)}`\n",
+            "no-colon-correct": f"SHA-256 `{argument}`\n",
         }[kind]
         if kind == "exempt-drift":
             subject("synthetic-container.txt", "synthetic container, edited\n")
