@@ -1996,10 +1996,19 @@ POLARIS_NO_SIGNAL_SUBJECT = (
     "CONTRACT-AMENDMENT-MANIFEST.txt")
 POLARIS_NO_SIGNAL_ACT = (
     ".syzygy/governance/decisions/POLARIS-NO-SIGNAL-AMENDMENT-ACT.md")
+#: The two modules the drafted no-signal package touches. Not a CG-7h
+#: predicate: a contract successor link's paths come from its own manifest
+#: rows (`CONTRACT_SUCCESSOR_CHAIN`). Kept as the selftest's realistic rows.
 POLARIS_NO_SIGNAL_PATHS = (
     "rfcs/RFC-0008/state-vocabulary-and-cost.md",
     "rfcs/RFC-0009/interaction-parity-and-release.md",
 )
+# Prospective tooling vocabulary: candidate bytes never perform this act.
+CONTRACT_RESTYLE_LABEL = "ADOPT CONTRACT READABILITY RESTYLE"
+CONTRACT_RESTYLE_SUBJECT = (
+    f"{CANDIDATES}/contract-readability-restyle/CONTRACT-AMENDMENT-MANIFEST.txt")
+CONTRACT_RESTYLE_ACT = (
+    f"{DECISIONS}/CONTRACT-READABILITY-RESTYLE-ADOPTION-ACT.md")
 
 
 POLARIS_GENERATOR_APPROVAL_LABEL = (
@@ -2103,9 +2112,10 @@ def _act_subjects():
             re.compile(re.escape(POLARIS_EDIT_REPAIR_LABEL)
                        + r"\s*:\s*`?([0-9a-f]{64})"),
         ))
-    out.append((POLARIS_NO_SIGNAL_LABEL, POLARIS_NO_SIGNAL_SUBJECT,
-                re.compile(re.escape(POLARIS_NO_SIGNAL_LABEL)
-                           + r"\s*:\s*`?([0-9a-f]{64})")))
+    for label, subject, _act, _activate in CONTRACT_SUCCESSOR_CHAIN:
+        out.append((label, subject,
+                    re.compile(re.escape(label)
+                               + r"\s*:\s*`?([0-9a-f]{64})")))
     out.append((POLARIS_GENERATOR_APPROVAL_LABEL,
                 POLARIS_GENERATOR_APPROVAL_SUBJECT,
                 re.compile(re.escape(POLARIS_GENERATOR_APPROVAL_LABEL)
@@ -2520,7 +2530,34 @@ def _activate_polaris_no_signal_act_copy_registry():
     ACT_DIGEST_COPY_FILES[POLARIS_NO_SIGNAL_ACT] = (POLARIS_NO_SIGNAL_LABEL,)
 
 
-_activate_polaris_no_signal_act_copy_registry()
+def _activate_contract_restyle_act_copy_registry():
+    """Require both record copies only once the dedicated record exists."""
+    if not os.path.isfile(os.path.join(ROOT, CONTRACT_RESTYLE_ACT)):
+        return
+    labels = ACT_DIGEST_COPY_FILES.get(PERFORMED_ACT_RECORD, ())
+    if CONTRACT_RESTYLE_LABEL not in labels:
+        ACT_DIGEST_COPY_FILES[PERFORMED_ACT_RECORD] = labels + (CONTRACT_RESTYLE_LABEL,)
+    ACT_DIGEST_COPY_FILES[CONTRACT_RESTYLE_ACT] = (CONTRACT_RESTYLE_LABEL,)
+
+
+#: Ordered owner-act successors to the bootstrap 30-row contract manifest:
+#: `(label, subject manifest, dedicated act record, copy-registry activation)`.
+#: Each link's manifest binds any non-empty, codepoint-sorted, duplicate-free
+#: subset of the 30 bootstrap contract paths. CG-7h folds every validly
+#: performed link's rows into the current-byte expectation in this order, so
+#: a later link overrides an earlier one for a shared path. An earlier link
+#: need not be performed (a gap is allowed only when it has no records at
+#: all); one with records that fail validation blocks every later link.
+#: Candidate manifests without both records never override anything.
+CONTRACT_SUCCESSOR_CHAIN = (
+    (POLARIS_NO_SIGNAL_LABEL, POLARIS_NO_SIGNAL_SUBJECT,
+     POLARIS_NO_SIGNAL_ACT, _activate_polaris_no_signal_act_copy_registry),
+    (CONTRACT_RESTYLE_LABEL, CONTRACT_RESTYLE_SUBJECT,
+     CONTRACT_RESTYLE_ACT, _activate_contract_restyle_act_copy_registry),
+)
+for _label, _subject, _act_rel, _activate in CONTRACT_SUCCESSOR_CHAIN:
+    _activate()
+del _label, _subject, _act_rel, _activate
 
 
 def _activate_pwb_effect_act_copy_registries():
@@ -2974,9 +3011,8 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                                scoped_dedicated_record=None,
                                scoped_manifest_body=None,
                                scoped_manifest_digest=None,
-                               contract_successor_dedicated_record=None,
-                               contract_successor_manifest_body=None,
-                               contract_successor_manifest_digest=None):
+                               contract_chain_inputs=None,
+                               contract_chain=None):
     """The performed transaction binds every current and nested subject.
 
     CG-7d permits old *performed* digests so append-only history remains true.
@@ -2993,10 +3029,20 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
     (`PWB_SUCCESSOR_CHAIN`): the latest validly performed link binds current
     bytes, every earlier link is immutable act-time history, and a later
     link recorded without its predecessor is a gap, not a supersession.
-    The prospective Polaris contract successor independently binds exactly
-    two contract modules. Its two records must each occur once, agree with
-    the closed manifest's actual digest, and preserve the bootstrap history;
-    unsigned candidates never replace the original current-byte expectations.
+    Contract successors form a second, independent chain
+    (`CONTRACT_SUCCESSOR_CHAIN`). Each link binds a non-empty,
+    codepoint-sorted, duplicate-free subset of the 30 bootstrap contract
+    paths; its two records must each carry exactly one bare full-line
+    `LABEL: <sha256>` agreeing with the manifest's actual digest. Valid links
+    fold into the current-byte expectations in chain order (a later link
+    overrides an earlier one per path); the installed and mirror loops then
+    verify current bytes against the fold. An earlier link with records that
+    fail validation is a finding against every later performed link; an
+    earlier link with no records is an allowed gap. Unsigned candidates
+    never replace the original current-byte expectations.
+    `contract_chain_inputs`, when given, maps each link label to
+    `(dedicated record, manifest body, manifest digest)`; an absent label
+    reads as no records and no manifest.
     Otherwise a correct outer ceremony could be reported over drifted nested
     bytes or an unsigned candidate could impersonate current authority.
     """
@@ -3025,7 +3071,12 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
             rows.append((m.group("sha"), m.group("path").strip(), line_no))
         if bad_lines:
             findings.extend(bad_lines)
-        if len(rows) != expected_count:
+        if expected_count is None:
+            if not rows:
+                findings.append(
+                    f"{rel} — parsed 0 digest rows, expected at least 1; a "
+                    f"successor link must bind a non-empty population")
+        elif len(rows) != expected_count:
             findings.append(
                 f"{rel} — parsed {len(rows)} digest row(s), expected "
                 f"{expected_count}; the performed population is incomplete")
@@ -3218,67 +3269,88 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                 f"{GENERAL_BOOTSTRAP_SUBJECT}:{line_no} — `{path}` hashes to "
                 f"{(actual or 'absent')[:12]}…, expected {expected[:12]}…")
 
-    # This successor has one performance, not a history of repeated phrases.
-    # Count occurrences directly: _performed_act_digests intentionally deduplicates.
-    if contract_successor_dedicated_record is None:
-        contract_successor_dedicated_record = read_if_present(POLARIS_NO_SIGNAL_ACT)
-    if contract_successor_manifest_body is None:
-        contract_successor_manifest_body = read_if_present(POLARIS_NO_SIGNAL_SUBJECT)
-    if contract_successor_manifest_digest is None:
-        contract_successor_manifest_digest = current_digest(POLARIS_NO_SIGNAL_SUBJECT)
-    phrase = re.compile(re.escape(POLARIS_NO_SIGNAL_LABEL) + r": ([0-9a-f]{64})")
-    record_bodies = (act_record, contract_successor_dedicated_record)
-    contract_mentions = [
-        tuple(line for line in body.splitlines() if POLARIS_NO_SIGNAL_LABEL in line)
-        for body in record_bodies
-    ]
-    contract_records = [
-        tuple(m.group(1) for line in mentions if (m := phrase.fullmatch(line)))
-        for mentions in contract_mentions
-    ]
-    contract_attempted = any(contract_mentions) or bool(contract_successor_dedicated_record)
+    # Each contract successor has one performance, not a history of repeated
+    # phrases. Count occurrences directly: _performed_act_digests
+    # intentionally deduplicates.
+    chain = CONTRACT_SUCCESSOR_CHAIN if contract_chain is None else contract_chain
+    bootstrap_contract_paths = {path for _sha, path, _line in contract_rows}
+    bootstrap_valid = not findings
     contract_overrides = {}
-    if contract_attempted:
-        predecessor_valid = not findings
-        if not predecessor_valid:
-            findings.append(f"{POLARIS_NO_SIGNAL_ACT} — bootstrap predecessor is invalid")
-        before_contract = len(findings)
-        for where, values, mentions in zip(
-                (PERFORMED_ACT_RECORD, POLARIS_NO_SIGNAL_ACT),
-                contract_records, contract_mentions):
-            if any(not phrase.fullmatch(line) for line in mentions):
-                findings.append(f"{where} — malformed Polaris successor label occurrence; "
-                                "require one complete bare ceremony line")
+    contract_bound_by = {}
+    contract_links = []
+    previous_attempted = None
+    for label, subject, act_rel, _activate in chain:
+        if contract_chain_inputs is None:
+            link_dedicated = read_if_present(act_rel)
+            link_body = read_if_present(subject)
+            link_digest = current_digest(subject)
+        else:
+            link_dedicated, link_body, link_digest = contract_chain_inputs.get(
+                label, ("", "", None))
+        phrase = re.compile(re.escape(label) + r": ([0-9a-f]{64})")
+        mentions = [
+            tuple(line for line in body.splitlines() if label in line)
+            for body in (act_record, link_dedicated)
+        ]
+        records = [
+            tuple(m.group(1) for line in link_mentions
+                  if (m := phrase.fullmatch(line)))
+            for link_mentions in mentions
+        ]
+        if not (any(mentions) or link_dedicated):
+            continue
+        before_link = len(findings)
+        if not bootstrap_valid:
+            findings.append(f"{act_rel} — bootstrap predecessor is invalid")
+        if previous_attempted is not None and not previous_attempted[1]:
+            findings.append(
+                f"{act_rel} — contract successor recorded while its chain "
+                f"predecessor `{previous_attempted[0]}` has records present "
+                f"but is invalid; a link cannot supersede a broken predecessor")
+        for where, values, link_mentions in zip(
+                (PERFORMED_ACT_RECORD, act_rel), records, mentions):
+            if any(not phrase.fullmatch(line) for line in link_mentions):
+                findings.append(
+                    f"{where} — malformed contract successor label occurrence "
+                    f"for `{label}`; require one complete bare ceremony line")
             if len(values) != 1:
-                findings.append(f"{where} — expected exactly one performed Polaris "
-                                f"successor record, found {len(values)}")
-            require_latest(where, values, contract_successor_manifest_digest,
-                           POLARIS_NO_SIGNAL_SUBJECT)
-        body_digest = hashlib.sha256(contract_successor_manifest_body.encode()).hexdigest()
-        if body_digest != contract_successor_manifest_digest:
-            findings.append(f"{POLARIS_NO_SIGNAL_SUBJECT} — manifest body digest differs "
+                findings.append(
+                    f"{where} — expected exactly one performed contract "
+                    f"successor record for `{label}`, found {len(values)}")
+            require_latest(where, values, link_digest, subject)
+        body_digest = hashlib.sha256(link_body.encode()).hexdigest()
+        if body_digest != link_digest:
+            findings.append(f"{subject} — manifest body digest differs "
                             "from current subject digest")
-        new_rows = manifest_rows(contract_successor_manifest_body,
-                                 POLARIS_NO_SIGNAL_SUBJECT, 2)
-        require_exact_paths(new_rows, POLARIS_NO_SIGNAL_SUBJECT, POLARIS_NO_SIGNAL_PATHS)
-        old_paths = {path for _sha, path, _line in contract_rows}
-        for expected, path, line_no in new_rows:
-            historical_path = path
-            if historical_path not in old_paths:
-                findings.append(f"{POLARIS_NO_SIGNAL_SUBJECT}:{line_no} — no predecessor "
-                                f"contract row for `{path}`")
-            for base in (CONTRACT_ROOT, CANDIDATES):
-                rel = repo_subject(path, POLARIS_NO_SIGNAL_SUBJECT, line_no, base=base)
-                actual = current_digest(rel) if rel else None
-                if actual != expected:
-                    findings.append(f"{POLARIS_NO_SIGNAL_SUBJECT}:{line_no} — `{rel}` "
-                                    f"hashes to {(actual or 'absent')[:12]}…, "
-                                    f"expected {expected[:12]}…")
-        if predecessor_valid and len(findings) == before_contract:
-            contract_overrides = {path: sha for sha, path, _line in new_rows}
-            details.append(f"[historical] {GENERAL_BOOTSTRAP_CONTRACT_MANIFEST} — "
-                           "two act-time module rows preserved; current bytes are "
-                           f"bound by {POLARIS_NO_SIGNAL_SUBJECT}")
+        link_rows = manifest_rows(link_body, subject, None)
+        link_paths = [path for _sha, path, _line in link_rows]
+        if link_paths != sorted(link_paths):
+            findings.append(
+                f"{subject} — subject path population/order: rows are not "
+                f"in codepoint-sorted order")
+        for _sha, path, line_no in link_rows:
+            if repo_subject(path, subject, line_no, base=CONTRACT_ROOT) is None:
+                continue
+            if path not in bootstrap_contract_paths:
+                findings.append(
+                    f"{subject}:{line_no} — no predecessor contract row for "
+                    f"`{path}`; a link binds only the "
+                    f"{len(bootstrap_contract_paths)} bootstrap contract paths")
+        link_valid = len(findings) == before_link
+        previous_attempted = (label, link_valid)
+        contract_links.append((label, subject, link_rows, link_valid))
+        if link_valid:
+            for sha, path, _line in link_rows:
+                if path in contract_bound_by:
+                    details.append(
+                        f"[historical] {contract_bound_by[path]} — act-time "
+                        f"row for `{path}` superseded by {subject}")
+                contract_overrides[path] = sha
+                contract_bound_by[path] = subject
+            details.append(
+                f"[historical] {GENERAL_BOOTSTRAP_CONTRACT_MANIFEST} — "
+                f"{len(link_rows)} act-time module row(s) superseded by "
+                f"{subject}")
 
     for expected, path, line_no in contract_rows:
         expected = contract_overrides.get(path, expected)
@@ -3331,9 +3403,10 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
     successor_examined = (
         2 * len(attempted_links) + len(successor_rows)
         if successor_attempted else 0)
+    contract_link_rows = sum(len(rows) for _l, _s, rows, _v in contract_links)
     examined = (4 + len(top_rows) + len(contract_rows) + len(pwb_rows)
                 + len(contract_rows) + successor_examined
-                + (4 if contract_attempted else 0))
+                + 2 * len(contract_links) + contract_link_rows)
     details.append(
         f"[population] 4 act-record predicates + {len(top_rows)} top-level "
         f"subjects + {len(contract_rows)} contract rows + {len(pwb_rows)} PWB "
@@ -3341,8 +3414,9 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         + (f" + {2 * len(attempted_links)} successor act predicates + "
            f"{len(successor_rows)} successor PWB rows" if successor_attempted
            else "")
-        + (" + 2 contract successor act predicates + 2 contract successor rows"
-           if contract_attempted else ""))
+        + (f" + {2 * len(contract_links)} contract successor act predicates "
+           f"+ {contract_link_rows} contract successor rows"
+           if contract_links else ""))
 
     res.add("FAIL" if findings else "OK",
             "CG-7h  performed bootstrap transaction subjects remain exact",
@@ -6735,12 +6809,13 @@ def selftest():
     row = _selftest_cg7h("contract-valid")
     cases.append(("CG-7h exact two-module contract successor passes at 80",
                   row[0] == "OK" and row[2] == 80 and row[3] == 0))
+    no_signal_for = f"for `{POLARIS_NO_SIGNAL_LABEL}`, found"
     contract_failures = {
         "candidate-only": "installed `rfcs/RFC-0008/state-vocabulary-and-cost.md`",
-        "no-dedicated": "expected exactly one performed Polaris successor record, found 0",
-        "no-aggregate": "expected exactly one performed Polaris successor record, found 0",
-        "duplicate-aggregate": "expected exactly one performed Polaris successor record, found 2",
-        "duplicate-dedicated": "expected exactly one performed Polaris successor record, found 2",
+        "no-dedicated": f"expected exactly one performed contract successor record {no_signal_for} 0",
+        "no-aggregate": f"expected exactly one performed contract successor record {no_signal_for} 0",
+        "duplicate-aggregate": f"expected exactly one performed contract successor record {no_signal_for} 2",
+        "duplicate-dedicated": f"expected exactly one performed contract successor record {no_signal_for} 2",
         "conflict": "latest performed digest",
         "invalid-predecessor": "bootstrap predecessor is invalid",
         "historical-drift": "bootstrap predecessor is invalid",
@@ -6753,20 +6828,54 @@ def selftest():
         "duplicate-path": "duplicate subject path",
         "reordered": "subject path population/order",
         "escape": "subject escapes its declared base",
-        "alias": "subject path population/order",
-        "extra": "expected 2",
+        "alias": "no predecessor contract row for `./rfcs/RFC-0008",
+        "extra": "no predecessor contract row for `zz-extra.md`",
         "malformed": "non-comment line is not a digest row",
-        "malformed-aggregate-original": "malformed Polaris successor label occurrence",
-        "malformed-extra-dedicated": "malformed Polaris successor label occurrence",
-        "malformed-extra-aggregate": "malformed Polaris successor label occurrence",
-        "unmatched-backtick": "malformed Polaris successor label occurrence",
-        "duplicate-quoted": "malformed Polaris successor label occurrence",
-        "duplicate-indented": "malformed Polaris successor label occurrence",
-        "trailing-prose": "malformed Polaris successor label occurrence",
+        "malformed-aggregate-original": "malformed contract successor label occurrence",
+        "malformed-extra-dedicated": "malformed contract successor label occurrence",
+        "malformed-extra-aggregate": "malformed contract successor label occurrence",
+        "unmatched-backtick": "malformed contract successor label occurrence",
+        "duplicate-quoted": "malformed contract successor label occurrence",
+        "duplicate-indented": "malformed contract successor label occurrence",
+        "trailing-prose": "malformed contract successor label occurrence",
     }
     for mutation, diagnostic in contract_failures.items():
         row = _selftest_cg7h(f"contract-{mutation}")
         cases.append((f"CG-7h contract successor {mutation} rejected",
+                      row[0] == "FAIL" and any(diagnostic in d for d in row[4])))
+
+    # The second chain link: the 29-module readability restyle.
+    row = _selftest_cg7h("restyle-valid")
+    cases.append(("CG-7h 29-row restyle link alone passes at 107 "
+                  "(no-signal gap allowed)",
+                  row[0] == "OK" and row[2] == 107 and row[3] == 0))
+    row = _selftest_cg7h("restyle-both-performed")
+    cases.append(("CG-7h both contract links performed pass at 111 with the "
+                  "restyle digest overriding the no-signal rows",
+                  row[0] == "OK" and row[2] == 111 and row[3] == 0
+                  and any("superseded by " + CONTRACT_RESTYLE_SUBJECT in d
+                          and "[historical] " + POLARIS_NO_SIGNAL_SUBJECT in d
+                          for d in row[4])))
+    row = _selftest_cg7h("restyle-candidate-inert")
+    cases.append(("CG-7h unrecorded restyle candidate over bootstrap bytes "
+                  "examines only the bootstrap population",
+                  row[0] == "OK" and row[2] == 76))
+    restyle_for = f"for `{CONTRACT_RESTYLE_LABEL}`, found"
+    restyle_failures = {
+        "one-record": f"record {restyle_for} 0",
+        "digest-mismatch": "latest performed digest",
+        "outside-path": "no predecessor contract row for `rfcs/RFC-0099/not-a-contract.md`",
+        "unsorted": "not in codepoint-sorted order",
+        "empty": "expected at least 1",
+        "current-drift": "installed `rfcs/RFC-0008/state-vocabulary-and-cost.md` hashes to",
+        "mirror-drift": "installed and candidate `rfcs/RFC-0008/state-vocabulary-and-cost.md` differ",
+        "both-earlier-bytes": "installed `rfcs/RFC-0008/state-vocabulary-and-cost.md` hashes to",
+        "candidate-no-records": "installed `rfcs/RFC-0000.md` hashes to",
+        "after-invalid-no-signal": "chain predecessor",
+    }
+    for mutation, diagnostic in restyle_failures.items():
+        row = _selftest_cg7h(f"restyle-{mutation}")
+        cases.append((f"CG-7h restyle link {mutation} rejected",
                       row[0] == "FAIL" and any(diagnostic in d for d in row[4])))
 
     c = Cap(); cg21_contract_prose_states_no_measurement(c, modules=[])
@@ -7416,8 +7525,10 @@ def _selftest_cg7h(kind):
         dedicated = performed
 
     contract_rows, pwb_rows, current = [], [], {}
+    restyle_excluded = "rfcs/RFC-0007/rendering-and-surface.md"
     for i in range(30):
         path = (POLARIS_NO_SIGNAL_PATHS[i - 28] if i >= 28
+                else restyle_excluded if i == 7
                 else f"rfcs/RFC-{i:04d}.md")
         stated = digest(f"contract-{i}")
         contract_rows.append(f"{stated}  {path}")
@@ -7540,7 +7651,30 @@ def _selftest_cg7h(kind):
     elif kind == "successor-current-drift":
         current[PWB_STATE1_SUBJECTS[0]] = digest("post-successor-drift")
 
-    contract_body, contract_digest, contract_dedicated = "", None, ""
+    # Contract successor chain links. `link()` builds one link's inputs and
+    # (unless `records` says otherwise) appends its aggregate phrase.
+    contract_inputs = {}
+    all_contract_paths = sorted(path for path in (
+        line.split("  ", 1)[1] for line in contract_rows))
+
+    def contract_body_of(rows):
+        return "".join(f"{sha}  {path}\n" for sha, path in rows)
+
+    def link(label, rows, records="both", set_current=True, recorded=None):
+        nonlocal performed
+        body = contract_body_of(rows)
+        link_digest = digest(body)
+        phrase = f"{label}: {recorded or link_digest}\n"
+        if set_current:
+            for sha, path in rows:
+                current[f"{CONTRACT_ROOT}/{path}"] = sha
+                current[f"{CANDIDATES}/{path}"] = sha
+        if records in ("both", "aggregate"):
+            performed += phrase
+        dedicated_body = phrase if records in ("both", "dedicated") else ""
+        contract_inputs[label] = (dedicated_body, body, link_digest)
+        return phrase, body, link_digest
+
     if kind.startswith("contract-"):
         new_rows = [(digest(f"new-contract-{i}"), path)
                     for i, path in enumerate(POLARIS_NO_SIGNAL_PATHS)]
@@ -7556,12 +7690,13 @@ def _selftest_cg7h(kind):
         elif kind == "contract-alias":
             new_rows[0] = (new_rows[0][0], "./" + new_rows[0][1])
         elif kind == "contract-extra":
-            new_rows.append((digest("extra"), "extra.md"))
-        contract_body = "".join(f"{sha}  {path}\n" for sha, path in new_rows)
+            new_rows.append((digest("extra"), "zz-extra.md"))
+        contract_body = contract_body_of(new_rows)
         if kind == "contract-malformed":
             contract_body += "not a digest row\n"
         contract_digest = digest(contract_body)
         contract_phrase = f"{POLARIS_NO_SIGNAL_LABEL}: {contract_digest}\n"
+        contract_dedicated = ""
         if kind != "contract-candidate-only":
             performed += contract_phrase
             contract_dedicated = contract_phrase
@@ -7615,6 +7750,47 @@ def _selftest_cg7h(kind):
             malformed_phrase = f"{contract_phrase.rstrip()} extra text\n"
             performed = performed.replace(contract_phrase, malformed_phrase)
             contract_dedicated = malformed_phrase
+        contract_inputs[POLARIS_NO_SIGNAL_LABEL] = (
+            contract_dedicated, contract_body, contract_digest)
+
+    if kind.startswith("restyle-"):
+        # The 29-module readability restyle: every bootstrap path except
+        # RFC-0007's rendering module, codepoint-sorted, new digests.
+        restyle_rows = [(digest(f"restyle-{path}"), path)
+                        for path in all_contract_paths
+                        if path != restyle_excluded]
+        no_signal_rows = [(digest(f"no-signal-{path}"), path)
+                          for path in POLARIS_NO_SIGNAL_PATHS]
+        if kind in ("restyle-both-performed", "restyle-both-earlier-bytes",
+                    "restyle-after-invalid-no-signal"):
+            link(POLARIS_NO_SIGNAL_LABEL, no_signal_rows,
+                 records=("aggregate"
+                          if kind == "restyle-after-invalid-no-signal"
+                          else "both"))
+        if kind == "restyle-outside-path":
+            restyle_rows[-1] = (restyle_rows[-1][0],
+                                "rfcs/RFC-0099/not-a-contract.md")
+        if kind == "restyle-unsorted":
+            restyle_rows[0], restyle_rows[1] = restyle_rows[1], restyle_rows[0]
+        if kind == "restyle-empty":
+            restyle_rows = []
+        records = {"restyle-one-record": "aggregate",
+                   "restyle-candidate-no-records": "none",
+                   "restyle-candidate-inert": "none"}.get(kind, "both")
+        link(CONTRACT_RESTYLE_LABEL, restyle_rows, records=records,
+             set_current=kind != "restyle-candidate-inert",
+             recorded=mismatched if kind == "restyle-digest-mismatch" else None)
+        target = POLARIS_NO_SIGNAL_PATHS[0]
+        if kind == "restyle-current-drift":
+            current[f"{CONTRACT_ROOT}/{target}"] = mismatched
+            current[f"{CANDIDATES}/{target}"] = mismatched
+        elif kind == "restyle-mirror-drift":
+            current[f"{CANDIDATES}/{target}"] = mismatched
+        elif kind == "restyle-both-earlier-bytes":
+            # current bytes hold the no-signal rows: the later link must win
+            for sha, path in no_signal_rows:
+                current[f"{CONTRACT_ROOT}/{path}"] = sha
+                current[f"{CANDIDATES}/{path}"] = sha
 
     c = Cap()
     cg7h_general_bootstrap_act(
@@ -7629,9 +7805,7 @@ def _selftest_cg7h(kind):
         truth_dedicated_record=truth_dedicated,
         truth_manifest_body=truth_manifest,
         truth_manifest_digest=truth_digest,
-        contract_successor_dedicated_record=contract_dedicated,
-        contract_successor_manifest_body=contract_body,
-        contract_successor_manifest_digest=contract_digest)
+        contract_chain_inputs=contract_inputs)
     return c.row("CG-7h")
 
 
