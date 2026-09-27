@@ -90,8 +90,8 @@ that is right is open question 4 in the packet.
 
 **Why a container-shape vocabulary is in this package.** The sitting of
 2026-09-26 (§6, recorded in
-`.syzygy/governance/decisions/POLARIS-GATE-SITTING-2026-09-26-DECISION.md`,
-not yet merged) asks for a separate specification amendment, N8, letting a
+`.syzygy/governance/decisions/POLARIS-GATE-SITTING-2026-09-26-DECISION.md`)
+asks for a separate specification amendment, N8, letting a
 project's profile declare its own container shapes, with Butlers declaring
 today's. Those declarations need somewhere to live that an act binds. This
 package puts Butlers' in `containerShapes` and `classGrammar`, so N8 can
@@ -124,7 +124,7 @@ The same row also says "The consent record, the registry entry and
 PWB-REQ-005 are edited on no arm." Read literally that forbids this
 package's subject. This package reads the sentence as describing the other
 slices' arms, because Q2 in the same row rules an act over the registry
-entry [Inferred]. The owner decides the reading — packet question 6.
+entry [Inferred]. The owner decides the reading — packet question 3.
 
 Doctrine: `VIS-4` reserves the act to the owner; `VIS-2` requires a source
 the grammar cannot read to stay Unknown, which the `containerShape` and
