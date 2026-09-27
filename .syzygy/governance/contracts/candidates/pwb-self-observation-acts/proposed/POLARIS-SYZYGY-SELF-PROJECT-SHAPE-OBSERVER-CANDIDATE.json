@@ -8,11 +8,9 @@
     {
       "observerId": "polaris-syzygy-self-project-shape",
       "observerVersion": "1.0.0-candidate.1",
-      "discoveryVersion": "pwb-discovery-v2-candidate.1",
+      "discoveryVersion": "pwb-self-discovery-v1-candidate.1",
       "purpose": "test-only conformance fixture (M8 slice 6): measures the project-shape pipeline against this repository's own tracked tree at one fixed Git revision; serves no surface",
       "role": "adapter",
-      "implementationId": "three-surface-poc-core/project-shape-observer",
-      "implementationVersion": "1.0.0",
       "contractId": "RFC-0004/general-contract",
       "contractVersion": "sha256:b21fc950103964c34e2f9b2d78c97ac8e03720f311738e0e6323afb29b8d6f0e",
       "contractVersionSource": "accepted RFC-0004/general-contract.md as amended by the 2026-09-01 general trusted-bootstrap transaction (CONTRACT-AMENDMENT-MANIFEST.txt row)",
@@ -31,7 +29,7 @@
       ],
       "authorizationModeDerivation": "every artifact must have a current exact digest-bound owner act; independently-verified only when all three acts verify through A1; owner-trusted-bootstrap when at least one valid act remains owner-adopted bootstrap and the others are valid state-(1) or state-(2) acts; every other combination rejects before body reads",
       "provenanceDisclosure": "Observation uses owner-trusted records; independent audit is not configured.",
-      "implementation": "none yet; a conformance module under packages/three-surface-poc-core/src/ would be added by M8 slice 6 only after all three self-observation acts exist",
+      "implementation": "none yet; a conformance module under packages/three-surface-poc-core/src/ would be added by M8 slice 6 only after all three self-observation acts exist; this entry names no implementation identity or version until that slice does, and the self discovery has its own discoveryVersion because it differs from the Butlers discovery in seed, population and roster",
       "implementationStatus": "no implementation reads this entry; adopting it authorizes no code change by itself",
       "surfaceExposure": {
         "servedRoutes": [],
@@ -39,7 +37,7 @@
         "log": false,
         "storedEvaluation": false,
         "walkthroughRecord": false,
-        "rule": "the page and machine answer are built only as in-memory values inside the conformance test process and are never served, cached, logged or written anywhere"
+        "rule": "the page and machine answer are built only as in-memory values inside the conformance test process and are never served, cached, logged or written anywhere; test assertions compare only digests, counts, identities and closed reasons, and no assertion message, snapshot, reporter output or test log carries an observed body or rendered text"
       },
       "inputClasses": [
         {
@@ -132,7 +130,7 @@
         "questions": [
           "What currently exists?"
         ],
-        "readAuthority": "within this repository's own Git object database at the one fixed revision the conformance fixture names, phase A reads only the root index the secret-classification policy's self-observation scope names, the further indexes this profile declares, and Git tree metadata needed to derive the manifest; phase B reads only normalized repository-relative paths addressed as exact Git objects in that revision-bound manifest",
+        "readAuthority": "within this repository's own Git object database at the one fixed revision the conformance fixture names, phase A reads only the root index this profile's sourcePopulation names and Git tree metadata needed to derive the manifest; phase B reads only those sourcePopulation phase-B paths the root index links to, addressed as exact Git objects in that revision-bound manifest; no further index is followed",
         "writeSurface": [],
         "databaseAccess": [],
         "networkAccess": [],
@@ -168,6 +166,19 @@
         ],
         "rootSummary": null,
         "precedence": null,
+        "sourcePopulation": {
+          "phaseA": [
+            ".syzygy/governance/doctrine/README.md"
+          ],
+          "phaseB": [
+            ".syzygy/governance/doctrine/architecture.md",
+            ".syzygy/governance/doctrine/security.md",
+            ".syzygy/governance/doctrine/trust-and-evidence.md",
+            ".syzygy/governance/doctrine/v1.md",
+            ".syzygy/governance/doctrine/vision.md"
+          ],
+          "rule": "closed: at most these six files; a phase-B path is read only when the phase-A index links to it at the fixed revision, and no other path is read even if linked"
+        },
         "profileNote": "this repository declares no catalog, no root summary and no precedence table in the grammar this observer reads, so this profile declares none; every catalog-count, root-summary and precedence-dependent claim is Unknown rather than borrowed from another profile"
       },
       "resourceLimits": {
@@ -236,6 +247,7 @@
       "claimStateMapping": {
         "unresolvedContradiction": "contradicted-pending-adjudication"
       },
+      "selfReferenceRule": "no object read as an observed Git blob under this entry, including any policy, registry entry, consent record, act record, manifest, owner packet or the acceptance-act record, is an authority input to any evaluation; authority for this pair is evaluated only for the pair (project:syzygy, repository:syzygy) and is never inherited from another pair, including through expectations keyed only by the observing project",
       "adoptionStatus": "candidate-unadopted"
     }
   ]

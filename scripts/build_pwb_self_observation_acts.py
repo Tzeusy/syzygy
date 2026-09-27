@@ -18,18 +18,25 @@ are installed byte-for-byte at adoption, so the row is the act argument.
 Row 3 hashes the policy's current bytes with the diff applied.
 
 `--check` verifies each artifact's structural claims, their agreement on
-the pair and content class, that the new install targets are still free,
-that no sibling candidate package patches any of the three targets, that
-every manifest is an exact regeneration, and that the owner packet quotes
-the two new-file arguments at their current digests and offers no policy
-argument. Bare invocation refuses to overwrite the manifests; pass
-`--write` to regenerate them.
+the pair, content class, pinned versions and closed source population, that
+each new install target is free (act pending) or holds exactly the proposed
+bytes (act adopted), that the policy either takes the patch (pending) or
+already holds its result (adopted), that no sibling candidate package
+patches or drafts any of the three targets, that every manifest is an exact
+regeneration, and that the owner packet quotes the two new-file arguments
+at their current digests and offers no policy argument. It holds before,
+between and after the three adoptions, in any order, and `--apply` refuses
+an act that is already adopted. Bare invocation refuses to overwrite the
+manifests; pass `--write` to regenerate them.
 """
 
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
+import io
+import itertools
 import json
 import pathlib
 import re
@@ -89,6 +96,26 @@ POLICY_PROPOSED_VERSION = "1.2.0-candidate.1"
 #: scope's served or stored boundaries (cache, log, walkthrough-record) is
 #: outside it.
 SELF_BOUNDARIES = ("observation", "model", "human-html", "machine-json")
+SELF_OBSERVER_ID = "polaris-syzygy-self-project-shape"
+SELF_OBSERVER_VERSION = "1.0.0-candidate.1"
+#: The closed source population the consent, the policy scope and the
+#: registry entry all name: one index, and the five files it links to.
+DOCTRINE = ".syzygy/governance/doctrine/"
+SELF_PHASE_A = (f"{DOCTRINE}README.md",)
+SELF_PHASE_B = tuple(f"{DOCTRINE}{name}" for name in (
+    "architecture.md", "security.md", "trust-and-evidence.md", "v1.md",
+    "vision.md"))
+#: Sentences each artifact must carry, compared whitespace-normalized.
+ASSERTION_BOUND = ("assertion message, snapshot, reporter output or test log "
+                   "carries an observed body or rendered text")
+GRAMMAR_READING = ("a source that matches no signed literal is excluded as an "
+                   "unknown extraction class")
+NO_INHERITANCE = "is never inherited from another pair"
+#: Every finder check() calls; the selftest proves each call site survives.
+CHECK_FINDERS = ("population_findings", "consent_findings",
+                 "registry_findings", "policy_findings", "target_findings",
+                 "composition_findings", "manifest_findings",
+                 "packet_findings")
 ROW = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
 HEX64 = re.compile(r"[0-9a-f]{64}")
 PATCH_TARGET = re.compile(r"^\+\+\+ b/(\S+)", re.MULTILINE)
@@ -105,16 +132,22 @@ def read_bytes(rel: pathlib.Path, root: pathlib.Path = ROOT) -> bytes:
     return target.read_bytes()
 
 
-def spec_digest() -> str:
-    return sha256(read_bytes(SPEC))
+def spec_digest(root: pathlib.Path = ROOT) -> str:
+    return sha256(read_bytes(SPEC, root))
+
+
+def one_line(text: str) -> str:
+    """Whitespace-normalized text, so a hard wrap never hides a sentence."""
+    return " ".join(text.split())
 
 
 # ------------------------------------------------------------- policy
 
 
 def policy_proposed(current: bytes | None = None,
-                    patch: pathlib.Path | None = None) -> bytes:
-    """The policy's current bytes with the one proposed diff applied."""
+                    patch: pathlib.Path | None = None,
+                    reverse: bool = False) -> bytes:
+    """The policy's bytes with the one proposed diff applied (or reversed)."""
     body = read_bytes(POLICY) if current is None else current
     patch = ROOT / PROPOSED / POLICY_PATCH_NAME if patch is None else patch
     with tempfile.TemporaryDirectory() as scratch:
@@ -122,13 +155,35 @@ def policy_proposed(current: bytes | None = None,
         (base / POLICY).parent.mkdir(parents=True, exist_ok=True)
         (base / POLICY).write_bytes(body)
         done = subprocess.run(
-            ["git", "apply", "--whitespace=nowarn", str(patch)],
+            ["git", "apply", "--whitespace=nowarn"]
+            + (["-R"] if reverse else []) + [str(patch)],
             cwd=base, capture_output=True, text=True)
         if done.returncode != 0:
             raise ValueError(
-                f"{patch.name} does not apply to the current bytes of "
-                f"{POLICY.as_posix()}: {done.stderr.strip()}")
+                f"{patch.name} does not {'reverse' if reverse else 'apply'} "
+                f"on the current bytes of {POLICY.as_posix()}: "
+                f"{done.stderr.strip()}")
         return (base / POLICY).read_bytes()
+
+
+def policy_state(root: pathlib.Path = ROOT) -> tuple[str, bytes, bytes]:
+    """(state, base bytes, proposed bytes) for act 3 in the tree at `root`.
+
+    Before act 3 the patch applies forward to the policy: the act is pending
+    and the current bytes are the base. After act 3 the policy already holds
+    the proposed bytes, so the patch reverses cleanly and the reversal is
+    the base. Anything else is drift, and neither state is claimed.
+    """
+    current = read_bytes(POLICY, root)
+    patch = root / PROPOSED / POLICY_PATCH_NAME
+    try:
+        return "pending", current, policy_proposed(current, patch)
+    except ValueError as forward:
+        try:
+            base = policy_proposed(current, patch, reverse=True)
+        except ValueError:
+            raise forward from None
+        return "adopted", base, current
 
 
 def policy_findings(proposed: bytes, current: bytes,
@@ -170,17 +225,28 @@ def policy_findings(proposed: bytes, current: bytes,
             if not isinstance(seed, str) or not (root / seed).is_file():
                 findings.append(f"phase-A seed is not a file in this "
                                 f"repository: {seed!r}")
+    if (seeds, scope.get("phaseBPaths")) != (list(SELF_PHASE_A),
+                                             list(SELF_PHASE_B)):
+        findings.append("selfObservationScope's phase-A and phase-B paths are "
+                        "not the closed population the consent names")
     for key in ("purpose", "ingestBoundaryRule", "derivedSeedRule",
                 "inheritedRules", "selfReferenceRule"):
         if not isinstance(scope.get(key), str) or not scope[key].strip():
             findings.append(f"selfObservationScope sentence is empty: {key}")
+    for key, phrase in (("ingestBoundaryRule", ASSERTION_BOUND),
+                        ("inheritedRules", GRAMMAR_READING),
+                        ("selfReferenceRule", NO_INHERITANCE)):
+        if phrase not in one_line(str(scope.get(key, ""))):
+            findings.append(f"selfObservationScope {key} does not say: "
+                            f"{phrase}")
     return findings
 
 
 # ------------------------------------------------------------ registry
 
 
-def registry_findings(body: bytes, spec: str) -> list[str]:
+def registry_findings(body: bytes, spec: str,
+                      root: pathlib.Path = ROOT) -> list[str]:
     try:
         doc = json.loads(body)
     except ValueError as error:
@@ -193,11 +259,19 @@ def registry_findings(body: bytes, spec: str) -> list[str]:
     if doc.get("project") != OBSERVING:
         findings.append(f"registry project is not {OBSERVING}")
     try:
-        butlers = json.loads(read_bytes(BUTLERS_REGISTRY))["entries"][0]
-        if entry.get("observerId") == butlers.get("observerId"):
-            findings.append("observerId collides with the Butlers entry")
+        butlers = json.loads(read_bytes(BUTLERS_REGISTRY, root))["entries"][0]
+        for key in ("observerId", "discoveryVersion"):
+            if entry.get(key) == butlers.get(key):
+                findings.append(f"{key} collides with the Butlers entry")
     except (ValueError, KeyError, IndexError) as error:
         findings.append(f"cannot read the Butlers entry to compare: {error}")
+    if entry.get("observerVersion") != SELF_OBSERVER_VERSION:
+        findings.append(f"observerVersion is not {SELF_OBSERVER_VERSION}, the "
+                        "version the consent pins")
+    for key in ("implementationId", "implementationVersion"):
+        if key in entry:
+            findings.append(f"{key} is named before any slice names an "
+                            "implementation")
     subject = entry.get("subject") or {}
     if (subject.get("observingProject"), subject.get("observedRepository")) != (
             OBSERVING, OBSERVED):
@@ -220,6 +294,16 @@ def registry_findings(body: bytes, spec: str) -> list[str]:
     for key in ("cache", "log", "storedEvaluation", "walkthroughRecord"):
         if exposure.get(key) is not False:
             findings.append(f"surfaceExposure.{key} is not false")
+    if ASSERTION_BOUND not in one_line(str(exposure.get("rule", ""))):
+        findings.append(f"surfaceExposure.rule does not say: {ASSERTION_BOUND}")
+    population = (entry.get("observationGrammar") or {}).get(
+        "sourcePopulation") or {}
+    if (population.get("phaseA"), population.get("phaseB")) != (
+            list(SELF_PHASE_A), list(SELF_PHASE_B)):
+        findings.append("observationGrammar.sourcePopulation is not the closed "
+                        "population the consent names")
+    if NO_INHERITANCE not in one_line(str(entry.get("selfReferenceRule", ""))):
+        findings.append(f"selfReferenceRule does not say: {NO_INHERITANCE}")
     limits = entry.get("resourceLimits")
     semantics = entry.get("resourceLimitSemantics")
     if not isinstance(limits, dict) or not isinstance(semantics, dict):
@@ -253,6 +337,18 @@ def consent_findings(text: str) -> list[str]:
                         "been given for this pair")
     if BUTLERS_OBSERVED in text.split("## Scope", 1)[0]:
         findings.append("consent head names the Butlers repository")
+    # The scope is closed and pinned, so a later version of the other two
+    # artifacts can never widen it.
+    flat = one_line(text)
+    for phrase in (f"observer `{SELF_OBSERVER_ID}` version "
+                   f"`{SELF_OBSERVER_VERSION}`",
+                   f"at version `{POLICY_PROPOSED_VERSION}`",
+                   "needs a new consent act", ASSERTION_BOUND):
+        if phrase not in flat:
+            findings.append(f"consent scope does not say: {phrase}")
+    for path in SELF_PHASE_A + SELF_PHASE_B:
+        if f"`{pathlib.PurePosixPath(path).name}`" not in flat:
+            findings.append(f"consent does not name population member {path}")
     return findings
 
 
@@ -266,32 +362,65 @@ def population_findings(names: list[str]) -> list[str]:
     return []
 
 
-def new_target_findings(root: pathlib.Path = ROOT) -> list[str]:
-    """A new file's install target must still be free, or adoption overwrites."""
-    return [f"install target already exists: {ACTS[k][1].as_posix()}"
-            for k in ("consent", "registry") if (root / ACTS[k][1]).exists()]
+def target_state(key: str, root: pathlib.Path = ROOT) -> str:
+    """'pending' or 'adopted' for a new-file act; ValueError when occupied."""
+    target = root / ACTS[key][1]
+    if not target.exists():
+        return "pending"
+    source = root / PROPOSED / (CONSENT_NAME if key == "consent"
+                                else REGISTRY_NAME)
+    if target.is_file() and source.is_file() and (
+            target.read_bytes() == source.read_bytes()):
+        return "adopted"
+    raise ValueError(f"install target occupied by different bytes: "
+                     f"{ACTS[key][1].as_posix()}")
 
 
-def composition_findings(root: pathlib.Path = ROOT) -> list[str]:
-    """No sibling candidate package may patch any of the three targets."""
-    targets = {ACTS[k][1].as_posix() for k in ACTS}
+def target_findings(root: pathlib.Path = ROOT) -> list[str]:
+    """A new file's install target is free (pending) or holds exactly the
+    proposed bytes (adopted); anything else would be overwritten."""
     findings = []
-    for patch in sorted((root / CANDIDATES).glob("*/proposed/*.patch")):
-        if patch.parent.parent.name == PACKAGE.name:
-            continue
-        for hit in PATCH_TARGET.findall(patch.read_text()):
-            if hit in targets:
-                findings.append(
-                    f"{patch.relative_to(root).as_posix()} also patches {hit}")
+    for key in ("consent", "registry"):
+        try:
+            target_state(key, root)
+        except ValueError as error:
+            findings.append(str(error))
     return findings
 
 
-def artifacts() -> dict[str, bytes]:
+def composition_findings(root: pathlib.Path = ROOT) -> list[str]:
+    """No sibling candidate package may patch or draft any of the targets."""
+    targets = {ACTS[k][1].as_posix() for k in ACTS}
+    names = {ACTS[k][1].name for k in ACTS}
+    findings = []
+    for drafted in sorted((root / CANDIDATES).glob("*/proposed/**/*")):
+        if not drafted.is_file() or (
+                drafted.relative_to(root / CANDIDATES).parts[0]
+                == PACKAGE.name):
+            continue
+        rel = drafted.relative_to(root).as_posix()
+        if drafted.name in names:
+            findings.append(f"{rel} also drafts a file named {drafted.name}")
+        if drafted.suffix == ".patch":
+            for hit in PATCH_TARGET.findall(
+                    drafted.read_text(errors="replace")):
+                if hit in targets:
+                    findings.append(f"{rel} also patches {hit}")
+    return findings
+
+
+def artifacts(root: pathlib.Path = ROOT) -> dict[str, bytes]:
     return {
-        "consent": read_bytes(PROPOSED / CONSENT_NAME),
-        "registry": read_bytes(PROPOSED / REGISTRY_NAME),
-        "policy": policy_proposed(),
+        "consent": read_bytes(PROPOSED / CONSENT_NAME, root),
+        "registry": read_bytes(PROPOSED / REGISTRY_NAME, root),
+        "policy": policy_state(root)[2],
     }
+
+
+def adoption_states(root: pathlib.Path = ROOT) -> dict[str, str]:
+    return {"consent": target_state("consent", root),
+            "registry": target_state("registry", root),
+            "policy": policy_state(root)[0]}
 
 
 def render(key: str, body: bytes) -> str:
@@ -341,26 +470,30 @@ def packet_findings(text: str | None, digests: dict[str, str]) -> list[str]:
     return findings
 
 
-def check() -> list[str]:
+def check(root: pathlib.Path = ROOT) -> list[str]:
+    """Every predicate over the tree at `root`, before, between or after the
+    three adoptions, in any order."""
     findings: list[str] = []
     findings.extend(population_findings(
-        [p.name for p in (ROOT / PROPOSED).iterdir()]
-        if (ROOT / PROPOSED).is_dir() else []))
+        [p.name for p in (root / PROPOSED).iterdir()]
+        if (root / PROPOSED).is_dir() else []))
     try:
-        bodies = artifacts()
+        _state, base, proposed = policy_state(root)
+        bodies = artifacts(root)
     except ValueError as error:
         return findings + [str(error)]
     findings.extend(consent_findings(bodies["consent"].decode("utf-8")))
-    findings.extend(registry_findings(bodies["registry"], spec_digest()))
-    findings.extend(policy_findings(bodies["policy"], read_bytes(POLICY)))
-    findings.extend(new_target_findings())
-    findings.extend(composition_findings())
+    findings.extend(registry_findings(bodies["registry"], spec_digest(root),
+                                      root))
+    findings.extend(policy_findings(proposed, base, root))
+    findings.extend(target_findings(root))
+    findings.extend(composition_findings(root))
     for key, body in bodies.items():
-        target = ROOT / ACTS[key][2]
+        target = root / ACTS[key][2]
         findings.extend(manifest_findings(
             key, target.read_text() if target.is_file() else None,
             render(key, body)))
-    packet = ROOT / PACKET
+    packet = root / PACKET
     findings.extend(packet_findings(
         packet.read_text() if packet.is_file() else None,
         {k: sha256(v) for k, v in bodies.items()}))
@@ -368,6 +501,28 @@ def check() -> list[str]:
 
 
 # ------------------------------------------------------------ selftest
+
+
+#: What `check()` needs to run in a scratch root: the package, the three
+#: install targets' neighbours, the specification and the seed population.
+SCRATCH_COPIES = (PACKAGE, POLICY, BUTLERS_REGISTRY, SPEC,
+                  pathlib.Path(".syzygy/governance/doctrine"))
+
+
+def scratch_root(into: pathlib.Path) -> pathlib.Path:
+    for rel in SCRATCH_COPIES:
+        source, target = ROOT / rel, into / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if source.is_dir():
+            shutil.copytree(source, target)
+        else:
+            shutil.copyfile(source, target)
+    return into
+
+
+def quietly(fn, *args):
+    with contextlib.redirect_stdout(io.StringIO()):
+        return fn(*args)
 
 
 def selftest() -> int:
@@ -380,8 +535,7 @@ def selftest() -> int:
     bodies = artifacts()
     consent = bodies["consent"].decode("utf-8")
     registry = bodies["registry"]
-    current = read_bytes(POLICY)
-    proposed = bodies["policy"]
+    _state, current, proposed = policy_state()
     spec = spec_digest()
     count = 0
 
@@ -392,6 +546,11 @@ def selftest() -> int:
             print(f"SELFTEST FAILED: {label} passed")
             return False
         return True
+
+    def csub(phrase: str, replacement: str) -> str:
+        """Replace one phrase of the consent across any hard wrap."""
+        pattern = r"\s+".join(re.escape(word) for word in phrase.split())
+        return re.sub(pattern, replacement, consent, count=1)
 
     # Consent predicates.
     consent_mutants = (
@@ -404,9 +563,22 @@ def selftest() -> int:
          consent.replace("## Scope", "> “you have consent”\n\n## Scope", 1)),
         ("a consent with no candidate Status line",
          consent.replace("Status: **candidate;", "Status: **in force;", 1)),
+        ("a consent with two Status lines",
+         consent.replace("Consent class:", "Status: candidate\n\nConsent "
+                         "class:", 1)),
         ("a consent head naming the Butlers repository",
          consent.replace("Purpose: test-only.",
                          f"Purpose: test-only, like {BUTLERS_OBSERVED}.", 1)),
+        ("a consent with an unpinned observer",
+         csub(f"version `{SELF_OBSERVER_VERSION}`", "")),
+        ("a consent with an unpinned policy version",
+         csub(f"at version `{POLICY_PROPOSED_VERSION}`", "at any version")),
+        ("a consent a later version may widen",
+         csub("needs a new consent act", "is covered")),
+        ("a consent with no assertion bound",
+         csub("reporter output or test log", "reporter output")),
+        ("a consent missing one population member",
+         consent.replace("`trust-and-evidence.md`", "`trust.md`", 1)),
     )
     for label, mutant in consent_mutants:
         assert mutant != consent, label
@@ -424,6 +596,9 @@ def selftest() -> int:
         fn(doc)
         return json.dumps(doc, indent=2).encode()
 
+    def butlers(key: str) -> str:
+        return json.loads(read_bytes(BUTLERS_REGISTRY))["entries"][0][key]
+
     registry_mutants = (
         ("invalid registry JSON", registry + b"}"),
         ("a second registry entry",
@@ -431,8 +606,16 @@ def selftest() -> int:
         ("a registry for another project",
          reg_doc(lambda d: d.__setitem__("project", "project:butlers"))),
         ("the Butlers observerId",
-         reg(lambda e: e.__setitem__("observerId",
-                                     "polaris-butlers-project-shape"))),
+         reg(lambda e: e.__setitem__("observerId", butlers("observerId")))),
+        ("the Butlers discoveryVersion",
+         reg(lambda e: e.__setitem__("discoveryVersion",
+                                     butlers("discoveryVersion")))),
+        ("an observerVersion the consent does not pin",
+         reg(lambda e: e.__setitem__("observerVersion", "1.1.0-candidate.1"))),
+        ("a named implementationId",
+         reg(lambda e: e.__setitem__("implementationId", "x/y"))),
+        ("a named implementationVersion",
+         reg(lambda e: e.__setitem__("implementationVersion", "1.0.0"))),
         ("a registry subject naming the Butlers repository",
          reg(lambda e: e["subject"].__setitem__("observedRepository",
                                                 BUTLERS_OBSERVED))),
@@ -442,6 +625,12 @@ def selftest() -> int:
         ("a non-empty write surface",
          reg(lambda e: e["typedAuthority"].__setitem__("writeSurface",
                                                        ["docs/"]))),
+        ("database access",
+         reg(lambda e: e["typedAuthority"].__setitem__("databaseAccess",
+                                                       ["sqlite"]))),
+        ("network access",
+         reg(lambda e: e["typedAuthority"].__setitem__("networkAccess",
+                                                       ["https"]))),
         ("observed-code execution",
          reg(lambda e: e["typedAuthority"].__setitem__("executeObservedCode",
                                                        True))),
@@ -453,6 +642,25 @@ def selftest() -> int:
                                                         ["/polaris"]))),
         ("a cached self-observation",
          reg(lambda e: e["surfaceExposure"].__setitem__("cache", True))),
+        ("a logged self-observation",
+         reg(lambda e: e["surfaceExposure"].__setitem__("log", True))),
+        ("a stored evaluation",
+         reg(lambda e: e["surfaceExposure"].__setitem__("storedEvaluation",
+                                                        True))),
+        ("a walkthrough record",
+         reg(lambda e: e["surfaceExposure"].__setitem__("walkthroughRecord",
+                                                        True))),
+        ("an exposure rule with no assertion bound",
+         reg(lambda e: e["surfaceExposure"].__setitem__("rule", "never served"))),
+        ("a widened source population",
+         reg(lambda e: e["observationGrammar"]["sourcePopulation"]["phaseB"]
+             .append("AGENTS.md"))),
+        ("a missing source population",
+         reg(lambda e: e["observationGrammar"].pop("sourcePopulation"))),
+        ("an inheritable self-reference rule",
+         reg(lambda e: e.__setitem__("selfReferenceRule", "observed text"))),
+        ("resource limits that are not an object",
+         reg(lambda e: e.__setitem__("resourceLimits", []))),
         ("a resource limit without semantics",
          reg(lambda e: e["resourceLimits"].__setitem__("maxExtra", 1))),
     )
@@ -501,6 +709,9 @@ def selftest() -> int:
         fn(doc)
         return json.dumps(doc, indent=2).encode()
 
+    def self_scope(key: str, value) -> bytes:
+        return pol(lambda d: d["selfObservationScope"].__setitem__(key, value))
+
     policy_mutants = (
         ("an unbumped policyVersion",
          pol(lambda d: d.__setitem__("policyVersion", POLICY_CURRENT_VERSION))),
@@ -511,17 +722,26 @@ def selftest() -> int:
         ("a missing selfObservationScope",
          pol(lambda d: d.pop("selfObservationScope"))),
         ("a self scope naming the Butlers repository",
-         pol(lambda d: d["selfObservationScope"].__setitem__(
-             "observedRepository", BUTLERS_OBSERVED))),
+         self_scope("observedRepository", BUTLERS_OBSERVED)),
         ("a self scope that caches",
          pol(lambda d: d["selfObservationScope"]["ingestBoundaries"].append(
              "cache"))),
         ("a phase-A seed that is not a file here",
-         pol(lambda d: d["selfObservationScope"].__setitem__(
-             "phaseASeedPaths", ["about/README.md"]))),
-        ("an empty self-reference rule",
-         pol(lambda d: d["selfObservationScope"].__setitem__(
-             "selfReferenceRule", " "))),
+         self_scope("phaseASeedPaths", ["about/README.md"])),
+        ("an empty phase-A seed list", self_scope("phaseASeedPaths", [])),
+        ("a widened phase-B population",
+         self_scope("phaseBPaths", list(SELF_PHASE_B) + ["AGENTS.md"])),
+        ("an empty purpose", self_scope("purpose", "")),
+        ("an empty ingest boundary rule", self_scope("ingestBoundaryRule", " ")),
+        ("an ingest boundary rule with no assertion bound",
+         self_scope("ingestBoundaryRule", "nothing is served")),
+        ("an empty derived-seed rule", self_scope("derivedSeedRule", "")),
+        ("an empty inherited-rules sentence", self_scope("inheritedRules", "")),
+        ("inherited rules with no signed-grammar reading",
+         self_scope("inheritedRules", "every other rule applies unchanged")),
+        ("an empty self-reference rule", self_scope("selfReferenceRule", " ")),
+        ("an inheritable self-reference rule",
+         self_scope("selfReferenceRule", "this policy is observed text")),
     )
     for label, mutant in policy_mutants:
         assert mutant != proposed, label
@@ -537,13 +757,19 @@ def selftest() -> int:
         target = root / ACTS["consent"][1]
         target.parent.mkdir(parents=True)
         target.write_text("already here\n")
-        if not expect("an occupied install target", new_target_findings(root)):
+        if not expect("an install target occupied by different bytes",
+                      target_findings(root)):
             return 1
         sibling = root / CANDIDATES / "other-package" / "proposed"
         sibling.mkdir(parents=True)
         (sibling / "x.patch").write_text(
             f"--- a/{POLICY.as_posix()}\n+++ b/{POLICY.as_posix()}\n")
         if not expect("a sibling patching the policy",
+                      composition_findings(root)):
+            return 1
+        (sibling / "x.patch").unlink()
+        (sibling / REGISTRY_NAME).write_text("{}\n")
+        if not expect("a sibling drafting a whole install target",
                       composition_findings(root)):
             return 1
     for key, body in bodies.items():
@@ -572,40 +798,92 @@ def selftest() -> int:
             packet + f"\n{ACTS['policy'][0]}: {digests['policy']}\n",
             digests)):
         return 1
+
+    # Every finder must still be called by check(): replace each in turn
+    # with one that returns a sentinel, and require check() to surface it.
+    module = sys.modules[__name__]
+    for name in CHECK_FINDERS:
+        original = getattr(module, name)
+        setattr(module, name, lambda *_a, **_k: ["SENTINEL"])
+        try:
+            got = [f for f in check() if f == "SENTINEL"]
+        finally:
+            setattr(module, name, original)
+        if not expect(f"check() without its {name} call", got):
+            return 1
+
+    # Three separate acts, in every order: after each adoption the package
+    # still verifies, the adopted act refuses a second --apply, and the
+    # manifests keep matching.
+    for order in itertools.permutations(ACTS):
+        with tempfile.TemporaryDirectory() as scratch:
+            root = scratch_root(pathlib.Path(scratch))
+            done: list[str] = []
+            for key in order:
+                count += 1
+                if quietly(apply, key, True, root) != 0:
+                    print(f"SELFTEST FAILED: --apply {key} refused after "
+                          f"{done or 'no act'}")
+                    return 1
+                done.append(key)
+                findings = check(root)
+                states = {} if findings else adoption_states(root)
+                if findings or any(states.get(k) != ("adopted" if k in done
+                                                 else "pending")
+                                   for k in ACTS):
+                    print(f"SELFTEST FAILED: after {done}, states {states}, "
+                          f"findings {findings}")
+                    return 1
+                count += 1
+                if quietly(apply, key, True, root) == 0:
+                    print(f"SELFTEST FAILED: a second --apply {key} after "
+                          f"{done} succeeded")
+                    return 1
     print(f"selftest: {count} predicates — consent pair, class, drafted owner "
-          "quotation, status and head; registry JSON, entry count, project, "
-          "observerId collision, pair, specification digest, write surface, "
-          "code execution, working-tree read, served route, cache and limit semantics; policy "
+          "quotation, status, head, pinned observer and policy versions, "
+          "no-widening sentence, assertion bound and population; registry "
+          "JSON, entry count, project, observerId and discoveryVersion "
+          "collision, pinned observer version, unnamed implementation, pair, "
+          "specification digest, write surface, database and network access, "
+          "code execution, working-tree read, served route, cache, log, "
+          "stored evaluation, walkthrough record, assertion bound, source "
+          "population, self-reference rule and limit semantics; policy "
           "drift, corruption, no-op, version, base scope, detectors, self "
-          "scope, boundaries, seed and rule sentences; proposed population, "
-          "occupied install target, sibling composition, three manifests' "
-          "digest, path and absence, and the packet's two quoted arguments "
-          "and absent policy offer all fail closed")
+          "scope, boundaries, seeds, phase-B population and rule sentences; "
+          "proposed population, occupied install target, sibling patch and "
+          "sibling draft, three manifests' digest, path and absence, the "
+          "packet's two quoted arguments and absent policy offer, and every "
+          "check() call site all fail closed; and all six adoption orders "
+          "verify after each act and refuse a repeated act")
     return 0
 
 
 # --------------------------------------------------------------- apply
 
 
-def apply(key: str, at_adoption: bool) -> int:
+def apply(key: str, at_adoption: bool, root: pathlib.Path = ROOT) -> int:
     if not at_adoption:
         print("refusing: --apply installs act-bound bytes; it is the adoption "
               "step and belongs in the change that records that act. Pass "
               "--at-adoption.")
         return 2
-    findings = check()
+    findings = check(root)
     if findings:
         print("refusing to apply: the package does not verify")
         for finding in findings:
             print(f"  {finding}")
         return 1
-    target = ROOT / ACTS[key][1]
+    if adoption_states(root)[key] == "adopted":
+        print(f"refusing to apply: {ACTS[key][1].as_posix()} already holds "
+              "the proposed bytes")
+        return 1
+    target = root / ACTS[key][1]
     if key == "policy":
-        target.write_bytes(policy_proposed())
+        target.write_bytes(policy_state(root)[2])
     else:
-        source = ROOT / PROPOSED / (CONSENT_NAME if key == "consent"
-                                    else REGISTRY_NAME)
-        shutil.copyfile(source, target)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(root / PROPOSED / (CONSENT_NAME if key == "consent"
+                                           else REGISTRY_NAME), target)
     print(f"applied {ACTS[key][1].as_posix()}")
     return 0
 
@@ -637,11 +915,13 @@ def main(argv: list[str]) -> int:
                 print(f"  {finding}")
             return 1
         bodies = artifacts()
+        states = adoption_states()
         print("Syzygy self-observation act packets verify: 3 manifests match "
               "their 3 proposed artifacts (consent, registry entry, policy "
-              "extension); the policy patch applies to the bound bytes")
+              "extension)")
         for key, body in bodies.items():
-            print(f"  {key}: {sha256(body)}  {ACTS[key][1].as_posix()}")
+            print(f"  {key} ({states[key]}): {sha256(body)}  "
+                  f"{ACTS[key][1].as_posix()}")
         return 0
     if not args.write:
         print("refusing: regenerating a manifest changes an act argument; pass "

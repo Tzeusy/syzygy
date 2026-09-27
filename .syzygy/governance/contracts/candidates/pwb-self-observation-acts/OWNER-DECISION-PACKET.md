@@ -24,16 +24,25 @@ acts exist, each separate and dated". This directory drafts those three:
 
 `SEMANTIC-DELTA.md` says what each act changes. `IMPACT-LEDGER.md` says
 what depends on each, with the sweeps that found them. `REVIEW-BRIEF.md`
-says what an independent reviewer should be given. Nothing here has been
-reviewed.
+says what an independent reviewer should be given. Round 1 of review
+returned REVISE; this is the repair, not yet reviewed. The "Review record"
+at the end says what changed for each finding.
 
 ## What each act would allow, in plain words
 
-With all three acts, one test may read this repository's own committed files
-at one fixed revision. Those reads are screened by the same secret rules as
-Butlers, and the test builds the page in memory to check it. Nothing is
-served, cached, logged or saved. Any one act without the other two allows
-nothing, because a read needs all three to be valid.
+With all three acts, one test may read at most six of this repository's
+own committed files, at one fixed revision: the doctrine index
+`.syzygy/governance/doctrine/README.md` and the five doctrine files it
+links to. Those reads are screened by the same secret rules as Butlers,
+and the test builds the page in memory to check it. Nothing is served,
+cached, logged or saved. The test's own checks compare only digests,
+counts, identities and reasons, so a failing test prints no observed text.
+Any one act without the other two allows nothing, because a read needs all
+three to be valid.
+
+The consent names the exact observer and policy versions it covers. A later
+version of either needs a new consent act, so a later registry entry or
+policy can never widen what was consented.
 
 None of the three acts authorizes code. Open question 4 asks whether writing
 the test needs a separate owner direction.
@@ -51,7 +60,7 @@ the test needs a separate owner direction.
 - **Phrase and argument:**
 
 ```text
-CONSENT TO SYZYGY SELF PROJECT-SHAPE OBSERVATION: e72382b69ff4bff1596b05afb5b3553d3329d743e192b2ce65caf2fa46a729d6
+CONSENT TO SYZYGY SELF PROJECT-SHAPE OBSERVATION: 66368ae09a6b5ddeff51d55444237d6a06f42ed6e98f3a4fc25c90b85ab175e5
 ```
 
 The phrase is new. The Butlers phrase names Butlers, and reusing it would
@@ -67,7 +76,7 @@ make one label name two subjects.
 - **Phrase and argument:**
 
 ```text
-ADOPT POLARIS SYZYGY SELF PROJECT-SHAPE OBSERVER REGISTRY ENTRY: 2218911c7b04bd1b5084d3c2a5e8da22735039cd9cb7e4d800b70e276f4fb912
+ADOPT POLARIS SYZYGY SELF PROJECT-SHAPE OBSERVER REGISTRY ENTRY: 6b3d0b9992cc4c1e6217013a62c3fc6d32e3077559895553f5234e287c423fce
 ```
 
 This argument goes stale whenever the PWB specification changes, because
@@ -110,8 +119,10 @@ the entry pins the specification's digest (see "Landing order").
 
 ## Landing order and which manifests move
 
-The queue this package must fit is `.21 → .30 → .22 → lane B`, then `.20`
-and `.18`, with `dov.24` and N8 alongside.
+The only landing order the owner has set is `.21 → .30 → .22 → lane B`
+(`POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md` §6). That
+ruling does not place `.20`, `.18`, `dov.24`, `dov.29` or N8, and nothing
+here assumes a place for them.
 
 | This package's manifest | Changes when | Why |
 |---|---|---|
@@ -128,10 +139,15 @@ the self entry should also carry a briefing ceiling is open question 7.
 **Proposed order (the owner's to set):**
 
 - Act 1, any time.
-- Act 3, together with the code change that updates the policy version.
+- Act 3, together with the code change that moves the policy version and
+  the policy act's identity (see "What happens to Butlers").
 - Act 2, last: after `dov.24` and after the last PWB specification act the
   owner wants in force before slice 6. Regenerate its manifest with
   `--write` just before performing it, and update the digest quoted above.
+
+The tooling allows any order. `--check` passes before, between and after
+the three adoptions, and `--apply` refuses only an act that is already
+applied. The self-test runs all six orders.
 
 **Nothing in this package forces another package to regenerate.**
 [Observed] No other candidate hashes the two new files. Act 3 moves the
@@ -146,25 +162,25 @@ policy's bytes, which has two consequences:
 
 ## What happens to Butlers when act 3 is applied
 
-[Observed] Two source sites hard-code the policy version
-`1.1.0-candidate.1`:
+Act 3 changes the policy file Butlers reads depend on, and it supersedes
+the policy act the code names. `IMPACT-LEDGER.md` sweep 2 lists every site.
+In short:
 
-- the expectations in `apps/three-surface-poc/src/governance-inputs.ts`
-  (line 72, and the policy's scope anchors);
-- `PWB_POLICY_IDENTITY` in
-  `packages/three-surface-poc-core/src/git-object-reader.ts` (line 43),
-  which `PWB_SECRET_POLICY` in `content-classification.ts` reuses.
+- [Observed] 10 lines in 4 files hard-code the policy version
+  `1.1.0-candidate.1`: two in `apps/three-surface-poc/src/governance-inputs.ts`
+  (the version and the policy's scope anchors), one in
+  `packages/three-surface-poc-core/src/git-object-reader.ts`
+  (`PWB_POLICY_IDENTITY`, which `content-classification.ts` reuses), five in
+  `content-classification.test.ts` and two in `project-shape-model.test.ts`.
+- [Observed] The same code also names the policy act in force: its act
+  identity, recording tag and act-record path, and the earlier act it
+  superseded. After act 3 all of these name the new act.
 
-Two test files assert the same value:
-`content-classification.test.ts` (five places) and
-`project-shape-model.test.ts` (two places).
-
-[Inferred] If the policy file moves before those do, the Butlers body-read
-authority fails closed and the Butlers page reads Unknown until they catch
-up. The tests that compare the hard-coded copy with the policy file would
-also fail. This fails safe, but it is visible. That is why act 3 should land in
-the same change that updates those sites, and why open question 2 offers a
-separate policy file instead.
+[Inferred] If the policy file moves before the code does, the Butlers
+body-read authority fails closed and the Butlers page reads Unknown until
+the code catches up. The tests that compare the code with the policy file
+would also fail. This fails safe, but it is visible. That is why act 3
+should land in the same change that moves all of those sites together.
 
 ## Open questions for the owner
 
@@ -178,12 +194,12 @@ it.
    owner performs the act over this record's exact digest, the act itself is
    the grant." *Proposal:* accept that. *Alternative:* the owner supplies a
    sentence to quote. That changes act 1's argument.
-2. **Extend the Butlers policy, or write a second policy file?** The ruling
-   says "secret-policy extension", which this package reads as a patch to
-   the one policy [Inferred]. The cost is the Butlers window described
-   above. A separate file for the self pair would leave Butlers untouched,
-   but would need a new phrase and a new subject. *Proposal:* extend (arm
-   A), landing with the version-site update.
+2. **Extend the one policy — already ruled, stated here for its
+   consequence.** The option you chose on P-74 question 3 read "an
+   extension of the existing secret-classification policy to the observing
+   project's own tree". So act 3 patches the one policy file, and the
+   Butlers window described above follows from that choice. Nothing to
+   decide here unless you want to reopen the ruling.
 3. **Which file starts the self-observation?** *Proposal:*
    `.syzygy/governance/doctrine/README.md`. This repository has no catalog,
    no root summary and no precedence table in the grammar the observer
@@ -193,9 +209,12 @@ it.
 4. **Does slice 6's code need its own permission?** Line 73 of the PWB
    implementation act says "No second repository". The P-74 row puts
    "slices 1, 3, 4, 6 (design) and 7 under the PWB implementation act".
-   Whether the three acts, together with that row, are enough to write and
-   run the test is unclear [Unknown]. *Proposal:* a plain owner continuation
-   direction naming slice 6. It binds no digest and needs no packet.
+   The three acts do not amend that act, and its "No second repository"
+   line governs *running* the test, not only writing it. Whether the three
+   acts, together with that row, are enough to write and run the test is
+   unclear [Unknown]. *Proposal:* a plain owner continuation direction
+   naming slice 6, and saying the test may run. It binds no digest and needs
+   no packet.
 5. **Provenance state.** *Proposal:* state (1), owner-adopted bootstrap,
    uncorrelated, with the A1 audit record recorded as absent. This is the
    same as all three Butlers acts. It stays visible as uncorrelated and is
@@ -219,7 +238,28 @@ it.
    - record ID `PWB-SELF-CONSENT-2026-09-26`;
    - observer `polaris-syzygy-self-project-shape`, version
      `1.0.0-candidate.1`;
-   - policy version `1.2.0-candidate.1`.
+   - policy version `1.2.0-candidate.1`;
+   - discovery version `pwb-self-discovery-v1-candidate.1`.
+
+   The record ID embeds the date the record was drafted, not the date of any
+   statement or act. If you would rather it carry the act date, it changes
+   at the act, and so does act 1's argument.
+10. **Which rule decides whether the self pair may be read?** No approved
+    requirement names this pair. PWB-REQ-005 says "The consent subject SHALL
+    be exactly `(observing Syzygy project, configured Butlers
+    repository)`", and the M8 portability funnel says "No approved
+    requirement names a self-observation". The ruling forbids editing
+    PWB-REQ-005. *Proposal:* slice 6 applies PWB-REQ-005's gate to the self
+    pair by analogy, and says so in the test. *Alternative:* the test runs
+    with no specified gate beyond the three acts. *Alternative:* a separate
+    specification change names the self pair first.
+11. **Which checkouts count as `repository:syzygy`?** The consent resolves
+    the locator from whatever checkout runs the test. That could be a fork,
+    a pull-request branch in hosted CI, or an old worktree. *Proposal:* any
+    checkout of this repository whose fixture revision is a commit on
+    `main`, including hosted CI runs of this repository's own workflows,
+    and no fork. *Alternative:* the consent pins the fixture's revision,
+    which changes act 1's argument whenever the fixture moves.
 
 ## What is not in this package
 
@@ -227,7 +267,10 @@ it.
   each act.
 - No code. The authority lookup N8 slice 4 added is keyed by observing
   project, and both pairs share `project:syzygy` [Observed]. Slice 6's
-  implementation has to key it by the pair instead [Inferred].
+  implementation has to key it by the pair instead [Inferred]. The drafted
+  policy scope and registry entry both say authority for this pair "is
+  never inherited from another pair, including through expectations keyed
+  only by the observing project".
 - No change to the PROJECT-STATUS battery, the hosted workflow or its count
   sentence. Those are registered once, at merge time.
 
@@ -245,11 +288,44 @@ python3 scripts/check_governance.py
 `--check` re-derives all three manifests. It also checks:
 
 - that the drafted files and the patched policy say what this packet says;
-- that the patch still applies to the bound policy bytes;
-- that the two install targets are still free;
-- that no other candidate patches the same files;
+- that the consent, policy scope and registry entry name the same closed
+  population and the same versions;
+- that the patch still applies to the policy (act 3 pending), or that the
+  policy already holds the patched bytes (act 3 adopted);
+- that each install target is free (pending) or holds exactly the drafted
+  bytes (adopted);
+- that no other candidate patches, or drafts a file with the same name as,
+  any of the three targets;
 - that the two digests above are current.
 
-`--selftest` breaks each check in turn and requires each break to fail. The
-count it prints is the number of checks covered. `--diff` prints the policy
-change in full.
+`--selftest` breaks each check in turn and requires each break to fail. It
+also replaces each check `--check` calls with one that always reports a
+problem, and requires `--check` to report it. Then it applies the three acts
+in all six orders in a scratch copy, and requires `--check` to pass after
+each act and a repeated act to be refused. The count it prints is the
+number of those cases. `--diff` prints the policy change in full.
+
+
+## Review record
+
+Round 1: **REVISE**, over commit `5323721`, retained verbatim at
+`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-RAW.md`. That commit is
+pre-rebase: the branch was rebased onto `main` afterwards, to `6eb406d`, with
+no change to this package, and the repair below was made on `6eb406d`. Every
+repair changes bytes the review read, so the round-1 verdict covers none of
+the current bytes (verification rule 10). Both new-file digests above
+changed. No confirmation review has been run.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| F1 — `--apply` of the first act blocks the other two; `IMPACT-LEDGER.md` "not changed" claim was unrun | revise | **Repaired.** Every check now takes the tree root. An install target holding exactly the drafted bytes is *adopted*; only different bytes fail. The policy is *pending* if the patch applies forward and *adopted* if it reverses cleanly. `--apply` refuses only an already-adopted act. `--selftest` applies the three acts in all six orders in a scratch copy and requires `--check` to pass after each. The ledger claim is now [Observed] from a run: after the three applies in a full worktree copy, `git status --porcelain` listed exactly the three target paths. |
+| F2 — package claimed PWB-REQ-005 governs the self pair; inherited "signed PWB grammar" steps had no self reading | revise | **Repaired.** `SEMANTIC-DELTA.md` now says no approved requirement names the self pair, quoting PWB-REQ-005 and the funnel, and that slice 6 would apply the gate by analogy [Inferred]. `inheritedRules` now says how the signed-grammar rules read under this scope; a builder predicate requires that sentence. New open question 10 asks the owner which rule decides admission. |
+| F3 — consented population not closed; consent scope floated with later versions | revise | **Repaired.** The consent names the closed population (the doctrine index and at most the five files it links to, nothing else even if linked), pins observer `1.0.0-candidate.1` and policy `1.2.0-candidate.1`, and says a later version of either needs a new consent act. The policy scope gains `phaseBPaths`; the registry entry gains `sourcePopulation`. The builder requires all three to name the same six paths and the consent to carry both pins. |
+| F4 — "never logged, written to disk" not met by default test output | revise | **Repaired.** The consent, the registry entry's `surfaceExposure.rule` and the policy's `ingestBoundaryRule` each say assertions compare only digests, counts, identities and closed reasons, and no assertion message, snapshot, reporter output or test log carries an observed body or rendered text. The consent's exclusions name test-runner output, snapshots and CI logs. A builder predicate requires the sentence in all three. |
+| F5 — locator unbound; no owner question | note | **Routed to the owner** as open question 11, with a proposal. |
+| F6 — Q2 reopened a ruled choice; Q4 imprecise; Q9 record-ID date; two gates missing | note | **Repaired.** Q2 is restated as a consequence of the ruling, quoting the chosen option. Q4 says the act's "No second repository" line governs running the test and the three acts do not amend it. Q9 notes the record ID carries the drafting date. Questions 10 and 11 added. |
+| F7 — sweep 2 missed a line; Butlers authority chain beyond the version not named | note | **Repaired.** Sweep 2 is re-run by fixed string at `6eb406d` over the 348 tracked files under `apps/`, `packages/` and `scripts/`: 21 lines, classified in a table as 10 policy-version lines in 4 files, 6 observer-version lines and 5 script lines. It now lists the act identity, recording tag, act-record paths, supersession target and act instant the policy object names. "What happens to Butlers" above says the same. |
+| F8 — several `check()` predicates had no mutant; no call-site mutants | note | **Repaired.** Added mutants for database and network access, log, stored evaluation, walkthrough record, non-object resource limits, an empty seed list, all five scope sentences, and two Status lines, plus mutants for every new predicate. Each of the eight finders `check()` calls is replaced in turn with one returning a sentinel, and `check()` must surface it. The count went from 44 to 118; 36 of those are the adoption-order steps. |
+| F9 — registry reused Butlers discovery and implementation identities | note | **Repaired.** The self entry has its own `discoveryVersion`, `pwb-self-discovery-v1-candidate.1`, and names no `implementationId` or `implementationVersion` until slice 6 does; its `implementation` sentence says so. The builder fails on a shared discovery version or a named implementation. |
+| F10 — `selfReferenceRule` left the file/copy distinction and part of the population implicit; no registry counterpart | note | **Repaired.** The rule now reads as the review suggested: no object read as an observed Git blob, naming manifests, packets and the acceptance-act record, is an authority input, and authority for this pair is never inherited from another pair, including through expectations keyed only by the observing project. The registry entry carries the same rule. A builder predicate requires it in both. |
+| F11 — composition sweep saw only patches | note | **Repaired.** It now reads every file under every other package's `proposed/`, and fails on a patch targeting any of the three files or any file sharing a target's name. A selftest mutant drafts a whole registry file in a sibling. At `6eb406d` the other packages hold 21 `proposed/` files in 7 packages, all patches, none colliding. |

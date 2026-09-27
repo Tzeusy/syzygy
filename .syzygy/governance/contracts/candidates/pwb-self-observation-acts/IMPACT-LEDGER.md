@@ -35,29 +35,44 @@ The three scripts:
   amendment row. A new amendment row lands with act 3's record, never
   before.
 
-## Sweep 2 — code that pins the policy version
+## Sweep 2 — code that pins the policy version and the policy act
 
-Command: `git ls-files -z apps packages scripts | xargs -0 grep -nE`, with
-`(policyVersion|POLICY_VERSION|version).{0,20}1\.1\.0-candidate\.1`. The
-matches were then read one by one.
+Re-derived 2026-09-27 at commit `6eb406d` after round-1 review finding F7.
+The first version of this sweep used a regex and missed one line.
 
-[Observed] 10 matching lines. One of them
-(`scripts/record_pwb_effect_amendment_acts.py:111`) is the observer
-version, not the policy version. That leaves 9 policy-version lines in 4
-files:
+Command: `git grep -nF '1.1.0-candidate.1' 6eb406d -- apps packages scripts`.
+Denominator: the 348 tracked files under `apps/`, `packages/` and
+`scripts/` at that commit. Each hit was then read and classified by hand.
 
-- `apps/three-surface-poc/src/governance-inputs.ts`: 1 line, plus the
-  policy scope anchor on the same object.
-- `packages/three-surface-poc-core/src/git-object-reader.ts`: 1 line, in
-  `PWB_POLICY_IDENTITY`. `content-classification.ts` reuses this.
-- `packages/three-surface-poc-core/src/content-classification.test.ts`:
-  5 lines.
-- `packages/three-surface-poc-core/src/project-shape-model.test.ts`:
-  2 lines.
+[Observed] 21 matching lines. The version string names two different
+things, so the lines split three ways:
 
-[Inferred] All four files must change in the same implementation change that
-applies act 3. Otherwise the Butlers read authority fails closed and the
-Butlers page reads Unknown.
+| Kind | Lines | Where |
+|---|---:|---|
+| Policy version | 10 lines in 4 files | `apps/three-surface-poc/src/governance-inputs.ts:72` and `:93` (the policy's scope anchors); `packages/three-surface-poc-core/src/git-object-reader.ts:43` (`PWB_POLICY_IDENTITY`, which `content-classification.ts` reuses); `content-classification.test.ts:255, 286, 406, 474, 488`; `project-shape-model.test.ts:435, 592` |
+| Butlers observer version (not the policy) | 6 lines in 4 files | `governance-inputs.ts:105` (the registry's scope anchors); `project-shape-model.test.ts:464`; `project-shape-observation.test.ts:241, 268, 318`; `project-shape-observation.ts:50` |
+| Scripts | 5 lines in 3 files | `scripts/record_pwb_effect_amendment_acts.py:77` (policy) and `:111` (observer), in the recorder of a performed act, never edited; `scripts/build_pwb_registry_currency_briefing_amendment.py:54` (registry version); and 2 lines in this package's own builder |
+
+The version is not the only thing act 3 moves. Act 3 is a superseding
+`approve-policy` act, and the same `policy` object in
+`governance-inputs.ts` (lines 87-96) also names the act in force:
+
+- `actIdentity` (line 89) and `recordingTag` (line 92) name the
+  2026-09-05 amendment act. `governance-inputs.test.ts:166` asserts the tag.
+- `supersession.target` (line 95) resolves through
+  `PWB_SUPERSEDED_ACT_RECORDS.policy` (line 53) to the 2026-09-02 act
+  record, and `PWB_ACT_RECORDS.policy` (line 48) names the 2026-09-05
+  amendment act record.
+- `governingActInstant` (line 76) is `2026-09-02`.
+
+[Inferred] Act 3's adoption change must move all of these together: the ten
+policy-version lines, and the act identity, recording tag, act-record path,
+supersession target and scope anchors to the new act. Whether
+`governingActInstant` moves too depends on what act 3's record says. If the
+version or any one of those stays behind, the Butlers read authority fails
+closed on PWB-REQ-005's wrong-but-present act-record cases, and the Butlers
+page reads Unknown until the rest catch up. The six observer-version lines
+do not move: act 3 changes no registry entry.
 
 ## Sweep 3 — who pins the PWB specification's digest
 
@@ -91,12 +106,16 @@ acts forces the registry-entry manifest here to be regenerated.
 
 ## Sweep 4 — collisions with other candidate patches
 
-Command: the builder's `composition_findings`, run on every `--check`. It
-reads the `+++ b/` target of every `*/proposed/*.patch` in the other
-candidate packages.
+Command: the builder's `composition_findings`, run on every `--check`.
+Since round-1 review finding F11 it reads every file under every other
+candidate package's `proposed/` directory: a patch fails if its `+++ b/`
+target is one of the three targets, and any file fails if its name is one
+of the three targets' names.
 
-[Observed] 0 of the 20 patches from other packages target the policy or
-either install path. The only patch that touches the Butlers registry entry
+[Observed] At `6eb406d` the other packages hold 21 `proposed/` files in 7
+packages, all of them patches. 0 target the policy or either install path,
+and 0 share a name with any of the three. (At `3ee61c7` the same sweep over
+patches alone found 20.) The only patch that touches the Butlers registry entry
 is `.18`'s, and that is a different file from the self entry.
 
 ## Sweep 5 — the observed pair
@@ -131,12 +150,22 @@ Nothing in this package changes it.
 
 ## Not changed by any of the three acts
 
-[Observed] These are byte-identical before and after `--apply` of all
-three acts:
+[Observed] On 2026-09-27 the three acts were applied, in the order the
+packet proposes (consent, policy, registry), to a fresh Git repository made
+from a copy of this worktree with the repaired package committed: 1,552
+files, the same as `git ls-files` here. After the three
+`--apply … --at-adoption` runs, `git status --porcelain` in that copy listed
+exactly three paths: the policy (modified) and the two new files. A fourth
+`--apply consent` was refused. Every other tracked file was unchanged,
+including:
 
 - the Butlers consent record and its act;
 - the Butlers registry entry;
 - PWB-REQ-005 and the rest of the PWB specification.
+
+`--check` still passed in that copy and reported all three acts as
+adopted. The builder's `--selftest` repeats this in all six orders, in a
+scratch copy of the files `--check` reads.
 
 The builder checks that every policy key other than `policyVersion` and
 `selfObservationScope` stays equal.

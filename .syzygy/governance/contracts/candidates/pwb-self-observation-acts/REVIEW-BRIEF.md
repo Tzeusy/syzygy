@@ -2,7 +2,9 @@
 
 > **Candidate — binds nothing.** This brief says what an independent
 > reviewer should be given and what they are asked to decide. It is not a
-> review and gives no verdict. No review has been run on this package.
+> review and gives no verdict. Round 1 returned REVISE over commit
+> `5323721` (`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-RAW.md`); the
+> repaired bytes have not been reviewed.
 
 ## Status of the package under review
 
@@ -27,7 +29,10 @@ earlier bytes (verification rule 10).
   - PWB-REQ-005 in
     `openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md`;
   - `.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md`;
-  - SEC-4 and SEC-5 in `.syzygy/governance/doctrine/security.md`.
+  - SEC-4 and SEC-5 in `.syzygy/governance/doctrine/security.md`;
+  - `docs/design/POLARIS-M8-PORTABILITY-FUNNEL.md`, question 3 and slice 6.
+- For a confirmation round: the round-1 raw and the packet's "Review record"
+  table, to check each disposition against the repaired bytes.
 - For comparison, the Butlers originals:
   - the Butlers consent record and its act in `.syzygy/governance/decisions/`;
   - `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`;
@@ -52,6 +57,8 @@ history, or any other candidate package.
 6. Do the `--selftest` mutants each break a distinct check, and does any
    check in `check()` have no mutant?
 7. Are the [Observed] labels backed by a sweep with a stated denominator?
+8. For a confirmation round: is each round-1 finding repaired as its
+   disposition says, and did any repair introduce a new defect?
 
 Store the verdict word exactly and the raw output unchanged, in a file whose
 name ends in `-RAW.md` under `docs/reviews/`.

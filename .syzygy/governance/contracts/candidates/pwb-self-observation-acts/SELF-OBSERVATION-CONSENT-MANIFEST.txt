@@ -3,4 +3,4 @@
 # digest as argument; until that act is performed it binds nothing.
 # 1 artifact; the row hashes the drafted file under proposed/, installed byte-for-byte at adoption.
 # It matches the tree only after --apply at adoption.
-e72382b69ff4bff1596b05afb5b3553d3329d743e192b2ce65caf2fa46a729d6  .syzygy/governance/decisions/SYZYGY-SELF-PROJECT-SHAPE-OBSERVATION-CONSENT.md
+66368ae09a6b5ddeff51d55444237d6a06f42ed6e98f3a4fc25c90b85ab175e5  .syzygy/governance/decisions/SYZYGY-SELF-PROJECT-SHAPE-OBSERVATION-CONSENT.md

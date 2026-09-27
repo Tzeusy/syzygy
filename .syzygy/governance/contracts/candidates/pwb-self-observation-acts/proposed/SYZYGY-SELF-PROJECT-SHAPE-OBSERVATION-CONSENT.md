@@ -41,15 +41,29 @@ the act itself is the grant.
 ## Scope
 
 The consent covers read-only reads of exact Git objects in this repository,
-at the one fixed Git revision a conformance fixture names, selected by the
-observation the second adapter-registry entry for this pair declares
-(observer `polaris-syzygy-self-project-shape`) and screened by the
-secret-classification policy's self-observation scope.
+at the one fixed Git revision a conformance fixture names, and only of this
+closed population of at most six tracked files, all under
+`.syzygy/governance/doctrine/`:
+
+- phase A: `README.md`; and
+- phase B: those of `architecture.md`, `security.md`,
+  `trust-and-evidence.md`, `v1.md` and `vision.md` that `README.md` links
+  to at that revision. No other file is read, even if the index links to it,
+  and no further index is followed.
+
+The reads are selected by observer `polaris-syzygy-self-project-shape`
+version `1.0.0-candidate.1` in the second adapter-registry entry for this
+pair, and screened by the self-observation scope of the secret-classification
+policy at version `1.2.0-candidate.1`. This consent covers those two versions
+only. A later version of either, or any wider population, needs a new
+consent act; a superseding registry entry or policy never widens this one.
 
 Everything read is used only inside the conformance test process. The
 rendered page and machine answer the test builds are in-memory values the
 test inspects; they are never served, cached, logged, written to disk or
-written to a walkthrough record.
+written to a walkthrough record. Test assertions compare only digests,
+counts, identities and closed reasons. No assertion message, snapshot,
+reporter output or test log carries an observed body or rendered text.
 
 The scope excludes:
 
@@ -62,7 +76,8 @@ The scope excludes:
 - executing any code in this repository as part of the observation, and
   network egress;
 - any write to this repository; and
-- any route, cache, log line, stored evaluation or walkthrough record.
+- any route, cache, log line, stored evaluation or walkthrough record,
+  including test-runner output, snapshots and CI logs.
 
 The grant has no silent expiry. The owner may narrow or revoke it through a
 later recorded act; revocation does not erase prior observation records.
