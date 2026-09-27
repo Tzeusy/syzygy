@@ -70,11 +70,11 @@ INSTANT = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")
 PHRASE = re.compile(re.escape(LABEL) + r": ([0-9a-f]{64})")
 VERDICTS = ("Verdict: CONFIRM", "Verdict: CONFIRM WITH EXCEPTIONS")
 
-#: Pins to the reviewed package. None until the package and its confirming
-#: review exist; `--record` refuses while any is None.
-FROZEN_MANIFEST_SHA = None
-REVIEW = None
-REVIEW_SHA = None
+#: Pins to the reviewed package: the manifest digest the binding review
+#: re-derived (the act argument) and that review's raw, by path and sha256.
+FROZEN_MANIFEST_SHA = "6e83675fd61bf72a1912152dbc3c6dda64303e892eeadcf1273ce6aebe6ab134"
+REVIEW = "docs/reviews/R-TREE-STYLE-CONTRACT-PACKAGE-1-RAW.md"
+REVIEW_SHA = "3a6121085b8cc53f060d70c325412420c627aff92bf831d45bce32ad570a150d"
 
 Pins = namedtuple("Pins", "manifest_sha review review_sha")
 
@@ -319,8 +319,15 @@ def selftest():
         phrase = f"{LABEL}: {sha}"
         results.append(("nothing recorded reads as not performed",
                         check(root, pins=pins) is False))
-        results.append(("module pins are unset until the package is reviewed",
-                        pinned() == Pins(None, None, None)))
+        live = pinned()
+        results.append(("module pins name the reviewed package and its raw",
+                        live.manifest_sha is not None
+                        and re.fullmatch(r"[0-9a-f]{64}", live.manifest_sha)
+                        is not None
+                        and live.review is not None
+                        and live.review.endswith("-RAW.md")
+                        and re.fullmatch(r"[0-9a-f]{64}", live.review_sha or "")
+                        is not None))
         refuses("unpinned recorder refused",
                 lambda: record(root, phrase, instant, False, Pins(None, None, None)),
                 "recorder unpinned")
