@@ -1593,6 +1593,14 @@ PWB_CONTAINER_SHAPE_SUBJECT = (
     f"{PWB_CONTAINER_SHAPE_DIR}/PWB-CONTAINER-SHAPE-PROFILE-MANIFEST.txt")
 PWB_CONTAINER_SHAPE_ACT = (
     f"{DECISIONS}/PWB-CONTAINER-SHAPE-PROFILE-AMENDMENT-ACT.md")
+#: P-81 Q5's item-depth amendment to PWB-REQ-015. Candidate registration
+#: watches the not-yet-offered packet argument without asserting adoption or
+#: successor order. A future act adds its own chain link.
+PWB_ITEM_DEPTH_LABEL = "SIGN OFF PWB ITEM-DEPTH AMENDMENT"
+PWB_ITEM_DEPTH_DIR = f"{CANDIDATES}/pwb-item-depth-amendment"
+PWB_ITEM_DEPTH_SUBJECT = (
+    f"{PWB_ITEM_DEPTH_DIR}/PWB-ITEM-DEPTH-AMENDMENT-MANIFEST.txt")
+PWB_ITEM_DEPTH_ACT = f"{DECISIONS}/PWB-ITEM-DEPTH-AMENDMENT-ACT.md"
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -2283,7 +2291,8 @@ def _act_subjects():
                            (PWB_DISMISSAL_EXPIRY_LABEL,
                             PWB_DISMISSAL_EXPIRY_SUBJECT),
                            (PWB_CONTAINER_SHAPE_LABEL,
-                            PWB_CONTAINER_SHAPE_SUBJECT)):
+                            PWB_CONTAINER_SHAPE_SUBJECT),
+                           (PWB_ITEM_DEPTH_LABEL, PWB_ITEM_DEPTH_SUBJECT)):
         if not any(existing == label for existing, _rel, _pat in out):
             out.append((
                 label,
@@ -2548,6 +2557,8 @@ ACT_DIGEST_COPY_FILES = {
         (PWB_DISMISSAL_EXPIRY_LABEL,),
     f"{PWB_CONTAINER_SHAPE_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_CONTAINER_SHAPE_LABEL,),
+    f"{PWB_ITEM_DEPTH_DIR}/OWNER-DECISION-PACKET.md":
+        (PWB_ITEM_DEPTH_LABEL,),
     # The owner-act record quotes each performed act's exact phrase and
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
@@ -2736,6 +2747,11 @@ def _activate_pwb_dismissal_expiry_act_copy_registry():
         PWB_DISMISSAL_EXPIRY_LABEL, PWB_DISMISSAL_EXPIRY_ACT)
 
 
+def _activate_pwb_item_depth_act_copy_registry():
+    _activate_pwb_candidate_act_copy_registry(
+        PWB_ITEM_DEPTH_LABEL, PWB_ITEM_DEPTH_ACT)
+
+
 _activate_pwb_machine_view_act_copy_registry()
 _activate_pwb_opening_band_act_copy_registry()
 _activate_pwb_missing_currency_act_copy_registry()
@@ -2746,6 +2762,7 @@ def _activate_pwb_container_shape_act_copy_registry():
 
 _activate_pwb_dismissal_expiry_act_copy_registry()
 _activate_pwb_container_shape_act_copy_registry()
+_activate_pwb_item_depth_act_copy_registry()
 
 
 def _activate_polaris_no_signal_act_copy_registry():
@@ -7440,7 +7457,10 @@ def selftest():
             ("dismissal-expiry", (PWB_DISMISSAL_EXPIRY_LABEL,
                                   PWB_DISMISSAL_EXPIRY_SUBJECT,
                                   PWB_DISMISSAL_EXPIRY_ACT,
-                                  _activate_pwb_dismissal_expiry_act_copy_registry))):
+                                  _activate_pwb_dismissal_expiry_act_copy_registry)),
+            ("item-depth", (PWB_ITEM_DEPTH_LABEL, PWB_ITEM_DEPTH_SUBJECT,
+                            PWB_ITEM_DEPTH_ACT,
+                            _activate_pwb_item_depth_act_copy_registry))):
         row = _selftest_pwb_act_copy_registry("valid", link)
         cases.append((f"CG-7e performed PWB {name} act registers both record copies",
                       row[0] == "OK" and row[2] == 2 and row[3] == 0))

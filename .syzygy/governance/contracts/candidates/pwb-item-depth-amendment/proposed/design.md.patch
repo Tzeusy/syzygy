@@ -1,0 +1,60 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/openspec/changes/polaris-project-wide-butlers-model/design.md
+--- a/openspec/changes/polaris-project-wide-butlers-model/design.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
+@@ -135,19 +135,38 @@
+ The machine answer and Polaris consume the same coverage object. A page cannot
+ claim whole-project coverage from a smaller hidden model.
+
+-### 3. Separate the project account from capability detail
++### 3. Separate the project account from item detail
+
+ The Polaris entry follows the accepted RFC7 progression:
+
+ 1. Overview
+ 2. Boundaries
+ 3. Architecture
+ 4. V1 scope and success
+ 5. Project catalog
+-6. Capability detail
++6. Item detail
+ 7. Evidence and gaps
+
+-The existing WhatsApp material moves under capability detail. Active and
+-proposed OpenSpec work appears only there, marked with its lifecycle state.
++Every declared catalog entry reaches one item detail keyed by the item's stable
++semantic claim identity. The existing WhatsApp capability deep dive is the
++detail for its matching declared catalog item, not a second identity or a
++special route. A route or fragment locates the detail but never becomes item
++identity.
++
++The three authority bands keep their existing order and meaning. Argument is
++non-normative framing and cannot mint intent. Contract carries only captured,
++declared governing relations to verbatim current authority. When no unique
++relation was captured, the contract band says so once with the item's Unknown
++reason and resolution route; matching a label, basename or similar prose is
++never a substitute. Reality is projected only from the item's facts in the one
++shared model and evaluation. Active and proposed OpenSpec work appears only
++beside current intent in item detail, marked with its lifecycle state and kept
++separate by candidate future.
++
++This generalization does not make every item a capability. Capability identity
++continues to come only from a declared capability artifact. It also adds no
++body read: exact intent remains reachable through the separately governed
++exact-source path and its existing authority, identity, secret and inert-content
++gates.
+
+ ### 4. Use direct copy with a finite rubric
+@@ -274,10 +293,11 @@
+ 3. Discover and expose the closed source-path population.
+ 4. Read exact Git objects and classify content; record exclusions.
+ 5. Extract declared entities, statements, catalogs and source anchors.
+ 6. Reconcile coverage and contradictions.
+-7. Add the existing capability deep-dive facts.
++7. Associate declared catalog items with captured governing relations, leaving
++   absent or ambiguous relations Unknown.
+ 8. Freeze one shared model for the human and machine surfaces.
+-9. Render project-level Polaris and capability drill-down from that model.
++9. Render project-level Polaris and item detail from that model.
+ 10. Evaluate nine-answer readiness under PWB-REQ-021, then evaluate the
+     separate walkthrough record and owner judgment under PWB-REQ-022 with the
+     exact judgment-act state retained.
