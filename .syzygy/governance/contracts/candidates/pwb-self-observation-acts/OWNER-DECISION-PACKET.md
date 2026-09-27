@@ -126,9 +126,10 @@ the entry pins the specification's digest (see "Landing order").
 
 ## Landing order and which manifests move
 
-The only landing order the owner has set is `.21 → .30 → .22 → lane B`
-(`POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md` §6). That
-ruling does not place `.20`, `.18`, `dov.24`, `dov.29` or N8, and nothing
+The only landing order the owner has set is the one answered "Readiness
+order, lane B last (Recommended)", an option presented as `.21 → .30 →
+.22 → lane B` (`POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md`
+§6). That answer does not place `.20`, `.18`, `dov.24`, `dov.29` or N8, and nothing
 here assumes a place for them.
 
 | This package's manifest | Changes when | Why |
@@ -212,9 +213,12 @@ it.
    the grant." *Proposal:* accept that. *Alternative:* the owner supplies a
    sentence to quote. That changes act 1's argument.
 2. **Extend the one policy — already ruled, stated here for its
-   consequence.** The option you chose on P-74 question 3 read "an
-   extension of the existing secret-classification policy to the observing
-   project's own tree". So act 3 patches the one policy file, and the
+   consequence.** Your P-74 answer to question 3 names a "secret-policy
+   extension". The M8 funnel's recommendation behind that answer
+   (`docs/design/POLARIS-M8-PORTABILITY-FUNNEL.md`, question 3) spells it
+   out as "an extension of the existing secret-classification policy to the
+   observing project's own tree"; that wording is the funnel's, not yours
+   [Observed, quoted]. So act 3 patches the one policy file, and the
    Butlers window described above follows from that choice. Nothing to
    decide here unless you want to reopen the ruling.
 3. **Which file starts the self-observation?** *Proposal:*
@@ -384,3 +388,17 @@ arguments did not. The round-2 verdict covers none of the current bytes
 | N8 — cost of the consent's policy-version pin | note | **Repaired.** Open question 8 states it. |
 | N9 — Q4 quote not byte-exact | note | **Repaired.** The quote is now exact, capital included, runs to the end of the sentence, and says it is the row's reading. |
 | N10 — builder state word "adopted" | note | **Repaired.** The builder's states are now `pending` and `installed`; the packet says only the owner's act makes an act performed. |
+
+**Attribution sweep, 2026-09-27.** Every sentence in this package that says
+the owner ruled, chose, set or answered something was checked against the
+owner's verbatim answer: the Ruled column of the P-68–P-83 decision record
+and the verbatim-answer columns of the 2026-09-23 records. Pattern (Python
+`re`, case-sensitive), on lines that also name the owner, "you", a P-row, a
+sitting or a record:
+`\b(ruled?|rules|chose|chosen|decided|answer(ed)?|set|[Rr]eading)\b`.
+Two sites were repaired. "Landing order and which manifests move" had given
+the presented option's order as the owner's words. Open question 2 had
+quoted the M8 funnel's recommendation as the option you chose; it now quotes
+your answer cell and names the funnel as the source of the longer wording.
+The P-74 question 3, P-76 question 2 and `.18` question 4 quotations already
+matched their answer cells and are unchanged.
