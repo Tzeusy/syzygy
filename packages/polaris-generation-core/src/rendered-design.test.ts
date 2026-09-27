@@ -103,6 +103,19 @@ describe('rendered-design review verdict (REQ-polaris-generation-004/006)', () =
     expect(renderedDesignVerdict(review([disclosed]), draft).blocking).toBe(false);
   });
 
+  it('a prose-sufficient relationship drawn in a produced figure still obeys the drawing rules', () => {
+    const prose = (fields: Rel) => rel('p1', { judgment: 'prose-sufficient', ...fields });
+    expect(rules(review([prose({ support: 'unsupported' })]))).toEqual([['p1', 'unsupported-relationship-drawn']]);
+    expect(rules(review([rel('r1'), prose({ support: 'unsupported' })]))).toEqual([['p1', 'unsupported-relationship-drawn']]);
+    expect(rules(review([prose({ support: 'partly-supported' })]))).toEqual([['p1', 'undisclosed-gap']]);
+    expect(rules(review([prose({ support: 'partly-supported', gaps: [{ element: 'Writer', reason: 'No premise names it.' }] })]))).toEqual([]);
+    expect(rules(review([prose({ support: 'unsupported', diagram: { kind: 'named', diagramId: 'skipped' } })]))).toEqual([]);
+  });
+
+  it('a prose-sufficient claim on a figure does not make it shared with the diagram-clearer relationship it draws', () => {
+    expect(rules(review([rel('r1'), rel('p1', { judgment: 'prose-sufficient' })]))).toEqual([]);
+  });
+
   it('an explicit empty enumeration is a valid record that blocks nothing by itself', () => {
     expect(renderedDesignVerdict(review([]), draft)).toEqual({ blocking: false, retired: false, findings: [], reviewerFindings: [], enumeration: [] });
   });
