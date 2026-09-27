@@ -93,8 +93,17 @@ below line 4 is read) and accepts exactly one of two cases, per
       verdict is CONFIRM WITH EXCEPTIONS but whose finding set parses empty
       is refused with its own distinct message — a notes-only verdict with
       no countable note is a parse failure, not a vacuous pass. The
-      disposition's own finding set over its own stripped text must equal
-      the raw's finding set exactly — not a superset or a subset.
+      disposition's own finding set — read over its own stripped text with
+      one further form, an ATX heading `^#{2,6} (\d+) — ` (MULTILINE,
+      levels 2–6, the exact em dash; disposition-record-only) in addition
+      to the raw's two forms — must equal the raw's finding set exactly —
+      not a superset or a subset. The heading form exists because a real
+      disposition record beside the package
+      (`.syzygy/governance/contracts/candidates/pwb-opening-band-scenario/ROUND-11-DISPOSITIONS.md`)
+      opens every one of its entries `### <n> — ...` and cannot be
+      rewritten to carry either raw-recognized marker; it is read only on
+      the disposition side; a raw opening a line this way still counts 0
+      for it.
   Any other combination (a REVISE-style verdict, a missing or malformed
   disposition, a missing or mismatched `disposition_sha256` pin, a digest
   mismatch, a nonzero revise count, an unmatched finding, a raw with zero
@@ -148,6 +157,13 @@ FINDING_MARK_RE = re.compile(r"^(\d+)\.\s", re.MULTILINE)
 # (bold, em dash or similar after the number) and carry no line-leading
 # `N. ` markers at all (syzygy-qqt scope addition).
 FINDING_BOLD_RE = re.compile(r"^\*\*Finding (\d+)\b", re.MULTILINE)
+# Disposition-record-only (syzygy-qqt scope addition): an ATX heading,
+# levels 2-6, exact em dash. ROUND-11-DISPOSITIONS.md's own dispositions
+# open every one of its four entries `### <n> — ...` and no other form or
+# dash variant appears there (checked); it cannot be rewritten to carry
+# either raw-recognized marker, so this form is read on the disposition
+# side only — a raw opening a line this way still counts 0 for it.
+FINDING_HEADING_RE = re.compile(r"^#{2,6} (\d+) — ", re.MULTILINE)
 CONFIRM_LINE = "Verdict: CONFIRM"
 EXCEPTIONS_LINE = "Verdict: CONFIRM WITH EXCEPTIONS"
 EXPECTED_ROWS = 11
@@ -203,23 +219,33 @@ def _strip_fenced_code(text: str) -> str:
     return "\n".join(out)
 
 
-def _finding_numbers(text: str) -> list[int]:
+RAW_FINDING_FORMS = (FINDING_MARK_RE, FINDING_BOLD_RE)
+# Disposition records recognize everything a raw does, plus the ATX
+# heading form (syzygy-qqt scope addition, disposition-only — see
+# FINDING_HEADING_RE).
+DISPOSITION_FINDING_FORMS = (FINDING_MARK_RE, FINDING_BOLD_RE, FINDING_HEADING_RE)
+
+
+def _finding_numbers(text: str, *, forms: tuple[re.Pattern, ...] = RAW_FINDING_FORMS) -> list[int]:
     """Every finding number opening a line outside any fenced code block, in
-    document order, recognizing both a line-leading `<n>. ` marker and a
-    bold `**Finding <n> —` marker (syzygy-qqt scope addition: the real
-    P-71 opening-band-scenario raws use only the bold form). Duplicates are
-    preserved here — `_finding_number_set` is where a repeated number is
-    treated as a parse failure."""
+    document order, recognizing each pattern in `forms` (default: a
+    line-leading `<n>. ` marker and a bold `**Finding <n> —` marker —
+    syzygy-qqt scope addition: the real P-71 opening-band-scenario raws use
+    only the bold form). Duplicates are preserved here — `_finding_number_set`
+    is where a repeated number is treated as a parse failure."""
     stripped = _strip_fenced_code(text)
-    return (
-        [int(n) for n in FINDING_MARK_RE.findall(stripped)]
-        + [int(n) for n in FINDING_BOLD_RE.findall(stripped)]
-    )
+    nums: list[int] = []
+    for pattern in forms:
+        nums += [int(n) for n in pattern.findall(stripped)]
+    return nums
 
 
-def _finding_number_set(text: str, *, label: str) -> set[int]:
+def _finding_number_set(
+    text: str, *, label: str, forms: tuple[re.Pattern, ...] = RAW_FINDING_FORMS,
+) -> set[int]:
     """The exact set of finding numbers `_finding_numbers` parses from
-    `text`. Findings are numbered continuously across a package's review
+    `text` (pass `forms=DISPOSITION_FINDING_FORMS` for a disposition
+    record). Findings are numbered continuously across a package's review
     rounds (not `{1, ..., N}` from 1 — round 11 of the opening-band-scenario
     package opens at 49), so the exact set, not a contiguous range, is what
     a disposition must match. Raises if any number opens more than one line
@@ -227,7 +253,7 @@ def _finding_number_set(text: str, *, label: str) -> set[int]:
     legitimately re-used number."""
     seen: set[int] = set()
     dupes: set[int] = set()
-    for n in _finding_numbers(text):
+    for n in _finding_numbers(text, forms=forms):
         (dupes if n in seen else seen).add(n)
     if dupes:
         raise ValueError(
@@ -461,7 +487,9 @@ def validate_disposition(
             "notes-only verdict with no countable note is a parse failure, "
             "not a pass"
         )
-    actual = _finding_number_set(text, label="disposition record")
+    actual = _finding_number_set(
+        text, label="disposition record", forms=DISPOSITION_FINDING_FORMS,
+    )
     if actual != expected:
         raise ValueError(
             f"disposition record findings {sorted(actual)} do not match the "
@@ -764,9 +792,10 @@ def selftest_disposition() -> list[tuple[str, bool]]:
     matching), the bold `**Finding N —` marker form and a form mixing it
     with the line-leading form in one text, the zero-countable-findings
     fail-closed refusal, exact (non-contiguous, non-1-based) finding-set
-    equality, and duplicate-finding-number parse failures on both the raw
-    and the disposition side (syzygy-qqt scope addition), plus the positive
-    fixtures for each."""
+    equality, duplicate-finding-number parse failures on both the raw and
+    the disposition side, and the disposition-record-only ATX heading form
+    (fenced, and confirmed absent from raw-side recognition) (syzygy-qqt
+    scope addition), plus the positive fixtures for each."""
     results = []
 
     def rejects(fn, needle, *args, **kwargs):
@@ -1137,6 +1166,70 @@ def selftest_disposition() -> list[tuple[str, bool]]:
             rejects(validate_packet, "carries a finding number more than once",
                     root, act, argument, review_override=review_text,
                     disposition_override=with_pin(dup_disposition.encode()))))
+
+        # --- syzygy-qqt scope addition: an ATX heading marker
+        # `^#{2,6} N — ` (exact em dash), disposition-record-only — the
+        # real ROUND-11-DISPOSITIONS.md opens every entry `### N — ...`
+        # and cannot be rewritten to carry either raw-recognized form ---
+
+        heading_disposition = (
+            "# Disposition — fixture (heading form)\n"
+            f"Reviewed record: {rel_review.as_posix()}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Revise-severity findings: 0\n"
+            "\n"
+            "### 1 — Accepted as noted; no repair needed.\n"
+            "\n"
+            "### 2 — Owner already ruled on this; dispositioned by that "
+            "ruling.\n"
+        )
+        results.append((
+            "heading: a disposition dispositioning its findings with an "
+            "ATX heading (`### N — `) validates against the ordinary "
+            "2-finding raw",
+            accepts_case_b(review_text, heading_disposition.encode())))
+
+        heading_fenced_decoy_disposition = (
+            "# Disposition — fixture (heading fenced decoy)\n"
+            f"Reviewed record: {rel_review.as_posix()}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Revise-severity findings: 0\n"
+            "\n"
+            "### 1 — Accepted as noted; no repair needed.\n"
+            "\n"
+            "Not a disposition of finding 2 — just an example, fenced "
+            "below:\n"
+            "\n"
+            "```text\n"
+            "### 2 — inside a fence; must not count as dispositioning "
+            "finding 2\n"
+            "```\n"
+        )
+        results.append((
+            "heading: a fenced heading-form decoy in the disposition does "
+            "not satisfy the raw's real finding 2",
+            rejects(validate_packet, "do not match the raw's numbered findings",
+                    root, act, argument, review_override=review_text,
+                    disposition_override=with_pin(
+                        heading_fenced_decoy_disposition.encode()))))
+
+        heading_in_raw = (
+            "# Review — fixture (heading in raw, must not count)\n"
+            f"Reviewed commit: {'b' * 40}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Verdict: CONFIRM WITH EXCEPTIONS\n"
+            "\n"
+            "## Findings\n"
+            "\n"
+            "1. First finding, notes only.\n"
+            "\n"
+            "### 2 — a heading-form line; disposition-only, must not count "
+            "as a raw finding.\n"
+        )
+        results.append((
+            "heading: a heading-form line in a raw is not a raw finding "
+            "(heading recognition is disposition-only)",
+            _finding_number_set(heading_in_raw, label="raw") == {1}))
 
     return results
 
