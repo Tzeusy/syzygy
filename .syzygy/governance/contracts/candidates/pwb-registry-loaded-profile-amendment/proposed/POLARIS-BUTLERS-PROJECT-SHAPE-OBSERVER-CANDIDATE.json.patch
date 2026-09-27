@@ -1,0 +1,320 @@
+diff --git a/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json b/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+index 8bca9d8..9c83bb0 100644
+--- a/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
++++ b/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+@@ -1,13 +1,13 @@
+ {
+   "schemaVersion": 1,
+-  "registryVersion": "1.2.0-candidate.1",
++  "registryVersion": "1.3.0-candidate.1",
+   "status": "candidate-amendment-no-effect-until-owner-act",
+   "governanceHome": ".syzygy/governance/declarations/adapter-registry",
+   "project": "project:syzygy",
+   "entries": [
+     {
+       "observerId": "polaris-butlers-project-shape",
+-      "observerVersion": "1.2.0-candidate.1",
++      "observerVersion": "1.3.0-candidate.1",
+       "discoveryVersion": "pwb-discovery-v2-candidate.1",
+       "role": "adapter",
+       "implementationId": "three-surface-poc-core/project-shape-observer",
+@@ -259,6 +259,299 @@
+           },
+           "cellSyntax": "Layer raw cell is exactly one complete bold span; compare its content and Owns/Home after trimming outer ASCII whitespace and unwrapping only complete inline code spans; preserve case, punctuation and internal whitespace and apply no other Markdown or prose normalization",
+           "application": "every Layer, Owns and Home cell must equal its row literal; mixed-family or unrecognized Owns prose invalidates the table; rows 1 through 5 are exact normalized roots, row 6 expands roster/{butler}/ only for a declared roster key, and row 7 is inert because code owns no admitted fact; an applied expanded home must contain at least one admitted source; the unique lowest-numbered applied home assigned by factFamilyRows selects its declaration; the root summary is non-owning; malformed, duplicate, missing, equally ranked or mutually disagreeing rules select nothing"
++        },
++        "rootIndex": {
++          "path": "about/README.md",
++          "pillarRootTable": {
++            "pillarColumn": "Pillar",
++            "directoryColumn": "Directory"
++          },
++          "pillarRootLinks": "after the table is read, every link in the root index, wherever it stands in the file, also declares a pillar's root when its resolved target, or the directory of a target named README.md, ends in a segment that is a pillar key; two different declared roots for one pillar, from the table, from links or from both, make that pillar Unknown"
++        },
++        "pillars": [
++          {
++            "key": "heart-and-soul",
++            "label": "Heart and Soul"
++          },
++          {
++            "key": "legends-and-lore",
++            "label": "Legends and Lore"
++          },
++          {
++            "key": "spec-and-spine",
++            "label": "Spec and Spine"
++          },
++          {
++            "key": "lay-and-land",
++            "label": "Lay and Land"
++          },
++          {
++            "key": "craft-and-care",
++            "label": "Craft and Care"
++          }
++        ],
++        "sourcePopulation": {
++          "indexChainDepth": 3,
++          "pillarIndexBasename": "README.md",
++          "sourceRules": [
++            "root-index",
++            "pillar-index",
++            "pillar-named-file",
++            "baseline-spec-tree",
++            "roster-tree"
++          ],
++          "treePopulations": [
++            {
++              "rule": "baseline-spec-tree",
++              "pathPattern": "openspec/specs/<key>/spec.md",
++              "companions": []
++            },
++            {
++              "rule": "roster-tree",
++              "pathPattern": "roster/<key>/butler.toml",
++              "companions": [
++                "roster/<key>/MANIFESTO.md"
++              ]
++            }
++          ],
++          "extractionBindings": [
++            {
++              "rule": "pillar-index",
++              "pillar": "legends-and-lore",
++              "relativePath": "README.md",
++              "classes": [
++                "design-contract"
++              ]
++            },
++            {
++              "rule": "pillar-index",
++              "pillar": "craft-and-care",
++              "relativePath": "README.md",
++              "classes": [
++                "craft-policy"
++              ]
++            },
++            {
++              "rule": "pillar-named-file",
++              "pillar": "heart-and-soul",
++              "relativePath": "vision.md",
++              "classes": [
++                "project-account-section",
++                "principle",
++                "success-criterion"
++              ]
++            },
++            {
++              "rule": "pillar-named-file",
++              "pillar": "heart-and-soul",
++              "relativePath": "architecture.md",
++              "classes": [
++                "project-account-section"
++              ]
++            },
++            {
++              "rule": "pillar-named-file",
++              "pillar": "heart-and-soul",
++              "relativePath": "v1.md",
++              "classes": [
++                "project-account-section",
++                "success-criterion",
++                "catalog-entry"
++              ]
++            },
++            {
++              "rule": "pillar-named-file",
++              "pillar": "lay-and-land",
++              "relativePath": "components.md",
++              "classes": [
++                "topology-component"
++              ]
++            },
++            {
++              "rule": "baseline-spec-tree",
++              "relativePath": "spec.md",
++              "classes": [
++                "baseline-spec"
++              ]
++            },
++            {
++              "rule": "roster-tree",
++              "relativePath": "butler.toml",
++              "classes": [
++                "roster-identity"
++              ]
++            }
++          ]
++        },
++        "containerShapes": {
++          "heading-section": "the body under the declared heading: the lines after it up to the next heading at the same or a higher level, with outer whitespace trimmed, NFC-normalized; the body may be empty; when a row declares two headings the item's text is the first heading's text, a blank line, its body, a blank line, the second heading's text, a blank line and its body, with outer whitespace trimmed",
++          "every-level-2-section": "every level-2 heading in the file, in file order; each part is the heading's text, a blank line and its body read as heading-section reads it, with outer whitespace trimmed, and the parts are joined by one blank line; a file with no level-2 heading fails the source as missing-heading",
++          "top-level-decimal-list": "each list item at column 0 in the section, which must be numbered: a decimal number followed by . or ) and a space or tab; a bulleted item at column 0 fails the source as malformed-list, and so does a section with no list item at column 0",
++          "top-level-list": "each list item at column 0 in the section, numbered or bulleted; a section with no list item at column 0 fails the source as malformed-list",
++          "top-level-bulleted-list": "each list item at column 0 in the section, which must be bulleted: a numbered item at column 0 fails the source as malformed-list; a section with no list item yields no items and does not fail",
++          "first-table-rows": "each body row of the first table in the section; a section with no table fails the source as malformed-row, and so does a body row of that table whose cell count differs from its header's; later tables in the section are not read",
++          "ordinal-section-table-rows": "each body row of every table in the section of every level-2 heading whose text opens with a decimal number, optionally one lowercase letter, and then the end of the text or a character that is not an ASCII letter, digit or underscore; a file with no such heading fails the source as missing-heading, and a body row whose cell count differs from its table's header fails it as malformed-row",
++          "tree-path": "the Git tree path itself, matched against the tree population's pathPattern; no body is read and nothing fails",
++          "toml-table-field": "the declared field of the declared TOML table: exactly one header line must name the table, and inside it the field must be written once as field = \"value\" or field = 'value' with a non-empty value; no such table, a repeated table, a repeated field or a missing or empty value fails the source as malformed-toml; a line in any other form, and the field inside any other table, is not read; an array-of-tables header such as [[other]] is a line in another form, so it neither opens a table nor ends the declared one; the value is trimmed and NFC-normalized, a backslash escape in a double-quoted value is not decoded, and the value becomes the item's context"
++        },
++        "classGrammar": [
++          {
++            "class": "project-account-section",
++            "key": "purpose",
++            "source": "vision.md",
++            "heading": {
++              "level": 2,
++              "text": "What Butlers Is"
++            },
++            "container": "heading-section",
++            "itemKey": "the fixed key"
++          },
++          {
++            "class": "project-account-section",
++            "key": "promises",
++            "source": "vision.md",
++            "heading": {
++              "level": 2,
++              "text": "What Success Looks Like"
++            },
++            "container": "heading-section",
++            "itemKey": "the fixed key"
++          },
++          {
++            "class": "project-account-section",
++            "key": "refusals",
++            "source": "vision.md",
++            "heading": {
++              "level": 2,
++              "text": "What Butlers Is Not"
++            },
++            "container": "heading-section",
++            "itemKey": "the fixed key"
++          },
++          {
++            "class": "project-account-section",
++            "key": "architecture",
++            "source": "architecture.md",
++            "container": "every-level-2-section",
++            "itemKey": "the fixed key"
++          },
++          {
++            "class": "project-account-section",
++            "key": "v1-scope",
++            "source": "v1.md",
++            "headings": [
++              {
++                "level": 2,
++                "text": "What v1 Ships"
++              },
++              {
++                "level": 2,
++                "text": "What v1 Defers"
++              }
++            ],
++            "container": "heading-section",
++            "itemKey": "the fixed key"
++          },
++          {
++            "class": "project-account-section",
++            "key": "v1-success",
++            "source": "v1.md",
++            "heading": {
++              "level": 2,
++              "text": "Success Criteria"
++            },
++            "container": "heading-section",
++            "itemKey": "the fixed key"
++          },
++          {
++            "class": "principle",
++            "source": "vision.md",
++            "heading": {
++              "level": 2,
++              "text": "Non-Negotiable Rules"
++            },
++            "container": "top-level-decimal-list",
++            "itemKey": "the item's leading bold span (** or __), NFC-normalized with whitespace runs collapsed; an item with no non-empty leading bold span fails the source as ambiguous-leading-label"
++          },
++          {
++            "class": "success-criterion",
++            "source": "vision.md",
++            "heading": {
++              "level": 2,
++              "text": "What Success Looks Like"
++            },
++            "container": "top-level-list",
++            "itemKey": "vision:<one-based ordinal>"
++          },
++          {
++            "class": "success-criterion",
++            "source": "v1.md",
++            "heading": {
++              "level": 2,
++              "text": "Success Criteria"
++            },
++            "container": "top-level-list",
++            "itemKey": "v1:<one-based ordinal>"
++          },
++          {
++            "class": "catalog-entry",
++            "source": "v1.md",
++            "heading": {
++              "level": 3,
++              "textsFrom": "fixedCatalogKeys"
++            },
++            "container": "top-level-bulleted-list",
++            "itemKey": "the item's leading bold span, or else its leading code span, NFC-normalized with whitespace runs collapsed; the span must be non-empty and followed, after optional whitespace, by a hyphen-minus, en dash or em dash, or the source fails as ambiguous-leading-label; each item's context is the text of the declared heading it was read under"
++          },
++          {
++            "class": "design-contract",
++            "source": "README.md",
++            "pillar": "legends-and-lore",
++            "heading": {
++              "text": "Index"
++            },
++            "container": "first-table-rows",
++            "itemKey": "the link text of the first cell, trimmed and NFC-normalized; the cell must be one whole link [text](target), optionally with a space or tab and a title in double quotes after the target, with non-empty text, or the source fails as malformed-row"
++          },
++          {
++            "class": "baseline-spec",
++            "source": "spec.md",
++            "container": "tree-path",
++            "itemKey": "the <key> segment of the tree population's pathPattern"
++          },
++          {
++            "class": "topology-component",
++            "source": "components.md",
++            "container": "ordinal-section-table-rows",
++            "itemKey": "the heading's ordinal, a colon and the first cell's label; the first cell must be exactly one bold span with a non-empty label, or the source fails as malformed-row; each item's context is the heading's ordinal"
++          },
++          {
++            "class": "craft-policy",
++            "source": "README.md",
++            "pillar": "craft-and-care",
++            "heading": {
++              "text": "Reading Order"
++            },
++            "column": "File",
++            "container": "first-table-rows",
++            "itemKey": "the basename of the link target in the declared column, without its fragment; a table with no such column, or a cell in it that is not one whole link whose target has a non-empty last segment, fails the source as malformed-row"
++          },
++          {
++            "class": "roster-identity",
++            "source": "butler.toml",
++            "table": "butler",
++            "field": "name",
++            "container": "toml-table-field",
++            "itemKey": "the <key> segment of the tree population's pathPattern"
++          }
++        ],
++        "sourceGrammarSemantics": {
++          "scope": "these fields restate the per-project values of the source grammar the observer applies today; loading them in place of the observer's built-in values must reproduce byte for byte the current source manifest and observation digests and, for every source, the items extraction reads from it; they add no class, heading, source, shape or key; the reading rules every project shares are listed under sharedReadingRules, stay in code and are set by no profile",
++          "headingMatch": "a heading is an ATX heading written at column 0 (one to six # marks, then a space or tab) outside fenced code, so an indented line is never a heading; its text is taken without closing # marks and outer whitespace, NFC-normalized; a declared heading matches only at its declared level and only by exact text; a heading object without a level matches at any level; a declared heading that is missing fails the source as missing-heading, and one that occurs more than once fails it as duplicate-key",
++          "containerShape": "each grammar row names exactly one shape from containerShapes, whose sentence says what is read and every way it fails; any class failing makes the whole source Unknown, and the source yields no partial item set",
++          "itemKey": "each grammar row's itemKey says what becomes the item's key and how a key fails; a key that occurs twice within one class of one source fails the source as duplicate-key",
++          "sharedReadingRules": "these rules are the same for every project, stay in code and are set by no profile: fenced code blocks, opened by three or more backticks or tildes, hide headings, list items, table rows and links (the source-population reader and the extraction reader each keep their own rule for fence indentation and closing); a list item opens at column 0 with a decimal number followed by . or ), or with -, * or +, then a space or tab; its text is the rest of that line and each following blank or indented line, each trimmed and joined by line breaks, up to the next list item, the first other unindented line or fenced code, with outer whitespace trimmed, NFC-normalized; a leading bold span is written with ** or __; a table is a line that starts, after leading whitespace, with a pipe, followed by a delimiter row, and runs to the first line that does not; the extraction reader reads a backslash-escaped pipe inside a cell as a pipe; in the root index only the first table carrying both pillar-root columns is read, a pillar-column cell is a pillar label, optionally in ** bold or as a link, a directory-column cell is one code span ending in /, and a row with the wrong cell count or an unrecognised value is skipped; an index names a file only by an inline link or a reference definition outside fenced code and code spans, images excluded, with the fragment and query dropped, and it ignores and records a link that is external, escapes the repository, leaves the pillar root, names a directory or names the index itself; a baseline spec or roster butler.toml blob is read by its tree population even when a pillar index names it; a named file that is missing or is not a blob at the revision stays in the population; and the tree populations are enumerated from the Git tree whether or not the root index or any pillar index reads",
++          "missingField": "a loader that finds any of these fields absent or malformed refuses the load; it never falls back to built-in values"
+         }
+       },
+       "resourceLimits": {

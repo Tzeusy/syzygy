@@ -1,0 +1,9 @@
+# PWB REGISTRY LOADED-PROFILE EFFECT AMENDMENT MANIFEST
+# This row binds only by the owner act that takes its digest as the
+# argument of a superseding adopt-registry-entry act; until that act is
+# performed it binds nothing.
+# 1 artifact; the row hashes the PROPOSED bytes: the subject with the
+# syzygy-dov.18 patch (unless already adopted) and then proposed/*.patch
+# applied. It matches the tree only after --apply, the adoption step.
+# The subject's current bytes stay the argument of the act in force.
+aa2bf7e1d5dd2e016a72369ab9003b3040597c5022c4ffe986acfe11251713d5  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json

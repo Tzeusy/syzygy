@@ -207,6 +207,11 @@ CAMPAIGNS = (
         "P-73 edit/repair deletion gate",
         r"R-POLARIS-EDIT-REPAIR-DELETION-.*\.md",
     ),
+    campaign(
+        "dov24-loaded-profile",
+        "P-74 loaded-profile registry gate",
+        r"R-DOV24-.*\.md",
+    ),
 )
 
 
