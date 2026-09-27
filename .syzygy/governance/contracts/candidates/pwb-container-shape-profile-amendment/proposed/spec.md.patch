@@ -1,0 +1,107 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+index 543469d..c1a305b 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -27,7 +27,39 @@ Reader definitions:
+ - Stable item identity is `(item class, declared key)`. Repository-relative path
+   and content hash are source-anchor state, never identity. A duplicate key in
+   one class is a contradiction rather than a path-based disambiguation.
+-- The extraction grammar is literal:
++- A **container shape** is how one class's items sit inside a source. The
++  vocabulary is closed at nine shapes, and no other shape is read:
++  - `heading-section`: the body under one exact heading, up to the next
++    heading at the same or a higher level.
++  - `every-level-2-section`: every H2 in the file with its section body, in
++    file order.
++  - `top-level-decimal-list`: each top-level numbered list item in the
++    section; any other top-level list item makes the source malformed.
++  - `top-level-list`: each top-level list item in the section, numbered or
++    bulleted.
++  - `top-level-bulleted-list`: each top-level bulleted list item in the
++    section; a numbered item makes the source malformed.
++  - `first-table-rows`: each body row of the first table in the section; a
++    row with the wrong cell count makes the source malformed.
++  - `ordinal-section-table-rows`: each body row of every table under an H2
++    whose text begins with a decimal plus optional lowercase suffix.
++  - `tree-path`: the Git tree path itself; no body is parsed.
++  - `toml-table-field`: one field of one TOML table, present exactly once;
++    anything else makes the source malformed.
++- The **project profile** declares the extraction rules. For each class above,
++  the observed project's profile, carried in the project-shape observer's
++  owner-adopted registry entry, declares the source, the heading or tree rule,
++  exactly one container shape and exactly one key form. The key forms are
++  closed at the eight the Butlers grammar below uses: a fixed key; the leading
++  bold phrase; the leading bold or code span before the first dash; a prefixed
++  one-based ordinal; the first-column link text; the link target basename; the
++  one tree directory; and an H2 ordinal with a first-column bold label. A class
++  whose rule is missing from the profile, or whose rule names a shape or key
++  form outside these closed sets, makes its sources' item denominators
++  Unknown; the observer never substitutes a built-in rule. A profile cannot
++  add a class, a shape or a key form.
++- Butlers' profile declares exactly the following extraction grammar, which is
++  literal:
+   - `project-account-section` mints exactly six aggregate keys: purpose from
+     vision.md H2 “What Butlers Is”; promises from vision.md H2 “What Success
+     Looks Like”; refusals from vision.md H2 “What Butlers Is Not”; architecture
+@@ -117,7 +149,8 @@ warrants:
+ Group: Coverage. Form: **invariant**.
+ 
+ For every lawfully admitted source body, Polaris SHALL account for each
+-declared item discovered by the closed extraction rule across Heart and Soul,
++declared item discovered by the extraction rule its project profile declares,
++using only the closed container-shape vocabulary, across Heart and Soul,
+ Legends and Lore, Spec and Spine, Lay and Land, Craft and Care and roster
+ identity. Each admitted item SHALL be in exactly one coverage state: modeled,
+ Unknown or contradicted. A source whose item population cannot be read SHALL
+@@ -125,19 +158,23 @@ retain its source identity while its item denominator renders Unknown.
+ 
+ - **Case (sweep)**: enumerate the source population and every declared item in
+   each readable category at one revision, then compare it to the model; include
+-  an unreadable source case.
++  an unreadable source case and a profile missing one class's rule.
+ - **Observable**: per-category identities and reconciling counts are visible in
+   the machine answer and reachable from Polaris.
+-- **Oracle**: two independent extractors apply the literal grammar to the
+-  revision-bound source population and must produce the same identities and D;
++- **Oracle**: two independent extractors apply the literal grammar declared
++  by the project profile to the revision-bound source population and must
++  produce the same identities and D; for Butlers, both also apply the grammar
++  written in these reader definitions and must produce the same identities;
+   modeled + Unknown + contradicted equals D, with each identity appearing once;
+   malformed/unreadable sources carry an Unknown item denominator.
+ - **Oracle independence**: the expected denominator is extracted from the
+   source files, not from the POC's coverage object.
+ - **Falsifier**: the independent extractors disagree, a malformed source emits
+   a partial population, a known source disappears, an admitted item appears twice or
+-  lacks a state, a known count does not reconcile, or an unavailable body's
+-  item denominator is presented as known.
++  lacks a state, a known count does not reconcile, an unavailable body's
++  item denominator is presented as known, an item is read through a shape the
++  profile does not declare, or a missing or unknown profile rule is replaced
++  by a built-in one.
+ 
+ #### Scenario: Declared shape reconciles
+ 
+@@ -146,6 +183,22 @@ retain its source identity while its item denominator renders Unknown.
+ - **AND** every category reports modeled, Unknown and contradicted counts that
+   sum to its denominator
+ 
++#### Scenario: Butlers' profile reproduces the written grammar
++
++- **WHEN** Butlers is observed through its project profile
++- **THEN** every class's items are extracted through the container shape the
++  profile declares for it
++- **AND** the identities and D equal those produced by the grammar written in
++  these reader definitions
++
++#### Scenario: Profile rule is missing or names an unknown shape
++
++- **WHEN** the profile lacks the rule for one class, or that rule names a shape
++  or key form outside the closed sets
++- **THEN** each source of that class stays counted with an Unknown item
++  denominator
++- **AND** no built-in rule or shape is used in its place
++
+ ```yaml
+ warrants:
+   primary: VIS-2

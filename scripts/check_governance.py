@@ -1562,6 +1562,16 @@ PWB_MISSING_CURRENCY_SUBJECT = (
     "PWB-MISSING-CURRENCY-DISCLOSURE-MANIFEST.txt")
 PWB_MISSING_CURRENCY_ACT = (
     f"{DECISIONS}/PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-ACT.md")
+#: The 2026-09-26 sitting's §6 container-shape profile amendment (N8) to
+#: PWB-REQ-002. Registered the same way: packet copy watched now, act records
+#: once they exist, and no successor-chain link until an act fixes the
+#: performance order.
+PWB_CONTAINER_SHAPE_LABEL = "SIGN OFF PWB CONTAINER-SHAPE PROFILE AMENDMENT"
+PWB_CONTAINER_SHAPE_DIR = f"{CANDIDATES}/pwb-container-shape-profile-amendment"
+PWB_CONTAINER_SHAPE_SUBJECT = (
+    f"{PWB_CONTAINER_SHAPE_DIR}/PWB-CONTAINER-SHAPE-PROFILE-MANIFEST.txt")
+PWB_CONTAINER_SHAPE_ACT = (
+    f"{DECISIONS}/PWB-CONTAINER-SHAPE-PROFILE-AMENDMENT-ACT.md")
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -1625,6 +1635,7 @@ PWB_RENDER_MODE_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_MACHINE_VIEW_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_OPENING_BAND_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_MISSING_CURRENCY_SUBJECTS = PWB_STATE1_SUBJECTS
+PWB_CONTAINER_SHAPE_SUBJECTS = PWB_STATE1_SUBJECTS
 #: Successor chain over the PWB behavioral package, in performance order.
 #: The latest validly performed link binds current bytes; every earlier
 #: link's rows are immutable act-time history.
@@ -2087,7 +2098,9 @@ def _act_subjects():
     for label, subject in ((PWB_MACHINE_VIEW_LABEL, PWB_MACHINE_VIEW_SUBJECT),
                            (PWB_OPENING_BAND_LABEL, PWB_OPENING_BAND_SUBJECT),
                            (PWB_MISSING_CURRENCY_LABEL,
-                            PWB_MISSING_CURRENCY_SUBJECT)):
+                            PWB_MISSING_CURRENCY_SUBJECT),
+                           (PWB_CONTAINER_SHAPE_LABEL,
+                            PWB_CONTAINER_SHAPE_SUBJECT)):
         if not any(existing == label for existing, _rel, _pat in out):
             out.append((
                 label,
@@ -2322,6 +2335,8 @@ ACT_DIGEST_COPY_FILES = {
         (PWB_OPENING_BAND_LABEL,),
     f"{PWB_MISSING_CURRENCY_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_MISSING_CURRENCY_LABEL,),
+    f"{PWB_CONTAINER_SHAPE_DIR}/OWNER-DECISION-PACKET.md":
+        (PWB_CONTAINER_SHAPE_LABEL,),
     # The owner-act record quotes each performed act's exact phrase and
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
@@ -2505,9 +2520,15 @@ def _activate_pwb_missing_currency_act_copy_registry():
         PWB_MISSING_CURRENCY_LABEL, PWB_MISSING_CURRENCY_ACT)
 
 
+def _activate_pwb_container_shape_act_copy_registry():
+    _activate_pwb_candidate_act_copy_registry(
+        PWB_CONTAINER_SHAPE_LABEL, PWB_CONTAINER_SHAPE_ACT)
+
+
 _activate_pwb_machine_view_act_copy_registry()
 _activate_pwb_opening_band_act_copy_registry()
 _activate_pwb_missing_currency_act_copy_registry()
+_activate_pwb_container_shape_act_copy_registry()
 
 
 def _activate_polaris_no_signal_act_copy_registry():
@@ -6544,7 +6565,11 @@ def selftest():
             ("missing-currency", (PWB_MISSING_CURRENCY_LABEL,
                                   PWB_MISSING_CURRENCY_SUBJECT,
                                   PWB_MISSING_CURRENCY_ACT,
-                                  _activate_pwb_missing_currency_act_copy_registry))):
+                                  _activate_pwb_missing_currency_act_copy_registry)),
+            ("container-shape", (PWB_CONTAINER_SHAPE_LABEL,
+                                 PWB_CONTAINER_SHAPE_SUBJECT,
+                                 PWB_CONTAINER_SHAPE_ACT,
+                                 _activate_pwb_container_shape_act_copy_registry))):
         row = _selftest_pwb_act_copy_registry("valid", link)
         cases.append((f"CG-7e performed PWB {name} act registers both record copies",
                       row[0] == "OK" and row[2] == 2 and row[3] == 0))
@@ -6552,6 +6577,13 @@ def selftest():
         cases.append((f"CG-7e performed PWB {name} act requires aggregate record copy",
                       row[0] == "FAIL"
                       and any(PERFORMED_ACT_RECORD in d for d in row[4])))
+
+    registered, activated = _selftest_pwb_candidate_act_absent(
+        PWB_CONTAINER_SHAPE_LABEL, PWB_CONTAINER_SHAPE_DIR,
+        _activate_pwb_container_shape_act_copy_registry)
+    cases.append(("CG-7e unperformed PWB container-shape act watches the "
+                  "packet copy and registers no act-record copy",
+                  registered and activated == {}))
 
     for act in POLARIS_GENERATOR_APPROVAL_ACTS:
         link = (POLARIS_GENERATOR_APPROVAL_LABEL, POLARIS_GENERATOR_APPROVAL_SUBJECT,
@@ -7069,6 +7101,32 @@ def _selftest_polaris_edit_repair_candidate_registration(present):
         ROOT = keep_root
         _PHRASE_REGISTRY_CACHE.clear()
         _PHRASE_REGISTRY_CACHE.update(keep_registry)
+
+
+def _selftest_pwb_candidate_act_absent(label, candidate_dir, activate):
+    """Before its act exists, a candidate's phrase and packet copy are
+    registered and its activation adds nothing (the absent half of the
+    present/absent fixture; the present half is the "valid" row)."""
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp(prefix="cg7e-pwb-absent-selftest-")
+    global ROOT
+    keep = ROOT
+    current_files = dict(ACT_DIGEST_COPY_FILES)
+    try:
+        registered = (
+            ACT_DIGEST_COPY_FILES.get(
+                f"{candidate_dir}/OWNER-DECISION-PACKET.md") == (label,)
+            and any(existing == label for existing, _rel, _pat in _act_subjects()))
+        ROOT = d
+        ACT_DIGEST_COPY_FILES.clear()
+        activate()
+        return registered, dict(ACT_DIGEST_COPY_FILES)
+    finally:
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES.update(current_files)
+        ROOT = keep
+        shutil.rmtree(d, ignore_errors=True)
 
 
 def _selftest_pwb_act_copy_registry(kind, link=None):
