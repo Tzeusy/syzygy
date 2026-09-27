@@ -1,0 +1,376 @@
+--- a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
++++ b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
+@@ -61,11 +61,11 @@
+
+ Group: Code-structure observation. Form: **event-response**.
+
+-WHEN the POC observes the configured project's code structure, it SHALL
+-produce one identified observation naming the exact git revision
+-observed, containing a directory and file inventory (paths, sizes,
+-per-file content digests, and declared language classifications) whose
+-every entry carries that revision as provenance.
++**Required behavior.** WHEN the POC observes the configured project's code
++structure, it SHALL produce one identified observation naming the exact git
++revision observed, containing a directory and file inventory (paths, sizes,
++per-file content digests, and declared language classifications) whose every
++entry carries that revision as provenance.
+
+ - **Case**: a checker runs the POC against the configured repository at
+   a known commit.
+@@ -104,10 +104,12 @@
+
+ Group: Code-structure observation. Form: **prohibition**.
+
+-The POC SHALL NOT index, store, or serve observed file contents from
+-the code-structure observation. Scope of quantification: every field of
+-every served code-structure fact. Only paths, sizes, counts, language
+-classifications, digests, revisions, and capture instants may appear.
++**Required behavior.** The POC SHALL NOT index, store, or serve observed file
++contents from the code-structure observation.
++
++- **Scope.** every field of every served code-structure fact. Only paths,
++  sizes, counts, language classifications, digests, revisions, and capture
++  instants may appear.
+
+ - **Case (counterexample schema + sweep)**: a checker plants a file
+   containing a unique sentinel string in the observed repository,
+@@ -144,9 +146,9 @@
+
+ Group: Code-structure observation. Form: **event-response**.
+
+-WHEN the code-structure observation cannot be produced (repository
+-unreadable, revision unresolvable, observer failure), the POC SHALL
+-serve the code-structure region as Unknown carrying a named reason, and
++**Required behavior.** WHEN the code-structure observation cannot be produced
++(repository unreadable, revision unresolvable, observer failure), the POC
++SHALL serve the code-structure region as Unknown carrying a named reason, and
+ SHALL NOT serve a partial inventory as if complete.
+
+ - **Case**: a checker points the POC at an unreadable or absent
+@@ -185,10 +187,11 @@
+
+ Group: Code-structure observation. Form: **invariant**.
+
+-For any revision R of the configured project, two code-structure
+-observations of R SHALL produce identical fact content. Scope of
+-quantification: all served code-structure facts across repeated runs at
+-the same revision.
++**Required behavior.** For any revision R of the configured project, two
++code-structure observations of R SHALL produce identical fact content.
++
++- **Scope.** all served code-structure facts across repeated runs at the same
++  revision.
+
+ - **Case (sweep)**: a checker runs observation twice at the same
+   commit, holding declared inputs fixed, and diffs the two machine
+@@ -222,10 +225,10 @@
+
+ Group: Work-item observation. Form: **event-response**.
+
+-WHEN the POC observes the configured project's work items, it SHALL
+-read them from the project's Beads database hosted on Dolt, and SHALL
+-serve the observation identified by the exact Dolt revision read, with
+-every served work-item fact carrying that revision as provenance.
++**Required behavior.** WHEN the POC observes the configured project's work
++items, it SHALL read them from the project's Beads database hosted on Dolt,
++and SHALL serve the observation identified by the exact Dolt revision read,
++with every served work-item fact carrying that revision as provenance.
+
+ - **Case**: a checker runs work-item observation against the configured
+   Beads Dolt database at a known Dolt head.
+@@ -262,9 +265,10 @@
+
+ Group: Work-item observation. Form: **invariant**.
+
+-Every served work item SHALL carry an identifier under the configured
+-project's registered bead-prefix. Scope of quantification: all work
+-items in the machine answer and on every human surface.
++**Required behavior.** Every served work item SHALL carry an identifier under
++the configured project's registered bead-prefix.
++
++- **Scope.** all work items in the machine answer and on every human surface.
+
+ - **Case (sweep)**: a checker enumerates every served work-item
+   identifier from the machine answer — the denominator is the complete
+@@ -298,9 +302,11 @@
+
+ Group: Work-item observation. Form: **prohibition**.
+
+-The POC SHALL NOT read work-item facts from the Beads JSONL export or
+-any derived file; the Dolt database is the only work-item source. Scope
+-of quantification: every work-item fact served in either channel.
++**Required behavior.** The POC SHALL NOT read work-item facts from the Beads
++JSONL export or any derived file; the Dolt database is the only work-item
++source.
++
++- **Scope.** every work-item fact served in either channel.
+
+ - **Case (counterexample schema + sweep)**: a checker mutates the JSONL
+   export to disagree with the Dolt database on one item's status, then
+@@ -337,10 +343,10 @@
+
+ Group: Work-item observation. Form: **event-response**.
+
+-WHEN the Beads Dolt database is absent, unreachable, or unreadable, the
+-POC SHALL serve the work-item region as Unknown with a named reason on
+-both channels, and Trajectory SHALL render that Unknown state — never
+-an empty board presented as "no work".
++**Required behavior.** WHEN the Beads Dolt database is absent, unreachable, or
++unreadable, the POC SHALL serve the work-item region as Unknown with a named
++reason on both channels, and Trajectory SHALL render that Unknown state —
++never an empty board presented as "no work".
+
+ - **Case**: a checker makes the database unreachable and requests both
+   channels.
+@@ -378,10 +384,10 @@
+
+ Group: Client rendering and parity. Form: **invariant**.
+
+-Every fact a client-rendered surface presents SHALL be present, with
+-equal value, in the machine answer for the same evaluation. Scope of
+-quantification: all facts rendered by client-side code across the three
+-surfaces.
++**Required behavior.** Every fact a client-rendered surface presents SHALL be
++present, with equal value, in the machine answer for the same evaluation.
++
++- **Scope.** all facts rendered by client-side code across the three surfaces.
+
+ - **Case (sweep)**: a checker loads each surface, extracts every
+   rendered fact through the surfaces' declared parity markers — the
+@@ -418,10 +424,11 @@
+
+ Group: Client rendering and parity. Form: **prohibition**.
+
+-The POC SHALL NOT load executable client code from outside its own
+-built, version-controlled outputs: no runtime fetch of scripts from
+-external origins. Scope of quantification: every script the served
+-pages cause a browser to execute.
++**Required behavior.** The POC SHALL NOT load executable client code from
++outside its own built, version-controlled outputs: no runtime fetch of scripts
++from external origins.
++
++- **Scope.** every script the served pages cause a browser to execute.
+
+ - **Case (sweep)**: a checker enumerates every script reference in the
+   served pages and every network origin contacted during page load —
+@@ -457,11 +464,11 @@
+
+ Group: Client rendering and parity. Form: **event-response**.
+
+-WHEN a human surface is read without script execution, the POC SHALL
+-still serve the surface's facts in exact, accessible form (the
++**Required behavior.** WHEN a human surface is read without script execution,
++the POC SHALL still serve the surface's facts in exact, accessible form (the
+ server-rendered exact tables/routes), or an explicit statement that the
+-enhanced rendering is unavailable — never a blank or silently degraded
+-region presented as complete.
++enhanced rendering is unavailable — never a blank or silently degraded region
++presented as complete.
+
+ - **Case**: a checker requests each surface with scripting disabled and
+   reads the served HTML.
+@@ -497,10 +504,9 @@
+
+ Group: Polaris. Form: **state projection/query**.
+
+-WHEN Polaris is read, it SHALL project the shared model's intent
+-entities as a long-form narrative document in multiple titled
+-pages/sections, each section traceable to the entity or entities it
+-presents.
++**Required behavior.** WHEN Polaris is read, it SHALL project the shared
++model's intent entities as a long-form narrative document in multiple titled
++pages/sections, each section traceable to the entity or entities it presents.
+
+ - **Case**: a checker loads Polaris at a known evaluation with a known
+   entity set.
+@@ -538,10 +544,12 @@
+
+ Group: Polaris. Form: **invariant**.
+
+-Every positive claim Polaris presents SHALL cite provenance that
+-resolves to an identified observation or governed artifact in the
+-shared model. Scope of quantification: all claim-bearing elements
+-Polaris marks (its declared claim markers).
++**Required behavior.** Every positive claim Polaris presents SHALL cite
++provenance that resolves to an identified observation or governed artifact in
++the shared model.
++
++- **Scope.** all claim-bearing elements Polaris marks (its declared claim
++  markers).
+
+ - **Case (sweep)**: a checker enumerates Polaris's claim markers — the
+   denominator is the complete marker population, counted and reported —
+@@ -575,11 +583,11 @@
+
+ Group: Polaris. Form: **prohibition**.
+
+-Polaris SHALL NOT present prose asserting states of the project for
+-which the shared model holds no evidence; where the model is Unknown,
+-the narrative SHALL disclose the Unknown and its reason in place. Scope
+-of quantification: every substantive assertion in the rendered
+-document.
++**Required behavior.** Polaris SHALL NOT present prose asserting states of the
++project for which the shared model holds no evidence; where the model is
++Unknown, the narrative SHALL disclose the Unknown and its reason in place.
++
++- **Scope.** every substantive assertion in the rendered document.
+
+ - **Case (counterexample schema + sweep)**: a checker takes a model
+   whose relationships include declared Unknowns, renders Polaris, and
+@@ -618,9 +626,9 @@
+
+ Group: Trajectory. Form: **state projection/query**.
+
+-WHEN Trajectory is read, it SHALL project observed work items onto
+-board columns drawn from a declared closed mapping of the Beads status
+-vocabulary, with every rendered item placed by its observed status and
++**Required behavior.** WHEN Trajectory is read, it SHALL project observed work
++items onto board columns drawn from a declared closed mapping of the Beads
++status vocabulary, with every rendered item placed by its observed status and
+ carrying its identifier.
+
+ - **Case**: a checker loads Trajectory at a known Dolt revision with
+@@ -656,10 +664,12 @@
+
+ Group: Trajectory. Form: **invariant**.
+
+-Every temporal position, duration, or ordering Trajectory renders SHALL
+-derive from instants recorded in the observed work-item facts (created,
+-updated, closed), never from render-time clocks or inferred ordering.
+-Scope of quantification: all temporal encodings on the surface.
++**Required behavior.** Every temporal position, duration, or ordering
++Trajectory renders SHALL derive from instants recorded in the observed
++work-item facts (created, updated, closed), never from render-time clocks or
++inferred ordering.
++
++- **Scope.** all temporal encodings on the surface.
+
+ - **Case (sweep)**: a checker enumerates Trajectory's temporal markers
+   — the denominator is the marker population — and recomputes each
+@@ -695,11 +705,11 @@
+
+ Group: Trajectory. Form: **invariant**.
+
+-Trajectory SHALL visibly declare which work-item population it renders
+-(its selection rule) and the counts inside and outside that selection,
+-so an excluded-item population is never silently invisible. Scope of
+-quantification: the rendered scope statement against the full observed
+-item set.
++**Required behavior.** Trajectory SHALL visibly declare which work-item
++population it renders (its selection rule) and the counts inside and outside
++that selection, so an excluded-item population is never silently invisible.
++
++- **Scope.** the rendered scope statement against the full observed item set.
+
+ - **Case**: a checker loads Trajectory over a database whose total item
+   count exceeds the rendered selection.
+@@ -734,9 +744,10 @@
+
+ Group: Trajectory. Form: **prohibition**.
+
+-Trajectory SHALL NOT render work-item activity, closure, or merge state
+-as intent satisfaction or verification. Scope of quantification: every
+-satisfaction/verification encoding on the surface.
++**Required behavior.** Trajectory SHALL NOT render work-item activity,
++closure, or merge state as intent satisfaction or verification.
++
++- **Scope.** every satisfaction/verification encoding on the surface.
+
+ - **Case (counterexample schema + sweep)**: a checker closes an
+   observed item whose governing relationship holds no verification
+@@ -774,9 +785,9 @@
+
+ Group: Orrery. Form: **state projection/query**.
+
+-WHEN Orrery is read, it SHALL render a spatial projection of the
+-observed code structure in which regions derive from the directory
+-structure and declared capability-to-path mappings, with a
++**Required behavior.** WHEN Orrery is read, it SHALL render a spatial
++projection of the observed code structure in which regions derive from the
++directory structure and declared capability-to-path mappings, with a
+ deterministic layout per observation.
+
+ - **Case**: a checker loads Orrery twice over one observation and once
+@@ -813,10 +824,11 @@
+
+ Group: Orrery. Form: **invariant**.
+
+-Orrery SHALL render observed code outside every declared mapping as an
+-explicit unmapped/Unknown region, and SHALL state the mapped and
+-unmapped counts against the observed total. Scope of quantification:
+-every observed file in the structure observation.
++**Required behavior.** Orrery SHALL render observed code outside every
++declared mapping as an explicit unmapped/Unknown region, and SHALL state the
++mapped and unmapped counts against the observed total.
++
++- **Scope.** every observed file in the structure observation.
+
+ - **Case (sweep)**: a checker counts observed files directly from the
+   machine answer, and reads Orrery's mapped/unmapped counts — the
+@@ -852,10 +864,10 @@
+
+ Group: Orrery. Form: **prohibition**.
+
+-Orrery SHALL NOT render an edge, adjacency, grouping, or emphasis
+-encoding a relationship the shared model does not hold. Scope of
+-quantification: every relationship encoding the surface's legend
+-declares.
++**Required behavior.** Orrery SHALL NOT render an edge, adjacency, grouping,
++or emphasis encoding a relationship the shared model does not hold.
++
++- **Scope.** every relationship encoding the surface's legend declares.
+
+ - **Case (sweep)**: a checker enumerates every rendered relationship
+   encoding per the legend — the denominator is the enumerated encoding
+@@ -891,10 +903,11 @@
+
+ Group: Orrery. Form: **invariant**.
+
+-Every entity Orrery renders SHALL link to the same entity route the
+-exact tables serve, so the spatial view and the exact view are two
+-projections of one graph. Scope of quantification: all interactive
+-entity elements on the surface.
++**Required behavior.** Every entity Orrery renders SHALL link to the same
++entity route the exact tables serve, so the spatial view and the exact view
++are two projections of one graph.
++
++- **Scope.** all interactive entity elements on the surface.
+
+ - **Case (sweep)**: a checker enumerates every interactive entity
+   element — the denominator is that population — and follows each link.
+@@ -928,10 +941,11 @@
+
+ Group: Cross-cutting experience. Form: **invariant**.
+
+-The three surfaces SHALL draw from one declared set of design tokens,
+-and SHALL encode epistemic states (Observed, Unknown, and their
+-reasons) identically wherever they appear. Scope of quantification:
+-every epistemic encoding across the three surfaces.
++**Required behavior.** The three surfaces SHALL draw from one declared set of
++design tokens, and SHALL encode epistemic states (Observed, Unknown, and their
++reasons) identically wherever they appear.
++
++- **Scope.** every epistemic encoding across the three surfaces.
+
+ - **Case (sweep)**: a checker enumerates every epistemic encoding on
+   all three surfaces — the denominator is that population — and
+@@ -967,12 +981,13 @@
+
+ Group: Cross-cutting experience. Form: **invariant**.
+
+-Every surface SHALL be navigable by keyboard with visible focus, SHALL
+-meet WCAG AA contrast for text and epistemic encodings, SHALL respect
+-reduced-motion preferences, and SHALL carry legends whose text matches
+-every visual encoding in use. Scope of quantification: all interactive
+-elements, text/encoding color pairs, animated behaviors, and
+-legend-declared encodings on the three surfaces.
++**Required behavior.** Every surface SHALL be navigable by keyboard with
++visible focus, SHALL meet WCAG AA contrast for text and epistemic encodings,
++SHALL respect reduced-motion preferences, and SHALL carry legends whose text
++matches every visual encoding in use.
++
++- **Scope.** all interactive elements, text/encoding color pairs, animated
++  behaviors, and legend-declared encodings on the three surfaces.
+
+ - **Case (sweep)**: a checker runs keyboard traversal, automated
+   contrast measurement over the enumerated color pairs,
