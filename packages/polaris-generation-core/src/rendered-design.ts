@@ -19,7 +19,8 @@ import { checkClosedSchema, schemaParts, validateDraftRecord, type ClosedSchema,
  * number of other figures in the draft never matters (unrelated extra figures
  * cannot stand in). A `prose-sufficient` relationship naming a diagram the
  * draft does not contain is a malformed record and throws; a `diagram-clearer`
- * one keeps its `missing-diagram` finding.
+ * one blocks instead (`missing-diagram` when supported or partly supported,
+ * `undrawable-without-recorded-omission` when unsupported).
  *
  * One name per relationship: an undrawable relationship drawn in any produced
  * figure must name that figure, which blocks. Naming a figure that records its
