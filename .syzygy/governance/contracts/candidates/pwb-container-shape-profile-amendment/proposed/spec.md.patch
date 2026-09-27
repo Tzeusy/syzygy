@@ -1,14 +1,20 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-index 543469d..83dc555 100644
+index 543469d..1ae1fc3 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -14,3 +14,4 @@ Reader definitions:
+@@ -12,7 +12,8 @@ Reader definitions:
+   index within that root; baseline `openspec/specs/*/spec.md` Git-tree entries;
+   and top-level roster directories containing `butler.toml`, with their
    `MANIFESTO.md` when present. Narrative links do not recurse.
 -- A **declared item** has one class from this closed set and one extraction rule:
 +- A **declared item** has one class from this closed set, read by that class's
 +  extraction rule (for a loaded profile, the class's grammar rows):
    `project-account-section` uses the six keys purpose, promises, refusals,
-@@ -25,3 +26,8 @@ Reader definitions:
+   architecture, V1 scope and V1 success; `principle` uses each numbered
+   non-negotiable; `success-criterion` uses each list item in the two success
+@@ -23,11 +24,145 @@ Reader definitions:
+   `topology-component` uses each first-column identity in the component tables;
+   `craft-policy` uses each policy-file identity in the craft index; and
    `roster-identity` uses each top-level roster directory containing
 -  butler.toml. No other prose, heading, link or file mints an item.
 +  butler.toml. No other prose, heading, link or file mints an item. Each class
@@ -18,7 +24,7 @@ index 543469d..83dc555 100644
 +  to Lay and Land; `craft-policy` to Craft and Care; and `roster-identity` to
 +  roster identity.
  - Stable item identity is `(item class, declared key)`. Repository-relative path
-@@ -29,3 +35,132 @@ Reader definitions:
+   and content hash are source-anchor state, never identity. A duplicate key in
    one class is a contradiction rather than a path-based disambiguation.
 -- The extraction grammar is literal:
 +- A **container shape** is how the items of one grammar row sit inside its
@@ -152,7 +158,11 @@ index 543469d..83dc555 100644
 +- Butlers' profile declares exactly the following extraction grammar, which is
 +  literal:
    - `project-account-section` mints exactly six aggregate keys: purpose from
-@@ -56,8 +191,2 @@ Reader definitions:
+     vision.md H2 “What Butlers Is”; promises from vision.md H2 “What Success
+     Looks Like”; refusals from vision.md H2 “What Butlers Is Not”; architecture
+@@ -54,12 +189,6 @@ Reader definitions:
+     Order” table; the File-column link target basename is the key.
+   - `roster-identity` is each Git-tree path roster/<one-directory>/butler.toml;
      the directory is the key and the TOML `[butler].name` must be non-empty.
 -  Heading levels/text, top-level list depth, table column counts, one-based
 -  ordinals and literal keys are exact. Unicode is NFC-normalized; no case
@@ -161,7 +171,11 @@ index 543469d..83dc555 100644
 -  makes the enclosing source's item denominator Unknown; it never produces a
 -  partial item set.
  - The source-path denominator remains known through body-read failures. An
-@@ -119,4 +248,8 @@ Group: Coverage. Form: **invariant**.
+   unavailable body's within-source item denominator is Unknown, never copied
+   from a fixture or prior ambient state.
+@@ -117,27 +246,43 @@ warrants:
+ Group: Coverage. Form: **invariant**.
+ 
  For every lawfully admitted source body, Polaris SHALL account for each
 -declared item discovered by the closed extraction rule across Heart and Soul,
 -Legends and Lore, Spec and Spine, Lay and Land, Craft and Care and roster
@@ -172,7 +186,10 @@ index 543469d..83dc555 100644
 +across Heart
 +and Soul, Legends and Lore, Spec and Spine, Lay and Land, Craft and Care and roster
  identity. Each admitted item SHALL be in exactly one coverage state: modeled,
-@@ -127,9 +260,15 @@ retain its source identity while its item denominator renders Unknown.
+ Unknown or contradicted. A source whose item population cannot be read SHALL
+ retain its source identity while its item denominator renders Unknown.
+ 
+ - **Case (sweep)**: enumerate the source population and every declared item in
    each readable category at one revision, then compare it to the model; include
 -  an unreadable source case.
 +  an unreadable source case, a loaded profile that gives one class no row, a
@@ -193,7 +210,8 @@ index 543469d..83dc555 100644
 +  each identity appearing once; malformed/unreadable sources, and every class
 +  a loaded profile leaves unreadable, carry an Unknown item denominator.
  - **Oracle independence**: the expected denominator is extracted from the
-@@ -138,4 +277,8 @@ retain its source identity while its item denominator renders Unknown.
+   source files, not from the POC's coverage object.
+ - **Falsifier**: the independent extractors disagree, a malformed source emits
    a partial population, a known source disappears, an admitted item appears twice or
 -  lacks a state, a known count does not reconcile, or an unavailable body's
 -  item denominator is presented as known.
@@ -201,10 +219,16 @@ index 543469d..83dc555 100644
 +  item denominator is presented as known, an item is read through a shape or
 +  key form its governing grammar does not declare, a loaded profile's
 +  missing or invalid rule is replaced by a built-in one, a refused Butlers
-+  profile returns Butlers to the built-in grammar, or a project other than
-+  Butlers with no loaded profile reports a known item denominator.
++  profile returns Butlers to the built-in grammar, a class a loaded profile
++  leaves unreadable, or any class of a Butlers profile that is refused or
++  declared but unread, reports a known item denominator, or a project other
++  than Butlers with no loaded profile reports a known item denominator.
  
-@@ -148,2 +291,44 @@ retain its source identity while its item denominator renders Unknown.
+ #### Scenario: Declared shape reconciles
+ 
+@@ -146,6 +291,48 @@ retain its source identity while its item denominator renders Unknown.
+ - **AND** every category reports modeled, Unknown and contradicted counts that
+   sum to its denominator
  
 +#### Scenario: Butlers' profile reproduces the written grammar
 +
@@ -249,3 +273,5 @@ index 543469d..83dc555 100644
 +  definitions reads none of its classes
 +
  ```yaml
+ warrants:
+   primary: VIS-2

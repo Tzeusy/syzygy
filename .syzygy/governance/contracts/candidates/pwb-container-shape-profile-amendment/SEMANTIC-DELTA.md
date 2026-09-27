@@ -21,8 +21,11 @@ edited here**. The proposed bytes exist only as three unified diffs under
 The manifest has eleven rows over the subject's manifest population (the
 subject tracks 15 files; like every sibling PWB manifest it leaves out the
 three contract-coverage parts and `tasks.md`): three hash proposed
-bytes, eight hash current bytes. `CONTRACT-COVERAGE.md` and its three matrix
-parts regenerate unchanged (the builder checks this).
+bytes, eight hash current bytes. `CONTRACT-COVERAGE.md` regenerates
+unchanged, and its three matrix parts, which the contract-coverage generator
+reads rather than writes, are unchanged; the builder checks both (each part
+has a manifest row, and a change to any file no patch is declared to change
+fails `--check`).
 
 **Stable IDs affected:** `PWB-REQ-002` (amended in place: body, case, oracle,
 falsifier, five added scenarios; warrants unchanged). The reader definitions
@@ -161,8 +164,10 @@ The
 falsifier adds "an item is read through a shape or key form its governing
 grammar does not declare, a loaded profile's missing or invalid rule is
 replaced by a built-in one, a refused Butlers profile returns Butlers to the
-built-in grammar, or a project other than Butlers with no loaded profile
-reports a known item denominator". That last clause names projects other
+built-in grammar, a class a loaded profile leaves unreadable, or any class
+of a Butlers profile that is refused or declared but unread, reports a known
+item denominator, or a project other than Butlers with no loaded profile
+reports a known item denominator". The last clause names projects other
 than Butlers on purpose: Butlers today has no profile and lawfully reports
 known denominators by its built-in default, so an unscoped clause would call
 today's conforming state a failure. Five scenarios are added: "Butlers'
@@ -212,8 +217,16 @@ profile declares today's shapes as they are" [Observed, quoted from §6].
 P-74 Q2 (`POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`, line 64)
 ruled "one registry-entry amendment act before slice 5's fifth limb only,
 the first four limbs thread a profile parameter with current constants as
-default" [Observed, quoted]. Item 4's interim default writes that ruling
-into the specification.
+default" [Observed, quoted]. Item 4's interim default writes today's
+constants into the specification as Butlers' default, but only until a
+profile is declared for Butlers, not until limb 5. If the registry act
+declares Butlers' profile and lands before limb 5, as that ruling orders,
+then until limb 5 lands the text requires Butlers to show Unknown while
+today's code shows known counts: the code does not conform in that window,
+and the falsifier's "a refused Butlers profile returns Butlers to the
+built-in grammar" fires on it [Inferred]. The draft keeps "declared" as the
+fail-closed choice (round 3, N-a) and discloses the window; packet question
+7 asks the owner whether the registry act must land together with limb 5.
 
 Doctrine: `VIS-4` reserves the act to the owner. `VIS-2`
 (`.syzygy/governance/doctrine/vision.md`, lines 96-98): "**VIS-2 — No evidence
@@ -229,7 +242,7 @@ first scenario keeps Butlers' identities and denominators equal to today's.
 
 Method: `NORMATIVE-CHANGE-WORKFLOW.md` and `SEMANTIC-DELTA-TEMPLATE.md` under
 `.syzygy/governance/contracts/candidates/policy-candidates/`. This delta
-stops at step 2: drafted, blast radius established, three review rounds
+stops at step 2: drafted, blast radius established, four review rounds
 repaired. **No self-review was performed.**
 
 ## Evidence or decision basis
@@ -295,20 +308,25 @@ packet question 10 asks whether to rename.
 
 Enumerated in `IMPACT-LEDGER.md`. In one line each:
 
-1. **No gap opens in the code.** No profile loader exists; the observer
-   reads compiled-in constants. The text names Butlers' written grammar as
-   its built-in default until a profile is declared for it, which is the
-   design
-   P-74 Q2 ruled, so today's code conforms by the text [Inferred]. Once limb
-   5 loads a profile, the no-built-in rule applies.
+1. **A gap opens in the code only if a Butlers profile is declared before
+   limb 5.** No profile loader exists; the observer reads compiled-in
+   constants. The text names Butlers' written grammar as its built-in
+   default until a profile is declared for it, so today's code conforms
+   by the text while none is declared [Inferred]. P-74 Q2 puts the
+   registry act before limb 5; if that act declares Butlers' profile, then
+   from that act until limb 5 the text requires Butlers to show Unknown and
+   today's code, which shows known counts, does not conform (packet, "The
+   window between a declared profile and limb 5", and question 7) [Inferred].
+   Once limb 5 loads a profile, the no-built-in rule applies.
 2. **The registry entry and the secret policy pin today's `spec.md` digest.**
    Any adopted specification successor stales both pins; this package does
    not repair them (the same is true of every sibling).
 3. **Every sibling's generated `GOVERNING-DEPENDENCIES.md` patch collides
    with this one.** Resolved by regenerating with `--write` after each act.
-4. **The profile's home is drafted, not performed.** Its registry fields
-   are `syzygy-dov.24`'s (PR #123) `containerShapes` and `classGrammar`, the
-   one registry act P-74 Q2 ruled.
+4. **The profile's home is drafted, not performed.** Its drafted registry
+   fields are `syzygy-dov.24`'s (PR #123) `containerShapes` and
+   `classGrammar`. Whether `syzygy-dov.24`'s act is the one registry act
+   P-74 Q2 ruled, for this profile too, is not settled (packet question 7).
 5. **M15 amends the same requirement.** P-82's answer (decision record line
    70, Ruled column) was "Q1 arm (b), draft the delta only", with Q2–Q4
    designing `partially-extracted`, the `unenumerated-heading` reason and
@@ -347,6 +365,8 @@ Round 1: `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-RAW.md` (REVISE, commit
 `a7eda10`). Round 2: `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-2-RAW.md`
 (REVISE, commit `c103523`). Round 3:
 `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-3-RAW.md` (REVISE, commit
-`81315da`). Every finding of all three is dispositioned in the packet's
+`81315da`). Round 4:
+`docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-4-RAW.md` (REVISE, commit
+`e381e4e`). Every finding of all four is dispositioned in the packet's
 review record.
 `REVIEW-BRIEF.md` states what the next reviewer is given.

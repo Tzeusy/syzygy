@@ -5,8 +5,8 @@
 > merged pull request, passing check, silence or general approval performs no
 > act. The phrase below is kept only so governance checks can see it go
 > stale; it is not offered until the exact bytes pass a fresh independent
-> review. Three review rounds have run and all said REVISE; this head repairs
-> the third (review record below).
+> review. Four review rounds have run and all said REVISE; this head repairs
+> the fourth (review record below).
 
 Date: 2026-09-27. Gate bead: `syzygy-u05.8` (N8).
 
@@ -22,7 +22,7 @@ sibling PWB manifest does). Three rows hash proposed bytes and eight hash
 current bytes.
 
 Manifest SHA-256:
-`2c59453345276366d1a5b7f95dcacc40b199a4edc350072dd564d52aeb11ae82`
+`2bf8addcb4168ad4b20a56e3097ca59a94e02fb9e820156ad796e31a50f2ae0e`
 
 The builder writes the manifest; this digest was computed from it by script.
 Any change to a patch, the manifest or the subject retires it.
@@ -99,9 +99,30 @@ default". So:
 
 - the profile's home is a registry-entry amendment, and there is one such
   act. `syzygy-dov.24` drafts it;
-- until that act and limb 5, the code runs on today's constants. The
-  drafted text writes that in as Butlers' built-in default, so the code
-  conforms by the text, not by chance.
+- until limb 5, the code runs on today's constants. The drafted text makes
+  Butlers' written rules its built-in default only **until a profile is
+  declared for Butlers**, not until limb 5. So today's code conforms by the
+  text only while no Butlers profile is declared. Once one is declared and
+  before limb 5 reads it, the code does not conform (the window below).
+
+### The window between a declared profile and limb 5
+
+P-74 Q2 puts the registry act before limb 5. Suppose that act puts Butlers'
+grammar rows into the registry entry, as `syzygy-dov.24` drafts. Then from
+the day it lands until limb 5 lands, Butlers has a declared profile that no
+code reads. The drafted text treats such a profile as refused, so every
+Butlers kind of item, and every category, must show Unknown. Today's code
+would still show known counts from its constants. For that whole window the
+code would not conform to the text, and the falsifier "a refused Butlers
+profile returns Butlers to the built-in grammar" would fire on it [Inferred,
+from the drafted text and today's code].
+
+The draft keeps "declared" on purpose. It is the fail-closed choice: a
+profile that has been declared but is not being read never falls back to
+the written rules (review round 3, N-a). The reviewer's other repair, to
+keep the default "until limb 5's loader reads a profile", would reopen that
+gap, so it is not taken here. How to handle the window is the second part of
+question 7.
 
 ## Open questions for you
 
@@ -130,7 +151,9 @@ default". So:
    out, and let the registry entry alone say it.
 6. **When should this be signed?** No code reads a profile yet: limb 5
    (`syzygy-dov.8.3` and after) is not started. Because the interim default
-   is written in, signing now leaves today's code conforming. *Recommended:
+   is written in, signing now leaves today's code conforming, but only while
+   no Butlers profile is declared; question 7 covers what happens once one
+   is. *Recommended:
    sign this before the `syzygy-dov.24` registry act, so the registry and
    the specification agree the first time; `syzygy-dov.24`'s own question 1
    recommends the same* [Inferred].
@@ -141,6 +164,22 @@ default". So:
    secret-policy act looks needed: the policy lists no per-class files, only
    a seed rule [Inferred, read from the policy]. *Recommended: yes, and
    after.*
+
+   **Second part: must that registry act land together with limb 5, or may
+   it land first?** P-74 Q2 orders the act before limb 5; it does not say
+   how long the gap may be. If the act declares Butlers' profile and lands
+   first, Butlers must show Unknown until limb 5 lands, and today's code,
+   which shows known counts, does not conform during that time (the window
+   above). The options, none decided here:
+
+   - (a) Land the registry act and limb 5 together, so no declared Butlers
+     profile ever goes unread.
+   - (b) Let the registry act land first, with the window disclosed: until
+     limb 5 lands, the text says Butlers is Unknown while the code shows
+     known counts, and the "refused Butlers profile" falsifier fires.
+
+   The recommendation above ("yes, and after") is about this sign-off; it
+   does not choose between (a) and (b).
 8. **This package and M15 both amend `PWB-REQ-002`. Keep them separate?**
    Your P-82 answer was "Q1 arm (b), draft the delta only; Q2 design
    `partially-extracted` inside it, build only after sign-off and a fresh
@@ -199,10 +238,10 @@ added for that here; §6 asks for Butlers' shapes as they are.
 
 The act phrase for this manifest would be:
 
-`SIGN OFF PWB CONTAINER-SHAPE PROFILE AMENDMENT: 2c59453345276366d1a5b7f95dcacc40b199a4edc350072dd564d52aeb11ae82`
+`SIGN OFF PWB CONTAINER-SHAPE PROFILE AMENDMENT: 2bf8addcb4168ad4b20a56e3097ca59a94e02fb9e820156ad796e31a50f2ae0e`
 
 It is registered so governance checks see it go stale, but it is **not
-offered**: all three review rounds so far said REVISE, and these repaired
+offered**: all four review rounds so far said REVISE, and these repaired
 bytes have not been reviewed. If you reply with this phrase now,
 nothing is performed. A future recorder must reject a digest that differs
 from the manifest then present and must prove every manifest row against the
@@ -238,7 +277,8 @@ tree after the patches are applied.
    in one change, writes the act record and appends one aggregate section.
 5. Add this link to `PWB_SUCCESSOR_CHAIN` in the performed order.
 6. The registry act for the profile (question 7) and any continuation
-   direction for limb 5, each as its own decision.
+   direction for limb 5, each as its own decision; whether they must land
+   together is question 7's second part.
 7. Run the canonical governance battery in a clone and keep the transcript.
 
 If unanswered, the signed text stays in force and only Butlers' written
@@ -253,7 +293,7 @@ and what was done:
 | Finding | Severity | Disposition |
 |---|---|---|
 | R1 — one source and one shape per class cannot express Butlers' own grammar | revise | Fixed. The profile is a list of grammar rows; a class has one or more, each with its source, heading or headings, the parameters its shape or key form reads, one shape and one key form. This matches `syzygy-dov.24`'s rows. |
-| R2 — no built-in rule conflicts with P-74 Q2's "current constants as default"; question 7 already ruled | revise | Fixed. Butlers' written grammar is its built-in default until its profile is loaded; the no-built-in rule applies only once a profile is loaded. P-74 Q2 is quoted above, "by coincidence" is gone, and question 7 asks only what is left. |
+| R2 — no built-in rule conflicts with P-74 Q2's "current constants as default"; question 7 already ruled | revise | Fixed. Butlers' written grammar is its built-in default until its profile is loaded (**superseded 2026-09-27, rounds 3 and 4:** until a profile is declared for Butlers; round 4, R-D, found that this does not keep today's code conforming once a profile is declared and before limb 5, and the window is now disclosed); the no-built-in rule applies only once a profile is loaded. P-74 Q2 is quoted above, "by coincidence" is gone, and question 7 asks only what is left. |
 | R3 — landing order credited the owner with `.20` and `.18` | revise | Fixed. Only `.21` → `.30` → `.22` → lane B is attributed to you (question 11); the ledger's list is corrected the same way. |
 | R4 — a missing rule names no source, so nothing turned Unknown | revise | Fixed. A class with no row, or with an invalid row, makes the class and its category Unknown; separate scenarios for the missing row and the invalid row. |
 | R5 — shape sentences looser than the code; exactness paragraph left Butlers-only | revise | Fixed. The nine shape sentences and seven key-form sentences are `syzygy-dov.24`'s, word for word, each naming every failure; the builder compares them once `syzygy-dov.24`'s builder is in the tree. The exactness paragraph is its own bullet covering every grammar. |
@@ -299,7 +339,22 @@ what was done:
 | N-f — "no other requirement changes" and "source population unchanged" were held only by the digest and review | note | Fixed by enforcing them. The builder now pins the whole proposed `spec.md`: it must equal today's with this package's eight edits applied, byte for byte. The reviewer's twelve surviving `PWB-REQ-002` clause mutants, the scenario swap, `PWB-REQ-003`'s SHALL NOT made MAY and the source population's "do not recurse" removed are selftest mutants and fail closed, with one more on `PWB-REQ-001`'s title. The rule tables are digest-pinned so a weakened rule fails the selftest. |
 | N-g — label trimming, which failure wins, three or more headings, and whether a numbered key restarts | note | Two fixed in this package's own text: a `heading-section` row declares at most two headings, and a declared third makes the row unreadable; a `prefixed-ordinal` key counts across a row's headings and does not restart. Two are disclosed, not fixed: the `ordinal-and-label` key trims the label (`nfc(label.trim())` in `project-shape-extraction.ts`, line 519), and when a source breaks several rules the code reports the first it meets. Both belong to the shared sentences, which must stay identical to `syzygy-dov.24`'s, so they go to `syzygy-dov.32` with that package's shared notes. |
 
-The selftest now kills 185 mutants (was 146), against a total fixed in the
+After round 3 the selftest killed 185 mutants (was 146).
+
+Round 4: `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-4-RAW.md`, a
+fresh-context review of commit `e381e4e`. Verdict: REVISE. It found round 3's
+R-C and N-a–N-g resolved. Every new finding and what was done:
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| R-D — the default lasts "until a profile is declared for Butlers", but P-74 Q2 puts the registry act before limb 5; if that act declares Butlers' profile, today's code does not conform until limb 5, and the package said it did | revise | Fixed by the reviewer's option (a); round 3's "declared" is kept. The window and what it means are now stated in this packet (under "Already ruled") and in the semantic delta. The three sites that said the opposite are corrected: the "Already ruled" bullet above, the semantic delta's warrant and its downstream item 1, and the ledger's extraction-code row. The review brief's criterion 5 said the same and is corrected too. Question 7 gains a second part: must the registry act land together with limb 5, or may it land first with the window disclosed. It is put to you, not decided. |
+| N-h — no falsifier names a known count for a class a loaded profile leaves unreadable, or for a refused or unread Butlers profile | note | Fixed. The falsifier adds "a class a loaded profile leaves unreadable, or any class of a Butlers profile that is refused or declared but unread, reports a known item denominator". The builder checks it as a rule. |
+| N-i — the selftest did not show that `--check` actually calls the manifest comparison and the shared-text digest | note | Fixed. The selftest runs the full check with a corrupted manifest, and again with a wrong shared-text digest; each must fail. A builder with either call removed now fails the selftest. |
+| N-j — "each anchor occurs exactly once" was tested only for absence | note | Fixed. The selftest adds each of the eight anchors a second time; each must fail. A builder that checks only "at least once" now fails the selftest. |
+| N-k — the three matrix parts were said to "regenerate" | note | Fixed in the semantic delta and the ledger. They are files the contract-coverage generator reads, not files it writes. They are unchanged, and the builder checks that: each has a manifest row, and it refuses a change to any file no patch is declared to change. |
+| N-l — the semantic delta called `syzygy-dov.24`'s fields the one registry act P-74 Q2 ruled | note | Fixed. It now says those fields are the drafted home, and that whether `syzygy-dov.24`'s act is the one P-74 Q2 ruled is open (question 7). |
+
+The selftest now kills 196 mutants (was 185), against a total fixed in the
 builder.
 
 ## Verification before any answer

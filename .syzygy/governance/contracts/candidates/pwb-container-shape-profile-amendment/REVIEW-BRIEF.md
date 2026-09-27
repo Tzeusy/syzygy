@@ -2,10 +2,11 @@
 
 > **Candidate — binds nothing.** This brief says what an independent
 > reviewer is given and what they decide. It is not a review and carries
-> no verdict. Rounds 1, 2 and 3 returned REVISE
+> no verdict. Rounds 1 to 4 returned REVISE
 > (`docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-RAW.md`,
 > `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-2-RAW.md`,
-> `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-3-RAW.md`). Round 4 is a
+> `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-3-RAW.md`,
+> `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-4-RAW.md`). Round 5 is a
 > confirmation round over the repaired bytes.
 
 ## What the reviewer is given, and nothing else
@@ -15,7 +16,7 @@
 (`SEMANTIC-DELTA.md`, `IMPACT-LEDGER.md`, `OWNER-DECISION-PACKET.md`, this
 brief, `PWB-CONTAINER-SHAPE-PROFILE-MANIFEST.txt`), the three patches under
 `proposed/`, `scripts/build_pwb_container_shape_profile_amendment.py`, and
-the round-1, round-2 and round-3 raws with the packet's review record.
+the round-1 to round-4 raws with the packet's review record.
 
 **The subject** — `openspec/changes/polaris-project-wide-butlers-model/` at
 its current bytes.
@@ -52,7 +53,8 @@ pursuit. They recommend; the sitting decides.
 
 1. **Is every earlier finding closed as the review record says?** Round 1's
    R1–R5 and N1–N9, round 2's R-A, R-B and N-1–N-8, and round 3's R-C and
-   N-a–N-g, each against the bytes, not the disposition's words.
+   N-a–N-g, and round 4's R-D and N-h–N-l, each against the bytes, not the
+   disposition's words.
 2. **Does it do what §6 asks, and no more?** §6: "let a project's profile
    declare its own container shapes, instead of the shapes written into
    PWB-REQ-002's reader definitions", with Butlers' profile declaring
@@ -68,8 +70,10 @@ pursuit. They recommend; the sitting decides.
 5. **Do the loaded-profile and interim-default sentences keep `VIS-2` and
    agree with P-74 Q2?** A class with no row, or an invalid row, must make
    the class and its category Unknown with every source counted; no
-   built-in rule may stand in once a profile is loaded; today's code, with
-   no profile loaded, must conform. A refused Butlers profile, or one
+   built-in rule may stand in once a profile is loaded; today's code must
+   conform while no Butlers profile is declared, and the window after one is
+   declared and before limb 5 reads it, when it does not, must be disclosed
+   and put to the owner (packet question 7). A refused Butlers profile, or one
    declared but not read, must not return Butlers to the written grammar,
    and a project other than Butlers with no loaded profile must not report a
    known count.
@@ -81,7 +85,7 @@ pursuit. They recommend; the sitting decides.
    "for Butlers read through its loaded profile, both also apply the grammar
    written in these reader definitions" fail?
 8. **Does the package verify, and does the verification mean anything?** Run
-   `--check` and `--selftest` (185 mutants). Name any claim the builder makes
+   `--check` and `--selftest` (196 mutants). Name any claim the builder makes
    that no mutant covers.
 9. **Does the package quote any act argument or claim authority it lacks?**
    Nothing labelled accepted or in force; the phrase marked not offered; no
@@ -111,5 +115,5 @@ head must satisfy it exactly:
 That file digest is the act argument: the manifest's header names "the owner
 act that names this file's digest". The reviewer re-derives it by hashing
 the file. It is **not** any one row of the manifest (each row hashes one
-subject file), and not a digest of the subject. Rounds 1, 2 and 3 carried
+subject file), and not a digest of the subject. Rounds 1 to 4 carried
 the file digest in this position.

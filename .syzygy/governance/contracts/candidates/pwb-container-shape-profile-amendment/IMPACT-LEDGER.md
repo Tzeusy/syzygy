@@ -109,14 +109,14 @@ below. The single-token names were not join-swept.
 | `specs/polaris-project-wide-butlers-model/spec.md` | Reader definitions and `PWB-REQ-002`, by `spec.md.patch`. |
 | `GOVERNING-DEPENDENCIES.md` | Regenerated; only the specification digest moves. |
 | `CAPABILITY-COVERAGE.md` | Row 4 reworded; totals unchanged at 31. |
-| `CONTRACT-COVERAGE.md`, three matrix parts | Regenerate byte-identical (checked). |
+| `CONTRACT-COVERAGE.md`, three matrix parts | `CONTRACT-COVERAGE.md` regenerates byte-identical; the three matrix parts are files the generator reads, not writes, and are unchanged. Both checked: each has a manifest row, and a change to any file no patch is declared to change fails `--check`. |
 | `proposal.md`, `design.md`, `.openspec.yaml`, `CONTRACT-COVERAGE-REPAIR-DELTA.md` | Unchanged. |
 
 ## Table 2 — code that cites `PWB-REQ-002` and is not changed by this act
 
-| File | Why it keeps working |
+| File | Why it keeps working, and when it does not |
 |---|---|
-| `packages/three-surface-poc-core/src/project-shape-extraction.ts` and its test | Reads Butlers through built-in constants equal to the Butlers grammar written in the reader definitions. It loads no profile, and the text names that grammar as Butlers' built-in default until a profile is declared for Butlers; a declared profile the observer does not read is treated as refused and goes to Unknown, never to the default (Semantic delta, item 4). |
+| `packages/three-surface-poc-core/src/project-shape-extraction.ts` and its test | Reads Butlers through built-in constants equal to the Butlers grammar written in the reader definitions. It loads no profile, and the text names that grammar as Butlers' built-in default until a profile is declared for Butlers, so it conforms only while none is declared. A declared profile the observer does not read is treated as refused and goes to Unknown, never to the default (Semantic delta, item 4). So if the registry act declares Butlers' profile before limb 5 lands, this code, still showing known counts, does not conform until limb 5 lands [Inferred]; packet question 7 asks whether the two must land together. |
 | `packages/three-surface-poc-core/src/project-shape-coverage.ts` and its test | Counts what extraction yields; unchanged. Its `CLASS_ROWS` table (lines 85-95) is the class-to-category mapping the declared-item bullet now writes down, so the text and the code agree. |
 | `packages/three-surface-poc-core/src/project-shape-model.ts` | Composes the pipeline; cites the requirement only in a range (line 2, `PWB-REQ-001…007`). |
 | `packages/three-surface-poc-core/src/synthetic-corpus-coverage.ts` | N8's synthetic census. Measures cells; asserts no conformance. |

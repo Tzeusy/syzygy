@@ -414,6 +414,11 @@ REQUIREMENT_RULES = {
     "falsifier: refused profile falls back": (
         "a refused Butlers profile returns Butlers to the built-in grammar,"
     ),
+    "falsifier: unreadable or refused class known": (
+        "a class a loaded profile leaves unreadable, or any class of a Butlers "
+        "profile that is refused or declared but unread, reports a known item "
+        "denominator,"
+    ),
     "falsifier: project with no profile": (
         "or a project other than Butlers with no loaded profile reports a known "
         "item denominator."
@@ -512,10 +517,10 @@ SCENARIO_RULES = {
 # breaks; they are not the guard on the bytes (SPEC_EDITS below is). Their
 # digest is pinned so that a rule weakened, dropped or added in one place
 # fails the selftest instead of passing with its own derived mutant.
-RULE_TABLES_SHA256 = "c89c6da731b517e73af7e5b39c304b14f78d2f76a2147159c89e46d896dcab5d"
+RULE_TABLES_SHA256 = "b655c861078327f168ef337127e01f46962fd3404ff062419c4f22be91ae3031"
 # The selftest's total, fixed so that a rule removed from any table above
 # fails the selftest instead of lowering its count.
-EXPECTED_KILLED = 185
+EXPECTED_KILLED = 196
 # The whole proposed spec.md, pinned by construction: it must equal the
 # current spec.md with each (anchor, replacement) pair applied once, and every
 # other byte of the file unchanged. Each anchor must occur exactly once in the
@@ -770,8 +775,10 @@ SPEC_EDITS = (
             '  item denominator is presented as known, an item is read through a shape or\n'
             "  key form its governing grammar does not declare, a loaded profile's\n"
             '  missing or invalid rule is replaced by a built-in one, a refused Butlers\n'
-            '  profile returns Butlers to the built-in grammar, or a project other than\n'
-            '  Butlers with no loaded profile reports a known item denominator.\n'
+            '  profile returns Butlers to the built-in grammar, a class a loaded profile\n'
+            '  leaves unreadable, or any class of a Butlers profile that is refused or\n'
+            '  declared but unread, reports a known item denominator, or a project other\n'
+            '  than Butlers with no loaded profile reports a known item denominator.\n'
             '\n'
         ),
     ),
@@ -1824,7 +1831,7 @@ def selftest() -> int:
     # default, and both the pin and the rule refuse it.
     unscoped = _replace_once(
         spec,
-        "or a project other than\n  Butlers with no loaded profile reports",
+        "or a project other\n  than Butlers with no loaded profile reports",
         "or a project with no\n  profile reports",
         "unscoped falsifier",
     )
@@ -1846,6 +1853,44 @@ def selftest() -> int:
         if expected not in requirement_findings(proposed[SPEC], drifted):
             return _fail(f"drifted anchor passed: {anchor.splitlines()[0]}")
         killed += 1
+    # Each pinned anchor present twice: "exactly once" refuses a duplicate,
+    # not only an absence.
+    for anchor, _ in SPEC_EDITS:
+        doubled = (base_text + anchor).encode()
+        expected = (
+            "current spec does not carry the pinned anchor exactly once: "
+            f"{anchor.splitlines()[0]!r}"
+        )
+        if expected not in requirement_findings(proposed[SPEC], doubled):
+            return _fail(f"duplicated anchor passed: {anchor.splitlines()[0]}")
+        killed += 1
+
+    # check() itself: its manifest comparison and its shared-text digest are
+    # wired in, not only correct as functions.
+    global MANIFEST_OUT, SHARED_TEXT_SHA256
+    kept_manifest, kept_digest = MANIFEST_OUT, SHARED_TEXT_SHA256
+    with tempfile.TemporaryDirectory() as scratch:
+        stale = pathlib.Path(scratch) / "manifest.txt"
+        stale.write_text(baseline.replace(rows[0][0], "0" * 64, 1))
+        MANIFEST_OUT = stale
+        try:
+            found = check()
+        finally:
+            MANIFEST_OUT = kept_manifest
+    if "manifest differs from exact regeneration over proposed bytes" not in found:
+        return _fail("check() passed a corrupted manifest")
+    killed += 1
+    SHARED_TEXT_SHA256 = "0" * 64
+    try:
+        found = check()
+    finally:
+        SHARED_TEXT_SHA256 = kept_digest
+    if (
+        "shape and key-form sentences do not hash to syzygy-dov.24's at "
+        f"{SHARED_TEXT_COMMIT}"
+    ) not in found:
+        return _fail("check() passed without the shared-text digest")
+    killed += 1
 
     # The shared sentences drifted on both sides at once: the sentence
     # comparison agrees, and only the pinned dov.24 digest refuses it.
@@ -1883,8 +1928,9 @@ def selftest() -> int:
         "declared-item rules and the rule made 'any', the source-path bullet, "
         "shared-text drift on either vocabulary and on both packages at once, "
         f"the whole-spec pin over {len(unamended)} unamended clauses, a "
-        f"scenario swap, the unscoped falsifier and {len(SPEC_EDITS)} drifted "
-        "anchors, bullet order/duplicate/missing, retired opening, the "
+        f"scenario swap, the unscoped falsifier, {len(SPEC_EDITS)} drifted and "
+        f"{len(SPEC_EDITS)} duplicated anchors, check() without its manifest "
+        "comparison or its shared-text digest, bullet order/duplicate/missing, retired opening, the "
         "hoisted exactness paragraph reworded or left behind, Butlers grammar "
         f"drift, {len(REQUIREMENT_RULES)} PWB-REQ-002 rules, retired "
         f"requirement text, SHALL made MAY, the falsifier relabelled, three "
