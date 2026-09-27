@@ -1,8 +1,8 @@
 > **Candidate — binds nothing.** This semantic delta is drafted under P-81 Q5
 > and CC-REV-2. It performs no act, amends no signed byte and authorizes no
-> implementation. The 2026-09-05 PWB specification remains in force unless the
-> owner later performs a dedicated amendment act over the final reviewed
-> manifest.
+> implementation. The signed PWB specification remains in force until the
+> owner signs off a version of this package after a fresh independent review
+> of its exact bytes.
 
 # Semantic delta PWB-ITEM-DEPTH-1 — every declared catalog item can be read in depth
 
@@ -26,7 +26,8 @@ afterward.
 
 **Author:** agent drafting for bead `syzygy-dov.14.2`.
 
-**Date:** 2026-09-27.
+**Date:** 2026-10-02, regenerated over the applied opening-band, render-mode,
+machine-view, missing-currency, dismissal-expiry and container-shape text.
 
 ## Current meaning
 
@@ -113,8 +114,10 @@ Each contract band SHALL carry an item-to-intent relation claim whose stable
 semantic identity is the tuple of the item's stable claim identity and the
 fixed relation role `governing-intent`, at the same evaluation. This relation
 claim is distinct from the item claim and SHALL NOT change or borrow the item's
-epistemic tuple. Exactly one captured declared governing relation makes the
-relation claim Observed and the band renders that current intent verbatim. No
+epistemic tuple. One or more captured declared governing relations, none of
+which excludes another, make the relation claim Observed over that whole
+set, and the band renders each related current intent verbatim; compatible
+relations never become separate claims or a conflict. No
 captured governing relation makes the relation claim Unknown with the
 RFC2-24 reason `missing-declaration` and its resolution route. Mutually
 exclusive captured governing relations make it Unknown with
@@ -139,8 +142,9 @@ reorganized or stored normative copy of doctrine, non-goal, requirement or
 scenario text SHALL exist outside its owning artifact.
 
 - **Case (sweep)**: enumerate the complete declared `catalog-entry` population
-  at an evaluation that includes a uniquely mapped current intent, an Observed
-  item whose relation is `missing-declaration`, a contradicted relation, a
+  at an evaluation that includes a uniquely mapped current intent, an item with
+  two compatible mappings (a requirement and a non-goal), an Observed item
+  whose relation is `missing-declaration`, a contradicted relation, a
   draft capability, a non-capability item with a proposal in the source
   population and two incompatible capability proposals.
 - **Observable**: every declared item reaches exactly one item detail; Base
@@ -150,7 +154,7 @@ scenario text SHALL exist outside its owning artifact.
   are recoverable in both channels.
 - **Oracle**: derive the expected item population and identity/state tuples
   from the shared model; independently derive the fixed-role relation identity,
-  declared relation cardinality, RFC2-24 reason and route from captured
+  declared relation cardinality and mutual exclusivity, RFC2-24 reason and route from captured
   authority; compare current requirement/scenario, doctrine and non-goal bytes
   to their owning artifacts; compare proposal identities and exclusivity to
   captured capability changes; exhaust detail, band and anchor populations;
@@ -164,7 +168,9 @@ scenario text SHALL exist outside its owning artifact.
   declared mappings and exclusivity inputs come from captured authority and
   hard-coded accepted vocabularies, never from Polaris or route output.
 - **Mutation proof**: independently drop and duplicate an item detail, map an
-  item by label alone, assign the item's tuple to its absent relation, remove
+  item by label alone, drop one member of a compatible relation set, report a
+  compatible set as contradicted or as separate claims, assign the item's tuple
+  to its absent relation, remove
   or alter the relation reason/route, render a proposal in a non-capability
   detail, reorder two bands, assign two classes to one block, substitute
   proposal text for current text, and source a reality fact outside the shared
@@ -172,7 +178,9 @@ scenario text SHALL exist outside its owning artifact.
   item and relation denominators each time.
 - **Falsifier**: a missing/duplicate item detail, changed item identity or
   epistemic state, relation identity/state collapsed into the item, inferred
-  intent mapping, absent or invalid relation reason/route, hidden empty contract
+  intent mapping, a compatible relation set collapsed to one relation, split
+  into claims or reported as contradicted, absent or invalid relation
+  reason/route, hidden empty contract
   band, proposal material in a non-capability detail,
   missing/misordered/multiply-classed band, summarized normative text, second
   reality computation, draft rendered adopted, proposal substituted,
@@ -183,7 +191,8 @@ scenario text SHALL exist outside its owning artifact.
 - **WHEN** a reader opens a declared catalog item from the catalog
 - **THEN** its detail preserves the item's identity and epistemic state and
   separately renders the fixed-role item-to-intent relation claim
-- **AND** exactly one captured declared relation renders current intent verbatim
+- **AND** one or more captured, mutually compatible declared relations render
+  every related current intent verbatim under one Observed relation claim
 - **AND** an absent or contradicted relation renders its own RFC2-24 Unknown
   reason and route without changing the item's tuple or guessing intent
 - **AND** proposal material appears only for a matching declared capability,
@@ -205,13 +214,14 @@ warrants:
 ### Item truth and relation truth stay separate
 
 The item keeps its own tuple; only the fixed-role governing-intent relation
-changes state when its declaration is absent or contradicted.
+changes state when its declaration is absent or contradicted, and compatible
+declarations form one set-valued relation, never several claims.
 
 ```mermaid
 flowchart LR
     I["Catalog item claim<br/>identity and epistemic tuple unchanged"] --> D["Item detail"]
     I --> R["governing-intent relation claim<br/>(item identity, fixed role, evaluation)"]
-    ONE["Exactly one declared relation"] --> O["Observed relation<br/>verbatim current intent"]
+    ONE["One or more compatible declared relations"] --> O["Observed relation over the whole set<br/>verbatim current intents"]
     NONE["No declared relation"] --> U1["Unknown relation<br/>missing-declaration + route"]
     MANY["Mutually exclusive relations"] --> U2["Unknown relation<br/>contradicted-pending-adjudication + route"]
     O --> R
@@ -231,7 +241,9 @@ flowchart LR
   in Polaris.
 - Capability identity is still declared, never inferred from a catalog row.
 - PWB-REQ-007 still owns complete epistemic tuples; the item-to-intent relation
-  carries its own tuple and never borrows the item's.
+  carries its own tuple and never borrows the item's. Its closed Unknown
+  vocabulary, missing-currency disclosure and dismissal rules apply to the
+  relation claim as to any claim.
 - PWB-REQ-013 still confines proposal material to matching capability detail.
 - PWB-REQ-011's exact-source authority, content class and fail-closed gates.
 - PWB-REQ-014's anchor and non-citability rules, PWB-REQ-016's nonvisual and
@@ -266,7 +278,8 @@ this later semantic delta.
 It generalizes the current capability deep dive without turning every item into
 a capability; and `item-to-intent relation claim`, keyed by the item's identity,
 the fixed `governing-intent` role and the evaluation, whose tuple is always
-separate from the item's.
+separate from the item's and whose Observed value is the set of all captured,
+mutually compatible governing relations.
 
 **Retired:** none. `Capability deep dive` remains the item-detail form for a
 matching declared capability.
@@ -277,82 +290,47 @@ matching declared capability.
 Five signed subjects move in the proposed bytes. Implementation files are
 named only as future consumers and are unchanged here.
 
+## Open points for the owner
+
+These are choices the drafted text makes and the owner may reverse; each is
+also a row of `OWNER-DECISION-PACKET.md`.
+
+1. **Compatible plural relations.** Two or more captured governing relations
+   that do not exclude one another (a requirement and a non-goal) form one
+   Observed set-valued relation claim, rendered in full. The other lawful arm
+   classifies any plural population as a contradiction, which needs a
+   governing invariant that makes the relation functional.
+2. **Exact intent behind a failed gate.** The text says the band renders each
+   related current intent verbatim. PWB-REQ-011 leaves a body Unknown when its
+   authority, exact-object, secret or inert-content gate fails. The package
+   does not say whether the relation claim stays Observed (the declaration was
+   captured) with its text Unknown, or becomes Unknown itself.
+3. **Currency class of the relation claim.** PWB-REQ-007 renders a claim whose
+   class has no effective currency bound Unknown with
+   `no-currency-bound-declared`. The package does not name the relation
+   claim's class, so whether an Observed relation can exist before a bound is
+   declared for that class is open.
+
 ## Migration / supersession plan
 
-1. Review the exact candidate and manifest in fresh context under
-   `REVIEW-BRIEF.md`; retain raw output verbatim.
-2. Resolve every finding. Any semantic repair retires the review and requires
-   a fresh independent review of the repaired exact bytes.
-3. The owner chooses this package's position relative to the already directed
-   `.21 → .30 → .22 → lane B` chain and any intervening PWB successors.
-4. Regenerate the patches, dependency declaration, manifest and packet digest
-   against the actual predecessor. A changed predecessor retires prior review
-   and any copied argument.
-5. Only then may the owner be offered the dedicated act phrase. A recorder
-   applies all proposed bytes and records the dedicated and aggregate act in
-   one logical change. This draft creates no chain link.
-6. Implementation remains a separate bead behind a fresh explicit owner
-   authorization. Adoption alone authorizes no code or body read.
+1. A fresh independent reviewer reads the exact package under
+   `REVIEW-BRIEF.md`; the raw is stored verbatim.
+2. The owner is asked once, by version, whether to sign off the confirmed
+   bytes (`scripts/record_versioned_signoff.py`).
+3. The recorder applies the five patches through the builder, writes the
+   dedicated record and the aggregate block, and prints the tag to create.
+4. A later amendment that touches the same files regenerates the dependency
+   patch and the manifest over the then-current text.
+5. Implementation is a separate bead behind a fresh explicit owner
+   authorization. Sign-off alone authorizes no code or body read.
 
-Rollback before adoption is deletion or reversion of this inert candidate.
-After adoption, rollback is another reviewed and owner-signed successor; no
-performed act or historical manifest is edited.
+Rollback before sign-off is deletion or reversion of this inert candidate.
+After sign-off, rollback is another reviewed and owner-signed version; no
+performed record or earlier manifest is edited.
 
 ## Review
 
 **Required class:** CC-REV-1 full fresh-context review plus CC-REV-4/VIS-3
-fresh-reader comprehension. The package is Normative and gate-bound.
-
-**Round 1 reviewed bytes:** commit
-`39707e9e2ad4f7671df2a5f728f87d1ae786be79`; manifest-file SHA-256
-`1b9b70c091db566be9ec472d0e1f4bc2bf7203d0cf97056c87cdbc8d435f009a`.
-The exact fresh-context raw is retained unchanged at
-`docs/reviews/R-PWB-ITEM-DEPTH-AMENDMENT-RAW.md`. **Verdict:** `REVISE`.
-
-**Finding 1 — relation state borrowed the item tuple. Accepted and repaired.**
-The proposed requirement and design now define a separate fixed-role
-item-to-intent relation claim with its own stable identity, evaluation tuple,
-RFC2-24 reason and route. PWB-REQ-007 and PWB-REQ-020 are reached unchanged and
-named in the impact ledger, coverage row and review brief. The item tuple is
-explicitly preserved.
-
-**Finding 2 — proposal scope contradicted PWB-REQ-013. Accepted and repaired.**
-Proposal obligations now apply only when item detail is matching declared
-capability detail; non-capability detail renders no proposal material.
-PWB-REQ-013 is reached unchanged and named in the impact ledger, coverage row,
-design, owner packet and review brief.
-
-**Finding 3 — adoption could leave a partial signed tree. Accepted and
-repaired in round 1, then superseded by the round-2 repair below.** At reviewed
-commit `4d9bc742`, `apply_at_adoption` ran the complete package check and
-materialized the proposed-byte map before its first target write; its selftest
-corrupted the final patch and confirmed every scratch target stayed unchanged.
-
-**Round 2 reviewed bytes:** commit
-`4d9bc74215a8a22562f3ff3fcba4655483c2e0e2`; the manifest-file digest is
-recorded verbatim in the exact fresh-context raw retained unchanged at
-`docs/reviews/R-PWB-ITEM-DEPTH-AMENDMENT-RECHECK-RAW.md`. **Verdict:**
-`REVISE`. It confirmed the three round-1 repairs and found one further blocker.
-
-**Round 2 finding — the standalone builder could write signed subjects without
-an act. Accepted and repaired.** The candidate builder no longer defines
-`apply_at_adoption`, `--apply` or `--at-adoption`. Its only write mode updates
-the inert candidate's generated dependency patch and manifest. A behavior-level
-CLI fixture copies the builder, dependencies, candidate, signed subjects and
-sibling patches into a scratch mirror, invokes the removed arguments, requires
-argparse exit 2 and verifies all five signed-subject target bytes are unchanged.
-A future independently reviewed owner-act recorder must own act/order/digest
-validation and materialization.
-
-**Rule-6 counterexample [Observed].** In an isolated clone at unsafe head
-`4d9bc74215a8a22562f3ff3fcba4655483c2e0e2`, the new predicate's exact command
-(`python3 scripts/build_pwb_item_depth_amendment.py --apply --at-adoption`)
-returned 0, emitted the old success line, and changed all five signed-subject
-targets. It therefore evaluated false against that head's behavior. The same
-predicate passes on the repaired builder with argparse return 2, an
-`unrecognized arguments` diagnostic and zero changed target bytes.
-
-**Current review state:** this repair changes candidate-builder bytes after
-round 2; rule 10 retires that review for the current head. A different fresh
-independent reviewer must review the exact repaired head. This author may not
-review it. No phrase is offered and the PR remains Draft.
+fresh-reader comprehension. The package is Normative and gate-bound. The
+reviewer is independent of everyone who drafted or repaired the package, and a
+semantic edit after review requires a new review.

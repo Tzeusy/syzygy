@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Build and verify the inert PWB item-depth amendment candidate.
 
-The current eleven-artifact PWB behavior package is act-bound. This builder
-therefore applies the candidate's ``proposed/*.patch`` files only in a scratch
-tree and hashes those proposed bytes. It has no signed-subject write mode: only
-a future independently reviewed owner-act recorder may validate an effective
-act, chain position and exact manifest before writing ``openspec/**``. A
-candidate commit, review, manifest or merge performs no owner act.
+The current eleven-artifact PWB behavior package is act-bound. ``--check``
+and ``--write`` therefore apply the candidate's ``proposed/*.patch`` files
+only in a scratch tree and hash those proposed bytes. ``--apply
+--at-adoption`` is the one mode that writes signed subjects; it exists for
+``scripts/record_versioned_signoff.py`` after an owner's version-tagged
+sign-off and refuses unless the whole package verifies. A candidate commit,
+review, manifest or merge performs no owner act.
 """
 
 from __future__ import annotations
@@ -32,6 +33,7 @@ CANDIDATE = pathlib.Path(
 )
 PROPOSED = CANDIDATE / "proposed"
 MANIFEST = CANDIDATE / "PWB-ITEM-DEPTH-AMENDMENT-MANIFEST.txt"
+MANIFEST_OUT = MANIFEST
 TITLE = "PWB ITEM-DEPTH BEHAVIOR AMENDMENT MANIFEST"
 SPEC = CHANGE / "specs/polaris-project-wide-butlers-model/spec.md"
 GOVERNING = CHANGE / "GOVERNING-DEPENDENCIES.md"
@@ -61,6 +63,10 @@ PATCHED = {
     CHANGE / "design.md",
     SPEC,
 }
+#: Sibling packages the owner declined and never applied; their patches no
+#: longer apply and compose with nothing (POLARIS-LANE-B-DECLINED-AND-TARGET-
+#: REVISED-DIRECTION.md). Closed list: any other sibling must classify.
+DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
 ROW_RE = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
 DIFF_TARGET_RE = re.compile(r"^\+\+\+ b/(.+)$", re.MULTILINE)
 SOURCE_RE = re.compile(
@@ -182,6 +188,8 @@ def semantic_findings(
         "Each contract band SHALL carry an item-to-intent relation claim",
         "fixed relation role `governing-intent`",
         "SHALL NOT change or borrow the item's",
+        "One or more captured declared governing relations, none of\nwhich excludes another, make the relation claim Observed over that whole\nset",
+        "compatible\nrelations never become separate claims or a conflict",
         "RFC2-24 reason `missing-declaration`",
         "`contradicted-pending-adjudication` and the owner-adjudication route",
         "SHALL NOT infer a relation from a label, basename, similarity or generated",
@@ -238,7 +246,14 @@ def generated_findings(proposed: dict[pathlib.Path, bytes]) -> list[str]:
     return []
 
 
-def active_sibling_spec_patches() -> list[pathlib.Path]:
+def display(path: pathlib.Path) -> str:
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def sibling_spec_patches() -> list[pathlib.Path]:
     root = ROOT / ".syzygy/governance/contracts/candidates"
     siblings: list[pathlib.Path] = []
     for patch in sorted(root.glob("*/proposed/spec.md.patch")):
@@ -250,25 +265,91 @@ def active_sibling_spec_patches() -> list[pathlib.Path]:
     return siblings
 
 
+def _hunk_sides(patch_text: str) -> list[tuple[str, str]]:
+    """(old side, new side) text of every hunk of a one-file unified patch."""
+    hunks: list[tuple[list[str], list[str]]] = []
+    for line in patch_text.splitlines():
+        if line.startswith("@@"):
+            hunks.append(([], []))
+        elif hunks and line[:1] in (" ", "-", "+", ""):
+            body = line[1:]
+            if line[:1] in (" ", ""):
+                hunks[-1][0].append(body)
+                hunks[-1][1].append(body)
+            elif line[:1] == "-":
+                hunks[-1][0].append(body)
+            else:
+                hunks[-1][1].append(body)
+    return [("\n".join(old) + "\n", "\n".join(new) + "\n") for old, new in hunks]
+
+
+def patch_state(patch: pathlib.Path, current: bytes | None = None) -> str:
+    """`pending`, `applied` or `unclassified` against the current spec.
+
+    Each hunk's old and new sides are searched in the current spec as
+    contiguous text (git's own reverse check cannot tell an insert-only hunk
+    with one context line from a pending one). A patch is applied when every
+    hunk's new side is present and its old side is absent or contained in the
+    new side (an insertion); pending when every hunk's old side is present and
+    its new side absent; anything else cannot be composed or retired and is
+    reported.
+    """
+    text = (read_subjects()[SPEC] if current is None else current).decode("utf-8")
+    sides = _hunk_sides(patch.read_text(encoding="utf-8"))
+    if not sides:
+        return "unclassified"
+    states = set()
+    for old, new in sides:
+        in_old, in_new = old in text, new in text
+        if in_new and (not in_old or old in new) and old != new:
+            states.add("applied")
+        elif in_old and not in_new:
+            states.add("pending")
+        else:
+            states.add("unclassified")
+    return states.pop() if len(states) == 1 else "unclassified"
+
+
+def sibling_population(
+    siblings: list[pathlib.Path] | None = None, current: bytes | None = None
+) -> dict[str, list[pathlib.Path]]:
+    siblings = sibling_spec_patches() if siblings is None else siblings
+    out: dict[str, list[pathlib.Path]] = {
+        "pending": [], "applied": [], "declined": [], "unclassified": []}
+    for sibling in siblings:
+        if sibling.parent.parent.name in DECLINED_SIBLINGS:
+            out["declined"].append(sibling)
+        else:
+            out[patch_state(sibling, current)].append(sibling)
+    return out
+
+
+def active_sibling_spec_patches() -> list[pathlib.Path]:
+    """Sibling spec patches not yet part of the signed spec."""
+    return sibling_population()["pending"]
+
+
 def composition_findings(
     mine: pathlib.Path | None = None,
     siblings: list[pathlib.Path] | None = None,
+    current: bytes | None = None,
 ) -> list[str]:
     mine = ROOT / PROPOSED / "spec.md.patch" if mine is None else mine
-    siblings = active_sibling_spec_patches() if siblings is None else siblings
-    findings: list[str] = []
-    current = read_subjects()[SPEC]
-    for sibling in siblings:
+    current = read_subjects()[SPEC] if current is None else current
+    population = sibling_population(siblings, current)
+    findings = [
+        f"sibling spec patch is neither pending nor applied: {display(path)}"
+        for path in population["unclassified"]
+    ]
+    for sibling in population["pending"]:
         try:
             first = apply_patches({**read_subjects(), SPEC: current}, [sibling, mine])[SPEC]
             second = apply_patches({**read_subjects(), SPEC: current}, [mine, sibling])[SPEC]
         except ValueError as error:
-            findings.append(f"sibling composition failed for {sibling.relative_to(ROOT)}: {error}")
+            findings.append(f"sibling composition failed for {display(sibling)}: {error}")
             continue
         if first != second:
-            findings.append(f"sibling composition is order-dependent: {sibling.relative_to(ROOT)}")
-    if not siblings:
-        findings.append("no active sibling PWB spec patches found; composition denominator is empty")
+            findings.append(f"sibling composition is order-dependent: {display(sibling)}")
     return findings
 
 
@@ -313,6 +394,8 @@ def selftest() -> int:
         "guessed relation": ("SHALL NOT infer a relation", "MAY infer a relation"),
         "unstable relation identity": ("fixed relation role `governing-intent`", "route-selected relation role"),
         "borrowed item tuple": ("SHALL NOT change or borrow the item's", "MAY borrow the item's"),
+        "single-relation collapse": ("One or more captured declared governing relations, none of\nwhich excludes another, make", "Exactly one captured declared governing relation makes"),
+        "compatible set split": ("compatible\nrelations never become separate claims or a conflict", "compatible\nrelations become separate claims"),
         "invalid relation reason": ("RFC2-24 reason `missing-declaration`", "reason `mapping-ambiguous`"),
         "non-capability proposal": ("A non-capability item detail SHALL render no", "A non-capability item detail MAY render"),
         "reordered bands": ("in order, an `argument` band marked", "in order, a `reality` band marked"),
@@ -353,51 +436,163 @@ def selftest() -> int:
         broken_findings, _ = check([broken])
         cases.append(("corrupt patch", bool(broken_findings)))
 
-        mirror = temp_root / "cli-mirror"
-        script_rel = pathlib.Path("scripts/build_pwb_item_depth_amendment.py")
-        dependency_rels = (
-            pathlib.Path("scripts/build_polaris_project_wide_spec_dependencies.py"),
-            pathlib.Path("scripts/build_capability_1_spec_dependencies.py"),
-        )
-        for rel in (script_rel, *dependency_rels):
-            target = mirror / rel
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(ROOT / rel, target)
-        for rel in BEHAVIOR_SUBJECTS:
-            target = mirror / rel
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes((ROOT / rel).read_bytes())
-        shutil.copytree(ROOT / CANDIDATE, mirror / CANDIDATE)
-        for sibling in active_sibling_spec_patches():
-            rel = sibling.relative_to(ROOT)
-            target = mirror / rel
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(sibling.read_bytes())
-        before: dict[pathlib.Path, bytes] = {}
-        for rel in PATCHED:
-            target = mirror / rel
-            before[rel] = target.read_bytes()
-        refused = subprocess.run(
-            [sys.executable, str(mirror / script_rel), "--apply", "--at-adoption"],
-            cwd=mirror,
-            capture_output=True,
-        )
-        after = {rel: (mirror / rel).read_bytes() for rel in PATCHED}
-        if refused.returncode != 2 or b"unrecognized arguments" not in refused.stderr:
-            print(
-                "  (standalone CLI refusal mismatch: "
-                f"rc={refused.returncode}, stderr={refused.stderr.decode().strip()!r})"
+        def make_mirror(name: str) -> pathlib.Path:
+            mirror = temp_root / name
+            script_rel = pathlib.Path("scripts/build_pwb_item_depth_amendment.py")
+            dependency_rels = (
+                pathlib.Path("scripts/build_polaris_project_wide_spec_dependencies.py"),
+                pathlib.Path("scripts/build_capability_1_spec_dependencies.py"),
             )
+            for rel in (script_rel, *dependency_rels):
+                target = mirror / rel
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(ROOT / rel, target)
+            for rel in BEHAVIOR_SUBJECTS:
+                target = mirror / rel
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes((ROOT / rel).read_bytes())
+            shutil.copytree(ROOT / CANDIDATE, mirror / CANDIDATE)
+            parent = pathlib.Path("openspec/changes/three-surface-poc-experience")
+            shutil.copytree(ROOT / parent, mirror / parent)
+            for sibling in sibling_spec_patches():
+                rel = sibling.relative_to(ROOT)
+                target = mirror / rel
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(sibling.read_bytes())
+            return mirror
+
+        def run_cli(mirror: pathlib.Path, *args: str) -> subprocess.CompletedProcess:
+            return subprocess.run(
+                [sys.executable, str(mirror / "scripts/build_pwb_item_depth_amendment.py"), *args],
+                cwd=mirror, capture_output=True,
+            )
+
+        def targets(mirror: pathlib.Path) -> dict[pathlib.Path, bytes]:
+            return {rel: (mirror / rel).read_bytes() for rel in BEHAVIOR_SUBJECTS}
+
+        mirror = make_mirror("apply-refused")
+        before = targets(mirror)
+        refused = run_cli(mirror, "--apply")
         cases.append((
-            "standalone adoption CLI is absent and writes no signed subject",
-            refused.returncode == 2
-            and b"unrecognized arguments" in refused.stderr
-            and after == before,
+            "apply without --at-adoption refuses and writes no signed subject",
+            refused.returncode == 2 and targets(mirror) == before,
         ))
 
-    siblings = active_sibling_spec_patches()
-    cases.append(("missing sibling denominator", bool(composition_findings(siblings=[]))))
-    cases.append(("sibling population present", len(siblings) > 0))
+        mirror = make_mirror("apply-corrupt")
+        before = targets(mirror)
+        (mirror / PROPOSED / "design.md.patch").write_text("not a patch\n", encoding="utf-8")
+        corrupt = run_cli(mirror, "--apply", "--at-adoption")
+        cases.append((
+            "apply at adoption with a corrupt patch writes no signed subject",
+            corrupt.returncode == 1 and targets(mirror) == before,
+        ))
+
+        mirror = make_mirror("apply-stale")
+        before = targets(mirror)
+        manifest = mirror / MANIFEST
+        manifest.write_text(
+            manifest.read_text(encoding="utf-8").replace(
+                sha256(proposed[SPEC]), "0" * 64, 1),
+            encoding="utf-8",
+        )
+        stale = run_cli(mirror, "--apply", "--at-adoption")
+        cases.append((
+            "apply at adoption with a stale manifest writes no signed subject",
+            stale.returncode == 1 and targets(mirror) == before,
+        ))
+
+        mirror = make_mirror("apply-ok")
+        before = targets(mirror)
+        applied = run_cli(mirror, "--apply", "--at-adoption")
+        after = targets(mirror)
+        cases.append((
+            "apply at adoption writes exactly the five proposed subjects",
+            applied.returncode == 0
+            and all(after[rel] == proposed[rel] for rel in BEHAVIOR_SUBJECTS)
+            and {rel for rel in BEHAVIOR_SUBJECTS if after[rel] != before[rel]} == PATCHED,
+        ))
+
+        # Sibling classification and composition over synthetic patches.
+        current = read_subjects()[SPEC]
+        text = current.decode("utf-8")
+
+        def synthetic(name: str, old: str, new: str, state: str = "pending") -> pathlib.Path:
+            assert text.count(old) == 1, old
+            moved = text.replace(old, new, 1).encode()
+            body = unified_patch(SPEC, current, moved) if state == "pending" else unified_patch(SPEC, moved, current)
+            path = temp_root / name / "proposed" / "spec.md.patch"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(body, encoding="utf-8")
+            return path
+
+        far = "### Requirement: PWB-REQ-012 \u2014 Owner-facing copy is direct and concise"
+        pending_far = synthetic("pending-far", far, far + " (x)")
+        applied_far = synthetic("applied-far", far, far + " (x)", "applied")
+        near = "### Requirement: PWB-REQ-015 \u2014 Capability detail preserves authority bands and exact intent"
+        pending_near = synthetic("pending-near", near, near + " (x)")
+        stray = temp_root / "stray" / "proposed" / "spec.md.patch"
+        stray.parent.mkdir(parents=True)
+        stray.write_text(
+            unified_patch(SPEC, b"a line the spec lacks\n", b"another line\n"), encoding="utf-8")
+        declined = temp_root / "pwb-scoped-attributes-amendment" / "proposed" / "spec.md.patch"
+        declined.parent.mkdir(parents=True)
+        declined.write_bytes(stray.read_bytes())
+        def handmade(name: str, hunks: list[tuple[str, str]]) -> pathlib.Path:
+            path = temp_root / name / "proposed" / "spec.md.patch"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            body = f"--- a/{SPEC.as_posix()}\n+++ b/{SPEC.as_posix()}\n"
+            for old, new in hunks:
+                body += f"@@ -1 +1 @@\n-{old}\n+{new}\n"
+            path.write_text(body, encoding="utf-8")
+            return path
+
+        both_present = handmade("both-present", [(
+            "### Requirement: PWB-REQ-012 \u2014 Owner-facing copy is direct and concise",
+            "### Requirement: PWB-REQ-013 \u2014 Proposed work stays subordinate to current project truth")])
+        mixed = handmade("mixed", [
+            ("### Requirement: PWB-REQ-012 \u2014 Owner-facing copy is direct and concise",
+             "a replacement line the spec lacks"),
+            ("a removed line the spec lacks", "Group: Presentation. Form: **invariant**.")])
+        hunkless = temp_root / "hunkless" / "proposed" / "spec.md.patch"
+        hunkless.parent.mkdir(parents=True)
+        hunkless.write_text(f"--- a/{SPEC.as_posix()}\n+++ b/{SPEC.as_posix()}\n", encoding="utf-8")
+        cases.append(("a hunk whose old and new sides both exist is unclassified",
+                      patch_state(both_present, current) == "unclassified"))
+        cases.append(("a patch with one pending and one applied hunk is unclassified",
+                      patch_state(mixed, current) == "unclassified"))
+        cases.append(("a patch with no hunk is unclassified",
+                      patch_state(hunkless, current) == "unclassified"))
+        real_apply = globals()["apply_patches"]
+        try:
+            counter = iter(range(100))
+            globals()["apply_patches"] = lambda _current, _patches: {SPEC: str(next(counter)).encode()}
+            order_findings = composition_findings(siblings=[pending_far])
+        finally:
+            globals()["apply_patches"] = real_apply
+        cases.append(("a sibling that composes to different bytes per order is reported",
+                      any("order-dependent" in finding for finding in order_findings)))
+        states = {
+            name: patch_state(path, current)
+            for name, path in (("far", pending_far), ("applied", applied_far),
+                               ("near", pending_near), ("stray", stray))
+        }
+        cases.append(("a disjoint unapplied sibling classifies pending", states["far"] == "pending"))
+        cases.append(("an already-applied sibling classifies applied", states["applied"] == "applied"))
+        cases.append(("a sibling whose text is absent classifies unclassified", states["stray"] == "unclassified"))
+        cases.append(("a disjoint pending sibling composes in both orders",
+                      composition_findings(siblings=[pending_far]) == []))
+        cases.append(("an overlapping pending sibling is reported",
+                      bool(composition_findings(siblings=[pending_near]))))
+        cases.append(("an unclassified sibling is reported",
+                      bool(composition_findings(siblings=[stray]))))
+        cases.append(("an applied sibling is not composed",
+                      composition_findings(siblings=[applied_far]) == []))
+        cases.append(("a declined sibling is skipped by its closed name",
+                      composition_findings(siblings=[declined]) == []))
+    population = sibling_population()
+    cases.append(("every real sibling spec patch classifies", not population["unclassified"]))
+    cases.append(("the real sibling population is the whole tracked set",
+                  sum(len(group) for group in population.values()) == len(sibling_spec_patches())))
     first = proposed_bytes()
     second = proposed_bytes()
     cases.append(("deterministic regeneration", first == second and render_manifest(first) == render_manifest(second)))
@@ -424,16 +619,39 @@ def write() -> int:
     return 0
 
 
+def apply(at_adoption: bool) -> int:
+    if not at_adoption:
+        print(
+            "refusing: --apply is an adoption-time operation; pass --at-adoption "
+            "only through the version-tagged sign-off recorder"
+        )
+        return 2
+    findings, proposed = check()
+    if findings or proposed is None:
+        print("refusing to apply: package does not verify")
+        for finding in findings:
+            print(f"  {finding}")
+        return 1
+    for rel in sorted(PATCHED, key=lambda path: path.as_posix()):
+        (ROOT / rel).write_bytes(proposed[rel])
+        print(f"applied {rel.as_posix()}")
+    return 0
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--selftest", action="store_true")
     parser.add_argument("--diff", action="store_true")
     parser.add_argument("--write", action="store_true")
+    parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--at-adoption", action="store_true")
     args = parser.parse_args(argv)
 
     if args.selftest:
         return selftest()
+    if args.apply:
+        return apply(args.at_adoption)
     if args.write:
         return write()
     if args.diff:
@@ -451,9 +669,12 @@ def main(argv: list[str]) -> int:
             print(f"  {finding}")
         return 1
     assert proposed is not None
+    population = sibling_population()
     print(
         f"item-depth candidate matches {len(BEHAVIOR_SUBJECTS)} proposed subjects; "
-        f"{len(active_sibling_spec_patches())} sibling spec patches compose"
+        f"{len(population['pending'])} pending sibling spec patches compose "
+        f"({len(population['applied'])} applied, {len(population['declined'])} "
+        "declined, none unclassified)"
     )
     return 0
 

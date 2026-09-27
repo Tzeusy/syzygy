@@ -269,6 +269,77 @@ def check() -> list[str]:
     return findings
 
 
+def _rule_cases() -> list[tuple[str, bool]]:
+    """Fixtures for the general re-patched-row rule of `superseded_digest`.
+
+    A row is history only when the tree digest equals a later performed
+    sign-off's manifest row for that path; every other state is strict.
+    """
+    import tempfile
+
+    rel = next(path for path in BEHAVIOR_SUBJECTS if path not in SUPERSEDED_ROWS)
+    old, new = sha256(b"offered\n"), sha256(b"re-patched\n")
+    decisions = pathlib.Path(".syzygy/governance/decisions")
+    candidates = pathlib.Path(".syzygy/governance/contracts/candidates")
+
+    def result(
+        *,
+        body: bytes | None = b"re-patched\n",
+        record: str | None = "FOO-SIGNOFF-v1.0.md",
+        later_dir: str = "foo",
+        later_row: tuple[str, str] | None = None,
+        offered_in: pathlib.Path = BEHAVIOR_OUT,
+        offered: str = old,
+        subject: pathlib.Path = rel,
+    ) -> str | None:
+        later_row = later_row or (new, rel.as_posix())
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            if body is not None:
+                (root / subject).parent.mkdir(parents=True, exist_ok=True)
+                (root / subject).write_bytes(body)
+            if record is not None:
+                (root / decisions).mkdir(parents=True, exist_ok=True)
+                (root / decisions / record).write_text("record\n")
+            (root / candidates / later_dir).mkdir(parents=True, exist_ok=True)
+            (root / candidates / later_dir / "FOO-MANIFEST.txt").write_text(
+                f"{later_row[0]}  {later_row[1]}\n")
+            (root / offered_in).parent.mkdir(parents=True, exist_ok=True)
+            (root / offered_in).write_text(f"{offered}  {subject.as_posix()}\n")
+            saved = globals()["ROOT"]
+            globals()["ROOT"] = root
+            try:
+                return superseded_digest(subject)
+            finally:
+                globals()["ROOT"] = saved
+
+    listed = next(iter(SUPERSEDED_ROWS))
+    return [
+        ("a row the tree hashes to a later sign-off's row stays at its offered digest",
+         result() == old),
+        ("a row offered in the effect manifest is pinned the same way",
+         result(offered_in=EFFECT_OUT) == old),
+        ("no performed sign-off record leaves the row strict",
+         result(record=None) is None),
+        ("a later manifest in another package directory leaves the row strict",
+         result(later_dir="bar") is None),
+        ("a sign-off record whose stem names another package leaves the row strict",
+         result(record="BAR-SIGNOFF-v1.0.md") is None),
+        ("a decision record that is not a version-tagged sign-off leaves the row strict",
+         result(record="FOO-ACT.md", later_dir="foo-act.md") is None),
+        ("a tree digest outside every later manifest row stays strict",
+         result(body=b"drifted\n") is None),
+        ("a later manifest row for another path leaves the row strict",
+         result(later_row=(new, "elsewhere.md")) is None),
+        ("an offered row the tree still hashes to is not history",
+         result(offered=new) is None),
+        ("a missing subject file stays strict", result(body=None) is None),
+        ("a listed superseded path never takes the general rule",
+         result(subject=listed, later_row=(new, listed.as_posix()),
+                body=b"re-patched\n") is None),
+    ]
+
+
 def selftest() -> int:
     if len(BEHAVIOR_SUBJECTS) != 11 or len(set(BEHAVIOR_SUBJECTS)) != 11:
         print("SELFTEST FAILED: behavior population is not 11 unique paths")
@@ -290,7 +361,12 @@ def selftest() -> int:
     if not verify_manifest(reordered, BEHAVIOR_SUBJECTS, baseline[BEHAVIOR_OUT]):
         print("SELFTEST FAILED: path-order mutation passed")
         return 1
+    failed = [name for name, ok in _rule_cases() if not ok]
+    if failed:
+        print("SELFTEST FAILED: re-patched-row rule: " + "; ".join(failed))
+        return 1
     print("selftest: closed populations, byte drift and path order fail closed")
+    print("selftest: the re-patched-row rule holds in 11 states")
     return 0
 
 

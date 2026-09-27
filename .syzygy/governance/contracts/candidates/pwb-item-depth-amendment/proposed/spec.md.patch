@@ -1,8 +1,7 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -813,50 +813,110 @@
-   parent_requirements: [three-surface-poc-experience/POC-REQ-031]
+@@ -1232,14 +1232,46 @@
  ```
 
 -### Requirement: PWB-REQ-015 — Capability detail preserves authority bands and exact intent
@@ -32,8 +31,10 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 +semantic identity is the tuple of the item's stable claim identity and the
 +fixed relation role `governing-intent`, at the same evaluation. This relation
 +claim is distinct from the item claim and SHALL NOT change or borrow the item's
-+epistemic tuple. Exactly one captured declared governing relation makes the
-+relation claim Observed and the band renders that current intent verbatim. No
++epistemic tuple. One or more captured declared governing relations, none of
++which excludes another, make the relation claim Observed over that whole
++set, and the band renders each related current intent verbatim; compatible
++relations never become separate claims or a conflict. No
 +captured governing relation makes the relation claim Unknown with the
 +RFC2-24 reason `missing-declaration` and its resolution route. Mutually
 +exclusive captured governing relations make it Unknown with
@@ -54,7 +55,7 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 +without making a URL, label, path or coordinate part of that identity.
  The default reading mode SHALL be `Base` and include observed reality. Every
  block SHALL carry exactly one of the three band-class attributes. No
- reorganized or stored normative copy of doctrine, non-goal, requirement or
+@@ -1247,32 +1279,68 @@
  scenario text SHALL exist outside its owning artifact.
 
 -- **Case (sweep)**: enumerate every capability deep dive at an evaluation that
@@ -66,15 +67,10 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 -  proposal identities/exclusivity to captured changes, exhaust band and anchor
 -  populations and perform a static-source sweep for normative copies; exact
 -  bytes/order, exactly one class per block, zero stored copies and zero proposal
--  authority decide.
--- **Oracle independence**: current/proposed artifacts and exclusivity inputs
--  come from captured OpenSpec state, not Polaris.
--- **Falsifier**: a missing/misordered band, summarized normative text, draft
--  rendered adopted, proposal substituted/interleaved/anchored/green, or
--  competing proposals collapsed.
 +- **Case (sweep)**: enumerate the complete declared `catalog-entry` population
-+  at an evaluation that includes a uniquely mapped current intent, an Observed
-+  item whose relation is `missing-declaration`, a contradicted relation, a
++  at an evaluation that includes a uniquely mapped current intent, an item with
++  two compatible mappings (a requirement and a non-goal), an Observed item
++  whose relation is `missing-declaration`, a contradicted relation, a
 +  draft capability, a non-capability item with a proposal in the source
 +  population and two incompatible capability proposals.
 +- **Observable**: every declared item reaches exactly one item detail; Base
@@ -84,7 +80,7 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 +  are recoverable in both channels.
 +- **Oracle**: derive the expected item population and identity/state tuples
 +  from the shared model; independently derive the fixed-role relation identity,
-+  declared relation cardinality, RFC2-24 reason and route from captured
++  declared relation cardinality and mutual exclusivity, RFC2-24 reason and route from captured
 +  authority; compare current requirement/scenario, doctrine and non-goal bytes
 +  to their owning artifacts; compare proposal identities and exclusivity to
 +  captured capability changes; exhaust detail, band and anchor populations;
@@ -92,13 +88,26 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 +  separate item/relation tuple equality, exact bytes/order, exactly one class
 +  per block, honest relation absence for every unmapped or contradicted item,
 +  zero non-capability proposal blocks, zero stored copies and zero proposal
-+  authority decide.
+   authority decide.
+-- **Oracle independence**: current/proposed artifacts and exclusivity inputs
+-  come from captured OpenSpec state, not Polaris.
+-- **Falsifier**: a missing/misordered band, summarized normative text, draft
+-  rendered adopted, proposal substituted/interleaved/anchored/green, or
+-  competing proposals collapsed.
+-
+-#### Scenario: Proposed work stays beside exact current intent
+-
+-- **WHEN** a declared capability has an active proposal
+-- **THEN** the contract band renders current requirement text verbatim
+-- **AND** the proposal remains adjacent, distinct, non-anchorable and non-status-bearing
 +- **Oracle independence**: expected items and tuples come from the shared model,
 +  while relation cardinality, RFC2-24 values, current/proposed artifacts,
 +  declared mappings and exclusivity inputs come from captured authority and
 +  hard-coded accepted vocabularies, never from Polaris or route output.
 +- **Mutation proof**: independently drop and duplicate an item detail, map an
-+  item by label alone, assign the item's tuple to its absent relation, remove
++  item by label alone, drop one member of a compatible relation set, report a
++  compatible set as contradicted or as separate claims, assign the item's tuple
++  to its absent relation, remove
 +  or alter the relation reason/route, render a proposal in a non-capability
 +  detail, reorder two bands, assign two classes to one block, substitute
 +  proposal text for current text, and source a reality fact outside the shared
@@ -106,22 +115,21 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 +  item and relation denominators each time.
 +- **Falsifier**: a missing/duplicate item detail, changed item identity or
 +  epistemic state, relation identity/state collapsed into the item, inferred
-+  intent mapping, absent or invalid relation reason/route, hidden empty contract
++  intent mapping, a compatible relation set collapsed to one relation, split
++  into claims or reported as contradicted, absent or invalid relation
++  reason/route, hidden empty contract
 +  band, proposal material in a non-capability detail,
 +  missing/misordered/multiply-classed band, summarized normative text, second
 +  reality computation, draft rendered adopted, proposal substituted,
 +  interleaved, anchored or green, or competing proposals collapsed.
-
--#### Scenario: Proposed work stays beside exact current intent
++
 +#### Scenario: Catalog item reaches exact current intent or honest absence
-
--- **WHEN** a declared capability has an active proposal
--- **THEN** the contract band renders current requirement text verbatim
--- **AND** the proposal remains adjacent, distinct, non-anchorable and non-status-bearing
++
 +- **WHEN** a reader opens a declared catalog item from the catalog
 +- **THEN** its detail preserves the item's identity and epistemic state and
 +  separately renders the fixed-role item-to-intent relation claim
-+- **AND** exactly one captured declared relation renders current intent verbatim
++- **AND** one or more captured, mutually compatible declared relations render
++  every related current intent verbatim under one Observed relation claim
 +- **AND** an absent or contradicted relation renders its own RFC2-24 Unknown
 +  reason and route without changing the item's tuple or guessing intent
 +- **AND** proposal material appears only for a matching declared capability,
@@ -132,12 +140,10 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
  warrants:
    primary: RFC7-17
 -  doctrine: [VIS-1, VIS-2, VIS-4]
-+  doctrine: [VIS-1, VIS-2, VIS-4, VIS-7]
 -  contracts: [RFC1-14, RFC1-27, RFC7-12, RFC7-13, RFC7-14, RFC7-15, RFC7-17, RFC7-18, RFC7-26, RFC7-27, RFC7-29, RFC7-33]
-+  contracts: [RFC1-14, RFC1-27, RFC2-24, RFC6-14, RFC6-22, RFC7-12, RFC7-13, RFC7-14, RFC7-15, RFC7-17, RFC7-18, RFC7-26, RFC7-27, RFC7-29, RFC7-33]
 -  policies: [CC-BAR-3, CC-BAR-5, CC-TEST-5]
++  doctrine: [VIS-1, VIS-2, VIS-4, VIS-7]
++  contracts: [RFC1-14, RFC1-27, RFC2-24, RFC6-14, RFC6-22, RFC7-12, RFC7-13, RFC7-14, RFC7-15, RFC7-17, RFC7-18, RFC7-26, RFC7-27, RFC7-29, RFC7-33]
 +  policies: [CC-BAR-3, CC-BAR-5, CC-TEST-5, CC-TEST-6]
    decisions: [POLARIS-DIR-2026-08-31]
    topology: []
-   parent_requirements: []
- ```
