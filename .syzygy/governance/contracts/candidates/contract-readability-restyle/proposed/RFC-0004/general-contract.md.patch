@@ -1,0 +1,293 @@
+--- a/rfcs/RFC-0004/general-contract.md
++++ b/rfcs/RFC-0004/general-contract.md
+@@ -34,19 +34,28 @@
+ 
+ *If this section and a clause disagree, the clause wins.*
+ 
+-This module owns **what an observer or adapter is, what it must declare before
+-anything it emits is admissible, and what happens when versions move**. Read it
+-to answer: *may this output enter the graph at all?* Every other module in this
+-package presupposes it — a named adapter (module 2), an Execution Record
+-(module 3), or a fidelity label (module 4) produced by an observer that does
+-not satisfy RFC4-2 and RFC4-7 is inadmissible regardless of its own content.
+-
+-Two rules carry most of the weight here: an external authority is reached
+-through **exactly one registered adapter** (RFC4-1), and a registry entry is
+-**not self-authenticating** — it is honored only under RFC3-16(a), because
+-admitting an adapter is what makes its output a deterministic fact at all
+-(RFC4-7). The anti-duplication invariant (RFC4-5) fixes which store may write
+-which field in both directions.
++This module decides whether an observer's output may enter the graph at all.
++An external authority is reached through **exactly one registered adapter**
++(RFC4-1); a registry entry is honored **only under RFC3-16(a)**, because
++admitting an adapter is what makes its output a deterministic fact (RFC4-7);
++and the anti-duplication invariant fixes which store may write which field,
++in both directions (RFC4-5).
++
++- **What it owns:** what an observer or adapter is, what it must declare
++  before anything it emits is admissible, and what happens when versions
++  move.
++- **The question it answers:** *may this output enter the graph at all?*
++- **Why every other module presupposes it:** a named adapter (module 2), an
++  Execution Record (module 3), or a fidelity label (module 4) produced by an
++  observer that does not satisfy RFC4-2 and RFC4-7 is inadmissible regardless
++  of its own content.
++- **Where to look:**
++  - roles and the one-adapter rule — RFC4-1;
++  - the declaration set and emission obligations — RFC4-2, RFC4-3;
++  - failure rendering — RFC4-4;
++  - the two-limb anti-duplication invariant — RFC4-5;
++  - substrate-term translation — RFC4-6;
++  - the registry, version skew and substitution — RFC4-7, RFC4-8, RFC4-9.
+ 
+ ---
+ 
+@@ -76,11 +85,12 @@
+    snapshot minimum-input list (RFC2-1);
+ 4. **declared outputs** — the evidence and fact classes it emits, with each
+    class's identity scheme;
+-5. **determinism class** — per output class: *derivation-deterministic* (same
+-   captured inputs always yield the same output; inside the VIS-7 identity
+-   test) or *capture* (a recording of what an external source said at a
+-   capture instant — immutable and identity-bearing, but a re-capture may
+-   legitimately differ);
++5. **determinism class** — per output class:
++   - *derivation-deterministic* (same captured inputs always yield the same
++     output; inside the VIS-7 identity test) or
++   - *capture* (a recording of what an external source said at a capture
++     instant — immutable and identity-bearing, but a re-capture may
++     legitimately differ);
+ 6. **failure states** — which RFC2-23 degradation states it can enter, and the
+    mapping from its internal errors onto them;
+ 7. **authority boundary** — which typed-authority question(s) it answers, and
+@@ -88,12 +98,17 @@
+    explicitly authorized**.
+ 
+ **RFC4-3 — Emission obligations.** Every emitted fact or evidence artifact
+-carries: source identity; **capture instant and capturing observer identity +
+-version**, distinct from any instant the source itself claims [Observed:
+-trust-and-evidence.md]; scope; and provenance sufficient to re-locate the
+-source. Observer and adapter identities and versions are snapshot inputs
+-(RFC2-1 item 7); an output from an observer whose identity/version is not in
+-the snapshot must not influence that snapshot's deterministic claims (RFC2-2).
++carries:
++
++- source identity;
++- **capture instant and capturing observer identity + version**, distinct from
++  any instant the source itself claims [Observed: trust-and-evidence.md];
++- scope; and
++- provenance sufficient to re-locate the source.
++
++Observer and adapter identities and versions are snapshot inputs (RFC2-1
++item 7); an output from an observer whose identity/version is not in the
++snapshot must not influence that snapshot's deterministic claims (RFC2-2).
+ 
+ **RFC4-4 — Failure is rendered, never invisible.** On failure an observer
+ degrades to its last-good observation record marked `stale`/`broken`
+@@ -106,72 +121,112 @@
+ adapter:
+ 
+ - **Inward limb.** For every mutable field of an externally owned record,
+-  exactly one store is writable, and it is not Syzygy. Syzygy may hold a
+-  projection only if it is stamped with the identified evaluation that read
+-  it, is never presented as editable in a Syzygy surface, and is discarded and
+-  re-derived at the next evaluation — never merged. Any surviving, editable
+-  Syzygy copy of an external field is a second source of truth and forbidden.
+-  **The limb governs mutable projections of *current* external state; it does
+-  not govern captured evidence about the past.** An immutable,
+-  evaluation-stamped observation record or Execution Record capturing that a
+-  transition *occurred* — a historical fact, never rewritten and never
+-  presented as the field's current value — is not a second source of truth and
+-  is not forbidden here; where a durable Syzygy record depends on such a fact,
+-  RFC4-16(2) *requires* the capture. What this limb forbids is a Syzygy-side
+-  record of what the field **is now** that survives the evaluation that read
+-  it. [Inferred — the distinction the limb already turns on, stated so the
+-  capture duty and the anti-mirror rule are not read as opposed.]
++  exactly one store is writable, and it is not Syzygy.
++  - Syzygy may hold a projection only if it is stamped with the identified
++    evaluation that read it, is never presented as editable in a Syzygy
++    surface, and is discarded and re-derived at the next evaluation — never
++    merged.
++  - Any surviving, editable Syzygy copy of an external field is a second
++    source of truth and forbidden.
++  - **The limb governs mutable projections of *current* external state; it
++    does not govern captured evidence about the past.** An immutable,
++    evaluation-stamped observation record or Execution Record capturing that
++    a transition *occurred* — a historical fact, never rewritten and never
++    presented as the field's current value — is not a second source of truth
++    and is not forbidden here; where a durable Syzygy record depends on such
++    a fact, RFC4-16(2) *requires* the capture.
++  - What this limb forbids is a Syzygy-side record of what the field **is
++    now** that survives the evaluation that read it. [Inferred — the
++    distinction the limb already turns on, stated so the capture duty and the
++    anti-mirror rule are not read as opposed.]
+ - **Outward limb.** No Syzygy-owned fact is written into an externally
+   writable store except as a **derived, re-derivable pointer**: stamped with
+   the evaluation that produced it, re-asserted (never merged) on divergence,
+   and treated as a cache of the Syzygy-side record, which stays authoritative.
+-  Where the external store permits third-party edits of that field, divergence
+-  is **rendered as a substrate annotation** — never adjudicated as a
+-  contradiction, because only one authority exists.
++  - Where the external store permits third-party edits of that field,
++    divergence is **rendered as a substrate annotation** — never adjudicated
++    as a contradiction, because only one authority exists.
+ 
+ The asymmetry is deliberate: inward, the external value wins; outward,
+ Syzygy's record wins. Edits to external state go through the adapter,
+ synchronously and attributably, followed by a re-read — never
+ write-locally-and-sync-later.
+ 
++*Diagram (non-normative; the clauses govern):* which side is authoritative
++for each limb of RFC4-5.
++
++```mermaid
++flowchart LR
++    subgraph IN["Inward limb: external value wins"]
++        EXT["External store<br/>(the one writable store)"] -->|"read at an identified evaluation"| PROJ["Syzygy projection<br/>stamped, never editable,<br/>discarded and re-derived"]
++    end
++    subgraph OUT["Outward limb: Syzygy's record wins"]
++        REC["Syzygy-side record<br/>(authoritative)"] -->|"derived, re-derivable pointer;<br/>re-asserted, never merged"| PTR["Pointer in the<br/>external store (a cache)"]
++        PTR -.->|"third-party edit"| ANN["Rendered as a substrate<br/>annotation, never a contradiction"]
++    end
++```
++
+ **RFC4-6 — Substrate-term translation.** An adapter translates substrate
+-vocabulary on read and never lets it impersonate kernel vocabulary. In
+-particular, the scheduler's own "reconciliation" (state-repair passes,
+-`scheduler_state.reconciled`) is translated per RFC2-17 and never shares a
+-field, count, or UI string with doctrinal reconciliation. Substrate-native
+-identifiers (`bead_id`, PR numbers) are carried as substrate-qualified aliases
+-of the substrate-neutral identity, never as the primary key.
++vocabulary on read and never lets it impersonate kernel vocabulary.
++
++- In particular, the scheduler's own "reconciliation" (state-repair passes,
++  `scheduler_state.reconciled`) is translated per RFC2-17 and never shares a
++  field, count, or UI string with doctrinal reconciliation.
++- Substrate-native identifiers (`bead_id`, PR numbers) are carried as
++  substrate-qualified aliases of the substrate-neutral identity, never as the
++  primary key.
+ 
+ ### 3.2 The adapter version registry
+ 
+ **RFC4-7 — The registry.** A per-project, versioned **adapter registry** lives
+ in the governance plane (`.syzygy/governance/`; physical schema: RFC 0003).
+ One entry per registered observer/adapter, holding the RFC4-2 declaration set
+-plus the entry's own adoption status. The registry is a snapshot input; an
+-output attributed to an adapter absent from the snapshot's registry state is
+-inadmissible as a deterministic fact and renders Unknown
+-(`source-uncaptured-or-unreachable`). An entry's **adoption status is not
+-self-authenticating** (RFC3-16): admitting an adapter is what makes its output
+-a deterministic fact at all, so an entry is honored **only under RFC3-16(a)** —
+-an entry an untrusted writer could mint would register an arbitrary adapter
+-and launder whatever it emits into the deterministic base graph, which no
+-downstream tier or freshness check inspects. An entry without an effective
+-owner act admits nothing: outputs attributed to it render Unknown exactly as
+-if the adapter were unregistered. State-(1) and state-(2) acts both admit the
+-entry, with the exact provenance state carried on every resulting fact.
+-
+-**RFC4-8 — Version skew.** (a) Observation records permanently carry the
+-observer/adapter versions that produced them; an upgrade never reinterprets
+-existing records. (b) An adapter upgrade or registry change is a new snapshot,
+-never an in-place refresh [Observed: architecture.md]. (c) When an adapter
+-implements an older per-adapter contract version than the kernel expects, its
+-outputs are admitted **at the declared version**: fields the older contract
+-does not emit render Unknown with their reason — never defaulted, guessed, or
+-zero-filled (SDR-6 generalized). (d) When an adapter claims a contract version
+-this RFC does not define, its outputs are inadmissible until the registry
+-entry is corrected. (e) Cross-version joins are permitted only on identity
+-fields whose scheme both versions declare identically; otherwise the join
+-renders Unknown rather than fuzzy-matching.
++plus the entry's own adoption status.
++
++- The registry is a snapshot input; an output attributed to an adapter absent
++  from the snapshot's registry state is inadmissible as a deterministic fact
++  and renders Unknown (`source-uncaptured-or-unreachable`).
++- An entry's **adoption status is not self-authenticating** (RFC3-16):
++  admitting an adapter is what makes its output a deterministic fact at all,
++  so an entry is honored **only under RFC3-16(a)** — an entry an untrusted
++  writer could mint would register an arbitrary adapter and launder whatever
++  it emits into the deterministic base graph, which no downstream tier or
++  freshness check inspects.
++- An entry without an effective owner act admits nothing: outputs attributed
++  to it render Unknown exactly as if the adapter were unregistered.
++- State-(1) and state-(2) acts both admit the entry, with the exact
++  provenance state carried on every resulting fact.
++
++**RFC4-8 — Version skew.**
++
++- (a) Observation records permanently carry the observer/adapter versions
++  that produced them; an upgrade never reinterprets existing records.
++- (b) An adapter upgrade or registry change is a new snapshot, never an
++  in-place refresh [Observed: architecture.md].
++- (c) When an adapter implements an older per-adapter contract version than
++  the kernel expects, its outputs are admitted **at the declared version**:
++  fields the older contract does not emit render Unknown with their reason —
++  never defaulted, guessed, or zero-filled (SDR-6 generalized).
++- (d) When an adapter claims a contract version this RFC does not define, its
++  outputs are inadmissible until the registry entry is corrected.
++- (e) Cross-version joins are permitted only on identity fields whose scheme
++  both versions declare identically; otherwise the join renders Unknown
++  rather than fuzzy-matching.
++
++*Diagram (non-normative; the clauses govern):* how RFC4-7 and RFC4-8 decide
++whether an attributed output is admitted.
++
++```mermaid
++flowchart TD
++    O["Output attributed to an adapter"] --> R{"Adapter in the snapshot's<br/>registry state? (RFC4-7)"}
++    R -->|no| U1["Inadmissible as a deterministic fact;<br/>renders Unknown"]
++    R -->|yes| A{"Entry has an effective owner act<br/>under RFC3-16(a)?"}
++    A -->|no| U2["Admits nothing; renders Unknown<br/>as if unregistered"]
++    A -->|"yes, state (1) or (2)"| V{"Claimed per-adapter<br/>contract version? (RFC4-8)"}
++    V -->|"not defined by this RFC"| X["Inadmissible until the<br/>entry is corrected (d)"]
++    V -->|"older than the kernel expects"| OLD["Admitted at the declared version;<br/>unemitted fields render Unknown (c)"]
++    V -->|current| OK["Admitted, provenance state carried"]
++```
+ 
+ **RFC4-9 — Substitution.** Replacing an implementation (a different VCS host,
+ a different scheduler) is a registry event: the role identity persists, a new
+@@ -200,20 +255,31 @@
+ 
+ ## 5. Integration (module-local)
+ 
+-**Relies on RFC 0002:** the snapshot minimum-input list and the
+-uncaptured-source rule (RFC2-1 item 7, RFC2-2) that make observer identity and
+-version deterministic inputs; the degradation states RFC4-2 item 6 maps onto
+-(RFC2-23); Unknown reasons (RFC2-24 #7, #10); the substrate-translation duty
+-(RFC2-17) realized by RFC4-6. **Relies on RFC 0003:** the RFC3-16 owner-act
+-predicate, and specifically RFC3-16(a) gating the registry entry (RFC4-7).
++**Relies on RFC 0002:**
++
++- the snapshot minimum-input list and the uncaptured-source rule (RFC2-1
++  item 7, RFC2-2) that make observer identity and version deterministic
++  inputs;
++- the degradation states RFC4-2 item 6 maps onto (RFC2-23);
++- Unknown reasons (RFC2-24 #7, #10);
++- the substrate-translation duty (RFC2-17) realized by RFC4-6.
++
++**Relies on RFC 0003:** the RFC3-16 owner-act predicate, and specifically
++RFC3-16(a) gating the registry entry (RFC4-7).
+ 
+ **Provides to RFC 0003:** the adapter-registry semantics it must physically
+-encode. **To RFC 0011:** the evidence-emission identity every context packet
+-binds against — source identity, capture instant, and capturing observer
+-identity + version (RFC4-3), and the determinism class that distinguishes a
+-re-derivable output from a capture (RFC4-2 item 5). **To the rest of this
+-package:** the declaration set (RFC4-2), the emission obligations (RFC4-3), and
+-the degradation contract (RFC4-4) that every named adapter, Execution Record,
+-and fidelity label depends on.
++encode.
++
++**To RFC 0011:** the evidence-emission identity every context packet binds
++against —
++
++- source identity, capture instant, and capturing observer identity +
++  version (RFC4-3), and
++- the determinism class that distinguishes a re-derivable output from a
++  capture (RFC4-2 item 5).
++
++**To the rest of this package:** the declaration set (RFC4-2), the emission
++obligations (RFC4-3), and the degradation contract (RFC4-4) that every named
++adapter, Execution Record, and fidelity label depends on.
+ 
+ This module owns no §8 owner question.

@@ -1,0 +1,170 @@
+--- a/rfcs/RFC-0002/snapshot-and-evaluation-core.md
++++ b/rfcs/RFC-0002/snapshot-and-evaluation-core.md
+@@ -36,24 +36,29 @@
+ *If this section and a clause disagree, the clause wins.*
+ 
+ This module owns **what an evaluation is computed over, what identifies it, and
+-which direction its conclusions may move**. Read it to answer: *is this claim
+-even well-formed, and may it have got better?* Every other module in this
+-package presupposes it — a challenge (module 2), a chain verdict (module 3), or
+-an Unknown reason (module 4) attaches to a claim instance minted here, at an
+-evaluation identified here.
+-
+-Four rules carry most of the weight. A snapshot identifies **every**
+-deterministic input capable of affecting a conclusion, and its eleven-item
+-minimum list is enumerated rather than described (RFC2-1) — **item numbers are
+-cited from other contracts and never change**. An input not in the snapshot
+-must not influence that snapshot's claims (RFC2-2). An evaluation is identified
+-by `(source snapshot, as-of instant)` and by nothing else, so no
+-implementation may add a third identity component (RFC2-3). And over an
+-unchanged snapshot, claims may only **degrade** — improvement requires a new
+-snapshot carrying one of five permitted authoritative inputs (RFC2-4). The
+-currency-bound declaration (RFC2-9) is the module's one authorization-bearing
+-artifact: it is what lets a claim class leave Unknown, so it is honored only
+-under the RFC3-16(a) owner-act predicate.
++which direction its conclusions may move**. An evaluation is identified by
++`(source snapshot, as-of instant)` and by nothing else (RFC2-3), and over an
++unchanged snapshot claims may only **degrade** (RFC2-4). Read it to answer:
++*is this claim even well-formed, and may it have got better?*
++
++- **Why it comes first.** Every other module in this package presupposes it.
++  - A challenge (module 2), a chain verdict (module 3), or an Unknown reason
++    (module 4) attaches to a claim instance minted here, at an evaluation
++    identified here.
++- **Four rules carry most of the weight.**
++  - **The snapshot is closed.** It identifies **every** deterministic input
++    capable of affecting a conclusion (RFC2-1).
++    - Its eleven-item minimum list is enumerated rather than described.
++    - **Item numbers are cited from other contracts and never change.**
++  - **Uncaptured means uninfluential.** An input not in the snapshot must not
++    influence that snapshot's claims (RFC2-2).
++  - **Identity is the pair and nothing else.** No implementation may add a
++    third identity component (RFC2-3).
++  - **Degradation only.** Improvement requires a new snapshot carrying one of
++    five permitted authoritative inputs (RFC2-4).
++- **One authorization-bearing artifact.** The currency-bound declaration
++  (RFC2-9) is what lets a claim class leave Unknown.
++  - It is therefore honored only under the RFC3-16(a) owner-act predicate.
+ 
+ ---
+ 
+@@ -138,6 +143,17 @@
+ ever changes without a new identified evaluation — "the badge flipped
+ overnight" is a violation unless an evaluation with a new identity exists.
+ 
++*Diagram (non-normative; the clauses govern):* how a later evaluation may move a claim.
++
++```mermaid
++flowchart LR
++  E1["Evaluation (snapshot S, as-of t1)"]
++  E2["Evaluation (S, later as-of t2)<br/>claims may only degrade"]
++  E3["Evaluation (new snapshot S2, as-of t3)<br/>the only route to establishing or improving a claim"]
++  E1 -->|"same snapshot"| E2
++  E1 -->|"new snapshot carrying a permitted authoritative input"| E3
++```
++
+ **RFC2-5 — Two-level claim identity (SDR-2).** Every claim and gap carries
+ (a) a **durable semantic identity** stable across evaluations, and (b)
+ **evaluation-specific instances** carrying status, epistemic label, rendering
+@@ -182,6 +198,16 @@
+ provenance both visible) until resolved by a human or a declared deterministic
+ policy. [Observed — trust-and-evidence.md.]
+ 
++*Diagram (non-normative; the clauses govern):* the RFC2-7 seam and the RFC2-8 ceiling.
++
++```mermaid
++flowchart LR
++  S["Snapshot inputs"] --> B["Deterministic base graph<br/>inside the VIS-7 identity test"]
++  S --> O["Inference overlay<br/>separately versioned; excluded from the identity test;<br/>not computed absent consent (SEC-2)"]
++  B --> C["Claim instances"]
++  O -. "propose or challenge only (RFC2-12);<br/>never establish, raise or independently satisfy a positive status claim" .-> C
++```
++
+ ### Currency and staleness
+ 
+ **RFC2-9 — The declaration mechanism.** Every claim class must declare a
+@@ -209,18 +235,25 @@
+ **RFC2-10 — Identity-bearing freshness.** Logical freshness state — `fresh`,
+ `stale`, `broken`, `superseded` — changes status and therefore participates in
+ the VIS-7 identity test: two runs of one evaluation must agree on every
+-freshness state. [Observed — architecture.md.] **Four values, closed.** The
+-list changes only by amendment to this RFC; no implementation may mint, spell,
+-or force-fit a freshness value it does not carry. The closure is required for
+-the same reason RFC2-24's is: a machine answer carries the freshness state
+-verbatim (RFC6-14), aggregates count per freshness value (RFC6-17), and a
+-disagreement between two renderings over one declared scope is release-blocking
+-(RFC6-22/23) — a value existing in no vocabulary can be neither carried
+-verbatim nor checked for parity, and leaving it unstated is how the value gets
+-chosen by whoever implements the render first. A condition genuinely outside
+-the four is disclosed as a fact of the render, never dressed as a freshness
+-state. Freshness is orthogonal to the three labels and the tier registry; it
+-never substitutes for either.
++freshness state. [Observed — architecture.md.]
++
++**Four values, closed.**
++
++- The list changes only by amendment to this RFC; no implementation may mint,
++  spell, or force-fit a freshness value it does not carry.
++- The closure is required for the same reason RFC2-24's is:
++  - a machine answer carries the freshness state verbatim (RFC6-14);
++  - aggregates count per freshness value (RFC6-17);
++  - and a disagreement between two renderings over one declared scope is
++    release-blocking (RFC6-22/23)
++
++  — a value existing in no vocabulary can be neither carried verbatim nor
++  checked for parity, and leaving it unstated is how the value gets chosen by
++  whoever implements the render first.
++- A condition genuinely outside the four is disclosed as a fact of the
++  render, never dressed as a freshness state.
++- Freshness is orthogonal to the three labels and the tier registry; it never
++  substitutes for either.
+ 
+ **RFC2-11 — Evidence–revision binding.** [Inferred — from the evidence
+ definition and the SHA-binding rule.] A report artifact is evidence only *for*
+@@ -245,23 +278,29 @@
+ 
+ ## 5. Integration (module-local)
+ 
+-**Relies on RFC 0001:** durable identity minting and continuity for claims,
+-gaps, and capabilities (RFC2-5; SDR-2). **Relies on RFC 0003:** the RFC3-16
+-owner-act predicate — RFC3-16(a) gating the currency-bound declaration
+-(RFC2-9), and RFC3-16(b) item 9 supplying the audit-correlation identity that
+-snapshot input 11 binds. **Relies on RFC 0005:** RFC5-25's audit-record
+-correlation, likewise behind input 11.
+-
+-**Provides to RFC 0003:** the semantics that snapshot, evaluation, and
+-observation-record representations must physically encode. **Provides to
+-RFC 0004:** the snapshot minimum-input list (items 4, 6, 7) every observer and
+-adapter maps its declared inputs onto, and the uncaptured-source rule its
+-outputs are admissible under. **Provides to RFC 0011:** the selected evaluation
+-and as-of instant a context packet binds against. **Provides to the rest of
+-this package:** the claim instance (RFC2-5) that a challenge suspends, a chain
+-verdict attaches to, and an Unknown reason stamps; the degradation-only rule
+-(RFC2-4) that makes automatic challenge expiry unavailable in module 2; and the
+-authority ceiling (RFC2-8) that module 2's lifecycle operationalizes.
++- **Relies on RFC 0001:** durable identity minting and continuity for claims,
++  gaps, and capabilities (RFC2-5; SDR-2).
++- **Relies on RFC 0003:** the RFC3-16 owner-act predicate —
++  - RFC3-16(a) gating the currency-bound declaration (RFC2-9),
++  - and RFC3-16(b) item 9 supplying the audit-correlation identity that
++    snapshot input 11 binds.
++- **Relies on RFC 0005:** RFC5-25's audit-record correlation, likewise behind
++  input 11.
++
++- **Provides to RFC 0003:** the semantics that snapshot, evaluation, and
++  observation-record representations must physically encode.
++- **Provides to RFC 0004:** the snapshot minimum-input list (items 4, 6, 7)
++  every observer and adapter maps its declared inputs onto, and the
++  uncaptured-source rule its outputs are admissible under.
++- **Provides to RFC 0011:** the selected evaluation and as-of instant a
++  context packet binds against.
++- **Provides to the rest of this package:**
++  - the claim instance (RFC2-5) that a challenge suspends, a chain verdict
++    attaches to, and an Unknown reason stamps;
++  - the degradation-only rule (RFC2-4) that makes automatic challenge expiry
++    unavailable in module 2;
++  - and the authority ceiling (RFC2-8) that module 2's lifecycle
++    operationalizes.
+ 
+ ## 8. Owner questions
+ 

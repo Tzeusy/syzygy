@@ -1,0 +1,290 @@
+--- a/rfcs/RFC-0007/narrative-contract.md
++++ b/rfcs/RFC-0007/narrative-contract.md
+@@ -33,31 +33,40 @@
+ 
+ *If this section and a clause disagree, the clause wins.*
+ 
+-This module owns **what curated narrative is, what binds a claim to the
++This module decides **what curated narrative is, what binds a claim to the
+ artifact that owns the fact, and what any act producing narrative must
+-satisfy**: Polaris's identity and its two load-bearing invariants (RFC7-1…4),
+-the narrative entity model and its residence (RFC7-5…8), claim blocks and
+-source anchors including the target-state component and both drift states
+-(RFC7-9…12), progressive disclosure and the verbatim leaf (RFC7-13…16),
+-capability deep-dive bands (RFC7-17…19), generated editorial drafts and their
+-human adoption gate (RFC7-20…22), and the authoring acts, gates, and
+-materiality review (RFC7-23…25). Read it to answer: *may this sentence exist in
+-curated narrative, and what act does it take to put it there?*
+-
+-Two invariants bind hardest and reach every other clause in the package: every
+-load-bearing narrative claim is **anchored, marked non-normative, or
+-epistemically labelled** — there is no fourth kind (RFC7-2); and **nothing
+-anywhere in Syzygy may cite a Polaris rendering as authority**, so deleting
+-`.syzygy/intent/**` changes no truth (RFC7-3). A third protection closes time
+-rather than citation: an anchor records the **state of its target at
+-authorship**, so a cited rule that moved renders as drifted, never as current
+-(RFC7-10, RFC7-11(a)).
+-
+-What this module hands to module 2: every distinction drawn here must be
+-machine-readable and non-visually recoverable (RFC7-33/34); the primary
+-narrative this module requires is the entry point of the comprehension test
+-(RFC7-30); the review records and failed-review renderings RFC7-25 defines
+-share their home and their RFC3-16(a) provenance gate with RFC7-31's verdicts.
++satisfy**. Three clauses carry the weight: RFC7-2 (every load-bearing claim is
++anchored, marked non-normative or labelled, checked at every act that
++produces narrative), RFC7-3 (nothing may cite a Polaris rendering as
++authority) and RFC7-11(a) (an anchor whose target moved renders as drifted,
++never as current).
++
++- **Read it to answer:** *may this sentence exist in curated narrative, and
++  what act does it take to put it there?*
++- **What it owns**, by clause range:
++  - Polaris's identity and its two load-bearing invariants (RFC7-1…4);
++  - the narrative entity model and its residence (RFC7-5…8);
++  - claim blocks and source anchors including the target-state component and
++    both drift states (RFC7-9…12);
++  - progressive disclosure and the verbatim leaf (RFC7-13…16);
++  - capability deep-dive bands (RFC7-17…19);
++  - generated editorial drafts and their human adoption gate (RFC7-20…22);
++  - the authoring acts, gates, and materiality review (RFC7-23…25).
++- **Two invariants bind hardest** and reach every other clause in the package:
++  - every load-bearing narrative claim is **anchored, marked non-normative, or
++    epistemically labelled** — there is no fourth kind (RFC7-2);
++  - **nothing anywhere in Syzygy may cite a Polaris rendering as authority**,
++    so deleting `.syzygy/intent/**` changes no truth (RFC7-3).
++- **A third protection closes time** rather than citation: an anchor records
++  the **state of its target at authorship**, so a cited rule that moved
++  renders as drifted, never as current (RFC7-10, RFC7-11(a)).
++- **What this module hands to module 2:**
++  - every distinction drawn here must be machine-readable and non-visually
++    recoverable (RFC7-33/34);
++  - the primary narrative this module requires is the entry point of the
++    comprehension test (RFC7-30);
++  - the review records and failed-review renderings RFC7-25 defines share
++    their home and their RFC3-16(a) provenance gate with RFC7-31's verdicts.
+ 
+ ---
+ 
+@@ -78,15 +87,19 @@
+ **RFC7-2 — Composition, never custody.** Every **load-bearing narrative
+ claim** — a span of narrative content asserting a fact about the project
+ (rules, behavior, structure, status, history, decisions) — is exactly one of:
+-**(a) anchored** — resolvable through its claim block's source anchors
+-(RFC7-9, RFC7-10) to the one artifact that owns the fact; **(b) explicitly
+-non-normative** — framing, motivation, analogy, transition, or reader guidance,
+-machine-marked as carrying no normative force; or **(c) epistemically
+-labeled** — Observed with its evidence link, Inferred with its inference
+-provenance, or Unknown, per trust-and-evidence.md. There is no fourth kind: an
+-unanchored, unlabeled, unmarked project-fact claim in curated narrative is a
+-**defect**, not a style choice. Granularity is the claim block (SDR-16) — the
+-obligation binds claims; the mechanism binds blocks.
++
++- **(a) anchored** — resolvable through its claim block's source anchors
++  (RFC7-9, RFC7-10) to the one artifact that owns the fact;
++- **(b) explicitly non-normative** — framing, motivation, analogy,
++  transition, or reader guidance, machine-marked as carrying no normative
++  force; or
++- **(c) epistemically labeled** — Observed with its evidence link, Inferred
++  with its inference provenance, or Unknown, per trust-and-evidence.md.
++
++There is no fourth kind: an unanchored, unlabeled, unmarked project-fact claim
++in curated narrative is a **defect**, not a style choice. Granularity is the
++claim block (SDR-16) — the obligation binds claims; the mechanism binds
++blocks.
+ 
+ **The check binds the authoring act, not one path through it**: it is a
+ property of **any act producing curated narrative** — a human typing prose,
+@@ -203,12 +216,17 @@
+ 
+ **RFC7-10 — Anchor form.** A source anchor is machine-readable and typed:
+ **(target class, target identifier, optional fragment, target state)**, target
+-class one of: a **kernel entity reference** (selection reference per RFC6-1,
+-optionally evaluation-qualified); a **doctrine rule or accepted-contract
+-citation** (stable identifier `VIS-n`/`SEC-n`/RFC clause, rendered per
+-RFC6-20); an **`openspec/**` anchor** (RFC3-28); a **decision or policy
+-identifier**; or an **evidence artifact identifier** with integrity digest. No
+-target class exists for narrative content, renderings, or editorial drafts
++class one of:
++
++- a **kernel entity reference** (selection reference per RFC6-1, optionally
++  evaluation-qualified);
++- a **doctrine rule or accepted-contract citation** (stable identifier
++  `VIS-n`/`SEC-n`/RFC clause, rendered per RFC6-20);
++- an **`openspec/**` anchor** (RFC3-28);
++- a **decision or policy identifier**; or
++- an **evidence artifact identifier** with integrity digest.
++
++No target class exists for narrative content, renderings, or editorial drafts
+ (RFC7-3). Anchors embed durable identifiers, never labels, paths, or
+ coordinates (RFC6-8/9).
+ 
+@@ -243,15 +261,16 @@
+ state (RFC7-10) differs from the target's current state — a cited rule amended
+ in place under RFC1-10's same-identifier discipline, a requirement re-worded,
+ a referenced kernel entity whose label, tier, or reason now differs from the
+-one recorded at authorship — the block renders **`anchored — target changed
+-since authorship`** on the primary surface, naming which anchor and what moved
+-(recorded versus current), with the identical state served to machine
+-consumers (RFC7-33), and is **marked for RFC7-25 review**. It is never rendered
+-as silently current, and the drift marker is cleared only by an authoring act
+-that re-reads the target. A **new evaluation identity alone is not drift**:
+-for a kernel entity reference, divergence is a change in the rendered label,
+-tier, or reason, not the passage of evaluations — otherwise every block would
+-drift on every evaluation and the marker would carry no information.
++one recorded at authorship — the block renders
++**`anchored — target changed since authorship`** on the primary surface,
++naming which anchor and what moved (recorded versus current), with the
++identical state served to machine consumers (RFC7-33), and is **marked for
++RFC7-25 review**. It is never rendered as silently current, and the drift
++marker is cleared only by an authoring act that re-reads the target. A **new
++evaluation identity alone is not drift**: for a kernel entity reference,
++divergence is a change in the rendered label, tier, or reason, not the passage
++of evaluations — otherwise every block would drift on every evaluation and the
++marker would carry no information.
+ 
+ This is a **Polaris-local rendering obligation over a resolving anchor**, not
+ an epistemic state: the anchor resolves and the fact is present, so nothing
+@@ -262,6 +281,19 @@
+ grounding (`README.md` §2) — RFC7-3 closes citation, RFC7-20/21 close
+ generation, and this closes time; reasoning in history.]
+ 
++*Diagram (non-normative; the clauses govern):* how RFC7-11 and RFC7-11(a)
++render an anchored block, by what its anchor does now.
++
++```mermaid
++flowchart TD
++    A["Anchored claim block"] --> R{"Anchor still resolves?"}
++    R -->|no| U["RFC7-11: break named on the primary surface;<br/>claim degrades to Unknown, reference-unresolvable,<br/>route: repair the reference"]
++    R -->|yes| C{"Recorded target state differs from current?<br/>For a kernel entity: label, tier or reason changed,<br/>not a new evaluation alone"}
++    C -->|no| OK["Renders as anchored"]
++    C -->|yes| D["RFC7-11(a): anchored — target changed since authorship;<br/>marked for RFC7-25 review; no Unknown reason minted"]
++    D -->|"authoring act that re-reads the target"| OK
++```
++
+ **RFC7-12 — Restatement discipline.** An anchored block renders *about* its
+ target; the target's own text is one step away. For **adjudicative material**
+ — doctrine rules, non-goals, requirement text — the operative text a reader
+@@ -345,18 +377,20 @@
+ dive composes named bands, each block declaring its band machine-readably
+ (RFC7-33). The binding content is the **authority class per band**: every band
+ falls in exactly one of three classes, no block straddles two, and no fourth
+-class exists. The V0 composition is: the **argument band** — authored,
+-non-normative (RFC7-2 (b)): capability thesis and outcome, why it exists
+-(anchored to the motivating principle or decision, never restating it),
+-related capabilities; the **contract band** — referenced, verbatim-reachable:
+-requirement/scenario identities and titles linking to the verbatim leaf,
+-accepted contracts, declared topology placement, active proposal deltas per
+-RFC7-26; the **reality band** — kernel-computed, VIS-2-governed: current
+-status (RFC7-16), implementation mappings with the four SDR-3 classes queryably
+-distinct (RFC1-16), evidence summaries, contradictions and open challenges
+-(first-class in the readable layer — prose must not resolve what adjudication
+-has not), open work, and intent history (adoptions, amendments, dismissals —
+-not a commit log).
++class exists. The V0 composition is:
++
++- the **argument band** — authored, non-normative (RFC7-2 (b)): capability
++  thesis and outcome, why it exists (anchored to the motivating principle or
++  decision, never restating it), related capabilities;
++- the **contract band** — referenced, verbatim-reachable: requirement/scenario
++  identities and titles linking to the verbatim leaf, accepted contracts,
++  declared topology placement, active proposal deltas per RFC7-26;
++- the **reality band** — kernel-computed, VIS-2-governed: current status
++  (RFC7-16), implementation mappings with the four SDR-3 classes queryably
++  distinct (RFC1-16), evidence summaries, contradictions and open challenges
++  (first-class in the readable layer — prose must not resolve what
++  adjudication has not), open work, and intent history (adoptions,
++  amendments, dismissals — not a commit log).
+ 
+ **Exactly these three bands, in this order, are the V0 default** *(owner
+ decision B7)* — count and ordering are a V0 default, not a frozen constraint;
+@@ -427,6 +461,18 @@
+ artifacts are inference-layer material with their own declared reproducibility
+ standard; an expired draft is a discarded projection, never a lost truth.
+ 
++*Diagram (non-normative; the clauses govern):* the life of generated prose
++under RFC7-20 to RFC7-22.
++
++```mermaid
++flowchart TD
++    G{"SEC-2 named-provider consent?"} -->|no| N["Not computed: draft layer renders Unknown,<br/>unconsented-source-or-provider"]
++    G -->|yes| E["editorial-draft: machine-marked, non-citable;<br/>pending in Trajectory's queue"]
++    E -->|"human adoption act, per-claim RFC7-2 attestation,<br/>effective owner act under RFC3-16(a)"| C["Curated narrative:<br/>curated status, never authority"]
++    E -->|"adoption without an effective owner act"| E
++    E -->|rejected| X["Leaves the intent surface;<br/>rejection recorded on the queue's work item"]
++```
++
+ ### 3.7 Authoring and adoption workflow
+ 
+ **RFC7-23 — Acts and gates.**
+@@ -547,30 +593,47 @@
+ no-silent-inference (RFC1-14) behind RFC7-15; mapping-class distinctness
+ (RFC1-16) in the reality band; the badge rule (RFC1-19) behind RFC7-16's tier;
+ the plane rule (RFC1-22) that stops a proposed delta being anchorable at the
+-leaf. **On RFC 0002:** the inference-overlay discipline (RFC2-7) an editorial
+-draft carries; the verbatim label + tier + reason + freshness vocabulary
+-(RFC2-10/24/25) — including `editorial-draft` as the third sibling surface
+-state RFC7-20 mints, and reason **#11 `reference-unresolvable`**, minted on
+-this package's reported finding and **retained at acceptance by owner
+-decision A5** with the list closed at twelve, which RFC7-11 now cites; the
+-admissibility floor made operational (RFC2-12) behind
+-RFC7-9; the revision-binding pattern (RFC2-11, RFC2-18) which RFC7-10's
+-target-state component **imitates and never extends**, so RFC7-11(a) mints no
+-RFC2-24 Unknown reason; V0 reconciliation staging (RFC2-19) wherever the
+-reality band shows merged work. **On RFC 0003:** `intent/` as a
+-schema-versioned governed namespace (RFC3-18) and the cache exclusion
+-(RFC3-20); spec anchors and their degrade-never-guess rule (RFC3-28); the
+-verbatim identity scheme (RFC3-27); local-state rules (RFC3-21); and the
+-**owner-act provenance predicate (RFC3-16(a))**, which gates two clauses here —
+-draft adoption (RFC7-21) and the review verdict (RFC7-25). **On RFC 0004:** the
+-OpenSpec adapter's verbatim read and anchor obligations (RFC4-10) behind
+-RFC7-14; the anti-duplication invariant (RFC4-5) behind RFC7-18. **On
+-RFC 0005:** the egress choke point (RFC5-14/15) behind RFC7-20's consent gate;
+-act attribution (RFC5-25) behind RFC7-7. **On RFC 0006:** selection references
+-(RFC6-1), unresolvable/retired outcomes (RFC6-5), durable-identifier anchoring
+-(RFC6-8/9), no auto-redirect (RFC6-11), the label vocabulary (RFC6-14), the
+-single drawer (RFC6-18/19), citation rendering (RFC6-20), the
+-minimal-density fact-set rule (RFC6-21), and scenario contexts (RFC6-24).
++leaf.
++
++**On RFC 0002:**
++
++- the inference-overlay discipline (RFC2-7) an editorial draft carries;
++- the verbatim label + tier + reason + freshness vocabulary (RFC2-10/24/25) —
++  including `editorial-draft` as the third sibling surface state RFC7-20
++  mints, and reason **#11 `reference-unresolvable`**, minted on this
++  package's reported finding and **retained at acceptance by owner decision
++  A5** with the list closed at twelve, which RFC7-11 now cites;
++- the admissibility floor made operational (RFC2-12) behind RFC7-9;
++- the revision-binding pattern (RFC2-11, RFC2-18) which RFC7-10's
++  target-state component **imitates and never extends**, so RFC7-11(a) mints
++  no RFC2-24 Unknown reason;
++- V0 reconciliation staging (RFC2-19) wherever the reality band shows merged
++  work.
++
++**On RFC 0003:** `intent/` as a schema-versioned governed namespace (RFC3-18)
++and the cache exclusion (RFC3-20); spec anchors and their degrade-never-guess
++rule (RFC3-28); the verbatim identity scheme (RFC3-27); local-state rules
++(RFC3-21); and the **owner-act provenance predicate (RFC3-16(a))**, which gates
++two clauses here — draft adoption (RFC7-21) and the review verdict (RFC7-25).
++
++**On RFC 0004:** the OpenSpec adapter's verbatim read and anchor obligations
++(RFC4-10) behind RFC7-14; the anti-duplication invariant (RFC4-5) behind
++RFC7-18.
++
++**On RFC 0005:** the egress choke point (RFC5-14/15) behind RFC7-20's consent
++gate; act attribution (RFC5-25) behind RFC7-7.
++
++**On RFC 0006:**
++
++- selection references (RFC6-1);
++- unresolvable/retired outcomes (RFC6-5);
++- durable-identifier anchoring (RFC6-8/9);
++- no auto-redirect (RFC6-11);
++- the label vocabulary (RFC6-14);
++- the single drawer (RFC6-18/19);
++- citation rendering (RFC6-20);
++- the minimal-density fact-set rule (RFC6-21); and
++- scenario contexts (RFC6-24).
+ 
+ **Provides to RFC 0008 (Trajectory):** the SDR-18 seam obligations
+ (RFC7-22/24) — the drafting queue's ownership, the read-only rendering

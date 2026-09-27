@@ -2584,6 +2584,22 @@ def _activate_contract_restyle_act_copy_registry():
     ACT_DIGEST_COPY_FILES[CONTRACT_RESTYLE_ACT] = (CONTRACT_RESTYLE_LABEL,)
 
 
+CONTRACT_RESTYLE_PACKET = (
+    f"{CANDIDATES}/contract-readability-restyle/OWNER-DECISION-PACKET.md")
+
+
+def _activate_contract_restyle_packet_copy_registry(registry=None, root=None):
+    """Register the unperformed packet copy once the packet exists."""
+    if not os.path.isfile(os.path.join(root or ROOT, CONTRACT_RESTYLE_PACKET)):
+        return
+    if registry is None:
+        registry = ACT_DIGEST_COPY_FILES
+    registry[CONTRACT_RESTYLE_PACKET] = (CONTRACT_RESTYLE_LABEL,)
+
+
+_activate_contract_restyle_packet_copy_registry()
+
+
 #: Ordered owner-act successors to the bootstrap 30-row contract manifest:
 #: `(label, subject manifest, dedicated act record, copy-registry activation,
 #: closed path tuple)`. Each link's manifest must bind exactly its own path

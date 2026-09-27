@@ -1,0 +1,599 @@
+--- a/rfcs/RFC-0009/visual-grammar-and-lenses.md
++++ b/rfcs/RFC-0009/visual-grammar-and-lenses.md
+@@ -34,25 +34,31 @@
+ 
+ *If this section and a clause disagree, the clause wins.*
+ 
+-This module owns **what the map is allowed to mean**: the reserved state palette
+-and the channels no lens may repurpose; the channel declaration contract and its
+-fail-closed registry; Unknown rendering at every scale; height, text, and
+-inference treatments; the lens contract and the V0 lens set; City and Factory
+-scene profiles; base, approved-intent, proposed and historical scenarios;
+-aggregation, semantic zoom, the unmapped district, and the grey-map comprehension
+-walkthrough. Read it to answer: *what does this colour, height or edge mean? may
+-this lens or overlay bind that channel? what must an Unknown or an aggregate
+-show? what may a proposed or historical scene look like?*
+-
+-Position, proximity, layout stability and counting rules live in
+-`semantic-geography.md` (RFC9-1..RFC9-23); equivalence, release gates,
+-performance, motion and the OpenSpec boundary in
+-`interaction-parity-and-release.md` (RFC9-46..RFC9-52).
+-
+-Two orientations: **Unknown is a first-class colour** — a predominantly-grey map
+-on an undeclared project is correct output, not a defect — and **every visual
+-channel is registered and legended**, with unregistered encodings failing closed
+-so they never reach a reader.
++This module owns **what the map is allowed to mean**. Every visual channel is
++registered and legended, and an unregistered or unauthorized encoding fails
++closed so it never reaches a reader (RFC9-26). **Unknown is a first-class
++colour**, visible at every scale and inside every aggregate (RFC9-27,
++RFC9-43), so a predominantly-grey map on an undeclared project is correct
++output, not a defect (RFC9-45).
++
++- **Visual grammar (§1, RFC9-24..RFC9-30).**
++  - The reserved state palette and the channels no lens may repurpose.
++  - The channel declaration contract and its fail-closed registry.
++  - Unknown rendering at every scale; height, text, and inference treatments.
++- **Lenses (§2, RFC9-31..RFC9-35).** The lens contract, overlays, the V0 lens
++  set, and the promotion predicate.
++- **Scenes (§3, RFC9-36..RFC9-41).** City and Factory scene profiles; base,
++  approved-intent, proposed and historical scenarios.
++- **Aggregation (§4, RFC9-42..RFC9-45).** Aggregation, semantic zoom, the
++  unmapped district, and the grey-map comprehension walkthrough.
++- **Questions it answers.** *What does this colour, height or edge mean? May
++  this lens or overlay bind that channel? What must an Unknown or an aggregate
++  show? What may a proposed or historical scene look like?*
++- **Elsewhere in the package.**
++  - Position, proximity, layout stability and counting rules:
++    `semantic-geography.md` (RFC9-1..RFC9-23).
++  - Equivalence, release gates, performance, motion and the OpenSpec
++    boundary: `interaction-parity-and-release.md` (RFC9-46..RFC9-52).
+ 
+ ---
+ 
+@@ -62,27 +68,41 @@
+ reserved, mutually distinct treatments no lens may repurpose. Only **Observed /
+ Inferred / Unknown** are epistemic labels (exclusive, trust-and-evidence.md); the
+ rest are sibling states rendered alongside a label, never fourth labels
+-(RFC2-25): **Contradicted** (Unknown base + conflict marker + adjudication route
+-— no surface silently picks a winner [Observed: architecture.md]); **Dismissed by
+-decision** (struck plate with reason + expiry; never green, resolved, or
+-aligned); **Proposed/speculative** (wireframe + translucency — never looks like
+-existing structure [Observed: trust-and-evidence.md]); **Unadopted draft**
+-(proposed treatment + "unadopted" plate; anchors nothing); **Editorial draft**
+-(RFC7-20's third RFC2-25 sibling surface state — a distinct reservation, not
+-the unadopted-draft treatment: an `unadopted-draft` awaits an adoption gate
+-into authority, an `editorial-draft` awaits a human authorship act into a
+-non-authoritative artifact and stays non-citable even after adoption, so a
+-shared treatment would tell the reader the wrong thing about what act is
+-owed). All three sibling surface states are reserved here because RFC9-43
+-makes them **mandatory** in aggregate disclosure and RFC9-26 is fail-closed: a
+-state with no reserved treatment either does not render — contradicting
+-RFC9-43 and RFC9-46, a release-blocking scene/table disagreement under
+-RFC6-22/23 — or renders on an unreserved treatment, which is the unlegended
+-meaning VIS-7 forbids. The freshness family —
+-fresh / stale / broken / superseded — applies on top of any state (RFC2-10):
+-stale desaturates with an age plate; broken shows last-good marked broken, never
+-failing invisibly; superseded ghosts. Concrete treatment *values* (hues,
+-materials) are design-contract material; the role reservations are bound here.
++(RFC2-25):
++
++- **Contradicted** (Unknown base + conflict marker + adjudication route — no
++  surface silently picks a winner [Observed: architecture.md]);
++- **Dismissed by decision** (struck plate with reason + expiry; never green,
++  resolved, or aligned);
++- **Proposed/speculative** (wireframe + translucency — never looks like
++  existing structure [Observed: trust-and-evidence.md]);
++- **Unadopted draft** (proposed treatment + "unadopted" plate; anchors
++  nothing);
++- **Editorial draft** (RFC7-20's third RFC2-25 sibling surface state — a
++  distinct reservation, not the unadopted-draft treatment: an
++  `unadopted-draft` awaits an adoption gate into authority, an
++  `editorial-draft` awaits a human authorship act into a non-authoritative
++  artifact and stays non-citable even after adoption, so a shared treatment
++  would tell the reader the wrong thing about what act is owed).
++
++All three sibling surface states are reserved here because RFC9-43 makes them
++**mandatory** in aggregate disclosure and RFC9-26 is fail-closed: a state with
++no reserved treatment either
++
++- does not render — contradicting RFC9-43 and RFC9-46, a release-blocking
++  scene/table disagreement under RFC6-22/23 — or
++- renders on an unreserved treatment, which is the unlegended meaning VIS-7
++  forbids.
++
++The freshness family — fresh / stale / broken / superseded — applies on top of
++any state (RFC2-10):
++
++- stale desaturates with an age plate;
++- broken shows last-good marked broken, never failing invisibly;
++- superseded ghosts.
++
++Concrete treatment *values* (hues, materials) are design-contract material; the
++role reservations are bound here.
+ 
+ **RFC9-25.** **Reserved channels.** Position, district boundary, the epistemic
+ rim/plate carrier, and saturation/chroma (the freshness carrier) are
+@@ -125,14 +145,30 @@
+ encoding-meaning-fixing; the other is RFC9-18's **layout version registry**, in
+ `semantic-geography.md`.)*
+ 
++*Diagram (non-normative; the clauses govern):* whether a meaning-carrying
++channel may render under RFC9-26's fail-closed registry.
++
++```mermaid
++flowchart TD
++    C["A channel that carries meaning"] --> E{"Registry entry present?"}
++    E -->|no| N["Does not render<br/>no fallback legend, no default meaning"]
++    E -->|yes| A{"Effective owner act under RFC3-16(a)<br/>bound to the registry's exact digest?"}
++    A -->|no| N
++    A -->|"yes: state (1) or state (2)"| R["Renders, legend generated from the registry,<br/>exact provenance state rendered"]
++```
++
+ **RFC9-27.** **Unknown is never invisible.** Every channel defines a mandatory
+ Unknown value, visually distinct from both ends of its own scale and from any
+-"good" reading — never green, never zero/empty/absent-looking (an Unknown height
+-is a marked stub, never zero; an unmeasured heat region is marked unmeasured,
+-never cold; a missing quantity renders Unknown, never 0, SDR-6). Every Unknown
+-element carries its RFC2-24 reason, rendered verbatim, with the reason's
+-resolution route as an affordance. No epistemic state is carried by color alone:
+-each carries at least two of {surface treatment, plate/badge, label}.
++"good" reading — never green, never zero/empty/absent-looking:
++
++- an Unknown height is a marked stub, never zero;
++- an unmeasured heat region is marked unmeasured, never cold;
++- a missing quantity renders Unknown, never 0, SDR-6.
++
++Every Unknown element carries its RFC2-24 reason, rendered verbatim, with the
++reason's resolution route as an affordance. No epistemic state is carried by
++color alone: each carries at least two of {surface treatment, plate/badge,
++label}.
+ 
+ **Unknown is never invisible *at any scale*.** The rule binds per channel per
+ element and, in the same reserved vocabulary, per channel per **aggregate**: an
+@@ -164,16 +200,20 @@
+ **RFC9-29.** **Text is a channel.** Labels, plates, counts, breadcrumbs, and
+ tooltips state only what identified artifacts state; truncation is marked, never
+ silent; an Unknown entity carries an explicit "Unknown" label, never an omitted
+-one. No text may derive from secret-matched or unclassifiable content — a
+-connection string in a map tooltip is doctrine's own named violation [Observed:
+-SEC-5]; excluded content contributes only a sealed-marker disclosure **at a
+-declared minimum aggregation, never a per-element match count**. A per-building
+-sealed marker carrying its own match count *is* a per-file match count rendered
+-spatially — RFC6-27's violation case 10 — disclosing the *shape* of the excluded
+-material (which files, how many matches each, clustered where) while withholding
+-only its content. SEC-5 sanctions rendering **the exclusion**, not its shape; the
+-map is the surface where that shape is most legible, so the granularity bound is
+-stated here and applies to every sealed marker (RFC9-23).
++one.
++
++- No text may derive from secret-matched or unclassifiable content — a
++  connection string in a map tooltip is doctrine's own named violation
++  [Observed: SEC-5]; excluded content contributes only a sealed-marker
++  disclosure **at a declared minimum aggregation, never a per-element match
++  count**.
++- A per-building sealed marker carrying its own match count *is* a per-file
++  match count rendered spatially — RFC6-27's violation case 10 — disclosing the
++  *shape* of the excluded material (which files, how many matches each,
++  clustered where) while withholding only its content.
++- SEC-5 sanctions rendering **the exclusion**, not its shape; the map is the
++  surface where that shape is most legible, so the granularity bound is stated
++  here and applies to every sealed marker (RFC9-23).
+ 
+ **RFC9-30.** Inferred contributions render in the inferred treatment (hatched +
+ provenance) and never raise a status-bearing encoding; an open admitted challenge
+@@ -226,27 +266,30 @@
+ 
+ - the **normalized work state** — RFC8-12/13's closed vocabulary, whose values
+   are partitioned into live states, a terminal state, and **state-local absence
+-  values**. The overlay renders each value as itself: an absence value is **never
+-  folded into an Unknown aggregate**, never counted among RFC2-24 Unknown
+-  reasons, and never rendered as scaffolding absent — "no work state could be
+-  determined" and "no work is scheduled here" are different facts, and a district
+-  that renders them alike has manufactured the second from the first;
++  values**.
++  - The overlay renders each value as itself: an absence value is **never
++    folded into an Unknown aggregate**, never counted among RFC2-24 Unknown
++    reasons, and never rendered as scaffolding absent — "no work state could
++    be determined" and "no work is scheduled here" are different facts, and a
++    district that renders them alike has manufactured the second from the
++    first;
+ - the **RFC2-18 chain state** — `merged`, `reconciliation-pending`,
+   `reconciled@E`, `unsatisfied`, `contradiction-raised`, `Unknown(reason)` —
+   carried on every element and every aggregate that carries a normalized state.
+-  **RFC2-17's word reservation binds this overlay**: *reconciled at E with
+-  evidence*, *merged, not yet evaluated*, *evaluated and unsatisfied*, and
+-  *evaluated, contradiction raised* are four answers and **never share a mark, a
+-  mark's color, a count, or a legend entry** (RFC8-28); an `unsatisfied` mark and
+-  a `contradiction-raised` mark are never merged into one, since one routes to a
+-  gap and the other to owner adjudication alone. A district rendering normalized
+-  `merged` while dropping the chain state has shown scaffolding removed and
+-  concealed that nothing was reconciled — the closure fallacy at map scale
+-  (RFC8-30). **Staging:** per RFC8-29 the verdict-bearing outcomes
+-  (`reconciled@E`, `unsatisfied`, `contradiction-raised`) are not produced at V0,
+-  where the field carries `merged`, `reconciliation-pending` and
+-  `Unknown(reason)` only; the overlay binds on all of them regardless, so the V1
+-  computation lands on a surface that already renders its outcomes distinctly.
++  - **RFC2-17's word reservation binds this overlay**: *reconciled at E with
++    evidence*, *merged, not yet evaluated*, *evaluated and unsatisfied*, and
++    *evaluated, contradiction raised* are four answers and **never share a
++    mark, a mark's color, a count, or a legend entry** (RFC8-28); an
++    `unsatisfied` mark and a `contradiction-raised` mark are never merged into
++    one, since one routes to a gap and the other to owner adjudication alone.
++  - A district rendering normalized `merged` while dropping the chain state has
++    shown scaffolding removed and concealed that nothing was reconciled — the
++    closure fallacy at map scale (RFC8-30).
++  - **Staging:** per RFC8-29 the verdict-bearing outcomes (`reconciled@E`,
++    `unsatisfied`, `contradiction-raised`) are not produced at V0, where the
++    field carries `merged`, `reconciliation-pending` and `Unknown(reason)`
++    only; the overlay binds on all of them regardless, so the V1 computation
++    lands on a surface that already renders its outcomes distinctly.
+ 
+ Neither field's vocabulary is fixed by this clause: the overlay consumes whatever
+ values each field currently carries, and a value it cannot render is a defect
+@@ -310,20 +353,25 @@
+ 
+ **RFC9-38.** Every scene names its evaluation — (source snapshot, as-of instant)
+ — on the surface, not in a menu; time is an explicit input, never ambient
+-[Observed: architecture.md]. A scene rendering an evaluation of a non-default
+-snapshot (a branch or PR tree) is Observed truth *about that snapshot* and
+-renders a persistent non-default marker (a surface-local restatement of RFC6-24's
+-upstream obligation, not a marker this RFC binds alone). Between-evaluation
+-motion is a labelled transition; no interpolated frame is a claim; time travel is
+-between identified evaluations only, and gaps look like gaps. A later as-of
+-instant may only degrade a claim (RFC2-4); a building never visibly decays by
+-wall clock. **Subject to RFC9-41:** rendering motion across *superseded*
+-evaluations is map rendering of historical state — constitutionally in scope
+-(doctrine amendment D1, adopted), but its concrete interaction design is the
+-unapproved candidate bundle RFC9-41 holds. Until the owner approves that design,
+-this clause governs motion between *non-superseded* evaluations of different
+-snapshots only, and the map offers historical access through the drawer. Read
+-alone, this clause licenses no particular historical rendering design.
++[Observed: architecture.md].
++
++- A scene rendering an evaluation of a non-default snapshot (a branch or PR
++  tree) is Observed truth *about that snapshot* and renders a persistent
++  non-default marker (a surface-local restatement of RFC6-24's upstream
++  obligation, not a marker this RFC binds alone).
++- Between-evaluation motion is a labelled transition; no interpolated frame is
++  a claim; time travel is between identified evaluations only, and gaps look
++  like gaps.
++- A later as-of instant may only degrade a claim (RFC2-4); a building never
++  visibly decays by wall clock.
++- **Subject to RFC9-41:** rendering motion across *superseded* evaluations is
++  map rendering of historical state — constitutionally in scope (doctrine
++  amendment D1, adopted), but its concrete interaction design is the
++  unapproved candidate bundle RFC9-41 holds. Until the owner approves that
++  design, this clause governs motion between *non-superseded* evaluations of
++  different snapshots only, and the map offers historical access through the
++  drawer. Read alone, this clause licenses no particular historical rendering
++  design.
+ 
+ **RFC9-39.** **Base and intended.** The base scene is the base graph at the
+ selected evaluation. The **approved-intent scene** renders adopted declarations —
+@@ -361,17 +409,23 @@
+ An intended state whose approved inputs contradict renders the contradicted
+ region Unknown with its adjudication route — never a resolved intent.
+ 
+-**RFC9-40.** **Proposed.** Proposed scenes obey RFC1-27 and RFC6-24: the kernel
+-refuses to union proposals in one exclusivity group or of undeclared
+-compatibility — the honest render is *N candidate futures*, selectable one at a
+-time; **proposed structure never looks like existing structure** in any profile
+-at any zoom; every proposed scene names its base on-surface (default: the
+-observed base graph; proposal-over-intended only as an explicitly labelled
+-stacked scenario); structurally divergent proposals compare side-by-side in their
+-own address spaces with shared declared districts as registration anchors — their
+-union is never one scene. A deterministically computed merge projection is a
+-derived projection in the proposed treatment, never solid: determinism of a
+-computation is not evidence of existence.
++**RFC9-40.** **Proposed.** Proposed scenes obey RFC1-27 and RFC6-24:
++
++- the kernel refuses to union proposals in one exclusivity group or of
++  undeclared compatibility — the honest render is *N candidate futures*,
++  selectable one at a time;
++- **proposed structure never looks like existing structure** in any profile at
++  any zoom;
++- every proposed scene names its base on-surface (default: the observed base
++  graph; proposal-over-intended only as an explicitly labelled stacked
++  scenario);
++- structurally divergent proposals compare side-by-side in their own address
++  spaces with shared declared districts as registration anchors — their union
++  is never one scene.
++
++A deterministically computed merge projection is a derived projection in the
++proposed treatment, never solid: determinism of a computation is not evidence of
++existence.
+ 
+ **RFC9-41.** **Historical.** Drawer and query access to superseded evaluations
+ rests on VIS-6, exception (b), and needs no doctrine change (RFC6-24).
+@@ -392,6 +446,21 @@
+ claiming the candidate bundle is contract. [Observed: D1; the candidate bundle
+ Inferred and explicitly non-binding.]
+ 
++*Diagram (non-normative; the clauses govern):* the three scenario contexts of
++RFC6-24 and the scenes RFC9-39..RFC9-41 place in each.
++
++```mermaid
++flowchart TD
++    CTX["RFC6-24: exactly three scenario contexts,<br/>exactly one on every selection"]
++    CTX --> BASE["Base"]
++    CTX --> PROP["Proposed<br/>selects a proposal set"]
++    CTX --> HIST["Historical<br/>selects a superseded evaluation"]
++    BASE --> BS["Base scene: the base graph<br/>at the selected evaluation (RFC9-39)"]
++    BASE --> AI["Approved-intent scene: a comparison within Base,<br/>context value base, never a fourth context (RFC9-39)"]
++    PROP --> PS["Proposed scene: never looks like existing structure;<br/>where proposals share an exclusivity group or compatibility<br/>is undeclared: N candidate futures, one at a time (RFC9-40)"]
++    HIST --> HS["Observed + superseded, visibly distinct from current;<br/>interaction bundle is candidate design, non-binding (RFC9-41)"]
++```
++
+ ---
+ 
+ ## 4. Aggregation, semantic zoom, and unmapped code
+@@ -454,8 +523,12 @@
+ **Aggregated measured channels carry their Unknown contribution — RFC9-27 at
+ scale.** Where an aggregate renders a lens-bound measured channel over
+ epistemically mixed members, the aggregate must carry its Unknown contribution in
+-**the same reserved vocabulary the per-element rule uses**: a **marked stub
+-fraction**, a **hatched band**, or a **refusal to render a magnitude at all**.
++**the same reserved vocabulary the per-element rule uses**:
++
++- a **marked stub fraction**,
++- a **hatched band**, or
++- a **refusal to render a magnitude at all**.
++
+ The aggregate's per-zoom legend must state which of the three it does.
+ Aggregating over only the members that have values, and letting the rest vanish,
+ is Unknown rendered as zero at the map's most legible scale — SDR-6 and RFC2-23's
+@@ -499,57 +572,67 @@
+ 
+ 1. The **walkthrough execution record** — a `kernel-recorded` durable fact
+    (RFC3-2) in **`.syzygy/governance/records/`** (RFC3-15) minted when a
+-   walkthrough runs: the project and surface walked, the participants, the
+-   start/end or capture identity, the submission identity, and what was on the
+-   screen — the **evaluation** walked ((source snapshot, as-of instant),
+-   RFC9-38), the **layout version and layout baseline** in force (RFC9-14(a),
+-   RFC9-18), the **scenario context** and **active lens** (RFC6-24; RFC9-31), and
+-   the **declared filter scope**, including any RFC9-49 narrowing. *(The
+-   screen-content list is required because a name and a rationale make a false
+-   pass **attributable**, not **findable**; findability requires knowing what was
+-   rendered.)* Every listed item is a governed or snapshot-identified fact this
+-   RFC already requires the *scene* to name. The execution record asserts only
+-   that a walkthrough occurred as described; it judges nothing and authorizes
+-   nothing.
++   walkthrough runs:
++   - the project and surface walked, the participants, the start/end or
++     capture identity, the submission identity, and
++   - what was on the screen:
++     - the **evaluation** walked ((source snapshot, as-of instant), RFC9-38),
++     - the **layout version and layout baseline** in force (RFC9-14(a),
++       RFC9-18),
++     - the **scenario context** and **active lens** (RFC6-24; RFC9-31), and
++     - the **declared filter scope**, including any RFC9-49 narrowing.
++
++   *(The screen-content list is required because a name and a rationale make
++   a false pass **attributable**, not **findable**; findability requires
++   knowing what was rendered.)* Every listed item is a governed or
++   snapshot-identified fact this RFC already requires the *scene* to name. The
++   execution record asserts only that a walkthrough occurred as described; it
++   judges nothing and authorizes nothing.
+ 2. The **walkthrough judgment** — an attributed human adjudication recorded in
+    **`.syzygy/governance/decisions/`** (RFC3-15: a decision is a warrant, never
+    evidence), naming the judging party, the outcome (**pass / fail /
+    insufficient-to-judge**), the rationale, the execution record(s) judged, the
+-   scope the judgment covers, its instant, and any earlier judgment it supersedes.
+-   *(Attribution ruled at acceptance by owner decision B12(b), escalating v1.md's
+-   success test to a gate.)* The judgment is honored only through an **effective
+-   owner act under RFC3-16(a)** bound to the judgment's exact digest. State (1)
+-   or state (2) may supply the judgment, with its exact provenance state rendered;
+-   state (1) remains visibly uncorrelated. It is an adjudication Decision in
+-   `decisions/`, squarely inside that predicate's example list, and the home
+-   establishes durability, never authorship: an owner judgment a fleet worker
+-   could commit is not an owner judgment. An unattributed or unreasoned verdict
+-   is not a lawful gate outcome in either direction — a false pass must be
+-   findable afterward, and it is only findable with a name and reasoning
+-   attached. The judgment is **never rendered Observed** and is **never evidence
+-   about the project**: it is a recorded human judgment about the surface, and
+-   no claim instance, gate outcome, or reconciliation verdict may consume it as
+-   project implementation evidence.
+-3. The **release policy** — an owner-approved, authorization-bearing policy under
+-   **`.syzygy/governance/policies/`**, honored only through an effective owner act
+-   under RFC3-16(a) bound to the policy's exact digest. State (1) or state (2) is
+-   effective, with its exact provenance state rendered; state (1) remains visibly
+-   uncorrelated. The policy says whether a walkthrough is required for a given
+-   release class, **which judgment classes qualify and who may judge**, what
+-   freshness and scope the judgment must have, and that a lawful qualifying pass
+-   clears this walkthrough gate. **Authority to configure or clear this
+-   walkthrough gate comes from the effective policy — never from the kernel
+-   having stored a verdict.** **Absence of an effective policy is not a permissive
+-   default**: with no effective release policy, **owner decision B12(b) binds
+-   directly**: the comprehension walkthrough is required at every release
+-   milestone, the owner judges, and the walkthrough gate requires a lawful
+-   qualifying pass. An effective policy **configures and may narrow** that default
+-   (release classes, qualifying judgment classes, freshness, scope); only an
+-   explicit effective owner act under RFC3-16(a), in either state and bound to the
+-   waiver's exact digest, may waive the walkthrough for a release class, and no
+-   policy silence ever does. Release policies and waivers are warrants for this
+-   gate, never project evidence or evidence that any release, deployment or
+-   recovery effect succeeded.
++   scope the judgment covers, its instant, and any earlier judgment it
++   supersedes. *(Attribution ruled at acceptance by owner decision B12(b),
++   escalating v1.md's success test to a gate.)*
++   - The judgment is honored only through an **effective owner act under
++     RFC3-16(a)** bound to the judgment's exact digest. State (1) or state (2)
++     may supply the judgment, with its exact provenance state rendered; state
++     (1) remains visibly uncorrelated.
++   - It is an adjudication Decision in `decisions/`, squarely inside that
++     predicate's example list, and the home establishes durability, never
++     authorship: an owner judgment a fleet worker could commit is not an owner
++     judgment.
++   - An unattributed or unreasoned verdict is not a lawful gate outcome in
++     either direction — a false pass must be findable afterward, and it is
++     only findable with a name and reasoning attached.
++   - The judgment is **never rendered Observed** and is **never evidence about
++     the project**: it is a recorded human judgment about the surface, and no
++     claim instance, gate outcome, or reconciliation verdict may consume it as
++     project implementation evidence.
++3. The **release policy** — an owner-approved, authorization-bearing policy
++   under **`.syzygy/governance/policies/`**, honored only through an effective
++   owner act under RFC3-16(a) bound to the policy's exact digest. State (1) or
++   state (2) is effective, with its exact provenance state rendered; state (1)
++   remains visibly uncorrelated.
++   - The policy says whether a walkthrough is required for a given release
++     class, **which judgment classes qualify and who may judge**, what
++     freshness and scope the judgment must have, and that a lawful qualifying
++     pass clears this walkthrough gate.
++   - **Authority to configure or clear this walkthrough gate comes from the
++     effective policy — never from the kernel having stored a verdict.**
++   - **Absence of an effective policy is not a permissive default**: with no
++     effective release policy, **owner decision B12(b) binds directly**: the
++     comprehension walkthrough is required at every release milestone, the
++     owner judges, and the walkthrough gate requires a lawful qualifying pass.
++   - An effective policy **configures and may narrow** that default (release
++     classes, qualifying judgment classes, freshness, scope); only an explicit
++     effective owner act under RFC3-16(a), in either state and bound to the
++     waiver's exact digest, may waive the walkthrough for a release class, and
++     no policy silence ever does.
++   - Release policies and waivers are warrants for this gate, never project
++     evidence or evidence that any release, deployment or recovery effect
++     succeeded.
+ 
+ Orrery **references** the execution record and judgment (drawer-linkable per
+ RFC6-19); it owns neither, and nothing gate-bearing lives under `.syzygy/map/**`.
+@@ -560,28 +643,48 @@
+ its artifact, a test renders Unknown, never met"). Concretely: **where the
+ walkthrough is required — by the effective release policy, or by B12(b)'s default
+ when no policy is effective — the walkthrough gate requires a lawful qualifying
+-pass.** An
+-unattributed or unreasoned verdict — in either direction — is not a lawful pass,
+-so it blocks release exactly as a fail does. It is recorded as
+-**verdict-unlawful** — a state of the judgment record, *not* an RFC2-24 Unknown
+-reason (that vocabulary is closed at twelve and governs claims about the project,
+-not outcomes of Syzygy's own release gates) — rather than converted into a fail,
+-because the walkthrough's actual outcome is not thereby known and recording a
+-fail would assert something no one judged. **A judgment without an effective
+-owner act under RFC3-16(a) is unlawful in exactly the same way** — attributed
+-and reasoned prose a fleet worker could commit clears nothing — and is recorded
+-as **verdict-unlawful** likewise. Absence of an execution record,
+-absence of a judgment, and a judgment whose scope or freshness the policy rejects
+-are likewise not a pass. In every one of these cases the walkthrough test renders
+-**Unknown, never met** (v1.md's own words), the gate stays closed, and the remedy
+-is to re-run the walkthrough and record it lawfully. *(This paragraph and RFC7-31
+-state one protocol, with the same outcome on both surfaces.)*
++pass.**
++
++- An unattributed or unreasoned verdict — in either direction — is not a
++  lawful pass, so it blocks release exactly as a fail does. It is recorded as
++  **verdict-unlawful** — a state of the judgment record, *not* an RFC2-24
++  Unknown reason (that vocabulary is closed at twelve and governs claims about
++  the project, not outcomes of Syzygy's own release gates) — rather than
++  converted into a fail, because the walkthrough's actual outcome is not
++  thereby known and recording a fail would assert something no one judged.
++- **A judgment without an effective owner act under RFC3-16(a) is unlawful in
++  exactly the same way** — attributed and reasoned prose a fleet worker could
++  commit clears nothing — and is recorded as **verdict-unlawful** likewise.
++- Absence of an execution record, absence of a judgment, and a judgment whose
++  scope or freshness the policy rejects are likewise not a pass.
++
++In every one of these cases the walkthrough test renders **Unknown, never met**
++(v1.md's own words), the gate stays closed, and the remedy is to re-run the
++walkthrough and record it lawfully. *(This paragraph and RFC7-31 state one
++protocol, with the same outcome on both surfaces.)*
+ 
+ **This clause is only a walkthrough/release-policy gate.** Clearing it never
+ authorizes release or proves that a release occurred. This amendment creates no
+ deployment or recovery authority; those effects remain unavailable until
+ separately contracted, specified and authorized.
+ 
++*Diagram (non-normative; the clauses govern):* how a recorded walkthrough
++reaches the RFC9-45 gate where a walkthrough is required.
++
++```mermaid
++flowchart TD
++    X["Walkthrough execution record<br/>records/, kernel-recorded"] --> J["Walkthrough judgment<br/>decisions/"]
++    NR["No execution record,<br/>or no judgment"] --> U
++    J --> L{"Attributed, reasoned, and honored through<br/>an effective owner act under RFC3-16(a)?"}
++    L -->|no| VU["Recorded as verdict-unlawful"]
++    VU --> U["Walkthrough test renders Unknown, never met;<br/>gate stays closed"]
++    L -->|yes| SF{"Judgment class, judge, scope or freshness<br/>not qualifying under the effective policy<br/>(or B12(b)'s default)?"}
++    SF -->|yes| U
++    SF -->|no| O{"Outcome"}
++    O -->|"fail or insufficient-to-judge"| B["Not a pass: gate stays closed"]
++    O -->|pass| G["Walkthrough gate cleared;<br/>clearing it never authorizes release"]
++```
++
+ ---
+ 
+ ## 5. Violation cases (module-owned)
+@@ -615,24 +718,29 @@
+ 
+ ## 6. Integration (module-scoped)
+ 
+-**RFC 0001:** state planes and the proposed plane (RFC1-22); exclusivity groups
+-(RFC1-27); code-element identity not path-only (RFC1-5). **RFC 0002:** the label
+-+ tier + reason + freshness vocabulary rendered verbatim (RFC2-10/24/25, incl.
+-`declared-only`); suspension visibility (RFC2-8/13/14); the RFC2-18 chain state
+-and RFC2-17's word reservation; failure states and "no aggregate silently treats
+-absent as 0" (RFC2-23); declared target scope (RFC2-16). **RFC 0003:**
+-`kernel-recorded` durable facts (RFC3-2); governance homes for records,
+-decisions and policies (RFC3-15); the RFC3-16(a) owner-act predicate. **RFC
+-0004:** coverage records behind every empty plot (RFC4-27); reduced-fidelity
+-labeling for churn inputs (RFC4-11/24); code-element identity continuity
+-(RFC4-12). **RFC 0005:** execution profiles gating every runtime-lens input
+-(RFC5-20…23; SEC-3). **RFC 0006:** aggregation disclosure (RFC6-17); filters
+-disclosed as filters (RFC6-16); scenario context (RFC6-24/25); one truth, two
+-consumers (RFC6-13); sibling surface states (RFC6-14); drawer links (RFC6-19).
+-**RFC 0008:** the two-field work-state handoff (RFC8-12/13, RFC8-28, RFC8-29,
+-RFC8-30). **Provides to** RFC 0007/0008 the map-side rendering obligations behind
+-cross-surface highlights (same reserved palette semantics for shared states), and
+-to craft-and-care the legend/palette registry discipline.
++- **RFC 0001:** state planes and the proposed plane (RFC1-22); exclusivity
++  groups (RFC1-27); code-element identity not path-only (RFC1-5).
++- **RFC 0002:** the label + tier + reason + freshness vocabulary rendered
++  verbatim (RFC2-10/24/25, incl. `declared-only`); suspension visibility
++  (RFC2-8/13/14); the RFC2-18 chain state and RFC2-17's word reservation;
++  failure states and "no aggregate silently treats absent as 0" (RFC2-23);
++  declared target scope (RFC2-16).
++- **RFC 0003:** `kernel-recorded` durable facts (RFC3-2); governance homes for
++  records, decisions and policies (RFC3-15); the RFC3-16(a) owner-act
++  predicate.
++- **RFC 0004:** coverage records behind every empty plot (RFC4-27);
++  reduced-fidelity labeling for churn inputs (RFC4-11/24); code-element
++  identity continuity (RFC4-12).
++- **RFC 0005:** execution profiles gating every runtime-lens input
++  (RFC5-20…23; SEC-3).
++- **RFC 0006:** aggregation disclosure (RFC6-17); filters disclosed as filters
++  (RFC6-16); scenario context (RFC6-24/25); one truth, two consumers
++  (RFC6-13); sibling surface states (RFC6-14); drawer links (RFC6-19).
++- **RFC 0008:** the two-field work-state handoff (RFC8-12/13, RFC8-28,
++  RFC8-29, RFC8-30).
++- **Provides to** RFC 0007/0008 the map-side rendering obligations behind
++  cross-surface highlights (same reserved palette semantics for shared
++  states), and to craft-and-care the legend/palette registry discipline.
+ 
+ **Upstream defects reported from this module's clauses are all resolved**:
+ RFC6-24's implicit non-default snapshot (defect 3) and RFC6-17's narrow
+@@ -643,14 +751,17 @@
+ 
+ ## 7. Deliberately deferred (module-scoped)
+ 
+-Concrete visual treatment values, legend layout, and lens metric formulas and
+-band edges → post-acceptance design contract and per-lens spec + quality policy;
+-none may weaken a clause here (RFC9-2). Factory's full scene contract → its own
+-later spec under RFC9-36/37's bound invariants. Historical-scene retention and
+-renderable-evaluation selection → quality/evidence policy, active only under
+-RFC9-41. V1 gap-object rendering on the map → V1 RFC, over the same identities
+-(V0 renders absence). Certificate rendering (post-V1, future-tagged) and live
+-fleet streaming (deferred mandate) are not this module's.
++- Concrete visual treatment values, legend layout, and lens metric formulas
++  and band edges → post-acceptance design contract and per-lens spec + quality
++  policy; none may weaken a clause here (RFC9-2).
++- Factory's full scene contract → its own later spec under RFC9-36/37's bound
++  invariants.
++- Historical-scene retention and renderable-evaluation selection →
++  quality/evidence policy, active only under RFC9-41.
++- V1 gap-object rendering on the map → V1 RFC, over the same identities (V0
++  renders absence).
++- Certificate rendering (post-V1, future-tagged) and live fleet streaming
++  (deferred mandate) are not this module's.
+ 
+ ---
+ 

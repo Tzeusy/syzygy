@@ -1,0 +1,198 @@
+--- a/rfcs/RFC-0004/execution-record.md
++++ b/rfcs/RFC-0004/execution-record.md
+@@ -33,25 +33,33 @@
+ 
+ *If this section and a clause disagree, the clause wins.*
+ 
+-This module owns **what Syzygy durably records about a fleet run**: the
+-Execution Record's classification as an Evidence kind rather than a new
+-doctrine class (RFC4-18), the minimum durable run envelope field-by-field
+-(RFC4-19), what enrichment may never be required to add (RFC4-20), and the
+-model/timing/token/cost semantics under Unknown-never-zero (RFC4-21). Read it
+-to answer: *what must this record contain, and what may it never invent?*
+-
+-The envelope table in RFC4-19 is the single place the minimum content is
+-stated — RFC 0005's own run-envelope obligations (profile identity, RFC5-18(e);
+-policy-violation recording, RFC5-21) are carried here as named rows rather than
+-cross-referenced, so no reader has to assemble the envelope from two contracts.
+-Two rules bind hardest: an absent value renders **Unknown, never zero**, and a
+-**derivation collision is disclosed, never collapsed** — a silent single record
+-is a violation.
+-
+-Observers producing these records must satisfy the general contract (module 1);
+-the gate tiers the envelope's gate rows carry are defined in module 2
+-(RFC4-13); the `reduced-fidelity` causes it cites are the closed list in
+-module 4 (RFC4-24).
++This module decides what Syzygy durably records about a fleet run, and what
++that record may never invent. Two rules bind hardest: an absent value renders
++**Unknown, never zero** (RFC4-19, RFC4-21), and a **derivation collision is
++disclosed, never collapsed** — a silent single record is a violation
++(RFC4-20).
++
++- **The question it answers:** *what must this record contain, and what may
++  it never invent?*
++- **Where to look:**
++  - the Execution Record's classification as an Evidence kind rather than a
++    new doctrine class — RFC4-18;
++  - the minimum durable run envelope, field by field — RFC4-19;
++  - what enrichment may never be required to add — RFC4-20;
++  - model/timing/token/cost semantics under Unknown-never-zero — RFC4-21.
++- **One home for the envelope:** the RFC4-19 table is the single place the
++  minimum content is stated.
++  - RFC 0005's own run-envelope obligations (profile identity, RFC5-18(e);
++    policy-violation recording, RFC5-21) are carried here as named rows
++    rather than cross-referenced.
++  - So no reader has to assemble the envelope from two contracts.
++- **What it presupposes:**
++  - observers producing these records must satisfy the general contract
++    (module 1);
++  - the gate tiers the envelope's gate rows carry are defined in module 2
++    (RFC4-13);
++  - the `reduced-fidelity` causes it cites are the closed list in module 4
++    (RFC4-24).
+ 
+ ---
+ 
+@@ -64,20 +72,25 @@
+ 
+ **RFC4-18 — Classification (SDR-8).** An **Execution Record** is an **Evidence
+ artifact** — durable, identified, integrity-verifiable, immutable once
+-recorded — residing under `.syzygy/work/**`. It is a *kind* of the existing
+-Evidence class (RFC1-5); **no new doctrine-level evidence class exists**. It
+-is execution-plane evidence (RFC1-22): it may support claims about what the
+-fleet did, and it may never satisfy a desired-state claim — work is never
+-proof intent is satisfied. It is captured historical evidence and, like all
+-evidence, is not required to be rebuildable from a source that no longer
+-exists; observation records cite it (RFC2-1 item 6).
++recorded — residing under `.syzygy/work/**`.
++
++- It is a *kind* of the existing Evidence class (RFC1-5); **no new
++  doctrine-level evidence class exists**.
++- It is execution-plane evidence (RFC1-22): it may support claims about what
++  the fleet did, and it may never satisfy a desired-state claim — work is
++  never proof intent is satisfied.
++- It is captured historical evidence and, like all evidence, is not required
++  to be rebuildable from a source that no longer exists; observation records
++  cite it (RFC2-1 item 6).
+ 
+ **RFC4-19 — The minimum durable run envelope.** One Execution Record per
+ execution run (RFC1-5), including Syzygy's own propagation acts. Field
+-classes: **R** = required (record inadmissible without it), **EA** =
+-`expected-where-available` — expected wherever the source can supply it,
+-**Unknown-with-reason otherwise** (never zero, never defaulted) — and **O** =
+-optional enrichment.
++classes:
++
++- **R** = required (record inadmissible without it);
++- **EA** = `expected-where-available` — expected wherever the source can
++  supply it, **Unknown-with-reason otherwise** (never zero, never defaulted);
++- **O** = optional enrichment.
+ 
+ | Field | Class | Semantics |
+ |---|---|---|
+@@ -103,12 +116,15 @@
+ 
+ **RFC4-20 — Enrichment is explicitly non-required.** Fine-grained heartbeats,
+ nested tool events, phase transitions, per-span telemetry, and streaming
+-capture are **optional enrichment**: their absence never blocks a record,
+-never degrades the record below its envelope, and no kernel or surface
+-behavior may require them (SDR-31; SDR-5 keeps live streaming and control
+-deferred entirely). Multiple runs against one work item are distinct records —
+-redispatches and attempts are countable only from records, never inferred from
+-a mutation trail.
++capture are **optional enrichment**:
++
++- their absence never blocks a record, never degrades the record below its
++  envelope, and no kernel or surface behavior may require them (SDR-31;
++  SDR-5 keeps live streaming and control deferred entirely).
++
++Multiple runs against one work item are distinct records — redispatches and
++attempts are countable only from records, never inferred from a mutation
++trail.
+ 
+ **Derivation collision is detected and disclosed, never collapsed.** Where run
+ identity is adapter-derived (RFC4-19) and the derivation inputs cannot
+@@ -125,17 +141,33 @@
+ form from silently under-joining either (owner decision **B11**: derive, and
+ disclose collisions).
+ 
++*Diagram (non-normative; the clauses govern):* how run identity is sourced
++under RFC4-19, and the collision rule of RFC4-20.
++
++```mermaid
++flowchart TD
++    RUN["An execution run"] --> T{"Toolchain-emitted<br/>run identity exists?"}
++    T -->|yes| TE["Toolchain-emitted identity"]
++    T -->|no| D["Adapter-derived identity from durable joins,<br/>labeled derived"]
++    D --> C{"Derivation inputs distinguish<br/>the genuine dispatches?"}
++    C -->|yes| ONE["One record per run"]
++    C -->|no| RF["Affected records at reduced-fidelity,<br/>cause indistinguishable-runs;<br/>run count for the work item Unknown"]
++    C -.->|"never"| BAD["Silent single record<br/>(a violation)"]
++```
++
+ **RFC4-21 — Model, timing, token, and cost semantics.** Values come only from
+ runtime-reported or toolchain-recorded facts captured as evidence; a cost
+ computed from token counts and a rate table is **Inferred** (rate tables
+-drift) and labeled with its derivation [Observed]. Absent values render
+-Unknown, never zero (SDR-6). **Partial aggregates are disclosed**: any sum,
+-average, or account over runs where some values are Unknown must state its
+-coverage ("cost known for n of m runs") and must never render as a complete
+-total — an undisclosed partial aggregate is the zero-fallacy at portfolio
+-scale. Cost measures stay independent; no composite "effort" number. Event
+-instants are execution facts, distinct from any evaluation's as-of instant;
+-they never alter a status outside a new identified evaluation.
++drift) and labeled with its derivation [Observed].
++
++- Absent values render Unknown, never zero (SDR-6).
++- **Partial aggregates are disclosed**: any sum, average, or account over
++  runs where some values are Unknown must state its coverage ("cost known
++  for n of m runs") and must never render as a complete total — an
++  undisclosed partial aggregate is the zero-fallacy at portfolio scale.
++- Cost measures stay independent; no composite "effort" number.
++- Event instants are execution facts, distinct from any evaluation's as-of
++  instant; they never alter a status outside a new identified evaluation.
+ 
+ ---
+ 
+@@ -153,20 +185,27 @@
+ 
+ ## 5. Integration (module-local)
+ 
+-**Relies on RFC 0001:** the Evidence and execution-run entity classes (RFC1-5)
+-this record is a kind of, and the execution-plane boundary (RFC1-22) that stops
+-it satisfying a desired-state claim. **On RFC 0002:** the observation record
+-that cites it (RFC2-1 item 6) and the tier registry (RFC2-25) its gate rows
+-carry. **On RFC 0003:** the physical encoding of the envelope, and the RFC3-30
+-secret-detection policy the prose-field row admits content through. **On
+-RFC 0005:** profile identity and version (RFC5-18(e)), policy-violation
+-recording (RFC5-21), and the storage authority for prose fields (RFC5-17).
+-
+-**Provides to RFC 0003:** the run-envelope semantics it must physically encode.
+-**To RFC 0005:** the single stated home of the envelope's minimum content.
+-**To RFC 0008:** the records from which redispatches and attempts are counted —
+-never inferred from a mutation trail. **To RFC 0011:** the evidence identity and
+-capture provenance a context packet binds against.
++**Relies on:**
++
++- **RFC 0001:** the Evidence and execution-run entity classes (RFC1-5) this
++  record is a kind of, and the execution-plane boundary (RFC1-22) that stops
++  it satisfying a desired-state claim.
++- **RFC 0002:** the observation record that cites it (RFC2-1 item 6) and
++  the tier registry (RFC2-25) its gate rows carry.
++- **RFC 0003:** the physical encoding of the envelope, and the RFC3-30
++  secret-detection policy the prose-field row admits content through.
++- **RFC 0005:** profile identity and version (RFC5-18(e)),
++  policy-violation recording (RFC5-21), and the storage authority for prose
++  fields (RFC5-17).
++
++**Provides to:**
++
++- **RFC 0003:** the run-envelope semantics it must physically encode.
++- **RFC 0005:** the single stated home of the envelope's minimum content.
++- **RFC 0008:** the records from which redispatches and attempts are
++  counted — never inferred from a mutation trail.
++- **RFC 0011:** the evidence identity and capture provenance a context
++  packet binds against.
+ 
+ ---
+ 

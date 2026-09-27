@@ -1,0 +1,409 @@
+--- a/rfcs/RFC-0004/fidelity-joins-and-mappings.md
++++ b/rfcs/RFC-0004/fidelity-joins-and-mappings.md
+@@ -32,27 +32,38 @@
+ 
+ *If this section and a clause disagree, the clause wins.*
+ 
+-This module owns **how honestly a fact is labeled once it exists**: the
+-declared basis of every provenance join (RFC4-22); worker liveness, which is
+-never guessed (RFC4-23); the closed `reduced-fidelity` cause list and what a
+-coarse fact may never be asked (RFC4-24); the per-observer degradation mapping
+-(RFC4-25); where a capability↔code mapping may lawfully be declared, including
+-the marker-adoption gate (RFC4-26); the executed coverage record behind every
+-absence claim (RFC4-27); and the derivation-first invariant with its
+-never-required enrichment roadmap (RFC4-28, RFC4-29).
+-
+-Read it to answer: *how much may I actually conclude from this fact?* Three
+-rules bind hardest: a convention-based join is legitimate but labeled, because
+-**a convention is a practice, not a guarantee**; only an actual progress signal
+-may render a worker live — never a coordinator heartbeat, a lock label, or a
+-worktree; and an absence claim without an executed coverage record renders
+-Unknown, because **an unexecuted mapping is not evidence of absence**. The
+-marker-adoption policy of RFC4-26 is **authorization-bearing** and honored only
+-under RFC3-16(a) — markers are written by workers into the untrusted code tree,
+-so the policy gate is the whole defense.
++This module decides how honestly a fact is labeled once it exists, and so how
++much may be concluded from it. Three rules bind hardest:
+ 
+-The joins and labels here are emitted by the adapters of module 2 and carried
+-on the records of module 3, all under the general contract of module 1.
++- a convention-based join is legitimate but labeled, because **a convention
++  is a practice, not a guarantee** (RFC4-22);
++- only an actual progress signal may render a worker live — never a
++  coordinator heartbeat, a lock label, or a worktree (RFC4-23);
++- an absence claim without an executed coverage record renders Unknown,
++  because **an unexecuted mapping is not evidence of absence** (RFC4-27).
++
++Reader map:
++
++- **The question it answers:** *how much may I actually conclude from this
++  fact?*
++- **Where to look:**
++  - the declared basis of every provenance join — RFC4-22;
++  - worker liveness, which is never guessed — RFC4-23;
++  - the closed `reduced-fidelity` cause list and what a coarse fact may never
++    be asked — RFC4-24;
++  - the per-observer degradation mapping — RFC4-25;
++  - where a capability↔code mapping may lawfully be declared, including the
++    marker-adoption gate — RFC4-26;
++  - the executed coverage record behind every absence claim — RFC4-27;
++  - the derivation-first invariant with its never-required enrichment
++    roadmap — RFC4-28, RFC4-29;
++  - the OpenSpec seam binding the whole package — RFC4-30.
++- **Authorization-bearing:** the marker-adoption policy of RFC4-26 is honored
++  only under RFC3-16(a) — markers are written by workers into the untrusted
++  code tree, so the policy gate is the whole defense.
++- **What it presupposes:** the joins and labels here are emitted by the
++  adapters of module 2 and carried on the records of module 3, all under the
++  general contract of module 1.
+ 
+ ---
+ 
+@@ -66,8 +77,11 @@
+ **RFC4-22 — Declared join bases.** Every adapter-owned link of the
+ change-accounting chain — work item ↔ branch/worktree, branch → commits,
+ commit → PR, PR → merge fact, gate outcome → artifact — declares its
+-**basis**: `recorded-identity` (an explicit identifier written by an actor) or
+-`naming-convention` (derived from a path/branch/message convention).
++**basis**:
++
++- `recorded-identity` (an explicit identifier written by an actor) or
++- `naming-convention` (derived from a path/branch/message convention).
++
+ Convention-based joins are legitimate and labeled as such; they are
+ `reduced-fidelity` with cause `derived-from-convention`, because a convention
+ is a practice, not a guarantee [Observed]. A join that can no longer be
+@@ -84,19 +98,20 @@
+ 2. Worker activity is derived exclusively from the **last progress signal** —
+    branch tip moved, new commit, PR state changed — rendered with its instant
+    and the declared staleness bound (bound value: policy material; the
+-   obligation to declare is binding here). That bound is an owner-approved
+-   declaration that unblocks a claim class — **until it is declared, this
+-   contract yields no admissible liveness input, so `active` cannot be
+-   rendered from it** (the surface-side statement of the same obligation is
+-   RFC8-16, a parallel-obligation pointer, not this rule's source) — so it
+-   is honored only through an **effective owner act under RFC3-16(a)**: a
+-   bound an untrusted writer could mint would make `active` renderable, and a
+-   generous one would hold a dead worker green indefinitely on a signal that
+-   never comes. A valid state-(1) or state-(2) act is effective and its exact
+-   provenance state is rendered; a bound with a missing or invalid act is no
+-   declaration, so liveness stays unrenderable rather than degrading to a
+-   permissive default. The act warrants use of the bound; it is never liveness
+-   evidence.
++   obligation to declare is binding here).
++   - That bound is an owner-approved declaration that unblocks a claim class
++     — **until it is declared, this contract yields no admissible liveness
++     input, so `active` cannot be rendered from it** (the surface-side
++     statement of the same obligation is RFC8-16, a parallel-obligation
++     pointer, not this rule's source) — so it is honored only through an
++     **effective owner act under RFC3-16(a)**: a bound an untrusted writer
++     could mint would make `active` renderable, and a generous one would hold
++     a dead worker green indefinitely on a signal that never comes.
++   - A valid state-(1) or state-(2) act is effective and its exact provenance
++     state is rendered; a bound with a missing or invalid act is no
++     declaration, so liveness stays unrenderable rather than degrading to a
++     permissive default.
++   - The act warrants use of the bound; it is never liveness evidence.
+ 3. Between signals, worker liveness renders **Unknown**; past the bound, the
+    item renders stale-or-dead with the last-signal instant shown — never
+    "active", never green.
+@@ -108,19 +123,26 @@
+ **RFC4-24 — The labeling schema (SDR-33; delegated by RFC2).** Event-time
+ evidence is captured where available. Where only coarser data exists, the fact
+ is emitted at the `reduced-fidelity` tier (RFC2-25) carrying, as one
+-structured label: **declared granularity** (what the fact truthfully resolves,
+-e.g. PR-level); **unavailable granularity** (what it does not, e.g.
+-per-commit); **cause**, from a closed list extendable only by amending this
+-RFC — `post-merge-history-unreachable`, `replace-in-place-source`,
+-`retention-horizon-passed`, `derived-from-convention`, `approximated-boundary`
+-(timing bounds from first/last durable trace), `terminal-report-only` (a run
+-knowable only from its terminal report), `indistinguishable-runs` (derived run
+-identity cannot separate two genuine dispatches; the run count renders Unknown
+-— RFC4-19/RFC4-20) — and **upgrade path** (which instrumentation or capture
+-would raise it, cross-referencing RFC4-27). Finer-granularity questions
+-against a reduced-fidelity fact render Unknown; interpolation and invention
+-are forbidden — full Observed authority holds *at the declared granularity
+-only* (RFC2-25).
++structured label:
++
++- **declared granularity** (what the fact truthfully resolves, e.g.
++  PR-level);
++- **unavailable granularity** (what it does not, e.g. per-commit);
++- **cause**, from a closed list extendable only by amending this RFC —
++  - `post-merge-history-unreachable`,
++  - `replace-in-place-source`,
++  - `retention-horizon-passed`,
++  - `derived-from-convention`,
++  - `approximated-boundary` (timing bounds from first/last durable trace),
++  - `terminal-report-only` (a run knowable only from its terminal report),
++  - `indistinguishable-runs` (derived run identity cannot separate two
++    genuine dispatches; the run count renders Unknown — RFC4-19/RFC4-20);
++- and **upgrade path** (which instrumentation or capture would raise it,
++  cross-referencing RFC4-27).
++
++Finer-granularity questions against a reduced-fidelity fact render Unknown;
++interpolation and invention are forbidden — full Observed authority holds *at
++the declared granularity only* (RFC2-25).
+ 
+ **RFC4-25 — Degradation mapping.** Every registered observer names, in the
+ registry, which RFC2-23 states it can enter and what its last-good rendering
+@@ -130,91 +152,146 @@
+ ### 3.7 Code mappings: declared, inferred, and covered
+ 
+ **RFC4-26 — Declaration sites (SDR-3/4).** The four capability↔code relation
+-classes of RFC1-16 remain queryably distinct end to end: the observers of this
+-RFC emit class (iii) structural facts and class (iv) verification facts; class
+-(i) declared mappings come from the governance mapping artifact — the
+-**primary declaration site**; class (ii) inferred mappings enter only through
+-the inference profile with challenge authority only. **Optional code markers**
+-are a supplement, never required: the code-structure observer reads markers
+-and emits them as marker facts, but a marker constitutes a *declared* mapping
+-only where a governance-plane policy has adopted marker-sourced declarations
+-for that project; otherwise markers render as unadopted candidate declarations
+-— surfaced for adoption, anchoring nothing. **The adopting policy is
+-authorization-bearing and is honored only under RFC3-16(a)**: markers are
+-written by workers into the untrusted code tree, so a marker-adoption policy
+-an untrusted writer could mint would convert in-code text into anchoring
+-declarations by the same act — the policy gate is the whole defense, and it
+-must be an effective owner act under RFC3-16(a), not a file. A project with no markers anywhere
+-is fully supported (SDR-4).
++classes of RFC1-16 remain queryably distinct end to end:
++
++- the observers of this RFC emit class (iii) structural facts and class (iv)
++  verification facts;
++- class (i) declared mappings come from the governance mapping artifact — the
++  **primary declaration site**;
++- class (ii) inferred mappings enter only through the inference profile with
++  challenge authority only.
++
++**Optional code markers** are a supplement, never required:
++
++- the code-structure observer reads markers and emits them as marker facts,
++  but a marker constitutes a *declared* mapping only where a governance-plane
++  policy has adopted marker-sourced declarations for that project; otherwise
++  markers render as unadopted candidate declarations — surfaced for adoption,
++  anchoring nothing.
++- **The adopting policy is authorization-bearing and is honored only under
++  RFC3-16(a)**: markers are written by workers into the untrusted code tree,
++  so a marker-adoption policy an untrusted writer could mint would convert
++  in-code text into anchoring declarations by the same act — the policy gate
++  is the whole defense, and it must be an effective owner act under
++  RFC3-16(a), not a file.
++- A project with no markers anywhere is fully supported (SDR-4).
++
++*Diagram (non-normative; the clauses govern):* where each capability↔code
++relation class of RFC4-26 comes from.
++
++```mermaid
++flowchart LR
++    GOV["Governance mapping artifact<br/>(primary declaration site)"] --> C1["(i) declared mapping"]
++    INF["Inference profile"] -->|"challenge authority only"| C2["(ii) inferred mapping"]
++    OBS["Observers of this RFC"] --> C3["(iii) structural facts"]
++    OBS --> C4["(iv) verification facts"]
++    MK["Code markers"] -->|"read as marker facts"| AP{"Marker-adoption policy for that project<br/>with an effective owner act<br/>under RFC3-16(a)?"}
++    AP -->|yes| C1
++    AP -->|no| CAND["Unadopted candidate declaration:<br/>surfaced for adoption, anchoring nothing"]
++```
+ 
+ **RFC4-27 — Executed coverage behind every absence claim.** An absence claim —
+ "no code implements capability C", "this code maps to no capability", Orrery's
+ empty plot — is a status claim and requires an executed **mapping coverage
+-record**: which mapping pass ran, over which declared scope (repositories,
+-exclusions counted), with which observer/adapter versions, at which
+-evaluation, and what it found. Absent that record, the claim renders Unknown
+-(`mapping-coverage-absent`, RFC2-24 #5) — an unexecuted mapping is not
+-evidence of absence. Coverage records are deterministic facts inside the
+-observation record (RFC2-6).
++record**, stating:
++
++- which mapping pass ran,
++- over which declared scope (repositories, exclusions counted),
++- with which observer/adapter versions,
++- at which evaluation,
++- and what it found.
++
++Absent that record, the claim renders Unknown (`mapping-coverage-absent`,
++RFC2-24 #5) — an unexecuted mapping is not evidence of absence. Coverage
++records are deterministic facts inside the observation record (RFC2-6).
+ 
+ ### 3.8 Derivation-first, instrumentation-optional (SDR-31)
+ 
+ **RFC4-28 — The invariant.** Syzygy is fully truthful from derivable facts
+-alone. At V1, without any toolchain change, the adapters derive: work-item
+-state and transition history within the retention bound;
+-branch/worktree/commit/PR/merge joins for in-flight work; terminal worker and
+-reviewer report facts where persisted; PR-granularity change history for
+-closed work (`reduced-fidelity`); lead time at work-item granularity; and
+-approximated run boundaries — everything else renders Unknown with its reason
+-or reduced-fidelity with its cause. A sparse-but-honest pane is the correct
+-output, not a defect (VIS-1, VIS-2).
++alone. At V1, without any toolchain change, the adapters derive:
++
++- work-item state and transition history within the retention bound;
++- branch/worktree/commit/PR/merge joins for in-flight work;
++- terminal worker and reviewer report facts where persisted;
++- PR-granularity change history for closed work (`reduced-fidelity`);
++- lead time at work-item granularity; and
++- approximated run boundaries.
++
++Everything else renders Unknown with its reason or reduced-fidelity with its
++cause. A sparse-but-honest pane is the correct output, not a defect (VIS-1,
++VIS-2).
+ 
+ **RFC4-29 — The enrichment roadmap, named but never required.** The emissions
+ the adapters would consume, each upgrading a labeled Unknown or
+-reduced-fidelity fact to event-time Observed: durable run identity and
+-parent-run identity; dispatch records (model, runtime, instant); event
+-timestamps; worker progress/heartbeat signals; retained gate artifacts with
+-reported references; tokens/cost from the runtime; resolvable spec anchors on
+-work items; per-subworker report contracts. These evolve with the actuator
+-toolchain on a deliberate co-evolution roadmap; **no Syzygy claim, surface, or
+-acceptance test may require them** — a project whose toolchain emits nothing
+-is a first-class citizen rendered honestly. Where enrichment lands in the
+-substrate's own typed event store, Syzygy consumes it as one more read source;
+-any Syzygy-authored record placed there is governed by the outward limb
+-(RFC4-5) and the durable authority stays in `.syzygy/work/**` (RFC4-16) — the
+-substrate's store is never the primary home of Syzygy's run records (SDR-8).
++reduced-fidelity fact to event-time Observed:
++
++- durable run identity and parent-run identity;
++- dispatch records (model, runtime, instant);
++- event timestamps;
++- worker progress/heartbeat signals;
++- retained gate artifacts with reported references;
++- tokens/cost from the runtime;
++- resolvable spec anchors on work items;
++- per-subworker report contracts.
++
++These evolve with the actuator toolchain on a deliberate co-evolution roadmap;
++**no Syzygy claim, surface, or acceptance test may require them** — a project
++whose toolchain emits nothing is a first-class citizen rendered honestly.
++Where enrichment lands in the substrate's own typed event store, Syzygy
++consumes it as one more read source; any Syzygy-authored record placed there
++is governed by the outward limb (RFC4-5) and the durable authority stays in
++`.syzygy/work/**` (RFC4-16) — the substrate's store is never the primary home
++of Syzygy's run records (SDR-8).
+ 
+ ---
+ 
+ ### 3.9 Authority boundary at the OpenSpec seam (binding phase rule)
+ 
+ **RFC4-30.** This contract schedules nothing: **it is not a specification of
+-record from which implementation work may be scheduled**. No implementation
+-work for user-observable consequences of this contract — adapter
+-configuration and observation capture behavior, execution-record surfaces,
+-fidelity, staleness and degradation rendering, mapping displays — may be
+-scheduled solely from this RFC. Before implementation, every observable
+-consequence either maps to an approved OpenSpec requirement and scenario in
+-the governance root's `openspec/**` plane, or carries a reviewed N/A judgment
+-proving it purely structural with no independently testable behavior. **The
+-reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a recorded
+-owner judgment homed in `decisions/` (RFC3-15), and the judgment is honored
+-only through an effective owner act under RFC3-16(a), in state (1) or state
+-(2), with that state rendered; absent or invalid acts map nothing and leave
+-the consequence unmapped and Unknown, never covered (RFC3-16(a)'s effect
+-rule; VIS-2).
+-
+-**Rows are per observable consequence, not per clause.** A clause with five
+-observable consequences and one mapped requirement is not covered; the matrix
+-discloses the consequences it enumerates for each clause, so a
+-complete-looking matrix over under-enumerated consequences is a defect of the
+-matrix. At
+-surface specification a clause-to-requirement coverage matrix over
+-RFC4-1..RFC4-30 is produced — **that matrix is review material, never
+-authority**. This clause creates no OpenSpec content now (none may exist
+-during bootstrap). This clause binds the whole RFC 0004 package, not this
+-module alone. (Shape-parallel with RFC6-28, RFC7-38, RFC8-32, RFC9-52,
+-RFC10-16, RFC11-12.)
++record from which implementation work may be scheduled**.
++
++- No implementation work for user-observable consequences of this contract —
++  adapter configuration and observation capture behavior, execution-record
++  surfaces, fidelity, staleness and degradation rendering, mapping displays —
++  may be scheduled solely from this RFC.
++- Before implementation, every observable consequence either maps to an
++  approved OpenSpec requirement and scenario in the governance root's
++  `openspec/**` plane, or carries a reviewed N/A judgment proving it purely
++  structural with no independently testable behavior.
++
++**The reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a
++recorded owner judgment homed in `decisions/` (RFC3-15), and the judgment is
++honored only through an effective owner act under RFC3-16(a), in state (1) or
++state (2), with that state rendered; absent or invalid acts map nothing and
++leave the consequence unmapped and Unknown, never covered (RFC3-16(a)'s
++effect rule; VIS-2).
++
++**Rows are per observable consequence, not per clause.**
++
++- A clause with five observable consequences and one mapped requirement is
++  not covered; the matrix discloses the consequences it enumerates for each
++  clause, so a complete-looking matrix over under-enumerated consequences is a
++  defect of the matrix.
++- At surface specification a clause-to-requirement coverage matrix over
++  RFC4-1..RFC4-30 is produced — **that matrix is review material, never
++  authority**.
++
++This clause creates no OpenSpec content now (none may exist during
++bootstrap). This clause binds the whole RFC 0004 package, not this module
++alone. (Shape-parallel with RFC6-28, RFC7-38, RFC8-32, RFC9-52, RFC10-16,
++RFC11-12.)
++
++*Diagram (non-normative; the clauses govern):* what RFC4-30 requires of each
++observable consequence before implementation.
++
++```mermaid
++flowchart TD
++    C["One user-observable consequence<br/>of this contract"] --> Q{"Maps to an approved OpenSpec<br/>requirement and scenario?"}
++    Q -->|yes| OK["Consequence mapped"]
++    Q -->|no| NA{"Reviewed N/A judgment in decisions/<br/>with an effective owner act<br/>under RFC3-16(a)?"}
++    NA -->|yes| NAOK["Consequence carries an effective<br/>reviewed N/A judgment"]
++    NA -->|"no, or act absent or invalid"| U["Unmapped and Unknown, never covered"]
++```
+ 
+ ## 4. Violation cases
+ 
+@@ -235,21 +312,29 @@
+ 
+ ## 5. Integration (module-local)
+ 
+-**Relies on RFC 0001:** the four capability↔code relation classes (RFC1-16)
+-this module keeps queryably distinct. **On RFC 0002:** coverage records as
+-deterministic facts inside the observation record (RFC2-6); the
+-`mapping-coverage-absent` Unknown reason (RFC2-24 #5); the tier registry and
+-its declared-granularity rule (RFC2-25); the failure states each observer names
+-(RFC2-23). **On RFC 0003:** RFC3-16(a) gating the staleness bound (RFC4-23) and
+-the marker-adoption policy (RFC4-26).
+-
+-**Provides to RFC 0003:** the reduced-fidelity label and coverage-record
+-semantics it must physically encode. **To RFC 0008:** the liveness rules
+-(RFC4-23) Trajectory renders — RFC4-23(2) cites **RFC8-16** for the rule that
+-`active` is unrenderable until the staleness bound is declared, a forward
+-citation into RFC 0008. **To RFC 0009:** the coverage records (RFC4-27) behind
+-every empty plot. **To RFC 0011:** the fidelity and coverage labels that bound
+-what a context packet may assert from a given fact.
++**Relies on:**
++
++- **RFC 0001:** the four capability↔code relation classes (RFC1-16) this
++  module keeps queryably distinct.
++- **RFC 0002:**
++  - coverage records as deterministic facts inside the observation record
++    (RFC2-6);
++  - the `mapping-coverage-absent` Unknown reason (RFC2-24 #5);
++  - the tier registry and its declared-granularity rule (RFC2-25);
++  - the failure states each observer names (RFC2-23).
++- **RFC 0003:** RFC3-16(a) gating the staleness bound (RFC4-23) and the
++  marker-adoption policy (RFC4-26).
++
++**Provides to:**
++
++- **RFC 0003:** the reduced-fidelity label and coverage-record semantics it
++  must physically encode.
++- **RFC 0008:** the liveness rules (RFC4-23) Trajectory renders — RFC4-23(2)
++  cites **RFC8-16** for the rule that `active` is unrenderable until the
++  staleness bound is declared, a forward citation into RFC 0008.
++- **RFC 0009:** the coverage records (RFC4-27) behind every empty plot.
++- **RFC 0011:** the fidelity and coverage labels that bound what a context
++  packet may assert from a given fact.
+ 
+ ---
+ 

@@ -1,0 +1,568 @@
+--- a/rfcs/RFC-0001-project-graph-identity-state-planes.md
++++ b/rfcs/RFC-0001-project-graph-identity-state-planes.md
+@@ -35,15 +35,29 @@
+ *Where this section and a clause disagree, the clause wins.*
+ 
+ This RFC is the semantic kernel every Syzygy surface projects from, and the
+-**dictionary** every other RFC uses: the V0-core entity vocabulary and its
+-extension profiles, the identity scheme for each identity-bearing class (who
+-mints; what survives rename/split/merge), the six state planes and the rule
+-assigning acts to them, the closed V0 relation vocabulary with its semantic
+-classes and the single evidence-to-status path, proposal exclusivity groups,
+-and entity lifecycles. It is **semantics only**: no storage engine,
+-serialization, database, or query technology is chosen or implied. Every
+-doctrine-frozen noun gets exactly one kernel construct or a recorded
+-deliberate non-reification. Four load-bearing ideas:
++**dictionary** every other RFC uses: which entities and relations exist, who
++mints each identity, and which state plane each source-state assertion sits
++in. Three clauses carry the weight: RFC1-22 (six state planes; edges and
++derived objects in none), RFC1-24 (all positive status flows through Claims),
++and RFC1-25 with RFC1-26 (the closed relation vocabulary). It is **semantics
++only**: no storage engine, serialization, database, or query technology is
++chosen or implied.
++
++**What the dictionary fixes:**
++
++- the V0-core entity vocabulary and its extension profiles;
++- the identity scheme for each identity-bearing class (who mints; what
++  survives rename/split/merge);
++- the six state planes and the rule assigning acts to them;
++- the closed V0 relation vocabulary with its semantic classes and the single
++  evidence-to-status path;
++- proposal exclusivity groups;
++- entity lifecycles.
++
++Every doctrine-frozen noun gets exactly one kernel construct or a recorded
++deliberate non-reification.
++
++**Four load-bearing ideas:**
+ 
+ - **Two dimensions, never one.** Every **source-state assertion** sits in
+   exactly one of **six state planes** (Desired, Proposed, Observed, Inferred,
+@@ -62,31 +76,54 @@
+   placements, orphaned work: contradictions for owner adjudication, never
+   silently repaired.
+ 
+-Also fixed here: a **Proposal** is the single container for every unadopted
+-change and approved work crosses a one-way door (**materialization**) — which
+-is how the SDR §5 plan-item question is resolved, as a Proposal lifecycle
+-state rather than a new entity or a scheduler-native epic (RFC1-28); and there
+-is deliberately **no "Feature" entity** — Capability is the only stable
+-product-behavior identity, and what the map anchors to.
+-
+-**Doctrine grounding.** Doctrine keeps desired, observed implementation and
+-execution semantically distinct and rules that work is never proof intent is
+-satisfied [Observed: vision.md, Thesis]; mandates one shared kernel under
+-three non-authoritative surfaces with map geography anchored to capability
+-identity, not file paths [Observed: architecture.md; v1.md]; computes statuses
+-only at identified evaluations (VIS-2, VIS-7); requires rebuildability with
+-two closed exceptions (VIS-6); and sets a trust floor whose link rule requires
+-every internal reference to resolve to an identified target [Observed:
+-trust-and-evidence.md, floor]. [Inferred] The failure mode this contract
+-guards against is the **silent default** — an unruled identity question
+-answered by whatever the first implementation does [Observed:
+-../history/RFC-0001-history.md, the K-F1/K-F2 narrative].
+-
+-Structure: §3 is the contract (RFC1-1 … RFC1-32); §4 gives recognizable
+-violation cases; §5 fixes what downstream RFCs may rely on; §8 lists the
+-still-open owner questions. Section numbers §3–§8 are unchanged from rev9 so
+-in-clause references stay valid; rev9 §2 (motivation narrative) was absorbed
+-into this section, with its long form in the history file.
++**Also fixed here:**
++
++- A **Proposal** is the single container for every unadopted change, and
++  approved work crosses a one-way door (**materialization**) — which is how
++  the SDR §5 plan-item question is resolved, as a Proposal lifecycle state
++  rather than a new entity or a scheduler-native epic (RFC1-28).
++- There is deliberately **no "Feature" entity** — Capability is the only
++  stable product-behavior identity, and what the map anchors to.
++
++**Doctrine grounding.** Doctrine:
++
++- keeps desired, observed implementation and execution semantically distinct
++  and rules that work is never proof intent is satisfied [Observed:
++  vision.md, Thesis];
++- mandates one shared kernel under three non-authoritative surfaces with map
++  geography anchored to capability identity, not file paths [Observed:
++  architecture.md; v1.md];
++- computes statuses only at identified evaluations (VIS-2, VIS-7);
++- requires rebuildability with two closed exceptions (VIS-6); and
++- sets a trust floor whose link rule requires every internal reference to
++  resolve to an identified target [Observed: trust-and-evidence.md, floor].
++
++[Inferred] The failure mode this contract guards against is the **silent
++default** — an unruled identity question answered by whatever the first
++implementation does [Observed: ../history/RFC-0001-history.md, the K-F1/K-F2
++narrative].
++
++**Reader map.**
++
++- §3 is the contract (RFC1-1 … RFC1-32):
++  - §3.1 project, repositories, governance root, consent — RFC1-1 to RFC1-4;
++  - §3.2 V0-core entities and extension profiles — RFC1-5 to RFC1-8;
++  - §3.3 identity minting and continuity — RFC1-9 to RFC1-13;
++  - §3.4 capability, requirements, mapping to code — RFC1-14 to RFC1-17;
++  - §3.5 claims, gaps, contradictions — RFC1-18 to RFC1-21;
++  - §3.6 state planes and act assignment — RFC1-22, RFC1-23;
++  - §3.7 the closed relation vocabulary — RFC1-24 to RFC1-26;
++  - §3.8 proposals and the approved plan item — RFC1-27 to RFC1-30;
++  - §3.9 entity lifecycle — RFC1-31;
++  - §3.10 no Feature entity — RFC1-32;
++  - §3.11 the OpenSpec authority boundary — RFC1-33.
++- §4 gives recognizable violation cases.
++- §5 fixes what downstream RFCs may rely on.
++- §6 and §7 point to rejected alternatives and deferred work.
++- §8 lists the still-open owner questions.
++- Section numbers §3–§8 are unchanged from rev9 so in-clause references stay
++  valid; rev9 §2 (motivation narrative) was absorbed into this section, with
++  its long form in the history file.
+ 
+ ---
+ 
+@@ -118,6 +155,17 @@
+ The unevaluable entry renders Unknown with its reason and is never dropped and
+ never guessed (RFC 0003's manifest rendering — informative, §5) [Inferred].
+ 
++*Diagram (non-normative; the clauses govern):* where a declaration's
++governance-root count surfaces.
++
++```mermaid
++flowchart TD
++    D["Project declaration"] --> N{"How many governance roots does it name?"}
++    N -->|"exactly one"| OK["The kernel invariant holds"]
++    N -->|"two"| C["Contradiction minted in the Project's own evaluation"]
++    N -->|"zero"| W["Workspace/manifest level: unevaluable as a Project,<br/>rendered Unknown (missing-declaration),<br/>no kernel contradiction minted"]
++```
++
+ **RFC1-2.** **Repository** is one entity class carrying a declared **role**:
+ `governance-root` or `observed-source`. Governance root is a role, not a
+ separate entity — a second entity would split repository identity and the
+@@ -194,71 +242,91 @@
+   here, never by delegation.
+ 
+ **RFC1-7.** **Extension profiles** are named, per-project-loadable entity and
+-relation sets, never presumed present: **inference** (inference records,
+-inferred implementation mappings, challenge machinery beyond the admissibility
+-floor), **presentation** (narrative composition; personal view state is
+-deliberately **not** reified even here — it stays outside every state plane
+-and is never a snapshot input, RFC1-22), **map** (districts, scenes, lenses,
+-layout records), **portfolio** (workspace-manifest concerns per SDR-29/30;
+-cross-project relationship entities live here, and an undeclared cross-project
+-relation renders unconfirmed/asymmetric, never silently reconciled),
+-**annotation/dismissal** (designations, milestones, dismissal application
+-machinery), **mission** (Mission and Attention Item identities and their
+-relations — mission-targets, attention-blocks; loadable only where the
+-Mission contracts (RFC 0010 and successors) are accepted and active for the
+-project or workspace, and never part of any project's unconditional V0
+-core) **[P-28 — the `mission` profile entry is a drafted arm, awaiting an
+-owner ruling; the accepting act ratifies it or the owner reverts it
+-(acceptance record §7 item 16)]**. A profile may add vocabulary; it may never alter the semantics of
+-a V0-core clause. Profile contents are defined by RFCs 0002–0011 and by
+-successor RFCs accepted into the contract set; a profile-defining RFC names,
+-for every identity it adds, **(i)** exactly one minting authority — which,
+-where that authority is the kernel, must derive the identity deterministically
+-from declared inputs in RFC1-9's sense — and **(ii)** exactly one RFC1-22
+-**state plane** for every source-state assertion the profile adds, so no
+-profile entity enters the graph without the plane assignment RFC1-22 requires
+-and a drawer renders. Both namings are made in the profile-defining RFC, and
+-that is what discharges RFC1-9's "in RFC1-5" locator for profile classes: a
+-profile identity is named there rather than in RFC1-5's V0-core table, and
+-RFC1-5's closure is not thereby widened.
++relation sets, never presumed present:
++
++- **inference** (inference records, inferred implementation mappings,
++  challenge machinery beyond the admissibility floor),
++- **presentation** (narrative composition; personal view state is
++  deliberately **not** reified even here — it stays outside every state plane
++  and is never a snapshot input, RFC1-22),
++- **map** (districts, scenes, lenses, layout records),
++- **portfolio** (workspace-manifest concerns per SDR-29/30; cross-project
++  relationship entities live here, and an undeclared cross-project relation
++  renders unconfirmed/asymmetric, never silently reconciled),
++- **annotation/dismissal** (designations, milestones, dismissal application
++  machinery),
++- **mission** (Mission and Attention Item identities and their relations —
++  mission-targets, attention-blocks; loadable only where the Mission
++  contracts (RFC 0010 and successors) are accepted and active for the project
++  or workspace, and never part of any project's unconditional V0 core)
++  **[P-28 — the `mission` profile entry is a drafted arm, awaiting an owner
++  ruling; the accepting act ratifies it or the owner reverts it (acceptance
++  record §7 item 16)]**.
++
++A profile may add vocabulary; it may never alter the semantics of a V0-core
++clause. Profile contents are defined by RFCs 0002–0011 and by successor RFCs
++accepted into the contract set; a profile-defining RFC names, for every
++identity it adds:
++
++- **(i)** exactly one minting authority — which, where that authority is the
++  kernel, must derive the identity deterministically from declared inputs in
++  RFC1-9's sense — and
++- **(ii)** exactly one RFC1-22 **state plane** for every source-state
++  assertion the profile adds, so no profile entity enters the graph without
++  the plane assignment RFC1-22 requires and a drawer renders.
++
++Both namings are made in the profile-defining RFC, and that is what
++discharges RFC1-9's "in RFC1-5" locator for profile classes: a profile
++identity is named there rather than in RFC1-5's V0-core table, and RFC1-5's
++closure is not thereby widened.
+ 
+ **RFC1-8.** **Frozen-noun mapping.** Every doctrine-frozen noun resolves to
+-exactly one kernel construct: project, capability, gap, contradiction,
+-evidence, snapshot, evaluation, observation record → the entities above.
+-**Warrant** is deliberately not reified — it is a property of the `motivates`
+-edge or of a Decision, never a node. **Aligned** is realized as the predicate
+-of a Claim over (observed subject, cited normative reference, evaluation) —
+-resolving SDR §5 question 3; there is no `aligned` edge, so every alignment
+-stays challengeable (RFC1-24). **Converged** and **genome-complete** are
+-aggregate Claim predicates over a declared scope. **Genome** is a membership
+-predicate answered by the governance plane's declared inventory, not an
+-entity.
++exactly one kernel construct:
++
++- project, capability, gap, contradiction, evidence, snapshot, evaluation,
++  observation record → the entities above.
++- **Warrant** is deliberately not reified — it is a property of the
++  `motivates` edge or of a Decision, never a node.
++- **Aligned** is realized as the predicate of a Claim over (observed subject,
++  cited normative reference, evaluation) — resolving SDR §5 question 3; there
++  is no `aligned` edge, so every alignment stays challengeable (RFC1-24).
++- **Converged** and **genome-complete** are aggregate Claim predicates over a
++  declared scope.
++- **Genome** is a membership predicate answered by the governance plane's
++  declared inventory, not an entity.
+ 
+ ### 3.3 Identity: minting, continuity, split/merge/rename
+ 
+ **RFC1-9.** Every identity-bearing class names, in RFC1-5, exactly one minting
+ authority, and the kernel **never mints an identity it does not own**:
+-work-item identities are mirrored from the scheduler; requirement identities
+-are held as references to the OpenSpec artifact contract; code-element
+-identities come from the source adapter. Kernel-owned identities (snapshot,
+-evaluation, claim, gap, contradiction, materialization record) are
+-**deterministically derived** from their defining inputs, so two runs over the
+-same inputs mint the same identity (VIS-7). **The "in RFC1-5" locator is
+-discharged by RFC1-7 for extension-profile classes**, whose minting authority
+-and state plane are named in the profile-defining RFC rather than in RFC1-5's
+-closed V0-core table: a profile identity so named satisfies this clause, and a
+-profile identity minted by the kernel is subject to this clause's determinism
+-requirement exactly as a V0-core kernel-owned identity is. **Author-minted
+-identities**
+-(Proposal) are neither mirrored nor derived, so determinism protects them from
+-nothing — two authors could otherwise mint colliding identifiers, and the
+-materialization record, `succeeds` citations of superseded proposals, and
+-exclusivity groups all key on this identity. The authority-scoped,
+-collision-free **identity scheme for Proposals is therefore delegated to
+-RFC 0003 as a named obligation** — the delegation pattern used for code
+-elements → RFC 0004, because RFC 0003 owns the `.syzygy/**` schema plane. This
+-RFC fixes the obligation (authority-scoped, collision-free, opaque per
+-RFC1-10); the scheme is RFC 0003 material.
++
++- work-item identities are mirrored from the scheduler;
++- requirement identities are held as references to the OpenSpec artifact
++  contract;
++- code-element identities come from the source adapter.
++
++Kernel-owned identities (snapshot, evaluation, claim, gap, contradiction,
++materialization record) are **deterministically derived** from their defining
++inputs, so two runs over the same inputs mint the same identity (VIS-7).
++
++**The "in RFC1-5" locator is discharged by RFC1-7 for extension-profile
++classes**, whose minting authority and state plane are named in the
++profile-defining RFC rather than in RFC1-5's closed V0-core table: a profile
++identity so named satisfies this clause, and a profile identity minted by the
++kernel is subject to this clause's determinism requirement exactly as a
++V0-core kernel-owned identity is.
++
++**Author-minted identities** (Proposal) are neither mirrored nor derived, so
++determinism protects them from nothing — two authors could otherwise mint
++colliding identifiers, and the materialization record, `succeeds` citations
++of superseded proposals, and exclusivity groups all key on this identity.
++
++- The authority-scoped, collision-free **identity scheme for Proposals is
++  therefore delegated to RFC 0003 as a named obligation** — the delegation
++  pattern used for code elements → RFC 0004, because RFC 0003 owns the
++  `.syzygy/**` schema plane.
++- This RFC fixes the obligation (authority-scoped, collision-free, opaque per
++  RFC1-10); the scheme is RFC 0003 material.
+ 
+ **RFC1-10.** **Identifiers are opaque; names are labels.** For every declared
+ class (Capability, Topology entry, Declared region, Repository, Project,
+@@ -308,13 +376,18 @@
+ they do not.
+ 
+ **RFC1-16.** Capability↔code relationships are **four distinct classes, never
+-conflated** (SDR-3): (i) declared implementation mapping, (ii) inferred
+-implementation mapping, (iii) deterministically observed structural
+-relationships, (iv) requirement/scenario verification. A passing test does not
+-by itself prove semantic ownership. Class (i) lives in the **Declared
+-implementation mapping** governance artifact — the primary declaration site
+-(SDR-4); optional in-code markers may supplement, never be required. Class
+-(ii) enters only via the inference profile, challenge authority only.
++conflated** (SDR-3):
++
++- (i) declared implementation mapping,
++- (ii) inferred implementation mapping,
++- (iii) deterministically observed structural relationships,
++- (iv) requirement/scenario verification.
++
++A passing test does not by itself prove semantic ownership. Class (i) lives
++in the **Declared implementation mapping** governance artifact — the primary
++declaration site (SDR-4); optional in-code markers may supplement, never be
++required. Class (ii) enters only via the inference profile, challenge
++authority only.
+ 
+ **RFC1-17.** A code element may carry declared mappings to **multiple
+ capabilities** (SDR-22). Aggregation and counting over such edges is
+@@ -386,11 +459,14 @@
+ a badge [Observed: trust-and-evidence.md].
+ 
+ **RFC1-20.** A gap leaves a surface in exactly two non-interchangeable ways:
+-**factual resolution/absence** (a status claim, evidence required) or **policy
+-dismissal** (a Decision with reason and expiry, rendered *dismissed by
+-decision*, never green). A dismissal without a reason current at the
+-evaluation's as-of instant renders the gap again — expiry acts only through a
+-new identified evaluation (VIS-6, exception (a)).
++
++- **factual resolution/absence** (a status claim, evidence required) or
++- **policy dismissal** (a Decision with reason and expiry, rendered
++  *dismissed by decision*, never green).
++
++A dismissal without a reason current at the evaluation's as-of instant
++renders the gap again — expiry acts only through a new identified evaluation
++(VIS-6, exception (a)).
+ 
+ **RFC1-21.** A **Contradiction** (co-unsatisfiable authoritative claims in one
+ declared scope) renders the affected conclusion Unknown, routes to owner
+@@ -441,16 +517,40 @@
+ Personal presentation state sits outside every plane (VIS-6, exception (a))
+ and may never affect truth, work, or status.
+ 
++*Diagram (non-normative; the clauses govern):* what occupies a state plane
++and what occupies none.
++
++```mermaid
++flowchart LR
++    subgraph IN["Source-state assertions: exactly one plane at each evaluation"]
++        DES["Desired"]
++        PRO["Proposed"]
++        OBS["Observed"]
++        INF["Inferred"]
++        EXE["Execution"]
++        HIS["Historical"]
++    end
++    subgraph OUT["No plane"]
++        DER["Derived objects: snapshot, claim, gap, contradiction"]
++        EDG["Relation edges: carry a semantic relation class (RFC1-25)"]
++        EVC["Evaluations, while current"]
++        PER["Personal presentation state"]
++    end
++    OBS -->|"observation record superseded (rendered)"| HIS
++```
++
+ **RFC1-23.** **Act-assignment rule.** An act is **observed** when its durable
+ output is evidence about the *implementation* (a verification run); it is
+ **execution** when its durable output is evidence about the *work* (an
+ execution run, a propagation act). The rule is load-bearing, not taxonomic:
+ execution state never satisfies a desired-state claim, so misclassifying an
+-act moves its output into the plane that feeds status. Corollaries: a
+-verification run sits in the observed plane even when an agent triggered it;
+-"a worker reported tests passed" is Observed only as a report fact — "tests
+-passed" is Observed only when backed by a retained, resolvable gate artifact
+-(SDR-9).
++act moves its output into the plane that feeds status. Corollaries:
++
++- a verification run sits in the observed plane even when an agent triggered
++  it;
++- "a worker reported tests passed" is Observed only as a report fact —
++  "tests passed" is Observed only when backed by a retained, resolvable gate
++  artifact (SDR-9).
+ 
+ ### 3.7 Relation vocabulary — closed V0 set
+ 
+@@ -644,12 +744,19 @@
+ ### 3.8 Proposals, exclusivity groups, and the approved plan item
+ 
+ **RFC1-27.** A **Proposal** is the single entity for every unadopted delta.
+-Kinds: (a) governance delta (doctrine/contract/topology), (b) spec delta, (c)
+-code change set, (d) generated code-shaped artifact, (e) **execution intent** —
+-a proposed, decomposable set of work to be performed. Every proposal declares
+-an **exclusivity group**; the kernel refuses to render a projection that
+-unions two proposals in one group, and refuses to silently union proposals
+-whose compatibility is undeclared — the honest render is *N candidate
++Kinds:
++
++- (a) governance delta (doctrine/contract/topology),
++- (b) spec delta,
++- (c) code change set,
++- (d) generated code-shaped artifact,
++- (e) **execution intent** — a proposed, decomposable set of work to be
++  performed.
++
++Every proposal declares an **exclusivity group**; the kernel refuses to
++render a projection that unions two proposals in one group, and refuses to
++silently union proposals whose compatibility is undeclared — the honest
++render is *N candidate
+ futures*, selectable one at a time (VIS-1). Competing proposals over one
+ subject never collapse into a fictitious consensus.
+ 
+@@ -692,6 +799,17 @@
+ orphan finding** in the new materialization record, so a retry is traceable
+ rather than a second silent attempt (violation case 10 unchanged) [Inferred].
+ 
++*Diagram (non-normative; the clauses govern):* which authority answers "what
++is the state of this planned work", and where unrecorded work goes.
++
++```mermaid
++flowchart LR
++    P["Approved execution-intent Proposal<br/>(sole authority until the record exists)"]
++    P -->|"Materialization record written:<br/>proposal identity, work-item identities,<br/>pinned intent revision"| M["Proposal: materialized (terminal)"]
++    M --> S["Scheduler, through its typed adapter<br/>(authority for work lifecycle state)"]
++    O["Scheduler work items matching<br/>no materialization record"] --> C["Orphaned-work contradiction:<br/>rendered, routed to owner adjudication"]
++```
++
+ **RFC1-30.** An approved execution-intent Proposal may be decomposed into
+ child execution-intent Proposals (`part_of`), each individually materializable
+ under the parent's warrant. Decomposition is authorship, not adoption:
+@@ -715,17 +833,19 @@
+   become historical when superseded, staleness rendered.
+ - **Proposals**: drafted → under review → approved (kind (e): then `approved`
+   → `materialized`, RFC1-28/29) / adopted (kinds (a),(b)) / rejected /
+-  abandoned / superseded. Kinds (c) *code change set* and (d) *generated
+-  code-shaped artifact* terminate by being **cited as inputs of a kind-(e)
+-  execution-intent proposal** — terminal state `incorporated`, recording the
+-  citing proposal — or else rejected / abandoned / superseded. Their contents
+-  reach code no other way: only materialized execution intent is worked, so an
+-  implementation may not auto-wrap or adopt-as-artifact its way around the
+-  gate (VIS-5). Rejection, abandonment, and supersession are reachable **only
+-  before materialization** — `materialized` is terminal (RFC1-29), and
+-  superseding a materialized proposal would recreate the second editable
+-  store; post-materialization regret is expressed as a *new* proposal citing
+-  the old one.
++  abandoned / superseded.
++  - Kinds (c) *code change set* and (d) *generated code-shaped artifact*
++    terminate by being **cited as inputs of a kind-(e) execution-intent
++    proposal** — terminal state `incorporated`, recording the citing
++    proposal — or else rejected / abandoned / superseded. Their contents
++    reach code no other way: only materialized execution intent is worked, so
++    an implementation may not auto-wrap or adopt-as-artifact its way around
++    the gate (VIS-5).
++  - Rejection, abandonment, and supersession are reachable **only before
++    materialization** — `materialized` is terminal (RFC1-29), and superseding
++    a materialized proposal would recreate the second editable store;
++    post-materialization regret is expressed as a *new* proposal citing the
++    old one.
+ - **Work items**: lifecycle owned by the scheduler, mirrored with labeled
+   staleness when the adapter degrades — never invisibly.
+ - **Derived classes** (Claim, Gap, Contradiction): computed at an evaluation;
+@@ -753,25 +873,29 @@
+ registration and declaration validation flows, entity and relation rendering,
+ lifecycle and succession displays, proposal and materialization surfaces, API
+ answers over graph identities — may be scheduled solely from this RFC. Before
+-implementation, every observable consequence either maps to an approved
+-OpenSpec requirement and scenario in the governance root's `openspec/**`
+-plane, or carries a reviewed N/A judgment proving it purely structural with
+-no independently testable behavior. **The reviewed N/A judgment's home and
+-gate.** A reviewed N/A judgment is a recorded owner judgment homed in
+-`decisions/` (RFC3-15), and the judgment is honored only through an effective
+-owner act under RFC3-16(a), in state (1) or state (2), with that state rendered;
+-absent or invalid acts map nothing and leave the consequence unmapped and
+-Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2).
++implementation, every observable consequence either:
++
++- maps to an approved OpenSpec requirement and scenario in the governance
++  root's `openspec/**` plane, or
++- carries a reviewed N/A judgment proving it purely structural with no
++  independently testable behavior.
++
++**The reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a
++recorded owner judgment homed in `decisions/` (RFC3-15), and the judgment is
++honored only through an effective owner act under RFC3-16(a), in state (1) or
++state (2), with that state rendered; absent or invalid acts map nothing and
++leave the consequence unmapped and Unknown, never covered (RFC3-16(a)'s
++effect rule; VIS-2).
+ 
+ **Rows are per observable consequence, not per clause.** A clause with five
+ observable consequences and one mapped requirement is not covered; the matrix
+ discloses the consequences it enumerates for each clause, so a
+ complete-looking matrix over under-enumerated consequences is a defect of the
+-matrix. At surface specification a
+-clause-to-requirement coverage matrix over RFC1-1..RFC1-33 is produced —
+-**that matrix is review material, never authority**. This clause creates no
+-OpenSpec content now (none may exist during bootstrap). (Shape-parallel with
+-RFC6-28, RFC7-38, RFC8-32, RFC9-52, RFC10-16, RFC11-12.)
++matrix. At surface specification a clause-to-requirement coverage matrix
++over RFC1-1..RFC1-33 is produced — **that matrix is review material, never
++authority**. This clause creates no OpenSpec content now (none may exist
++during bootstrap). (Shape-parallel with RFC6-28, RFC7-38, RFC8-32, RFC9-52,
++RFC10-16, RFC11-12.)
+ 
+ ---
+ 
+@@ -816,19 +940,24 @@
+ plan-item resolution (RFC1-28/29); capability as the sole behavior identity
+ with no feature tier.
+ 
+-**Left to them:** **0002** — Unknown-reason vocabulary, rendering-tier
+-registry (report-fact vs gate-backed, declared-only), currency bounds per
+-claim class, challenge lifecycle beyond the admissibility floor. **0003** —
+-`project.yaml` and `.syzygy/**` schemas, versioning, identity-preserving
+-migration, the Proposal identity scheme (RFC1-9). **0004** — concrete identity
+-schemes for code elements, OpenSpec reference stability, adapter version
+-registry, run envelope, reduced-fidelity labeling (SDR-31/33), first-class VCS
+-entities if needed. **0005** — authentication, execution profiles (SEC-3).
+-**0006** — selection/URL/query semantics and the single evidence drawer over
+-this RFC's entity references. **0007–0009** — surface contracts (narrative
+-model, work ontology incl. "feature request" intake vocabulary, map
+-geography/lens grammar over capability identities). Certificate semantics
+-remain post-V1.
++**Left to them:**
++
++- **0002** — Unknown-reason vocabulary, rendering-tier registry (report-fact
++  vs gate-backed, declared-only), currency bounds per claim class, challenge
++  lifecycle beyond the admissibility floor.
++- **0003** — `project.yaml` and `.syzygy/**` schemas, versioning,
++  identity-preserving migration, the Proposal identity scheme (RFC1-9).
++- **0004** — concrete identity schemes for code elements, OpenSpec reference
++  stability, adapter version registry, run envelope, reduced-fidelity
++  labeling (SDR-31/33), first-class VCS entities if needed.
++- **0005** — authentication, execution profiles (SEC-3).
++- **0006** — selection/URL/query semantics and the single evidence drawer
++  over this RFC's entity references.
++- **0007–0009** — surface contracts (narrative model, work ontology incl.
++  "feature request" intake vocabulary, map geography/lens grammar over
++  capability identities).
++
++Certificate semantics remain post-V1.
+ 
+ **Forward references are informative.** Where a clause of this RFC cites a
+ sibling *draft* by clause number (RFC2-n, RFC3-n, RFC4-n, RFC5-n, RFC6-n,
+@@ -864,16 +993,19 @@
+ 
+ ## 7. Deliberately deferred
+ 
+-Concrete identity-scheme syntax for code elements and the OpenSpec reference
+-stability guarantee → RFC 0004 (obligations fixed here; schemes are adapter
+-contracts). Snapshot representation (one tuple vs composite) → RFC 0003/0004;
+-the closure rule is fixed here. Gap *computation* (V1) — V0 surfaces absence;
+-the entities are defined now so both share one identity. Challenge machinery
+-beyond the admissibility floor, and inference records → inference profile /
+-RFC 0002. Cross-project relationship semantics → portfolio profile (SDR-30).
+-Convergence certificate semantics → post-V1 RFC (future-tagged). The
+-confirmation-path enumeration behind RFC1-21 (which acts confirm a gap into a
+-work warrant) → RFC 0002/0008.
++- Concrete identity-scheme syntax for code elements and the OpenSpec
++  reference stability guarantee → RFC 0004 (obligations fixed here; schemes
++  are adapter contracts).
++- Snapshot representation (one tuple vs composite) → RFC 0003/0004; the
++  closure rule is fixed here.
++- Gap *computation* (V1) — V0 surfaces absence; the entities are defined now
++  so both share one identity.
++- Challenge machinery beyond the admissibility floor, and inference records
++  → inference profile / RFC 0002.
++- Cross-project relationship semantics → portfolio profile (SDR-30).
++- Convergence certificate semantics → post-V1 RFC (future-tagged).
++- The confirmation-path enumeration behind RFC1-21 (which acts confirm a gap
++  into a work warrant) → RFC 0002/0008.
+ 
+ ---
+ 

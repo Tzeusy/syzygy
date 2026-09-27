@@ -1,0 +1,39 @@
+# CONTRACT READABILITY RESTYLE AMENDMENT MANIFEST
+# 29 accepted RFC 0001-0009 modules; rows sorted by codepoint path.
+# Paths are relative to .syzygy/governance/contracts/.
+# Excluded, not restyled: rfcs/RFC-0007/rendering-and-surface.md.
+# These rows bind only by the owner act that names this file's digest in
+# ACCEPTANCE-ACT-RECORD.md; until that act is performed they bind nothing.
+# Rows hash the PROPOSED bytes: both identical mirrors with
+# proposed/<path under rfcs/>.patch applied. They match the tree only
+# after --apply --at-adoption. Installed and candidate-mirror bytes are
+# required to match exactly.
+7ba9f6b4b36c930b5540a38ee1cc9875498e3a4149a15dc0c63e29d7d0ae5e4e  rfcs/RFC-0001-project-graph-identity-state-planes.md
+132655e3c01ac444a063578195dc34b579f7d3213fa884b4194e386b4b9fd7cc  rfcs/RFC-0002/README.md
+d12a4ddbcdc525f3c7fec744b4c26f97a64cc5ae33ec7a3ae5eb911be386e056  rfcs/RFC-0002/challenge-lifecycle.md
+7d7f876bd03c5a1e7b5120f1e452b82d85483430e2355068ab03138845f38bb5  rfcs/RFC-0002/reconciliation-chain.md
+045c15bc6f1eb9e31e9fe1218a24d3191923829c31f7bd450e3c400fcea7dc2a  rfcs/RFC-0002/rendering-vocabularies.md
+7f573ba19df09b00db90954d41e49cb352b67f4433eb34b57be1a37bfe2b3526  rfcs/RFC-0002/snapshot-and-evaluation-core.md
+e33ee089b455e658b75a6b9385cf53a9d7fb6fdc26c726b7f6d7264780495cd1  rfcs/RFC-0003/README.md
+457a3d3d1a1f9d94d1f76751c8f6eb1022eeb938ecd20b4e631e965ba4298c82  rfcs/RFC-0003/governance-homes-and-owner-acts.md
+940cc701e835d190a27a769f1b976956c22c2d37f342ad26587bf3c883ff9b49  rfcs/RFC-0003/manifests-and-namespace.md
+7b9fcd0ca5dddd4df368b7567fb6553bafa8aba072b2add4d643334a0af0f58d  rfcs/RFC-0004/README.md
+4547fe3a0ec3c504d12252fad35f35574caf547aa7fed2f4bc4020a899f63649  rfcs/RFC-0004/execution-record.md
+4eebe43c50050e16c9836b7a12db7b1775c86c967d8540afdcaa5db251212833  rfcs/RFC-0004/fidelity-joins-and-mappings.md
+76707433802f5f253b93d8b5f967a7745dd55ba8d29cb860dd16a166fcf50658  rfcs/RFC-0004/general-contract.md
+8c0cce7fdc682c1880f3e1317e294506b4f83c0b4b855668c5dc7b8a1a68f847  rfcs/RFC-0004/named-adapters.md
+2436a7bc5cfc5dcccb7b7543845bedacde6d439f9039ecbcda31a5127cd40bef  rfcs/RFC-0005/README.md
+a742a77fb14ee415d705f31d2e8733a94a51cffd6ccd5dca2f5d0cc1e3f533e0  rfcs/RFC-0005/admission-and-boundary.md
+786c66f85707c252c81825ffc1ad9359cccbd0c25eaa7c93b6595f5c62954382  rfcs/RFC-0005/consent-egress-secrets.md
+4da6ff36e967264e867f0ff8715d908d5171e886b394e71c86470fdaf05d8277  rfcs/RFC-0005/execution-profiles.md
+aa83ae4f592639b03b354b2b8df57f600500fab1d8502163b2dace9cefc90f5d  rfcs/RFC-0006-cross-surface-selection-query-drawer.md
+eb63af0ca644dcb49dc0a05c7308babb074174e5f4381d06dc862d052d88dda3  rfcs/RFC-0007/README.md
+76faec0ded0cdf2f41402fa18fad179592d46f1b65ca08dea63cf31d56247140  rfcs/RFC-0007/narrative-contract.md
+d23f1469ca2a14240c9821a99c27a5b53dee85943bd842a115fa77680baf4cae  rfcs/RFC-0008/README.md
+02307b6849f6e56f7942175bb6c18c5004968fa3dda8c06678c0c41c0e0aa470  rfcs/RFC-0008/accounting-reconciliation-and-release.md
+ac7d7d2afb2d28de483cec32e8352161b616c8cf18d3287972a3f89510d7c740  rfcs/RFC-0008/identity-authority-materialization.md
+fe843b367eb7edfcad2df82ceb3a04190a7f7b3eaa11e14381ab3c9d08e1f7a4  rfcs/RFC-0008/state-vocabulary-and-cost.md
+b4065948132e2cd27952e7f8f381c6d71252d6ee1f5c4009505e8b1406d0aadf  rfcs/RFC-0009/README.md
+ffa1ec64205ab422012e700853f584baa6e16601665408777b056449951e6539  rfcs/RFC-0009/interaction-parity-and-release.md
+fa16c9368eb564073c21966a322ccfa3e2a07603d3e6beea4215605bcd1ee8ea  rfcs/RFC-0009/semantic-geography.md
+030f6a5f1f592fbfc837daaa16c36dcf7070447957c1e384914731e6b8c82315  rfcs/RFC-0009/visual-grammar-and-lenses.md
