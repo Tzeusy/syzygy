@@ -6,8 +6,8 @@
 > extension) before slice 6 runs". That the acts are separate and dated is
 > the record's reading, in its "What it means" column, not the owner's
 > answer; that the answer authorizes drafting and nothing more is this
-> drafter's reading [Inferred]. Rounds 1, 2 and 3 of review each returned
-> REVISE; these bytes are the round-3 repair and are not yet reviewed (see
+> drafter's reading [Inferred]. Rounds 1 to 4 of review each returned
+> REVISE; these bytes are the round-4 repair and are not yet reviewed (see
 > "Review"). Silence, a commit, a merged pull request or a passing
 > check performs no act.
 
@@ -177,7 +177,9 @@ Round 1: REVISE, over commit `5323721`, retained verbatim at
 `docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-RAW.md`. Round 2: REVISE, over
 `35e497b`, retained at `docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-2-RAW.md`.
 Round 3: REVISE, over `64746a4`, retained at
-`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-3-RAW.md`. Every finding of each
-round is dispositioned in the packet's "Review record". The round-3 repair has
-not been reviewed. `REVIEW-BRIEF.md` states what a fresh-context reviewer is
-to be given.
+`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-3-RAW.md`. Round 4: REVISE,
+over `a20c263`, retained at
+`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-4-RAW.md`. Every finding of each
+round is dispositioned in the packet's "Review record". The round-4 repair
+has not been reviewed. `REVIEW-BRIEF.md` states what a fresh-context
+reviewer is to be given.

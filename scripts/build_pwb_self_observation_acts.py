@@ -17,23 +17,29 @@ Each act has its own manifest. Rows 1 and 2 hash the drafted files, which
 are installed byte-for-byte at adoption, so the row is the act argument.
 Row 3 hashes the policy's current bytes with the diff applied.
 
-`--check` compares, by exact value, everything each draft says about what
-may be read, how, and where the result may go: the consent's head and its
-whole `## Scope` section, the registry file's head, its entry's key set and
-eleven of its values, and the policy's whole self-observation scope. It
-also checks the values it does not pin (the pair, the observer version, the
-PWB specification digest, the source population and the limit semantics),
-that each new install target is free (act pending) or holds exactly the
-proposed bytes (act installed), that the policy either takes the patch
-(pending) or already holds its result (installed), that no sibling
-candidate package patches or drafts any of the three targets, that every
-manifest is an exact regeneration, and that the owner packet quotes the two
-new-file arguments at their current digests and offers no policy argument.
-The pins live here, not in the drafts, so `--write` can never regenerate a
-manifest over a widened draft. It holds before, between and after the
-three adoptions, in any order, and `--apply` refuses an act that is already
-installed. Bare invocation refuses to overwrite the
-manifests; pass `--write` to regenerate them.
+`--check` compares the whole consent draft and the whole registry draft,
+byte for byte, with the text this script holds (the registry text takes
+only the current PWB specification digest from the tree), and the policy's
+patched bytes, byte for byte, with the base policy's bytes plus exactly two
+changes: the version line and one inserted self-observation scope rendered
+from the value this script holds. Any byte change to either draft, or to
+what the patch produces, fails `--check`. The patch file's own bytes are
+not pinned: a patch that yields the same result bytes changes no act
+argument, and one that yields any other bytes fails. It also checks that
+the registry entry's observerId and discoveryVersion differ from those of
+the Butlers entry, that the phase-A seed exists, that each new install
+target is free (act pending) or holds exactly the proposed bytes (act
+installed), that the policy either takes the patch (pending) or already
+holds its result (installed), that no sibling candidate package patches or
+drafts any of the three targets, that every manifest is an exact
+regeneration, and that the owner packet quotes the two new-file arguments
+at their current digests and offers no policy argument.
+
+The canonical text lives here, not in the drafts, so `--write` can never
+regenerate a manifest over a changed draft. It holds before, between and
+after the three adoptions, in any order, and `--apply` refuses an act that
+is already installed. Bare invocation refuses to overwrite the manifests;
+pass `--write` to regenerate them.
 """
 
 from __future__ import annotations
@@ -111,193 +117,517 @@ SELF_PHASE_A = (f"{DOCTRINE}README.md",)
 SELF_PHASE_B = tuple(f"{DOCTRINE}{name}" for name in (
     "architecture.md", "security.md", "trust-and-evidence.md", "v1.md",
     "vision.md"))
-#: Everything each draft says about what may be read, how, and where the
-#: result may go, pinned by exact value, so `--write` can never regenerate a
-#: manifest over a widened draft. The consent's head (title to revocation
-#: state) and its whole `## Scope` section are compared whitespace-normalized;
-#: the registry and policy values are compared as parsed JSON.
-CONSENT_HEAD = (
-    ('# Syzygy self project-shape observation consent (test-only) Date: '
-     '2026-09-26 (drafted); the act, if performed, records its own instant '
-     'Owner: Tzeusy Record ID: `PWB-SELF-CONSENT-2026-09-26` Record version: '
-     '`1.0.0-candidate.1` Consent class: observation Observation content '
-     'class: `declared-project-shape-text` Subject: `(project:syzygy, '
-     'repository:syzygy)` Current locator: the root of the Syzygy checkout '
-     "that runs the conformance test, resolved from that checkout's own Git "
-     'metadata at test time (configuration, not repository identity) Purpose: '
-     'test-only. This consent exists for one conformance fixture that '
-     "measures the project-shape pipeline against this repository's own "
-     'tracked tree (M8 slice 6). Nothing observed under it is served to any '
-     'reader. Status: **candidate; no effect until the owner acts on this '
-     'exact digest** (self-declared stamp; effective status comes only from '
-     'an owner-act record, RFC3-16) Proposed revocation state: active; '
-     'supersedes no earlier consent'))
-CONSENT_SCOPE = (
-    ('The consent covers read-only reads of exact Git objects in this '
-     'repository, at the one fixed Git revision a conformance fixture names, '
-     'and only of this closed population of at most six tracked files, all '
-     'under `.syzygy/governance/doctrine/`: - phase A: `README.md`; and - '
-     'phase B: those of `architecture.md`, `security.md`, '
-     '`trust-and-evidence.md`, `v1.md` and `vision.md` that `README.md` links '
-     'to at that revision. No other file is read, even if the index links to '
-     'it, and no further index is followed. The reads are selected by '
-     'observer `polaris-syzygy-self-project-shape` version '
-     '`1.0.0-candidate.1` in the second adapter-registry entry for this pair, '
-     'and screened by the self-observation scope of the secret-classification '
-     'policy at version `1.2.0-candidate.1`. This consent covers those two '
-     'versions only. A later version of either, or any wider population, '
-     'needs a new consent act; a superseding registry entry or policy never '
-     'widens this one. Everything read is used only inside the conformance '
-     'test process. The rendered page and machine answer the test builds are '
-     'in-memory values the test inspects; they are never served, cached, '
-     'logged, written to disk or written to a walkthrough record. Test '
-     'assertions compare only digests, counts, identities and closed reasons. '
-     'No assertion message, snapshot, reporter output or test log carries an '
-     'observed body or rendered text. The scope excludes: - any repository '
-     'other than this one, including the Butlers repository, whose consent is '
-     'a separate record this one neither widens nor narrows; - the working '
-     'tree, untracked or ignored files, and any revision other than the one '
-     'the fixture names; - data stores, credential stores, secret APIs and '
-     'the process environment; - credential files and arbitrary '
-     'implementation-file bodies; - executing any code in this repository as '
-     'part of the observation, and network egress; - any write to this '
-     'repository; and - any route, cache, log line, stored evaluation or '
-     'walkthrough record, including test-runner output, snapshots and CI '
-     'logs. The grant has no silent expiry. The owner may narrow or revoke it '
-     'through a later recorded act; revocation does not erase prior '
-     'observation records.'))
-REGISTRY_HEAD = {
-    'schemaVersion':
-        1,
-    'registryVersion':
-        '1.0.0-candidate.1',
-    'status':
-        'candidate-no-effect-until-owner-act',
-    'governanceHome':
-        '.syzygy/governance/declarations/adapter-registry',
-    'project':
-        'project:syzygy',
-}
-REGISTRY_ENTRY_KEYS = (
-    ('observerId',
-     'observerVersion',
-     'discoveryVersion',
-     'purpose',
-     'role',
-     'contractId',
-     'contractVersion',
-     'contractVersionSource',
-     'governingBehaviorContract',
-     'subject',
-     'authorizationModes',
-     'authorizationModeDerivation',
-     'provenanceDisclosure',
-     'implementation',
-     'implementationStatus',
-     'surfaceExposure',
-     'inputClasses',
-     'outputFactClasses',
-     'determinismClass',
-     'determinism',
-     'typedAuthority',
-     'observationGrammar',
-     'resourceLimits',
-     'resourceLimitSemantics',
-     'parsePassIdentities',
-     'admissionFailureMapping',
-     'failureStates',
-     'claimStateMapping',
-     'selfReferenceRule',
-     'adoptionStatus'))
-INPUT_CLASSES = (
-    ('git-revision', 'git-object-id'),
-    ('repository-locator-mapping',
-     'opaque-repository-id-plus-normalized-approved-locator'),
-    ('git-object-database', 'repository-id-plus-resolved-git-common-dir'),
-    ('governing-behavior-contract', 'contract-id-plus-sha256-content-digest'),
-    ('git-tree-entry',
-     'repository-id-plus-revision-plus-repository-relative-path-plus-'
-     'object-id'),
-    ('git-blob', 'repository-id-plus-blob-object-id'),
-    ('project-shape-source-manifest', 'sha256-content-digest'),
-    ('observation-consent', 'record-id-plus-provenance-state'),
-    ('secret-classification-policy',
-     'policy-id-plus-version-plus-content-digest-plus-provenance-state'),
-    ('observer-registry-entry',
-     'observer-id-plus-version-plus-content-digest-plus-provenance-state'),
-    ('resource-limits', 'canonical-json-sha256'),
+#: The two new-file drafts, whole. `--check` compares each draft with this
+#: text byte for byte, so any byte change to either draft fails it, and
+#: `--write` can never regenerate a manifest over a changed draft. The one
+#: value the registry text takes from the tree is the PWB specification
+#: digest, substituted for SPEC_TOKEN.
+CONSENT_TEXT = (
+    '# Syzygy self project-shape observation consent (test-only)\n'
+    '\n'
+    'Date: 2026-09-26 (drafted); the act, if performed, records its '
+    'own instant\n'
+    '\n'
+    'Owner: Tzeusy\n'
+    '\n'
+    'Record ID: `PWB-SELF-CONSENT-2026-09-26`\n'
+    '\n'
+    'Record version: `1.0.0-candidate.1`\n'
+    '\n'
+    'Consent class: observation\n'
+    '\n'
+    'Observation content class: `declared-project-shape-text`\n'
+    '\n'
+    'Subject: `(project:syzygy, repository:syzygy)`\n'
+    '\n'
+    'Current locator: the root of the Syzygy checkout that runs the '
+    'conformance\n'
+    "test, resolved from that checkout's own Git metadata at test "
+    'time\n'
+    '(configuration, not repository identity)\n'
+    '\n'
+    'Purpose: test-only. This consent exists for one conformance '
+    'fixture that\n'
+    "measures the project-shape pipeline against this repository's "
+    'own tracked\n'
+    'tree (M8 slice 6). Nothing observed under it is served to any '
+    'reader.\n'
+    '\n'
+    'Status: **candidate; no effect until the owner acts on this '
+    'exact digest**\n'
+    '(self-declared stamp; effective status comes only from an '
+    'owner-act record,\n'
+    'RFC3-16)\n'
+    '\n'
+    'Proposed revocation state: active; supersedes no earlier '
+    'consent\n'
+    '\n'
+    '## Where the grant comes from\n'
+    '\n'
+    'No owner statement of consent is quoted here, because none has '
+    'been given\n'
+    "for this pair. The owner's 2026-09-21 answer to P-74 question 3 "
+    '(recorded\n'
+    'in\n'
+    '`.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-'
+    'P83-DECISION.md`)\n'
+    'was "three acts scoped to a test-only self-observation (consent '
+    'record,\n'
+    'second registry entry, secret-policy extension) before slice 6 '
+    'runs". That\n'
+    'answer asks for this record; it does not grant it. If the owner '
+    "performs the act over this record's exact digest,\n"
+    'the act itself is the grant.\n'
+    '\n'
+    '## Scope\n'
+    '\n'
+    'The consent covers read-only reads of exact Git objects in this '
+    'repository,\n'
+    'at the one fixed Git revision a conformance fixture names, and '
+    'only of this\n'
+    'closed population of at most six tracked files, all under\n'
+    '`.syzygy/governance/doctrine/`:\n'
+    '\n'
+    '- phase A: `README.md`; and\n'
+    '- phase B: those of `architecture.md`, `security.md`,\n'
+    '  `trust-and-evidence.md`, `v1.md` and `vision.md` that '
+    '`README.md` links\n'
+    '  to at that revision. No other file is read, even if the index '
+    'links to it,\n'
+    '  and no further index is followed.\n'
+    '\n'
+    'The reads are selected by observer '
+    '`polaris-syzygy-self-project-shape`\n'
+    'version `1.0.0-candidate.1` in the second adapter-registry '
+    'entry for this\n'
+    'pair, and screened by the self-observation scope of the '
+    'secret-classification\n'
+    'policy at version `1.2.0-candidate.1`. This consent covers '
+    'those two versions\n'
+    'only. A later version of either, or any wider population, needs '
+    'a new\n'
+    'consent act; a superseding registry entry or policy never '
+    'widens this one.\n'
+    '\n'
+    'Everything read is used only inside the conformance test '
+    'process. The\n'
+    'rendered page and machine answer the test builds are in-memory '
+    'values the\n'
+    'test inspects; they are never served, cached, logged, written '
+    'to disk or\n'
+    'written to a walkthrough record. Test assertions compare only '
+    'digests,\n'
+    'counts, identities and closed reasons. No assertion message, '
+    'snapshot,\n'
+    'reporter output or test log carries an observed body or '
+    'rendered text.\n'
+    '\n'
+    'The scope excludes:\n'
+    '\n'
+    '- any repository other than this one, including the Butlers '
+    'repository,\n'
+    '  whose consent is a separate record this one neither widens '
+    'nor narrows;\n'
+    '- the working tree, untracked or ignored files, and any '
+    'revision other than\n'
+    '  the one the fixture names;\n'
+    '- data stores, credential stores, secret APIs and the process '
+    'environment;\n'
+    '- credential files and arbitrary implementation-file bodies;\n'
+    '- executing any code in this repository as part of the '
+    'observation, and\n'
+    '  network egress;\n'
+    '- any write to this repository; and\n'
+    '- any route, cache, log line, stored evaluation or walkthrough '
+    'record,\n'
+    '  including test-runner output, snapshots and CI logs.\n'
+    '\n'
+    'The grant has no silent expiry. The owner may narrow or revoke '
+    'it through a\n'
+    'later recorded act; revocation does not erase prior observation '
+    'records.\n'
+    '\n'
+    '## Provenance state and effect\n'
+    '\n'
+    '[Observed] This candidate names the owner, date, subject, '
+    'content class and\n'
+    'scope. It has no effect until the owner acts on its exact '
+    'digest. It is one\n'
+    'of the three acts the P-74 question 3 ruling requires; the '
+    'other two\n'
+    "(the policy's self-observation scope and the second registry "
+    'entry) are\n'
+    'separate artifacts with separate acts, and a body read under '
+    'this pair\n'
+    'requires all three to be valid.\n'
+    '\n'
+    'If acted on, its provenance state is **owner-adopted '
+    '(bootstrap,\n'
+    'uncorrelated)**, state (1) under RFC3-16(c), only if the human '
+    'act\n'
+    'explicitly selects state (1) and records the A1 audit-record '
+    'identity as\n'
+    'absent. That state authorizes only this read-only, test-only '
+    'observation,\n'
+    'must remain visible as uncorrelated, and is never '
+    '"independently verified".\n'
+    'The act is a warrant to observe within this scope; it is never '
+    'evidence\n'
+    'that any read occurred, that screening succeeded, or that any '
+    'derived claim\n'
+    'is true.\n'
 )
-REGISTRY_PINNED = {
-    'purpose':
-        ('test-only conformance fixture (M8 slice 6): measures the '
-         "project-shape pipeline against this repository's own tracked tree "
-         'at one fixed Git revision; serves no surface'),
-    'authorizationModes':
-        ['independently-verified', 'owner-trusted-bootstrap'],
-    'provenanceDisclosure':
-        ('Observation uses owner-trusted records; independent audit is not '
-         'configured.'),
-    'implementation':
-        ('none yet; a conformance module under '
-         'packages/three-surface-poc-core/src/ would be added by M8 slice 6 '
-         'only after all three self-observation acts exist; this entry names '
-         'no implementation identity or version until that slice does, and '
-         'the self discovery has its own discoveryVersion because it differs '
-         'from the Butlers discovery in seed, population and roster'),
-    'implementationStatus':
-        ('no implementation reads this entry; adopting it authorizes no code '
-         'change by itself'),
-    'typedAuthority':
-        {'authorityType': 'version-control',
-         'questions': ['What currently exists?'],
-         'readAuthority': "within this repository's own Git object database "
-                          'at the one fixed revision the conformance fixture '
-                          'names, phase A reads only the root index this '
-                          "profile's sourcePopulation names and Git tree "
-                          'metadata needed to derive the manifest; phase B '
-                          'reads only those sourcePopulation phase-B paths '
-                          'the root index links to, addressed as exact Git '
-                          'objects in that revision-bound manifest; no '
-                          'further index is followed',
-         'writeSurface': [],
-         'databaseAccess': [],
-         'networkAccess': [],
-         'executeObservedCode': False,
-         'workingTreeRead': False},
-    'surfaceExposure':
-        {'servedRoutes': [],
-         'cache': False,
-         'log': False,
-         'storedEvaluation': False,
-         'walkthroughRecord': False,
-         'rule': 'the page and machine answer are built only as in-memory '
-                 'values inside the conformance test process and are never '
-                 'served, cached, logged or written anywhere; test assertions '
-                 'compare only digests, counts, identities and closed '
-                 'reasons, and no assertion message, snapshot, reporter '
-                 'output or test log carries an observed body or rendered '
-                 'text'},
-    'inputClasses': [{"class": name, "identityScheme": scheme}
-                     for name, scheme in INPUT_CLASSES],
-    'resourceLimits':
-        {'maxSources': 512,
-         'maxBytesPerSource': 1048576,
-         'maxTotalBytes': 16777216,
-         'maxIndexDepth': 4,
-         'maxParsePassesPerSource': 16,
-         'maxHumanResponseBytes': 2097152,
-         'maxMachineResponseBytes': 8388608},
-    'selfReferenceRule':
-        ('no object read as an observed Git blob under this entry, including '
-         'any policy, registry entry, consent record, act record, manifest, '
-         'owner packet or the acceptance-act record, is an authority input to '
-         'any evaluation; authority for this pair is evaluated only for the '
-         'pair (project:syzygy, repository:syzygy) and is never inherited '
-         'from another pair, including through expectations keyed only by the '
-         'observing project'),
-    'adoptionStatus':
-        'candidate-unadopted',
-}
+SPEC_TOKEN = '<PWB-SPECIFICATION-DIGEST>'
+REGISTRY_TEXT = (
+    '{\n'
+    '  "schemaVersion": 1,\n'
+    '  "registryVersion": "1.0.0-candidate.1",\n'
+    '  "status": "candidate-no-effect-until-owner-act",\n'
+    '  "governanceHome": '
+    '".syzygy/governance/declarations/adapter-registry",\n'
+    '  "project": "project:syzygy",\n'
+    '  "entries": [\n'
+    '    {\n'
+    '      "observerId": "polaris-syzygy-self-project-shape",\n'
+    '      "observerVersion": "1.0.0-candidate.1",\n'
+    '      "discoveryVersion": "pwb-self-discovery-v1-candidate.1",\n'
+    '      "purpose": "test-only conformance fixture (M8 slice 6): '
+    "measures the project-shape pipeline against this repository's "
+    'own tracked tree at one fixed Git revision; serves no surface",\n'
+    '      "role": "adapter",\n'
+    '      "contractId": "RFC-0004/general-contract",\n'
+    '      "contractVersion": '
+    '"sha256:b21fc950103964c34e2f9b2d78c97ac8e03720f311738e0e6323afb2'
+    '9b8d6f0e",\n'
+    '      "contractVersionSource": "accepted '
+    'RFC-0004/general-contract.md as amended by the 2026-09-01 '
+    'general trusted-bootstrap transaction '
+    '(CONTRACT-AMENDMENT-MANIFEST.txt row)",\n'
+    '      "governingBehaviorContract": {\n'
+    '        "id": "polaris-project-wide-butlers-model",\n'
+    '        "version": "sha256:<PWB-SPECIFICATION-DIGEST>",\n'
+    '        "signedBy": "the PWB behavior acts in force when this '
+    'entry is acted on; this value is regenerated after every PWB '
+    'specification act that lands first"\n'
+    '      },\n'
+    '      "subject": {\n'
+    '        "observingProject": "project:syzygy",\n'
+    '        "observedRepository": "repository:syzygy"\n'
+    '      },\n'
+    '      "authorizationModes": [\n'
+    '        "independently-verified",\n'
+    '        "owner-trusted-bootstrap"\n'
+    '      ],\n'
+    '      "authorizationModeDerivation": "every artifact must have '
+    'a current exact digest-bound owner act; independently-verified '
+    'only when all three acts verify through A1; '
+    'owner-trusted-bootstrap when at least one valid act remains '
+    'owner-adopted bootstrap and the others are valid state-(1) or '
+    'state-(2) acts; every other combination rejects before body '
+    'reads",\n'
+    '      "provenanceDisclosure": "Observation uses owner-trusted '
+    'records; independent audit is not configured.",\n'
+    '      "implementation": "none yet; a conformance module under '
+    'packages/three-surface-poc-core/src/ would be added by M8 slice '
+    '6 only after all three self-observation acts exist; this entry '
+    'names no implementation identity or version until that slice '
+    'does, and the self discovery has its own discoveryVersion '
+    'because it differs from the Butlers discovery in seed, '
+    'population and roster",\n'
+    '      "implementationStatus": "no implementation reads this '
+    'entry; adopting it authorizes no code change by itself",\n'
+    '      "surfaceExposure": {\n'
+    '        "servedRoutes": [],\n'
+    '        "cache": false,\n'
+    '        "log": false,\n'
+    '        "storedEvaluation": false,\n'
+    '        "walkthroughRecord": false,\n'
+    '        "rule": "the page and machine answer are built only as '
+    'in-memory values inside the conformance test process and are '
+    'never served, cached, logged or written anywhere; test '
+    'assertions compare only digests, counts, identities and closed '
+    'reasons, and no assertion message, snapshot, reporter output or '
+    'test log carries an observed body or rendered text"\n'
+    '      },\n'
+    '      "inputClasses": [\n'
+    '        {\n'
+    '          "class": "git-revision",\n'
+    '          "identityScheme": "git-object-id"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "repository-locator-mapping",\n'
+    '          "identityScheme": '
+    '"opaque-repository-id-plus-normalized-approved-locator"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "git-object-database",\n'
+    '          "identityScheme": '
+    '"repository-id-plus-resolved-git-common-dir"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "governing-behavior-contract",\n'
+    '          "identityScheme": '
+    '"contract-id-plus-sha256-content-digest"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "git-tree-entry",\n'
+    '          "identityScheme": '
+    '"repository-id-plus-revision-plus-repository-relative-path-plus-'
+    'object-id"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "git-blob",\n'
+    '          "identityScheme": "repository-id-plus-blob-object-id"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "project-shape-source-manifest",\n'
+    '          "identityScheme": "sha256-content-digest"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "observation-consent",\n'
+    '          "identityScheme": "record-id-plus-provenance-state"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "secret-classification-policy",\n'
+    '          "identityScheme": '
+    '"policy-id-plus-version-plus-content-digest-plus-provenance-stat'
+    'e"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "observer-registry-entry",\n'
+    '          "identityScheme": '
+    '"observer-id-plus-version-plus-content-digest-plus-provenance-st'
+    'ate"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "resource-limits",\n'
+    '          "identityScheme": "canonical-json-sha256"\n'
+    '        }\n'
+    '      ],\n'
+    '      "outputFactClasses": [\n'
+    '        {\n'
+    '          "class": "project-account-statement",\n'
+    '          "identityScheme": "section-plus-declared-key"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "project-shape-source-manifest",\n'
+    '          "identityScheme": '
+    '"repository-id-plus-revision-plus-discovery-version-plus-sha256-'
+    'content-digest"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "declared-catalog-item",\n'
+    '          "identityScheme": "item-class-plus-declared-key"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "source-coverage",\n'
+    '          "identityScheme": '
+    '"repository-relative-path-at-git-revision"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "contradiction",\n'
+    '          "identityScheme": '
+    '"claim-identity-plus-sorted-source-anchors"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "project-fact-declaration",\n'
+    '          "identityScheme": '
+    '"closed-fact-identity-plus-declaration-source-anchor"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "precedence-rule",\n'
+    '          "identityScheme": '
+    '"root-precedence-table-anchor-plus-layer-ordinal"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "content-exclusion",\n'
+    '          "identityScheme": '
+    '"content-digest-plus-policy-version-plus-redaction-class"\n'
+    '        },\n'
+    '        {\n'
+    '          "class": "unknown",\n'
+    '          "identityScheme": "claim-identity-plus-closed-reason"\n'
+    '        }\n'
+    '      ],\n'
+    '      "determinismClass": "derivation-deterministic",\n'
+    '      "determinism": "same exact inputs produce byte-equivalent '
+    'deterministic facts",\n'
+    '      "typedAuthority": {\n'
+    '        "authorityType": "version-control",\n'
+    '        "questions": [\n'
+    '          "What currently exists?"\n'
+    '        ],\n'
+    '        "readAuthority": "within this repository\'s own Git '
+    'object database at the one fixed revision the conformance '
+    "fixture names, phase A reads only the root index this profile's "
+    'sourcePopulation names and Git tree metadata needed to derive '
+    'the manifest; phase B reads only those sourcePopulation phase-B '
+    'paths the root index links to, addressed as exact Git objects '
+    'in that revision-bound manifest; no further index is followed",\n'
+    '        "writeSurface": [],\n'
+    '        "databaseAccess": [],\n'
+    '        "networkAccess": [],\n'
+    '        "executeObservedCode": false,\n'
+    '        "workingTreeRead": false\n'
+    '      },\n'
+    '      "observationGrammar": {\n'
+    '        "factFamilies": [\n'
+    '          "item:<class>:<declared-key>",\n'
+    '          "count:<class>",\n'
+    '          "catalog-count:<catalog-key>",\n'
+    '          "project-account:<key>"\n'
+    '        ],\n'
+    '        "fixedClassKeys": [\n'
+    '          "project-account-section",\n'
+    '          "principle",\n'
+    '          "success-criterion",\n'
+    '          "catalog-entry",\n'
+    '          "design-contract",\n'
+    '          "baseline-spec",\n'
+    '          "topology-component",\n'
+    '          "craft-policy",\n'
+    '          "roster-identity"\n'
+    '        ],\n'
+    '        "fixedCatalogKeys": [],\n'
+    '        "fixedProjectAccountKeys": [\n'
+    '          "purpose",\n'
+    '          "promises",\n'
+    '          "refusals",\n'
+    '          "architecture",\n'
+    '          "v1-scope",\n'
+    '          "v1-success"\n'
+    '        ],\n'
+    '        "rootSummary": null,\n'
+    '        "precedence": null,\n'
+    '        "sourcePopulation": {\n'
+    '          "phaseA": [\n'
+    '            ".syzygy/governance/doctrine/README.md"\n'
+    '          ],\n'
+    '          "phaseB": [\n'
+    '            ".syzygy/governance/doctrine/architecture.md",\n'
+    '            ".syzygy/governance/doctrine/security.md",\n'
+    '            '
+    '".syzygy/governance/doctrine/trust-and-evidence.md",\n'
+    '            ".syzygy/governance/doctrine/v1.md",\n'
+    '            ".syzygy/governance/doctrine/vision.md"\n'
+    '          ],\n'
+    '          "rule": "closed: at most these six files; a phase-B '
+    'path is read only when the phase-A index links to it at the '
+    'fixed revision, and no other path is read even if linked"\n'
+    '        },\n'
+    '        "profileNote": "this repository declares no catalog, no '
+    'root summary and no precedence table in the grammar this '
+    'observer reads, so this profile declares none; every '
+    'catalog-count, root-summary and precedence-dependent claim is '
+    'Unknown rather than borrowed from another profile"\n'
+    '      },\n'
+    '      "resourceLimits": {\n'
+    '        "maxSources": 512,\n'
+    '        "maxBytesPerSource": 1048576,\n'
+    '        "maxTotalBytes": 16777216,\n'
+    '        "maxIndexDepth": 4,\n'
+    '        "maxParsePassesPerSource": 16,\n'
+    '        "maxHumanResponseBytes": 2097152,\n'
+    '        "maxMachineResponseBytes": 8388608\n'
+    '      },\n'
+    '      "resourceLimitSemantics": {\n'
+    '        "maxSources": "the complete revision-bound manifest; an '
+    'excess preserves every tree-known source identity but admits no '
+    'source body and makes every dependent fact Unknown",\n'
+    '        "maxBytesPerSource": "the exact UTF-8 blob before '
+    'classification or parsing; the limit plus one byte is never '
+    'passed to an extractor",\n'
+    '        "maxTotalBytes": "one cumulative counter across phase A '
+    'and phase B; count each repository-relative-path plus object-id '
+    'body once and never reset between phases",\n'
+    '        "maxIndexDepth": "the complete root-to-pillar discovery '
+    'traversal",\n'
+    '        "maxParsePassesPerSource": "one unit is one complete '
+    'traversal of one decoded source by a pass in '
+    'parsePassIdentities; a helper traversal is charged to its named '
+    'caller pass, repeating a pass counts again, and an unregistered '
+    'traversal is forbidden; elapsed wall-clock time is not an '
+    'input",\n'
+    '        "maxHumanResponseBytes": "the final encoded body of '
+    'each Polaris HTML page the conformance test renders in memory; '
+    'this entry serves no HTTP response",\n'
+    '        "maxMachineResponseBytes": "the final encoded body of '
+    'each Polaris machine JSON answer the conformance test renders '
+    'in memory; this entry serves no HTTP response",\n'
+    '        "breachResult": "source and input breaches retain the '
+    'complete population and make dependent facts Unknown; '
+    'final-output breaches emit only a bounded typed failure '
+    'carrying evaluation identity, limit identity, declared value, '
+    'observed value and population counts; no truncated or '
+    'success-shaped model is emitted; PWB-REQ-021 readiness is '
+    'false"\n'
+    '      },\n'
+    '      "parsePassIdentities": [\n'
+    '        "utf8-and-nul-validation",\n'
+    '        "secret-private-key-fragments",\n'
+    '        "secret-known-token-formats",\n'
+    '        "secret-credential-assignment",\n'
+    '        "secret-credential-bearing-url",\n'
+    '        "markdown-code-context-mask",\n'
+    '        "active-html-svg-script-handler",\n'
+    '        "unsafe-url-positions",\n'
+    '        "phase-a-link-discovery",\n'
+    '        "project-account-extraction",\n'
+    '        "declared-item-extraction",\n'
+    '        "fact-and-precedence-extraction"\n'
+    '      ],\n'
+    '      "admissionFailureMapping": {\n'
+    '        "missingConsent": "unconsented-source-or-provider",\n'
+    '        "mismatchedStaleRevokedOrUnattributedConsent": '
+    '"unconsented-source-or-provider",\n'
+    '        "missingSecretPolicy": "missing-declaration",\n'
+    '        "mismatchedStaleRevokedOrUnattributedSecretPolicy": '
+    '"source-uncaptured-or-unreachable",\n'
+    '        "missingRegistryEntry": '
+    '"source-uncaptured-or-unreachable",\n'
+    '        "mismatchedStaleRevokedOrUnattributedRegistryEntry": '
+    '"source-uncaptured-or-unreachable"\n'
+    '      },\n'
+    '      "failureStates": {\n'
+    '        "gitCaptureFailed": {\n'
+    '          "degradationState": "Observer failed",\n'
+    '          "unknownReason": "source-uncaptured-or-unreachable"\n'
+    '        },\n'
+    '        "sourceMissingOrUnreadable": {\n'
+    '          "degradationState": "Source unreachable",\n'
+    '          "unknownReason": "source-uncaptured-or-unreachable"\n'
+    '        },\n'
+    '        "someSourcesUncapturedOrOverLimit": {\n'
+    '          "degradationState": "Partial snapshot",\n'
+    '          "unknownReason": "source-uncaptured-or-unreachable"\n'
+    '        },\n'
+    '        "secretMatchedOrUnclassifiable": {\n'
+    '          "degradationState": "Excluded content",\n'
+    '          "unknownReason": "excluded-content"\n'
+    '        },\n'
+    '        "consentWithdrawn": {\n'
+    '          "degradationState": "Consent withdrawn",\n'
+    '          "unknownReason": "unconsented-source-or-provider"\n'
+    '        }\n'
+    '      },\n'
+    '      "claimStateMapping": {\n'
+    '        "unresolvedContradiction": '
+    '"contradicted-pending-adjudication"\n'
+    '      },\n'
+    '      "selfReferenceRule": "no object read as an observed Git '
+    'blob under this entry, including any policy, registry entry, '
+    'consent record, act record, manifest, owner packet or the '
+    'acceptance-act record, is an authority input to any evaluation; '
+    'authority for this pair is evaluated only for the pair '
+    '(project:syzygy, repository:syzygy) and is never inherited from '
+    'another pair, including through expectations keyed only by the '
+    'observing project",\n'
+    '      "adoptionStatus": "candidate-unadopted"\n'
+    '    }\n'
+    '  ]\n'
+    '}\n'
+)
+#: The policy's one added key, compared by value and, rendered, by bytes.
 SELF_SCOPE = {
     'purpose':
         ('test-only conformance fixture (M8 slice 6): the project-shape '
@@ -378,11 +708,6 @@ def spec_digest(root: pathlib.Path = ROOT) -> str:
     return sha256(read_bytes(SPEC, root))
 
 
-def one_line(text: str) -> str:
-    """Whitespace-normalized text, so a hard wrap never hides a sentence."""
-    return " ".join(text.split())
-
-
 # ------------------------------------------------------------- policy
 
 
@@ -428,34 +753,38 @@ def policy_state(root: pathlib.Path = ROOT) -> tuple[str, bytes, bytes]:
         return "installed", base, current
 
 
+def policy_expected(current: bytes) -> bytes | None:
+    """The base policy's bytes with exactly the version line and the one
+    inserted scope changed, or None when the base lacks either anchor."""
+    version = (f'  "policyVersion": "{POLICY_CURRENT_VERSION}",\n').encode()
+    anchor = b'  "governingBehaviorContract": {\n'
+    if current.count(version) != 1 or current.count(anchor) != 1:
+        return None
+    block = ('  "selfObservationScope": '
+             + json.dumps(SELF_SCOPE, indent=2).replace("\n", "\n  ")
+             + ",\n").encode()
+    return current.replace(version, version.replace(
+        POLICY_CURRENT_VERSION.encode(), POLICY_PROPOSED_VERSION.encode()),
+        1).replace(anchor, block + anchor, 1)
+
+
 def policy_findings(proposed: bytes, current: bytes,
                     root: pathlib.Path = ROOT) -> list[str]:
-    """The extension adds one scope and changes nothing the base scope uses."""
+    """The extension changes the version and adds the one pinned scope; no
+    other byte of the policy moves."""
     if proposed == current:
         return [f"the policy patch changes nothing: {POLICY.as_posix()}"]
-    try:
-        new, old = json.loads(proposed), json.loads(current)
-    except ValueError as error:
-        return [f"policy bytes are not valid JSON: {error}"]
     findings: list[str] = []
-    if new.get("policyVersion") != POLICY_PROPOSED_VERSION:
-        findings.append(f"policyVersion is not {POLICY_PROPOSED_VERSION}: "
-                        f"{new.get('policyVersion')!r}")
-    # Everything except the version and the one new key must be unchanged.
-    for key in sorted(set(old) | set(new)):
-        if key in ("policyVersion", "selfObservationScope"):
-            continue
-        if old.get(key) != new.get(key):
-            findings.append(f"the extension changes the base policy's {key!r}")
-    scope = new.get("selfObservationScope")
-    if scope != SELF_SCOPE:
-        findings.append("selfObservationScope is not exactly the pinned "
-                        "scope: pair, content class, modes, boundaries, "
-                        "population and every rule sentence")
+    expected = policy_expected(current)
+    if expected is None:
+        findings.append("the base policy lacks the version line or the "
+                        "governingBehaviorContract key the scope precedes")
+    elif proposed != expected:
+        findings.extend(text_findings("the patched policy",
+                                      proposed, expected))
     # The pinned seed must also exist in the tree being checked.
-    seeds = scope.get("phaseASeedPaths") if isinstance(scope, dict) else None
-    for seed in seeds if isinstance(seeds, list) else []:
-        if not isinstance(seed, str) or not (root / seed).is_file():
+    for seed in SELF_SCOPE["phaseASeedPaths"]:
+        if not (root / seed).is_file():
             findings.append(f"phase-A seed is not a file in this "
                             f"repository: {seed!r}")
     return findings
@@ -464,55 +793,38 @@ def policy_findings(proposed: bytes, current: bytes,
 # ------------------------------------------------------------ registry
 
 
+def text_findings(label: str, got: bytes, want: bytes) -> list[str]:
+    """One finding naming the first line where `got` leaves `want`."""
+    if got == want:
+        return []
+    have, need = got.splitlines(True), want.splitlines(True)
+    line = next((n for n, (a, b) in enumerate(zip(have, need), 1) if a != b),
+                min(len(have), len(need)) + 1)
+    return [f"{label} differs from the text this script holds, from line "
+            f"{line} ({len(got)} bytes, expected {len(want)})"]
+
+
+def registry_text(spec: str) -> bytes:
+    return REGISTRY_TEXT.replace(SPEC_TOKEN, spec).encode()
+
+
 def registry_findings(body: bytes, spec: str,
                       root: pathlib.Path = ROOT) -> list[str]:
+    findings = text_findings("the registry draft", body, registry_text(spec))
+    stale = re.sub(rb'"version": "sha256:[0-9a-f]{64}"',
+                   b'"version": "sha256:' + spec.encode() + b'"', body, 1)
+    if findings and stale != body and stale == registry_text(spec):
+        findings.append("governingBehaviorContract.version is not the current "
+                        "PWB specification digest; regenerate after the PWB "
+                        "specification act that moved it")
     try:
-        doc = json.loads(body)
-    except ValueError as error:
-        return [f"registry entry is not valid JSON: {error}"]
-    entries = doc.get("entries")
-    if not isinstance(entries, list) or len(entries) != 1:
-        return ["registry file does not carry exactly one entry"]
-    entry = entries[0]
-    findings: list[str] = []
-    if {k: v for k, v in doc.items() if k != "entries"} != REGISTRY_HEAD:
-        findings.append("registry file head is not exactly the pinned head")
-    if not isinstance(entry, dict) or tuple(entry) != REGISTRY_ENTRY_KEYS:
-        return findings + ["registry entry keys are not exactly the pinned "
-                           "key set, in order"]
-    try:
+        entry = json.loads(registry_text(spec))["entries"][0]
         butlers = json.loads(read_bytes(BUTLERS_REGISTRY, root))["entries"][0]
         for key in ("observerId", "discoveryVersion"):
             if entry.get(key) == butlers.get(key):
                 findings.append(f"{key} collides with the Butlers entry")
     except (ValueError, KeyError, IndexError) as error:
         findings.append(f"cannot read the Butlers entry to compare: {error}")
-    if entry.get("observerVersion") != SELF_OBSERVER_VERSION:
-        findings.append(f"observerVersion is not {SELF_OBSERVER_VERSION}, the "
-                        "version the consent pins")
-    subject = entry.get("subject") or {}
-    if (subject.get("observingProject"), subject.get("observedRepository")) != (
-            OBSERVING, OBSERVED):
-        findings.append("registry subject names a different pair")
-    contract = entry.get("governingBehaviorContract") or {}
-    if contract.get("version") != f"sha256:{spec}":
-        findings.append("governingBehaviorContract.version is not the current "
-                        "PWB specification digest; regenerate after the PWB "
-                        "specification act that moved it")
-    for key, value in REGISTRY_PINNED.items():
-        if entry.get(key) != value:
-            findings.append(f"registry {key} is not exactly the pinned value")
-    population = (entry.get("observationGrammar") or {}).get(
-        "sourcePopulation") or {}
-    if (population.get("phaseA"), population.get("phaseB")) != (
-            list(SELF_PHASE_A), list(SELF_PHASE_B)):
-        findings.append("observationGrammar.sourcePopulation is not the closed "
-                        "population the consent names")
-    semantics = entry.get("resourceLimitSemantics")
-    for key in REGISTRY_PINNED["resourceLimits"]:
-        if not isinstance(semantics, dict) or key not in semantics:
-            findings.append(f"resource limit without a semantics "
-                            f"sentence: {key}")
     return findings
 
 
@@ -520,27 +832,8 @@ def registry_findings(body: bytes, spec: str,
 
 
 def consent_findings(text: str) -> list[str]:
-    findings: list[str] = []
-    # No agent may draft words into the owner's mouth: the Butlers record
-    # quotes a statement the owner actually made, and no such statement
-    # exists for this pair.
-    if re.search(r"^>\s*[“\"]", text, re.MULTILINE):
-        findings.append("consent carries a quoted owner statement; none has "
-                        "been given for this pair")
-    if BUTLERS_OBSERVED in text.split("## Scope", 1)[0]:
-        findings.append("consent head names the Butlers repository")
-    # The head and the scope are the grant: pair, class, purpose, locator,
-    # status, revocation, closed population, pinned versions, where results
-    # may go and every exclusion. A later version of the other two artifacts
-    # can never widen them.
-    if one_line(text.split("## Where the grant comes from", 1)[0]) != (
-            CONSENT_HEAD):
-        findings.append("consent head is not exactly the pinned head")
-    if one_line(text.split("## Scope", 1)[-1].split(
-            "## Provenance state and effect", 1)[0]) != CONSENT_SCOPE:
-        findings.append("consent ## Scope section is not exactly the pinned "
-                        "scope")
-    return findings
+    return text_findings("the consent draft", text.encode(),
+                         CONSENT_TEXT.encode())
 
 
 # ------------------------------------------------------ package-level
@@ -813,6 +1106,39 @@ def selftest() -> int:
         ("an irrevocable consent",
          csub("active; supersedes no earlier consent",
               "irrevocable; supersedes the Butlers consent")),
+        # Round-4 mutants: each lies outside the head and the ## Scope
+        # section, which were all round 3 pinned.
+        ("C14 a consent state authorizing any observation",
+         csub("authorizes only this read-only, test-only observation",
+              "authorizes any observation of this repository")),
+        ("C15 a consent that alone suffices",
+         csub("requires all three to be valid",
+              "requires only this record to be valid")),
+        ("C16 a provenance section granting apps/ and /polaris",
+         consent.replace("## Provenance state and effect\n",
+                         "## Provenance state and effect\n\nThe consent "
+                         "also covers every tracked file under `apps/`, and "
+                         "results may be served on /polaris.\n", 1)),
+        ("C17 an appended addendum",
+         consent + "\n## Addendum\n\nThis consent also covers the working "
+         "tree and may be logged.\n"),
+        ("C18 a request presented as the grant",
+         csub("That answer asks for this record; it does not grant it.",
+              "That answer is itself the grant.")),
+        ("C19 an unquoted owner statement",
+         csub("No owner statement of consent is quoted here, because none "
+              "has been given for this pair.",
+              "The owner said: I consent to every read of this repository.")),
+        ("C21 a consent that may show as independently verified",
+         csub('is never "independently verified"',
+              'may be shown as "independently verified"')),
+        # A byte change that alters no word.
+        ("a consent with one trailing space",
+         consent.replace("## Scope\n", "## Scope \n", 1)),
+        ("a consent rewrapped",
+         csub("Current locator: the root of the Syzygy checkout that runs "
+              "the conformance test,", "Current locator: the root of the "
+              "Syzygy checkout that runs the conformance test,")),
     )
     for label, mutant in consent_mutants:
         assert mutant != consent, label
@@ -820,15 +1146,24 @@ def selftest() -> int:
             return 1
 
     # Registry predicates, mutated through the parsed document.
+    # The drafted file is json.dumps(indent=2) plus a newline, so each
+    # mutant differs from it only where it mutates.
     def reg(fn) -> bytes:
         doc = json.loads(registry)
         fn(doc["entries"][0])
-        return json.dumps(doc, indent=2).encode()
+        return (json.dumps(doc, indent=2) + "\n").encode()
 
     def reg_doc(fn) -> bytes:
         doc = json.loads(registry)
         fn(doc)
-        return json.dumps(doc, indent=2).encode()
+        return (json.dumps(doc, indent=2) + "\n").encode()
+
+    def reorder(entry: dict) -> None:
+        # Swap the first two keys, keeping every key and value.
+        items = list(entry.items())
+        items[0], items[1] = items[1], items[0]
+        entry.clear()
+        entry.update(items)
 
     def butlers(key: str) -> str:
         return json.loads(read_bytes(BUTLERS_REGISTRY))["entries"][0][key]
@@ -934,11 +1269,76 @@ def selftest() -> int:
              "processEnvironmentRead", True))),
         ("no provenance disclosure",
          reg(lambda e: e.__setitem__("provenanceDisclosure", ""))),
+        # Round-4 mutants: each sits in a field round 3 did not pin.
+        ("R12 an open, recursive source population",
+         reg(lambda e: e["observationGrammar"]["sourcePopulation"]
+             .__setitem__("rule", "open: these six files and every file "
+                          "they link to, recursively, at any revision"))),
+        ("R13 any single act suffices",
+         reg(lambda e: e.__setitem__(
+             "authorizationModeDerivation", "any single valid act suffices; "
+             "every other combination proceeds under "
+             "owner-trusted-bootstrap"))),
+        ("R14 a breach served and logged",
+         reg(lambda e: e["resourceLimitSemantics"].__setitem__(
+             "breachResult", "a truncated model is emitted and may be "
+             "served and logged"))),
+        ("R15 an advisory byte limit",
+         reg(lambda e: e["resourceLimitSemantics"].__setitem__(
+             "maxBytesPerSource", "advisory only; oversized blobs are "
+             "passed to the extractor"))),
+        ("R16 a subject naming a second repository",
+         reg(lambda e: e["subject"].__setitem__(
+             "additionalObservedRepositories", [BUTLERS_OBSERVED]))),
+        ("R17 no secret parse passes",
+         reg(lambda e: e.__setitem__("parsePassIdentities", [
+             p for p in e["parsePassIdentities"]
+             if not p.startswith("secret-")]))),
+        ("R18 a withdrawn consent read as fresh",
+         reg(lambda e: e["failureStates"].__setitem__(
+             "consentWithdrawn",
+             {"degradationState": "Fresh", "unknownReason": None}))),
+        ("R19 an empty admission failure mapping",
+         reg(lambda e: e.__setitem__("admissionFailureMapping", {}))),
+        ("R20 a wildcard catalog",
+         reg(lambda e: e["observationGrammar"].__setitem__(
+             "fixedCatalogKeys", ["*"]))),
+        ("R21 an extra phase-B population",
+         reg(lambda e: e["observationGrammar"]["sourcePopulation"]
+             .__setitem__("extraPhaseB", ["apps/**"]))),
+        ("R23 a contract needing no act",
+         reg(lambda e: e["governingBehaviorContract"].__setitem__(
+             "signedBy", "no act needed"))),
+        # Round-4 note n7: order alone.
+        ("registry entry keys reordered", reg(reorder)),
+        # A byte change that alters no value.
+        ("a registry re-serialized with four-space indent",
+         (json.dumps(json.loads(registry), indent=4) + "\n").encode()),
+        ("a registry with no final newline", registry.rstrip(b"\n")),
     )
     for label, mutant in registry_mutants:
         assert mutant != registry, label
         if not expect(label, registry_findings(mutant, spec)):
             return 1
+    # The pinned identity must still differ from the Butlers entry's, which
+    # lives in another file and can move under it.
+    for key in ("observerId", "discoveryVersion"):
+        with tempfile.TemporaryDirectory() as scratch:
+            root = scratch_root(pathlib.Path(scratch))
+            doc = json.loads(read_bytes(BUTLERS_REGISTRY, root))
+            doc["entries"][0][key] = json.loads(registry)["entries"][0][key]
+            (root / BUTLERS_REGISTRY).write_text(json.dumps(doc))
+            if not expect(f"a Butlers entry sharing the {key}", [
+                    f for f in registry_findings(registry, spec, root)
+                    if "collides" in f]):
+                return 1
+    # The stale-digest diagnosis names itself.
+    stale = registry.replace(spec.encode(), b"0" * 64, 1)
+    count += 1
+    if not any("PWB specification digest" in f
+               for f in registry_findings(stale, spec)):
+        print("SELFTEST FAILED: a stale specification digest was not named")
+        return 1
 
     # Policy predicates.
     drifted = current.replace(b'"policyVersion": "1.1.0-candidate.1"',
@@ -971,8 +1371,18 @@ def selftest() -> int:
             return 1
     # Base and proposal both carry the extension, so only the no-op
     # predicate can see it.
-    if not expect("a no-op policy patch", policy_findings(proposed, proposed)):
+    if not expect("a no-op policy patch", [
+            f for f in policy_findings(proposed, proposed)
+            if "changes nothing" in f]):
         return 1
+    # A base that lost either anchor is named as such, not merely unequal.
+    for label, anchor in (("version line", b'"policyVersion"'),
+                          ("scope anchor", b'"governingBehaviorContract"')):
+        if not expect(f"a base policy without its {label}", [
+                f for f in policy_findings(
+                    proposed, current.replace(anchor, b'"renamed"', 1))
+                if "lacks" in f]):
+            return 1
     if not expect("invalid policy JSON",
                   policy_findings(proposed + b"}", current)):
         return 1
@@ -1047,8 +1457,23 @@ def selftest() -> int:
         ("a self scope with no authorization modes",
          pol(lambda d: d["selfObservationScope"].pop("authorizationModes"))),
     )
+    # Byte changes to the patched policy that alter no value.
+    policy_mutants += (
+        ("a patched policy with one escaped character",
+         proposed.replace(b"test-only", b"test\\u002donly", 1)),
+        ("a patched policy with one array reflowed",
+         proposed.replace(b'[\n      "independently-verified",\n      '
+                          b'"owner-trusted-bootstrap"\n    ]',
+                          b'["independently-verified", '
+                          b'"owner-trusted-bootstrap"]', 1)),
+        ("a patched policy with a base line reflowed",
+         proposed.replace(b'  "policyId": "polaris-butlers-project-shape-'
+                          b'secrets",\n', b'  "policyId":  "polaris-butlers-'
+                          b'project-shape-secrets",\n', 1)),
+    )
     for label, mutant in policy_mutants:
         assert mutant != proposed, label
+        assert json.loads(mutant) is not None, label
         if not expect(label, policy_findings(mutant, current)):
             return 1
 
@@ -1113,6 +1538,33 @@ def selftest() -> int:
             digests)):
         return 1
 
+    # End to end (round-4 S1): widen both drafts, regenerate every manifest
+    # with --write's own renderer, refresh the packet's quoted digests as
+    # the landing order instructs, and require check() to fail on the drafts
+    # alone.
+    with tempfile.TemporaryDirectory() as scratch:
+        root = scratch_root(pathlib.Path(scratch))
+        (root / PROPOSED / CONSENT_NAME).write_text(
+            consent + "\n## Addendum\n\nThis consent also covers the "
+            "working tree and may be logged.\n")
+        (root / PROPOSED / REGISTRY_NAME).write_bytes(reg(
+            lambda e: e["observationGrammar"]["sourcePopulation"].__setitem__(
+                "rule", "open: these six files and every file they link to, "
+                "recursively, at any revision")))
+        widened = artifacts(root)
+        for key, body in widened.items():
+            (root / ACTS[key][2]).write_text(render(key, body))
+        text = (root / PACKET).read_text()
+        for key in ("consent", "registry"):
+            text = text.replace(digests[key], sha256(widened[key]))
+        (root / PACKET).write_text(text)
+        got = check(root)
+        count += 1
+        if not got or any("draft" not in f for f in got):
+            print(f"SELFTEST FAILED: a widened, regenerated package gave "
+                  f"{got}; expected only the two draft findings")
+            return 1
+
     # Every finder must still be called by check(): replace each in turn
     # with one that returns a sentinel, and require check() to surface it.
     module = sys.modules[__name__]
@@ -1176,14 +1628,14 @@ def selftest() -> int:
                     print(f"SELFTEST FAILED: a second --apply {key} after "
                           f"{done} succeeded")
                     return 1
-    print(f"selftest: {count} predicates — consent drafted owner "
-          "quotation, Butlers named before the scope, pinned head and pinned "
-          "scope, with every round-1 to round-3 widening mutant; registry "
-          "JSON, entry count, pinned head, closed key set, observerId and "
-          "discoveryVersion collision, observer version, pair, "
-          "specification digest, eleven pinned values, source population and "
-          "limit semantics; policy drift, corruption, no-op, version, base "
-          "scope, pinned self scope and a seed absent from the tree; "
+    print(f"selftest: {count} predicates — the whole consent and the whole "
+          "registry entry against the builder's text, byte for byte, with "
+          "every round-1 to round-4 widening mutant, a key-order swap and "
+          "byte-only changes; observerId and discoveryVersion collision and "
+          "the stale specification digest named; policy drift, corruption, "
+          "no-op, version, base scope, pinned self scope, byte-only changes "
+          "and a seed absent from the tree; a widened package regenerated "
+          "by --write with the packet refreshed; "
           "proposed population, occupied install target, sibling patch, "
           "nested sibling patch and sibling draft, --apply without "
           "--at-adoption and over a package that does not verify, three "

@@ -325,21 +325,19 @@ python3 scripts/check_governance.py
 
 `--check` re-derives all three manifests. It also checks:
 
-- that everything each draft says about what may be read, how, and where
-  the result may go is exactly the text the builder pins. For the consent
-  that is its head (title to revocation state: pair, content class,
-  purpose, locator, status) and its whole "Scope" section (the closed
-  six-file grant, the version pins, the never-served sentence and every
-  exclusion). For the registry entry it is the file head, the entry's key
-  set, and eleven values: purpose, authorization modes, provenance
-  disclosure, the two implementation sentences, typed authority, surface
-  exposure, input classes, resource limits, the self-reference rule and
-  the adoption status. For the policy it is the whole self-observation
-  scope. The pins live in the builder, so regenerating a manifest can
-  never pass a widened draft;
-- that the values the builder does not pin still agree: the pair, the
-  observer version, the PWB specification digest, the six paths in the
-  registry entry, and a semantics sentence for every resource limit;
+- that each draft is exactly the text the builder holds, byte for byte.
+  The builder holds the whole consent file and the whole registry file;
+  the only value the registry text takes from the tree is the current PWB
+  specification digest. For the policy, the patched bytes must be the
+  base policy's bytes with exactly two changes: the version line, and the
+  one self-observation scope rendered from the value the builder holds.
+  So any byte change to either draft, or to what the patch produces, fails
+  `--check`, and regenerating a manifest cannot make a changed draft pass.
+  The patch file's own bytes are not compared: a patch that produces the
+  same bytes changes no act argument, and one that produces any other
+  bytes fails;
+- that the registry entry's observer name and discovery version still
+  differ from the Butlers entry's, and that the phase-A seed exists;
 - that the patch still applies to the policy (act 3 pending), or that the
   policy already holds the patched bytes (installed);
 - that each install target is free (pending) or holds exactly the drafted
@@ -354,7 +352,9 @@ problem, and requires `--check` to report it. Then it applies the three acts
 in all six orders in a scratch copy, and requires `--check` to pass after
 each act and a repeated act to be refused. It also requires `--apply` to
 install nothing over a package that does not verify, or without
-`--at-adoption`. "Installed" means only
+`--at-adoption`. It also widens both drafts in a scratch copy,
+regenerates every manifest, refreshes the digests quoted here, and
+requires `--check` to fail. "Installed" means only
 that the bytes are in place; only your act makes an act performed. The
 count it prints is the number of those cases. `--diff` prints the policy
 change in full.
@@ -427,14 +427,20 @@ made on that base. `35e497b` and the round-2 repair commits as first made
 are on no remote ref; the figures they carried were re-derived at the
 round-3 repair (sweep 2: 22 lines over 348 files; sweep 4: 21 sibling
 files in 7 packages; 20 files carry the PWB specification digest; 1,561
-tracked files). The repair changes only the builder and prose: all three
-act arguments above are unchanged. The round-3 verdict covers none of the
-current bytes (verification rule 10). No confirmation review has been run.
+tracked files). *Corrected 2026-09-27 (round 4, n9):* the 1,561 was
+counted at `64746a4`, before the repair commit `a20c263` added the retained
+round-3 raw; `a20c263` tracks 1,562 files, and sweep 2 still reads 22
+lines over 348 files there [Observed, `git ls-tree -r -z` and `git grep -F`
+at both commits]. The round-4 reviewer re-derived the other two figures
+unchanged at `a20c263`. The repair changes only the
+builder and prose: all three act arguments above are unchanged. The
+round-3 verdict covers none of the current bytes (verification rule 10). No
+confirmation review has been run.
 
 | Finding | Severity | Disposition |
 |---|---|---|
 | R1 — two sentences still presented the P-74 "What it means" column as the ruling; the round-2 sweep could not match "ruling" | revise | **Repaired.** Open question 10 now names the column as the record's reading and quotes it, as `SEMANTIC-DELTA.md` already did. The delta's banner quotes the answer cell and names "separate, dated" as the column's reading. The sweep below was widened and re-run. |
-| R2 — "`--check` verifies the drafts say what this packet says"; 29 widening mutants passed | revise | **Repaired in the builder (option b).** The builder now pins by exact value the consent's head and whole "Scope" section, the registry file head, the entry's key set and eleven entry values, and the policy's whole self-observation scope. The individual phrase checks those pins subsume are removed. All 29 reviewer mutants are selftest cases, and each fails. The `--check` list above now names exactly what is pinned and what is checked some other way. The F10 and round-2 N1/N2 dispositions carry dated corrections. The consent's bytes did not change, so note n6 is left alone. |
+| R2 — "`--check` verifies the drafts say what this packet says"; 29 widening mutants passed | revise | **Repaired in the builder (option b).** The builder now pins by exact value the consent's head and whole "Scope" section, the registry file head, the entry's key set and eleven entry values, and the policy's whole self-observation scope. The individual phrase checks those pins subsume are removed. All 29 reviewer mutants are selftest cases, and each fails. The `--check` list above now names exactly what is pinned and what is checked some other way. *Corrected 2026-09-27 (round 4, S1):* it did not: 18 widening mutants outside those pins passed. The builder now pins both drafts whole; see round 4. The F10 and round-2 N1/N2 dispositions carry dated corrections. The consent's bytes did not change, so note n6 is left alone. |
 | n1 — the occupied-target case failed for the wrong reason | note | **Repaired.** The fixture is now a full scratch copy, so the drafted source exists and only the byte comparison can fail it. Replacing that comparison with `True` now fails `--selftest`. |
 | n2 — B15 and B20 survived | note | **Repaired.** The no-op case now compares the proposed policy with itself, which only the no-op predicate can see. A new case requires `--apply` without `--at-adoption` to install nothing, even over a package that verifies. Both builder mutants now fail `--selftest`. |
 | n3 — the rebase onto `96ee305` was unrecorded | note | **Repaired** in the paragraph above and in `IMPACT-LEDGER.md`. |
@@ -460,3 +466,25 @@ something outside an answer cell to the owner: the two R1 sites and the
 delta's). All three are repaired above. The consent's "the three acts the
 P-74 question 3 ruling requires" matches the Ruled cell ("Q3 three acts
 scoped to …") and is inside act 1's argument, so it is unchanged.
+
+Round 4: **REVISE**, over commit `a20c263`, retained verbatim at
+`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-4-RAW.md`. The repair below
+was made on the same base, `96ee305`. It changes only the builder and
+prose: all three act arguments above are unchanged. The round-4 verdict
+covers none of the current bytes (verification rule 10). No confirmation
+review has been run.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| S1 — "`--check` pins everything each draft says about what may be read …" and "can never pass a widened draft" were false: 18 widening mutants passed, and a widened draft regenerated by `--write` passed end to end | revise | **Repaired by pinning whole files.** The builder now holds the whole text of both new-file drafts and compares each draft with it byte for byte (the registry text takes only the current PWB specification digest from the tree). For the policy it compares the patched bytes, byte for byte, with the base policy's bytes plus exactly the version line and the one scope, rendered from the value the builder holds. The partial pins of rounds 2 and 3 are gone. The claim is now "any byte change to either draft, or to what the patch produces, fails `--check`"; the list above says so, and names the one thing not pinned (the patch file's own bytes, which bind nothing). All 18 reviewer mutants, a key-order swap and byte-only changes (a trailing space, a rewrap, a re-indent, an escaped character, a reflowed array) are selftest cases, and each fails. The reviewer's end-to-end case is in `--selftest`: in a scratch copy, the registry's population rule is opened (R12) and an addendum is appended to the consent (C17); the manifests are regenerated with `--write`'s renderer and the packet's two digests refreshed; `--check` must then fail with only the two draft findings, and does. |
+| n7 — B28 (key order unchecked) survived | note | **Repaired by construction.** The key-order predicate is gone with the other partial pins; a selftest case swaps two entry keys, keeping every key and value, and the byte comparison fails it. |
+| n8 — `docs/README.md` called round-3 R1's column the "answer column" | note | **Repaired.** The row now says the P-74 "What it means" column. |
+| n9 — "1,561 tracked files" was the pre-repair population | note | **Repaired.** The round-3 paragraph now names the commit it was counted at, with a dated correction. |
+
+**Builder mutants, round 4.** Ten checks were each disabled in turn in a
+copy of the builder: the consent comparison, the registry comparison, the
+policy comparison, the first-difference helper, the stale-digest
+diagnosis, the base policy's anchor check, the seed check, the
+specification-digest substitution, the no-op check and the Butlers
+collision check. Each fails `--selftest` [Observed]. `--selftest` now
+prints 190.
