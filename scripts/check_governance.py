@@ -2630,6 +2630,24 @@ def _activate_pwb_effect_amendment_act_copy_registries():
 _activate_pwb_effect_amendment_act_copy_registries()
 
 
+#: The bare-copy shape every PWB `OWNER-DECISION-PACKET.md` uses for the
+#: owner's convenience, ahead of the phrase line CG-7d reads: a literal
+#: `Manifest SHA-256:` label (never qualified — "Behavior manifest",
+#: "Effect manifest", "Three-artifact manifest", "Policy" and "Registry"
+#: headings name a *different* digest and are deliberately not this
+#: pattern) followed by the 64-hex digest, same line or wrapped to the
+#: next. `\s*` already spans the newline, so one pattern covers both
+#: shapes bd-eau's two independent reviews found: a stale copy here
+#: passed CG-7d (no phrase on the line) *and* CG-7e (predicate 1 only
+#: tested "is the current digest present somewhere in the body", so a
+#: second, correct copy of the phrase line elsewhere in the same file
+#: masked the corrupted bare one). This constant is intentionally exact
+#: — a loosened match would re-open RD-6's 47-false-finding hole by
+#: catching every other file's legitimately different sub-artifact
+#: digest under a qualified heading.
+BARE_MANIFEST_ARGUMENT = re.compile(r"Manifest SHA-256:\s*`?([0-9a-f]{64})`?")
+
+
 def cg7e_act_digest_copies(paths, res):
     """Every copy of an act argument is examined, wherever it sits.
 
@@ -2705,6 +2723,30 @@ def cg7e_act_digest_copies(paths, res):
                     f"contain its current argument `{by_label[lab][:12]}…`. "
                     f"The copy in this file is stale, and this file is one "
                     f"the owner is sent to")
+
+            # Predicate 1 above only asks "is the current digest present
+            # *somewhere* in the file" — true even when the file's own bare
+            # `Manifest SHA-256:` copy has gone stale, provided the phrase
+            # line elsewhere still quotes the real one. Check that specific
+            # bare copy against exactly this file's declared digests (never
+            # the whole corpus's recognized set — a different file's correct
+            # digest must not excuse this one).
+            allowed_bare = {by_label[lab] for lab in current_declared
+                           if by_label.get(lab)}
+            for lab, bindings in historical_declared.items():
+                allowed_bare.update(digest for digest, _pattern in bindings)
+            for m in BARE_MANIFEST_ARGUMENT.finditer(body):
+                bare = m.group(1)
+                if bare in allowed_bare:
+                    continue
+                line_no = body[:m.start()].count("\n") + 1
+                findings.append(
+                    f"{rel}:{line_no} — bare `Manifest SHA-256:` copy "
+                    f"`{bare[:12]}…` matches none of this file's declared "
+                    f"argument(s) {sorted(current_declared) or sorted(historical_declared)}. "
+                    f"A correct copy of the phrase line elsewhere in the "
+                    f"file does not make this bare copy current — it is "
+                    f"stale or corrupted")
 
             missing_historical = []
             for lab, bindings in historical_declared.items():
@@ -6340,6 +6382,23 @@ def selftest():
                   row[0] == "FAIL"
                   and any("exact act-time quotation" in d for d in row[4])))
 
+    # bd-eau: a bare `Manifest SHA-256:` copy with no phrase on its line,
+    # mutated, must fail even though the file's phrase-linked copy elsewhere
+    # is correct (predicate 1's whole-body substring check alone is fooled by
+    # exactly this — see cg7e_act_digest_copies's docstring update above).
+    row = _selftest_cg7e_bare_manifest_copy("stale")
+    cases.append(("CG-7e mutated bare Manifest SHA-256 copy fails despite a correct phrase line",
+                  row[0] == "FAIL"
+                  and any("bare `Manifest SHA-256:` copy" in d for d in row[4])))
+
+    row = _selftest_cg7e_bare_manifest_copy("correct")
+    cases.append(("CG-7e correct bare Manifest SHA-256 copy passes",
+                  row[0] == "OK" and row[3] == 0))
+
+    row = _selftest_cg7e_bare_manifest_copy("qualified-heading")
+    cases.append(("CG-7e qualified manifest heading (lowercase, unrelated digest) is not the bare pattern",
+                  row[0] == "OK" and row[3] == 0))
+
     absent = _selftest_polaris_edit_repair_candidate_registration(False)
     cases.append(("CG-7d/7e absent edit-repair manifest registers no candidate phrase or packet",
                   absent == (0, {})))
@@ -6974,6 +7033,88 @@ def _selftest_pwb_act_copy_registry(kind, link=None):
         activate()
         c = Cap()
         cg7e_act_digest_copies(list(ACT_DIGEST_COPY_FILES), c)
+        return c.row("CG-7e")
+    finally:
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES.update(current_files)
+        _ActSubjects._cache.clear()
+        _ActSubjects._cache.update(cache)
+        ROOT = keep
+        shutil.rmtree(d, ignore_errors=True)
+
+
+def _selftest_cg7e_bare_manifest_copy(kind):
+    """bd-eau: a bare `Manifest SHA-256:` copy, mutated, must fail on its own.
+
+    Reproduces the exact shape both R-N8-CONTAINER-SHAPE-PROFILE note N3 and
+    R-DOV29-DISMISSAL-EXPIRY-DELTA-2 note N11 found live on
+    `pwb-missing-currency-disclosure-scenario/OWNER-DECISION-PACKET.md`: a
+    file carries a correct phrase-linked copy (`<LABEL>: <digest>`, what
+    predicate 1 above already checks) *and* a bare `Manifest SHA-256:`
+    convenience copy with no phrase on its line. Before the fix, mutating
+    only the bare copy left predicate 1 satisfied (the correct digest is
+    still present, via the phrase line) and CG-7d blind (no phrase on the
+    bare copy's line), so the corrupted owner-facing copy passed clean.
+
+    ``kind``:
+      - "stale"  — bare copy holds a one-hex-character mutation of the real
+        argument, phrase line still correct. Must FAIL, naming this file.
+      - "correct" — bare copy holds the real argument. Must pass with no
+        bare-copy finding.
+      - "qualified-heading" — edge case: a *different* file's shape, a
+        qualified heading ("Behavior manifest SHA-256:") carrying an
+        unrelated digest. The heading text is lowercase "manifest" in every
+        real qualified variant (Behavior/Effect/Three-artifact/Eleven-
+        artifact/Approval-manifest), so it must never match the bare-only
+        pattern — confirms the fix does not regress into RD-6's 47-false-
+        finding blanket-scan failure.
+    """
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, status, name, examined, n, unit, note=None, details=None):
+            self.rows.append((status, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows if r[1].startswith(prefix)), None)
+
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp(prefix="cg7e-bare-manifest-selftest-")
+    global ROOT
+    keep = ROOT
+    cache = dict(_ActSubjects._cache)
+    current_files = dict(ACT_DIGEST_COPY_FILES)
+    try:
+        label = "SIGN OFF SYNTHETIC BARE-COPY TEST"
+        subject = "synthetic-manifest.txt"
+        manifest = os.path.join(d, subject)
+        with open(manifest, "w", encoding="utf-8") as fh:
+            fh.write("synthetic bare-copy subject\n")
+        argument = sha256_file(manifest)
+        mutated_char = "e" if argument[5] != "e" else "f"
+        mutated = argument[:5] + mutated_char + argument[6:]
+
+        packet = os.path.join(d, "OWNER-DECISION-PACKET.md")
+        phrase_line = f"{label}: {argument}\n"
+        if kind == "stale":
+            bare_line = f"Manifest SHA-256:\n`{mutated}`\n"
+        elif kind == "correct":
+            bare_line = f"Manifest SHA-256:\n`{argument}`\n"
+        else:  # "qualified-heading"
+            bare_line = f"Behavior manifest SHA-256:\n`{'9' * 64}`\n"
+        with open(packet, "w", encoding="utf-8") as fh:
+            fh.write(f"# Synthetic packet\n\n{bare_line}\n{phrase_line}")
+
+        ROOT = d
+        _ActSubjects._cache[d] = ((
+            label,
+            subject,
+            re.compile(re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})"),
+        ),)
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES["OWNER-DECISION-PACKET.md"] = (label,)
+        c = Cap()
+        cg7e_act_digest_copies(["OWNER-DECISION-PACKET.md"], c)
         return c.row("CG-7e")
     finally:
         ACT_DIGEST_COPY_FILES.clear()
