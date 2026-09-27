@@ -1,0 +1,319 @@
+diff --git a/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json b/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+index 8bca9d8..c49b711 100644
+--- a/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
++++ b/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+@@ -1,13 +1,13 @@
+ {
+   "schemaVersion": 1,
+-  "registryVersion": "1.2.0-candidate.1",
++  "registryVersion": "1.3.0-candidate.1",
+   "status": "candidate-amendment-no-effect-until-owner-act",
+   "governanceHome": ".syzygy/governance/declarations/adapter-registry",
+   "project": "project:syzygy",
+   "entries": [
+     {
+       "observerId": "polaris-butlers-project-shape",
+-      "observerVersion": "1.2.0-candidate.1",
++      "observerVersion": "1.3.0-candidate.1",
+       "discoveryVersion": "pwb-discovery-v2-candidate.1",
+       "role": "adapter",
+       "implementationId": "three-surface-poc-core/project-shape-observer",
+@@ -259,6 +259,298 @@
+           },
+           "cellSyntax": "Layer raw cell is exactly one complete bold span; compare its content and Owns/Home after trimming outer ASCII whitespace and unwrapping only complete inline code spans; preserve case, punctuation and internal whitespace and apply no other Markdown or prose normalization",
+           "application": "every Layer, Owns and Home cell must equal its row literal; mixed-family or unrecognized Owns prose invalidates the table; rows 1 through 5 are exact normalized roots, row 6 expands roster/{butler}/ only for a declared roster key, and row 7 is inert because code owns no admitted fact; an applied expanded home must contain at least one admitted source; the unique lowest-numbered applied home assigned by factFamilyRows selects its declaration; the root summary is non-owning; malformed, duplicate, missing, equally ranked or mutually disagreeing rules select nothing"
++        },
++        "rootIndex": {
++          "path": "about/README.md",
++          "pillarRootTable": {
++            "pillarColumn": "Pillar",
++            "directoryColumn": "Directory"
++          },
++          "pillarRootLinks": "a root-index link whose target directory, or the directory of a README.md target, has a pillar key as its last segment also declares that pillar's root; two different declared roots for one pillar make that pillar Unknown"
++        },
++        "pillars": [
++          {
++            "key": "heart-and-soul",
++            "label": "Heart and Soul"
++          },
++          {
++            "key": "legends-and-lore",
++            "label": "Legends and Lore"
++          },
++          {
++            "key": "spec-and-spine",
++            "label": "Spec and Spine"
++          },
++          {
++            "key": "lay-and-land",
++            "label": "Lay and Land"
++          },
++          {
++            "key": "craft-and-care",
++            "label": "Craft and Care"
++          }
++        ],
++        "sourcePopulation": {
++          "indexChainDepth": 3,
++          "pillarIndexBasename": "README.md",
++          "sourceRules": [
++            "root-index",
++            "pillar-index",
++            "pillar-named-file",
++            "baseline-spec-tree",
++            "roster-tree"
++          ],
++          "treePopulations": [
++            {
++              "rule": "baseline-spec-tree",
++              "pathPattern": "openspec/specs/<key>/spec.md",
++              "companions": [],
++              "rootIndependent": true
++            },
++            {
++              "rule": "roster-tree",
++              "pathPattern": "roster/<key>/butler.toml",
++              "companions": [
++                "roster/<key>/MANIFESTO.md"
++              ],
++              "rootIndependent": true
++            }
++          ],
++          "extractionBindings": [
++            {
++              "rule": "pillar-index",
++              "pillar": "legends-and-lore",
++              "relativePath": "README.md",
++              "classes": [
++                "design-contract"
++              ]
++            },
++            {
++              "rule": "pillar-index",
++              "pillar": "craft-and-care",
++              "relativePath": "README.md",
++              "classes": [
++                "craft-policy"
++              ]
++            },
++            {
++              "rule": "pillar-named-file",
++              "pillar": "heart-and-soul",
++              "relativePath": "vision.md",
++              "classes": [
++                "project-account-section",
++                "principle",
++                "success-criterion"
++              ]
++            },
++            {
++              "rule": "pillar-named-file",
++              "pillar": "heart-and-soul",
++              "relativePath": "architecture.md",
++              "classes": [
++                "project-account-section"
++              ]
++            },
++            {
++              "rule": "pillar-named-file",
++              "pillar": "heart-and-soul",
++              "relativePath": "v1.md",
++              "classes": [
++                "project-account-section",
++                "success-criterion",
++                "catalog-entry"
++              ]
++            },
++            {
++              "rule": "pillar-named-file",
++              "pillar": "lay-and-land",
++              "relativePath": "components.md",
++              "classes": [
++                "topology-component"
++              ]
++            },
++            {
++              "rule": "baseline-spec-tree",
++              "relativePath": "spec.md",
++              "classes": [
++                "baseline-spec"
++              ]
++            },
++            {
++              "rule": "roster-tree",
++              "relativePath": "butler.toml",
++              "classes": [
++                "roster-identity"
++              ]
++            }
++          ]
++        },
++        "containerShapes": {
++          "heading-section": "the body under one exact heading, up to the next heading at the same or a higher level",
++          "every-level-2-section": "the text of every level-2 heading in the file, each followed by its section body, joined in file order",
++          "top-level-decimal-list": "each top-level numbered list item in the section; any other top-level list item fails the source as malformed-list",
++          "top-level-list": "each top-level list item in the section, numbered or bulleted",
++          "top-level-bulleted-list": "each top-level bulleted list item in the section; a numbered item fails the source as malformed-list",
++          "first-table-rows": "each body row of the first table in the section; a row with the wrong cell count fails the source as malformed-row",
++          "ordinal-section-table-rows": "each body row of every table under a level-2 heading whose text begins with a decimal ordinal and an optional lowercase suffix",
++          "tree-path": "the Git tree path itself; no body is parsed",
++          "toml-table-field": "one field of one TOML table, which must appear exactly once; anything else fails the source as malformed-toml"
++        },
++        "classGrammar": [
++          {
++            "class": "project-account-section",
++            "key": "purpose",
++            "source": "vision.md",
++            "heading": {
++              "level": 2,
++              "text": "What Butlers Is"
++            },
++            "container": "heading-section",
++            "itemKey": "the fixed key"
++          },
++          {
++            "class": "project-account-section",
++            "key": "promises",
++            "source": "vision.md",
++            "heading": {
++              "level": 2,
++              "text": "What Success Looks Like"
++            },
++            "container": "heading-section",
++            "itemKey": "the fixed key"
++          },
++          {
++            "class": "project-account-section",
++            "key": "refusals",
++            "source": "vision.md",
++            "heading": {
++              "level": 2,
++              "text": "What Butlers Is Not"
++            },
++            "container": "heading-section",
++            "itemKey": "the fixed key"
++          },
++          {
++            "class": "project-account-section",
++            "key": "architecture",
++            "source": "architecture.md",
++            "container": "every-level-2-section",
++            "itemKey": "the fixed key"
++          },
++          {
++            "class": "project-account-section",
++            "key": "v1-scope",
++            "source": "v1.md",
++            "headings": [
++              {
++                "level": 2,
++                "text": "What v1 Ships"
++              },
++              {
++                "level": 2,
++                "text": "What v1 Defers"
++              }
++            ],
++            "container": "heading-section",
++            "itemKey": "the fixed key"
++          },
++          {
++            "class": "project-account-section",
++            "key": "v1-success",
++            "source": "v1.md",
++            "heading": {
++              "level": 2,
++              "text": "Success Criteria"
++            },
++            "container": "heading-section",
++            "itemKey": "the fixed key"
++          },
++          {
++            "class": "principle",
++            "source": "vision.md",
++            "heading": {
++              "level": 2,
++              "text": "Non-Negotiable Rules"
++            },
++            "container": "top-level-decimal-list",
++            "itemKey": "the item's leading bold span"
++          },
++          {
++            "class": "success-criterion",
++            "source": "vision.md",
++            "heading": {
++              "level": 2,
++              "text": "What Success Looks Like"
++            },
++            "container": "top-level-list",
++            "itemKey": "vision:<one-based ordinal>"
++          },
++          {
++            "class": "success-criterion",
++            "source": "v1.md",
++            "heading": {
++              "level": 2,
++              "text": "Success Criteria"
++            },
++            "container": "top-level-list",
++            "itemKey": "v1:<one-based ordinal>"
++          },
++          {
++            "class": "catalog-entry",
++            "source": "v1.md",
++            "headingsFrom": "fixedCatalogKeys",
++            "headingLevel": 3,
++            "container": "top-level-bulleted-list",
++            "itemKey": "the item's leading bold or code span, which a dash must follow"
++          },
++          {
++            "class": "design-contract",
++            "source": "README.md",
++            "pillar": "legends-and-lore",
++            "heading": {
++              "text": "Index"
++            },
++            "container": "first-table-rows",
++            "itemKey": "the link text of the first cell"
++          },
++          {
++            "class": "baseline-spec",
++            "source": "spec.md",
++            "container": "tree-path",
++            "itemKey": "the one directory in openspec/specs/<key>/spec.md"
++          },
++          {
++            "class": "topology-component",
++            "source": "components.md",
++            "container": "ordinal-section-table-rows",
++            "itemKey": "<heading ordinal>:<first cell, exactly one bold span>"
++          },
++          {
++            "class": "craft-policy",
++            "source": "README.md",
++            "pillar": "craft-and-care",
++            "heading": {
++              "text": "Reading Order"
++            },
++            "column": "File",
++            "container": "first-table-rows",
++            "itemKey": "the basename of the link target in the File column"
++          },
++          {
++            "class": "roster-identity",
++            "source": "butler.toml",
++            "table": "butler",
++            "field": "name",
++            "container": "toml-table-field",
++            "itemKey": "the roster directory; the field must be non-empty"
++          }
++        ],
++        "sourceGrammarSemantics": {
++          "scope": "these fields restate the source grammar the observer applies today; loading them must reproduce the current source manifest and observation digests byte for byte, and they add no class, heading, source, shape or key",
++          "headingMatch": "a heading matches only at the declared level, by exact text after NFC normalization; a heading object without a level matches at any level; a missing or repeated declared heading makes the source Unknown",
++          "containerShape": "each grammar row names exactly one shape from containerShapes; a source whose body does not have the declared shape is Unknown as a whole and yields no partial item set",
++          "rootIndependent": "true means the population is enumerated from the Git tree alone, whether or not the root index or any pillar index is readable",
++          "missingField": "a loader that finds any of these fields absent or malformed refuses the load; it never falls back to built-in values"
+         }
+       },
+       "resourceLimits": {
