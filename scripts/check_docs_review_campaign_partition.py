@@ -137,6 +137,11 @@ CAMPAIGNS = (
         r"R-PWB-RECORDER-NOTES-ONLY-.*\.md",
     ),
     campaign(
+        "cg7e-bare-digest",
+        "CG-7e bare digest headings",
+        r"R-CG7E-BARE-DIGEST-.*\.md",
+    ),
+    campaign(
         "pwb-scoped-attributes",
         "P-68 scoped-attributes package",
         r"R-PWB-SCOPED-ATTRIBUTES-.*\.md",
