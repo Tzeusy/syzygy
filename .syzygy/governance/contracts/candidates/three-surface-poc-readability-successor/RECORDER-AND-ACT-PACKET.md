@@ -90,11 +90,14 @@ Before the fsynced `committed` phase, locked recovery checks every backup and
 staged output, restores the exact inert predecessor and removes the absent
 dedicated act. At and after that phase it checks all successor outputs,
 installs the repository-wide completion receipt, and retains the performed
-state. A missing or corrupt bound root, journal, backup, staged file, target
-or receipt refuses and preserves evidence. The receipt coordinates replay
-among linked worktrees; the two tracked act records and six signed subjects
-are portable authority. A clean clone can check a performed commit without a
-local receipt.
+state. A missing or corrupt journal-bound root, backup, staged file, target
+or receipt refuses and preserves evidence. After successful completion,
+`git worktree remove` may retire the recording root and its Git-dir metadata.
+The retained receipt then validates against the performed bytes in the
+current worktree and still blocks replay across the common Git directory;
+a present but identity-mismatched recording root remains a refusal. The two
+tracked act records and six signed subjects are portable authority. A clean
+clone can check a performed commit without a local receipt.
 
 These are eight ordered filesystem writes with journaled logical
 recoverability. A process killed between writes can leave a physically

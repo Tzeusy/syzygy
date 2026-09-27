@@ -269,6 +269,65 @@ def fixture_tests(a: Path, b: Path, common: Path) -> None:
     assert_case("portable performed check without receipt", cli(clean, "check").returncode == 0 and "performed-exact" in cli(clean, "check").stdout and not r.receipt_path(r.context(clean)[3]).exists())
 
 
+def post_merge_cleanup_fixture(base: Path) -> None:
+    """A same-common-dir performed checkout survives removal of recorder A."""
+    main, a, b = base / "lifecycle-repo", base / "lifecycle-A", base / "lifecycle-B"
+    clone = run("git", "clone", "-q", "--no-hardlinks", str(r.ROOT), str(main))
+    if clone.returncode:
+        raise AssertionError(clone.stderr)
+    overlay_script(r.SCRIPT, main)
+    updated = run("git", "status", "--porcelain", "--", "scripts/record_three_surface_poc_readability_successor.py", cwd=main)
+    if updated.stdout.strip():
+        staged = run("git", "add", "scripts/record_three_surface_poc_readability_successor.py", cwd=main)
+        prepared = run("git", "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "fixture reviewed recorder source", cwd=main)
+        if staged.returncode or prepared.returncode:
+            raise AssertionError(staged.stderr + prepared.stderr)
+    for root in (a, b):
+        added = run("git", "worktree", "add", "--detach", str(root), "HEAD", cwd=main)
+        if added.returncode:
+            raise AssertionError(added.stderr)
+    common = r.context(main)[2]
+    tx = common / r.TX_NAME
+    manifest = rendered_manifest(a)
+    performed = cli(a, "record", manifest=manifest)
+    assert_case("lifecycle synthetic record succeeds", performed.returncode == 0 and check(a) == "performed-exact")
+    add = run("git", "add", *r.TARGETS, cwd=a)
+    commit = run("git", "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "fixture performed transaction", cwd=a)
+    assert_case("lifecycle transaction commit", add.returncode == commit.returncode == 0)
+    performed_head = run("git", "rev-parse", "HEAD", cwd=a).stdout.strip()
+    landed = run("git", "merge", "--ff-only", performed_head, cwd=main)
+    assert_case("lifecycle main fast-forward", landed.returncode == 0 and run("git", "rev-parse", "HEAD", cwd=main).stdout.strip() == performed_head)
+    removed = run("git", "worktree", "remove", str(a), cwd=main)
+    assert_case("lifecycle bound worktree cleanly removed", removed.returncode == 0 and not a.exists() and not Path(json.loads(r.receipt_path(tx).read_bytes())["git_dir"]).exists())
+    assert_case("same-common-dir post-cleanup performed check", cli(main, "check").returncode == 0 and check(main) == "performed-exact")
+    replay = cli(b, "record", manifest=manifest)
+    assert_case("post-cleanup linked candidate replay refused", replay.returncode != 0 and "repository-wide replay refused" in replay.stderr)
+    receipt = r.receipt_path(tx)
+    original = receipt.read_bytes()
+    receipt.write_bytes(original + b"tampered")
+    assert_case("post-cleanup malformed receipt refused", refuses(lambda: check(main), "receipt"))
+    receipt.write_bytes(original)
+    value = json.loads(original)
+    value["outputs"][r.DEDICATED] = "0" * 64
+    value["checksum_sha256"] = r.sha(r.canonical_json({key: item for key, item in value.items() if key != "checksum_sha256"}))
+    receipt.write_bytes(r.canonical_json(value))
+    assert_case("post-cleanup receipt output tamper refused despite fresh checksum", refuses(lambda: check(main), "dedicated output digest"))
+    receipt.write_bytes(original)
+    assert_case("post-cleanup receipt restoration", check(main) == "performed-exact")
+    a.symlink_to(b, target_is_directory=True)
+    try:
+        assert_case("retired path symlink substitution refused", refuses(lambda: check(main), "bound path"))
+    finally:
+        a.unlink()
+    router = main / r.ROUTER
+    saved_router = router.read_bytes()
+    router.write_bytes(saved_router + b"\nLater note: THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md remains the act route.\n")
+    assert_case("later prose citation passes scoped router check", check(main) == "performed-exact")
+    router.write_bytes(saved_router + r.router_row("2026-09-28T12:00:00Z"))
+    assert_case("later duplicate act row refused", refuses(lambda: check(main), "act-router row"))
+    router.write_bytes(saved_router)
+
+
 def selftest() -> int:
     with tempfile.TemporaryDirectory(prefix="syzygy-poc-recorder-test-") as directory:
         base = Path(directory)
@@ -284,6 +343,7 @@ def selftest() -> int:
             overlay_script(r.SCRIPT, root)
         common = r.context(a)[2]
         fixture_tests(a, b, common)
+        post_merge_cleanup_fixture(base)
     print(f"PASS {TESTS} recorder assertions: state, phrase/time, exception, SIGKILL, recovery, corruption, concurrency, replay, portable clone")
     return 0
 

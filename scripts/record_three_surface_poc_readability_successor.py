@@ -403,24 +403,42 @@ def validate_receipt(root: Path, common: Path, tx: Path, *, required: bool = Fal
     if record["common_dir"] != str(common) or (record["common_dev"], record["common_ino"]) != (common.stat().st_dev, common.stat().st_ino):
         raise Refusal("completion receipt common Git directory identity mismatch")
     bound = Path(record["worktree_root"])
-    try:
-        _bound, git_dir, bound_common = identities(bound)
-    except (OSError, Refusal) as error:
-        raise Refusal("completion receipt bound worktree identity mismatch") from error
-    if bound_common != common or str(git_dir) != record["git_dir"]:
-        raise Refusal("completion receipt bound worktree Git identity mismatch")
     if not isinstance(record["outputs"], dict) or set(record["outputs"]) != set(TARGETS) or any(type(value) is not str or not re.fullmatch(r"[0-9a-f]{64}", value) for value in record["outputs"].values()):
         raise Refusal("completion receipt output population/digest mismatch")
-    body = read(bound, DEDICATED)
+    git_dir_path = Path(record["git_dir"])
+    linked_git_dir = (git_dir_path.parent == common / "worktrees"
+                      and git_dir_path.name not in ("", ".", ".."))
+    if (not bound.is_absolute() or bound.resolve() != bound
+            or not (git_dir_path == common or linked_git_dir)):
+        raise Refusal("completion receipt bound path is noncanonical")
+    if bound.exists() or bound.is_symlink() or git_dir_path.exists():
+        try:
+            _bound, git_dir, bound_common = identities(bound)
+        except (OSError, Refusal) as error:
+            raise Refusal("completion receipt bound worktree identity mismatch") from error
+        if bound_common != common or str(git_dir) != record["git_dir"]:
+            raise Refusal("completion receipt bound worktree Git identity mismatch")
+        validate_receipt_outputs(record, bound)
+    else:
+        # A successful `git worktree remove` retires both paths. Retaining the
+        # receipt still prevents same-common-dir replay; performed authority
+        # is checked from the current tracked tree below, not that old path.
+        listed = subprocess.run(["git", "-C", str(root), "worktree", "list", "--porcelain"], capture_output=True, text=True)
+        if listed.returncode or f"worktree {bound}\n" in listed.stdout:
+            raise Refusal("completion receipt bound worktree is still registered")
+    return record
+
+
+def validate_receipt_outputs(record: dict, root: Path) -> None:
+    body = read(root, DEDICATED)
     phrase, instant_line = parse_body(body)
     if record["phrase_sha256"] != sha(phrase.encode()) or record["instant_line_sha256"] != sha(instant_line.encode()):
         raise Refusal("completion receipt owner-input digest mismatch")
     if record["outputs"][DEDICATED] != sha(body):
         raise Refusal("completion receipt dedicated output digest mismatch")
     for target in TARGETS[:4]:
-        if record["outputs"][target] != sha(read(bound, target)):
+        if record["outputs"][target] != sha(read(root, target)):
             raise Refusal(f"completion receipt subject output digest mismatch: {target}")
-    return record
 
 
 def parse_body(body: bytes) -> tuple[str, str]:
@@ -471,19 +489,24 @@ def check_state(root: Path, common: Path, tx: Path, *, allow_journal: bool = Fal
         raise Refusal("aggregate successor block missing, duplicated or conflicting")
     instant = owner_inputs(phrase, instant_line)
     row = router_row(instant)
-    if router.count(row) != 1 or router.count(b"THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md") != 2:
+    act_rows = [line + b"\n" for line in router.splitlines()
+                if line.lstrip().startswith(b"|") and
+                b"THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md" in line]
+    if act_rows != [row]:
         raise Refusal("decisions act-router row missing, duplicated or conflicting")
     statement = status_statement(instant)
     if status.count(statement) != 1 or status.count(b"The six-subject Three-Surface POC readability successor is current") != 1:
         raise Refusal("PROJECT-STATUS current-successor statement missing, duplicated or conflicting")
     if b"Three-Surface POC readability successor" in status.replace(statement, b""):
         raise Refusal("PROJECT-STATUS carries a conflicting successor-current claim")
-    if receipt is not None and receipt["worktree_root"] == str(root):
-        expected_receipt = receipt_from_outputs(root, common, phrase, instant_line, {
-            path: receipt["outputs"][path] for path in TARGETS
-        })
-        if receipt != expected_receipt:
-            raise Refusal("completion receipt content conflicts with performed act")
+    if receipt is not None:
+        validate_receipt_outputs(receipt, root)
+        if receipt["worktree_root"] == str(root):
+            expected_receipt = receipt_from_outputs(root, common, phrase, instant_line, {
+                path: receipt["outputs"][path] for path in TARGETS
+            })
+            if receipt != expected_receipt:
+                raise Refusal("completion receipt content conflicts with performed act")
     return "performed-exact"
 
 
