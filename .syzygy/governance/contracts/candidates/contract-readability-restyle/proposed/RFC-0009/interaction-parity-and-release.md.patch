@@ -1,0 +1,397 @@
+--- a/rfcs/RFC-0009/interaction-parity-and-release.md
++++ b/rfcs/RFC-0009/interaction-parity-and-release.md
+@@ -33,20 +33,28 @@
+ 
+ *If this section and a clause disagree, the clause wins.*
+ 
+-This module owns **how the surface is checked and where its authority stops**:
+-the 3D/non-3D equivalence obligation and accessibility parity; the release-gate
+-list craft-and-care consumes, and the rule that keeps that list complete;
+-performance as declared scope-narrowing rather than silent decimation; motion and
+-illumination; and the binding phase rule that stops this RFC being read as an
+-implementable behavioral spec.
+-
+-Position, anchoring, layout determinism and counting live in
+-`semantic-geography.md` (RFC9-1..RFC9-23); palette, channels, lenses, scenes and
+-aggregation in `visual-grammar-and-lenses.md` (RFC9-24..RFC9-45).
+-
+-Two orientations: **non-3D views are co-equal** — same evaluation, same facts,
+-same counts, and a table and the scene disagreeing over one scope is
+-release-blocking — and **truth is never purchased with frame rate**.
++This module owns **how the surface is checked and where its authority stops**.
++**Non-3D views are co-equal**: same evaluation, same facts, same counts, and a
++table and the scene disagreeing over one scope is release-blocking (RFC9-46).
++The release-gate list craft-and-care consumes must keep itself complete
++(RFC9-47, RFC9-47(a)), and no implementation work for user-observable Orrery
++behavior may be scheduled solely from this RFC (RFC9-52). **Truth is never
++purchased with frame rate** (RFC9-49).
++
++- **Equivalence and accessibility (§1, RFC9-46..RFC9-48).**
++  - The 3D/non-3D equivalence obligation and accessibility parity.
++  - The release-gate list craft-and-care consumes, and the rule that keeps
++    that list complete.
++- **Performance (§2, RFC9-49).** Declared scope-narrowing rather than silent
++  decimation.
++- **Motion (§3, RFC9-50..RFC9-51).** Motion and illumination.
++- **Phase boundary (§4, RFC9-52).** The binding phase rule that stops this RFC
++  being read as an implementable behavioral spec.
++- **Elsewhere in the package.**
++  - Position, anchoring, layout determinism and counting:
++    `semantic-geography.md` (RFC9-1..RFC9-23).
++  - Palette, channels, lenses, scenes and aggregation:
++    `visual-grammar-and-lenses.md` (RFC9-24..RFC9-45).
+ 
+ ---
+ 
+@@ -55,17 +63,25 @@
+ **RFC9-46.** Non-3D views (2D, tabular) are **co-equal product surfaces** — the
+ precision, debugging, and assistive-technology paths — not derived exports. For
+ one (evaluation, scenario context, lens, declared filter scope), the 3D scene and
+-the non-3D view are equivalent per RFC6-22/23: same entity set, same edges, same
+-epistemic states (label + tier + reason + freshness **and sibling surface
+-states**), same counts, **the same `challenge-pending` disclosure (RFC2-13,
+-per RFC6-22)**, same evidence links, same scenario context, and —
+-wherever the work/construction overlay is active — **both work-state fields: the
+-normalized work state and the RFC2-18 chain state** (RFC9-32; RFC8-12/8-28). A
+-tabular view that carries the normalized state and drops the chain state is not a
+-finer-detail difference under RFC6-23; it answers the reconciliation question
+-differently from the scene, which is precisely the disagreement RFC6-23 forbids.
+-Non-3D views may expose finer detail than an aggregated scene — a disclosed
+-aggregation difference, never a contradiction (RFC6-23).
++the non-3D view are equivalent per RFC6-22/23:
++
++- same entity set,
++- same edges,
++- same epistemic states (label + tier + reason + freshness **and sibling
++  surface states**),
++- same counts,
++- **the same `challenge-pending` disclosure (RFC2-13, per RFC6-22)**,
++- same evidence links,
++- same scenario context, and
++- wherever the work/construction overlay is active — **both work-state fields:
++  the normalized work state and the RFC2-18 chain state** (RFC9-32;
++  RFC8-12/8-28).
++
++A tabular view that carries the normalized state and drops the chain state is
++not a finer-detail difference under RFC6-23; it answers the reconciliation
++question differently from the scene, which is precisely the disagreement
++RFC6-23 forbids. Non-3D views may expose finer detail than an aggregated scene —
++a disclosed aggregation difference, never a contradiction (RFC6-23).
+ 
+ **Added to the tuple at acceptance: the positional-expression state and the
+ backlog partitions.** The tuple additionally carries, for the same (evaluation,
+@@ -104,60 +120,71 @@
+ omission does not fail loudly anywhere.]
+ 
+ **RFC9-47.** **The equivalence gate is a release check** for Syzygy's own
+-releases, alongside: layout determinism (two runs, one evaluation, identical base
+-layout); refactor stability (mapping-preserving refactor moves nothing);
+-append-stability (RFC9-15, fixture-tested); no double-counting (RFC9-21,
+-fixture-tested); legend completeness and registry-generated legend text
+-(RFC9-26); Unknown coverage (no Unknown renders green or absent, every reason
+-rendered, **including the aggregate form of RFC9-27 — no aggregated measured
+-channel renders without its Unknown contribution, RFC9-43**); empty-plot coverage
+-records (RFC9-27, at every level of the hierarchy and in the approved-intent and
+-proposed scenes); **proposed-scene fidelity** (RFC9-40: the exclusivity-group
+-union refusal — no scene unions proposals in one exclusivity group or of
+-undeclared compatibility, the honest render being *N candidate futures* selectable
+-one at a time; and **proposed structure never looks like existing structure in
+-any profile at any zoom**, checked per profile and per zoom step, since a
+-proposed district that reads as built is the most seductive lie this surface can
+-tell); **work-state two-field consumption** (RFC9-32: every element and every
+-aggregate that carries a normalized work state carries its RFC2-18 chain state
+-beside it — no rendering, filter, count, legend entry, or tabular row shows one
+-in place of the other; and `unsatisfied` and `contradiction-raised` never share a
+-mark, a mark's color, a count, or a legend entry with each other, with `merged`,
+-or with `reconciled@E`, per RFC2-17's word reservation and RFC8-28 — run against
+-a fixture carrying **every chain outcome the release can produce**, co-located on
+-one district, since a gate exercised only over merged-not-yet-evaluated data
+-passes vacuously; per RFC8-29 that is `merged`, `reconciliation-pending` and
+-`Unknown(reason)` at V0, the verdict-bearing outcomes entering the fixture with
+-the V1 computation that first produces them); **aggregation attribution**
+-(RFC9-43, restating RFC6-17's own rule: per-Unknown-reason counts are computed
+-over **primary reasons only** — one claim instance contributes exactly one —
+-with secondary annotations (RFC2-24) disclosed separately and never folded
+-into the primary counts; run at aggregate level against a fixture whose
+-members carry secondary annotations, since a fixture without them passes
+-vacuously over the exact failure RFC6-17 states the rule prevents — two
+-conforming surfaces producing divergent Unknown-reason totals over one
+-declared scope, the disagreement RFC6-23 classes release-blocking; routed
+-2026-08-10, RD32b-N1 — the rule entered RFC9-43 with the RD-32 batch and
+-RFC9-47(a) part 1 makes routing it here part of the same amendment, never
+-later housekeeping); **declared-vs-observed relation
+-separation** (RFC9-9: every rendered profile relation legends as itself with its
+-profile and state class named — the registry side of this is already covered by
+-legend completeness above — and no declared project-scope edge shares a mark, a
+-channel treatment, a legend entry, or a count with an observed `depends_on` edge,
+-RFC1-25's anti-conflation rule run as a rendering check; exercised over a
+-portfolio fixture carrying both an observed intra-project dependency and a
+-declared `depends-on` edge, since a single-project fixture cannot reach it); LOD
+-epistemic invariance (RFC9-42); link resolution for every map entity; secret
+-exclusion (RFC9-29, including the minimum-aggregation granularity bound); **the
+-masquerade check** (no view binds position or proximity to a metric without the
+-analytical-plane marker — RFC9-11 makes this a violation identical in class to an
+-unlegended channel, VIS-7); **non-visual parity** (RFC9-48: full keyboard
+-navigation of every action, tabular equivalent as the screen-reader surface,
+-textual epistemic labels for every state, reduced-motion honored — accessibility
+-is a truth requirement, and keyboard navigation is V0 scope per v1.md); **no
+-ambient motion** (RFC9-50); **encoding explainability** (RFC9-3: every rendered
+-encoding traceable to an identified artifact, with the RFC9-26 fail-closed rule —
+-no channel renders without a registry entry).
++releases, alongside:
++
++- layout determinism (two runs, one evaluation, identical base layout);
++- refactor stability (mapping-preserving refactor moves nothing);
++- append-stability (RFC9-15, fixture-tested);
++- no double-counting (RFC9-21, fixture-tested);
++- legend completeness and registry-generated legend text (RFC9-26);
++- Unknown coverage (no Unknown renders green or absent, every reason rendered,
++  **including the aggregate form of RFC9-27 — no aggregated measured channel
++  renders without its Unknown contribution, RFC9-43**);
++- empty-plot coverage records (RFC9-27, at every level of the hierarchy and in
++  the approved-intent and proposed scenes);
++- **proposed-scene fidelity** (RFC9-40: the exclusivity-group union refusal —
++  no scene unions proposals in one exclusivity group or of undeclared
++  compatibility, the honest render being *N candidate futures* selectable one
++  at a time; and **proposed structure never looks like existing structure in
++  any profile at any zoom**, checked per profile and per zoom step, since a
++  proposed district that reads as built is the most seductive lie this surface
++  can tell);
++- **work-state two-field consumption** (RFC9-32: every element and every
++  aggregate that carries a normalized work state carries its RFC2-18 chain
++  state beside it — no rendering, filter, count, legend entry, or tabular row
++  shows one in place of the other; and `unsatisfied` and
++  `contradiction-raised` never share a mark, a mark's color, a count, or a
++  legend entry with each other, with `merged`, or with `reconciled@E`, per
++  RFC2-17's word reservation and RFC8-28 — run against a fixture carrying
++  **every chain outcome the release can produce**, co-located on one district,
++  since a gate exercised only over merged-not-yet-evaluated data passes
++  vacuously; per RFC8-29 that is `merged`, `reconciliation-pending` and
++  `Unknown(reason)` at V0, the verdict-bearing outcomes entering the fixture
++  with the V1 computation that first produces them);
++- **aggregation attribution** (RFC9-43, restating RFC6-17's own rule:
++  per-Unknown-reason counts are computed over **primary reasons only** — one
++  claim instance contributes exactly one — with secondary annotations
++  (RFC2-24) disclosed separately and never folded into the primary counts; run
++  at aggregate level against a fixture whose members carry secondary
++  annotations, since a fixture without them passes vacuously over the exact
++  failure RFC6-17 states the rule prevents — two conforming surfaces producing
++  divergent Unknown-reason totals over one declared scope, the disagreement
++  RFC6-23 classes release-blocking; routed 2026-08-10, RD32b-N1 — the rule
++  entered RFC9-43 with the RD-32 batch and RFC9-47(a) part 1 makes routing it
++  here part of the same amendment, never later housekeeping);
++- **declared-vs-observed relation separation** (RFC9-9: every rendered profile
++  relation legends as itself with its profile and state class named — the
++  registry side of this is already covered by legend completeness above — and
++  no declared project-scope edge shares a mark, a channel treatment, a legend
++  entry, or a count with an observed `depends_on` edge, RFC1-25's
++  anti-conflation rule run as a rendering check; exercised over a portfolio
++  fixture carrying both an observed intra-project dependency and a declared
++  `depends-on` edge, since a single-project fixture cannot reach it);
++- LOD epistemic invariance (RFC9-42);
++- link resolution for every map entity;
++- secret exclusion (RFC9-29, including the minimum-aggregation granularity
++  bound);
++- **the masquerade check** (no view binds position or proximity to a metric
++  without the analytical-plane marker — RFC9-11 makes this a violation
++  identical in class to an unlegended channel, VIS-7);
++- **non-visual parity** (RFC9-48: full keyboard navigation of every action,
++  tabular equivalent as the screen-reader surface, textual epistemic labels for
++  every state, reduced-motion honored — accessibility is a truth requirement,
++  and keyboard navigation is V0 scope per v1.md);
++- **no ambient motion** (RFC9-50);
++- **encoding explainability** (RFC9-3: every rendered encoding traceable to an
++  identified artifact, with the RFC9-26 fail-closed rule — no channel renders
++  without a registry entry).
+ 
+ **Six layout obligations added at acceptance** *(from the B12(a)/B12(b)/A3
+ amendments; §4 case 3a names four of them as violation cases)*:
+@@ -205,11 +232,14 @@
+ reach the failure.
+ 
+ **And: the walkthrough artifacts' completeness and the fail-closed gate**
+-(RFC9-45) — an execution record naming no evaluation, layout version, baseline,
+-scenario context, lens or filter scope is not a lawful record; an unattributed or
+-unreasoned judgment blocks release rather than clearing it; and a pass may clear
+-release only through the adopted release policy, never because a verdict is
+-stored.
++(RFC9-45):
++
++- an execution record naming no evaluation, layout version, baseline, scenario
++  context, lens or filter scope is not a lawful record;
++- an unattributed or unreasoned judgment blocks release rather than clearing
++  it; and
++- a pass may clear release only through the adopted release policy, never
++  because a verdict is stored.
+ 
+ [Inferred — the checkable form of the trust floor for this surface; the gates'
+ place in the release process is craft-and-care material. **This list is what
+@@ -247,15 +277,19 @@
+ boundaries exactly as it did across sections.]
+ 
+ **RFC9-48.** **Non-visual parity.** Every distinction the scene renders has a
+-non-visual path: full keyboard navigation of every action — traverse, select,
+-zoom, lens, analytical plane, scenario, drawer, filter — without pointer or
+-camera; the tabular equivalent as the screen-reader surface; **textual
+-epistemic labels for every state**, bound by this clause (distinct from
+-RFC9-27's two-carrier rule, which bars colour alone but is satisfied by
+-surface treatment plus plate/badge, neither of which is text); reduced-motion
+-honored with no loss of meaning; text contrast maintained in every profile. Accessibility here
+-is a truth requirement: a reader who cannot perceive "Unknown" is being shown
+-comprehensible fiction.
++non-visual path:
++
++- full keyboard navigation of every action — traverse, select, zoom, lens,
++  analytical plane, scenario, drawer, filter — without pointer or camera;
++- the tabular equivalent as the screen-reader surface;
++- **textual epistemic labels for every state**, bound by this clause (distinct
++  from RFC9-27's two-carrier rule, which bars colour alone but is satisfied by
++  surface treatment plus plate/badge, neither of which is text);
++- reduced-motion honored with no loss of meaning;
++- text contrast maintained in every profile.
++
++Accessibility here is a truth requirement: a reader who cannot perceive
++"Unknown" is being shown comprehensible fiction.
+ 
+ ---
+ 
+@@ -282,6 +316,17 @@
+ speed are forbidden; the permitted currency is VIS-1 rank 4, never rank 1
+ [Observed: vision.md, Performance]. **Truth is never purchased with frame rate.**
+ 
++*Diagram (non-normative; the clauses govern):* how RFC9-49 lets a scene
++degrade when its declared budget cannot be met.
++
++```mermaid
++flowchart TD
++    B["A declared budget for this<br/>scene class cannot be met"] --> N["Select one narrowing scope declared in the<br/>surface's spec beside that class's budget;<br/>never a render-time scope improvised from device capability"]
++    N --> R["Rendered as narrowed, in the 3D scene and<br/>the non-3D equivalent identically"]
++    R --> E["Selected scope named in the answer<br/>as a declared filter under RFC6-16"]
++    X["Forbidden, unconditionally:<br/>silent decimation, silent entity dropping,<br/>stripping epistemic carriers for speed"]
++```
++
+ ---
+ 
+ ## 3. Motion (SDR-26)
+@@ -306,21 +351,26 @@
+ work may be scheduled**. No implementation work for **user-observable Orrery
+ behavior** may be scheduled solely from this RFC: before implementation, every
+ observable consequence of **every clause of this contract other than this one**
+-must either **map to an approved
+-OpenSpec requirement or scenario** in the governance root's `openspec/**` plane,
+-or carry an **explicit, reviewed N/A judgment** recording why that consequence
+-needs no requirement. **The
+-reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a recorded
+-owner judgment homed in `decisions/` (RFC3-15), and it is honored only through
+-an effective owner act under RFC3-16(a), in state (1) or state (2), with that
+-state rendered. Absent or invalid acts map nothing and leave the consequence
+-unmapped and Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2). The
+-surface-specification phase must produce, as a
+-deliverable, a **clause-to-requirement coverage matrix** for this RFC — every
+-clause mapped to requirement identities or to its reviewed N/A — and that matrix
+-is review material, never authority. This clause creates no OpenSpec content now
+-(none may exist during bootstrap); it binds the phase boundary so RFC prose is
+-never quietly treated as an implementable behavioral spec.
++must either
++
++- **map to an approved OpenSpec requirement or scenario** in the governance
++  root's `openspec/**` plane, or
++- carry an **explicit, reviewed N/A judgment** recording why that consequence
++  needs no requirement.
++
++**The reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a
++recorded owner judgment homed in `decisions/` (RFC3-15), and it is honored only
++through an effective owner act under RFC3-16(a), in state (1) or state (2), with
++that state rendered. Absent or invalid acts map nothing and leave the
++consequence unmapped and Unknown, never covered (RFC3-16(a)'s effect rule;
++VIS-2).
++
++The surface-specification phase must produce, as a deliverable, a
++**clause-to-requirement coverage matrix** for this RFC — every clause mapped to
++requirement identities or to its reviewed N/A — and that matrix is review
++material, never authority. This clause creates no OpenSpec content now (none
++may exist during bootstrap); it binds the phase boundary so RFC prose is never
++quietly treated as an implementable behavioral spec.
+ 
+ **The scope is stated without a range on purpose.** A numeric range copied
+ into a clause goes stale the moment a clause is appended, and the appended
+@@ -347,6 +397,20 @@
+ all three modules, and the coverage matrix is produced for RFC 0009 entire. The
+ clause is shape-parallel with RFC6-28, RFC7-38 and RFC8-32.)*
+ 
++*Diagram (non-normative; the clauses govern):* how each observable
++consequence of an RFC 0009 clause stands at the RFC9-52 phase boundary.
++
++```mermaid
++flowchart TD
++    C["An observable consequence of any clause<br/>of RFC 0009 other than RFC9-52"] --> M{"Maps to an approved OpenSpec<br/>requirement or scenario?"}
++    M -->|yes| R["Mapped to requirement identities"]
++    M -->|no| NA{"Reviewed N/A judgment in decisions/,<br/>honored through an effective owner act<br/>under RFC3-16(a)?"}
++    NA -->|"yes: state (1) or state (2), rendered"| NAR["Mapped to its reviewed N/A"]
++    NA -->|"no: absent or invalid act"| U["Unmapped and Unknown, never covered:<br/>implementation work may not be scheduled"]
++    R --> CM["Coverage matrix row, per consequence:<br/>review material, never authority"]
++    NAR --> CM
++```
++
+ ---
+ 
+ ## 5. Violation cases (module-owned)
+@@ -361,21 +425,24 @@
+ 
+ ## 6. Integration (module-scoped)
+ 
+-**RFC 0001:** RFC1-25's anti-conflation rule, run as a rendering check in
+-RFC9-47's declared-vs-observed relation-separation gate. **RFC 0002:** the
+-recorded base layout (RFC2-6); the RFC2-18 chain state and
+-RFC2-17's word reservation. **RFC 0003:** the `decisions/` governance home and
+-the RFC3-16(a) owner-act predicate, behind RFC9-52's reviewed N/A judgment.
+-**RFC 0006:** equivalence (RFC6-22/23); filters
+-disclosed as filters (RFC6-16); cross-surface highlight and evaluation skew
+-(RFC6-3); one truth, two consumers (RFC6-13); sibling surface states (RFC6-14);
+-scenario context (RFC6-24). **RFC 0008:** the two work-state fields
+-(RFC8-12/8-28/8-29). **Provides to craft-and-care:** the release-gate list
+-(RFC9-47) and its self-maintenance contract (RFC9-47(a)) — this is the artifact
+-craft-and-care's release checklist consumes, and RFC9-47(a) part 1 binds that
+-checklist too. **Provides to the first map-surface spec:** every declared-value
+-slot this contract deliberately leaves open (budget values, treatment values,
+-band counts, analytical-plane catalog).
++- **RFC 0001:** RFC1-25's anti-conflation rule, run as a rendering check in
++  RFC9-47's declared-vs-observed relation-separation gate.
++- **RFC 0002:** the recorded base layout (RFC2-6); the RFC2-18 chain state and
++  RFC2-17's word reservation.
++- **RFC 0003:** the `decisions/` governance home and the RFC3-16(a) owner-act
++  predicate, behind RFC9-52's reviewed N/A judgment.
++- **RFC 0006:** equivalence (RFC6-22/23); filters disclosed as filters
++  (RFC6-16); cross-surface highlight and evaluation skew (RFC6-3); one truth,
++  two consumers (RFC6-13); sibling surface states (RFC6-14); scenario context
++  (RFC6-24).
++- **RFC 0008:** the two work-state fields (RFC8-12/8-28/8-29).
++- **Provides to craft-and-care:** the release-gate list (RFC9-47) and its
++  self-maintenance contract (RFC9-47(a)) — this is the artifact
++  craft-and-care's release checklist consumes, and RFC9-47(a) part 1 binds
++  that checklist too.
++- **Provides to the first map-surface spec:** every declared-value slot this
++  contract deliberately leaves open (budget values, treatment values, band
++  counts, analytical-plane catalog).
+ 
+ **Upstream defect reported from this module's clauses is resolved**: RFC6-22's
+ equivalence enumeration formerly omitted sibling surface states and scenario
+@@ -386,11 +453,13 @@
+ 
+ ## 7. Deliberately deferred (module-scoped)
+ 
+-Performance budget *values* and the release-gate operating procedure →
+-craft-and-care / quality policy (the obligation to declare budgets, and to
+-declare them before V0 ships, binds here regardless). Rendering technology →
+-post-acceptance material; none may weaken a clause here (RFC9-2). Live fleet
+-streaming → deferred mandate; certificate rendering → post-V1, future-tagged.
++- Performance budget *values* and the release-gate operating procedure →
++  craft-and-care / quality policy (the obligation to declare budgets, and to
++  declare them before V0 ships, binds here regardless).
++- Rendering technology → post-acceptance material; none may weaken a clause
++  here (RFC9-2).
++- Live fleet streaming → deferred mandate; certificate rendering → post-V1,
++  future-tagged.
+ 
+ ---
+ 
