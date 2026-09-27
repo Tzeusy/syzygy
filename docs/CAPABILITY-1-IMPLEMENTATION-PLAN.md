@@ -11,39 +11,52 @@
 > Scope: **Capability 1 only** — local development, tests, and a local
 > demonstration; no production deployment, no external onboarding.
 
+Capability 1 is built as one TypeScript fact model on Node.js in three
+packages plus an entry app, in eight ordered slices keyed to CAP1
+requirement IDs; a requirement counts as implemented only when its slice
+lands and its conformance module passes.
+
 ## Selected stack, with rationale
+
+One language and one fact model serve both the human and machine channels;
+the rest of the stack follows from the spec's parity, vocabulary and dialect
+obligations.
 
 **TypeScript on Node.js (≥22.15 — raised from ≥20 on 2026-08-23: Node 20
 left maintenance 2026-04), npm workspaces, Vitest, and the `yaml`
 package pinned exact.** `[Inferred — one defensible choice, reasoning
 stated so the owner can disagree with the reasoning]`
 
-- **One language, one fact model, both channels.** The spec's hardest
-  standing obligations are parity ones (CAP1-REQ-040…046: identical
-  fact sets to human view and machine answer; a parity disagreement is
-  a defect). One TypeScript fact model, serialized to the machine plane
-  as JSON and rendered server-side to HTML for the human view, makes
-  the two channels share their source by construction instead of by
-  discipline.
+- **One language, one fact model, both channels.**
+  - The spec's hardest standing obligations are parity ones
+    (CAP1-REQ-040…046: identical fact sets to human view and machine
+    answer; a parity disagreement is a defect).
+  - One TypeScript fact model, serialized to the machine plane as JSON and
+    rendered server-side to HTML for the human view, makes the two channels
+    share their source by construction instead of by discipline.
 - **Closed vocabularies as types.** `Unknown`/`Gap`/`satisfied`, the
   twelve reasons, the four-value discoverability domain, and the
-  Mission-ready posture coordinates are literal union types — the
-  verbatim-spelling oracles (REQ-013/030/034/036/050) get compile-time
-  teeth plus runtime tests.
+  Mission-ready posture coordinates are literal union types.
+  - The verbatim-spelling oracles (REQ-013/030/034/036/050) get
+    compile-time teeth plus runtime tests.
 - **The YAML dialect is a conformance item** (RFC3-1; REQ-001…006): one
   parser (`yaml`), pinned at an exact version with its options
   committed in one module, becomes the fixed dialect.
 - **No database.** Capability 1 stores declarations, consent records,
   and evaluations as files under the observed repository and the
-  daemon's local state directory; choosing no database avoids a
-  normative-data-contract escalation trigger entirely and fits
-  local-first doctrine. Revisit only when a later capability needs one.
+  daemon's local state directory.
+  - Choosing no database avoids a normative-data-contract escalation
+    trigger entirely and fits local-first doctrine.
+  - Revisit only when a later capability needs one.
 - **Doctrine fit.** The platform commitment (local-first daemon +
   browser app) is doctrine-level; Node serves both from one process.
-  The Capability 1 human view is **server-rendered HTML** — a browser
-  *app* framework is Polaris-family work, not this capability's.
+  - The Capability 1 human view is **server-rendered HTML** — a browser
+    *app* framework is Polaris-family work, not this capability's.
 
 ## Selected repository layout
+
+Pure domain, daemon and conformance suite are separate packages; no
+implementation file lands in the governed plane.
 
 ```text
 packages/cap1-core/         pure domain, no I/O: declaration parse/validate,
@@ -61,12 +74,16 @@ docs/                       implementation guidance and retained evidence
 package.json, tsconfig.base.json, vitest.config.ts       root manifests
 ```
 
-`openspec/**` and `.syzygy/**` stay the governed plane — no
-implementation file lands there. The daemon's own runtime writes are
-themselves specified by CAP1-REQ-023/053/061 and tested externally
-(harness-level filesystem diff), exactly as the spec's oracles demand.
+- `openspec/**` and `.syzygy/**` stay the governed plane — no
+  implementation file lands there.
+- The daemon's own runtime writes are themselves specified by
+  CAP1-REQ-023/053/061 and tested externally (harness-level filesystem
+  diff), exactly as the spec's oracles demand.
 
 ## Initial implementation slices → CAP1 requirement IDs
+
+Eight slices, S0 to S7; S1–S7 each claim a named set of requirements, and S0
+claims none.
 
 | Slice | Content | Requirements |
 |---|---|---|
@@ -79,17 +96,28 @@ themselves specified by CAP1-REQ-023/053/061 and tested externally
 | S6 | Human entry serving + honest degradation; discoverability findings + link proposal | CAP1-REQ-020, 021, 022, 023, 050, 051, 052, 053 |
 | S7 | Write-boundary hardening, non-visual distinctions, local demonstration end-to-end | CAP1-REQ-061, 064 (+ integration over all) |
 
-Order: S0 → S1 → S2 → S3 → S4 → S5 → S6 → S7 (S3 may overlap S2). A
-requirement is **implemented** only when its S-slice lands *and* its
-conformance module passes; partial slices are never reported as done.
+- **Order:** S0 → S1 → S2 → S3 → S4 → S5 → S6 → S7 (S3 may overlap S2).
+- **Done means both:** a requirement is **implemented** only when its
+  S-slice lands *and* its conformance module passes; partial slices are
+  never reported as done.
+
+```mermaid
+flowchart LR
+    S0 --> S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7
+    S2 -. "S3 may overlap S2" .- S3
+```
 
 ## Testing and retained evidence
+
+Tests are keyed to requirements, write boundaries are observed from outside
+the daemon, and no status claim is made without a retained record.
 
 - **`packages/cap1-conformance` is requirement-keyed**: one module per
   CAP1-REQ-NNN, its tests derived from that requirement's stated Case,
   Oracle, and Falsifier — including the sweep denominators for
-  invariants/prohibitions. Unknown, stale, absent, and failure paths
-  are first-class cases, per the act and VIS-2.
+  invariants/prohibitions.
+  - Unknown, stale, absent, and failure paths are first-class cases, per
+    the act and VIS-2.
 - Write-boundary requirements (023/053/061) are verified by
   **harness-external observation** (filesystem snapshot diff around the
   operation), never by the daemon's self-report — as the spec's own
@@ -98,11 +126,14 @@ conformance module passes; partial slices are never reported as done.
   infeasibility is recorded in the fix's Beads issue.
 - **Retained evidence**: each slice's review gate records the exact
   commit, the `vitest run` transcript, and the conformance-module pass
-  list in its Beads issue before the issue closes; claims without a
-  resolvable record are not made (`[Observed]`/`[Inferred]` discipline
-  applies to implementation status too).
+  list in its Beads issue before the issue closes.
+  - Claims without a resolvable record are not made
+    (`[Observed]`/`[Inferred]` discipline applies to implementation status
+    too).
 
 ## Risk and review classes
+
+The riskier the class, the more independent the review.
 
 | Class | What falls in it | Review bar |
 |---|---|---|
@@ -112,11 +143,15 @@ conformance module passes; partial slices are never reported as done.
 
 ## Escalation back to the owner (cited, never restated)
 
-The triggers are the act's own, and this plan does not carry a second copy of
-them: `.syzygy/governance/decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`,
-the paragraph beginning "They do not require another owner act unless the
-proposed choice", lists five. Read them there. Everything else in stack and
-layout is settled by this plan and its ordinary revisions.
+The five escalation triggers are the act's own; read them there, because
+this plan does not carry a second copy of them.
+
+- **Where:**
+  `.syzygy/governance/decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`,
+  the paragraph beginning "They do not require another owner act unless the
+  proposed choice", lists five.
+- **Everything else** in stack and layout is settled by this plan and its
+  ordinary revisions.
 
 *Superseded, dated:* until 2026-09-06 this section was headed "(from the act,
 restated)" and paraphrased the five triggers. The paraphrase had already

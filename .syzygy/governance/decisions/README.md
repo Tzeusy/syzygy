@@ -7,7 +7,14 @@
 > Written 2026-08-13 to close review finding RD-50 f7: `README.md` sends a
 > reader to this directory as a destination, and the directory had no door.
 
+This directory holds the owner's recorded decisions and performed acts,
+the pending-decision queue with its packets, and their history; this page
+says which file answers which question.
+
 ## The four questions this directory answers
+
+Find your question in the left column; the middle column names the file that
+owns the answer.
 
 | You want to know | Ask | Short answer today |
 |---|---|---|
@@ -17,10 +24,25 @@
 | **Which decisions were resolved, and how?** | [`DECISION-HISTORY.md`](DECISION-HISTORY.md) | The resolved rows — the nine 2026-08-16 rulings and the 2026-08-17 act dispositions (P-41/P-42 executed, P-22/P-28 ratified) — and the register's chronology |
 | **Where is the history?** | [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md), [`DECISION-HISTORY.md`](DECISION-HISTORY.md), and the round trees under `contracts/candidates/` | Deliberately off the default path |
 
-A **decision** is recorded prose the owner writes. An **act** is a formal
-transaction with a ceremony phrase and a digest-bound argument. They are not
-the same thing, and this directory holds both kinds of record. See
-[`PROCESS-GLOSSARY.md`](../../../PROCESS-GLOSSARY.md).
+Decisions and acts are different records, and this directory holds both
+kinds. See [`PROCESS-GLOSSARY.md`](../../../PROCESS-GLOSSARY.md).
+
+- A **decision** is recorded prose the owner writes.
+- An **act** is a formal transaction with a ceremony phrase and a
+  digest-bound argument.
+
+How an open question moves through this directory (the queue path only;
+not every decision or act starts as a queue row):
+
+```mermaid
+flowchart LR
+    Q["Open row in<br/>PENDING-OWNER-DECISIONS.md"] -->|launch-critical or grouped| P["Prepared packet<br/>(§3)"]
+    Q --> O{"Owner rules"}
+    P --> O
+    O -->|recorded prose| D["Recorded decision<br/>(§1)"]
+    O -->|ceremony phrase + digest| A["Own act record +<br/>ACCEPTANCE-ACT-RECORD.md (§2)"]
+    Q -.->|"once ruled, the row moves"| H["DECISION-HISTORY.md<br/>(§4)"]
+```
 
 ## 1. Recorded decisions — binding
 
@@ -64,6 +86,9 @@ Doctrine itself (VIS-1…7, SEC-1…5) is adopted and lives in
 
 ## 2. Owner acts
 
+`ACCEPTANCE-ACT-RECORD.md` is the aggregate record of performed acts;
+each act's own record, and the files named below, own the details.
+
 ```text
 ACCEPTANCE-ACT-RECORD.md      exists — created by the Wave A act, 2026-08-17
 ```
@@ -72,24 +97,29 @@ ACCEPTANCE-ACT-RECORD.md      exists — created by the Wave A act, 2026-08-17
 performed 2026-08-17: Wave A, then Wave B, then craft acts 6 + 7 (CC-SPEC
 and CC-IMPACT, one sitting), the separate indivisible five-row general
 trusted-bootstrap amendment transaction performed 2026-09-01, and the
-separate eleven-artifact PWB behavioral amendment performed 2026-09-02. The
-PWB act superseded the earlier state-(2)-only PWB behavior: valid state (1) or
-state (2) human acts may now satisfy PWB-REQ-005 and PWB-REQ-022 with exact
-state visible. Neither amendment granted consent, observation, write, egress,
-execution, deployment, release, recovery, mission or implementation authority.
-Entries are appended, never edited. Nine foundational offerings remain unperformed:
-four deferred waves, CC-TEST-2, topology, overview, D3, and **P-12 knowledge
-hygiene** as the ninth.
-The original foundational acts themselves — their exact phrases and arguments
-— are owned by
-[`../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`](../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md),
-while the amendment transaction's exact five-row semantics and manifest live
-under `../contracts/candidates/general-trusted-bootstrap-authorization/` and
-its performed record is
-[`GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`](GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md).
-The PWB amendment's performed record is
-[`PWB-STATE1-AMENDMENT-ACT.md`](PWB-STATE1-AMENDMENT-ACT.md). This page owns
-neither amendment act.
+separate eleven-artifact PWB behavioral amendment performed 2026-09-02.
+
+- **The PWB act superseded the earlier state-(2)-only PWB behavior:** valid
+  state (1) or state (2) human acts may now satisfy PWB-REQ-005 and
+  PWB-REQ-022 with exact state visible.
+- **Neither amendment granted** consent, observation, write, egress,
+  execution, deployment, release, recovery, mission or implementation
+  authority.
+- **Entries are appended, never edited.**
+- **Nine foundational offerings remain unperformed:** four deferred waves,
+  CC-TEST-2, topology, overview, D3, and **P-12 knowledge hygiene** as the
+  ninth.
+- **Where each act's exact terms live:**
+  - The original foundational acts themselves — their exact phrases and
+    arguments — are owned by
+    [`../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`](../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md).
+  - The amendment transaction's exact five-row semantics and manifest live
+    under `../contracts/candidates/general-trusted-bootstrap-authorization/`
+    and its performed record is
+    [`GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`](GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md).
+  - The PWB amendment's performed record is
+    [`PWB-STATE1-AMENDMENT-ACT.md`](PWB-STATE1-AMENDMENT-ACT.md).
+  - This page owns neither amendment act.
 
 ### Every act and direction recorded here, by date
 
@@ -100,11 +130,12 @@ PWB implementation authorization that `AGENTS.md` cites as current authority —
 was present in this directory and named by no index in it. A reader following
 the router could not reach the acts in force.
 
-**None of these rows is authority.** Each act's authority is its own record
-plus the aggregate entry in
-[`ACCEPTANCE-ACT-RECORD.md`](ACCEPTANCE-ACT-RECORD.md); which acts are *in
-force* is owned by `PROJECT-STATUS.md`. This table says only that the file
+**None of these rows is authority.** This table says only that the file
 exists and what it is about, so that a reader can find it.
+
+- Each act's authority is its own record plus the aggregate entry in
+  [`ACCEPTANCE-ACT-RECORD.md`](ACCEPTANCE-ACT-RECORD.md).
+- Which acts are *in force* is owned by `PROJECT-STATUS.md`.
 
 | Recorded | File | About |
 |---|---|---|
@@ -134,8 +165,11 @@ table after any new act.]
 
 ## 3. Pending decisions — one bounded packet each
 
-The queue is [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md). The
-rows below have a prepared packet here — the launch-critical ones, and any
+The queue is [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md); some
+rows also have a prepared packet here, and every other row is a queue
+entry only.
+
+The rows below have a prepared packet here — the launch-critical ones, and any
 group of rows gathered so the owner can answer them in one sitting:
 
 | `P-nn` | Question | Packet |
@@ -144,6 +178,7 @@ group of rows gathered so the owner can answer them in one sitting:
 | **P-45…P-48** | The four Administration-1 owner inputs (resource envelope, effort ceiling, F2 disposition, stop condition) | [`ADMINISTRATION-1-OWNER-INPUTS-DECISION.md`](ADMINISTRATION-1-OWNER-INPUTS-DECISION.md) |
 | **P-54…P-59, P-66** | *(Ruled 2026-09-07 — record [`DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md`](DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md); the seven rows have left [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) for [`DECISION-HISTORY.md`](DECISION-HISTORY.md), which is where a reader checks whether any row in this table is still open.)* Seven questions about the written estate: the OpenSpec config's vendor boilerplate, the two empty OpenSpec lifecycle directories, the spent Capability 1 prompt at the repository root, whether `openspec/` gets a navigation page, the two front doors that name different founding rules, the public overview that still says nothing is implemented, and CC-SPEC's amendment banner naming five of nine phase rules on frozen bytes | [`DOCUMENTATION-ESTATE-DECISION-PACKET.md`](DOCUMENTATION-ESTATE-DECISION-PACKET.md) |
 
+Ruled packets stay here as the record or context of their ruling.
 Packets whose question the owner has since ruled or executed (P-41's
 `SPECIFICATION-ACCEPTANCE-DECISION.md` and P-42's
 `SHAPE-TO-SPEC-IMPACT-DECISION.md` — acts 6 and 7 performed 2026-08-17 —
@@ -166,6 +201,8 @@ row is the whole of what exists for them.
 
 ## 4. History — kept, and off the default path
 
+History is kept off the default path; a current decision should not need it.
+
 | Where | Holds |
 |---|---|
 | [`DECISION-HISTORY.md`](DECISION-HISTORY.md) | Resolved decision rows and the register's as-of chronology |
@@ -180,13 +217,17 @@ of them.
 
 ## What this directory is not
 
-It is not a changelog, not a backlog, and not a place to record work. Open
-questions belong in the register as owner decisions; process housekeeping
-belongs in `bd`.
+It is not a changelog, not a backlog, and not a place to record work.
+
+- Open questions belong in the register as owner decisions.
+- Process housekeeping belongs in `bd`.
 
 ---
 
 ### A note on this file's own lawfulness
+
+This README sits in tension with accepted clause RFC3-15 and stays here only
+on explicit owner instruction, as navigation and never authority.
 
 Accepted clause **RFC3-15**, bound at its current module bytes by the
 2026-09-01 contract-amendment manifest, says the `decisions/` category holds

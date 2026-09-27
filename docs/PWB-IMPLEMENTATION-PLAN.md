@@ -15,33 +15,54 @@
 Every substantive statement below is `[Inferred]` planning unless marked
 `[Observed]`; the spec's own oracles decide, never this plan.
 
+The PWB change is built inside the existing POC packages as a pure,
+injectable pipeline — authority gate, read guard, classification,
+extraction, coverage — feeding one shared model, in eight slices P1–P8
+whose first slice is the body-read gate.
+
+- **§1–§2:** stack and module layout; §2 also carries the dated per-slice
+  build notes.
+- **§3–§5:** the body-read gate, the containment pipeline, and the model and
+  surfaces.
+- **§6–§8:** verification denominators, slice order, and review classes.
+- **§9–§10:** known gaps, and when to return to the owner.
+
 ## 1. Stack and packaging
 
-**No new language, package, runtime dependency or route.** `[Observed]` The
-adopted registry entry names the implementation module as
-`packages/three-surface-poc-core/src/project-shape-observer.ts` inside the
-existing `three-surface-poc-core` package, so no `tsc -b` project list or
-Vitest project entry changes. TypeScript on Node ≥22.15, Vitest, `tsc -b
---force` for `build:poc`, exactly as today.
+**No new language, package, runtime dependency or route.**
+
+- `[Observed]` The adopted registry entry names the implementation module as
+  `packages/three-surface-poc-core/src/project-shape-observer.ts` inside the
+  existing `three-surface-poc-core` package, so no `tsc -b` project list or
+  Vitest project entry changes. TypeScript on Node ≥22.15, Vitest,
+  `tsc -b --force` for `build:poc`, exactly as today.
 
 - **Markdown and TOML are parsed by small, inert, purpose-built line
   parsers** in this repository rather than a third-party Markdown library.
-  The extraction grammar (spec "Reader definitions") is literal: H2/H3
-  headings, top-level list items, table body rows, a leading bold or code
-  span, one `[butler].name` key. A general Markdown parser would both widen
-  the attack surface (raw HTML, link resolution) and make the grammar harder
-  to falsify. The parser never produces HTML; it produces typed items and
-  NFC-normalized strings.
+  - The extraction grammar (spec "Reader definitions") is literal: H2/H3
+    headings, top-level list items, table body rows, a leading bold or code
+    span, one `[butler].name` key.
+  - A general Markdown parser would both widen the attack surface (raw HTML,
+    link resolution) and make the grammar harder to falsify.
+  - The parser never produces HTML; it produces typed items and
+    NFC-normalized strings.
 - **Git objects only.** Bodies are read through `git cat-file --batch` /
   `git ls-tree -r -l <revision>` against the configured repository's
-  resolved Git common directory, never through the working tree, and only for
-  paths admitted by the read guard (§4). `[Observed]` `code-structure.ts`
-  already uses `ls-tree` metadata this way with an injectable `runGit`.
+  resolved Git common directory, never through the working tree, and only
+  for paths admitted by the read guard (§4).
+  - `[Observed]` `code-structure.ts` already uses `ls-tree` metadata this
+    way with an injectable `runGit`.
 - **One shared model, parity by construction.** `PocModel` gains additive
   fields (§5); `GET /api/poc` stays `JSON.stringify(model)`; all Polaris
   HTML renders from that object.
 
 ## 2. Module layout
+
+Core owns the pure pipeline modules and the model; the app owns loading
+governance inputs, the mutation tooling and Polaris rendering. The dated
+notes after the tree are the slice-by-slice build record — deviations,
+measurements, repairs, reconciliation reviews and cycle reports — and are
+kept as written.
 
 ```text
 packages/three-surface-poc-core/src/
@@ -1226,78 +1247,118 @@ packet, the same way task 1.7 was.
 
 ## 3. The body-read gate
 
-This is the risk-floor of the change. Design so the spec's falsifier "any
-body is read before all three acts are effective" is structurally hard to
-violate:
+This is the risk-floor of the change: no body is read unless a pure
+evaluation of the three act-bound artifacts and their act records admits it.
+Design so the spec's falsifier "any body is read before all three acts are
+effective" is structurally hard to violate:
+
+```mermaid
+flowchart LR
+    G["governance-inputs.ts<br/>three artifacts + three act records<br/>present | missing | unreadable | malformed"] --> P["owner-act-record.ts<br/>fields present | missing | malformed"]
+    P --> E{"evaluateBodyReadAuthority<br/>pure; first failing predicate names the case"}
+    E -->|admits false| U["project-shape Unknown<br/>zero reads"]
+    E -->|admits true| O["project-shape-observer.ts<br/>reader may run"]
+    E --> D["authority-disclosure.ts<br/>one renderer for state text"]
+```
 
 1. **Inputs are files, not flags.** `governance-inputs.ts` resolves the
    observing checkout root (the same root `pocObserverInputsAreClean`
-   already inspects), then reads exactly: the three act-bound artifacts
-   (consent record, policy JSON, registry entry) and their three dedicated
-   act records under `decisions/`. Each read yields `{kind:'present', bytes,
-   sha256}` or a typed failure (`missing`, `unreadable`, `malformed`). A
-   `repoRoot` option plus injectable `readFile` / `listDirectory` / `runGit`
-   serve hermetic tests (replacing the planned `--governance-dir` flag).
+   already inspects), then reads exactly:
+   - the three act-bound artifacts (consent record, policy JSON, registry
+     entry);
+   - their three dedicated act records under `decisions/`.
+
+   Each read yields `{kind:'present', bytes, sha256}` or a typed failure
+   (`missing`, `unreadable`, `malformed`). A `repoRoot` option plus
+   injectable `readFile` / `listDirectory` / `runGit` serve hermetic tests
+   (replacing the planned `--governance-dir` flag).
 2. **The act record is parsed, never trusted.** `owner-act-record.ts`
    extracts the labelled fields the 2026-09-02 records carry: act identity,
    act type, project identity, artifact identity, exact digest, provenance
    state, supersession/revocation, A1 identity or explicit absence, owner,
-   date, ceremony phrase, recording tag. Each field is `present | missing |
-   malformed`; the parser owns no notion of validity.
+   date, ceremony phrase, recording tag.
+   - Each field is `present | missing | malformed`; the parser owns no
+     notion of validity.
 3. **Evaluation is a pure function.** `evaluateBodyReadAuthority(inputs) →
    { admits: boolean; consent: AuthorityState; policy: AuthorityState;
    registry: AuthorityState; contradiction?: … }` where `AuthorityState` is
    `valid(state-1 | state-2) | invalid(caseId) | absent(artifact-missing |
    artifact-unreadable | act-record-absent)`; `absent` is a non-admitting
    outcome outside the 195 present-invalid cases. Per authority it checks,
-   in order: false substitutes first (a record that is only a tag, commit,
-   sign-off, machine submission or agent assertion has no fields to judge),
-   then the nine RFC3-16(b) items (item 3 by recomputing the
-   artifact's SHA-256 from the bytes just read and comparing to the act
-   argument, so an edited artifact is "wrong but present digest"); the
-   association (act record names this artifact); the provenance-state input;
-   lifecycle (stale, expired, superseded,
-   revoked); state mechanics (state (1) explicitly selected; A1 explicitly
-   absent for state (1); claimed state (2) needs successful correlation);
-   state-(1) record semantics (phrase and recording tag present, well-formed
-   and matching); then the authority-specific fields (consent subject pair
-   and content class; policy-owning project and version; registry home,
-   project, repository, read-only authority and empty write surface). The
-   first failing predicate names the case; every predicate is independently
-   reachable. `[Observed]` 2026-09-03: 85 predicate sites — 55 common ones
-   shared by the three authorities (× 3 = 165 instances) plus 30
+   in order:
+   1. false substitutes first (a record that is only a tag, commit,
+      sign-off, machine submission or agent assertion has no fields to
+      judge);
+   2. then the nine RFC3-16(b) items (RFC3-16(b) item 3 by recomputing the artifact's
+      SHA-256 from the bytes just read and comparing to the act argument, so
+      an edited artifact is "wrong but present digest");
+   3. the association (act record names this artifact);
+   4. the provenance-state input;
+   5. lifecycle (stale, expired, superseded, revoked);
+   6. state mechanics (state (1) explicitly selected; A1 explicitly absent
+      for state (1); claimed state (2) needs successful correlation);
+   7. state-(1) record semantics (phrase and recording tag present,
+      well-formed and matching);
+   8. then the authority-specific fields (consent subject pair and content
+      class; policy-owning project and version; registry home, project,
+      repository, read-only authority and empty write surface).
+
+   The first failing predicate names the case; every predicate is
+   independently reachable. `[Observed]` 2026-09-03: 85 predicate sites — 55
+   common ones shared by the three authorities (× 3 = 165 instances) plus 30
    authority-specific — carry the 195 case instances; there is no bucket.
 4. **State (2) is unavailable in this repository.** `[Observed]` No RFC5-25
-   audit trail exists. Correlation is an injected function whose production
-   value returns `unavailable`; any record claiming state (2) is therefore
-   invalid today and never falls back to state (1). Tests inject a
-   `succeeded` correlator to exercise the four state-(2)-bearing valid
-   triples and a `failed` one for the no-fallback scenarios.
+   audit trail exists.
+   - Correlation is an injected function whose production value returns
+     `unavailable`; any record claiming state (2) is therefore invalid today
+     and never falls back to state (1).
+   - Tests inject a `succeeded` correlator to exercise the four
+     state-(2)-bearing valid triples and a `failed` one for the no-fallback
+     scenarios.
 5. **Zero reads unless admitted.** `project-shape-observer.ts` receives the
    authority result and the reader; its first statement returns a
    project-shape Unknown (reason from the registry's
    `admissionFailureMapping`, the RFC3-16(a) contradiction attached) when
-   `admits` is false. The reader is an injected spy in every test; the read
-   count is asserted zero in each of the 195 cases.
+   `admits` is false.
+   - The reader is an injected spy in every test; the read count is asserted
+     zero in each of the 195 cases.
 6. **Exact state everywhere.** `authority-disclosure.ts` is the only place
    the per-authority state text and the exact state-(1) sentence are
    rendered; Polaris, the home page and `/api/poc` carry the same strings.
-   State (1) renders exactly the sentence PWB-REQ-005 quotes; nothing may
-   say "verified" for it. Evaluation history is append-only per
-   evaluation: a later correlation produces a new evaluation and never
-   rewrites an earlier one's recorded state.
+   - State (1) renders exactly the sentence PWB-REQ-005 quotes; nothing may
+     say "verified" for it.
+   - Evaluation history is append-only per evaluation: a later correlation
+     produces a new evaluation and never rewrites an earlier one's recorded
+     state.
 
 ## 4. Containment, classification and extraction
 
-- **Read guard** (`git-object-reader.ts`): a path is admitted only if it is
-  relative, NUL-free, contains no `.`/`..` segments after POSIX
-  normalization, resolves to a `blob` entry (mode `100644`/`100755`) in the
-  exact revision's tree — so symlinks (`120000`) and submodules (`160000`)
-  are rejected by mode, without touching the working tree — and its
-  normalized final segment passes the policy's denied basename, prefix and
-  suffix rules. The registry's `resourceLimits` block is an evaluation input:
-  source count, per-source and total bytes, index depth, parse time and
-  rendered bytes; a breach leaves the source counted and Unknown with reason
+Each admitted path passes a read guard, then classification, then literal
+extraction, then coverage; a failure leaves the source counted and Unknown,
+or excluded whole — never a partial item set.
+
+```mermaid
+flowchart LR
+    RG["Read guard<br/>git-object-reader.ts"] --> CL["Classification<br/>content-classification.ts"]
+    CL -->|any failure| EX["Whole-artifact exclusion<br/>hash, never body"]
+    CL -->|admitted| XT["Extraction<br/>project-shape-extraction.ts"]
+    XT --> CV["Coverage and precedence<br/>project-shape-coverage.ts"]
+    CV --> M["PocModel.projectShape (§5)"]
+    RG -->|resource-limit breach| UK["Counted, Unknown<br/>source-uncaptured-or-unreachable"]
+```
+
+- **Read guard** (`git-object-reader.ts`): a path is admitted only if it
+  - is relative, NUL-free, and contains no `.`/`..` segments after POSIX
+    normalization;
+  - resolves to a `blob` entry (mode `100644`/`100755`) in the exact
+    revision's tree — so symlinks (`120000`) and submodules (`160000`) are
+    rejected by mode, without touching the working tree;
+  - and its normalized final segment passes the policy's denied basename,
+    prefix and suffix rules.
+
+  The registry's `resourceLimits` block is an evaluation input: source
+  count, per-source and total bytes, index depth, parse time and rendered
+  bytes; a breach leaves the source counted and Unknown with reason
   `source-uncaptured-or-unreachable`.
 - **Classification** (`content-classification.ts`) follows the policy's
   `classificationOrder` literally over transient bytes: membership in phase
@@ -1305,49 +1366,64 @@ violate:
   detector (the detectors are executed from the policy document's own
   strings, so the policy version is the input) → extraction class assigned
   by the manifest → whole-artifact exclusion on any failure → admit parsed
-  facts only. Exclusions carry `{contentDigest, repositoryRelativePath,
-  policyId, policyVersion, detectorId | exclusionReason}` with redaction
-  class `excluded-artifact` or `unclassifiable-excluded`; `redacted-span` is
-  never emitted. Raw bodies are never stored, logged, rendered or served.
+  facts only.
+  - Exclusions carry
+    `{contentDigest, repositoryRelativePath, policyId, policyVersion, detectorId | exclusionReason}`
+    with redaction class
+    `excluded-artifact` or `unclassifiable-excluded`; `redacted-span` is
+    never emitted.
+  - Raw bodies are never stored, logged, rendered or served.
 - **Extraction** (`project-shape-extraction.ts`): one function per item
-  class implementing the spec grammar exactly; keys are literal after NFC;
-  any missing heading, malformed row/list/TOML, duplicate key or ambiguous
-  leading label makes that source's item denominator Unknown (no partial
-  set). Identity is `(item class, declared key)`; path and digest are
-  anchor state.
-- **Coverage and precedence** (`project-shape-coverage.ts`): the source-path
-  denominator comes from Git and phase A and never shrinks; the item
-  denominator per admitted source; states modeled / Unknown / contradicted
-  summing to D per class. A conflict between two admitted declarations is
-  resolved only by a precedence rule that Butlers itself declares and the
-  model can cite by source anchor; otherwise both anchors are retained and
-  the fact is Unknown with reason `contradicted-pending-adjudication`.
-  `[Unknown]` Whether Butlers declares any such rule; the first live run
-  answers this and the design's known eight-versus-nine domain-butlers
-  conflict is the first fixture either way.
+  class implementing the spec grammar exactly; keys are literal after NFC.
+  - Any missing heading, malformed row/list/TOML, duplicate key or ambiguous
+    leading label makes that source's item denominator Unknown (no partial
+    set).
+  - Identity is `(item class, declared key)`; path and digest are anchor
+    state.
+- **Coverage and precedence** (`project-shape-coverage.ts`):
+  - **Denominators:** the source-path denominator comes from Git and phase A
+    and never shrinks; the item denominator per admitted source; states
+    modeled / Unknown / contradicted summing to D per class.
+  - **Conflicts:** a conflict between two admitted declarations is resolved
+    only by a precedence rule that Butlers itself declares and the model can
+    cite by source anchor; otherwise both anchors are retained and the fact
+    is Unknown with reason `contradicted-pending-adjudication`.
+  - `[Unknown]` Whether Butlers declares any such rule; the first live run
+    answers this and the design's known eight-versus-nine domain-butlers
+    conflict is the first fixture either way.
 
 ## 5. Model and surfaces
+
+The shared `PocModel` gains the project-shape and walkthrough fields, and
+Polaris renders only from it, with every owner-visible string in one copy
+table.
 
 - `PocModel` gains `projectShape` (authority evaluation with per-authority
   state and disclosure, manifest identity, source coverage, items,
   contradictions, exclusions, per-class counts, project-account statements
-  with their epistemic tuples) and `walkthroughJudgment`. Epistemic tuples
-  reuse cap1-core's `EpistemicState` and six rendering tiers rather than a
-  new vocabulary; Unknown reasons are RFC2-24 strings verbatim.
+  with their epistemic tuples) and `walkthroughJudgment`.
+  - Epistemic tuples reuse cap1-core's `EpistemicState` and six rendering
+    tiers rather than a new vocabulary; Unknown reasons are RFC2-24 strings
+    verbatim.
 - New provenance kinds: `project-shape-source` (path at revision, blob
   digest) and `owner-act` (record identity, artifact digest, state).
 - Polaris renders the seven project-level groups in RFC7 order, then
   capability detail with the existing WhatsApp slice under it (argument /
   contract / reality bands, verbatim requirement text loaded from the
-  owning artifact at render, never stored). Every owner-visible string is a
-  row in `polaris-copy.ts` with exactly one role; headings ≤ 6 words, ledes
-  ≤ 20, prohibited words rejected at test time by an independent extractor.
-  The existing "movement" scaffolding is removed from Polaris entirely.
+  owning artifact at render, never stored).
+  - Every owner-visible string is a row in `polaris-copy.ts` with exactly
+    one role; headings ≤ 6 words, ledes ≤ 20, prohibited words rejected at
+    test time by an independent extractor.
+  - The existing "movement" scaffolding is removed from Polaris entirely.
 - Every project-shape fact, authority state, judgment state and disclosure
   carries a `data-parity-field` marker so the sweep in §6 can count both
   channels.
 
 ## 6. Verification design and denominators
+
+Every denominator is checked by a test built independently of the code it
+checks, every authority predicate has a mutation proof, and every claim
+rests on a retained record.
 
 | Denominator | Where | How it is made independent |
 |---|---|---|
@@ -1362,36 +1438,44 @@ violate:
 
 **Mutation proofs** (rule 6; REQ-005/020/022 demand one per case). Each
 predicate in the two authority evaluators and each parity marker class
-carries a `// mutation-point: <case-id>` comment. For REQ-005 the tool is
-`apps/three-surface-poc/src/pwb-mutation.ts` (pure plan) plus
-`pwb-mutation-run-main.ts` (`npm run poc:pwb-mutation-run`; tooling, not
-shipped behavior). Per mutation it rewrites one predicate's condition to
-`false && (…)` (or applies one hand-listed literal mutation: exact-state
-collapse/inflation, failed-correlation downgrade, admits-always,
-contradiction suppression, history rewrite, duplicate append, forced
-"independently verified", altered state-(1) sentence), runs the two
-independent test files, requires every named case-instance test to fail,
-restores the bytes, verifies the restore by digest, and writes one record
-`{id, mustFail, observed, mustFailMissing, killed, restored}` per mutation
-with source digests before/after and the commit to
-`docs/evidence/pwb-mutation-run-<date>.json`. A run is valid only at a named
-commit and is retained as review evidence; it is never run against a dirty
-tree.
+carries a `// mutation-point: <case-id>` comment.
 
-The run that pattern names is
-`docs/evidence/pwb-mutation-run-2026-09-03.json`, at commit `c5f59361`: 97
-mutations planned — 86 predicate sites and 11 literals — 97 killed, 0
-survived, 0 restore failures, over `body-read-authority.test.ts` and
-`governance-inputs.test.ts`. Those are the same 86 and 11 §"task 2.5" cites
-above; until 2026-09-05 the figures travelled in this page's prose while the
-file holding them was named only by the `<date>` pattern, so a reader could
-not reach the record without guessing its name.
+- **The REQ-005 tool:** `apps/three-surface-poc/src/pwb-mutation.ts` (pure
+  plan) plus `pwb-mutation-run-main.ts` (`npm run poc:pwb-mutation-run`;
+  tooling, not shipped behavior).
+- **Per mutation, it:**
+  1. rewrites one predicate's condition to `false && (…)` (or applies one
+     hand-listed literal mutation: exact-state collapse/inflation,
+     failed-correlation downgrade, admits-always, contradiction
+     suppression, history rewrite, duplicate append, forced "independently
+     verified", altered state-(1) sentence);
+  2. runs the two independent test files;
+  3. requires every named case-instance test to fail;
+  4. restores the bytes, and verifies the restore by digest;
+  5. writes one record
+     `{id, mustFail, observed, mustFailMissing, killed, restored}` per
+     mutation with source digests before/after and the commit to
+     `docs/evidence/pwb-mutation-run-<date>.json`.
+- **Validity:** a run is valid only at a named commit and is retained as
+  review evidence; it is never run against a dirty tree.
+- **The recorded run:** the run that pattern names is
+  `docs/evidence/pwb-mutation-run-2026-09-03.json`, at commit `c5f59361`: 97
+  mutations planned — 86 predicate sites and 11 literals — 97 killed, 0
+  survived, 0 restore failures, over `body-read-authority.test.ts` and
+  `governance-inputs.test.ts`.
+  - Those are the same 86 and 11 §"task 2.5" cites above; until 2026-09-05
+    the figures travelled in this page's prose while the file holding them
+    was named only by the `<date>` pattern, so a reader could not reach the
+    record without guessing its name.
 
 **Retained evidence** per slice: commit, `vitest run` transcript summary,
 the three denominators reported separately, mutation-run file. Claims
 without a resolvable record are not made.
 
 ## 7. Slices, order and bead mapping
+
+Eight slices run in order, P1 to P8; the first real Butlers body read
+happens in P4, only after P1's evaluator admits.
 
 | Slice | Content | Beads | Requirements |
 |---|---|---|---|
@@ -1404,14 +1488,26 @@ without a resolvable record are not made.
 | P7 | verification sweep: parity comparator, mutation runs, contrast/keyboard checks, fresh-checkout demo; walkthrough judgment evaluator | 1z3.17…1z3.21 | PWB-REQ-020, 022 |
 | P8 | owner cold-open walkthrough (record + judgment packet), independent review, repair, confirmation, owner report | 1z3.22…1z3.25 | PWB-REQ-021, 022 |
 
-Order P1 → P2 → P3 → P4 → P5 → P6 → P7 → P8. **The first real Butlers body
-read happens in P4 and only after P1's evaluator, run against the real
-governance tree, reports an all-valid triple.** Until then every live test
-runs with the read spy and asserts zero reads. Shared-model changes keep WIP
-one; each slice lands with its tests, its mutation evidence where the spec
-demands it, and a review at the classes below.
+Order P1 → P2 → P3 → P4 → P5 → P6 → P7 → P8.
+
+- **The first real Butlers body read happens in P4 and only after P1's
+  evaluator, run against the real governance tree, reports an all-valid
+  triple.** Until then every live test runs with the read spy and asserts
+  zero reads.
+- **Shared-model changes keep WIP one.**
+- **Each slice lands with** its tests, its mutation evidence where the spec
+  demands it, and a review at the classes below.
+
+```mermaid
+flowchart LR
+    P1["P1 body-read gate"] --> P2["P2 read guard,<br/>phase A manifest"] --> P3["P3 classification"] --> P4["P4 extraction, coverage;<br/>first body read"] --> P5["P5 model"] --> P6["P6 Polaris"] --> P7["P7 verification sweep"] --> P8["P8 walkthrough,<br/>review, report"]
+```
 
 ## 8. Risk classes and review bar
+
+Risk-floor code — the read gate, the read guard, classification, the
+judgment evaluator and the parity comparator — gets independent review on
+frozen bytes with mutation evidence attached.
 
 | Class | What falls in it | Review bar |
 |---|---|---|
@@ -1420,6 +1516,8 @@ demands it, and a review at the classes below.
 | Trivial | tooling, tokens, non-semantic refactors | author-verified |
 
 ## 9. Known gaps and assumptions, stated now
+
+Four observed items and one inferred assumption, each labelled.
 
 - `[Observed]` (closed by P4.4, 2026-09-04) Automated keyboard traversal and
   WCAG AA contrast run in a locally installed Chrome/Chromium through the
@@ -1448,10 +1546,16 @@ demands it, and a review at the classes below.
 
 ## 10. Escalation back to the owner (from the act, restated)
 
-Stop and return to the owner before: any doctrine or contract change; any
-amendment to the signed PWB artifacts (including the extraction grammar or
-the case tables); any change to security, privacy or retention posture beyond
-the adopted policy; any change to the registry entry's constraints or limits;
-any read outside the consented repository or content class; any scope beyond
-the signed change. Everything else in stack and layout is settled by this
-plan and its ordinary revisions.
+Stop and return to the owner before:
+
+- any doctrine or contract change;
+- any amendment to the signed PWB artifacts (including the extraction
+  grammar or the case tables);
+- any change to security, privacy or retention posture beyond the adopted
+  policy;
+- any change to the registry entry's constraints or limits;
+- any read outside the consented repository or content class;
+- any scope beyond the signed change.
+
+Everything else in stack and layout is settled by this plan and its ordinary
+revisions.
