@@ -19,6 +19,17 @@ declaration and the contract-coverage report from the proposed bytes, and
 composes every shared patch with each sibling PWB package in both orders
 against a declared table, so a drifted sibling fails the check instead of
 passing it.
+
+What is pinned, exactly. The proposed spec.md is pinned whole: it must equal
+the current spec.md with SPEC_EDITS applied, byte for byte, so no byte outside
+those eight edits may change and none inside them may drift. The rule tables
+below only name which rule a drift broke, and their digest is pinned. The
+shape and key-form sentences must hash to the digest of `syzygy-dov.24`'s
+tables at commit 1d5966c, and equal that builder's tables when it is in the
+tree. GOVERNING-DEPENDENCIES.md and CONTRACT-COVERAGE.md are regenerated and
+compared byte for byte. CAPABILITY-COVERAGE.md is pinned only by row 4 and its
+totals, and otherwise only by the manifest digest. The patch files' own bytes
+are not pinned beyond what they produce.
 """
 
 from __future__ import annotations
@@ -76,7 +87,7 @@ READER_END = "## ADDED Requirements"
 VOCABULARY_OPENING = "- A **container shape** is how the items of one grammar row sit inside its"
 KEYS_OPENING = "- An **item key form** says what becomes an item's key and how a key fails."
 PROFILE_OPENING = "- The **project profile** declares a project's extraction grammar as grammar"
-LOADED_OPENING = "- Until the observer reads a profile for Butlers, it reads Butlers by the"
+LOADED_OPENING = "- Until a profile is declared for Butlers, the observer reads Butlers by the"
 DECLARED_ITEM_OPENING = "- A **declared item** "
 DECLARED_ITEM_END = "- Stable item identity is"
 #: The reader definitions from here to their end are not amended and must stay
@@ -108,6 +119,12 @@ EXACT_PREFIX = "- For every grammar, loaded or built-in, h"
 #: is in the tree its sentences are compared with these; until then the two
 #: packages agree by copy, and `--check` says so.
 SHARED_TEXT = "build_pwb_registry_loaded_profile_amendment"
+#: The SHA-256 of repr((SHAPES, ITEM_KEY_SENTENCES)) in `syzygy-dov.24`'s
+#: builder at commit 1d5966c, its round-3 repair (unchanged at the head its
+#: confirmation round cleared). This package's tables must hash to it whether
+#: or not that builder is in the tree.
+SHARED_TEXT_COMMIT = "1d5966c"
+SHARED_TEXT_SHA256 = "64b15eaeed24b510c7d744bdd09f1de4f5989d2c05c9165b3826b8ac226d753d"
 #: The closed shape vocabulary, name -> the sentence `syzygy-dov.24` gives it,
 #: copied verbatim. The spec adds a full stop and code-span backticks around
 #: markup; both are removed before the whitespace-folded comparison.
@@ -152,7 +169,9 @@ SHAPES = {
         "table, and inside it the field must be written once as field = \"value\" or "
         "field = 'value' with a non-empty value; no such table, a repeated table, a repeated "
         "field or a missing or empty value fails the source as malformed-toml; a line in any "
-        "other form, and the field inside any other table, is not read; the value is trimmed "
+        "other form, and the field inside any other table, is not read; an array-of-tables "
+        "header such as [[other]] is a line in another form, so it neither opens a table nor "
+        "ends the declared one; the value is trimmed "
         "and NFC-normalized, a backslash escape in a double-quoted value is not decoded, and "
         "the value becomes the item's context"),
 }
@@ -176,8 +195,8 @@ KEY_FORMS = {
         "<prefix>:<one-based ordinal>, with the prefix the grammar row declares")),
     "first-cell-link-text": ("first-cell-link-text", (
         "the link text of the first cell, trimmed and NFC-normalized; the cell must be one "
-        "whole link [text](target), optionally with a quoted title, with non-empty text, or "
-        "the source fails as malformed-row")),
+        "whole link [text](target), optionally with a space or tab and a title in double "
+        "quotes after the target, with non-empty text, or the source fails as malformed-row")),
     "tree-key": ("tree-key", "the <key> segment of the tree population's pathPattern"),
     "ordinal-and-label": ("ordinal-and-label", (
         "the heading's ordinal, a colon and the first cell's label; the first cell must be "
@@ -213,6 +232,9 @@ VOCABULARY_RULES = {
         "section under each in the order declared, as it reads one section, and the items "
         "of all of them are that row's items."
     ),
+    "heading-section at most two headings": (
+        "A `heading-section` row declares at most two headings."
+    ),
     "recognition left to the observer": (
         "How list markers, table rows, fenced code and TOML lines are recognized is shared "
         "by every project and left to the observer:"
@@ -226,6 +248,11 @@ KEY_FORM_RULES = {
         "prefix written in;"
     ),
     "names are labels": "the form names are this text's labels for those sentences.",
+    "prefixed ordinal does not restart": (
+        "When a row declares more than one heading, a `prefixed-ordinal` key counts "
+        "the row's items across its sections in the order declared and does not "
+        "restart at each heading."
+    ),
 }
 #: The declared-item bullet: a class is read by its rule, made of rows, and
 #: each class has one category.
@@ -279,6 +306,14 @@ LOADED_RULES = {
         "grammar written below, as a built-in default; no other project has a "
         "built-in default."
     ),
+    "declared but unread is refused": (
+        "A Butlers profile that is declared but that the observer does not read, "
+        "for any reason, is treated as one the loader refuses,"
+    ),
+    "undeterminable declaration is refused": (
+        "and so is a profile the observer cannot tell is or is not declared for "
+        "Butlers."
+    ),
     "refused profile does not fall back": (
         "A Butlers profile the loader refuses never returns Butlers to the built-in "
         "default."
@@ -295,8 +330,8 @@ LOADED_RULES = {
     "a class with no row": "A class that the loaded profile gives no row,",
     "a row outside the closed sets": (
         "or that has a row naming a shape or stating a key form outside these "
-        "closed sets or lacking a parameter its shape or key form reads, is "
-        "unreadable:"
+        "closed sets or lacking a parameter its shape or key form reads, or "
+        "declaring more headings than its shape allows, is unreadable:"
     ),
     "class and category Unknown": (
         "its item denominator and its category's item denominator are Unknown,"
@@ -314,7 +349,7 @@ LOADED_RULES = {
     "whole-load refusal": (
         "A loader that instead refuses the whole profile meets this rule only if "
         "every source stays in the source-path population with an Unknown item "
-        "denominator."
+        "denominator and every class's and category's item denominator is Unknown."
     ),
 }
 
@@ -332,7 +367,7 @@ REQUIREMENT_RULES = {
         "closed container shapes and item key forms"
     ),
     "body: Butlers default": (
-        "or, until the observer reads a profile for Butlers, the Butlers grammar "
+        "or, until a profile is declared for Butlers, the Butlers grammar "
         "written there"
     ),
     "body: one coverage state": (
@@ -352,7 +387,10 @@ REQUIREMENT_RULES = {
     "case: shape outside the vocabulary": (
         "a loaded profile with a row that names a shape outside the vocabulary,"
     ),
-    "case: refused Butlers profile": "and a Butlers profile the loader refuses.",
+    "case: refused Butlers profile": "a Butlers profile the loader refuses,",
+    "case: project with no profile": (
+        "and a project other than Butlers with no loaded profile."
+    ),
     "oracle: governing grammar": (
         "two independent extractors apply the literal grammar that governs the "
         "project"
@@ -377,7 +415,8 @@ REQUIREMENT_RULES = {
         "a refused Butlers profile returns Butlers to the built-in grammar,"
     ),
     "falsifier: project with no profile": (
-        "or a project with no profile reports a known item denominator."
+        "or a project other than Butlers with no loaded profile reports a known "
+        "item denominator."
     ),
 }
 RETIRED_REQUIREMENT_TEXT = "declared item discovered by the closed extraction rule"
@@ -385,7 +424,8 @@ SCENARIOS = (
     "#### Scenario: Butlers' profile reproduces the written grammar",
     "#### Scenario: Loaded profile gives one class no row",
     "#### Scenario: Loaded profile names a shape outside the vocabulary",
-    "#### Scenario: Refused Butlers profile does not fall back",
+    "#### Scenario: Refused or unread Butlers profile does not fall back",
+    "#### Scenario: Project with no profile has Unknown item denominators",
 )
 #: Each added scenario, word for word; its rules below name what each clause
 #: must keep.
@@ -413,11 +453,19 @@ SCENARIO_TEXT = {
         "- **AND** no built-in or nearest shape reads the class in its place\n"
     ),
     SCENARIOS[3]: (
-        "- **WHEN** the loader refuses a profile declared for Butlers\n"
+        "- **WHEN** a profile is declared for Butlers and the loader refuses it or the\n"
+        "  observer does not read it\n"
         "- **THEN** every Butlers class's item denominator and its category's item\n"
         "  denominator render Unknown\n"
         "- **AND** every source stays in the source-path population and the grammar\n"
         "  written in these reader definitions reads no class\n"
+    ),
+    SCENARIOS[4]: (
+        "- **WHEN** a project other than Butlers is observed with no loaded profile\n"
+        "- **THEN** each of its classes' item denominators and each category's item\n"
+        "  denominator render Unknown, never zero\n"
+        "- **AND** no item is minted for it and the grammar written in these reader\n"
+        "  definitions reads none of its classes\n"
     ),
 }
 SCENARIO_RULES = {
@@ -445,13 +493,341 @@ SCENARIO_RULES = {
         "no built-in or nearest shape reads the class in its place",
     ),
     SCENARIOS[3]: (
-        "the loader refuses a profile declared for Butlers",
+        "a profile is declared for Butlers and the loader refuses it or the "
+        "observer does not read it",
         "every Butlers class's item denominator and its category's item "
         "denominator render Unknown",
         "every source stays in the source-path population and the grammar "
         "written in these reader definitions reads no class",
     ),
+    SCENARIOS[4]: (
+        "a project other than Butlers is observed with no loaded profile",
+        "each of its classes' item denominators and each category's item "
+        "denominator render Unknown, never zero",
+        "no item is minted for it and the grammar written in these reader "
+        "definitions reads none of its classes",
+    ),
 }
+# The rule tables above name which rule a drifted paragraph or scenario
+# breaks; they are not the guard on the bytes (SPEC_EDITS below is). Their
+# digest is pinned so that a rule weakened, dropped or added in one place
+# fails the selftest instead of passing with its own derived mutant.
+RULE_TABLES_SHA256 = "c89c6da731b517e73af7e5b39c304b14f78d2f76a2147159c89e46d896dcab5d"
+# The selftest's total, fixed so that a rule removed from any table above
+# fails the selftest instead of lowering its count.
+EXPECTED_KILLED = 185
+# The whole proposed spec.md, pinned by construction: it must equal the
+# current spec.md with each (anchor, replacement) pair applied once, and every
+# other byte of the file unchanged. Each anchor must occur exactly once in the
+# current spec.md. This is what holds every requirement, scenario and source
+# population rule this package does not amend to its current bytes.
+SPEC_EDITS = (
+    (
+        (
+            '  `MANIFESTO.md` when present. Narrative links do not recurse.\n'
+            '- A **declared item** has one class from this closed set and one extraction rule:\n'
+            '  `project-account-section` uses the six keys purpose, promises, refusals,\n'
+        ),
+        (
+            '  `MANIFESTO.md` when present. Narrative links do not recurse.\n'
+            "- A **declared item** has one class from this closed set, read by that class's\n"
+            "  extraction rule (for a loaded profile, the class's grammar rows):\n"
+            '  `project-account-section` uses the six keys purpose, promises, refusals,\n'
+        ),
+    ),
+    (
+        (
+            '  `roster-identity` uses each top-level roster directory containing\n'
+            '  butler.toml. No other prose, heading, link or file mints an item.\n'
+            '- Stable item identity is `(item class, declared key)`. Repository-relative path\n'
+        ),
+        (
+            '  `roster-identity` uses each top-level roster directory containing\n'
+            '  butler.toml. No other prose, heading, link or file mints an item. Each class\n'
+            '  belongs to one category: `project-account-section`, `principle`,\n'
+            '  `success-criterion` and `catalog-entry` to Heart and Soul; `design-contract`\n'
+            '  to Legends and Lore; `baseline-spec` to Spec and Spine; `topology-component`\n'
+            '  to Lay and Land; `craft-policy` to Craft and Care; and `roster-identity` to\n'
+            '  roster identity.\n'
+            '- Stable item identity is `(item class, declared key)`. Repository-relative path\n'
+        ),
+    ),
+    (
+        (
+            '  one class is a contradiction rather than a path-based disambiguation.\n'
+            '- The extraction grammar is literal:\n'
+            '  - `project-account-section` mints exactly six aggregate keys: purpose from\n'
+        ),
+        (
+            '  one class is a contradiction rather than a path-based disambiguation.\n'
+            '- A **container shape** is how the items of one grammar row sit inside its\n'
+            '  source. The vocabulary is closed at nine shapes, and no other shape is read.\n'
+            "  Each shape's sentence says what the shape reads and how that reading fails.\n"
+            '  Rules every shape shares are stated once here: a heading is an ATX heading\n'
+            '  written at column 0 outside fenced code, so an indented line is never a\n'
+            '  heading; a declared heading with a level matches only at that level, and one\n'
+            '  without a level at any level, always by exact text; a declared heading that\n'
+            '  is missing fails the source as missing-heading, and one that occurs more\n'
+            '  than once fails it as duplicate-key. When a list or table row declares more\n'
+            '  than one heading, the shape reads the section under each in the order\n'
+            '  declared, as it reads one section, and the items of all of them are that\n'
+            "  row's items. A `heading-section` row declares at most two headings. How list\n"
+            '  markers, table rows, fenced code and TOML lines are recognized is shared by\n'
+            '  every project and left to the observer:\n'
+            '  - `heading-section`: the body under the declared heading: the lines after it\n'
+            '    up to the next heading at the same or a higher level, with outer\n'
+            '    whitespace trimmed, NFC-normalized; the body may be empty; when a row\n'
+            "    declares two headings the item's text is the first heading's text, a blank\n"
+            "    line, its body, a blank line, the second heading's text, a blank line and\n"
+            '    its body, with outer whitespace trimmed.\n'
+            '  - `every-level-2-section`: every level-2 heading in the file, in file order;\n'
+            "    each part is the heading's text, a blank line and its body read as\n"
+            '    heading-section reads it, with outer whitespace trimmed, and the parts are\n'
+            '    joined by one blank line; a file with no level-2 heading fails the source\n'
+            '    as missing-heading.\n'
+            '  - `top-level-decimal-list`: each list item at column 0 in the section, which\n'
+            '    must be numbered: a decimal number followed by . or ) and a space or tab;\n'
+            '    a bulleted item at column 0 fails the source as malformed-list, and so\n'
+            '    does a section with no list item at column 0.\n'
+            '  - `top-level-list`: each list item at column 0 in the section, numbered or\n'
+            '    bulleted; a section with no list item at column 0 fails the source as\n'
+            '    malformed-list.\n'
+            '  - `top-level-bulleted-list`: each list item at column 0 in the section,\n'
+            '    which must be bulleted: a numbered item at column 0 fails the source as\n'
+            '    malformed-list; a section with no list item yields no items and does not\n'
+            '    fail.\n'
+            '  - `first-table-rows`: each body row of the first table in the section; a\n'
+            '    section with no table fails the source as malformed-row, and so does a\n'
+            "    body row of that table whose cell count differs from its header's; later\n"
+            '    tables in the section are not read.\n'
+            '  - `ordinal-section-table-rows`: each body row of every table in the section\n'
+            '    of every level-2 heading whose text opens with a decimal number,\n'
+            '    optionally one lowercase letter, and then the end of the text or a\n'
+            '    character that is not an ASCII letter, digit or underscore; a file with no\n'
+            '    such heading fails the source as missing-heading, and a body row whose\n'
+            "    cell count differs from its table's header fails it as malformed-row.\n"
+            '  - `tree-path`: the Git tree path itself, matched against the tree\n'
+            "    population's `pathPattern`; no body is read and nothing fails.\n"
+            '  - `toml-table-field`: the declared field of the declared TOML table: exactly\n'
+            '    one header line must name the table, and inside it the field must be\n'
+            '    written once as `field = "value"` or `field = \'value\'` with a non-empty\n'
+            '    value; no such table, a repeated table, a repeated field or a missing or\n'
+            '    empty value fails the source as malformed-toml; a line in any other form,\n'
+            '    and the field inside any other table, is not read; an array-of-tables\n'
+            '    header such as `[[other]]` is a line in another form, so it neither opens\n'
+            '    a table nor ends the declared one; the value is trimmed and\n'
+            '    NFC-normalized, a backslash escape in a double-quoted value is not\n'
+            "    decoded, and the value becomes the item's context.\n"
+            "- An **item key form** says what becomes an item's key and how a key fails.\n"
+            '  The forms are closed at eight, and no other key form is read:\n'
+            '  - `fixed`: the fixed key.\n'
+            "  - `leading-bold`: the item's leading bold span (`**` or `__`),\n"
+            '    NFC-normalized with whitespace runs collapsed; an item with no non-empty\n'
+            '    leading bold span fails the source as ambiguous-leading-label.\n'
+            "  - `leading-bold-or-code`: the item's leading bold span, or else its leading\n"
+            '    code span, NFC-normalized with whitespace runs collapsed; the span must be\n'
+            '    non-empty and followed, after optional whitespace, by a hyphen-minus, en\n'
+            '    dash or em dash, or the source fails as ambiguous-leading-label; each\n'
+            "    item's context is the text of the declared heading it was read under.\n"
+            '  - `prefixed-ordinal`: `<prefix>:<one-based ordinal>`, with the prefix the\n'
+            '    grammar row declares.\n'
+            '  - `first-cell-link-text`: the link text of the first cell, trimmed and\n'
+            '    NFC-normalized; the cell must be one whole link `[text](target)`,\n'
+            '    optionally with a space or tab and a title in double quotes after the\n'
+            '    target, with non-empty text, or the source fails as malformed-row.\n'
+            "  - `tree-key`: the `<key>` segment of the tree population's `pathPattern`.\n"
+            "  - `ordinal-and-label`: the heading's ordinal, a colon and the first cell's\n"
+            '    label; the first cell must be exactly one bold span with a non-empty\n'
+            "    label, or the source fails as malformed-row; each item's context is the\n"
+            "    heading's ordinal.\n"
+            '  - `link-target-basename`: the basename of the link target in the declared\n'
+            '    column, without its fragment; a table with no such column, or a cell in it\n'
+            '    that is not one whole link whose target has a non-empty last segment,\n'
+            '    fails the source as malformed-row.\n'
+            '  A key that occurs twice within one class of one source fails the source as\n'
+            "  duplicate-key. A grammar row states its key form by carrying that form's\n"
+            '  sentence above, word for word, or, for `prefixed-ordinal`, by\n'
+            '  `<prefix>:<one-based ordinal>` with its prefix written in; the form names\n'
+            "  are this text's labels for those sentences. When a row declares more than\n"
+            "  one heading, a `prefixed-ordinal` key counts the row's items across its\n"
+            '  sections in the order declared and does not restart at each heading.\n'
+            "- The **project profile** declares a project's extraction grammar as grammar\n"
+            "  rows, and is carried in the project-shape observer's owner-adopted registry\n"
+            '  entry. Each class above has one or more rows. Each row names its class and\n'
+            '  its source; the heading or headings, each with its level when it has one and\n'
+            '  its exact text, or the tree population that locate it, when its shape reads\n'
+            '  one; every parameter its shape or key form reads, such as a table column, a\n'
+            '  TOML table and field or a key prefix; exactly one container shape; and\n'
+            '  exactly one item key form. A tree population is declared by a path pattern,\n'
+            '  `pathPattern`, whose one `<key>` segment is a single directory name. A\n'
+            '  profile cannot add a class, a shape or a key form.\n'
+            '- Until a profile is declared for Butlers, the observer reads Butlers by the\n'
+            '  grammar written below, as a built-in default; no other project has a\n'
+            '  built-in default. A Butlers profile that is declared but that the observer\n'
+            '  does not read, for any reason, is treated as one the loader refuses, and so\n'
+            '  is a profile the observer cannot tell is or is not declared for Butlers. A\n'
+            '  Butlers profile the loader refuses never returns Butlers to the built-in\n'
+            '  default. A project other than Butlers with no loaded profile has no\n'
+            "  extraction rules: its classes' and categories' item denominators are\n"
+            "  Unknown, never zero, and no item is minted for it. Once a project's profile\n"
+            "  is loaded, it is the only source of that project's extraction rules. A class\n"
+            '  that the loaded profile gives no row, or that has a row naming a shape or\n'
+            '  stating a key form outside these closed sets or lacking a parameter its\n'
+            '  shape or key form reads, or declaring more headings than its shape allows,\n'
+            "  is unreadable: its item denominator and its category's item denominator are\n"
+            '  Unknown, each source any of its rows names fails as a source in which a\n'
+            '  class fails, and every source stays in the source-path population. The\n'
+            "  observer never substitutes a built-in rule for a loaded profile's missing or\n"
+            '  invalid one. A loader that instead refuses the whole profile meets this rule\n'
+            '  only if every source stays in the source-path population with an Unknown\n'
+            "  item denominator and every class's and category's item denominator is\n"
+            '  Unknown.\n'
+            '- For every grammar, loaded or built-in, heading levels/text, top-level list\n'
+            '  depth, table column counts, one-based ordinals and literal keys are exact.\n'
+            '  Unicode is NFC-normalized; no case folding, stemming or punctuation\n'
+            '  rewriting occurs. A missing heading, malformed row/list/TOML, unexpected\n'
+            "  duplicate key or ambiguous leading label makes the enclosing source's item\n"
+            '  denominator Unknown; it never produces a partial item set.\n'
+            "- Butlers' profile declares exactly the following extraction grammar, which is\n"
+            '  literal:\n'
+            '  - `project-account-section` mints exactly six aggregate keys: purpose from\n'
+        ),
+    ),
+    (
+        (
+            '    the directory is the key and the TOML `[butler].name` must be non-empty.\n'
+            '  Heading levels/text, top-level list depth, table column counts, one-based\n'
+            '  ordinals and literal keys are exact. Unicode is NFC-normalized; no case\n'
+            '  folding, stemming or punctuation rewriting occurs. A missing heading,\n'
+            '  malformed row/list/TOML, unexpected duplicate key or ambiguous leading label\n'
+            "  makes the enclosing source's item denominator Unknown; it never produces a\n"
+            '  partial item set.\n'
+            '- The source-path denominator remains known through body-read failures. An\n'
+        ),
+        (
+            '    the directory is the key and the TOML `[butler].name` must be non-empty.\n'
+            '- The source-path denominator remains known through body-read failures. An\n'
+        ),
+    ),
+    (
+        (
+            'For every lawfully admitted source body, Polaris SHALL account for each\n'
+            'declared item discovered by the closed extraction rule across Heart and Soul,\n'
+            'Legends and Lore, Spec and Spine, Lay and Land, Craft and Care and roster\n'
+            'identity. Each admitted item SHALL be in exactly one coverage state: modeled,\n'
+        ),
+        (
+            'For every lawfully admitted source body, Polaris SHALL account for each\n'
+            'declared item discovered by the extraction grammar that governs its project\n'
+            'under the reader definitions (the grammar rows of its loaded project profile,\n'
+            'read only through the closed container shapes and item key forms, or, until\n'
+            'a profile is declared for Butlers, the Butlers grammar written there)\n'
+            'across Heart\n'
+            'and Soul, Legends and Lore, Spec and Spine, Lay and Land, Craft and Care and roster\n'
+            'identity. Each admitted item SHALL be in exactly one coverage state: modeled,\n'
+        ),
+    ),
+    (
+        (
+            '  each readable category at one revision, then compare it to the model; include\n'
+            '  an unreadable source case.\n'
+            '- **Observable**: per-category identities and reconciling counts are visible in\n'
+            '  the machine answer and reachable from Polaris.\n'
+            '- **Oracle**: two independent extractors apply the literal grammar to the\n'
+            '  revision-bound source population and must produce the same identities and D;\n'
+            '  modeled + Unknown + contradicted equals D, with each identity appearing once;\n'
+            '  malformed/unreadable sources carry an Unknown item denominator.\n'
+            '- **Oracle independence**: the expected denominator is extracted from the\n'
+        ),
+        (
+            '  each readable category at one revision, then compare it to the model; include\n'
+            '  an unreadable source case, a loaded profile that gives one class no row, a\n'
+            '  loaded profile with a row that names a shape outside the vocabulary, a\n'
+            '  Butlers profile the loader refuses, and a project other than Butlers with no\n'
+            '  loaded profile.\n'
+            '- **Observable**: per-category identities and reconciling counts are visible in\n'
+            '  the machine answer and reachable from Polaris.\n'
+            '- **Oracle**: two independent extractors apply the literal grammar that\n'
+            '  governs the project to the revision-bound source population and must produce\n'
+            '  the same identities and D; for Butlers read through its loaded profile, both\n'
+            '  also apply the grammar written in these reader definitions and must produce\n'
+            '  the same identities and D; modeled + Unknown + contradicted equals D, with\n'
+            '  each identity appearing once; malformed/unreadable sources, and every class\n'
+            '  a loaded profile leaves unreadable, carry an Unknown item denominator.\n'
+            '- **Oracle independence**: the expected denominator is extracted from the\n'
+        ),
+    ),
+    (
+        (
+            '  a partial population, a known source disappears, an admitted item appears twice or\n'
+            "  lacks a state, a known count does not reconcile, or an unavailable body's\n"
+            '  item denominator is presented as known.\n'
+            '\n'
+        ),
+        (
+            '  a partial population, a known source disappears, an admitted item appears twice or\n'
+            "  lacks a state, a known count does not reconcile, an unavailable body's\n"
+            '  item denominator is presented as known, an item is read through a shape or\n'
+            "  key form its governing grammar does not declare, a loaded profile's\n"
+            '  missing or invalid rule is replaced by a built-in one, a refused Butlers\n'
+            '  profile returns Butlers to the built-in grammar, or a project other than\n'
+            '  Butlers with no loaded profile reports a known item denominator.\n'
+            '\n'
+        ),
+    ),
+    (
+        (
+            '  sum to its denominator\n'
+            '\n'
+        ),
+        (
+            '  sum to its denominator\n'
+            '\n'
+            "#### Scenario: Butlers' profile reproduces the written grammar\n"
+            '\n'
+            '- **WHEN** Butlers is observed through its loaded project profile\n'
+            '- **THEN** each item is extracted through the container shape and item key\n'
+            '  form its grammar row declares\n'
+            '- **AND** the identities and D equal those produced by the grammar written in\n'
+            '  these reader definitions\n'
+            '\n'
+            '#### Scenario: Loaded profile gives one class no row\n'
+            '\n'
+            "- **WHEN** Butlers' loaded profile has no grammar row for one class\n"
+            "- **THEN** that class's item denominator and its category's item denominator\n"
+            '  render Unknown\n'
+            '- **AND** every source stays in the source-path population and no built-in\n'
+            '  rule reads the class\n'
+            '\n'
+            '#### Scenario: Loaded profile names a shape outside the vocabulary\n'
+            '\n'
+            "- **WHEN** a grammar row in Butlers' loaded profile names a container shape or\n"
+            '  item key form outside the closed sets\n'
+            "- **THEN** that class's item denominator and its category's item denominator\n"
+            "  render Unknown, and each source any of the class's rows names fails as a\n"
+            '  source in which a class fails\n'
+            '- **AND** no built-in or nearest shape reads the class in its place\n'
+            '\n'
+            '#### Scenario: Refused or unread Butlers profile does not fall back\n'
+            '\n'
+            '- **WHEN** a profile is declared for Butlers and the loader refuses it or the\n'
+            '  observer does not read it\n'
+            "- **THEN** every Butlers class's item denominator and its category's item\n"
+            '  denominator render Unknown\n'
+            '- **AND** every source stays in the source-path population and the grammar\n'
+            '  written in these reader definitions reads no class\n'
+            '\n'
+            '#### Scenario: Project with no profile has Unknown item denominators\n'
+            '\n'
+            '- **WHEN** a project other than Butlers is observed with no loaded profile\n'
+            "- **THEN** each of its classes' item denominators and each category's item\n"
+            '  denominator render Unknown, never zero\n'
+            '- **AND** no item is minted for it and the grammar written in these reader\n'
+            '  definitions reads none of its classes\n'
+            '\n'
+        ),
+    ),
+)
 CAPABILITY_ROW = (
     "| 4 | Account for every admitted declared item exactly once, reading each "
     "class only through the grammar rows its loaded project profile declares "
@@ -595,14 +971,26 @@ def _entries(block: str, expected: dict[str, str], label: str) -> list[str]:
     return findings
 
 
+def shared_digest(shapes: dict[str, str], key_forms: dict) -> str:
+    """The digest `SHARED_TEXT_SHA256` pins, over this package's two tables."""
+    ours = {form: sentence for form, sentence in key_forms.values() if form}
+    return sha256(repr((shapes, ours)).encode())
+
+
 def shared_text_findings(module: object | None = None) -> list[str]:
-    """This package's sentences against `syzygy-dov.24`'s, once it is in the tree."""
+    """This package's sentences against `syzygy-dov.24`'s: always by the pinned
+    digest, and sentence by sentence once that builder is in the tree."""
+    findings: list[str] = []
+    if shared_digest(SHAPES, KEY_FORMS) != SHARED_TEXT_SHA256:
+        findings.append(
+            f"shape and key-form sentences do not hash to syzygy-dov.24's at "
+            f"{SHARED_TEXT_COMMIT}"
+        )
     if module is None:
         if not (ROOT / "scripts" / f"{SHARED_TEXT}.py").is_file():
-            return []
+            return findings
         sys.path.insert(0, str(ROOT / "scripts"))
         module = __import__(SHARED_TEXT)
-    findings: list[str] = []
     if getattr(module, "SHAPES", None) != SHAPES:
         findings.append("shape sentences differ from the loaded-profile amendment's")
     theirs = getattr(module, "ITEM_KEY_SENTENCES", None) or {}
@@ -610,6 +998,53 @@ def shared_text_findings(module: object | None = None) -> list[str]:
     if theirs != ours:
         findings.append("key-form sentences differ from the loaded-profile amendment's")
     return findings
+
+
+def rule_tables_digest() -> str:
+    tables = (
+        SHAPES, KEY_FORMS, CLOSURES, VOCABULARY_RULES, KEY_FORM_RULES,
+        DECLARED_ITEM_RULES, DUPLICATE_KEY, PROFILE_RULES, LOADED_RULES,
+        REQUIREMENT_RULES, RETIRED_REQUIREMENT_TEXT, SCENARIOS, SCENARIO_TEXT,
+        SCENARIO_RULES,
+    )
+    return sha256(repr(tables).encode("utf-8"))
+
+
+def expected_spec(base: str) -> tuple[str | None, list[str]]:
+    """The current spec with each SPEC_EDITS pair applied once."""
+    findings: list[str] = []
+    text = base
+    for anchor, replacement in SPEC_EDITS:
+        if base.count(anchor) != 1:
+            findings.append(
+                "current spec does not carry the pinned anchor exactly once: "
+                f"{anchor.splitlines()[0]!r}"
+            )
+            continue
+        text = text.replace(anchor, replacement, 1)
+    if findings:
+        return None, findings
+    return text, []
+
+
+def pin_findings(text: str, base: str) -> list[str]:
+    want, findings = expected_spec(base)
+    if want is None:
+        return findings
+    if text == want:
+        return []
+    got_lines, want_lines = text.splitlines(), want.splitlines()
+    for number, (got, wanted) in enumerate(zip(got_lines, want_lines), 1):
+        if got != wanted:
+            break
+    else:
+        number = min(len(got_lines), len(want_lines)) + 1
+        got = got_lines[number - 1] if number <= len(got_lines) else "<end>"
+        wanted = want_lines[number - 1] if number <= len(want_lines) else "<end>"
+    return [
+        f"proposed spec differs from the pinned text at line {number}: "
+        f"got {got!r}, want {wanted!r}"
+    ]
 
 
 def reader_findings(text: str, current: str) -> list[str]:
@@ -699,7 +1134,7 @@ def _block(text: str, heading: str) -> str:
 def requirement_findings(spec: bytes, current: bytes | None = None) -> list[str]:
     text = spec.decode("utf-8")
     base = (current if current is not None else current_bytes()[SPEC]).decode("utf-8")
-    findings = reader_findings(text, base)
+    findings = pin_findings(text, base) + reader_findings(text, base)
     start = text.find(REQUIREMENT)
     end = text.find(NEXT_REQUIREMENT, start)
     if start < 0 or end < 0:
@@ -962,7 +1397,14 @@ def selftest() -> int:
     )
     if not verify_manifest(reordered, baseline):
         return _fail("manifest path-order mutation passed")
-    killed += 2
+    # A row digest corrupted with the path order kept: only the exact
+    # comparison sees it.
+    corrupted_row = baseline.replace(rows[0][0], "0" * 64, 1)
+    if "manifest differs from exact regeneration over proposed bytes" not in (
+        verify_manifest(corrupted_row, baseline)
+    ):
+        return _fail("corrupted manifest row digest passed")
+    killed += 3
 
     # Patch population: dropping the capability patch.
     without = [p for p in patch_files() if p.name != "CAPABILITY-COVERAGE.md.patch"]
@@ -972,6 +1414,21 @@ def selftest() -> int:
         or f"declared patched subject is unchanged: {CAPABILITY_COVERAGE}" not in population
     ):
         return _fail("dropped-patch mutation passed the population predicate")
+    killed += 1
+    # An extra patch that changes a subject no patch is declared to change.
+    with tempfile.TemporaryDirectory() as scratch:
+        design = CHANGE / "design.md"
+        lines = current[design].decode("utf-8").splitlines()
+        extra = pathlib.Path(scratch) / "design.md.patch"
+        extra.write_text(
+            f"diff --git a/{design.as_posix()} b/{design.as_posix()}\n"
+            f"--- a/{design.as_posix()}\n+++ b/{design.as_posix()}\n"
+            f"@@ -{len(lines)} +{len(lines)},2 @@\n {lines[-1]}\n+undeclared drift\n"
+        )
+        if f"undeclared subject change: {design}" not in population_findings(
+            patch_files() + [extra]
+        ):
+            return _fail("undeclared subject change passed the population predicate")
     killed += 1
 
     # Shape and key-form vocabularies: each sentence altered, one entry
@@ -1304,18 +1761,130 @@ def selftest() -> int:
         return _fail("declared but unobserved sibling pair passed")
     killed += 2
 
+    # The whole-spec pin: text this package does not amend, each changed on
+    # its own. The round-3 reviewer's mutants passed every rule above; the
+    # PWB-REQ-001 title is one more.
+    unamended = {
+        "oracle 'malformed/unreadable'": ("malformed/unreadable sources,", "malformed sources,"),
+        "oracle 'modeled + Unknown + contradicted'": (
+            "modeled + Unknown + contradicted equals D", "modeled + Unknown equals D"),
+        "oracle 'revision-bound'": (
+            "governs the project to the revision-bound source population",
+            "governs the project to the source population"),
+        "oracle independence 'not from'": (
+            "  source files, not from the POC's coverage object.",
+            "  source files, or from the POC's coverage object."),
+        "observable 'Polaris'": (
+            "- **Observable**: per-category identities and reconciling counts are visible in",
+            "- **Observable**: per-category identities and reconciling counts are kept in"),
+        "Form invariant": (
+            "Group: Coverage. Form: **invariant**.\n\nFor every lawfully admitted",
+            "Group: Coverage. Form: **guideline**.\n\nFor every lawfully admitted"),
+        "body category list": (
+            "and Soul, Legends and Lore, Spec and Spine, Lay and Land, Craft and Care and roster",
+            "and Soul, Legends and Lore, Spec and Spine, Lay and Land and roster"),
+        "PWB-REQ-002 title": (
+            "### Requirement: PWB-REQ-002 — Every declared project-shape item is accounted for",
+            "### Requirement: PWB-REQ-002 — Most declared project-shape items are accounted for"),
+        "case 'one revision'": (
+            "  each readable category at one revision, then compare it to the model; include",
+            "  each readable category at any revision, then compare it to the model; include"),
+        "case 'unreadable source case'": (
+            "  an unreadable source case, a loaded profile", "  a loaded profile"),
+        "falsifier 'partial population'": (
+            "  a partial population, a known source disappears,", "  a known source disappears,"),
+        "falsifier 'unavailable body'": (
+            "an unavailable body's", "an available body's"),
+        "PWB-REQ-003 SHALL NOT made MAY": (
+            "The POC SHALL NOT shrink the source-path denominator",
+            "The POC MAY shrink the source-path denominator"),
+        "source population 'do not recurse'": (
+            "Narrative links do not recurse.", "Narrative links recurse."),
+        "PWB-REQ-001 title": (
+            "is revision-bound and explicitly scoped", "is explicitly scoped"),
+    }
+    for name, (old, new) in unamended.items():
+        mutated = _replace_once(spec, old, new, name)
+        if not any(
+            f.startswith("proposed spec differs from the pinned text")
+            for f in requirement_findings(mutated.encode())
+        ):
+            return _fail(f"unamended-text mutation passed the spec pin: {name}")
+        killed += 1
+    third = _block(spec, SCENARIOS[1])
+    fourth = _block(spec, SCENARIOS[2])
+    swapped = spec.replace(third + fourth, fourth + third, 1)
+    if swapped == spec or not any(
+        f.startswith("proposed spec differs from the pinned text")
+        for f in requirement_findings(swapped.encode())
+    ):
+        return _fail("scenario order swap passed the spec pin")
+    killed += 1
+    # Round 3's R-C: the falsifier unscoped again fires on Butlers' interim
+    # default, and both the pin and the rule refuse it.
+    unscoped = _replace_once(
+        spec,
+        "or a project other than\n  Butlers with no loaded profile reports",
+        "or a project with no\n  profile reports",
+        "unscoped falsifier",
+    )
+    found = requirement_findings(unscoped.encode())
+    if "PWB-REQ-002 lacks falsifier: project with no profile" not in found or not any(
+        f.startswith("proposed spec differs from the pinned text") for f in found
+    ):
+        return _fail("unscoped falsifier passed")
+    killed += 1
+    # Each pinned anchor drifted in the current spec.
+    base_text = current[SPEC].decode("utf-8")
+    for anchor, _ in SPEC_EDITS:
+        at = base_text.index(anchor)
+        drifted = (base_text[:at + 1] + "~" + base_text[at + 1:]).encode()
+        expected = (
+            "current spec does not carry the pinned anchor exactly once: "
+            f"{anchor.splitlines()[0]!r}"
+        )
+        if expected not in requirement_findings(proposed[SPEC], drifted):
+            return _fail(f"drifted anchor passed: {anchor.splitlines()[0]}")
+        killed += 1
+
+    # The shared sentences drifted on both sides at once: the sentence
+    # comparison agrees, and only the pinned dov.24 digest refuses it.
+    key = next(iter(SHAPES))
+    original_sentence = SHAPES[key]
+    SHAPES[key] = original_sentence + " [changed]"
+    try:
+        module = Module()
+        module.SHAPES = dict(SHAPES)
+        module.ITEM_KEY_SENTENCES = {form: s for form, s in KEY_FORMS.values() if form}
+        found = shared_text_findings(module)
+    finally:
+        SHAPES[key] = original_sentence
+    if found != [
+        "shape and key-form sentences do not hash to syzygy-dov.24's at "
+        f"{SHARED_TEXT_COMMIT}"
+    ]:
+        return _fail("shared-text drift on both sides passed the pinned digest")
+    killed += 1
+
     if composition_findings():
         return _fail("sibling composition does not verify")
+    if rule_tables_digest() != RULE_TABLES_SHA256:
+        return _fail("rule tables changed without their pinned digest")
+    if killed != EXPECTED_KILLED:
+        return _fail(f"{killed} mutants killed, expected {EXPECTED_KILLED}")
     print(
-        f"selftest: {killed} mutants killed — stale manifest, path order, patch "
-        f"population, {len(SHAPES)} shape and {len(KEY_FORMS)} key-form "
+        f"selftest: {killed} mutants killed — stale manifest, path order, a "
+        "corrupted row digest, patch population, an undeclared subject change, "
+        f"{len(SHAPES)} shape and {len(KEY_FORMS)} key-form "
         "sentences, entry dropped/added/moved and closure for each vocabulary, "
         f"the duplicate-key rule, {len(VOCABULARY_RULES)} vocabulary, "
         f"{len(KEY_FORM_RULES)} key-form, {len(PROFILE_RULES)} profile and "
         f"{len(LOADED_RULES)} loaded-profile rules, {len(DECLARED_ITEM_RULES)} "
         "declared-item rules and the rule made 'any', the source-path bullet, "
-        "shared-text drift on both "
-        "vocabularies, bullet order/duplicate/missing, retired opening, the "
+        "shared-text drift on either vocabulary and on both packages at once, "
+        f"the whole-spec pin over {len(unamended)} unamended clauses, a "
+        f"scenario swap, the unscoped falsifier and {len(SPEC_EDITS)} drifted "
+        "anchors, bullet order/duplicate/missing, retired opening, the "
         "hoisted exactness paragraph reworded or left behind, Butlers grammar "
         f"drift, {len(REQUIREMENT_RULES)} PWB-REQ-002 rules, retired "
         f"requirement text, SHALL made MAY, the falsifier relabelled, three "
@@ -1376,7 +1945,8 @@ def main(argv: list[str]) -> int:
         print(
             f"PWB container-shape profile manifest matches {len(BEHAVIOR_SUBJECTS)} "
             f"proposed subjects ({len(PATCHED)} patched, "
-            f"{len(BEHAVIOR_SUBJECTS) - len(PATCHED)} unchanged); {len(SHAPES)} "
+            f"{len(BEHAVIOR_SUBJECTS) - len(PATCHED)} unchanged); the whole spec "
+            f"equals the current spec with {len(SPEC_EDITS)} pinned edits; {len(SHAPES)} "
             f"shapes, {len(KEY_FORMS)} key forms, {len(VOCABULARY_RULES)} "
             f"vocabulary, {len(KEY_FORM_RULES)} key-form, {len(PROFILE_RULES)} "
             f"profile, {len(LOADED_RULES)} loaded-profile and "
@@ -1389,11 +1959,15 @@ def main(argv: list[str]) -> int:
             f"{len(DECLARED_COMPOSITION)} declared sibling-composition outcomes verify"
         )
         if (ROOT / "scripts" / f"{SHARED_TEXT}.py").is_file():
-            print("shape and key-form sentences match the loaded-profile amendment's builder")
+            print(
+                "shape and key-form sentences hash to syzygy-dov.24's at "
+                f"{SHARED_TEXT_COMMIT} and match the loaded-profile amendment's builder"
+            )
         else:
             print(
-                f"shape and key-form sentences are a copy: scripts/{SHARED_TEXT}.py "
-                "is not in this tree, so they are compared only once it lands"
+                "shape and key-form sentences hash to syzygy-dov.24's at "
+                f"{SHARED_TEXT_COMMIT}; scripts/{SHARED_TEXT}.py is not in this "
+                "tree, so they are compared sentence by sentence only once it lands"
             )
         return 0
     if not args.write:

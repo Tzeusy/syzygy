@@ -25,13 +25,16 @@ bytes, eight hash current bytes. `CONTRACT-COVERAGE.md` and its three matrix
 parts regenerate unchanged (the builder checks this).
 
 **Stable IDs affected:** `PWB-REQ-002` (amended in place: body, case, oracle,
-falsifier, four added scenarios; warrants unchanged). The reader definitions
-carry no identifier of their own. No other requirement changes.
+falsifier, five added scenarios; warrants unchanged). The reader definitions
+carry no identifier of their own. No other requirement changes: the builder
+holds the whole proposed `spec.md` to today's bytes with its eight edits
+applied, so a changed byte anywhere else fails `--check`.
 
 **Change class:** **Normative.** It changes what a conforming observer must
 do: once a project's profile is loaded, read each class only through the
 grammar rows that profile declares, and never fall back to a built-in rule;
-a Butlers profile the loader refuses does not fall back either.
+a Butlers profile the loader refuses, or that is declared but not read, does
+not fall back either.
 
 **Author:** agent draft. **Date:** 2026-09-27. **Gate bead:** `syzygy-u05.8`.
 
@@ -74,7 +77,8 @@ declared heading matches only at its declared level (at any level when it has
 none) and only by exact text; a missing one fails the source as
 missing-heading and a repeated one as duplicate-key; and a list or table row
 with more than one heading reads the section under each, in order, and its
-items are all of theirs. How list markers, table rows, fenced code and TOML
+items are all of theirs. A `heading-section` row declares at most two
+headings. How list markers, table rows, fenced code and TOML
 lines are recognized is left to the observer, the same for every project.
 The earlier claim that each sentence names "every way it fails" is gone.
 
@@ -90,7 +94,10 @@ the source as duplicate-key." It then says how a row names its form: "A
 grammar row states its key form by carrying that form's sentence above, word
 for word, or, for `prefixed-ordinal`, by `<prefix>:<one-based ordinal>` with
 its prefix written in; the form names are this text's labels for those
-sentences." That is how `syzygy-dov.24`'s rows state their forms.
+sentences." That is how `syzygy-dov.24`'s rows state their forms. It closes
+with: "When a row declares more than one heading, a `prefixed-ordinal` key
+counts the row's items across its sections in the order declared and does
+not restart at each heading."
 
 **3. A project profile declares grammar rows.** The new bullet reads, in
 part:
@@ -106,22 +113,28 @@ part:
 > cannot add a class, a shape or a key form.
 
 **4. Butlers' interim default, and what a loaded profile may not leave
-out.** The next bullet opens "Until the observer reads a profile for
-Butlers, it reads Butlers by the grammar written below, as a built-in
-default; no other project has a built-in default." Two sentences close the
-paths round 2 found open: "A Butlers profile the loader refuses never returns
-Butlers to the built-in default", and "A project other than Butlers with no
-loaded profile has no extraction rules: its classes' and categories' item
-denominators are Unknown, never zero, and no item is minted for it." Once a
-profile is loaded it is the only source of that project's rules. A class it
-gives no row, or whose row names a shape or states a key form outside the
-closed sets or lacks a parameter, "is
+out.** The next bullet opens "Until a profile is declared for Butlers, the
+observer reads Butlers by the grammar written below, as a built-in default;
+no other project has a built-in default." The trigger is that a profile is
+*declared*, not that one is read. So the next sentence closes the gap round 3
+found between the two: "A Butlers profile that is declared but that the
+observer does not read, for any reason, is treated as one the loader refuses,
+and so is a profile the observer cannot tell is or is not declared for
+Butlers." Two sentences close the paths round 2 found open: "A Butlers
+profile the loader refuses never returns Butlers to the built-in default",
+and "A project other than Butlers with no loaded profile has no extraction
+rules: its classes' and categories' item denominators are Unknown, never
+zero, and no item is minted for it." Once a profile is loaded it is the only
+source of that project's rules. A class it gives no row, or whose row names a
+shape or states a key form outside the closed sets, lacks a parameter or
+declares more headings than its shape allows, "is
 unreadable: its item denominator and its category's item denominator are
 Unknown, each source any of its rows names fails as a source in which a
 class fails, and every source stays in the source-path population." The
 observer never substitutes a built-in rule for a loaded profile's missing
 or invalid one. A whole-profile refusal meets the rule only if every source
-stays counted with an Unknown item denominator.
+stays counted with an Unknown item denominator "and every class's and
+category's item denominator is Unknown".
 
 **5. Exactness covers every grammar.** Today's closing paragraph of the
 Butlers grammar ("Heading levels/text, top-level list depth, … it never
@@ -136,22 +149,27 @@ is literal:". The nine class bullets under it are byte-identical to today's
 **7. `PWB-REQ-002`.** The body now reads "declared item discovered by the
 extraction grammar that governs its project under the reader definitions
 (the grammar rows of its loaded project profile, read only through the
-closed container shapes and item key forms, or, until the observer reads a
-profile for Butlers, the Butlers grammar written there)". The case adds "a
-loaded profile that gives one class no row, a loaded profile with a row that
-names a shape outside the vocabulary, and a Butlers profile the loader
-refuses". The oracle adds that, for Butlers
-read through its loaded profile, both extractors also apply the written
-grammar "and must produce the same identities and D", and that every class
-a loaded profile leaves unreadable carries an Unknown item denominator. The
+closed container shapes and item key forms, or, until a profile is declared
+for Butlers, the Butlers grammar written there)". The case adds "a loaded
+profile that gives one class no row, a loaded profile with a row that names a
+shape outside the vocabulary, a Butlers profile the loader refuses, and a
+project other than Butlers with no loaded profile". The oracle adds that,
+for Butlers read through its loaded profile, both extractors also apply the
+written grammar "and must produce the same identities and D", and that every
+class a loaded profile leaves unreadable carries an Unknown item denominator.
+The
 falsifier adds "an item is read through a shape or key form its governing
 grammar does not declare, a loaded profile's missing or invalid rule is
 replaced by a built-in one, a refused Butlers profile returns Butlers to the
-built-in grammar, or a project with no profile reports a known item
-denominator". Four scenarios are added: "Butlers' profile reproduces the
-written grammar", "Loaded profile gives one class no row", "Loaded profile
-names a shape outside the vocabulary" and "Refused Butlers profile does not
-fall back".
+built-in grammar, or a project other than Butlers with no loaded profile
+reports a known item denominator". That last clause names projects other
+than Butlers on purpose: Butlers today has no profile and lawfully reports
+known denominators by its built-in default, so an unscoped clause would call
+today's conforming state a failure. Five scenarios are added: "Butlers'
+profile reproduces the written grammar", "Loaded profile gives one class no
+row", "Loaded profile names a shape outside the vocabulary", "Refused or
+unread Butlers profile does not fall back" and "Project with no profile has
+Unknown item denominators".
 
 **8. The declared-item bullet.** It said a declared item has "one class
 from this closed set and one extraction rule", which pulled against a class
@@ -161,9 +179,10 @@ rows)", and adds which category each class counts toward: the first four
 classes to Heart and Soul, `design-contract` to Legends and Lore,
 `baseline-spec` to Spec and Spine, `topology-component` to Lay and Land,
 `craft-policy` to Craft and Care and `roster-identity` to roster identity.
-The mapping is the one the code already uses (`classesForPillar` in
-`packages/three-surface-poc-core/src/project-shape-model.ts`, with roster
-identity as its own category, as `PWB-REQ-002`'s list names it) [Observed].
+The mapping is the one the code already uses: `CLASS_ROWS` in
+`packages/three-surface-poc-core/src/project-shape-coverage.ts`, lines 85-95,
+gives the first four classes layer 1, `design-contract` 2, `baseline-spec` 3,
+`craft-policy` 4, `topology-component` 5 and `roster-identity` 6 [Observed].
 The class list and each class's meaning are unchanged.
 
 ## What explicitly does NOT change
@@ -173,7 +192,8 @@ The class list and each class's meaning are unchanged.
 - The source population rules (still named for Butlers; packet question 9),
   the root index, the pillar rules, the
   secret and active-content rules, and every other requirement are
-  unchanged.
+  unchanged. The builder enforces this: the whole proposed `spec.md` must
+  equal today's with the eight pinned edits applied, byte for byte.
 - `PWB-REQ-002`'s warrants are unchanged.
 - No registry entry, policy, consent record, contract, doctrine or decision
   byte is touched. No implementation file is changed.
@@ -209,7 +229,7 @@ first scenario keeps Butlers' identities and denominators equal to today's.
 
 Method: `NORMATIVE-CHANGE-WORKFLOW.md` and `SEMANTIC-DELTA-TEMPLATE.md` under
 `.syzygy/governance/contracts/candidates/policy-candidates/`. This delta
-stops at step 2: drafted, blast radius established, two review rounds
+stops at step 2: drafted, blast radius established, three review rounds
 repaired. **No self-review was performed.**
 
 ## Evidence or decision basis
@@ -225,13 +245,28 @@ repaired. **No self-review was performed.**
 - [Observed] The nine shape names occur in no tracked file except one
   (`heading-section`, in two pursuit records); see `IMPACT-LEDGER.md`.
 - [Observed] The nine shape sentences and seven key-form sentences are
-  `syzygy-dov.24`'s proposed sentences (PR #123, head `929100f`, after its
-  round-2 repairs), word for word; the spec adds only a full stop and
-  code-span backticks. With that builder copied in, this builder's `--check`
-  reported the sentences equal; with this package's `spec.md.patch` applied
-  to that head, its own `--check` passed [Observed, 2026-09-27]. The builder
-  holds the copy and, once `syzygy-dov.24`'s builder is in the tree, compares
-  the two on every `--check`; a changed copy on either side fails.
+  `syzygy-dov.24`'s proposed sentences as they stand at its commit `1d5966c`
+  (PR #123, after its round-3 repairs; unchanged at `0d1ccc5`, where that
+  branch is now frozen), word for word; the spec adds only a full stop
+  and code-span backticks. The proof is a digest: SHA-256 over the Python
+  representation of that builder's two tables, `SHAPES` and
+  `ITEM_KEY_SENTENCES`, read from `git show 1d5966c:` of the builder, is
+  `64b15eaeed24b510c7d744bdd09f1de4f5989d2c05c9165b3826b8ac226d753d`, and this
+  builder's two tables hash to the same value. The builder pins that digest
+  and checks it on every `--check`, and compares sentence by sentence once
+  `syzygy-dov.24`'s builder is in the tree. Round 3 found two of those
+  sentences out of step with the code (the link title, and a `[[other]]`
+  header); `syzygy-dov.24`'s round 3 repaired both, and this package now
+  carries the repaired text.
+- [Observed] Two details stay unstated in the shared sentences, and this
+  package cannot state them without breaking the identity above. The
+  `ordinal-and-label` key trims the label before it is used
+  (`${ordinal}:${nfc(label.trim())}` in
+  `packages/three-surface-poc-core/src/project-shape-extraction.ts`, line
+  519), which the sentence does not say. And when one source breaks more than
+  one rule, the code reports the first failure it meets in reading order; no
+  sentence says which failure wins. Both belong to the shared text and go to
+  `syzygy-dov.32` with the other shared notes, for both packages together.
 - [Inferred] That those sentences, with the shared rules, describe how the
   current extraction code reads Butlers and how that reading fails. `syzygy-dov.24`'s builder checks them by running the
   observer's code over files built from its fields; that check was not
@@ -262,8 +297,8 @@ Enumerated in `IMPACT-LEDGER.md`. In one line each:
 
 1. **No gap opens in the code.** No profile loader exists; the observer
    reads compiled-in constants. The text names Butlers' written grammar as
-   its built-in default until the observer reads a profile for it, which is
-   the design
+   its built-in default until a profile is declared for it, which is the
+   design
    P-74 Q2 ruled, so today's code conforms by the text [Inferred]. Once limb
    5 loads a profile, the no-built-in rule applies.
 2. **The registry entry and the secret policy pin today's `spec.md` digest.**
@@ -310,6 +345,8 @@ edit.
 
 Round 1: `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-RAW.md` (REVISE, commit
 `a7eda10`). Round 2: `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-2-RAW.md`
-(REVISE, commit `c103523`). Every finding of both is dispositioned in the
-packet's review record.
+(REVISE, commit `c103523`). Round 3:
+`docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-3-RAW.md` (REVISE, commit
+`81315da`). Every finding of all three is dispositioned in the packet's
+review record.
 `REVIEW-BRIEF.md` states what the next reviewer is given.

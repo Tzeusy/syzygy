@@ -1,5 +1,5 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-index 543469d..2082ee2 100644
+index 543469d..83dc555 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 @@ -14,3 +14,4 @@ Reader definitions:
@@ -18,7 +18,7 @@ index 543469d..2082ee2 100644
 +  to Lay and Land; `craft-policy` to Craft and Care; and `roster-identity` to
 +  roster identity.
  - Stable item identity is `(item class, declared key)`. Repository-relative path
-@@ -29,3 +35,122 @@ Reader definitions:
+@@ -29,3 +35,132 @@ Reader definitions:
    one class is a contradiction rather than a path-based disambiguation.
 -- The extraction grammar is literal:
 +- A **container shape** is how the items of one grammar row sit inside its
@@ -32,8 +32,9 @@ index 543469d..2082ee2 100644
 +  than once fails it as duplicate-key. When a list or table row declares more
 +  than one heading, the shape reads the section under each in the order
 +  declared, as it reads one section, and the items of all of them are that
-+  row's items. How list markers, table rows, fenced code and TOML lines are
-+  recognized is shared by every project and left to the observer:
++  row's items. A `heading-section` row declares at most two headings. How list
++  markers, table rows, fenced code and TOML lines are recognized is shared by
++  every project and left to the observer:
 +  - `heading-section`: the body under the declared heading: the lines after it
 +    up to the next heading at the same or a higher level, with outer
 +    whitespace trimmed, NFC-normalized; the body may be empty; when a row
@@ -73,8 +74,10 @@ index 543469d..2082ee2 100644
 +    written once as `field = "value"` or `field = 'value'` with a non-empty
 +    value; no such table, a repeated table, a repeated field or a missing or
 +    empty value fails the source as malformed-toml; a line in any other form,
-+    and the field inside any other table, is not read; the value is trimmed
-+    and NFC-normalized, a backslash escape in a double-quoted value is not
++    and the field inside any other table, is not read; an array-of-tables
++    header such as `[[other]]` is a line in another form, so it neither opens
++    a table nor ends the declared one; the value is trimmed and
++    NFC-normalized, a backslash escape in a double-quoted value is not
 +    decoded, and the value becomes the item's context.
 +- An **item key form** says what becomes an item's key and how a key fails.
 +  The forms are closed at eight, and no other key form is read:
@@ -91,8 +94,8 @@ index 543469d..2082ee2 100644
 +    grammar row declares.
 +  - `first-cell-link-text`: the link text of the first cell, trimmed and
 +    NFC-normalized; the cell must be one whole link `[text](target)`,
-+    optionally with a quoted title, with non-empty text, or the source fails
-+    as malformed-row.
++    optionally with a space or tab and a title in double quotes after the
++    target, with non-empty text, or the source fails as malformed-row.
 +  - `tree-key`: the `<key>` segment of the tree population's `pathPattern`.
 +  - `ordinal-and-label`: the heading's ordinal, a colon and the first cell's
 +    label; the first cell must be exactly one bold span with a non-empty
@@ -106,7 +109,9 @@ index 543469d..2082ee2 100644
 +  duplicate-key. A grammar row states its key form by carrying that form's
 +  sentence above, word for word, or, for `prefixed-ordinal`, by
 +  `<prefix>:<one-based ordinal>` with its prefix written in; the form names
-+  are this text's labels for those sentences.
++  are this text's labels for those sentences. When a row declares more than
++  one heading, a `prefixed-ordinal` key counts the row's items across its
++  sections in the order declared and does not restart at each heading.
 +- The **project profile** declares a project's extraction grammar as grammar
 +  rows, and is carried in the project-shape observer's owner-adopted registry
 +  entry. Each class above has one or more rows. Each row names its class and
@@ -117,22 +122,27 @@ index 543469d..2082ee2 100644
 +  exactly one item key form. A tree population is declared by a path pattern,
 +  `pathPattern`, whose one `<key>` segment is a single directory name. A
 +  profile cannot add a class, a shape or a key form.
-+- Until the observer reads a profile for Butlers, it reads Butlers by the
++- Until a profile is declared for Butlers, the observer reads Butlers by the
 +  grammar written below, as a built-in default; no other project has a
-+  built-in default. A Butlers profile the loader refuses never returns Butlers
-+  to the built-in default. A project other than Butlers with no loaded profile
-+  has no extraction rules: its classes' and categories' item denominators are
++  built-in default. A Butlers profile that is declared but that the observer
++  does not read, for any reason, is treated as one the loader refuses, and so
++  is a profile the observer cannot tell is or is not declared for Butlers. A
++  Butlers profile the loader refuses never returns Butlers to the built-in
++  default. A project other than Butlers with no loaded profile has no
++  extraction rules: its classes' and categories' item denominators are
 +  Unknown, never zero, and no item is minted for it. Once a project's profile
 +  is loaded, it is the only source of that project's extraction rules. A class
 +  that the loaded profile gives no row, or that has a row naming a shape or
 +  stating a key form outside these closed sets or lacking a parameter its
-+  shape or key form reads, is unreadable: its item denominator and its
-+  category's item denominator are Unknown, each source any of its rows names
-+  fails as a source in which a class fails, and every source stays in the
-+  source-path population. The observer never substitutes a built-in rule for
-+  a loaded profile's missing or invalid one. A loader that instead refuses the
-+  whole profile meets this rule only if every source stays in the source-path
-+  population with an Unknown item denominator.
++  shape or key form reads, or declaring more headings than its shape allows,
++  is unreadable: its item denominator and its category's item denominator are
++  Unknown, each source any of its rows names fails as a source in which a
++  class fails, and every source stays in the source-path population. The
++  observer never substitutes a built-in rule for a loaded profile's missing or
++  invalid one. A loader that instead refuses the whole profile meets this rule
++  only if every source stays in the source-path population with an Unknown
++  item denominator and every class's and category's item denominator is
++  Unknown.
 +- For every grammar, loaded or built-in, heading levels/text, top-level list
 +  depth, table column counts, one-based ordinals and literal keys are exact.
 +  Unicode is NFC-normalized; no case folding, stemming or punctuation
@@ -142,7 +152,7 @@ index 543469d..2082ee2 100644
 +- Butlers' profile declares exactly the following extraction grammar, which is
 +  literal:
    - `project-account-section` mints exactly six aggregate keys: purpose from
-@@ -56,8 +181,2 @@ Reader definitions:
+@@ -56,8 +191,2 @@ Reader definitions:
      the directory is the key and the TOML `[butler].name` must be non-empty.
 -  Heading levels/text, top-level list depth, table column counts, one-based
 -  ordinals and literal keys are exact. Unicode is NFC-normalized; no case
@@ -151,23 +161,24 @@ index 543469d..2082ee2 100644
 -  makes the enclosing source's item denominator Unknown; it never produces a
 -  partial item set.
  - The source-path denominator remains known through body-read failures. An
-@@ -119,4 +238,8 @@ Group: Coverage. Form: **invariant**.
+@@ -119,4 +248,8 @@ Group: Coverage. Form: **invariant**.
  For every lawfully admitted source body, Polaris SHALL account for each
 -declared item discovered by the closed extraction rule across Heart and Soul,
 -Legends and Lore, Spec and Spine, Lay and Land, Craft and Care and roster
 +declared item discovered by the extraction grammar that governs its project
 +under the reader definitions (the grammar rows of its loaded project profile,
 +read only through the closed container shapes and item key forms, or, until
-+the observer reads a profile for Butlers, the Butlers grammar written there)
++a profile is declared for Butlers, the Butlers grammar written there)
 +across Heart
 +and Soul, Legends and Lore, Spec and Spine, Lay and Land, Craft and Care and roster
  identity. Each admitted item SHALL be in exactly one coverage state: modeled,
-@@ -127,9 +250,14 @@ retain its source identity while its item denominator renders Unknown.
+@@ -127,9 +260,15 @@ retain its source identity while its item denominator renders Unknown.
    each readable category at one revision, then compare it to the model; include
 -  an unreadable source case.
 +  an unreadable source case, a loaded profile that gives one class no row, a
-+  loaded profile with a row that names a shape outside the vocabulary, and a
-+  Butlers profile the loader refuses.
++  loaded profile with a row that names a shape outside the vocabulary, a
++  Butlers profile the loader refuses, and a project other than Butlers with no
++  loaded profile.
  - **Observable**: per-category identities and reconciling counts are visible in
    the machine answer and reachable from Polaris.
 -- **Oracle**: two independent extractors apply the literal grammar to the
@@ -182,7 +193,7 @@ index 543469d..2082ee2 100644
 +  each identity appearing once; malformed/unreadable sources, and every class
 +  a loaded profile leaves unreadable, carry an Unknown item denominator.
  - **Oracle independence**: the expected denominator is extracted from the
-@@ -138,4 +266,8 @@ retain its source identity while its item denominator renders Unknown.
+@@ -138,4 +277,8 @@ retain its source identity while its item denominator renders Unknown.
    a partial population, a known source disappears, an admitted item appears twice or
 -  lacks a state, a known count does not reconcile, or an unavailable body's
 -  item denominator is presented as known.
@@ -190,10 +201,10 @@ index 543469d..2082ee2 100644
 +  item denominator is presented as known, an item is read through a shape or
 +  key form its governing grammar does not declare, a loaded profile's
 +  missing or invalid rule is replaced by a built-in one, a refused Butlers
-+  profile returns Butlers to the built-in grammar, or a project with no
-+  profile reports a known item denominator.
++  profile returns Butlers to the built-in grammar, or a project other than
++  Butlers with no loaded profile reports a known item denominator.
  
-@@ -148,2 +280,35 @@ retain its source identity while its item denominator renders Unknown.
+@@ -148,2 +291,44 @@ retain its source identity while its item denominator renders Unknown.
  
 +#### Scenario: Butlers' profile reproduces the written grammar
 +
@@ -220,12 +231,21 @@ index 543469d..2082ee2 100644
 +  source in which a class fails
 +- **AND** no built-in or nearest shape reads the class in its place
 +
-+#### Scenario: Refused Butlers profile does not fall back
++#### Scenario: Refused or unread Butlers profile does not fall back
 +
-+- **WHEN** the loader refuses a profile declared for Butlers
++- **WHEN** a profile is declared for Butlers and the loader refuses it or the
++  observer does not read it
 +- **THEN** every Butlers class's item denominator and its category's item
 +  denominator render Unknown
 +- **AND** every source stays in the source-path population and the grammar
 +  written in these reader definitions reads no class
++
++#### Scenario: Project with no profile has Unknown item denominators
++
++- **WHEN** a project other than Butlers is observed with no loaded profile
++- **THEN** each of its classes' item denominators and each category's item
++  denominator render Unknown, never zero
++- **AND** no item is minted for it and the grammar written in these reader
++  definitions reads none of its classes
 +
  ```yaml
