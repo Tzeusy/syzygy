@@ -97,6 +97,12 @@ PARAGRAPH_RULES = {
         "Every dismissal record present in the governed plane at an "
         "evaluation's snapshot is an identified input of that evaluation"
     ),
+    "unreadable record set": (
+        "When an evaluation cannot read that record set, or no governed-plane "
+        "home for dismissal records is designated, it dismisses no claim and "
+        "SHALL disclose its dismissed count and the count of each record class "
+        "below as Unknown, never as zero"
+    ),
     "Unknown-only scope": "Only a claim whose label is Unknown MAY be dismissed",
     "contradiction exclusion": (
         "never one whose primary reason is `contradicted-pending-adjudication`"
@@ -109,12 +115,13 @@ PARAGRAPH_RULES = {
         "Nothing else dismisses a claim: not a view preference, a query "
         "parameter, browser or daemon state, an owner note or a model assertion"
     ),
-    "expiry boundary": (
-        "only while that evaluation's as-of instant is earlier than the "
-        "record's expiry instant"
-    ),
-    "reason currency": (
-        "the claim's primary reason is still the one the record dismissed"
+    # One rule, so the connectives between the three tests are pinned too.
+    "in-effect conjunction": (
+        "A dismissal is in effect at an evaluation only while all three hold: "
+        "the evaluation carries the claim identity the record names, the "
+        "evaluation's as-of instant is earlier than the record's expiry "
+        "instant, and the claim's primary reason is the one the record "
+        "dismissed"
     ),
     "as-of instant only": (
         "SHALL decide this from its own as-of instant and never from the "
@@ -136,6 +143,11 @@ PARAGRAPH_RULES = {
     ),
     "human and machine parity": (
         "disclosure, identically in the human and machine views"
+    ),
+    "several records in effect": (
+        "When more than one record is in effect for the same claim, each is "
+        "disclosed that way beside the claim and the claim is counted once as "
+        "dismissed"
     ),
     "no tuple change": "SHALL not change any tuple value",
     "never positive": "render as a positive, resolved, aligned or current state",
@@ -166,21 +178,32 @@ PARAGRAPH_RULES = {
         "or itself names, as the reason it dismisses, a primary reason that "
         "may not be dismissed"
     ),
+    "never refused by claim state": (
+        "a record is never refused because of the state of the claim it names"
+    ),
     "lapse conditions": (
         "Otherwise it is a lapsed record when the evaluation's as-of instant "
-        "is not earlier than its expiry instant, or the claim's primary reason "
-        "is no longer the one it dismissed, including because the claim is no "
-        "longer Unknown or its new primary reason is one that may not be "
-        "dismissed"
+        "is not earlier than its expiry instant, the evaluation does not carry "
+        "the claim identity it names, or the claim's primary reason is not the "
+        "one it dismissed, including because the claim is not Unknown or its "
+        "primary reason is one that may not be dismissed"
     ),
     "lapsed records disclosed": (
-        "a lapsed record is disclosed beside the claim with its reason, expiry "
-        "instant, author, record identity and the condition that lapsed it"
+        "A lapsed record is disclosed with its reason, expiry instant, author, "
+        "record identity and the condition that lapsed it, beside the claim "
+        "when the evaluation carries it and otherwise among the evaluation's "
+        "lapsed records"
     ),
+    "never-matched records": (
+        "the condition names the test that failed and never states whether the "
+        "record once took effect"
+    ),
+    # The evaluation's own record decides retirement, the same side of the
+    # world as the lapse test for an identity the evaluation does not carry.
     "retired identity": (
-        "Otherwise it is bound to a retired identity when a split or merge has "
-        "retired the claim identity it names; it is never transferred to a "
-        "successor"
+        "Otherwise it is bound to a retired identity when the evaluation "
+        "records the claim identity it names as retired by a split or merge; "
+        "it is never transferred to a successor"
     ),
 }
 # Each rule a scenario's body must state, compared after whitespace folding.
@@ -221,8 +244,16 @@ SCENARIO_RULES = {
             "even when the claim's new primary reason is one that may not be "
             "dismissed"
         ),
+        "retired by the evaluation's record": (
+            "names a claim identity that the evaluation records as retired by "
+            "a split or merge"
+        ),
         "no transfer": "is never transferred to a successor",
-        "never refused": "neither record is disclosed as refused",
+        "uncarried identity lapses": (
+            "the third is disclosed as lapsed with the condition that the "
+            "evaluation does not carry its claim identity"
+        ),
+        "never refused": "no record is disclosed as refused",
     },
 }
 # Each phrase a scenario's body must carry exactly once, so a second
@@ -240,9 +271,17 @@ FORBIDDEN = {
     "removal": r"\bremov\w*",
     "exclusion": r"\bexclu\w*",
     "second refusal route": r"refused record also|also (?:a )?refused",
-    "permissive dismissal source": r"\b(?:MAY|can|could)\s+dismiss\b",
+    "permissive dismissal source": r"\b(?:MAY|SHALL|can|could)\s+dismiss\b",
+    "uncounted member": r"\bnot (?:be )?counted\b",
     "claim-reason refusal": r"naming a claim whose primary reason",
+    "refusal by an absent claim": r"refused[^.]*\bcarr(?:y|ies)\b",
+    "two classes at once": (
+        r"\b(?:lapsed|retired|refused) and (?:as )?(?:lapsed|retired|refused)\b"
+    ),
 }
+# The selftest's total, fixed so that a rule removed from any table above
+# fails the selftest instead of lowering its count.
+EXPECTED_KILLED = 136
 REQUIRED_WARRANTS = (
     "VIS-6", "RFC1-12", "RFC1-20", "RFC1-25", "RFC2-1", "RFC2-15"
 )
@@ -259,10 +298,13 @@ CAPABILITY_TOTALS = (
     "Totals: 26 covered, 6 lawfully out of scope, 0 Unknown/unresolved; 32 total."
 )
 # The gap rows stay Unknown until the owner decides which gap a claim-level
-# dismissal binds (packet question 4); unadopted-draft is a used state.
+# dismissal binds (packet question 4); unadopted-draft is a used state; and
+# RFC1-12.r3 stays Unknown until the owner decides who may re-dismiss
+# (packet question 3).
 REPAIR_DISPOSITIONS = {
     "RFC1-12.r1": ("RFC1-12.c1", "covered:PWB-REQ-007"),
     "RFC1-12.r2": ("RFC1-12.c1", "believed-not-applicable"),
+    "RFC1-12.r3": ("RFC1-12.c1", "unknown-uncovered"),
     "RFC1-20.r1": ("RFC1-20.c1", "unknown-uncovered"),
     "RFC1-25.r1": ("RFC1-25.c14", "unknown-uncovered"),
     "RFC1-25.r2": ("RFC1-25.c14", "believed-not-applicable"),
@@ -779,6 +821,11 @@ def selftest() -> int:
         "claim-reason refusal": (
             "A record naming a claim whose primary reason is `challenge-suspended` is refused."
         ),
+        "refusal by an absent claim": (
+            "It is refused when the evaluation neither carries nor records its claim."
+        ),
+        "two classes at once": "The record is disclosed as lapsed and as refused.",
+        "uncounted member": "A dismissed claim is not counted in the Unknown headline.",
     }
     if set(fixtures) != set(FORBIDDEN):
         return _fail("forbidden fixtures do not cover every forbidden wording")
@@ -831,6 +878,43 @@ def selftest() -> int:
         or f"scenario {SCENARIOS[1]} uses forbidden claim-reason refusal wording" not in found
     ):
         return _fail("scenario-2 reversion passed")
+    killed += 1
+
+    # Round-3 review mutants: the in-effect conjunction weakened to a
+    # disjunction, retirement decided outside the evaluation, and a Scenario 3
+    # record put in two classes.
+    folded = fold(paragraph)
+    round3 = {
+        "in-effect disjunction": (
+            "earlier than the record's expiry instant, and the claim's",
+            "earlier than the record's expiry instant, or the claim's",
+            "dismissal paragraph lacks in-effect conjunction",
+        ),
+        "world-side retirement": (
+            "when the evaluation records the claim identity it names as retired "
+            "by a split or merge",
+            "when a split or merge has retired the claim identity it names",
+            "dismissal paragraph lacks retired identity",
+        ),
+    }
+    for name, (old, new, expected) in round3.items():
+        mutated_paragraph = folded.replace(old, new, 1)
+        if mutated_paragraph == folded:
+            return _fail(f"round-3 fixture matched nothing: {name}")
+        mutated = (text[:opening] + mutated_paragraph + "\n\n" + text[case:]).encode()
+        if expected not in requirement_findings(mutated):
+            return _fail(f"round-3 mutation passed: {name}")
+        killed += 1
+    two_classes = text.replace(
+        "is disclosed beside the\n  claim as lapsed,",
+        "is disclosed beside the\n  claim as lapsed and as refused,",
+        1,
+    )
+    if two_classes == text:
+        return _fail("two-class fixture matched nothing")
+    expected = f"scenario {SCENARIOS[2]} uses forbidden two classes at once wording"
+    if expected not in requirement_findings(two_classes.encode()):
+        return _fail("two-class scenario mutation passed")
     killed += 1
 
     # Each required warrant removed from PWB-REQ-007's block only.
@@ -966,6 +1050,15 @@ def selftest() -> int:
 
     if composition_findings() or sequential_findings():
         return _fail("sibling composition does not verify")
+    # The mutant tables above are also the rules they test, so a rule deleted
+    # from a table deletes its own mutant. Pin the once-only population and
+    # the total here, as literals, so a deletion fails this selftest.
+    if SCENARIO_ONCE != {
+        SCENARIOS[0]: ("the first evaluation renders", "without the sibling state"),
+    }:
+        return _fail("once-only scenario phrase population changed")
+    if killed != EXPECTED_KILLED:
+        return _fail(f"{killed} mutants killed, expected {EXPECTED_KILLED}")
     print(
         f"selftest: {killed} mutants killed — stale manifest, path order, patch "
         f"population, {len(PARAGRAPH_RULES)} paragraph rules, paragraph "
@@ -974,7 +1067,8 @@ def selftest() -> int:
         f"{sum(len(rules) for rules in SCENARIO_RULES.values())} scenario-body "
         f"rules, {len(FORBIDDEN)} forbidden wordings x paragraph/scenario, "
         f"{sum(len(p) for p in SCENARIO_ONCE.values())} once-only scenario "
-        "phrases, a dropped fact, the scenario-2 reversion, "
+        "phrases, a dropped fact, the scenario-2 reversion, three round-3 "
+        "mutants, "
         f"{len(REQUIRED_WARRANTS)} warrants, "
         "dependency and contract-coverage drift, proposal, capability row and "
         f"totals, {len(REPAIR_DISPOSITIONS)} repair rows, patch drift, "

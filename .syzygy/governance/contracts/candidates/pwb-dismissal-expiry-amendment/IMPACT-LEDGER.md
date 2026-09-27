@@ -4,7 +4,11 @@
 > possible PWB amendment under P-79 question 5. It performs no act, edits no
 > signed byte and authorizes no implementation.
 
-**Baseline:** `3ee61c7`.
+**Baseline:** `3ee61c7`. The branch has since been rebased onto `08d4d02`
+and then `96ee305` (PR #130); the sweeps below were run at `3ee61c7` and were
+not re-run on either later base, so whether their counts changed there is
+[Unknown]. The builder figures (coverage totals, composition outcomes) are
+re-derived by `--check` on every base. [Observed]
 
 **Subject:** the closed eleven-artifact PWB behavioral package. Proposed bytes
 are six patches under `proposed/`; the manifest hashes their post-apply
@@ -74,8 +78,8 @@ and none needs a change here.
 |---|---|
 | `.openspec.yaml` | unchanged |
 | `CAPABILITY-COVERAGE.md` | row 32 added; totals 26 covered, 6 out of scope, 32 |
-| `CONTRACT-COVERAGE-REPAIR-DELTA.md` | one row changed, eleven added, totals line |
-| `CONTRACT-COVERAGE.md` | regenerated: 627 rows, 141 covered, 241 Unknown, 245 believed not applicable (was 622, 137, 237, 248) |
+| `CONTRACT-COVERAGE-REPAIR-DELTA.md` | one row changed, twelve added, totals line |
+| `CONTRACT-COVERAGE.md` | regenerated: 628 rows, 141 covered, 242 Unknown, 245 believed not applicable (was 622, 137, 237, 248) |
 | `GOVERNING-DEPENDENCIES.md` | regenerated: 100 distinct authorities (was 96) |
 | three `contract-coverage-matrix/` files | unchanged |
 | `design.md` | unchanged |
@@ -85,14 +89,15 @@ and none needs a change here.
 ## Contract-coverage repair rows
 
 Each new row splits a base row the audited matrix gave one disposition. The
-repair delta's declared totals become 91 rows, 77 superseded base rows, 65
-covered, 21 Unknown uncovered and 5 believed not applicable (was 80, 71, 61,
+repair delta's declared totals become 92 rows, 77 superseded base rows, 65
+covered, 22 Unknown uncovered and 5 believed not applicable (was 80, 71, 61,
 16, 3). [Observed: builder `--check` and the coverage generator]
 
 | Row | Supersedes | Disposition | Why |
 |---|---|---|---|
 | RFC6-17.r7 | RFC6-17.c2 | covered (was Unknown) | dismissed members stay in every per-label, tier, freshness and reason count and are additionally counted and expandable |
-| RFC1-12.r1 | RFC1-12.c1 | covered | a dismissal bound to a retired claim identity is never transferred and is disclosed as bound to a retired identity [Inferred: PWB specifies no split or merge, so the rule is conditional] |
+| RFC1-12.r1 | RFC1-12.c1 | covered | a dismissal bound to a claim identity the evaluation records as retired is never transferred and is disclosed as bound to a retired identity [Inferred: PWB specifies no split, merge or retirement record, so the class is unreachable today and the credit is conditional] |
+| RFC1-12.r3 | RFC1-12.c1 | Unknown, uncovered | "re-dismissal is an owner act": the paragraph requires a new attributed human record, and whether that must be the owner is packet question 3 (round-3 note N-C1) |
 | RFC1-12.r2 | RFC1-12.c1 | believed not applicable | challenges and claims across split or merge; no split or merge behaviour is specified, as the base row said |
 | RFC1-20.r1 | RFC1-20.c1 | Unknown, uncovered (was believed not applicable) | the clause is about a gap; the paragraph states the rule for claims |
 | RFC1-25.r1 | RFC1-25.c14 | Unknown, uncovered (was believed not applicable) | `dismisses` is typed Decision to Gap; the record names a claim |

@@ -4,12 +4,14 @@
 > carries no verdict and performs no act. The reviewer must not receive the
 > drafting conversation or a desired verdict.
 
-**Round 3 is a confirmation round.** Round 1 returned REVISE over
-`9b18409` (pre-rebase) and round 2 returned REVISE over `82cc6c4`; their raws
-are `docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-RAW.md` and
-`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-2-RAW.md`, and every finding is
+**Round 4 is a confirmation round.** Round 1 returned REVISE over
+`9b18409` (pre-rebase), round 2 returned REVISE over `82cc6c4` and round 3
+returned REVISE over `8307180`; their raws are
+`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-RAW.md`,
+`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-2-RAW.md` and
+`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-3-RAW.md`, and every finding is
 dispositioned in the review record at the end of `OWNER-DECISION-PACKET.md`.
-The round-3 reviewer checks each disposition against the raws and the current
+The round-4 reviewer checks each disposition against the raws and the current
 bytes, then applies the criteria below afresh.
 
 ## Exact review inputs
@@ -21,7 +23,7 @@ Give the fresh reviewer only:
   `proposed/*.patch` files;
 - `scripts/build_pwb_dismissal_expiry_amendment.py` and the matching
   registration diff in `scripts/check_governance.py`;
-- the round-1 and round-2 raws named above;
+- the round-1, round-2 and round-3 raws named above;
 - the signed PWB eleven-artifact subject;
 - PWB-REQ-007, PWB-REQ-001, RFC1-5, RFC1-12, RFC1-18, RFC1-20, RFC1-25, RFC2-1, RFC2-13, RFC2-14,
   RFC2-15, RFC2-24, RFC2-25, RFC6-14, RFC6-17, VIS-2 and VIS-6 at their
@@ -71,11 +73,11 @@ review.
    exact.
 9. **Same-change propagation.** All eleven subjects; the six patched files
    change together and the other five stay exact.
-10. **Coverage rows.** Test the twelve repair-row changes independently,
-    especially the five held or new Unknown rows (RFC1-20.r1, RFC1-25.r1,
-    RFC2-15.r1, RFC6-14.r5, RFC6-14.r6) and the believed-not-applicable rows
-    (RFC1-12.r2, RFC1-25.r2). Confirm totals regenerate to
-    627 / 141 / 241 / 245.
+10. **Coverage rows.** Test the thirteen repair-row changes independently,
+    especially the six held or new Unknown rows (RFC1-20.r1, RFC1-25.r1,
+    RFC2-15.r1, RFC6-14.r5, RFC6-14.r6, RFC1-12.r3) and the
+    believed-not-applicable rows (RFC1-12.r2, RFC1-25.r2). Confirm totals
+    regenerate to 628 / 141 / 242 / 245.
 11. **Impact sweep.** Re-run the 1,537-file sweep, the continuation forms
     and the published range-form regex; check the 19 digest pins and implementation consumers.
 12. **Sibling composition.** Exercise the 15 declared outcomes in both
@@ -93,6 +95,25 @@ review.
 16. **Owner packet.** Digest exact; one copyable phrase marked not offered;
     open questions answerable by a non-specialist; no package proposal
     attributed to the owner; silence keeps current behaviour.
+
+## The raw's head
+
+A future recorder binds a review by the first four non-blank lines of its
+raw, so the raw must open with exactly these four lines, in this order
+(blank lines between them are allowed):
+
+```
+# <title of the review>
+Verdict: <CONFIRM | CONFIRM WITH EXCEPTIONS | REVISE>
+Reviewed commit: <40 lowercase hex>
+Manifest sha256: <64 lowercase hex>
+```
+
+The line-4 value is the SHA-256 of the manifest **file**
+`PWB-DISMISSAL-EXPIRY-MANIFEST.txt` as a whole: that is the act argument
+the packet names. It is **not** any row digest inside the manifest. Line 4
+must match `^Manifest sha256: ([0-9a-f]{64})$`. Compute it by script
+(`sha256sum` on the file) and never transcribe it.
 
 ## Required report
 

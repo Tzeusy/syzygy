@@ -3,7 +3,9 @@
 > **Candidate — binds nothing.** These bytes were drafted under the owner's
 > 2026-09-21 answer to row P-79, question 5, in
 > `.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`.
-> That answer is direction to draft, not a specification amendment act. Only
+> That answer requires "CC-REV-2 delta plus a new act"; reading it as a
+> direction to draft this delta is the drafter's reading [Inferred], and it
+> is not a specification amendment act. Only
 > a dedicated owner act naming this package's exact manifest digest may amend
 > the signed PWB behavioral package. This candidate performs no act,
 > authorizes no implementation and edits no signed byte.
@@ -31,8 +33,8 @@ the compliance consequence.]
 
 **Author:** Claude drafting worker for `syzygy-dov.29`.
 
-**Date:** 2026-09-26; repaired 2026-09-27 after review rounds 1 and 2. **Baseline:**
-`3ee61c7`.
+**Date:** 2026-09-26; repaired 2026-09-27 after review rounds 1, 2 and 3.
+**Baseline:** `3ee61c7`.
 
 ## What the owner asked for
 
@@ -41,7 +43,8 @@ the compliance consequence.]
 > Q5 dismissal is an amendment — CC-REV-2 delta plus a new act before any
 > dismissal touches a tuple
 
-and records the consequence for slice 4:
+and its "What it means" column, the recorder's words rather than the
+owner's answer, records the consequence for slice 4:
 
 > slice 4 waits for the dismissal delta, its sign-off and act.
 
@@ -282,16 +285,21 @@ PWB-REQ-007's SHALL paragraph. In plain terms it says:
   dismisses, states a reason and an expiry instant, and is committed to the
   governed plane. "Every dismissal record present in the governed plane at an
   evaluation's snapshot is an identified input of that evaluation", so an
-  evaluation cannot leave a record out by not reading it. "Nothing else
+  evaluation cannot leave a record out by not reading it. If the record set
+  cannot be read, or no home for records is designated, the evaluation
+  "dismisses no claim and SHALL disclose its dismissed count and the count of
+  each record class below as Unknown, never as zero" (VIS-2: missing
+  evidence never yields zero). "Nothing else
   dismisses a claim: not a view preference, a query parameter, browser or
   daemon state, an owner note or a model assertion."
 - **What may be dismissed.** Only a claim whose label is Unknown, and never
   one whose primary reason is `contradicted-pending-adjudication` (owner
   adjudication only) or `challenge-suspended` (its challenge's resolution
   only).
-- **When it is in effect.** "only while that evaluation's as-of instant is
-  earlier than the record's expiry instant and the claim's primary reason is
-  still the one the record dismissed". An as-of instant equal to the expiry
+- **When it is in effect.** "only while all three hold: the evaluation
+  carries the claim identity the record names, the evaluation's as-of instant
+  is earlier than the record's expiry instant, and the claim's primary reason
+  is the one the record dismissed". An as-of instant equal to the expiry
   instant means lapsed. "The evaluation SHALL decide this from its own as-of
   instant and never from the instant a page or answer is read, so a dismissal
   lapses only through a new identified evaluation."
@@ -301,7 +309,9 @@ PWB-REQ-007's SHALL paragraph. In plain terms it says:
   unchanged beside the dismissal's reason, expiry instant, author and record
   identity, "on the same surface as the claim and without further
   disclosure", identically in the human and machine views. This carries
-  RFC2-15's "on the primary surface".
+  RFC2-15's "on the primary surface". When more than one record is in effect
+  for the same claim, each is disclosed the same way beside it and the claim
+  is counted once as dismissed.
 - **What it never does.** It "SHALL not change any tuple value", render as
   positive, resolved, aligned or current, or count as resolved or favourable
   in an aggregate. "Dismissed members SHALL remain in every per-label, tier,
@@ -314,18 +324,30 @@ PWB-REQ-007's SHALL paragraph. In plain terms it says:
   classes are tested in this order and a record is disclosed in the first
   whose test it meets, so no record meets two:
   - *refused* — the record lacks an author, reason, expiry instant, claim
-    identity or dismissed primary reason, names a claim the evaluation neither
-    carries nor records as retired, or itself names, as the reason it
-    dismisses, a reason that may not be dismissed;
-  - *bound to a retired identity* — otherwise, RFC1-12: a split or merge
-    retired the claim identity it names; it is never transferred to a
-    successor, and dismissing a successor needs a new record;
+    identity or dismissed primary reason, or itself names, as the reason it
+    dismisses, a reason that may not be dismissed; "a record is never
+    refused because of the state of the claim it names";
+  - *bound to a retired identity* — otherwise, RFC1-12: the evaluation
+    records the claim identity it names as retired by a split or merge; it
+    is never transferred to a successor, and dismissing a successor needs a
+    new record;
   - *lapsed* — otherwise, a record whose expiry instant is not later than the
-    as-of instant, or whose dismissed primary reason is no longer the claim's
-    (including because the claim is no longer Unknown, or has moved to a
-    reason that may not be dismissed); shown beside the claim with the
-    condition that lapsed it, so a valid owner act is never shown as
-    refused.
+    as-of instant, whose claim identity the evaluation does not carry (for
+    example because the declaration behind the claim was deleted or renamed),
+    or whose dismissed primary reason is not the claim's (including because
+    the claim is not Unknown, or its reason may not be dismissed); shown with
+    the condition that lapsed it, beside the claim when the evaluation
+    carries it and otherwise among the evaluation's lapsed records, so a
+    complete record is never shown as refused. The condition names the test
+    that failed and "never states whether the record once took effect", so a
+    record whose claim or reason never matched is lapsed under the same
+    condition as one whose claim or reason changed.
+
+  Retirement and the uncarried-identity lapse are both decided on the
+  evaluation's side: the evaluation either records a retirement or does not
+  carry the identity. [Inferred] PWB specifies no split, merge or
+  retirement record today, so until it does every record for a vanished
+  claim is lapsed and the retired class is unreachable.
 
 The Case, Oracle and Falsifier lines are extended to match. Three scenarios
 are added after "Missing current evidence remains explicit Unknown":
@@ -342,8 +364,9 @@ are added after "Missing current evidence remains explicit Unknown":
   reason.
 - *A record that no longer applies is lapsed or retired, never refused* —
   reason drift gives lapsed, even when the claim's new reason may not be
-  dismissed; a retired identity gives bound to a retired identity; neither is
-  shown as refused.
+  dismissed; an identity the evaluation records as retired gives bound to a
+  retired identity; an identity the evaluation does not carry gives lapsed;
+  no record is shown as refused.
 
 Warrants gain VIS-6 (doctrine) and RFC1-12, RFC1-20, RFC1-25, RFC2-1 and
 RFC2-15 (contracts).
@@ -355,13 +378,13 @@ RFC2-15 (contracts).
 | `spec.md` | the paragraph, three extended bullets, three scenarios, warrants |
 | `proposal.md` | one new last bullet describing the dismissal |
 | `CAPABILITY-COVERAGE.md` | row 32 added, covered by PWB-REQ-007; 26 covered, 6 out of scope, 32 total |
-| `CONTRACT-COVERAGE-REPAIR-DELTA.md` | RFC6-17.r7 becomes covered; eleven rows added; totals 91 rows, 77 superseded, 65 covered, 21 Unknown uncovered, 5 believed not applicable |
-| `CONTRACT-COVERAGE.md` | regenerated by its generator: 627 effective rows, 141 covered, 241 Unknown, 245 believed not applicable |
+| `CONTRACT-COVERAGE-REPAIR-DELTA.md` | RFC6-17.r7 becomes covered; twelve rows added; totals 92 rows, 77 superseded, 65 covered, 22 Unknown uncovered, 5 believed not applicable |
+| `CONTRACT-COVERAGE.md` | regenerated by its generator: 628 effective rows, 141 covered, 242 Unknown, 245 believed not applicable |
 | `GOVERNING-DEPENDENCIES.md` | regenerated: 17 requirements, 100 distinct authorities (doctrine 9, contracts 71) |
 | `design.md`, `.openspec.yaml`, the three matrix files | unchanged |
 
 [Observed: builder `--check` re-derives every figure above from the proposed
-bytes.] The eleven new repair rows and their reasoning are in
+bytes.] The twelve new repair rows and their reasoning are in
 `IMPACT-LEDGER.md`.
 
 ## Composition with the sibling packages
@@ -394,5 +417,9 @@ dispositioned in the review record at the end of `OWNER-DECISION-PACKET.md`.
 Round 2 (fresh context, over `82cc6c4`) returned **REVISE**: two revise
 findings (N1, N2) and nine notes. The raw is kept verbatim at
 `docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-2-RAW.md` and each finding is
-dispositioned in the packet's review record. Every repair retires the round
-before it (rule 10); a confirmation round must bind the new manifest digest.
+dispositioned in the packet's review record. Round 3 (fresh context, over
+`8307180`) returned **REVISE**: one revise finding (R1) and seven notes. The
+raw is kept verbatim at `docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-3-RAW.md`
+and each finding is dispositioned in the packet's review record. Every repair
+retires the round before it (rule 10); a confirmation round must bind the
+new manifest digest.
