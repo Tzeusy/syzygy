@@ -1,0 +1,251 @@
+{
+  "baseline": "3c915991fbb0eebc38f8daaaea4d05679914b6b8",
+  "non_normative_artifacts": {
+    "design.md": "restructured with one data-flow diagram; implementation guidance remains non-normative",
+    "proposal.md": "restructured and condensed; scope/non-goals/Unknowns preserved"
+  },
+  "requirements": [
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-001",
+      "title": "Code-structure observation is bound to an exact revision",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-002",
+      "title": "Structure observation captures metadata, never indexed contents",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-003",
+      "title": "Failed structure observation renders Unknown with its reason",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-004",
+      "title": "Structure facts are deterministic per revision",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-010",
+      "title": "Work items are read from the Dolt database and revision-stamped",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-011",
+      "title": "Work-item observation is scoped to the registered bead-prefix",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-012",
+      "title": "The passive export is never a work-item source",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-013",
+      "title": "An unreadable work-item source renders Unknown",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-020",
+      "title": "Client-rendered facts are the shared model's facts",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-021",
+      "title": "Client code is a build output, never fetched at runtime",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-022",
+      "title": "Script-less reading still gets honest facts",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-030",
+      "title": "Polaris renders a multi-page long-form narrative from intent facts",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-031",
+      "title": "Every positive Polaris claim carries resolvable provenance",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-032",
+      "title": "Polaris never fills evidence gaps with narrative",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-040",
+      "title": "Trajectory columns come from the closed status vocabulary",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-041",
+      "title": "Trajectory's time visualization uses recorded instants only",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-042",
+      "title": "Trajectory declares its scope and denominator",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-043",
+      "title": "Activity is never rendered as satisfaction",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-050",
+      "title": "Orrery projects declared mappings deterministically",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-051",
+      "title": "Unmapped code is a visible Unknown region with a denominator",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-052",
+      "title": "Orrery never infers relationships",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-053",
+      "title": "Every Orrery entity resolves to its exact route",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-060",
+      "title": "One design language, one epistemic encoding",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    },
+    {
+      "classification": "meaning-preserved",
+      "id": "POC-REQ-061",
+      "title": "The accessibility floor holds on every surface",
+      "verification": [
+        "normalized normative body text equal after readability markers",
+        "scenario heading population and order equal",
+        "warrants block byte-equal"
+      ]
+    }
+  ],
+  "semantic_changes": [],
+  "version": 1
+}

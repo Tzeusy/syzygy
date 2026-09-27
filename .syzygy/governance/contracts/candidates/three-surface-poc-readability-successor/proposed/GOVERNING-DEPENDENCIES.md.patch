@@ -1,0 +1,9 @@
+--- a/openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
++++ b/openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
+@@ -9,5 +9,5 @@
+ > nothing here quotes or paraphrases any clause.
+ >
+-> Source: `spec.md` sha256 `f0eda5b9ec8766e2b4b961fb2940c4ece7aa97b1c397e10d570abb04f5dd960e` — 24 requirement(s), 85 distinct authorities.
++> Source: `spec.md` sha256 `bb9112a55a1cf2afdd6911815e80fa645f517f8a4e8b1b262ecf7381be515410` — 24 requirement(s), 85 distinct authorities.
+
+ ## doctrine (9)
