@@ -12,9 +12,11 @@
 
 M8 slice 6 wants to run the project-shape pipeline against this repository
 itself, inside one test, to show the pipeline works on a project other than
-Butlers. Today nothing permits that. The P-74 ruling chose to permit it
-with three separate owner acts, and said "slice 6 runs only after the three
-acts exist, each separate and dated". This directory drafts those three:
+Butlers. Today nothing permits that. Your P-74 answer to question 3 chose
+"three acts scoped to a test-only self-observation (consent record, second
+registry entry, secret-policy extension) before slice 6 runs". The
+record's own reading of that row adds that each act is separate and dated.
+This directory drafts those three:
 
 1. **A consent record** for Syzygy observing its own repository, test-only.
 2. **A second registry entry** declaring the observer for that pair. It
@@ -24,9 +26,9 @@ acts exist, each separate and dated". This directory drafts those three:
 
 `SEMANTIC-DELTA.md` says what each act changes. `IMPACT-LEDGER.md` says
 what depends on each, with the sweeps that found them. `REVIEW-BRIEF.md`
-says what an independent reviewer should be given. Round 1 of review
-returned REVISE; this is the repair, not yet reviewed. The "Review record"
-at the end says what changed for each finding.
+says what an independent reviewer should be given. Rounds 1 and 2 of
+review returned REVISE; this is the round-2 repair, not yet reviewed. The
+"Review record" at the end says what changed for each finding.
 
 ## What each act would allow, in plain words
 
@@ -60,7 +62,7 @@ the test needs a separate owner direction.
 - **Phrase and argument:**
 
 ```text
-CONSENT TO SYZYGY SELF PROJECT-SHAPE OBSERVATION: 66368ae09a6b5ddeff51d55444237d6a06f42ed6e98f3a4fc25c90b85ab175e5
+CONSENT TO SYZYGY SELF PROJECT-SHAPE OBSERVATION: 2901eccbc92cfcec8aaae0ec5817dd70a74d333bb3af321c81e094fc47c022e4
 ```
 
 The phrase is new. The Butlers phrase names Butlers, and reusing it would
@@ -117,6 +119,11 @@ the entry pins the specification's digest (see "Landing order").
      file's current hash. That comparison must fail while this is a
      candidate.
 
+  The change that performs act 3 must therefore register this package's
+  policy manifest in `check_governance.py`, write act 3's record and add
+  its amendment row, all in the same commit (see "Nothing in this package
+  forces another package to regenerate").
+
 ## Landing order and which manifests move
 
 The only landing order the owner has set is `.21 → .30 → .22 → lane B`
@@ -154,11 +161,21 @@ applied. The self-test runs all six orders.
 policy's bytes, which has two consequences:
 
 - `scripts/build_pwb_truth_policy_amendment.py --check` goes red at
-  adoption. That builder hashes the policy's current bytes.
-- On 2026-09-23 the owner ruled that the change applying `.18` "retires or
-  rebases" that check. If `.18` lands first and retires the check, nothing
-  more is needed. If it rebases the check, act 3's adoption change must
-  rebase the policy row the same way.
+  adoption. That builder hashes the policy's current bytes. On 2026-09-23,
+  asked about that builder in the `.18` package, you answered "Retire it in
+  the adoption change (Recommended)"
+  (`POLARIS-GATE-PACKAGE-OPEN-QUESTIONS-2026-09-23-DECISION.md` §2,
+  question 4). If `.18` lands first and retires it, nothing more is needed
+  here. If act 3 lands first, the proposal is that act 3's adoption change
+  retires it the same way. That answer was given for `.18`, so this is a
+  proposal for you to confirm, not a ruling [Inferred].
+- `scripts/check_governance.py` also goes red at adoption [Observed in a
+  scratch clone, round-2 review]: CG-7e reports 5 findings. This package's
+  policy manifest is in neither act-copy registry, and the truth-policy
+  packet, its manifest, `ACCEPTANCE-ACT-RECORD.md` and the 2026-09-05
+  policy amendment act record no longer contain the policy's current
+  argument. The adoption change clears these by registering the manifest
+  and recording act 3, as above.
 
 ## What happens to Butlers when act 3 is applied
 
@@ -207,8 +224,9 @@ it.
    Unknown. *Alternative:* the owner authors such a table for this
    repository. That is an intent change, outside this package.
 4. **Does slice 6's code need its own permission?** Line 73 of the PWB
-   implementation act says "No second repository". The P-74 row puts
-   "slices 1, 3, 4, 6 (design) and 7 under the PWB implementation act".
+   implementation act says "No second repository". The P-74 row's
+   reading says "Slices 1, 3, 4, 6 (design) and 7 under the PWB
+   implementation act as continued 2026-09-05".
    The three acts do not amend that act, and its "No second repository"
    line governs *running* the test, not only writing it. Whether the three
    acts, together with that row, are enough to write and run the test is
@@ -233,7 +251,11 @@ it.
    digest?** The policy pins the PWB specification's digest too, so every
    specification act leaves it stale. No package is assigned to refresh it.
    *Proposal:* no. Keep act 3 to the one scope it was ruled for. The
-   refresh gets its own act.
+   refresh gets its own act. *Cost:* the consent pins policy version
+   `1.2.0-candidate.1`, so any later policy act that bumps the version,
+   this refresh included, leaves the self consent not covering the new
+   version. Slice 6 cannot run again until a new consent act, even when
+   the bump was for a Butlers-only reason [Inferred].
 9. **Names and versions.** *Proposal:*
    - record ID `PWB-SELF-CONSENT-2026-09-26`;
    - observer `polaris-syzygy-self-project-shape`, version
@@ -249,10 +271,17 @@ it.
     be exactly `(observing Syzygy project, configured Butlers
     repository)`", and the M8 portability funnel says "No approved
     requirement names a self-observation". The ruling forbids editing
-    PWB-REQ-005. *Proposal:* slice 6 applies PWB-REQ-005's gate to the self
-    pair by analogy, and says so in the test. *Alternative:* the test runs
-    with no specified gate beyond the three acts. *Alternative:* a separate
-    specification change names the self pair first.
+    PWB-REQ-005. A sibling answer bears on this: your P-76 answer to
+    question 2 was "an observing project reading its own tree, recorded
+    here, needs no consent record, registry entry or act". That covers M7
+    slice 3, which reads Syzygy's own governed corpus, the same doctrine
+    files slice 6 would read. P-74 question 3 is the answer specific to
+    slice 6, so the two do not conflict [Inferred], but they place different
+    gates on reading the same files. *Proposal:* slice 6 applies
+    PWB-REQ-005's gate to the self pair by analogy, and says so in the test.
+    *Alternative:* the test runs with no specified gate beyond the three
+    acts. *Alternative:* a separate specification change names the self pair
+    first.
 11. **Which checkouts count as `repository:syzygy`?** The consent resolves
     the locator from whatever checkout runs the test. That could be a fork,
     a pull-request branch in hosted CI, or an old worktree. *Proposal:* any
@@ -288,12 +317,13 @@ python3 scripts/check_governance.py
 `--check` re-derives all three manifests. It also checks:
 
 - that the drafted files and the patched policy say what this packet says;
-- that the consent, policy scope and registry entry name the same closed
-  population and the same versions;
+- that the consent's grant paragraph is exactly the closed six-file grant,
+  and that the policy scope and registry entry name the same six paths and
+  the same versions;
 - that the patch still applies to the policy (act 3 pending), or that the
-  policy already holds the patched bytes (act 3 adopted);
+  policy already holds the patched bytes (installed);
 - that each install target is free (pending) or holds exactly the drafted
-  bytes (adopted);
+  bytes (installed);
 - that no other candidate patches, or drafts a file with the same name as,
   any of the three targets;
 - that the two digests above are current.
@@ -302,8 +332,11 @@ python3 scripts/check_governance.py
 also replaces each check `--check` calls with one that always reports a
 problem, and requires `--check` to report it. Then it applies the three acts
 in all six orders in a scratch copy, and requires `--check` to pass after
-each act and a repeated act to be refused. The count it prints is the
-number of those cases. `--diff` prints the policy change in full.
+each act and a repeated act to be refused. It also requires `--apply` to
+install nothing over a package that does not verify. "Installed" means only
+that the bytes are in place; only your act makes an act performed. The
+count it prints is the number of those cases. `--diff` prints the policy
+change in full.
 
 
 ## Review record
@@ -311,7 +344,9 @@ number of those cases. `--diff` prints the policy change in full.
 Round 1: **REVISE**, over commit `5323721`, retained verbatim at
 `docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-RAW.md`. That commit is
 pre-rebase: the branch was rebased onto `main` afterwards, to `6eb406d`, with
-no change to this package, and the repair below was made on `6eb406d`. Every
+no change to this package, and the repair below was made on `6eb406d`. The
+branch was then rebased again, onto `66114ac`, before round 2 read it at
+`35e497b` (parent `2f11704`); `6eb406d` is on no remote ref. Every
 repair changes bytes the review read, so the round-1 verdict covers none of
 the current bytes (verification rule 10). Both new-file digests above
 changed. No confirmation review has been run.
@@ -329,3 +364,23 @@ changed. No confirmation review has been run.
 | F9 — registry reused Butlers discovery and implementation identities | note | **Repaired.** The self entry has its own `discoveryVersion`, `pwb-self-discovery-v1-candidate.1`, and names no `implementationId` or `implementationVersion` until slice 6 does; its `implementation` sentence says so. The builder fails on a shared discovery version or a named implementation. |
 | F10 — `selfReferenceRule` left the file/copy distinction and part of the population implicit; no registry counterpart | note | **Repaired.** The rule now reads as the review suggested: no object read as an observed Git blob, naming manifests, packets and the acceptance-act record, is an authority input, and authority for this pair is never inherited from another pair, including through expectations keyed only by the observing project. The registry entry carries the same rule. A builder predicate requires it in both. |
 | F11 — composition sweep saw only patches | note | **Repaired.** It now reads every file under every other package's `proposed/`, and fails on a patch targeting any of the three files or any file sharing a target's name. A selftest mutant drafts a whole registry file in a sibling. At `6eb406d` the other packages hold 21 `proposed/` files in 7 packages, all patches, none colliding. |
+
+Round 2: **REVISE**, over commit `35e497b`, retained verbatim at
+`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-2-RAW.md`. The round-2 repair
+below was made after rebasing onto `08d4d02`. It changes the consent
+draft, so act 1's argument above changed again; the registry and policy
+arguments did not. The round-2 verdict covers none of the current bytes
+(verification rule 10). No confirmation review has been run.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| N1 — "retires or rebases" presented as the owner's ruling | revise | **Repaired.** The packet and the ledger now quote the owner's answer cell, "Retire it in the adoption change (Recommended)", and say it was given for `.18`. The rebase branch is gone. Applying the same handling to act 3's adoption change is marked a proposal [Inferred]. A sweep of the whole package for owner-attributed sentences found four more that quoted the P-74 row's "What it means" column as the owner's words: the packet's opening paragraph, two sentences of `SEMANTIC-DELTA.md`, and the consent draft ("separate, dated"). Each now quotes the answer cell, or names the column as the record's reading. |
+| N2 — `--check` did not enforce a closed consent population | revise | **Repaired in the builder.** `consent_findings` now requires the consent's grant paragraph, from "## Scope" to the version pins, to equal one exact closed-grant text, whitespace-normalized. The reviewer's four widening mutants (another path, "closed … at most six" dropped, links followed, the working tree added) are selftest cases, and each fails. The packet's `--check` list now says what is checked. |
+| N3 — `6eb406d` unreachable; sweep 2 reads 22 at the head | note | **Repaired.** The review record above names both rebases. The ledger keeps the `6eb406d` table, adds the 22-line re-run at the round-2 head with the builder's third line named, and states which tree the 1,552 figure counted. |
+| N4 — sweep 3 and 4 denominators were one level deep | note | **Repaired.** Both now give the recursive counts (22 patches in 8 packages; 21 sibling files in 7) and name the nested RFC-0007 patch. The 20→21 change is explained by the glob, not by growth. |
+| N5 — four selftest survivors (M1, M2, M6, M8) | note | **Repaired.** New cases: a nested sibling patch (kills M1); `--apply` over a package with a corrupted manifest must install nothing (kills M2); the policy checked against a tree with no doctrine README (isolates and kills M6). The "names no phase-A seed" predicate was redundant with population equality and is removed (M8); the empty-list mutant stays and is killed by equality. Each of the three mutants and a mutant disabling the grant check was run against a copy of the builder and failed `--selftest`. Count 118 → 125. |
+| N6 — `check_governance.py` goes red at `--apply policy` | note | **Repaired.** The packet names the CG-7e state and says act 3's adoption change registers the policy manifest and records the act in the same commit. |
+| N7 — P-76 Q2 not mentioned | note | **Repaired.** Open question 10 quotes the P-76 question 2 answer cell and says how it sits beside P-74 question 3 [Inferred]. |
+| N8 — cost of the consent's policy-version pin | note | **Repaired.** Open question 8 states it. |
+| N9 — Q4 quote not byte-exact | note | **Repaired.** The quote is now exact, capital included, runs to the end of the sentence, and says it is the row's reading. |
+| N10 — builder state word "adopted" | note | **Repaired.** The builder's states are now `pending` and `installed`; the packet says only the owner's act makes an act performed. |

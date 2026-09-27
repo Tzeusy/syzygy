@@ -26,8 +26,10 @@ The three scripts:
 
 - `scripts/build_pwb_truth_policy_amendment.py` hashes the current policy
   bytes. Its `--check` goes red when act 3 is applied. On 2026-09-23 the
-  owner ruled that the `.18` adoption change "retires or rebases" this
-  check. The packet explains what follows for act 3.
+  owner's answer on this builder, asked in the `.18` package, was "Retire
+  it in the adoption change (Recommended)"
+  (`POLARIS-GATE-PACKAGE-OPEN-QUESTIONS-2026-09-23-DECISION.md` §2,
+  question 4). The packet explains what follows for act 3.
 - `scripts/build_pwb_effect_acts_packet.py` builds the performed 2026-09-02
   package. `PROJECT-STATUS.md` keeps it out of the battery on purpose: its
   `--check` already fails by design. No change.
@@ -44,6 +46,12 @@ Command: `git grep -nF '1.1.0-candidate.1' 6eb406d -- apps packages scripts`.
 Denominator: the 348 tracked files under `apps/`, `packages/` and
 `scripts/` at that commit. Each hit was then read and classified by hand.
 
+`6eb406d` is on no remote ref: the branch was rebased again, onto
+`66114ac` and then onto `08d4d02`. Re-run at the rebased round-2 head over
+the same 348 files, the sweep finds 22 lines [Observed]. The one extra line
+is this package's own builder, whose count went from 2 to 3 in the round-1
+repair; the 16 lines under `apps/` and `packages/` are unchanged.
+
 [Observed] 21 matching lines. The version string names two different
 things, so the lines split three ways:
 
@@ -51,7 +59,7 @@ things, so the lines split three ways:
 |---|---:|---|
 | Policy version | 10 lines in 4 files | `apps/three-surface-poc/src/governance-inputs.ts:72` and `:93` (the policy's scope anchors); `packages/three-surface-poc-core/src/git-object-reader.ts:43` (`PWB_POLICY_IDENTITY`, which `content-classification.ts` reuses); `content-classification.test.ts:255, 286, 406, 474, 488`; `project-shape-model.test.ts:435, 592` |
 | Butlers observer version (not the policy) | 6 lines in 4 files | `governance-inputs.ts:105` (the registry's scope anchors); `project-shape-model.test.ts:464`; `project-shape-observation.test.ts:241, 268, 318`; `project-shape-observation.ts:50` |
-| Scripts | 5 lines in 3 files | `scripts/record_pwb_effect_amendment_acts.py:77` (policy) and `:111` (observer), in the recorder of a performed act, never edited; `scripts/build_pwb_registry_currency_briefing_amendment.py:54` (registry version); and 2 lines in this package's own builder |
+| Scripts | 5 lines in 3 files (6 at the round-2 head) | `scripts/record_pwb_effect_amendment_acts.py:77` (policy) and `:111` (observer), in the recorder of a performed act, never edited; `scripts/build_pwb_registry_currency_briefing_amendment.py:54` (registry version); and 2 lines in this package's own builder (3 at the round-2 head) |
 
 The version is not the only thing act 3 moves. Act 3 is a superseding
 `approve-policy` act, and the same `policy` object in
@@ -92,8 +100,13 @@ The draft self registry entry is a twentieth, untracked until this commit.
 It moves every time the specification moves.
 
 [Observed] 5 candidate packages patch the specification itself. Command:
-`grep -l` on `+++ b/` headers over all 21 patch files in the 8 candidate
-`proposed/` directories. The five are:
+`grep -l` on `+++ b/` headers over the patch files in the 8 candidate
+`proposed/` directories. The first run globbed one level deep and counted
+21. Listed recursively (`git ls-files` under each `proposed/`) there are
+22: this package's own, and 21 in the 7 others, one of them nested at
+`pwb-scoped-attributes-amendment/proposed/contract/RFC-0007-rendering-and-surface.md.patch`.
+The nested patch targets RFC-0007, not the specification, so the five
+below are unchanged. The five are:
 
 - `pwb-opening-band-scenario` (`.21`)
 - `pwb-exact-source-render-mode-scenario` (`.30`)
@@ -101,8 +114,9 @@ It moves every time the specification moves.
 - `pwb-scoped-attributes-amendment` (lane B)
 - `pwb-missing-currency-disclosure-scenario` (`.20`)
 
-`dov.29` has no committed package on this base [Observed]. Each of these
-acts forces the registry-entry manifest here to be regenerated.
+`dov.29` has no committed package on this base or on `08d4d02`
+[Observed]. Each of these acts forces the registry-entry manifest here to
+be regenerated.
 
 ## Sweep 4 — collisions with other candidate patches
 
@@ -112,11 +126,16 @@ candidate package's `proposed/` directory: a patch fails if its `+++ b/`
 target is one of the three targets, and any file fails if its name is one
 of the three targets' names.
 
-[Observed] At `6eb406d` the other packages hold 21 `proposed/` files in 7
-packages, all of them patches. 0 target the policy or either install path,
-and 0 share a name with any of the three. (At `3ee61c7` the same sweep over
-patches alone found 20.) The only patch that touches the Butlers registry entry
-is `.18`'s, and that is a different file from the self entry.
+[Observed] At `6eb406d`, and again at the round-2 head on `08d4d02`, the
+other packages hold 21 `proposed/` files in 7 packages, all of them
+patches, listed recursively. 0 target the policy or either install path,
+and 0 share a name with any of the three. The round-1 builder found 20 at
+`3ee61c7` because its glob was one level deep and missed the nested
+`pwb-scoped-attributes-amendment/proposed/contract/RFC-0007-rendering-and-surface.md.patch`;
+the population did not grow. The glob is now recursive, and a selftest
+case with a nested sibling patch requires it. The only patch that touches
+the Butlers registry entry is `.18`'s, and that is a different file from
+the self entry.
 
 ## Sweep 5 — the observed pair
 
@@ -152,8 +171,11 @@ Nothing in this package changes it.
 
 [Observed] On 2026-09-27 the three acts were applied, in the order the
 packet proposes (consent, policy, registry), to a fresh Git repository made
-from a copy of this worktree with the repaired package committed: 1,552
-files, the same as `git ls-files` here. After the three
+from a copy of this worktree with the round-1 repair committed: 1,552
+files, the same as `git ls-files` at that repair (round-1 head `6eb406d`
+plus the retained raw; the reviewed head `35e497b` had 1,554). The
+round-2 review repeated the run in all six orders at `35e497b`, with the
+same three paths. After the three
 `--apply … --at-adoption` runs, `git status --porcelain` in that copy listed
 exactly three paths: the policy (modified) and the two new files. A fourth
 `--apply consent` was refused. Every other tracked file was unchanged,
@@ -164,7 +186,8 @@ including:
 - PWB-REQ-005 and the rest of the PWB specification.
 
 `--check` still passed in that copy and reported all three acts as
-adopted. The builder's `--selftest` repeats this in all six orders, in a
+installed (the builder's word since round 2; only an owner act makes an act
+performed). The builder's `--selftest` repeats this in all six orders, in a
 scratch copy of the files `--check` reads.
 
 The builder checks that every policy key other than `policyVersion` and

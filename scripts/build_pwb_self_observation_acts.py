@@ -20,13 +20,13 @@ Row 3 hashes the policy's current bytes with the diff applied.
 `--check` verifies each artifact's structural claims, their agreement on
 the pair, content class, pinned versions and closed source population, that
 each new install target is free (act pending) or holds exactly the proposed
-bytes (act adopted), that the policy either takes the patch (pending) or
-already holds its result (adopted), that no sibling candidate package
+bytes (act installed), that the policy either takes the patch (pending) or
+already holds its result (installed), that no sibling candidate package
 patches or drafts any of the three targets, that every manifest is an exact
 regeneration, and that the owner packet quotes the two new-file arguments
 at their current digests and offers no policy argument. It holds before,
 between and after the three adoptions, in any order, and `--apply` refuses
-an act that is already adopted. Bare invocation refuses to overwrite the
+an act that is already installed. Bare invocation refuses to overwrite the
 manifests; pass `--write` to regenerate them.
 """
 
@@ -111,6 +111,17 @@ ASSERTION_BOUND = ("assertion message, snapshot, reporter output or test log "
 GRAMMAR_READING = ("a source that matches no signed literal is excluded as an "
                    "unknown extraction class")
 NO_INHERITANCE = "is never inherited from another pair"
+#: The consent's grant paragraph, from "## Scope" to the version pins,
+#: compared whitespace-normalized and whole. It is the SEC-4 grant, so an
+#: added path, a dropped closure sentence or a widened read fails.
+CONSENT_GRANT = (
+    "The consent covers read-only reads of exact Git objects in this "
+    "repository, at the one fixed Git revision a conformance fixture names, "
+    "and only of this closed population of at most six tracked files, all "
+    f"under `{DOCTRINE}`: - phase A: `README.md`; and - phase B: those of "
+    "`architecture.md`, `security.md`, `trust-and-evidence.md`, `v1.md` and "
+    "`vision.md` that `README.md` links to at that revision. No other file is "
+    "read, even if the index links to it, and no further index is followed.")
 #: Every finder check() calls; the selftest proves each call site survives.
 CHECK_FINDERS = ("population_findings", "consent_findings",
                  "registry_findings", "policy_findings", "target_findings",
@@ -183,7 +194,7 @@ def policy_state(root: pathlib.Path = ROOT) -> tuple[str, bytes, bytes]:
             base = policy_proposed(current, patch, reverse=True)
         except ValueError:
             raise forward from None
-        return "adopted", base, current
+        return "installed", base, current
 
 
 def policy_findings(proposed: bytes, current: bytes,
@@ -217,14 +228,13 @@ def policy_findings(proposed: bytes, current: bytes,
             SELF_BOUNDARIES):
         findings.append(f"selfObservationScope names an ingest boundary outside "
                         f"{', '.join(SELF_BOUNDARIES)}: {boundaries!r}")
+    # An empty or non-list seed list fails the population equality below;
+    # this loop adds only that each seed exists in the tree being checked.
     seeds = scope.get("phaseASeedPaths")
-    if not isinstance(seeds, list) or not seeds:
-        findings.append("selfObservationScope names no phase-A seed")
-    else:
-        for seed in seeds:
-            if not isinstance(seed, str) or not (root / seed).is_file():
-                findings.append(f"phase-A seed is not a file in this "
-                                f"repository: {seed!r}")
+    for seed in seeds if isinstance(seeds, list) else []:
+        if not isinstance(seed, str) or not (root / seed).is_file():
+            findings.append(f"phase-A seed is not a file in this "
+                            f"repository: {seed!r}")
     if (seeds, scope.get("phaseBPaths")) != (list(SELF_PHASE_A),
                                              list(SELF_PHASE_B)):
         findings.append("selfObservationScope's phase-A and phase-B paths are "
@@ -346,9 +356,11 @@ def consent_findings(text: str) -> list[str]:
                    "needs a new consent act", ASSERTION_BOUND):
         if phrase not in flat:
             findings.append(f"consent scope does not say: {phrase}")
-    for path in SELF_PHASE_A + SELF_PHASE_B:
-        if f"`{pathlib.PurePosixPath(path).name}`" not in flat:
-            findings.append(f"consent does not name population member {path}")
+    grant = one_line(text.split("## Scope", 1)[-1].split(
+        "The reads are selected", 1)[0])
+    if grant != CONSENT_GRANT:
+        findings.append("consent grant is not exactly the closed six-file "
+                        "population: " + grant)
     return findings
 
 
@@ -363,7 +375,7 @@ def population_findings(names: list[str]) -> list[str]:
 
 
 def target_state(key: str, root: pathlib.Path = ROOT) -> str:
-    """'pending' or 'adopted' for a new-file act; ValueError when occupied."""
+    """'pending' or 'installed' for a new-file act; ValueError when occupied."""
     target = root / ACTS[key][1]
     if not target.exists():
         return "pending"
@@ -371,14 +383,14 @@ def target_state(key: str, root: pathlib.Path = ROOT) -> str:
                                 else REGISTRY_NAME)
     if target.is_file() and source.is_file() and (
             target.read_bytes() == source.read_bytes()):
-        return "adopted"
+        return "installed"
     raise ValueError(f"install target occupied by different bytes: "
                      f"{ACTS[key][1].as_posix()}")
 
 
 def target_findings(root: pathlib.Path = ROOT) -> list[str]:
     """A new file's install target is free (pending) or holds exactly the
-    proposed bytes (adopted); anything else would be overwritten."""
+    proposed bytes (installed); anything else would be overwritten."""
     findings = []
     for key in ("consent", "registry"):
         try:
@@ -579,6 +591,21 @@ def selftest() -> int:
          csub("reporter output or test log", "reporter output")),
         ("a consent missing one population member",
          consent.replace("`trust-and-evidence.md`", "`trust.md`", 1)),
+        ("a consent granting another path",
+         consent.replace("no further index is followed.",
+                         "no further index is followed. Phase A also: "
+                         "`AGENTS.md` and every file under `apps/`.", 1)),
+        ("a consent population that is not closed",
+         csub("closed population of at most six tracked files",
+              "population of tracked files")),
+        ("a consent that follows links",
+         csub("No other file is read, even if the index links to it, and no "
+              "further index is followed.",
+              "Any file the index links to is read.")),
+        ("a consent that also reads the working tree",
+         csub("reads of exact Git objects in this repository",
+              "reads of exact Git objects in this repository and the "
+              "working tree")),
     )
     for label, mutant in consent_mutants:
         assert mutant != consent, label
@@ -703,6 +730,11 @@ def selftest() -> int:
     if not expect("invalid policy JSON",
                   policy_findings(proposed + b"}", current)):
         return 1
+    with tempfile.TemporaryDirectory() as scratch:
+        # The seed list is right; only the file is missing from this tree.
+        if not expect("a phase-A seed absent from the tree", policy_findings(
+                proposed, current, pathlib.Path(scratch))):
+            return 1
 
     def pol(fn) -> bytes:
         doc = json.loads(proposed)
@@ -772,6 +804,13 @@ def selftest() -> int:
         if not expect("a sibling drafting a whole install target",
                       composition_findings(root)):
             return 1
+        (sibling / REGISTRY_NAME).unlink()
+        # A real sibling nests a patch one level down; the sweep recurses.
+        (sibling / "contract").mkdir()
+        (sibling / "contract" / "x.patch").write_text(
+            f"--- a/{POLICY.as_posix()}\n+++ b/{POLICY.as_posix()}\n")
+        if not expect("a nested sibling patch", composition_findings(root)):
+            return 1
     for key, body in bodies.items():
         baseline = render(key, body)
         digest = ROW.findall(baseline)[0][0]
@@ -812,8 +851,21 @@ def selftest() -> int:
         if not expect(f"check() without its {name} call", got):
             return 1
 
+    # --apply installs nothing over a package that does not verify.
+    with tempfile.TemporaryDirectory() as scratch:
+        root = scratch_root(pathlib.Path(scratch))
+        manifest = root / ACTS["consent"][2]
+        manifest.write_text(manifest.read_text().replace(
+            digests["consent"], "0" * 64))
+        count += 1
+        if quietly(apply, "consent", True, root) == 0 or (
+                root / ACTS["consent"][1]).exists():
+            print("SELFTEST FAILED: --apply installed over a package that "
+                  "does not verify")
+            return 1
+
     # Three separate acts, in every order: after each adoption the package
-    # still verifies, the adopted act refuses a second --apply, and the
+    # still verifies, the installed act refuses a second --apply, and the
     # manifests keep matching.
     for order in itertools.permutations(ACTS):
         with tempfile.TemporaryDirectory() as scratch:
@@ -828,7 +880,7 @@ def selftest() -> int:
                 done.append(key)
                 findings = check(root)
                 states = {} if findings else adoption_states(root)
-                if findings or any(states.get(k) != ("adopted" if k in done
+                if findings or any(states.get(k) != ("installed" if k in done
                                                  else "pending")
                                    for k in ACTS):
                     print(f"SELFTEST FAILED: after {done}, states {states}, "
@@ -841,7 +893,7 @@ def selftest() -> int:
                     return 1
     print(f"selftest: {count} predicates — consent pair, class, drafted owner "
           "quotation, status, head, pinned observer and policy versions, "
-          "no-widening sentence, assertion bound and population; registry "
+          "no-widening sentence, assertion bound and exact closed grant; registry "
           "JSON, entry count, project, observerId and discoveryVersion "
           "collision, pinned observer version, unnamed implementation, pair, "
           "specification digest, write surface, database and network access, "
@@ -849,9 +901,11 @@ def selftest() -> int:
           "stored evaluation, walkthrough record, assertion bound, source "
           "population, self-reference rule and limit semantics; policy "
           "drift, corruption, no-op, version, base scope, detectors, self "
-          "scope, boundaries, seeds, phase-B population and rule sentences; "
-          "proposed population, occupied install target, sibling patch and "
-          "sibling draft, three manifests' digest, path and absence, the "
+          "scope, boundaries, seeds, a seed absent from the tree, phase-B "
+          "population and rule sentences; proposed population, occupied "
+          "install target, sibling patch, nested sibling patch and sibling "
+          "draft, --apply over a package that does not verify, three "
+          "manifests' digest, path and absence, the "
           "packet's two quoted arguments and absent policy offer, and every "
           "check() call site all fail closed; and all six adoption orders "
           "verify after each act and refuse a repeated act")
@@ -873,7 +927,7 @@ def apply(key: str, at_adoption: bool, root: pathlib.Path = ROOT) -> int:
         for finding in findings:
             print(f"  {finding}")
         return 1
-    if adoption_states(root)[key] == "adopted":
+    if adoption_states(root)[key] == "installed":
         print(f"refusing to apply: {ACTS[key][1].as_posix()} already holds "
               "the proposed bytes")
         return 1

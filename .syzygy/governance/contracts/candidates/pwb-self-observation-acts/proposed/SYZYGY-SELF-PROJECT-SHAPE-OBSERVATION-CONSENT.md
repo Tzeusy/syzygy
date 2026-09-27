@@ -30,12 +30,13 @@ Proposed revocation state: active; supersedes no earlier consent
 
 ## Where the grant comes from
 
-No owner statement is quoted here, because none has been given for this
-pair. The owner's 2026-09-21 ruling on P-74 question 3 (recorded in
+No owner statement of consent is quoted here, because none has been given
+for this pair. The owner's 2026-09-21 answer to P-74 question 3 (recorded
+in
 `.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`)
-chose three separate, dated acts scoped to a test-only self-observation
-before the fixture may run. That ruling asks for this record; it does not
-grant it. If the owner performs the act over this record's exact digest,
+was "three acts scoped to a test-only self-observation (consent record,
+second registry entry, secret-policy extension) before slice 6 runs". That
+answer asks for this record; it does not grant it. If the owner performs the act over this record's exact digest,
 the act itself is the grant.
 
 ## Scope
@@ -86,7 +87,7 @@ later recorded act; revocation does not erase prior observation records.
 
 [Observed] This candidate names the owner, date, subject, content class and
 scope. It has no effect until the owner acts on its exact digest. It is one
-of three separate acts the P-74 question 3 ruling requires; the other two
+of the three acts the P-74 question 3 ruling requires; the other two
 (the policy's self-observation scope and the second registry entry) are
 separate artifacts with separate acts, and a body read under this pair
 requires all three to be valid.

@@ -26,8 +26,9 @@ self pair: PWB-REQ-005 says "The consent subject SHALL be exactly
 portability funnel says of slice 6 "No approved requirement names a
 self-observation". Slice 6 would apply PWB-REQ-005's gate to the self pair
 by analogy [Inferred]; whether it may is the packet's open question 10.
-PWB-REQ-005's own text is not edited (the ruling: "The consent record, the
-registry entry and PWB-REQ-005 are edited on no arm").
+PWB-REQ-005's own text is not edited. The record's reading of the P-74
+row, in its "What it means" column and not the owner's answer, says "The
+consent record, the registry entry and PWB-REQ-005 are edited on no arm".
 **Change class:** Normative (a new consent, a new registry entry, and a
 new policy scope; each widens what may be read).
 **Author:** agent session for bead `syzygy-dov.25`
@@ -134,10 +135,12 @@ in these ways:
 
 The P-74 row of
 `.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`
-chose arm A for question 3: "three acts scoped to a test-only
-self-observation (consent record, second registry entry, secret-policy
-extension) before slice 6 runs", and "slice 6 runs only after the three acts
-exist, each separate and dated".
+records the owner's answer, arm A, which for question 3 reads "three acts
+scoped to a test-only self-observation (consent record, second registry
+entry, secret-policy extension) before slice 6 runs". The row's "What it
+means" column, which is the record's reading and not the owner's answer,
+adds "slice 6 runs only after the three acts exist, each separate and
+dated".
 
 ## Evidence or decision basis
 
