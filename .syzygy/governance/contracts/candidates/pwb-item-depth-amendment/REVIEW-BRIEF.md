@@ -53,7 +53,9 @@ must remain unchanged.
 8. **Package mechanics.** Run builder `--check`, `--selftest` and `--diff`.
    Re-derive all eleven rows and the manifest-file SHA-256; verify five patch
    targets, no current signed-byte edit and the stated sibling denominator.
-   Corrupt the last patch and confirm adoption preflight changes no target byte.
+   Invoke the actual CLI with `--apply --at-adoption` in a scratch mirror and
+   confirm argparse refuses while every signed-subject target byte is unchanged.
+   Confirm no other builder mode writes outside the inert candidate package.
 9. **Overlap.** Fetch then-current open PWB PR patches, including PR #121 and
    PR #124 if still open, and test this spec patch before/after each. Confirm
    `.30` remains separate and explicitly leaves PWB-REQ-015 downstream.
@@ -65,11 +67,12 @@ must remain unchanged.
     authorization. The relation diagram repeats the text faithfully and
     introduces no extra state or route.
 
-Round 1 is retained verbatim in
-`docs/reviews/R-PWB-ITEM-DEPTH-AMENDMENT-RAW.md` with verdict `REVISE`.
-Because this repair changes semantic bytes, this exact head needs a different
-fresh independent reviewer. That review's raw must start with the exact
-reviewed commit, the exact manifest-file SHA-256, one verdict from `CONFIRM`,
+Rounds 1 and 2 are retained verbatim in
+`docs/reviews/R-PWB-ITEM-DEPTH-AMENDMENT-RAW.md` and
+`docs/reviews/R-PWB-ITEM-DEPTH-AMENDMENT-RECHECK-RAW.md`, both with verdict
+`REVISE`. Because this repair changes the candidate builder, this exact head
+needs a different fresh independent reviewer. That review's raw must start with
+the exact reviewed commit, the exact manifest-file SHA-256, one verdict from `CONFIRM`,
 `CONFIRM WITH EXCEPTIONS`, `REVISE`, and then every finding with file and line.
 Store it verbatim under a new filename ending `-RAW.md`. A reviewer who authors
 semantic repairs retires their review; repaired bytes need a fresh independent

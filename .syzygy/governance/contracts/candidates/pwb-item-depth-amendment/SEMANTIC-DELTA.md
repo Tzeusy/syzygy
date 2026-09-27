@@ -323,12 +323,36 @@ PWB-REQ-013 is reached unchanged and named in the impact ledger, coverage row,
 design, owner packet and review brief.
 
 **Finding 3 — adoption could leave a partial signed tree. Accepted and
-repaired.** `apply_at_adoption` now runs the complete package check and
-materializes the proposed-byte map before its first target write. A selftest
-corrupts the final patch, invokes adoption against a scratch mirror and confirms
-every target byte remains unchanged.
+repaired in round 1, then superseded by the round-2 repair below.** At reviewed
+commit `4d9bc742`, `apply_at_adoption` ran the complete package check and
+materialized the proposed-byte map before its first target write; its selftest
+corrupted the final patch and confirmed every scratch target stayed unchanged.
 
-**Current review state:** these are semantic repairs after `REVISE`; rule 10
-retires round 1 for the current bytes. A different fresh independent reviewer
-must review the exact repaired head. This author may not review it. No phrase is
-offered and the PR remains Draft.
+**Round 2 reviewed bytes:** commit
+`4d9bc74215a8a22562f3ff3fcba4655483c2e0e2`; the manifest-file digest is
+recorded verbatim in the exact fresh-context raw retained unchanged at
+`docs/reviews/R-PWB-ITEM-DEPTH-AMENDMENT-RECHECK-RAW.md`. **Verdict:**
+`REVISE`. It confirmed the three round-1 repairs and found one further blocker.
+
+**Round 2 finding — the standalone builder could write signed subjects without
+an act. Accepted and repaired.** The candidate builder no longer defines
+`apply_at_adoption`, `--apply` or `--at-adoption`. Its only write mode updates
+the inert candidate's generated dependency patch and manifest. A behavior-level
+CLI fixture copies the builder, dependencies, candidate, signed subjects and
+sibling patches into a scratch mirror, invokes the removed arguments, requires
+argparse exit 2 and verifies all five signed-subject target bytes are unchanged.
+A future independently reviewed owner-act recorder must own act/order/digest
+validation and materialization.
+
+**Rule-6 counterexample [Observed].** In an isolated clone at unsafe head
+`4d9bc74215a8a22562f3ff3fcba4655483c2e0e2`, the new predicate's exact command
+(`python3 scripts/build_pwb_item_depth_amendment.py --apply --at-adoption`)
+returned 0, emitted the old success line, and changed all five signed-subject
+targets. It therefore evaluated false against that head's behavior. The same
+predicate passes on the repaired builder with argparse return 2, an
+`unrecognized arguments` diagnostic and zero changed target bytes.
+
+**Current review state:** this repair changes candidate-builder bytes after
+round 2; rule 10 retires that review for the current head. A different fresh
+independent reviewer must review the exact repaired head. This author may not
+review it. No phrase is offered and the PR remains Draft.

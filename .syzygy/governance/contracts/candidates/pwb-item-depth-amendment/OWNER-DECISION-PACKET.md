@@ -1,7 +1,8 @@
 > **Candidate — binds nothing. Phrase not offered.** P-81 Q5 authorized this
-> draft only. Round 1 returned `REVISE`; its three findings are repaired in
-> these bytes, which require a different fresh independent reviewer. The owner
-> has not chosen a successor-chain position, and no recorder entry exists.
+> draft only. Rounds 1 and 2 returned `REVISE`; their findings are repaired in
+> these bytes, which require a different fresh independent reviewer. The
+> builder has no signed-subject apply mode. The owner has not chosen a
+> successor-chain position, and no recorder entry exists.
 
 # Owner packet — PWB item depth
 
@@ -53,8 +54,8 @@ bytes and regenerates the manifest.
 
 ## Review and ordering before any act
 
-1. The retained round-1 raw records `REVISE`; these repaired bytes get a
-   different fresh independent reviewer under `REVIEW-BRIEF.md`.
+1. The retained round-1 and round-2 raws record `REVISE`; these repaired bytes
+   get a different fresh independent reviewer under `REVIEW-BRIEF.md`.
 2. Every finding is dispositioned; any further semantic edit gets another
    fresh review.
 3. The owner answers the choices above and selects the successor-chain position.

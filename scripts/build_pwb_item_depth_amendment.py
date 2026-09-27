@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 """Build and verify the inert PWB item-depth amendment candidate.
 
-The current eleven-artifact PWB behavior package is act-bound.  This builder
+The current eleven-artifact PWB behavior package is act-bound. This builder
 therefore applies the candidate's ``proposed/*.patch`` files only in a scratch
-tree, hashes those proposed bytes, and never edits ``openspec/**`` unless an
-adoption recorder explicitly invokes ``--apply --at-adoption``.  A candidate
-commit, review, manifest, or merge performs no owner act.
-
-Adoption mode first constructs and validates the complete proposed-byte map in
-scratch. It writes no signed subject until every patch, manifest, dependency
-and sibling-composition predicate has passed.
+tree and hashes those proposed bytes. It has no signed-subject write mode: only
+a future independently reviewed owner-act recorder may validate an effective
+act, chain position and exact manifest before writing ``openspec/**``. A
+candidate commit, review, manifest or merge performs no owner act.
 """
 
 from __future__ import annotations
@@ -19,6 +16,7 @@ import difflib
 import hashlib
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -355,31 +353,46 @@ def selftest() -> int:
         broken_findings, _ = check([broken])
         cases.append(("corrupt patch", bool(broken_findings)))
 
-        real_patches = patch_files()
-        late_patch = real_patches[-1]
-        broken_late = temp_root / late_patch.name
-        broken_late.write_text(
-            late_patch.read_text(encoding="utf-8").replace(
-                " Group: Presentation. Form: **invariant**.",
-                " Group: deliberately-invalid-late-context.",
-                1,
-            ),
-            encoding="utf-8",
+        mirror = temp_root / "cli-mirror"
+        script_rel = pathlib.Path("scripts/build_pwb_item_depth_amendment.py")
+        dependency_rels = (
+            pathlib.Path("scripts/build_polaris_project_wide_spec_dependencies.py"),
+            pathlib.Path("scripts/build_capability_1_spec_dependencies.py"),
         )
-        mirror = temp_root / "adoption-mirror"
-        before: dict[pathlib.Path, bytes] = {}
-        for rel in PATCHED:
-            before[rel] = (ROOT / rel).read_bytes()
+        for rel in (script_rel, *dependency_rels):
             target = mirror / rel
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(before[rel])
-        refused = apply_at_adoption(
-            patches=[*real_patches[:-1], broken_late], write_root=mirror,
+            shutil.copy2(ROOT / rel, target)
+        for rel in BEHAVIOR_SUBJECTS:
+            target = mirror / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((ROOT / rel).read_bytes())
+        shutil.copytree(ROOT / CANDIDATE, mirror / CANDIDATE)
+        for sibling in active_sibling_spec_patches():
+            rel = sibling.relative_to(ROOT)
+            target = mirror / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(sibling.read_bytes())
+        before: dict[pathlib.Path, bytes] = {}
+        for rel in PATCHED:
+            target = mirror / rel
+            before[rel] = target.read_bytes()
+        refused = subprocess.run(
+            [sys.executable, str(mirror / script_rel), "--apply", "--at-adoption"],
+            cwd=mirror,
+            capture_output=True,
         )
         after = {rel: (mirror / rel).read_bytes() for rel in PATCHED}
+        if refused.returncode != 2 or b"unrecognized arguments" not in refused.stderr:
+            print(
+                "  (standalone CLI refusal mismatch: "
+                f"rc={refused.returncode}, stderr={refused.stderr.decode().strip()!r})"
+            )
         cases.append((
-            "late patch failure writes no adoption target",
-            refused == 1 and after == before,
+            "standalone adoption CLI is absent and writes no signed subject",
+            refused.returncode == 2
+            and b"unrecognized arguments" in refused.stderr
+            and after == before,
         ))
 
     siblings = active_sibling_spec_patches()
@@ -411,46 +424,18 @@ def write() -> int:
     return 0
 
 
-def apply_at_adoption(
-    patches: list[pathlib.Path] | None = None,
-    write_root: pathlib.Path = ROOT,
-) -> int:
-    findings, proposed = check(patches)
-    if findings or proposed is None:
-        print("refusing adoption before any write:")
-        for finding in findings:
-            print(f"  {finding}")
-        return 1
-    for rel in sorted(PATCHED, key=lambda path: path.as_posix()):
-        target = write_root / rel
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(proposed[rel])
-    print(
-        "applied preflighted PWB item-depth bytes; owner-act recorder must "
-        "finish atomically"
-    )
-    return 0
-
-
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--selftest", action="store_true")
     parser.add_argument("--diff", action="store_true")
     parser.add_argument("--write", action="store_true")
-    parser.add_argument("--apply", action="store_true")
-    parser.add_argument("--at-adoption", action="store_true")
     args = parser.parse_args(argv)
 
     if args.selftest:
         return selftest()
     if args.write:
         return write()
-    if args.apply:
-        if not args.at_adoption:
-            print("refusing: --apply requires --at-adoption and an owner-act recorder")
-            return 2
-        return apply_at_adoption()
     if args.diff:
         for patch in patch_files():
             print(patch.read_text(encoding="utf-8"), end="")
