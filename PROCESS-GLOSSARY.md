@@ -23,10 +23,9 @@
 
 ## The lifecycle of a document
 
-These four words are not synonyms, and the difference between them is the
-single thing most worth understanding here. They describe **increasing force**,
-and a document at one level must never be described using a word from a
-higher one.
+Four words name **increasing force** — candidate, confirmed, accepted,
+recorded — and they are not synonyms: a document at one level must never be
+described using a word from a higher one.
 
 | Word | Means | Who makes it so |
 |---|---|---|
@@ -35,64 +34,77 @@ higher one.
 | **accepted** | An owner **act** was performed on it. It is now binding authority | the owner, and only the owner |
 | **recorded** | An owner **decision** was written down. Binding, but not digest-bound — no ceremony phrase, no argument | the owner |
 
-**Confirmed is not accepted.** This is the distinction a newcomer most often
-collapses: a `CONFIRM` verdict says the bytes are ready to be offered, and an
-act is a separate thing that only the owner does. Confirmation of Waves A and
-B did not make them binding — the two acts performed on 2026-08-17 did, and
-each was a separate transaction after the review. Which artifacts are accepted
-today is owned by `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` and
-summarised in `PROJECT-STATUS.md`; read those, not this page, for status.
+**Confirmed is not accepted.** A `CONFIRM` verdict says the bytes are ready
+to be offered; an act is a separate thing that only the owner does. This is
+the distinction a newcomer most often collapses.
 
-*Superseded, dated:* until 2026-09-05 this paragraph ended "Waves A and B are
-both *confirmed* today and **neither is accepted**; no owner act has been
-performed in this repository at all." That was true when written and stopped
-being true on 2026-08-17.
+- *Example:* confirmation of Waves A and B did not make them binding — the
+  two acts performed on 2026-08-17 did, and each was a separate transaction
+  after the review.
+- *Status lives elsewhere:* which artifacts are accepted today is owned by
+  `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` and summarised in
+  `PROJECT-STATUS.md`; read those, not this page, for status.
+- *Superseded, dated:* until 2026-09-05 this paragraph ended "Waves A and B
+  are both *confirmed* today and **neither is accepted**; no owner act has
+  been performed in this repository at all." That was true when written and
+  stopped being true on 2026-08-17.
 
 ## Acts, arguments, offers
 
-- **act** — a formal owner transaction that changes what is binding. An act
-  has an exact **ceremony phrase** the owner types, and an **argument**. Only
-  the owner performs acts (doctrine VIS-4). Acts have been performed here, and
-  `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` — created by the
-  first of them — is the append-only record of every one. This page defines
-  the word; it never says which acts exist. *(Until 2026-09-05 this entry read
-  "No act has been performed yet; `decisions/ACCEPTANCE-ACT-RECORD.md`
-  therefore does not exist, and that absence is correct rather than a gap" —
-  correct when written, false from 2026-08-17 onward.)*
+An act is the owner's formal transaction; its argument is the exact bytes it
+binds; an offer presents a prepared act for a yes/no.
+
+- **act** — a formal owner transaction that changes what is binding.
+  - An act has an exact **ceremony phrase** the owner types, and an
+    **argument**. Only the owner performs acts (doctrine VIS-4).
+  - Acts have been performed here, and
+    `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` — created by the
+    first of them — is the append-only record of every one. This page
+    defines the word; it never says which acts exist.
+  - *(Until 2026-09-05 this entry read "No act has been performed yet;
+    `decisions/ACCEPTANCE-ACT-RECORD.md` therefore does not exist, and that
+    absence is correct rather than a gap" — correct when written, false from
+    2026-08-17 onward.)*
 
 - **argument** — the exact bytes an act binds, identified by a `sha256`
-  digest. For a wave act the argument is the digest of that wave's **whole
-  manifest file** — four generated header lines plus one digest row per
-  module. A change to a file that is not in the manifest moves no accepted
-  byte. **But the header names the acceptance phrase**, so renaming the phrase
-  regenerates the argument and retires the confirmation without touching any
-  module. *(Corrected 2026-08-13, RD-54: the shorter form of this rule — "the
-  ceremony is in no manifest, so a ceremony change costs nothing" — was false
-  in exactly that case.)*
+  digest.
+  - For a wave act the argument is the digest of that wave's **whole
+    manifest file** — four generated header lines plus one digest row per
+    module.
+  - A change to a file that is not in the manifest moves no accepted byte.
+  - **But the header names the acceptance phrase**, so renaming the phrase
+    regenerates the argument and retires the confirmation without touching
+    any module. *(Corrected 2026-08-13, RD-54: the shorter form of this rule
+    — "the ceremony is in no manifest, so a ceremony change costs nothing" —
+    was false in exactly that case.)*
 
-- **offer** — presenting a prepared act to the owner for a yes/no. Preparing
-  an offer is not performing it. An act can be *confirmed and unoffered* —
-  Wave A spent a week in exactly that state while the P-33 install-shape
-  decision withheld its offer (`PROJECT-STATUS.md` owns the current state).
+- **offer** — presenting a prepared act to the owner for a yes/no.
+  - Preparing an offer is not performing it.
+  - An act can be *confirmed and unoffered* — Wave A spent a week in exactly
+    that state while the P-33 install-shape decision withheld its offer
+    (`PROJECT-STATUS.md` owns the current state).
 
-- **wave** — one batch of contract modules accepted by one act. There are six
-  (A, B, C1, C2, D1, D2). Waves A and B are the launch path; C1/C2/D1/D2 are
-  **deferred** — candidate, not accepted, not used by the launch target, and
-  excluded from default task routing.
+- **wave** — one batch of contract modules accepted by one act.
+  - There are six (A, B, C1, C2, D1, D2).
+  - Waves A and B are the launch path; C1/C2/D1/D2 are **deferred** —
+    candidate, not accepted, not used by the launch target, and excluded
+    from default task routing.
 
-- **retire / survive** — what happens to a *confirmation* when bytes move. If
-  an act's argument regenerates, the review that confirmed the old argument
-  no longer covers anything and is **retired**; otherwise it **survives**.
+- **retire / survive** — what happens to a *confirmation* when bytes move.
+  If an act's argument regenerates, the review that confirmed the old
+  argument no longer covers anything and is **retired**; otherwise it
+  **survives**.
 
 ## Identifiers
 
 Identifiers are amended in place or retired — **never renumbered**.
 
-This page defines the *forms*. For the *instances* — every identifier that
-exists, and the file and line where each is defined — see
-[`DIRECTIVE-REGISTER.md`](DIRECTIVE-REGISTER.md), which is generated from the
-corpus on every CI run. It answers "where does `CC-SPEC-11` live?"; it
-deliberately does not answer "what does it say?", because only the clause does.
+- **Forms here, instances elsewhere.** This page defines the *forms*. For
+  the *instances* — every identifier that exists, and the file and line
+  where each is defined — see [`DIRECTIVE-REGISTER.md`](DIRECTIVE-REGISTER.md),
+  which is generated from the corpus on every CI run.
+  - It answers "where does `CC-SPEC-11` live?"; it deliberately does not
+    answer "what does it say?", because only the clause does.
 
 | Form | Is | Example |
 |---|---|---|
@@ -112,6 +124,10 @@ else does.
 
 ## The launch gate
 
+The launch gate is a fixed question set that judges whether the repository
+is ready for its first specification; it is an instrument and authorizes
+nothing.
+
 - **launch gate** — a fixed question set (`A1…G1`) asking whether this
   repository is ready for anyone to author its first specification. It is an
   **instrument**: it judges, and it authorizes nothing.
@@ -121,20 +137,23 @@ else does.
   report is *generated from it and never read back as authority*.
 
 - **formal administration** — an administration that may be cited as launch
-  evidence. It must be run in **fresh context**, by someone who is not an
-  authoring session of this repository, preferably outside the corpus
-  authors' model family. Which administrations have been run, and what each
-  returned, is a status question this page does not own: the launch-path
-  table in `PROJECT-STATUS.md` owns it, and the records live under
-  `.syzygy/governance/decisions/launch-gate/`. The 2026-08-09 run was a
-  **pilot**, not a formal administration, and is steering evidence only.
-
-  *Superseded, dated:* until 2026-09-05 this entry read "**None has ever been
-  run.** The only administration on record is the 2026-08-09 pilot, which
-  returned `NOT READY`." That was true when written and stopped being true on
-  2026-08-18, when Administration 1 was performed out-of-family in fresh
-  context — an administration whose own strongest findings were stale
-  current-state claims on the default path, of which this sentence was one.
+  evidence.
+  - It must be run in **fresh context**, by someone who is not an authoring
+    session of this repository, preferably outside the corpus authors' model
+    family.
+  - Which administrations have been run, and what each returned, is a status
+    question this page does not own: the launch-path table in
+    `PROJECT-STATUS.md` owns it, and the records live under
+    `.syzygy/governance/decisions/launch-gate/`.
+  - The 2026-08-09 run was a **pilot**, not a formal administration, and is
+    steering evidence only.
+  - *Superseded, dated:* until 2026-09-05 this entry read "**None has ever
+    been run.** The only administration on record is the 2026-08-09 pilot,
+    which returned `NOT READY`." That was true when written and stopped
+    being true on 2026-08-18, when Administration 1 was performed
+    out-of-family in fresh context — an administration whose own strongest
+    findings were stale current-state claims on the default path, of which
+    this sentence was one.
 
 - **E1…E6** — the six readiness questions in the gate's section E, the
   section that asks the gate's actual question. Abbreviated constantly:
@@ -157,6 +176,10 @@ else does.
 
 ## Review vocabulary
 
+These terms define a review's verdict words and fresh context, where its
+raw output and each finding's outcome are kept, and what model family,
+digest binding and semantic deltas mean for a review.
+
 - **verdict words** are a closed set and are **copied exactly**, never
   paraphrased: `CONFIRM`, `CONFIRM WITH EXCEPTIONS`, `REVISE`. "Pass with
   findings" is not a verdict and never substitutes for `EXCEPTIONS`.
@@ -166,26 +189,29 @@ else does.
   no "how it's going".
 
 - **raw review lane** — the directories holding reviewer bytes verbatim
-  behind a provenance banner. **Never edited**, including to fix an error the
-  reviewer made; the register records the disposition instead.
+  behind a provenance banner. **Never edited**, including to fix an error
+  the reviewer made; the register records the disposition instead.
 
-- **disposition register** — where each finding's outcome is recorded, in the
-  vocabulary `repaired` · `open` · `declined`. Never "acknowledged".
+- **disposition register** — where each finding's outcome is recorded, in
+  the vocabulary `repaired` · `open` · `declined`. Never "acknowledged".
 
-- **same-model-family** — the reviewer is the same model family as the corpus
-  authors. Such a review **supports repair** and is never the formal launch
-  administration. Every review obtained so far is same-family, and each one
-  says so.
+- **same-model-family** — the reviewer is the same model family as the
+  corpus authors. Such a review **supports repair** and is never the formal
+  launch administration. Every review obtained so far is same-family, and
+  each one says so.
 
-- **exact-package review** — a review bound to a specific digest. Editing the
-  subject afterwards makes the review worth nothing, however small the edit.
+- **exact-package review** — a review bound to a specific digest. Editing
+  the subject afterwards makes the review worth nothing, however small the
+  edit.
 
-- **semantic delta** — the document normative changes travel in. "Editorial"
-  and "no semantic change" are reviewable claims, not exemptions.
+- **semantic delta** — the document normative changes travel in.
+  "Editorial" and "no semantic change" are reviewable claims, not
+  exemptions.
 
 ## Epistemic labels
 
-Used on substantive claims throughout, and load-bearing:
+Three labels are used on substantive claims throughout, and they are
+load-bearing:
 
 ```text
 [Observed]   measured, with the method and denominator available
@@ -196,6 +222,8 @@ Used on substantive claims throughout, and load-bearing:
 `Unknown` is a **result**, not a failure to produce one.
 
 ## Where to ask what
+
+Each question has one owning record; this page owns none of them.
 
 | Question | Owning record |
 |---|---|

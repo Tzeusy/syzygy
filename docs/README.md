@@ -7,13 +7,19 @@
 > here disagrees with one of those, **the owning record wins and this page is
 > stale** — report the disagreement rather than resolving it here.
 
-`.syzygy/**` says what must be true and `openspec/**` says what the software
-must do. This directory holds the third thing: the **implementation plane's**
-own working record — how the work was planned, what was reviewed, and what
-evidence a run actually produced. It is written by and for the people and
-agents doing the building.
+This directory is the **implementation plane's** own working record: how the
+work was planned, what was reviewed, and what evidence a run actually
+produced. It sits beside the governed planes and is written by and for the
+people and agents doing the building.
+
+- `.syzygy/**` says what must be true.
+- `openspec/**` says what the software must do.
+- `docs/` holds the third thing: plans, reviews and run evidence.
 
 ## What is here
+
+Seven homes, each with a named reader and the question it answers. A plan
+here is never permission to do the work it describes.
 
 | Path | What it is | Reader, and the question it answers |
 |---|---|---|
@@ -25,17 +31,22 @@ agents doing the building.
 | `plans/` | Dated design notes for a single bead, written before the work | An implementer picking up that bead: "what shape was already decided, and by whom?" |
 | `superpowers/plans/`, `superpowers/specs/` | Spent plans and designs from an external-harness convention, kept as evidence | Someone auditing a past change: "what was the plan the work was actually done against?" |
 
-Implementation *plans* live here. The **authorizing act** for any of that work
-does not — it lives in `.syzygy/governance/decisions/`. A plan in this
-directory is never permission; find the act first (`AGENTS.md`, "Where
-authority lives").
+**A plan here is never permission.**
+
+- Implementation *plans* live here.
+- The **authorizing act** for any of that work does not; it lives in
+  `.syzygy/governance/decisions/`.
+- Find the act first (`AGENTS.md`, "Where authority lives").
 
 ## `reviews/` — the corpus, by campaign
 
-Raw reviewer output is stored **verbatim and never edited** (CC-REV-6). Files
-ending `-RAW.md` are that verbatim output; `-DISPOSITION.md` and `*-PACKET.md`
-files are the synthesis over them. Correcting a RAW file is never the repair —
-the repair is a new disposition that cites it.
+Raw reviewer output is stored **verbatim and never edited** (CC-REV-6); the
+table routes each campaign to its last verdict of record.
+
+- Files ending `-RAW.md` are that verbatim output.
+- `-DISPOSITION.md` and `*-PACKET.md` files are the synthesis over them.
+- Correcting a RAW file is never the repair. The repair is a new disposition
+  that cites it.
 
 | Campaign | Files | Recorded | What was under review | Last verdict of record, and where the findings landed |
 |---|---|---|---|---|
@@ -65,6 +76,7 @@ the repair is a new disposition that cites it.
 | Surface-routes CI budget | 2 | 2026-09-27 | `surface-routes.test.ts` 13-link exhaustion shares one browser across its two forms, `syzygy-8hr` (PR #126) | `REVISE` (`R-SURFACE-ROUTES-BUDGET-REVIEW-RAW.md:1`): the shared teardown swallowed a `browser.close()` drain failure; repaired so it propagates (mutation-checked), hooks budgeted 60,000ms to match the other browser suites.; confirmation `CONFIRM` (`R-SURFACE-ROUTES-BUDGET-CONFIRMATION-RAW.md:1`). |
 | Recorder notes-only verdict | 2 | 2026-09-26 → 2026-09-27 | `record_pwb_behavior_amendment_acts.py` accepts a notes-only `CONFIRM WITH EXCEPTIONS` bound to a disposition record, per the 2026-09-26 gate-sitting direction §1 (PR #118), then hardened (PR #125) | `CONFIRM WITH EXCEPTIONS` (`R-PWB-RECORDER-NOTES-ONLY-REVIEW-RAW.md:1`), notes only; notes 7 and 8 went to `syzygy-qqt`, repaired by PR #125. PR #125: `CONFIRM WITH EXCEPTIONS` (`R-PWB-RECORDER-NOTES-ONLY-HARDENING-REVIEW-RAW.md:1`), notes only; notes 5 (fence corner case) and 9 (whole-document finding scan) are dispositioned to `syzygy-4yr` before any package is wired. |
 | CG-7e bare digest headings | 3 | 2026-09-27 | `check_governance.py` CG-7e checks each bare `<qualifier> SHA-256:` heading in a registered act-copy file against that file's own declared digests, `syzygy-eau` (PR #130) | `REVISE` (`R-CG7E-BARE-DIGEST-REVIEW-RAW.md:1`): the first fix matched only the literal `Manifest SHA-256:` spelling and left 15 qualified bare copies (three live bypasses) unchecked; repaired by generalizing to every `SHA-256:` heading with two checked container exemptions; confirmation `CONFIRM WITH EXCEPTIONS` (`R-CG7E-BARE-DIGEST-CONFIRMATION-RAW.md:1`) with one revise-severity finding (4: lowercase `sha256` and colon-less headings, four more live bypasses), repaired by a case-insensitive, colon-optional heading pattern; second confirmation `REVISE` (`R-CG7E-BARE-DIGEST-CONFIRMATION-2-RAW.md:1`): 12 unlabeled copies of act arguments (act-identity lines, table cells, a checksum row, one owner phrase) still masked by a correct copy elsewhere in the same file. |
+| Tree-style restyle (CC-REV-8) | 2 | 2026-09-28 | The answer-first abstraction-tree restyle (CC-REV-8) of presentation and governed prose, meaning unchanged; one campaign for the docs, craft-and-care, topology and contract restyle reviews | Docs review 2 is `CONFIRM WITH EXCEPTIONS` (`R-TREE-STYLE-DOCS-2-RAW.md:2`), notes only, which clears the bytes under the owner's notes-only stopping rule. Review 1 (`REVISE`, `R-TREE-STYLE-DOCS-1-RAW.md:2`) was repaired in the same change, M1 by reverting `openspec/README.md`; its topology-bundle findings travel with the separate topology restyle. |
 | P-68 scoped-attributes package | 4 | 2026-09-14 | Scoped epistemic-attributes semantic delta | Review 4 ends `CONFIRM WITH EXCEPTIONS` (`R-PWB-SCOPED-ATTRIBUTES-DELTA-4-RAW.md:489`); findings landed in the candidate package, which binds nothing without its act. |
 | Polaris M2 funnel | 6 | 2026-09-14 | P-69 evidence-currency funnel | Review 6 ends `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-6-RAW.md:327`); findings landed in the M2 packet before owner ruling. |
 | Polaris M3 funnel | 7 | 2026-09-14 → 2026-09-15 | P-70 honest-encoding funnel | Review 7 ends `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-M3-HONEST-ENCODING-FUNNEL-7-RAW.md:336`); findings landed in the M3 packet before owner ruling. |
@@ -95,42 +107,64 @@ the repair is a new disposition that cites it.
 | Polaris generation admission validation | 1 | 2026-09-23 | `syzygy-u05.16`: source-population admission in `polaris-generation-core` sharing the provider-draft source-id and length bounds (PR #90) | `CONFIRM` (`R-PWB-U05-16-REVIEW-RAW.md:3`). |
 | P-73 edit/repair deletion gate | 5 | 2026-09-23 → 2026-09-26 | Edit/repair deletion scenario candidate package, `syzygy-dov.23` (PR #98; status-page registration PR #107; binds nothing) | `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-DELTA-REVIEW-RAW.md:3`), the P-73 quotation not byte-exact, repaired; confirmation `CONFIRM` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-DELTA-CONFIRMATION-RAW.md:3`). Registration: `REVISE` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-REGISTRATION-REVIEW-RAW.md:1`), repaired; confirmation `CONFIRM` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-REGISTRATION-CONFIRMATION-RAW.md:1`). Recount script (PR #119, gate-sitting direction §5): `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-RECOUNT-SCRIPT-REVIEW-RAW.md:1`), notes only; 177 at HEAD and 178 with the package applied, both re-derived independently by the reviewer. |
 
-The 55 rows partition the tracked directory at HEAD: 248 files, 248 assigned,
-no remainder [Observed — re-derived for HEAD dated 2026-09-27 by
+The 56 rows partition the tracked directory at HEAD: 250 files, 250 assigned,
+no remainder [Observed — re-derived for HEAD dated 2026-09-28 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
 derives dates from `git log --diff-filter=A`]. These are navigation figures,
 not measurement, and they go stale the moment a review lands — re-run the
 helper rather than trusting the row.
 
-Three things the table cannot show. The PWB rows are a dependency chain, not
-four independent campaigns: the state-(1) amendment made a behavioral change,
-the effect acts then granted the authority that change could satisfy, and the
-truth-and-readiness amendment later replaced the state-(1) artifacts outright
-while amending the two instruments the effect acts had put in force — the act
-records say so, and only they say it. A `CONFIRM` verdict is a reviewer's
-finding about frozen bytes, never an adoption: what binds is always the act in
-`.syzygy/governance/decisions/`. And a campaign with nothing open in its own
-files may still have left something open elsewhere — the S-slice row's
-`syzygy-e3e`, the POC row's walkthrough blocker, the recovery row's §5.3.
+**Three things the table cannot show.**
+
+- **The PWB rows are a dependency chain, not four independent campaigns.** The
+  act records say so, and only they say it.
+  - The state-(1) amendment made a behavioral change.
+  - The effect acts then granted the authority that change could satisfy.
+  - The truth-and-readiness amendment later replaced the state-(1) artifacts
+    outright, while amending the two instruments the effect acts had put in
+    force.
+
+```mermaid
+flowchart LR
+  S1["State-(1) amendment<br/>made a behavioral change"]
+  EF["Effect acts<br/>granted the authority<br/>that change could satisfy"]
+  IN["The two instruments<br/>the effect acts put in force"]
+  TR["Truth-and-readiness amendment"]
+  S1 -- then --> EF
+  EF -- later --> TR
+  EF -- put in force --> IN
+  TR -. "replaced the state-(1) artifacts outright" .-> S1
+  TR -. amended .-> IN
+```
+
+- **A `CONFIRM` verdict is a reviewer's finding about frozen bytes, never an
+  adoption.** What binds is always the act in `.syzygy/governance/decisions/`.
+- **A campaign with nothing open in its own files may still have left
+  something open elsewhere.** Examples: the S-slice row's `syzygy-e3e`, the
+  POC row's walkthrough blocker, the recovery row's §5.3.
 
 ## `plans/` and `superpowers/` — two homes, one role
 
-Both hold plan-and-design notes; they are split by which harness wrote them,
-not by what they are. Prefer `plans/` for anything new.
+Both hold plan-and-design notes, split by which harness wrote them, not by
+what they are. Prefer `plans/` for anything new.
 
-`superpowers/` is **path-pinned and must not be moved or renamed.** The
-general trusted-bootstrap authorization's impact ledger classifies every path
-under that prefix as spent historical evidence, and
-`scripts/build_general_trusted_bootstrap_impact_ledger.py` hard-codes the
-prefix string to do it. Relocating a file out of that directory would silently
-re-classify it on the next regeneration.
+**`superpowers/` is path-pinned and must not be moved or renamed.**
 
-**One of the four is not spent.** The ledger's classification is about where a
-file sits, not about whether the work it plans is finished, and those two
-answers have come apart. Read the table before treating any of these as
-history — and read the `bd` issue, never the "REQUIRED SUB-SKILL" line at a
-file's head, which addressed the worker of the day.
+- The general trusted-bootstrap authorization's impact ledger classifies
+  every path under that prefix as spent historical evidence.
+- `scripts/build_general_trusted_bootstrap_impact_ledger.py` hard-codes the
+  prefix string to do it.
+- Relocating a file out of that directory would silently re-classify it on
+  the next regeneration.
+
+**One of the four is not spent.** Read the table before treating any of these
+as history.
+
+- The ledger's classification is about where a file sits, not about whether
+  the work it plans is finished, and those two answers have come apart.
+- Read the `bd` issue, never the "REQUIRED SUB-SKILL" line at a file's head,
+  which addressed the worker of the day.
 
 | File | Issue | State |
 |---|---|---|
@@ -147,54 +181,70 @@ trusted-bootstrap impact ledger; two are cited by nothing.]
 ## `evidence/` — run records
 
 Each file is one run's machine output at a named commit, kept because a claim
-elsewhere cites it. A mutation-run record is valid **only for the commit it
-names** (`AGENTS.md` verification rule 7). Reading the file's own contents is
-the check; the filename is not the evidence.
+elsewhere cites it. `PWB-IMPLEMENTATION-PLAN.md` is the route in for 25 of
+the 28; the three a reviewer produced route through `reviews/`.
+
+- A mutation-run record is valid **only for the commit it names** (`AGENTS.md`
+  verification rule 7).
+- Reading the file's own contents is the check; the filename is not the
+  evidence.
 
 **This directory has no index of its own, and does not need one:
-`PWB-IMPLEMENTATION-PLAN.md` is the index.** Every file here is cited, and 25
-of the 28 are cited by that plan, at the task whose evidence they are — so the
-route in is the plan's task, never a listing of this directory. The three the
-plan does not name are the three a *reviewer* produced rather than a task
-(`…-gen2-reviewer.json`, `pwb-recon-gen1-reviewer-…`,
-`pwb-recon-gen2-reviewer-…`); the reconciliation packets in `reviews/` cite
-those, which is the correct home for a reviewer's own run. [Observed — swept
-2026-09-06: 28 files, each basename and stem searched across every tracked
-`.md`, `.py`, `.ts`, `.json`, `.yml`, `.txt` and `.sh` outside this directory;
-28 cited, 0 uncited, 25 cited by the plan, remainder enumerated above.]
+`PWB-IMPLEMENTATION-PLAN.md` is the index.**
 
-A JSON here does not say whether the work it evidences is finished — a run
-that passed at a commit says nothing about the finding a later review raised
-against the same seam. `bd show` and `PROJECT-STATUS.md` own that.
+- Every file here is cited, and 25 of the 28 are cited by that plan, at the
+  task whose evidence they are. The route in is the plan's task, never a
+  listing of this directory.
+- The three the plan does not name are the three a *reviewer* produced rather
+  than a task (`…-gen2-reviewer.json`, `pwb-recon-gen1-reviewer-…`,
+  `pwb-recon-gen2-reviewer-…`).
+  - The reconciliation packets in `reviews/` cite those, which is the correct
+    home for a reviewer's own run.
+- [Observed — swept 2026-09-06: 28 files, each basename and stem searched
+  across every tracked `.md`, `.py`, `.ts`, `.json`, `.yml`, `.txt` and `.sh`
+  outside this directory; 28 cited, 0 uncited, 25 cited by the plan,
+  remainder enumerated above.]
+
+**A JSON here does not say whether the work it evidences is finished.**
+
+- A run that passed at a commit says nothing about the finding a later review
+  raised against the same seam.
+- `bd show` and `PROJECT-STATUS.md` own that.
 
 ## The maintenance contract
 
 This directory is governed by the adopted craft policy
 `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`. The
-clauses that bind what you write here — cited, not restated:
+clauses that bind what you write here are cited, not restated.
 
 - **CC-REV-2** — a change that moves a responsibility updates its
-  documentation *in the same change*; it does not merge with the
-  contradiction open.
-- **CC-REV-3** — documentation **cites** authoritative artifacts, it never
-  restates them normatively. A restated rule drifts and becomes a shadow
-  authority. If you find the same question answered in two homes, surface the
-  contradiction; do not silently pick a winner.
+  documentation *in the same change*.
+  - It does not merge with the contradiction open.
+- **CC-REV-3** — documentation **cites** authoritative artifacts; it never
+  restates them normatively.
+  - A restated rule drifts and becomes a shadow authority.
+  - If you find the same question answered in two homes, surface the
+    contradiction; do not silently pick a winner.
 - **CC-REV-5** — substantive claims carry `[Observed]` (with a resolvable
-  source), `[Inferred]`, or `[Unknown]`. Missing evidence renders Unknown,
-  never Inferred.
-- **CC-REV-6** — raw reviewer output is stored unchanged before synthesis, and
-  every revise-severity finding is fixed or explicitly overruled with recorded
-  rationale. Nothing is dropped.
+  source), `[Inferred]`, or `[Unknown]`.
+  - Missing evidence renders Unknown, never Inferred.
+- **CC-REV-6** — raw reviewer output is stored unchanged before synthesis.
+  - Every revise-severity finding is fixed or explicitly overruled with
+    recorded rationale. Nothing is dropped.
 - **CC-REV-7** — identifiers are stable: amend in place, retire rather than
   renumber.
 
-In practice, for this directory: a page that no longer has a nameable reader
-and a question it answers should be merged or removed, not left to rot; a page
-that has gone stale is marked stale **with evidence at the stale sentence**,
-never left silently standing behind a general "this page may be stale" banner.
+**In practice, for this directory:**
+
+- A page that no longer has a nameable reader and a question it answers
+  should be merged or removed, not left to rot.
+- A page that has gone stale is marked stale **with evidence at the stale
+  sentence**, never left silently standing behind a general "this page may be
+  stale" banner.
 
 ## What does not belong here
+
+Code, rules, duplicated state and harness scratch each have another home.
 
 - Implementation code (it belongs in `apps/**`, `packages/**`, `scripts/`).
 - Anything normative — rules, acceptance, adoption, approval. Those are owner

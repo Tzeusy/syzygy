@@ -1,39 +1,61 @@
 # Artifacts and generation tools
 
 Candidate handoff conventions, not a complete registered runtime schema or
-implemented API. The generation core does expose a provider-local inventory
-validator; it does not register the kit's full interchange format. Use the
-[run contract](README.md) and [authoring prompts](AUTHORING.md). The example is
-intentionally small; a production interchange must additionally satisfy the
-adopted narrative, provenance, security and lifecycle contracts.
+implemented API.
+
+- The generation core does expose a provider-local inventory validator; it
+  does not register the kit's full interchange format.
+- Use the [run contract](README.md) and [authoring prompts](AUTHORING.md).
+- The example is intentionally small; a production interchange must
+  additionally satisfy the adopted narrative, provenance, security and
+  lifecycle contracts.
 
 ## Per-stage envelope
 
-This kit grants no source access, provider egress, authorship adoption or release. A real provider requires recorded per-project, provider and content consent under SEC-2.
+Each stage is specified to run inside an identified, bounded request and to
+return an identified outcome; authorization is verified outside the LLM.
 
-A request identifies `runId`, `stageId`, `attempt`, project, audience, frozen
-input bundle, allowed source/claim/asset IDs, prompt version, accepted output
-kind/version, authorized provider route, tool allowlist and explicit budgets.
-The source bundle includes revision/evaluation identities, source digests,
-source spans, claim states, exclusions and unresolved inputs. Authorization is
-verified outside the LLM; putting a grant-shaped string in JSON grants nothing.
+This kit grants no source access, provider egress, authorship adoption or
+release. A real provider requires recorded per-project, provider and content
+consent under SEC-2.
 
-A result repeats its request/input identities and returns `complete`, `partial`,
-`failed` or `cancelled`, produced artifact references/digests, usage, unresolved
-items and concise findings. Unknown fields must not become executable extensions.
-A malformed result is a failed attempt, not an empty successful bundle.
+**Request.** A request identifies:
 
-These are stage outcomes, not project-health or adoption states. Record actual
-provider/model metadata and outcome only when an authorized call occurred; a
-synthetic handoff carries neither a fabricated provider response nor a paid-run
-success record. In [example.json](example.json), only `validatedInventoryExample`
-is passed to today's provider-local `validateStage("inventory", payload,
-context)` seam. `illustrativeUnderstandingExample` is marked
-`executable: false` and `schemaStatus: "illustrative-not-registered"`; no stage
-validator consumes it. The file is synthetic and records
-`providerCallPerformed: false`.
+- `runId`, `stageId`, `attempt`, project and audience;
+- the frozen input bundle and the allowed source/claim/asset IDs;
+- prompt version and accepted output kind/version;
+- authorized provider route, tool allowlist and explicit budgets.
+- The source bundle includes revision/evaluation identities, source digests,
+  source spans, claim states, exclusions and unresolved inputs.
+- Authorization is verified outside the LLM; putting a grant-shaped string in
+  JSON grants nothing.
+
+**Result.** A result repeats its request/input identities and returns
+`complete`, `partial`, `failed` or `cancelled`.
+
+- It also carries produced artifact references/digests, usage, unresolved
+  items and concise findings.
+- Unknown fields must not become executable extensions.
+- A malformed result is a failed attempt, not an empty successful bundle.
+- These are stage outcomes, not project-health or adoption states.
+
+**Provider metadata.** Record actual provider/model metadata and outcome only
+when an authorized call occurred.
+
+- A synthetic handoff carries neither a fabricated provider response nor a
+  paid-run success record.
+- In [example.json](example.json), only `validatedInventoryExample` is passed
+  to today's provider-local `validateStage("inventory", payload, context)`
+  seam.
+- `illustrativeUnderstandingExample` is marked `executable: false` and
+  `schemaStatus: "illustrative-not-registered"`; no stage validator consumes
+  it.
+- The file is synthetic and records `providerCallPerformed: false`.
 
 ## The artifact set
+
+Eight artifacts carry a run from admitted sources to review and audit; each
+has required content and a named consumer.
 
 | Artifact | Required content | Consumer |
 |---|---|---|
@@ -46,20 +68,28 @@ validator consumes it. The file is synthetic and records
 | Review record | Frozen subject/input digests; criteria; independent reviewer identity; actual methods/viewports/paths; findings and unresolved checks | Repair; human review |
 | Run manifest | Stage/attempt identities, tool/prompt/model versions, artifact hashes, outcomes, dependencies and invalidated reviews | Recovery and audit |
 
-Contents are derived from existing section/asset identities. Glossary entries
-are shared by inline definitions and glossary routes. Tables contain real
-comparisons with supported cells and explicit missing values. Every requested
-asset has a produced, unnecessary-with-reason or unresolved disposition; reviewers
-check omissions against the source inventory, not just the generated output.
+**Shared derivation.** Narrative, diagrams, glossary and optional depth
+consume the same claim ledger.
 
-Keep bundles and their manifests immutable once reviewed. A repair produces new
-artifact versions and invalidates affected reviews. Do not cache away a changed
-qualification, hidden broken edge, failed stage or withdrawn source permission.
-Narrative, diagrams, glossary and optional depth consume the same claim ledger.
+- Contents are derived from existing section/asset identities.
+- Glossary entries are shared by inline definitions and glossary routes.
+- Tables contain real comparisons with supported cells and explicit missing
+  values.
+- Every requested asset has a produced, unnecessary-with-reason or unresolved
+  disposition.
+  - Reviewers check omissions against the source inventory, not just the
+    generated output.
+
+**Immutability.** Keep bundles and their manifests immutable once reviewed.
+
+- A repair produces new artifact versions and invalidates affected reviews.
+- Do not cache away a changed qualification, hidden broken edge, failed stage
+  or withdrawn source permission.
 
 ## Tools available today
 
-[Observed] The POC has the following primitives. They are not a complete generator.
+[Observed] The POC has the following primitives. They are not a complete
+generator.
 
 | Existing surface | Actual capability and current limit |
 |---|---|
@@ -69,8 +99,9 @@ Narrative, diagrams, glossary and optional depth consume the same claim ledger.
 | POC body-read/observation pipeline | Acquires the currently configured consented source class. It is not a general repository crawler or permission grant for another project. |
 | Narrative, parity, reading and browser tests | Validate existing helper/model behavior. Passing them does not establish generated-prose quality or cross-project generality. |
 
-From a clean Syzygy checkout with its dependencies installed, a cold-start
-operator can exercise the checked-in inventory block and inspect the example:
+**Cold start.** From a clean Syzygy checkout with its dependencies installed,
+a cold-start operator can exercise the checked-in inventory block and inspect
+the example:
 
 ```sh
 npm run test:polaris-generation
@@ -79,20 +110,24 @@ npx vitest run apps/three-surface-poc/src/polaris-reading.test.ts apps/three-sur
 npx vitest run apps/three-surface-poc/src/polaris-accessibility.browser.test.ts
 ```
 
-The `provider-draft.test.ts` behavior test reads `validatedInventoryExample`
-and passes its `payload` and `context` to `validateStage("inventory", ...)`.
-That checks the provider-local closed schema and source coverage. The
-`illustrativeUnderstandingExample` is never passed to a stage validator.
-`python3 -m json.tool` proves JSON syntax only; parsing alone does not validate
-schema or establish a generator run. None of these commands generates a
-manifesto from the example.
-The existing `poc:fresh-checkout-demo` requires the configured repository's actual
-read gates and remains a separate live proving-case check.
+**What these commands prove.** None of these commands generates a manifesto
+from the example.
+
+- The `provider-draft.test.ts` behavior test reads `validatedInventoryExample`
+  and passes its `payload` and `context` to `validateStage("inventory", ...)`.
+  - That checks the provider-local closed schema and source coverage.
+- The `illustrativeUnderstandingExample` is never passed to a stage
+  validator.
+- `python3 -m json.tool` proves JSON syntax only; parsing alone does not
+  validate schema or establish a generator run.
+- The existing `poc:fresh-checkout-demo` requires the configured repository's
+  actual read gates and remains a separate live proving-case check.
 
 ## Tool interfaces to build for the vertical slice
 
-These names describe proposed operations, **not commands that exist**. Implement
-and admit them through the applicable specification/implementation gates.
+These names describe proposed operations, **not commands that exist**.
+Implement and admit them through the applicable specification/implementation
+gates.
 
 | Operation | Input → output | Boundary |
 |---|---|---|
@@ -103,21 +138,34 @@ and admit them through the applicable specification/implementation gates.
 | Inspect reading | Frozen preview and reader criteria → layout/navigation evidence and independent findings | Test full page, disclosure/return routes, keyboard, mobile and source access |
 | Revise bundle | Findings and prior artifacts → bounded replacements and invalidation manifest | Preserve prior evidence; review is not automatic adoption |
 
-Deliver these as one usable slice before adding a generalized scheduler or a new
-queue. Reuse the existing authorized lifecycle where applicable. The first slice
-should let an operator follow a source-backed draft from input through preview
-and repair; it must not require manually editing application code to make the
-second project render.
+**Deliver these as one usable slice** before adding a generalized scheduler or
+a new queue.
+
+- Reuse the existing authorized lifecycle where applicable.
+- The first slice should let an operator follow a source-backed draft from
+  input through preview and repair.
+- It must not require manually editing application code to make the second
+  project render.
 
 ## Validation and failure exercise
 
-Before relying on a predicate, exercise a counterexample: remove a source span,
-change a source digest, introduce a dangling deep-dive link, add an unsupported
-edge, hide a material qualifier, insert active content, exceed the output budget,
-and interrupt a pass. Confirm the corresponding explicit failure or partial
-outcome. Do not count a crash before validation as a successful rejection test.
+Trust no predicate until a counterexample makes it fail, and never let
+mechanical validation stand in for fidelity or reader review.
 
-Mechanical validation cannot establish that a conclusion follows from its cited
-source or that a page reads well. Retain independent fidelity and actual-reader
-reviews alongside structural results. The portability and changed-source recipe
-in [README](README.md) is the completion test for the broader generator.
+**Counterexamples first.** Before relying on a predicate, exercise a
+counterexample and confirm the corresponding explicit failure or partial
+outcome:
+
+- remove a source span; change a source digest;
+- introduce a dangling deep-dive link; add an unsupported edge;
+- hide a material qualifier; insert active content;
+- exceed the output budget; interrupt a pass.
+- Do not count a crash before validation as a successful rejection test.
+
+**Mechanical validation has a ceiling.** It cannot establish that a
+conclusion follows from its cited source or that a page reads well.
+
+- Retain independent fidelity and actual-reader reviews alongside structural
+  results.
+- The portability and changed-source recipe in [README](README.md) is the
+  completion test for the broader generator.
