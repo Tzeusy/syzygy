@@ -3,12 +3,13 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
+import type { PocModel } from '@syzygy/three-surface-poc-core';
 
 import { TAILNET_HOST } from './browser-origin.js';
-import { findBrowserExecutable, withBrowserPage, type BrowserPage } from './cdp-browser.js';
+import { findBrowserExecutable, launchBrowser, withBrowserPage, type Browser, type BrowserPage } from './cdp-browser.js';
 import { ORRERY_HUMAN_PATH } from './orrery.js';
 import { renderOrreryPage } from './orrery.js';
 import { POLARIS_HUMAN_PATH, renderPolarisPage } from './polaris.js';
@@ -246,89 +247,157 @@ describe('surface routes', () => {
     }
   });
 
-  it.skipIf(browserExecutable === undefined).each(['direct', 'tailnet'] as const)('exhausts 13 runtime cross-surface links over five classes and fetches every %s target', async (form) => {
-    const model = buildFixtureModel(cleanups);
-    const start = await createDaemon({ stateDir: join(tempDir('syzygy-cross-links-state-'), 'state'), routes: pocRoutes(() => model), port: 0 });
-    if (!start.started) throw new Error(`daemon failed to start: ${start.failure.kind}`);
-    running.push(start.daemon);
-    const baseUrl = `http://${start.daemon.host}:${start.daemon.port}`;
-    const directory = tempDir('syzygy-cross-links-pages-');
-    const expected = { 'work-count': 1, 'code-count': 1, 'reality-entity': 9, 'governing-intent': 1, 'mapped-capability': 1 };
-    await withBrowserPage(browserExecutable as string, async page => {
-        const mount = form === 'direct' ? '' : TAILNET_MOUNT_PREFIX;
-        const request = (path: string) => form === 'direct' ? fetch(`${baseUrl}${path}`)
-          : fetchWithHost(`${baseUrl}${path}`, TAILNET_HOST, { origin: `https://${TAILNET_HOST}` });
-        const links: CrossLink[] = [];
-        const sizes: Record<string, number> = {};
-        for (const path of ['/', POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH]) {
-          const response = await request(path);
-          expect(response.status, `${form} ${path}`).toBe(200);
-          const html = await response.text();
-          sizes[path] = Buffer.byteLength(html, 'utf8');
-          if (path === '/') continue;
-          expect(html).toContain('a:focus-visible');
-          expect(html).toContain('@media (prefers-reduced-motion: reduce)');
-          const file = join(directory, `${form}-${path.slice(1)}.html`);
-          writeFileSync(file, html);
-          await page.navigate(pathToFileURL(file).href);
-          const census = await runtimeCrossLinks(page);
-          expect(census.unmarked, `${form} ${path} unmarked native links`).toBe(0);
-          expect(census.links.length, `${form} ${path} marked population`).toBe(census.all);
-          links.push(...census.links);
+  describe('13-link cross-surface exhaustion', () => {
+    // syzygy-8hr: this case timed out at 15,000ms under hosted CI load
+    // (runs 36214865515 / 36215589451, 2026-09-26) though the identical
+    // case measured 2,969ms/1,929ms (direct/tailnet) on prior hosted CI
+    // (syzygy-bul). Phase timing (added and removed temporarily, 2026-09-27)
+    // showed one Chrome launch+newPage+close cycle inside `withBrowserPage`
+    // was 70-95%+ of this case's own wall time in every scenario tried,
+    // dwarfing the 13-link fetch loop and four-page navigation/DOM-census
+    // loop below (tens to a few hundred ms even under load) — and each of
+    // 'direct'/'tailnet' used to pay for its own separate launch+close.
+    // Measured on this branch after moving the shared model/daemon/browser
+    // build into this describe's beforeAll/afterAll (so one launch+close
+    // pays for both forms, outside either form's own 15,000ms budget), 5
+    // runs each:
+    //   unloaded:                        direct 236-383ms, tailnet 195-256ms
+    //   `taskset -c 0,1` + 24 competing
+    //   busy loops pinned to the same
+    //   two cores (~12x oversubscription,
+    //   approximating a starved 2-vCPU
+    //   hosted runner):                  direct 1056-2099ms, tailnet 739-1433ms
+    // Worst observed under synthetic load (2099ms) is ~7x under the
+    // 15,000ms per-case budget, which is kept as the stated margin rather
+    // than lowered, since real hosted-runner contention cannot be
+    // reproduced exactly locally.
+    // This block's own fixture directories are cleaned up here, in its
+    // afterAll, rather than through the top-level `cleanups` array (which
+    // the file-level afterEach drains after *every* test, including the
+    // first ('direct') of the two it.each cases sharing this fixture —
+    // that drain deleted the fixture git repo and the rendered-page
+    // directory out from under the still-pending 'tailnet' case).
+    const localCleanups: string[] = [];
+    let model: PocModel;
+    let daemon: RunningDaemon;
+    let baseUrl: string;
+    let directory: string;
+    let browser: Browser | undefined;
+    let page: BrowserPage | undefined;
+
+    beforeAll(async () => {
+      if (browserExecutable === undefined) return;
+      model = buildFixtureModel(localCleanups);
+      const stateDir = mkdtempSync(join(tmpdir(), 'syzygy-cross-links-state-'));
+      localCleanups.push(stateDir);
+      const start = await createDaemon({ stateDir: join(stateDir, 'state'), routes: pocRoutes(() => model), port: 0 });
+      if (!start.started) throw new Error(`daemon failed to start: ${start.failure.kind}`);
+      daemon = start.daemon;
+      baseUrl = `http://${daemon.host}:${daemon.port}`;
+      directory = mkdtempSync(join(tmpdir(), 'syzygy-cross-links-pages-'));
+      localCleanups.push(directory);
+      browser = await launchBrowser(browserExecutable);
+      page = await browser.newPage();
+    }, 20_000);
+
+    afterAll(async () => {
+      if (page !== undefined) await page.close().catch(() => undefined);
+      if (browser !== undefined) await browser.close().catch(() => undefined);
+      if (daemon !== undefined) await daemon.close().catch(() => undefined);
+      for (const directoryToRemove of localCleanups.splice(0)) {
+        rmSync(directoryToRemove, { recursive: true, force: true });
+      }
+    }, 20_000);
+
+    it.skipIf(browserExecutable === undefined).each(['direct', 'tailnet'] as const)('exhausts 13 runtime cross-surface links over five classes and fetches every %s target', async (form) => {
+      if (page === undefined) throw new Error('shared browser page not initialized');
+      const activePage = page;
+      const expected = { 'work-count': 1, 'code-count': 1, 'reality-entity': 9, 'governing-intent': 1, 'mapped-capability': 1 };
+      const mount = form === 'direct' ? '' : TAILNET_MOUNT_PREFIX;
+      const request = (path: string) => form === 'direct' ? fetch(`${baseUrl}${path}`)
+        : fetchWithHost(`${baseUrl}${path}`, TAILNET_HOST, { origin: `https://${TAILNET_HOST}` });
+      const links: CrossLink[] = [];
+      const sizes: Record<string, number> = {};
+      for (const path of ['/', POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH]) {
+        const response = await request(path);
+        expect(response.status, `${form} ${path}`).toBe(200);
+        const html = await response.text();
+        sizes[path] = Buffer.byteLength(html, 'utf8');
+        if (path === '/') continue;
+        expect(html).toContain('a:focus-visible');
+        expect(html).toContain('@media (prefers-reduced-motion: reduce)');
+        const file = join(directory, `${form}-${path.slice(1)}.html`);
+        writeFileSync(file, html);
+        await activePage.navigate(pathToFileURL(file).href);
+        const census = await runtimeCrossLinks(activePage);
+        expect(census.unmarked, `${form} ${path} unmarked native links`).toBe(0);
+        expect(census.links.length, `${form} ${path} marked population`).toBe(census.all);
+        links.push(...census.links);
+      }
+      expect(links.length, `${form} cross-surface denominator`).toBe(13);
+      const classes = Object.fromEntries(Object.keys(expected).map(key => [key, links.filter(link => link.className === key).length]));
+      expect(classes).toEqual(expected);
+      expect(new Set(links.map(link => `${link.className}:${link.source}:${link.target}`)).size).toBe(13);
+
+      // Every one of the 13 links still gets its own real HTTP fetch of its
+      // target (preserving the identical-content check below byte for
+      // byte) — only the *sequencing* changes, from 13 chained awaits to
+      // one concurrent batch, since the sequential chain (not the fetch
+      // cost itself, measured at 1-30ms per link even under heavy
+      // synthetic load above) was what scaled with scheduler contention.
+      const targetPaths = links.map((link) => new URL(link.href, baseUrl).pathname.slice(mount.length));
+      const targetResponses = await Promise.all(targetPaths.map((path) => request(path)));
+      const targetHtmls = await Promise.all(targetResponses.map((response) => response.text()));
+
+      const runtimeTargets = new Map<string, { html: string; fragments: { href: string; id: string }[] }>();
+      for (const [index, link] of links.entries()) {
+        expect(link.href.startsWith(`${mount}/`), `${form} ${link.className} mount`).toBe(true);
+        expect(link.insideDetails, link.href).toBe(false);
+        expect(link.tabIndex, link.href).toBe(0);
+        expect(link.text.length, link.href).toBeGreaterThan(3);
+        const url = new URL(link.href, baseUrl);
+        const targetPath = targetPaths[index]!;
+        expect([POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH]).toContain(targetPath);
+        expect(link.accessibleName, link.href).toContain(targetPath.slice(1)[0]!.toUpperCase() + targetPath.slice(2));
+        const targetResponse = targetResponses[index]!;
+        expect(targetResponse.status, `${form} target ${link.href}`).toBe(200);
+        const targetHtml = targetHtmls[index]!;
+        if (url.hash === '') {
+          expect(link.target).toBe(targetPath.slice(1));
+          continue;
         }
-        expect(links.length, `${form} cross-surface denominator`).toBe(13);
-        const classes = Object.fromEntries(Object.keys(expected).map(key => [key, links.filter(link => link.className === key).length]));
-        expect(classes).toEqual(expected);
-        expect(new Set(links.map(link => `${link.className}:${link.source}:${link.target}`)).size).toBe(13);
-        const runtimeTargets = new Map<string, { html: string; fragments: { href: string; id: string }[] }>();
-        for (const link of links) {
-          expect(link.href.startsWith(`${mount}/`), `${form} ${link.className} mount`).toBe(true);
-          expect(link.insideDetails, link.href).toBe(false);
-          expect(link.tabIndex, link.href).toBe(0);
-          expect(link.text.length, link.href).toBeGreaterThan(3);
-          const url = new URL(link.href, baseUrl);
-          const targetPath = url.pathname.slice(mount.length);
-          expect([POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH]).toContain(targetPath);
-          expect(link.accessibleName, link.href).toContain(targetPath.slice(1)[0]!.toUpperCase() + targetPath.slice(2));
-          const targetResponse = await request(targetPath);
-          expect(targetResponse.status, `${form} target ${link.href}`).toBe(200);
-          const targetHtml = await targetResponse.text();
-          if (url.hash === '') {
-            expect(link.target).toBe(targetPath.slice(1));
-            continue;
-          }
-          const fragment = decodeURIComponent(url.hash.slice(1));
-          expect(link.target).toBe(fragment);
-          const ids = [...targetHtml.matchAll(/\sid="([^"]+)"/g)].filter(match => match[1] === fragment);
-          expect(ids, `${form} dangling/duplicate ${link.href}`).toHaveLength(1);
-          const existing = runtimeTargets.get(targetPath);
-          if (existing !== undefined) {
-            expect(targetHtml, `${form} target changed between fetches ${link.href}`).toBe(existing.html);
-            existing.fragments.push({ href: link.href, id: fragment });
-          } else runtimeTargets.set(targetPath, { html: targetHtml, fragments: [{ href: link.href, id: fragment }] });
+        const fragment = decodeURIComponent(url.hash.slice(1));
+        expect(link.target).toBe(fragment);
+        const ids = [...targetHtml.matchAll(/\sid="([^"]+)"/g)].filter(match => match[1] === fragment);
+        expect(ids, `${form} dangling/duplicate ${link.href}`).toHaveLength(1);
+        const existing = runtimeTargets.get(targetPath);
+        if (existing !== undefined) {
+          expect(targetHtml, `${form} target changed between fetches ${link.href}`).toBe(existing.html);
+          existing.fragments.push({ href: link.href, id: fragment });
+        } else runtimeTargets.set(targetPath, { html: targetHtml, fragments: [{ href: link.href, id: fragment }] });
+      }
+      expect(runtimeTargets.size, `${form} distinct fragment target pages`).toBe(2);
+      for (const [targetPath, target] of runtimeTargets) {
+        const targetFile = join(directory, `${form}-target-${targetPath.slice(1)}.html`);
+        writeFileSync(targetFile, target.html);
+        await activePage.navigate(pathToFileURL(targetFile).href);
+        const results = await activePage.evaluate<readonly boolean[]>(`(() => {
+          const fragments = ${JSON.stringify(target.fragments.map(fragment => fragment.id))};
+          return fragments.map(id => {
+            const matches = [...document.querySelectorAll('[id]')].filter(node => node.id === id);
+            return matches.length !== 1 || !!matches[0].closest('details');
+          });
+        })()`);
+        expect(results).toHaveLength(target.fragments.length);
+        for (const [index, fragment] of target.fragments.entries()) {
+          expect(results[index], `${form} target hidden in details ${fragment.href}`).toBe(false);
         }
-        expect(runtimeTargets.size, `${form} distinct fragment target pages`).toBe(2);
-        for (const [targetPath, target] of runtimeTargets) {
-          const targetFile = join(directory, `${form}-target-${targetPath.slice(1)}.html`);
-          writeFileSync(targetFile, target.html);
-          await page.navigate(pathToFileURL(targetFile).href);
-          const results = await page.evaluate<readonly boolean[]>(`(() => {
-            const fragments = ${JSON.stringify(target.fragments.map(fragment => fragment.id))};
-            return fragments.map(id => {
-              const matches = [...document.querySelectorAll('[id]')].filter(node => node.id === id);
-              return matches.length !== 1 || !!matches[0].closest('details');
-            });
-          })()`);
-          expect(results).toHaveLength(target.fragments.length);
-          for (const [index, fragment] of target.fragments.entries()) {
-            expect(results[index], `${form} target hidden in details ${fragment.href}`).toBe(false);
-          }
-        }
-        // Readable capture for the dated size evidence, from the same served
-        // evaluation and exactly the three-surface link population above.
-        process.stdout.write(`[M9 cross links] ${JSON.stringify({ form, links: links.length, classes, sizes })}\n`);
-    });
-  }, 15_000);
+      }
+      // Readable capture for the dated size evidence, from the same served
+      // evaluation and exactly the three-surface link population above.
+      process.stdout.write(`[M9 cross links] ${JSON.stringify({ form, links: links.length, classes, sizes })}\n`);
+    }, 15_000);
+  });
 
   it('withholds hrefs and discloses unavailable targets instead of defaulting identities', () => {
     const model = buildFixtureModel(cleanups);
