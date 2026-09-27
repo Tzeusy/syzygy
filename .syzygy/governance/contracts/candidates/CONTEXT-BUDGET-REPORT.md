@@ -15,7 +15,7 @@
 > object from a waiver against one that does (review RC-12 §5), and
 > every row below says `candidate budget exception`, never `waiver`.
 
-**As-of commit:** `cff75cb222532023774d539c040a023e7ded70e1`  *(plus uncommitted working-tree edits at generation time)*
+**As-of commit:** `bb9ecea9eff20c079261b983f39b80fe32d9f170`  *(plus uncommitted working-tree edits at generation time)*
 
 This file is regenerated in the *same change* that moves any measured
 file. Two independent currency tests exist and neither is this line:
@@ -36,12 +36,12 @@ the *measurement*, never the *selection*.
 | `context-selection-10-trajectory-lifecycle.md` | 12 | 39,608 | 53,471 | **above the proposed trigger** by 167.4% | `eec0717d6a11548e…` |
 | `context-selection-2-trajectory-adapter.md` | 8 | 19,921 | 26,893 | **above the proposed trigger** by 34.5% | `2ab80354e3751f45…` |
 | `context-selection-3-orrery-lens.md` | 5 | 15,899 | 21,464 | **above the proposed trigger** by 7.3% | `6f39c530e1eada2d…` |
-| `context-selection-4-execution-profile.md` | 6 | 11,695 | 15,788 | above the proposed default band, under the proposed trigger | `70c5faacb15dc2d9…` |
+| `context-selection-4-execution-profile.md` | 6 | 11,842 | 15,987 | above the proposed default band, under the proposed trigger | `3df58957f651580c…` |
 | `context-selection-5-cross-project-mission.md` | 11 | 22,059 | 29,780 | **above the proposed trigger** by 48.9% | `62c79ff4ddd3da95…` |
 | `context-selection-6-doctrine-amendment.md` | 6 | 13,057 | 17,627 | above the proposed default band, under the proposed trigger | `98649eefd662e5d0…` |
-| `context-selection-7-kernel-identity.md` | 5 | 17,421 | 23,518 | **above the proposed trigger** by 17.6% | `f606379042d1b8cc…` |
-| `context-selection-8-openspec-authoring.md` | 6 | 25,354 | 34,228 | **above the proposed trigger** by 71.1% | `297f5246ca7dd73d…` |
-| `context-selection-9-evidence-adapter.md` | 12 | 26,244 | 35,429 | **above the proposed trigger** by 77.1% | `750d97bfe0a21f0b…` |
+| `context-selection-7-kernel-identity.md` | 5 | 17,522 | 23,655 | **above the proposed trigger** by 18.3% | `774620f7a714a1cc…` |
+| `context-selection-8-openspec-authoring.md` | 6 | 25,607 | 34,569 | **above the proposed trigger** by 72.8% | `c5b4f6039e3aeeed…` |
+| `context-selection-9-evidence-adapter.md` | 12 | 26,497 | 35,771 | **above the proposed trigger** by 78.9% | `ad9d6297a7def203…` |
 
 **8 of 10 fixtures are above the proposed 20,000-token trigger.**
 
@@ -116,7 +116,7 @@ printed at the foot of §5.
 
 ### `context-selection-7-kernel-identity.md`
 
-- **Measured:** 17,421 words ≈ 23,518 estimated tokens — 17.6% above the proposed trigger.
+- **Measured:** 17,522 words ≈ 23,655 estimated tokens — 18.3% above the proposed trigger.
 - **Reason:** RFC-0001 is indivisible (its justified oversize is recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md` and in the verifier's justification table, *not* in RFC-0001 itself, which records no waiver), and an identity change genuinely needs the minting/continuity scheme (RFC1-11), the evaluation identity a claim resolves against, the constitutional temporal model, and the floor text it may not weaken
 - **Scope:** Kernel identity and continuity changes — minting, successor edges, split/merge, and the continuity links recorded across them — **where CC-BAR-5 floor 7 is the declared classifier**. Does **not** cover: the adoption ceremony for such a change (RFC-0003 stays deferred to that packet, as this fixture already rules); `.syzygy/**` schema migrations that do not alter minting; changes to challenge, reconciliation or rendering semantics, which pull further RFC-0002 modules and must be re-measured (scope tightened by RC-12)
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed
@@ -125,7 +125,7 @@ printed at the foot of §5.
 
 ### `context-selection-8-openspec-authoring.md`
 
-- **Measured:** 25,354 words ≈ 34,228 estimated tokens — 71.1% above the proposed trigger.
+- **Measured:** 25,607 words ≈ 34,569 estimated tokens — 72.8% above the proposed trigger.
 - **Reason:** RFC-0001 is indivisible (its justified oversize is recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`, *not* in RFC-0001 itself, which records no waiver) and requirement authoring genuinely needs the capability/requirement identity model (RFC1-14/RFC1-15), both modules of the surface contract that makes the behaviour observable (RFC-0007 — including the module carrying its phase rule RFC7-38, forced by the on-seam rule, which dictates the clause-to-requirement coverage matrix the author must produce), the adoption gate the delta must pass (VIS-3/VIS-4), and the verification bar the requirement must be testable against
 - **Scope:** OpenSpec requirement authoring against an adopted capability **whose surface contract is RFC-0007 (Polaris)**. It does **not** stretch to another surface contract: this fixture names "a capability whose surface contract is smaller" as the narrowing that retires the waiver, so applying it there applies it to the case that voids it. Does not cover review of the authored delta, which pulls `craft:review-and-documentation.md` instead (scope tightened by RC-12)
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed
@@ -134,7 +134,7 @@ printed at the foot of §5.
 
 ### `context-selection-9-evidence-adapter.md`
 
-- **Measured:** 26,244 words ≈ 35,429 estimated tokens — 77.1% above the proposed trigger.
+- **Measured:** 26,497 words ≈ 35,771 estimated tokens — 78.9% above the proposed trigger.
 - **Reason:** The evidence plane is the corpus's widest authorization surface. RFC-0004 gates six clauses across three of its modules under RFC3-16(a) (see `RFC-0004/README.md`), so an authorization-bearing change here needs the whole four-module package, the tier vocabulary it emits into, the profile contract that defines its one self-sufficient route, and the act machinery that makes any of it honored
 - **Scope:** Evidence-adapter changes touching gate provenance (RFC4-13 routes), capture cadence or retention (RFC4-16), or fidelity labels (RFC4-24/25), **where the warrant spans the retention × cause coupling** — i.e. where a `reduced-fidelity` cause depends on a retention-horizon fact. A warrant touching **labels only**, with no RFC4-16 dependency, is **out of scope** and takes the smaller shard instead. Does not cover changes that also touch work-state rendering (fixture 2's class), or that add prose fields to a record, which pulls `RFC-0005/consent-egress-secrets` (scope tightened by RC-12)
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed

@@ -2,35 +2,56 @@
 
 # Craft and Care — Syzygy engineering policy cluster
 
-This cluster is the quality-and-evidence policy layer named in doctrine's
-typed-authority table ("What quality and evidence standards apply?" →
-`.syzygy/governance/` policies). It is **stack-neutral by construction**: no
-language, framework, database, or tool command appears here, because no stack
-has been selected (v1.md, "Stack … is not chosen here"). Policies constrain
-*any* future implementation.
+This cluster sets the quality and evidence standards that constrain any
+future Syzygy implementation. It adopts the canonical `th-engineering` bar by
+reference and records only Syzygy's overrides and additions.
+
+- **Its place in doctrine:** it is the quality-and-evidence policy layer
+  named in doctrine's typed-authority table ("What quality and evidence
+  standards apply?" → `.syzygy/governance/` policies).
+- **Stack-neutral by construction:** no language, framework, database, or
+  tool command appears here, because no stack has been selected (v1.md,
+  "Stack … is not chosen here").
+- **Reach:** the policies constrain *any* future implementation.
 
 ## Adoption by reference
 
-This cluster **adopts the canonical engineering bar by reference**: the
-`th-engineering` skill package — specifically its `engineering-bar` subskill
-(default biases 1–9 and its Definition of Done), its `test-rigor` bar (rules
-1–10), and its `dependency-hygiene` bar (rules 1–7) — is Syzygy's baseline
-engineering standard.
+The canonical `th-engineering` bar is Syzygy's baseline engineering standard;
+this cluster pins it, vendors it, and ranks below doctrine and owner rulings.
 
-**Vendored, not read from a founder-machine path.** Owner override,
-2026-08-06: a byte-identical local copy is tracked in this repository at
-`.claude/skills/th-engineering/` and `.codex/skills/th-engineering/`
-(scope: the root `SKILL.md` and these three subskills only — nothing else
-from the upstream package). `../GOVERNANCE-SUBSTRATE-LOCK.yaml` records the
-upstream provenance (public repository, exact commit, exact paths, and
-recomputable digests) that the vendored copy is pinned against; read the
-lock to verify the vendored copy, not a machine path. [Observed — vendored
-files' sha256 matches the lock's `installed.relevant_paths`; the bar itself
-states that project craft-and-care pillars adopt it by reference and
-override individual biases.]
+```mermaid
+flowchart TB
+    D["Tier 1: adopted doctrine (VIS-1…VIS-7, SEC-1…SEC-5)"] -->|"prevails over"| S["Tier 1: owner-ratified decisions (SDR-1…SDR-33)"]
+    S -->|"prevails over"| C["Tier 2: this cluster"]
+    C -->|"prevails over"| B["Tier 3: canonical th-engineering bar"]
+```
 
-The cluster **does not restate** the canonical bar. Every file below records
-only Syzygy-specific **overrides and additions**. Where a file is silent, the
+- **What is adopted:** the `th-engineering` skill package, specifically:
+  - its `engineering-bar` subskill (default biases 1–9 and its Definition of
+    Done);
+  - its `test-rigor` bar (rules 1–10);
+  - its `dependency-hygiene` bar (rules 1–7).
+
+**Vendored, not read from a founder-machine path.** A byte-identical local
+copy of the bar is tracked in this repository, verified against a recorded
+upstream lock.
+
+- **Source:** owner override, 2026-08-06.
+- **Where:** `.claude/skills/th-engineering/` and
+  `.codex/skills/th-engineering/`.
+- **Scope:** the root `SKILL.md` and these three subskills only — nothing
+  else from the upstream package.
+- **Provenance:** `../GOVERNANCE-SUBSTRATE-LOCK.yaml` records the upstream
+  provenance the vendored copy is pinned against: public repository, exact
+  commit, exact paths, and recomputable digests.
+- **Verification:** read the lock to verify the vendored copy, not a machine
+  path. [Observed — vendored files' sha256 matches the lock's
+  `installed.relevant_paths`; the bar itself states that project
+  craft-and-care pillars adopt it by reference and override individual
+  biases.]
+
+**The cluster does not restate the canonical bar.** Every file below records
+only Syzygy-specific **overrides and additions**; where a file is silent, the
 canonical bar applies unmodified.
 
 **Precedence, on any conflict:**
@@ -41,34 +62,46 @@ canonical bar applies unmodified.
 2. **this cluster**;
 3. **the canonical `th-engineering` bar**.
 
-Within tier 1, **doctrine prevails over the SDRs** on any conflict — the SDR
-itself declares that it modifies no doctrine text. A lower layer can
-strengthen a higher one; it can never weaken it. The adopted baseline is
-**pinned**: the `th-engineering` bar re-pinned 2026-08-06 to commit `f4cf1c7`
-(engineering-bar biases 1–9 + Definition of Done, including "Test delta
-accounted"; test-rigor rules 1–10; dependency-hygiene rules 1–7). This re-pin
-resolved an open drift (the previous 2026-07-30 pin, commit `61bd8fa`, had
-fallen two commits behind what was on the founder machine — tracked as
-`PENDING-OWNER-DECISIONS.md` P-26, now executed): CC-BAR-1 and CC-TEST-* were
-re-checked against test-rigor's two new bars (9: suite tiering and
-targetability; 10: governed test growth) and the new Definition of Done item,
-and no override conflicts were found — see CC-BAR-1's register and
-`testing-and-verification.md`. If the vendored bar is ever updated again,
-this same re-check-before-absorbing discipline applies.
+- **Within tier 1, doctrine prevails over the SDRs** on any conflict — the
+  SDR itself declares that it modifies no doctrine text.
+- **A lower layer can strengthen a higher one; it can never weaken it.**
+
+**The adopted baseline is pinned.** The `th-engineering` bar was re-pinned
+2026-08-06 to commit `f4cf1c7`, and a re-check found no override conflicts.
+
+- **What the pin covers:** engineering-bar biases 1–9 + Definition of Done,
+  including "Test delta accounted"; test-rigor rules 1–10;
+  dependency-hygiene rules 1–7.
+- **The drift it resolved:** the previous 2026-07-30 pin, commit `61bd8fa`,
+  had fallen two commits behind what was on the founder machine — tracked as
+  `PENDING-OWNER-DECISIONS.md` P-26, now executed.
+- **The re-check:** CC-BAR-1 and CC-TEST-* were re-checked against
+  test-rigor's two new bars (9: suite tiering and targetability; 10:
+  governed test growth) and the new Definition of Done item. No override
+  conflicts were found — see CC-BAR-1's register and
+  `testing-and-verification.md`.
+- **Future updates:** if the vendored bar is ever updated again, this same
+  re-check-before-absorbing discipline applies.
 
 ## Citation convention
 
-Policies are numbered per file (`CC-BAR-1`, `CC-TEST-3`, …) so reviews and
-RFCs can cite them. Identifiers are stable after approval: amend text in
-place; retire rather than renumber (mirrors doctrine's identifier rule).
-Substantive claims inside policies are labeled [Observed] (with source),
-[Inferred], or [Unknown]. The labels describe a clause's **derivation,
-never its authority**: on owner approval, every clause in this cluster
-binds equally, [Inferred]-labeled or not — no implementing agent may treat
-an [Inferred] obligation as advisory or as holding "challenge authority
-only."
+Policies carry stable per-file identifiers so reviews and RFCs can cite them,
+and every clause binds equally whatever its epistemic label.
+
+- **Numbering:** per file (`CC-BAR-1`, `CC-TEST-3`, …).
+- **Stability:** identifiers are stable after approval: amend text in place;
+  retire rather than renumber (mirrors doctrine's identifier rule).
+- **Labels:** substantive claims inside policies are labeled [Observed]
+  (with source), [Inferred], or [Unknown].
+  - The labels describe a clause's **derivation, never its authority**.
+  - On owner approval, every clause in this cluster binds equally,
+    [Inferred]-labeled or not — no implementing agent may treat an
+    [Inferred] obligation as advisory or as holding "challenge authority
+    only."
 
 ## Reading order
+
+Read in this order.
 
 1. [engineering-bar.md](engineering-bar.md) — Syzygy definition of done;
    merge and release constraints; the non-downgradable risk floors.
@@ -94,17 +127,24 @@ only."
 
 ## Scope boundary
 
-Doctrine (WHY, constitutional rules) is upstream and untouched here. Concrete
-schemas, envelope formats, currency-bound values, and authentication
-mechanisms are RFC material (SDR §5); this cluster states the obligations
-those RFCs and all implementation work must satisfy.
+This cluster states obligations; doctrine sits upstream of it and concrete
+mechanisms belong to RFCs.
+
+- **Upstream:** doctrine (WHY, constitutional rules) is untouched here.
+- **Downstream:** concrete schemas, envelope formats, currency-bound values,
+  and authentication mechanisms are RFC material (SDR §5).
+- **Here:** the obligations those RFCs and all implementation work must
+  satisfy.
 
 ## Adopted home
 
-On owner approval this cluster installs at **`.syzygy/governance/policies/`**
-(a doctrine-reserved governance category), and this draft copy is
-banner-marked historical — a surviving unmarked copy would be exactly the
-duplicate authority CC-REV-3 forbids. Note: the canonical bar's own text
-names `about/craft-and-care/` as the pillar home; this repository's
-owner-directed `.syzygy` canon deliberately diverges (no `about/**` tree
-exists or will be scaffolded here).
+On owner approval this cluster installs at **`.syzygy/governance/policies/`**,
+and this draft copy is banner-marked historical.
+
+- **Why that home:** it is a doctrine-reserved governance category.
+- **Why the draft is marked:** a surviving unmarked copy would be exactly the
+  duplicate authority CC-REV-3 forbids.
+- **Deliberate divergence:** the canonical bar's own text names
+  `about/craft-and-care/` as the pillar home; this repository's
+  owner-directed `.syzygy` canon deliberately diverges (no `about/**` tree
+  exists or will be scaffolded here).

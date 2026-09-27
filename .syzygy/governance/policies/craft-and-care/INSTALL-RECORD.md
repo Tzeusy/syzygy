@@ -110,6 +110,8 @@ The pending craft-confirmation act (act 2) therefore now binds
 (the amended `testing-and-verification.md` above, carrying CC-TEST-7); the
 previously offered, now-stale `CC-TEST-2@3858820f…` argument satisfies
 nothing.
+*(Superseded 2026-09-28: the readability restyle moved this file's bytes, so
+act 2 now binds the digest in the 2026-09-28 amendment below.)*
 
 **Correction — 2026-08-10.** The Status paragraph above previously named
 the retired rev10 single-act phrase as "currently" the acceptance act —
@@ -210,3 +212,28 @@ computed by script:
 ```
 425512d3b47b6b1ddbd7693cdfa092441f11d21feb0d956230b23a667f12e453  review-and-documentation.md
 ```
+
+**Amendment — 2026-09-28: readability restyle (no rule changed).** Under
+the owner's 2026-09-28 direction, the rule files below were restyled to
+CC-REV-8: answer-first openings, shallow rule trees and captioned diagrams.
+No rule, identifier, scope or citation changed, and every heading and banner
+is byte-identical. The restyle binds as craft policy only when the owner
+adopts it ("Adopt the craft restyle",
+`../../decisions/CRAFT-TREE-RESTYLE.md`). Current digests, computed by
+script:
+
+```
+2e04191e4be802f07bbfc013a801d056541ed3e96ba99fab6ec487a90d1a1e84  README.md
+0c256bc607b2272e827f79d07a5efb5c400737ef29d830b08cebc83bad768b52  agent-provenance-and-execution-evidence.md
+7427a66662976a287648731e724fa454ece3ea683767b99f01e8637dc87e1ce6  engineering-bar.md
+3898738db003cd84cfa1432f8080994514f0cbae31af318777a5304a824023c0  interfaces-and-dependencies.md
+c78222ccd1fe636cb572f77d6fb9e0395e27e35806bea764a969d6ca63ed3416  observability-and-operations.md
+905553febf8f9fe49bd3c93d120621de7f34d3cd8727820535b3df291d8fa8a0  performance-and-visual-discipline.md
+13928819f6573d85e3074bb6d042fef49c2d42d5beece658a3bc5292f1ea97e1  review-and-documentation.md
+f90ff5933fa461a4ab0b3de7876abe2aeb84eb6e6e2e6cb8a4e5176f9aa241f9  security-and-secrets.md
+8157c0c63ff27341365c9c29e0f620bd7eb7b986fd40432e9c5a30891d3e0782  testing-and-verification.md
+```
+
+The pending craft-confirmation act (act 2) now binds
+`CC-TEST-2@8157c0c63ff27341365c9c29e0f620bd7eb7b986fd40432e9c5a30891d3e0782`;
+the `7a716090…` argument above is stale and satisfies nothing.
