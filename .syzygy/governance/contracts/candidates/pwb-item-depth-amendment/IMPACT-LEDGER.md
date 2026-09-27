@@ -129,11 +129,14 @@ not read any new body merely to create item detail.
 set is not exactly the five subjects above, a patch no longer applies, the
 manifest differs, generated dependencies drift, required semantics disappear,
 the signed requirement was edited in place, or a sibling composition becomes
-order-dependent. `--write` is deterministic over identical inputs; `--check`
-is read-only. `--apply` refuses without `--at-adoption`, constructs and checks
-the complete proposed-byte map before its first real write, and belongs only
-inside a future dedicated owner-act recorder. A corrupted late patch therefore
-leaves every adoption target byte unchanged.
+order-dependent. `--write` is deterministic over identical inputs and writes
+only the inert candidate's derived patch and manifest; `--check` is read-only.
+The candidate builder exposes no signed-subject apply mode: argparse rejects
+`--apply --at-adoption`, and the CLI selftest runs that exact dispatch against
+a scratch mirror and confirms all five target bytes remain unchanged. A future
+dedicated recorder must independently validate the performed act, exact
+argument, chain position and manifest transaction before it materializes or
+writes proposed signed bytes.
 
 Per the repository's CG-26 integration rule, this draft does not independently
 edit the coupled PROJECT-STATUS battery, hosted workflow or count sentence.
