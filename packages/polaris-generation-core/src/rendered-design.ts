@@ -18,6 +18,16 @@ import { checkClosedSchema, schemaParts, validateDraftRecord, type ClosedSchema,
  * diagram named by two diagram-clearer relationships satisfies neither, so the
  * number of other figures in the draft never matters (unrelated extra figures
  * cannot stand in).
+ *
+ * The judgment decides only whether a diagram is required. Whatever the
+ * judgment, a named produced figure may never draw an unsupported relationship,
+ * and one drawing a partly supported relationship must record its gap.
+ * `diagram-clearer` with `unsupported` support is the spec's undrawable
+ * relationship: its recorded omission is the named draft diagram carrying the
+ * `omitted` disposition. Two further conditions are outside this verdict: that
+ * the gap is disclosed in the rendered account at the depth it affects, and
+ * whether a requested asset requires the visual anyway (`validateStage` owns
+ * requested-asset dispositions).
  */
 
 const { text, handle, list, object, refs } = schemaParts;
@@ -92,9 +102,15 @@ export function renderedDesignSubjectDigest(draft: unknown): string {
 }
 
 function relationshipRule(item: RenderedDesignRelationship, draft: ProviderDraft, shared: Set<string>): RenderedDesignRule | null {
-  if (item.judgment === 'prose-sufficient') return null;
   const named = item.diagram.kind === 'named' ? item.diagram.diagramId : null;
   const figure = named === null ? undefined : draft.diagrams.find(diagram => diagram.id === named);
+  if (item.judgment === 'prose-sufficient') {
+    // No diagram is required, but one drawn on another basis obeys the drawing rules.
+    if (figure?.disposition.kind !== 'produced') return null;
+    if (item.support === 'unsupported') return 'unsupported-relationship-drawn';
+    if (item.support === 'partly-supported' && item.gaps.length === 0) return 'undisclosed-gap';
+    return null;
+  }
   if (item.support === 'unsupported') {
     if (figure?.disposition.kind === 'produced') return 'unsupported-relationship-drawn';
     if (figure?.disposition.kind !== 'omitted') return 'undrawable-without-recorded-omission';
