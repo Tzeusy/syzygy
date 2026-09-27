@@ -178,7 +178,7 @@ overview, D3, and **P-12 knowledge hygiene** as the ninth.
 | Gate | State | Owning record |
 |---|---|---|
 | Doctrine adoption | ✅ Adopted 2026-07-30; amendments D1 and D5 (2026-09-27, readability rewrite) in force | tag `doctrine-adopted-2026-07-30`; `.syzygy/governance/decisions/DOCTRINE-AMENDMENT-LOG.md` |
-| Craft-and-care approval | ✅ Approved (owner decision D2) | `.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md` |
+| Craft-and-care approval | ✅ Approved (owner decision D2); CC-REV-8 added 2026-09-27 | `.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md` |
 | Surface decisions | ✅ Recorded SDR-1…37 | `.syzygy/governance/decisions/SURFACE-DECISION-RECORD.md` |
 | The 2026-08-16 rulings | ✅ See the launch-path table above | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-16" |
 | The 2026-08-18 questionnaire rulings | ✅ P-14 (MIT), P-16 (term registry as drafting vocabulary), P-24 (D4: inside VIS-4's bounds), P-44 (CC-REV-2 exception declined) — applied 2026-08-19 | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-19"; each row's own decision record |
