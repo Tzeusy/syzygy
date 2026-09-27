@@ -2,8 +2,9 @@
 """Build and verify the inert Three-Surface POC readability successor.
 
 The six signed predecessor artifacts remain unchanged while this is a
-candidate. Proposed bytes live as patches under the candidate package. Only a
-later owner-act recorder may invoke ``--apply --at-adoption``.
+candidate. Proposed bytes live as patches under the candidate package. This
+builder has no signed-byte write path: only a later independently reviewed
+owner-act recorder may implement the atomic successor transaction.
 """
 
 from __future__ import annotations
@@ -322,6 +323,28 @@ def selftest() -> int:
     semantic_map = json.loads((ROOT / SEMANTIC_MAP).read_text(encoding="utf-8"))
     semantic_map["requirements"] = semantic_map["requirements"][:-1]
     cases.append(("incomplete semantic map", bool(semantic_map_findings(semantic_map))))
+    before = current_bytes()
+    with tempfile.TemporaryDirectory() as directory:
+        corrupt = pathlib.Path(directory) / "spec.md.patch"
+        original = next(
+            patch for patch in patch_files() if patch_target(patch) == SPEC
+        ).read_text(encoding="utf-8")
+        target = "Group: Cross-cutting experience. Form: **invariant**."
+        if original.count(target) < 1:
+            raise AssertionError("late-patch mutation target is absent")
+        corrupt.write_text(
+            original.replace(target, "Group: Corrupted. Form: **invariant**.", 1),
+            encoding="utf-8",
+        )
+        late_patches = [
+            corrupt if patch_target(patch) == SPEC else patch
+            for patch in patch_files()
+        ]
+        late_findings, _ = check(late_patches)
+    cases.append((
+        "late patch failure leaves every signed subject byte-identical",
+        bool(late_findings) and current_bytes() == before,
+    ))
     cases.append(("deterministic regeneration", proposed_bytes() == proposed_bytes()))
     failed = [name for name, caught in cases if not caught]
     for name, caught in cases:
@@ -342,34 +365,17 @@ def write() -> int:
     return 0
 
 
-def apply_at_adoption() -> int:
-    for patch in patch_files():
-        code, error = apply_patch(ROOT, patch)
-        if code != 0:
-            print(f"refusing partial adoption: {patch.name}: {error}")
-            return 1
-    print("applied proposed readability successor; owner-act recorder must finish atomically")
-    return 0
-
-
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--selftest", action="store_true")
     parser.add_argument("--diff", action="store_true")
     parser.add_argument("--write", action="store_true")
-    parser.add_argument("--apply", action="store_true")
-    parser.add_argument("--at-adoption", action="store_true")
     args = parser.parse_args(argv)
     if args.selftest:
         return selftest()
     if args.write:
         return write()
-    if args.apply:
-        if not args.at_adoption:
-            print("refusing: --apply requires --at-adoption and an owner-act recorder")
-            return 2
-        return apply_at_adoption()
     if args.diff:
         for patch in patch_files():
             print(patch.read_text(encoding="utf-8"), end="")
