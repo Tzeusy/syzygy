@@ -33,8 +33,8 @@ specs, work history, and anything derived from them, including prompts — is
 never sent to a store or service the owner does not control without explicit,
 recorded, per-project consent. **Model providers are such services.**
 
-- Onboarding consent names the providers permitted for the project and the
-  content classes they may receive; Syzygy renders that consent on the
+- Onboarding consent must name the providers permitted for the project and
+  the content classes they may receive; Syzygy renders that consent on the
   project's surface.
 - A provider not named needs fresh consent.
 - Without consent, the inferred layer renders Unknown instead of being
