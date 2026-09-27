@@ -333,6 +333,28 @@ export function validateStage(stage: GenerationStage, value: unknown, context: R
   return structuredClone(value);
 }
 
+/** Closed-schema primitives shared with rendered-design.ts (package-internal; not
+ * re-exported from index.ts), so both modules enforce one `check` and one handle. */
+export type ClosedSchema = Schema;
+export const checkClosedSchema: (schema: Schema, value: unknown) => void = check;
+export const schemaParts = { text, handle, list, object, refs } as const;
+
+/**
+ * The draft's own shape and handle uniqueness, without the stage context
+ * (sources, plan, inventory) `validateStage` needs. A consumer that holds only a
+ * draft uses this; it never substitutes for the authoring-stage validation.
+ */
+export function validateDraftRecord(value: unknown): ProviderDraft {
+  check(draft, value);
+  const data = value as ProviderDraft;
+  draftHandles(data);
+  for (const diagram of data.diagrams) {
+    const nodes = new Set(diagram.nodes.map(n => n.id));
+    if (diagram.edges.some(e => !nodes.has(e.from) || !nodes.has(e.to))) throw new Error('unknown-node');
+  }
+  return structuredClone(data);
+}
+
 export function reviewVerdict(review: unknown): { blocking: boolean; findings: unknown[] } {
   check(fidelity, review);
   const findings = (review as ProviderReview).findings;
