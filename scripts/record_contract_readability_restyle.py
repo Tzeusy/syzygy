@@ -6,28 +6,53 @@
 """Record/check the owner's adoption of the contract readability restyle.
 
 The act is the second link of `CONTRACT_SUCCESSOR_CHAIN` in
-`check_governance.py`. Its argument is the sha256 of the package manifest
+`check_governance.py`. The owner performs it by writing exactly
+
+    ADOPT CONTRACT READABILITY RESTYLE: <sha256>
+
+where the argument is the sha256 of the package manifest *file*
 `candidates/contract-readability-restyle/CONTRACT-AMENDMENT-MANIFEST.txt`,
 built and verified by `scripts/build_contract_readability_restyle.py`.
 
-`--record --instruction "<owner words verbatim>"` writes the dedicated act
-record and appends one marked section to `ACCEPTANCE-ACT-RECORD.md`. Each
-carries the binding line `ADOPT CONTRACT READABILITY RESTYLE: <sha256>` once,
-as the only line that contains the label (CG-7h requires exactly one bare
-full-line occurrence per record). Recording refuses unless the package
-verifies: either the patches still produce the manifest rows over both
-identical mirrors (record, then `--apply --at-adoption` in the same change),
-or both mirrors already equal every row (applied first).
+The recorder is pinned to the reviewed package, like its siblings
+(`record_pwb_state1_amendment.py`, `record_polaris_understanding_adoption.py`):
 
-`--check` verifies the dedicated record regenerates exactly and that the
-aggregate holds exactly one copy of the marked block; it reports "not
-performed" and exits 0 when neither record exists, and fails on a partial
-record. `--selftest` runs fixtures in a temporary directory.
+- `FROZEN_MANIFEST_SHA`: the manifest-file digest the confirming review
+  examined and the owner is offered;
+- `REVIEW` / `REVIEW_SHA`: that review's retained raw, by path and sha256.
+  Its head, the first four non-blank lines, must carry
+  `Verdict: CONFIRM` or `Verdict: CONFIRM WITH EXCEPTIONS` and
+  `Manifest SHA-256: <FROZEN_MANIFEST_SHA>`. Here the act argument *is* the
+  manifest file's digest (there is no separate row digest), so the raw's
+  `Manifest SHA-256` line carries exactly the argument the owner speaks.
+
+All three are `None` until the package and its confirming review exist; they
+are set in the change that freezes the package, never inferred. `--record`
+refuses while any pin is `None`, when the owner's phrase is not the exact
+`LABEL: <sha256>` form, when its argument differs from the current manifest
+digest, when that digest differs from the pin, when the raw's sha or head
+differ, or when the package does not verify unapplied. The order is fixed:
+record first, then `build_contract_readability_restyle.py --apply
+--at-adoption` in the same change (the builder refuses to apply without
+these records).
+
+`--record --phrase "<owner phrase verbatim>"` writes the dedicated act record
+and appends one marked section to `ACCEPTANCE-ACT-RECORD.md`. Each carries the
+owner's phrase once, as the only line that contains the label (CG-7h requires
+exactly one bare full-line occurrence per record).
+
+`--check` verifies the pins, that the dedicated record regenerates exactly,
+and that the aggregate holds exactly one copy of the marked block; it reports
+"not performed" and exits 0 when neither record exists, and fails on a partial
+record. `--selftest` runs fixtures in temporary directories, including one
+over a real, verifying package built by the builder's own fixture.
 """
 import argparse
+from collections import namedtuple
 from datetime import datetime, timezone
 import hashlib
 import importlib.util
+import io
 from pathlib import Path
 import re
 import sys
@@ -42,6 +67,20 @@ BUILDER = "scripts/build_contract_readability_restyle.py"
 LABEL = "ADOPT CONTRACT READABILITY RESTYLE"
 MARKER = "CONTRACT-READABILITY-RESTYLE-ADOPTION"
 INSTANT = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")
+PHRASE = re.compile(re.escape(LABEL) + r": ([0-9a-f]{64})")
+VERDICTS = ("Verdict: CONFIRM", "Verdict: CONFIRM WITH EXCEPTIONS")
+
+#: Pins to the reviewed package. None until the package and its confirming
+#: review exist; `--record` refuses while any is None.
+FROZEN_MANIFEST_SHA = None
+REVIEW = None
+REVIEW_SHA = None
+
+Pins = namedtuple("Pins", "manifest_sha review review_sha")
+
+
+def pinned():
+    return Pins(FROZEN_MANIFEST_SHA, REVIEW, REVIEW_SHA)
 
 
 def digest(data):
@@ -65,36 +104,63 @@ def builder():
     return module
 
 
-def validate(root, verify_package=True):
-    """The manifest's digest, once the package verifies at `root`."""
+def review_head(text):
+    return [line.strip() for line in text.splitlines() if line.strip()][:4]
+
+
+def validate_pins(root, pins):
+    """The pinned manifest digest, once the pins are set and the raw matches."""
+    if None in pins:
+        raise ValueError("recorder unpinned: FROZEN_MANIFEST_SHA, REVIEW and "
+                         "REVIEW_SHA must name the reviewed package and its "
+                         "confirming raw before any act is recorded")
     if not (root / MANIFEST).is_file():
         raise ValueError(f"manifest absent: {MANIFEST}")
-    if verify_package:
-        package = builder()
-        try:
-            findings = [] if package.applied(root) else package.check(root)
-        except OSError as error:
-            raise ValueError(f"package inputs unreadable: {error}") from error
-        if findings:
-            raise ValueError("package does not verify: " + "; ".join(findings[:3]))
-    return digest(read(root, MANIFEST))
+    current = digest(read(root, MANIFEST))
+    if current != pins.manifest_sha:
+        raise ValueError(f"manifest digest {current} differs from the pinned "
+                         f"reviewed digest {pins.manifest_sha}")
+    raw = read(root, pins.review)
+    if digest(raw) != pins.review_sha:
+        raise ValueError(f"review raw {pins.review} differs from its pinned sha256")
+    head = review_head(raw.decode("utf-8"))
+    if not any(verdict in head for verdict in VERDICTS):
+        raise ValueError("review raw head carries no exact CONFIRM or "
+                         "CONFIRM WITH EXCEPTIONS verdict in its first four "
+                         "non-blank lines")
+    if f"Manifest SHA-256: {pins.manifest_sha}" not in head:
+        raise ValueError("review raw head does not bind the pinned manifest digest")
+    return current
 
 
-def validate_instruction(instruction):
-    if not instruction or not instruction.strip():
-        raise ValueError("owner instruction is empty")
-    if "\n" in instruction or "\r" in instruction:
-        raise ValueError("owner instruction spans lines; record it on one line "
-                         "verbatim or amend this recorder, never reflow it")
-    if LABEL in instruction or MARKER in instruction or "<!--" in instruction:
-        raise ValueError("owner instruction carries the act label or a record marker")
+def validate_phrase(phrase):
+    """The owner's argument, from the exact `LABEL: <sha256>` phrase."""
+    m = PHRASE.fullmatch(phrase or "")
+    if not m:
+        raise ValueError(f"owner phrase must be exactly `{LABEL}: <sha256>`, "
+                         f"got {phrase!r}")
+    return m.group(1)
 
 
-def body(sha, instant, instruction):
+def verify_package(root, allow_applied):
+    package = builder()
+    try:
+        if package.applied(root):
+            if allow_applied:
+                return
+            raise ValueError("package bytes are already installed: record the "
+                             "act first, then --apply --at-adoption")
+        findings = package.check(root)
+    except OSError as error:
+        raise ValueError(f"package inputs unreadable: {error}") from error
+    if findings:
+        raise ValueError("package does not verify: " + "; ".join(findings[:3]))
+
+
+def body(sha, instant, pins):
     if not INSTANT.fullmatch(instant):
         raise ValueError("invalid act instant")
     datetime.strptime(instant, "%Y-%m-%dT%H:%M:%SZ")
-    validate_instruction(instruction)
     return f"""# Contract readability restyle adoption
 
 Owner: Tzeusy
@@ -111,17 +177,19 @@ Provenance: owner-adopted (bootstrap, uncorrelated)
 
 A1 audit-record identity: explicitly absent
 
-Owner instruction, recorded verbatim: “{instruction}”
+The owner performed the act by writing exactly:
 
-The instruction refers to the reviewed restyle package offered immediately
-before it. The manifest below binds the exact post-restyle bytes of 29 of the
-30 accepted RFC 0001-0009 modules, every one except
-rfcs/RFC-0007/rendering-and-surface.md. This recorder-generated binding is
-not presented as a longer phrase typed by the owner:
-
+```text
 {LABEL}: {sha}
+```
 
-Manifest: {MANIFEST}
+The argument is the sha256 of {MANIFEST}. It was recomputed at recording,
+matched the phrase, and equals the reviewed digest the recorder pins.
+
+Confirming review: {pins.review} (sha256 {pins.review_sha})
+
+The manifest binds the exact post-restyle bytes of 29 of the 30 accepted
+RFC 0001-0009 modules, every one except rfcs/RFC-0007/rendering-and-surface.md.
 
 Scope: readability restyle only. Clause identities, clause leads, front
 matter and headings are unchanged by construction (the package builder
@@ -147,23 +215,25 @@ def block(content):
 
 def parse(actual):
     instant = re.search(r"^Act instant: (.+)$", actual, re.M)
-    instruction = re.search(r"^Owner instruction, recorded verbatim: “(.*)”$", actual, re.M)
-    if not instant or not instruction:
+    if not instant:
         raise ValueError("dedicated act unparseable")
-    return instant.group(1), instruction.group(1)
+    return instant.group(1)
 
 
-def check(root, verify_package=False):
+def check(root, verify=False, pins=None):
     """Returns False when nothing is recorded; raises on any partial or drifted record."""
+    pins = pinned() if pins is None else pins
     act_exists = (root / ACT).exists()
     aggregate = read(root, AGGREGATE).decode()
     if not act_exists and MARKER not in aggregate and LABEL not in aggregate:
         return False
     if not act_exists:
         raise ValueError("aggregate carries the act but the dedicated record is absent")
-    sha = validate(root, verify_package=verify_package)
+    sha = validate_pins(root, pins)
+    if verify:
+        verify_package(root, allow_applied=True)
     actual = read(root, ACT).decode()
-    if actual != body(sha, *parse(actual)):
+    if actual != body(sha, parse(actual), pins):
         raise ValueError("dedicated act mismatch")
     for text, where in ((actual, ACT), (aggregate, AGGREGATE)):
         lines = [line for line in text.splitlines() if LABEL in line]
@@ -176,10 +246,15 @@ def check(root, verify_package=False):
     return True
 
 
-def record(root, instruction, instant, verify_package=True):
-    validate_instruction(instruction)
-    sha = validate(root, verify_package=verify_package)
-    content = body(sha, instant, instruction)
+def record(root, phrase, instant, verify=True, pins=None):
+    pins = pinned() if pins is None else pins
+    argument = validate_phrase(phrase)
+    sha = validate_pins(root, pins)
+    if argument != sha:
+        raise ValueError(f"owner argument {argument} does not match manifest {sha}")
+    if verify:
+        verify_package(root, allow_applied=False)
+    content = body(sha, instant, pins)
     aggregate = read(root, AGGREGATE)
     if (root / ACT).exists() or MARKER.encode() in aggregate or LABEL.encode() in aggregate:
         raise ValueError("adoption already recorded or partial")
@@ -187,23 +262,52 @@ def record(root, instruction, instant, verify_package=True):
         stream.write(content)
     with (root / AGGREGATE).open("ab") as stream:
         stream.write(("\n" + block(content)).encode())
-    if not check(root, verify_package=False):
+    if not check(root, pins=pins):
         raise ValueError("record did not read back")
+
+
+def write_review(root, rel, manifest_sha, verdict="Verdict: CONFIRM"):
+    """A synthetic confirming raw for fixtures; returns its pins."""
+    target = root / rel
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(f"Title: restyle confirmation\n{verdict}\n"
+                      f"Reviewed commit: {'0' * 40}\n"
+                      f"Manifest SHA-256: {manifest_sha}\n\nBody.\n")
+    return Pins(manifest_sha, rel, digest(target.read_bytes()))
 
 
 def selftest():
     results = []
+    roots = []
 
-    def refuses(label, fn):
+    def refuses(label, fn, want):
+        # A fixture root is shared: snapshot the records so a wrongly
+        # accepted call fails only its own fixture, not every later one.
+        root_now = roots[-1]
+        act, aggregate = root_now / ACT, root_now / AGGREGATE
+        saved_act = act.read_bytes() if act.exists() else None
+        saved_aggregate = aggregate.read_bytes()
         try:
             fn()
-        except ValueError:
-            results.append((label, True))
+        except ValueError as error:
+            results.append((label, want in str(error)))
+            if want not in str(error):
+                print(f"  (got: {error})")
             return
         results.append((label, False))
+        if saved_act is None:
+            act.unlink(missing_ok=True)
+        else:
+            act.write_bytes(saved_act)
+        aggregate.write_bytes(saved_aggregate)
 
+    instant = "2026-09-28T00:00:00Z"
+    raw_rel = "docs/reviews/R-RESTYLE-CONFIRM-RAW.md"
+
+    # Synthetic group: record/check mechanics without the builder.
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
+        roots.append(root)
         (root / AGGREGATE).parent.mkdir(parents=True, exist_ok=True)
         (root / AGGREGATE).write_text("# Synthetic aggregate\n")
         (root / MANIFEST).parent.mkdir(parents=True, exist_ok=True)
@@ -211,51 +315,137 @@ def selftest():
             f"{digest(str(i).encode())}  rfcs/RFC-{i:04d}.md\n" for i in range(29))
         (root / MANIFEST).write_text(manifest)
         sha = digest(manifest.encode())
-        instant = "2026-09-28T00:00:00Z"
-        words = "Adopt the contract readability restyle"
+        pins = write_review(root, raw_rel, sha)
+        phrase = f"{LABEL}: {sha}"
         results.append(("nothing recorded reads as not performed",
-                        check(root) is False))
-        refuses("empty instruction", lambda: record(root, "  ", instant, False))
-        refuses("multi-line instruction", lambda: record(root, "a\nb", instant, False))
-        refuses("instruction carrying the label",
-                lambda: record(root, f"{LABEL}: x", instant, False))
-        refuses("invalid instant", lambda: record(root, words, "2026-02-30T00:00:00Z", False))
+                        check(root, pins=pins) is False))
+        results.append(("module pins are unset until the package is reviewed",
+                        pinned() == Pins(None, None, None)))
+        refuses("unpinned recorder refused",
+                lambda: record(root, phrase, instant, False, Pins(None, None, None)),
+                "recorder unpinned")
+        refuses("partly pinned recorder refused",
+                lambda: record(root, phrase, instant, False, pins._replace(review_sha=None)),
+                "recorder unpinned")
+        refuses("owner words other than the phrase ('continue') refused",
+                lambda: record(root, "continue", instant, False, pins), "owner phrase")
+        refuses("phrase with trailing words refused",
+                lambda: record(root, phrase + " please", instant, False, pins), "owner phrase")
+        refuses("wrong digest argument refused",
+                lambda: record(root, f"{LABEL}: {digest(b'other')}", instant, False, pins),
+                "does not match manifest")
+        refuses("manifest differing from the pinned digest refused",
+                lambda: record(root, phrase, instant, False,
+                               pins._replace(manifest_sha=digest(b"reviewed"))),
+                "differs from the pinned reviewed digest")
+        refuses("review raw sha mismatch refused",
+                lambda: record(root, phrase, instant, False,
+                               pins._replace(review_sha=digest(b"x"))),
+                "differs from its pinned sha256")
+        for label, verdict in (("REVISE verdict", "Verdict: REVISE"),
+                               ("verdict past the four-line head",
+                                "Note: a\nNote: b\nNote: c\nVerdict: CONFIRM")):
+            bad = write_review(root, "docs/reviews/R-BAD-RAW.md", sha, verdict)
+            refuses(f"review raw with {label} refused",
+                    lambda: record(root, phrase, instant, False, bad),
+                    "no exact CONFIRM")
+        other_head = write_review(root, "docs/reviews/R-OTHER-RAW.md", digest(b"other"))
+        refuses("review raw binding another manifest digest refused",
+                lambda: record(root, phrase, instant, False,
+                               other_head._replace(manifest_sha=sha)),
+                "does not bind the pinned manifest digest")
+        with_exceptions = write_review(root, "docs/reviews/R-CWE-RAW.md", sha,
+                                       "Verdict: CONFIRM WITH EXCEPTIONS")
+        results.append(("CONFIRM WITH EXCEPTIONS head accepted",
+                        validate_pins(root, with_exceptions) == sha))
+        refuses("invalid instant",
+                lambda: record(root, phrase, "2026-02-30T00:00:00Z", False, pins),
+                "day is out of range")
         manifest_file = root / MANIFEST
         manifest_file.rename(root / "moved")
-        refuses("absent manifest", lambda: record(root, words, instant, False))
+        refuses("absent manifest", lambda: record(root, phrase, instant, False, pins),
+                "manifest absent")
         (root / "moved").rename(manifest_file)
-        refuses("unverified package refused by the builder",
-                lambda: record(root, words, instant, True))
-        record(root, words, instant, verify_package=False)
+        record(root, phrase, instant, verify=False, pins=pins)
         act = (root / ACT).read_text()
         results.append(("dedicated record binds the manifest digest on one line",
-                        [l for l in act.splitlines() if LABEL in l] == [f"{LABEL}: {sha}"]))
-        results.append(("provenance, A1 absence and verbatim instruction recorded",
+                        [l for l in act.splitlines() if LABEL in l] == [phrase]))
+        results.append(("provenance, A1 absence and pinned review recorded",
                         "Provenance: owner-adopted (bootstrap, uncorrelated)" in act
                         and "A1 audit-record identity: explicitly absent" in act
-                        and f"“{words}”" in act))
-        results.append(("recorded act checks", check(root) is True))
-        refuses("second record refused", lambda: record(root, words, instant, False))
+                        and f"{raw_rel} (sha256 {pins.review_sha})" in act))
+        results.append(("recorded act checks", check(root, pins=pins) is True))
+        refuses("recorded act with unset pins fails check",
+                lambda: check(root, pins=Pins(None, None, None)), "recorder unpinned")
+        refuses("second record refused",
+                lambda: record(root, phrase, instant, False, pins), "already recorded")
         with (root / AGGREGATE).open("a") as stream:
             stream.write("\nLater unrelated record.\n")
-        results.append(("non-tail readback checks", check(root) is True))
+        results.append(("non-tail readback checks", check(root, pins=pins) is True))
         saved = manifest_file.read_bytes()
         manifest_file.write_bytes(saved + b"# changed\n")
-        refuses("manifest drift after recording", lambda: check(root))
+        refuses("manifest drift after recording", lambda: check(root, pins=pins),
+                "differs from the pinned reviewed digest")
         manifest_file.write_bytes(saved)
         saved_aggregate = (root / AGGREGATE).read_bytes()
         with (root / AGGREGATE).open("a") as stream:
             stream.write(block(act))
-        refuses("duplicated aggregate block", lambda: check(root))
+        refuses("duplicated aggregate block", lambda: check(root, pins=pins),
+                "expected exactly one binding line")
         (root / AGGREGATE).write_bytes(saved_aggregate)
         with (root / AGGREGATE).open("a") as stream:
-            stream.write(f"\n{LABEL}: {sha}\n")
-        refuses("second aggregate binding line", lambda: check(root))
+            stream.write(f"\n{phrase}\n")
+        refuses("second aggregate binding line", lambda: check(root, pins=pins),
+                "expected exactly one binding line")
         (root / AGGREGATE).write_bytes(saved_aggregate)
-        (root / ACT).write_text(act.replace(words, words + "!"))
-        refuses("edited dedicated record", lambda: check(root))
+        (root / ACT).write_text(act.replace("Owner: Tzeusy", "Owner: someone"))
+        refuses("edited dedicated record", lambda: check(root, pins=pins),
+                "dedicated act mismatch")
         (root / ACT).unlink()
-        refuses("aggregate without dedicated record", lambda: check(root))
+        refuses("aggregate without dedicated record", lambda: check(root, pins=pins),
+                "dedicated record is absent")
+
+    # Real group: a verifying package built by the builder's own fixture.
+    package = builder()
+    with tempfile.TemporaryDirectory() as directory:
+        root = package._fixture_root(Path(directory))
+        package.write_quiet(root)
+        roots.append(root)
+        (root / AGGREGATE).parent.mkdir(parents=True, exist_ok=True)
+        (root / AGGREGATE).write_text("# Synthetic aggregate\n")
+        sha = digest((root / MANIFEST).read_bytes())
+        pins = write_review(root, raw_rel, sha)
+        phrase = f"{LABEL}: {sha}"
+        results.append(("builder fixture package verifies", package.check(root) == []))
+        refuses("real package: 'continue' refused",
+                lambda: record(root, "continue", instant, True, pins), "owner phrase")
+        refuses("real package: wrong digest refused",
+                lambda: record(root, f"{LABEL}: {digest(b'x')}", instant, True, pins),
+                "does not match manifest")
+        refuses("real package: unpinned refused",
+                lambda: record(root, phrase, instant, True, Pins(None, None, None)),
+                "recorder unpinned")
+        first = package.population(root)[0]
+        patch = root / package.patch_for(first)
+        saved_patch = patch.read_bytes()
+        patch.write_bytes(saved_patch.replace(
+            b"+<!-- readability restyle fixture -->", b"+<!-- tampered -->"))
+        refuses("real package: tampered patch refused by the builder's findings",
+                lambda: record(root, phrase, instant, True, pins),
+                "package does not verify: manifest differs from exact regeneration")
+        patch.write_bytes(saved_patch)
+        record(root, phrase, instant, verify=True, pins=pins)
+        results.append(("real package: verified record reads back with verification",
+                        check(root, verify=True, pins=pins) is True))
+        with io.StringIO() as sink:
+            stdout, sys.stdout = sys.stdout, sink
+            try:
+                code = package.apply(root, at_adoption=True, pins=pins)
+            finally:
+                sys.stdout = stdout
+        results.append(("real package: apply after record installs, check still passes",
+                        code == 0 and package.applied(root)
+                        and check(root, verify=True, pins=pins) is True))
     failing = [label for label, ok in results if not ok]
     for label, ok in results:
         print(f"  {'pass' if ok else 'FAIL'}  {label}")
@@ -268,20 +458,22 @@ def main():
     mode = parser.add_mutually_exclusive_group(required=True)
     for action in ["record", "check", "selftest"]:
         mode.add_argument("--" + action, action="store_true")
-    parser.add_argument("--instruction", help="the owner's words, verbatim")
+    parser.add_argument("--phrase", help="the owner's phrase, verbatim: "
+                        f"'{LABEL}: <sha256>'")
     parser.add_argument("--instant", help="UTC act instant (default: now)")
     args = parser.parse_args()
     if args.selftest:
         return selftest()
     if args.record:
         instant = args.instant or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        record(ROOT, args.instruction, instant)
+        record(ROOT, args.phrase, instant)
         print("Recorded owner adoption of the contract readability restyle; "
               "bootstrap provenance; A1 absent. Next: "
               f"python3 {BUILDER} --apply --at-adoption")
         return 0
-    if check(ROOT):
-        print("PASS exact restyle manifest and dedicated/aggregate adoption records")
+    if check(ROOT, verify=True):
+        print("PASS exact restyle manifest, pinned review and dedicated/aggregate "
+              "adoption records")
     else:
         print("contract readability restyle not performed: no dedicated or aggregate record")
     return 0

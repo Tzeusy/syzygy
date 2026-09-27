@@ -21,7 +21,9 @@ The proposed bytes are NOT applied while the package is a candidate: CG-7h
 binds both mirrors to the bootstrap manifest until the act is performed, so
 an edit in place would read as drift. `--apply --at-adoption` writes the
 patched bytes into both mirrors; it belongs in the same change as the owner's
-act record (`scripts/record_contract_readability_restyle.py`).
+act record (`scripts/record_contract_readability_restyle.py`), and refuses
+unless that recorder's `check` finds both act records present and valid
+against its pins. The order is fixed: record, then apply.
 
 `--check` verifies, and prints `absent` and exits 0 when the package
 directory does not exist:
@@ -88,6 +90,7 @@ SCRATCH_EXTRAS = (
     "SURFACE-CLAUSE-ROUTING-MATRIX.md",
 )
 VERIFIER = CANDIDATES / "scripts" / "verify_final_prespec.py"
+RECORDER = pathlib.Path("scripts") / "record_contract_readability_restyle.py"
 ROW = re.compile(r"^([0-9a-f]{64})  (\S[^\n]*)$", re.MULTILINE)
 HEADING = re.compile(r"^#{1,6}\s")
 FENCE = re.compile(r"^\s*(```|~~~)")
@@ -107,6 +110,10 @@ def _load(name: str, path: pathlib.Path):
 def _verifier():
     """`verify_final_prespec.py`, from this checkout (the tool, not the subject)."""
     return _load("verify_final_prespec_restyle", ROOT / VERIFIER)
+
+
+def _recorder():
+    return _load("record_contract_readability_restyle_builder", ROOT / RECORDER)
 
 
 def _governance():
@@ -362,6 +369,11 @@ def applied(root: pathlib.Path) -> bool:
 def check(root: pathlib.Path = ROOT, scratch: bool = True) -> list[str]:
     findings: list[str] = []
     paths = population(root)
+    closed = list(_governance().CONTRACT_RESTYLE_PATHS)
+    if paths != closed:
+        findings.append(
+            f"restyle population differs from CG-7h's closed "
+            f"{len(closed)}-path CONTRACT_RESTYLE_PATHS")
     expected = [patch_for(path) for path in paths]
     actual = patch_files(root)
     missing = sorted(set(expected) - set(actual))
@@ -390,11 +402,24 @@ def check(root: pathlib.Path = ROOT, scratch: bool = True) -> list[str]:
     return findings
 
 
-def apply(root: pathlib.Path, at_adoption: bool) -> int:
+def apply(root: pathlib.Path, at_adoption: bool, pins=None) -> int:
+    """Install the proposed bytes, only once the owner's act is recorded.
+
+    `pins` overrides the recorder's pinned review (selftest only).
+    """
     if not at_adoption:
         print("refusing: --apply writes the proposed bytes into both mirrors and is "
               "the adoption step; pass --at-adoption in the change that records the act")
         return 2
+    try:
+        recorded = _recorder().check(root, pins=pins)
+    except (ValueError, OSError) as error:
+        print(f"refusing to apply: the act records do not validate: {error}")
+        return 1
+    if not recorded:
+        print("refusing to apply: no owner act is recorded; run "
+              f"{RECORDER.as_posix()} --record first")
+        return 1
     findings = check(root)
     if findings:
         print("refusing to apply: the package does not verify")
@@ -470,7 +495,8 @@ def selftest() -> int:
         manifest = root / MANIFEST
         good = manifest.read_text(encoding="utf-8")
         rows = manifest_rows(good)
-        if len(rows) != 29 or EXCLUDED[0] in [p for _s, p in rows]:
+        if (len(rows) != 29
+                or "rfcs/RFC-0007/rendering-and-surface.md" in rows_paths(rows)):
             failures.append("manifest population is not the 29 non-excluded modules")
         else:
             passed.append("manifest is 29 rows without the excluded module")
@@ -511,10 +537,20 @@ def selftest() -> int:
             assert new != old, path
             return lambda t: t.write_text(make_patch(path, old, new))
 
-        mutate_file(patch_for(first), lambda t: t.write_text(
-            make_patch(first, (root / CONTRACTS / first).read_bytes(),
-                       (root / CONTRACTS / first).read_bytes())),
-            "empty (no-op) patch rejected", f"`{first}`")
+        def identity_patch(t):
+            # A hunk that applies cleanly and rewrites a line to itself: the
+            # patch touches only its module, yet the bytes do not change.
+            # One line of context either side (git apply anchors a
+            # context-free hunk to the file's start).
+            lines = (root / CONTRACTS / first).read_text(encoding="utf-8").splitlines()
+            before, line, after = lines[1:4]
+            t.write_text(f"diff --git a/{first} b/{first}\n--- a/{first}\n"
+                         f"+++ b/{first}\n@@ -2,3 +2,3 @@\n {before}\n"
+                         f"-{line}\n+{line}\n {after}\n")
+
+        mutate_file(patch_for(first), identity_patch,
+                    "identity (no-op) patch rejected as changing nothing",
+                    f"patch for `{first}` changes nothing")
         # drifted subject: the patch's context no longer matches either mirror
         both = []
         for base in (CONTRACTS, CANDIDATES):
@@ -579,18 +615,44 @@ def selftest() -> int:
                     "verify_final_prespec.py fails", scratch_run=True)
         manifest.write_bytes(saved_manifest)
         expect("restored package verifies again", check(root), None)
-        # apply refuses without --at-adoption, then installs both mirrors
+        # apply refuses without --at-adoption, and without valid act
+        # records; once the owner's act is recorded it installs both mirrors.
+        recorder = _recorder()
+        aggregate = root / recorder.AGGREGATE
+        aggregate.parent.mkdir(parents=True, exist_ok=True)
+        aggregate.write_text("# Synthetic aggregate\n")
+        manifest_sha = sha256(manifest.read_bytes())
+        pins = recorder.write_review(
+            root, "docs/reviews/R-RESTYLE-CONFIRM-RAW.md", manifest_sha)
         with io.StringIO() as sink:
             stdout, sys.stdout = sys.stdout, sink
             try:
-                refused = apply(root, at_adoption=False)
-                done = apply(root, at_adoption=True)
+                refused = apply(root, at_adoption=False, pins=pins)
+                unrecorded = apply(root, at_adoption=True, pins=pins)
+                unrecorded_said = sink.getvalue()
+                recorder.record(root, f"{recorder.LABEL}: {manifest_sha}",
+                                "2026-09-28T00:00:00Z", verify=False, pins=pins)
+                act = root / recorder.ACT
+                saved_act = act.read_bytes()
+                act.write_bytes(saved_act.replace(b"Owner: Tzeusy", b"Owner: x"))
+                invalid = apply(root, at_adoption=True, pins=pins)
+                act.write_bytes(saved_act)
+                unpinned = apply(root, at_adoption=True,
+                                 pins=recorder.Pins(None, None, None))
+                untouched = not applied(root)
+                done = apply(root, at_adoption=True, pins=pins)
             finally:
                 sys.stdout = stdout
         (passed if refused == 2 else failures).append(
             "apply without --at-adoption refused")
+        (passed if unrecorded == 1 and "no owner act is recorded" in unrecorded_said
+         else failures).append("apply --at-adoption without act records refused")
+        (passed if invalid == 1 and unpinned == 1 and untouched else failures).append(
+            "apply --at-adoption over an edited record or an unpinned recorder "
+            "refused, nothing written")
         (passed if done == 0 and applied(root) else failures).append(
-            "apply --at-adoption installs manifest bytes on both mirrors")
+            "apply --at-adoption after a valid record installs manifest bytes on "
+            "both mirrors")
         absent = scratch / "absent"
         absent.mkdir()
         code, message = check_command(absent)
