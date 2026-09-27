@@ -17,7 +17,14 @@ import { checkClosedSchema, schemaParts, validateDraftRecord, type ClosedSchema,
  * relationship. A relationship is satisfied only through that name, and a
  * diagram named by two diagram-clearer relationships satisfies neither, so the
  * number of other figures in the draft never matters (unrelated extra figures
- * cannot stand in).
+ * cannot stand in). A `prose-sufficient` relationship naming a diagram the
+ * draft does not contain is a malformed record and throws; a `diagram-clearer`
+ * one keeps its `missing-diagram` finding.
+ *
+ * One name per relationship: an undrawable relationship drawn in any produced
+ * figure must name that figure, which blocks. Naming a figure that records its
+ * omission while another figure draws it misstates the record; the verdict
+ * cannot detect that misstatement, since it sees only the name given.
  *
  * The judgment decides only whether a diagram is required. Whatever the
  * judgment, a named produced figure may never draw an unsupported relationship,
@@ -28,6 +35,14 @@ import { checkClosedSchema, schemaParts, validateDraftRecord, type ClosedSchema,
  * the gap is disclosed in the rendered account at the depth it affects, and
  * whether a requested asset requires the visual anyway (`validateStage` owns
  * requested-asset dispositions).
+ *
+ * What the verdict trusts rather than checks. A relationship's `sourceIds` are
+ * shape-checked only (non-empty handles) and never resolved against the
+ * draft's premises; `support` is the reviewer's judgment, and the verdict
+ * derives blocking from it without re-deriving it. The spec's "Partly
+ * supported diagram" condition that supported nodes drawn with none of the
+ * relationship's edges are not a produced diagram is likewise not checked
+ * here: it is trusted to the figure's `produced` disposition.
  */
 
 const { text, handle, list, object, refs } = schemaParts;
@@ -136,7 +151,11 @@ export function renderedDesignVerdict(review: unknown, draft: unknown): Rendered
   const ids = data.relationships.map(item => item.id);
   if (new Set(ids).size !== ids.length) throw new Error('duplicate-handle');
   if (data.relationships.some(item => item.gaps.length > 0 && item.support !== 'partly-supported')) throw new Error('gap-without-partial-support');
-  const targets = new Set([...ids, ...subject.sections.map(s => s.id), ...subject.diagrams.map(d => d.id)]);
+  const diagramIds = new Set(subject.diagrams.map(d => d.id));
+  if (data.relationships.some(item => item.judgment === 'prose-sufficient' && item.diagram.kind === 'named' && !diagramIds.has(item.diagram.diagramId))) {
+    throw new Error('unknown-relationship-diagram');
+  }
+  const targets = new Set([...ids, ...subject.sections.map(s => s.id), ...diagramIds]);
   if (data.findings.some(finding => !targets.has(finding.target))) throw new Error('unknown-finding-target');
 
   const claims = new Map<string, number>();
