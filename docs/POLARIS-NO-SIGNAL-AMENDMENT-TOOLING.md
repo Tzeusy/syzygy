@@ -22,6 +22,12 @@ trailing whitespace or prose, alternate spacing and backtick wrapping are not
 accepted. Extra or malformed occurrences of this label are rejected,
 including an attempted aggregate entry without a dedicated record.
 
+The dedicated record must also carry exactly one full-line
+`Act instant: YYYY-MM-DDTHH:MM:SSZ`, naming a real UTC second, and the nearest
+`Act instant:` line above the label in the aggregate record must repeat it.
+CG-7h orders contract successor-chain acts by this instant; a missing,
+malformed, disagreeing or equal instant fails closed.
+
 The manifest has two digest rows, in this order, relative to the contracts home:
 
 1. `rfcs/RFC-0008/state-vocabulary-and-cost.md`
