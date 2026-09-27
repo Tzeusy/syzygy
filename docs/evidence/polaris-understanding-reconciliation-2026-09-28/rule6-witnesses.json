@@ -1,0 +1,340 @@
+{
+  "chain_mutants": 35,
+  "registry_mutants": 2,
+  "tested_commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+  "witnesses": [
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": " permission.\",\n  \"version\": 1\n}\n\nmutated\n",
+      "old": " permission.\",\n  \"version\": 1\n}\n",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-adoption-manifest-2026-09-13.json",
+      "refusal": "historical manifest changed"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": "3c915991fbb0eebc38f8daaaea4d05679914b6b8",
+      "new": " permission.\",\n  \"version\": 1\n}\n\nmutated\n",
+      "old": " permission.\",\n  \"version\": 1\n}\n",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-adoption-manifest-2026-09-13.json",
+      "refusal": "historical manifest identity"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": " evidence or product readiness.\n\nmutated\n",
+      "old": " evidence or product readiness.\n",
+      "operation": "replace-once",
+      "path": ".syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md",
+      "refusal": "historical act changed"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "<!-- POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION:BEGIN -->\n# Polaris understanding specification amendment adoption\n\nOwner: Mutant\n\nAct instant: 2026-09-13T01:58:26Z\n\nProject identity: project:syzygy\n\nArtifact identity: specification:syzygy:polaris-generation:understanding-amendment\n\nAct type: adopt specification amendment\n\nProvenance: owner-adopted (bootstrap, uncorrelated)\n\nA1 audit-record identity: explicitly absent\n\nOwner instruction, recorded verbatim: \u201cAdopt it\u201d\n\nThe instruction refers to the reviewed formal amendment offered immediately\nbefore it. The manifest below binds its exact eight-file subject and retained\nreview/context hashes. This recorder-generated binding is not presented as a\nlonger phrase typed by the owner:\n\nADOPT POLARIS UNDERSTANDING AMENDMENT: 3f4b96956b85a268532521ee5d0b1212d28537af7fddf09f89c877bd54bbc40d\n\nManifest: docs/evidence/polaris-understanding-adoption-manifest-2026-09-13.json\n\nScope: adopt the specification amendment at the manifest's exact bytes.\nREQ-polaris-generation-002, 004, 006, 009, 012, 014 and 019 take their full\namended clauses and preserved scenarios; 030 and 031 are added. The other 22\npredecessor requirements remain unchanged. Effective composition is 31\nrequirements and 177 scenarios, not an implementation completion verdict.\n\nSupersession relationship: partial specification amendment to the subject of\nPOLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md. Only the seven named requirement\nblocks are superseded by their extended blocks; the predecessor remains in force\nfor its unchanged requirements and is preserved byte-for-byte.\n\nRevocation relationship: none. Existing implementation and applicability acts\nretain their own exact scopes. This act grants no implementation extension,\nsource/provider/content permission, write consent, deployment or release.\n\nAdoption leaves the reviewed files and their candidate-era banners unchanged.\nThe act record determines effective status. This is bootstrap owner provenance,\nnot independent authorship verification, runtime evidence or product readiness.\n<!-- POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION:END -->\n",
+      "old": "<!-- POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION:BEGIN -->\n# Polaris understanding specification amendment adoption\n\nOwner: Tzeusy\n\nAct instant: 2026-09-13T01:58:26Z\n\nProject identity: project:syzygy\n\nArtifact identity: specification:syzygy:polaris-generation:understanding-amendment\n\nAct type: adopt specification amendment\n\nProvenance: owner-adopted (bootstrap, uncorrelated)\n\nA1 audit-record identity: explicitly absent\n\nOwner instruction, recorded verbatim: \u201cAdopt it\u201d\n\nThe instruction refers to the reviewed formal amendment offered immediately\nbefore it. The manifest below binds its exact eight-file subject and retained\nreview/context hashes. This recorder-generated binding is not presented as a\nlonger phrase typed by the owner:\n\nADOPT POLARIS UNDERSTANDING AMENDMENT: 3f4b96956b85a268532521ee5d0b1212d28537af7fddf09f89c877bd54bbc40d\n\nManifest: docs/evidence/polaris-understanding-adoption-manifest-2026-09-13.json\n\nScope: adopt the specification amendment at the manifest's exact bytes.\nREQ-polaris-generation-002, 004, 006, 009, 012, 014 and 019 take their full\namended clauses and preserved scenarios; 030 and 031 are added. The other 22\npredecessor requirements remain unchanged. Effective composition is 31\nrequirements and 177 scenarios, not an implementation completion verdict.\n\nSupersession relationship: partial specification amendment to the subject of\nPOLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md. Only the seven named requirement\nblocks are superseded by their extended blocks; the predecessor remains in force\nfor its unchanged requirements and is preserved byte-for-byte.\n\nRevocation relationship: none. Existing implementation and applicability acts\nretain their own exact scopes. This act grants no implementation extension,\nsource/provider/content permission, write consent, deployment or release.\n\nAdoption leaves the reviewed files and their candidate-era banners unchanged.\nThe act record determines effective status. This is bootstrap owner provenance,\nnot independent authorship verification, runtime evidence or product readiness.\n<!-- POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION:END -->\n",
+      "operation": "replace-once",
+      "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "refusal": "aggregate act changed"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": "3c915991fbb0eebc38f8daaaea4d05679914b6b8",
+      "new": "19, REQ-polaris-generation-020, REQ-polaris-generation-025]\n```\n\nmutated\n",
+      "old": "19, REQ-polaris-generation-020, REQ-polaris-generation-025]\n```\n",
+      "operation": "replace-once",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "refusal": "historical reviewed blob mismatch: openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": "077089d6268323c86fab9f6a5c32217e4955c006",
+      "new": "19, REQ-polaris-generation-020, REQ-polaris-generation-025]\n```\n\nmutated\n",
+      "old": "19, REQ-polaris-generation-020, REQ-polaris-generation-025]\n```\n",
+      "operation": "replace-once",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "refusal": "adoption blob mismatch: openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "19, REQ-polaris-generation-020, REQ-polaris-generation-025]\n```\n\nmutated\n",
+      "old": "19, REQ-polaris-generation-020, REQ-polaris-generation-025]\n```\n",
+      "operation": "replace-once",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "refusal": "current subject drift: openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "isting unfinished requirements.\n\nmutated\n",
+      "old": "isting unfinished requirements.\n",
+      "operation": "replace-once",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/tasks.md",
+      "refusal": "current subject drift: openspec/changes/polaris-manifesto-understanding-amendment/tasks.md"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "utlers `/polaris` page package.\n\nmutated\n",
+      "old": "utlers `/polaris` page package.\n",
+      "operation": "replace-once",
+      "path": ".syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md",
+      "refusal": "owner evidence changed: .syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": null,
+      "old": "utlers `/polaris` page package.\n",
+      "operation": "remove",
+      "path": ".syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md",
+      "refusal": "missing evidence: .syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": "077089d6268323c86fab9f6a5c32217e4955c006",
+      "new": "utlers `/polaris` page package.\n\nmutated\n",
+      "old": "utlers `/polaris` page package.\n",
+      "operation": "replace-once",
+      "path": ".syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md",
+      "refusal": "owner evidence changed: .syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": null,
+      "old": "o owner act.\",\n  \"version\": 1\n}\n",
+      "operation": "remove",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json",
+      "refusal": "missing evidence: docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "{}\n",
+      "old": "{\n  \"added_scenarios\": [\n    \"Section reads as an abstraction tree\",\n    \"Supported structure gets its diagram\",\n    \"Relationship that needs a diagram has none\",\n    \"Partly supported diagram\",\n    \"Diagram rendered inertly from declarative source\"\n  ],\n  \"composition_after\": {\n    \"requirements\": 31,\n    \"scenarios\": 182\n  },\n  \"composition_before\": {\n    \"requirements\": 31,\n    \"scenarios\": 177\n  },\n  \"epistemic_status\": \"Observed source/blob correspondence; independent review is Inferred\",\n  \"kind\": \"later technical recording of an earlier owner act\",\n  \"original_manifest\": {\n    \"path\": \"docs/evidence/polaris-understanding-adoption-manifest-2026-09-13.json\",\n    \"preservation\": \"Original eight-row manifest, dedicated act and aggregate block remain byte-identical. Only the REQ-004 row is reconciled to the later adoption; seven other rows remain checked against current bytes.\",\n    \"sha256\": \"3f4b96956b85a268532521ee5d0b1212d28537af7fddf09f89c877bd54bbc40d\"\n  },\n  \"owner_record\": {\n    \"commit\": \"077089d6268323c86fab9f6a5c32217e4955c006\",\n    \"correspondence_words_verbatim\": \"as merged with this record.\",\n    \"owner_words_verbatim\": \"\\\"1. Adopt and implement the Polaris tree-form amendment\\\", 2. Permitted, 3.\\n  Adopt now\\\"\",\n    \"path\": \".syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md\",\n    \"sha256\": \"dcc2e542e1b886d1e0be96e7bb86a982af14a6141d5c6d02b7d79385a7dd99a7\",\n    \"subject_words_verbatim\": \"the amended REQ-polaris-generation-004\"\n  },\n  \"proof_path\": \"docs/evidence/polaris-understanding-reconciliation-2026-09-28/proof.json\",\n  \"proof_sha256\": \"0d61eb32066d9ceebc41e2f8ff9ce964cd47cd6162f843cbb9caf9ef264e1712\",\n  \"provenance\": \"Agent technical recorder; existing owner act has bootstrap, uncorrelated provenance; A1 audit-record identity absent. This supplement is not owner adoption.\",\n  \"recording_date\": \"2026-09-28\",\n  \"recording_timezone\": \"Asia/Singapore\",\n  \"review\": {\n    \"c1_inputs\": \"The retained raw pins C1 and every reviewed input including review-inputs.json; that manifest pins the complete template, proof, checker and exact final documentation patch. The raw is excluded from its own input population.\",\n    \"path\": \"docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-RAW.md\",\n    \"sha256\": \"bce6cc1bfa2e2358f3e2b201290cad04a39241f56e8535f839bec2e37935819d\"\n  },\n  \"scope\": \"Evidence only: no new adoption, implementation, SVG, project-read, provider-egress, output-write, deployment or release authority. The supplement alone can never establish adoption.\",\n  \"separate_rulings\": \"The existing owner record separately authorized bounded generator implementation and ruled on sanitized static SVG. Those rulings retain their own scope and are not extended by this recording.\",\n  \"subject\": {\n    \"adopted_sha256\": \"6841e63cda0ccdb81966a6fabbdfaf3721910df8ea04959711eb59843859ba58\",\n    \"historical_commit\": \"3c915991fbb0eebc38f8daaaea4d05679914b6b8\",\n    \"historical_sha256\": \"b7c95f57ca5f67a18570b7124d20b223dff99aea2a936efef76d5940a400f93f\",\n    \"owner_adoption_commit\": \"077089d6268323c86fab9f6a5c32217e4955c006\",\n    \"path\": \"openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md\",\n    \"requirement\": \"REQ-polaris-generation-004\"\n  },\n  \"supersession\": \"The existing 2026-09-28 owner act replaces only REQ-polaris-generation-004 inside the understanding-amendment spec. The remainder of that spec and the predecessor remain unchanged. This technical supplement supersedes no owner act.\",\n  \"version\": 1\n}\n",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json",
+      "refusal": "technical record differs from reviewed template"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "new": "fe0591a5e0f0fd489a36e31ac03a9f`\n\nmutated\n",
+      "old": "fe0591a5e0f0fd489a36e31ac03a9f`\n",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-RAW.md",
+      "refusal": "retained C2 review changed"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "0000000000000000000000000000000000000000000000000000000000000000",
+      "old": "6841e63cda0ccdb81966a6fabbdfaf3721910df8ea04959711eb59843859ba58",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json",
+      "refusal": "technical record differs from reviewed template"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "wrong/path",
+      "old": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json",
+      "refusal": "technical record differs from reviewed template"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "\"version\": 1, \"extra_subject\": \"unreviewed\"",
+      "old": "\"version\": 1",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json",
+      "refusal": "technical record differs from reviewed template"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "Verdict: REVISE",
+      "old": "Verdict: PASS",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-RAW.md",
+      "refusal": "independent review not confirming: expected exactly one PASS verdict header"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "Verdict: REVISE\nVerdict: PASS",
+      "old": "Verdict: PASS",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-RAW.md",
+      "refusal": "independent review not confirming: expected exactly one PASS verdict header"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "Verdict: PASS\nVerdict: PASS",
+      "old": "Verdict: PASS",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-RAW.md",
+      "refusal": "independent review not confirming: expected exactly one PASS verdict header"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "Reviewed commit: wrong\nReviewed commit: ffffffffffffffffffffffffffffffffffffffff",
+      "old": "Reviewed commit: ffffffffffffffffffffffffffffffffffffffff",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-RAW.md",
+      "refusal": "C1 review commit population"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "Reviewed commit: ffffffffffffffffffffffffffffffffffffffff\nReviewed commit: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "old": "Reviewed commit: ffffffffffffffffffffffffffffffffffffffff",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-RAW.md",
+      "refusal": "C1 review commit population"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "bad-commit",
+      "old": "ffffffffffffffffffffffffffffffffffffffff",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-RAW.md",
+      "refusal": "invalid C1 review commit"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "- `wrong/template`:",
+      "old": "- `docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record-template.json`:",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-RAW.md",
+      "refusal": "C1 review input population"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "o owner act.\",\n  \"version\": 1\n}\n\nmutated\n",
+      "old": "o owner act.\",\n  \"version\": 1\n}\n",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record-template.json",
+      "refusal": "review retired by changed input: docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record-template.json"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "9f\"\n    }\n  ],\n  \"version\": 1\n}\n\nmutated\n",
+      "old": "9f\"\n    }\n  ],\n  \"version\": 1\n}\n",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/review-inputs.json",
+      "refusal": "review retired by changed input: docs/evidence/polaris-understanding-reconciliation-2026-09-28/review-inputs.json"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "':\n    raise SystemExit(main())\n\nmutated\n",
+      "old": "':\n    raise SystemExit(main())\n",
+      "operation": "replace-once",
+      "path": "scripts/record_polaris_understanding_adoption.py",
+      "refusal": "review retired by changed input: scripts/record_polaris_understanding_adoption.py"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "md\"\n    }\n  ],\n  \"version\": 1\n}\n\nmutated\n",
+      "old": "md\"\n    }\n  ],\n  \"version\": 1\n}\n",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/proof.json",
+      "refusal": "review retired by changed input: docs/evidence/polaris-understanding-reconciliation-2026-09-28/proof.json"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": " this page.** Run the commands.\n\nmutated\n",
+      "old": " this page.** Run the commands.\n",
+      "operation": "replace-once",
+      "path": "PROJECT-STATUS.md",
+      "refusal": "documentation after-image: PROJECT-STATUS.md"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": null,
+      "new": "__main__\":\n    sys.exit(main())\n\nmutated\n",
+      "old": "__main__\":\n    sys.exit(main())\n",
+      "operation": "replace-once",
+      "path": "scripts/check_governance.py",
+      "refusal": "governance registration source changed before C3"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": "dddddddddddddddddddddddddddddddddddddddd",
+      "new": "o owner act.\",\n  \"version\": 1\n}\n\nmutated\n",
+      "old": "o owner act.\",\n  \"version\": 1\n}\n",
+      "operation": "replace-once",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json",
+      "refusal": "retained C3 technical record changed"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": "dddddddddddddddddddddddddddddddddddddddd",
+      "new": " this page.** Run the commands.\n\nmutated\n",
+      "old": " this page.** Run the commands.\n",
+      "operation": "replace-once",
+      "path": "PROJECT-STATUS.md",
+      "refusal": "documentation after-image: PROJECT-STATUS.md"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "git_commit": "dddddddddddddddddddddddddddddddddddddddd",
+      "new": "__main__\":\n    sys.exit(main())\n\nmutated\n",
+      "old": "__main__\":\n    sys.exit(main())\n",
+      "operation": "replace-once",
+      "path": "scripts/check_governance.py",
+      "refusal": "governance registration source changed before C3"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "new": null,
+      "old": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "operation": "replace-introduction-seam",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-RAW.md",
+      "refusal": "C2 raw review must be retained after C1"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "new": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "old": "dddddddddddddddddddddddddddddddddddddddd",
+      "operation": "replace-introduction-seam",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json",
+      "refusal": "C3 technical record must follow C2 review"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "new": "- `.syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`: `0000000000000000000000000000000000000000000000000000000000000000`\n",
+      "old": "- `.syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`: `6093dbbe519dad6c35a5aaeeb31355d2e435d76ec4f0c2c9affb0d1e5b6b5621`\n",
+      "operation": "replace-in-synthetic-registry-fixture",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-1-RAW.md",
+      "preserved_decoy": "6093dbbe519dad6c35a5aaeeb31355d2e435d76ec4f0c2c9affb0d1e5b6b5621",
+      "refusal": "CG-7e historical quote missing despite correct digest decoy",
+      "verification": "scripts/check_governance.py --selftest: changed copy refused despite decoy"
+    },
+    {
+      "commit": "9322656dcfcc00b436868e93f2754f812dfa9db9",
+      "new": "- `.syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`: `0000000000000000000000000000000000000000000000000000000000000000`\n",
+      "old": "- `.syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`: `6093dbbe519dad6c35a5aaeeb31355d2e435d76ec4f0c2c9affb0d1e5b6b5621`\n",
+      "operation": "replace-in-synthetic-registry-fixture",
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-RAW.md",
+      "preserved_decoy": "6093dbbe519dad6c35a5aaeeb31355d2e435d76ec4f0c2c9affb0d1e5b6b5621",
+      "refusal": "CG-7e historical quote missing despite correct digest decoy",
+      "verification": "scripts/check_governance.py --selftest: changed copy refused despite decoy"
+    }
+  ]
+}
