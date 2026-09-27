@@ -30,9 +30,11 @@ reader definitions, and the root index path, pillar keys, labels, bindings
 and tree patterns match the constants in `packages/three-surface-poc-core/src/`.
 And the observer's own code, run under Node over files built from the
 profile's fields alone, derives the source manifest and reads the items the
-profile predicts, while one probe per exercised clause feeds it a varied
-file and checks the outcome the clause states. The sentences themselves are
-prose; a clause no probe exercises is checked only by its pin. The constants
+profile predicts, each row's keys predicted from that row's own key form,
+while every row runs the probes of its own shape and key form, each feeding
+the code a varied file and checking the outcome the clause states. A row may
+carry only the fields its shape and key form read. The sentences themselves
+are prose; a clause no probe exercises is checked only by its pin. The constants
 cross-check is retired by the change that deletes the constants (M8 slice 5
 limb 5), which then owns the loaded-profile test itself.
 
@@ -148,35 +150,57 @@ SHAPES = {
         "table, and inside it the field must be written once as field = \"value\" or "
         "field = 'value' with a non-empty value; no such table, a repeated table, a repeated "
         "field or a missing or empty value fails the source as malformed-toml; a line in any "
-        "other form, and the field inside any other table, is not read"),
+        "other form, and the field inside any other table, is not read; the value is trimmed "
+        "and NFC-normalized, a backslash escape in a double-quoted value is not decoded, and "
+        "the value becomes the item's context"),
 }
 
-#: The item-key sentences a grammar row may name, by form; a success row
-#: instead names "<prefix>:<one-based ordinal>".
+#: The item-key sentences a grammar row may carry, by form. A row states its
+#: form by carrying the sentence; the form names are the ones the sibling
+#: container-shape amendment (`syzygy-u05.8`) gives the same sentences. A
+#: success row instead carries "<prefix>:<one-based ordinal>", the
+#: prefixed-ordinal form.
 ITEM_KEY_SENTENCES = {
     "fixed": "the fixed key",
-    "principle": (
+    "leading-bold": (
         "the item's leading bold span (** or __), NFC-normalized with whitespace runs "
         "collapsed; an item with no non-empty leading bold span fails the source as "
         "ambiguous-leading-label"),
-    "catalog": (
+    "leading-bold-or-code": (
         "the item's leading bold span, or else its leading code span, NFC-normalized with "
         "whitespace runs collapsed; the span must be non-empty and followed, after optional "
         "whitespace, by a hyphen-minus, en dash or em dash, or the source fails as "
-        "ambiguous-leading-label"),
-    "design": (
-        "the link text of the first cell, which must be one whole link [text](target), "
-        "optionally with a quoted title, with non-empty text, or the source fails as "
-        "malformed-row"),
-    "tree": "the <key> segment of the tree population's pathPattern",
-    "topology": (
+        "ambiguous-leading-label; each item's context is the text of the declared heading it "
+        "was read under"),
+    "first-cell-link-text": (
+        "the link text of the first cell, trimmed and NFC-normalized; the cell must be one "
+        "whole link [text](target), optionally with a quoted title, with non-empty text, or "
+        "the source fails as malformed-row"),
+    "tree-key": "the <key> segment of the tree population's pathPattern",
+    "ordinal-and-label": (
         "the heading's ordinal, a colon and the first cell's label; the first cell must be "
-        "exactly one bold span with a non-empty label, or the source fails as malformed-row"),
-    "craft": (
+        "exactly one bold span with a non-empty label, or the source fails as malformed-row; "
+        "each item's context is the heading's ordinal"),
+    "link-target-basename": (
         "the basename of the link target in the declared column, without its fragment; a "
         "table with no such column, or a cell in it that is not one whole link whose target "
         "has a non-empty last segment, fails the source as malformed-row"),
 }
+
+#: The fields every class-grammar row carries (`pillar` only where two bindings
+#: share a source name), and the fields each shape and key form reads. A row
+#: may carry no other field: a field nothing reads would be a claim nothing
+#: tests. "heading" stands for `heading`, or `headings` on heading-section.
+ROW_FIELDS = {"class", "source", "pillar", "container", "itemKey"}
+SHAPE_FIELDS = {
+    "heading-section": {"heading"},
+    "top-level-decimal-list": {"heading"},
+    "top-level-list": {"heading"},
+    "top-level-bulleted-list": {"heading"},
+    "first-table-rows": {"heading"},
+    "toml-table-field": {"table", "field"},
+}
+FORM_FIELDS = {"fixed": {"key"}, "link-target-basename": {"column"}}
 
 PILLAR_ROOT_LINKS = (
     "after the table, every root-index link also declares a pillar's root when its resolved "
@@ -187,13 +211,14 @@ PILLAR_ROOT_LINKS = (
 SEMANTICS = {
     "scope": (
         "these fields restate the per-project values of the source grammar the observer applies "
-        "today; loading them in place of the observer's built-in values must reproduce the "
-        "current source manifest and observation digests byte for byte; they add no class, "
+        "today; loading them in place of the observer's built-in values must reproduce byte for "
+        "byte the current source manifest and observation digests and, for every source, the "
+        "items extraction reads from it; they add no class, "
         "heading, source, shape or key; the reading rules every project shares are listed under "
         "sharedReadingRules, stay in code and are set by no profile"),
     "headingMatch": (
-        "a heading is an ATX heading (one to six # marks, then a space or tab) outside fenced "
-        "code; its text is taken without closing # marks and outer whitespace, NFC-normalized; "
+        "a heading is an ATX heading written at column 0 (one to six # marks, then a space or "
+        "tab) outside fenced code, so an indented line is never a heading; its text is taken without closing # marks and outer whitespace, NFC-normalized; "
         "a declared heading matches only at its declared level and only by exact text; a heading "
         "object without a level matches at any level; a declared heading that is missing fails "
         "the source as missing-heading, and one that occurs more than once fails it as "
@@ -496,6 +521,23 @@ def structure_findings(body: bytes) -> list[str]:
         used.add(shape)
         if not isinstance(row.get("itemKey"), str) or not row["itemKey"]:
             findings.append(f"class grammar row has no itemKey: {cls}")
+        # Each field a row carries must be one its shape or its key form reads.
+        form = _form(row)[0]
+        needed = SHAPE_FIELDS.get(shape, set()) | FORM_FIELDS.get(form, set())
+        allowed = ROW_FIELDS | needed | ({"heading", "headings"} if "heading" in needed else set())
+        if set(row) - allowed:
+            findings.append(f"class grammar row carries a field its shape and key form do not "
+                            f"read: {cls} {sorted(set(row) - allowed)}")
+        for field in needed - {"heading"}:
+            if field not in row:
+                findings.append(f"class grammar row lacks a field its shape or key form reads: "
+                                f"{cls} {field}")
+        if "heading" in needed and not _headings(row):
+            findings.append(f"class grammar row lacks the heading its shape reads: {cls}")
+        if {"heading", "headings"} <= set(row):
+            findings.append(f"class grammar row carries both heading and headings: {cls}")
+        if "headings" in row and shape != "heading-section":
+            findings.append(f"only heading-section reads more than one heading object: {cls}")
         for h in _headings(row):
             if not isinstance(h, dict) or set(h) - {"level"} not in ({"text"}, {"textsFrom"}):
                 findings.append(f"heading object keys differ from level with text or textsFrom: {cls}")
@@ -756,7 +798,19 @@ def _form(row: dict) -> tuple[str, str | None]:
     if sentence in ITEM_FORMS:
         return ITEM_FORMS[sentence], None
     m = ORDINAL_KEY.match(sentence or "")
-    return ("ordinal", m[1]) if m else ("unknown", None)
+    return ("prefixed-ordinal", m[1]) if m else ("unknown", None)
+
+
+def _predict_key(row: dict, label: str | None, ordinal: int) -> str | None:
+    """The key the row's own item-key form gives an item whose natural label is `label`."""
+    form, prefix = _form(row)
+    if form == "prefixed-ordinal":
+        return f"{prefix}:{ordinal}"
+    if form == "fixed":
+        return row.get("key")
+    if form == "tree-key":
+        return TREE_KEY
+    return label
 
 
 def _kinds_for(row: dict) -> set[str]:
@@ -770,7 +824,7 @@ def _kinds_for(row: dict) -> set[str]:
     if shape == "top-level-bulleted-list":
         return {"bulleted"}
     if shape == "first-table-rows":
-        return {"craft-table" if _form(row)[0] == "craft" else "design-table"}
+        return {"craft-table" if _form(row)[0] == "link-target-basename" else "design-table"}
     return set()
 
 
@@ -881,11 +935,13 @@ class Witness:
             n = self._next()
             table, field = row.get("table"), row.get("field")
             for i in rows:
-                self.items.setdefault(path, []).append((grammar[i]["class"], TREE_KEY, None, f"n{n}"))
+                self.items.setdefault(path, []).append(
+                    (grammar[i]["class"], _predict_key(grammar[i], None, 1), None, f"n{n}"))
             return f"[{table}]\n{field} = \"n{n}\"\n\n[other{n}]\n{field} = 'ignored'\n"
         if shapes == {"tree-path"}:
             for i in rows:
-                self.items.setdefault(path, []).append((grammar[i]["class"], TREE_KEY, None, None))
+                self.items.setdefault(path, []).append(
+                    (grammar[i]["class"], _predict_key(grammar[i], None, 1), None, None))
             return "tree source\n"
         # Heading slots, in row order; one slot per distinct heading.
         slots: list[dict] = []
@@ -897,8 +953,11 @@ class Witness:
             if shape == "ordinal-section-table-rows":
                 text, keys = _ordinal_file(self._next())
                 tail += text
-                for key in keys:
-                    self.items.setdefault(path, []).append((row["class"], key, None, None))
+                topology = _form(row)[0] == "ordinal-and-label"
+                for ordinal, key in enumerate(keys, start=1):
+                    self.items.setdefault(path, []).append(
+                        (row["class"], _predict_key(row, key, ordinal), None,
+                         key.split(":")[0] if topology else None))
                 continue
             if shape == "every-level-2-section":
                 n = self._next()
@@ -941,23 +1000,25 @@ class Witness:
         # Predict what each row reads.
         for i in rows:
             row = grammar[i]
-            shape, (form, prefix) = row.get("container"), _form(row)
+            shape, (form, _prefix) = row.get("container"), _form(row)
             mine = [s for s in slots if i in s["rows"]]
             out = self.items.setdefault(path, [])
             if shape == "every-level-2-section":
                 parts = [s for s in shallow if s["level"] == 2]
                 statement = "\n\n".join(f"{s['text']}\n\n{s['content'].strip()}".strip() for s in parts)
-                out.append((row["class"], row.get("key"), statement, None))
+                out.append((row["class"], _predict_key(row, None, 1), statement, None))
             elif shape == "heading-section":
                 bodies = [f"{s['text']}\n\n{s['content'].strip()}" for s in mine]
                 statement = mine[0]["content"].strip() if len(mine) == 1 else "\n\n".join(bodies).strip()
-                out.append((row["class"], row.get("key"), statement, None))
+                out.append((row["class"], _predict_key(row, None, 1), statement, None))
             elif shape in ("top-level-decimal-list", "top-level-list", "top-level-bulleted-list",
                            "first-table-rows"):
+                ordinal = 0
                 for s in mine:
-                    for ordinal, (label, statement) in enumerate(s["items"], start=1):
-                        key = f"{prefix}:{ordinal}" if form == "ordinal" else label
-                        out.append((row["class"], key, statement, None))
+                    context = s["text"] if form == "leading-bold-or-code" else None
+                    for label, statement in s["items"]:
+                        ordinal += 1
+                        out.append((row["class"], _predict_key(row, label, ordinal), statement, context))
         return body
 
 
@@ -1039,6 +1100,16 @@ def _has_key(key: str, statement: str | None = None):
     return check
 
 
+def _has_context(context: str):
+    def check(r: dict) -> str | None:
+        if r.get("kind") != "extracted" or not r["items"]:
+            return f"expected an item with context {context!r}, observed {r.get('kind')} {r.get('reason')}"
+        if r["items"][0][3] != context:
+            return f"expected context {context!r}, observed {r['items'][0][3]!r}"
+        return None
+    return check
+
+
 def _extracted(r: dict) -> str | None:
     return None if r.get("kind") == "extracted" else f"expected items, observed {r.get('kind')} {r.get('reason')}"
 
@@ -1064,118 +1135,132 @@ def probes(g: dict) -> list[tuple[str, tuple, str, dict, object]]:
         path = w.slot_of[i]
         return {"kind": "extract", "path": path, "classes": [grammar[i]["class"]], "text": edit(w.files[path])}
 
-    done_shapes: set[str] = set()
-    done_forms: set[str] = set()
+    # Every row runs its own shape's and its own key form's probes, so a row
+    # relabelled with another shape or form is tested as it now claims.
     done_heading = False
     for i, row in enumerate(grammar):
         shape = row.get("container")
         form, _prefix = _form(row)
         C = ("containerShapes", shape)
-        if shape not in done_shapes:
-            done_shapes.add(shape)
-            if shape == "heading-section" and len(_row_headings(g, row)) == 1:
-                level = _row_headings(g, row)[0][0] or 2
-                out.append((f"{shape}: an empty body", C, "the body may be empty",
-                            row_case(i, ""), _has_key(row.get("key"), "")))
-                if level < 6:
-                    deeper = f"Intro.\n\n{'#' * (level + 1)} Deeper\n\nMore."
-                    out.append((f"{shape}: a deeper heading stays in the body", C,
-                                "up to the next heading at the same or a higher level",
-                                row_case(i, deeper), _has_key(row.get("key"), deeper)))
-            elif shape == "every-level-2-section":
-                out.append((f"{shape}: no level-2 heading", C,
-                            "a file with no level-2 heading fails the source as missing-heading",
-                            file_case(i, "# Only a title\n\nText.\n"), _failed("missing-heading")))
-            elif shape == "top-level-decimal-list":
-                out.append((f"{shape}: a bulleted item", C,
-                            "a bulleted item at column 0 fails the source as malformed-list",
-                            row_case(i, f"- **X** {EM} bulleted\n"), _failed("malformed-list")))
-                out.append((f"{shape}: only an indented item", C,
-                            "so does a section with no list item at column 0",
-                            row_case(i, f" 1. **X** {EM} indented\n"), _failed("malformed-list")))
-            elif shape == "top-level-list":
-                out.append((f"{shape}: only an indented item", C,
-                            "a section with no list item at column 0 fails the source as malformed-list",
-                            row_case(i, " - indented\n"), _failed("malformed-list")))
-            elif shape == "top-level-bulleted-list":
-                out.append((f"{shape}: a numbered item", C,
-                            "a numbered item at column 0 fails the source as malformed-list",
-                            row_case(i, f"1. **X** {EM} numbered\n"), _failed("malformed-list")))
-                out.append((f"{shape}: no list item", C,
-                            "a section with no list item yields no items and does not fail",
-                            row_case(i, "Prose only.\n"), _extracted))
-            elif shape == "first-table-rows":
-                out.append((f"{shape}: no table", C,
-                            "a section with no table fails the source as malformed-row",
-                            row_case(i, "Prose, no table.\n"), _failed("malformed-row")))
-                out.append((f"{shape}: a short body row", C,
-                            "a body row of that table whose cell count differs from its header's",
-                            row_case(i, "| A | B |\n|---|---|\n| [X](x.md) |\n"), _failed("malformed-row")))
-            elif shape == "ordinal-section-table-rows":
-                table = "| C | R |\n|---|---|\n| **A** | x |\n"
-                out.append((f"{shape}: an ordinal followed by a letter run", C,
-                            "a character that is not an ASCII letter, digit or underscore",
-                            file_case(i, f"## 1st Layer\n\n{table}"), _failed("missing-heading")))
-                out.append((f"{shape}: a short row under a level-3 heading", C,
-                            "a body row whose cell count differs from its table's header fails it as malformed-row",
-                            file_case(i, "## 3 Layer\n\n### Sub\n\n| C | R |\n|---|---|\n| **A** |\n"),
-                            _failed("malformed-row")))
-            elif shape == "toml-table-field":
-                t, f = row.get("table"), row.get("field")
-                for label, clause, text, check in (
-                        ("a repeated table", "a repeated table",
-                         f"[{t}]\n{f} = \"a\"\n\n[{t}]\n{f} = \"b\"\n", _failed("malformed-toml")),
-                        ("a repeated field", "a repeated field",
-                         f"[{t}]\n{f} = \"a\"\n{f} = 'b'\n", _failed("malformed-toml")),
-                        ("an empty value", "a missing or empty value",
-                         f"[{t}]\n{f} = \"\"\n", _failed("malformed-toml")),
-                        ("no such table", "no such table",
-                         f"[other]\n{f} = \"a\"\n", _failed("malformed-toml")),
-                        ("an unquoted value", "a line in any other form",
-                         f"[{t}]\n{f} = bare\n", _failed("malformed-toml")),
-                        ("the field only in another table", "the field inside any other table, is not read",
-                         f"[{t}]\n\n[other]\n{f} = \"a\"\n", _failed("malformed-toml")),
-                        ("a single-quoted value", "field = 'value'",
-                         f"[{t}]\n{f} = 'single'\n", _extracted)):
-                    out.append((f"{shape}: {label}", C, clause, file_case(i, text), check))
+
+        def items(*texts: str, shape=shape) -> str:
+            """List items in the markers the row's shape admits."""
+            if shape == "top-level-bulleted-list":
+                return "".join(f"- {t}\n" for t in texts)
+            return "".join(f"{n}. {t}\n" for n, t in enumerate(texts, start=1))
+        if shape == "heading-section" and len(_row_headings(g, row)) == 1:
+            level = _row_headings(g, row)[0][0] or 2
+            out.append((f"{shape}, row {i}: an empty body", C, "the body may be empty",
+                        row_case(i, ""), _has_key(row.get("key"), "")))
+            if level < 6:
+                deeper = f"Intro.\n\n{'#' * (level + 1)} Deeper\n\nMore."
+                out.append((f"{shape}, row {i}: a deeper heading stays in the body", C,
+                            "up to the next heading at the same or a higher level",
+                            row_case(i, deeper), _has_key(row.get("key"), deeper)))
+        elif shape == "every-level-2-section":
+            out.append((f"{shape}, row {i}: no level-2 heading", C,
+                        "a file with no level-2 heading fails the source as missing-heading",
+                        file_case(i, "# Only a title\n\nText.\n"), _failed("missing-heading")))
+        elif shape == "top-level-decimal-list":
+            out.append((f"{shape}, row {i}: a bulleted item", C,
+                        "a bulleted item at column 0 fails the source as malformed-list",
+                        row_case(i, f"- **X** {EM} bulleted\n"), _failed("malformed-list")))
+            out.append((f"{shape}, row {i}: only an indented item", C,
+                        "so does a section with no list item at column 0",
+                        row_case(i, f" 1. **X** {EM} indented\n"), _failed("malformed-list")))
+        elif shape == "top-level-list":
+            out.append((f"{shape}, row {i}: only an indented item", C,
+                        "a section with no list item at column 0 fails the source as malformed-list",
+                        row_case(i, " - indented\n"), _failed("malformed-list")))
+        elif shape == "top-level-bulleted-list":
+            out.append((f"{shape}, row {i}: a numbered item", C,
+                        "a numbered item at column 0 fails the source as malformed-list",
+                        row_case(i, f"1. **X** {EM} numbered\n"), _failed("malformed-list")))
+            out.append((f"{shape}, row {i}: no list item", C,
+                        "a section with no list item yields no items and does not fail",
+                        row_case(i, "Prose only.\n"), _extracted))
+        elif shape == "first-table-rows":
+            out.append((f"{shape}, row {i}: no table", C,
+                        "a section with no table fails the source as malformed-row",
+                        row_case(i, "Prose, no table.\n"), _failed("malformed-row")))
+            out.append((f"{shape}, row {i}: a short body row", C,
+                        "a body row of that table whose cell count differs from its header's",
+                        row_case(i, "| A | B |\n|---|---|\n| [X](x.md) |\n"), _failed("malformed-row")))
+        elif shape == "ordinal-section-table-rows":
+            table = "| C | R |\n|---|---|\n| **A** | x |\n"
+            out.append((f"{shape}, row {i}: an ordinal followed by a letter run", C,
+                        "a character that is not an ASCII letter, digit or underscore",
+                        file_case(i, f"## 1st Layer\n\n{table}"), _failed("missing-heading")))
+            out.append((f"{shape}, row {i}: a short row under a level-3 heading", C,
+                        "a body row whose cell count differs from its table's header fails it as malformed-row",
+                        file_case(i, "## 3 Layer\n\n### Sub\n\n| C | R |\n|---|---|\n| **A** |\n"),
+                        _failed("malformed-row")))
+        elif shape == "toml-table-field":
+            t, f = row.get("table"), row.get("field")
+            for label, clause, text, check in (
+                    ("a repeated table", "a repeated table",
+                     f"[{t}]\n{f} = \"a\"\n\n[{t}]\n{f} = \"b\"\n", _failed("malformed-toml")),
+                    ("a repeated field", "a repeated field",
+                     f"[{t}]\n{f} = \"a\"\n{f} = 'b'\n", _failed("malformed-toml")),
+                    ("an empty value", "a missing or empty value",
+                     f"[{t}]\n{f} = \"\"\n", _failed("malformed-toml")),
+                    ("no such table", "no such table",
+                     f"[other]\n{f} = \"a\"\n", _failed("malformed-toml")),
+                    ("an unquoted value", "a line in any other form",
+                     f"[{t}]\n{f} = bare\n", _failed("malformed-toml")),
+                    ("the field only in another table", "the field inside any other table, is not read",
+                     f"[{t}]\n\n[other]\n{f} = \"a\"\n", _failed("malformed-toml")),
+                    ("a single-quoted value", "field = 'value'",
+                     f"[{t}]\n{f} = 'single'\n", _extracted),
+                    ("an escaped quote", "a backslash escape in a double-quoted value is not decoded",
+                     f"[{t}]\n{f} = \"a\\\"b\"\n", _has_context('a\\"b')),
+                    ("a decomposed, padded value", "the value is trimmed and NFC-normalized",
+                     f"[{t}]\n{f} = \" e\u0301 \"\n", _has_context("\u00e9"))):
+                out.append((f"{shape}, row {i}: {label}", C, clause, file_case(i, text), check))
         K = ("row", i)
-        if form not in done_forms:
-            done_forms.add(form)
-            if form == "principle":
-                out.append(("itemKey principle: no bold span", K,
-                            "an item with no non-empty leading bold span fails the source as ambiguous-leading-label",
-                            row_case(i, "1. plain item\n"), _failed("ambiguous-leading-label")))
-                out.append(("itemKey principle: whitespace collapses", K, "whitespace runs collapsed",
-                            row_case(i, "1. **A  b** x\n"), _has_key("A b")))
-                out.append(("itemKey: a repeated key", ("sourceGrammarSemantics", "itemKey"),
-                            "a key that occurs twice within one class of one source fails the source as duplicate-key",
-                            row_case(i, "1. **A** x\n2. __A__ y\n"), _failed("duplicate-key")))
-            elif form == "catalog":
-                out.append(("itemKey catalog: no dash after the label", K,
-                            "or the source fails as ambiguous-leading-label",
-                            row_case(i, "- **A** no dash\n"), _failed("ambiguous-leading-label")))
-                out.append(("itemKey catalog: a code-span label", K, "or else its leading code span",
-                            row_case(i, f"- `a` {EM} x\n"), _has_key("a")))
-                out.append(("itemKey catalog: an en dash", K, "en dash",
-                            row_case(i, f"- **A** {EN} x\n"), _has_key("A")))
-            elif form == "design":
-                out.append(("itemKey design: a plain first cell", K, "must be one whole link",
-                            row_case(i, "| A | B |\n|---|---|\n| plain | x |\n"), _failed("malformed-row")))
-                out.append(("itemKey design: empty link text", K, "with non-empty text",
-                            row_case(i, "| A | B |\n|---|---|\n| [](e.md) | x |\n"), _failed("malformed-row")))
-            elif form == "topology":
-                out.append(("itemKey topology: text after the bold span", K, "exactly one bold span",
-                            file_case(i, "## 1 L\n\n| C | R |\n|---|---|\n| **A** extra | x |\n"),
-                            _failed("malformed-row")))
-            elif form == "craft":
-                column = row.get("column", "")
-                out.append(("itemKey craft: no such column", K, "a table with no such column",
-                            row_case(i, "| Why | Other |\n|---|---|\n| a | [x.md](x.md) |\n"),
-                            _failed("malformed-row")))
-                out.append(("itemKey craft: a cell that is not a link", K,
-                            "a cell in it that is not one whole link",
-                            row_case(i, f"| Why | {column} |\n|---|---|\n| a | x.md |\n"),
-                            _failed("malformed-row")))
+        if form == "leading-bold":
+            out.append((f"itemKey leading-bold, row {i}: no bold span", K,
+                        "an item with no non-empty leading bold span fails the source as ambiguous-leading-label",
+                        row_case(i, items("plain item")), _failed("ambiguous-leading-label")))
+            out.append((f"itemKey leading-bold, row {i}: whitespace collapses, no dash needed", K,
+                        "whitespace runs collapsed",
+                        row_case(i, items("**A  b** x")), _has_key("A b")))
+            out.append((f"itemKey: a repeated key, row {i}", ("sourceGrammarSemantics", "itemKey"),
+                        "a key that occurs twice within one class of one source fails the source as duplicate-key",
+                        row_case(i, items("**A** x", "__A__ y")), _failed("duplicate-key")))
+        elif form == "leading-bold-or-code":
+            out.append((f"itemKey leading-bold-or-code, row {i}: no dash after the label", K,
+                        "or the source fails as ambiguous-leading-label",
+                        row_case(i, items("**A** no dash")), _failed("ambiguous-leading-label")))
+            out.append((f"itemKey leading-bold-or-code, row {i}: a code-span label", K,
+                        "or else its leading code span",
+                        row_case(i, items(f"`a` {EM} x")), _has_key("a")))
+            out.append((f"itemKey leading-bold-or-code, row {i}: an en dash", K, "en dash",
+                        row_case(i, items(f"**A** {EN} x")), _has_key("A")))
+        elif form == "first-cell-link-text":
+            out.append((f"itemKey first-cell-link-text, row {i}: a plain first cell", K,
+                        "must be one whole link",
+                        row_case(i, "| A | B |\n|---|---|\n| plain | x |\n"), _failed("malformed-row")))
+            out.append((f"itemKey first-cell-link-text, row {i}: empty link text", K,
+                        "with non-empty text",
+                        row_case(i, "| A | B |\n|---|---|\n| [](e.md) | x |\n"), _failed("malformed-row")))
+            out.append((f"itemKey first-cell-link-text, row {i}: padded, decomposed link text", K,
+                        "trimmed and NFC-normalized",
+                        row_case(i, "| A | B |\n|---|---|\n| [ e\u0301 ](e.md) | x |\n"),
+                        _has_key("\u00e9")))
+        elif form == "ordinal-and-label":
+            out.append((f"itemKey ordinal-and-label, row {i}: text after the bold span", K, "exactly one bold span",
+                        file_case(i, "## 1 L\n\n| C | R |\n|---|---|\n| **A** extra | x |\n"),
+                        _failed("malformed-row")))
+        elif form == "link-target-basename":
+            column = row.get("column", "")
+            out.append((f"itemKey link-target-basename, row {i}: no such column", K, "a table with no such column",
+                        row_case(i, "| Why | Other |\n|---|---|\n| a | [x.md](x.md) |\n"),
+                        _failed("malformed-row")))
+            out.append((f"itemKey link-target-basename, row {i}: a cell that is not a link", K,
+                        "a cell in it that is not one whole link",
+                        row_case(i, f"| Why | {column} |\n|---|---|\n| a | x.md |\n"),
+                        _failed("malformed-row")))
         # headingMatch, per heading row.
         H = ("sourceGrammarSemantics", "headingMatch")
         headings = _row_headings(g, row)
@@ -1207,6 +1292,8 @@ def probes(g: dict) -> list[tuple[str, tuple, str, dict, object]]:
                             edit_case(i, swap(f"{line} ##")), _extracted))
                 out.append(("headingMatch: a heading inside a fence", H, "outside fenced code",
                             edit_case(i, swap(f"```\n{line}\n```")), _failed("missing-heading")))
+                out.append(("headingMatch: an indented heading", H, "an indented line is never a heading",
+                            edit_case(i, swap(f"   {line}")), _failed("missing-heading")))
     # containerShape: one failing class makes the whole source Unknown.
     w = Witness(g)
     multi = [(p, _classes_of(g, p)) for p in w.items if len(_classes_of(g, p)) > 1]
@@ -1707,6 +1794,25 @@ def selftest() -> int:
          lambda d: row(d, "catalog-entry")["heading"].__setitem__("text", "Staffers")),
         ("textsFrom naming an unknown list",
          lambda d: row(d, "catalog-entry")["heading"].__setitem__("textsFrom", "x")),
+        # The round-2 reviewer's field mutants (R-DOV24 round 2, D1): a field
+        # the row's shape and key form do not read.
+        ("X4 design-contract gains column Path",
+         lambda d: row(d, "design-contract").__setitem__("column", "Path")),
+        ("X5 architecture gains heading Non-Negotiable Rules",
+         lambda d: row(d, "project-account-section", "architecture.md").__setitem__(
+             "heading", {"level": 2, "text": "Non-Negotiable Rules"})),
+        ("X6 principle gains table and field",
+         lambda d: row(d, "principle").update({"table": "x", "field": "y"})),
+        ("a list row declaring headings",
+         lambda d: row(d, "principle").__setitem__("headings", [row(d, "principle").pop("heading")])),
+        ("a row with both heading and headings",
+         lambda d: row(d, "project-account-section").__setitem__(
+             "headings", [{"level": 2, "text": "What Butlers Is"}])),
+        ("a fixed-key row without its key",
+         lambda d: row(d, "project-account-section").pop("key")),
+        ("a craft row without its column", lambda d: row(d, "craft-policy").pop("column")),
+        ("a roster row without its table", lambda d: row(d, "roster-identity").pop("table")),
+        ("a list row without its heading", lambda d: row(d, "principle").pop("heading")),
         ("a grammar row matching two bindings",
          lambda d: g(d)["sourcePopulation"]["extractionBindings"].append(
              dict(g(d)["sourcePopulation"]["extractionBindings"][2]))),
@@ -1751,7 +1857,42 @@ def selftest() -> int:
         ("a class moved to a binding the code does not make",
          lambda d: g(d)["sourcePopulation"]["extractionBindings"][3]["classes"].__setitem__(
              0, "principle")),
+        # The round-2 reviewer's per-row mutants (R-DOV24 round 2, D1): each
+        # row is probed as its own shape and key form, and its keys predicted
+        # from its own form.
+        ("N2 vision success-criterion container -> top-level-decimal-list",
+         lambda d: row(d, "success-criterion", "vision.md").__setitem__(
+             "container", "top-level-decimal-list")),
+        ("N3 v1 success-criterion container -> top-level-decimal-list",
+         lambda d: row(d, "success-criterion", "v1.md").__setitem__(
+             "container", "top-level-decimal-list")),
+        ("N17 catalog itemKey -> the leading-bold sentence",
+         lambda d: row(d, "catalog-entry").__setitem__(
+             "itemKey", ITEM_KEY_SENTENCES["leading-bold"])),
+        ("N22 roster itemKey -> the fixed key",
+         lambda d: row(d, "roster-identity").__setitem__("itemKey", "the fixed key")),
+        ("X3 baseline itemKey -> the fixed key",
+         lambda d: row(d, "baseline-spec").__setitem__("itemKey", "the fixed key")),
+        ("principle itemKey -> the leading-bold-or-code sentence",
+         lambda d: row(d, "principle").__setitem__(
+             "itemKey", ITEM_KEY_SENTENCES["leading-bold-or-code"])),
+        ("design itemKey -> the link-target-basename sentence",
+         lambda d: row(d, "design-contract").__setitem__(
+             "itemKey", ITEM_KEY_SENTENCES["link-target-basename"])),
+        ("topology itemKey -> the tree-key sentence",
+         lambda d: row(d, "topology-component").__setitem__(
+             "itemKey", ITEM_KEY_SENTENCES["tree-key"])),
         # The unpinned-sentence path: each clause a probe exercises must be stated.
+        ("a heading rule dropping the column-0 clause",
+         lambda d: g(d)["sourceGrammarSemantics"].__setitem__("headingMatch", SEMANTICS[
+             "headingMatch"].replace(", so an indented line is never a heading", ""))),
+        ("a TOML shape sentence dropping the undecoded-escape clause",
+         lambda d: g(d)["containerShapes"].__setitem__("toml-table-field", SHAPES[
+             "toml-table-field"].replace("a backslash escape in a double-quoted value is not "
+                                         "decoded, and ", ""))),
+        ("a design key sentence dropping trimming and normalization",
+         lambda d: row(d, "design-contract").__setitem__("itemKey", ITEM_KEY_SENTENCES[
+             "first-cell-link-text"].replace("trimmed and NFC-normalized; the cell", "the cell"))),
         ("a shape sentence dropping a clause a probe exercises",
          lambda d: g(d)["containerShapes"].__setitem__("top-level-bulleted-list", SHAPES[
              "top-level-bulleted-list"].replace("yields no items and does not fail", "fails"))),
@@ -1760,7 +1901,7 @@ def selftest() -> int:
              "sharedReadingRules"].replace("images excluded, ", ""))),
         ("an item-key sentence dropping a clause a probe exercises",
          lambda d: row(d, "catalog-entry").__setitem__("itemKey", ITEM_KEY_SENTENCES[
-             "catalog"].replace(", or else its leading code span", ""))),
+             "leading-bold-or-code"].replace(", or else its leading code span", ""))),
     )
     for label, fn in behavioural:
         expect(label, behaviour_findings(mutate(fn)))
@@ -1844,7 +1985,8 @@ def selftest() -> int:
           ".18 adopted, this package adopted, .18 absent, subject drift, patch "
           "corruption), manifest digest, path and absence, patch population, a "
           "no-op patch, an undeclared sibling, nothing-else-moves, every "
-          "structural claim and pinned sentence, the reviewer's round-1 mutants, "
+          "structural claim and pinned sentence, the reviewer's round-1 mutants and "
+          "round-2 per-row shape, key-form and field mutants, "
           "a forged outcome for every behaviour case, and all three restatement "
           "witnesses (the specification's reader definitions, the code constants "
           "and the observer's own code run over profile-built files) all fail closed")

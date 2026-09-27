@@ -4,9 +4,10 @@
 > of `.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`
 > (2026-09-21), which authorizes drafting only. This file offers no act,
 > quotes no act argument and labels nothing accepted. Only the owner
-> performs an act (`VIS-4`). **Reviewed once, verdict REVISE;** every
-> finding was repaired in this revision, which has not yet been reviewed.
-> The review record is at the end of this file.
+> performs an act (`VIS-4`). **Reviewed twice, verdict REVISE both
+> times;** every finding of both rounds was repaired in this revision,
+> which has not yet been reviewed. The review record is at the end of this
+> file.
 
 ## What this package is, in one paragraph
 
@@ -14,8 +15,9 @@ Today the observer's rules for reading Butlers — where the root index is,
 which file feeds which kind of item, which headings to look under, what
 shape the items take — live only in TypeScript constants. M8 slice 5 wants
 the observer to load those rules from the registry entry instead, so that a
-governance act, not a code change, decides how a project is read. You ruled
-that its fifth step waits for one registry-entry amendment act (P-74 Q2).
+governance act, not a code change, decides how a project is read. Your
+P-74 Q2 answer was "one registry-entry amendment act before slice 5's fifth
+limb only".
 This package drafts that amendment: six new fields that write down exactly
 what the code does today, nothing more, plus a version bump. It is drafted
 on top of the `.18` currency-and-briefing amendment to the same entry, so
@@ -54,21 +56,36 @@ builder's `--check` tests the fields three ways [Observed, `--check`]:
    patterns match the TypeScript constants;
 3. the observer's own code is run under Node over files the builder writes
    from the fields alone. It must derive the source list the fields
-   predict and read the items they predict — class, key and text. Then 79
-   probes each feed it one varied file and check that the code does what
-   one clause of one sentence says, and that the sentence says it.
+   predict and read the items they predict — class, key, text and, where
+   the code sets one, context. Then 92 probes each feed it one varied file
+   and check that the code does what one clause of one sentence says, and
+   that the sentence says it. The probes run for every row, so a row given
+   the wrong shape or key sentence is caught even when another row uses
+   that shape correctly. A row carrying a field its shape does not read is
+   refused.
 
-`--selftest` then breaks the fields and the checks deliberately in 190
-ways, including the 17 wrong versions the first reviewer used; every one
-is caught [Observed, `--selftest`].
+`--selftest` then breaks the fields and the checks deliberately in 223
+ways, including the 17 wrong versions the first reviewer used and the 8
+the second reviewer found surviving; every one is caught [Observed,
+`--selftest`].
 
 What this does **not** prove: the sentences are prose, and a clause no
 probe exercises is checked only by its exact wording being pinned in the
 builder. Nor can a check show that the code has no rule these fields leave
 out. The rules every project shares are now listed in one sentence and left
-to code, which is what the first review asked for. Slice 5's first step,
-which rebuilds today's digests from the profile, remains the full proof
-[Inferred].
+to code, which is what the first review asked for.
+
+Today's source manifest and observation digests are **not** evidence for
+most of these fields. Neither the observation code nor the manifest code
+uses the extraction code [Observed, their imports], so those two digests
+depend only on `rootIndex`, `pillars` and `sourcePopulation` [Inferred]; a
+wrong heading, shape or key in `classGrammar`, `containerShapes` or
+`sourceGrammarSemantics` would leave them unchanged. The entry's scope
+sentence therefore also requires a loader to reproduce, for every source,
+the items the extraction reads from it. For those three fields the only
+evidence today is the builder's behaviour check above. Whether slice 5's
+first step will compare extracted items as well as the two digests is
+[Unknown]: that step is not built.
 
 ## The act, if you choose to perform it
 
@@ -105,8 +122,11 @@ The same four reasons the `.18` packet gives, unchanged:
 
 ## Landing order
 
-**What you ruled.** For the four specification-touching packages only:
-`.21` → `.30` → `.22` → lane B (the 2026-09-23 owner-values record, §6).
+**What you ruled.** Asked "Landing order for lane B and the three
+spec-touching packages?", you answered "Readiness order, lane B last
+(Recommended)" (the 2026-09-23 owner-values record, §6). As presented,
+that option read `.21` → `.30` → `.22` → lane B; that is the order it
+selected, and it covers those four packages only.
 
 **What you have not ruled.** Where `.20`, `.18` and this package fall. This
 package's builder needs `.18` applied first, because both edit the same
@@ -150,8 +170,13 @@ Each has a recommendation; none is decided here.
    names here are a guess at what limb 1's schema will call things. If the
    schema chooses different names, a second registry act follows.
    *Recommended: wait; perform this act only once limb 1 has proven the
-   profile reproduces today's digests and the names match.* Counter-view:
-   acting now fixes the names and lets limb 1 build against them.
+   profile reproduces today's digests **and** the items extraction reads
+   from every source, and the names match.* Today's two digests alone
+   would not show `classGrammar`, `containerShapes` or
+   `sourceGrammarSemantics` right, because they do not depend on the
+   extraction (see "How we know it restates today's reading"); whether
+   limb 1 will compare extracted items is [Unknown]. Counter-view: acting
+   now fixes the names and lets limb 1 build against them.
 3. **Does a sentence in the ruling record's "What it means" column stop
    this package?** Row P-74's "What it means" column says "The consent
    record, the registry entry and PWB-REQ-005 are edited on no arm." That
@@ -192,10 +217,11 @@ Each has a recommendation; none is decided here.
    direction, given with or after this act.*
 8. **Should the `.18` and this amendment be merged into one act?** They
    touch the same entry and would land close together. Your P-72 Q2 answer
-   was to "mint `maxBriefingResponseBytes` under a superseding registry
-   act, the fold-in ruled now"; the ruling record's own cross-cutting
-   reading, headed "One registry act, not two", is what joins that with
-   P-69 Q2(a) as `.18` — the recorder's heading, not your words.
+   was "Q2 mint `maxBriefingResponseBytes` under a superseding registry
+   act, the fold-in ruled now" (row P-72, "Ruled" column). That the
+   briefing ceiling and P-69 Q2(a) then travel together as `.18` is the
+   recorder's reading of that answer, not your words; nothing you ruled
+   joins this package to `.18`.
    *Recommended: keep them
    separate — `.18` is ready for its review round and this one waits on
    limbs 1–4* [Inferred]. Merging would retire `.18`'s reviews.
@@ -241,7 +267,7 @@ and what was done:
 
 | Finding | Severity | Disposition |
 |---|---|---|
-| R1 — the restatement check was much weaker than claimed: it found literals, not which row they belong to; 16 of the reviewer's 18 wrong versions survived | revise | Fixed. A third check runs the observer's own code over files built from the fields and compares sources and items; each row's heading, level, source and key are now bound behaviourally or structurally. All 17 wrong versions still applicable are in `--selftest` and caught. Both overclaiming paragraphs are rewritten to say what is and is not proved. |
+| R1 — the restatement check was much weaker than claimed: it found literals, not which row they belong to; 16 of the reviewer's 18 wrong versions survived | revise | Fixed. A third check runs the observer's own code over files built from the fields and compares sources and items; each row's heading, level, source and key are now bound behaviourally or structurally. All 17 wrong versions still applicable are in `--selftest` and caught. Both overclaiming paragraphs are rewritten to say what is and is not proved. **Corrected 2026-09-27:** "each row's heading, level, source and key are now bound" was false. The shape and key-form probes ran once per shape and once per form, and extra fields were accepted, so round 2 found 8 wrong versions that passed (its D1). See round 2 below. |
 | R2 — container-shape sentences looser than the code | revise | Fixed. Every shape sentence names each failure the code raises and what it ignores; the two-heading reading and the ordinal test are stated as the code does them. Each clause the code exercises has a probe. |
 | R3 — rules in the code that no field stated | revise | Fixed. Per-project rules the fields missed are added: duplicate keys, leading-label failures and key normalisation. Rules every project shares are listed in a new `sharedReadingRules` sentence, and the opening sentence now says those stay in code. |
 | R4 — the delta misdescribed the pillar-link rule | revise | Fixed. Links are read always, after the table; two different roots for one pillar make it Unknown. Stated in the entry and the delta, and probed. |
@@ -264,3 +290,17 @@ answer is quoted instead). Question 3, question 8, question 9, the delta's
 warrant, the brief's criterion 7 and the ledger's M15 row now name which
 column each quotation comes from. These edits retire any review of the
 previous bytes.
+
+Round 2: `docs/reviews/R-DOV24-LOADED-PROFILE-AMENDMENT-2-RAW.md`, a
+fresh-context confirmation review of commit `1395d44`. Verdict: REVISE.
+Every finding and what was done (2026-09-27):
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| D1 — each row's container shape and key form were not bound; 8 wrong versions survived (N2, N3, N17, N22, X3, X4–X6) | revise | Fixed. The shape and key-form probes now run for every row, not once per shape or form. The witness predicts each row's key from its own key sentence for every shape, including the tree and TOML rows, and each row's context where the code sets one. A row may carry only the fields its shape and key form read, and needs every one of them; a field no shape reads is refused. All 8 survivors, and further structural and sentence-swap wrong versions, are in `--selftest` and caught (223 predicates). The round-1 R1 disposition above carries a dated correction. |
+| D2 — the manifest and observation digests cannot show `classGrammar`, `containerShapes` or `sourceGrammarSemantics` right | revise | Fixed. Neither the observation code nor the manifest code uses the extraction code, so the packet, the delta and question 2 no longer call those digests the proof for the three fields. The entry's scope sentence now also requires every source's extracted items to be reproduced. The present evidence is named — the builder's behaviour check — and whether slice 5's first step will compare extracted items is marked [Unknown]. |
+| D3 — question 3 and the delta's warrant treated the recorder's "What it means" column as the owner's words | revise | Already fixed before this review landed, in the attribution sweep recorded above, in a later commit than the one reviewed. Question 3 names the sentence as the recorder's reading and asks whether either reading misstates your answer; the warrant quotes only the "Ruled" cell as your words. Checked again for this round; no further change. |
+| D4 — the landing order and question 8 quoted option text and a recorder heading as your answer | note | Fixed. The landing order quotes your verbatim answer, "Readiness order, lane B last (Recommended)", with the arrows cited as the option it selected and the record's own question ("lane B and the three spec-touching packages"). Question 8 cites P-72's "Ruled" cell and names the joining of the two amendments as the recorder's reading. The delta and brief are aligned. |
+| D5 — four behaviours of the code were not stated | note | Fixed. Headings are ATX headings at column 0, so an indented line is not a heading; the design key is trimmed and NFC-normalized and the cell must be one whole link; the TOML value is trimmed and NFC-normalized, a backslash escape is not decoded, and the value is the item's context; catalog items' context is the heading they were read under, and topology items' context is the ordinal. Each is checked by a probe or by the witness's predicted context. The same sentences, word for word, are in N8's specification amendment, and the key-form names now match N8's. |
+
+These edits retire any review of the previous bytes.

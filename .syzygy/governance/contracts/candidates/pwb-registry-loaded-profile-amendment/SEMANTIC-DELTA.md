@@ -25,9 +25,11 @@
   edits the same subject (currency bounds and the briefing ceiling). The
   builder applies `.18`'s diff and then this one while `.18` is
   unperformed, and this diff alone once `.18` has been applied. That order
-  is a constraint of this drafting, not an owner ruling: the owner has
-  ruled only `.21` → `.30` → `.22` → lane B (the 2026-09-23 owner-values
-  record, §6).
+  is a constraint of this drafting, not an owner ruling. Asked "Landing
+  order for lane B and the three spec-touching packages?", the owner
+  answered "Readiness order, lane B last (Recommended)" (the 2026-09-23
+  owner-values record, §6); the option it selected read `.21` → `.30` →
+  `.22` → lane B, and it orders those four packages only.
   The single row of `PWB-LOADED-PROFILE-AMENDMENT-MANIFEST.txt` hashes the
   result.
 
@@ -82,8 +84,8 @@ existing keys are byte-for-byte unchanged.
 | `pillars` | The five pillar keys with their display labels, in order. |
 | `sourcePopulation` | The index chain depth (3), the pillar index basename, the five source rules, the two tree populations with their path patterns and companions, and the eight bindings from a file to the classes it feeds. |
 | `containerShapes` | Nine named shapes a class's items can take in a source — a heading section, a numbered list, a table's rows, a Git tree path, one TOML field and so on — each with one sentence saying exactly what it reads and what fails. |
-| `classGrammar` | Fifteen rows. Each names one class, its source file, the heading(s) it reads under as `heading` objects (with `level` where the code fixes one; the catalog row takes its texts from `fixedCatalogKeys` by `textsFrom`), one container shape, and what becomes the item's key and how a key fails. |
-| `sourceGrammarSemantics` | Six sentences: `scope` (the fields restate today's per-project grammar and must reproduce today's digests; the shared rules stay in code); `headingMatch` (what a heading is and how a declared one matches or fails); `containerShape` (one shape per row, and any failure makes the whole source Unknown); `itemKey` (duplicate keys fail); `sharedReadingRules` (the reading rules every project shares — fences, list items, bold spans, tables, index links, tree-rule precedence — which no profile sets); and `missingField` (a loader refuses a missing field rather than using built-in values). |
+| `classGrammar` | Fifteen rows. Each names one class, its source file, the heading(s) it reads under as `heading` objects (with `level` where the code fixes one; the catalog row takes its texts from `fixedCatalogKeys` by `textsFrom`), one container shape, and what becomes the item's key, how a key fails and, where the code sets one, the item's context (the catalog heading, the topology ordinal, the TOML value). |
+| `sourceGrammarSemantics` | Six sentences: `scope` (the fields restate today's per-project grammar and must reproduce today's manifest and observation digests and, for every source, the items extraction reads from it; the shared rules stay in code); `headingMatch` (what a heading is — an ATX heading written at column 0, so an indented line is never one — and how a declared one matches or fails); `containerShape` (one shape per row, and any failure makes the whole source Unknown); `itemKey` (duplicate keys fail); `sharedReadingRules` (the reading rules every project shares — fences, list items, bold spans, tables, index links, tree-rule precedence — which no profile sets); and `missingField` (a loader refuses a missing field rather than using built-in values). |
 
 **2. The version bump.** `registryVersion` and `observerVersion` both move
 from `1.2.0-candidate.1` (the `.18` value) to `1.3.0-candidate.1`, a minor
@@ -112,9 +114,11 @@ the packet's first open question.
   (3) The observer's own code, run under Node over files built from the
   fields alone, derives the source list the fields predict (depth, root
   index, pillars, sources) and reads the items they predict (class, key,
-  text); 79 probes each vary one file and check one clause's outcome and
-  that the sentence states it. `--selftest` breaks the fields and the
-  checks 190 ways, every one caught. What is **not** proved: a clause no
+  text and, where the code sets one, context); 92 probes each vary one
+  file and check one clause's outcome and that the sentence states it.
+  The probes run for every row, and a row carrying a field its shape and
+  key form do not read is refused. `--selftest` breaks the fields and the
+  checks 223 ways, every one caught. What is **not** proved: a clause no
   probe exercises is checked only by its pinned wording, and no check can
   show the code has no rule the fields omit.
 - The six existing grammar keys, `resourceLimits` and its semantics, the
@@ -145,13 +149,13 @@ misstates it.
 Doctrine: `VIS-4` reserves the act to the owner; `VIS-2` requires a source
 the grammar cannot read to stay Unknown, which the `containerShape` and
 `missingField` sentences state; `VIS-7` requires the result to be
-deterministic, which the `scope` sentence's digest-reproduction duty
-serves.
+deterministic, which the `scope` sentence's reproduction duty serves.
 
 Method: `NORMATIVE-CHANGE-WORKFLOW.md` and `SEMANTIC-DELTA-TEMPLATE.md`
 under `.syzygy/governance/contracts/candidates/policy-candidates/`. This
-delta is at step 3: one independent review round returned REVISE, and this
-revision repairs its findings. The revision has not been reviewed.
+delta is at step 3: two independent review rounds each returned REVISE,
+and this revision repairs the findings of both. The revision has not been
+reviewed.
 
 ## Evidence or decision basis
 
@@ -169,9 +173,17 @@ revision repairs its findings. The revision has not been reviewed.
 - [Inferred] That the fields plus the shared rules describe today's reader
   completely. The behaviour check shows the code reading the profile-built
   files as the fields say, and each probed clause holding; it does not
-  prove the code has no rule the fields omit. Limb 1's regression oracle
-  (reproduce today's manifest and observation digests from the profile) is
-  the proof, and it does not exist yet.
+  prove the code has no rule the fields omit.
+- [Observed] Neither `project-shape-observation.ts` nor
+  `project-shape-manifest.ts` imports `project-shape-extraction.ts`. So
+  [Inferred] today's manifest and observation digests depend only on
+  `rootIndex`, `pillars` and `sourcePopulation`, and reproducing them says
+  nothing about `classGrammar`, `containerShapes` or
+  `sourceGrammarSemantics`. For those three keys the only witness today is
+  the builder's behaviour check; that is why the `scope` sentence also
+  requires every source's extracted items to be reproduced.
+- [Unknown] Whether limb 1's regression oracle will compare the extracted
+  items as well as the two digests. It is not built.
 - [Observed] The overlap with M15: the ruling for P-82 Q4 puts "the
   root-independence flags" in M15's delta to `PWB-REQ-002` (`.15.1`). This
   revision adds no such flag; the one clause touching it, the last of
