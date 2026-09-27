@@ -126,17 +126,21 @@ the packet's first open question.
 
 ## Warrant
 
-P-74 in the ruling record, arm A: "Q2 one registry-entry amendment act
-before slice 5's fifth limb only, the first four limbs thread a profile
-parameter with current constants as default", and in the same row: "Slice
-5's fifth limb waits for the registry act" [Observed, quoted from row P-74].
+P-74 in the ruling record, arm A, the owner's answer ("Ruled" column):
+"Q2 one registry-entry amendment act before slice 5's fifth limb only, the
+first four limbs thread a profile parameter with current constants as
+default" [Observed, quoted from row P-74]. The same row's "What it means"
+column, which is the recorder's gloss and not the owner's words, adds
+"Slice 5's fifth limb waits for the registry act" [Observed].
 
-The same row also says "The consent record, the registry entry and
+That gloss column also says "The consent record, the registry entry and
 PWB-REQ-005 are edited on no arm." Read literally that forbids this
-package's subject. Two readings reconcile it with Q2: the sentence covers
-the other slices' arms only, or "edited" means changed in place outside an
-act, which a superseding act is not [Inferred]. The owner decides the
-reading — packet question 3.
+package's subject, which the owner's Q2 answer puts under an act. Two
+readings reconcile the gloss with the answer: the sentence covers the other
+slices' arms only, or "edited" means changed in place outside an act, which
+a superseding act is not [Inferred]. Where they differ the draft follows
+the answer; packet question 3 asks the owner whether either reading
+misstates it.
 
 Doctrine: `VIS-4` reserves the act to the owner; `VIS-2` requires a source
 the grammar cannot read to stay Unknown, which the `containerShape` and

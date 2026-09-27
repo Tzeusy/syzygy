@@ -69,9 +69,12 @@ runs the observer's TypeScript directly.
    No 64-hex digest beside an act phrase; nothing labelled accepted or in
    force.
 7. **Are the open questions honest?** In particular question 3 (both
-   readings of P-74's "edited on no arm"), question 9 (the overlap with
+   readings of the "edited on no arm" sentence in P-74's "What it means"
+   column), question 9 (the overlap with
    M15's root-independence design) and the landing-order section: is any
    order attributed to the owner beyond `.21` → `.30` → `.22` → lane B?
+   Is anything presented as the owner's ruling that is not in a "Ruled"
+   (answer) cell — a "What it means" gloss or a recorder's heading?
 
 ## Out of scope
 

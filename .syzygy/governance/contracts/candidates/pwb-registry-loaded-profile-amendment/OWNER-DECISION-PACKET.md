@@ -152,21 +152,27 @@ Each has a recommendation; none is decided here.
    *Recommended: wait; perform this act only once limb 1 has proven the
    profile reproduces today's digests and the names match.* Counter-view:
    acting now fixes the names and lets limb 1 build against them.
-3. **How should P-74's sentence "The consent record, the registry entry
-   and PWB-REQ-005 are edited on no arm" be read?** Read literally it
-   forbids this package's subject, yet Q2 in the same row rules an act
-   over it. Two readings fit both:
-   - *Reading A:* the sentence covers the other slices' arms, and Q2's
-     act is the one exception.
+3. **Does a sentence in the ruling record's "What it means" column stop
+   this package?** Row P-74's "What it means" column says "The consent
+   record, the registry entry and PWB-REQ-005 are edited on no arm." That
+   column is the recorder's gloss, not your answer; your answer (the
+   "Ruled" column) is "Q2 one registry-entry amendment act before slice
+   5's fifth limb only, the first four limbs thread a profile parameter
+   with current constants as default". Read literally, the gloss forbids this
+   package's subject, which your Q2 answer puts under an act. Two readings
+   reconcile them:
+   - *Reading A:* the gloss covers the other slices' arms, and Q2's act is
+     the one exception.
    - *Reading B:* "edited" means changed in place outside an act. A new
      superseding act is not an edit — the act in force draws the same
-     line ("changes travel as a new act") — so the sentence and Q2 never
-     conflict. The same stock sentence appears in other rows (P-78: "The
-     registry entry is edited on no arm.").
+     line ("changes travel as a new act") — so the gloss and Q2 never
+     conflict. The same stock sentence appears in other rows' "What it
+     means" column (P-78: "The registry entry is edited on no arm.").
 
    Both let this package proceed; they differ on whether any *other* arm
-   may change the entry by act. *No recommendation* [Inferred]. Please
-   say which you meant.
+   may change the entry by act. Where the gloss and your answer differ,
+   the draft follows your answer. *No recommendation between the readings*
+   [Inferred]. Does either reading misstate what your Q2 answer meant?
 4. **Should `discoveryVersion` move?** It is left alone because discovery
    does not change. Counter-view: once limb 5 lands, discovery reads from
    the entry, and a new version marks that. *Recommended: leave it; bump
@@ -178,19 +184,26 @@ Each has a recommendation; none is decided here.
    Butlers' own words; writing them into a governance artifact is the
    point of the profile, but it also means every future Butlers heading
    edit needs an owner act. *Recommended: keep them; that cost is the one
-   the funnel's Q2 counter-argument named and you ruled past it.*
+   the funnel's Q2 counter-argument named, and your P-74 Q2 answer chose
+   the registry act anyway* [Inferred].
 7. **Does limb 5 need a plain continuation direction on top of this act?**
    `.18` needs one (`syzygy-dov.19`) because a registry amendment crosses
    an escalation trigger. *Recommended: yes, the same kind of short
    direction, given with or after this act.*
 8. **Should the `.18` and this amendment be merged into one act?** They
-   touch the same entry and would land close together. You ruled "one
-   registry act, not two" for `.18`'s two parts. *Recommended: keep them
+   touch the same entry and would land close together. Your P-72 Q2 answer
+   was to "mint `maxBriefingResponseBytes` under a superseding registry
+   act, the fold-in ruled now"; the ruling record's own cross-cutting
+   reading, headed "One registry act, not two", is what joins that with
+   P-69 Q2(a) as `.18` — the recorder's heading, not your words.
+   *Recommended: keep them
    separate — `.18` is ready for its review round and this one waits on
    limbs 1–4* [Inferred]. Merging would retire `.18`'s reviews.
 9. **Should this entry say anything about root independence before M15's
-   delta does?** You ruled (P-82 Q4) that M15's one delta to PWB-REQ-002
-   designs "the root-independence flags" (`.15.1`, after `.17`). M15's
+   delta does?** Your P-82 answer was "Q1 arm (b), draft the delta only"
+   and "Q4 design the root-independence flags in the same delta"; the
+   row's "What it means" column places that delta on PWB-REQ-002
+   (`.15.1`, after `.17`). M15's
    design calls the flag `rootIndexRequired`, set per tree population with
    the rule it came from. The first draft of this package added its own
    flag, `rootIndependent`, for the same idea; this revision removes it.
@@ -240,3 +253,14 @@ and what was done:
 | N3 — question 3 gave one reading | note | Fixed. Both readings are put to you, with no recommendation. |
 | N4 — the other open questions are genuine | note | No change needed. |
 | N5 — two ways of writing a heading level | note | Fixed. Every row writes its heading as a `heading` object, with `level` wherever the code fixes one; the catalog row names where its texts come from with `textsFrom`, and the level is range-checked in every row. |
+
+2026-09-27, after round 1 (no review round): an attribution sweep compared
+every sentence this package presents as your ruling with the answer cell
+("Ruled" column) of the ruling record. Three had quoted other text as your
+words: the "edited on no arm" sentence and "Slice 5's fifth limb waits for
+the registry act" (both from P-74's "What it means" column), and "one
+registry act, not two" (the record's cross-cutting heading; your P-72 Q2
+answer is quoted instead). Question 3, question 8, question 9, the delta's
+warrant, the brief's criterion 7 and the ledger's M15 row now name which
+column each quotation comes from. These edits retire any review of the
+previous bytes.

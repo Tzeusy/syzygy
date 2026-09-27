@@ -142,7 +142,7 @@ its place; the third keeps working, because it needs only the code.
 | `pwb-registry-currency-briefing-amendment/` (`syzygy-dov.18`) | Same subject. This package's diff is drafted on top of it, so its builder needs `.18` applied first — a drafting constraint, not an owner ruling. |
 | `pwb-self-observation-acts/` (`syzygy-dov.25`, PR #120) | Drafts a second registry entry; its packet asks whether to copy `.18`'s and this package's fields. Regenerated after this act. |
 | N8 container-shape amendment (`syzygy-u05.8`) | A specification amendment that would point at `containerShapes`; not yet on main. Its shape sentences are the same text as this package's. |
-| M15 pipeline-truthfulness delta (P-82, `.15.1`, after `.17`) | The owner ruled (P-82 Q4) that M15's delta to `PWB-REQ-002` designs the root-independence flags; M15's design names one, `rootIndexRequired`. This package adds no flag. The last clause of `sharedReadingRules` states today's root-blind tree enumeration; if M15's recommended arm is adopted, a later registry act replaces that clause. Packet question 9. |
+| M15 pipeline-truthfulness delta (P-82, `.15.1`, after `.17`) | The owner's P-82 Q4 answer: "design the root-independence flags in the same delta" (the row's "What it means" column places that delta on `PWB-REQ-002`); M15's design names one, `rootIndexRequired`. This package adds no flag. The last clause of `sharedReadingRules` states today's root-blind tree enumeration; if M15's recommended arm is adopted, a later registry act replaces that clause. Packet question 9. |
 
 The builder's composition check fails if any other candidate adds a patch
 to the subject.
