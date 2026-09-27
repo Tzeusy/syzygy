@@ -6,5 +6,5 @@
 f29a01f6a5725f4ac7085fa04a62de757fd16153d507ae5e415ae0b501fdc0a4  openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
 f8b66a710f9e3242f79b26b9c02eb4f44c55cd8368b517cd856da80b2ecbe1c5  openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
 6d39ea6f6111abaea32c74ce96c975ae53e077485f0ed8f7c97545e64d7ba295  openspec/changes/three-surface-poc-experience/design.md
-a27ed58081d14239b39a60abcf0817736fa25e896cb163f8c427081449e94296  openspec/changes/three-surface-poc-experience/proposal.md
+0650a6a3bc50158dc793802b9dcd40057b3199b3f7e9f8341a5bdc79cbea941a  openspec/changes/three-surface-poc-experience/proposal.md
 bb9112a55a1cf2afdd6911815e80fa645f517f8a4e8b1b262ecf7381be515410  openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
