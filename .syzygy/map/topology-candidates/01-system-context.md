@@ -4,12 +4,18 @@
 >
 > Rendering: Mermaid is the durable, renderable fallback chosen for this phase; an Excalidraw + SVG upgrade is a tracked follow-up.
 
+> Restyled 2026-09-28 for readability (no change of meaning); reviews 5–7 reviewed the prior bytes, and this restyle's review is recorded in [the topology restyle packet](../../governance/decisions/TOPOLOGY-TREE-RESTYLE.md).
+
 ## What this shows
 
-Syzygy in its world: the single owner, the machine clients that consume the
-same truth, the governed projects it observes and writes into, and the four
-classes of external authority it touches only through typed adapters or
-consented egress. Every arrow names what flows and under what authority.
+Syzygy in its world, where every arrow names what flows and under what
+authority.
+
+- **Who surrounds it:** the single owner, and the machine clients that
+  consume the same truth.
+- **What it governs:** the governed projects it observes and writes into.
+- **What it only reaches indirectly:** the four classes of external
+  authority it touches only through typed adapters or consented egress.
 
 ```mermaid
 flowchart TB
@@ -46,31 +52,48 @@ flowchart TB
 
 ## Authority and trust boundaries
 
+Three SEC boundaries apply (SEC-1 around Syzygy, SEC-2 around
+owner-controlled infrastructure, SEC-4 per repository), typed authority
+decides which external system answers what, and the workers that write code
+sit outside Syzygy.
+
 - **SEC-1 boundary** (around Syzygy): every endpoint authenticated by client
-  class; loopback location is never identity. Detailed in `07-client-trust-boundaries.md`.
+  class; loopback location is never identity.
+  - Detailed in `07-client-trust-boundaries.md`.
 - **SEC-2 boundary** (owner-controlled infrastructure): governed-project
   content crosses it only under explicit, recorded, per-project consent
-  naming provider and content classes. Model providers are such services.
-- **SEC-4 boundary** (per repository): no consent, no observation — an
-  unconsented repository renders Unknown, never an empty graph.
-- **Typed authority** [Observed: architecture.md]: the forge answers version
-  history; the scheduler answers work lifecycle (after materialization); CI
-  and runtime answer what exists; none answers intent. Effects on all of
-  them flow only through explicitly authorized adapters (`08-adapter-external-systems.md`).
-- Workers/actuators (the agent toolchain that turns work into code) sit
-  **outside Syzygy's body** [Observed: vision.md]: work-to-code and
-  code-to-deployment belong to the orchestration toolchain.
+  naming provider and content classes.
+  - Model providers are such services.
+- **SEC-4 boundary** (per repository): no consent, no observation.
+  - An unconsented repository renders Unknown, never an empty graph.
+- **Typed authority** [Observed: architecture.md]: each external authority
+  answers its own question; none answers intent.
+  - The forge answers version history.
+  - The scheduler answers work lifecycle (after materialization).
+  - CI and runtime answer what exists.
+  - Effects on all of them flow only through explicitly authorized adapters
+    (`08-adapter-external-systems.md`).
+- **Workers/actuators sit outside Syzygy's body** [Observed: vision.md]:
+  the agent toolchain that turns work into code is not part of Syzygy.
+  - Work-to-code and code-to-deployment belong to the orchestration
+    toolchain.
 
 ## [target] vs already true
 
+Syzygy itself is target; the substrate tools and this repository's
+governance plane already exist.
+
 - **[target]:** Syzygy itself — kernel, surfaces, endpoints, adapters, and
-  every arrow into or out of the Syzygy box. No implementation exists; no
-  stack is chosen [Observed: repo state; v1.md].
-- **[Observed] today:** the substrate tools exist and are designated initial
-  realizations (Beads, git/forge, OpenSpec, the `/th-*` agent toolchain)
-  [Observed: doctrine README glossary]; this repository already carries a
-  `.syzygy/` governance plane and an initialized Beads DB.
-- **[Inferred]:** the placement of the scheduler inside owner infrastructure
-  reflects the current local-first Beads substrate; a remote scheduler would
-  cross the SEC-2 boundary and require consent like any remote backing
-  dependency.
+  every arrow into or out of the Syzygy box.
+  - No implementation exists; no stack is chosen
+    [Observed: repo state; v1.md].
+- **[Observed] today:**
+  - The substrate tools exist and are designated initial realizations
+    (Beads, git/forge, OpenSpec, the `/th-*` agent toolchain)
+    [Observed: doctrine README glossary].
+  - This repository already carries a `.syzygy/` governance plane and an
+    initialized Beads DB.
+- **[Inferred]:** the placement of the scheduler inside owner
+  infrastructure reflects the current local-first Beads substrate.
+  - A remote scheduler would cross the SEC-2 boundary and require consent
+    like any remote backing dependency.

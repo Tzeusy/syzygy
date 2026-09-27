@@ -4,12 +4,20 @@
 >
 > Rendering: Mermaid is the durable, renderable fallback chosen for this phase; an Excalidraw + SVG upgrade is a tracked follow-up.
 
+> Restyled 2026-09-28 for readability (no change of meaning); reviews 5–7 reviewed the prior bytes, and this restyle's review is recorded in [the topology restyle packet](../../governance/decisions/TOPOLOGY-TREE-RESTYLE.md).
+
 ## What this shows
 
-How the owner's workspace relates to governed Projects, how each Project is
-composed of exactly one governance root plus declared observed-source
-repositories, where consent records live, and how "nesting" is realized as
-declared relations between whole Projects — never sub-roots.
+Each governed Project is one governance root plus declared observed-source
+repositories, and "nesting" is declared relations between whole Projects —
+never sub-roots.
+
+- **Workspace:** how the owner's workspace relates to governed Projects.
+- **Composition:** each Project is exactly one governance root plus declared
+  observed-source repositories.
+- **Consent:** where consent records live.
+- **Nesting:** realized as declared relations between whole Projects, never
+  sub-roots.
 
 ```mermaid
 flowchart TB
@@ -40,32 +48,44 @@ flowchart TB
 
 ## Authority and ownership boundaries
 
+A Project has one root, consent attaches to each (Project, repository) pair,
+the workspace manifest never holds truth, and nesting is composition by
+declaration.
+
 - **The one-root invariant** [Observed: architecture.md; RFC1-1]: a Project
   has exactly one governance root — the repository holding its single
-  `openspec/**` + `.syzygy/**` plane. Zero or two roots is a contradiction
-  routed to the owner, never silently repaired (RFC3-4). A `.syzygy/`
-  directory anywhere but a repository root designates nothing (RFC3-29).
+  `openspec/**` + `.syzygy/**` plane.
+  - Zero or two roots is a contradiction routed to the owner, never silently
+    repaired (RFC3-4).
+  - A `.syzygy/` directory anywhere but a repository root designates nothing
+    (RFC3-29).
 - **Consent is per pair** [Observed: RFC3-7/30]: role and consent attach to
-  the *(Project, repository)* pair. One repository may be its own Project's
-  root and simultaneously an observed source of another Project — under
-  that Project's own consent, read-only including its plane.
+  the *(Project, repository)* pair.
+  - One repository may be its own Project's root and simultaneously an
+    observed source of another Project — under that Project's own consent,
+    read-only including its plane.
 - **Workspace manifest is never truth** [Observed: SDR-29/30; RFC3-12]:
-  deleting it changes what is rendered, never any project's state; portfolio
-  truth is derived from the projects' own declarations (SDR-28).
+  deleting it changes what is rendered, never any project's state.
+  - Portfolio truth is derived from the projects' own declarations (SDR-28).
 - **Nesting is composition by declaration** [Observed: RFC3-31]: a
   "subproject" is a whole governed Project; recursion lives in rendering.
-  A parent may never hold authoritative state about a child's internals,
-  act on its behalf, or aggregate a child's Unknowns into green (RFC3-32).
+  - A parent may never hold authoritative state about a child's internals,
+    act on its behalf, or aggregate a child's Unknowns into green (RFC3-32).
 
 ## [target] vs already true
 
+The machinery drawn here is target. Today only this repository's
+governance-root shape exists; the generalization to the owner's portfolio is
+inferred.
+
 - **[target]:** the workspace manifest, consent-record machinery, asymmetric
-  relation rendering, and all resolution behavior — RFC 0003 is a draft
-  contract; nothing enforces it yet.
+  relation rendering, and all resolution behavior.
+  - RFC 0003 is a draft contract; nothing enforces it yet.
 - **[Observed] today:** this repository is itself shaped as a governance
-  root (`.syzygy/governance/` with doctrine and decisions exists);
-  `project.yaml`, consent records, and `relations[]` do not exist anywhere
-  yet.
+  root (`.syzygy/governance/` with doctrine and decisions exists).
+  - `project.yaml`, consent records, and `relations[]` do not exist anywhere
+    yet.
 - **[Inferred]:** the two-project picture generalizes to the owner's
-  portfolio; multi-workspace and multi-user manifests are deferred with
-  multi-user (v1.md).
+  portfolio.
+  - Multi-workspace and multi-user manifests are deferred with multi-user
+    (v1.md).

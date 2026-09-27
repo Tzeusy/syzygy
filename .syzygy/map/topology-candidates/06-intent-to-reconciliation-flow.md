@@ -4,13 +4,18 @@
 >
 > Rendering: Mermaid is the durable, renderable fallback chosen for this phase; an Excalidraw + SVG upgrade is a tracked follow-up.
 
+> Restyled 2026-09-28 for readability (no change of meaning); reviews 5–7 reviewed the prior bytes, and this restyle's review is recorded in [the topology restyle packet](../../governance/decisions/TOPOLOGY-TREE-RESTYLE.md).
+
 ## What this shows
 
-The full loop from adopted intent to a reconciliation verdict, with every
-human-triggered gate marked (hexagons), the one-way materialization door,
-and the post-merge reconciliation chain (RFC2-18) — with its four
-separately-named, separately-routed outcomes — that no substrate provides
-today. The whole loop is human-triggered; nothing here runs autonomously.
+The full loop from adopted intent to a reconciliation verdict is
+human-triggered throughout; nothing here runs autonomously.
+
+- **Human-triggered gates** are marked as hexagons.
+- **The one-way materialization door** is drawn.
+- **The post-merge reconciliation chain** (RFC2-18), which no substrate
+  provides today, ends in four separately-named, separately-routed
+  outcomes.
 
 ```mermaid
 flowchart TB
@@ -58,45 +63,60 @@ flowchart TB
 
 ## Authority boundaries and gates
 
+Human gates sit on the loop, the two negative outcomes never merge,
+authority over planned work passes once at materialization, and execution
+never proves intent.
+
 - **Human gates (hexagons):** gap confirmation, proposal approval, the
   propagate/observation trigger, the owner's adjudication of Contradictions,
-  and the owner's handling of spec-indictments — two distinct owner acts, not
-  one. Autonomy beyond VIS-4's bounds is licensed only through the mechanism
-  VIS-4 names.
-- **The two negative outcomes never merge** [Observed: RFC2-17/18]:
-  `unsatisfied` means the warranted intent revision is not satisfied and
-  nothing is co-unsatisfiable — that is a **gap**, so it opens one or routes
-  upward as a spec-indictment. `contradiction-raised` means the evaluation
-  found co-unsatisfiable authoritative claims — a **Contradiction** is minted,
-  the conclusion renders Unknown (reason #8, `suspended` tier), and its only
-  lawful exit is an `adjudicates` Decision: never resolved by precedence,
-  never auto-scheduled into work, and specifically **never routed into work
-  through a gap opened on its behalf** (RFC1-21). The two are separately
-  named, separately counted, and separately routed; no surface, aggregate,
-  endpoint, count, or UI string may merge them (RFC2-17).
-- **Sequenced authority, no duplication** [Observed: RFC1-29]: before
-  materialization the approved Proposal in `.syzygy/work/**` answers "what
-  is the state of this planned work"; after it, the scheduler through its
-  typed adapter. The materialization record is immutable — later scheduler
-  divergence is a fact about the scheduler, never grounds to rewrite it.
+  and the owner's handling of spec-indictments.
+  - The last two are two distinct owner acts, not one.
+  - Autonomy beyond VIS-4's bounds is licensed only through the mechanism
+    VIS-4 names.
+- **The two negative outcomes never merge** [Observed: RFC2-17/18]: they are
+  separately named, separately counted, and separately routed.
+  - `unsatisfied` means the warranted intent revision is not satisfied and
+    nothing is co-unsatisfiable.
+    - That is a **gap**, so it opens one or routes upward as a
+      spec-indictment.
+  - `contradiction-raised` means the evaluation found co-unsatisfiable
+    authoritative claims.
+    - A **Contradiction** is minted, and the conclusion renders Unknown
+      (reason #8, `suspended` tier).
+    - Its only lawful exit is an `adjudicates` Decision: never resolved by
+      precedence, never auto-scheduled into work, and specifically **never
+      routed into work through a gap opened on its behalf** (RFC1-21).
+  - No surface, aggregate, endpoint, count, or UI string may merge them
+    (RFC2-17).
+- **Sequenced authority, no duplication** [Observed: RFC1-29]: one authority
+  answers "what is the state of this planned work" at a time.
+  - Before materialization: the approved Proposal in `.syzygy/work/**`.
+  - After it: the scheduler, through its typed adapter.
+  - The materialization record is immutable — later scheduler divergence is
+    a fact about the scheduler, never grounds to rewrite it.
 - **Execution never proves intent** [Observed: vision.md thesis; RFC1-22]:
-  merged and closed are execution states; the reconciliation verdict binds
-  to the *warranted* intent revision, so post-merge intent drift surfaces
-  as a new gap, not retroactive failure (RFC2-18).
+  merged and closed are execution states.
+  - The reconciliation verdict binds to the *warranted* intent revision, so
+    post-merge intent drift surfaces as a new gap, not retroactive failure
+    (RFC2-18).
 - **The closure fallacy is forbidden** [Observed: RFC2-20]: scheduler
-  closure never implies reconciled; scheduler-internal "reconciliation"
-  (state repair) never shares a field or count with this chain (RFC2-17).
+  closure never implies reconciled.
+  - Scheduler-internal "reconciliation" (state repair) never shares a field
+    or count with this chain (RFC2-17).
 
 ## [target] vs already true
 
-- **[target]:** the entire flow. V0 targets: absence surfacing, the
-  propagation proof-of-concept slice (one spec delta → one dispatched work
-  item), and honest "reconciliation evidence absent / Unknown" rendering
-  for merged work (SDR-12). V1 targets: gap computation and the computed
-  reconciliation evaluation.
+The entire flow is target; the reconciliation evaluation exists in no
+substrate today.
+
+- **[target]:** the entire flow.
+  - V0 targets: absence surfacing, the propagation proof-of-concept slice
+    (one spec delta → one dispatched work item), and honest "reconciliation
+    evidence absent / Unknown" rendering for merged work (SDR-12).
+  - V1 targets: gap computation and the computed reconciliation evaluation.
 - **[Observed] today:** the reconciliation evaluation exists nowhere in any
-  substrate — no object, no field, no convention (RFC 0002 Summary); the
-  chain is created by these drafts.
+  substrate — no object, no field, no convention (RFC 0002 Summary).
+  - The chain is created by these drafts.
 - **[Inferred]:** the wall of reconciliation-pending Unknowns on a
-  fleet-built project will be V0's most visible honest output; doctrine
-  classifies it as correct, not a defect (RFC2-19).
+  fleet-built project will be V0's most visible honest output.
+  - Doctrine classifies it as correct, not a defect (RFC2-19).

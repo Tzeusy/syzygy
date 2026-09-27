@@ -4,12 +4,17 @@
 >
 > Rendering: Mermaid is the durable, renderable fallback chosen for this phase; an Excalidraw + SVG upgrade is a tracked follow-up.
 
+> Restyled 2026-09-28 for readability (no change of meaning); reviews 5–7 reviewed the prior bytes, and this restyle's review is recorded in [the topology restyle packet](../../governance/decisions/TOPOLOGY-TREE-RESTYLE.md).
+
 ## What this shows
 
-The single semantic kernel — temporal project graph plus evaluation engine —
-and the four co-equal consumers projected from it: three human surfaces and
-the machine query plane. One evidence drawer fact set feeds all of them; no
-surface is ever independently authoritative.
+One semantic kernel computes truth, and four co-equal consumers project it;
+no surface is ever independently authoritative.
+
+- **The kernel:** temporal project graph plus evaluation engine.
+- **The consumers:** three human surfaces and the machine query plane.
+- **The shared input:** one evidence drawer fact set feeds all of them,
+  one per selection, evaluation and scenario context.
 
 ```mermaid
 flowchart TB
@@ -36,35 +41,45 @@ flowchart TB
 
 ## Authority boundaries
 
+Only the kernel computes truth; every projection, human or machine, shows
+the same facts for the same selection at one evaluation.
+
 - **The kernel is the only truth-computer** [Observed: architecture.md, "One
   kernel, three surfaces"]: surfaces render; they never adjudicate, never
-  pick winners among contradictions, never fork the shared definitions. The
-  owner ruled a single repository (monorepo) the constitutional realization
-  of this invariant.
+  pick winners among contradictions, never fork the shared definitions.
+  - The owner ruled a single repository (monorepo) the constitutional
+    realization of this invariant.
 - **The machine plane is co-equal, not secondary** [Observed: vision.md two
   first-class consumers; RFC6-13]: no endpoint-only facts, no UI-only facts.
-  Anything a surface renders is queryable and vice versa.
+  - Anything a surface renders is queryable and vice versa.
 - **One drawer** [Observed: RFC6-18]: two surfaces showing different
   evidence for one selection at one evaluation is a kernel defect, not a UI
-  inconsistency. Selection references use only kernel identities — never
-  file paths, scene handles, or row indices (RFC6-1).
+  inconsistency.
+  - Selection references use only kernel identities — never file paths,
+    scene handles, or row indices (RFC6-1).
 - **Rendering equivalence** [Observed: SDR-27; RFC6-22/23]: 3D, 2D, table,
-  and machine answers must agree on entities, edges, labels, tiers,
-  reasons, freshness, and counts over the same declared scope;
-  disagreement is release-blocking under the trust floor.
+  and machine answers must agree over the same declared scope.
+  - They agree on entities, edges, labels, tiers, reasons, freshness, and
+    counts.
+  - Disagreement is release-blocking under the trust floor.
 
 ## [target] vs already true
 
+Everything drawn is target; the surface charter, codenames and directory
+names are already fixed, and Orrery's historical scope is constitutional.
+
 - **[target]:** everything in the diagram — kernel, graph, evaluation
-  engine, drawer, all four projections. These are drafted contracts
-  (RFC 0001/0002/0006), not running systems.
+  engine, drawer, all four projections.
+  - These are drafted contracts (RFC 0001/0002/0006), not running systems.
 - **[Observed] today:** the surface charter and codenames are owner-ratified
-  decisions (SDR §1–2); the `.syzygy/` directory names (`intent/`, `work/`,
-  `map/`) are fixed by adopted doctrine, though only `governance/` is
-  populated in this repository.
+  decisions (SDR §1–2).
+  - The `.syzygy/` directory names (`intent/`, `work/`, `map/`) are fixed by
+    adopted doctrine, though only `governance/` is populated in this
+    repository.
 - **[Observed]:** "Orrery includes historical state" rests on owner
-  amendment **D1** (ratified 2026-08-01, applied to
-  `.syzygy/governance/doctrine/architecture.md`) — constitutional scope,
-  no longer conditional. The concrete historical interaction design (ghost
-  steps, milestone scenes, scrubber) remains a non-binding candidate bundle
-  behind its own approval (RFC9-41).
+  amendment **D1** — constitutional scope, no longer conditional.
+  - Source: D1, ratified 2026-08-01, applied to
+    `.syzygy/governance/doctrine/architecture.md`.
+  - The concrete historical interaction design (ghost steps, milestone
+    scenes, scrubber) remains a non-binding candidate bundle behind its own
+    approval (RFC9-41).

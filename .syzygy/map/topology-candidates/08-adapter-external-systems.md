@@ -4,13 +4,19 @@
 >
 > Rendering: Mermaid is the durable, renderable fallback chosen for this phase; an Excalidraw + SVG upgrade is a tracked follow-up.
 
+> Restyled 2026-09-28 for readability (no change of meaning); reviews 5–7 reviewed the prior bytes, and this restyle's review is recorded in [the topology restyle packet](../../governance/decisions/TOPOLOGY-TREE-RESTYLE.md).
+
 ## What this shows
 
-Every named adapter and observer of RFC 0004, the external authority each
-mediates, the direction of trust on each arrow, and (in the table) each
-one's authority boundary and degraded modes. All substrates are
-substitutable realizations of roles; substitution is a registry event that
-never rewrites history (RFC4-9).
+Every named adapter and observer of RFC 0004 mediates an external system
+under a stated authority boundary; all substrates are substitutable
+realizations of roles.
+
+- **The diagram:** each adapter or observer, the external authority it
+  mediates, and the direction of trust on each arrow.
+- **The table:** each one's authority boundary and degraded modes.
+- **Substitution** is a registry event that never rewrites history
+  (RFC4-9).
 
 ```mermaid
 flowchart LR
@@ -50,6 +56,9 @@ flowchart LR
 
 ## Per-adapter authority, trust direction, degraded modes
 
+Each row states what the adapter or observer answers, which way trust
+runs, and how it degrades.
+
 | Adapter / observer | Authority (answers only) | Trust direction | Degraded modes |
 |---|---|---|---|
 | **OpenSpec** (RFC4-10) | Requirement/scenario content + identity under the constitutional artifact contract — never intent adjudication, never status | Syzygy trusts artifact content as the external authority's; declares anchor stability class; continuity across edits [Unknown] | Unreadable artifact → source-unreachable; malformed artifact rendered as a fact; unresolvable anchor → Unknown, never rejection |
@@ -62,28 +71,37 @@ flowchart LR
 
 ## Cross-cutting rules
 
+Substrate vocabulary never impersonates kernel vocabulary, every fidelity
+loss is labelled, and Syzygy depends on no instrumentation.
+
 - **Substrate-term translation** [Observed: RFC4-6]: substrate vocabulary
-  never impersonates kernel vocabulary — the scheduler's own
-  "reconciliation" (state repair) never shares a field or count with
-  doctrinal reconciliation (RFC2-17); `bead_id` and PR numbers are
-  substrate-qualified aliases, never primary keys.
+  never impersonates kernel vocabulary.
+  - The scheduler's own "reconciliation" (state repair) never shares a field
+    or count with doctrinal reconciliation (RFC2-17).
+  - `bead_id` and PR numbers are substrate-qualified aliases, never primary
+    keys.
 - **The confident adapter is the enemy** [Inferred: RFC 0004 §2]: silent
   normalization, interpolation, or forgetting manufactures comprehensible
-  fiction; every fidelity loss carries a structured `reduced-fidelity`
-  label with declared granularity, cause, and upgrade path (RFC4-24).
+  fiction.
+  - Every fidelity loss carries a structured `reduced-fidelity` label with
+    declared granularity, cause, and upgrade path (RFC4-24).
 - **Derivation-first** [Observed: SDR-31; RFC4-28/29]: Syzygy is fully
-  truthful from existing toolchain traces alone; instrumentation is a named
-  co-evolution roadmap, never a dependency — a toolchain that emits nothing
-  is rendered honestly, not rejected.
+  truthful from existing toolchain traces alone.
+  - Instrumentation is a named co-evolution roadmap, never a dependency.
+  - A toolchain that emits nothing is rendered honestly, not rejected.
 
 ## [target] vs already true
+
+Every adapter and the registry are target; the external systems they would
+mediate already exist.
 
 - **[target]:** every adapter and the registry — none is implemented.
 - **[Observed] today:** the external systems exist (git, GitHub-class
   forges, Beads with its gc/prune behavior, OpenSpec CLI, CI toolchains,
-  model providers); the substrate audit findings adopted into RFC 0004
-  (no run identity, unretained gate artifacts, squash-merge history loss)
-  describe the currently installed toolchain.
+  model providers).
+  - The substrate audit findings adopted into RFC 0004 (no run identity,
+    unretained gate artifacts, squash-merge history loss) describe the
+    currently installed toolchain.
 - **[Inferred]:** adapter credentials and their SEC-5 storage discipline
   (RFC5-24) will constrain deployment shape before any stack choice is
   made.
