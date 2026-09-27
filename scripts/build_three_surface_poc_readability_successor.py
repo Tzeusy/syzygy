@@ -15,9 +15,11 @@ import hashlib
 import json
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
+from datetime import datetime, timezone
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -32,6 +34,9 @@ CANDIDATE = pathlib.Path(
 PROPOSED = CANDIDATE / "proposed"
 MANIFEST = CANDIDATE / "THREE-SURFACE-POC-READABILITY-SUCCESSOR-MANIFEST.txt"
 SEMANTIC_MAP = CANDIDATE / "SEMANTIC-MAP.json"
+SERIAL_APPLY_MUTATION = pathlib.Path(
+    "scripts/fixtures/three_surface_poc_readability_serial_apply_mutation.json"
+)
 SPEC = CHANGE / "specs/three-surface-poc-experience/spec.md"
 GOVERNING = CHANGE / "GOVERNING-DEPENDENCIES.md"
 
@@ -294,7 +299,138 @@ def check(
     return findings, proposed
 
 
-def selftest() -> int:
+def subject_digests(base: pathlib.Path) -> dict[str, str]:
+    return {
+        rel.as_posix(): sha256((base / rel).read_bytes())
+        for rel in SUBJECTS
+    }
+
+
+def load_serial_apply_mutation() -> dict[str, object]:
+    value = json.loads((ROOT / SERIAL_APPLY_MUTATION).read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise ValueError("serial-apply mutation fixture is not an object")
+    if value.get("sourceCommit") != "5db2853e1613d34940e6c33aeb7eaf39a04de98c":
+        raise ValueError("serial-apply mutation fixture lost its historical source commit")
+    return value
+
+
+def prepare_cli_scratch(
+    base: pathlib.Path,
+    mutation: dict[str, object],
+    *,
+    restore_serial_apply: bool,
+) -> None:
+    copied = [MANIFEST, SEMANTIC_MAP, SERIAL_APPLY_MUTATION]
+    copied.extend(
+        pathlib.Path("scripts") / name
+        for name in (
+            "build_capability_1_spec_dependencies.py",
+            "build_three_surface_poc_readability_successor.py",
+            "build_three_surface_poc_spec_dependencies.py",
+        )
+    )
+    copied.extend(SUBJECTS)
+    copied.extend(patch.relative_to(ROOT) for patch in patch_files())
+    for rel in copied:
+        target = base / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / rel, target)
+
+    corruption = mutation.get("patchCorruption")
+    if not isinstance(corruption, dict):
+        raise ValueError("serial-apply mutation fixture has no patch corruption")
+    patch_rel = pathlib.Path(str(corruption.get("file")))
+    patch_path = base / patch_rel
+    patch_text = patch_path.read_text(encoding="utf-8")
+    old = str(corruption.get("old"))
+    new = str(corruption.get("new"))
+    if patch_text.count(old) != 1:
+        raise ValueError("late-patch corruption fragment must occur exactly once")
+    patch_path.write_text(patch_text.replace(old, new, 1), encoding="utf-8")
+
+    if restore_serial_apply:
+        builder = base / "scripts/build_three_surface_poc_readability_successor.py"
+        source = builder.read_text(encoding="utf-8")
+        replacements = mutation.get("sourceReplacements")
+        if not isinstance(replacements, list) or not replacements:
+            raise ValueError("serial-apply mutation fixture has no source replacements")
+        for replacement in replacements:
+            if not isinstance(replacement, dict):
+                raise ValueError("serial-apply mutation replacement is not an object")
+            old = str(replacement.get("old"))
+            new = str(replacement.get("new"))
+            if source.count(old) != 1:
+                raise ValueError("serial-apply source fragment must occur exactly once")
+            source = source.replace(old, new, 1)
+        builder.write_text(source, encoding="utf-8")
+
+    subprocess.run(["git", "init", "--quiet"], cwd=base, check=True)
+
+
+def run_cli_apply_regression(
+    mutation: dict[str, object],
+    *,
+    restore_serial_apply: bool,
+) -> dict[str, object]:
+    with tempfile.TemporaryDirectory() as directory:
+        base = pathlib.Path(directory)
+        prepare_cli_scratch(
+            base,
+            mutation,
+            restore_serial_apply=restore_serial_apply,
+        )
+        before = subject_digests(base)
+        command = mutation.get("command")
+        if not isinstance(command, list) or not all(isinstance(arg, str) for arg in command):
+            raise ValueError("serial-apply mutation command is invalid")
+        done = subprocess.run(
+            [sys.executable, "scripts/build_three_surface_poc_readability_successor.py", *command],
+            cwd=base,
+            capture_output=True,
+            text=True,
+        )
+        after = subject_digests(base)
+    changed = [path for path in before if before[path] != after[path]]
+    predicate = done.returncode != 0 and not changed
+    return {
+        "exit": done.returncode,
+        "stdout": done.stdout,
+        "stderr": done.stderr,
+        "before": before,
+        "after": after,
+        "changedSubjects": changed,
+        "predicateHeld": predicate,
+    }
+
+
+def cli_apply_regression() -> tuple[bool, dict[str, object]]:
+    mutation = load_serial_apply_mutation()
+    current = run_cli_apply_regression(mutation, restore_serial_apply=False)
+    historical = run_cli_apply_regression(mutation, restore_serial_apply=True)
+    expected_historical_changes = [
+        GOVERNING.as_posix(),
+        (CHANGE / "design.md").as_posix(),
+        (CHANGE / "proposal.md").as_posix(),
+    ]
+    caught = (
+        current["exit"] == 2
+        and "unrecognized arguments: --apply --at-adoption" in str(current["stderr"])
+        and current["predicateHeld"] is True
+        and historical["exit"] == 1
+        and historical["predicateHeld"] is False
+        and historical["changedSubjects"] == expected_historical_changes
+    )
+    return caught, {
+        "mutation": mutation,
+        "current": current,
+        "historicalSerialApply": historical,
+        "expectedHistoricalChangedSubjects": expected_historical_changes,
+        "outcome": "killed" if caught else "survived",
+    }
+
+
+def selftest(evidence_path: pathlib.Path | None = None) -> int:
     findings, proposed = check()
     if findings or proposed is None:
         print("SELFTEST PRECONDITION FAILED:")
@@ -323,28 +459,8 @@ def selftest() -> int:
     semantic_map = json.loads((ROOT / SEMANTIC_MAP).read_text(encoding="utf-8"))
     semantic_map["requirements"] = semantic_map["requirements"][:-1]
     cases.append(("incomplete semantic map", bool(semantic_map_findings(semantic_map))))
-    before = current_bytes()
-    with tempfile.TemporaryDirectory() as directory:
-        corrupt = pathlib.Path(directory) / "spec.md.patch"
-        original = next(
-            patch for patch in patch_files() if patch_target(patch) == SPEC
-        ).read_text(encoding="utf-8")
-        target = "Group: Cross-cutting experience. Form: **invariant**."
-        if original.count(target) < 1:
-            raise AssertionError("late-patch mutation target is absent")
-        corrupt.write_text(
-            original.replace(target, "Group: Corrupted. Form: **invariant**.", 1),
-            encoding="utf-8",
-        )
-        late_patches = [
-            corrupt if patch_target(patch) == SPEC else patch
-            for patch in patch_files()
-        ]
-        late_findings, _ = check(late_patches)
-    cases.append((
-        "late patch failure leaves every signed subject byte-identical",
-        bool(late_findings) and current_bytes() == before,
-    ))
+    cli_caught, cli_evidence = cli_apply_regression()
+    cases.append(("public CLI refusal kills historical serial apply", cli_caught))
     cases.append(("deterministic regeneration", proposed_bytes() == proposed_bytes()))
     failed = [name for name, caught in cases if not caught]
     for name, caught in cases:
@@ -352,6 +468,41 @@ def selftest() -> int:
     if failed:
         print("SELFTEST FAILED: " + ", ".join(failed))
         return 1
+    if evidence_path is not None:
+        status = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout
+        if status:
+            print("SELFTEST EVIDENCE REFUSED: mutation run requires a clean committed tree")
+            return 1
+        commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        evidence = {
+            "kind": "three-surface-poc-readability-cli-rule-6-mutation-evidence",
+            "capturedAt": datetime.now(timezone.utc).isoformat(),
+            "testedCommit": commit,
+            "method": (
+                "The public CLI ran in two isolated scratch repositories with the exact "
+                "final-patch corruption recorded below. The current builder had to reject "
+                "the removed apply command with all six signed subjects byte-identical. "
+                "The exact serial writer fragments from sourceCommit were then restored; "
+                "that mutant had to change the first three subjects before the corrupted "
+                "final patch failed. No live signed subject was written."
+            ),
+            **cli_evidence,
+        }
+        evidence_path.parent.mkdir(parents=True, exist_ok=True)
+        evidence_path.write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
+        print(f"selftest evidence: {evidence_path}")
     print(f"selftest: {len(cases)} candidate predicates fail closed")
     return 0
 
@@ -371,9 +522,12 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--selftest", action="store_true")
     parser.add_argument("--diff", action="store_true")
     parser.add_argument("--write", action="store_true")
+    parser.add_argument("--selftest-evidence", type=pathlib.Path)
     args = parser.parse_args(argv)
+    if args.selftest_evidence is not None and not args.selftest:
+        parser.error("--selftest-evidence requires --selftest")
     if args.selftest:
-        return selftest()
+        return selftest(args.selftest_evidence)
     if args.write:
         return write()
     if args.diff:

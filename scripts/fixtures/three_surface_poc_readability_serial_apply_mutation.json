@@ -1,0 +1,28 @@
+{
+  "id": "historical-serial-apply-partial-write",
+  "sourceCommit": "5db2853e1613d34940e6c33aeb7eaf39a04de98c",
+  "file": "scripts/build_three_surface_poc_readability_successor.py",
+  "command": [
+    "--apply",
+    "--at-adoption"
+  ],
+  "patchCorruption": {
+    "file": ".syzygy/governance/contracts/candidates/three-surface-poc-readability-successor/proposed/spec.md.patch",
+    "old": "@@ -967,12 +981,13 @@\n\n Group: Cross-cutting experience. Form: **invariant**.",
+    "new": "@@ -967,12 +981,13 @@\n\n Group: Corrupted. Form: **invariant**."
+  },
+  "sourceReplacements": [
+    {
+      "old": "def main(argv: list[str]) -> int:\n",
+      "new": "def apply_at_adoption() -> int:\n    for patch in patch_files():\n        code, error = apply_patch(ROOT, patch)\n        if code != 0:\n            print(f\"refusing partial adoption: {patch.name}: {error}\")\n            return 1\n    print(\"applied proposed readability successor; owner-act recorder must finish atomically\")\n    return 0\n\n\ndef main(argv: list[str]) -> int:\n"
+    },
+    {
+      "old": "    parser.add_argument(\"--write\", action=\"store_true\")\n    parser.add_argument(\"--selftest-evidence\", type=pathlib.Path)\n    args = parser.parse_args(argv)\n",
+      "new": "    parser.add_argument(\"--write\", action=\"store_true\")\n    parser.add_argument(\"--apply\", action=\"store_true\")\n    parser.add_argument(\"--at-adoption\", action=\"store_true\")\n    parser.add_argument(\"--selftest-evidence\", type=pathlib.Path)\n    args = parser.parse_args(argv)\n"
+    },
+    {
+      "old": "    if args.write:\n        return write()\n    if args.diff:\n",
+      "new": "    if args.write:\n        return write()\n    if args.apply:\n        if not args.at_adoption:\n            print(\"refusing: --apply requires --at-adoption and an owner-act recorder\")\n            return 2\n        return apply_at_adoption()\n    if args.diff:\n"
+    }
+  ]
+}
