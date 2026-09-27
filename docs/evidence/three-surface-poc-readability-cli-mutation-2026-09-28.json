@@ -1,7 +1,7 @@
 {
   "kind": "three-surface-poc-readability-cli-rule-6-mutation-evidence",
-  "capturedAt": "2026-09-27T18:40:02.685906+00:00",
-  "testedCommit": "4c0e318a92078c8ac8f08610d523eede356545b4",
+  "capturedAt": "2026-09-27T18:49:33.150492+00:00",
+  "testedCommit": "071777f0480d48a30827fbaca5d435c131580695",
   "method": "The public CLI ran in two isolated scratch repositories with the exact final-patch corruption recorded below. The current builder had to reject the removed apply command with exit 2 and all six signed subjects byte-identical; stderr wording was not part of the oracle. Each recorded serial-writer new fragment was independently required to occur exactly once in sourceCommit before those historical fragments were restored; that mutant had to change the first three subjects before the corrupted final patch failed. No live signed subject was written.",
   "mutations": [
     {
