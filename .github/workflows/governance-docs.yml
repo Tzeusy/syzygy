@@ -161,6 +161,12 @@ jobs:
       - name: check_governance --selftest
         run: python3 scripts/check_governance.py --selftest
 
+      - name: understanding adoption exact-digest chain
+        run: python3 scripts/record_polaris_understanding_adoption.py --check
+
+      - name: understanding adoption chain selftests
+        run: python3 scripts/record_polaris_understanding_adoption.py --selftest
+
       - name: launch_gate_results --selftest        # historical Markdown records
         run: python3 scripts/launch_gate_results.py --selftest
 
