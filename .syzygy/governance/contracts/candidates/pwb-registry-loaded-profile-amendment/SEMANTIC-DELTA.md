@@ -22,9 +22,12 @@
 - **This diff is drafted on top of another candidate.** The `syzygy-dov.18`
   package at
   `.syzygy/governance/contracts/candidates/pwb-registry-currency-briefing-amendment/`
-  edits the same subject (currency bounds and the briefing ceiling) and
-  lands first. The builder applies `.18`'s diff and then this one while
-  `.18` is unperformed, and this diff alone once `.18` has been applied.
+  edits the same subject (currency bounds and the briefing ceiling). The
+  builder applies `.18`'s diff and then this one while `.18` is
+  unperformed, and this diff alone once `.18` has been applied. That order
+  is a constraint of this drafting, not an owner ruling: the owner has
+  ruled only `.21` → `.30` → `.22` → lane B (the 2026-09-23 owner-values
+  record, §6).
   The single row of `PWB-LOADED-PROFILE-AMENDMENT-MANIFEST.txt` hashes the
   result.
 
@@ -75,12 +78,12 @@ existing keys are byte-for-byte unchanged.
 
 | Key | What it says |
 |---|---|
-| `rootIndex` | The root index path, the `Pillar`/`Directory` table that declares pillar roots, and the link rule used when that table is absent. |
+| `rootIndex` | The root index path, the `Pillar`/`Directory` table that declares pillar roots, and the link rule. Links are read always, after the table: a link whose target (or, for a `README.md` target, its directory) ends in a pillar key also declares that pillar's root, and two different roots for one pillar — from the table, from links or from both — make that pillar Unknown. |
 | `pillars` | The five pillar keys with their display labels, in order. |
-| `sourcePopulation` | The index chain depth (3), the pillar index basename, the five source rules, the two tree populations with a `rootIndependent` flag each, and the eight bindings from a file to the classes it feeds. |
+| `sourcePopulation` | The index chain depth (3), the pillar index basename, the five source rules, the two tree populations with their path patterns and companions, and the eight bindings from a file to the classes it feeds. |
 | `containerShapes` | Nine named shapes a class's items can take in a source — a heading section, a numbered list, a table's rows, a Git tree path, one TOML field and so on — each with one sentence saying exactly what it reads and what fails. |
-| `classGrammar` | Fifteen rows. Each names one class, its source file, the heading(s) it reads under (with level where the code fixes one), one container shape, and what becomes the item's key. |
-| `sourceGrammarSemantics` | Five sentences: the fields restate today's grammar and must reproduce today's digests; how a heading matches; what a mismatched shape does; what `rootIndependent` means; and that a loader refuses a missing field rather than using built-in values. |
+| `classGrammar` | Fifteen rows. Each names one class, its source file, the heading(s) it reads under as `heading` objects (with `level` where the code fixes one; the catalog row takes its texts from `fixedCatalogKeys` by `textsFrom`), one container shape, and what becomes the item's key and how a key fails. |
+| `sourceGrammarSemantics` | Six sentences: `scope` (the fields restate today's per-project grammar and must reproduce today's digests; the shared rules stay in code); `headingMatch` (what a heading is and how a declared one matches or fails); `containerShape` (one shape per row, and any failure makes the whole source Unknown); `itemKey` (duplicate keys fail); `sharedReadingRules` (the reading rules every project shares — fences, list items, bold spans, tables, index links, tree-rule precedence — which no profile sets); and `missingField` (a loader refuses a missing field rather than using built-in values). |
 
 **2. The version bump.** `registryVersion` and `observerVersion` both move
 from `1.2.0-candidate.1` (the `.18` value) to `1.3.0-candidate.1`, a minor
@@ -101,11 +104,19 @@ the packet's first open question.
 ## What explicitly does NOT change
 
 - **No class, heading, source, shape or key is added to what the observer
-  reads.** `--check` proves the restatement two independent ways: every
-  heading text and catalog key appears in the specification's reader
-  definitions, and the root path, depth, pillars, source rules, bindings,
-  tree patterns and heading texts appear as the exact constant source
-  lines in the two TypeScript files.
+  reads.** `--check` tests the restatement three ways. (1) Every heading
+  text and catalog key is present in the specification's reader
+  definitions. (2) The root path, depth, pillar keys and labels, source
+  rules, bindings and tree patterns match the constants in the two
+  TypeScript files; heading texts are found there as quoted literals.
+  (3) The observer's own code, run under Node over files built from the
+  fields alone, derives the source list the fields predict (depth, root
+  index, pillars, sources) and reads the items they predict (class, key,
+  text); 79 probes each vary one file and check one clause's outcome and
+  that the sentence states it. `--selftest` breaks the fields and the
+  checks 190 ways, every one caught. What is **not** proved: a clause no
+  probe exercises is checked only by its pinned wording, and no check can
+  show the code has no rule the fields omit.
 - The six existing grammar keys, `resourceLimits` and its semantics, the
   entry's two governance-lifecycle strings, `discoveryVersion` and every
   other field are byte-identical after the diff (checked).
@@ -122,9 +133,10 @@ parameter with current constants as default", and in the same row: "Slice
 
 The same row also says "The consent record, the registry entry and
 PWB-REQ-005 are edited on no arm." Read literally that forbids this
-package's subject. This package reads the sentence as describing the other
-slices' arms, because Q2 in the same row rules an act over the registry
-entry [Inferred]. The owner decides the reading — packet question 3.
+package's subject. Two readings reconcile it with Q2: the sentence covers
+the other slices' arms only, or "edited" means changed in place outside an
+act, which a superseding act is not [Inferred]. The owner decides the
+reading — packet question 3.
 
 Doctrine: `VIS-4` reserves the act to the owner; `VIS-2` requires a source
 the grammar cannot read to stay Unknown, which the `containerShape` and
@@ -134,23 +146,33 @@ serves.
 
 Method: `NORMATIVE-CHANGE-WORKFLOW.md` and `SEMANTIC-DELTA-TEMPLATE.md`
 under `.syzygy/governance/contracts/candidates/policy-candidates/`. This
-delta stops at step 2: drafted, blast radius established. **No review has
-been run and no self-review was performed.**
+delta is at step 3: one independent review round returned REVISE, and this
+revision repairs its findings. The revision has not been reviewed.
 
 ## Evidence or decision basis
 
 - [Observed] The six current keys and the absence of the new ones, read
   from the subject.
-- [Observed] Every literal in the new fields against both witnesses:
+- [Observed] The new fields against all three witnesses:
   `scripts/build_pwb_registry_loaded_profile_amendment.py --check`
   re-derives this on every run.
-- [Observed] The four new key names occur in no tracked file today; see
-  `IMPACT-LEDGER.md`.
-- [Inferred] That the fifteen class-grammar rows describe today's reader
-  completely. The check proves each literal is present in the code; it
-  does not prove the code has no rule the rows omit. Limb 1's regression
-  oracle (reproduce today's manifest and observation digests from the
-  profile) is the proof, and it does not exist yet.
+- [Observed] The diff introduces 48 key names. 15 are plain words
+  (`key`, `text`, `path` and the like) that no sweep can separate. Of the
+  33 distinctive ones, 24 occur in no tracked file at the baseline; the
+  other nine are listed with their hits in `IMPACT-LEDGER.md`. Three of
+  those nine — `rootIndex`, `pillars`, `sourcePopulation` — are already
+  code identifiers; none of those reads the registry.
+- [Inferred] That the fields plus the shared rules describe today's reader
+  completely. The behaviour check shows the code reading the profile-built
+  files as the fields say, and each probed clause holding; it does not
+  prove the code has no rule the fields omit. Limb 1's regression oracle
+  (reproduce today's manifest and observation digests from the profile) is
+  the proof, and it does not exist yet.
+- [Observed] The overlap with M15: the ruling for P-82 Q4 puts "the
+  root-independence flags" in M15's delta to `PWB-REQ-002` (`.15.1`). This
+  revision adds no such flag; the one clause touching it, the last of
+  `sharedReadingRules`, states today's root-blind tree enumeration. Packet
+  question 9.
 - [Unknown] Whether these field names match the profile schema limb 1
   will write. That schema does not exist yet (packet question 2).
 
@@ -158,8 +180,8 @@ been run and no self-review was performed.**
 
 Introduced, in the subject's own bytes: `rootIndex`, `pillars`,
 `sourcePopulation`, `containerShapes`, `classGrammar`,
-`sourceGrammarSemantics`, and the nine container-shape names. Retired:
-none.
+`sourceGrammarSemantics`, their sub-keys (listed in `IMPACT-LEDGER.md`),
+and the nine container-shape names. Retired: none.
 
 ## Downstream impact
 
@@ -171,8 +193,12 @@ Enumerated in `IMPACT-LEDGER.md`. In one line each:
    the version bump.
 2. **Nothing reads the new fields on adoption alone.** Only slice 5's
    fifth limb reads them, and it is blocked on this act and on limbs 1–4.
-3. **The `.18` package must land first.** If `.18`'s patch changes, this
-   package's manifest is regenerated with `--write`.
+3. **This builder needs `.18` applied first** (a drafting constraint, not
+   an owner ruling). If `.18`'s patch changes, this package's manifest is
+   regenerated with `--write`.
+4. **M15's delta (`.15.1`) may later replace the last `sharedReadingRules`
+   clause** with a per-population root-independence flag; that would take
+   a further registry act.
 
 ## Migration and supersession plan
 
@@ -191,4 +217,7 @@ After it: a further superseding act, never an edit.
 
 ## Review
 
-None yet. `REVIEW-BRIEF.md` states what an independent reviewer is given.
+Round 1: `docs/reviews/R-DOV24-LOADED-PROFILE-AMENDMENT-RAW.md`, over
+commit `31305bc`. Verdict: REVISE (seven revise findings, five notes). The
+packet's "Review record" table dispositions every one. This revision has
+not been reviewed; `REVIEW-BRIEF.md` states what round 2 is given.
