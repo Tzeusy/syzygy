@@ -62,8 +62,9 @@ about the bytes they reviewed and are not updated to the successor wording.
 - A same-subject branch discovered before review serializes this candidate.
 
 There is no active direct POC-package PR at the baseline. Recheck immediately
-before review. Candidate checks are pure and repeatable; `--apply` is guarded
-for a later owner-act recorder only.
+before review. Candidate checks are pure and repeatable. The builder exposes no
+signed-byte write command; a later independently reviewed owner-act recorder
+must preflight and implement the complete six-row transaction atomically.
 
 ## Documentation and battery
 

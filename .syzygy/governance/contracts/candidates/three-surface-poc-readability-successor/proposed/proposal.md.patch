@@ -1,6 +1,6 @@
 --- a/openspec/changes/three-surface-poc-experience/proposal.md
 +++ b/openspec/changes/three-surface-poc-experience/proposal.md
-@@ -1,103 +1,85 @@
+@@ -1,103 +1,88 @@
  # Proposal — three-surface-poc-experience
 
 -> **Candidate specification.** Authoring was authorized by the owner's
@@ -12,7 +12,7 @@
 -> implementation of the surface-redesign work item `syzygy-z2b`.
 -> This change specifies a **bounded, non-release proof of concept**; it
 -> must never be represented as conforming, complete, or released.
-+The bounded POC serves one observed external project through three honest
++The bounded POC serves the configured Butlers repository through three honest
 +surfaces over one shared fact model:
 +
 +- **Polaris** — a long-form account of project intent.
@@ -77,7 +77,7 @@
 
 -## Capabilities
 +`three-surface-poc-experience` is one coherent capability: a redesigned,
-+owner-readable POC over one configured external project, with one acceptance
++owner-readable POC over the configured Butlers repository, with one acceptance
 +decision under SDR-37.
 
 -- **New Capabilities**:
@@ -105,10 +105,11 @@
 -Trajectory as a kanban-with-time visualization; Orrery as a
 -deterministic spatial code projection; one design language and an
 -accessibility floor across all three.
-+- **Observe code structure.** Read metadata, sizes, language classifications
-+  and digests at one exact Git revision. Never index file contents.
-+- **Observe work.** Read the registered bead-prefix population from the Beads
-+  Dolt database and record the exact Dolt revision.
++- **Observe Butlers code structure.** Read metadata, sizes, language
++  classifications and digests at one exact Git revision. Never index file
++  contents.
++- **Observe Butlers work.** Read the registered bead-prefix population from
++  the Butlers Beads Dolt database and record the exact Dolt revision.
 +- **Render one shared model.** Client-enhanced facts remain identical to the
 +  machine answer and to the script-less exact routes.
 +- **Present three surfaces.** Polaris explains intent; Trajectory presents
@@ -130,10 +131,11 @@
 -production reachability of the observed project remains Unknown
 -throughout.
 +- Production release or deployment.
-+- A second observed project or a general multi-repository product.
++- Any project beyond the configured Butlers repository, or a general
++  multi-repository product.
 +- A general 3D engine or repository-wide semantic indexing.
 +- Inferred mappings, edges or missing intent.
-+- Writes to the observed project.
++- Writes to the configured Butlers repository.
 +- Autonomous behavior or multi-user support.
 +- Any change to Capability 1's adopted behavior.
 
@@ -160,7 +162,8 @@
 -  hand-maintained specification-level list exists.
 +The work-item/test-evidence/live-runtime relationships stay Unknown until their
 +existing POC work lands authoritative artifacts. Production reachability of the
-+observed project also remains Unknown. This specification does not turn missing
++configured Butlers repository also remains Unknown. This specification does
++not turn missing
 +evidence into an empty or successful state.
 +
 +## Acceptance inputs
