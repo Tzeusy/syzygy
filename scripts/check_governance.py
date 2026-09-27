@@ -2656,7 +2656,12 @@ _activate_pwb_effect_amendment_act_copy_registries()
 #: SHA-256:". Not headings, so deliberately unmatched: a digest cited inline
 #: mid-sentence ("… (SHA-256 `<digest>`)", "verdict `CONFIRM`, sha256
 #: `<digest>`"), which names a review raw or container file, not an act
-#: argument (3 such in `pwb-effect-acts/OWNER-SIGNOFF-PACKET.md`). The label text is captured
+#: argument (3 such in `pwb-effect-acts/OWNER-SIGNOFF-PACKET.md`). Known
+#: live remainder: a third review (R-CG7E-BARE-DIGEST-CONFIRMATION-2) found
+#: 12 copies of act arguments with no sha256 label at all — `Act identity:`
+#: lines, table cells, a checksum row, one owner phrase — still masked by a
+#: correct copy elsewhere in the file. Shape-matching cannot reach them;
+#: bd `syzygy-wh1` tracks a structural check. The label text is captured
 #: (group 1) so each match is validated against *that file's own* declared
 #: digests (`allowed_bare`), never the whole corpus's recognized set — a
 #: different file's correct digest must not excuse this one, and this
