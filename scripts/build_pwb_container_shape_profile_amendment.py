@@ -4,9 +4,9 @@
 # ///
 """Build and verify the inert PWB container-shape profile amendment package.
 
-N8 (`syzygy-u05.8`), drafted under the 2026-09-26 sitting's §6 ruling. The
-amendment lets the observed project's profile declare each class's extraction
-rule from a closed vocabulary of nine container shapes and eight key forms,
+N8 (`syzygy-u05.8`), drafted on the owner's 2026-09-26 direction to draft
+(the sitting record, §6). The amendment lets the observed project's profile
+declare each class's grammar rows from a closed vocabulary of nine container shapes and eight key forms,
 and keeps today's Butlers grammar in the reader definitions as Butlers'
 declaration. It performs no owner act and writes no act record.
 
@@ -76,7 +76,12 @@ READER_END = "## ADDED Requirements"
 VOCABULARY_OPENING = "- A **container shape** is how the items of one grammar row sit inside its"
 KEYS_OPENING = "- An **item key form** says what becomes an item's key and how a key fails."
 PROFILE_OPENING = "- The **project profile** declares a project's extraction grammar as grammar"
-LOADED_OPENING = "- Until Butlers' profile is loaded, the observer reads Butlers by the grammar"
+LOADED_OPENING = "- Until the observer reads a profile for Butlers, it reads Butlers by the"
+DECLARED_ITEM_OPENING = "- A **declared item** "
+DECLARED_ITEM_END = "- Stable item identity is"
+#: The reader definitions from here to their end are not amended and must stay
+#: byte-identical to the current text.
+UNCHANGED_TAIL = "- The source-path denominator remains known"
 EXACT_OPENING = "- For every grammar, loaded or built-in, heading levels/text, top-level list"
 BUTLERS_OPENING = (
     "- Butlers' profile declares exactly the following extraction grammar, "
@@ -147,33 +152,38 @@ SHAPES = {
         "table, and inside it the field must be written once as field = \"value\" or "
         "field = 'value' with a non-empty value; no such table, a repeated table, a repeated "
         "field or a missing or empty value fails the source as malformed-toml; a line in any "
-        "other form, and the field inside any other table, is not read"),
+        "other form, and the field inside any other table, is not read; the value is trimmed "
+        "and NFC-normalized, a backslash escape in a double-quoted value is not decoded, and "
+        "the value becomes the item's context"),
 }
-#: The closed key-form vocabulary, spec name -> (the `syzygy-dov.24` form it
-#: restates, its sentence). The prefixed ordinal has no shared sentence there:
-#: each success row names its own "<prefix>:<one-based ordinal>".
+#: The closed key-form vocabulary, name -> (the `syzygy-dov.24` form of the
+#: same name, its sentence). The names are the same in both packages. The
+#: prefixed ordinal has no shared sentence there: each success row writes its
+#: own "<prefix>:<one-based ordinal>".
 KEY_FORMS = {
     "fixed": ("fixed", "the fixed key"),
-    "leading-bold": ("principle", (
+    "leading-bold": ("leading-bold", (
         "the item's leading bold span (** or __), NFC-normalized with whitespace runs "
         "collapsed; an item with no non-empty leading bold span fails the source as "
         "ambiguous-leading-label")),
-    "leading-bold-or-code": ("catalog", (
+    "leading-bold-or-code": ("leading-bold-or-code", (
         "the item's leading bold span, or else its leading code span, NFC-normalized with "
         "whitespace runs collapsed; the span must be non-empty and followed, after optional "
         "whitespace, by a hyphen-minus, en dash or em dash, or the source fails as "
-        "ambiguous-leading-label")),
+        "ambiguous-leading-label; each item's context is the text of the declared heading it "
+        "was read under")),
     "prefixed-ordinal": (None, (
         "<prefix>:<one-based ordinal>, with the prefix the grammar row declares")),
-    "first-cell-link-text": ("design", (
-        "the link text of the first cell, which must be one whole link [text](target), "
-        "optionally with a quoted title, with non-empty text, or the source fails as "
-        "malformed-row")),
-    "tree-key": ("tree", "the <key> segment of the tree population's pathPattern"),
-    "ordinal-and-label": ("topology", (
+    "first-cell-link-text": ("first-cell-link-text", (
+        "the link text of the first cell, trimmed and NFC-normalized; the cell must be one "
+        "whole link [text](target), optionally with a quoted title, with non-empty text, or "
+        "the source fails as malformed-row")),
+    "tree-key": ("tree-key", "the <key> segment of the tree population's pathPattern"),
+    "ordinal-and-label": ("ordinal-and-label", (
         "the heading's ordinal, a colon and the first cell's label; the first cell must be "
-        "exactly one bold span with a non-empty label, or the source fails as malformed-row")),
-    "link-target-basename": ("craft", (
+        "exactly one bold span with a non-empty label, or the source fails as malformed-row; "
+        "each item's context is the heading's ordinal")),
+    "link-target-basename": ("link-target-basename", (
         "the basename of the link target in the declared column, without its fragment; a "
         "table with no such column, or a cell in it that is not one whole link whose target "
         "has a non-empty last segment, fails the source as malformed-row")),
@@ -182,6 +192,58 @@ ENTRY = re.compile(r"^  - `([^`\n]+)`: ", re.MULTILINE)
 CLOSURES = {
     "vocabulary": "The vocabulary is closed at nine shapes, and no other shape is read.",
     "key-form": "The forms are closed at eight, and no other key form is read:",
+}
+#: Rules the vocabulary bullet states once for every shape.
+VOCABULARY_RULES = {
+    "what a sentence says": (
+        "Each shape's sentence says what the shape reads and how that reading fails."
+    ),
+    "ATX headings at column 0": (
+        "a heading is an ATX heading written at column 0 outside fenced code, so an "
+        "indented line is never a heading;"
+    ),
+    "heading level and text": (
+        "a declared heading with a level matches only at that level, and one without a "
+        "level at any level, always by exact text;"
+    ),
+    "missing heading": "a declared heading that is missing fails the source as missing-heading,",
+    "repeated heading": "and one that occurs more than once fails it as duplicate-key.",
+    "several headings": (
+        "When a list or table row declares more than one heading, the shape reads the "
+        "section under each in the order declared, as it reads one section, and the items "
+        "of all of them are that row's items."
+    ),
+    "recognition left to the observer": (
+        "How list markers, table rows, fenced code and TOML lines are recognized is shared "
+        "by every project and left to the observer:"
+    ),
+}
+#: How a grammar row names its key form.
+KEY_FORM_RULES = {
+    "stated by its sentence": (
+        "A grammar row states its key form by carrying that form's sentence above, word "
+        "for word, or, for `prefixed-ordinal`, by `<prefix>:<one-based ordinal>` with its "
+        "prefix written in;"
+    ),
+    "names are labels": "the form names are this text's labels for those sentences.",
+}
+#: The declared-item bullet: a class is read by its rule, made of rows, and
+#: each class has one category.
+DECLARED_ITEM_RULES = {
+    "read by the class's rule": (
+        "has one class from this closed set, read by that class's extraction rule (for a "
+        "loaded profile, the class's grammar rows):"
+    ),
+    "no other item": "No other prose, heading, link or file mints an item.",
+    "Heart and Soul classes": (
+        "Each class belongs to one category: `project-account-section`, `principle`, "
+        "`success-criterion` and `catalog-entry` to Heart and Soul;"
+    ),
+    "other categories": (
+        "`design-contract` to Legends and Lore; `baseline-spec` to Spec and Spine; "
+        "`topology-component` to Lay and Land; `craft-policy` to Craft and Care; and "
+        "`roster-identity` to roster identity."
+    ),
 }
 DUPLICATE_KEY = (
     "A key that occurs twice within one class of one source fails the source as "
@@ -214,8 +276,17 @@ PROFILE_RULES = {
 }
 LOADED_RULES = {
     "Butlers' interim default": (
-        "written below, as a built-in default; no other project has a built-in "
+        "grammar written below, as a built-in default; no other project has a "
+        "built-in default."
+    ),
+    "refused profile does not fall back": (
+        "A Butlers profile the loader refuses never returns Butlers to the built-in "
         "default."
+    ),
+    "project with no profile": (
+        "A project other than Butlers with no loaded profile has no extraction rules: "
+        "its classes' and categories' item denominators are Unknown, never zero, and "
+        "no item is minted for it."
     ),
     "loaded profile is the only source": (
         "Once a project's profile is loaded, it is the only source of that "
@@ -223,8 +294,9 @@ LOADED_RULES = {
     ),
     "a class with no row": "A class that the loaded profile gives no row,",
     "a row outside the closed sets": (
-        "or that has a row naming a shape or key form outside these closed sets "
-        "or lacking a parameter its shape or key form reads, is unreadable:"
+        "or that has a row naming a shape or stating a key form outside these "
+        "closed sets or lacking a parameter its shape or key form reads, is "
+        "unreadable:"
     ),
     "class and category Unknown": (
         "its item denominator and its category's item denominator are Unknown,"
@@ -260,12 +332,27 @@ REQUIREMENT_RULES = {
         "closed container shapes and item key forms"
     ),
     "body: Butlers default": (
-        "or, before Butlers' profile is loaded, the Butlers grammar written there"
+        "or, until the observer reads a profile for Butlers, the Butlers grammar "
+        "written there"
     ),
+    "body: one coverage state": (
+        "Each admitted item SHALL be in exactly one coverage state: modeled, "
+        "Unknown or contradicted."
+    ),
+    "body: unreadable source keeps identity": (
+        "A source whose item population cannot be read SHALL retain its source "
+        "identity while its item denominator renders Unknown."
+    ),
+    "label: case": "- **Case (sweep)**: enumerate the source population",
+    "label: observable": "- **Observable**: per-category identities",
+    "label: oracle": "- **Oracle**: two independent extractors",
+    "label: oracle independence": "- **Oracle independence**: the expected denominator",
+    "label: falsifier": "- **Falsifier**: the independent extractors disagree",
     "case: class with no row": "a loaded profile that gives one class no row,",
     "case: shape outside the vocabulary": (
-        "a loaded profile with a row that names a shape outside the vocabulary."
+        "a loaded profile with a row that names a shape outside the vocabulary,"
     ),
+    "case: refused Butlers profile": "and a Butlers profile the loader refuses.",
     "oracle: governing grammar": (
         "two independent extractors apply the literal grammar that governs the "
         "project"
@@ -284,7 +371,13 @@ REQUIREMENT_RULES = {
         "not declare"
     ),
     "falsifier: built-in fallback": (
-        "a loaded profile's missing or invalid rule is replaced by a built-in one."
+        "a loaded profile's missing or invalid rule is replaced by a built-in one,"
+    ),
+    "falsifier: refused profile falls back": (
+        "a refused Butlers profile returns Butlers to the built-in grammar,"
+    ),
+    "falsifier: project with no profile": (
+        "or a project with no profile reports a known item denominator."
     ),
 }
 RETIRED_REQUIREMENT_TEXT = "declared item discovered by the closed extraction rule"
@@ -292,28 +385,71 @@ SCENARIOS = (
     "#### Scenario: Butlers' profile reproduces the written grammar",
     "#### Scenario: Loaded profile gives one class no row",
     "#### Scenario: Loaded profile names a shape outside the vocabulary",
+    "#### Scenario: Refused Butlers profile does not fall back",
 )
+#: Each added scenario, word for word; its rules below name what each clause
+#: must keep.
+SCENARIO_TEXT = {
+    SCENARIOS[0]: (
+        "- **WHEN** Butlers is observed through its loaded project profile\n"
+        "- **THEN** each item is extracted through the container shape and item key\n"
+        "  form its grammar row declares\n"
+        "- **AND** the identities and D equal those produced by the grammar written in\n"
+        "  these reader definitions\n"
+    ),
+    SCENARIOS[1]: (
+        "- **WHEN** Butlers' loaded profile has no grammar row for one class\n"
+        "- **THEN** that class's item denominator and its category's item denominator\n"
+        "  render Unknown\n"
+        "- **AND** every source stays in the source-path population and no built-in\n"
+        "  rule reads the class\n"
+    ),
+    SCENARIOS[2]: (
+        "- **WHEN** a grammar row in Butlers' loaded profile names a container shape or\n"
+        "  item key form outside the closed sets\n"
+        "- **THEN** that class's item denominator and its category's item denominator\n"
+        "  render Unknown, and each source any of the class's rows names fails as a\n"
+        "  source in which a class fails\n"
+        "- **AND** no built-in or nearest shape reads the class in its place\n"
+    ),
+    SCENARIOS[3]: (
+        "- **WHEN** the loader refuses a profile declared for Butlers\n"
+        "- **THEN** every Butlers class's item denominator and its category's item\n"
+        "  denominator render Unknown\n"
+        "- **AND** every source stays in the source-path population and the grammar\n"
+        "  written in these reader definitions reads no class\n"
+    ),
+}
 SCENARIO_RULES = {
     SCENARIOS[0]: (
+        "Butlers is observed through its loaded project profile",
         "each item is extracted through the container shape and item key form "
         "its grammar row declares",
         "the identities and D equal those produced by the grammar written in "
         "these reader definitions",
     ),
     SCENARIOS[1]: (
-        "has no grammar row for one class",
+        "Butlers' loaded profile has no grammar row for one class",
         "that class's item denominator and its category's item denominator "
         "render Unknown",
         "every source stays in the source-path population and no built-in rule "
         "reads the class",
     ),
     SCENARIOS[2]: (
-        "names a container shape or item key form outside the closed sets",
+        "a grammar row in Butlers' loaded profile names a container shape or item "
+        "key form outside the closed sets",
         "that class's item denominator and its category's item denominator "
         "render Unknown",
         "each source any of the class's rows names fails as a source in which a "
         "class fails",
         "no built-in or nearest shape reads the class in its place",
+    ),
+    SCENARIOS[3]: (
+        "the loader refuses a profile declared for Butlers",
+        "every Butlers class's item denominator and its category's item "
+        "denominator render Unknown",
+        "every source stays in the source-path population and the grammar "
+        "written in these reader definitions reads no class",
     ),
 }
 CAPABILITY_ROW = (
@@ -512,7 +648,12 @@ def reader_findings(text: str, current: str) -> list[str]:
     for label, closure in CLOSURES.items():
         if label in bodies and fold(closure) not in fold(bodies[label]):
             findings.append(f"{label} bullet is not stated closed")
-    for label, rules in (("profile", PROFILE_RULES), ("loaded-profile", LOADED_RULES)):
+    for label, rules in (
+        ("vocabulary", VOCABULARY_RULES),
+        ("key-form", KEY_FORM_RULES),
+        ("profile", PROFILE_RULES),
+        ("loaded-profile", LOADED_RULES),
+    ):
         if label in bodies:
             folded = fold(bodies[label])
             for rule_label, rule in rules.items():
@@ -527,6 +668,19 @@ def reader_findings(text: str, current: str) -> list[str]:
         findings.append("exactness bullet does not restate the current paragraph")
     if GRAMMAR_END in text:
         findings.append("the exactness paragraph is still inside the Butlers grammar")
+    declared_at = block.find(DECLARED_ITEM_OPENING)
+    declared_end = block.find(DECLARED_ITEM_END, declared_at)
+    if declared_at < 0 or declared_end < 0 or text.count(DECLARED_ITEM_OPENING) != 1:
+        findings.append("missing or duplicate declared-item bullet")
+    else:
+        folded = fold(block[declared_at:declared_end])
+        for rule_label, rule in DECLARED_ITEM_RULES.items():
+            if fold(rule) not in folded:
+                findings.append(f"declared-item bullet lacks {rule_label}")
+    tail = block[block.find(UNCHANGED_TAIL):] if UNCHANGED_TAIL in block else None
+    base_block = current[current.find(READER_START):current.find(READER_END)]
+    if tail is None or tail != base_block[base_block.find(UNCHANGED_TAIL):]:
+        findings.append("the source-path denominator bullet differs from the current one")
     retained = _grammar_items(text, BUTLERS_OPENING, None)
     expected = _grammar_items(current, RETIRED_OPENING, GRAMMAR_END)
     if expected is None:
@@ -569,13 +723,18 @@ def requirement_findings(spec: bytes, current: bytes | None = None) -> list[str]
                 f"scenario is not in the required PWB-REQ-002 position: {heading}"
             )
             continue
-        body = fold(_block(section, heading))
+        scenario = _block(section, heading)
+        body = fold(scenario)
         for rule in SCENARIO_RULES[heading]:
             if fold(rule) not in body:
                 findings.append(f"scenario lacks '{rule}': {heading}")
+        if scenario != f"{heading}\n\n{SCENARIO_TEXT[heading]}\n":
+            findings.append(f"scenario text differs: {heading}")
     base_start = base.find(REQUIREMENT)
     base_section = base[base_start:base.find(NEXT_REQUIREMENT, base_start)]
     base_warrants = base_section[base_section.find(WARRANTS):]
+    if preceding < 0 or _block(section, PRECEDING_SCENARIO) != _block(base_section, PRECEDING_SCENARIO):
+        findings.append("the first PWB-REQ-002 scenario differs from the current one")
     if warrants < 0 or section[warrants:] != base_warrants:
         findings.append("PWB-REQ-002 warrants differ from the current warrants")
     return findings
@@ -857,9 +1016,12 @@ def selftest() -> int:
         return _fail("duplicate-key rule mutation passed")
     killed += 1
 
-    # Profile and loaded-profile bullets: each rule removed on its own.
+    # Vocabulary, key-form, profile and loaded-profile bullets: each rule
+    # removed on its own.
     openings = dict(BULLETS)
     for label, rules, following in (
+        ("vocabulary", VOCABULARY_RULES, "key-form"),
+        ("key-form", KEY_FORM_RULES, "profile"),
         ("profile", PROFILE_RULES, "loaded-profile"),
         ("loaded-profile", LOADED_RULES, "exactness"),
     ):
@@ -874,6 +1036,23 @@ def selftest() -> int:
             if not spec_mutant(rule_label, mutated, f"{label} bullet lacks {rule_label}"):
                 return _fail(f"{label} rule mutation passed: {rule_label}")
             killed += 1
+
+    # Declared-item bullet: each rule removed, and the rule made "any".
+    at = spec.index(DECLARED_ITEM_OPENING)
+    end = spec.index(DECLARED_ITEM_END, at)
+    for rule_label, rule in DECLARED_ITEM_RULES.items():
+        paragraph = fold(spec[at:end])
+        mutated_paragraph = paragraph.replace(fold(rule), "[removed]", 1)
+        if mutated_paragraph == paragraph:
+            return _fail(f"declared-item fixture matched nothing: {rule_label}")
+        mutated = spec[:at] + mutated_paragraph + "\n" + spec[end:]
+        if not spec_mutant(rule_label, mutated, f"declared-item bullet lacks {rule_label}"):
+            return _fail(f"declared-item rule mutation passed: {rule_label}")
+        killed += 1
+    widened = _replace_once(spec, "read by that class's\n  extraction rule", "read by any\n  extraction rule", "any rule")
+    if not spec_mutant("any rule", widened, "declared-item bullet lacks read by the class's rule"):
+        return _fail("declared-item 'any extraction rule' mutation passed")
+    killed += 1
 
     # Shared text: a drifted sentence on either side of the two packages.
     class Module:
@@ -934,6 +1113,11 @@ def selftest() -> int:
                          "\n" + GRAMMAR_END + " are exact.\n- The source-path denominator remains known", 1),
             "the exactness paragraph is still inside the Butlers grammar",
         ),
+        "source-path bullet altered": (
+            _replace_once(spec, "denominator is Unknown, never copied",
+                          "denominator is 0, never copied", "source-path"),
+            "the source-path denominator bullet differs from the current one",
+        ),
         "Butlers grammar altered": (
             _replace_once(
                 spec,
@@ -970,6 +1154,42 @@ def selftest() -> int:
     )
     if not spec_mutant("retired", restored, "PWB-REQ-002 still reads the closed extraction rule"):
         return _fail("retired requirement text mutation passed")
+    killed += 1
+
+    # Clauses a reviewer mutated in round 2: the requirement's SHALL and its
+    # falsifier label.
+    for name, old, new, expected in (
+        ("SHALL made MAY", "Each admitted item SHALL be", "Each admitted item MAY be",
+         "PWB-REQ-002 lacks body: one coverage state"),
+        ("falsifier relabelled", "- **Falsifier**: the independent",
+         "- **Non-falsifier**: the independent", "PWB-REQ-002 lacks label: falsifier"),
+    ):
+        if not spec_mutant(name, _replace_once(spec, old, new, name), expected):
+            return _fail(f"{name} mutation passed")
+        killed += 1
+
+    # Scenario clauses a reviewer mutated in round 2, each with its checked
+    # phrase kept, and the unchanged first scenario.
+    for name, old, new, heading in (
+        ("any project observed", "- **WHEN** Butlers is observed through",
+         "- **WHEN** any project is observed through", SCENARIOS[0]),
+        ("WHEN negated", "- **WHEN** Butlers' loaded profile has no grammar row for one class",
+         "- **WHEN** not (Butlers' loaded profile has no grammar row for one class)", SCENARIOS[1]),
+        ("THEN excepted", "  source in which a class fails\n- **AND** no built-in",
+         "  source in which a class fails, except that the source leaves the source-path\n"
+         "  population\n- **AND** no built-in", SCENARIOS[2]),
+    ):
+        mutated = _replace_once(spec, old, new, name)
+        if not spec_mutant(name, mutated, f"scenario text differs: {heading}"):
+            return _fail(f"{name} scenario mutation passed")
+        killed += 1
+    first_scenario = _replace_once(
+        spec, "- **THEN** Polaris accounts for all D items exactly once",
+        "- **THEN** Polaris accounts for most D items exactly once", "first scenario",
+    )
+    if not spec_mutant("first scenario", first_scenario,
+                       "the first PWB-REQ-002 scenario differs from the current one"):
+        return _fail("first scenario mutation passed")
     killed += 1
 
     # Each scenario missing, duplicated, moved and emptied of each rule.
@@ -1048,8 +1268,8 @@ def selftest() -> int:
         broken = pathlib.Path(scratch) / "spec.md.patch"
         original = (ROOT / PROPOSED / "spec.md.patch").read_text()
         corrupted = original.replace(
-            " - **Case (sweep)**: enumerate the source population",
-            " - **Case (sweep)**: enumerate each source population",
+            "   each readable category at one revision, then compare it to the model; include",
+            "   each known category at one revision, then compare it to the model; include",
             1,
         )
         if corrupted == original:
@@ -1090,12 +1310,17 @@ def selftest() -> int:
         f"selftest: {killed} mutants killed — stale manifest, path order, patch "
         f"population, {len(SHAPES)} shape and {len(KEY_FORMS)} key-form "
         "sentences, entry dropped/added/moved and closure for each vocabulary, "
-        f"the duplicate-key rule, {len(PROFILE_RULES)} profile and "
-        f"{len(LOADED_RULES)} loaded-profile rules, shared-text drift on both "
+        f"the duplicate-key rule, {len(VOCABULARY_RULES)} vocabulary, "
+        f"{len(KEY_FORM_RULES)} key-form, {len(PROFILE_RULES)} profile and "
+        f"{len(LOADED_RULES)} loaded-profile rules, {len(DECLARED_ITEM_RULES)} "
+        "declared-item rules and the rule made 'any', the source-path bullet, "
+        "shared-text drift on both "
         "vocabularies, bullet order/duplicate/missing, retired opening, the "
         "hoisted exactness paragraph reworded or left behind, Butlers grammar "
         f"drift, {len(REQUIREMENT_RULES)} PWB-REQ-002 rules, retired "
-        f"requirement text, {len(SCENARIOS)} scenarios x missing/duplicate/"
+        f"requirement text, SHALL made MAY, the falsifier relabelled, three "
+        "scenario clauses and the first scenario altered, "
+        f"{len(SCENARIOS)} scenarios x missing/duplicate/"
         "placement plus each scenario rule, warrants, dependency and "
         "contract-coverage drift, capability row and totals, patch drift, "
         f"{len(DECLARED_COMPOSITION)} composition outcomes and two table-shape "
@@ -1152,10 +1377,14 @@ def main(argv: list[str]) -> int:
             f"PWB container-shape profile manifest matches {len(BEHAVIOR_SUBJECTS)} "
             f"proposed subjects ({len(PATCHED)} patched, "
             f"{len(BEHAVIOR_SUBJECTS) - len(PATCHED)} unchanged); {len(SHAPES)} "
-            f"shapes, {len(KEY_FORMS)} key forms, {len(PROFILE_RULES)} profile "
-            f"rules, {len(LOADED_RULES)} loaded-profile rules, the hoisted "
-            f"exactness bullet, {len(REQUIREMENT_RULES)} PWB-REQ-002 rules, "
-            f"{len(SCENARIOS)} scenarios, the retained Butlers grammar, dependency "
+            f"shapes, {len(KEY_FORMS)} key forms, {len(VOCABULARY_RULES)} "
+            f"vocabulary, {len(KEY_FORM_RULES)} key-form, {len(PROFILE_RULES)} "
+            f"profile, {len(LOADED_RULES)} loaded-profile and "
+            f"{len(DECLARED_ITEM_RULES)} declared-item rules, the hoisted "
+            f"exactness bullet, the unchanged source-path bullet, "
+            f"{len(REQUIREMENT_RULES)} PWB-REQ-002 rules, {len(SCENARIOS)} "
+            "scenarios word for word, the unchanged first scenario, the retained "
+            "Butlers grammar, dependency "
             "and contract-coverage regeneration and "
             f"{len(DECLARED_COMPOSITION)} declared sibling-composition outcomes verify"
         )

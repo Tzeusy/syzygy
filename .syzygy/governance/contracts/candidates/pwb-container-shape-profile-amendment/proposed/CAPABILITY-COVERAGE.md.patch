@@ -1,5 +1,5 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md b/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
-index 4a01f83..e798e66 100644
+index 4a01f83..185312f 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
 @@ -8,7 +8,7 @@ Population: 31 positive obligations and refusals declared by `proposal.md`,

@@ -24,7 +24,7 @@ Two independent sweeps, run 2026-09-27 at the baseline (rules 2 and 9):
 | Name | Python | `git grep` |
 |---|---|---|
 | `PWB-REQ-002`, literal | 49 | 49 |
-| `PWB-REQ-002` in a run or range only | 13 | 13 |
+| `PWB-REQ-002` in a run or range only | 14 | 14 |
 | `heading-section` | 2 | 2 |
 | `every-level-2-section`, `top-level-decimal-list`, `top-level-list`, `top-level-bulleted-list`, `first-table-rows`, `ordinal-section-table-rows`, `tree-path`, `toml-table-field` | 0 each | 0 each |
 | `containerShapes`, `classGrammar` | 0 each | 0 each |
@@ -44,17 +44,22 @@ requirement lists as runs (`PWB-REQ-001/002/003`) and ranges
 
 ```
 PWB-REQ-(\d{3}(?:SEP(?:PWB-REQ-)?\d{3})*)
-SEP = (?:\s*(?:/|,|\.\.|–|—|-|\bto\b|\bthrough\b|,?\s*\band\b|,?\s*\bor\b)\s*)
+SEP = (?:\s*(?:/|,|\.\.|…|–|—|-|\bto\b|\bthrough\b|,?\s*\band\b|,?\s*\bor\b)\s*)
 ```
 
 (Python `re`, case-sensitive, any run length) and counted a file when 002 is
 a member of a run or lies inside a range. Method 2 was `git grep -l -P`
 with the independent pattern
-`PWB-REQ-001(?:/0\d\d)*/002|PWB-REQ-001\s*(?:\.\.|–|-)\s*(?:PWB-REQ-)?0(?:0[2-9]|[1-9]\d)`.
-Both give the same 13 files beyond the literal 49, 62 in all:
+`PWB-REQ-001(?:/0\d\d)*/002|PWB-REQ-001\s*(?:\.\.|…|–|-)\s*(?:PWB-REQ-)?0(?:0[2-9]|[1-9]\d)`.
+Both separator sets include the ellipsis `…` (U+2026); round 1's did not,
+and missed a file. Re-run 2026-09-27 at the baseline, both give the same 14
+files beyond the literal 49, 63 in all; at `96ee305` (1,548 paths) both give
+the same 14 and 49 again:
 
 - code: `apps/three-surface-poc/src/pwb-mutation-sweep-main.ts` (line 226,
-  `PWB-REQ-001/002/003/004/005/010/012/020/022`);
+  `PWB-REQ-001/002/003/004/005/010/012/020/022`) and
+  `packages/three-surface-poc-core/src/project-shape-model.ts` (line 2,
+  `PWB-REQ-001…007`);
 - `AGENTS.md`;
 - the ledgers of `pwb-machine-view-amendment/` and
   `pwb-opening-band-scenario/`, and the latter's semantic delta;
@@ -113,6 +118,7 @@ below. The single-token names were not join-swept.
 |---|---|
 | `packages/three-surface-poc-core/src/project-shape-extraction.ts` and its test | Reads Butlers through built-in constants equal to the Butlers grammar written in the reader definitions. It loads no profile, and the text names that grammar as Butlers' built-in default until a profile is loaded (Semantic delta, item 4). |
 | `packages/three-surface-poc-core/src/project-shape-coverage.ts` and its test | Counts what extraction yields; unchanged. |
+| `packages/three-surface-poc-core/src/project-shape-model.ts` | Composes the pipeline; cites the requirement only in a range (line 2, `PWB-REQ-001…007`). Its `classesForPillar` table is the class-to-category mapping the declared-item bullet now writes down, so the text and the code agree. |
 | `packages/three-surface-poc-core/src/synthetic-corpus-coverage.ts` | N8's synthetic census. Measures cells; asserts no conformance. |
 | `apps/three-surface-poc/src/pwb-mutation-sweep.ts`, `pwb-mutation-sweep-main.ts`, `pwb-n8-synthetic-corpus-coverage-matrix-main.ts` | Tooling; unchanged. `pwb-mutation-sweep-main.ts` cites the requirement only in a run (line 226). |
 | `scripts/record_pwb_behavior_amendment_acts.py` | Out of scope for this lane; not touched. |
@@ -137,9 +143,9 @@ repair them.
 | `.21`, `.30`, `.22`, lane B | The owner answered "Readiness order, lane B last (Recommended)", an option presented as `.21` → `.30` → `.22` → lane B (2026-09-23 owner-values record, §6). Where this package falls is not ruled; the drafter proposes after lane B. Each collides on `GOVERNING-DEPENDENCIES.md`; `.30` also edits `CAPABILITY-COVERAGE.md` in rows that compose with row 4. This manifest is regenerated with `--write` after each act that lands before it. |
 | `.20` | Not in the ruled order. Edits `CAPABILITY-COVERAGE.md` in rows that compose with row 4 and collides on `GOVERNING-DEPENDENCIES.md`; regenerate after it if it lands first. |
 | `pwb-dismissal-expiry-amendment/` (`syzygy-dov.29`, PR #121) | Also proposes to land last; composes on `spec.md` (different requirement), collides on `GOVERNING-DEPENDENCIES.md`. |
-| `pwb-registry-loaded-profile-amendment/` (`syzygy-dov.24`, PR #123) | Drafts the registry fields a profile would live in. Its specification witness checks heading texts in the reader definitions; with this package's `spec.md.patch` applied in its worktree, its `--check` still passed [Observed, 2026-09-27, re-run with this round's patch at PR #123's head `1395d44`]. The two packages share the shape and key-form sentences word for word; this builder compares them once `syzygy-dov.24`'s builder is in the tree. |
+| `pwb-registry-loaded-profile-amendment/` (`syzygy-dov.24`, PR #123) | Drafts the registry fields a profile would live in. Its specification witness checks heading texts in the reader definitions; with this package's `spec.md.patch` applied in its worktree, its `--check` still passed [Observed, 2026-09-27, re-run with this round's patch at PR #123's head `929100f`]. The two packages share the shape and key-form sentences and the key-form names word for word; this builder compares them once `syzygy-dov.24`'s builder is in the tree, and did so with that builder copied in [Observed, same day]. |
 | `pwb-self-observation-acts/` (`syzygy-dov.25`, PR #120) | A second project's registry entry; would need a profile under this text. |
-| M15 (`syzygy-dov.15.1`, P-82), not drafted | P-82's answer (decision record line 70, Ruled column): "Q1 arm (b), draft the delta only; Q2 design `partially-extracted` inside it, build only after sign-off and a fresh authorization; Q3 design the `unenumerated-heading` reason as surface-flag (a counted, routed Unknown); Q4 design the root-independence flags in the same delta". That it is one CC-REV-2 delta to `PWB-REQ-002`, behind lane B's open manifest, is the recorder's "What it means" gloss, not the answer. It would likely edit the exactness sentence this package moves into its own bullet, so whichever lands second is regenerated and re-reviewed. The meanings stay apart: this package defers the size of a source failure to that sentence. Packet question 8. Not in the builder's composition outcomes, because no package exists. |
+| M15 (`syzygy-dov.15.1`, P-82), not drafted | P-82's answer (decision record line 70, Ruled column): "Q1 arm (b), draft the delta only; Q2 design `partially-extracted` inside it, build only after sign-off and a fresh authorization; Q3 design the `unenumerated-heading` reason as surface-flag (a counted, routed Unknown); Q4 design the root-independence flags in the same delta". That it is one CC-REV-2 delta to `PWB-REQ-002`, behind lane B's open manifest, is the recorder's "What it means" gloss, not the answer. It would likely edit the exactness sentence this package moves into its own bullet, so whichever lands second is regenerated and re-reviewed. The two overlap in meaning as well as text: this package makes that sentence ("it never produces a partial item set") bind every grammar, and adds that a class's Unknown makes its category Unknown, both where M15 designs `partially-extracted` (semantic delta, downstream item 5). Packet question 8. Not in the builder's composition outcomes, because no package exists. |
 
 The builder's `--check` applies every shared patch in both orders against
 each sibling's `proposed/` directory and compares the result with twelve

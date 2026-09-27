@@ -2,9 +2,10 @@
 
 > **Candidate — binds nothing.** This brief says what an independent
 > reviewer is given and what they decide. It is not a review and carries
-> no verdict. Round 1 returned REVISE
-> (`docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-RAW.md`); this brief is for
-> round 2, over the repaired bytes.
+> no verdict. Rounds 1 and 2 returned REVISE
+> (`docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-RAW.md`,
+> `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-2-RAW.md`); this brief is for
+> round 3, over the repaired bytes.
 
 ## What the reviewer is given, and nothing else
 
@@ -13,7 +14,7 @@
 (`SEMANTIC-DELTA.md`, `IMPACT-LEDGER.md`, `OWNER-DECISION-PACKET.md`, this
 brief, `PWB-CONTAINER-SHAPE-PROFILE-MANIFEST.txt`), the three patches under
 `proposed/`, `scripts/build_pwb_container_shape_profile_amendment.py`, and
-the round-1 raw with the packet's review record.
+the round-1 and round-2 raws with the packet's review record.
 
 **The subject** — `openspec/changes/polaris-project-wide-butlers-model/` at
 its current bytes.
@@ -28,7 +29,9 @@ its current bytes.
 - `VIS-2`, `VIS-4`, `VIS-7`.
 - `PWB-REQ-002` and the reader definitions in the subject's `spec.md`.
 - `packages/three-surface-poc-core/src/project-shape-extraction.ts`, for
-  the shape sentences.
+  the shape sentences, and `classesForPillar` in
+  `packages/three-surface-poc-core/src/project-shape-model.ts`, for the
+  class-to-category mapping.
 - `NORMATIVE-CHANGE-WORKFLOW.md`, `SEMANTIC-DELTA-TEMPLATE.md` and CC-REV-2.
 
 **Shared text** — `SHAPES` and `ITEM_KEY_SENTENCES` in
@@ -43,8 +46,9 @@ pursuit. They recommend; the sitting decides.
 
 ## Acceptance criteria
 
-1. **Is every round-1 finding closed as the review record says?** R1–R5
-   and N1–N9, each against the bytes, not the disposition's words.
+1. **Is every earlier finding closed as the review record says?** Round 1's
+   R1–R5 and N1–N9, and round 2's R-A, R-B and N-1–N-8, each against the
+   bytes, not the disposition's words.
 2. **Does it do what §6 asks, and no more?** §6: "let a project's profile
    declare its own container shapes, instead of the shapes written into
    PWB-REQ-002's reader definitions", with Butlers' profile declaring
@@ -61,14 +65,18 @@ pursuit. They recommend; the sitting decides.
    agree with P-74 Q2?** A class with no row, or an invalid row, must make
    the class and its category Unknown with every source counted; no
    built-in rule may stand in once a profile is loaded; today's code, with
-   no profile loaded, must conform.
-6. **Are this package and M15 (P-82) kept apart?** Does anything here decide
-   how much of a source fails, which P-82 leaves to M15? Packet question 8.
+   no profile loaded, must conform. A refused Butlers profile must not
+   return Butlers to the written grammar, and a project with no profile must
+   not report a known count.
+6. **Is the overlap with M15 (P-82) disclosed accurately?** The packet now
+   says the exactness sentence binds every grammar and a class's Unknown
+   makes its category Unknown, both in M15's path. Is anything else here in
+   that path and undisclosed? Packet question 8.
 7. **Is the oracle still independent and falsifiable?** In particular, can
    "for Butlers read through its loaded profile, both also apply the grammar
    written in these reader definitions" fail?
 8. **Does the package verify, and does the verification mean anything?** Run
-   `--check` and `--selftest` (106 mutants). Name any claim the builder makes
+   `--check` and `--selftest` (146 mutants). Name any claim the builder makes
    that no mutant covers.
 9. **Does the package quote any act argument or claim authority it lacks?**
    Nothing labelled accepted or in force; the phrase marked not offered; no
@@ -85,3 +93,18 @@ fields; any shape for Syzygy's own craft policies.
 
 Raw output under `docs/reviews/`, file name ending `-RAW.md`, verdict words
 copied exactly. A digest quoted in a raw freezes those bytes.
+
+**The raw's head.** A recorder binds the review by this predicate, so the
+head must satisfy it exactly:
+
+> The first four non-blank lines of the raw are, in order: a title line
+> beginning `# `; `Verdict: ` followed by the verdict words; `Reviewed
+> commit: ` followed by the full 40-hex commit; and `Manifest sha256: `
+> followed by the 64-hex SHA-256 of the file
+> `PWB-CONTAINER-SHAPE-PROFILE-MANIFEST.txt` itself.
+
+That file digest is the act argument: the manifest's header names "the owner
+act that names this file's digest". The reviewer re-derives it by hashing
+the file. It is **not** any one row of the manifest (each row hashes one
+subject file), and not a digest of the subject. Rounds 1 and 2 carried the
+file digest in this position.

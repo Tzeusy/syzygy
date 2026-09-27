@@ -25,12 +25,13 @@ bytes, eight hash current bytes. `CONTRACT-COVERAGE.md` and its three matrix
 parts regenerate unchanged (the builder checks this).
 
 **Stable IDs affected:** `PWB-REQ-002` (amended in place: body, case, oracle,
-falsifier, three added scenarios; warrants unchanged). The reader definitions
+falsifier, four added scenarios; warrants unchanged). The reader definitions
 carry no identifier of their own. No other requirement changes.
 
 **Change class:** **Normative.** It changes what a conforming observer must
 do: once a project's profile is loaded, read each class only through the
-grammar rows that profile declares, and never fall back to a built-in rule.
+grammar rows that profile declares, and never fall back to a built-in rule;
+a Butlers profile the loader refuses does not fall back either.
 
 **Author:** agent draft. **Date:** 2026-09-27. **Gate bead:** `syzygy-u05.8`.
 
@@ -64,10 +65,18 @@ them — `heading-section`, `every-level-2-section`, `top-level-decimal-list`,
 `top-level-list`, `top-level-bulleted-list`, `first-table-rows`,
 `ordinal-section-table-rows`, `tree-path`, `toml-table-field` — and gives
 each the sentence `syzygy-dov.24` (PR #123) gives it in its proposed
-`containerShapes`: what is read, and every way the source fails. The bullet
-says "The vocabulary is closed at nine shapes, and no other shape is read."
-These are the shapes today's Butlers grammar already uses, named — none is
-new.
+`containerShapes`: what the shape reads and how that reading fails. The
+bullet says "The vocabulary is closed at nine shapes, and no other shape is
+read." These are the shapes today's Butlers grammar already uses, named —
+none is new. Before the list it states once the rules every shape shares: a
+heading is an ATX heading written at column 0 outside fenced code; a
+declared heading matches only at its declared level (at any level when it has
+none) and only by exact text; a missing one fails the source as
+missing-heading and a repeated one as duplicate-key; and a list or table row
+with more than one heading reads the section under each, in order, and its
+items are all of theirs. How list markers, table rows, fenced code and TOML
+lines are recognized is left to the observer, the same for every project.
+The earlier claim that each sentence names "every way it fails" is gone.
 
 **2. A closed vocabulary of eight item key forms.** A second bullet names
 `fixed`, `leading-bold`, `leading-bold-or-code`, `prefixed-ordinal`,
@@ -75,8 +84,13 @@ new.
 `link-target-basename`. Seven carry `syzygy-dov.24`'s key sentences word for
 word; `prefixed-ordinal` is "`<prefix>:<one-based ordinal>`, with the prefix
 the grammar row declares", which is how `syzygy-dov.24` writes its
-`vision:` and `v1:` rows. The bullet adds: "A key that occurs twice within
-one class of one source fails the source as duplicate-key."
+`vision:` and `v1:` rows. The names are the same as `syzygy-dov.24`'s. The
+bullet adds: "A key that occurs twice within one class of one source fails
+the source as duplicate-key." It then says how a row names its form: "A
+grammar row states its key form by carrying that form's sentence above, word
+for word, or, for `prefixed-ordinal`, by `<prefix>:<one-based ordinal>` with
+its prefix written in; the form names are this text's labels for those
+sentences." That is how `syzygy-dov.24`'s rows state their forms.
 
 **3. A project profile declares grammar rows.** The new bullet reads, in
 part:
@@ -92,11 +106,16 @@ part:
 > cannot add a class, a shape or a key form.
 
 **4. Butlers' interim default, and what a loaded profile may not leave
-out.** The next bullet opens "Until Butlers' profile is loaded, the observer
-reads Butlers by the grammar written below, as a built-in default; no other
-project has a built-in default." Once a profile is loaded it is the only
-source of that project's rules. A class it gives no row, or whose row names
-a shape or key form outside the closed sets or lacks a parameter, "is
+out.** The next bullet opens "Until the observer reads a profile for
+Butlers, it reads Butlers by the grammar written below, as a built-in
+default; no other project has a built-in default." Two sentences close the
+paths round 2 found open: "A Butlers profile the loader refuses never returns
+Butlers to the built-in default", and "A project other than Butlers with no
+loaded profile has no extraction rules: its classes' and categories' item
+denominators are Unknown, never zero, and no item is minted for it." Once a
+profile is loaded it is the only source of that project's rules. A class it
+gives no row, or whose row names a shape or states a key form outside the
+closed sets or lacks a parameter, "is
 unreadable: its item denominator and its category's item denominator are
 Unknown, each source any of its rows names fails as a source in which a
 class fails, and every source stays in the source-path population." The
@@ -117,24 +136,42 @@ is literal:". The nine class bullets under it are byte-identical to today's
 **7. `PWB-REQ-002`.** The body now reads "declared item discovered by the
 extraction grammar that governs its project under the reader definitions
 (the grammar rows of its loaded project profile, read only through the
-closed container shapes and item key forms, or, before Butlers' profile is
-loaded, the Butlers grammar written there)". The case adds "a loaded
-profile that gives one class no row, and a loaded profile with a row that
-names a shape outside the vocabulary". The oracle adds that, for Butlers
+closed container shapes and item key forms, or, until the observer reads a
+profile for Butlers, the Butlers grammar written there)". The case adds "a
+loaded profile that gives one class no row, a loaded profile with a row that
+names a shape outside the vocabulary, and a Butlers profile the loader
+refuses". The oracle adds that, for Butlers
 read through its loaded profile, both extractors also apply the written
 grammar "and must produce the same identities and D", and that every class
 a loaded profile leaves unreadable carries an Unknown item denominator. The
 falsifier adds "an item is read through a shape or key form its governing
-grammar does not declare, or a loaded profile's missing or invalid rule is
-replaced by a built-in one". Three scenarios are added: "Butlers' profile
-reproduces the written grammar", "Loaded profile gives one class no row" and
-"Loaded profile names a shape outside the vocabulary".
+grammar does not declare, a loaded profile's missing or invalid rule is
+replaced by a built-in one, a refused Butlers profile returns Butlers to the
+built-in grammar, or a project with no profile reports a known item
+denominator". Four scenarios are added: "Butlers' profile reproduces the
+written grammar", "Loaded profile gives one class no row", "Loaded profile
+names a shape outside the vocabulary" and "Refused Butlers profile does not
+fall back".
+
+**8. The declared-item bullet.** It said a declared item has "one class
+from this closed set and one extraction rule", which pulled against a class
+having several rows. It now says "one class from this closed set, read by
+that class's extraction rule (for a loaded profile, the class's grammar
+rows)", and adds which category each class counts toward: the first four
+classes to Heart and Soul, `design-contract` to Legends and Lore,
+`baseline-spec` to Spec and Spine, `topology-component` to Lay and Land,
+`craft-policy` to Craft and Care and `roster-identity` to roster identity.
+The mapping is the one the code already uses (`classesForPillar` in
+`packages/three-surface-poc-core/src/project-shape-model.ts`, with roster
+identity as its own category, as `PWB-REQ-002`'s list names it) [Observed].
+The class list and each class's meaning are unchanged.
 
 ## What explicitly does NOT change
 
 - **No class is added, and no Butlers heading, source, shape or key.** The
   nine Butlers class bullets are byte-identical; `--check` verifies it.
-- The source population rules, the root index, the pillar rules, the
+- The source population rules (still named for Butlers; packet question 9),
+  the root index, the pillar rules, the
   secret and active-content rules, and every other requirement are
   unchanged.
 - `PWB-REQ-002`'s warrants are unchanged.
@@ -163,16 +200,16 @@ Doctrine: `VIS-4` reserves the act to the owner. `VIS-2`
 means Unknown, not success.** No surface may declare a project aligned,
 converged, or genome-complete — nor turn anything green — without current
 evidence." The class-and-category Unknown in item 4 and the second and
-third scenarios serve it: a class with no row has no source to fail, so
+fourth scenarios serve it: a class with no row has no source to fail, so
 without them it would render an empty set. `VIS-7` (same file, lines
 184-185): "the deterministic layer of an observation record is identical
 across runs of one identified evaluation". The shape and key sentences say
-every way a source fails, item 5 keeps exactness for every grammar, and the
+how a source's reading fails, item 5 keeps exactness for every grammar, and the
 first scenario keeps Butlers' identities and denominators equal to today's.
 
 Method: `NORMATIVE-CHANGE-WORKFLOW.md` and `SEMANTIC-DELTA-TEMPLATE.md` under
 `.syzygy/governance/contracts/candidates/policy-candidates/`. This delta
-stops at step 2: drafted, blast radius established, one review round
+stops at step 2: drafted, blast radius established, two review rounds
 repaired. **No self-review was performed.**
 
 ## Evidence or decision basis
@@ -188,12 +225,15 @@ repaired. **No self-review was performed.**
 - [Observed] The nine shape names occur in no tracked file except one
   (`heading-section`, in two pursuit records); see `IMPACT-LEDGER.md`.
 - [Observed] The nine shape sentences and seven key-form sentences are
-  `syzygy-dov.24`'s proposed sentences (PR #123, head `1395d44`), word for
-  word; the spec adds only a full stop and code-span backticks. The builder
+  `syzygy-dov.24`'s proposed sentences (PR #123, head `929100f`, after its
+  round-2 repairs), word for word; the spec adds only a full stop and
+  code-span backticks. With that builder copied in, this builder's `--check`
+  reported the sentences equal; with this package's `spec.md.patch` applied
+  to that head, its own `--check` passed [Observed, 2026-09-27]. The builder
   holds the copy and, once `syzygy-dov.24`'s builder is in the tree, compares
   the two on every `--check`; a changed copy on either side fails.
-- [Inferred] That those sentences describe every way the current extraction
-  code reads Butlers. `syzygy-dov.24`'s builder checks them by running the
+- [Inferred] That those sentences, with the shared rules, describe how the
+  current extraction code reads Butlers and how that reading fails. `syzygy-dov.24`'s builder checks them by running the
   observer's code over files built from its fields; that check was not
   re-run here beyond `syzygy-dov.24`'s own `--check`.
 - [Inferred] From the pursuit's slice 1/2 matrix: two of the three shapes
@@ -222,7 +262,8 @@ Enumerated in `IMPACT-LEDGER.md`. In one line each:
 
 1. **No gap opens in the code.** No profile loader exists; the observer
    reads compiled-in constants. The text names Butlers' written grammar as
-   its built-in default until its profile is loaded, which is the design
+   its built-in default until the observer reads a profile for it, which is
+   the design
    P-74 Q2 ruled, so today's code conforms by the text [Inferred]. Once limb
    5 loads a profile, the no-built-in rule applies.
 2. **The registry entry and the secret policy pin today's `spec.md` digest.**
@@ -238,13 +279,18 @@ Enumerated in `IMPACT-LEDGER.md`. In one line each:
    designing `partially-extracted`, the `unenumerated-heading` reason and
    the root-independence flags "in the same delta" [Observed, quoted]. "One
    CC-REV-2 semantic delta to PWB-REQ-002", behind lane B, is the record's
-   "What it means" gloss, not the answer (`syzygy-dov.15.1`, not drafted). The
-   two stay apart in meaning: this delta says which rules read a class and,
-   on failure, defers to the exactness sentence without deciding how much
-   of a source fails; M15 decides that. They share text: item 5 moves the
-   exactness sentence M15 is likely to edit. Whichever lands second is
-   regenerated and re-reviewed. Packet question 8 asks whether to keep them
-   separate.
+   "What it means" gloss, not the answer (`syzygy-dov.15.1`, not drafted).
+   This delta decides which rules read a class. It does not decide what
+   `partially-extracted` would mean. But it is not neutral on failure either,
+   and an earlier draft said it was: item 5 makes the exactness sentence ("it
+   never produces a partial item set") bind every grammar, loaded or
+   built-in, where it bound Butlers' alone, and item 4 adds that a class's
+   Unknown makes its **category's** item denominator Unknown too, which the
+   current text does not say. Both sit where M15 is ruled to design
+   `partially-extracted` and the root-independence flags. Whether those flags
+   touch the category rule is [Unknown] until M15 is drafted. Whichever lands
+   second is regenerated and re-reviewed, and may have to reopen what the
+   first decided. Packet question 8 asks whether to keep them separate.
 
 ## Migration and supersession plan
 
@@ -263,5 +309,7 @@ edit.
 ## Review
 
 Round 1: `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-RAW.md` (REVISE, commit
-`a7eda10`); every finding is dispositioned in the packet's review record.
+`a7eda10`). Round 2: `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-2-RAW.md`
+(REVISE, commit `c103523`). Every finding of both is dispositioned in the
+packet's review record.
 `REVIEW-BRIEF.md` states what the next reviewer is given.

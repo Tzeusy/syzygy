@@ -5,7 +5,8 @@
 > merged pull request, passing check, silence or general approval performs no
 > act. The phrase below is kept only so governance checks can see it go
 > stale; it is not offered until the exact bytes pass a fresh independent
-> review.
+> review. Two review rounds have run and both said REVISE; this head repairs
+> the second (review record below).
 
 Date: 2026-09-27. Gate bead: `syzygy-u05.8` (N8).
 
@@ -21,7 +22,7 @@ sibling PWB manifest does). Three rows hash proposed bytes and eight hash
 current bytes.
 
 Manifest SHA-256:
-`c8e2cfef5a7e62bf8fd396b7d238b7b73fc91b5e90007ca70d1921edf2020ab0`
+`e297d800c262173b707c54476fbd7a879ce9467e748c7f4e3c2e6ea6c08b07e5`
 
 The builder writes the manifest; this digest was computed from it by script.
 Any change to a patch, the manifest or the subject retires it.
@@ -39,10 +40,12 @@ already uses as a fixed list, and the eight ways Butlers names an item (the
 **grammar rows**: each row says which kind of item, which file, which
 heading, one shape and one key form. A kind of item may need several rows —
 Butlers' project account needs six, from three files. Butlers' rows give
-today's rules, word for word. Until Butlers' profile is loaded, today's
-written rules stay in use; once a profile is loaded, a kind of item it
-leaves out or gets wrong is shown as Unknown — never guessed with a
-built-in rule.
+today's rules, word for word. Until the observer reads a profile for
+Butlers, today's written rules stay in use; once a profile is loaded, a kind
+of item it leaves out or gets wrong is shown as Unknown — never guessed with
+a built-in rule. If Butlers' profile is refused, Butlers is shown as Unknown
+too; it does not go back to the written rules. Any other project with no
+profile has Unknown counts, never zero.
 
 ## What you would be deciding
 
@@ -53,24 +56,32 @@ prints the exact change.
 Under the drafted text:
 
 - the nine shapes and eight key forms are fixed in the specification; a
-  profile cannot add one. Each shape's sentence says what it reads and every
-  way it fails. The sentences are the `syzygy-dov.24` registry draft's (PR
+  profile cannot add one. Each shape's sentence says what it reads and how
+  that reading fails; the rules every shape shares (how a heading is found,
+  a missing or repeated heading, a row with several headings) are stated
+  once. The sentences and names are the `syzygy-dov.24` registry draft's (PR
   #123), word for word; the builder checks that once both are in the tree;
+- a grammar row states its key form by carrying that form's sentence, as
+  `syzygy-dov.24`'s rows do; the names are labels for the sentences;
 - a profile declares one or more grammar rows for each kind of item, each
   with its file, heading or headings, the settings its shape or key form
   needs (a table column, a TOML table and field, a key prefix), one shape
   and one key form;
 - the profile is carried in the observer's owner-adopted registry entry;
-- until Butlers' profile is loaded, the observer reads Butlers by the rules
-  written in the specification, as a built-in default. No other project has
-  one;
+- until the observer reads a profile for Butlers, it reads Butlers by the
+  rules written in the specification, as a built-in default. A Butlers
+  profile the observer refuses does not bring those rules back. No other
+  project has a default: with no profile, its counts are Unknown;
 - once a profile is loaded, a kind of item with no row, or a row naming a
   shape or key form not on the lists, is Unknown, and so is the category it
   belongs to. Every file stays counted;
 - the rules that make reading exact — heading text, NFC, no partial item
   sets — now cover every project, not only Butlers;
 - Butlers read through its profile must give exactly today's items and
-  counts.
+  counts;
+- each kind of item is written down as belonging to one category (Heart and
+  Soul, Legends and Lore, Spec and Spine, Lay and Land, Craft and Care or
+  roster identity), as the code already groups them.
 
 ## Already ruled, and what it settles here
 
@@ -131,20 +142,28 @@ default". So:
    flags in the same delta" (decision record, line 70, Ruled column). The
    record's "What it means" column, the recorder's gloss and not your words,
    reads that as "One CC-REV-2 semantic delta to PWB-REQ-002", sequenced
-   behind lane B's open manifest (`syzygy-dov.15.1`, not drafted). The
-   two deltas are kept apart in meaning: this one says only which rules read
-   a kind of item, and on failure defers to the exactness sentence ("fails
-   as a source in which a class fails") without saying how much of the file
-   fails. M15 would decide that. But this package moves that exactness
-   sentence into its own bullet, word for word, and M15 is likely to edit
-   the same sentence. So whichever lands second is regenerated and
-   re-reviewed. The 2026-09-22 pursuit suggested L1-M1 ride M15's delta
+   behind lane B's open manifest (`syzygy-dov.15.1`, not drafted). The two
+   are not fully apart in meaning, and an earlier draft of this question said
+   they were. This package decides which rules read a kind of item. It also
+   makes the exactness sentence ("it never produces a partial item set")
+   bind every project's rules, not only Butlers', and it adds that when a
+   kind of item is Unknown, its whole category is Unknown too. Both touch
+   what M15 is to design (`partially-extracted`, and the root-independence
+   flags). M15 is also likely to edit the exactness sentence this package
+   moves. So whichever lands second is regenerated and re-reviewed, and may
+   reopen what the first decided. The 2026-09-22 pursuit suggested L1-M1 ride M15's delta
    instead of opening a second one. *Recommended: keep them separate; they
-   answer different questions and the second is a mechanical regenerate*
-   [Inferred]. If you would rather merge, this package waits for M15.
-9. **Should the Butlers-only wording elsewhere be widened now?** The source
-   population and declared-item bullets still name Butlers. The draft leaves
-   them alone, to stay inside §6. Widen them here, or in a later change?
+   answer different questions. The second is not only a mechanical
+   regenerate: its review must check the category rule and how far the
+   exactness sentence reaches* [Inferred]. If you would rather merge, this package waits for M15.
+9. **Should the Butlers-only wording elsewhere be widened now?** The
+   declared-item bullet said each kind of item had "one extraction rule",
+   which clashed with a kind of item having several rows, so the draft now
+   changes it to "read by that class's extraction rule (for a loaded
+   profile, the class's grammar rows)" and adds which category each kind
+   counts toward. Its list of kinds, and the source population bullet, still
+   name Butlers' files and headings; the draft leaves those alone, to stay
+   inside §6. Widen them here, or in a later change?
 10. **Is "profile" the right word?** RFC 0005 already uses "a per-project
     profile" for a SEC-3 execution profile, and RFC 0007 speaks of a
     "governed-project profile" for presentation. Both are unrelated. Keep
@@ -156,7 +175,8 @@ default". So:
     does not change that order; that sentence is the recorder's, under
     "What this does not do". Where this package falls is not ruled. The
     drafter proposes it land after lane B; `syzygy-dov.29` (PR #121) also
-    proposes last, and M15 (question 8) is behind lane B too. Each earlier
+    proposes last, and the record's reading (not your answer) puts M15
+    (question 8) behind lane B too. Each earlier
     specification act means this manifest is regenerated with `--write` and
     re-reviewed.
 
@@ -172,10 +192,11 @@ added for that here; §6 asks for Butlers' shapes as they are.
 
 The act phrase for this manifest would be:
 
-`SIGN OFF PWB CONTAINER-SHAPE PROFILE AMENDMENT: c8e2cfef5a7e62bf8fd396b7d238b7b73fc91b5e90007ca70d1921edf2020ab0`
+`SIGN OFF PWB CONTAINER-SHAPE PROFILE AMENDMENT: e297d800c262173b707c54476fbd7a879ce9467e748c7f4e3c2e6ea6c08b07e5`
 
 It is registered so governance checks see it go stale, but it is **not
-offered**: no independent review has run. If you reply with this phrase now,
+offered**: both review rounds so far said REVISE, and these repaired bytes
+have not been reviewed. If you reply with this phrase now,
 nothing is performed. A future recorder must reject a digest that differs
 from the manifest then present and must prove every manifest row against the
 tree after the patches are applied.
@@ -232,12 +253,29 @@ and what was done:
 | N1 — the written-grammar oracle compared identities only | note | Fixed. It now compares identities and D. |
 | N2 — the builder guards phrases, not unchanged text | note | Partly. The exactness paragraph and the nine Butlers class bullets are now compared with today's bytes. Other untouched regions are not hash-pinned; the diff is the check there. |
 | N3 — the bare digest at packet line 22 is unguarded | note | Not changed. It is checker-wide and older than this package. |
-| N4 — the ledger missed run and range citers of `PWB-REQ-002` | note | Fixed. The ledger publishes the regex and lists the 13 files, and Table 2 adds the code citer. |
+| N4 — the ledger missed run and range citers of `PWB-REQ-002` | note | Fixed. The ledger publishes the regex and lists the 13 files, and Table 2 adds the code citer. **Corrected 2026-09-27:** the count is 14 (63 in all); round 2, N-5. |
 | N5 — M15 (P-82) not listed as a sibling | note | Fixed. Listed in the ledger, and put to you as question 8. |
 | N6 — warrant paraphrased VIS-2 and VIS-7 | note | Fixed. Both are quoted at source. |
 | N7 — key-form list wording | note | Fixed by R5: each key form carries its full sentence. |
 | N8 — "whole subject" | note | Fixed, here and in the delta. |
 | N9 — where the raw was recorded | note | The raw is retained under `docs/reviews/` with its campaign row. |
+
+Round 2: `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-2-RAW.md`, a
+fresh-context review of commit `c103523`. Verdict: REVISE. Every finding and
+what was done:
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| R-A — a refused Butlers profile is "not loaded", so it fell back to the written rules; a project with no profile had no rule | revise | Fixed. The bullet now opens "Until the observer reads a profile for Butlers" and says "A Butlers profile the loader refuses never returns Butlers to the built-in default"; a project other than Butlers with no loaded profile has Unknown class and category denominators, never zero. The body, case and falsifier of `PWB-REQ-002` say the same, and a fourth scenario, "Refused Butlers profile does not fall back", is added. |
+| R-B — recorder readings given as the owner's rulings (P-82 at three sites, §6 at question 1) | revise | Fixed at `bfdcf71`, before this round's repairs: the three P-82 sites quote the Ruled cell and name "What it means" as the record's gloss, and question 1 calls the §6 reading the recorder's. One more site was found and fixed: question 11 said M15 "is behind lane B"; it now says that is the record's reading. |
+| N-1 — six key-form names differed from `syzygy-dov.24`'s | note | Fixed jointly with PR #123: both now use the same eight names. The key-form bullet adds that a row states its form by carrying the form's sentence (or `<prefix>:<one-based ordinal>`), which is how `syzygy-dov.24`'s rows do it. |
+| N-2 — several headings defined only for `heading-section` | note | Fixed. The vocabulary bullet says a list or table row with more than one heading reads the section under each, in the order declared, and its items are all of theirs; so `syzygy-dov.24`'s one catalog row with nine headings has a meaning here. |
+| N-3 — "every way it fails" overstated | note | Fixed. The claim is now "what the shape reads and how that reading fails", and the rules every shape shares are stated once: ATX headings at column 0 outside fenced code, the declared level (any level when none is declared), exact text, missing-heading and duplicate-key for a repeated heading. How list markers, table rows, fenced code and TOML lines are recognized is said to be left to the observer. The shared sentences carry `syzygy-dov.24`'s round-2 text word for word. |
+| N-4 — the M15 disclosure said this package decides nothing about failure size | note | Fixed. Question 8, the semantic delta and the ledger now say that the package makes the exactness sentence bind every grammar and adds the category rule, both in M15's path. |
+| N-5 — citer count 63, not 62; U+2026 missing; a code citer missing | note | Fixed. Both sweeps re-run with `…` added: 14 files beyond the literal 49, 63 in all, at the baseline and at `96ee305`. `project-shape-model.ts` is in the list and in Table 2. |
+| N-6 — "no independent review has run" | note | Fixed. The sign-off section now says both rounds said REVISE and these bytes are unreviewed. |
+| N-7 — seven spec mutants survived | note | Fixed. The four added scenarios are compared word for word and the first scenario byte for byte with today's; the requirement body's two SHALL sentences and the five clause labels are rules; the source-path bullet is compared byte for byte with today's; the declared-item bullet is checked rule by rule. The seven survivors are now selftest mutants and fail closed; the selftest kills 146 (was 106). |
+| N-8 — "one extraction rule" and no class-to-category mapping | note | Fixed; question 9 is rewritten to match. The declared-item bullet reads "read by that class's extraction rule (for a loaded profile, the class's grammar rows)" and maps each class to its category, as `classesForPillar` in `project-shape-model.ts` already does, with roster identity its own category. |
 
 ## Verification before any answer
 
