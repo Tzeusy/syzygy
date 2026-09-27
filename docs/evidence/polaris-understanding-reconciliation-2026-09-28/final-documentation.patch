@@ -1,0 +1,58 @@
+--- a/PROJECT-STATUS.md
++++ b/PROJECT-STATUS.md
+@@ -52,8 +52,9 @@
+     to REQ-004, which adds five scenarios, authorized its generator
+     implementation, and ruled that sanitized static SVG is inert under
+     PWB-REQ-006.
+-  - [Unknown] Exact-digest recording/checker reconciliation for the observed
+-    2026-09-28 adoption is pending; the owner adopted the 31/182 composition.
++  - [Observed] The later [technical digest reconciliation](docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json)
++    links that existing owner adoption to its exact REQ-004 bytes. The record
++    adds no adoption or permission; run the checker in the battery below.
+ 
+ **Implementation is in progress.**
+ 
+@@ -310,6 +311,8 @@
+ ```sh
+ python3 scripts/check_governance.py
+ python3 scripts/check_governance.py --selftest
++python3 scripts/record_polaris_understanding_adoption.py --check
++python3 scripts/record_polaris_understanding_adoption.py --selftest
+ python3 scripts/launch_gate_results.py --selftest            # historical Markdown records
+ python3 scripts/validate_launch_administration.py --selftest # the structured record path
+ python3 scripts/render_launch_administration.py --selftest
+@@ -349,7 +352,7 @@
+ git tag --list 'doctrine-*'
+ ```
+ 
+-The thirty-six checks above are the same thirty-six the hosted workflow runs
++The thirty-eight checks above are the same thirty-eight the hosted workflow runs
+ (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
+ battery is clean" are one claim rather than two a reader conflates. The
+ `git tag` line is orientation, not a check — it prints and cannot fail.
+--- a/.syzygy/governance/decisions/README.md
++++ b/.syzygy/governance/decisions/README.md
+@@ -55,7 +55,7 @@
+ | [`DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md`](DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md) | Doctrine amendment **D1**, in force |
+ | [`DOCTRINE-AMENDMENT-D5-READABILITY.md`](DOCTRINE-AMENDMENT-D5-READABILITY.md) | Doctrine amendment **D5**, in force — adopted 2026-09-27; the readability rewrite, closing P-25 and P-25(c) |
+ | [`DOCTRINE-AMENDMENT-D6-TREE-STYLE.md`](DOCTRINE-AMENDMENT-D6-TREE-STYLE.md) | Doctrine amendment **D6**, in force — adopted 2026-09-27; the tree-style restyle under CC-REV-8, with eight diagrams |
+-| [`POLARIS-TREE-FORM-AMENDMENT.md`](POLARIS-TREE-FORM-AMENDMENT.md) · [`…-ADOPTION.md`](POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md) | Polaris tree-form and diagram amendment to REQ-polaris-generation-004, in force — adopted 2026-09-28 with implementation authorized; rules sanitized static SVG inert under PWB-REQ-006. [Unknown] Exact-digest recording/checker reconciliation is pending for this observed owner adoption (31/182). |
++| [`POLARIS-TREE-FORM-AMENDMENT.md`](POLARIS-TREE-FORM-AMENDMENT.md) · [`…-ADOPTION.md`](POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md) | Polaris tree-form and diagram amendment to REQ-polaris-generation-004, in force — adopted 2026-09-28 with implementation authorized; rules sanitized static SVG inert under PWB-REQ-006. [Observed] [Later technical digest reconciliation](../../../docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json) records its exact REQ-004 subject; it grants no adoption or permission. |
+ | [`DOCTRINE-AMENDMENT-LOG.md`](DOCTRINE-AMENDMENT-LOG.md) | Every doctrine amendment, one row each |
+ | [`WAVE-A-INSTALL-SHAPE-DECISION.md`](WAVE-A-INSTALL-SHAPE-DECISION.md) | **P-33 ruled 2026-08-16** — install shape (M), recorded in the packet's own template |
+ | [`LAUNCH-GATE-AUTHORITY-DECISION.md`](LAUNCH-GATE-AUTHORITY-DECISION.md) | **P-34 ruled 2026-08-16** — launch-gate v2.4 approved as process policy, arm (a), residuals disclosed |
+--- a/.github/workflows/governance-docs.yml
++++ b/.github/workflows/governance-docs.yml
+@@ -161,6 +161,12 @@
+       - name: check_governance --selftest
+         run: python3 scripts/check_governance.py --selftest
+ 
++      - name: understanding adoption exact-digest chain
++        run: python3 scripts/record_polaris_understanding_adoption.py --check
++
++      - name: understanding adoption chain selftests
++        run: python3 scripts/record_polaris_understanding_adoption.py --selftest
++
+       - name: launch_gate_results --selftest        # historical Markdown records
+         run: python3 scripts/launch_gate_results.py --selftest
+ 

@@ -1,0 +1,49 @@
+{
+  "files": [
+    {
+      "path": ".github/workflows/governance-docs.yml",
+      "sha256": "4207b793de709a3003428bf32190a42f279585adc3865177646e8cc2a6336f14"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md",
+      "sha256": "6093dbbe519dad6c35a5aaeeb31355d2e435d76ec4f0c2c9affb0d1e5b6b5621"
+    },
+    {
+      "path": ".syzygy/governance/decisions/README.md",
+      "sha256": "1d960d556c940a6367813f54b087a08c1e89cfb09070df47ff1b14b7a13ade12"
+    },
+    {
+      "path": ".syzygy/governance/doctrine/vision.md",
+      "sha256": "93cc5fbbfe8ba07643d097007500f772c7b4ba1f3d5a1ac792c6e4bf74f0506d"
+    },
+    {
+      "path": "PROJECT-STATUS.md",
+      "sha256": "53e9ae06b4b969f7ebe05c54c66f89f29751ab8ab952db4325e34f7a827347df"
+    },
+    {
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/README.md",
+      "sha256": "feab56ce976b36024781efa557e001fbf1c58e6a096c3372f4faf30783a3afe9"
+    },
+    {
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/documentation-images.json",
+      "sha256": "4feab500ead279f8ff6d9a2926bc670d59c47aa9a4a5856fcd7fb49fe41eb75f"
+    },
+    {
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/final-documentation.patch",
+      "sha256": "96f889b6054811f240a973982d2c38a0f580802d6a7e0f26321457ec5d7109e1"
+    },
+    {
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/proof.json",
+      "sha256": "0d61eb32066d9ceebc41e2f8ff9ce964cd47cd6162f843cbb9caf9ef264e1712"
+    },
+    {
+      "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record-template.json",
+      "sha256": "582f5be9a744254e7ebc3c0ea79907d1dca92d9511c78c4807a7ea257ead9ecb"
+    },
+    {
+      "path": "scripts/record_polaris_understanding_adoption.py",
+      "sha256": "a95212d4ea11db4934dfbe099c3791f15c3ba49bbfdac9e357eb316a9f443ac0"
+    }
+  ],
+  "version": 1
+}

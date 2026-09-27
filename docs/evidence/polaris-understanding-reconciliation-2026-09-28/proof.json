@@ -1,0 +1,103 @@
+{
+  "added_scenarios": [
+    "Section reads as an abstraction tree",
+    "Supported structure gets its diagram",
+    "Relationship that needs a diagram has none",
+    "Partly supported diagram",
+    "Diagram rendered inertly from declarative source"
+  ],
+  "aggregate_block_sha256": "b604073df7b3aaacbe6bd133b3213f55ef1e79e69549b808c61f3b73adccdad9",
+  "changed_requirements": [
+    "REQ-polaris-generation-004"
+  ],
+  "composition_after": {
+    "requirements": 31,
+    "scenarios": 182
+  },
+  "composition_before": {
+    "requirements": 31,
+    "scenarios": 177
+  },
+  "historical_act_sha256": "0ddd791ce1764b66800306207a7eb2f53be8cd4827c7b15f498d3fcaf7aa9cf5",
+  "historical_commit": "3c915991fbb0eebc38f8daaaea4d05679914b6b8",
+  "integration_base": "f7d80ca6b0f89b4005c52de6b01958d75f71cec5",
+  "manifest_sha256": "3f4b96956b85a268532521ee5d0b1212d28537af7fddf09f89c877bd54bbc40d",
+  "owner_adoption_commit": "077089d6268323c86fab9f6a5c32217e4955c006",
+  "preserved_owner_evidence": [
+    {
+      "path": ".syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md",
+      "sha256": "dcc2e542e1b886d1e0be96e7bb86a982af14a6141d5c6d02b7d79385a7dd99a7"
+    },
+    {
+      "path": ".syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT.md",
+      "sha256": "4c704a39823fafc1f9bff051611b730d23a51b467d192250c8705e16d7a6939c"
+    },
+    {
+      "path": ".syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-REVIEW-1-RAW.md",
+      "sha256": "b80ad1405c476bc319fade1b3dd0eb88a7730bdb675a71bc3877d89cf781e00d"
+    },
+    {
+      "path": ".syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-REVIEW-2-RAW.md",
+      "sha256": "d9fc41d4d4be95d997f772d902ab2a6ec9ac2d171fadf3efed87a40974cf080c"
+    },
+    {
+      "path": ".syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-REVIEW-3-RAW.md",
+      "sha256": "9e2b6402d8fea81192577c69e3ee1a5a9a96333216d22cbbcff2a3f4ebb97230"
+    },
+    {
+      "path": ".syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-REVIEW-4-RAW.md",
+      "sha256": "67f5a25aed5d091593c5160b15962ddf171b70fa3ba0f2c7ef8104e078b0ff70"
+    }
+  ],
+  "subjects": [
+    {
+      "adopted_sha256": "7e69d8445cf79fa4a5398138abf3cd1865bd0750cc53f44a98ef9904f1395f73",
+      "changed": false,
+      "historical_sha256": "7e69d8445cf79fa4a5398138abf3cd1865bd0750cc53f44a98ef9904f1395f73",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/.openspec.yaml"
+    },
+    {
+      "adopted_sha256": "a9506370bb972502a8cb37c6a66c6e14c787bf6dab878cae2e1b0d62018c1acf",
+      "changed": false,
+      "historical_sha256": "a9506370bb972502a8cb37c6a66c6e14c787bf6dab878cae2e1b0d62018c1acf",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/COVERAGE.md"
+    },
+    {
+      "adopted_sha256": "315207c0be81915f2461c1d94a8468a39171b98f1a11deeddd78e8ee676ba32e",
+      "changed": false,
+      "historical_sha256": "315207c0be81915f2461c1d94a8468a39171b98f1a11deeddd78e8ee676ba32e",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/GOVERNING-DEPENDENCIES.md"
+    },
+    {
+      "adopted_sha256": "2d961976b315d64f69bb5675e30614866b42fee75450bc6ab929f69e32d13d75",
+      "changed": false,
+      "historical_sha256": "2d961976b315d64f69bb5675e30614866b42fee75450bc6ab929f69e32d13d75",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/SYNTHESIS-MAP.json"
+    },
+    {
+      "adopted_sha256": "5b06017d100d635125b1b663be4d8ed766e41e9f66b0e85e218f3234eb51fd17",
+      "changed": false,
+      "historical_sha256": "5b06017d100d635125b1b663be4d8ed766e41e9f66b0e85e218f3234eb51fd17",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/design.md"
+    },
+    {
+      "adopted_sha256": "284859db3e1c4c5b763f8349584c35ac89d19dceef7d8a3b45238cf5f7d01ffd",
+      "changed": false,
+      "historical_sha256": "284859db3e1c4c5b763f8349584c35ac89d19dceef7d8a3b45238cf5f7d01ffd",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/proposal.md"
+    },
+    {
+      "adopted_sha256": "6841e63cda0ccdb81966a6fabbdfaf3721910df8ea04959711eb59843859ba58",
+      "changed": true,
+      "historical_sha256": "b7c95f57ca5f67a18570b7124d20b223dff99aea2a936efef76d5940a400f93f",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md"
+    },
+    {
+      "adopted_sha256": "f0e78d5915f076af4117cb839dee0afb27303b2578eea488c952706e382df68c",
+      "changed": false,
+      "historical_sha256": "f0e78d5915f076af4117cb839dee0afb27303b2578eea488c952706e382df68c",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/tasks.md"
+    }
+  ],
+  "version": 1
+}

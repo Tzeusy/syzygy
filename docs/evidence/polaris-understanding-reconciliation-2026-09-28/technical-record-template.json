@@ -1,0 +1,54 @@
+{
+  "added_scenarios": [
+    "Section reads as an abstraction tree",
+    "Supported structure gets its diagram",
+    "Relationship that needs a diagram has none",
+    "Partly supported diagram",
+    "Diagram rendered inertly from declarative source"
+  ],
+  "composition_after": {
+    "requirements": 31,
+    "scenarios": 182
+  },
+  "composition_before": {
+    "requirements": 31,
+    "scenarios": 177
+  },
+  "epistemic_status": "Observed source/blob correspondence; independent review is Inferred",
+  "kind": "later technical recording of an earlier owner act",
+  "original_manifest": {
+    "path": "docs/evidence/polaris-understanding-adoption-manifest-2026-09-13.json",
+    "preservation": "Original eight-row manifest, dedicated act and aggregate block remain byte-identical. Only the REQ-004 row is reconciled to the later adoption; seven other rows remain checked against current bytes.",
+    "sha256": "3f4b96956b85a268532521ee5d0b1212d28537af7fddf09f89c877bd54bbc40d"
+  },
+  "owner_record": {
+    "commit": "077089d6268323c86fab9f6a5c32217e4955c006",
+    "correspondence_words_verbatim": "as merged with this record.",
+    "owner_words_verbatim": "\"1. Adopt and implement the Polaris tree-form amendment\", 2. Permitted, 3.\n  Adopt now\"",
+    "path": ".syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md",
+    "sha256": "dcc2e542e1b886d1e0be96e7bb86a982af14a6141d5c6d02b7d79385a7dd99a7",
+    "subject_words_verbatim": "the amended REQ-polaris-generation-004"
+  },
+  "proof_path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/proof.json",
+  "proof_sha256": "0d61eb32066d9ceebc41e2f8ff9ce964cd47cd6162f843cbb9caf9ef264e1712",
+  "provenance": "Agent technical recorder; existing owner act has bootstrap, uncorrelated provenance; A1 audit-record identity absent. This supplement is not owner adoption.",
+  "recording_date": "2026-09-28",
+  "recording_timezone": "Asia/Singapore",
+  "review": {
+    "c1_inputs": "The retained raw pins C1 and every reviewed input including review-inputs.json; that manifest pins the complete template, proof, checker and exact final documentation patch. The raw is excluded from its own input population.",
+    "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-RAW.md",
+    "sha256": "__C2_RAW_REVIEW_SHA256__"
+  },
+  "scope": "Evidence only: no new adoption, implementation, SVG, project-read, provider-egress, output-write, deployment or release authority. The supplement alone can never establish adoption.",
+  "separate_rulings": "The existing owner record separately authorized bounded generator implementation and ruled on sanitized static SVG. Those rulings retain their own scope and are not extended by this recording.",
+  "subject": {
+    "adopted_sha256": "6841e63cda0ccdb81966a6fabbdfaf3721910df8ea04959711eb59843859ba58",
+    "historical_commit": "3c915991fbb0eebc38f8daaaea4d05679914b6b8",
+    "historical_sha256": "b7c95f57ca5f67a18570b7124d20b223dff99aea2a936efef76d5940a400f93f",
+    "owner_adoption_commit": "077089d6268323c86fab9f6a5c32217e4955c006",
+    "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+    "requirement": "REQ-polaris-generation-004"
+  },
+  "supersession": "The existing 2026-09-28 owner act replaces only REQ-polaris-generation-004 inside the understanding-amendment spec. The remainder of that spec and the predecessor remain unchanged. This technical supplement supersedes no owner act.",
+  "version": 1
+}

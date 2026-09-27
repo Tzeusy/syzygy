@@ -1,0 +1,14 @@
+{
+  ".github/workflows/governance-docs.yml": {
+    "after_sha256": "d30ae29246da18fa4fcb2c7d5e3c4063a7d9a763019dc5e4f760a1621b4464f5",
+    "before_sha256": "4207b793de709a3003428bf32190a42f279585adc3865177646e8cc2a6336f14"
+  },
+  ".syzygy/governance/decisions/README.md": {
+    "after_sha256": "13666f1fcf56686520daeb40ecdad3f81e57cff14870fd54f548e6b952253f3f",
+    "before_sha256": "1d960d556c940a6367813f54b087a08c1e89cfb09070df47ff1b14b7a13ade12"
+  },
+  "PROJECT-STATUS.md": {
+    "after_sha256": "5702688b2991a4d61a84c1c040a63f5b01b5bbd86e8d0defa4356b1c49610080",
+    "before_sha256": "53e9ae06b4b969f7ebe05c54c66f89f29751ab8ab952db4325e34f7a827347df"
+  }
+}

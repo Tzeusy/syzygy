@@ -52,6 +52,8 @@ authority and no model yet called on the current path.
     to REQ-004, which adds five scenarios, authorized its generator
     implementation, and ruled that sanitized static SVG is inert under
     PWB-REQ-006.
+  - [Unknown] Exact-digest recording/checker reconciliation for the observed
+    2026-09-28 adoption is pending; the owner adopted the 31/182 composition.
 
 **Implementation is in progress.**
 
