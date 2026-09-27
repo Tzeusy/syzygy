@@ -28,6 +28,17 @@ The dedicated record must also carry exactly one full-line
 CG-7h orders contract successor-chain acts by this instant; a missing,
 malformed, disagreeing or equal instant fails closed.
 
+The instant must belong to the act's own section of the aggregate record.
+CG-7h fails closed when a `BEGIN`/`END` marker or another act's ceremony line
+lies between the instant and the label, or when another act's ceremony line
+follows the label before the section closes. The section closes at the next
+marker, the next `Act instant:` line or the end of the file. So the section:
+
+- is delimited by markers, or ends where the next act's instant begins;
+- carries one act label only;
+- carries no other upper-case `LABEL: <sha256>` line, such as a quoted
+  predecessor phrase or a `SHA-256: <hex>` heading.
+
 The manifest has two digest rows, in this order, relative to the contracts home:
 
 1. `rfcs/RFC-0008/state-vocabulary-and-cost.md`
