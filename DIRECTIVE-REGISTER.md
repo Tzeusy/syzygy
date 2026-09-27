@@ -30,13 +30,13 @@ defining its identifiers renders an empty table rather than a stale one.
 
 | Identifier | Title, as the corpus marks it | Defined at |
 |---|---|---|
-| `VIS-1` | Comprehensible truth first; never comprehensible fiction | `.syzygy/governance/doctrine/vision.md`:91 |
-| `VIS-2` | No evidence means Unknown, not success | `.syzygy/governance/doctrine/vision.md`:109 |
-| `VIS-3` | Human interpretability is a core tenet | `.syzygy/governance/doctrine/vision.md`:121 |
-| `VIS-4` | Humans steer the vision; agents shape within it | `.syzygy/governance/doctrine/vision.md`:138 |
-| `VIS-5` | Syzygy never writes code; direct writes are confined to two namespaces | `.syzygy/governance/doctrine/vision.md`:163 |
-| `VIS-6` | Syzygy is derived, with two closed exceptions | `.syzygy/governance/doctrine/vision.md`:196 |
-| `VIS-7` | The observatory itself must be trustworthy | `.syzygy/governance/doctrine/vision.md`:215 |
+| `VIS-1` | Comprehensible truth first; never comprehensible fiction | `.syzygy/governance/doctrine/vision.md`:115 |
+| `VIS-2` | No evidence means Unknown, not success | `.syzygy/governance/doctrine/vision.md`:133 |
+| `VIS-3` | Human interpretability is a core tenet | `.syzygy/governance/doctrine/vision.md`:149 |
+| `VIS-4` | Humans steer the vision; agents shape within it | `.syzygy/governance/doctrine/vision.md`:168 |
+| `VIS-5` | Syzygy never writes code; direct writes are confined to two namespaces | `.syzygy/governance/doctrine/vision.md`:193 |
+| `VIS-6` | Syzygy is derived, with two closed exceptions | `.syzygy/governance/doctrine/vision.md`:229 |
+| `VIS-7` | The observatory itself must be trustworthy | `.syzygy/governance/doctrine/vision.md`:250 |
 
 ## Security doctrine — `SEC`
 
@@ -44,11 +44,11 @@ defining its identifiers renders an empty table rather than a stale one.
 
 | Identifier | Title, as the corpus marks it | Defined at |
 |---|---|---|
-| `SEC-1` | Authenticated by default | `.syzygy/governance/doctrine/security.md`:10 |
-| `SEC-2` | Portfolio data leaves owner-controlled infrastructure only through explicit, scoped consent | `.syzygy/governance/doctrine/security.md`:30 |
-| `SEC-3` | Observed code is untrusted, everywhere | `.syzygy/governance/doctrine/security.md`:47 |
-| `SEC-4` | Writes are consented, attributed, and revertable | `.syzygy/governance/doctrine/security.md`:56 |
-| `SEC-5` | Secrets are never indexed | `.syzygy/governance/doctrine/security.md`:64 |
+| `SEC-1` | Authenticated by default | `.syzygy/governance/doctrine/security.md`:15 |
+| `SEC-2` | Portfolio data leaves owner-controlled infrastructure only through explicit, scoped consent | `.syzygy/governance/doctrine/security.md`:42 |
+| `SEC-3` | Observed code is untrusted, everywhere | `.syzygy/governance/doctrine/security.md`:61 |
+| `SEC-4` | Writes are consented, attributed, and revertable | `.syzygy/governance/doctrine/security.md`:72 |
+| `SEC-5` | Secrets are never indexed | `.syzygy/governance/doctrine/security.md`:85 |
 
 ## Craft-and-care policy — `CC`
 
