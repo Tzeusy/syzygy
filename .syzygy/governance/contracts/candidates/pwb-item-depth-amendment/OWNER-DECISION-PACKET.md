@@ -1,46 +1,79 @@
-> **Candidate — binds nothing. Phrase not offered.** P-81 Q5 authorized this
-> draft only. Rounds 1 and 2 returned `REVISE`; their findings are repaired in
-> these bytes, which require a different fresh independent reviewer. The
-> builder has no signed-subject apply mode. The owner has not chosen a
-> successor-chain position, and no recorder entry exists.
+# Owner decision packet — every declared catalog item opens in depth
 
-# Owner packet — PWB item depth
+> **Inert draft.** This packet performs nothing. It records no act,
+> authorizes no implementation and changes no signed byte. A commit, review,
+> merged pull request, passing check, silence or general approval performs no
+> act. The phrase and digest below are retained only so governance checks can
+> detect drift; they are not offered. Sign-off is by version once a fresh
+> review has confirmed the exact bytes (see "How it is signed").
 
-## What this draft proposes
+Date: 2026-10-02. Gate bead: `syzygy-dov.14.2` (P-81 question 5).
 
-Every declared `catalog-entry` may be opened in one item-detail reading keyed
-by its existing semantic claim identity. The current capability deep dive is
-the detail for its matching item. Each detail preserves the existing argument,
-contract and reality bands in their existing order and authority classes.
+Warrant: the P-81 question 5 ruling in
+`.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`,
+which authorizes drafting this amendment only.
 
-The contract band uses a separate fixed-role item-to-intent relation claim. It
-never changes or borrows the item's tuple. One captured declared relation makes
-the relation claim Observed; an absent relation makes it Unknown with
-`missing-declaration`; mutually exclusive relations make it Unknown with
-`contradicted-pending-adjudication`. Each carries its own route and both
-channels carry the same tuple. It never guesses from a name.
+Manifest: `PWB-ITEM-DEPTH-AMENDMENT-MANIFEST.txt`, eleven rows over the signed
+PWB behavior subject. Five rows hash proposed bytes and six hash current
+bytes.
 
-Proposal futures remain adjacent and separate only in a matching declared
-capability's item detail, preserving PWB-REQ-013. Non-capability item details
-show no proposal material. Reality remains a projection of the one shared
-model and evaluation.
+Manifest SHA-256:
+`d46444901790955fa483f156e017d8014983a2bb2f1d51b4ed9b5f957b323771`
 
-No implementation, body read or route is created by this package.
+The builder writes the manifest; this digest was computed from it by script.
+Any change to a patch, the manifest or the subject retires it.
 
-## Choices for later owner disposition
+## What you would be deciding
+
+Whether PWB-REQ-015 should cover every declared catalog item, where it covers
+only the capability deep dive today.
+
+Under the drafted text:
+
+- every item in the declared `catalog-entry` population has one item detail,
+  keyed by the item's existing stable claim identity; the population is not
+  frozen at today's count. The capability deep dive is the detail for its
+  matching item, not a second identity;
+- every item detail keeps the existing three bands in the existing order:
+  `argument` (non-normative framing that cannot create intent, authority or a
+  capability), `contract` (captured governing identities and verbatim-reachable
+  current text), and `reality` (only the one shared model);
+- the contract band carries a separate **governing-intent relation claim**,
+  identified by the item's identity and a fixed role, with its own complete
+  tuple. It never changes or borrows the item's tuple;
+- one or more captured declared relations that do not exclude one another make
+  that claim Observed over the whole set, and each related current intent
+  renders verbatim; no declared relation makes it Unknown with
+  `missing-declaration`; mutually exclusive relations make it Unknown with
+  `contradicted-pending-adjudication`; each keeps its resolution route. A label,
+  basename, similarity or generated prose never makes a relation;
+- both channels carry the same item and relation tuples, and the
+  catalog-to-detail-to-exact-source path keeps the item's identity and state;
+  a URL, label, path or coordinate is never identity;
+- proposal material renders only in a matching declared capability's detail,
+  as PWB-REQ-013 requires; a non-capability detail renders none.
+
+Nothing reads a new source: exact intent stays behind the existing exact-source
+route and its gates.
+
+## Choices for you
 
 | Question | Drafted arm | Other lawful arm |
 |---|---|---|
 | Population | every declared `catalog-entry`, without freezing today's count | name a narrower closed population and return the delta to review |
-| Unmapped item relation | separate Unknown relation claim with RFC2-24 reason and route; item tuple unchanged | keep such an item at catalog altitude only, with no detail |
+| Unmapped item relation | separate Unknown relation claim with its reason and route; item tuple unchanged | keep such an item at catalog altitude only, with no detail |
+| Compatible plural relations | one Observed relation over the whole set, every related intent verbatim | classify every plural population as a contradiction, which needs a governing invariant making the relation functional |
 | Proposal scope | matching declared capabilities only, as PWB-REQ-013 requires | amend PWB-REQ-013 in a separately owner-scoped change before widening |
-| Location | specify semantic item selection and leave the incidental URL to implementation | require a particular observable route shape in the specification |
+| Location | specify semantic item selection and leave the incidental URL to implementation | require a particular observable route shape |
 | Existing capability | reuse the matching item detail and identity | retain a second capability-only detail, which needs a duplication rationale |
-| Successor order | not selected in this draft | place it relative to `.21 → .30 → .22 → lane B` and intervening successors |
 
-The recommended arm in each semantic row is the drafted one. Silence or a
-partial answer changes nothing. A requested change retires review of the old
-bytes and regenerates the manifest.
+Three points the drafted text leaves open, stated so a reviewer does not have
+to find them (`SEMANTIC-DELTA.md`, "Open points for the owner"): whether an
+Observed relation stays Observed when PWB-REQ-011's gates leave the exact text
+Unknown; which currency class the relation claim belongs to, since a class with
+no effective bound renders Unknown under PWB-REQ-007; and the compatible-set
+arm above. None changes the drafted bytes unless you rule on it, and a ruling
+that changes them goes back to review.
 
 ## What remains outside the decision
 
@@ -48,33 +81,32 @@ bytes and regenerates the manifest.
   posture.
 - No new band class, capability inference, positive status or authority.
 - No Butlers write, egress, observed-code execution, deployment or release.
-- No implementation authorization. Even an adopted amendment needs a fresh
-  explicit authorization because the current continuation stops at further
-  PWB specification changes.
+- No implementation authorization. A signed version authorizes no code or body
+  read; that needs a fresh explicit authorization.
 
-## Review and ordering before any act
+## Owner-visible consequences
 
-1. The retained round-1 and round-2 raws record `REVISE`; these repaired bytes
-   get a different fresh independent reviewer under `REVIEW-BRIEF.md`.
-2. Every finding is dispositioned; any further semantic edit gets another
-   fresh review.
-3. The owner answers the choices above and selects the successor-chain position.
-4. The builder regenerates against the actual predecessor and the final exact
-   bytes are reviewed again if they moved.
-5. Only then may a dedicated recorder and act phrase be presented.
+1. The registry entry and the secret policy pin `spec.md`'s digest. A signed
+   version stales both pins; this package does not repair them.
+2. The dependency patch is rebased on the current spec. A later amendment to
+   the same files regenerates it.
+3. Coverage row 18 is restated; contract coverage rows RFC7-13, RFC7-14,
+   RFC7-17 and RFC7-26 are reworded to the item scope. No row changes status.
 
-## Not offered
+## How it is signed
 
-The currently computed manifest-file SHA-256 is
-`2d071b73b0e3cb50dafa2fa80ac103d0079b855fcbbd9728c04eb99a166fbf7e`.
-The corresponding future label is registered for stale-copy detection:
+Sign-off is by version, under
+`.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`:
+once a fresh independent review of these exact bytes returns CONFIRM, or
+CONFIRM WITH EXCEPTIONS with every finding a note, you are asked once whether
+to sign off version 1.0. Nothing is performed until you say so, and replying
+before then performs nothing. The recorder
+`scripts/record_versioned_signoff.py` then proves every manifest row against
+the tree after the patches are applied, applies the five patches in one
+change, writes the record and tags the merged commit. The retained phrase, for
+governance checks only:
 
-```text
-SIGN OFF PWB ITEM-DEPTH AMENDMENT: 2d071b73b0e3cb50dafa2fa80ac103d0079b855fcbbd9728c04eb99a166fbf7e
-```
-
-This is **not an offer**. A reply with that text now performs nothing. The
-digest will change if any proposed byte or predecessor changes.
+`SIGN OFF PWB ITEM-DEPTH AMENDMENT: d46444901790955fa483f156e017d8014983a2bb2f1d51b4ed9b5f957b323771`
 
 ## Read-only checks
 

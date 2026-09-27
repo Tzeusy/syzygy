@@ -1,18 +1,14 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/openspec/changes/polaris-project-wide-butlers-model/design.md
 --- a/openspec/changes/polaris-project-wide-butlers-model/design.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
-@@ -135,19 +135,59 @@
- The machine answer and Polaris consume the same coverage object. A page cannot
+@@ -136,5 +136,5 @@
  claim whole-project coverage from a smaller hidden model.
 
 -### 3. Separate the project account from capability detail
 +### 3. Separate the project account from item detail
 
  The Polaris entry follows the accepted RFC7 progression:
-
- 1. Overview
- 2. Boundaries
- 3. Architecture
+@@ -145,9 +145,49 @@
  4. V1 scope and success
  5. Project catalog
 -6. Capability detail
@@ -31,9 +27,9 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/ope
 +non-normative framing and cannot mint intent. Contract carries a separate
 +item-to-intent relation claim whose semantic identity combines the item's
 +stable claim identity with the fixed role `governing-intent` at the same
-+evaluation. It never borrows or changes the item's epistemic tuple. Exactly
-+one captured declared relation is Observed and reaches verbatim current
-+authority. No relation is Unknown with RFC2-24 `missing-declaration`; mutually
++evaluation. It never borrows or changes the item's epistemic tuple. One or
++more captured declared relations that do not exclude one another are one
++Observed relation over the whole set and reach verbatim current authority. No relation is Unknown with RFC2-24 `missing-declaration`; mutually
 +exclusive relations are Unknown with `contradicted-pending-adjudication`.
 +Each reason retains its RFC2-24 resolution route, and matching a label,
 +basename or similar prose is never a substitute. Both channels recover the
@@ -50,7 +46,7 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/ope
 +flowchart LR
 +    I["Catalog item claim<br/>tuple unchanged"] --> D["Item detail"]
 +    I --> R["governing-intent relation claim<br/>separate tuple"]
-+    ONE["One declared relation"] --> O["Observed<br/>verbatim current intent"] --> R
++    ONE["One or more compatible declared relations"] --> O["Observed<br/>verbatim current intents"] --> R
 +    NONE["No declared relation"] --> U1["Unknown<br/>missing-declaration"] --> R
 +    MANY["Mutually exclusive relations"] --> U2["Unknown<br/>contradicted-pending-adjudication"] --> R
 +    R --> C["Contract band"]
@@ -65,9 +61,7 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/ope
 +gates.
 
  ### 4. Use direct copy with a finite rubric
-@@ -274,10 +314,12 @@
- 3. Discover and expose the closed source-path population.
- 4. Read exact Git objects and classify content; record exclusions.
+@@ -299,7 +339,9 @@
  5. Extract declared entities, statements, catalogs and source anchors.
  6. Reconcile coverage and contradictions.
 -7. Add the existing capability deep-dive facts.
@@ -79,4 +73,3 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/ope
 +9. Render project-level Polaris and item detail from that model.
  10. Evaluate nine-answer readiness under PWB-REQ-021, then evaluate the
      separate walkthrough record and owner judgment under PWB-REQ-022 with the
-     exact judgment-act state retained.

@@ -118,6 +118,7 @@ def real_packages() -> dict[str, Package]:
     missing = lambda: _module("build_pwb_missing_currency_disclosure_scenario")  # noqa: E731
     dismissal = lambda: _module("build_pwb_dismissal_expiry_amendment")  # noqa: E731
     container = lambda: _module("build_pwb_container_shape_profile_amendment")  # noqa: E731
+    item_depth = lambda: _module("build_pwb_item_depth_amendment")  # noqa: E731
     return {
         "pwb-missing-currency-disclosure-scenario": Package(
             "pwb-missing-currency-disclosure-scenario",
@@ -148,6 +149,16 @@ def real_packages() -> dict[str, Package]:
             lambda root: container().check(),
             lambda root: container().apply(True),
             lambda root: _rows_hash_tree(root, container().MANIFEST_OUT),
+        ),
+        "pwb-item-depth-amendment": Package(
+            "pwb-item-depth-amendment",
+            "PWB item-depth amendment",
+            "behavior amendment",
+            CANDIDATES / "pwb-item-depth-amendment",
+            "PWB-ITEM-DEPTH-AMENDMENT",
+            lambda root: item_depth().check()[0],
+            lambda root: item_depth().apply(True),
+            lambda root: _rows_hash_tree(root, item_depth().MANIFEST_OUT),
         ),
     }
 

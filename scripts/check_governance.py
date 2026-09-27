@@ -7230,6 +7230,23 @@ def selftest():
                   "not failed",
                   _selftest_dead_route(active=False)))
 
+    row = _selftest_code_span_link("[real](no-such-real.md)\n")
+    cases.append(("CG-1a a broken link outside a code span is still checked",
+                  row[0] == "FAIL" and row[2] == 1 and row[3] == 1
+                  and row[4] == ["doc.md -> no-such-real.md"]))
+    row = _selftest_code_span_link("example: `[text](no-such-span.md)`\n")
+    cases.append(("CG-1a a broken link inside a code span is not counted",
+                  row[0] == "WARN" and row[2] == 0 and row[3] == 0))
+    row = _selftest_code_span_link(
+        "`[text](no-such-span.md)` then [real](no-such-real.md)\n")
+    cases.append(("CG-1a a code span does not hide a real broken link beside it",
+                  row[0] == "FAIL" and row[2] == 1
+                  and row[4] == ["doc.md -> no-such-real.md"]))
+    row = _selftest_code_span_link(
+        "[ok](other.md) and `[text](no-such-span.md)`\n", existing=("other.md",))
+    cases.append(("CG-1a a resolving link beside a broken one in a span passes",
+                  row[0] == "OK" and row[2] == 1 and row[3] == 0))
+
     row = _selftest_installed_fallback("valid")
     cases.append(("CG-1i valid candidate fallback is verified and disclosed",
                   row[0] == "WARN" and row[2] == 1 and row[3] == 0))
@@ -8025,6 +8042,43 @@ def _selftest_dead_route(active):
         cg1_links([rel], c)
         row = c.row("CG-1g")
         return bool(row) and (row[0] == "FAIL") == bool(active)
+    finally:
+        ROOT = keep
+        shutil.rmtree(d, ignore_errors=True)
+
+
+def _selftest_code_span_link(body, existing=()):
+    """CG-1a against a temp tree: `body` is the whole text of one markdown file.
+
+    A link written inside an inline code span is an example, not a link, so it
+    is neither counted nor resolved; a link outside any span still is.
+    `existing` names sibling files created so a relative target resolves.
+    """
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, severity, name, examined, n, unit, note=None,
+                details=None):
+            self.rows.append(
+                (severity, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows
+                         if r[1].startswith(prefix)), None)
+
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp(prefix="cg1a-selftest-")
+    global ROOT
+    keep = ROOT
+    try:
+        paths = ["doc.md", *existing]
+        for rel in paths:
+            with open(os.path.join(d, rel), "w", encoding="utf-8") as fh:
+                fh.write(body if rel == "doc.md" else "target\n")
+        ROOT = d
+        c = Cap()
+        cg1_links(paths, c)
+        return c.row("CG-1a")
     finally:
         ROOT = keep
         shutil.rmtree(d, ignore_errors=True)
