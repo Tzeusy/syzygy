@@ -277,6 +277,10 @@ describe('surface routes', () => {
     // first ('direct') of the two it.each cases sharing this fixture —
     // that drain deleted the fixture git repo and the rendered-page
     // directory out from under the still-pending 'tailnet' case).
+    // Both forms share one model, daemon and ServedResponseRecorder, so a
+    // response-ceiling breach in 'direct' would stay visible to 'tailnet'.
+    // Served bodies here are 21-86 KB against the 2 MB ceiling. Hooks
+    // budget 60,000ms, matching the other browser suites' launchBrowser.
     const localCleanups: string[] = [];
     let model: PocModel;
     let daemon: RunningDaemon;
@@ -298,16 +302,22 @@ describe('surface routes', () => {
       localCleanups.push(directory);
       browser = await launchBrowser(browserExecutable);
       page = await browser.newPage();
-    }, 20_000);
+    }, 60_000);
 
     afterAll(async () => {
-      if (page !== undefined) await page.close().catch(() => undefined);
-      if (browser !== undefined) await browser.close().catch(() => undefined);
-      if (daemon !== undefined) await daemon.close().catch(() => undefined);
-      for (const directoryToRemove of localCleanups.splice(0)) {
-        rmSync(directoryToRemove, { recursive: true, force: true });
+      // browser.close() is left to throw: closeDisposableBrowser reports a
+      // private Chrome profile that failed to drain (9162d62), and that
+      // failure must fail this file, as it does in the other browser suites.
+      try {
+        if (page !== undefined) await page.close().catch(() => undefined);
+        if (browser !== undefined) await browser.close();
+      } finally {
+        if (daemon !== undefined) await daemon.close().catch(() => undefined);
+        for (const directoryToRemove of localCleanups.splice(0)) {
+          rmSync(directoryToRemove, { recursive: true, force: true });
+        }
       }
-    }, 20_000);
+    }, 60_000);
 
     it.skipIf(browserExecutable === undefined).each(['direct', 'tailnet'] as const)('exhausts 13 runtime cross-surface links over five classes and fetches every %s target', async (form) => {
       if (page === undefined) throw new Error('shared browser page not initialized');

@@ -127,6 +127,11 @@ CAMPAIGNS = (
     ),
     campaign("pwb-m1-lane-a", "PWB M1 lane A", r"R-PWB-M1-POLARIS-LANE-A-RAW\.md"),
     campaign(
+        "poc-surface-routes-budget",
+        "Surface-routes CI budget",
+        r"R-SURFACE-ROUTES-BUDGET-.*\.md",
+    ),
+    campaign(
         "pwb-recorder-notes-only",
         "Recorder notes-only verdict",
         r"R-PWB-RECORDER-NOTES-ONLY-.*\.md",
