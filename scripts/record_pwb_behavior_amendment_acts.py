@@ -46,9 +46,14 @@ below line 4 is read) and accepts exactly one of two cases, per
 - **Case (b) — CONFIRM WITH EXCEPTIONS, notes only.** The head carries an
   exact line `Verdict: CONFIRM WITH EXCEPTIONS`, the same
   `Manifest SHA-256:` and `Reviewed commit:` lines as case (a), AND the
-  `Act` entry names a `disposition_record` path, AND that disposition
-  record (read directly from the tree; never git-blob-pinned) satisfies
-  every one of:
+  `Act` entry names a `disposition_record` path AND a `disposition_sha256`
+  pin (see "Pinning" below), AND that disposition record (its bytes read
+  directly from the tree; never git-blob-pinned, only hash-pinned)
+  satisfies every one of:
+    - its current bytes hash to exactly the Act's `disposition_sha256`
+      (a mismatch, or an Act naming `disposition_record` with no
+      `disposition_sha256` at all, each refuses with its own distinct
+      message, before any content check below runs);
     - it exists;
     - it carries an exact line `Reviewed record: <the raw's repo path,
       exactly as `act.confirmation_review` names it>`;
@@ -57,15 +62,66 @@ below line 4 is read) and accepts exactly one of two cases, per
       digit, or the line's absence, refuses — this is the only accepted
       zero-count line form);
     - it dispositions every numbered finding of the raw: read each text's
-      own line-leading markers `^(\d+)\.\s` (MULTILINE); the raw's finding
-      count N is the longest unbroken run 1..N starting at 1 (0 if line
-      `1.` never opens a line); the disposition's own line-leading markers
-      must equal the exact set `{1, ..., N}` — not a superset or a subset.
+      own finding markers, recognizing BOTH a line-leading form
+      `^(\d+)\.\s` (MULTILINE) AND a bold form `^\*\*Finding (\d+)\b`
+      (MULTILINE) — the real P-71 opening-band-scenario raws (rounds 1–10)
+      open every finding `**Finding <n> — ...` and carry zero line-leading
+      markers, so recognizing only the first form reads their finding count
+      as 0 and the (then-vacuous) predicate would hold for any disposition,
+      including an empty one (found against the real round-10 raw while
+      hardening this predicate, `syzygy-qqt`). Both forms are read after
+      first stripping every CommonMark-fenced code block from that text —
+      a fence opens on a line of 3-or-more backticks or tildes (indented at
+      most 3 spaces; a backtick fence's info string may not itself contain
+      a backtick) and closes only on a later line of the *same* character,
+      similarly indented, whose run length is at least the opening fence's;
+      an unclosed fence runs to end of text. This stripping runs on BOTH
+      the raw and the disposition before either is scanned, so a numbered
+      line inside a fenced example cannot inflate the raw's finding count
+      nor stand in for a real disposition. Indented (4-space) code blocks
+      are NOT stripped — this corpus never opens a numbered list at column
+      0 inside one, and stripping by indentation risks swallowing a
+      genuinely indented continuation of a real finding. The raw's finding
+      set is the exact set of numbers either form yields over the stripped
+      text — NOT the contiguous run `{1, ..., N}` starting at 1: findings
+      are numbered continuously across a package's review rounds (round 11
+      of that same package opens at 49), so a later round's raw carries no
+      finding 1 at all and a `{1..N}`-from-1 predicate would refuse a
+      legitimate record. A number that opens more than one line in the same
+      text (raw or disposition, independently) is a parse failure, refused
+      with its own message, not a re-used finding number. A raw whose
+      verdict is CONFIRM WITH EXCEPTIONS but whose finding set parses empty
+      is refused with its own distinct message — a notes-only verdict with
+      no countable note is a parse failure, not a vacuous pass. The
+      disposition's own finding set over its own stripped text must equal
+      the raw's finding set exactly — not a superset or a subset.
   Any other combination (a REVISE-style verdict, a missing or malformed
-  disposition, a digest mismatch, a nonzero revise count, an unmatched
-  finding, or case (b) with no `disposition_record` configured on the Act)
-  refuses with a specific error. No `ACTS` entry currently names a
-  `disposition_record`; wiring one is a later, separately reviewed change.
+  disposition, a missing or mismatched `disposition_sha256` pin, a digest
+  mismatch, a nonzero revise count, an unmatched finding, a raw with zero
+  countable findings, a duplicated finding number in either text, or case
+  (b) with no `disposition_record` configured on the Act) refuses with a
+  specific error. No `ACTS` entry currently names a `disposition_record`;
+  wiring one is a later, separately reviewed change.
+
+Pinning. `disposition_sha256` is the full sha256 of the disposition
+record's bytes, set once when an Act's package is drafted with a
+`disposition_record` — exactly like `frozen_subject` and `packet_head` are
+fixed at drafting time from committed bytes, never recomputed from
+whatever the live tree happens to hold and trusted on that basis alone.
+Without this pin a disposition record — read live, with no CC-REV-6
+`-RAW.md` convention protecting it from edits — could be edited after the
+ceremony and `--check` would silently re-verify the new bytes, never the
+ones anyone reviewed (finding 8,
+`docs/reviews/R-PWB-RECORDER-NOTES-ONLY-REVIEW-RAW.md`). Documentation
+only: finding 6 of that same raw found the analogous self-computed
+CONFIRM-only render-byte-identity hashes hard-coded in `selftest()`
+insufficient, standing alone, as evidence that this script's rendering is
+byte-identical to the pre-case-(b) code — they only guard *future* drift
+from this commit onward, not a bug already present in it. The same is true
+in reverse of any digest this script computes from its own live read: the
+byte-identity evidence a dispute over a disposition's pin would need is an
+origin/main diff of the record's rendered bytes, not a hash recomputed
+here and checked against itself.
 """
 
 from __future__ import annotations
@@ -88,30 +144,103 @@ SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 ROW_RE = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
 REVIEWED_COMMIT_RE = re.compile(r"^Reviewed commit: ([0-9a-f]{40})\s*$", re.MULTILINE)
 FINDING_MARK_RE = re.compile(r"^(\d+)\.\s", re.MULTILINE)
+# The real P-71 opening-band-scenario raws open every finding this way
+# (bold, em dash or similar after the number) and carry no line-leading
+# `N. ` markers at all (syzygy-qqt scope addition).
+FINDING_BOLD_RE = re.compile(r"^\*\*Finding (\d+)\b", re.MULTILINE)
 CONFIRM_LINE = "Verdict: CONFIRM"
 EXCEPTIONS_LINE = "Verdict: CONFIRM WITH EXCEPTIONS"
 EXPECTED_ROWS = 11
+# A fence opener: up to 3 leading spaces, then 3-or-more of the same fence
+# character (backtick or tilde), then the rest of the line (the info string
+# for a backtick fence).
+FENCE_OPEN_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 
 
-def _numbered_markers(text: str) -> set[int]:
-    """The set of numbers that open a line as `<n>. ` (MULTILINE)."""
-    return {int(n) for n in FINDING_MARK_RE.findall(text)}
+def _strip_fenced_code(text: str) -> str:
+    """Blank out the content of every CommonMark-fenced code block (finding 7,
+    `docs/reviews/R-PWB-RECORDER-NOTES-ONLY-REVIEW-RAW.md`), so a numbered
+    line written as a fenced example cannot be mistaken for a real finding
+    marker on either side of the case-(b) predicate.
+
+    A fence opens on a line of 3-or-more backticks or tildes, indented at
+    most 3 spaces; per CommonMark a backtick fence's info string may not
+    itself contain a backtick (a line that violates this is not a fence
+    opener at all). It closes only on a later line of the *same* character,
+    indented at most 3 spaces, with no trailing content but whitespace,
+    whose run length is at least the opening fence's — a closing attempt
+    with fewer characters, or of the other fence character, does not close
+    it. An opened-but-never-closed fence runs to the end of the text.
+
+    Does NOT strip CommonMark's *indented* (4-space) code blocks: nothing in
+    this corpus opens a numbered finding list at column 0 inside one, and
+    stripping by indentation alone risks swallowing a genuinely indented
+    continuation of a real finding.
+    """
+    lines = text.split("\n")
+    out: list[str] = []
+    i = 0
+    n = len(lines)
+    while i < n:
+        m = FENCE_OPEN_RE.match(lines[i])
+        fence_char = m.group(1)[0] if m else None
+        fence_len = len(m.group(1)) if m else 0
+        info = m.group(2) if m else ""
+        is_fence = bool(m) and not (fence_char == "`" and "`" in info)
+        if not is_fence:
+            out.append(lines[i])
+            i += 1
+            continue
+        out.append("")
+        i += 1
+        close_re = re.compile(r"^ {0,3}" + re.escape(fence_char) + "{" + str(fence_len) + r",}\s*$")
+        while i < n:
+            out.append("")
+            closed = bool(close_re.match(lines[i]))
+            i += 1
+            if closed:
+                break
+    return "\n".join(out)
 
 
-def _raw_finding_count(text: str) -> int:
-    """The longest unbroken run 1..N of `_numbered_markers`, starting at 1;
-    0 if a line `1. ` never opens a line."""
-    seen = _numbered_markers(text)
-    n = 0
-    while (n + 1) in seen:
-        n += 1
-    return n
+def _finding_numbers(text: str) -> list[int]:
+    """Every finding number opening a line outside any fenced code block, in
+    document order, recognizing both a line-leading `<n>. ` marker and a
+    bold `**Finding <n> —` marker (syzygy-qqt scope addition: the real
+    P-71 opening-band-scenario raws use only the bold form). Duplicates are
+    preserved here — `_finding_number_set` is where a repeated number is
+    treated as a parse failure."""
+    stripped = _strip_fenced_code(text)
+    return (
+        [int(n) for n in FINDING_MARK_RE.findall(stripped)]
+        + [int(n) for n in FINDING_BOLD_RE.findall(stripped)]
+    )
+
+
+def _finding_number_set(text: str, *, label: str) -> set[int]:
+    """The exact set of finding numbers `_finding_numbers` parses from
+    `text`. Findings are numbered continuously across a package's review
+    rounds (not `{1, ..., N}` from 1 — round 11 of the opening-band-scenario
+    package opens at 49), so the exact set, not a contiguous range, is what
+    a disposition must match. Raises if any number opens more than one line
+    in this same text: a repeated finding number is a parse failure, not a
+    legitimately re-used number."""
+    seen: set[int] = set()
+    dupes: set[int] = set()
+    for n in _finding_numbers(text):
+        (dupes if n in seen else seen).add(n)
+    if dupes:
+        raise ValueError(
+            f"{label} carries a finding number more than once: {sorted(dupes)}"
+        )
+    return seen
 
 
 class Act:
     def __init__(self, act_type, builder, label, record_name, identity, title,
                  frozen_subject, packet_head, confirmation_review, tag_stem,
-                 effect, not_authorized, disposition_record=None):
+                 effect, not_authorized, disposition_record=None,
+                 disposition_sha256=None):
         self.act_type = act_type
         self.builder = builder
         self.label = label
@@ -130,6 +259,11 @@ class Act:
         self.disposition_record = (
             pathlib.Path(disposition_record) if disposition_record is not None else None
         )
+        # The full sha256 of `disposition_record`'s bytes, fixed at drafting
+        # time (finding 8). A disposition record is read live and carries no
+        # CC-REV-6 `-RAW.md` edit protection, so a set `disposition_record`
+        # with no matching pin here is a refusal, never a live trust.
+        self.disposition_sha256 = disposition_sha256
         self._module = None
 
     @property
@@ -297,8 +431,20 @@ def validate_disposition(
         raise ValueError(
             f"missing disposition record: {act.disposition_record.as_posix()}"
         )
-    text = (disposition_override.decode() if disposition_override is not None
-            else disposition_path.read_text())
+    disposition_bytes = (disposition_override if disposition_override is not None
+                         else disposition_path.read_bytes())
+    # Pin check (finding 8) runs before any content check: a disposition
+    # record is read live, so without a fixed sha256 pin an edit after the
+    # ceremony would silently change what `--check` re-verifies.
+    if act.disposition_sha256 is None:
+        raise ValueError(
+            "act names a disposition record but carries no disposition_sha256 pin"
+        )
+    if digest(disposition_bytes) != act.disposition_sha256:
+        raise ValueError(
+            "disposition record bytes do not match the pinned disposition_sha256"
+        )
+    text = disposition_bytes.decode()
     lines = text.splitlines()
     if f"Reviewed record: {act.confirmation_review.as_posix()}" not in lines:
         raise ValueError("disposition record does not name the reviewed raw's exact path")
@@ -306,8 +452,16 @@ def validate_disposition(
         raise ValueError("disposition record does not bind the offered manifest digest")
     if "Revise-severity findings: 0" not in lines:
         raise ValueError("disposition record does not state zero revise-severity findings")
-    expected = set(range(1, _raw_finding_count(review) + 1))
-    actual = _numbered_markers(text)
+    expected = _finding_number_set(review, label="confirmation review")
+    if not expected:
+        raise ValueError(
+            "confirmation review carries CONFIRM WITH EXCEPTIONS but no "
+            "countable numbered finding (neither a line-leading 'N. ' nor a "
+            "bold '**Finding N —' marker outside any fenced code) — a "
+            "notes-only verdict with no countable note is a parse failure, "
+            "not a pass"
+        )
+    actual = _finding_number_set(text, label="disposition record")
     if actual != expected:
         raise ValueError(
             f"disposition record findings {sorted(actual)} do not match the "
@@ -592,18 +746,27 @@ class _FixtureAct:
     2026-09-26-DECISION.md §1: "wiring a real package is a later step")."""
 
     def __init__(self, label, packet, packet_head, confirmation_review,
-                 disposition_record=None):
+                 disposition_record=None, disposition_sha256=None):
         self.label = label
         self.packet = packet
         self.packet_head = packet_head
         self.confirmation_review = confirmation_review
         self.disposition_record = disposition_record
+        self.disposition_sha256 = disposition_sha256
 
 
 def selftest_disposition() -> list[tuple[str, bool]]:
     """Case (b) mutation fixtures, built entirely under a temp directory
     (never the tracked tree). Exercises every refusal condition the module
-    docstring's case (b) lists, plus one positive fixture."""
+    docstring's case (b) lists, the fenced-region exclusion on both the raw
+    and the disposition (finding 7, ``` and ~~~ fences, a longer-length
+    close), the disposition_sha256 pin (finding 8: mismatch, missing, and
+    matching), the bold `**Finding N —` marker form and a form mixing it
+    with the line-leading form in one text, the zero-countable-findings
+    fail-closed refusal, exact (non-contiguous, non-1-based) finding-set
+    equality, and duplicate-finding-number parse failures on both the raw
+    and the disposition side (syzygy-qqt scope addition), plus the positive
+    fixtures for each."""
     results = []
 
     def rejects(fn, needle, *args, **kwargs):
@@ -621,6 +784,24 @@ def selftest_disposition() -> list[tuple[str, bool]]:
         argument = "c" * 64
 
         act = _FixtureAct("FIXTURE CASE-B LABEL", rel_packet, "0" * 40, rel_review)
+
+        def with_pin(disposition_bytes: bytes) -> bytes:
+            """Set the fixture Act's pin to match these exact bytes, the way a
+            real drafted package would, then hand the bytes back for the
+            override kwarg — every case-(b) fixture below is exercising a
+            predicate that runs *after* the pin check passes."""
+            act.disposition_sha256 = digest(disposition_bytes)
+            return disposition_bytes
+
+        def accepts_case_b(review_text_: str, disposition_bytes: bytes) -> bool:
+            try:
+                reviewed, verdict, disposition = validate_packet(
+                    root, act, argument, review_override=review_text_,
+                    disposition_override=with_pin(disposition_bytes))
+                return verdict == "CONFIRM WITH EXCEPTIONS" and disposition == rel_disposition
+            except ValueError as exc:
+                print(f"  (case-b unexpected failure: {exc})")
+                return False
 
         (root / rel_packet).write_text(f"# Packet\n\n{phrase_for(act, argument)}\n")
         subprocess.run(["git", "init", "-q"], cwd=root, check=True)
@@ -659,23 +840,13 @@ def selftest_disposition() -> list[tuple[str, bool]]:
             "case-b: no disposition_record configured on the Act rejected",
             rejects(validate_packet, "names no disposition record",
                     root, act, argument, review_override=review_text,
-                    disposition_override=good_disposition.encode())))
+                    disposition_override=with_pin(good_disposition.encode()))))
 
         act.disposition_record = rel_disposition
 
-        try:
-            reviewed, verdict, disposition = validate_packet(
-                root, act, argument, review_override=review_text,
-                disposition_override=good_disposition.encode())
-            positive_ok = (verdict == "CONFIRM WITH EXCEPTIONS"
-                          and disposition == rel_disposition
-                          and reviewed == "b" * 40)
-        except ValueError as exc:
-            positive_ok = False
-            print(f"  (case-b positive fixture failure: {exc})")
         results.append((
             "case-b: valid CONFIRM WITH EXCEPTIONS with matching disposition accepted",
-            positive_ok))
+            accepts_case_b(review_text, good_disposition.encode())))
 
         results.append((
             "case-b: missing disposition record file rejected",
@@ -689,7 +860,7 @@ def selftest_disposition() -> list[tuple[str, bool]]:
             "case-b: disposition naming the wrong raw path rejected",
             rejects(validate_packet, "does not name the reviewed raw's exact path",
                     root, act, argument, review_override=review_text,
-                    disposition_override=bad_path.encode())))
+                    disposition_override=with_pin(bad_path.encode()))))
 
         bad_digest = good_disposition.replace(
             f"Manifest SHA-256: {argument}", "Manifest SHA-256: " + "d" * 64, 1)
@@ -697,7 +868,7 @@ def selftest_disposition() -> list[tuple[str, bool]]:
             "case-b: disposition digest mismatch rejected",
             rejects(validate_packet, "does not bind the offered manifest digest",
                     root, act, argument, review_override=review_text,
-                    disposition_override=bad_digest.encode())))
+                    disposition_override=with_pin(bad_digest.encode()))))
 
         nonzero_revise = good_disposition.replace(
             "Revise-severity findings: 0", "Revise-severity findings: 1", 1)
@@ -705,7 +876,7 @@ def selftest_disposition() -> list[tuple[str, bool]]:
             "case-b: nonzero revise-severity count rejected",
             rejects(validate_packet, "does not state zero revise-severity findings",
                     root, act, argument, review_override=review_text,
-                    disposition_override=nonzero_revise.encode())))
+                    disposition_override=with_pin(nonzero_revise.encode()))))
 
         missing_finding = good_disposition.replace(
             "2. Owner already ruled on this; dispositioned by that ruling.\n", "")
@@ -713,14 +884,14 @@ def selftest_disposition() -> list[tuple[str, bool]]:
             "case-b: disposition missing one of the raw's numbered findings rejected",
             rejects(validate_packet, "do not match the raw's numbered findings",
                     root, act, argument, review_override=review_text,
-                    disposition_override=missing_finding.encode())))
+                    disposition_override=with_pin(missing_finding.encode()))))
 
         extra_finding = good_disposition + "3. An extra disposition the raw never raised.\n"
         results.append((
             "case-b: disposition naming an extra finding beyond the raw's rejected",
             rejects(validate_packet, "do not match the raw's numbered findings",
                     root, act, argument, review_override=review_text,
-                    disposition_override=extra_finding.encode())))
+                    disposition_override=with_pin(extra_finding.encode()))))
 
         revise_review = review_text.replace(
             "Verdict: CONFIRM WITH EXCEPTIONS", "Verdict: REVISE", 1)
@@ -728,7 +899,244 @@ def selftest_disposition() -> list[tuple[str, bool]]:
             "case-b: REVISE verdict rejected outright even with a valid disposition present",
             rejects(validate_packet, "does not carry an accepted exact verdict line",
                     root, act, argument, review_override=revise_review,
+                    disposition_override=with_pin(good_disposition.encode()))))
+
+        # --- finding 7: fence exclusion must apply to BOTH the raw and the
+        # disposition, for ```-fences, ~~~-fences and a longer-length close ---
+
+        fenced_decoy_raw = (
+            review_text
+            + "\n"
+            + "A fenced example only, not a third finding:\n"
+            + "\n"
+            + "```text\n"
+            + "3. this looks like a finding but is inside a code fence\n"
+            + "```\n"
+        )
+        results.append((
+            "finding-7: a raw's fenced decoy numbered line does not inflate "
+            "the raw finding count past 2",
+            _finding_number_set(fenced_decoy_raw, label="raw") == {1, 2}))
+        results.append((
+            "finding-7: a raw carrying a fenced decoy still validates against "
+            "the real 2-finding disposition",
+            accepts_case_b(fenced_decoy_raw, good_disposition.encode())))
+
+        disposition_fenced_decoy = (
+            "# Disposition — fixture\n"
+            f"Reviewed record: {rel_review.as_posix()}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Revise-severity findings: 0\n"
+            "\n"
+            "1. Accepted as noted; no repair needed.\n"
+            "\n"
+            "Not a disposition of finding 2 — just an example, fenced below:\n"
+            "\n"
+            "```text\n"
+            "2. inside a fence; must not count as dispositioning finding 2\n"
+            "```\n"
+        )
+        results.append((
+            "finding-7: a disposition's fenced decoy numbered line does not "
+            "satisfy the raw's real finding 2",
+            rejects(validate_packet, "do not match the raw's numbered findings",
+                    root, act, argument, review_override=review_text,
+                    disposition_override=with_pin(disposition_fenced_decoy.encode()))))
+
+        tilde_fenced_raw = (
+            review_text
+            + "\n"
+            + "~~~text\n"
+            + "3. tilde-fenced decoy, must not count\n"
+            + "~~~\n"
+        )
+        results.append((
+            "finding-7: a tilde-fenced decoy does not inflate the raw finding "
+            "count past 2",
+            _finding_number_set(tilde_fenced_raw, label="raw") == {1, 2}))
+
+        longer_close_raw = (
+            "# Review — fixture (round 1, confirmation)\n"
+            f"Reviewed commit: {'b' * 40}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Verdict: CONFIRM WITH EXCEPTIONS\n"
+            "\n"
+            "## Findings\n"
+            "\n"
+            "1. First finding, notes only.\n"
+            "2. Second finding, notes only.\n"
+            "\n"
+            "```text\n"
+            "3. decoy inside a fence closed by a longer fence line\n"
+            "````\n"
+            "\n"
+            "Trailing prose after the fence closes; not a finding.\n"
+        )
+        results.append((
+            "finding-7: a longer closing fence (4 backticks closing a "
+            "3-backtick open) still closes, so its decoy 3. does not count",
+            _finding_number_set(longer_close_raw, label="raw") == {1, 2}))
+
+        # --- finding 8: the disposition record is sha256-pinned ---
+
+        act.disposition_sha256 = digest(b"not the actual disposition bytes")
+        results.append((
+            "finding-8: disposition sha256 mismatch refuses",
+            rejects(validate_packet, "do not match the pinned disposition_sha256",
+                    root, act, argument, review_override=review_text,
                     disposition_override=good_disposition.encode())))
+
+        act.disposition_sha256 = None
+        results.append((
+            "finding-8: a disposition_record with no disposition_sha256 pin "
+            "refuses, distinctly from a mismatch",
+            rejects(validate_packet, "carries no disposition_sha256 pin",
+                    root, act, argument, review_override=review_text,
+                    disposition_override=good_disposition.encode())))
+
+        results.append((
+            "finding-8: a disposition_sha256 pin matching the actual bytes "
+            "passes case (a) unchanged and lets case (b) proceed",
+            accepts_case_b(review_text, good_disposition.encode())))
+
+        # --- syzygy-qqt scope addition: the bold `**Finding N —` marker
+        # form (the real P-71 opening-band-scenario raws' only form), the
+        # zero-countable-findings fail-closed refusal, exact (not `{1..N}`)
+        # set equality across non-contiguous, non-1-based numbering, and
+        # duplicate-number parse failures ---
+
+        bold_review = (
+            "# Review — fixture (round 1, confirmation, bold form)\n"
+            f"Reviewed commit: {'b' * 40}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Verdict: CONFIRM WITH EXCEPTIONS\n"
+            "\n"
+            "## Findings\n"
+            "\n"
+            "**Finding 1 — First finding, notes only.\n"
+            "\n"
+            "**Finding 2 — Second finding, notes only.\n"
+        )
+        results.append((
+            "finding-bold: a raw whose findings open `**Finding N —` "
+            "(bold, no line-leading form at all) is read as {1, 2}, not 0",
+            _finding_number_set(bold_review, label="raw") == {1, 2}))
+        results.append((
+            "finding-bold: a bold-form raw validates against the same "
+            "line-leading-form 2-finding disposition",
+            accepts_case_b(bold_review, good_disposition.encode())))
+
+        mixed_review = (
+            "# Review — fixture (round 1, confirmation, mixed form)\n"
+            f"Reviewed commit: {'b' * 40}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Verdict: CONFIRM WITH EXCEPTIONS\n"
+            "\n"
+            "## Findings\n"
+            "\n"
+            "1. First finding, line-leading form.\n"
+            "\n"
+            "**Finding 2 — Second finding, bold form.\n"
+        )
+        results.append((
+            "finding-bold: a raw mixing the line-leading and bold forms in "
+            "the same text is read as the union, {1, 2}",
+            _finding_number_set(mixed_review, label="raw") == {1, 2}))
+        results.append((
+            "finding-bold: a mixed-form raw validates against the ordinary "
+            "2-finding disposition",
+            accepts_case_b(mixed_review, good_disposition.encode())))
+
+        zero_count_review = (
+            "# Review — fixture (round 1, confirmation, no markers)\n"
+            f"Reviewed commit: {'b' * 40}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Verdict: CONFIRM WITH EXCEPTIONS\n"
+            "\n"
+            "## Notes\n"
+            "\n"
+            "Prose only; this raw opens no line-leading `N. ` marker and no "
+            "bold `**Finding N —` marker anywhere.\n"
+        )
+        results.append((
+            "zero-count: a CONFIRM WITH EXCEPTIONS raw with no countable "
+            "finding marker at all refuses, distinctly from a mismatch",
+            rejects(validate_packet, "no countable numbered finding",
+                    root, act, argument, review_override=zero_count_review,
+                    disposition_override=with_pin(good_disposition.encode()))))
+
+        nonbase_review = (
+            "# Review — fixture (round 11, confirmation, continued "
+            "numbering)\n"
+            f"Reviewed commit: {'b' * 40}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Verdict: CONFIRM WITH EXCEPTIONS\n"
+            "\n"
+            "## Findings\n"
+            "\n"
+            "**Finding 49 — first note, continuing the package's own "
+            "numbering across rounds.\n"
+            "\n"
+            "**Finding 50 — second note.\n"
+        )
+        nonbase_disposition = (
+            "# Disposition — fixture (round 11)\n"
+            f"Reviewed record: {rel_review.as_posix()}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Revise-severity findings: 0\n"
+            "\n"
+            "49. Accepted as noted; no repair needed.\n"
+            "50. Owner already ruled on this; dispositioned by that ruling.\n"
+        )
+        results.append((
+            "non-1-based: a raw numbered {49, 50} (numbering continues "
+            "across rounds, never restarts at 1) validates against a "
+            "disposition dispositioning exactly {49, 50}",
+            accepts_case_b(nonbase_review, nonbase_disposition.encode())))
+        results.append((
+            "non-1-based: a disposition dispositioning {1, 2} does not "
+            "satisfy a raw numbered {49, 50} — set equality, not a count "
+            "or a `{1..N}` range",
+            rejects(validate_packet, "do not match the raw's numbered findings",
+                    root, act, argument, review_override=nonbase_review,
+                    disposition_override=with_pin(good_disposition.encode()))))
+
+        dup_review = (
+            "# Review — fixture (round 1, confirmation, duplicate marker)\n"
+            f"Reviewed commit: {'b' * 40}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Verdict: CONFIRM WITH EXCEPTIONS\n"
+            "\n"
+            "## Findings\n"
+            "\n"
+            "1. First occurrence of finding 1.\n"
+            "\n"
+            "1. A second line also opens as finding 1 — a parse failure, "
+            "not a re-used number.\n"
+        )
+        results.append((
+            "duplicate: a raw with the same finding number opening two "
+            "lines refuses as a parse failure",
+            rejects(validate_packet, "carries a finding number more than once",
+                    root, act, argument, review_override=dup_review,
+                    disposition_override=with_pin(good_disposition.encode()))))
+
+        dup_disposition = (
+            "# Disposition — fixture (duplicate)\n"
+            f"Reviewed record: {rel_review.as_posix()}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Revise-severity findings: 0\n"
+            "\n"
+            "1. First occurrence.\n"
+            "\n"
+            "1. Second line also claims finding 1.\n"
+        )
+        results.append((
+            "duplicate: a disposition with the same finding number opening "
+            "two lines refuses as a parse failure",
+            rejects(validate_packet, "carries a finding number more than once",
+                    root, act, argument, review_override=review_text,
+                    disposition_override=with_pin(dup_disposition.encode()))))
 
     return results
 
