@@ -4,11 +4,12 @@
 > carries no verdict and performs no act. The reviewer must not receive the
 > drafting conversation or a desired verdict.
 
-**Round 2 is a confirmation round.** Round 1 returned REVISE over
-`9b18409` (pre-rebase); its raw is
-`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-RAW.md`, and every finding is
+**Round 3 is a confirmation round.** Round 1 returned REVISE over
+`9b18409` (pre-rebase) and round 2 returned REVISE over `82cc6c4`; their raws
+are `docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-RAW.md` and
+`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-2-RAW.md`, and every finding is
 dispositioned in the review record at the end of `OWNER-DECISION-PACKET.md`.
-The round-2 reviewer checks each disposition against the raw and the current
+The round-3 reviewer checks each disposition against the raws and the current
 bytes, then applies the criteria below afresh.
 
 ## Exact review inputs
@@ -20,7 +21,7 @@ Give the fresh reviewer only:
   `proposed/*.patch` files;
 - `scripts/build_pwb_dismissal_expiry_amendment.py` and the matching
   registration diff in `scripts/check_governance.py`;
-- the round-1 raw named above;
+- the round-1 and round-2 raws named above;
 - the signed PWB eleven-artifact subject;
 - PWB-REQ-007, PWB-REQ-001, RFC1-5, RFC1-12, RFC1-18, RFC1-20, RFC1-25, RFC2-1, RFC2-13, RFC2-14,
   RFC2-15, RFC2-24, RFC2-25, RFC6-14, RFC6-17, VIS-2 and VIS-6 at their
@@ -60,19 +61,21 @@ review.
 6. **Tuple preservation.** No tuple value changes; the challenge vocabulary
    is untouched; RFC2-13's `resolved-dismissed` is not conflated.
 7. **Aggregate polarity.** No aggregate counts a dismissed claim as resolved
-   or favourable; dismissed members stay in every label, tier and reason
-   count and are also counted separately.
+   or favourable; dismissed members stay in every label, tier, freshness and
+   reason count and are also counted separately.
 8. **Refused, lapsed, retired.** The refused-record cases close every way a
    record could dismiss without authority, and a valid record that no longer
    applies is shown as lapsed or bound to a retired identity, never refused.
-   The expiry boundary is exact.
+   Every reachable record state falls in exactly one class under the stated
+   order, and the scenarios agree with the paragraph. The expiry boundary is
+   exact.
 9. **Same-change propagation.** All eleven subjects; the six patched files
    change together and the other five stay exact.
 10. **Coverage rows.** Test the twelve repair-row changes independently,
-    especially the four held or new Unknown rows (RFC1-20.r1, RFC1-25.r1,
-    RFC2-15.r1, RFC6-14.r6) and the believed-not-applicable rows (RFC1-12.r2,
-    RFC1-25.r2, RFC6-14.r5). Confirm totals regenerate to
-    627 / 141 / 240 / 246.
+    especially the five held or new Unknown rows (RFC1-20.r1, RFC1-25.r1,
+    RFC2-15.r1, RFC6-14.r5, RFC6-14.r6) and the believed-not-applicable rows
+    (RFC1-12.r2, RFC1-25.r2). Confirm totals regenerate to
+    627 / 141 / 241 / 245.
 11. **Impact sweep.** Re-run the 1,537-file sweep, the continuation forms
     and the published range-form regex; check the 19 digest pins and implementation consumers.
 12. **Sibling composition.** Exercise the 15 declared outcomes in both

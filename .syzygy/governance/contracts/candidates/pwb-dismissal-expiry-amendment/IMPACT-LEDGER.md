@@ -44,7 +44,16 @@ files — the `.18` registry semantic delta and its retained raw review, the
 M14 funnel, the dated P2-7 mutation record, the 2026-09-05 live exact-head
 packet, and two lines of the retained M13 funnel raw review. All were read;
 none states PWB-REQ-007's dismissal behaviour, so none needs a change here.
-Raw reviews are never edited.
+Raw reviews are never edited. The predicate as run: Python `re`,
+case-sensitive, pattern `(?:,|/|\.\.|\band)\s*007\b`, over each decoded line
+that contains `PWB-REQ-` and does not contain `PWB-REQ-007`.
+
+[Observed, round-2 note N8] One further form lies outside both predicates:
+a hyphen suffix `-007` after another identifier's stem, in 3 lines of 3
+files (`docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md:1658`,
+`docs/evidence/polaris-m11-operability-funnel-2026-09-15.json:1011`,
+`docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-2-RAW.md:66`). The round-2
+reviewer found and read them; none states dismissal behaviour.
 
 [Observed] Range forms, which the continuation sweep above does not reach:
 Python `re` pattern `PWB-REQ-(\d{3}) ?(?:\.\.|…|–) ?(?:PWB-REQ-)?(\d{3})`,
@@ -66,7 +75,7 @@ and none needs a change here.
 | `.openspec.yaml` | unchanged |
 | `CAPABILITY-COVERAGE.md` | row 32 added; totals 26 covered, 6 out of scope, 32 |
 | `CONTRACT-COVERAGE-REPAIR-DELTA.md` | one row changed, eleven added, totals line |
-| `CONTRACT-COVERAGE.md` | regenerated: 627 rows, 141 covered, 240 Unknown, 246 believed not applicable (was 622, 137, 237, 248) |
+| `CONTRACT-COVERAGE.md` | regenerated: 627 rows, 141 covered, 241 Unknown, 245 believed not applicable (was 622, 137, 237, 248) |
 | `GOVERNING-DEPENDENCIES.md` | regenerated: 100 distinct authorities (was 96) |
 | three `contract-coverage-matrix/` files | unchanged |
 | `design.md` | unchanged |
@@ -77,12 +86,12 @@ and none needs a change here.
 
 Each new row splits a base row the audited matrix gave one disposition. The
 repair delta's declared totals become 91 rows, 77 superseded base rows, 65
-covered, 20 Unknown uncovered and 6 believed not applicable (was 80, 71, 61,
+covered, 21 Unknown uncovered and 5 believed not applicable (was 80, 71, 61,
 16, 3). [Observed: builder `--check` and the coverage generator]
 
 | Row | Supersedes | Disposition | Why |
 |---|---|---|---|
-| RFC6-17.r7 | RFC6-17.c2 | covered (was Unknown) | dismissed members stay in every per-label, tier and reason count and are additionally counted and expandable |
+| RFC6-17.r7 | RFC6-17.c2 | covered (was Unknown) | dismissed members stay in every per-label, tier, freshness and reason count and are additionally counted and expandable |
 | RFC1-12.r1 | RFC1-12.c1 | covered | a dismissal bound to a retired claim identity is never transferred and is disclosed as bound to a retired identity [Inferred: PWB specifies no split or merge, so the rule is conditional] |
 | RFC1-12.r2 | RFC1-12.c1 | believed not applicable | challenges and claims across split or merge; no split or merge behaviour is specified, as the base row said |
 | RFC1-20.r1 | RFC1-20.c1 | Unknown, uncovered (was believed not applicable) | the clause is about a gap; the paragraph states the rule for claims |
@@ -92,7 +101,7 @@ covered, 20 Unknown uncovered and 6 believed not applicable (was 80, 71, 61,
 | RFC2-1.r3 | RFC2-1.c12 | covered | every dismissal record present at the evaluation's snapshot is an identified input |
 | RFC2-15.r1 | RFC2-15.c2 | Unknown, uncovered (was believed not applicable) | the clause is about a gap; the paragraph states the rule for claims |
 | RFC6-14.r4 | RFC6-14.c5 | covered | `dismissed-by-decision` travels beside the unchanged tuple in machine views |
-| RFC6-14.r5 | RFC6-14.c5 | believed not applicable | `challenge-pending` and `editorial-draft`; base disposition kept |
+| RFC6-14.r5 | RFC6-14.c5 | Unknown, uncovered (was believed not applicable) | `challenge-pending` and `editorial-draft` travel; RFC6-17.r5 and RFC6-17.r8 already hold challenge state and `editorial-draft` in aggregates Unknown, so their travel cannot be believed not applicable here (round-2 note N7) |
 | RFC6-14.r6 | RFC6-14.c5 | Unknown, uncovered | `unadopted-draft` travel; RFC6-17.r2 already calls that state used, so it cannot be believed not applicable here |
 
 [Inferred] RFC1-20.r1, RFC1-25.r1 and RFC2-15.r1 stay Unknown because the

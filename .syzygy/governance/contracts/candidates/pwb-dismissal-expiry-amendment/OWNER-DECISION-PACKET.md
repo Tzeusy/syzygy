@@ -7,8 +7,8 @@
 > stale; it is not offered until the exact bytes pass a fresh independent
 > review.
 
-Date: 2026-09-26; repaired 2026-09-27 after review round 1 (REVISE; see
-the review record at the end). Gate bead: `syzygy-dov.29` (P-79 question 5, M12 slice 4).
+Date: 2026-09-26; repaired 2026-09-27 after review rounds 1 and 2 (both
+REVISE; see the review record at the end). Gate bead: `syzygy-dov.29` (P-79 question 5, M12 slice 4).
 
 Warrant: your 2026-09-21 answer to P-79 question 5 — a dismissal is an
 amendment, needing a CC-REV-2 delta and a new act "before any dismissal
@@ -19,7 +19,7 @@ PWB behavior subject. Six rows hash proposed bytes and five hash current
 bytes.
 
 Manifest SHA-256:
-`dec888c6399cad83d35da6b7a24a63ed458ae5ab2db272dda6d16ab6c670c91d`
+`2f60fd6352f472aec500e2efea7d9c85cf9f272ccd8bc98ccf2148388c628f73`
 
 The builder writes the manifest; this digest was computed from it by script.
 Any change to a patch, the manifest or the subject retires it.
@@ -45,14 +45,16 @@ Under the drafted text:
   reason, route, freshness and identities), with the dismissal's reason,
   expiry and author beside it, on the same page and without an extra click,
   the same in the human and machine views;
-- no tuple value changes; a dismissed claim stays in every Unknown count and
-  is also counted separately as dismissed, and no count treats it as resolved
-  or good;
-- a record that dismisses nothing is shown as one of three things, never
-  confused: **refused** (incomplete, or names something it may not),
-  **lapsed** (its expiry has passed, or the claim's reason has changed since),
-  or **bound to a retired identity** (the claim it named was split or merged
-  away; a new record is needed for the successor).
+- no tuple value changes; a dismissed claim stays in every label, tier,
+  freshness and reason count (so in every Unknown count) and is also counted
+  separately as dismissed, and no count treats it as resolved or good;
+- a record that dismisses nothing is shown as exactly one of three things,
+  checked in this order and shown as the first that fits: **refused**
+  (incomplete, names a claim that does not exist, or itself tries to dismiss
+  a reason that may not be dismissed), then **bound to a retired identity**
+  (the claim it named was split or merged away; a new record is needed for
+  the successor), then **lapsed** (its expiry has passed, or the claim's
+  reason has changed since, even to one that may not be dismissed).
 
 The full reasoning, with every contract clause quoted, is in
 `SEMANTIC-DELTA.md`.
@@ -62,13 +64,23 @@ The full reasoning, with every contract clause quoted, is in
 1. **Which arm?** The draft keeps the tuple unchanged and shows the dismissal
    as the `dismissed-by-decision` sibling state beside it. Your P-79 words
    say "before any dismissal touches a tuple"; this arm never touches one.
-   The other arms are: widen the challenge-state vocabulary so a dismissal
-   lives inside the tuple (the M12 funnel's framing), or do not build slice 4.
-   Does the drafted arm answer what you asked?
+   The M12 funnel's Q5 row names three arms: (1) an amendment that widens
+   the challenge-state vocabulary so a dismissal lives inside the tuple;
+   (2) a dismissal beside the tuple, leaving every tuple byte unchanged;
+   (3) do not build slice 4. The draft is closest to arm 2, but written as
+   an amendment, as your P-79 answer requires. The funnel says arm 2 is
+   "exactly the 'view filter over a rendered list' shape L2-M8 argues would
+   violate VIS-6(a)". The draft answers that objection by letting only a
+   governed-plane record dismiss; it survives only if no governed-plane home
+   for records is chosen (question 2), and then nothing can dismiss at all.
+   [Inferred; the full argument is in `SEMANTIC-DELTA.md`.] Does the drafted
+   arm answer what you asked?
 2. **Where do dismissal records live, and who writes them?** The draft says
-   only "committed to the governed plane" — that is, in Syzygy's own
-   governed files, never in the observed repository, which Syzygy may not
-   write to. Your question-4 answer deferred any write act, so this package
+   only "committed to the governed plane", and does not say whose. Two
+   readings are possible [Inferred]: Syzygy's own governed files, which
+   Syzygy could one day write to; or the observed project's governed plane,
+   which is how the M12 funnel reads VIS-6(a) promotion, and which Syzygy may
+   not write to. Your question-4 answer deferred any write act, so this package
    gives Syzygy no way to write a record. Which path should the records use,
    and do you author them by hand until a write act exists?
 3. **Who may dismiss?** The draft requires an attributed human author. With
@@ -130,13 +142,14 @@ The full reasoning, with every contract clause quoted, is in
 
 The act phrase for this manifest would be:
 
-`SIGN OFF PWB DISMISSAL-EXPIRY AMENDMENT: dec888c6399cad83d35da6b7a24a63ed458ae5ab2db272dda6d16ab6c670c91d`
+`SIGN OFF PWB DISMISSAL-EXPIRY AMENDMENT: 2f60fd6352f472aec500e2efea7d9c85cf9f272ccd8bc98ccf2148388c628f73`
 
 It is registered so governance checks see it go stale, but it is **not
-offered**: round 1 returned REVISE and no review has confirmed these bytes. If you reply with this phrase now,
-nothing is performed. A future recorder must reject a digest that differs
-from the manifest then present and must prove every manifest row against the
-tree after the patches are applied.
+offered**: rounds 1 and 2 returned REVISE and no review has confirmed these
+bytes. If you reply with this phrase now, nothing is performed. A future
+recorder must reject a digest that differs from the manifest then present and
+must prove every manifest row against the tree after the patches are
+applied.
 
 ## What this act would not do
 
@@ -144,7 +157,8 @@ tree after the patches are applied.
   registry value or retention direction.
 - It would not widen `CHALLENGE_STATES` or change any implementation file.
 - It would not create a write path for dismissal records, or promote notes
-  into governance (your question-4 answer deferred that).
+  into governance. Your question-4 answer ruled "no promotion" and deferred
+  only the write act.
 - It would not authorize M12 slice 4, or any slice.
 - It would not decide the performance order of the other PWB successors.
 
@@ -167,9 +181,10 @@ tree after the patches are applied.
 1. Four contract consequences move to covered (RFC1-12.r1, RFC2-1.r3,
    RFC6-14.r4, RFC6-17.r7). Three rows that would credit the gap clauses are
    held `unknown-uncovered` until you answer question 4, and new rows for
-   decisions affecting precedence and `unadopted-draft` travel stay honestly
-   `unknown-uncovered`. Contract coverage becomes 627 rows: 141 covered, 240
-   Unknown, 246 believed not applicable (today 622: 137, 237, 248).
+   decisions affecting precedence and for `unadopted-draft`,
+   `challenge-pending` and `editorial-draft` travel stay honestly
+   `unknown-uncovered`. Contract coverage becomes 627 rows: 141 covered, 241
+   Unknown, 245 believed not applicable (today 622: 137, 237, 248).
 2. The observer-registry and secret-policy candidates both pin today's
    `spec.md` digest. An adopted successor stales both pins; this package does
    not repair them.
@@ -209,10 +224,15 @@ them at the integration commit.
 Round 1: a fresh-context review over commit `9b18409` returned **REVISE**
 with eleven revise findings and seven notes. The raw is kept verbatim at
 `docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-RAW.md` (verdict line 271).
-`9b18409` was the pre-rebase head; the branch was rebased to `f5f97b8`
-before the repair, and the repair was made on `f5f97b8`. Every repair
-retires round 1 (rule 10); a confirmation round must bind the manifest digest
-above. The builder's self-test went from 67 to 102 mutants killed.
+`9b18409` was the pre-rebase head. The repair was reviewed in round 2 as
+commit `82cc6c4`, whose parent is `8cf689d` (the draft rebased onto
+`66114ac`); an earlier note here named `f5f97b8`, which is on no branch
+(round-2 note N10). Before the round-2 repair the branch was rebased again,
+onto `08d4d02`, where the draft is `6e6d60c` and the round-1 repair
+`28b88a3`; package and builder bytes are unchanged by both rebases. Every
+repair retires the round before it (rule 10); a confirmation round must bind
+the manifest digest above. The builder's self-test went from 67 to 102
+mutants killed in round 1.
 
 | # | Kind | Finding (short) | Disposition |
 |---|---|---|---|
@@ -221,16 +241,37 @@ above. The builder's self-test went from 67 to 102 mutants killed.
 | 3 | REVISE | Refused and lapsed conflated | Repaired. Lapsed is its own disclosed class; refused is only for incomplete or ineligible records; Scenario 3 says neither is shown as refused. |
 | 4 | REVISE | Scenario 1 "same tuple values" false | Repaired. Each evaluation carries the values its own snapshot and as-of instant give, none changed by the dismissal. |
 | 5 | REVISE | "on the primary surface" not carried | Repaired. "on the same surface as the claim and without further disclosure". |
-| 6 | REVISE | Aggregate sentence could drop Unknown counts | Repaired. Dismissed members stay in every label, tier and reason count and are also counted as a sibling state; a Falsifier line and a forbidden-wording rule check it. |
+| 6 | REVISE | Aggregate sentence could drop Unknown counts | Repaired. Dismissed members stay in every label, tier and reason count and are also counted as a sibling state; a Falsifier line and a forbidden-wording rule check it. *Round-2 correction (N4): no forbidden-wording rule checked it; the reviewer's mutant P3 survived. Removal and exclusion wordings are now forbidden, and freshness counts are named (N3).* |
 | 7 | REVISE | "No retention question arises" unsupported | Withdrawn. Routed to you as question 7, a possible retention change. |
 | 8 | REVISE | Arm framing misstates the funnel | Repaired. The funnel's three arms quoted verbatim; the drafted arm placed against arm 2; L2-M8's objection answered, and the case where it survives stated. [Inferred] |
 | 9 | REVISE | RFC6-14.r5 versus RFC6-17.r2 | Repaired. `unadopted-draft` travel split out as RFC6-14.r6, `unknown-uncovered`; r5 narrowed; old question 10 dropped. |
 | 10 | REVISE | PWB-REQ-007 count does not reproduce | Repaired. Re-derived by two methods at `3ee61c7`: 113 files, 540 occurrences (515 is the line count); method published in `IMPACT-LEDGER.md`. |
 | 11 | REVISE | Question 11 put a package proposal in your mouth | Repaired. Now question 10: you fixed `.21 → .30 → .22 → lane B`; `.20`, `.18` and this package after it are the package's proposal [Inferred]. |
-| 12 | NOTE | Builder rules presence-only | Repaired. Scenario body rules, forbidden wordings (clock, hide, collapse, expire-on-read) and their mutants; the reviewer's two surviving mutants are now caught. |
+| 12 | NOTE | Builder rules presence-only | Repaired. Scenario body rules, forbidden wordings (clock, hide, collapse, expire-on-read) and their mutants; the reviewer's two surviving mutants are now caught. *Round-2 correction (N4): four new mutants (P3, P5, P9, S1) still survived; see the round-2 table.* |
 | 13 | NOTE | Expiry boundary unspecified | Repaired. In effect only while the as-of instant is earlier than the expiry; equal means lapsed; Scenario 1 tests equality. |
 | 14 | NOTE | `challenge-suspended` dismissable without argument | Repaired by exclusion, argued in `SEMANTIC-DELTA.md`; question 12 asks whether to allow it. |
 | 15 | NOTE | Input binding scoped to records "read" | Repaired. Every record present at the snapshot is an identified input. |
 | 16 | NOTE | Retention quote elided record-level fields | Repaired. The elision is marked in `SEMANTIC-DELTA.md`. |
 | 17 | NOTE | Sweep omitted range forms | Repaired. Range-form sweep with its regex published in `IMPACT-LEDGER.md`: 13 lines in 9 files carry a range, 7 lines in 6 files span 007. |
 | 18 | NOTE | Composition checked pairwise only | Repaired. The builder now applies every composing sibling in order, then this package, and re-checks the text; question 10 names the order. |
+
+Round 2: a fresh-context confirmation review over commit `82cc6c4` returned
+**REVISE** with two revise findings and nine notes, and resolved 13 of the 18
+round-1 findings in full. The raw is kept verbatim at
+`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-2-RAW.md` (verdict line 2; the
+closing verdict section repeats it). The builder's self-test went from 102
+to 121 mutants killed.
+
+| # | Kind | Finding (short) | Disposition |
+|---|---|---|---|
+| N1 | REVISE | Scenario 2 refused a record by the claim's current reason, against the paragraph and Scenario 3 | Repaired. Scenario 2 now refuses a record "whose own dismissed primary reason is" one that may not be dismissed; the paragraph says the same ("itself names, as the reason it dismisses"); a record whose claim has since moved to such a reason is lapsed, stated in the paragraph and in Scenario 3. The builder requires both sentences and forbids the old wording. |
+| N2 | REVISE | "Exactly one of three classes" over overlapping tests | Repaired. The classes are tested in order, refused, then bound to a retired identity, then lapsed, and a record is shown in the first whose test it meets. The Falsifier now fails any record shown in a later class. |
+| N3 | NOTE | Freshness counts not named | Repaired. The paragraph, Scenario 2 and the Falsifier name per-label, tier, freshness and reason counts; the full list of kept facts is a required rule (kills P10). |
+| N4 | NOTE | Mutants P3, P5, P9, S1 survived; dispositions 6 and 12 overstated the guard | Repaired. New forbidden wordings (removal, exclusion, a second refusal route, a permissive dismissal source, the old Scenario 2 refusal) and a once-only rule for Scenario 1's rendering phrases; each has its own self-test mutant. Dispositions 6 and 12 above carry a dated correction. |
+| N5 | NOTE | Question 2 glossed "governed plane" one way | Repaired. Question 2 gives both readings, labelled [Inferred]. |
+| N6 | NOTE | Question 1 did not map the drafted arm to the funnel | Repaired. Question 1 lists the funnel's three arms, places the draft nearest arm 2 and quotes L2-M8's objection. |
+| N7 | NOTE | RFC6-14.r5 believed not applicable while RFC6-17.r5 and r8 are Unknown | Repaired. RFC6-14.r5 is now `unknown-uncovered`; totals 627 / 141 / 241 / 245. |
+| N8 | NOTE | Continuation predicate published in words | Repaired. `IMPACT-LEDGER.md` publishes the regex and the hyphen form. |
+| N9 | NOTE | "Deferred" misstated the question-4 answer | Repaired. The answer ruled "no promotion" and deferred only the write act. |
+| N10 | NOTE | Review record named a commit on no branch | Repaired. The round-1 paragraph names `8cf689d` and the later rebase. |
+| N11 | NOTE | A bare packet digest copy is unguarded (systemic) | Not repaired here. Filed separately and owned by another bead; it affects the missing-currency packet the same way. |

@@ -105,7 +105,10 @@ PARAGRAPH_RULES = {
         "or `challenge-suspended`, which leaves only through its challenge's "
         "resolution"
     ),
-    "no other dismissal source": "Nothing else dismisses a claim",
+    "no other dismissal source": (
+        "Nothing else dismisses a claim: not a view preference, a query "
+        "parameter, browser or daemon state, an owner note or a model assertion"
+    ),
     "expiry boundary": (
         "only while that evaluation's as-of instant is earlier than the "
         "record's expiry instant"
@@ -123,6 +126,11 @@ PARAGRAPH_RULES = {
     "facts stay visible": (
         "replaces the claim's status rendering and never its facts"
     ),
+    "every fact named": (
+        "the claim's label, tier, primary and secondary reasons, resolution "
+        "route, freshness, challenge state, claim identity and evaluation "
+        "identity stay visible and unchanged"
+    ),
     "same surface": (
         "on the same surface as the claim and without further disclosure"
     ),
@@ -135,8 +143,8 @@ PARAGRAPH_RULES = {
         "count as resolved or favourable in any aggregate"
     ),
     "aggregate counts kept": (
-        "Dismissed members SHALL remain in every per-label, tier and reason "
-        "count of an aggregate"
+        "Dismissed members SHALL remain in every per-label, tier, freshness "
+        "and reason count of an aggregate"
     ),
     "aggregate expansion": (
         "SHALL additionally be counted and expandable as a sibling state"
@@ -145,13 +153,24 @@ PARAGRAPH_RULES = {
         "is disclosed in exactly one of three classes, each distinct from the "
         "others and from a dismissal in effect"
     ),
+    "class order": (
+        "The classes are tested in order, refused first, then bound to a "
+        "retired identity, then lapsed, and a record is disclosed in the first "
+        "class whose test it meets"
+    ),
     "refused records disclosed": (
         "It is a refused record when it lacks an author, reason, expiry "
         "instant, claim identity or dismissed primary reason"
     ),
+    "refused by its own reason": (
+        "or itself names, as the reason it dismisses, a primary reason that "
+        "may not be dismissed"
+    ),
     "lapse conditions": (
-        "the evaluation's as-of instant is not earlier than its expiry "
-        "instant, or the claim's primary reason is no longer the one it "
+        "Otherwise it is a lapsed record when the evaluation's as-of instant "
+        "is not earlier than its expiry instant, or the claim's primary reason "
+        "is no longer the one it dismissed, including because the claim is no "
+        "longer Unknown or its new primary reason is one that may not be "
         "dismissed"
     ),
     "lapsed records disclosed": (
@@ -159,8 +178,9 @@ PARAGRAPH_RULES = {
         "instant, author, record identity and the condition that lapsed it"
     ),
     "retired identity": (
-        "It is bound to a retired identity when a split or merge has retired "
-        "the claim identity it names; it is never transferred to a successor"
+        "Otherwise it is bound to a retired identity when a split or merge has "
+        "retired the claim identity it names; it is never transferred to a "
+        "successor"
     ),
 }
 # Each rule a scenario's body must state, compared after whitespace folding.
@@ -183,7 +203,12 @@ SCENARIO_RULES = {
             "claim's own surface"
         ),
         "aggregate counts kept": (
-            "keeps the claim in its per-label, tier and reason counts"
+            "keeps the claim in its per-label, tier, freshness and reason "
+            "counts"
+        ),
+        "refused by its own reason": (
+            "a record whose own dismissed primary reason is "
+            "`contradicted-pending-adjudication`"
         ),
         "refused records": (
             "or `challenge-suspended`, each dismiss nothing and are disclosed "
@@ -192,16 +217,31 @@ SCENARIO_RULES = {
     },
     SCENARIOS[2]: {
         "reason drift lapses": "is disclosed beside the claim as lapsed",
+        "lapsed onto an undismissable reason": (
+            "even when the claim's new primary reason is one that may not be "
+            "dismissed"
+        ),
         "no transfer": "is never transferred to a successor",
         "never refused": "neither record is disclosed as refused",
     },
 }
-# Wording that would let a dismissal act by reading time or leave the page.
+# Each phrase a scenario's body must carry exactly once, so a second
+# rendering claim for the same evaluation cannot be appended beside the first.
+SCENARIO_ONCE = {
+    SCENARIOS[0]: ("the first evaluation renders", "without the sibling state"),
+}
+# Wording that would let a dismissal act by reading time, leave the page,
+# leave a count, come from another source or be refused by another route.
 FORBIDDEN = {
     "clock": r"clock",
     "hide": r"\bhid(?:e|es|den|ing)\b",
     "collapse": r"collaps",
     "expire-on-read": r"expir\w*[- ]on[- ]read",
+    "removal": r"\bremov\w*",
+    "exclusion": r"\bexclu\w*",
+    "second refusal route": r"refused record also|also (?:a )?refused",
+    "permissive dismissal source": r"\b(?:MAY|can|could)\s+dismiss\b",
+    "claim-reason refusal": r"naming a claim whose primary reason",
 }
 REQUIRED_WARRANTS = (
     "VIS-6", "RFC1-12", "RFC1-20", "RFC1-25", "RFC2-1", "RFC2-15"
@@ -230,7 +270,7 @@ REPAIR_DISPOSITIONS = {
     "RFC2-1.r3": ("RFC2-1.c12", "covered:PWB-REQ-007"),
     "RFC2-15.r1": ("RFC2-15.c2", "unknown-uncovered"),
     "RFC6-14.r4": ("RFC6-14.c5", "covered:PWB-REQ-007"),
-    "RFC6-14.r5": ("RFC6-14.c5", "believed-not-applicable"),
+    "RFC6-14.r5": ("RFC6-14.c5", "unknown-uncovered"),
     "RFC6-14.r6": ("RFC6-14.c5", "unknown-uncovered"),
     "RFC6-17.r7": ("RFC6-17.c2", "covered:PWB-REQ-007"),
 }
@@ -375,6 +415,9 @@ def requirement_findings(spec: bytes) -> list[str]:
         for label, rule in SCENARIO_RULES[heading].items():
             if fold(rule) not in body:
                 findings.append(f"scenario lacks {label}: {heading}")
+        for phrase in SCENARIO_ONCE.get(heading, ()):
+            if body.count(fold(phrase)) != 1:
+                findings.append(f"scenario does not say {phrase!r} exactly once: {heading}")
         findings.extend(forbidden_findings(f"scenario {heading}", body))
     block = section[warrants:] if warrants >= 0 else ""
     for authority in REQUIRED_WARRANTS:
@@ -729,7 +772,16 @@ def selftest() -> int:
         "hide": "A page MAY hide the dismissed claim.",
         "collapse": "A view MAY collapse the claim's facts.",
         "expire-on-read": "A dismissal MAY expire on read.",
+        "removal": "A dismissed Unknown claim is removed from the aggregate's Unknown total.",
+        "exclusion": "A dismissed member is excluded from the freshness count.",
+        "second refusal route": "It is a refused record also when its expiry has passed.",
+        "permissive dismissal source": "A model assertion MAY dismiss a claim.",
+        "claim-reason refusal": (
+            "A record naming a claim whose primary reason is `challenge-suspended` is refused."
+        ),
     }
+    if set(fixtures) != set(FORBIDDEN):
+        return _fail("forbidden fixtures do not cover every forbidden wording")
     first_heading = SCENARIOS[0]
     first_body_end = text.index(first_heading) + len(first_heading) + len(
         scenario_body(text, first_heading)
@@ -747,6 +799,39 @@ def selftest() -> int:
         if f"scenario {first_heading} uses forbidden {label} wording" not in requirement_findings(in_scenario):
             return _fail(f"forbidden scenario wording passed: {label}")
         killed += 2
+
+    # Round-2 review mutants: a second rendering claim in Scenario 1, one fact
+    # dropped from the disclosure list, and Scenario 2's refusal reverted to
+    # naming the claim's current reason.
+    for heading, phrases in SCENARIO_ONCE.items():
+        end = text.index(heading) + len(heading) + len(scenario_body(text, heading))
+        for phrase in phrases:
+            repeated = (text[:end] + "\n  " + phrase + text[end:]).encode()
+            expected = f"scenario does not say {phrase!r} exactly once: {heading}"
+            if expected not in requirement_findings(repeated):
+                return _fail(f"repeated scenario phrase passed: {phrase}")
+            killed += 1
+    fact_list = fold(PARAGRAPH_RULES["every fact named"])
+    folded = fold(paragraph)
+    dropped_fact = folded.replace(fact_list, fact_list.replace("freshness, ", "", 1), 1)
+    if dropped_fact == folded:
+        return _fail("fact-list fixture matched nothing")
+    mutated = (text[:opening] + dropped_fact + "\n\n" + text[case:]).encode()
+    if "dismissal paragraph lacks every fact named" not in requirement_findings(mutated):
+        return _fail("dropped-fact mutation passed")
+    killed += 1
+    reverted = text.replace(
+        "whose own dismissed primary reason is", "naming a claim whose primary reason is", 1
+    )
+    if reverted == text:
+        return _fail("scenario-2 reversion fixture matched nothing")
+    found = requirement_findings(reverted.encode())
+    if (
+        f"scenario lacks refused by its own reason: {SCENARIOS[1]}" not in found
+        or f"scenario {SCENARIOS[1]} uses forbidden claim-reason refusal wording" not in found
+    ):
+        return _fail("scenario-2 reversion passed")
+    killed += 1
 
     # Each required warrant removed from PWB-REQ-007's block only.
     warrants_at = text.index(WARRANTS, text.index(REQUIREMENT))
@@ -888,6 +973,8 @@ def selftest() -> int:
         "missing/duplicate/placement, "
         f"{sum(len(rules) for rules in SCENARIO_RULES.values())} scenario-body "
         f"rules, {len(FORBIDDEN)} forbidden wordings x paragraph/scenario, "
+        f"{sum(len(p) for p in SCENARIO_ONCE.values())} once-only scenario "
+        "phrases, a dropped fact, the scenario-2 reversion, "
         f"{len(REQUIRED_WARRANTS)} warrants, "
         "dependency and contract-coverage drift, proposal, capability row and "
         f"totals, {len(REPAIR_DISPOSITIONS)} repair rows, patch drift, "

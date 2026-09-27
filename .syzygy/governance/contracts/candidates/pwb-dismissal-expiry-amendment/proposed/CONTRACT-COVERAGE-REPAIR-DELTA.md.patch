@@ -1,5 +1,5 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md b/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
-index cd70fe9..4a49c0e 100644
+index cd70fe9..c64cff4 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
 @@ -19,8 +19,8 @@ silently downgrades.
@@ -8,8 +8,8 @@ index cd70fe9..4a49c0e 100644
  
 -Declared totals: **80 rows; 71 superseded base rows; 61 covered; 16 Unknown
 -uncovered; 3 believed not applicable.**
-+Declared totals: **91 rows; 77 superseded base rows; 65 covered; 20 Unknown
-+uncovered; 6 believed not applicable.**
++Declared totals: **91 rows; 77 superseded base rows; 65 covered; 21 Unknown
++uncovered; 5 believed not applicable.**
  
  | Repair consequence ID | Supersedes | Clause | Effective consequence | Disposition |
  |---|---|---|---|---|
@@ -35,7 +35,7 @@ index cd70fe9..4a49c0e 100644
 +| RFC2-1.r3 | RFC2-1.c12 | RFC2-1 | Recorded dismissal decisions, with reason and expiry, are identified evaluation inputs | covered:PWB-REQ-007 |
 +| RFC2-15.r1 | RFC2-15.c2 | RFC2-15 | A gap leaves only by evidence or an attributed, reasoned, expiring governed-plane dismissal, and its dismissed facts stay visible beside it on the primary surface; PWB-REQ-007 states this for claims, and which gap a claim-level dismissal binds is not yet decided | unknown-uncovered |
 +| RFC6-14.r4 | RFC6-14.c5 | RFC6-14 | The `dismissed-by-decision` sibling state travels beside the unchanged epistemic tuple | covered:PWB-REQ-007 |
-+| RFC6-14.r5 | RFC6-14.c5 | RFC6-14 | `challenge-pending` and `editorial-draft` travel beside the epistemic tuple | believed-not-applicable |
++| RFC6-14.r5 | RFC6-14.c5 | RFC6-14 | `challenge-pending` and `editorial-draft` travel beside the epistemic tuple | unknown-uncovered |
 +| RFC6-14.r6 | RFC6-14.c5 | RFC6-14 | The used `unadopted-draft` sibling state travels beside the epistemic tuple | unknown-uncovered |
  
  ## Verification rule
