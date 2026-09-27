@@ -21,8 +21,12 @@ headings or assume agents, daemons, modules, connectors or any other proving-cas
 architecture. A comparison, timeline or workflow may explain one project better
 than a component map.
 
-Each paragraph develops one point. Prefer concrete verbs, connected prose and
-short meaningful headings. Remove repeated summaries and document-management
+Shape each section as an abstraction tree (REQ-polaris-generation-004,
+CC-REV-8). Its first block states the section's answer, and child blocks add
+mechanisms and evidence, so a reader who stops at any depth still has a true
+account. The tree keeps the argument connected: parents carry the links
+between motives, promises and capabilities. Each block develops one point.
+Prefer concrete verbs and short meaningful headings. Remove repeated summaries and document-management
 language. Explain unfamiliar terms at first use; add a glossary when it helps
 further reading. Use a table for an actual comparison, not as a universal prose
 container. Length follows the argument; neither a word quota nor an exhaustive
@@ -36,8 +40,11 @@ an unsupported sentence.
 
 ## Make visuals explain something
 
-Choose a diagram when relationships, boundaries, sequence or dependencies become
-clearer spatially. Select its shape from the evidence: component/containment view,
+Draw a diagram wherever a flow, lifecycle, state machine, boundary, dependency
+or placement is clearer drawn than written; the independent rendered-design
+review decides which relationships need one, and a missing drawable one is a
+blocking finding. Every node and edge label also appears in the section's text,
+and each element is marked observed, inferred or unknown. Select its shape from the evidence: component/containment view,
 directed workflow, separate branches, feedback loop or supported comparison.
 A chain of boxes is appropriate only when the source supports that sequence.
 Adjacency, grouping and arrows all carry meaning and need support.

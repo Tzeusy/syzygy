@@ -34,6 +34,15 @@ schema bytes. `parseBoundedJson` refuses duplicate keys, malformed responses and
 byte/depth/node overflow before stage validation. `validateStage` checks closed
 fields, source references, requested section identities, diagram endpoints and
 review population declarations. These checks cannot establish semantic truth.
+Draft stages use schema v2 (prompts v2 for plan, author, edit and repair):
+section and deep-dive blocks are one-level trees (a parent paragraph and 0–12
+leaf children, all counted as blocks for handles and review coverage), and each
+diagram names its `kind`, the `relationship` it explains and an
+observed/inferred/unknown marking on every node and edge. A produced diagram's
+node and edge labels must appear in its section's block text
+(`diagram-label-not-in-text`); that check is necessary, not sufficient.
+`diagramToMermaid` derives the reviewable Mermaid text from the structured
+record, which stays the declarative source.
 `GenerationSource` binds each countable source to repository, revision, Git
 object and evaluation identities. Only a body-backed, validated byte span
 can be quoted; path-only, excluded and unavailable rows remain in the

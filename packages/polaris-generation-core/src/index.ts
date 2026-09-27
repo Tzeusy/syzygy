@@ -22,5 +22,5 @@ export {
 } from './admitted-input.js';
 export { promptForStage, type GenerationStage } from './prompts.js';
 export { runGenerationPipeline, type PipelineRequest, type PipelinePorts, type PipelineResult, type GenerationBudget, type AdmissionDecision, type DispatchPermit, type AttemptInput, type AttemptOutcome, type InvalidOutputReason, type ProviderReply, type StageReceipt } from './pipeline.js';
-export { stageSchema, validateStage, reviewVerdict } from './provider-draft.js';
-export type { ProviderDraft, RequestedAsset } from './provider-draft.js';
+export { stageSchema, validateStage, reviewVerdict, diagramToMermaid, DIAGRAM_KINDS } from './provider-draft.js';
+export type { ProviderDraft, ProviderParagraph, ProviderBlock, ProviderDiagram, ProviderDiagramNode, ProviderDiagramEdge, DiagramKind, EpistemicMarking, RequestedAsset } from './provider-draft.js';

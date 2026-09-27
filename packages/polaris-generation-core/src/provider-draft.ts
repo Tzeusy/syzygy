@@ -31,6 +31,12 @@ const object = (properties: Record<string, Schema>): Schema => ({ type: 'object'
 const refs: Schema = { ...list(handle, 1), uniqueItems: true };
 const requestedAssetsSchema = list(object({ id: handle, kind: { ...text, enum: ['section', 'diagram', 'deep-dive'] }, required: { type: 'boolean' } }), 0, 100);
 const paragraph = object({ id: handle, text, sourceIds: refs });
+// A tree block: the parent summarizes its leaf children, so truncating at either
+// depth leaves a coarser account. Nesting is exactly one level; the Schema type
+// has no recursion. The first block of a section is its answer (prompt-stated).
+const block = object({ id: handle, text, sourceIds: refs, children: list(paragraph, 0, 12) });
+const epistemic: Schema = { ...text, enum: ['observed', 'inferred', 'unknown'] };
+export const DIAGRAM_KINDS = ['flow', 'lifecycle', 'state-machine', 'boundary', 'dependency', 'placement'] as const;
 const disposition: Schema = { oneOf: [
   object({ kind: { ...text, enum: ['produced'] }, assetIds: refs }),
   object({ kind: { ...text, enum: ['omitted'] }, reason: text, references: refs }),
@@ -40,13 +46,14 @@ const inventory = object({ entries: list(object({ id: handle, sourceIds: refs, s
 const plan = object({ sections: list(object({ id: handle, title: text, reason: text, sourceIds: refs, disposition }), 1, 30) });
 const draft = object({
   title: text, introduction: paragraph,
-  sections: list(object({ id: handle, title: text, paragraphs: list(paragraph, 1, 30), disposition }), 1, 30),
+  sections: list(object({ id: handle, title: text, paragraphs: list(block, 1, 30), disposition }), 1, 30),
   diagrams: list(object({ id: handle, title: text, sectionId: handle,
-    nodes: list(object({ id: handle, label: text, sourceIds: refs }), 1, 40),
-    edges: list(object({ id: handle, from: handle, to: handle, label: text, sourceIds: refs }), 1, 80),
+    kind: { ...text, enum: [...DIAGRAM_KINDS] }, relationship: text,
+    nodes: list(object({ id: handle, label: text, sourceIds: refs, epistemic }), 1, 40),
+    edges: list(object({ id: handle, from: handle, to: handle, label: text, sourceIds: refs, epistemic }), 1, 80),
     disposition,
   }), 0, 20),
-  deepDives: list(object({ id: handle, title: text, sectionId: handle, paragraphs: list(paragraph, 1, 30), disposition }), 0, 30),
+  deepDives: list(object({ id: handle, title: text, sectionId: handle, paragraphs: list(block, 1, 30), disposition }), 0, 30),
   unresolved: list(object({ question: text, reason: text, references: refs }), 0, 100),
 });
 const inventoryCoverage = list(object({ entryId: handle, disposition: { ...text, enum: ['represented', 'justified-omission', 'unsupported', 'unresolved'] }, blockIds: list(handle, 0, 5000), reason: text }), 1, 5000);
@@ -55,10 +62,12 @@ const fidelity = object({ inventoryCoverage, blockSupport,
   findings: list(object({ severity: { ...text, enum: ['blocking', 'advisory'] }, message: text, target: handle }), 0, 1000),
 });
 const schemas: Record<GenerationStage, Schema> = { inventory, plan, author: draft, edit: draft, repair: draft, fidelity };
+// v2: tree blocks and marked, kinded diagrams. Only the draft stages changed shape.
+const schemaVersions: Record<GenerationStage, 'v1' | 'v2'> = { inventory: 'v1', plan: 'v1', author: 'v2', edit: 'v2', repair: 'v2', fidelity: 'v1' };
 
 export function stageSchema(stage: GenerationStage): { version: string; schema: Schema } {
   if (!Object.hasOwn(schemas, stage)) throw new Error('invalid-stage');
-  return { version: `polaris-provider-${stage}-v1`, schema: structuredClone(schemas[stage]) };
+  return { version: `polaris-provider-${stage}-${schemaVersions[stage]}`, schema: structuredClone(schemas[stage]) };
 }
 
 function check(schema: Schema, value: unknown): void {
@@ -99,6 +108,12 @@ function check(schema: Schema, value: unknown): void {
 }
 
 export interface ProviderParagraph { id: string; text: string; sourceIds: string[] }
+/** A section or deep-dive block: a parent paragraph and its 0–12 leaf children. */
+export interface ProviderBlock extends ProviderParagraph { children: ProviderParagraph[] }
+export type DiagramKind = typeof DIAGRAM_KINDS[number];
+export type EpistemicMarking = 'observed' | 'inferred' | 'unknown';
+export interface ProviderDiagramNode { id: string; label: string; sourceIds: string[]; epistemic: EpistemicMarking }
+export interface ProviderDiagramEdge { id: string; from: string; to: string; label: string; sourceIds: string[]; epistemic: EpistemicMarking }
 export interface RequestedAsset { readonly id: string; readonly kind: 'section' | 'diagram' | 'deep-dive'; readonly required: boolean }
 export type AssetDisposition =
   | { kind: 'produced'; assetIds: string[] }
@@ -109,12 +124,14 @@ export interface ProviderPlan { sections: { id: string; title: string; reason: s
 export interface ProviderDraft {
   title: string;
   introduction: ProviderParagraph;
-  sections: { id: string; title: string; paragraphs: ProviderParagraph[]; disposition: AssetDisposition }[];
-  diagrams: { id: string; title: string; sectionId: string;
-    nodes: { id: string; label: string; sourceIds: string[] }[];
-    edges: { id: string; from: string; to: string; label: string; sourceIds: string[] }[]; disposition: AssetDisposition }[];
-  deepDives: { id: string; title: string; sectionId: string; paragraphs: ProviderParagraph[]; disposition: AssetDisposition }[];
+  sections: { id: string; title: string; paragraphs: ProviderBlock[]; disposition: AssetDisposition }[];
+  diagrams: ProviderDiagram[];
+  deepDives: { id: string; title: string; sectionId: string; paragraphs: ProviderBlock[]; disposition: AssetDisposition }[];
   unresolved: { question: string; reason: string; references: string[] }[];
+}
+export interface ProviderDiagram {
+  id: string; title: string; sectionId: string; kind: DiagramKind; relationship: string;
+  nodes: ProviderDiagramNode[]; edges: ProviderDiagramEdge[]; disposition: AssetDisposition;
 }
 export interface ProviderInventoryCoverage { entryId: string; disposition: 'represented' | 'justified-omission' | 'unsupported' | 'unresolved'; blockIds: string[]; reason: string }
 export interface ProviderBlockSupport { blockId: string; verdict: 'supported' | 'anchor-does-not-support' | 'unresolved'; sourceIds: string[]; reason: string }
@@ -147,21 +164,26 @@ export function validateRequestedAssets(value: unknown): RequestedAsset[] {
   return structuredClone(assets);
 }
 
-function draftBlocks(value: ProviderDraft): Map<string, ProviderParagraph | ProviderDraft['diagrams'][number]['nodes'][number] | ProviderDraft['diagrams'][number]['edges'][number]> {
+/** Every block of a tree, parent first: children are blocks everywhere. */
+function treeBlocks(blocks: readonly ProviderBlock[]): ProviderParagraph[] {
+  return blocks.flatMap(block => [block, ...block.children]);
+}
+
+function draftBlocks(value: ProviderDraft): Map<string, ProviderParagraph | ProviderDiagramNode | ProviderDiagramEdge> {
   return new Map([
     value.introduction,
-    ...value.sections.flatMap(section => section.paragraphs),
+    ...value.sections.flatMap(section => treeBlocks(section.paragraphs)),
     ...value.diagrams.flatMap(diagram => [...diagram.nodes, ...diagram.edges]),
-    ...value.deepDives.flatMap(deepDive => deepDive.paragraphs),
+    ...value.deepDives.flatMap(deepDive => treeBlocks(deepDive.paragraphs)),
   ].map(block => [block.id, block]));
 }
 
 function producedHandles(value: ProviderDraft): Set<string> {
   return new Set([
     value.introduction.id,
-    ...value.sections.flatMap(section => section.disposition.kind === 'produced' ? [section.id, ...section.paragraphs.map(p => p.id)] : []),
+    ...value.sections.flatMap(section => section.disposition.kind === 'produced' ? [section.id, ...treeBlocks(section.paragraphs).map(p => p.id)] : []),
     ...value.diagrams.flatMap(diagram => diagram.disposition.kind === 'produced' ? [diagram.id, ...diagram.nodes.map(n => n.id), ...diagram.edges.map(e => e.id)] : []),
-    ...value.deepDives.flatMap(deepDive => deepDive.disposition.kind === 'produced' ? [deepDive.id, ...deepDive.paragraphs.map(p => p.id)] : []),
+    ...value.deepDives.flatMap(deepDive => deepDive.disposition.kind === 'produced' ? [deepDive.id, ...treeBlocks(deepDive.paragraphs).map(p => p.id)] : []),
   ]);
 }
 
@@ -193,11 +215,11 @@ function requestedAssetOutput(request: RequestedAsset, draft: ProviderDraft): Re
 function requestedOutputHandles(output: RequestedAssetOutput): Set<string> {
   switch (output.kind) {
     case 'section':
-      return new Set([output.asset.id, ...output.asset.paragraphs.map(paragraph => paragraph.id)]);
+      return new Set([output.asset.id, ...treeBlocks(output.asset.paragraphs).map(paragraph => paragraph.id)]);
     case 'diagram':
       return new Set([output.asset.id, ...output.asset.nodes.map(node => node.id), ...output.asset.edges.map(edge => edge.id)]);
     case 'deep-dive':
-      return new Set([output.asset.id, ...output.asset.paragraphs.map(paragraph => paragraph.id)]);
+      return new Set([output.asset.id, ...treeBlocks(output.asset.paragraphs).map(paragraph => paragraph.id)]);
   }
 }
 
@@ -211,11 +233,17 @@ function requestedDisposition(request: RequestedAsset, draft: ProviderDraft): As
   return disposition;
 }
 function draftHandles(value: ProviderDraft): { all: Set<string>; blocks: Set<string> } {
-  const blocks = [value.introduction, ...value.sections.flatMap(s => s.paragraphs),
+  const blocks = [value.introduction, ...value.sections.flatMap(s => treeBlocks(s.paragraphs)),
     ...value.diagrams.flatMap(d => [...d.nodes, ...d.edges]),
-    ...value.deepDives.flatMap(d => d.paragraphs)].map(b => b.id);
+    ...value.deepDives.flatMap(d => treeBlocks(d.paragraphs))].map(b => b.id);
   return { blocks: unique(blocks), all: unique([...blocks, ...value.sections.map(s => s.id),
     ...value.diagrams.map(d => d.id), ...value.deepDives.map(d => d.id)]) };
+}
+
+/** Case-folded, whitespace-collapsed text; block boundaries become `\n`, which
+ * no normalized label contains, so a label cannot match across two blocks. */
+function normalizedText(value: string): string {
+  return value.replace(/\s+/gu, ' ').trim().toLowerCase();
 }
 
 export function validateStage(stage: GenerationStage, value: unknown, context: Record<string, unknown>): unknown {
@@ -290,6 +318,15 @@ export function validateStage(stage: GenerationStage, value: unknown, context: R
       if (!sections.has(diagram.sectionId)) throw new Error('unknown-section');
       const nodes = new Set(diagram.nodes.map((n) => n.id));
       if (diagram.edges.some((e) => !nodes.has(e.from) || !nodes.has(e.to))) throw new Error('unknown-node');
+      if (diagram.disposition.kind === 'produced') {
+        // Necessary, not sufficient: a label found in the section's text shows the
+        // diagram names what the account states, never that the text supports it.
+        const section = data.sections.find((s) => s.id === diagram.sectionId)!;
+        const account = treeBlocks(section.paragraphs).map((b) => normalizedText(b.text)).join('\n');
+        if ([...diagram.nodes, ...diagram.edges].some((element) => !account.includes(normalizedText(element.label)))) {
+          throw new Error('diagram-label-not-in-text');
+        }
+      }
     }
     if (data.deepDives.some((d) => !sections.has(d.sectionId))) throw new Error('unknown-section');
   }
@@ -305,4 +342,38 @@ export function reviewVerdict(review: unknown): { blocking: boolean; findings: u
   const coverageBlocking = data.inventoryCoverage.some((row) => row.disposition !== 'represented' && row.disposition !== 'justified-omission');
   const supportBlocking = data.blockSupport.some((row) => row.verdict !== 'supported');
   return { blocking: coverageBlocking || supportBlocking || findings.some((finding) => finding.severity === 'blocking'), findings: structuredClone(findings) };
+}
+
+/** Mermaid string text safe inside `"…"`: every character Mermaid could read as
+ * syntax becomes a numeric entity code, and any whitespace run (including a
+ * newline, which would end the statement) becomes one space. */
+function mermaidText(value: string): string {
+  return value.replace(/\s+/gu, ' ').trim().replace(/["#|<>&[\]{}()`;:%\\]/gu, c => `#${c.codePointAt(0)!};`);
+}
+
+/**
+ * The reviewable text form of a diagram. The structured record (nodes, edges and
+ * their markings) is the declarative source; this export is derived from it
+ * deterministically: `flowchart LR`, nodes by position (`n0`, `n1`, …, never the
+ * provider handle), observed edges `-->`, inferred `-.->`, unknown `-.->` with an
+ * "(unknown)" label suffix, and a class line per non-observed node marking.
+ */
+export function diagramToMermaid(diagram: Pick<ProviderDiagram, 'nodes' | 'edges'>): string {
+  const index = new Map(diagram.nodes.map((node, i) => [node.id, `n${i}`]));
+  const lines = ['flowchart LR'];
+  diagram.nodes.forEach((node, i) => {
+    lines.push(`  n${i}["${mermaidText(node.epistemic === 'unknown' ? `${node.label} (unknown)` : node.label)}"]`);
+  });
+  for (const edge of diagram.edges) {
+    const from = index.get(edge.from), to = index.get(edge.to);
+    if (from === undefined || to === undefined) throw new Error('unknown-node');
+    const label = mermaidText(edge.epistemic === 'unknown' ? `${edge.label} (unknown)` : edge.label);
+    lines.push(`  ${from} ${edge.epistemic === 'observed' ? '-->' : '-.->'}|"${label}"| ${to}`);
+  }
+  for (const marking of ['inferred', 'unknown'] as const) {
+    const members = diagram.nodes.flatMap((node, i) => node.epistemic === marking ? [`n${i}`] : []);
+    if (members.length > 0) lines.push(`  class ${members.join(',')} ${marking}`);
+  }
+  lines.push('  classDef inferred stroke-dasharray:6 4', '  classDef unknown stroke-dasharray:2 4');
+  return `${lines.join('\n')}\n`;
 }

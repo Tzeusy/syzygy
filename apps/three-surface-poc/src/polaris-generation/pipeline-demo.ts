@@ -50,21 +50,25 @@ export async function runSyntheticProject(project: SyntheticProject) {
     { id: 'how', title: 'How the pieces connect', reason: 'Explain the central relationship.', sourceIds: ['mechanism'], disposition: { kind: 'produced', assetIds: ['how'] } },
     { id: 'judgment', title: 'Where judgment stays', reason: 'Keep the material limit visible.', sourceIds: ['qualification'], disposition: { kind: 'produced', assetIds: ['judgment'] } },
   ] };
+  // Tree form: the section opens with the mechanism's first sentence as its
+  // answer; any further sentences nest beneath it as child blocks.
+  const [answer, ...details] = project.mechanism.split(/(?<=\.)\s+/u);
+  const mechanismChildren = details.map((text, i) => ({ id: `mechanism-detail-${i}`, text, sourceIds: ['mechanism'] }));
   const draft = {
     title: project.title,
     introduction: { id: 'opening', text: project.purpose, sourceIds: ['purpose'] },
     sections: [
-      { id: 'how', title: 'How the pieces connect', paragraphs: [{ id: 'mechanism-text', text: project.mechanism, sourceIds: ['mechanism'] }], disposition: { kind: 'produced', assetIds: ['how'] } },
-      { id: 'judgment', title: 'Where judgment stays', paragraphs: [{ id: 'qualification-text', text: project.qualification, sourceIds: ['qualification'] }], disposition: { kind: 'produced', assetIds: ['judgment'] } },
+      { id: 'how', title: 'How the pieces connect', paragraphs: [{ id: 'mechanism-text', text: answer!, sourceIds: ['mechanism'], children: mechanismChildren }], disposition: { kind: 'produced', assetIds: ['how'] } },
+      { id: 'judgment', title: 'Where judgment stays', paragraphs: [{ id: 'qualification-text', text: project.qualification, sourceIds: ['qualification'], children: [] }], disposition: { kind: 'produced', assetIds: ['judgment'] } },
     ],
-    diagrams: [{ id: 'architecture', title: 'From observation to useful context', sectionId: 'how',
-      nodes: [{ id: 'left', label: project.components[0], sourceIds: ['mechanism'] }, { id: 'right', label: project.components[1], sourceIds: ['mechanism'] }],
-      edges: [{ id: 'connection', from: 'left', to: 'right', label: 'feeds', sourceIds: ['mechanism'] }], disposition: { kind: 'produced', assetIds: ['architecture'] },
+    diagrams: [{ id: 'architecture', title: 'From observation to useful context', sectionId: 'how', kind: 'flow', relationship: `${project.components[0]} feed ${project.components[1].toLowerCase()}`,
+      nodes: [{ id: 'left', label: project.components[0], sourceIds: ['mechanism'], epistemic: 'observed' }, { id: 'right', label: project.components[1], sourceIds: ['mechanism'], epistemic: 'observed' }],
+      edges: [{ id: 'connection', from: 'left', to: 'right', label: 'feed', sourceIds: ['mechanism'], epistemic: 'observed' }], disposition: { kind: 'produced', assetIds: ['architecture'] },
     }],
-    deepDives: [{ id: 'component-depth', title: `Inside ${project.components[1].toLowerCase()}`, sectionId: 'how', paragraphs: [{ id: 'depth-text', text: project.mechanism, sourceIds: ['mechanism'] }], disposition: { kind: 'produced', assetIds: ['component-depth'] } }],
+    deepDives: [{ id: 'component-depth', title: `Inside ${project.components[1].toLowerCase()}`, sectionId: 'how', paragraphs: [{ id: 'depth-text', text: project.mechanism, sourceIds: ['mechanism'], children: [] }], disposition: { kind: 'produced', assetIds: ['component-depth'] } }],
     unresolved: [],
   };
-  const review = { inventoryCoverage: inventory.entries.map(entry => ({ entryId: entry.id, disposition: 'represented', blockIds: entry.disposition.assetIds, reason: 'represented' })), blockSupport: ['opening', 'mechanism-text', 'qualification-text', 'left', 'right', 'connection', 'depth-text'].map(blockId => ({ blockId, verdict: 'supported', sourceIds: [blockId === 'opening' ? 'purpose' : blockId === 'qualification-text' ? 'qualification' : 'mechanism'], reason: 'supported' })), findings: [] };
+  const review = { inventoryCoverage: inventory.entries.map(entry => ({ entryId: entry.id, disposition: 'represented', blockIds: entry.disposition.assetIds, reason: 'represented' })), blockSupport: ['opening', 'mechanism-text', ...mechanismChildren.map(child => child.id), 'qualification-text', 'left', 'right', 'connection', 'depth-text'].map(blockId => ({ blockId, verdict: 'supported', sourceIds: [blockId === 'opening' ? 'purpose' : blockId === 'qualification-text' ? 'qualification' : 'mechanism'], reason: 'supported' })), findings: [] };
   const responses = { inventory, plan, author: draft, edit: draft, fidelity: review, repair: draft };
   const admitted = new Set<number>();
   const records: unknown[] = [];

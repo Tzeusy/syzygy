@@ -1,16 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import type { ProviderDraft } from '@syzygy/polaris-generation-core';
 import { renderDraftPreview } from './draft-preview.js';
+import { assertInertSvg } from './svg-inert.js';
 import { syntheticGenerationSource } from './synthetic-source.js';
 
 function fixture(): ProviderDraft {
   return {
     title: 'A quieter everyday', introduction: { id: 'intro', text: 'Let recurring work take care of itself.', sourceIds: ['purpose'] },
-    sections: [{ id: 'architecture', title: 'How the pieces connect', paragraphs: [{ id: 'overview', text: 'Requests reach the planner, then the calendar.', sourceIds: ['architecture'] }], disposition: { kind: 'produced', assetIds: ['architecture'] } }],
-    diagrams: [{ id: 'flow', title: 'From request to calendar', sectionId: 'architecture', nodes: [
-      { id: 'planner', label: 'Planner', sourceIds: ['architecture'] }, { id: 'calendar', label: 'Calendar', sourceIds: ['architecture'] },
-    ], edges: [{ id: 'schedules', from: 'planner', to: 'calendar', label: 'Schedules an event', sourceIds: ['architecture'] }], disposition: { kind: 'produced', assetIds: ['flow'] } }],
-    deepDives: [{ id: 'calendar-detail', title: 'Inside the calendar', sectionId: 'architecture', paragraphs: [{ id: 'detail', text: 'The calendar records scheduled events.', sourceIds: ['architecture'] }], disposition: { kind: 'produced', assetIds: ['calendar-detail'] } }],
+    sections: [{ id: 'architecture', title: 'How the pieces connect', paragraphs: [{ id: 'overview', text: 'Requests reach the planner, then the calendar.', sourceIds: ['architecture'],
+      children: [{ id: 'overview-mechanism', text: 'The planner schedules an event in the calendar.', sourceIds: ['architecture'] }] }], disposition: { kind: 'produced', assetIds: ['architecture'] } }],
+    diagrams: [{ id: 'flow', title: 'From request to calendar', sectionId: 'architecture', kind: 'flow', relationship: 'How a request becomes a calendar event', nodes: [
+      { id: 'planner', label: 'Planner', sourceIds: ['architecture'], epistemic: 'observed' }, { id: 'calendar', label: 'Calendar', sourceIds: ['architecture'], epistemic: 'observed' },
+    ], edges: [{ id: 'schedules', from: 'planner', to: 'calendar', label: 'Schedules an event', sourceIds: ['architecture'], epistemic: 'observed' }], disposition: { kind: 'produced', assetIds: ['flow'] } }],
+    deepDives: [{ id: 'calendar-detail', title: 'Inside the calendar', sectionId: 'architecture', paragraphs: [{ id: 'detail', text: 'The calendar records scheduled events.', sourceIds: ['architecture'], children: [] }], disposition: { kind: 'produced', assetIds: ['calendar-detail'] } }],
     unresolved: [],
   };
 }
@@ -66,7 +68,7 @@ describe('intermediate draft preview', () => {
 
   it('keeps mobile navigation collapsed and shows isolated nodes without inventing relationships', () => {
     const d = fixture();
-    d.diagrams[0]!.nodes.push({ id: 'archive', label: 'Archive', sourceIds: ['architecture'] });
+    d.diagrams[0]!.nodes.push({ id: 'archive', label: 'Archive', sourceIds: ['architecture'], epistemic: 'observed' });
     const html = renderDraftPreview(d, sources);
     expect(html).toContain('<details class="contents mobile-contents"><summary>In this manifesto</summary>');
     expect(html).toContain('.desktop-contents{display:none}.mobile-contents{display:block}');
@@ -85,6 +87,8 @@ describe('intermediate draft preview', () => {
     d.introduction.text = hostile;
     d.sections[0]!.title = hostile;
     d.sections[0]!.paragraphs[0]!.text = hostile;
+    d.sections[0]!.paragraphs[0]!.children[0]!.text = hostile;
+    d.diagrams[0]!.relationship = hostile;
     d.diagrams[0]!.title = hostile;
     d.diagrams[0]!.nodes[0]!.label = hostile;
     d.diagrams[0]!.edges[0]!.label = hostile;
@@ -96,6 +100,7 @@ describe('intermediate draft preview', () => {
     expect(html).not.toMatch(/\shref="(?!#)|\ssrc="/i);
     expect(html).toContain("default-src 'none'");
     expect(html).not.toContain('@import');
+    expect(html).toContain('<svg xmlns="http://www.w3.org/2000/svg"');
   });
 
   it('refuses missing sources including diagram and deep dive support', () => {
@@ -143,5 +148,62 @@ describe('intermediate draft preview', () => {
     expect(html).toContain('architecture');
     expect(html).not.toContain('Requests reach the planner, then the calendar.');
     expect(html).not.toContain('marker-end="url(#arrow-0)"');
+  });
+  it('renders a tree block as a paragraph with its children nested beneath, each with its refs', () => {
+    const html = renderDraftPreview(fixture(), sources);
+    expect(html).toMatch(/<p>Requests reach the planner, then the calendar\. <span class="sources"><a href="#source-[0-9a-f]{24}" aria-label="Read source architecture">\[architecture\]<\/a><\/span><\/p><ul class="block-children"><li>The planner schedules an event in the calendar\. <span class="sources"><a href="#source-[0-9a-f]{24}" aria-label="Read source architecture">\[architecture\]<\/a><\/span><\/li><\/ul>/u);
+    expect(html).toContain('<p>The calendar records scheduled events. <span class="sources">');
+    expect(html.match(/class="block-children"/g)).toHaveLength(1);
+    const clash = fixture();
+    clash.sections[0]!.paragraphs[0]!.children[0]!.id = 'detail';
+    expect(() => renderDraftPreview(clash, sources)).toThrow('duplicate-draft-handle');
+    const missing = fixture();
+    missing.sections[0]!.paragraphs[0]!.children[0]!.sourceIds = ['missing'];
+    expect(() => renderDraftPreview(missing, sources)).toThrow('unknown-source');
+  });
+
+  it('carries every epistemic marking into the SVG classes, the text equivalent and the declarative source', () => {
+    const d = fixture();
+    d.diagrams[0]!.nodes[1]!.epistemic = 'unknown';
+    d.diagrams[0]!.edges[0]!.epistemic = 'inferred';
+    const html = renderDraftPreview(d, sources);
+    const svg = html.match(/<svg[\s\S]*?<\/svg>/u)![0];
+    expect(svg).toContain('<g class="node observed"><title>Planner (observed)</title>');
+    expect(svg).toContain('<g class="node unknown"><title>Calendar (unknown)</title>');
+    expect(svg).toContain('>Calendar ?</tspan>');
+    expect(svg).toContain('<g class="edge inferred"><title>Schedules an event (inferred)</title>');
+    expect(html).toContain('<li>Planner <span class="marking observed">[Observed]</span>');
+    expect(html).toContain('<li>Calendar <span class="marking unknown">[Unknown]</span>');
+    expect(html).toContain('<li>Planner → Calendar: Schedules an event <span class="marking inferred">[Inferred]</span>');
+    expect(html).toContain('<details class="diagram-source"><summary>Declarative source (Mermaid)</summary><pre>flowchart LR\n  n0[&quot;Planner&quot;]\n  n1[&quot;Calendar #40;unknown#41;&quot;]\n  n0 -.-&gt;|&quot;Schedules an event&quot;| n1\n  class n1 unknown\n  classDef inferred stroke-dasharray:6 4\n  classDef unknown stroke-dasharray:2 4\n</pre></details></details>');
+    expect(html).toContain('<li><span class="legend-line inferred" aria-hidden="true"></span>Dashed: inferred</li>');
+    expect(html).toContain('<p class="diagram-relationship"><span class="eyebrow">flow</span> How a request becomes a calendar event</p>');
+    expect(html).toContain('svg .inferred>path,svg .inferred>rect{stroke-dasharray:6 4}svg .unknown>path,svg .unknown>rect{stroke-dasharray:2 4}');
+  });
+
+  it('never emits an SVG the inert boundary refuses, and localizes the asset as unresolved instead', () => {
+    const seen: string[] = [];
+    const accepted = renderDraftPreview(fixture(), sources, undefined, { assertSvg: svg => { seen.push(svg); } });
+    expect(seen).toHaveLength(1);
+    expect(accepted).toContain(seen[0]);
+    const refused = renderDraftPreview(fixture(), sources, undefined, { assertSvg: () => { throw new Error('unsafe-svg'); } });
+    expect(refused).not.toContain('<svg');
+    expect(refused).not.toContain('marker-end');
+    expect(refused).not.toContain('diagram-text-0');
+    expect(refused).toContain('<aside class="unresolved-asset" data-asset-disposition="unresolved" id="unresolved-flow"><strong>flow</strong>: diagram could not be rendered inertly <span class="asset-references">(architecture)</span></aside>');
+    expect(refused).toContain('Requests reach the planner, then the calendar.');
+    expect(() => renderDraftPreview(fixture(), sources, undefined, { assertSvg: () => { throw new Error('unsafe-svg'); } })).not.toThrow();
+  });
+
+  it('passes every diagram it renders through the real inert boundary', () => {
+    const d = fixture();
+    d.diagrams[0]!.nodes.push({ id: 'archive', label: 'Archive "&" <x>', sourceIds: ['architecture'], epistemic: 'inferred' });
+    d.diagrams[0]!.edges.push({ id: 'loop', from: 'calendar', to: 'planner', label: 'Reports back', sourceIds: ['architecture'], epistemic: 'unknown' });
+    d.diagrams[0]!.edges.push({ id: 'self', from: 'calendar', to: 'calendar', label: 'Reschedules', sourceIds: ['architecture'], epistemic: 'observed' });
+    const html = renderDraftPreview(d, sources);
+    const svg = html.match(/<svg[\s\S]*?<\/svg>/u)![0];
+    expect(() => assertInertSvg(svg)).not.toThrow();
+    expect(svg.match(/marker-end=/g)).toHaveLength(3);
+    expect(svg).toContain('Archive &quot;&amp;&quot; &lt;x&gt;');
   });
 });

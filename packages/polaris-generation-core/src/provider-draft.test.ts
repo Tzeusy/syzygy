@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { stageSchema, validateStage, reviewVerdict } from './provider-draft.js';
+import { diagramToMermaid, stageSchema, validateStage, reviewVerdict } from './provider-draft.js';
 
 const sources = [{ sourceId: 's1', text: 'Purpose and architecture' }, { sourceId: 's2', text: 'A material qualification' }];
 const inventory = { entries: [
@@ -9,12 +9,13 @@ const inventory = { entries: [
 ] };
 const plan = { sections: [{ id: 'section', title: 'How it works', reason: 'Explain relationships', sourceIds: ['s1', 's2'], disposition: { kind: 'produced', assetIds: ['section'] } }] };
 const paragraph = (id: string) => ({ id, text: 'Supported explanation', sourceIds: [id === 'detail-body' ? 's2' : 's1'] });
+const block = (id: string, text = 'Supported explanation') => ({ ...paragraph(id), text, children: [] as { id: string; text: string; sourceIds: string[] }[] });
 const draft = { title: 'A manifesto', introduction: paragraph('intro'),
-  sections: [{ id: 'section', title: 'How it works', paragraphs: [paragraph('body')], disposition: { kind: 'produced', assetIds: ['section'] } }],
-  diagrams: [{ id: 'diagram', title: 'Architecture', sectionId: 'section', nodes: [
-    { id: 'n1', label: 'Input', sourceIds: ['s1'] }, { id: 'n2', label: 'Output', sourceIds: ['s1'] },
-  ], edges: [{ id: 'e1', from: 'n1', to: 'n2', label: 'Supplies', sourceIds: ['s1'] }], disposition: { kind: 'produced', assetIds: ['diagram'] } }],
-  deepDives: [{ id: 'detail', title: 'Why this choice?', sectionId: 'section', paragraphs: [paragraph('detail-body')], disposition: { kind: 'produced', assetIds: ['detail'] } }],
+  sections: [{ id: 'section', title: 'How it works', paragraphs: [block('body', 'Input supplies the output.')], disposition: { kind: 'produced', assetIds: ['section'] } }],
+  diagrams: [{ id: 'diagram', title: 'Architecture', sectionId: 'section', kind: 'flow', relationship: 'How input becomes output', nodes: [
+    { id: 'n1', label: 'Input', sourceIds: ['s1'], epistemic: 'observed' }, { id: 'n2', label: 'Output', sourceIds: ['s1'], epistemic: 'observed' },
+  ], edges: [{ id: 'e1', from: 'n1', to: 'n2', label: 'Supplies', sourceIds: ['s1'], epistemic: 'observed' }], disposition: { kind: 'produced', assetIds: ['diagram'] } }],
+  deepDives: [{ id: 'detail', title: 'Why this choice?', sectionId: 'section', paragraphs: [block('detail-body')], disposition: { kind: 'produced', assetIds: ['detail'] } }],
   unresolved: [],
 };
 const review = { inventoryCoverage: [{ entryId: 'i1', disposition: 'represented', blockIds: ['intro'], reason: 'represented' }, { entryId: 'i2', disposition: 'represented', blockIds: ['detail-body'], reason: 'represented' }], blockSupport: ['intro', 'body', 'n1', 'n2', 'e1', 'detail-body'].map(blockId => ({ blockId, verdict: 'supported', sourceIds: [blockId === 'detail-body' ? 's2' : 's1'], reason: 'supported' })), findings: [] };
@@ -180,5 +181,139 @@ describe('provider-local intermediate validation', () => {
     expect(() => validateStage('author', bad, context)).toThrow('invalid-property');
     expect(called).toBe(false);
     expect(() => validateStage('inventory', { entries: new Array(2) }, context)).toThrow('invalid-array');
+  });
+  it('versions only the draft stages at v2', () => {
+    expect(['inventory', 'plan', 'author', 'edit', 'repair', 'fidelity'].map(stage => stageSchema(stage as 'author').version)).toEqual([
+      'polaris-provider-inventory-v1', 'polaris-provider-plan-v1', 'polaris-provider-author-v2',
+      'polaris-provider-edit-v2', 'polaris-provider-repair-v2', 'polaris-provider-fidelity-v1',
+    ]);
+  });
+
+  it('bounds tree blocks at one level of 0-12 children and closes the diagram vocabularies', () => {
+    const withChildren = (count: number) => {
+      const d = structuredClone(draft);
+      d.sections[0]!.paragraphs[0]!.children = Array.from({ length: count }, (_, i) => ({ id: `c${i}`, text: 'Child detail', sourceIds: ['s1'] }));
+      return d;
+    };
+    const review12 = { ...review, blockSupport: [...review.blockSupport, ...Array.from({ length: 12 }, (_, i) => ({ blockId: `c${i}`, verdict: 'supported', sourceIds: ['s1'], reason: 'supported' }))] };
+    expect(() => validateStage('author', withChildren(12), context)).not.toThrow();
+    expect(() => validateStage('fidelity', review12, { ...context, draft: withChildren(12) })).not.toThrow();
+    expect(() => validateStage('author', withChildren(13), context)).toThrow('invalid-array');
+    const nested = withChildren(1);
+    (nested.sections[0]!.paragraphs[0]!.children[0] as Record<string, unknown>).children = [];
+    expect(() => validateStage('author', nested, context)).toThrow('invalid-fields');
+    const { children: _children, ...flat } = draft.sections[0]!.paragraphs[0]!;
+    expect(() => validateStage('author', { ...draft, sections: [{ ...draft.sections[0]!, paragraphs: [flat] }] }, context)).toThrow('invalid-fields');
+    expect(() => validateStage('author', { ...draft, introduction: { ...draft.introduction, children: [] } }, context)).toThrow('invalid-fields');
+    const d = structuredClone(draft);
+    d.diagrams[0]!.kind = 'decorative';
+    expect(() => validateStage('author', d, context)).toThrow('invalid-string');
+    const e = structuredClone(draft);
+    e.diagrams[0]!.edges[0]!.epistemic = 'certain';
+    expect(() => validateStage('author', e, context)).toThrow('invalid-string');
+    const n = structuredClone(draft);
+    delete (n.diagrams[0]!.nodes[0] as Record<string, unknown>).epistemic;
+    expect(() => validateStage('author', n, context)).toThrow('invalid-fields');
+    const r = structuredClone(draft);
+    delete (r.diagrams[0] as Record<string, unknown>).relationship;
+    expect(() => validateStage('author', r, context)).toThrow('invalid-fields');
+    const noEdges = structuredClone(draft);
+    noEdges.diagrams[0]!.edges = [];
+    expect(() => validateStage('author', noEdges, context)).toThrow('invalid-array');
+  });
+
+  it('counts child blocks as blocks in handles, produced assets and fidelity coverage', () => {
+    const d = structuredClone(draft);
+    d.sections[0]!.paragraphs[0]!.children = [{ id: 'child', text: 'A qualified mechanism', sourceIds: ['s2'] }];
+    d.sections[0]!.disposition = { kind: 'produced', assetIds: ['section', 'child'] };
+    const withChild = { ...context, draft: d };
+    const childSupport = { blockId: 'child', verdict: 'supported', sourceIds: ['s2'], reason: 'supported' };
+    const covered = { ...review, blockSupport: [...review.blockSupport, childSupport] };
+    expect(() => validateStage('author', d, context)).not.toThrow();
+    expect(() => validateStage('fidelity', covered, withChild)).not.toThrow();
+    expect(() => validateStage('fidelity', review, withChild)).toThrow('incomplete-coverage');
+    const childCoverage = { ...covered, inventoryCoverage: [review.inventoryCoverage[0]!, { ...review.inventoryCoverage[1]!, blockIds: ['child'] }] };
+    expect(() => validateStage('fidelity', childCoverage, withChild)).not.toThrow();
+    expect(() => validateStage('fidelity', { ...covered, blockSupport: [...review.blockSupport, { ...childSupport, sourceIds: ['s1'] }] }, withChild)).toThrow('support-source-outside-block');
+    expect(() => validateStage('fidelity', { ...covered, findings: [{ severity: 'advisory', message: 'Tighten', target: 'child' }] }, withChild)).not.toThrow();
+    const clash = structuredClone(d);
+    clash.sections[0]!.paragraphs[0]!.children[0]!.id = 'n1';
+    expect(() => validateStage('author', clash, context)).toThrow('duplicate-handle');
+    const unknownChild = structuredClone(d);
+    unknownChild.sections[0]!.paragraphs[0]!.children[0]!.sourceIds = ['nowhere'];
+    expect(() => validateStage('author', unknownChild, context)).toThrow('unknown-source');
+    const deep = structuredClone(draft);
+    deep.deepDives[0]!.paragraphs[0]!.children = [{ id: 'deep-child', text: 'Depth', sourceIds: ['s2'] }];
+    deep.deepDives[0]!.disposition = { kind: 'produced', assetIds: ['detail', 'deep-child'] };
+    expect(() => validateStage('author', deep, context)).not.toThrow();
+    expect(() => validateStage('fidelity', review, { ...context, draft: deep })).toThrow('incomplete-coverage');
+    const requested = { ...context, requestedAssets: [{ id: 'section', kind: 'section', required: true }] };
+    const mismatch = structuredClone(draft);
+    mismatch.sections[0]!.disposition = { kind: 'produced', assetIds: ['section', 'n1'] };
+    expect(() => validateStage('author', mismatch, requested)).toThrow('requested-asset-output-mismatch');
+    expect(() => validateStage('author', d, requested)).not.toThrow();
+  });
+
+  it('requires every produced diagram label in its own section text, children included', () => {
+    const labelled = (sectionText: string, children: string[] = []) => {
+      const d = structuredClone(draft);
+      d.sections[0]!.paragraphs[0]!.text = sectionText;
+      d.sections[0]!.paragraphs[0]!.children = children.map((text, i) => ({ id: `child-${i}`, text, sourceIds: ['s1'] }));
+      return d;
+    };
+    expect(() => validateStage('author', labelled('Input supplies the output.'), context)).not.toThrow();
+    expect(() => validateStage('author', labelled('It starts with input.', ['It ends with output.', 'Each stage supplies the next.']), context)).not.toThrow();
+    expect(() => validateStage('author', labelled('  INPUT\n\tsupplies   OUTPUT  '), context)).not.toThrow();
+    expect(() => validateStage('author', labelled('It starts with input and ends with output.'), context)).toThrow('diagram-label-not-in-text');
+    expect(() => validateStage('author', labelled('Input supplies it.'), context)).toThrow('diagram-label-not-in-text');
+    const spaced = labelled('Input supplies the output.');
+    spaced.diagrams[0]!.edges[0]!.label = 'Supplies   the\noutput';
+    expect(() => validateStage('author', spaced, context)).not.toThrow();
+    const straddle = labelled('Input supplies the', ['output arrives.']);
+    straddle.diagrams[0]!.edges[0]!.label = 'the output';
+    expect(() => validateStage('author', straddle, context)).toThrow('diagram-label-not-in-text');
+    const depthOnly = labelled('It starts with input and ends with output.');
+    depthOnly.deepDives[0]!.paragraphs[0]!.text = 'Input supplies the output.';
+    expect(() => validateStage('author', depthOnly, context)).toThrow('diagram-label-not-in-text');
+    const unresolved = labelled('Nothing drawn here.');
+    const unresolvedDraft = { ...unresolved, diagrams: [{ ...unresolved.diagrams[0]!, disposition: { kind: 'unresolved', reason: 'Renderer unavailable', references: ['s1'] } }] };
+    expect(() => validateStage('author', unresolvedDraft, context)).not.toThrow();
+    expect(() => validateStage('fidelity', review, { ...context, draft: labelled('Input only.') })).toThrow('diagram-label-not-in-text');
+  });
+
+  it('exports deterministic, escaped Mermaid from the structured diagram', () => {
+    const diagram = {
+      nodes: [
+        { id: 'a.handle', label: 'Say "hi" [now]', sourceIds: ['s1'], epistemic: 'observed' as const },
+        { id: 'b', label: 'Line one\nline two {x} (y) | z', sourceIds: ['s1'], epistemic: 'inferred' as const },
+        { id: 'c', label: 'end', sourceIds: ['s1'], epistemic: 'unknown' as const },
+      ],
+      edges: [
+        { id: 'e1', from: 'a.handle', to: 'b', label: 'feeds; then --> ends', sourceIds: ['s1'], epistemic: 'observed' as const },
+        { id: 'e2', from: 'b', to: 'c', label: 'may <reach>', sourceIds: ['s1'], epistemic: 'inferred' as const },
+        { id: 'e3', from: 'c', to: 'a.handle', label: 'loops #1', sourceIds: ['s1'], epistemic: 'unknown' as const },
+      ],
+    };
+    const expected = [
+      'flowchart LR',
+      '  n0["Say #34;hi#34; #91;now#93;"]',
+      '  n1["Line one line two #123;x#125; #40;y#41; #124; z"]',
+      '  n2["end #40;unknown#41;"]',
+      '  n0 -->|"feeds#59; then --#62; ends"| n1',
+      '  n1 -.->|"may #60;reach#62;"| n2',
+      '  n2 -.->|"loops #35;1 #40;unknown#41;"| n0',
+      '  class n1 inferred',
+      '  class n2 unknown',
+      '  classDef inferred stroke-dasharray:6 4',
+      '  classDef unknown stroke-dasharray:2 4',
+      '',
+    ].join('\n');
+    expect(diagramToMermaid(diagram)).toBe(expected);
+    expect(diagramToMermaid(structuredClone(diagram))).toBe(expected);
+    // Each label stays one quoted token: no bare quote, bracket, pipe or newline escapes it.
+    const lines = diagramToMermaid(diagram).split('\n');
+    for (const line of lines.slice(1, 4)) expect(line).toMatch(/^  n\d+\["[^"\[\](){}|<>]*"\]$/u);
+    for (const line of lines.slice(4, 7)) expect(line).toMatch(/^  n\d+ (?:-->|-\.->)\|"[^"\[\](){}|<>]*"\| n\d+$/u);
+    expect(() => diagramToMermaid({ ...diagram, edges: [{ ...diagram.edges[0]!, to: 'missing' }] })).toThrow('unknown-node');
   });
 });
