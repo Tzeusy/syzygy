@@ -4,11 +4,17 @@
 >
 > Rendering: Mermaid is the durable, renderable fallback chosen for this phase; an Excalidraw + SVG upgrade is a tracked follow-up.
 
+> Restyled 2026-09-28 for readability (no change of meaning); reviews 5–7 reviewed the prior bytes, and this restyle's review is recorded in [the topology restyle packet](../../governance/decisions/TOPOLOGY-TREE-RESTYLE.md).
+
 ## What this shows
 
-Who may talk to Syzygy and through what: the two client classes, the three
-closed exposure modes, classification by credential (never location), and
-where the consent gates sit between an admitted client and any effect.
+Clients are classified by credential, never location, and consent gates
+sit between an admitted client and any effect.
+
+- **Who:** the two client classes.
+- **Over what:** the three closed exposure modes.
+- **How classified:** by credential, never location.
+- **Where the gates sit:** between an admitted client and any effect.
 
 ```mermaid
 flowchart TB
@@ -46,32 +52,47 @@ flowchart TB
 
 ## Trust boundaries
 
+Location is never identity, credential populations are disjoint, an
+unauthenticated network-exposed configuration is refused, and revocation
+acts at the next act.
+
 - **Location is never identity** [Observed: SEC-1; RFC5-3]: loopback gets
-  the full discipline; a browser page's fetch of `localhost` must fail
-  origin validation and the anti-forgery proof structurally. An absent
-  Origin header neither admits nor condemns.
+  the full discipline.
+  - A browser page's fetch of `localhost` must fail origin validation and
+    the anti-forgery proof structurally.
+  - An absent Origin header neither admits nor condemns.
 - **Two credential populations plus one more** [Observed: RFC5-2/24]:
   browser sessions, machine credentials, and Syzygy's own adapter
-  credentials are disjoint; none is transferable, and an execution profile
-  can never name an adapter credential as injectable.
+  credentials are disjoint.
+  - None is transferable.
+  - An execution profile can never name an adapter credential as
+    injectable.
 - **Fail closed** [Observed: RFC5-8]: an unauthenticated network-exposed
-  configuration is invalid — Syzygy refuses to serve rather than serve it.
+  configuration is invalid.
+  - Syzygy refuses to serve rather than serve it.
 - **Acts vs claims** [Observed: RFC5-11]: revocation of a credential,
-  consent, or profile takes effect at the next act, immediately; only the
-  rendering of its consequences flows through identified evaluations.
+  consent, or profile takes effect at the next act, immediately.
+  - Only the rendering of its consequences flows through identified
+    evaluations.
 - **Execution consent is the fourth gate** [Observed: RFC5-18]: observed
-  code runs only under an owner-approved execution-profile version —
-  default-deny credentials, declared network, resource limits, destructive
-  operation gates (SEC-3); blocked entirely until RFC 0005 is accepted.
+  code runs only under an owner-approved execution-profile version.
+  - The profile carries default-deny credentials, declared network,
+    resource limits, and destructive operation gates (SEC-3).
+  - Execution is blocked entirely until RFC 0005 is accepted.
 
 ## [target] vs already true
 
+All of this machinery is target; SEC-1..5 are adopted doctrine and the
+platform posture is recorded scope.
+
 - **[target]:** everything — no daemon, endpoint, session, credential, or
-  profile machinery exists. The machine-client mechanism itself is an open
-  enumerated choice for acceptance (RFC5-7; RFC 0005 §8 q1).
-- **[Observed] today:** SEC-1..5 are adopted doctrine; the platform posture
-  (local-first daemon + browser app, owner devices only) is recorded scope
-  (v1.md) and remains RFC-open.
+  profile machinery exists.
+  - The machine-client mechanism itself is an open enumerated choice for
+    acceptance (RFC5-7; RFC 0005 §8 q1).
+- **[Observed] today:** SEC-1..5 are adopted doctrine.
+  - The platform posture (local-first daemon + browser app, owner devices
+    only) is recorded scope (v1.md) and remains RFC-open.
 - **[Inferred]:** the tailnet mode reflects the owner's current device
-  topology (FD-029/OQ-007); the class is "owner-controlled overlay with
-  device identity and TLS," so Tailscale itself is substitutable.
+  topology (FD-029/OQ-007).
+  - The class is "owner-controlled overlay with device identity and TLS,"
+    so Tailscale itself is substitutable.

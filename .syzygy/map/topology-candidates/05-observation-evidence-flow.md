@@ -4,12 +4,20 @@
 >
 > Rendering: Mermaid is the durable, renderable fallback chosen for this phase; an Excalidraw + SVG upgrade is a tracked follow-up.
 
+> Restyled 2026-09-28 for readability (no change of meaning); reviews 5–7 reviewed the prior bytes, and this restyle's review is recorded in [the topology restyle packet](../../governance/decisions/TOPOLOGY-TREE-RESTYLE.md).
+
 ## What this shows
 
-The deterministic path from sources to rendered claims — capture, snapshot,
-evaluation, immutable record, claims — and, deliberately separate, the
-inference overlay path that can only challenge, never establish. Solid
-arrows are the deterministic layer; dashed arrows are the inferred layer.
+Sources become rendered claims along one deterministic path, and inference
+runs on a deliberately separate path that can only challenge, never
+establish.
+
+- **Deterministic path:** capture, snapshot, evaluation, immutable record,
+  claims.
+- **Inference overlay path:** deliberately separate; can only challenge,
+  never establish.
+- **Legend:** solid arrows are the deterministic layer; dashed arrows are
+  the inferred layer.
 
 ```mermaid
 flowchart TB
@@ -52,29 +60,38 @@ flowchart TB
 
 ## Authority boundaries
 
+Inference is structurally separated and holds challenge authority only;
+time is an explicit input, and the named failures render as Unknown with a
+reason.
+
 - **The seam is structural** [Observed: trust-and-evidence.md]: observation
-  records contain deterministic facts only; overlays are separate,
-  separately versioned artifacts excluded from the VIS-7 identity test. An
-  LLM assertion is Inferred, never Observed.
+  records contain deterministic facts only.
+  - Overlays are separate, separately versioned artifacts excluded from the
+    VIS-7 identity test.
+  - An LLM assertion is Inferred, never Observed.
 - **Challenge authority only** [Observed: RFC2-8]: an overlay never
   establishes, raises, or independently satisfies a positive status claim.
-  Only `gate-backed` Observed evidence turns anything green (RFC2-25).
+  - Only `gate-backed` Observed evidence turns anything green (RFC2-25).
 - **Time is an input** [Observed: architecture.md]: no status changes
-  without a new identified evaluation; the wall clock never flips a badge.
-- **Failure is rendered** [Observed: RFC2-23]: broken observers, unreachable
-  sources, withdrawn consent, partial snapshots, excluded secrets, and
-  missing quantities each have a defined rendering — Unknown with reason,
-  never silence, never zero.
+  without a new identified evaluation.
+  - The wall clock never flips a badge.
+- **Failure is rendered** [Observed: RFC2-23]: broken observers,
+  unreachable sources, withdrawn consent, partial snapshots, excluded
+  secrets, and missing quantities each have a defined rendering — Unknown
+  with reason, never silence, never zero.
 
 ## [target] vs already true
+
+The whole pipeline is target; its semantics are already fixed by adopted
+doctrine and drafted in RFCs.
 
 - **[target]:** the entire pipeline — no observer, snapshot, evaluation, or
   overlay machinery exists.
 - **[Observed] today:** the semantics are fixed by adopted doctrine
-  (snapshot closed rule, temporal rule, seam) and drafted in RFC 0002/0004;
-  the twelve Unknown reasons and six tiers are RFC-draft vocabulary, not yet
-  accepted.
+  (snapshot closed rule, temporal rule, seam) and drafted in RFC 0002/0004.
+  - The twelve Unknown reasons and six tiers are RFC-draft vocabulary, not
+    yet accepted.
 - **[Inferred]:** initial capture fidelity will be constrained by the
-  substrate's forgetfulness (squash-merge history loss, `bd gc` horizons) —
-  RFC 0004 renders that as labeled reduced fidelity rather than invented
-  precision (RFC4-16/24).
+  substrate's forgetfulness (squash-merge history loss, `bd gc` horizons).
+  - RFC 0004 renders that as labeled reduced fidelity rather than invented
+    precision (RFC4-16/24).
