@@ -1,10 +1,19 @@
 # Structural philosophy
 
-Constitutional structure only. Load-bearing technical contracts — graph
-schemas, adjudication and certificate semantics, execution profiles, deeper
-`.syzygy/**` schemas — belong to RFCs.
+Syzygy is one kernel, projected through three surfaces, governing an in-tree
+plane it writes in only two places, and every status it shows is computed from
+an identified snapshot at an identified instant.
+
+- **What lives here:** constitutional structure only.
+- **What does not:** load-bearing technical contracts — graph schemas,
+  adjudication and certificate semantics, execution profiles, deeper
+  `.syzygy/**` schemas — belong to RFCs.
 
 ## Governed projects and the two-namespace plane
+
+A governed project has one governance root, where Syzygy writes only
+`openspec/**` and `.syzygy/**`; everything else it reads or reaches through
+adapters.
 
 A **governed project** is one or more repositories, one owner, and **exactly
 one designated governance root**: the repository holding the project's single
@@ -17,18 +26,42 @@ under Syzygy observation.
 - Onboarding is recorded, per-repository consent (security.md SEC-4).
   **Every observed repository consents, governance root or not.**
 
-Syzygy governs an orthogonal, **in-tree** plane at the governance root. Its
-**direct project-content write authority is confined to exactly two
-namespaces, `openspec/**` and `.syzygy/**`** (vision.md VIS-5), and no
-manifest, configuration, or convention may widen it. Syzygy may *read*
-declared implementation and evidence sources anywhere in the project, but may
-never directly create, modify, move, or delete project content outside its two
-roots.
-Every other authority — version-control metadata, the work scheduler, CI,
-runtime systems — it affects only through typed, explicitly authorized
-adapters (see typed authority); those stores are never Syzygy-owned
-namespaces. Code changes materialize only through workers executing scheduled
-work.
+Syzygy governs an orthogonal, **in-tree** plane at the governance root.
+
+- **Its direct project-content write authority is confined to exactly two
+  namespaces, `openspec/**` and `.syzygy/**`** (vision.md VIS-5); no manifest,
+  configuration, or convention may widen it.
+- **Reading reaches declared sources anywhere in the project; direct writing
+  is confined to two roots.** Syzygy may *read*
+  declared implementation and evidence sources anywhere in the project, but
+  may never directly create, modify, move, or delete project content outside
+  its two roots.
+- **Every other authority** — version-control metadata, the work scheduler,
+  CI, runtime systems — it affects only through typed, explicitly authorized
+  adapters (see typed authority); those stores are never Syzygy-owned
+  namespaces.
+- **Code changes materialize only through workers executing scheduled work.**
+
+```mermaid
+flowchart LR
+    subgraph Root["Governance root repository"]
+        OS["openspec/**"]
+        SZ[".syzygy/**"]
+        CODE["Implementation code"]
+    end
+    SRC["Observed-source repositories"]
+    EXT["Version control, work scheduler, CI, runtime"]
+    K["Syzygy"] -->|"direct writes"| OS
+    K -->|"direct writes"| SZ
+    K -.->|"reads"| CODE
+    K -.->|"reads"| SRC
+    K -->|"typed, authorized adapters"| EXT
+    W["Workers, via scheduled work"] -->|"materialize"| CODE
+```
+
+Every edge from Syzygy is gated: each observed repository, governance root
+included, has consented (SEC-4), and adapters act only when explicitly
+authorized.
 
 **The two roots have different schema owners.**
 
@@ -64,30 +97,33 @@ governance_root/
     └── local/           # personal presentation state (VIS-6a; never truth-bearing)
 ```
 
-The four `governance/` categories are **constitutional minimums**. Their
-schemas and deeper organization — including where identities, promoted
-annotations, dismissals, and declared topology sit within `governance/` — are
-RFC material. `governance/` is the shared cross-surface location: surfaces
-stay projections over one shared semantic kernel and must never become
-independently authoritative.
-
-**Some required Genome material lives in the code tree**: explicitly
-designated executable specifications and declared handcrafted regions (both
-defined under Project Genome, below). Syzygy governs these *by reference and
-annotation only*, never by edit — marking a region handcrafted, or a test
-authoritative, is a governance annotation in `.syzygy/governance/`, not a code
-change. Handcrafted regions are an explicit exception to "code is a
-replaceable realization": they must survive regeneration.
-
-**On offboarding**, the plane stays with the repository: `openspec/**` and the
-governance, intent, work, and map parts of `.syzygy/**`, including
-committed-out annotations and dismissals. Syzygy exports the owner's remaining
-personal state (`.syzygy/local/`) and then deletes its projections
-(`.syzygy/cache/` and any external ones). The plane is in-tree by explicit
-owner ruling; the orphan-branch alternative was considered and **rejected**
-(FD-034, resolving OQ-006).
+- **The four `governance/` categories are constitutional minimums.**
+  - Their schemas and deeper organization — including where identities,
+    promoted annotations, dismissals, and declared topology sit within
+    `governance/` — are RFC material.
+  - `governance/` is the shared cross-surface location: surfaces stay
+    projections over one shared semantic kernel and must never become
+    independently authoritative.
+- **Some required Genome material lives in the code tree**: explicitly
+  designated executable specifications and declared handcrafted regions (both
+  defined under Project Genome, below).
+  - Syzygy governs these *by reference and annotation only*, never by edit:
+    marking a region handcrafted, or a test authoritative, is a governance
+    annotation in `.syzygy/governance/`, not a code change.
+  - Handcrafted regions are an explicit exception to "code is a replaceable
+    realization": they must survive regeneration.
+- **On offboarding, the plane stays with the repository.**
+  - What stays: `openspec/**` and the governance, intent, work, and map parts
+    of `.syzygy/**`, including committed-out annotations and dismissals.
+  - Syzygy exports the owner's remaining personal state (`.syzygy/local/`) and
+    then deletes its projections (`.syzygy/cache/` and any external ones).
+  - The plane is in-tree by explicit owner ruling; the orphan-branch
+    alternative was considered and **rejected** (FD-034, resolving OQ-006).
 
 ## Typed authority
+
+Authority is typed by question; a contradiction — across authorities or
+within one — renders Unknown and goes to the owner, never settled silently.
 
 There is no single universal source of truth. Authority is typed by question,
 and each role names its current realization — all substitutable (see
@@ -104,11 +140,13 @@ and each role names its current realization — all substitutable (see
 | What work is scheduled, and in what state? | The work-scheduling system (initial substrate: Beads) — reached only through its typed adapter |
 | What does Syzygy display? | A rebuildable projection of all the above |
 
-The work-scheduling system is authoritative for work lifecycle state, and the
-version-control system (initial substrate: git) for version history. Neither
-is authoritative for intent or observed behavior, and both are external
-authorities Syzygy affects only through typed, explicitly authorized adapters
-(VIS-5), never Syzygy-owned namespaces.
+**External authorities stay external.**
+
+- The work-scheduling system is authoritative for work lifecycle state, and
+  the version-control system (initial substrate: git) for version history.
+- Neither is authoritative for intent or observed behavior.
+- Both are external authorities Syzygy affects only through typed, explicitly
+  authorized adapters (VIS-5), never Syzygy-owned namespaces.
 
 **Contradictions and gaps are different things.**
 
@@ -121,18 +159,21 @@ authorities Syzygy affects only through typed, explicitly authorized adapters
 - A **gap** is compatible desired state not yet realized in observed state:
   the intent-vs-observed, work-generating difference (v1.md, V1 scope).
 
-**Substrate tools are adapters, not doctrine.** The Genome is defined by the
-*questions* it must answer, and any substrate that answers them can be swapped
-in without amending doctrine. The one exception is stated above: the
-`openspec/` *artifact contract* is constitutional even though the OpenSpec CLI
-is not.
+**Substrate tools are adapters, not doctrine.**
+
+- The Genome is defined by the *questions* it must answer, and any substrate
+  that answers them can be swapped in without amending doctrine.
+- The one exception is stated above: the `openspec/` *artifact contract* is
+  constitutional even though the OpenSpec CLI is not.
 
 ## Project Genome
 
 The **Project Genome** is the complete normative corpus: everything that must
-survive deletion of the implementation. The behavioral-requirements system
-holds its behavioral part, not all of it — "regenerate from the specification"
-must never shrink to "regenerate from behavioral scenarios alone."
+survive deletion of the implementation.
+
+- The behavioral-requirements system holds its behavioral part, not all of
+  it — "regenerate from the specification" must never shrink to "regenerate
+  from behavioral scenarios alone."
 
 Verification material splits three ways, and the split matters for
 regeneration, write authority, and offboarding:
@@ -225,6 +266,10 @@ byte-identical schema.
 
 ## Snapshots and the loop
 
+Every status is computed from an identified snapshot at an identified instant,
+so the deterministic layer always gives the same answer for the same inputs,
+and time alone can only make an answer worse.
+
 **A snapshot identifies every deterministic input that can affect the observed
 graph or a status claim.** That is the constitutional rule; whether it is one
 tuple or a composite of source, evidence, and policy snapshots is RFC
@@ -254,17 +299,32 @@ made at that as-of instant.
   adjudication result.**
 
 An **observation record** is the immutable result of one identified evaluation
-and holds deterministic facts only. Determinism (VIS-7) is asserted per
-identified evaluation, over the deterministic observed graph and base layout
-— **including logical freshness state (fresh, stale, broken, superseded),
-which changes status and therefore counts toward identity**. Only display
-formatting — localized timestamps and relative-age strings — is excluded from
-the identity test; widening that exclusion is a doctrine amendment.
+and holds deterministic facts only.
 
-The **inferred layer is a separate artifact.** It records the model, version,
-and inputs that produced it, declares its own reproducibility standard, is
-excluded from the VIS-7 identity test, and has no positive status authority.
-Its limited power to suspend a claim is defined in trust-and-evidence.md.
+- **Determinism (VIS-7) is asserted per identified evaluation**, over the
+  deterministic observed graph and base layout — **including logical
+  freshness state (fresh, stale, broken, superseded), which changes status and
+  therefore counts toward identity**.
+- **Only display formatting** — localized timestamps and relative-age
+  strings — is excluded from the identity test; widening that exclusion is a
+  doctrine amendment.
+
+The **inferred layer is a separate artifact.**
+
+- It records the model, version, and inputs that produced it, and declares its
+  own reproducibility standard.
+- It is excluded from the VIS-7 identity test and has no positive status
+  authority.
+- Its limited power to suspend a claim is defined in trust-and-evidence.md.
+
+```mermaid
+flowchart LR
+    S["Source snapshot<br/>every deterministic input"] --> EV["Status evaluation<br/>(snapshot, as-of instant)"]
+    T["As-of instant"] --> EV
+    EV --> OR["Observation record<br/>immutable, deterministic facts only"]
+    OR --> SC["Displayed status claim"]
+    IL["Inferred layer<br/>separate artifact"] -. "may challenge, never establish" .-> SC
+```
 
 **The loop:** intent → observation → gaps → reviewed work → fleet execution →
 verification. It has one upward arrow: verification and runtime evidence may
@@ -272,6 +332,12 @@ open spec-indictment gaps that route to the owner. The loop is
 **human-triggered**: someone specs a desired shape, then deliberately triggers
 a propagate/sync pass. Work-to-code and code-to-deployment belong to the
 orchestration toolchain, outside Syzygy's body.
+
+```mermaid
+flowchart LR
+    I["Intent"] --> O["Observation"] --> G["Gaps"] --> R["Reviewed work"] --> F["Fleet execution"] --> V["Verification"]
+    V -. "verification or runtime evidence:<br/>spec-indictment gap, to the owner" .-> I
+```
 
 **Observation determinism and idempotence of authoritative effects are
 constitutional. Zero-token synchronization, cache reproducibility, and
@@ -285,6 +351,9 @@ improve any status claim. (A later evaluation over the same snapshot may only
 degrade claims, per the time rule above.)
 
 ## One kernel, three surfaces
+
+One shared kernel holds the semantics every surface uses, and the three
+surfaces are only projections of it.
 
 The kernel's shared semantics — the definitions above, materialized in
 `.syzygy/governance/` — must never fork across surfaces, and no surface is
@@ -302,13 +371,25 @@ is a doctrine amendment.
 Each surface can be tested, navigated, feature-planned, and — later, if
 useful — deployed on its own; all are projections over the one shared kernel.
 
+```mermaid
+flowchart TD
+    K["Shared kernel<br/>definitions in .syzygy/governance/"]
+    K --> P["intent/ — Polaris"]
+    K --> T["work/ — Trajectory"]
+    K --> O["map/ — Orrery"]
+```
+
 The constitutional visualization requirement is a spatial comprehension
-surface anchored to **capability identities, not file paths**. Refactoring
-must not scatter the map, the same snapshot must produce the same layout, and
-exact 2D/tabular equivalents are always available. The concrete V0 mandate
-(3D) is scope, recorded in v1.md.
+surface anchored to **capability identities, not file paths**.
+
+- Refactoring must not scatter the map.
+- The same snapshot must produce the same layout.
+- Exact 2D/tabular equivalents are always available.
+- The concrete V0 mandate (3D) is scope, recorded in v1.md.
 
 ## Vocabulary
+
+Technical nouns are frozen; poetic names are working codenames.
 
 These technical nouns are frozen and stable for citation: project,
 capability, gap, contradiction, evidence, warrant, aligned, converged,

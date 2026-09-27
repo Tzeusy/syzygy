@@ -78,7 +78,7 @@ scripts/context_load.py rfcs/RFC-0001-project-graph-identity-state-planes.md \
   craft:testing-and-verification.md
 ```
 
-Measured: **25,018 words ≈ 33,774 estimated tokens.**
+Measured: **25,354 words ≈ 34,228 estimated tokens.**
 
 ## ⚠️ Budget breach — waiver
 
@@ -198,7 +198,7 @@ anything.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`fef2aad3c7525bb6…` (recompute: `cat <mandatory files> | sha256sum`).
+`297f5246ca7dd73d…` (recompute: `cat <mandatory files> | sha256sum`).
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a
