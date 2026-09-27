@@ -18,17 +18,19 @@ edited here**. The proposed bytes exist only as three unified diffs under
   specification digest moves;
 - `CAPABILITY-COVERAGE.md.patch` — row 4 reworded in place; totals stay at 31.
 
-The manifest has eleven rows over the whole subject: three hash proposed
+The manifest has eleven rows over the subject's manifest population (the
+subject tracks 15 files; like every sibling PWB manifest it leaves out the
+three contract-coverage parts and `tasks.md`): three hash proposed
 bytes, eight hash current bytes. `CONTRACT-COVERAGE.md` and its three matrix
 parts regenerate unchanged (the builder checks this).
 
 **Stable IDs affected:** `PWB-REQ-002` (amended in place: body, case, oracle,
-falsifier, two added scenarios; warrants unchanged). The reader definitions
+falsifier, three added scenarios; warrants unchanged). The reader definitions
 carry no identifier of their own. No other requirement changes.
 
 **Change class:** **Normative.** It changes what a conforming observer must
-do: read each class only through the shape the project's profile declares,
-and never fall back to a built-in rule.
+do: once a project's profile is loaded, read each class only through the
+grammar rows that profile declares, and never fall back to a built-in rule.
 
 **Author:** agent draft. **Date:** 2026-09-27. **Gate bead:** `syzygy-u05.8`.
 
@@ -52,44 +54,81 @@ pursuit record].
 
 ## Proposed meaning
 
-The diff makes three changes to the reader definitions and one to
-`PWB-REQ-002`. `--diff` prints it; `--check` proves it applies.
+The diff replaces the reader definitions' opening "The extraction grammar
+is literal:" with five new bullets and a new opening for the Butlers
+grammar, and amends `PWB-REQ-002`. `--diff` prints it; `--check` proves it
+applies.
 
-**1. A closed vocabulary of nine container shapes.** A new bullet names them
-and says in one sentence each what is read and what makes a source
-malformed: `heading-section`, `every-level-2-section`,
-`top-level-decimal-list`, `top-level-list`, `top-level-bulleted-list`,
-`first-table-rows`, `ordinal-section-table-rows`, `tree-path`,
-`toml-table-field`. The draft says "no other shape is read". These are the
-shapes today's Butlers grammar already uses, named — none is new.
+**1. A closed vocabulary of nine container shapes.** A new bullet names
+them — `heading-section`, `every-level-2-section`, `top-level-decimal-list`,
+`top-level-list`, `top-level-bulleted-list`, `first-table-rows`,
+`ordinal-section-table-rows`, `tree-path`, `toml-table-field` — and gives
+each the sentence `syzygy-dov.24` (PR #123) gives it in its proposed
+`containerShapes`: what is read, and every way the source fails. The bullet
+says "The vocabulary is closed at nine shapes, and no other shape is read."
+These are the shapes today's Butlers grammar already uses, named — none is
+new.
 
-**2. A project profile declares each class's rule.** The new bullet reads:
+**2. A closed vocabulary of eight item key forms.** A second bullet names
+`fixed`, `leading-bold`, `leading-bold-or-code`, `prefixed-ordinal`,
+`first-cell-link-text`, `tree-key`, `ordinal-and-label` and
+`link-target-basename`. Seven carry `syzygy-dov.24`'s key sentences word for
+word; `prefixed-ordinal` is "`<prefix>:<one-based ordinal>`, with the prefix
+the grammar row declares", which is how `syzygy-dov.24` writes its
+`vision:` and `v1:` rows. The bullet adds: "A key that occurs twice within
+one class of one source fails the source as duplicate-key."
 
-> For each class above, the observed project's profile, carried in the
-> project-shape observer's owner-adopted registry entry, declares the
-> source, the heading or tree rule, exactly one container shape and exactly
-> one key form.
+**3. A project profile declares grammar rows.** The new bullet reads, in
+part:
 
-Key forms are closed at the eight the Butlers grammar uses. A missing rule,
-or a rule naming a shape or key form outside the closed sets, "makes its
-sources' item denominators Unknown; the observer never substitutes a
-built-in rule. A profile cannot add a class, a shape or a key form."
+> The **project profile** declares a project's extraction grammar as
+> grammar rows, and is carried in the project-shape observer's
+> owner-adopted registry entry. Each class above has one or more rows. Each
+> row names its class and its source; the heading or headings, each with its
+> level when it has one and its exact text, or the tree population that
+> locate it, when its shape reads one; every parameter its shape or key form
+> reads, such as a table column, a TOML table and field or a key prefix;
+> exactly one container shape; and exactly one item key form. […] A profile
+> cannot add a class, a shape or a key form.
 
-**3. Butlers' grammar stays, as Butlers' profile.** The old lead-in "The
-extraction grammar is literal:" becomes "Butlers' profile declares exactly
-the following extraction grammar, which is literal:". The nine class bullets
-under it are byte-identical to today's (checked).
+**4. Butlers' interim default, and what a loaded profile may not leave
+out.** The next bullet opens "Until Butlers' profile is loaded, the observer
+reads Butlers by the grammar written below, as a built-in default; no other
+project has a built-in default." Once a profile is loaded it is the only
+source of that project's rules. A class it gives no row, or whose row names
+a shape or key form outside the closed sets or lacks a parameter, "is
+unreadable: its item denominator and its category's item denominator are
+Unknown, each source any of its rows names fails as a source in which a
+class fails, and every source stays in the source-path population." The
+observer never substitutes a built-in rule for a loaded profile's missing
+or invalid one. A whole-profile refusal meets the rule only if every source
+stays counted with an Unknown item denominator.
 
-**4. `PWB-REQ-002`.** The body now reads "declared item discovered by the
-extraction rule its project profile declares, using only the closed
-container-shape vocabulary". The case adds "a profile missing one class's
-rule". The oracle adds that both extractors apply the grammar the profile
-declares and, for Butlers, also the grammar written in the reader
-definitions, and must agree. The falsifier adds "an item is read through a
-shape the profile does not declare, or a missing or unknown profile rule is
-replaced by a built-in one". Two scenarios are added: "Butlers' profile
-reproduces the written grammar" and "Profile rule is missing or names an
-unknown shape".
+**5. Exactness covers every grammar.** Today's closing paragraph of the
+Butlers grammar ("Heading levels/text, top-level list depth, … it never
+produces a partial item set.") moves, word for word, into its own bullet
+that opens "For every grammar, loaded or built-in, heading levels/text, …".
+
+**6. Butlers' grammar stays, as Butlers' profile.** Its opening becomes
+"Butlers' profile declares exactly the following extraction grammar, which
+is literal:". The nine class bullets under it are byte-identical to today's
+(checked).
+
+**7. `PWB-REQ-002`.** The body now reads "declared item discovered by the
+extraction grammar that governs its project under the reader definitions
+(the grammar rows of its loaded project profile, read only through the
+closed container shapes and item key forms, or, before Butlers' profile is
+loaded, the Butlers grammar written there)". The case adds "a loaded
+profile that gives one class no row, and a loaded profile with a row that
+names a shape outside the vocabulary". The oracle adds that, for Butlers
+read through its loaded profile, both extractors also apply the written
+grammar "and must produce the same identities and D", and that every class
+a loaded profile leaves unreadable carries an Unknown item denominator. The
+falsifier adds "an item is read through a shape or key form its governing
+grammar does not declare, or a loaded profile's missing or invalid rule is
+replaced by a built-in one". Three scenarios are added: "Butlers' profile
+reproduces the written grammar", "Loaded profile gives one class no row" and
+"Loaded profile names a shape outside the vocabulary".
 
 ## What explicitly does NOT change
 
@@ -113,21 +152,33 @@ Its reading says what the package contains: "a CC-REV-2 amendment to
 PWB-REQ-002, plus any registry or policy act it needs", and "Butlers: its
 profile declares today's shapes as they are" [Observed, quoted from §6].
 
-Doctrine: `VIS-4` reserves the act to the owner. `VIS-2` requires an item
-population the observer cannot read to stay Unknown; the "never substitutes
-a built-in rule" sentence and the second scenario serve it. `VIS-7` requires
-the result to be deterministic; the first scenario keeps Butlers' identities
-and denominators equal to today's.
+P-74 Q2 (`POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`, line 64)
+ruled "one registry-entry amendment act before slice 5's fifth limb only,
+the first four limbs thread a profile parameter with current constants as
+default" [Observed, quoted]. Item 4's interim default writes that ruling
+into the specification.
+
+Doctrine: `VIS-4` reserves the act to the owner. `VIS-2`
+(`.syzygy/governance/doctrine/vision.md`, lines 96-98): "**VIS-2 — No evidence
+means Unknown, not success.** No surface may declare a project aligned,
+converged, or genome-complete — nor turn anything green — without current
+evidence." The class-and-category Unknown in item 4 and the second and
+third scenarios serve it: a class with no row has no source to fail, so
+without them it would render an empty set. `VIS-7` (same file, lines
+184-185): "the deterministic layer of an observation record is identical
+across runs of one identified evaluation". The shape and key sentences say
+every way a source fails, item 5 keeps exactness for every grammar, and the
+first scenario keeps Butlers' identities and denominators equal to today's.
 
 Method: `NORMATIVE-CHANGE-WORKFLOW.md` and `SEMANTIC-DELTA-TEMPLATE.md` under
 `.syzygy/governance/contracts/candidates/policy-candidates/`. This delta
-stops at step 2: drafted, blast radius established. **No review has been
-run and no self-review was performed.**
+stops at step 2: drafted, blast radius established, one review round
+repaired. **No self-review was performed.**
 
 ## Evidence or decision basis
 
 - [Observed] The current reader definitions and `PWB-REQ-002`, read from the
-  subject at baseline `23b486c`.
+  subject at baseline `08d4d02`.
 - [Observed] The Butlers class bullets are byte-identical after the diff;
   `scripts/build_pwb_container_shape_profile_amendment.py --check`
   re-derives this on every run.
@@ -136,10 +187,15 @@ run and no self-review was performed.**
   324 clauses represented.
 - [Observed] The nine shape names occur in no tracked file except one
   (`heading-section`, in two pursuit records); see `IMPACT-LEDGER.md`.
-- [Inferred] That the nine shapes describe every way the current extraction
-  code reads Butlers. The shape sentences paraphrase the `syzygy-dov.24`
-  registry package's `containerShapes` sentences (PR #123), which were
-  checked against the code there. They were not re-checked here.
+- [Observed] The nine shape sentences and seven key-form sentences are
+  `syzygy-dov.24`'s proposed sentences (PR #123, head `1395d44`), word for
+  word; the spec adds only a full stop and code-span backticks. The builder
+  holds the copy and, once `syzygy-dov.24`'s builder is in the tree, compares
+  the two on every `--check`; a changed copy on either side fails.
+- [Inferred] That those sentences describe every way the current extraction
+  code reads Butlers. `syzygy-dov.24`'s builder checks them by running the
+  observer's code over files built from its fields; that check was not
+  re-run here beyond `syzygy-dov.24`'s own `--check`.
 - [Inferred] From the pursuit's slice 1/2 matrix: two of the three shapes
   Syzygy's own doctrine uses could be read with this vocabulary (principles
   as `top-level-bulleted-list` with an ordinal key; success criteria as
@@ -150,30 +206,41 @@ run and no self-review was performed.**
 
 ## Terms introduced or retired
 
-Introduced: **container shape**, **project profile** (as used in the PWB
-specification), **key form**, and the nine shape names. Retired: none.
+Introduced: **container shape**, **item key form**, **grammar row**,
+**project profile** (as used in the PWB specification), the nine shape
+names and the eight key-form names. Retired: none.
 
 "Profile" already has a meaning in RFC 0005, where "a per-project profile"
 is a SEC-3 execution profile [Observed, RFC-0005 `README.md` line 86], and
 the subject's own coverage row `RFC7-5.c3` speaks of a "governed-project
 profile" for presentation [Observed]. Neither is this draft's profile;
-packet question 9 asks whether to rename.
+packet question 10 asks whether to rename.
 
 ## Downstream impact
 
 Enumerated in `IMPACT-LEDGER.md`. In one line each:
 
-1. **Adoption opens a disclosed gap in the code.** No profile loader exists;
-   the observer reads compiled-in constants. Until M8 slice 5 limb 5 lands,
-   the code conforms only for Butlers and only because its constants equal
-   the Butlers profile [Inferred].
+1. **No gap opens in the code.** No profile loader exists; the observer
+   reads compiled-in constants. The text names Butlers' written grammar as
+   its built-in default until its profile is loaded, which is the design
+   P-74 Q2 ruled, so today's code conforms by the text [Inferred]. Once limb
+   5 loads a profile, the no-built-in rule applies.
 2. **The registry entry and the secret policy pin today's `spec.md` digest.**
    Any adopted specification successor stales both pins; this package does
    not repair them (the same is true of every sibling).
 3. **Every sibling's generated `GOVERNING-DEPENDENCIES.md` patch collides
    with this one.** Resolved by regenerating with `--write` after each act.
-4. **The profile has no home yet.** The registry fields it needs are drafted
-   by `syzygy-dov.24` (PR #123), which is not performed.
+4. **The profile's home is drafted, not performed.** Its registry fields
+   are `syzygy-dov.24`'s (PR #123) `containerShapes` and `classGrammar`, the
+   one registry act P-74 Q2 ruled.
+5. **M15 amends the same requirement.** P-82 ruled "One CC-REV-2 semantic
+   delta to PWB-REQ-002", behind lane B (`syzygy-dov.15.1`, not drafted). The
+   two stay apart in meaning: this delta says which rules read a class and,
+   on failure, defers to the exactness sentence without deciding how much
+   of a source fails; M15 decides that. They share text: item 5 moves the
+   exactness sentence M15 is likely to edit. Whichever lands second is
+   regenerated and re-reviewed. Packet question 8 asks whether to keep them
+   separate.
 
 ## Migration and supersession plan
 
@@ -191,4 +258,6 @@ edit.
 
 ## Review
 
-None yet. `REVIEW-BRIEF.md` states what an independent reviewer is given.
+Round 1: `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-RAW.md` (REVISE, commit
+`a7eda10`); every finding is dispositioned in the packet's review record.
+`REVIEW-BRIEF.md` states what the next reviewer is given.

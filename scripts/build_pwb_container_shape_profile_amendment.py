@@ -73,81 +73,176 @@ ROW = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
 
 READER_START = "Reader definitions:\n"
 READER_END = "## ADDED Requirements"
-VOCABULARY_OPENING = "- A **container shape** is how one class's items sit inside a source."
-PROFILE_OPENING = "- The **project profile** declares the extraction rules."
+VOCABULARY_OPENING = "- A **container shape** is how the items of one grammar row sit inside its"
+KEYS_OPENING = "- An **item key form** says what becomes an item's key and how a key fails."
+PROFILE_OPENING = "- The **project profile** declares a project's extraction grammar as grammar"
+LOADED_OPENING = "- Until Butlers' profile is loaded, the observer reads Butlers by the grammar"
+EXACT_OPENING = "- For every grammar, loaded or built-in, heading levels/text, top-level list"
 BUTLERS_OPENING = (
     "- Butlers' profile declares exactly the following extraction grammar, "
     "which is\n  literal:\n"
 )
+#: The reader-definition bullets this package adds, in the order they must
+#: appear. Each runs to the next one; the last runs to BUTLERS_OPENING.
+BULLETS = (
+    ("vocabulary", VOCABULARY_OPENING),
+    ("key-form", KEYS_OPENING),
+    ("profile", PROFILE_OPENING),
+    ("loaded-profile", LOADED_OPENING),
+    ("exactness", EXACT_OPENING),
+    ("Butlers grammar", BUTLERS_OPENING),
+)
 #: The pre-amendment opening of the Butlers grammar bullet. It must be gone:
 #: the grammar is now Butlers' declaration, not the only grammar.
 RETIRED_OPENING = "- The extraction grammar is literal:\n"
+#: The exactness paragraph as it closes the Butlers grammar today. The package
+#: hoists it into its own bullet so it governs every grammar.
 GRAMMAR_END = "  Heading levels/text, top-level list depth"
-#: The closed shape vocabulary, name -> the sentence the spec gives it
-#: (compared after whitespace folding). Order is the spec's order.
+EXACT_PREFIX = "- For every grammar, loaded or built-in, h"
+#: The loaded-profile amendment's builder (`syzygy-dov.24`, PR #123). When it
+#: is in the tree its sentences are compared with these; until then the two
+#: packages agree by copy, and `--check` says so.
+SHARED_TEXT = "build_pwb_registry_loaded_profile_amendment"
+#: The closed shape vocabulary, name -> the sentence `syzygy-dov.24` gives it,
+#: copied verbatim. The spec adds a full stop and code-span backticks around
+#: markup; both are removed before the whitespace-folded comparison.
 SHAPES = {
     "heading-section": (
-        "the body under one exact heading, up to the next heading at the same "
-        "or a higher level."
-    ),
+        "the body under the declared heading: the lines after it up to the next heading at "
+        "the same or a higher level, with outer whitespace trimmed, NFC-normalized; the body "
+        "may be empty; when a row declares two headings the item's text is the first heading's "
+        "text, a blank line, its body, a blank line, the second heading's text, a blank line "
+        "and its body, with outer whitespace trimmed"),
     "every-level-2-section": (
-        "every H2 in the file with its section body, in file order."
-    ),
+        "every level-2 heading in the file, in file order; each part is the heading's text, a "
+        "blank line and its body read as heading-section reads it, with outer whitespace "
+        "trimmed, and the parts are joined by one blank line; a file with no level-2 heading "
+        "fails the source as missing-heading"),
     "top-level-decimal-list": (
-        "each top-level numbered list item in the section; any other top-level "
-        "list item makes the source malformed."
-    ),
+        "each list item at column 0 in the section, which must be numbered: a decimal number "
+        "followed by . or ) and a space or tab; a bulleted item at column 0 fails the source "
+        "as malformed-list, and so does a section with no list item at column 0"),
     "top-level-list": (
-        "each top-level list item in the section, numbered or bulleted."
-    ),
+        "each list item at column 0 in the section, numbered or bulleted; a section with no "
+        "list item at column 0 fails the source as malformed-list"),
     "top-level-bulleted-list": (
-        "each top-level bulleted list item in the section; a numbered item "
-        "makes the source malformed."
-    ),
+        "each list item at column 0 in the section, which must be bulleted: a numbered item at "
+        "column 0 fails the source as malformed-list; a section with no list item yields no "
+        "items and does not fail"),
     "first-table-rows": (
-        "each body row of the first table in the section; a row with the wrong "
-        "cell count makes the source malformed."
-    ),
+        "each body row of the first table in the section; a section with no table fails the "
+        "source as malformed-row, and so does a body row of that table whose cell count "
+        "differs from its header's; later tables in the section are not read"),
     "ordinal-section-table-rows": (
-        "each body row of every table under an H2 whose text begins with a "
-        "decimal plus optional lowercase suffix."
-    ),
-    "tree-path": "the Git tree path itself; no body is parsed.",
+        "each body row of every table in the section of every level-2 heading whose text opens "
+        "with a decimal number, optionally one lowercase letter, and then the end of the text "
+        "or a character that is not an ASCII letter, digit or underscore; a file with no such "
+        "heading fails the source as missing-heading, and a body row whose cell count differs "
+        "from its table's header fails it as malformed-row"),
+    "tree-path": (
+        "the Git tree path itself, matched against the tree population's pathPattern; no body "
+        "is read and nothing fails"),
     "toml-table-field": (
-        "one field of one TOML table, present exactly once; anything else makes "
-        "the source malformed."
-    ),
+        "the declared field of the declared TOML table: exactly one header line must name the "
+        "table, and inside it the field must be written once as field = \"value\" or "
+        "field = 'value' with a non-empty value; no such table, a repeated table, a repeated "
+        "field or a missing or empty value fails the source as malformed-toml; a line in any "
+        "other form, and the field inside any other table, is not read"),
 }
-SHAPE_ENTRY = re.compile(r"^  - `([^`\n]+)`: ", re.MULTILINE)
+#: The closed key-form vocabulary, spec name -> (the `syzygy-dov.24` form it
+#: restates, its sentence). The prefixed ordinal has no shared sentence there:
+#: each success row names its own "<prefix>:<one-based ordinal>".
+KEY_FORMS = {
+    "fixed": ("fixed", "the fixed key"),
+    "leading-bold": ("principle", (
+        "the item's leading bold span (** or __), NFC-normalized with whitespace runs "
+        "collapsed; an item with no non-empty leading bold span fails the source as "
+        "ambiguous-leading-label")),
+    "leading-bold-or-code": ("catalog", (
+        "the item's leading bold span, or else its leading code span, NFC-normalized with "
+        "whitespace runs collapsed; the span must be non-empty and followed, after optional "
+        "whitespace, by a hyphen-minus, en dash or em dash, or the source fails as "
+        "ambiguous-leading-label")),
+    "prefixed-ordinal": (None, (
+        "<prefix>:<one-based ordinal>, with the prefix the grammar row declares")),
+    "first-cell-link-text": ("design", (
+        "the link text of the first cell, which must be one whole link [text](target), "
+        "optionally with a quoted title, with non-empty text, or the source fails as "
+        "malformed-row")),
+    "tree-key": ("tree", "the <key> segment of the tree population's pathPattern"),
+    "ordinal-and-label": ("topology", (
+        "the heading's ordinal, a colon and the first cell's label; the first cell must be "
+        "exactly one bold span with a non-empty label, or the source fails as malformed-row")),
+    "link-target-basename": ("craft", (
+        "the basename of the link target in the declared column, without its fragment; a "
+        "table with no such column, or a cell in it that is not one whole link whose target "
+        "has a non-empty last segment, fails the source as malformed-row")),
+}
+ENTRY = re.compile(r"^  - `([^`\n]+)`: ", re.MULTILINE)
+CLOSURES = {
+    "vocabulary": "The vocabulary is closed at nine shapes, and no other shape is read.",
+    "key-form": "The forms are closed at eight, and no other key form is read:",
+}
+DUPLICATE_KEY = (
+    "A key that occurs twice within one class of one source fails the source as "
+    "duplicate-key."
+)
 PROFILE_RULES = {
     "carried in the registry entry": (
-        "carried in the project-shape observer's owner-adopted registry entry"
+        "is carried in the project-shape observer's owner-adopted registry entry"
     ),
-    "one source, heading, shape and key form": (
-        "declares the source, the heading or tree rule, exactly one container "
-        "shape and exactly one key form"
+    "one or more rows per class": "Each class above has one or more rows.",
+    "row: class and source": "Each row names its class and its source;",
+    "row: headings or tree population": (
+        "the heading or headings, each with its level when it has one and its "
+        "exact text, or the tree population that locate it, when its shape reads one;"
     ),
-    "key forms closed at eight": "The key forms are closed at the eight",
-    "key form: fixed key": "a fixed key;",
-    "key form: leading bold phrase": "the leading bold phrase;",
-    "key form: bold or code span": (
-        "the leading bold or code span before the first dash;"
+    "row: parameters": (
+        "every parameter its shape or key form reads, such as a table column, a "
+        "TOML table and field or a key prefix;"
     ),
-    "key form: prefixed ordinal": "a prefixed one-based ordinal;",
-    "key form: first-column link text": "the first-column link text;",
-    "key form: link target basename": "the link target basename;",
-    "key form: tree directory": "the one tree directory;",
-    "key form: H2 ordinal and label": (
-        "an H2 ordinal with a first-column bold label."
+    "row: one shape and one key form": (
+        "exactly one container shape; and exactly one item key form."
     ),
-    "missing or unknown rule is Unknown": (
-        "A class whose rule is missing from the profile, or whose rule names a "
-        "shape or key form outside these closed sets, makes its sources' item "
-        "denominators Unknown"
+    "tree population pattern": (
+        "A tree population is declared by a path pattern, `pathPattern`, whose "
+        "one `<key>` segment is a single directory name."
     ),
-    "no built-in substitute": "the observer never substitutes a built-in rule",
     "nothing added by a profile": (
         "A profile cannot add a class, a shape or a key form."
+    ),
+}
+LOADED_RULES = {
+    "Butlers' interim default": (
+        "written below, as a built-in default; no other project has a built-in "
+        "default."
+    ),
+    "loaded profile is the only source": (
+        "Once a project's profile is loaded, it is the only source of that "
+        "project's extraction rules."
+    ),
+    "a class with no row": "A class that the loaded profile gives no row,",
+    "a row outside the closed sets": (
+        "or that has a row naming a shape or key form outside these closed sets "
+        "or lacking a parameter its shape or key form reads, is unreadable:"
+    ),
+    "class and category Unknown": (
+        "its item denominator and its category's item denominator are Unknown,"
+    ),
+    "sources fail as the exactness bullet says": (
+        "each source any of its rows names fails as a source in which a class fails,"
+    ),
+    "every source stays counted": (
+        "and every source stays in the source-path population."
+    ),
+    "no built-in substitute once loaded": (
+        "The observer never substitutes a built-in rule for a loaded profile's "
+        "missing or invalid one."
+    ),
+    "whole-load refusal": (
+        "A loader that instead refuses the whole profile meets this rule only if "
+        "every source stays in the source-path population with an Unknown item "
+        "denominator."
     ),
 }
 
@@ -156,48 +251,76 @@ NEXT_REQUIREMENT = "### Requirement: PWB-REQ-003"
 PRECEDING_SCENARIO = "#### Scenario: Declared shape reconciles"
 WARRANTS = "```yaml\nwarrants:"
 REQUIREMENT_RULES = {
-    "body: profile rule": (
-        "declared item discovered by the extraction rule its project profile "
-        "declares, using only the closed container-shape vocabulary, across"
+    "body: governing grammar": (
+        "declared item discovered by the extraction grammar that governs its "
+        "project under the reader definitions"
     ),
-    "case: missing-rule case": "and a profile missing one class's rule.",
-    "oracle: profile grammar": (
-        "two independent extractors apply the literal grammar declared by the "
-        "project profile"
+    "body: loaded profile through closed sets": (
+        "the grammar rows of its loaded project profile, read only through the "
+        "closed container shapes and item key forms"
+    ),
+    "body: Butlers default": (
+        "or, before Butlers' profile is loaded, the Butlers grammar written there"
+    ),
+    "case: class with no row": "a loaded profile that gives one class no row,",
+    "case: shape outside the vocabulary": (
+        "a loaded profile with a row that names a shape outside the vocabulary."
+    ),
+    "oracle: governing grammar": (
+        "two independent extractors apply the literal grammar that governs the "
+        "project"
     ),
     "oracle: written Butlers grammar": (
-        "for Butlers, both also apply the grammar written in these reader "
-        "definitions and must produce the same identities;"
+        "for Butlers read through its loaded profile, both also apply the grammar "
+        "written in these reader definitions and must produce the same "
+        "identities and D;"
+    ),
+    "oracle: unreadable class": (
+        "and every class a loaded profile leaves unreadable, carry an Unknown "
+        "item denominator."
     ),
     "falsifier: undeclared shape": (
-        "an item is read through a shape the profile does not declare"
+        "an item is read through a shape or key form its governing grammar does "
+        "not declare"
     ),
     "falsifier: built-in fallback": (
-        "a missing or unknown profile rule is replaced by a built-in one."
+        "a loaded profile's missing or invalid rule is replaced by a built-in one."
     ),
 }
 RETIRED_REQUIREMENT_TEXT = "declared item discovered by the closed extraction rule"
 SCENARIOS = (
     "#### Scenario: Butlers' profile reproduces the written grammar",
-    "#### Scenario: Profile rule is missing or names an unknown shape",
+    "#### Scenario: Loaded profile gives one class no row",
+    "#### Scenario: Loaded profile names a shape outside the vocabulary",
 )
 SCENARIO_RULES = {
     SCENARIOS[0]: (
-        "extracted through the container shape the profile declares for it",
+        "each item is extracted through the container shape and item key form "
+        "its grammar row declares",
         "the identities and D equal those produced by the grammar written in "
         "these reader definitions",
     ),
     SCENARIOS[1]: (
-        "names a shape or key form outside the closed sets",
-        "stays counted with an Unknown item denominator",
-        "no built-in rule or shape is used in its place",
+        "has no grammar row for one class",
+        "that class's item denominator and its category's item denominator "
+        "render Unknown",
+        "every source stays in the source-path population and no built-in rule "
+        "reads the class",
+    ),
+    SCENARIOS[2]: (
+        "names a container shape or item key form outside the closed sets",
+        "that class's item denominator and its category's item denominator "
+        "render Unknown",
+        "each source any of the class's rows names fails as a source in which a "
+        "class fails",
+        "no built-in or nearest shape reads the class in its place",
     ),
 }
 CAPABILITY_ROW = (
     "| 4 | Account for every admitted declared item exactly once, reading each "
-    "class only through the container shape its project profile declares from "
-    "the closed nine-shape vocabulary, with no built-in fallback | covered — "
-    "PWB-REQ-002 |"
+    "class only through the grammar rows its loaded project profile declares "
+    "from the closed nine-shape and eight-key-form vocabularies, with no "
+    "built-in fallback once a profile is loaded | covered — PWB-REQ-002 |"
 )
 CAPABILITY_TOTALS = (
     "Totals: 25 covered, 6 lawfully out of scope, 0 Unknown/unresolved; 31 total."
@@ -285,63 +408,127 @@ def proposed_bytes(
         return {rel: (base / rel).read_bytes() for rel in BEHAVIOR_SUBJECTS}
 
 
-def _grammar_items(text: str, opening: str) -> str | None:
-    """The nine class bullets of the Butlers grammar, byte for byte."""
+def _plain(text: str) -> str:
+    """Whitespace-folded text with code-span backticks removed."""
+    return fold(text.replace("`", ""))
+
+
+def _grammar_items(text: str, opening: str, end: str | None) -> str | None:
+    """The nine class bullets of the Butlers grammar, byte for byte.
+
+    In the current spec they end where the exactness paragraph begins; in the
+    proposed spec, which hoists that paragraph, at the next top-level bullet.
+    """
     at = text.find(opening)
     if at < 0:
         return None
     start = at + len(opening)
-    end = text.find(GRAMMAR_END, start)
-    return text[start:end] if end >= 0 else None
+    stop = text.find(end, start) if end else text.find("\n- ", start) + 1
+    return text[start:stop] if stop > 0 else None
+
+
+def _exactness(current: str) -> str | None:
+    """The current exactness paragraph, as the proposed bullet must restate it."""
+    at = current.find(GRAMMAR_END)
+    if at < 0:
+        return None
+    stop = current.find("\n- ", at)
+    return current[at:stop + 1] if stop >= 0 else None
+
+
+def entry_span(block: str, name: str) -> tuple[int, int] | None:
+    """Where one `  - `name`: ...` entry and its continuation lines sit."""
+    entry = re.search(
+        rf"^  - `{re.escape(name)}`: (?:[^\n]*\n)(?:    [^\n]*\n)*",
+        block,
+        re.MULTILINE,
+    )
+    return entry.span() if entry else None
+
+
+def _entries(block: str, expected: dict[str, str], label: str) -> list[str]:
+    findings: list[str] = []
+    names = ENTRY.findall(block)
+    if names != list(expected):
+        findings.append(f"{label} vocabulary differs: {names} is not {list(expected)}")
+    for name, sentence in expected.items():
+        span = entry_span(block, name)
+        body = block[span[0]:span[1]].split(": ", 1)[1] if span else ""
+        if not span or _plain(body) != fold(sentence.replace("`", "") + "."):
+            findings.append(f"{label} sentence differs: {name}")
+    return findings
+
+
+def shared_text_findings(module: object | None = None) -> list[str]:
+    """This package's sentences against `syzygy-dov.24`'s, once it is in the tree."""
+    if module is None:
+        if not (ROOT / "scripts" / f"{SHARED_TEXT}.py").is_file():
+            return []
+        sys.path.insert(0, str(ROOT / "scripts"))
+        module = __import__(SHARED_TEXT)
+    findings: list[str] = []
+    if getattr(module, "SHAPES", None) != SHAPES:
+        findings.append("shape sentences differ from the loaded-profile amendment's")
+    theirs = getattr(module, "ITEM_KEY_SENTENCES", None) or {}
+    ours = {form: sentence for form, sentence in KEY_FORMS.values() if form}
+    if theirs != ours:
+        findings.append("key-form sentences differ from the loaded-profile amendment's")
+    return findings
 
 
 def reader_findings(text: str, current: str) -> list[str]:
-    """The vocabulary, the profile rule and the retained Butlers grammar."""
+    """The added bullets in order, each rule in them, and the Butlers grammar."""
     findings: list[str] = []
     start = text.find(READER_START)
     end = text.find(READER_END, start)
     if start < 0 or end < 0:
         return ["reader definitions are missing"]
     block = text[start:end]
-    positions = []
-    for label, opening in (
-        ("vocabulary", VOCABULARY_OPENING),
-        ("profile", PROFILE_OPENING),
-        ("Butlers grammar", BUTLERS_OPENING),
-    ):
+    positions: dict[str, int] = {}
+    for label, opening in BULLETS:
         if text.count(opening) != 1 or block.count(opening) != 1:
             findings.append(f"missing or duplicate {label} bullet")
-            positions.append(-1)
         else:
-            positions.append(block.find(opening))
-    if -1 not in positions and positions != sorted(positions):
-        findings.append("vocabulary, profile and Butlers bullets are out of order")
+            positions[label] = block.find(opening)
+    if len(positions) == len(BULLETS) and list(positions.values()) != sorted(positions.values()):
+        findings.append("the added reader-definition bullets are out of order")
     if RETIRED_OPENING in text:
         findings.append("the retired single-grammar opening is still present")
-    if positions[0] >= 0 and positions[1] > positions[0]:
-        vocabulary = block[positions[0]:positions[1]]
-        names = SHAPE_ENTRY.findall(vocabulary)
-        if names != list(SHAPES):
-            findings.append(
-                f"shape vocabulary differs: {names} is not {list(SHAPES)}"
-            )
-        for name, sentence in SHAPES.items():
-            entry = re.search(
-                rf"^  - `{re.escape(name)}`: ((?:[^\n]*\n)(?:    [^\n]*\n)*)",
-                vocabulary,
-                re.MULTILINE,
-            )
-            if not entry or fold(entry.group(1)) != fold(sentence):
-                findings.append(f"shape sentence differs: {name}")
-        if "closed at nine shapes, and no other shape is read" not in fold(vocabulary):
-            findings.append("vocabulary is not stated closed at nine")
-    if positions[1] >= 0 and positions[2] > positions[1]:
-        profile = fold(block[positions[1]:positions[2]])
-        for label, rule in PROFILE_RULES.items():
-            if fold(rule) not in profile:
-                findings.append(f"profile bullet lacks {label}")
-    retained = _grammar_items(text, BUTLERS_OPENING)
-    expected = _grammar_items(current, RETIRED_OPENING)
+    bodies: dict[str, str] = {}
+    labels = [label for label, _opening in BULLETS]
+    for label, following in zip(labels, labels[1:]):
+        if label in positions and following in positions and positions[following] > positions[label]:
+            bodies[label] = block[positions[label]:positions[following]]
+    if "vocabulary" in bodies:
+        findings.extend(_entries(bodies["vocabulary"], SHAPES, "shape"))
+    if "key-form" in bodies:
+        findings.extend(_entries(
+            bodies["key-form"],
+            {name: sentence for name, (_form, sentence) in KEY_FORMS.items()},
+            "key-form",
+        ))
+        if fold(DUPLICATE_KEY) not in fold(bodies["key-form"]):
+            findings.append("key-form bullet lacks the duplicate-key rule")
+    for label, closure in CLOSURES.items():
+        if label in bodies and fold(closure) not in fold(bodies[label]):
+            findings.append(f"{label} bullet is not stated closed")
+    for label, rules in (("profile", PROFILE_RULES), ("loaded-profile", LOADED_RULES)):
+        if label in bodies:
+            folded = fold(bodies[label])
+            for rule_label, rule in rules.items():
+                if fold(rule) not in folded:
+                    findings.append(f"{label} bullet lacks {rule_label}")
+    expected_exact = _exactness(current)
+    if expected_exact is None:
+        findings.append("current spec no longer carries the exactness paragraph this package hoists")
+    elif "exactness" in bodies and fold(bodies["exactness"]) != fold(
+        EXACT_PREFIX + expected_exact.strip()[1:]
+    ):
+        findings.append("exactness bullet does not restate the current paragraph")
+    if GRAMMAR_END in text:
+        findings.append("the exactness paragraph is still inside the Butlers grammar")
+    retained = _grammar_items(text, BUTLERS_OPENING, None)
+    expected = _grammar_items(current, RETIRED_OPENING, GRAMMAR_END)
     if expected is None:
         findings.append("current spec no longer carries the grammar this package restates")
     elif retained != expected:
@@ -570,6 +757,7 @@ def check() -> list[str]:
     except ValueError as error:
         return findings + [str(error)]
     findings.extend(structure_findings(proposed))
+    findings.extend(shared_text_findings())
     findings.extend(composition_findings())
     target = ROOT / MANIFEST_OUT
     if not target.is_file():
@@ -627,70 +815,106 @@ def selftest() -> int:
         return _fail("dropped-patch mutation passed the population predicate")
     killed += 1
 
-    # Vocabulary: each shape's sentence altered, one shape dropped, one added,
-    # two shapes swapped, and the closure sentence removed.
-    for name, sentence in SHAPES.items():
-        words = sentence.split()
-        mutated_sentence = " ".join(words[:-1] + ["[changed]."])
-        entry_at = spec.index(f"  - `{name}`: ")
-        entry_end = spec.index("\n  - ", entry_at + 1) if name != "toml-table-field" else spec.index("\n- ", entry_at)
-        mutated = spec[:entry_at] + f"  - `{name}`: {mutated_sentence}" + spec[entry_end:]
-        if not spec_mutant(name, mutated, f"shape sentence differs: {name}"):
-            return _fail(f"shape sentence mutation passed: {name}")
+    # Shape and key-form vocabularies: each sentence altered, one entry
+    # dropped, one added, one moved, and each closure sentence removed.
+    for label, entries in (("shape", SHAPES), ("key-form", KEY_FORMS)):
+        for name in entries:
+            span = entry_span(spec, name)
+            if span is None:
+                return _fail(f"{label} entry fixture matched nothing: {name}")
+            entry = spec[span[0]:span[1]]
+            mutated_entry = entry.rstrip("\n").rstrip(".") + " [changed].\n"
+            mutated = spec[:span[0]] + mutated_entry + spec[span[1]:]
+            if not spec_mutant(name, mutated, f"{label} sentence differs: {name}"):
+                return _fail(f"{label} sentence mutation passed: {name}")
+            killed += 1
+        last = list(entries)[-1]
+        first_name = list(entries)[0]
+        span = entry_span(spec, last)
+        entry = spec[span[0]:span[1]]
+        first_at = spec.index(f"  - `{first_name}`: ")
+        entry_mutants = {
+            "dropped": spec[:span[0]] + spec[span[1]:],
+            "added": spec[:span[1]] + "  - `prose-paragraphs`: each paragraph.\n" + spec[span[1]:],
+            "moved": (
+                spec[:first_at] + entry + spec[first_at:span[0]] + spec[span[1]:]
+            ),
+        }
+        for name, mutated in entry_mutants.items():
+            if mutated == spec or not any(
+                f.startswith(f"{label} vocabulary differs")
+                for f in requirement_findings(mutated.encode())
+            ):
+                return _fail(f"{label} entry {name} mutation passed")
+            killed += 1
+    for label, closure in CLOSURES.items():
+        opened = _replace_once(spec, closure.split(", and")[0], "The list is open", label)
+        if not spec_mutant(label, opened, f"{label} bullet is not stated closed"):
+            return _fail(f"{label} closure mutation passed")
         killed += 1
-    tree_line = "  - `tree-path`: the Git tree path itself; no body is parsed.\n"
-    shape_mutants = {
-        "shape dropped": spec.replace(tree_line, "", 1),
-        "shape added": spec.replace(
-            tree_line, tree_line + "  - `prose-paragraphs`: each paragraph.\n", 1
-        ),
-        "shape moved": spec.replace(
-            tree_line, "", 1
-        ).replace(
-            "  - `heading-section`:", tree_line + "  - `heading-section`:", 1
-        ),
-    }
-    for name, mutated in shape_mutants.items():
-        if mutated == spec or not any(
-            f.startswith("shape vocabulary differs") for f in requirement_findings(mutated.encode())
-        ):
-            return _fail(f"{name} mutation passed")
-        killed += 1
-    closure = _replace_once(
-        spec,
-        "closed at nine shapes, and no other shape is read",
-        "open, and other shapes may be read",
-        "closure",
-    )
-    if not spec_mutant("closure", closure, "vocabulary is not stated closed at nine"):
-        return _fail("vocabulary closure mutation passed")
+    duplicate = _replace_once(spec, "fails the source as\n  duplicate-key.", "is kept.", "duplicate key")
+    if not spec_mutant("duplicate", duplicate, "key-form bullet lacks the duplicate-key rule"):
+        return _fail("duplicate-key rule mutation passed")
     killed += 1
 
-    # Profile bullet: each rule removed on its own.
-    profile_at = spec.index(PROFILE_OPENING)
-    profile_end = spec.index(BUTLERS_OPENING)
-    for label, rule in PROFILE_RULES.items():
-        paragraph = fold(spec[profile_at:profile_end])
-        mutated_paragraph = paragraph.replace(fold(rule), "[removed]", 1)
-        if mutated_paragraph == paragraph:
-            return _fail(f"profile-rule fixture matched nothing: {label}")
-        mutated = spec[:profile_at] + mutated_paragraph + "\n" + spec[profile_end:]
-        if not spec_mutant(label, mutated, f"profile bullet lacks {label}"):
-            return _fail(f"profile-rule mutation passed: {label}")
+    # Profile and loaded-profile bullets: each rule removed on its own.
+    openings = dict(BULLETS)
+    for label, rules, following in (
+        ("profile", PROFILE_RULES, "loaded-profile"),
+        ("loaded-profile", LOADED_RULES, "exactness"),
+    ):
+        at = spec.index(openings[label])
+        end = spec.index(openings[following])
+        for rule_label, rule in rules.items():
+            paragraph = fold(spec[at:end])
+            mutated_paragraph = paragraph.replace(fold(rule), "[removed]", 1)
+            if mutated_paragraph == paragraph:
+                return _fail(f"{label} fixture matched nothing: {rule_label}")
+            mutated = spec[:at] + mutated_paragraph + "\n" + spec[end:]
+            if not spec_mutant(rule_label, mutated, f"{label} bullet lacks {rule_label}"):
+                return _fail(f"{label} rule mutation passed: {rule_label}")
+            killed += 1
+
+    # Shared text: a drifted sentence on either side of the two packages.
+    class Module:
+        pass
+
+    for label, attribute, expected in (
+        ("shape", "SHAPES", "shape sentences differ from the loaded-profile amendment's"),
+        ("key form", "ITEM_KEY_SENTENCES", "key-form sentences differ from the loaded-profile amendment's"),
+    ):
+        module = Module()
+        module.SHAPES = dict(SHAPES)
+        module.ITEM_KEY_SENTENCES = {form: s for form, s in KEY_FORMS.values() if form}
+        if shared_text_findings(module):
+            return _fail("shared-text fixture does not verify unmutated")
+        drifted = dict(getattr(module, attribute))
+        key = next(iter(drifted))
+        drifted[key] = drifted[key] + " [changed]"
+        setattr(module, attribute, drifted)
+        if expected not in shared_text_findings(module):
+            return _fail(f"shared {label} drift passed")
         killed += 1
 
-    # Bullet order, duplicates, the retired opening and the retained grammar.
+    # Bullet order, duplicates, the retired opening, the hoisted exactness
+    # paragraph and the retained grammar.
     vocabulary_at = spec.index(VOCABULARY_OPENING)
-    vocabulary = spec[vocabulary_at:profile_at]
-    profile = spec[profile_at:profile_end]
+    keys_at = spec.index(KEYS_OPENING)
+    profile_at = spec.index(PROFILE_OPENING)
+    vocabulary = spec[vocabulary_at:keys_at]
+    keys = spec[keys_at:profile_at]
     reader_mutants = {
         "bullets out of order": (
-            spec[:vocabulary_at] + profile + vocabulary + spec[profile_end:],
-            "vocabulary, profile and Butlers bullets are out of order",
+            spec[:vocabulary_at] + keys + vocabulary + spec[profile_at:],
+            "the added reader-definition bullets are out of order",
         ),
-        "duplicate profile bullet": (
-            spec[:profile_end] + profile + spec[profile_end:],
-            "missing or duplicate profile bullet",
+        "duplicate key-form bullet": (
+            spec[:profile_at] + keys + spec[profile_at:],
+            "missing or duplicate key-form bullet",
+        ),
+        "missing loaded-profile bullet": (
+            spec.replace(LOADED_OPENING, "- Until later, the observer reads Butlers by the grammar", 1),
+            "missing or duplicate loaded-profile bullet",
         ),
         "missing Butlers bullet": (
             spec.replace(BUTLERS_OPENING, "- Butlers declares:\n", 1),
@@ -699,6 +923,16 @@ def selftest() -> int:
         "retired opening restored": (
             spec.replace(BUTLERS_OPENING, BUTLERS_OPENING + RETIRED_OPENING, 1),
             "the retired single-grammar opening is still present",
+        ),
+        "exactness paragraph reworded": (
+            _replace_once(spec, "Unknown; it never produces a partial item set.",
+                          "Unknown; it may produce a partial item set.", "exactness"),
+            "exactness bullet does not restate the current paragraph",
+        ),
+        "exactness paragraph left in the Butlers grammar": (
+            spec.replace("\n- The source-path denominator remains known",
+                         "\n" + GRAMMAR_END + " are exact.\n- The source-path denominator remains known", 1),
+            "the exactness paragraph is still inside the Butlers grammar",
         ),
         "Butlers grammar altered": (
             _replace_once(
@@ -730,8 +964,8 @@ def selftest() -> int:
         killed += 1
     restored = _replace_once(
         spec,
-        "declared item discovered by the extraction rule its project profile declares,\nusing only the closed container-shape vocabulary, across",
-        "declared item discovered by the closed extraction rule across",
+        "declared item discovered by the extraction grammar that governs its project\n",
+        "declared item discovered by the closed extraction rule across\n",
         "retired body",
     )
     if not spec_mutant("retired", restored, "PWB-REQ-002 still reads the closed extraction rule"):
@@ -793,7 +1027,7 @@ def selftest() -> int:
     companion_mutants = {
         "capability row": (
             CAPABILITY_ROW.encode(),
-            CAPABILITY_ROW.replace("with no built-in fallback", "with a built-in fallback").encode(),
+            CAPABILITY_ROW.replace("with no built-in fallback", "with a built-in fallback", 1).encode(),
             "capability coverage does not carry the amended row 4 exactly once",
         ),
         "capability totals": (
@@ -854,9 +1088,12 @@ def selftest() -> int:
         return _fail("sibling composition does not verify")
     print(
         f"selftest: {killed} mutants killed — stale manifest, path order, patch "
-        f"population, {len(SHAPES)} shape sentences, shape dropped/added/"
-        f"moved, vocabulary closure, {len(PROFILE_RULES)} profile rules, "
-        "bullet order/duplicate/missing, retired opening, Butlers grammar "
+        f"population, {len(SHAPES)} shape and {len(KEY_FORMS)} key-form "
+        "sentences, entry dropped/added/moved and closure for each vocabulary, "
+        f"the duplicate-key rule, {len(PROFILE_RULES)} profile and "
+        f"{len(LOADED_RULES)} loaded-profile rules, shared-text drift on both "
+        "vocabularies, bullet order/duplicate/missing, retired opening, the "
+        "hoisted exactness paragraph reworded or left behind, Butlers grammar "
         f"drift, {len(REQUIREMENT_RULES)} PWB-REQ-002 rules, retired "
         f"requirement text, {len(SCENARIOS)} scenarios x missing/duplicate/"
         "placement plus each scenario rule, warrants, dependency and "
@@ -915,12 +1152,20 @@ def main(argv: list[str]) -> int:
             f"PWB container-shape profile manifest matches {len(BEHAVIOR_SUBJECTS)} "
             f"proposed subjects ({len(PATCHED)} patched, "
             f"{len(BEHAVIOR_SUBJECTS) - len(PATCHED)} unchanged); {len(SHAPES)} "
-            f"shapes, {len(PROFILE_RULES)} profile rules, "
-            f"{len(REQUIREMENT_RULES)} PWB-REQ-002 rules, {len(SCENARIOS)} "
-            "scenarios, the retained Butlers grammar, dependency and "
-            "contract-coverage regeneration and "
+            f"shapes, {len(KEY_FORMS)} key forms, {len(PROFILE_RULES)} profile "
+            f"rules, {len(LOADED_RULES)} loaded-profile rules, the hoisted "
+            f"exactness bullet, {len(REQUIREMENT_RULES)} PWB-REQ-002 rules, "
+            f"{len(SCENARIOS)} scenarios, the retained Butlers grammar, dependency "
+            "and contract-coverage regeneration and "
             f"{len(DECLARED_COMPOSITION)} declared sibling-composition outcomes verify"
         )
+        if (ROOT / "scripts" / f"{SHARED_TEXT}.py").is_file():
+            print("shape and key-form sentences match the loaded-profile amendment's builder")
+        else:
+            print(
+                f"shape and key-form sentences are a copy: scripts/{SHARED_TEXT}.py "
+                "is not in this tree, so they are compared only once it lands"
+            )
         return 0
     if not args.write:
         print(

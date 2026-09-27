@@ -206,6 +206,10 @@ CAMPAIGNS = (
         "edit-repair-deletion",
         "P-73 edit/repair deletion gate",
         r"R-POLARIS-EDIT-REPAIR-DELETION-.*\.md",
+    ),    campaign(
+        "n8-container-shape",
+        "N8 container-shape profile gate",
+        r"R-N8-.*\.md",
     ),
 )
 

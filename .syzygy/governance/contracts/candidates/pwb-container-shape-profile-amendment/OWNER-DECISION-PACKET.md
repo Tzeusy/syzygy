@@ -15,11 +15,13 @@ spec change that lets each project declare its own formats?", recorded in
 That answer is direction to draft, not an act.
 
 Manifest: `PWB-CONTAINER-SHAPE-PROFILE-MANIFEST.txt`, eleven rows over the
-signed PWB behavior subject. Three rows hash proposed bytes and eight hash
+subject's manifest population (the subject tracks 15 files; the manifest
+leaves out the three contract-coverage parts and `tasks.md`, as every
+sibling PWB manifest does). Three rows hash proposed bytes and eight hash
 current bytes.
 
 Manifest SHA-256:
-`3eb181c44ca29d57f31f2804caaebcc8b3deb9f81d79391395a04e4bc299fca6`
+`c8e2cfef5a7e62bf8fd396b7d238b7b73fc91b5e90007ca70d1921edf2020ab0`
 
 The builder writes the manifest; this digest was computed from it by script.
 Any change to a patch, the manifest or the subject retires it.
@@ -32,11 +34,15 @@ table's rows, a folder in the tree, one TOML field. That last part is the
 **container shape**. Because it is written into the specification for
 Butlers, a second project that keeps the same kind of item in a different
 shape cannot be read at all. This draft names the nine shapes Butlers
-already uses as a fixed list, and says each project's **profile** picks, per
-kind of item, which file, heading, shape and naming rule applies. Butlers'
-profile is today's rules, word for word. If a profile leaves a rule out or
-names a shape not on the list, that kind of item is shown as Unknown —
-never guessed with a built-in rule.
+already uses as a fixed list, and the eight ways Butlers names an item (the
+**key forms**) as a second fixed list. A project's **profile** then lists
+**grammar rows**: each row says which kind of item, which file, which
+heading, one shape and one key form. A kind of item may need several rows —
+Butlers' project account needs six, from three files. Butlers' rows give
+today's rules, word for word. Until Butlers' profile is loaded, today's
+written rules stay in use; once a profile is loaded, a kind of item it
+leaves out or gets wrong is shown as Unknown — never guessed with a
+built-in rule.
 
 ## What you would be deciding
 
@@ -46,65 +52,104 @@ prints the exact change.
 
 Under the drafted text:
 
-- the nine shapes are fixed in the specification; a profile cannot add one;
-- a profile declares, for each kind of item, the file, the heading, one
-  shape and one of eight fixed naming rules ("key forms");
+- the nine shapes and eight key forms are fixed in the specification; a
+  profile cannot add one. Each shape's sentence says what it reads and every
+  way it fails. The sentences are the `syzygy-dov.24` registry draft's (PR
+  #123), word for word; the builder checks that once both are in the tree;
+- a profile declares one or more grammar rows for each kind of item, each
+  with its file, heading or headings, the settings its shape or key form
+  needs (a table column, a TOML table and field, a key prefix), one shape
+  and one key form;
 - the profile is carried in the observer's owner-adopted registry entry;
-- a missing or unknown rule makes that kind of item's count Unknown, and the
-  file itself stays counted;
-- Butlers' rules stay written in the specification, and Butlers read through
-  its profile must give exactly today's items and counts.
+- until Butlers' profile is loaded, the observer reads Butlers by the rules
+  written in the specification, as a built-in default. No other project has
+  one;
+- once a profile is loaded, a kind of item with no row, or a row naming a
+  shape or key form not on the lists, is Unknown, and so is the category it
+  belongs to. Every file stays counted;
+- the rules that make reading exact — heading text, NFC, no partial item
+  sets — now cover every project, not only Butlers;
+- Butlers read through its profile must give exactly today's items and
+  counts.
+
+## Already ruled, and what it settles here
+
+P-74 Q2 (`POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`, line 64)
+reads: "one registry-entry amendment act before slice 5's fifth limb only,
+the first four limbs thread a profile parameter with current constants as
+default". So:
+
+- the profile's home is a registry-entry amendment, and there is one such
+  act. `syzygy-dov.24` drafts it;
+- until that act and limb 5, the code runs on today's constants. The
+  drafted text writes that in as Butlers' built-in default, so the code
+  conforms by the text, not by chance.
 
 ## Open questions for you
 
 1. **What does "declare its own formats" cover?** The draft lets the profile
-   declare the whole rule — file, heading, shape and naming rule — not only
+   declare the whole rule — file, heading, shape and key form — not only
    the shape. Your §6 reading speaks of "container shapes". Is the whole rule
    what you meant, or only the shape, with files and headings staying in the
    specification?
-2. **Where does the list of shapes live?** The draft puts the nine shapes in
-   the specification, so adding a tenth needs a specification amendment. An
-   earlier pursuit move (L1-M1) put the list in the registry entry, so adding
-   one needs only a registry act. Which should it be?
-3. **Should the naming rules also be a fixed list?** The draft fixes them at
+2. **Where do the lists of shapes and key forms live?** The draft puts both
+   in the specification, so adding a tenth shape needs a specification
+   amendment. An earlier pursuit move (L1-M1) put the list in the registry
+   entry, so adding one needs only a registry act. Which should it be?
+3. **Should the key forms also be a fixed list?** The draft fixes them at
    the eight Butlers uses. A second project may name its items another way
    (for example, by heading text alone). Keep them fixed, or leave them open?
-4. **What happens when a profile is incomplete?** The draft marks only the
-   affected kind of item Unknown. The `syzygy-dov.24` registry draft (PR #123)
-   and the L1-M1 move instead refuse to load the whole profile. A whole-load
-   refusal satisfies this text only if every source path is still counted.
-   Which do you want?
+4. **What happens when a loaded profile is incomplete?** The draft marks the
+   affected kind of item, and its category, Unknown. The `syzygy-dov.24`
+   draft and the L1-M1 move instead refuse to load the whole profile. The
+   drafted text allows a whole-load refusal only if every file is still
+   counted with an Unknown item count. Which do you want?
 5. **Keep Butlers' rules written in the specification?** The draft keeps
-   them, so the oracle has a written reference. The cost: any change to how
-   Butlers is read needs both a registry act and a specification amendment.
-   Counter-view: move them out, and let the registry entry alone say it.
-6. **When should this be signed, given that no code reads a profile yet?**
-   The observer reads built-in constants. Profile loading is M8 slice 5's
-   fifth limb (`syzygy-dov.8.3`), not started. Signing now leaves the code
-   conforming for Butlers only by coincidence of its constants, a gap that
-   would be disclosed. *Recommended: sign this together with, or just before,
-   the `syzygy-dov.24` registry act, then give a continuation direction for
-   limb 5* [Inferred].
-7. **Does the registry need ride `syzygy-dov.24`'s act?** The profile needs
-   a home in the registry entry. `syzygy-dov.24` (PR #123) drafts one, and its
-   own first question asks the same. No secret-policy act looks needed: the
-   policy lists no per-class files, only a seed rule [Inferred, read from the
-   policy]. *Recommended: yes, one registry act after this sign-off.*
-8. **Should the Butlers-only wording elsewhere be widened now?** The source
+   them, so the oracle has a written reference and the interim default has
+   words to point at. The cost: any change to how Butlers is read needs both
+   a registry act and a specification amendment. Counter-view: move them
+   out, and let the registry entry alone say it.
+6. **When should this be signed?** No code reads a profile yet: limb 5
+   (`syzygy-dov.8.3` and after) is not started. Because the interim default
+   is written in, signing now leaves today's code conforming. *Recommended:
+   sign this before the `syzygy-dov.24` registry act, so the registry and
+   the specification agree the first time; `syzygy-dov.24`'s own question 1
+   recommends the same* [Inferred].
+7. **The one registry act P-74 Q2 ruled: is it `syzygy-dov.24`'s, and does
+   it come after this sign-off?** P-74 Q2 settles that there is one act. What
+   it does not settle is whether `syzygy-dov.24`'s drafted act is that act
+   for this profile too, and its order relative to this sign-off. No
+   secret-policy act looks needed: the policy lists no per-class files, only
+   a seed rule [Inferred, read from the policy]. *Recommended: yes, and
+   after.*
+8. **This package and M15 both amend `PWB-REQ-002`. Keep them separate?**
+   P-82 ruled "One CC-REV-2 semantic delta to PWB-REQ-002", sequenced behind
+   lane B, adding a partially-extracted state, an unenumerated-heading
+   reason and root-independence flags (`syzygy-dov.15.1`, not drafted). The
+   two deltas are kept apart in meaning: this one says only which rules read
+   a kind of item, and on failure defers to the exactness sentence ("fails
+   as a source in which a class fails") without saying how much of the file
+   fails. M15 would decide that. But this package moves that exactness
+   sentence into its own bullet, word for word, and M15 is likely to edit
+   the same sentence. So whichever lands second is regenerated and
+   re-reviewed. The 2026-09-22 pursuit suggested L1-M1 ride M15's delta
+   instead of opening a second one. *Recommended: keep them separate; they
+   answer different questions and the second is a mechanical regenerate*
+   [Inferred]. If you would rather merge, this package waits for M15.
+9. **Should the Butlers-only wording elsewhere be widened now?** The source
    population and declared-item bullets still name Butlers. The draft leaves
    them alone, to stay inside §6. Widen them here, or in a later change?
-9. **Is "profile" the right word?** RFC 0005 already uses "a per-project
-   profile" for a SEC-3 execution profile, and RFC 0007 speaks of a
-   "governed-project profile" for presentation. Both are unrelated. Keep
-   "project profile", or rename (for example, "reading profile")?
-10. **Where in the landing order?** Your order is `.21` → `.30` → `.22` →
-    lane B, then `.20` and `.18`. This package proposes to land **after all of
-    those**; `syzygy-dov.29` (PR #121) also proposes last. Which of the two
-    goes first? Each earlier specification act means this manifest is
-    regenerated with `--write` and re-reviewed.
-11. **Should the shape sentences match the registry draft word for word?**
-    They paraphrase `syzygy-dov.24`'s. If they must match, one of the two is
-    redrafted.
+10. **Is "profile" the right word?** RFC 0005 already uses "a per-project
+    profile" for a SEC-3 execution profile, and RFC 0007 speaks of a
+    "governed-project profile" for presentation. Both are unrelated. Keep
+    "project profile", or rename (for example, "reading profile")?
+11. **Where in the landing order?** What you ruled covers four packages
+    only: `.21` → `.30` → `.22` → lane B (the 2026-09-23 owner-values
+    record, §6; the 2026-09-26 sitting says N8 does not change it). Where
+    this package falls is not ruled. The drafter proposes it land after
+    lane B; `syzygy-dov.29` (PR #121) also proposes last, and M15 (question
+    8) is behind lane B too. Each earlier specification act means this
+    manifest is regenerated with `--write` and re-reviewed.
 
 ## What this would still leave unread
 
@@ -118,7 +163,7 @@ added for that here; §6 asks for Butlers' shapes as they are.
 
 The act phrase for this manifest would be:
 
-`SIGN OFF PWB CONTAINER-SHAPE PROFILE AMENDMENT: 3eb181c44ca29d57f31f2804caaebcc8b3deb9f81d79391395a04e4bc299fca6`
+`SIGN OFF PWB CONTAINER-SHAPE PROFILE AMENDMENT: c8e2cfef5a7e62bf8fd396b7d238b7b73fc91b5e90007ca70d1921edf2020ab0`
 
 It is registered so governance checks see it go stale, but it is **not
 offered**: no independent review has run. If you reply with this phrase now,
@@ -155,12 +200,35 @@ tree after the patches are applied.
 4. A dedicated recorder validates the exact phrase, applies the three patches
    in one change, writes the act record and appends one aggregate section.
 5. Add this link to `PWB_SUCCESSOR_CHAIN` in the performed order.
-6. The registry act for the profile (question 7) and a continuation
-   direction for limb 5 (question 6), each as its own decision.
+6. The registry act for the profile (question 7) and any continuation
+   direction for limb 5, each as its own decision.
 7. Run the canonical governance battery in a clone and keep the transcript.
 
 If unanswered, the signed text stays in force and only Butlers' written
 rules apply.
+
+## Review record
+
+Round 1: `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-RAW.md`, a
+fresh-context review of commit `a7eda10`. Verdict: REVISE. Every finding
+and what was done:
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| R1 — one source and one shape per class cannot express Butlers' own grammar | revise | Fixed. The profile is a list of grammar rows; a class has one or more, each with its source, heading or headings, the parameters its shape or key form reads, one shape and one key form. This matches `syzygy-dov.24`'s rows. |
+| R2 — no built-in rule conflicts with P-74 Q2's "current constants as default"; question 7 already ruled | revise | Fixed. Butlers' written grammar is its built-in default until its profile is loaded; the no-built-in rule applies only once a profile is loaded. P-74 Q2 is quoted above, "by coincidence" is gone, and question 7 asks only what is left. |
+| R3 — landing order credited the owner with `.20` and `.18` | revise | Fixed. Only `.21` → `.30` → `.22` → lane B is attributed to you (question 11); the ledger's list is corrected the same way. |
+| R4 — a missing rule names no source, so nothing turned Unknown | revise | Fixed. A class with no row, or with an invalid row, makes the class and its category Unknown; separate scenarios for the missing row and the invalid row. |
+| R5 — shape sentences looser than the code; exactness paragraph left Butlers-only | revise | Fixed. The nine shape sentences and seven key-form sentences are `syzygy-dov.24`'s, word for word, each naming every failure; the builder compares them once `syzygy-dov.24`'s builder is in the tree. The exactness paragraph is its own bullet covering every grammar. |
+| N1 — the written-grammar oracle compared identities only | note | Fixed. It now compares identities and D. |
+| N2 — the builder guards phrases, not unchanged text | note | Partly. The exactness paragraph and the nine Butlers class bullets are now compared with today's bytes. Other untouched regions are not hash-pinned; the diff is the check there. |
+| N3 — the bare digest at packet line 22 is unguarded | note | Not changed. It is checker-wide and older than this package. |
+| N4 — the ledger missed run and range citers of `PWB-REQ-002` | note | Fixed. The ledger publishes the regex and lists the 13 files, and Table 2 adds the code citer. |
+| N5 — M15 (P-82) not listed as a sibling | note | Fixed. Listed in the ledger, and put to you as question 8. |
+| N6 — warrant paraphrased VIS-2 and VIS-7 | note | Fixed. Both are quoted at source. |
+| N7 — key-form list wording | note | Fixed by R5: each key form carries its full sentence. |
+| N8 — "whole subject" | note | Fixed, here and in the delta. |
+| N9 — where the raw was recorded | note | The raw is retained under `docs/reviews/` with its campaign row. |
 
 ## Verification before any answer
 
