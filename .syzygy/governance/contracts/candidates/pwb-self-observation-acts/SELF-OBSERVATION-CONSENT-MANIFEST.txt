@@ -1,0 +1,6 @@
+# SYZYGY SELF-OBSERVATION CONSENT MANIFEST
+# This row binds only by the owner act `CONSENT TO SYZYGY SELF PROJECT-SHAPE OBSERVATION` that takes its
+# digest as argument; until that act is performed it binds nothing.
+# 1 artifact; the row hashes the drafted file under proposed/, installed byte-for-byte at adoption.
+# It matches the tree only after --apply at adoption.
+2901eccbc92cfcec8aaae0ec5817dd70a74d333bb3af321c81e094fc47c022e4  .syzygy/governance/decisions/SYZYGY-SELF-PROJECT-SHAPE-OBSERVATION-CONSENT.md
