@@ -61,8 +61,12 @@ below line 4 is read) and accepts exactly one of two cases, per
     - it carries an exact line `Revise-severity findings: 0` (any other
       digit, or the line's absence, refuses — this is the only accepted
       zero-count line form);
-    - it dispositions every numbered finding of the raw: read each text's
-      own finding markers, recognizing BOTH a line-leading form
+    - the `Act` names the raw's exact `raw_findings_heading`; after fenced
+      code is stripped, that byte-exact ATX heading must occur exactly once,
+      and the raw scan is confined to its section (through the next ATX
+      heading of equal or higher rank, or EOF). Missing, malformed or repeated
+      headings refuse; there is no whole-document fallback. Within that slice,
+      read the raw's finding markers, recognizing BOTH a line-leading form
       `^(\d+)\.\s` (MULTILINE) AND a bold form `^\*\*Finding (\d+)\b`
       (MULTILINE) — the real P-71 opening-band-scenario raws (rounds 1–10)
       open every finding `**Finding <n> — ...` and carry zero line-leading
@@ -82,8 +86,9 @@ below line 4 is read) and accepts exactly one of two cases, per
       are NOT stripped — this corpus never opens a numbered list at column
       0 inside one, and stripping by indentation risks swallowing a
       genuinely indented continuation of a real finding. The raw's finding
-      set is the exact set of numbers either form yields over the stripped
-      text — NOT the contiguous run `{1, ..., N}` starting at 1: findings
+      set is the exact set of numbers either form yields inside the selected
+      stripped section — NOT the contiguous run `{1, ..., N}` starting at 1:
+      findings
       are numbered continuously across a package's review rounds (round 11
       of that same package opens at 49), so a later round's raw carries no
       finding 1 at all and a `{1..N}`-from-1 predicate would refuse a
@@ -106,11 +111,12 @@ below line 4 is read) and accepts exactly one of two cases, per
       for it.
   Any other combination (a REVISE-style verdict, a missing or malformed
   disposition, a missing or mismatched `disposition_sha256` pin, a digest
-  mismatch, a nonzero revise count, an unmatched finding, a raw with zero
-  countable findings, a duplicated finding number in either text, or case
-  (b) with no `disposition_record` configured on the Act) refuses with a
-  specific error. No `ACTS` entry currently names a `disposition_record`;
-  wiring one is a later, separately reviewed change.
+  mismatch, a nonzero revise count, an unmatched finding, a missing or
+  ambiguous raw findings section, a raw with zero countable findings, a
+  duplicated finding number in either text, or case (b) with no
+  `disposition_record` configured on the Act) refuses with a specific error.
+  No `ACTS` entry currently names a `disposition_record` or
+  `raw_findings_heading`; wiring one is a later, separately reviewed change.
 
 Pinning. `disposition_sha256` is the full sha256 of the disposition
 record's bytes, set once when an Act's package is drafted with a
@@ -136,6 +142,7 @@ here and checked against itself.
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import hashlib
 import importlib
 import pathlib
@@ -171,6 +178,10 @@ EXPECTED_ROWS = 11
 # character (backtick or tilde), then the rest of the line (the info string
 # for a backtick fence).
 FENCE_OPEN_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
+# Enough of CommonMark's ATX-heading grammar to identify an exact configured
+# section boundary after fenced regions have already been blanked. The heading
+# may be indented by at most three spaces and contains one to six `#` bytes.
+ATX_HEADING_RE = re.compile(r"^ {0,3}(#{1,6})(?:[ \t]+|$)")
 
 
 def _strip_fenced_code(text: str) -> str:
@@ -219,6 +230,54 @@ def _strip_fenced_code(text: str) -> str:
     return "\n".join(out)
 
 
+def _raw_findings_section(text: str, heading: str | None) -> str:
+    """Return the one explicitly configured raw-review findings section.
+
+    Section selection is deliberately per Act rather than inferred from prose:
+    retained reviews use several heading vocabularies, and choosing one by a
+    fuzzy match could turn a summary or a prior-round recap into ceremony
+    input. Fences are stripped before both locating the exact heading and
+    finding the next equal-or-higher ATX heading, so heading-shaped examples
+    inside code cannot open or close the selected section.
+    """
+    if heading is None:
+        raise ValueError(
+            "act names a disposition record but carries no raw_findings_heading"
+        )
+    heading_match = ATX_HEADING_RE.match(heading)
+    if (
+        "\n" in heading
+        or "\r" in heading
+        or heading_match is None
+        or not heading[heading_match.end():].strip(" \t#")
+    ):
+        raise ValueError(
+            "raw_findings_heading is not one exact nonempty ATX heading line"
+        )
+
+    lines = _strip_fenced_code(text).splitlines()
+    starts = [index for index, line in enumerate(lines) if line == heading]
+    if not starts:
+        raise ValueError(
+            "confirmation review is missing its configured raw findings heading"
+        )
+    if len(starts) != 1:
+        raise ValueError(
+            "confirmation review carries its configured raw findings heading "
+            "more than once"
+        )
+
+    start = starts[0]
+    rank = len(heading_match.group(1))
+    end = len(lines)
+    for index in range(start + 1, len(lines)):
+        next_heading = ATX_HEADING_RE.match(lines[index])
+        if next_heading is not None and len(next_heading.group(1)) <= rank:
+            end = index
+            break
+    return "\n".join(lines[start + 1:end])
+
+
 RAW_FINDING_FORMS = (FINDING_MARK_RE, FINDING_BOLD_RE)
 # Disposition records recognize everything a raw does, plus the ATX
 # heading form (syzygy-qqt scope addition, disposition-only — see
@@ -262,11 +321,20 @@ def _finding_number_set(
     return seen
 
 
+def _raw_finding_number_set(
+    text: str, heading: str | None, *, label: str,
+) -> set[int]:
+    """Parse raw finding identities only from the Act-selected section."""
+    return _finding_number_set(
+        _raw_findings_section(text, heading), label=label, forms=RAW_FINDING_FORMS,
+    )
+
+
 class Act:
     def __init__(self, act_type, builder, label, record_name, identity, title,
                  frozen_subject, packet_head, confirmation_review, tag_stem,
                  effect, not_authorized, disposition_record=None,
-                 disposition_sha256=None):
+                 disposition_sha256=None, raw_findings_heading=None):
         self.act_type = act_type
         self.builder = builder
         self.label = label
@@ -290,6 +358,10 @@ class Act:
         # CC-REV-6 `-RAW.md` edit protection, so a set `disposition_record`
         # with no matching pin here is a refusal, never a live trust.
         self.disposition_sha256 = disposition_sha256
+        # Case (b) only: the exact ATX heading that owns the raw's finding
+        # population. A configured disposition with no heading refuses before
+        # marker comparison; case (a) never consults this field.
+        self.raw_findings_heading = raw_findings_heading
         self._module = None
 
     @property
@@ -478,14 +550,16 @@ def validate_disposition(
         raise ValueError("disposition record does not bind the offered manifest digest")
     if "Revise-severity findings: 0" not in lines:
         raise ValueError("disposition record does not state zero revise-severity findings")
-    expected = _finding_number_set(review, label="confirmation review")
+    expected = _raw_finding_number_set(
+        review, act.raw_findings_heading, label="confirmation review findings section",
+    )
     if not expected:
         raise ValueError(
             "confirmation review carries CONFIRM WITH EXCEPTIONS but no "
             "countable numbered finding (neither a line-leading 'N. ' nor a "
-            "bold '**Finding N —' marker outside any fenced code) — a "
-            "notes-only verdict with no countable note is a parse failure, "
-            "not a pass"
+            "bold '**Finding N —' marker outside any fenced code in its "
+            "configured findings section) — a notes-only verdict with no "
+            "countable note is a parse failure, not a pass"
         )
     actual = _finding_number_set(
         text, label="disposition record", forms=DISPOSITION_FINDING_FORMS,
@@ -774,13 +848,15 @@ class _FixtureAct:
     2026-09-26-DECISION.md §1: "wiring a real package is a later step")."""
 
     def __init__(self, label, packet, packet_head, confirmation_review,
-                 disposition_record=None, disposition_sha256=None):
+                 disposition_record=None, disposition_sha256=None,
+                 raw_findings_heading="## Findings"):
         self.label = label
         self.packet = packet
         self.packet_head = packet_head
         self.confirmation_review = confirmation_review
         self.disposition_record = disposition_record
         self.disposition_sha256 = disposition_sha256
+        self.raw_findings_heading = raw_findings_heading
 
 
 def selftest_disposition() -> list[tuple[str, bool]]:
@@ -795,7 +871,9 @@ def selftest_disposition() -> list[tuple[str, bool]]:
     equality, duplicate-finding-number parse failures on both the raw and
     the disposition side, and the disposition-record-only ATX heading form
     (fenced, and confirmed absent from raw-side recognition) (syzygy-qqt
-    scope addition), plus the positive fixtures for each."""
+    scope addition), plus the exact configured raw findings-section boundary,
+    concurrent repeatability, the invalid-info-string/bare-fence corner and
+    the positive fixtures for each."""
     results = []
 
     def rejects(fn, needle, *args, **kwargs):
@@ -876,6 +954,90 @@ def selftest_disposition() -> list[tuple[str, bool]]:
         results.append((
             "case-b: valid CONFIRM WITH EXCEPTIONS with matching disposition accepted",
             accepts_case_b(review_text, good_disposition.encode())))
+
+        configured_heading = act.raw_findings_heading
+        act.raw_findings_heading = None
+        results.append((
+            "findings-section: a case-b Act with no raw_findings_heading refuses",
+            rejects(validate_packet, "carries no raw_findings_heading",
+                    root, act, argument, review_override=review_text,
+                    disposition_override=with_pin(good_disposition.encode()))))
+        act.raw_findings_heading = "Findings"
+        results.append((
+            "findings-section: a configured heading that is not an exact ATX "
+            "heading line refuses",
+            rejects(validate_packet, "not one exact nonempty ATX heading line",
+                    root, act, argument, review_override=review_text,
+                    disposition_override=with_pin(good_disposition.encode()))))
+        act.raw_findings_heading = configured_heading
+
+        missing_heading_review = review_text.replace("## Findings", "## Notes", 1)
+        results.append((
+            "findings-section: a raw missing its configured exact heading refuses",
+            rejects(validate_packet, "missing its configured raw findings heading",
+                    root, act, argument, review_override=missing_heading_review,
+                    disposition_override=with_pin(good_disposition.encode()))))
+
+        repeated_heading_review = review_text + "\n## Findings\n\n3. Later section.\n"
+        results.append((
+            "findings-section: a repeated configured heading refuses as ambiguous",
+            rejects(validate_packet, "configured raw findings heading more than once",
+                    root, act, argument, review_override=repeated_heading_review,
+                    disposition_override=with_pin(good_disposition.encode()))))
+
+        scoped_review = (
+            "# Review — fixture (section scoping)\n"
+            f"Reviewed commit: {'b' * 40}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Verdict: CONFIRM WITH EXCEPTIONS\n"
+            "\n"
+            "## Open questions\n"
+            "\n"
+            "1. This list is outside Findings.\n"
+            "2. So is this one.\n"
+            "\n"
+            "## Findings\n"
+            "\n"
+            "1. First actual finding.\n"
+            "\n"
+            "### Nested detail\n"
+            "\n"
+            "**Finding 2 — Second actual finding in a nested subsection.\n"
+            "\n"
+            "## Risks\n"
+            "\n"
+            "1. Reused outside number after Findings.\n"
+            "2. Another reused outside number.\n"
+        )
+        results.append((
+            "findings-section: unrelated duplicate numbered lists before and "
+            "after Findings are ignored while nested finding subsections remain",
+            accepts_case_b(scoped_review, good_disposition.encode())))
+
+        scoped_before = scoped_review
+
+        def parse_scoped_review():
+            try:
+                return _raw_finding_number_set(
+                    scoped_review, act.raw_findings_heading,
+                    label="repeatability fixture",
+                )
+            except ValueError:
+                return None
+
+        sequential = [parse_scoped_review() for _ in range(2)]
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+            concurrent_results = list(pool.map(
+                lambda _: parse_scoped_review(),
+                range(8),
+            ))
+        results.append((
+            "findings-section: sequential and concurrent parses are deterministic "
+            "and leave the input unchanged",
+            sequential == [{1, 2}, {1, 2}]
+            and concurrent_results == [{1, 2}] * 8
+            and scoped_review == scoped_before,
+        ))
 
         results.append((
             "case-b: missing disposition record file rejected",
@@ -1006,6 +1168,32 @@ def selftest_disposition() -> list[tuple[str, bool]]:
             "3-backtick open) still closes, so its decoy 3. does not count",
             _finding_number_set(longer_close_raw, label="raw") == {1, 2}))
 
+        invalid_info_then_bare_raw = (
+            "# Review — fixture (invalid info then bare fence)\n"
+            f"Reviewed commit: {'b' * 40}\n"
+            f"Manifest SHA-256: {argument}\n"
+            "Verdict: CONFIRM WITH EXCEPTIONS\n"
+            "\n"
+            "## Findings\n"
+            "\n"
+            "1. First visible finding.\n"
+            "```te`xt\n"
+            "2. The invalid-info line above is not a fence opener.\n"
+            "```\n"
+            "3. This finding is inside the later real fence through EOF.\n"
+        )
+        three_finding_disposition = (
+            good_disposition
+            + "3. Disposition for the finding hidden by the real bare fence.\n"
+        )
+        results.append((
+            "finding-5: invalid backtick info followed by a bare real fence "
+            "cannot falsely validate a disposition naming the hidden finding",
+            rejects(validate_packet, "do not match the raw's numbered findings",
+                    root, act, argument, review_override=invalid_info_then_bare_raw,
+                    disposition_override=with_pin(
+                        three_finding_disposition.encode()))))
+
         # --- finding 8: the disposition record is sha256-pinned ---
 
         act.disposition_sha256 = digest(b"not the actual disposition bytes")
@@ -1082,7 +1270,7 @@ def selftest_disposition() -> list[tuple[str, bool]]:
             f"Manifest SHA-256: {argument}\n"
             "Verdict: CONFIRM WITH EXCEPTIONS\n"
             "\n"
-            "## Notes\n"
+            "## Findings\n"
             "\n"
             "Prose only; this raw opens no line-leading `N. ` marker and no "
             "bold `**Finding N —` marker anywhere.\n"
@@ -1230,6 +1418,56 @@ def selftest_disposition() -> list[tuple[str, bool]]:
             "heading: a heading-form line in a raw is not a raw finding "
             "(heading recognition is disposition-only)",
             _finding_number_set(heading_in_raw, label="raw") == {1}))
+
+    real_review_rel = pathlib.Path(
+        "docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-10-RAW.md"
+    )
+    real_disposition_rel = pathlib.Path(
+        ".syzygy/governance/contracts/candidates/pwb-opening-band-scenario/"
+        "ROUND-11-DISPOSITIONS.md"
+    )
+    real_review = (ROOT / real_review_rel).read_text()
+    real_disposition_bytes = (ROOT / real_disposition_rel).read_bytes()
+    real_manifest = re.search(
+        r"^Manifest SHA-256: ([0-9a-f]{64})$", real_review, re.MULTILINE,
+    )
+    real_act = _FixtureAct(
+        "FIXTURE REAL ROUND-11 LABEL",
+        pathlib.Path("unused-real-packet.md"),
+        "0" * 40,
+        real_review_rel,
+        disposition_record=real_disposition_rel,
+        disposition_sha256=digest(real_disposition_bytes),
+        raw_findings_heading="## Findings",
+    )
+    real_findings = None
+    try:
+        real_findings = _raw_finding_number_set(
+            real_review, real_act.raw_findings_heading,
+            label="real round-11 confirmation review findings section",
+        )
+    except ValueError as exc:
+        print(f"  (real round-11 finding parse failure: {exc})")
+    results.append((
+        "real round-11: exact Findings section derives {49, 50, 51, 52}",
+        real_findings == {49, 50, 51, 52},
+    ))
+    real_validates = False
+    if real_manifest is not None:
+        try:
+            real_validates = validate_disposition(
+                ROOT,
+                real_act,
+                real_manifest.group(1),
+                real_review,
+                disposition_override=real_disposition_bytes,
+            ) == real_disposition_rel
+        except ValueError as exc:
+            print(f"  (real round-11 disposition failure: {exc})")
+    results.append((
+        "real round-11: pinned disposition validates against the selected raw section",
+        real_validates,
+    ))
 
     return results
 
