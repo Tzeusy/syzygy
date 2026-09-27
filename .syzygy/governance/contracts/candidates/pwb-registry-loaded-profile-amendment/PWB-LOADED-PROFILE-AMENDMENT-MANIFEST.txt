@@ -6,4 +6,4 @@
 # syzygy-dov.18 patch (unless already adopted) and then proposed/*.patch
 # applied. It matches the tree only after --apply, the adoption step.
 # The subject's current bytes stay the argument of the act in force.
-5280846f70b31811e38faffb36c5217c0090fd92ba04f19b763a127b0d105682  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+aa2bf7e1d5dd2e016a72369ab9003b3040597c5022c4ffe986acfe11251713d5  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json

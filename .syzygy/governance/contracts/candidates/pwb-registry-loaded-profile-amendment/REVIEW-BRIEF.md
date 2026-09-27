@@ -2,10 +2,11 @@
 
 > **Candidate — binds nothing.** This brief says what an independent
 > reviewer is given and what they decide. It is not a review and carries
-> no verdict. **Round 3.** Rounds 1 and 2 each returned REVISE; their raws
-> are retained verbatim at
-> `docs/reviews/R-DOV24-LOADED-PROFILE-AMENDMENT-RAW.md` and
-> `docs/reviews/R-DOV24-LOADED-PROFILE-AMENDMENT-2-RAW.md`, and the
+> no verdict. **Round 4.** Rounds 1, 2 and 3 each returned REVISE; their
+> raws are retained verbatim at
+> `docs/reviews/R-DOV24-LOADED-PROFILE-AMENDMENT-RAW.md`,
+> `docs/reviews/R-DOV24-LOADED-PROFILE-AMENDMENT-2-RAW.md` and
+> `docs/reviews/R-DOV24-LOADED-PROFILE-AMENDMENT-3-RAW.md`, and the
 > packet's "Review record" tables say what was done with each finding.
 
 ## What the reviewer is given, and nothing else
@@ -38,7 +39,7 @@ that this one is drafted on.
 - `.syzygy/governance/decisions/POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md`
   §6: the owner's verbatim answer, "Readiness order, lane B last
   (Recommended)", and the option text it selected.
-- The round-1 and round-2 raws named above.
+- The round-1, round-2 and round-3 raws named above.
 
 **Withheld** — the M8 funnel under `docs/design/`. It recommends; the
 ruling decides.
@@ -57,7 +58,7 @@ runs the observer's TypeScript directly.
    read and what fails. Check each against the extraction code; a sentence
    that is looser or stricter than the code is a finding.
 3. **Does the package verify, and does the verification mean anything?**
-   Run `--check` and `--selftest` (223 predicates). Name any claim the
+   Run `--check` and `--selftest` (268 predicates). Name any claim the
    builder makes that no mutant covers, and any sentence clause that no
    behaviour probe exercises and that the packet does not admit is checked
    by its pin alone. Did each round-1 finding get the disposition the
@@ -65,8 +66,13 @@ runs the observer's TypeScript directly.
    extra field still pass unchecked (round 2's D1), and does anything
    still call today's manifest and observation digests evidence for
    `classGrammar`, `containerShapes` or `sourceGrammarSemantics` (D2)?
+   Does every heading a row declares now run the heading probes (round
+   3's F2), and do the extra-key, pillar and bare-key checks (N1, N2)
+   hold?
 4. **Is anything else in the entry changed?** Only the two versions and the
-   six added keys may differ from `.18`'s bytes.
+   six added keys may differ from `.18`'s bytes. Check it on the bytes,
+   not the parsed values (round 3's F1): diff the `.18`-applied file
+   against the proposed file line by line.
 5. **Is the stacking on `.18` sound?** Confirm, in each of the three
    states — `.18` pending; `.18` applied; this package applied — that
    `--check` and `--selftest` pass and compute the same manifest row, and

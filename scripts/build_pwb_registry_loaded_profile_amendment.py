@@ -150,7 +150,9 @@ SHAPES = {
         "table, and inside it the field must be written once as field = \"value\" or "
         "field = 'value' with a non-empty value; no such table, a repeated table, a repeated "
         "field or a missing or empty value fails the source as malformed-toml; a line in any "
-        "other form, and the field inside any other table, is not read; the value is trimmed "
+        "other form, and the field inside any other table, is not read; an array-of-tables "
+        "header such as [[other]] is a line in another form, so it neither opens a table nor "
+        "ends the declared one; the value is trimmed "
         "and NFC-normalized, a backslash escape in a double-quoted value is not decoded, and "
         "the value becomes the item's context"),
 }
@@ -174,8 +176,8 @@ ITEM_KEY_SENTENCES = {
         "was read under"),
     "first-cell-link-text": (
         "the link text of the first cell, trimmed and NFC-normalized; the cell must be one "
-        "whole link [text](target), optionally with a quoted title, with non-empty text, or "
-        "the source fails as malformed-row"),
+        "whole link [text](target), optionally with a space or tab and a title in double "
+        "quotes after the target, with non-empty text, or the source fails as malformed-row"),
     "tree-key": "the <key> segment of the tree population's pathPattern",
     "ordinal-and-label": (
         "the heading's ordinal, a colon and the first cell's label; the first cell must be "
@@ -201,9 +203,21 @@ SHAPE_FIELDS = {
     "toml-table-field": {"table", "field"},
 }
 FORM_FIELDS = {"fixed": {"key"}, "link-target-basename": {"column"}}
+#: The same allowlist for the other objects this package adds or reads (round-3 N1).
+SOURCE_POPULATION_FIELDS = {
+    "indexChainDepth", "pillarIndexBasename", "sourceRules", "treePopulations", "extractionBindings"}
+BINDING_REQUIRED = {"rule", "relativePath", "classes"}
+#: A TOML table or field name the profile may declare: a bare key, so no
+#: padding or quoting changes what the reader matches.
+TOML_BARE_KEY = re.compile(r"^[A-Za-z0-9_-]+$")
+#: Order carries no meaning in `extractionBindings`, in `classGrammar` beyond
+#: the project-account rows (which follow `fixedProjectAccountKeys`), in
+#: `treePopulations` or in the keys of `containerShapes`: the observer reads
+#: none of them in order, so no check pins it (round-3 N2).
 
 PILLAR_ROOT_LINKS = (
-    "after the table, every root-index link also declares a pillar's root when its resolved "
+    "after the table is read, every link in the root index, wherever it stands in the file, "
+    "also declares a pillar's root when its resolved "
     "target, or the directory of a target named README.md, ends in a segment that is a pillar "
     "key; two different declared roots for one pillar, from the table, from links or from both, "
     "make that pillar Unknown")
@@ -401,6 +415,48 @@ def unchanged_findings(proposed: bytes, base: bytes) -> list[str]:
     return findings
 
 
+VERSION_LINES = (
+    ('  "registryVersion": "{}",\n'),
+    ('      "observerVersion": "{}",\n'),
+)
+
+
+def byte_findings(proposed: bytes, base: bytes) -> list[str]:
+    """Outside the two version lines and one inserted block, the bytes are `.18`'s.
+
+    `unchanged_findings` compares parsed values, so it cannot see a re-serialized
+    line (a reflowed array, an escaped em dash). This compares lines: the only
+    permitted differences are each version line replaced in place and a single
+    pure insertion, which carries the added grammar keys.
+    """
+    import difflib
+    try:
+        old, new = base.decode().splitlines(True), proposed.decode().splitlines(True)
+    except UnicodeDecodeError as error:
+        return [f"not UTF-8: {error}"]
+    allowed = {(line.format(BASE_VERSION), line.format(PROPOSED_VERSION)) for line in VERSION_LINES}
+    findings: list[str] = []
+    replaced: set[tuple[str, str]] = set()
+    inserts = 0
+    matcher = difflib.SequenceMatcher(None, old, new, autojunk=False)
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == "equal":
+            continue
+        if tag == "insert":
+            inserts += 1
+            continue
+        pair = (old[i1], new[j1]) if (i2 - i1, j2 - j1) == (1, 1) else None
+        if tag == "replace" and pair in allowed and pair not in replaced:
+            replaced.add(pair)
+            continue
+        findings.append(f"bytes outside the permitted hunks differ from the base at base line {i1 + 1}")
+    if replaced != allowed:
+        findings.append("the two version lines are not each replaced in place")
+    if inserts != 1:
+        findings.append(f"expected one inserted block, found {inserts}")
+    return findings
+
+
 def _positive_int(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool) and value > 0
 
@@ -446,6 +502,9 @@ def structure_findings(body: bytes) -> list[str]:
     root = g.get("rootIndex")
     if not isinstance(root, dict) or not isinstance(root.get("path"), str) or not root["path"]:
         findings.append("rootIndex.path is missing")
+    elif not isinstance(root.get("pillarRootTable"), dict) or \
+            set(root["pillarRootTable"]) != {"pillarColumn", "directoryColumn"}:
+        findings.append("rootIndex.pillarRootTable keys differ from pillarColumn, directoryColumn")
 
     pop = g.get("sourcePopulation")
     rules: list[str] = []
@@ -471,11 +530,16 @@ def structure_findings(body: bytes) -> list[str]:
                 elif not isinstance(t["companions"], list) or not all(
                         isinstance(c, str) and "<key>" in c for c in t["companions"]):
                     findings.append(f"tree companions are not <key> paths: {t.get('rule')}")
+        if set(pop) != SOURCE_POPULATION_FIELDS:
+            findings.append(f"sourcePopulation keys differ from {sorted(SOURCE_POPULATION_FIELDS)}")
         bound: set[str] = set()
         for b in pop.get("extractionBindings") or []:
             if not isinstance(b, dict) or b.get("rule") not in rules:
                 findings.append(f"extraction binding names an undeclared rule: {b!r}")
                 continue
+            if not BINDING_REQUIRED <= set(b) <= BINDING_REQUIRED | {"pillar"}:
+                findings.append(f"extraction binding keys differ from rule, relativePath, classes "
+                                f"and an optional pillar: {b.get('relativePath')}")
             if "pillar" in b and b["pillar"] not in pillar_keys:
                 findings.append(f"extraction binding names an undeclared pillar: {b['pillar']}")
             if b["rule"] == "pillar-index" and b.get("relativePath") != pop.get("pillarIndexBasename"):
@@ -549,6 +613,16 @@ def structure_findings(body: bytes) -> list[str]:
                 findings.append(f"heading level out of range: {cls} {h['level']}")
         if cls == "project-account-section":
             account_keys.append(row.get("key"))
+        # `pillar` only where two bindings share the row's source name (round-3 N2).
+        if isinstance(pop, dict):
+            sharing = [b for b in pop.get("extractionBindings") or []
+                       if isinstance(b, dict) and b.get("relativePath") == row.get("source")]
+            if ("pillar" in row) != (len(sharing) > 1):
+                findings.append(f"class grammar row carries pillar where its source name is "
+                                f"{'not ' if len(sharing) < 2 else ''}shared: {cls}")
+        for field in ("table", "field"):
+            if field in row and not (isinstance(row[field], str) and TOML_BARE_KEY.match(row[field])):
+                findings.append(f"TOML {field} is not a bare key: {cls} {row[field]!r}")
         if isinstance(pop, dict) and len(row_bindings(g, row)) != 1:
             findings.append(f"class grammar row does not match exactly one binding: {cls} "
                             f"{row.get('source')}")
@@ -1210,6 +1284,9 @@ def probes(g: dict) -> list[tuple[str, tuple, str, dict, object]]:
                      f"[{t}]\n{f} = bare\n", _failed("malformed-toml")),
                     ("the field only in another table", "the field inside any other table, is not read",
                      f"[{t}]\n\n[other]\n{f} = \"a\"\n", _failed("malformed-toml")),
+                    ("an array-of-tables header inside the table",
+                     "neither opens a table nor ends the declared one",
+                     f"[{t}]\n[[other]]\n{f} = \"a\"\n", _has_context("a")),
                     ("a single-quoted value", "field = 'value'",
                      f"[{t}]\n{f} = 'single'\n", _extracted),
                     ("an escaped quote", "a backslash escape in a double-quoted value is not decoded",
@@ -1244,6 +1321,14 @@ def probes(g: dict) -> list[tuple[str, tuple, str, dict, object]]:
             out.append((f"itemKey first-cell-link-text, row {i}: empty link text", K,
                         "with non-empty text",
                         row_case(i, "| A | B |\n|---|---|\n| [](e.md) | x |\n"), _failed("malformed-row")))
+            out.append((f"itemKey first-cell-link-text, row {i}: a single-quoted title", K,
+                        "a title in double quotes",
+                        row_case(i, "| A | B |\n|---|---|\n| [t](t.md 'x') | x |\n"),
+                        _failed("malformed-row")))
+            out.append((f"itemKey first-cell-link-text, row {i}: a double-quoted title", K,
+                        "a title in double quotes",
+                        row_case(i, "| A | B |\n|---|---|\n| [t](t.md \"x\") | x |\n"),
+                        _has_key("t")))
             out.append((f"itemKey first-cell-link-text, row {i}: padded, decomposed link text", K,
                         "trimmed and NFC-normalized",
                         row_case(i, "| A | B |\n|---|---|\n| [ e\u0301 ](e.md) | x |\n"),
@@ -1264,25 +1349,28 @@ def probes(g: dict) -> list[tuple[str, tuple, str, dict, object]]:
         # headingMatch, per heading row.
         H = ("sourceGrammarSemantics", "headingMatch")
         headings = _row_headings(g, row)
-        if headings and shape not in ("every-level-2-section", "ordinal-section-table-rows"):
-            level, text = headings[0]
+        # Every entry of `headings` is probed, not only the first (round-3 F2).
+        if shape in ("every-level-2-section", "ordinal-section-table-rows"):
+            headings = []
+        for h, (level, text) in enumerate(headings):
+            name = row["class"] if len(headings) == 1 else f"{row['class']} heading {h + 1}"
             marks = "#" * (level or 2)
             line = f"{marks} {text}"
 
             def swap(new: str, line=line):
                 return lambda body: body.replace(f"\n{line}\n", f"\n{new}\n", 1)
             if level is None:
-                out.append((f"headingMatch: {row['class']} at level 4", H,
+                out.append((f"headingMatch: {name} at level 4", H,
                             "a heading object without a level matches at any level",
                             edit_case(i, swap(f"#### {text}")), _extracted))
             elif level < 6:
-                out.append((f"headingMatch: {row['class']} one level deeper", H,
+                out.append((f"headingMatch: {name} one level deeper", H,
                             "a declared heading matches only at its declared level",
                             edit_case(i, swap(f"{marks}# {text}")), _failed("missing-heading")))
-            out.append((f"headingMatch: {row['class']} missing", H,
+            out.append((f"headingMatch: {name} missing", H,
                         "a declared heading that is missing fails the source as missing-heading",
                         edit_case(i, swap(f"{marks} Renamed {text}")), _failed("missing-heading")))
-            out.append((f"headingMatch: {row['class']} twice", H,
+            out.append((f"headingMatch: {name} twice", H,
                         "one that occurs more than once fails it as duplicate-key",
                         edit_case(i, lambda body, line=line: body + f"\n{line}\n\nAgain.\n"),
                         _failed("duplicate-key")))
@@ -1350,7 +1438,7 @@ def _derive_probes(g: dict) -> list[tuple]:
             f"- [{k}]({rel(f'{PILLAR_DIR}/{k}/README.md')})\n" if i % 2 == 0 else
             f"- [{k}]({rel(f'{PILLAR_DIR}/{k}')}/)\n" for i, k in enumerate(keys))
 
-    out.append(("pillarRootLinks: links alone declare every root", L, "every root-index link also declares",
+    out.append(("pillarRootLinks: links alone declare every root", L, "every link in the root index, wherever it stands in the file",
                 files(links_only),
                 lambda r: None if r.get("kind") == "manifest" and all(p[1] == "discovered" for p in r["pillars"])
                 else f"expected every pillar discovered, observed {r.get('pillars')}"))
@@ -1360,6 +1448,14 @@ def _derive_probes(g: dict) -> list[tuple]:
         f[root] += f"\n[elsewhere]({rel(f'q/{first}/README.md')})\n"
     out.append(("pillarRootLinks: a link naming a second root", L, "make that pillar Unknown",
                 files(ambiguous),
+                lambda r: None if (_pillar(r, first) or ("",) * 2)[1:3] == ("unknown", "named-root-ambiguous")
+                else f"expected {first} unknown named-root-ambiguous, observed {_pillar(r, first)}"))
+
+    def ambiguous_before(f: dict) -> None:
+        f[root] = f"[elsewhere]({rel(f'q/{first}/README.md')})\n\n" + f[root]
+    out.append(("pillarRootLinks: a link before the table naming a second root", L,
+                "wherever it stands in the file",
+                files(ambiguous_before),
                 lambda r: None if (_pillar(r, first) or ("",) * 2)[1:3] == ("unknown", "named-root-ambiguous")
                 else f"expected {first} unknown named-root-ambiguous, observed {_pillar(r, first)}"))
 
@@ -1539,6 +1635,7 @@ def check() -> list[str]:
         return findings + [str(error)]
     findings.extend(noop_findings(proposed, base))
     findings.extend(unchanged_findings(proposed, base))
+    findings.extend(byte_findings(proposed, base))
     structural = structure_findings(proposed)
     findings.extend(structural)
     if not structural:
@@ -1690,6 +1787,29 @@ def selftest() -> int:
     expect("reordered grammar keys",
            unchanged_findings(json.dumps(reordered).encode(), base))
 
+    # Bytes outside the hunks (round-3 F1). The first three leave every parsed
+    # value identical to the proposed one, so only the byte check can see them.
+    text = proposed.decode()
+    reserialized = json.dumps(json.loads(proposed), indent=2).encode() + b"\n"
+    byte_mutants = (
+        ("a re-serialized document (reflowed array, escaped em dash)", reserialized),
+        ("one em dash escaped", text.replace("\u2014", "\\u2014", 1).encode()),
+        ("one array reflowed", text.replace(
+            '"questions": ["What currently exists?"],',
+            '"questions": [\n          "What currently exists?"\n        ],', 1).encode()),
+        ("an unbumped version line", text.replace(
+            f'"observerVersion": "{PROPOSED_VERSION}"',
+            f'"observerVersion": "{BASE_VERSION}"', 1).encode()),
+        ("a second inserted block", text.replace(
+            '      "role": "adapter",\n', '      "note": "x",\n      "role": "adapter",\n', 1).encode()),
+    )
+    for label, body in byte_mutants:
+        count += 1
+        if body == proposed:
+            failures.append(f"byte mutant did not apply: {label}")
+        elif not byte_findings(body, base):
+            failures.append(label)
+
     # Structure.
     expect("invalid JSON", structure_findings(proposed + b"}"))
     structural_mutants = (
@@ -1817,10 +1937,33 @@ def selftest() -> int:
          lambda d: g(d)["sourcePopulation"]["extractionBindings"].append(
              dict(g(d)["sourcePopulation"]["extractionBindings"][2]))),
     )
+    structural_only += (
+        # The round-3 reviewer's survivors (R-DOV24 round 3, N1 and N2).
+        ("A44 pillarRootTable gains a key",
+         lambda d: g(d)["rootIndex"]["pillarRootTable"].__setitem__("x", "y")),
+        ("A46 the first extraction binding gains a key",
+         lambda d: g(d)["sourcePopulation"]["extractionBindings"][0].__setitem__("x", 1)),
+        ("B7 a later extraction binding gains a key",
+         lambda d: g(d)["sourcePopulation"]["extractionBindings"][5].__setitem__("x", 1)),
+        ("A47 sourcePopulation gains a key",
+         lambda d: g(d)["sourcePopulation"].__setitem__("x", 1)),
+        ("A18 a redundant pillar on principle",
+         lambda d: row(d, "principle").__setitem__("pillar", "heart-and-soul")),
+        ("a shared-source row without its pillar",
+         lambda d: row(d, "craft-policy").pop("pillar")),
+        ("A60 roster field padded",
+         lambda d: row(d, "roster-identity").__setitem__("field", "name ")),
+        ("a roster table padded",
+         lambda d: row(d, "roster-identity").__setitem__("table", " butler")),
+    )
     for label, fn in structural_only:
         expect(label, structure_findings(mutate(fn)))
     behavioural = (
         ("M1 purpose and refusals heading texts swapped", swap_headings),
+        # Round 3, F2: the second heading of a two-heading row is probed too.
+        ("A4 v1-scope second heading level deleted",
+         lambda d: next(r for r in g(d)["classGrammar"] if r.get("key") == "v1-scope")[
+             "headings"][1].pop("level")),
         ("M2 principle heading level 2 -> 3",
          lambda d: row(d, "principle")["heading"].__setitem__("level", 3)),
         ("M3 catalog heading level 3 -> 2",
@@ -1984,9 +2127,11 @@ def selftest() -> int:
     print(f"selftest: {count} predicates — base-state composition (.18 pending, "
           ".18 adopted, this package adopted, .18 absent, subject drift, patch "
           "corruption), manifest digest, path and absence, patch population, a "
-          "no-op patch, an undeclared sibling, nothing-else-moves, every "
+          "no-op patch, an undeclared sibling, nothing-else-moves, bytes outside "
+          "the permitted hunks, every "
           "structural claim and pinned sentence, the reviewer's round-1 mutants and "
-          "round-2 per-row shape, key-form and field mutants, "
+          "round-2 per-row shape, key-form and field mutants, the round-3 "
+          "second-heading, extra-key, pillar and bare-key mutants, "
           "a forged outcome for every behaviour case, and all three restatement "
           "witnesses (the specification's reader definitions, the code constants "
           "and the observer's own code run over profile-built files) all fail closed")

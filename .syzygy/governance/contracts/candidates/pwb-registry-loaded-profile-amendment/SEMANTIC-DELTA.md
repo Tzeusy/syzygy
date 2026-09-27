@@ -3,10 +3,11 @@
 > **Candidate — binds nothing.** Agents drafted these bytes under the
 > owner's 2026-09-21 ruling P-74 question 2 in
 > `.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`,
-> which authorizes **drafting only**. Effect would come from one superseding
-> `adopt-registry-entry` owner act over the subject named below, and from
-> nothing else. Silence, a commit, a review, a merged pull request, a
-> passing check or this manifest performs no act. Nothing here authorizes
+> which the drafters read as authorizing **drafting only** [Inferred].
+> Effect would come from one superseding `adopt-registry-entry` owner act
+> over the subject named below, and from nothing else. Silence, a commit,
+> a review, a merged pull request, a passing check or this manifest
+> performs no act. Nothing here authorizes
 > an implementation: M8 slice 5's fifth limb, which would read these
 > fields, is its own work under its own gates.
 
@@ -76,7 +77,8 @@ new act" (`PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md` lines 76–77)
 The diff makes two changes. `--diff` prints it; `--check` proves it applies.
 
 **1. Six keys added to `observationGrammar`, after `precedence`.** The six
-existing keys are byte-for-byte unchanged.
+existing keys are byte-for-byte unchanged (checked by value and, since
+round 3, by bytes).
 
 | Key | What it says |
 |---|---|
@@ -114,16 +116,22 @@ the packet's first open question.
   (3) The observer's own code, run under Node over files built from the
   fields alone, derives the source list the fields predict (depth, root
   index, pillars, sources) and reads the items they predict (class, key,
-  text and, where the code sets one, context); 92 probes each vary one
+  text and, where the code sets one, context); 123 probes each vary one
   file and check one clause's outcome and that the sentence states it.
   The probes run for every row, and a row carrying a field its shape and
   key form do not read is refused. `--selftest` breaks the fields and the
-  checks 223 ways, every one caught. What is **not** proved: a clause no
-  probe exercises is checked only by its pinned wording, and no check can
-  show the code has no rule the fields omit.
+  checks 268 ways, every one caught. What is **not** proved: a clause no
+  probe exercises is checked only by its pinned wording; a sentence
+  rewritten the same way in the builder and the entry passes, because the
+  pin is the builder's copy; and no check can show the code has no rule
+  the fields omit. Order carries no meaning in `extractionBindings`, in
+  `classGrammar` beyond the project-account rows, in `treePopulations` or
+  in the keys of `containerShapes`, and no check pins it.
 - The six existing grammar keys, `resourceLimits` and its semantics, the
   entry's two governance-lifecycle strings, `discoveryVersion` and every
-  other field are byte-identical after the diff (checked).
+  other field are byte-identical after the diff (checked by value and, since
+  round 3, by bytes: the only differing lines are the two versions and the
+  inserted block).
 - No specification, contract, policy or decision byte is touched. No act
   record is written and nothing is appended to `ACCEPTANCE-ACT-RECORD.md`.
 - No implementation file is changed.
@@ -153,9 +161,9 @@ deterministic, which the `scope` sentence's reproduction duty serves.
 
 Method: `NORMATIVE-CHANGE-WORKFLOW.md` and `SEMANTIC-DELTA-TEMPLATE.md`
 under `.syzygy/governance/contracts/candidates/policy-candidates/`. This
-delta is at step 3: two independent review rounds each returned REVISE,
-and this revision repairs the findings of both. The revision has not been
-reviewed.
+delta is at step 3: three independent review rounds each returned REVISE,
+and this revision repairs the findings of all three. The revision has not
+been reviewed.
 
 ## Evidence or decision basis
 
@@ -184,8 +192,11 @@ reviewed.
   requires every source's extracted items to be reproduced.
 - [Unknown] Whether limb 1's regression oracle will compare the extracted
   items as well as the two digests. It is not built.
-- [Observed] The overlap with M15: the ruling for P-82 Q4 puts "the
-  root-independence flags" in M15's delta to `PWB-REQ-002` (`.15.1`). This
+- The overlap with M15. The P-82 "Ruled" cell says only "Q4 design the
+  root-independence flags in the same delta" [Observed]. That the delta is
+  M15's, to `PWB-REQ-002`, comes from the row's "What it means" column,
+  and `.15.1`, after `.17`, from its "Applied by" column: the recorder's
+  placement, not the ruling [Observed for the columns]. This
   revision adds no such flag; the one clause touching it, the last of
   `sharedReadingRules`, states today's root-blind tree enumeration. Packet
   question 9.
@@ -234,6 +245,19 @@ After it: a further superseding act, never an edit.
 ## Review
 
 Round 1: `docs/reviews/R-DOV24-LOADED-PROFILE-AMENDMENT-RAW.md`, over
-commit `31305bc`. Verdict: REVISE (seven revise findings, five notes). The
-packet's "Review record" table dispositions every one. This revision has
-not been reviewed; `REVIEW-BRIEF.md` states what round 2 is given.
+commit `31305bc`. Verdict: REVISE (seven revise findings, five notes).
+
+Round 2: `docs/reviews/R-DOV24-LOADED-PROFILE-AMENDMENT-2-RAW.md`, over
+commit `1395d44`. Verdict: REVISE (three revise findings, two notes).
+
+Round 3: `docs/reviews/R-DOV24-LOADED-PROFILE-AMENDMENT-3-RAW.md`, over
+commit `929100f`. Verdict: REVISE (two revise findings, five notes).
+
+The packet's "Review record" tables disposition every finding of all
+three rounds. This revision has not been reviewed; `REVIEW-BRIEF.md`
+states what round 4 is given.
+
+*Corrected 2026-09-27 (round-3 note N5):* until this revision the section
+named round 1 only and ended "This revision has not been reviewed;
+`REVIEW-BRIEF.md` states what round 2 is given." — stale once round 2 had
+run over `1395d44`.

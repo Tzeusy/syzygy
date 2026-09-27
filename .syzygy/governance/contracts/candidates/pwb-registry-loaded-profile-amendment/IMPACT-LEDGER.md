@@ -6,7 +6,12 @@
 Baseline: commit `08d4d023e0d3a12d0be21fe76550442607e70f4e`, the tip of
 `main` this revision is rebased onto. The subject is byte-identical there
 and in the tree this package was drafted in. (Round 1 used `23b486c`; its
-table is replaced, not amended.)
+table is replaced, not amended.) The branch now sits on `96ee305`; the
+subject, the `.18` package, the two observer source files and the
+specification are byte-identical between `08d4d02` and `96ee305`
+[Observed, `git diff --stat`, empty]. The name sweep was not re-run there.
+Round 3 changed only sentence text inside the added keys, not key names,
+so the 48-name population is unchanged [Inferred from the diff].
 
 ## Discovery method
 
@@ -142,7 +147,7 @@ its place; the third keeps working, because it needs only the code.
 | `pwb-registry-currency-briefing-amendment/` (`syzygy-dov.18`) | Same subject. This package's diff is drafted on top of it, so its builder needs `.18` applied first — a drafting constraint, not an owner ruling. |
 | `pwb-self-observation-acts/` (`syzygy-dov.25`, PR #120) | Drafts a second registry entry; its packet asks whether to copy `.18`'s and this package's fields. Regenerated after this act. |
 | N8 container-shape amendment (`syzygy-u05.8`) | A specification amendment that would point at `containerShapes`; not yet on main. Its shape sentences are the same text as this package's. |
-| M15 pipeline-truthfulness delta (P-82, `.15.1`, after `.17`) | The owner's P-82 Q4 answer: "design the root-independence flags in the same delta" (the row's "What it means" column places that delta on `PWB-REQ-002`); M15's design names one, `rootIndexRequired`. This package adds no flag. The last clause of `sharedReadingRules` states today's root-blind tree enumeration; if M15's recommended arm is adopted, a later registry act replaces that clause. Packet question 9. |
+| M15 pipeline-truthfulness delta (P-82) | The owner's P-82 Q4 answer ("Ruled" cell): "design the root-independence flags in the same delta". The delta's place, `PWB-REQ-002`, is the row's "What it means" column, and `.15.1`, after `.17`, its "Applied by" column; both are the recorder's words. M15's design names one, `rootIndexRequired`. This package adds no flag. The last clause of `sharedReadingRules` states today's root-blind tree enumeration; if M15's recommended arm is adopted, a later registry act replaces that clause. Packet question 9. |
 
 The builder's composition check fails if any other candidate adds a patch
 to the subject.

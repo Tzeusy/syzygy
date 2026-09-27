@@ -1,5 +1,5 @@
 diff --git a/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json b/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
-index 8bca9d8..b7ceca0 100644
+index 8bca9d8..9c83bb0 100644
 --- a/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
 +++ b/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
 @@ -1,13 +1,13 @@
@@ -18,36 +18,7 @@ index 8bca9d8..b7ceca0 100644
        "discoveryVersion": "pwb-discovery-v2-candidate.1",
        "role": "adapter",
        "implementationId": "three-surface-poc-core/project-shape-observer",
-@@ -120,7 +120,9 @@
-       "determinism": "same exact inputs produce byte-equivalent deterministic facts",
-       "typedAuthority": {
-         "authorityType": "version-control",
--        "questions": ["What currently exists?"],
-+        "questions": [
-+          "What currently exists?"
-+        ],
-         "readAuthority": "within the one resolved Git object database for the approved opaque-repository locator mapping, phase A reads only the fixed root index, its declared pillar README indexes and Git tree metadata needed to derive the manifest; phase B reads only normalized repository-relative paths addressed as exact Git objects in that revision-bound manifest",
-         "writeSurface": [],
-         "databaseAccess": [],
-@@ -219,7 +221,7 @@
-             {
-               "ordinal": 5,
-               "layer": "Lay and Land",
--              "owns": "Topology snapshot — where components live, how they connect, stability levels",
-+              "owns": "Topology snapshot \u2014 where components live, how they connect, stability levels",
-               "home": "about/lay-and-land/"
-             },
-             {
-@@ -231,7 +233,7 @@
-             {
-               "ordinal": 7,
-               "layer": "Code",
--              "owns": "Runtime behaviour — executed source, migrations, tests",
-+              "owns": "Runtime behaviour \u2014 executed source, migrations, tests",
-               "home": "src/, alembic/, tests/"
-             }
-           ],
-@@ -259,6 +261,299 @@
+@@ -259,6 +259,299 @@
            },
            "cellSyntax": "Layer raw cell is exactly one complete bold span; compare its content and Owns/Home after trimming outer ASCII whitespace and unwrapping only complete inline code spans; preserve case, punctuation and internal whitespace and apply no other Markdown or prose normalization",
            "application": "every Layer, Owns and Home cell must equal its row literal; mixed-family or unrecognized Owns prose invalidates the table; rows 1 through 5 are exact normalized roots, row 6 expands roster/{butler}/ only for a declared roster key, and row 7 is inert because code owns no admitted fact; an applied expanded home must contain at least one admitted source; the unique lowest-numbered applied home assigned by factFamilyRows selects its declaration; the root summary is non-owning; malformed, duplicate, missing, equally ranked or mutually disagreeing rules select nothing"
@@ -58,7 +29,7 @@ index 8bca9d8..b7ceca0 100644
 +            "pillarColumn": "Pillar",
 +            "directoryColumn": "Directory"
 +          },
-+          "pillarRootLinks": "after the table, every root-index link also declares a pillar's root when its resolved target, or the directory of a target named README.md, ends in a segment that is a pillar key; two different declared roots for one pillar, from the table, from links or from both, make that pillar Unknown"
++          "pillarRootLinks": "after the table is read, every link in the root index, wherever it stands in the file, also declares a pillar's root when its resolved target, or the directory of a target named README.md, ends in a segment that is a pillar key; two different declared roots for one pillar, from the table, from links or from both, make that pillar Unknown"
 +        },
 +        "pillars": [
 +          {
@@ -184,7 +155,7 @@ index 8bca9d8..b7ceca0 100644
 +          "first-table-rows": "each body row of the first table in the section; a section with no table fails the source as malformed-row, and so does a body row of that table whose cell count differs from its header's; later tables in the section are not read",
 +          "ordinal-section-table-rows": "each body row of every table in the section of every level-2 heading whose text opens with a decimal number, optionally one lowercase letter, and then the end of the text or a character that is not an ASCII letter, digit or underscore; a file with no such heading fails the source as missing-heading, and a body row whose cell count differs from its table's header fails it as malformed-row",
 +          "tree-path": "the Git tree path itself, matched against the tree population's pathPattern; no body is read and nothing fails",
-+          "toml-table-field": "the declared field of the declared TOML table: exactly one header line must name the table, and inside it the field must be written once as field = \"value\" or field = 'value' with a non-empty value; no such table, a repeated table, a repeated field or a missing or empty value fails the source as malformed-toml; a line in any other form, and the field inside any other table, is not read; the value is trimmed and NFC-normalized, a backslash escape in a double-quoted value is not decoded, and the value becomes the item's context"
++          "toml-table-field": "the declared field of the declared TOML table: exactly one header line must name the table, and inside it the field must be written once as field = \"value\" or field = 'value' with a non-empty value; no such table, a repeated table, a repeated field or a missing or empty value fails the source as malformed-toml; a line in any other form, and the field inside any other table, is not read; an array-of-tables header such as [[other]] is a line in another form, so it neither opens a table nor ends the declared one; the value is trimmed and NFC-normalized, a backslash escape in a double-quoted value is not decoded, and the value becomes the item's context"
 +        },
 +        "classGrammar": [
 +          {
@@ -303,7 +274,7 @@ index 8bca9d8..b7ceca0 100644
 +              "text": "Index"
 +            },
 +            "container": "first-table-rows",
-+            "itemKey": "the link text of the first cell, trimmed and NFC-normalized; the cell must be one whole link [text](target), optionally with a quoted title, with non-empty text, or the source fails as malformed-row"
++            "itemKey": "the link text of the first cell, trimmed and NFC-normalized; the cell must be one whole link [text](target), optionally with a space or tab and a title in double quotes after the target, with non-empty text, or the source fails as malformed-row"
 +          },
 +          {
 +            "class": "baseline-spec",

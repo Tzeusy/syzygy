@@ -2,12 +2,12 @@
 
 > **Candidate — binds nothing.** Drafted by agents under P-74 question 2
 > of `.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`
-> (2026-09-21), which authorizes drafting only. This file offers no act,
-> quotes no act argument and labels nothing accepted. Only the owner
-> performs an act (`VIS-4`). **Reviewed twice, verdict REVISE both
-> times;** every finding of both rounds was repaired in this revision,
-> which has not yet been reviewed. The review record is at the end of this
-> file.
+> (2026-09-21), which the drafters read as authorizing drafting only
+> [Inferred]. This file offers no act, quotes no act argument and labels
+> nothing accepted. Only the owner performs an act (`VIS-4`). **Reviewed
+> three times, verdict REVISE each time;** every finding of all three
+> rounds was repaired in this revision, which has not yet been reviewed.
+> The review record is at the end of this file.
 
 ## What this package is, in one paragraph
 
@@ -45,7 +45,11 @@ reasons to wait.
 | `sourceGrammarSemantics` | Six sentences on how to apply the above. One lists the reading rules every project shares, which stay in code; the last says a loader refuses a missing field rather than guessing. | — |
 
 `registryVersion` and `observerVersion` move to `1.3.0-candidate.1`.
-Nothing else in the entry changes; the builder checks that.
+Nothing else in the entry changes, byte for byte: outside the two version
+lines and the one inserted block, the file is `.18`'s bytes exactly. The
+builder checks both the parsed values and the bytes. (Before round 3 it
+checked values only, and the proposed file had re-written one array onto
+three lines and two em dashes as escapes; see the round-3 record.)
 
 **How we know it restates today's reading, and how far that goes.** The
 builder's `--check` tests the fields three ways [Observed, `--check`]:
@@ -57,22 +61,32 @@ builder's `--check` tests the fields three ways [Observed, `--check`]:
 3. the observer's own code is run under Node over files the builder writes
    from the fields alone. It must derive the source list the fields
    predict and read the items they predict — class, key, text and, where
-   the code sets one, context. Then 92 probes each feed it one varied file
+   the code sets one, context. Then 123 probes each feed it one varied file
    and check that the code does what one clause of one sentence says, and
    that the sentence says it. The probes run for every row, so a row given
    the wrong shape or key sentence is caught even when another row uses
    that shape correctly. A row carrying a field its shape does not read is
    refused.
 
-`--selftest` then breaks the fields and the checks deliberately in 223
-ways, including the 17 wrong versions the first reviewer used and the 8
-the second reviewer found surviving; every one is caught [Observed,
+`--selftest` then breaks the fields and the checks deliberately in 268
+ways, including the 17 wrong versions the first reviewer used, the 8
+the second reviewer found surviving and the third reviewer's survivors
+that change what the code reads; every one is caught [Observed,
 `--selftest`].
 
 What this does **not** prove: the sentences are prose, and a clause no
 probe exercises is checked only by its exact wording being pinned in the
-builder. Nor can a check show that the code has no rule these fields leave
-out. The rules every project shares are now listed in one sentence and left
+builder. The pin is the builder's own copy of each sentence, so a
+sentence rewritten the same way in both the builder and the entry passes
+every check; only a review of the builder's diff catches that. Nor can a
+check show that the code has no rule these fields leave out.
+
+Order carries no meaning in four places, and no check pins it: the list of
+file bindings, the reading rules after the project-account ones (which
+must follow `fixedProjectAccountKeys`), the tree populations, and the keys
+of the shape list. The observer reads none of them in order [Inferred from
+the code; the third reviewer's order-only mutants all passed the behaviour
+check]. The rules every project shares are now listed in one sentence and left
 to code, which is what the first review asked for.
 
 Today's source manifest and observation digests are **not** evidence for
@@ -227,9 +241,10 @@ Each has a recommendation; none is decided here.
    limbs 1–4* [Inferred]. Merging would retire `.18`'s reviews.
 9. **Should this entry say anything about root independence before M15's
    delta does?** Your P-82 answer was "Q1 arm (b), draft the delta only"
-   and "Q4 design the root-independence flags in the same delta"; the
-   row's "What it means" column places that delta on PWB-REQ-002
-   (`.15.1`, after `.17`). M15's
+   and "Q4 design the root-independence flags in the same delta". That
+   delta's place, PWB-REQ-002, comes from the row's "What it means"
+   column, and `.15.1`, after `.17`, from its "Applied by" column; both
+   are the recorder's words, not your answer. M15's
    design calls the flag `rootIndexRequired`, set per tree population with
    the rule it came from. The first draft of this package added its own
    flag, `rootIndependent`, for the same idea; this revision removes it.
@@ -302,5 +317,22 @@ Every finding and what was done (2026-09-27):
 | D3 — question 3 and the delta's warrant treated the recorder's "What it means" column as the owner's words | revise | Already fixed before this review landed, in the attribution sweep recorded above, in a later commit than the one reviewed. Question 3 names the sentence as the recorder's reading and asks whether either reading misstates your answer; the warrant quotes only the "Ruled" cell as your words. Checked again for this round; no further change. |
 | D4 — the landing order and question 8 quoted option text and a recorder heading as your answer | note | Fixed. The landing order quotes your verbatim answer, "Readiness order, lane B last (Recommended)", with the arrows cited as the option it selected and the record's own question ("lane B and the three spec-touching packages"). Question 8 cites P-72's "Ruled" cell and names the joining of the two amendments as the recorder's reading. The delta and brief are aligned. |
 | D5 — four behaviours of the code were not stated | note | Fixed. Headings are ATX headings at column 0, so an indented line is not a heading; the design key is trimmed and NFC-normalized and the cell must be one whole link; the TOML value is trimmed and NFC-normalized, a backslash escape is not decoded, and the value is the item's context; catalog items' context is the heading they were read under, and topology items' context is the ordinal. Each is checked by a probe or by the witness's predicted context. The same sentences, word for word, are in N8's specification amendment, and the key-form names now match N8's. |
+
+These edits retire any review of the previous bytes.
+
+Round 3: `docs/reviews/R-DOV24-LOADED-PROFILE-AMENDMENT-3-RAW.md`, a
+fresh-context confirmation review of commit `929100f`. Verdict: REVISE
+(line 2 of the raw). It found every round-2 finding resolved (D1 with one
+residual gap, its F2). Every new finding and what was done (2026-09-27):
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| F1 — "Nothing else in the entry changes" was false at byte level: the patch re-wrote the `questions` array onto three lines and two em dashes in the precedence rows as `\u2014` escapes; the builder compared parsed values only | revise | Fixed. The patch is regenerated so only the two version lines and the one inserted block differ from `.18`'s bytes; the two precedence strings and the array are `.18`'s bytes again. A new byte check allows exactly those three differences and nothing else, and `--selftest` breaks it five ways (a re-serialized file, one escaped dash, one reflowed array, an unbumped version line, a second inserted block), each caught. The statement above and the delta's two "byte-for-byte" sentences now hold, and the brief's criterion 4 stays in bytes. The manifest row changed; the new row is in `PWB-LOADED-PROFILE-AMENDMENT-MANIFEST.txt`. |
+| F2 — the second heading of the two-heading `v1-scope` row was not probed, so deleting its level passed | revise | Fixed. The heading probes now run for every heading a row declares, not only the first, and the reviewer's mutant (the second heading's level deleted) is in `--selftest` and caught. |
+| N1 — extra keys passed in the pillar-root table, the file bindings and the source population | note | Fixed. Each of the three now has a fixed key set; the reviewer's four mutants are in `--selftest` and caught. |
+| N2 — a redundant `pillar`, a padded TOML name, and order-only changes passed | note | Fixed for the first two: a row carries `pillar` exactly when two bindings share its source name, and a TOML table or field name must be a bare key (letters, digits, `_`, `-`), so `"name "` is refused; both are in `--selftest`, with a missing-pillar and a padded-table mutant. Order is stated free above, in the builder's comments and in the delta, because the observer reads none of those lists in order. |
+| N3 — three sentence clauses looser or stricter than the code, and the consistent-rewrite gap | note | Fixed. (a) The link title is now "a title in double quotes", with a probe that a single-quoted title fails and a double-quoted one reads. (b) The TOML sentence now says an array-of-tables header such as `[[other]]` neither opens a table nor ends the declared one, with a probe. (c) The pillar-link sentence now reads "after the table is read, every link in the root index, wherever it stands in the file", with a probe that a link placed before the table counts. (d) The consistent-rewrite gap is stated above. |
+| N4 — P-82 recorder columns read as the ruling | note | Fixed. Question 9, the delta's M15 bullet and the ledger's M15 row now quote only the "Ruled" cell as your answer and name the "What it means" and "Applied by" columns as the recorder's. The delta's and this packet's "authorizes drafting only" are labelled as the drafters' reading [Inferred]. |
+| N5 — the delta's review section still said the revision was unreviewed after round 2 | note | Fixed, with the stale sentence kept quoted and dated beside the correction. |
 
 These edits retire any review of the previous bytes.
