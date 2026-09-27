@@ -555,12 +555,12 @@ contracts:
 # Non-contract governance sources (read from the canonical homes;
 # selection metadata only — the canonical homes stay authoritative):
 governance_sources:
-  - {file: doctrine/README.md, role: doctrine, words: 674, rule_ids: [SEC-1, SEC-4, SEC-5, VIS-1, VIS-5, VIS-7]}
-  - {file: doctrine/architecture.md, role: doctrine, words: 2350, rule_ids: [SEC-4, VIS-1, VIS-5, VIS-6, VIS-7]}
-  - {file: doctrine/security.md, role: doctrine, words: 511, rule_ids: [SEC-1, SEC-2, SEC-3, SEC-4, SEC-5]}
-  - {file: doctrine/trust-and-evidence.md, role: doctrine, words: 1069, rule_ids: [SEC-5, VIS-1, VIS-2, VIS-6, VIS-7]}
-  - {file: doctrine/v1.md, role: doctrine, words: 1056, rule_ids: [SEC-1, SEC-2, SEC-3, VIS-2, VIS-4, VIS-5]}
-  - {file: doctrine/vision.md, role: doctrine, words: 2156, rule_ids: [VIS-1, VIS-2, VIS-3, VIS-4, VIS-5, VIS-6, VIS-7]}
+  - {file: doctrine/README.md, role: doctrine, words: 682, rule_ids: [SEC-1, SEC-4, SEC-5, VIS-1, VIS-5, VIS-6, VIS-7]}
+  - {file: doctrine/architecture.md, role: doctrine, words: 2355, rule_ids: [SEC-4, VIS-1, VIS-5, VIS-6, VIS-7]}
+  - {file: doctrine/security.md, role: doctrine, words: 497, rule_ids: [SEC-1, SEC-2, SEC-3, SEC-4, SEC-5]}
+  - {file: doctrine/trust-and-evidence.md, role: doctrine, words: 1073, rule_ids: [SEC-5, VIS-1, VIS-2, VIS-6, VIS-7]}
+  - {file: doctrine/v1.md, role: doctrine, words: 1088, rule_ids: [SEC-1, SEC-2, SEC-3, VIS-2, VIS-4, VIS-5]}
+  - {file: doctrine/vision.md, role: doctrine, words: 2137, rule_ids: [VIS-1, VIS-2, VIS-3, VIS-4, VIS-5, VIS-6, VIS-7]}
   - {file: craft-and-care/INSTALL-RECORD.md, role: craft-policy, words: 1278, rule_ids: [CC-BAR-1, CC-IMPACT-1, CC-SPEC-1, CC-SPEC-8, CC-SPEC-11, CC-TEST-1, CC-TEST-2, CC-TEST-7, CC-VIZ-5]}
   - {file: craft-and-care/README.md, role: craft-policy, words: 768, rule_ids: [CC-BAR-1, CC-REV-3, CC-TEST-3, SEC-1, SEC-5, VIS-1, VIS-7]}
   - {file: craft-and-care/agent-provenance-and-execution-evidence.md, role: craft-policy, words: 972, rule_ids: [CC-PROV-1, CC-PROV-2, CC-PROV-3, CC-PROV-4, CC-PROV-5, CC-PROV-6, CC-PROV-7, CC-SEC-6, CC-TEST-2]}

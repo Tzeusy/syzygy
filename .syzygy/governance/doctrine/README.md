@@ -1,81 +1,91 @@
 # Heart and Soul — Doctrine
 
-> **Status:** Adopted project doctrine — owner adoption `ADOPT DOCTRINE`, 2026-07-30.
+> **Status:** Adopted project doctrine — owner adoption `ADOPT DOCTRINE`,
+> 2026-07-30. Amendments are recorded in
+> [`../decisions/DOCTRINE-AMENDMENT-LOG.md`](../decisions/DOCTRINE-AMENDMENT-LOG.md).
 
-## Amendment log
-
-| Id | Date | What changed | Authority |
-|---|---|---|---|
-| D1 | 2026-08-01 | `architecture.md`, two sites (layout comment; `map/` definition bullet): the map's scope now reads "observed, intended, proposed, and historical system state" — historical rendering added unconditionally. | Owner decision D1, ratifying the packet at `../decisions/DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md` (extracted under FD-037; original authored in the bootstrap record); scope made unconditional by rev7 rework directive item A2 (not owner decision A2). *FD-n identifiers and the rev7 directive live in the founder-local bootstrap log, which is not in the clone — a known reachability gap, queued as P-15; the ruling itself is fully stated here* |
-
-This folder answers **WHY** Syzygy exists, what it believes, what it refuses to
-be, and which constraints bind every downstream decision. It is constitutional,
-not aspirational: every rule is stated so that a violation is recognizable.
+This folder says **why** Syzygy exists, what it believes, what it refuses to
+be, and which constraints bind every later decision. It is constitutional, not
+aspirational: every rule is written so that a violation is recognizable.
 
 ## Glossary (read first)
 
-- **Syzygy** — provisional codename for this project; literally, the
-  astronomical alignment of three bodies — here: vision, specification, code.
-  Adopting this doctrine ratifies Syzygy, Polaris, Trajectory, and Orrery as
-  **working codenames only**; final product naming is a separate, later owner
-  decision (architecture.md, Vocabulary).
+- **Syzygy** — provisional codename for the project. The word means the
+  astronomical alignment of three bodies; here, vision, specification, and
+  code. Syzygy, Polaris, Trajectory, and Orrery are **working codenames
+  only**; final product naming is a later owner decision (architecture.md,
+  Vocabulary).
 - **Owner** — the single human accountable for a governed project's intent.
-  Everywhere this doctrine says "human sign-off" or "consent," the owner is that
-  human. (Multi-user operation is deferred; see v1.md.)
-- **Governed project** — one or more repositories with exactly one
-  **designated governance root** (the repository holding the project's single
-  `openspec/**` + `.syzygy/**` plane) and one owner, explicitly brought under
-  Syzygy observation; additional repositories are declared observed-source
+  Wherever doctrine says "human sign-off" or "consent," it means the owner.
+  (Multi-user operation is deferred; see v1.md.)
+- **Governed project** — one or more repositories with one owner and exactly
+  one **designated governance root**: the repository that holds the project's
+  single `openspec/**` + `.syzygy/**` plane. It is explicitly brought under
+  Syzygy observation. Other repositories are declared observed-source
   repositories, read-only to Syzygy unless separately onboarded, and every
-  observed repository requires consent (architecture.md; security.md SEC-4).
-- **`.syzygy/` and `openspec/`** — the exactly-two in-tree namespaces Syzygy
-  writes directly in any governed project (vision.md VIS-5; architecture.md
+  observed repository needs consent (architecture.md; security.md SEC-4).
+- **`.syzygy/` and `openspec/`** — the only two in-tree namespaces Syzygy
+  writes directly in a governed project (vision.md VIS-5). architecture.md
   defines the `.syzygy/` layout: `governance/`, `intent/`, `work/`, `map/`,
-  `cache/`, `local/`). Everything else Syzygy only reads, or affects through
+  `cache/`, `local/`. Everything else Syzygy only reads, or affects through
   typed adapters.
 - **Polaris / Trajectory / Orrery** — provisional codenames for Syzygy's three
-  surfaces: intent and comprehension; gaps, work, and convergence; the
+  surfaces: intent and comprehension; gaps, work, and convergence; and the
   observed/projected system twin (architecture.md).
-- **OpenSpec** — the designated initial behavioral-specification substrate for
-  `openspec/`; **Beads** — the designated initial work-scheduling substrate
-  (issues, dependencies); **the `/th-*` skills and claude/codex CLIs** — the
-  designated initial agent toolchain for workers and actuators. All substrate
-  tools are designated initial realizations of roles, substitutable per
-  architecture.md; nothing here claims an integration already exists.
-- **Rule identifiers** — vision.md's non-negotiable rules are `VIS-1`–`VIS-7`;
-  security.md's are `SEC-1`–`SEC-5`. The namespaces are deliberately disjoint
-  from the product lifecycle stages `V0`/`V1` (v1.md), so a rule citation can
-  never be read as a release stage. Identifiers are stable after adoption:
-  amend text in place; retire rather than renumber.
+- **Substrates** — the designated initial tools for each role, all
+  substitutable (architecture.md); nothing here claims an integration already
+  exists:
+  - **OpenSpec** — behavioral specifications in `openspec/`;
+  - **Beads** — work scheduling (issues, dependencies);
+  - **the `/th-*` skills and claude/codex CLIs** — the agent toolchain for
+    workers and actuators. The skills are published as the public
+    **ai-bootstrap toolchain** that v1.md names as the initial substrate.
+- **Actuator / actuator toolchain** — an **actuator** is whatever performs the
+  work Syzygy's answers generate: an agent worker, a fleet of them, or a human
+  working by hand. The **actuator toolchain** is the existing, external
+  agent-execution toolchain Syzygy harnesses rather than replaces — initially
+  the `/th-*` skills and claude/codex CLIs above, working over the designated
+  work scheduler. "Agent toolchain" and "actuator toolchain" name the same
+  role. Syzygy shows the difference between desired and observed state; the
+  actuator toolchain closes it (vision.md, Thesis). Syzygy is not itself an
+  actuator: it writes no implementation code (VIS-5, VIS-6), and its effects
+  reach code only through dispatched work (architecture.md).
+- **Rule identifiers** — vision.md's rules are `VIS-1`–`VIS-7`; security.md's
+  are `SEC-1`–`SEC-5`. They are deliberately distinct from the release stages
+  `V0`/`V1` (v1.md), so a rule citation never reads as a stage. Identifiers
+  are stable: text is amended in place, and a retired number is never reused.
 
 ## Reading order
 
-1. **[vision.md](vision.md)** — the owner's transformation, the thesis, what
-   Syzygy is and is not, rules VIS-1–VIS-7, the regeneration north star, the
-   fleet observability mandate, and what success and failure mean.
-2. **[v1.md](v1.md)** — the scope boundary: what V0 ships (and in what
-   increments), what V1 adds, deferrals with rationale, platform and audience,
-   and the stage-labeled success tests with their evidence artifacts.
+1. **[vision.md](vision.md)** — the owner's problem, the thesis, what Syzygy
+   is and is not, rules VIS-1–VIS-7, the regeneration north star, the fleet
+   observability mandate, and what success and failure mean.
+2. **[v1.md](v1.md)** — scope: what V0 ships and in what increments, what V1
+   adds, deferrals and why, platform and audience, and the stage-labeled
+   success tests with their evidence.
 3. **[architecture.md](architecture.md)** — constitutional structure: governed
    projects and the orthogonal plane, typed authority, contradictions vs gaps,
    the Project Genome and convergence, snapshots and the loop, one kernel and
    three surfaces, and the frozen vocabulary.
 4. **[trust-and-evidence.md](trust-and-evidence.md)** — claims, evidence,
    warrants, staleness, the deterministic/inferred seam, and the normative
-   statement of the trust floor.
+   trust floor.
 5. **[security.md](security.md)** — the trust model: rules SEC-1–SEC-5 on
    exposure, data egress, executing observed code, write blast radius, and
    secrets.
 
 ## Scope boundary
 
-- Engineering standards, review discipline, testing rules, provenance formats →
-  the quality and evidence policy in `.syzygy/governance/` (not here).
-- Technical contracts (graph schemas, adjudication and certificate semantics,
-  execution profiles, deeper `.syzygy/**` schemas) → accepted contracts (RFCs)
-  in `.syzygy/governance/` (not here).
-- Required observable behavior → `openspec/`. Component placement → declared
-  topology in `.syzygy/governance/`.
+Doctrine does not hold:
 
-Doctrine is slow to change. Every amendment is owner-adopted, and downstream
-artifacts must be re-checked for alignment when it changes.
+- engineering standards, review discipline, testing rules, or provenance
+  formats — those are the quality and evidence policy in
+  `.syzygy/governance/`;
+- technical contracts (graph schemas, adjudication and certificate semantics,
+  execution profiles, deeper `.syzygy/**` schemas) — those are accepted RFCs
+  in `.syzygy/governance/`;
+- required observable behavior (`openspec/`) or component placement (declared
+  topology in `.syzygy/governance/`).
+
+Doctrine is slow to change. The owner adopts every amendment, and downstream
+artifacts are re-checked for alignment when it changes.
