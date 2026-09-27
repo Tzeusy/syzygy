@@ -199,3 +199,14 @@ The full five-row transaction is recorded in
 and `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md`. This install entry
 performs no consent, registry adoption, observation, write, egress, execution,
 deployment, release, recovery, implementation or mission act.
+
+**Amendment — 2026-09-27: CC-REV-8 added (tree-shaped documents with
+diagrams).** The owner directed the style on 2026-09-27 and approved the
+drafted rule the same day with the word "Approved" (PR #133). CC-REV-8 is
+appended to `review-and-documentation.md`; no other rule in the cluster
+changes, and no identifier is renumbered. Current digest of the amended file,
+computed by script:
+
+```
+425512d3b47b6b1ddbd7693cdfa092441f11d21feb0d956230b23a667f12e453  review-and-documentation.md
+```
