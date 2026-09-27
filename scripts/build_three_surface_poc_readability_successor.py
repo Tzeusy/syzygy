@@ -486,6 +486,26 @@ def selftest(evidence_path: pathlib.Path | None = None) -> int:
             capture_output=True,
             text=True,
         ).stdout.strip()
+        mutation = cli_evidence["mutation"]
+        assert isinstance(mutation, dict)
+        corruption = mutation["patchCorruption"]
+        replacements = mutation["sourceReplacements"]
+        assert isinstance(corruption, dict)
+        assert isinstance(replacements, list)
+        mutation_records = [{
+            "id": f"{mutation['id']}:late-patch-corruption",
+            "file": corruption["file"],
+            "old": corruption["old"],
+            "new": corruption["new"],
+            "sourceCommit": mutation["sourceCommit"],
+        }]
+        mutation_records.extend({
+            "id": f"{mutation['id']}:serial-source-{index}",
+            "file": mutation["file"],
+            "old": replacement["old"],
+            "new": replacement["new"],
+            "sourceCommit": mutation["sourceCommit"],
+        } for index, replacement in enumerate(replacements, 1))
         evidence = {
             "kind": "three-surface-poc-readability-cli-rule-6-mutation-evidence",
             "capturedAt": datetime.now(timezone.utc).isoformat(),
@@ -498,6 +518,7 @@ def selftest(evidence_path: pathlib.Path | None = None) -> int:
                 "that mutant had to change the first three subjects before the corrupted "
                 "final patch failed. No live signed subject was written."
             ),
+            "mutations": mutation_records,
             **cli_evidence,
         }
         evidence_path.parent.mkdir(parents=True, exist_ok=True)
