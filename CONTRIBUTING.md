@@ -1,20 +1,28 @@
 # Contributing
 
+Syzygy is MIT-licensed but does not accept external code contributions yet;
+issues and discussion are welcome, and documentation or governance proposals
+follow the disciplines below.
+
 ## Current posture: licensed, but not accepting code contributions
 
-The repository is licensed **MIT** (owner ruling P-14, 2026-08-18 — see the
-root `LICENSE` and
-`.syzygy/governance/decisions/LICENSE-CHOICE-DECISION.md`), so reuse rights
-are granted. External **code** contributions still cannot be accepted, because
-contributor-agreement posture is an unrecorded owner-held fact — not because
-the project has no code. `LICENSE-CHOICE-DECISION.md` names it: "Whether a
-hosted offering is intended, and contributor-agreement posture, remain
-unrecorded owner-held facts — the latter is its own future decision and is
-**not** settled by this ruling." It is not queued in
-`PENDING-OWNER-DECISIONS.md` either [Observed — zero case-insensitive matches
-for "contributor" across that file's 125 lines, swept 2026-09-06], so no
-record anywhere carries a date by which it will be answered. Issues and discussion are welcome; documentation and
-governance proposals follow the disciplines below.
+Reuse rights are granted; code contributions wait on an owner decision that
+has not been recorded or queued.
+
+- **Licence:** **MIT** (owner ruling P-14, 2026-08-18 — see the root
+  `LICENSE` and `.syzygy/governance/decisions/LICENSE-CHOICE-DECISION.md`).
+- **Why code is refused:** contributor-agreement posture is an unrecorded
+  owner-held fact — not because the project has no code.
+  - `LICENSE-CHOICE-DECISION.md` names it: "Whether a hosted offering is
+    intended, and contributor-agreement posture, remain unrecorded
+    owner-held facts — the latter is its own future decision and is **not**
+    settled by this ruling."
+  - It is not queued in `PENDING-OWNER-DECISIONS.md` either [Observed — zero
+    case-insensitive matches for "contributor" across that file's 125 lines,
+    swept 2026-09-06], so no record anywhere carries a date by which it will
+    be answered.
+- **What is welcome:** issues and discussion; documentation and governance
+  proposals follow the disciplines below.
 
 *Superseded, dated:* until 2026-09-05 this section opened "Syzygy is in
 **final pre-specification**" and gave the reason for refusing code as "there
@@ -26,11 +34,14 @@ this page's.
 
 ## The implementation boundary
 
-Implementation is not open-ended: code may be added only where a **named owner
-act** authorizes it, and anything no act covers is forbidden. Find the act
-before writing code — `AGENTS.md` ("Where authority lives") routes to it, and
-`PROJECT-STATUS.md` says which acts are in force. This binds the project's own
-agents today and would bind contributors later.
+Code may be added only where a **named owner act** authorizes it; anything no
+act covers is forbidden.
+
+- **Find the act before writing code.**
+  - `AGENTS.md` ("Where authority lives") routes to it.
+  - `PROJECT-STATUS.md` says which acts are in force.
+- **Who it binds:** the project's own agents today, and it would bind
+  contributors later.
 
 *Superseded, dated:* this section was headed "The no-implementation boundary"
 and read "Nothing in this repository may add application or library code,
@@ -43,8 +54,8 @@ disappear; it moved from "none at all" to "only what an act names.
 
 ## Authority layers
 
-Authority is typed; each question has one owning home (see the README's
-authority table). The load-bearing distinction for any change:
+Authority is typed, and each question has one owning home (see the README's
+authority table); what a change may do depends on which layer it touches.
 
 - **Adopted/approved** — doctrine, decisions, craft-and-care policies.
   Changing these is an owner-gated amendment, always.
@@ -54,61 +65,77 @@ authority table). The load-bearing distinction for any change:
 - **Derived** — indexes, summaries, status pages, this file. Regenerate
   freely; they are never authority and never cited as such.
 
-A rule about writes, often misread: doctrine VIS-5 confines **Syzygy the
-system's** direct project-content writes to `openspec/**` and `.syzygy/**`.
-That is a product rule, not a contributor rule — people and agents working
-on this repository edit the front door, CI, and skills too. The contributor
-rule is simpler: documentation and governance artifacts only, through the
-disciplines below.
+**A rule about writes, often misread:** VIS-5 is a product rule, not a
+contributor rule.
+
+- Doctrine VIS-5 confines **Syzygy the system's** direct project-content
+  writes to `openspec/**` and `.syzygy/**`.
+- People and agents working on this repository edit the front door, CI, and
+  skills too.
+- The contributor rule is simpler: documentation and governance artifacts
+  only, through the disciplines below.
 
 ## How to propose a documentation or contract change
+
+Edit the one owning artifact, describe any normative change as a semantic
+delta, and expect a fresh-context review.
 
 1. **Find the owning artifact** — one authoritative home per fact; edit the
    owner, cite it everywhere else.
 2. **Write a semantic delta** for any normative change:
    `.syzygy/governance/contracts/candidates/policy-candidates/SEMANTIC-DELTA-TEMPLATE.md`
-   records current meaning, proposed meaning, change class (Editorial /
-   Clarifying / Normative / Structural), warrant, impact, and what
-   explicitly does not change. "Editorial" and "no semantic change" are
-   reviewable claims, not exemptions. Whole-file rewrites are exceptional
-   and require justification plus a mapping.
+   - It records current meaning, proposed meaning, change class (Editorial /
+     Clarifying / Normative / Structural), warrant, impact, and what
+     explicitly does not change.
+   - "Editorial" and "no semantic change" are reviewable claims, not
+     exemptions.
+   - Whole-file rewrites are exceptional and require justification plus a
+     mapping.
 3. **Preserve stable IDs** — clause and rule identifiers are amended in
    place or retired, never renumbered.
 4. **Expect fresh-context review** — material normative changes are reviewed
    by a session given only the artifact, its governing references, and
-   acceptance criteria; never the authoring conversation. Raw reviewer
-   output is stored verbatim; verdict words are copied exactly.
+   acceptance criteria; never the authoring conversation.
+   - Raw reviewer output is stored verbatim; verdict words are copied
+     exactly.
 5. **Never edit a digest-bound artifact after its act** — it voids the act.
    Propose a re-offer instead.
 
 ## Public-clone validation is part of done
 
 Any governance change must leave a fresh `git clone` able to reconstruct the
-project's current shape: run the validation commands in `PROJECT-STATUS.md`
-("How to verify this page") plus `python3 scripts/check_governance.py`, and
-confirm no active artifact depends on the git-excluded `_bootstrap/**` tree
-for essential meaning (citing it as unavailable history is fine; needing it
-is not).
+project's current shape.
+
+- Run the validation commands in `PROJECT-STATUS.md` ("How to verify this
+  page") plus `python3 scripts/check_governance.py`.
+- Confirm no active artifact depends on the git-excluded `_bootstrap/**` tree
+  for essential meaning: citing it as unavailable history is fine; needing it
+  is not.
 
 ## Vendored external material
 
-`.claude/skills/th-engineering/` and `.codex/skills/th-engineering/` are a
-byte-identical, MIT-licensed vendored copy of the `engineering-bar`,
-`test-rigor`, and `dependency-hygiene` subskills that
-`.syzygy/governance/policies/craft-and-care/` adopts by reference (owner
-override, 2026-08-06). It is tooling configuration, not application or
-library code, and not authored here — do not edit it to satisfy a local
-checker or to add Syzygy-specific rules; overrides belong in
-`craft-and-care/` instead. Provenance, exact commit, and recomputable
-digests: `.syzygy/governance/policies/GOVERNANCE-SUBSTRATE-LOCK.yaml`
-(`th_engineering`).
+`.claude/skills/th-engineering/` and `.codex/skills/th-engineering/` are
+vendored tooling configuration: do not edit them to satisfy a local checker
+or to add Syzygy-specific rules; overrides belong in `craft-and-care/`.
+
+- **What they are:** a byte-identical, MIT-licensed vendored copy of the
+  `engineering-bar`, `test-rigor`, and `dependency-hygiene` subskills that
+  `.syzygy/governance/policies/craft-and-care/` adopts by reference (owner
+  override, 2026-08-06).
+- **What they are not:** application or library code, or authored here.
+- **Rule:** do not edit it to satisfy a local checker or to add
+  Syzygy-specific rules; overrides belong in `craft-and-care/` instead.
+- **Provenance, exact commit, and recomputable digests:**
+  `.syzygy/governance/policies/GOVERNANCE-SUBSTRATE-LOCK.yaml`
+  (`th_engineering`).
 
 ## Where Beads applies
 
 `bd` (Beads) tracks process housekeeping, the implementation backlog, and the
 POC improvement cycles — see `AGENTS.md`, "Beads scope", which owns this rule.
-Unknowns still go to the pending-decision queue, not the tracker: an open
-question for the owner is not a task.
+
+- Unknowns still go to the pending-decision queue, not the tracker: an open
+  question for the owner is not a task.
 
 *Superseded, dated:* until 2026-09-05 this section read "It is **not** used
 for product work: no implementation issues, epics, or backlog exist, and none
@@ -118,6 +145,8 @@ may be created before specification authoring opens." True when written on
 ## Reporting a problem in the governance material
 
 Contradictions between artifacts are **surfaced, never silently
-reconciled**. If two documents disagree, report both readings rather than
-choosing one — a contradiction renders the affected conclusion Unknown and
-routes to the owner.
+reconciled**.
+
+- If two documents disagree, report both readings rather than choosing one.
+- A contradiction renders the affected conclusion Unknown and routes to the
+  owner.

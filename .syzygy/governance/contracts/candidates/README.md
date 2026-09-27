@@ -24,13 +24,30 @@
 > **RFC-0011 (Context Compiler)**, the deferred waves C1/C2/D1/D2, and every
 > companion, report, and round record under this tree.
 
+Read contract text in `contracts/rfcs/`, the two in-force craft policies in
+`policy-candidates/`, and treat everything else here as candidate or record;
+the Layout table routes to each file class.
+
+```mermaid
+flowchart LR
+    subgraph C["contracts/candidates/ — this directory"]
+        R19["rfcs/RFC-0001…0009<br/>manifest-hashed candidate originals"]
+        R1011["rfcs/RFC-0010 · RFC-0011<br/>still candidate, never offered"]
+        PC["policy-candidates/<br/>CC-SPEC-1…11 · CC-IMPACT-1…7 in force here"]
+        REST["companions · reports · round records<br/>bind nothing"]
+    end
+    R19 -->|"Wave A and B acts, 2026-08-17:<br/>a separate installed copy"| INST[".syzygy/governance/contracts/rfcs/<br/>read contract text here"]
+```
+
 This directory tracks the final pre-specification candidate package so that
 a fresh clone can read, review, and verify the exact artifacts the owner is
 being asked to accept (clone-visibility ruling P-9 / FD-037 corollary,
-2026-08-05). It was promoted byte-verbatim from the founder-local rev10
-packet, then corrected round by round as each round's semantic-delta record
-states (`round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md` through
-`round-2026-08e/`).
+2026-08-05).
+
+- **Provenance:** it was promoted byte-verbatim from the founder-local rev10
+  packet, then corrected round by round as each round's semantic-delta
+  record states (`round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md` through
+  `round-2026-08e/`).
 
 > **This page does not own any state it reports.** `PROJECT-STATUS.md`
 > owns the launch path and `decisions/PENDING-OWNER-DECISIONS.md` owns the
@@ -70,6 +87,8 @@ are that round's record and are not the current package's state.
 
 ## Layout
 
+One row per file class; each file's head banner says what binds.
+
 | Path | What it is |
 |---|---|
 | `rfcs/` | The 39 active candidate contract modules (RFC 0001–0011; RFC-0010 is a five-module package and RFC-0011 a two-module package since round 2026-08d) |
@@ -97,18 +116,21 @@ are that round's record and are not the current package's state.
 ### What is in `reviews/`
 
 Eight files: seven raw reviewer reports of the rev10 packet and the lead's
-synthesis of them. The synthesis, `reviews/DISPOSITIONS.md`, is the reading
-order — it carries every finding and its disposition, section by section, and
-it is the only file here that was written by the lead rather than a reviewer.
+synthesis of them. Read the synthesis, `reviews/DISPOSITIONS.md`, first.
 
-`DISPOSITIONS.md` names its sections by short name ("rev10-boundary",
-"rev10-safety") and not by filename, so a sweep looking for a report by its
-own basename finds no citer and reports it unread. That is a false absence of
-the kind verification rule 9 exists to catch, and it cannot be repaired where
-it occurs: the general trusted-bootstrap `IMPACT-LEDGER.md` classifies
-`reviews/DISPOSITIONS.md` as raw-review evidence "never rewritten to current
-semantics", and that ledger is a row of its own package's transaction
-manifest, so the classification is bound. The mapping therefore lives here.
+- **`reviews/DISPOSITIONS.md` is the reading order.** It carries every
+  finding and its disposition, section by section, and it is the only file
+  here that was written by the lead rather than a reviewer.
+- **The filename-to-section mapping lives here, in the table below.**
+  - `DISPOSITIONS.md` names its sections by short name ("rev10-boundary",
+    "rev10-safety") and not by filename, so a sweep looking for a report by
+    its own basename finds no citer and reports it unread. That is a false
+    absence of the kind verification rule 9 exists to catch.
+  - It cannot be repaired where it occurs: the general trusted-bootstrap
+    `IMPACT-LEDGER.md` classifies `reviews/DISPOSITIONS.md` as raw-review
+    evidence "never rewritten to current semantics", and that ledger is a
+    row of its own package's transaction manifest, so the classification is
+    bound. The mapping therefore lives here.
 
 | File | Directive | Verdict of record | Disposition section |
 |---|---|---|---|
@@ -122,52 +144,68 @@ manifest, so the classification is bound. The mapping therefore lives here.
 | `reviews/rev10-confirming-review.md` | final confirming review, 2026-08-03 | `CONFIRM`, 3 residuals | §7 |
 
 Every verdict in the column above is `EXCEPTIONS` except the last. That is
-what a working review round looks like, not a troubled one: the findings were
-dispositioned, the `rfcs/`-touching fixes were batched so the manifest digest
-regenerated once, and the confirming review then ran against the repaired
-bytes. §7's three residuals include one the lead **declined** rather than
-fixed — a stale navigation word-count — because fixing it would have churned
-the act's argument digest for a figure that binds nothing. The decline is
-recorded with its reasoning; read it as the model for surfacing a cost to the
-owner instead of absorbing it.
+what a working review round looks like, not a troubled one:
+
+- the findings were dispositioned;
+- the `rfcs/`-touching fixes were batched so the manifest digest regenerated
+  once;
+- the confirming review then ran against the repaired bytes.
+
+§7's three residuals include one the lead **declined** rather than fixed — a
+stale navigation word-count — because fixing it would have churned the act's
+argument digest for a figure that binds nothing. The decline is recorded with
+its reasoning; read it as the model for surfacing a cost to the owner instead
+of absorbing it.
 
 **Two files, one review.** `rev10-transaction-review-resend.md` is the same
 reviewer's fuller retransmission of `rev10-transaction-review.md` after an
-idle nudge. The first transmission stays exactly as it arrived and remains the
-one of record; the resend is retained beside it because a re-issued raw is
-kept as a second file and never overwrites the first (verification rule 10 —
-the bytes a review is bound to are frozen, and that includes a worse earlier
-draft of the same report). Both carry the same verdict and the same five
-findings in the same locations; the resend adds per-check evidence only.
+idle nudge.
+
+- **The first transmission is the one of record;** it stays exactly as it
+  arrived.
+- **The resend is retained beside it** because a re-issued raw is kept as a
+  second file and never overwrites the first (verification rule 10 — the
+  bytes a review is bound to are frozen, and that includes a worse earlier
+  draft of the same report).
+- **Both carry the same verdict and the same five findings in the same
+  locations;** the resend adds per-check evidence only.
 
 ### Act packages prepared in this tree
 
-Five directories hold prepared act packages — a semantic delta, a manifest,
-an impact ledger, a review brief, and an owner packet apiece. They were absent
-from every index in this tree until 2026-09-05, which is why a reader could
-only find the newest and most consequential material here by listing the
-directory. **A performed act's authority is the record in
+**A performed act's authority is the record in
 `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md`, never the package**;
 the package is how the act was prepared and what its argument was computed
-over. Some of these packages still carry the "candidate, binds nothing" banner
-they were drafted with, written before the act was performed over them —
-read the act record, not the banner.
+over.
+
+- **What a package holds:** five directories hold prepared act packages — a
+  semantic delta, a manifest, an impact ledger, a review brief, and an owner
+  packet apiece.
+- **Why they are listed here:** they were absent from every index in this
+  tree until 2026-09-05, which is why a reader could only find the newest and
+  most consequential material here by listing the directory.
+- **Read the act record, not the banner:** some of these packages still
+  carry the "candidate, binds nothing" banner they were drafted with, written
+  before the act was performed over them.
 
 *Repaired at the head, 2026-09-06.* Eight package files that assert their own
 inertness now open with a dated **PERFORMED** note naming the act record that
 performed them; the pre-act banner is kept unedited beneath it as the
-drafter's record. Two of those files carry a second date: the state-(1)
-amendment's own eleven digests were superseded on 2026-09-05 by the
-truth-and-readiness act. Every other file in these four packages was left
-byte-identical, for one of two reasons. Seven of them are bound — the five
-`*-MANIFEST.txt` files, and the general trusted-bootstrap package's
-`ACT-SEMANTICS.md` and `IMPACT-LEDGER.md`, both of which that package's
-transaction manifest carries as rows. `ACT-SEMANTICS.md` therefore still opens
-"**Candidate — binds nothing**" about a transaction the owner performed on
-2026-09-01, and no agent may correct it: the act bound the bytes that say it.
-The rest were left because their banner is still true — a review brief that
-says "review input, never authority" has not stopped being one. Tracked as
-`syzygy-bba`.
+drafter's record. Tracked as `syzygy-bba`.
+
+- Two of those files carry a second date: the state-(1) amendment's own
+  eleven digests were superseded on 2026-09-05 by the truth-and-readiness
+  act.
+- Every other file in these four packages was left byte-identical, for one
+  of two reasons:
+  - **Seven of them are bound** — the five `*-MANIFEST.txt` files, and the
+    general trusted-bootstrap package's `ACT-SEMANTICS.md` and
+    `IMPACT-LEDGER.md`, both of which that package's transaction manifest
+    carries as rows. `ACT-SEMANTICS.md` therefore still opens "**Candidate —
+    binds nothing**" about a transaction the owner performed on 2026-09-01,
+    and no agent may correct it: the act bound the bytes that say it.
+  - **The rest were left because their banner is still true** — a review
+    brief that says "review input, never authority" has not stopped being
+    one.
 
 | Directory | Subject | Where its authority is |
 |---|---|---|
@@ -181,18 +219,22 @@ Eight further top-level files here are the rev10 packet's own working records
 — compaction charter, worker-report digest, lead sweep notes, the generated
 context-budget report, two Polaris observation deltas, the general
 trusted-bootstrap routing delta, and the superseded D3 draft. None is
-authority. Seven are unreachable from any route that matters; the eighth,
-`CONTEXT-BUDGET-REPORT.md`, is a **live input to the everyday validator** —
-`scripts/check_governance.py` hard-codes its filename as the single sentence a
-contract module may use to point at a measurement (CG-21), and exempts it by
-path from the digest-scope rule (CG-7e). Deleting or renaming it changes what
-the validator accepts. *(Until 2026-09-06 this sentence read "None is
-authority, and none is reachable from any route that matters" — the first
-clause is still true; the second was never true of this file.)* Two of the eight
-carried no banner until 2026-09-05 and now do: `COMPACTION-CHARTER.md`, whose
-head announced "binding rules" and an `Authority:` line for a pass that
-finished in August, and `WORKER-REPORT-DIGEST.md`, which declared itself
-non-normative in its title only.
+authority.
+
+- **Seven are unreachable from any route that matters; the eighth,
+  `CONTEXT-BUDGET-REPORT.md`, is a live input to the everyday validator.**
+  - `scripts/check_governance.py` hard-codes its filename as the single
+    sentence a contract module may use to point at a measurement (CG-21),
+    and exempts it by path from the digest-scope rule (CG-7e).
+  - Deleting or renaming it changes what the validator accepts.
+  - *(Until 2026-09-06 this sentence read "None is authority, and none is
+    reachable from any route that matters" — the first clause is still true;
+    the second was never true of this file.)*
+- **Two of the eight carried no banner until 2026-09-05 and now do:**
+  `COMPACTION-CHARTER.md`, whose head announced "binding rules" and an
+  `Authority:` line for a pass that finished in August, and
+  `WORKER-REPORT-DIGEST.md`, which declared itself non-normative in its title
+  only.
 
 The packet's former `doctrine/` and `craft-and-care/` mirrors are **not**
 tracked here — their canonical homes are `.syzygy/governance/doctrine/` and
@@ -201,6 +243,9 @@ fact). The former `topology/` directory is tracked at
 `.syzygy/map/topology-candidates/`.
 
 ## Two in-force craft policies live in this tree
+
+CC-SPEC-1…11 and CC-IMPACT-1…7 are in force at their committed home here,
+under banners, filenames and a directory name that all still say candidate.
 
 Craft acts 6 and 7 were performed 2026-08-17 in one sitting, and they bound
 their subjects **at the committed home** rather than installing a copy — the
@@ -238,6 +283,9 @@ Re-derive rather than trusting this count after any act.]
 
 ### CC-IMPACT-7 names a fixture that has since been superseded
 
+CC-IMPACT-7's mandated fixture is fixture 2, whose successor, fixture 3,
+documents why it is not sufficient; neither file may be edited to say so.
+
 CC-IMPACT-7 requires the propagation path to be run blind, before the first
 real shape amendment, against a fixture it names by path *and* by sha256:
 `round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md`. A later fixture
@@ -265,6 +313,8 @@ against a sound fixture is a status question this page does not own.
 
 ## Verify
 
+Run these from the package root to check the manifests and generated views.
+
 ```sh
 cd .syzygy/governance/contracts/candidates
 sha256sum -c ACTIVE-CONTRACT-MANIFEST.txt          # every listed module OK
@@ -279,12 +329,14 @@ python3 scripts/build_capability_1_views.py --check # Capability 1 view drift
 **Structural note, disclosed for owner ratification:** candidate contract
 RFC3-15 closes `.syzygy/governance/` to six category names; this package
 sits *inside* `contracts/` with an explicit non-accepted lifecycle label
-rather than minting a seventh category. That arrangement has now been
-exercised twice: the Wave A and Wave B acts fired on 2026-08-17 and their
-modules installed to `contracts/rfcs/`, which is why contract text is read
-there and not here. The `candidates/` tree is retired to history only when
-the last wave the owner intends to accept has fired, and no C or D act has
-been offered — so it stays.
+rather than minting a seventh category.
+
+- That arrangement has now been exercised twice: the Wave A and Wave B acts
+  fired on 2026-08-17 and their modules installed to `contracts/rfcs/`,
+  which is why contract text is read there and not here.
+- The `candidates/` tree is retired to history only when the last wave the
+  owner intends to accept has fired, and no C or D act has been offered — so
+  it stays.
 
 *Superseded, dated:* until 2026-09-05 the two sentences above read "On the
 first wave act, that wave's modules install to `contracts/rfcs/`; the

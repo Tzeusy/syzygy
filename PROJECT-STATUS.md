@@ -17,131 +17,185 @@
 > lessons are at `.syzygy/governance/decisions/PROCESS-LESSONS.md`; each
 > pass's reports live in the `round-*` trees. None is default reading.
 
+Syzygy is in **bounded Three-Surface POC mode (non-release)**. Capability 1
+and its local runtime are implemented; the generalized Polaris generator
+specification is adopted and its implementation authorized and in progress;
+the Polaris project-wide Butlers (PWB) work is authorized for one consented
+content class. Each section cites the record that owns its rows.
+
 ## Generalized Polaris generation
 
-[Observed] On 2026-09-12 the owner adopted the generator specification and scoped
-applicability judgments, and authorized its full implementation. The owning
-records are [specification adoption](.syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md),
-[applicability](.syzygy/governance/decisions/POLARIS-GENERATOR-APPLICABILITY-ACT.md)
-and [implementation authorization](.syzygy/governance/decisions/POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md).
-These are bootstrap owner acts with A1 explicitly absent. The exact specification
-bytes retain their original candidate banners; the acts determine their status.
+The generator specification and its two amendments are adopted, and
+its implementation is authorized and in progress, with no provider or effect
+authority and no model yet called on the current path.
 
-[Observed] The owner adopted the [project-understanding amendment](.syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md)
-on 2026-09-13. It extends seven generator requirements and adds discovery and
-owner clarification as 030/031. Read the predecessor together with
-[the adopted amendment](openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md):
-31 requirements and 182 scenarios in the effective composition. Its reviewed
-candidate-era banners remain unchanged; the act determines status. This is
-specification adoption, with no new implementation or effect permission inferred.
-On 2026-09-28 the owner adopted the [tree-form and diagram amendment](.syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md)
-to REQ-004, which adds five scenarios, authorized its generator
-implementation, and ruled that sanitized static SVG is inert under PWB-REQ-006.
+- [Observed] On 2026-09-12 the owner adopted the generator specification and
+  scoped applicability judgments, and authorized its full implementation.
+  - The owning records are [specification adoption](.syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md),
+    [applicability](.syzygy/governance/decisions/POLARIS-GENERATOR-APPLICABILITY-ACT.md)
+    and [implementation authorization](.syzygy/governance/decisions/POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md).
+  - These are bootstrap owner acts with A1 explicitly absent.
+  - The exact specification bytes retain their original candidate banners;
+    the acts determine their status.
+- [Observed] The owner adopted the [project-understanding amendment](.syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md)
+  on 2026-09-13.
+  - It extends seven generator requirements and adds discovery and owner
+    clarification as 030/031.
+  - Read the predecessor together with
+    [the adopted amendment](openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md):
+    31 requirements and 182 scenarios in the effective composition.
+  - Its reviewed candidate-era banners remain unchanged; the act determines
+    status.
+  - This is specification adoption, with no new implementation or effect
+    permission inferred.
+  - On 2026-09-28 the owner adopted the [tree-form and diagram amendment](.syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md)
+    to REQ-004, which adds five scenarios, authorized its generator
+    implementation, and ruled that sanitized static SVG is inert under
+    PWB-REQ-006.
 
-Implementation is in progress. Completion requires the full owner workflow and
-reviewed output from the unchanged generator on two separately admitted real
-projects, including source-change regeneration. Existing Butlers presentation
-and synthetic checks do not prove this outcome. Project reads, provider egress
-and output writes remain separately admitted. The older single-project POC
-boundary below still describes the existing PWB runtime, not this new generator's
-full authorized implementation target. The current operator path calls no real
-model or provider. No model has been called on that path; the honesty layer and
-independent review remain the current critical path, without provider/effect
-authority.
+**Implementation is in progress.**
+
+- **Completion requires** the full owner workflow and reviewed output from
+  the unchanged generator on two separately admitted real projects,
+  including source-change regeneration.
+  - Existing Butlers presentation and synthetic checks do not prove this
+    outcome.
+- **Still separately admitted:** project reads, provider egress and output
+  writes.
+- **Scope of the POC boundary below:** the older single-project POC boundary
+  below still describes the existing PWB runtime, not this new generator's
+  full authorized implementation target.
+- **No model yet:** The current operator path calls no real model or provider.
+  No model has been called on that path; the honesty layer and independent
+  review remain the current critical path, without provider/effect
+  authority.
 
 ## Lifecycle stage
 
 **Bounded Three-Surface POC mode (non-release).** Capability 1 and its local
-runtime are implemented trusted groundwork. On 2026-08-29 the owner directly
-authorized a deliberately bounded proof of concept across Polaris,
-Trajectory, and Orrery, using Butlers as the initial external proving project.
-For this experiment only, the direction supersedes the Capability-1-only and
-no-external-project-onboarding restrictions. It authorizes implementation
-outside Capability 1 only where required by the experiment; it does not amend
-doctrine, accepted contracts, or the adopted Capability 1 specification.
+runtime are implemented trusted groundwork.
 
-The POC remains local, single-project, file-backed, human-triggered, and
-experimental. It does not authorize production release or deployment,
-autonomous adoption of intent, Syzygy-authored implementation code, broad
-remote access, or multi-user support. Desired, execution, and observed state
-remain distinct; no evidence means Unknown; activity or merge state is never
-intent satisfaction; human and machine views consume one shared fact model;
-every positive claim has resolvable provenance. The owning record is
-`decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`.
+- **The direction:** on 2026-08-29 the owner directly authorized a
+  deliberately bounded proof of concept across Polaris, Trajectory, and
+  Orrery, using Butlers as the initial external proving project.
+  - For this experiment only, the direction supersedes the
+    Capability-1-only and no-external-project-onboarding restrictions.
+  - It authorizes implementation outside Capability 1 only where required by
+    the experiment; it does not amend doctrine, accepted contracts, or the
+    adopted Capability 1 specification.
+  - The owning record is `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`.
+- **Its bounds:** the POC remains local, single-project, file-backed,
+  human-triggered, and experimental.
+  - It does not authorize production release or deployment, autonomous
+    adoption of intent, Syzygy-authored implementation code, broad remote
+    access, or multi-user support.
+- **Its invariants:**
+  - desired, execution, and observed state remain distinct;
+  - no evidence means Unknown;
+  - activity or merge state is never intent satisfaction;
+  - human and machine views consume one shared fact model;
+  - every positive claim has resolvable provenance.
+- **What runs today:** the runnable POC now includes
+  - an explicit human-triggered action that creates or reuses one bounded
+    Bead;
+  - Git-based worker-change observation for that item;
+  - a separately invoked file-backed JUnit capture, ingestion and
+    verification path.
+- **What that does not prove:** these mechanisms being implemented is not
+  evidence that a work item was materialized, a worker changed code, or a
+  matching test artifact is current in any particular run.
+  - The shared model renders the records it actually has and fails closed on
+    absent or mismatched evidence.
+  - The daemon never runs the observed test suite automatically and Syzygy
+    never dispatches a worker or writes implementation code.
 
-The runnable POC now includes an explicit human-triggered action that creates
-or reuses one bounded Bead, Git-based worker-change observation for that item,
-and a separately invoked file-backed JUnit capture, ingestion and verification
-path. These mechanisms being implemented is not evidence that a work item was
-materialized, a worker changed code, or a matching test artifact is current in
-any particular run; the shared model renders the records it actually
-has and fails closed on absent or mismatched evidence. The daemon never runs
-the observed test suite automatically and Syzygy never dispatches a worker or
-writes implementation code.
+Dated groups of acts, 2026-09-01 to 2026-09-05, define human-act
+provenance and the PWB authority for the one Butlers content class; each
+names its own record.
 
-On 2026-09-01 the owner separately performed the indivisible five-row general
-trusted-bootstrap authorization transaction recorded in
+**2026-09-01 — general trusted-bootstrap transaction.** The owner separately
+performed the indivisible five-row general trusted-bootstrap authorization
+transaction recorded in
 `decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md` and the append-only
-`decisions/ACCEPTANCE-ACT-RECORD.md`. It amended the accepted RFC 0001–0009
-bytes at the exact 30-module amendment manifest, seven signed contract-coverage
-artifacts, and CC-SPEC-8. A valid exact-scope human act may now be effective in
-state (1), `owner-adopted (bootstrap, uncorrelated)`, or state (2),
-`Syzygy-verified`; only state (2) is independently verified. The transaction
-granted no effect-specific consent, policy approval, registry adoption,
-observation, write, egress, execution, deployment, release, recovery, mission,
-or implementation authority.
+`decisions/ACCEPTANCE-ACT-RECORD.md`.
 
-On 2026-09-02 the owner separately performed the exact PWB state-(1)
-amendment sign-off recorded in `decisions/PWB-STATE1-AMENDMENT-ACT.md` and the
-append-only act record. The eleven-artifact package at manifest
-`14a84aba…b1e` is now the signed behavioral authority: PWB-REQ-005 and
-PWB-REQ-022 accept valid exact-scope human acts in state (1) or state (2),
-preserve the exact state, fail invalid acts closed and never call state (1)
-independently verified. This sign-off created no consent, policy approval,
-registry adoption, body-read or implementation authority.
+- **It amended** the accepted RFC 0001–0009 bytes at the exact 30-module
+  amendment manifest, seven signed contract-coverage artifacts, and
+  CC-SPEC-8.
+- **State (1) and state (2):** a valid exact-scope human act may now be
+  effective in state (1), `owner-adopted (bootstrap, uncorrelated)`, or
+  state (2), `Syzygy-verified`; only state (2) is independently verified.
+- **It granted no** effect-specific consent, policy approval, registry
+  adoption, observation, write, egress, execution, deployment, release,
+  recovery, mission, or implementation authority.
 
-On 2026-09-05 the owner signed Decision 1 of the PWB truth-and-readiness
-packet, recorded in `decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md` and the
-append-only act record: the eleven-artifact package at
-`contracts/candidates/pwb-truth-policy-amendment/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt`
-supersedes the 2026-09-02 digests as the signed behavioral authority (closed
-fact/precedence grammar, inert-code admission, deterministic resource
-envelope, one transient verbatim baseline requirement, PWB-REQ-021
-readiness). The same day the owner approved Decision 2, the amended
-secret-classification policy, as a separate state-(1) act bound to the
-policy's own SHA-256 and recorded in
-`decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md`; it supersedes
-the 2026-09-02 policy approval for that role only, and that earlier record
-stays immutable history. The owner then adopted Decision 3, the amended
-observer registry entry, the same way
-(`decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md`), superseding the
-2026-09-02 adoption for the registry role only. All three acts of the packet
-are performed; consent is unchanged. The owner then continued PWB
-implementation authorization for the 2026-09-05 amendment by direct
-direction the same day
-(`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md`, closing
-bead syzygy-8i7): the amended semantics, policy and registry entry are now
-the implementation target, with every 2026-09-02 exclusion retained and no
-new authority added.
+**2026-09-02 — PWB state-(1) amendment.** The owner separately performed the
+exact PWB state-(1) amendment sign-off recorded in
+`decisions/PWB-STATE1-AMENDMENT-ACT.md` and the append-only act record.
 
-Later on 2026-09-02 the owner performed the three separate effect-specific
-acts PWB-REQ-005 requires, each a state-(1) act bound to its artifact's own
-SHA-256 at frozen subject `48e0f5d`: observation consent for the configured
-Butlers repository (`decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`),
-approval of the concrete secret-classification policy
-(`decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md`), and adoption of the
-project-shape observer registry entry
-(`decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md`). Each is recorded in the
-append-only act record with A1 explicitly absent; none is independently
-verified. Together they close the effect gate for the one Butlers
-project-shape content class. They grant no implementation authority by
-themselves. The owner then granted **PWB implementation authorization** the
-same day (`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md`, closing task
-1.8): the owner's one-word reply is recorded verbatim with the recorder's
-explicit scope reading. Implementation of tasks §2–§5 is now dispatchable
-in the ordinary implementation plane; the first Butlers body read is lawful
-only after the implementation itself evaluates the three acts under
-PWB-REQ-005, and only for the consented content class.
+- The eleven-artifact package at manifest `14a84aba…b1e` is now the signed
+  behavioral authority: PWB-REQ-005 and PWB-REQ-022 accept valid exact-scope
+  human acts in state (1) or state (2), preserve the exact state, fail
+  invalid acts closed and never call state (1) independently verified.
+- This sign-off created no consent, policy approval, registry adoption,
+  body-read or implementation authority.
+
+**2026-09-05 — PWB truth-and-readiness packet.** All three acts of the packet
+are performed; consent is unchanged.
+
+- **Decision 1:** the owner signed Decision 1 of the PWB truth-and-readiness
+  packet, recorded in `decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md` and the
+  append-only act record: the eleven-artifact package at
+  `contracts/candidates/pwb-truth-policy-amendment/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt`
+  supersedes the 2026-09-02 digests as the signed behavioral authority
+  (closed fact/precedence grammar, inert-code admission, deterministic
+  resource envelope, one transient verbatim baseline requirement, PWB-REQ-021
+  readiness).
+- **Decision 2:** the same day the owner approved Decision 2, the amended
+  secret-classification policy, as a separate state-(1) act bound to the
+  policy's own SHA-256 and recorded in
+  `decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md`; it
+  supersedes the 2026-09-02 policy approval for that role only, and that
+  earlier record stays immutable history.
+- **Decision 3:** the owner then adopted Decision 3, the amended observer
+  registry entry, the same way
+  (`decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md`), superseding the
+  2026-09-02 adoption for the registry role only.
+- **Implementation continuation:** the owner then continued PWB
+  implementation authorization for the 2026-09-05 amendment by direct
+  direction the same day
+  (`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md`, closing
+  bead syzygy-8i7): the amended semantics, policy and registry entry are now
+  the implementation target, with every 2026-09-02 exclusion retained and no
+  new authority added.
+
+**Later on 2026-09-02 — the three effect-specific acts, then implementation
+authorization.** The owner performed the three separate effect-specific acts
+PWB-REQ-005 requires, each a state-(1) act bound to its artifact's own
+SHA-256 at frozen subject `48e0f5d`:
+
+- observation consent for the configured Butlers repository
+  (`decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`);
+- approval of the concrete secret-classification policy
+  (`decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md`);
+- adoption of the project-shape observer registry entry
+  (`decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md`).
+
+What those acts do, and what followed:
+
+- Each is recorded in the append-only act record with A1 explicitly absent;
+  none is independently verified.
+- Together they close the effect gate for the one Butlers project-shape
+  content class. They grant no implementation authority by themselves.
+- The owner then granted **PWB implementation authorization** the same day
+  (`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md`, closing task 1.8):
+  the owner's one-word reply is recorded verbatim with the recorder's
+  explicit scope reading.
+  - Implementation of tasks §2–§5 is now dispatchable in the ordinary
+    implementation plane.
+  - The first Butlers body read is lawful only after the implementation
+    itself evaluates the three acts under PWB-REQ-005, and only for the
+    consented content class.
 
 ## The launch path, in one table
 
@@ -168,15 +222,20 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 | Three-Surface POC | **AUTHORIZED 2026-08-29, non-release and bounded.** One live Butlers proving project; WIP one for shared-model changes. The runnable implementation exposes human-triggered Bead materialization, worker-change observation, and separate file-backed test-artifact capture/ingestion/verification; availability of those paths is not a positive evidence claim for the current run. The original eight items completed 2026-08-30: all three product assumptions NOT FALSIFIED (`docs/reviews/R-POC-PRODUCT-REVIEW.md`), PRF-1 repair CONFIRMED. The owner's 2026-08-30 direction extends the experiment with **improvement cycles** (review → finding-derived repairs → confirmation, owner-reported per cycle), lifting the eight-item cap and one-review budget; every other bound stands. | `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`; `decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md`; `docs/THREE-SURFACE-POC.md` |
 
 **Four original foundational owner acts were performed on 2026-08-17:** Wave
-A, Wave B, and craft acts 6 + 7. A separate indivisible five-row amendment
-transaction was performed on 2026-09-01, followed by the separate PWB
-behavioral amendment on 2026-09-02; neither is a foundational offering.
-`.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` exists since the
-first act and owns every performed act. The nine still-open foundational
-offerings remain open: deferred Waves C1/C2/D1/D2, CC-TEST-2, topology,
-overview, D3, and **P-12 knowledge hygiene** as the ninth.
+A, Wave B, and craft acts 6 + 7.
+
+- A separate indivisible five-row amendment transaction was performed on
+  2026-09-01, followed by the separate PWB behavioral amendment on
+  2026-09-02; neither is a foundational offering.
+- `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` exists since the
+  first act and owns every performed act.
+- The nine still-open foundational offerings remain open: deferred Waves
+  C1/C2/D1/D2, CC-TEST-2, topology, overview, D3, and **P-12 knowledge
+  hygiene** as the ninth.
 
 ## Gates already closed
+
+Every gate below is closed; each row names what closed it.
 
 | Gate | State | Owning record |
 |---|---|---|
@@ -198,6 +257,8 @@ overview, D3, and **P-12 knowledge hygiene** as the ninth.
 
 ## Gates still open, beyond the launch path
 
+These gates remain open; none of them is on the launch path.
+
 | Gate | State | Owning record |
 |---|---|---|
 | Craft amendment CC-TEST-2 | Awaiting confirmation at the current digest | `INSTALL-RECORD.md` **2026-08-06** correction block |
@@ -209,10 +270,10 @@ overview, D3, and **P-12 knowledge hygiene** as the ninth.
 
 ## Next lawful step
 
-The PWB behavioral amendment, the three effect-specific acts and the
+Project-wide Polaris implementation is now the lawful next work, because the
+PWB behavioral amendment, the three effect-specific acts and the
 implementation authorization are all signed for the one Butlers project-shape
-content class. Project-wide Polaris implementation is now the lawful next
-work, in this order:
+content class. The order:
 
 1. Implementation follows `docs/PWB-IMPLEMENTATION-PLAN.md` (plan bead
    closed 2026-09-03): slices P1–P8 mapped to the bounded Beads backlog under
@@ -227,10 +288,22 @@ work, in this order:
 4. Add write, egress, execution, deployment, release, recovery, or mission
    authorization only if that effect is actually requested; none is today.
 
+How step 2 gates the first Butlers body read:
+
+```mermaid
+flowchart LR
+    A["Three effect acts<br/>consent · secret policy · registry entry<br/>(warrants, not evidence)"] --> E{"Implementation evaluates<br/>them under PWB-REQ-005"}
+    E -->|any act invalid| F["Fail closed — no read"]
+    E -->|all valid| R["Body read, only inside<br/>declared-project-shape-text<br/>and the approved secret policy"]
+```
+
 RFC 0010/0011 and the nine still-open foundational
 offerings — including P-12 knowledge hygiene — remain candidate/open.
 
 ## How to verify this page
+
+Run the block below from the repository root and read each check's own
+output; it is the canonical battery.
 
 ```sh
 python3 scripts/check_governance.py

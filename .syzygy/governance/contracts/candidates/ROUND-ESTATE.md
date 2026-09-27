@@ -26,40 +26,59 @@ them are easy to get wrong:
   contents.** `round-2026-08g` took two files seventeen days after it closed.
 - **"Historical" never means "safe to relocate."** Two round files are live
   inputs to running software; both are named below.
-- **96 Markdown round files carry no status word at their head** — none of
-  *historical*, *superseded*, *candidate*, *never authority*,
-  *non-authoritative* or *not authority* anywhere in their first fifteen
-  lines, matched case-insensitively. Those six literals and that window are
-  the whole predicate; a sweep using a different window, or that word set
-  minus its last two, gets a different number — dropping them gives 118.
-  The denominator does not matter here, which is why the headline no longer
-  carries one: the figure is 96 over the 234 Markdown round work files, 96
-  over the 245 `.md` files under the eleven directories, and 96 over the 235
-  that existed before the ten new READMEs, because every one of the eleven
-  READMEs carries a status word [Observed — re-swept 2026-09-06 at commit
-  `9ca96c2` over all three populations]. Every round directory now has a
-  `README.md` saying the round is closed, but those 96 file heads are
-  unchanged. Read the `round-*` path itself as the banner.
+- **96 Markdown round files carry no status word at their head.**
+  - **The predicate:** none of *historical*, *superseded*, *candidate*,
+    *never authority*, *non-authoritative* or *not authority* anywhere in
+    their first fifteen lines, matched case-insensitively.
+    - Those six literals and that window are the whole predicate; a sweep
+      using a different window, or that word set minus its last two, gets a
+      different number — dropping them gives 118.
+  - **The denominator does not matter here,** which is why the headline no
+    longer carries one: the figure is 96 over the 234 Markdown round work
+    files, 96 over the 245 `.md` files under the eleven directories, and 96
+    over the 235 that existed before the ten new READMEs, because every one
+    of the eleven READMEs carries a status word [Observed — re-swept
+    2026-09-06 at commit `9ca96c2` over all three populations].
+  - Every round directory now has a `README.md` saying the round is closed,
+    but those 96 file heads are unchanged. Read the `round-*` path itself as
+    the banner.
 
-  **The 96 is not a to-do list, and it is mostly not actionable by anyone**
-  [Observed — swept 2026-09-06 under the predicate above, then each of the 22
-  non-review files hashed and its digest searched across all tracked
-  `.syzygy/**` and `openspec/**`]. **74 of the 96** sit inside a round's
-  `reviews/` subdirectory and are raw reviewer output, which CC-REV-6 stores
-  unchanged — no owner authorization reaches them, because the rule that
-  protects them is not about authority. **Two more are digest-bound:**
-  `round-2026-08/OWNER-ROUND-CHARTER.md`, whose digest its own round README
-  and `round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md` both carry, and
-  `round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md`, which in-force
-  **CC-IMPACT-7** pins by path *and* digest for a blind exercise. **One more
-  is byte-checked by CI:** `round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.md`
-  is regenerated from its sibling JSON and compared, so a banner in it fails
-  `.github/workflows/governance-docs.yml`. That leaves **19** files that a
-  head-banner act could lawfully reach, out of a figure reading 96. Anyone
-  weighing that act should weigh 19 edits against eleven directory READMEs
-  that already exist — which is why `syzygy-3zi` closed on arm (a).
+**The 96 is not a to-do list, and it is mostly not actionable by anyone**
+[Observed — swept 2026-09-06 under the predicate above, then each of the 22
+non-review files hashed and its digest searched across all tracked
+`.syzygy/**` and `openspec/**`]. Only 19 of the 96 are files a head-banner
+act could lawfully reach.
+
+- **74 of the 96** sit inside a round's `reviews/` subdirectory and are raw
+  reviewer output, which CC-REV-6 stores unchanged — no owner authorization
+  reaches them, because the rule that protects them is not about authority.
+- **Two more are digest-bound:**
+  - `round-2026-08/OWNER-ROUND-CHARTER.md`, whose digest its own round
+    README and `round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md` both carry;
+  - `round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md`, which in-force
+    **CC-IMPACT-7** pins by path *and* digest for a blind exercise.
+- **One more is byte-checked by CI:**
+  `round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.md` is regenerated from its
+  sibling JSON and compared, so a banner in it fails
+  `.github/workflows/governance-docs.yml`.
+- **That leaves 19** files that a head-banner act could lawfully reach, out
+  of a figure reading 96.
+  - Anyone weighing that act should weigh 19 edits against eleven directory
+    READMEs that already exist — which is why `syzygy-3zi` closed on arm
+    (a).
+
+```mermaid
+flowchart LR
+    U["96 unbannered<br/>Markdown heads"] --> R["74 raw reviewer output<br/>under reviews/ — CC-REV-6"]
+    U --> B["2 digest-bound"]
+    U --> CI["1 byte-checked by CI"]
+    U --> L["19 a head-banner act<br/>could lawfully reach"]
+```
 
 ## The eleven rounds
+
+The table names where each round's settlement lives now, and says
+**Nowhere current** or **Still open** where that is the answer.
 
 | Round | Span | Files | What it settled | Where that settlement lives now |
 |---|---|---|---|---|
@@ -76,6 +95,9 @@ them are easy to get wrong:
 | `round-2026-08k` | 08-20 → 08-21 | 8 | The Capability 1 specification adoption and implementation-authorization acts, prepared and bound; five fresh-context reviews | `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md` and `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`, both in force. The two `*-PREPARED.md` files here are literally the packets those acts performed from |
 
 ## One finding that outlived the packet it was routed to
+
+One round-08c finding — intra- versus inter-facet rollup — lost its route
+when its packet was struck, and no record says it was answered.
 
 Round `2026-08c` recorded its own sharpest unrepaired finding — facets permit
 **intra**-facet rollup and forbid **inter**-facet rollup, with no stated
@@ -98,7 +120,8 @@ concluding either way; do not treat this paragraph as the disposition.
 
 ## The two round files that running software reads
 
-Neither may be moved, renamed or deleted without breaking something.
+Two round files are read by running software, so neither may be moved,
+renamed or deleted without breaking something.
 
 - **`round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json`** — a live CI input.
   `.github/workflows/governance-docs.yml` invokes
@@ -109,19 +132,24 @@ Neither may be moved, renamed or deleted without breaking something.
   answer key — named **by path and by SHA-256** inside CC-IMPACT-7, an
   in-force craft clause
   (`policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md`, the fenced
-  block under the clause head). Note the trap: fixture **3** exists in the same
-  directory and supersedes fixture 2 on the merits — fixture 2 left
-  `topology[]` unexercised — but the clause names fixture 2, and neither the
-  clause nor the fixture may be edited to say otherwise.
+  block under the clause head).
+  - **The trap:** fixture **3** exists in the same directory and supersedes
+    fixture 2 on the merits — fixture 2 left `topology[]` unexercised — but
+    the clause names fixture 2, and neither the clause nor the fixture may be
+    edited to say otherwise.
 
-Rounds `h` through `k` are additionally cited as evidence by acts in force.
-Before treating any round file as inert, sweep for citers by filename across
-`git ls-files` — not by directory name, and not by the word "historical".
+**Beyond those two:**
+
+- Rounds `h` through `k` are additionally cited as evidence by acts in force.
+- Before treating any round file as inert, sweep for citers by filename
+  across `git ls-files` — not by directory name, and not by the word
+  "historical".
 
 ## How many files are in here
 
 Four figures for this one population are in circulation, and all four are
-right about different things. The derivation, so no page has to guess:
+right about different things; the table derives each, so no page has to
+guess.
 
 | Figure | What it counts |
 |---|---|
@@ -141,6 +169,9 @@ the two in the next section, which were re-derived here today and were already
 wrong by four when first published, for the reason that section gives.
 
 ## What no longer has a reader
+
+The uncited figure below is a sweep result at a named commit, not a fact
+about the estate; nothing here may be deleted or relocated by an agent.
 
 **82 of the 237 round work files are named by no other non-round tracked
 file** [Observed — re-swept 2026-09-06 at commit `2342724`: every non-README
@@ -210,19 +241,25 @@ agree exactly once the tree is held fixed — which is the second method rule 2
 asks for, and is the reason the figure above is stated as a sweep and not as a
 fact about the estate.
 
-Two cautions on that figure, in both directions. It counts **filename**
-citation only, so a file whose findings were absorbed into a successor's prose
-counts as uncited while its content lives on — which is what happened to most
-of 08e's nineteen, the per-instrument-version raw reviews that the closure
-reports summarise without ever naming. And it says nothing about whether a
-file *should* have a reader: a raw reviewer file is stored verbatim precisely
-so that nobody has to cite it for it to remain evidence (CC-REV-6).
+Two cautions on that figure, in both directions:
+
+- **It counts filename citation only,** so a file whose findings were
+  absorbed into a successor's prose counts as uncited while its content lives
+  on — which is what happened to most of 08e's nineteen, the
+  per-instrument-version raw reviews that the closure reports summarise
+  without ever naming.
+- **It says nothing about whether a file *should* have a reader:** a raw
+  reviewer file is stored verbatim precisely so that nobody has to cite it
+  for it to remain evidence (CC-REV-6).
 
 **Nothing here may be deleted or relocated by an agent.** These files sit in
 the governed plane; disposing of them is an owner decision, and the open
 question is queued in `decisions/DOCUMENTATION-ESTATE-DECISION-PACKET.md`.
 
 ## Where the durable lessons went
+
+Every round's transferable lesson lives in `decisions/PROCESS-LESSONS.md`;
+open a round only to check what paid for a lesson.
 
 Rounds discover rules; rules outlive rounds. Every round's transferable
 lesson — the thing that changes how the *next* piece of work is done — belongs
