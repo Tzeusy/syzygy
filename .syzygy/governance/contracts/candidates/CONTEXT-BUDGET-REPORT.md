@@ -15,7 +15,7 @@
 > object from a waiver against one that does (review RC-12 §5), and
 > every row below says `candidate budget exception`, never `waiver`.
 
-**As-of commit:** `bb9ecea9eff20c079261b983f39b80fe32d9f170`  *(plus uncommitted working-tree edits at generation time)*
+**As-of commit:** `53ac7b5da33ddb2dea33e3c85e39c5d312f54ab7`  *(plus uncommitted working-tree edits at generation time)*
 
 This file is regenerated in the *same change* that moves any measured
 file. Two independent currency tests exist and neither is this line:
@@ -33,11 +33,11 @@ the *measurement*, never the *selection*.
 | Fixture | Files | Words | Est. tokens (×1.35) | Disposition vs the proposed trigger | Packet digest |
 |---|---:|---:|---:|---|---|
 | `context-selection-1-polaris-narrative.md` | 5 | 15,218 | 20,544 | **above the proposed trigger** by 2.7% | `8079198e75183fcd…` |
-| `context-selection-10-trajectory-lifecycle.md` | 12 | 39,608 | 53,471 | **above the proposed trigger** by 167.4% | `eec0717d6a11548e…` |
+| `context-selection-10-trajectory-lifecycle.md` | 12 | 40,051 | 54,069 | **above the proposed trigger** by 170.3% | `bed2a2b12ae23ca1…` |
 | `context-selection-2-trajectory-adapter.md` | 8 | 19,921 | 26,893 | **above the proposed trigger** by 34.5% | `2ab80354e3751f45…` |
 | `context-selection-3-orrery-lens.md` | 5 | 15,899 | 21,464 | **above the proposed trigger** by 7.3% | `6f39c530e1eada2d…` |
 | `context-selection-4-execution-profile.md` | 6 | 11,842 | 15,987 | above the proposed default band, under the proposed trigger | `3df58957f651580c…` |
-| `context-selection-5-cross-project-mission.md` | 11 | 22,059 | 29,780 | **above the proposed trigger** by 48.9% | `62c79ff4ddd3da95…` |
+| `context-selection-5-cross-project-mission.md` | 11 | 24,529 | 33,114 | **above the proposed trigger** by 65.6% | `4f30a1317d7ecb31…` |
 | `context-selection-6-doctrine-amendment.md` | 6 | 13,057 | 17,627 | above the proposed default band, under the proposed trigger | `98649eefd662e5d0…` |
 | `context-selection-7-kernel-identity.md` | 5 | 17,522 | 23,655 | **above the proposed trigger** by 18.3% | `774620f7a714a1cc…` |
 | `context-selection-8-openspec-authoring.md` | 6 | 25,607 | 34,569 | **above the proposed trigger** by 72.8% | `c5b4f6039e3aeeed…` |
@@ -80,7 +80,7 @@ printed at the foot of §5.
 
 ### `context-selection-10-trajectory-lifecycle.md`
 
-- **Measured:** 39,608 words ≈ 53,471 estimated tokens — 167.4% above the proposed trigger.
+- **Measured:** 40,051 words ≈ 54,069 estimated tokens — 170.3% above the proposed trigger.
 - **Reason:** The undivided lifecycle warrant spans kernel work identity (RFC-0001, indivisible), all three planes of the work surface (RFC-0008 in full), the mission-side reservation/release seam (RFC-0010 module 3), the state vocabularies and record envelope the chain joins on, and the surface-selection contract every rendering obeys. Every file answers a clause the warrant's own text names. The size is a property of the warrant's breadth, not of padding
 - **Scope:** Amendments spanning the **whole** work-item lifecycle seam — identity + dispatch + materialization + accounting + release together, for mission-spawned work. A warrant touching only one segment takes the matching shard below instead
 - **Reviewer:** **Unassigned.** This fixture is new at round-2026-08d; independent review is owed at the round's review pass, and this row says so rather than borrowing a signature from a review that never saw it
@@ -107,7 +107,7 @@ printed at the foot of §5.
 
 ### `context-selection-5-cross-project-mission.md`
 
-- **Measured:** 22,059 words ≈ 29,780 estimated tokens — 48.9% above the proposed trigger.
+- **Measured:** 24,529 words ≈ 33,114 estimated tokens — 65.6% above the proposed trigger.
 - **Reason:** A mission draft must state, in the artifact itself, every dimension the RFC-0010 package defines — identity and pinned inputs (module 1), the envelope and its attention posture (module 2), budget reservation under the six-quantity model (module 3), stop conditions and effect/recovery duties (module 4), and the two-project consent plane (module 5). Dropping a module drops the defining text of a section the drafter must write. The packet-provenance module and the act machinery are what make the draft's obligations and its approval honorable
 - **Scope:** Drafting a cross-project mission and its envelope for owner approval. Does **not** cover: the approval ceremony itself; single-project missions (module 5 may then be omitted and the packet re-measured); mission *operation* tasks, which are inadmissible until the D3 precondition clears (RFC10-24)
 - **Reviewer:** **Unassigned.** This selection was re-derived 2026-08-08 after the owner-ordered RFC-0010/0011 package split; the RC-12 waiver review covered other fixtures and never this one. Independent review is owed at the round's review pass and this row says so rather than borrowing a signature
@@ -143,7 +143,7 @@ printed at the foot of §5.
 
 ## 3. Contract modules — the corpus this budget is spent on
 
-**39 modules, 119,714 words.** The 7,000-word per-module
+**39 modules, 122,391 words.** The 7,000-word per-module
 ceiling and the 35–50k corpus target band are the compaction charter's,
 recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`; both are
 candidate figures under the same non-installed policy as §1's trigger.
@@ -180,15 +180,15 @@ candidate figures under the same non-installed policy as §1's trigger.
 | `rfcs/RFC-0009/interaction-parity-and-release.md` | 3,514 | — |
 | `rfcs/RFC-0009/semantic-geography.md` | 7,869 | **yes** |
 | `rfcs/RFC-0009/visual-grammar-and-lenses.md` | 6,088 | — |
-| `rfcs/RFC-0010/README.md` | 1,504 | — |
-| `rfcs/RFC-0010/budget-reservation.md` | 1,627 | — |
-| `rfcs/RFC-0010/effects-recovery-and-stop.md` | 2,817 | — |
-| `rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md` | 1,772 | — |
-| `rfcs/RFC-0010/portfolio-and-cross-project-consent.md` | 684 | — |
-| `rfcs/RFC-0010/prevention-envelope-and-attention.md` | 2,511 | — |
-| `rfcs/RFC-0011/README.md` | 1,385 | — |
-| `rfcs/RFC-0011/deterministic-selection-and-budget.md` | 1,314 | — |
-| `rfcs/RFC-0011/packet-identity-provenance-and-memory.md` | 1,362 | — |
+| `rfcs/RFC-0010/README.md` | 1,733 | — |
+| `rfcs/RFC-0010/budget-reservation.md` | 1,841 | — |
+| `rfcs/RFC-0010/effects-recovery-and-stop.md` | 3,291 | — |
+| `rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md` | 2,285 | — |
+| `rfcs/RFC-0010/portfolio-and-cross-project-consent.md` | 869 | — |
+| `rfcs/RFC-0010/prevention-envelope-and-attention.md` | 2,944 | — |
+| `rfcs/RFC-0011/README.md` | 1,576 | — |
+| `rfcs/RFC-0011/deterministic-selection-and-budget.md` | 1,521 | — |
+| `rfcs/RFC-0011/packet-identity-provenance-and-memory.md` | 1,593 | — |
 
 ## 4. What this report deliberately does not contain
 

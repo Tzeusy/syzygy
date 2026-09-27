@@ -25,6 +25,15 @@ Rationale, amendment history, and violation cases:
 
 **Serves:** VIS-4, VIS-5; SEC-1, SEC-2.
 
+*Orientation (non-normative; the clauses govern).* This module draws two
+lines no mission may cross. Portfolio governance lives in a typed workspace
+governance store whose writ ends at scheduling, budget, and attention policy
+and never reaches project-internal truth (**RFC10-15**). A composite
+assembled under any mission is subject to the egress-consent record of every
+project whose content it embeds, keyed on the content rather than on the
+mission's declared target, and fails closed where any is missing or ineffective
+(**RFC10-21**).
+
 ## 1. Scope of this module
 
 The portfolio authority plane and its hard boundary against project-internal
@@ -37,49 +46,66 @@ level, may cross.
 
 **RFC10-15.** **Portfolio authority is a distinct plane.** A cross-project
 mission never makes one project authoritative over another. Portfolio-level
-governance — workspace missions, portfolio priorities, global and
-per-project budgets, fleet capacity and concurrency, project
-pause/maintenance-only modes, cross-project attention and scheduling
-policy — lives in a typed, platform-level **workspace governance store**,
-distinct from the presentation-only workspace manifest (which remains
-personal presentation state, RFC 0003). The store's entries that authorize
-anything are RFC3-16(a) artifacts. The store **must never become
-authoritative for project-internal doctrine, contracts, specifications, or
-behavior** — its writ ends at scheduling, budget, and attention policy.
-Where the writ's own enumeration (per-project budgets, pause and
-maintenance-only modes) meets that prohibition, **the prohibition wins**:
-pausing a project means Syzygy refuses to schedule against it, and never
-mutates project-internal state or status. Its concrete home and schema are
-deferred (§8 q3) — and minting the store is an authority-plane widening
-that requires an RFC3-15-style recorded owner widening, not merely a
-schema decision.
+governance — workspace missions, portfolio priorities, global and per-project
+budgets, fleet capacity and concurrency, project pause/maintenance-only modes,
+cross-project attention and scheduling policy — lives in a typed,
+platform-level **workspace governance store**, distinct from the
+presentation-only workspace manifest (which remains personal presentation
+state, RFC 0003). The store's entries that authorize anything are RFC3-16(a)
+artifacts.
+
+The store **must never become authoritative for project-internal doctrine,
+contracts, specifications, or behavior** — its writ ends at scheduling,
+budget, and attention policy. Where the writ's own enumeration (per-project
+budgets, pause and maintenance-only modes) meets that prohibition, **the
+prohibition wins**: pausing a project means Syzygy refuses to schedule against
+it, and never mutates project-internal state or status.
+
+Its concrete home and schema are deferred (§8 q3) — and minting the store is
+an authority-plane widening that requires an RFC3-15-style recorded owner
+widening, not merely a schema decision.
 
 **RFC10-21. Cross-project composites carry every embedded project's consent
 requirement.** A context packet, prompt, summary, embedding, or any other
-composite assembled **under any mission** is
-subject, at the RFC5-15 choke point, to the egress-consent record of **every
-project whose content it embeds** — not one of them, never the project
-the composing step names for itself, and **regardless of how many projects the
-mission's declared target names**. The predicate is a property of the
-*content*, not of the mission's scope declaration: a mission declared against
-project A alone, whose envelope grants a path containing project B's checkout
-and whose composite embeds B's content, is squarely inside this clause. Keying
-the rule on declared scope would let the composing party choose whether the
-rule applies by choosing how to declare its own target — the party the rule
-exists to bind. A composite embedding content from a
-project for which the naming (project, provider) consent is absent, not in
-force, or lacks an effective exact-digest owner act under RFC3-16(a) **fails
-closed and the refusal renders**, exactly as an undeterminable content class
-does (RFC5-14); so does a composite whose embedded content cannot be
-attributed to a project of origin at all. State (1) and state (2) consent acts
-are both effective, and the exact provenance state is rendered at the refusal
-or transmission decision.
-Evidence gathered
-within one project never satisfies a completion predicate scoped to another.
-Where the workspace governance store's per-project budget and an envelope's
-budget both bind (RFC10-15, RFC10-7), **the lesser binds**, and a portfolio
-mission's spend against a project is debited from that project's budget as
-well as the mission's.
+composite assembled **under any mission** is subject, at the RFC5-15 choke
+point, to the egress-consent record of **every project whose content it
+embeds** — not one of them, never the project the composing step names for
+itself, and **regardless of how many projects the mission's declared target
+names**.
+
+The predicate is a property of the *content*, not of the mission's scope
+declaration: a mission declared against project A alone, whose envelope grants
+a path containing project B's checkout and whose composite embeds B's content,
+is squarely inside this clause. Keying the rule on declared scope would let
+the composing party choose whether the rule applies by choosing how to declare
+its own target — the party the rule exists to bind.
+
+A composite embedding content from a project for which the naming (project,
+provider) consent is absent, not in force, or lacks an effective exact-digest
+owner act under RFC3-16(a) **fails closed and the refusal renders**, exactly
+as an undeterminable content class does (RFC5-14); so does a composite whose
+embedded content cannot be attributed to a project of origin at all. State (1)
+and state (2) consent acts are both effective, and the exact provenance state
+is rendered at the refusal or transmission decision.
+
+Evidence gathered within one project never satisfies a completion predicate
+scoped to another. Where the workspace governance store's per-project budget
+and an envelope's budget both bind (RFC10-15, RFC10-7), **the lesser binds**,
+and a portfolio mission's spend against a project is debited from that
+project's budget as well as the mission's.
+
+*Diagram (non-normative; the clauses govern):* the consent predicate of
+RFC10-21 at the RFC5-15 choke point — keyed on the projects whose content a
+composite embeds, and failing closed.
+
+```mermaid
+flowchart TD
+    C["composite assembled under any mission<br/>(context packet, prompt, summary, embedding, …)"] --> P["every project whose content it embeds<br/>(keyed on content, not on the declared target;<br/>never only the project the composing step names)"]
+    P --> Q{"for each embedded project: the (project, provider)<br/>consent is present, in force, and carries an effective<br/>exact-digest owner act under RFC3-16(a)?"}
+    Q -->|"no, for any one project"| R["fails closed; the refusal renders"]
+    C --> U{"embedded content attributable<br/>to a project of origin?"}
+    U -->|"no"| R
+```
 
 ## 8. Owner questions
 

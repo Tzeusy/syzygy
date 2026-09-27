@@ -30,14 +30,25 @@ package at rev12 with clause text preserved verbatim. **Amendment history,
 rationale, and violation cases:** `../../history/RFC-0010-history.md`
 (non-normative).
 
+*Orientation (non-normative; the clauses govern).* This package governs
+Mission Control: how a human approves one bounded mission, the autonomy
+envelope agent fleets then run inside and can never widen, how budget,
+completion, effects, recovery and stop are handled, and how human attention
+and portfolio authority are bounded. To find a clause, take the one row of
+the clause map below whose clause list contains it; clause numbers are not
+contiguous per module, and a lettered sub-clause lives with its parent.
+Absent an owner-act record the package binds nothing, and RFC10-16 makes it
+no specification of record from which implementation work may be scheduled.
+
 ## Clause map and lookup rule
 
-**Every clause identity appears in exactly one module.** One `RFC10-n`
-namespace, no duplicated normative clauses, no renumbering. Clause numbers
-are **not contiguous per module**: the package was split along the
-prevention/correction seam after the clauses were numbered, and clause
-identities are never renumbered, so the map below — not range arithmetic —
-is the lookup authority.
+**Every clause identity appears in exactly one module.**
+
+- One `RFC10-n` namespace, no duplicated normative clauses, no renumbering.
+- Clause numbers are **not contiguous per module**: the package was split
+  along the prevention/correction seam after the clauses were numbered, and
+  clause identities are never renumbered, so the map below — not range
+  arithmetic — is the lookup authority.
 
 | Module | File | Clauses |
 |---|---|---|
@@ -47,28 +58,53 @@ is the lookup authority.
 | 4 — completion adjudication, effects, recovery, stop | `effects-recovery-and-stop.md` | RFC10-18, RFC10-18(a), RFC10-19, RFC10-19(a), RFC10-20, RFC10-23 |
 | 5 — portfolio authority, cross-project consent | `portfolio-and-cross-project-consent.md` | RFC10-15, RFC10-21 |
 
-**Lookup rule (deterministic).** For any citation `RFC10-n`, find the one
-row of the table whose clause list contains it; lettered sub-clauses live
-with their parents. The table is exhaustive over RFC10-1…RFC10-24 with no
-gaps and no duplicates. Modules are numbered for reading order only —
-citations name clauses, never modules or sections.
+**Lookup rule (deterministic).** For any citation `RFC10-n`, find the one row
+of the table whose clause list contains it; lettered sub-clauses live with
+their parents.
 
-**The two planes, and the acceptance seam.** Modules 1, 2, 3 and 5 are the
-**prevention plane**: they make out-of-envelope Syzygy-mediated acts
-impossible before they happen — including spend, which module 3 bounds by
-reservation at dispatch. Module 4 is the **correction plane**: what happens
-after something goes wrong — adjudication, compensation, recovery, stop.
-The two planes are independently acceptable: a propose-only mission posture
-(RFC10-7's cap) is safe under the prevention plane alone, because the only
-effects it can cause are drafts inside the two governed namespaces,
-consented provider disclosure, and reserved spend — each bounded by modules
-1–3 and 5. Effect-bearing autonomy levels are inoperative until the
-correction plane is accepted *and* the autonomy-level vocabulary is
-enumerated by owner act. Cross-module references from the prevention plane
-into module 4 (the release table's recovery hooks, RFC10-18 naming in
-lifecycle text) are **staged references**: they bind when module 4 is
-accepted and, until then, mark duties that cannot yet arise because no
-effect class that would trigger them is authorized.
+- The table is exhaustive over RFC10-1…RFC10-24 with no gaps and no
+  duplicates.
+- Modules are numbered for reading order only — citations name clauses, never
+  modules or sections.
+
+**The two planes, and the acceptance seam.**
+
+- Modules 1, 2, 3 and 5 are the **prevention plane**: they make
+  out-of-envelope Syzygy-mediated acts impossible before they happen —
+  including spend, which module 3 bounds by reservation at dispatch.
+- Module 4 is the **correction plane**: what happens after something goes
+  wrong — adjudication, compensation, recovery, stop.
+- The two planes are independently acceptable: a propose-only mission posture
+  (RFC10-7's cap) is safe under the prevention plane alone, because the only
+  effects it can cause are drafts inside the two governed namespaces,
+  consented provider disclosure, and reserved spend — each bounded by modules
+  1–3 and 5.
+- Effect-bearing autonomy levels are inoperative until the correction plane is
+  accepted *and* the autonomy-level vocabulary is enumerated by owner act.
+- Cross-module references from the prevention plane into module 4 (the release
+  table's recovery hooks, RFC10-18 naming in lifecycle text) are **staged
+  references**: they bind when module 4 is accepted and, until then, mark
+  duties that cannot yet arise because no effect class that would trigger them
+  is authorized.
+
+*Diagram (non-normative; the clauses govern):* the five modules on the two
+planes, and the staged references from modules 1, 2 and 3 into module 4.
+
+```mermaid
+flowchart LR
+    subgraph PREV["prevention plane"]
+        M1["module 1<br/>platform boundary, mission identity,<br/>approval, lifecycle"]
+        M2["module 2<br/>autonomy envelope, guardrail runtime,<br/>attention"]
+        M3["module 3<br/>budget reservation and release"]
+        M5["module 5<br/>portfolio authority,<br/>cross-project consent"]
+    end
+    subgraph CORR["correction plane"]
+        M4["module 4<br/>completion adjudication, effects,<br/>recovery, stop"]
+    end
+    M1 -.->|"staged references:<br/>bind when module 4 is accepted"| M4
+    M2 -.-> M4
+    M3 -.-> M4
+```
 
 Module sizes are deliberately not stated here; the current measurement
 lives in the generated budget report `../../CONTEXT-BUDGET-REPORT.md`,
@@ -78,32 +114,44 @@ which is regenerated, never transcribed.
 
 A human approves one bounded **Mission**; agent fleets then plan, execute,
 verify, re-plan, and recover inside an approved **autonomy envelope** they can
-never widen, until the mission ends or a terminal condition fires. Mission
-Control is a workspace-level operator domain over the same one canonical
-Syzygy service and semantic API that serves Polaris, Trajectory and Orrery —
-**not** a fourth project truth surface. Human attention arrives as
-decision-ready **Attention Items**, never event streams. Portfolio authority
-lives in a typed **workspace governance store** that can never override
-project-internal truth.
+never widen, until the mission ends or a terminal condition fires.
+
+- **Not a truth surface.** Mission Control is a workspace-level operator
+  domain over the same one canonical Syzygy service and semantic API that
+  serves Polaris, Trajectory and Orrery — **not** a fourth project truth
+  surface.
+- **Decisions, not streams.** Human attention arrives as decision-ready
+  **Attention Items**, never event streams.
+- **Portfolio authority is walled off.** Portfolio authority lives in a typed
+  **workspace governance store** that can never override project-internal
+  truth.
 
 ## 1. Summary
 
-This package fixes: the platform boundary (one service, one semantic API,
-many clients — RFC10-1..3); Mission identity and lifecycle (RFC10-4..6); the
-autonomy envelope and the no-self-widening rule (RFC10-7..9); the guardrail
-runtime as distinct from semantic correctness (RFC10-10..11); attention and
-escalation (RFC10-12..13); project-bound versus portfolio missions and the
-workspace governance store (RFC10-14..15); the OpenSpec phase rule
-(RFC10-16); budget reservation and release (RFC10-17, RFC10-17(a));
-independent completion adjudication and the independently established
-effects-applied determination (RFC10-18, RFC10-18(a)); effect reversibility,
-recovery and sibling disposition (RFC10-19, RFC10-19(a)); what stop
-guarantees (RFC10-20); cross-project consent composition (RFC10-21);
-attention-queue bounds (RFC10-22); separately recorded effect dimensions
-(RFC10-23); and the doctrine precondition on operation (RFC10-24). Autonomy
-level enumerations, lifecycle
-freeze, store schema, and all transport/language/packaging choices are
-explicitly deferred (§7, §8).
+This package fixes:
+
+- the platform boundary (one service, one semantic API, many clients —
+  RFC10-1..3);
+- Mission identity and lifecycle (RFC10-4..6);
+- the autonomy envelope and the no-self-widening rule (RFC10-7..9);
+- the guardrail runtime as distinct from semantic correctness (RFC10-10..11);
+- attention and escalation (RFC10-12..13);
+- project-bound versus portfolio missions and the workspace governance store
+  (RFC10-14..15);
+- the OpenSpec phase rule (RFC10-16);
+- budget reservation and release (RFC10-17, RFC10-17(a));
+- independent completion adjudication and the independently established
+  effects-applied determination (RFC10-18, RFC10-18(a));
+- effect reversibility, recovery and sibling disposition (RFC10-19,
+  RFC10-19(a));
+- what stop guarantees (RFC10-20);
+- cross-project consent composition (RFC10-21);
+- attention-queue bounds (RFC10-22);
+- separately recorded effect dimensions (RFC10-23); and
+- the doctrine precondition on operation (RFC10-24).
+
+Autonomy level enumerations, lifecycle freeze, store schema, and all
+transport/language/packaging choices are explicitly deferred (§7, §8).
 
 ## 2. Motivation and doctrine grounding
 
@@ -129,25 +177,24 @@ closes. They are non-normative teaching examples.
 
 ## 5. Integration
 
-- **RFC 0001:** Mission and Attention Item are identified entities;
-  relations (mission targets requirement, attention blocks work) carry
-  semantic classes, never planes.
+- **RFC 0001:** Mission and Attention Item are identified entities; relations
+  (mission targets requirement, attention blocks work) carry semantic classes,
+  never planes.
 - **RFC 0002:** completion predicates, guardrail decisions, and escalation
   facts are evidence; Unknown is first-class in attention packets.
-- **RFC 0003:** mission approval, envelope, and workspace-store
-  authorizations are RFC3-16(a) artifacts under the RFC3-16(c) two-state
-  model; mission homes follow RFC3-15 discipline.
+- **RFC 0003:** mission approval, envelope, and workspace-store authorizations
+  are RFC3-16(a) artifacts under the RFC3-16(c) two-state model; mission homes
+  follow RFC3-15 discipline.
 - **RFC 0005:** clients per RFC5-3/5/6; execution under RFC5-18 profiles;
   attribution per RFC5-25; consent/egress gates unbypassed (RFC10-6).
-- **RFC 0006:** mission and attention data are served by the same semantic
-  API with human/machine parity (RFC6-13/RFC6-14).
+- **RFC 0006:** mission and attention data are served by the same semantic API
+  with human/machine parity (RFC6-13/RFC6-14).
 - **RFC 0008:** missions materialize work; work states, dispatch, and
-  execution records remain RFC 0008's; lifecycle interaction reviewed
-  before freeze (RFC10-5). Mission views consume **two fields** — the
-  RFC8-12 normalized work state and the RFC8-28 chain state — never folded
-  into one; no mission aggregate renders a closed item as done absent
-  `reconciled@E` (RFC8-30), and `closed-unmerged` is never rendered as
-  complete.
+  execution records remain RFC 0008's; lifecycle interaction reviewed before
+  freeze (RFC10-5). Mission views consume **two fields** — the RFC8-12
+  normalized work state and the RFC8-28 chain state — never folded into one;
+  no mission aggregate renders a closed item as done absent `reconciled@E`
+  (RFC8-30), and `closed-unmerged` is never rendered as complete.
 - **RFC 0011:** every mission-spawned agent run receives a governed context
   packet; the envelope is a mandatory packet input.
 
@@ -160,24 +207,30 @@ of what the contract says.
 
 ## 6. Alternatives considered (summary; full rationale in the history file)
 
-A fourth truth surface ("Missions" beside Polaris/Trajectory/Orrery) —
-rejected: missions are operator authority over the same truth, not a new
-truth class. A project-local orchestrator script as the architecture —
-rejected by owner direction (OD-R10-1). Extending the workspace manifest
-into portfolio governance — rejected: presentation state and typed authority
-must not share one artifact (RFC10-15). Keeping the contract in one file —
-rejected at rev12: twenty-two clauses and three sub-clauses across two
-planes had reached the per-module word ceiling, every amendment displaced
-non-normative text, and the single file coupled the mature prevention plane
-to correction-plane findings still under repair; the split is the package
-convention seven of eleven contracts already follow.
+- A fourth truth surface ("Missions" beside Polaris/Trajectory/Orrery) —
+  rejected: missions are operator authority over the same truth, not a new
+  truth class.
+- A project-local orchestrator script as the architecture — rejected by owner
+  direction (OD-R10-1).
+- Extending the workspace manifest into portfolio governance — rejected:
+  presentation state and typed authority must not share one artifact
+  (RFC10-15).
+- Keeping the contract in one file — rejected at rev12: twenty-two clauses and
+  three sub-clauses across two planes had reached the per-module word ceiling,
+  every amendment displaced non-normative text, and the single file coupled
+  the mature prevention plane to correction-plane findings still under repair;
+  the split is the package convention seven of eleven contracts already
+  follow.
 
 ## 7. Deliberately deferred
 
-Autonomy-level enumeration; mission-lifecycle freeze (both to surface
-specification / OpenSpec review); workspace governance store home and
-schema; attention-queue SLA and batching policy; checkpoint format; fleet
-scheduling algorithms; all transport/language/packaging choices.
+- Autonomy-level enumeration; mission-lifecycle freeze (both to surface
+  specification / OpenSpec review);
+- workspace governance store home and schema;
+- attention-queue SLA and batching policy;
+- checkpoint format;
+- fleet scheduling algorithms;
+- all transport/language/packaging choices.
 
 ## 8. Open questions for acceptance
 

@@ -25,39 +25,55 @@ Rationale, amendment history, and violation cases:
 
 **Serves:** VIS-2 (Unknown spend is never zero spend), VIS-4; SEC-2.
 
+*Orientation (non-normative; the clauses govern).* This module decides how a
+mission's spend is bounded before anything goes wrong: no work is dispatched
+without reserving its declared maximum cost, a dispatch is admitted only
+where that cost is bound to an enforced limit, Unknown spend is treated as
+the bound reached, and every reservation has a stated release point. Two
+clauses carry the weight: **RFC10-17** (the six accounted quantities, the
+admission inequality, resource kinds, overrun, and who measures and sizes)
+and **RFC10-17(a)** (the release table).
+
 ## 1. Scope of this module
 
 Budget as **reservation bound to enforcement, not observation**: the six
-accounted quantities, the resource-kind classification that fixes what
-"hard" may honestly mean, the dispatch-time admission rule, independent
-spend measurement, and the release table that guarantees no reservation is
-held indefinitely (RFC10-17, RFC10-17(a)). This module is prevention-plane
-material: it bounds what a mission can consume before anything goes wrong.
-What happens *after* something goes wrong is module 4,
-`effects-recovery-and-stop.md`, which this module's release table names
-where a release depends on recovery duties having fired.
+accounted quantities, the resource-kind classification that fixes what "hard"
+may honestly mean, the dispatch-time admission rule, independent spend
+measurement, and the release table that guarantees no reservation is held
+indefinitely (RFC10-17, RFC10-17(a)).
+
+This module is prevention-plane material: it bounds what a mission can consume
+before anything goes wrong. What happens *after* something goes wrong is
+module 4, `effects-recovery-and-stop.md`, which this module's release table
+names where a release depends on recovery duties having fired.
 
 ## 2. The contract
 
 **RFC10-17. Budget is reserved, and reservation is enforcement, never
 accounting alone.** Every budget in an envelope is accounted in six distinct
-quantities: **authorized** (the owner act's figure), **reserved_remaining**
-(committed at dispatch to work not yet complete, and not yet consumed),
-**spent** (measured consumption), **released** (reserved-but-unspent,
-returned on completion or termination), **overrun** (spend exceeding what an
-enforced bound covers — see the residual rule below), and
-**recovery_reserve** (carved out of `authorized` at approval time — or, for
-a derived child mission, at grant time by the deriving record — and held
-undispatchable so that RFC10-19's compensating actions are fundable after an
-RFC10-11 exhaustion). **No work is dispatched without reserving its declared
-maximum cost against the envelope at dispatch time**, and the admission
-inequality is `reserved_remaining + spent ≤ authorized − recovery_reserve`,
-checked at every dispatch and conserved by every consumption event — the
-sibling-sum invariant RFC10-8 states for child missions, applied to every
-dispatch. The budget bound RFC10-11 fires on is `authorized −
-recovery_reserve`: work never dispatches into the reserve, and the reserve
-is spendable only by RFC10-19's compensating actions. Work whose maximum
-cost cannot be declared is not dispatchable under that budget.
+quantities:
+
+- **authorized** (the owner act's figure),
+- **reserved_remaining** (committed at dispatch to work not yet complete, and
+  not yet consumed),
+- **spent** (measured consumption),
+- **released** (reserved-but-unspent, returned on completion or termination),
+- **overrun** (spend exceeding what an enforced bound covers — see the
+  residual rule below), and
+- **recovery_reserve** (carved out of `authorized` at approval time — or, for
+  a derived child mission, at grant time by the deriving record — and held
+  undispatchable so that RFC10-19's compensating actions are fundable after an
+  RFC10-11 exhaustion).
+
+**No work is dispatched without reserving its declared maximum cost against
+the envelope at dispatch time**, and the admission inequality is
+`reserved_remaining + spent ≤ authorized − recovery_reserve`, checked at every
+dispatch and conserved by every consumption event — the sibling-sum invariant
+RFC10-8 states for child missions, applied to every dispatch. The budget bound
+RFC10-11 fires on is `authorized − recovery_reserve`: work never dispatches
+into the reserve, and the reserve is spendable only by RFC10-19's compensating
+actions. Work whose maximum cost cannot be declared is not dispatchable under
+that budget.
 
 **A reservation admits a dispatch only where it is bound to an enforced
 limit.** A dispatch is admitted only where its declared maximum cost is
@@ -74,9 +90,9 @@ atomically.** A declared maximum with no enforced limit admits nothing.
 honestly mean:**
 
 - **hard-enforceable** — a Syzygy choke point (the RFC5-21 launch gate, the
-  RFC5-15 egress gate) can refuse the act that would exceed the bound
-  *before it happens*. Only this kind supports autonomous dispatch without
-  further condition.
+  RFC5-15 egress gate) can refuse the act that would exceed the bound *before
+  it happens*. Only this kind supports autonomous dispatch without further
+  condition.
 - **provider-quota-enforceable** — an external provider enforces a
   provider-side limit at or below the delegated figure. Delegation requires
   the provider-side limit to be set, and its setting captured as evidence,
@@ -84,53 +100,61 @@ honestly mean:**
 - **monitoring-only** — consumption is measurable but not refusable at any
   choke point. A monitoring-only kind is never rendered as a hard bound and
   supports no autonomous dispatch on its own.
-- **non-delegable** — no enforcement point or no reliable measurement
-  exists. Consumption of this kind requires per-act human approval.
+- **non-delegable** — no enforcement point or no reliable measurement exists.
+  Consumption of this kind requires per-act human approval.
 
 A delegated budget may be called **hard** only where its kind is
 hard-enforceable or provider-quota-enforceable. For model-provider monetary
-spend: use a provider-side hard limit where available; otherwise cap the
-individual call and the remaining headroom at the launch/egress choke
-point; where neither is enforceable, the kind is non-delegable.
+spend:
+
+- use a provider-side hard limit where available;
+- otherwise cap the individual call and the remaining headroom at the
+  launch/egress choke point;
+- where neither is enforceable, the kind is non-delegable.
 
 **Where measured spend against a bound is Unknown (RFC8-19, RFC2-23), the
 bound is treated as reached**: the mission transitions per RFC10-11 and an
 Attention Item states the measurement gap — Unknown spend is never read as
 zero spend.
 
-**Overrun is a residual of the unmediated world, never a conforming
-mediated outcome.** Under this clause a Syzygy-mediated act cannot
-conformingly produce overrun: the act that would exceed an enforced limit
-is refused (RFC10-10). `overrun` remains a first-class recorded quantity
-because exactly three sources outside the mediated path can produce it:
-(i) effects on a declared unmediated effect surface (RFC10-18(a));
-(ii) measurement lag within a declared, bounded telemetry interval,
-disclosed per resource kind — lag defers knowledge of spend, never its
-ceiling, because the per-run enforced limit still bounds it; and (iii) a
-provider's violation of its own enforced limit. Every overrun is recorded
-as attributable evidence against the mission and mints its own Attention
-Item; an overrun from any other source, or a mission record showing a
-respected bound with unrecorded overrun, is a violation of this clause.
+**Overrun is a residual of the unmediated world, never a conforming mediated
+outcome.** Under this clause a Syzygy-mediated act cannot conformingly produce
+overrun: the act that would exceed an enforced limit is refused (RFC10-10).
+`overrun` remains a first-class recorded quantity because exactly three
+sources outside the mediated path can produce it:
 
-**Who measures, and who sizes.** `spent` is admitted from the execution
-record of a Syzygy-launched profiled run (RFC5-18, RFC4-18..RFC4-21; RFC5-21
-governs admissibility) or from an adapter-backed provider record (RFC 0004)
-— **never from a self-report by the principal whose spend it is**, on the
-same independence rule RFC10-18 states for completion. A principal's own
-figure is evidence, never the measurement: the Unknown rule above closes
-*absent* telemetry, and this limb closes *false* telemetry. The evidence
-tier of `spent` is the admitting record's own tier and is disclosed with
-the figure; where a cost is computed (token counts × rate table) it is
-Inferred and renders as such (VIS-2) — prevention rests on the enforced
-limit at the choke point, never on the ledger figure alone. The **declared
-maximum cost** sizing a reservation is declared by the envelope or by the
-dispatching authority, never by the worker being dispatched — **and the
-dispatching authority inside a running mission is itself a
-Mission-controlled component (RFC10-8), so its declaration binds only
-through the enforced limit the launch gate places on the run**: a run
-reaching its declared maximum is halted at the gate, not billed past it.
-Chronic under-declaration renders as a recorded pattern of
-halted-at-limit runs attributable to the declaring authority.
+- (i) effects on a declared unmediated effect surface (RFC10-18(a));
+- (ii) measurement lag within a declared, bounded telemetry interval,
+  disclosed per resource kind — lag defers knowledge of spend, never its
+  ceiling, because the per-run enforced limit still bounds it; and
+- (iii) a provider's violation of its own enforced limit.
+
+Every overrun is recorded as attributable evidence against the mission and
+mints its own Attention Item; an overrun from any other source, or a mission
+record showing a respected bound with unrecorded overrun, is a violation of
+this clause.
+
+**Who measures, and who sizes.**
+
+- `spent` is admitted from the execution record of a Syzygy-launched profiled
+  run (RFC5-18, RFC4-18..RFC4-21; RFC5-21 governs admissibility) or from an
+  adapter-backed provider record (RFC 0004) — **never from a self-report by
+  the principal whose spend it is**, on the same independence rule RFC10-18
+  states for completion. A principal's own figure is evidence, never the
+  measurement: the Unknown rule above closes *absent* telemetry, and this limb
+  closes *false* telemetry. The evidence tier of `spent` is the admitting
+  record's own tier and is disclosed with the figure; where a cost is computed
+  (token counts × rate table) it is Inferred and renders as such (VIS-2) —
+  prevention rests on the enforced limit at the choke point, never on the
+  ledger figure alone.
+- The **declared maximum cost** sizing a reservation is declared by the
+  envelope or by the dispatching authority, never by the worker being
+  dispatched — **and the dispatching authority inside a running mission is
+  itself a Mission-controlled component (RFC10-8), so its declaration binds
+  only through the enforced limit the launch gate places on the run**: a run
+  reaching its declared maximum is halted at the gate, not billed past it.
+  Chronic under-declaration renders as a recorded pattern of halted-at-limit
+  runs attributable to the declaring authority.
 
 **RFC10-17(a). Every reservation has a stated release point.** Reserved
 budget is *released* — returned to the envelope's available headroom, and for
@@ -152,15 +176,31 @@ quantity returned.
 | unrecoverable stop — RFC10-20 limb (b) not achieved | released at the stop record **except** for the runs that did not terminate, whose reservations are retained and **named individually**: a reservation may not be returned while the work it funds may still spend |
 
 **No non-terminal state holds a reservation indefinitely** — parked,
-pre-running, or otherwise. A runtime holding reservation past the
-applicable maximum violates this clause, and so does a mission record
-showing headroom that reserved work still holds. **`recovery_reserve` is
-sized, not merely present**: each compensating action an envelope names
-carries a **declared maximum cost** (RFC10-19), and `recovery_reserve` is
-not less than the sum of those declared maxima over every effect class the
-envelope permits; an envelope failing that inequality — including a
-derived child grant with no recovery_reserve of its own — authorizes no
-effect class that requires compensation.
+pre-running, or otherwise. A runtime holding reservation past the applicable
+maximum violates this clause, and so does a mission record showing headroom
+that reserved work still holds.
+
+**`recovery_reserve` is sized, not merely present**: each compensating action
+an envelope names carries a **declared maximum cost** (RFC10-19), and
+`recovery_reserve` is not less than the sum of those declared maxima over
+every effect class the envelope permits; an envelope failing that inequality —
+including a derived child grant with no recovery_reserve of its own —
+authorizes no effect class that requires compensation.
+
+*Diagram (non-normative; the clauses govern):* how the six quantities of
+RFC10-17 relate — where each figure comes from and where reserved budget
+goes.
+
+```mermaid
+flowchart LR
+    A["authorized<br/>(the owner act's figure)"] --> RR["recovery_reserve<br/>carved out at approval, or at grant<br/>for a derived child; undispatchable"]
+    A --> H["authorized − recovery_reserve<br/>(the bound RFC10-11 fires on)"]
+    H -->|"dispatch admitted only where<br/>reserved_remaining + spent ≤ authorized − recovery_reserve,<br/>bound to an enforced limit"| R["reserved_remaining"]
+    R -->|"each measured consumption event:<br/>same amount, atomically"| S["spent"]
+    R -->|"at the release points of RFC10-17(a)"| REL["released<br/>returned to the envelope's available headroom;<br/>for a child, to the parent's remaining envelope"]
+    RR -.->|"spendable only by"| C["RFC10-19 compensating actions"]
+    X["exactly three sources outside<br/>the mediated path"] --> O["overrun<br/>recorded; mints its own Attention Item"]
+```
 
 ---
 

@@ -30,40 +30,65 @@ bootstrap process artifact retained with the delivery packet). New at
 rev10 — no rev9 predecessor; split into a package at rev12 with clause text
 preserved verbatim.
 
+*Orientation (non-normative; the clauses govern).* This package governs the
+Context Compiler: every governed run receives a versioned, immutable,
+digest-bound Context Packet stating exactly what the agent saw and what
+applicable material was omitted and why, with mandatory context selected
+deterministically and never silently removed. To find a clause, take the
+one row of the clause map below whose clause list contains it; clause
+numbers are not contiguous per module. Absent an owner-act record the
+package binds nothing, and RFC11-12 makes it no specification of record
+from which implementation work may be scheduled.
+
 ## Clause map and lookup rule
 
-**Every clause identity appears in exactly one module.** One `RFC11-n`
-namespace, no duplicated normative clauses, no renumbering. Clause numbers
-are **not contiguous per module**: the package was split along the seam
-between what a packet *is* and how its mandatory content is *selected*,
-after the clauses were numbered, and clause identities are never
-renumbered, so the map below — not range arithmetic — is the lookup
-authority.
+**Every clause identity appears in exactly one module.**
+
+- One `RFC11-n` namespace, no duplicated normative clauses, no renumbering.
+- Clause numbers are **not contiguous per module**: the package was split
+  along the seam between what a packet *is* and how its mandatory content is
+  *selected*, after the clauses were numbered, and clause identities are never
+  renumbered, so the map below — not range arithmetic — is the lookup
+  authority.
 
 | Module | File | Clauses |
 |---|---|---|
 | 1 — packet identity, provenance, memory, profiles | `packet-identity-provenance-and-memory.md` | RFC11-1, RFC11-2, RFC11-3, RFC11-5, RFC11-6, RFC11-7, RFC11-8, RFC11-9, RFC11-10, RFC11-12 |
 | 2 — deterministic selection and budget | `deterministic-selection-and-budget.md` | RFC11-4, RFC11-11, RFC11-13, RFC11-14, RFC11-15, RFC11-16 |
 
-**Lookup rule (deterministic).** For any citation `RFC11-n`, find the one
-row of the table whose clause list contains it. The table is exhaustive over
-RFC11-1…RFC11-16 with no gaps and no duplicates. Modules are numbered for
-reading order only — citations name clauses, never modules or sections.
+**Lookup rule (deterministic).** For any citation `RFC11-n`, find the one row
+of the table whose clause list contains it.
 
-**The seam, and the acceptance boundary.** Module 1 fixes what a Context
-Packet **is** — its identity, immutability, execution-record binding, the
-mandatory/suggested distinction, the incomplete-is-Unknown rule, the
-no-second-truth-store rule, governed memory, agent profiles, and the phase
-rule. Module 1 **does not claim deterministic selection is solved**: a
-packet's honesty (exact inclusions, exact omissions, disclosed
-incompleteness) is contractually fixed even while the selection policy that
-fills it remains under repair. Module 2 fixes how the mandatory set is
-**derived** — the deterministic selection inputs and the budget posture —
-and is acceptable only when its rules can reproduce the blind golden
-selection fixtures. References from module 1 to module 2's selection
-semantics are staged until module 2 is accepted; until then a conforming
-packet is compiled against module 1's identity and disclosure duties with
-its selection basis stated.
+- The table is exhaustive over RFC11-1…RFC11-16 with no gaps and no
+  duplicates.
+- Modules are numbered for reading order only — citations name clauses, never
+  modules or sections.
+
+**The seam, and the acceptance boundary.**
+
+- Module 1 fixes what a Context Packet **is** — its identity, immutability,
+  execution-record binding, the mandatory/suggested distinction, the
+  incomplete-is-Unknown rule, the no-second-truth-store rule, governed memory,
+  agent profiles, and the phase rule. Module 1 **does not claim deterministic
+  selection is solved**: a packet's honesty (exact inclusions, exact
+  omissions, disclosed incompleteness) is contractually fixed even while the
+  selection policy that fills it remains under repair.
+- Module 2 fixes how the mandatory set is **derived** — the deterministic
+  selection inputs and the budget posture — and is acceptable only when its
+  rules can reproduce the blind golden selection fixtures.
+- References from module 1 to module 2's selection semantics are staged until
+  module 2 is accepted; until then a conforming packet is compiled against
+  module 1's identity and disclosure duties with its selection basis stated.
+
+*Diagram (non-normative; the clauses govern):* the seam between the two
+modules, and the staged references across it.
+
+```mermaid
+flowchart LR
+    M1["module 1: what a packet is<br/>identity, immutability, disclosure duties,<br/>governed memory, profiles, phase rule"]
+    M2["module 2: how the mandatory set is derived<br/>selection inputs and budget posture;<br/>acceptable only when its rules reproduce<br/>the blind golden selection fixtures"]
+    M1 -.->|"references to selection semantics<br/>staged until module 2 is accepted"| M2
+```
 
 Module sizes are deliberately not stated here; the current measurement
 lives in the generated budget report `../../CONTEXT-BUDGET-REPORT.md`,
@@ -71,29 +96,39 @@ which is regenerated, never transcribed.
 
 ## 0. Reader's summary (non-normative)
 
-No agent is ever told to "read all project documentation." Every governed
-run — mission, plan, work item, review, query task — receives a **Context
-Packet**: a versioned, immutable, digest-bound artifact stating exactly
-which doctrine rules, contract clauses, requirements, policies, evidence,
-decisions, and permissions the agent saw, what applicable material was
-omitted and why, and under which evaluation instant. Mandatory context is
-selected **deterministically** from graph and applicability rules; inference
-may suggest more, never silently remove. The packet digest lands in the
-resulting execution record, so "what did the agent know?" is answerable
-forever. Chat transcripts are not project memory; durable memory is
-governed artifacts.
+No agent is ever told to "read all project documentation." Every governed run
+— mission, plan, work item, review, query task — receives a **Context
+Packet**: a versioned, immutable, digest-bound artifact stating exactly which
+doctrine rules, contract clauses, requirements, policies, evidence, decisions,
+and permissions the agent saw, what applicable material was omitted and why,
+and under which evaluation instant.
+
+- **Selection.** Mandatory context is selected **deterministically** from
+  graph and applicability rules; inference may suggest more, never silently
+  remove.
+- **Provenance.** The packet digest lands in the resulting execution record,
+  so "what did the agent know?" is answerable forever.
+- **Memory.** Chat transcripts are not project memory; durable memory is
+  governed artifacts.
 
 ## 1. Summary
 
-This package fixes: packet identity and immutability (RFC11-1..3);
-deterministic selection semantics and the incompleteness rule (RFC11-4..7);
-governed memory boundaries (RFC11-8..9); the minimal agent/model profile for
-routing (RFC11-10); the context-budget posture (RFC11-11); the OpenSpec
-phase rule (RFC11-12); the implementation-boundary declaration every active
-contract carries (RFC11-13); defined dependency traversal (RFC11-14);
-doctrine/craft ownership metadata (RFC11-15); and clause-first `constrains`
-consumption (RFC11-16). Storage engines, retrieval technology, and the
-exact token-budget number are explicitly not chosen here.
+This package fixes:
+
+- packet identity and immutability (RFC11-1..3);
+- deterministic selection semantics and the incompleteness rule (RFC11-4..7);
+- governed memory boundaries (RFC11-8..9);
+- the minimal agent/model profile for routing (RFC11-10);
+- the context-budget posture (RFC11-11);
+- the OpenSpec phase rule (RFC11-12);
+- the implementation-boundary declaration every active contract carries
+  (RFC11-13);
+- defined dependency traversal (RFC11-14);
+- doctrine/craft ownership metadata (RFC11-15); and
+- clause-first `constrains` consumption (RFC11-16).
+
+Storage engines, retrieval technology, and the exact token-budget number are
+explicitly not chosen here.
 
 ## 2. Motivation and doctrine grounding
 
@@ -116,9 +151,9 @@ not minimum document count."
 2. *(RFC11-5)* A retrieval layer ranks a mandatory doctrine rule below its
    cutoff and drops it; the packet shows no omission because "the selector
    never saw it."
-3. *(RFC11-2)* An execution record says "context: latest docs" with no
-   packet digest; six weeks later nobody can establish which revision of the
-   envelope the agent saw.
+3. *(RFC11-2)* An execution record says "context: latest docs" with no packet
+   digest; six weeks later nobody can establish which revision of the envelope
+   the agent saw.
 4. *(RFC11-6)* Two applicable policies contradict; the compiler picks the
    newer one silently and the packet renders complete.
 5. *(RFC11-8)* A planning chat's conclusions are cited as project authority
@@ -131,18 +166,16 @@ not minimum document count."
 
 ## 5. Integration
 
-- **RFC 0001/0002:** packets pin evaluations and as-of instants; packet
-  facts and omissions are identified; Unknown is first-class (RFC11-6).
-- **RFC 0003:** packet and memory homes follow governance-home discipline;
-  the contract-index projection (RFC11-7) is rebuildable, never
-  authoritative; effective-status inputs come from owner-act records under
-  the RFC3-16(c) two-state model — a packet states correlation gaps
-  honestly.
-- **RFC 0004:** evidence references enter packets by identity; capture
-  cadence limits are disclosed as staleness, not hidden.
-- **RFC 0005:** packets respect scopes (RFC5-6), egress consent (RFC5-14),
-  and secret exclusion (RFC5-16/17); compiler acts are attributable
-  (RFC5-25).
+- **RFC 0001/0002:** packets pin evaluations and as-of instants; packet facts
+  and omissions are identified; Unknown is first-class (RFC11-6).
+- **RFC 0003:** packet and memory homes follow governance-home discipline; the
+  contract-index projection (RFC11-7) is rebuildable, never authoritative;
+  effective-status inputs come from owner-act records under the RFC3-16(c)
+  two-state model — a packet states correlation gaps honestly.
+- **RFC 0004:** evidence references enter packets by identity; capture cadence
+  limits are disclosed as staleness, not hidden.
+- **RFC 0005:** packets respect scopes (RFC5-6), egress consent (RFC5-14), and
+  secret exclusion (RFC5-16/17); compiler acts are attributable (RFC5-25).
 - **RFC 0006:** packet contents are queryable through the same semantic API
   with human/machine parity (RFC6-13/RFC6-14).
 - **RFC 0010:** the envelope is a mandatory packet input; incomplete-context
@@ -150,21 +183,25 @@ not minimum document count."
 
 ## 6. Alternatives considered (summary; this contract is new at rev10 and has no history file)
 
-Pure retrieval ("embed everything, let relevance decide") — rejected:
-non-deterministic mandatory selection cannot support the trust floor.
-Whole-corpus loading as the safe default — rejected by OD-R10-3. Manual
-per-task reading lists — rejected: hand-maintained selection is the drift
-RFC11-7 forbids. Keeping the contract in one file — rejected at rev12: the
-stable packet/provenance contract and the still-unsatisfiable selection
-policy shared one acceptance digest, so the mature half was held hostage by
-the half under repair; the split is the package convention most contracts
-already follow.
+- Pure retrieval ("embed everything, let relevance decide") — rejected:
+  non-deterministic mandatory selection cannot support the trust floor.
+- Whole-corpus loading as the safe default — rejected by OD-R10-3.
+- Manual per-task reading lists — rejected: hand-maintained selection is the
+  drift RFC11-7 forbids.
+- Keeping the contract in one file — rejected at rev12: the stable
+  packet/provenance contract and the still-unsatisfiable selection policy
+  shared one acceptance digest, so the mature half was held hostage by the
+  half under repair; the split is the package convention most contracts
+  already follow.
 
 ## 7. Deliberately deferred
 
-Storage and retrieval technology; embedding/index formats; the numeric
-token budget (policy default, evidenced in the load map); packet transport;
-compiler scheduling; profile registry home.
+- Storage and retrieval technology;
+- embedding/index formats;
+- the numeric token budget (policy default, evidenced in the load map);
+- packet transport;
+- compiler scheduling;
+- profile registry home.
 
 ## 8. Open questions for acceptance
 
