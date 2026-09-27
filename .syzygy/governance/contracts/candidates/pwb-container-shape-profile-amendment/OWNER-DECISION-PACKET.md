@@ -89,9 +89,10 @@ default". So:
 
 1. **What does "declare its own formats" cover?** The draft lets the profile
    declare the whole rule — file, heading, shape and key form — not only
-   the shape. Your §6 reading speaks of "container shapes". Is the whole rule
-   what you meant, or only the shape, with files and headings staying in the
-   specification?
+   the shape. The question you answered says "formats"; the record's §6
+   reading, which is the recorder's and not your words, says "container
+   shapes". Is the whole rule what you meant, or only the shape, with files
+   and headings staying in the specification?
 2. **Where do the lists of shapes and key forms live?** The draft puts both
    in the specification, so adding a tenth shape needs a specification
    amendment. An earlier pursuit move (L1-M1) put the list in the registry
@@ -123,9 +124,14 @@ default". So:
    a seed rule [Inferred, read from the policy]. *Recommended: yes, and
    after.*
 8. **This package and M15 both amend `PWB-REQ-002`. Keep them separate?**
-   P-82 ruled "One CC-REV-2 semantic delta to PWB-REQ-002", sequenced behind
-   lane B, adding a partially-extracted state, an unenumerated-heading
-   reason and root-independence flags (`syzygy-dov.15.1`, not drafted). The
+   Your P-82 answer was "Q1 arm (b), draft the delta only; Q2 design
+   `partially-extracted` inside it, build only after sign-off and a fresh
+   authorization; Q3 design the `unenumerated-heading` reason as
+   surface-flag (a counted, routed Unknown); Q4 design the root-independence
+   flags in the same delta" (decision record, line 70, Ruled column). The
+   record's "What it means" column, the recorder's gloss and not your words,
+   reads that as "One CC-REV-2 semantic delta to PWB-REQ-002", sequenced
+   behind lane B's open manifest (`syzygy-dov.15.1`, not drafted). The
    two deltas are kept apart in meaning: this one says only which rules read
    a kind of item, and on failure defers to the exactness sentence ("fails
    as a source in which a class fails") without saying how much of the file
@@ -143,13 +149,16 @@ default". So:
     profile" for a SEC-3 execution profile, and RFC 0007 speaks of a
     "governed-project profile" for presentation. Both are unrelated. Keep
     "project profile", or rename (for example, "reading profile")?
-11. **Where in the landing order?** What you ruled covers four packages
-    only: `.21` → `.30` → `.22` → lane B (the 2026-09-23 owner-values
-    record, §6; the 2026-09-26 sitting says N8 does not change it). Where
-    this package falls is not ruled. The drafter proposes it land after
-    lane B; `syzygy-dov.29` (PR #121) also proposes last, and M15 (question
-    8) is behind lane B too. Each earlier specification act means this
-    manifest is regenerated with `--write` and re-reviewed.
+11. **Where in the landing order?** Your answer on 2026-09-23 was
+    "Readiness order, lane B last (Recommended)", an option presented as
+    `.21` → `.30` → `.22` → lane B (the owner-values record, §6). It covers
+    those four packages only. The 2026-09-26 sitting record states that it
+    does not change that order; that sentence is the recorder's, under
+    "What this does not do". Where this package falls is not ruled. The
+    drafter proposes it land after lane B; `syzygy-dov.29` (PR #121) also
+    proposes last, and M15 (question 8) is behind lane B too. Each earlier
+    specification act means this manifest is regenerated with `--write` and
+    re-reviewed.
 
 ## What this would still leave unread
 
@@ -242,3 +251,15 @@ python3 scripts/check_governance.py --selftest
 
 This branch leaves CG-26's coupled battery lists untouched; the builder joins
 them at the integration commit.
+
+**Attribution sweep, 2026-09-27.** Every sentence here, in the ledger and in
+the semantic delta that says the owner ruled, chose or answered something was
+checked against the owner's verbatim answer: the Ruled column of the
+P-68–P-83 decision record, and the "Owner's answer (verbatim)" column of the
+2026-09-23 and 2026-09-26 records. Pattern (Python `re`, case-sensitive):
+`\b(ruled?|rules|chose|chosen|decided|answer(ed)?)\b`, then `\b[Rr]eading\b`.
+Six sites were repaired: question 1 had called the record's §6 reading
+yours; question 8, ledger row M15 and semantic-delta item 5 had quoted
+P-82's "What it means" gloss as the ruling, and question 11 and ledger row
+`.21`–lane B had given the presented option's order as the owner's words.
+The P-74 Q2 quotations already matched the Ruled cell and are unchanged.

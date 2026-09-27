@@ -233,8 +233,12 @@ Enumerated in `IMPACT-LEDGER.md`. In one line each:
 4. **The profile's home is drafted, not performed.** Its registry fields
    are `syzygy-dov.24`'s (PR #123) `containerShapes` and `classGrammar`, the
    one registry act P-74 Q2 ruled.
-5. **M15 amends the same requirement.** P-82 ruled "One CC-REV-2 semantic
-   delta to PWB-REQ-002", behind lane B (`syzygy-dov.15.1`, not drafted). The
+5. **M15 amends the same requirement.** P-82's answer (decision record line
+   70, Ruled column) was "Q1 arm (b), draft the delta only", with Q2–Q4
+   designing `partially-extracted`, the `unenumerated-heading` reason and
+   the root-independence flags "in the same delta" [Observed, quoted]. "One
+   CC-REV-2 semantic delta to PWB-REQ-002", behind lane B, is the record's
+   "What it means" gloss, not the answer (`syzygy-dov.15.1`, not drafted). The
    two stay apart in meaning: this delta says which rules read a class and,
    on failure, defers to the exactness sentence without deciding how much
    of a source fails; M15 decides that. They share text: item 5 moves the
