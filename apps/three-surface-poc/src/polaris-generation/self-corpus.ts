@@ -88,7 +88,7 @@ function scriptedResponse(stage: ScriptedStage, encoded: string): unknown {
   if (stage === 'author') {
     const first = sources[0]!, second = sources[1]!;
     return { title: 'Synthetic Syzygy corpus exercise', introduction: { id: 'intro', text: excerpt(first.text ?? ''), sourceIds: [first.sourceId] },
-      sections: [{ id: 'account', title: 'A bounded account', paragraphs: [{ id: 'account-paragraph', text: excerpt(second.text ?? ''), sourceIds: [second.sourceId] }],
+      sections: [{ id: 'account', title: 'A bounded account', paragraphs: [{ id: 'account-paragraph', text: excerpt(second.text ?? ''), sourceIds: [second.sourceId], children: [] }],
         disposition: { kind: 'produced', assetIds: ['account'] } }], diagrams: [], deepDives: [], unresolved: [] };
   }
   if (stage === 'edit' || stage === 'repair') return inputs.draft;
@@ -99,7 +99,7 @@ function scriptedResponse(stage: ScriptedStage, encoded: string): unknown {
     disposition: i < 2 ? 'represented' : 'justified-omission',
     blockIds: i < 2 ? [i === 0 ? 'intro' : 'account-paragraph'] : [],
     reason: i < 2 ? 'Scripted reference match only.' : 'Scripted omission; real quality unproven.' })),
-    blockSupport: [draft.introduction, ...draft.sections.flatMap(section => section.paragraphs)].map(block => ({
+    blockSupport: [draft.introduction, ...draft.sections.flatMap(section => section.paragraphs.flatMap(block => [block, ...block.children]))].map(block => ({
       blockId: block.id, verdict: 'supported', sourceIds: block.sourceIds, reason: 'Scripted reference match only.' })), findings: [] };
 }
 

@@ -6,11 +6,11 @@ import { promptForStage, type GenerationStage } from './prompts.js';
 // require a version decision and a new reviewed digest; these are not LLM evals.
 const recipes: [GenerationStage, string, string][] = [
   ['inventory', 'polaris-inventory-v1', 'ea6c06ff89668f4914859b4c1133f9def4db51f2456f28b2cf86ba89fb1411af'],
-  ['plan', 'polaris-plan-v1', 'da8633b316906432b9378f86135453f77728551233d942beaa7c9ac4a330594f'],
-  ['author', 'polaris-author-v1', '7b9dffb8073e69a1f9c428ce620a66377a69c1cb70912867ca40d2c536b64011'],
-  ['edit', 'polaris-edit-v1', 'a5b064dbf4628ab3a7ffc09cd2541dd0ee289262788cd6b0b5894306bbeb1d49'],
+  ['plan', 'polaris-plan-v2', 'e632eada2e46aac167345b95fa5911e04ebf6b183d1fb19e1564ede4da7db344'],
+  ['author', 'polaris-author-v2', '5ff6d41c45e7fe9cf28d5e957d0c85ff3c714aa9f3f2de17523a4c2e554c9743'],
+  ['edit', 'polaris-edit-v2', 'd0af06409f066c42c7a1f69f60b0c2f60b097926ea3508fd8322e6f11413e6de'],
   ['fidelity', 'polaris-fidelity-v1', 'ea3d5f99f5ac1520ae46a1a3f9c0fca7e0180427ca92a2aaf85a0c975f97377c'],
-  ['repair', 'polaris-repair-v1', '38c7cbda98b9989152443c34738577490b7ba0d591f31aa197cf91f526877824'],
+  ['repair', 'polaris-repair-v2', '0ad55710dc4c7dabc4586aa04861880533b6c88749acbc3ca2f1c9183b50b34b'],
 ];
 
 describe('versioned stage prompts', () => {

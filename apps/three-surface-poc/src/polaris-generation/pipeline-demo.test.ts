@@ -15,7 +15,10 @@ describe('concrete source-to-draft pipeline exercise', () => {
       expect(run.result.status).toBe('awaiting-rendered-review');
       if (run.result.status !== 'awaiting-rendered-review') throw Error(run.result.reason);
       expect(run.result.receipts.map(r => r.stage)).toEqual(['inventory', 'plan', 'author', 'edit', 'fidelity']);
-      expect(run.result.draft).toMatchObject({ diagrams: [{ edges: [{ label: 'feeds' }] }], deepDives: [{ id: 'component-depth' }] });
+      expect(run.result.draft).toMatchObject({
+        sections: [{ paragraphs: [{ id: 'mechanism-text', children: [{ id: 'mechanism-detail-0' }] }] }, { id: 'judgment' }],
+        diagrams: [{ kind: 'flow', edges: [{ label: 'feed', epistemic: 'observed' }] }], deepDives: [{ id: 'component-depth' }],
+      });
     }
     expect(runs[0]!.result.receipts.map(r => r.promptVersion)).toEqual(runs[1]!.result.receipts.map(r => r.promptVersion));
   });
