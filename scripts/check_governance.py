@@ -3090,18 +3090,66 @@ def cg7d_quoted_elsewhere(paths, res, act_subjects=None,
 #: every dedicated act recorder writes.
 ACT_INSTANT_LINE = re.compile(
     r"Act instant: ([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z)")
+#: A marked aggregate section's opening or closing comment, the form every
+#: dedicated act recorder's `block()` writes (`<!-- MARKER:BEGIN -->`).
+ACT_SECTION_MARKER = re.compile(r"<!--\s*[^>]*:(BEGIN|END)\s*-->")
+#: An owner ceremony line: an upper-case act label, a colon, then an argument
+#: carrying a sha256 (bare, or qualified as in `CC-SPEC@<sha256>`). Only the
+#: label is compared; the shape is what makes a line another act's phrase.
+ACT_CEREMONY_LINE = re.compile(
+    r"([A-Z][A-Z0-9 ,()/'&.-]*[A-Z0-9)]): \S*[0-9a-f]{64}\b.*")
 
 
-def _contract_link_instant(dedicated, aggregate_lines, position):
+def _contract_link_section_problem(label, aggregate_lines, instant_index,
+                                   position):
+    """Why the link's phrase at `position` is not in its instant's section.
+
+    The instant at `instant_index` belongs to the link only when both sit in
+    one section: no section marker (`<!-- …:BEGIN/END -->`) and no other
+    act's ceremony line between them, and no other act's ceremony line after
+    the phrase before its section closes (the next marker, the next
+    `Act instant:` line, or the end of the record). Otherwise a phrase
+    spliced under an unrelated act's instant would borrow that act's time.
+    Returns `None` when the section is the link's own.
+    """
+    def other_ceremony(line):
+        m = ACT_CEREMONY_LINE.fullmatch(line.strip())
+        return m is not None and m.group(1) != label
+
+    for index in range(instant_index + 1, position):
+        line = aggregate_lines[index]
+        if ACT_SECTION_MARKER.search(line):
+            return (f"aggregate section marker {line.strip()!r} at line "
+                    f"{index + 1} lies between the act instant and the act "
+                    f"phrase")
+        if other_ceremony(line):
+            return (f"another act's ceremony line at aggregate line "
+                    f"{index + 1} lies between the act instant and the act "
+                    f"phrase")
+    for index in range(position + 1, len(aggregate_lines)):
+        line = aggregate_lines[index]
+        if (ACT_SECTION_MARKER.search(line)
+                or line.startswith("Act instant:")):
+            break
+        if other_ceremony(line):
+            return (f"another act's ceremony line at aggregate line "
+                    f"{index + 1} shares the act phrase's section")
+    return None
+
+
+def _contract_link_instant(dedicated, aggregate_lines, position, label):
     """`(instant, problem)` for one contract successor link's act instant.
 
     The dedicated record must carry exactly one full-line
     `Act instant: YYYY-MM-DDTHH:MM:SSZ` naming a real UTC second, and the
     aggregate's nearest `Act instant:` line above the link's first label line
     must repeat it: the aggregate section is the dedicated record's copy, so
-    the two agree or the act is unordered. Any other shape yields
-    `(None, problem)` — a missing or ambiguous instant never orders an act.
-    Returns `(None, None)` when the link carries no records at all.
+    the two agree or the act is unordered. That instant must lie in the
+    link's own section (`_contract_link_section_problem`): a section marker
+    or another act's ceremony line between them, or another act's ceremony
+    line after the phrase in the same section, fails closed. Any other shape
+    yields `(None, problem)` — a missing or ambiguous instant never orders an
+    act. Returns `(None, None)` when the link carries no records at all.
     """
     lines = [line for line in dedicated.splitlines()
              if line.startswith("Act instant:")]
@@ -3117,14 +3165,19 @@ def _contract_link_instant(dedicated, aggregate_lines, position):
         datetime.strptime(m.group(1), "%Y-%m-%dT%H:%M:%SZ")
     except ValueError:
         return None, f"act instant {m.group(1)} is not a real UTC second"
-    above = [line for line in aggregate_lines[:position or 0]
+    above = [index for index, line in enumerate(aggregate_lines[:position or 0])
              if line.startswith("Act instant:")]
     if position is None or not above:
         return None, ("aggregate section carries no `Act instant:` line above "
                       "its act phrase")
-    if above[-1] != lines[0]:
-        return None, (f"aggregate act instant {above[-1]!r} differs from the "
+    nearest = aggregate_lines[above[-1]]
+    if nearest != lines[0]:
+        return None, (f"aggregate act instant {nearest!r} differs from the "
                       f"dedicated record's {lines[0]!r}")
+    section_problem = _contract_link_section_problem(
+        label, aggregate_lines, above[-1], position)
+    if section_problem:
+        return None, section_problem
     return m.group(1), None
 
 
@@ -3432,7 +3485,7 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         position = next((index for index, line in enumerate(aggregate_lines)
                          if label in line), None)
         instant, instant_problem = _contract_link_instant(
-            link_dedicated, aggregate_lines, position)
+            link_dedicated, aggregate_lines, position, label)
         link_states.append((label, subject, act_rel, link_paths, link_dedicated,
                             link_body, link_digest, mentions, position,
                             instant, instant_problem))
@@ -7119,6 +7172,12 @@ def selftest():
                            f"carries 0 `Act instant:` lines"),
         "aggregate-no-instant": (f"`{CONTRACT_RESTYLE_LABEL}` aggregate "
                                  f"section carries no `Act instant:` line"),
+        "splice-under-instant": "shares the act phrase's section",
+        "splice-after-phrase": ("lies between the act instant and the act "
+                                "phrase"),
+        "splice-marker-only": (
+            f"`{POLARIS_NO_SIGNAL_LABEL}` aggregate section marker "
+            f"'<!-- SYNTHETIC-SPLICE:END -->'"),
         "three-link-cascade": (f"{THIRD_LINK[2]} — contract successor recorded "
                                f"while earlier chain link(s) "
                                f"`{POLARIS_NO_SIGNAL_LABEL}`, "
@@ -7128,6 +7187,44 @@ def selftest():
         row = _selftest_cg7h(f"restyle-{mutation}")
         cases.append((f"CG-7h restyle link {mutation} rejected",
                       row[0] == "FAIL" and any(diagnostic in d for d in row[4])))
+
+    # The real recorder's section, appended to the real aggregate, keeps its
+    # own instant; the review N-a probe over the same real aggregate (a
+    # no-signal phrase alone under the understanding act's instant) does not.
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "record_contract_readability_restyle",
+        os.path.join(ROOT, "scripts", "record_contract_readability_restyle.py"))
+    recorder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(recorder)
+    real_aggregate = read(PERFORMED_ACT_RECORD)
+    real_instant = "2026-09-28T00:00:00Z"
+    real_body = recorder.body(
+        "a" * 64, real_instant, recorder.Pins("a" * 64, "r.md", "b" * 64))
+    recorded = (real_aggregate + "\n" + recorder.block(real_body)).splitlines()
+    later_legacy = recorded + ["", "## A later act without an instant", "",
+                               f"SYNTHETIC LATER ACT: {'c' * 64}"]
+    for name, lines in (("alone", recorded),
+                        ("before a later instant-less act", later_legacy)):
+        at = next(i for i, line in enumerate(lines) if recorder.LABEL in line)
+        cases.append((f"CG-7h real restyle recorder section ({name}) keeps "
+                      f"its own act instant",
+                      _contract_link_instant(real_body, lines, at,
+                                             recorder.LABEL)
+                      == (real_instant, None)))
+    probe = real_aggregate.splitlines()
+    borrowed = next(i for i, line in enumerate(probe)
+                    if line == "Act instant: 2026-09-13T01:58:26Z")
+    probe.insert(borrowed + 1, f"{POLARIS_NO_SIGNAL_LABEL}: {'d' * 64}")
+    probe_result = _contract_link_instant(
+        f"Act instant: 2026-09-13T01:58:26Z\n"
+        f"{POLARIS_NO_SIGNAL_LABEL}: {'d' * 64}\n",
+        probe, borrowed + 1, POLARIS_NO_SIGNAL_LABEL)
+    cases.append(("CG-7h review N-a probe: a no-signal phrase under the real "
+                  "understanding act's instant cannot borrow it",
+                  probe_result[0] is None
+                  and "shares the act phrase's section" in (probe_result[1]
+                                                           or "")))
 
     c = Cap(); cg21_contract_prose_states_no_measurement(c, modules=[])
     cases.append(("CG-21 empty module list warns, never passes",
@@ -8132,6 +8229,40 @@ def _selftest_cg7h(kind):
             # genuinely earlier: legitimate history, restyle supersedes it
             "restyle-inserted-earlier": ("2026-09-15T00:00:00Z", None, True),
         }
+        # Review N-a (R-TREE-STYLE-TOOLING-3): a no-signal phrase alone,
+        # spliced into an unrelated act's marked section, must not borrow
+        # that act's instant. The dedicated record repeats the borrowed
+        # instant, which is earlier than the restyle's, so before the
+        # section scoping each of these read as superseded history (OK).
+        unrelated_instant = "2026-09-13T01:58:26Z"
+        unrelated_phrase = f"SYNTHETIC UNRELATED ACT: {digest('unrelated')}\n"
+        spliced = {
+            # directly under the unrelated instant, above its phrase
+            "restyle-splice-under-instant": (
+                f"Act instant: {unrelated_instant}\n", unrelated_phrase),
+            # after the unrelated phrase, before its END marker
+            "restyle-splice-after-phrase": (
+                f"Act instant: {unrelated_instant}\n" + unrelated_phrase, ""),
+            # a marked section of its own with no instant, under a bare one
+            "restyle-splice-marker-only": (
+                f"Act instant: {unrelated_instant}\n"
+                "<!-- SYNTHETIC-SPLICE:END -->\n"
+                "<!-- SYNTHETIC-SPLICE:BEGIN -->\n", ""),
+        }
+        if kind in spliced:
+            head, tail = spliced[kind]
+            ns_phrase, _b, _d = link(
+                POLARIS_NO_SIGNAL_LABEL, no_signal_rows, records="dedicated",
+                set_current=False, instant=unrelated_instant)
+            head_sep, sep, rest = performed.partition(restyle_section)
+            assert sep, restyle_section
+            performed = (head_sep + "<!-- SYNTHETIC-UNRELATED:BEGIN -->\n"
+                         + head + ns_phrase + tail
+                         + "<!-- SYNTHETIC-UNRELATED:END -->\n"
+                         + sep + rest)
+            for sha, path in restyle_rows:
+                current[f"{CONTRACT_ROOT}/{path}"] = sha
+                current[f"{CANDIDATES}/{path}"] = sha
         if kind in inserted:
             ns_instant, ns_aggregate, ns_bytes = inserted[kind]
             link(POLARIS_NO_SIGNAL_LABEL, no_signal_rows, set_current=ns_bytes,

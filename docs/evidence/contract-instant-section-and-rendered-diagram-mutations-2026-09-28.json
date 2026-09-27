@@ -1,0 +1,277 @@
+{
+  "record": "rule-6 mutation evidence: CG-7h act-instant section scoping (review R-TREE-STYLE-TOOLING-3 N-a), restyle --selftest battery wiring (N-e), and the rendered-design dangling prose-sufficient diagram name (review R-TREE-STYLE-POLARIS-RENDERED-2 R2-N2); syzygy-73e.18, syzygy-73e.17",
+  "date": "2026-09-28",
+  "commits": {
+    "N-a": "33f4c26d92acc42ffd35b112a252aeaad9fc7c45",
+    "N-e and R2-N2": "135bab4029f726d06d073c675fefef1a7866f7fb"
+  },
+  "method": "Worktree of branch agent/syzygy-73e.17-18 at the mutant's `commit`, clean before each run. For each mutant the `old` fragment (asserted to occur exactly once in `file`) was replaced by `new`, `check` was run from the worktree root, and the file was restored from saved bytes; `git status --short` was empty after the last mutant. A selftest or vitest mutant is killed when the command exits non-zero with at least one named failing fixture or test; a live-check mutant (CG-26 wiring) is killed when the live battery exits non-zero with a FAIL row. M-section-check-disabled is the pre-change behaviour of `_contract_link_instant` (nearest instant, no section scoping): the four fixtures it fails are the new ones, confirming they fail on the pre-change code.",
+  "baseline": {
+    "python3 scripts/check_governance.py --selftest": "327 fixtures, 0 failing — a check that cannot fail is not a check",
+    "python3 scripts/check_governance.py": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+    "npx vitest run packages/polaris-generation-core": "8 files, 143 tests passed (20 in rendered-design.test.ts)"
+  },
+  "totals": {
+    "mutants": 14,
+    "killed": 13,
+    "survived": 1,
+    "survived_equivalent": 1
+  },
+  "restored_byte_identical": true,
+  "mutants": [
+    {
+      "id": "M-section-check-disabled",
+      "finding": "N-a (R-TREE-STYLE-TOOLING-3)",
+      "bead": "syzygy-73e.18",
+      "file": "scripts/check_governance.py",
+      "old": "    section_problem = _contract_link_section_problem(\n        label, aggregate_lines, above[-1], position)",
+      "new": "    section_problem = None",
+      "check": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "summary": "327 fixtures, 4 failing — a check that cannot fail is not a check",
+      "failed": [
+        "CG-7h restyle link splice-under-instant rejected",
+        "CG-7h restyle link splice-after-phrase rejected",
+        "CG-7h restyle link splice-marker-only rejected",
+        "CG-7h review N-a probe: a no-signal phrase under the real understanding act's instant cannot borrow it"
+      ],
+      "outcome": "killed",
+      "commit": "33f4c26d92acc42ffd35b112a252aeaad9fc7c45"
+    },
+    {
+      "id": "M-backward-marker-ignored",
+      "finding": "N-a (R-TREE-STYLE-TOOLING-3)",
+      "bead": "syzygy-73e.18",
+      "file": "scripts/check_governance.py",
+      "old": "        if ACT_SECTION_MARKER.search(line):\n            return (f\"aggregate section marker",
+      "new": "        if False:\n            return (f\"aggregate section marker",
+      "check": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "summary": "327 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed": [
+        "CG-7h restyle link splice-marker-only rejected"
+      ],
+      "outcome": "killed",
+      "commit": "33f4c26d92acc42ffd35b112a252aeaad9fc7c45"
+    },
+    {
+      "id": "M-backward-ceremony-ignored",
+      "finding": "N-a (R-TREE-STYLE-TOOLING-3)",
+      "bead": "syzygy-73e.18",
+      "file": "scripts/check_governance.py",
+      "old": "        if other_ceremony(line):\n            return (f\"another act's ceremony line at aggregate line \"\n                    f\"{index + 1} lies between",
+      "new": "        if False:\n            return (f\"another act's ceremony line at aggregate line \"\n                    f\"{index + 1} lies between",
+      "check": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "summary": "327 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed": [
+        "CG-7h restyle link splice-after-phrase rejected"
+      ],
+      "outcome": "killed",
+      "commit": "33f4c26d92acc42ffd35b112a252aeaad9fc7c45"
+    },
+    {
+      "id": "M-forward-ceremony-ignored",
+      "finding": "N-a (R-TREE-STYLE-TOOLING-3)",
+      "bead": "syzygy-73e.18",
+      "file": "scripts/check_governance.py",
+      "old": "        if other_ceremony(line):\n            return (f\"another act's ceremony line at aggregate line \"\n                    f\"{index + 1} shares",
+      "new": "        if False:\n            return (f\"another act's ceremony line at aggregate line \"\n                    f\"{index + 1} shares",
+      "check": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "summary": "327 fixtures, 2 failing — a check that cannot fail is not a check",
+      "failed": [
+        "CG-7h restyle link splice-under-instant rejected",
+        "CG-7h review N-a probe: a no-signal phrase under the real understanding act's instant cannot borrow it"
+      ],
+      "outcome": "killed",
+      "commit": "33f4c26d92acc42ffd35b112a252aeaad9fc7c45"
+    },
+    {
+      "id": "M-forward-no-break-on-marker",
+      "finding": "N-a (R-TREE-STYLE-TOOLING-3)",
+      "bead": "syzygy-73e.18",
+      "file": "scripts/check_governance.py",
+      "old": "        if (ACT_SECTION_MARKER.search(line)\n                or line.startswith(\"Act instant:\")):",
+      "new": "        if (False\n                or line.startswith(\"Act instant:\")):",
+      "check": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "summary": "327 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed": [
+        "CG-7h real restyle recorder section (before a later instant-less act) keeps its own act instant"
+      ],
+      "outcome": "killed",
+      "commit": "33f4c26d92acc42ffd35b112a252aeaad9fc7c45"
+    },
+    {
+      "id": "M-forward-no-break-on-instant",
+      "finding": "N-a (R-TREE-STYLE-TOOLING-3)",
+      "bead": "syzygy-73e.18",
+      "file": "scripts/check_governance.py",
+      "old": "        if (ACT_SECTION_MARKER.search(line)\n                or line.startswith(\"Act instant:\")):",
+      "new": "        if (ACT_SECTION_MARKER.search(line)\n                or False):",
+      "check": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "summary": "327 fixtures, 4 failing — a check that cannot fail is not a check",
+      "failed": [
+        "CG-7h both contract links performed pass at 111 with the restyle digest overriding the no-signal rows",
+        "CG-7h no-signal section above the restyle with an earlier act instant passes at 111 as superseded history",
+        "CG-7h restyle link inserted-later rejected",
+        "CG-7h restyle link inserted-same-instant rejected"
+      ],
+      "outcome": "killed",
+      "commit": "33f4c26d92acc42ffd35b112a252aeaad9fc7c45"
+    },
+    {
+      "id": "M-own-label-counted-as-other",
+      "finding": "N-a (R-TREE-STYLE-TOOLING-3)",
+      "bead": "syzygy-73e.18",
+      "file": "scripts/check_governance.py",
+      "old": "        return m is not None and m.group(1) != label",
+      "new": "        return m is not None",
+      "check": "python3 scripts/check_governance.py --selftest",
+      "exit": 0,
+      "summary": "327 fixtures, 0 failing — a check that cannot fail is not a check",
+      "failed": [],
+      "outcome": "survived (equivalent)",
+      "commit": "33f4c26d92acc42ffd35b112a252aeaad9fc7c45",
+      "equivalence": "The link's position is the first aggregate line naming its label, so no line of its own label can lie between the instant and the phrase; one after the phrase is a second bare label line, which CG-7h's exactly-one-record check already fails for the link. The mutant changes only which diagnostic accompanies that failure."
+    },
+    {
+      "id": "M-prose-guard-dropped",
+      "finding": "R2-N2 (R-TREE-STYLE-POLARIS-RENDERED-2)",
+      "bead": "syzygy-73e.17",
+      "file": "packages/polaris-generation-core/src/rendered-design.ts",
+      "old": "item => item.judgment === 'prose-sufficient' && item.diagram.kind === 'named' && !diagramIds.has",
+      "new": "item => item.diagram.kind === 'named' && !diagramIds.has",
+      "check": "npx vitest run packages/polaris-generation-core/src/rendered-design.test.ts",
+      "exit": 1,
+      "summary": [
+        "Tests  2 failed | 18 passed (20)"
+      ],
+      "failed": [
+        "× rendered-design review verdict (REQ-polaris-generation-004/006) > the finding stands even though no draft diagram ever proposed the relationship 4ms",
+        "× rendered-design review verdict (REQ-polaris-generation-004/006) > a prose-sufficient relationship naming a diagram the draft lacks is a malformed record 2ms",
+        "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/rendered-design.test.ts > rendered-design review verdict (REQ-polaris-generation-004/006) > the finding stands even though no draft diagram ever proposed the relationship",
+        "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/rendered-design.test.ts > rendered-design review verdict (REQ-polaris-generation-004/006) > a prose-sufficient relationship naming a diagram the draft lacks is a malformed record"
+      ],
+      "outcome": "killed",
+      "commit": "135bab4029f726d06d073c675fefef1a7866f7fb"
+    },
+    {
+      "id": "M-membership-check-disabled",
+      "finding": "R2-N2 (R-TREE-STYLE-POLARIS-RENDERED-2)",
+      "bead": "syzygy-73e.17",
+      "file": "packages/polaris-generation-core/src/rendered-design.ts",
+      "old": "&& !diagramIds.has(item.diagram.diagramId))) {",
+      "new": "&& false)) {",
+      "check": "npx vitest run packages/polaris-generation-core/src/rendered-design.test.ts",
+      "exit": 1,
+      "summary": [
+        "Tests  1 failed | 19 passed (20)"
+      ],
+      "failed": [
+        "× rendered-design review verdict (REQ-polaris-generation-004/006) > a prose-sufficient relationship naming a diagram the draft lacks is a malformed record 9ms",
+        "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/rendered-design.test.ts > rendered-design review verdict (REQ-polaris-generation-004/006) > a prose-sufficient relationship naming a diagram the draft lacks is a malformed record"
+      ],
+      "outcome": "killed",
+      "commit": "135bab4029f726d06d073c675fefef1a7866f7fb"
+    },
+    {
+      "id": "M-named-guard-dropped",
+      "finding": "R2-N2 (R-TREE-STYLE-POLARIS-RENDERED-2)",
+      "bead": "syzygy-73e.17",
+      "file": "packages/polaris-generation-core/src/rendered-design.ts",
+      "old": "item.judgment === 'prose-sufficient' && item.diagram.kind === 'named' && !diagramIds.has(item.diagram.diagramId)",
+      "new": "item.judgment === 'prose-sufficient' && !diagramIds.has((item.diagram as { diagramId: string }).diagramId)",
+      "check": "npx vitest run packages/polaris-generation-core/src/rendered-design.test.ts",
+      "exit": 1,
+      "summary": [
+        "Tests  1 failed | 19 passed (20)"
+      ],
+      "failed": [
+        "× rendered-design review verdict (REQ-polaris-generation-004/006) > a prose-sufficient relationship needs no diagram 4ms",
+        "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/rendered-design.test.ts > rendered-design review verdict (REQ-polaris-generation-004/006) > a prose-sufficient relationship needs no diagram"
+      ],
+      "outcome": "killed",
+      "commit": "135bab4029f726d06d073c675fefef1a7866f7fb"
+    },
+    {
+      "id": "M-ids-from-sections",
+      "finding": "R2-N2 (R-TREE-STYLE-POLARIS-RENDERED-2)",
+      "bead": "syzygy-73e.17",
+      "file": "packages/polaris-generation-core/src/rendered-design.ts",
+      "old": "const diagramIds = new Set(subject.diagrams.map(d => d.id));",
+      "new": "const diagramIds = new Set(subject.sections.map(d => d.id));",
+      "check": "npx vitest run packages/polaris-generation-core/src/rendered-design.test.ts",
+      "exit": 1,
+      "summary": [
+        "Tests  4 failed | 16 passed (20)"
+      ],
+      "failed": [
+        "× rendered-design review verdict (REQ-polaris-generation-004/006) > a prose-sufficient relationship drawn in a produced figure still obeys the drawing rules 4ms",
+        "× rendered-design review verdict (REQ-polaris-generation-004/006) > a prose-sufficient claim on a figure does not make it shared with the diagram-clearer relationship it draws 1ms",
+        "× rendered-design review verdict (REQ-polaris-generation-004/006) > a prose-sufficient relationship naming a diagram the draft lacks is a malformed record 3ms",
+        "× rendered-design review verdict (REQ-polaris-generation-004/006) > reviewer blocking findings add to the verdict; advisory ones do not; targets must exist 1ms",
+        "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/rendered-design.test.ts > rendered-design review verdict (REQ-polaris-generation-004/006) > a prose-sufficient relationship drawn in a produced figure still obeys the drawing rules",
+        "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/rendered-design.test.ts > rendered-design review verdict (REQ-polaris-generation-004/006) > a prose-sufficient claim on a figure does not make it shared with the diagram-clearer relationship it draws"
+      ],
+      "outcome": "killed",
+      "commit": "135bab4029f726d06d073c675fefef1a7866f7fb"
+    },
+    {
+      "id": "M-count-word-reverted",
+      "finding": "N-e (R-TREE-STYLE-TOOLING-3)",
+      "bead": "syzygy-73e.18",
+      "file": "PROJECT-STATUS.md",
+      "old": "The forty-two checks above are the same forty-two",
+      "new": "The forty checks above are the same forty",
+      "check": "/home/tze/.pyenv/versions/3.10.12/bin/python3 scripts/check_governance.py",
+      "exit": 1,
+      "summary": [
+        "31 OK, 20 WARN, 1 FAIL (52 checks) — counts derived, not asserted"
+      ],
+      "failed": [
+        "FAIL  CG-26  published battery and hosted battery are one list — 42 checks examined, 2 findings — 42 published, 42 hosted, 42 shared"
+      ],
+      "outcome": "killed",
+      "commit": "135bab4029f726d06d073c675fefef1a7866f7fb"
+    },
+    {
+      "id": "M-hosted-selftest-step-dropped",
+      "finding": "N-e (R-TREE-STYLE-TOOLING-3)",
+      "bead": "syzygy-73e.18",
+      "file": ".github/workflows/governance-docs.yml",
+      "old": "      - name: record_contract_readability_restyle --selftest\n        run: python3 scripts/record_contract_readability_restyle.py --selftest\n",
+      "new": "",
+      "check": "/home/tze/.pyenv/versions/3.10.12/bin/python3 scripts/check_governance.py",
+      "exit": 1,
+      "summary": [
+        "31 OK, 20 WARN, 1 FAIL (52 checks) — counts derived, not asserted"
+      ],
+      "failed": [
+        "FAIL  CG-26  published battery and hosted battery are one list — 42 checks examined, 2 findings — 42 published, 41 hosted, 41 shared"
+      ],
+      "outcome": "killed",
+      "commit": "135bab4029f726d06d073c675fefef1a7866f7fb"
+    },
+    {
+      "id": "M-published-selftest-line-dropped",
+      "finding": "N-e (R-TREE-STYLE-TOOLING-3)",
+      "bead": "syzygy-73e.18",
+      "file": "PROJECT-STATUS.md",
+      "old": "python3 scripts/build_contract_readability_restyle.py --selftest\n",
+      "new": "",
+      "check": "/home/tze/.pyenv/versions/3.10.12/bin/python3 scripts/check_governance.py",
+      "exit": 1,
+      "summary": [
+        "31 OK, 20 WARN, 1 FAIL (52 checks) — counts derived, not asserted"
+      ],
+      "failed": [
+        "FAIL  CG-26  published battery and hosted battery are one list — 42 checks examined, 2 findings — 41 published, 42 hosted, 41 shared"
+      ],
+      "outcome": "killed",
+      "commit": "135bab4029f726d06d073c675fefef1a7866f7fb"
+    }
+  ]
+}

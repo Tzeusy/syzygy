@@ -344,7 +344,9 @@ python3 scripts/build_pwb_exact_source_render_mode_amendment.py --selftest
 python3 scripts/build_pwb_registry_currency_briefing_amendment.py --check   # P-69/P-72 registry candidate: patch applies to bound bytes
 python3 scripts/build_pwb_registry_currency_briefing_amendment.py --selftest
 python3 scripts/build_contract_readability_restyle.py --check   # restyle candidate package: manifest = exact regeneration
+python3 scripts/build_contract_readability_restyle.py --selftest
 python3 scripts/record_contract_readability_restyle.py --check  # restyle act: "not performed" until recorded
+python3 scripts/record_contract_readability_restyle.py --selftest
 python3 scripts/build_three_surface_poc_spec_dependencies.py --check
 python3 scripts/build_directive_register.py --check     # every identifier -> its definition site
 python3 scripts/build_directive_register.py --selftest
@@ -354,7 +356,7 @@ python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
 ```
 
-The forty checks above are the same forty the hosted workflow runs
+The forty-two checks above are the same forty-two the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.

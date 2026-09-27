@@ -134,6 +134,16 @@ describe('rendered-design review verdict (REQ-polaris-generation-004/006)', () =
     expect(() => renderedDesignVerdict(review([rel('r1'), rel('r1', { judgment: 'prose-sufficient' })]), draft)).toThrow('duplicate-handle');
   });
 
+  it('a prose-sufficient relationship naming a diagram the draft lacks is a malformed record', () => {
+    const dangling = { diagram: { kind: 'named', diagramId: 'never-drawn' } };
+    expect(() => renderedDesignVerdict(review([rel('p1', { judgment: 'prose-sufficient', ...dangling })]), draft)).toThrow('unknown-relationship-diagram');
+    expect(() => renderedDesignVerdict(review([rel('p1', { judgment: 'prose-sufficient', support: 'unsupported', ...dangling })]), draft)).toThrow('unknown-relationship-diagram');
+    // The same dangling name on a diagram-clearer relationship stays a finding, not a throw.
+    expect(rules(review([rel('r1', dangling)]))).toEqual([['r1', 'missing-diagram']]);
+    // Every draft diagram id, whatever its disposition, is a known name.
+    expect(rules(review([rel('p1', { judgment: 'prose-sufficient', diagram: { kind: 'named', diagramId: 'pending' } })]))).toEqual([]);
+  });
+
   it('a gap outside a partly supported relationship is invalid', () => {
     expect(() => renderedDesignVerdict(review([rel('r1', { gaps: [{ element: 'Writer', reason: 'Absent.' }] })]), draft)).toThrow('gap-without-partial-support');
   });
