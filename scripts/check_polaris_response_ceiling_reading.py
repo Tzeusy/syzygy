@@ -10,14 +10,17 @@ covers. This script checks, read-only:
   C2 the packet names every response ceiling whose registry sentence opens
      "the final encoded HTTP body", in the registry as it stands and as the
      candidate .18 patch would leave it;
-  C3 while no issued direction exists, no non-test TypeScript source under
+  C3 unless an issued direction answers Q1 (a) or (b) and permits a
+     coding, with no withdrawal record, no non-test TypeScript source under
      apps/*/src or packages/*/src carries compression code (a sweep over
      zero files fails);
   C4 the packet keeps its candidate banner, an open-questions section in
      which every question states a default, and no 64-hex digest;
   C5 every candidate patch under contracts/candidates/*/proposed/ that
-     targets a quoted file, applied alone, leaves every quote from that
-     file intact.
+     targets a quoted file leaves every quote from that file intact, both
+     applied alone and composed in sequence with the others (sorted by
+     path; a patch that does not apply on top of the earlier ones is
+     reported, not failed).
 
 --selftest breaks each predicate in a scratch fixture and confirms failure.
 """
@@ -65,9 +68,22 @@ QUOTES: tuple[tuple[str, str, str], ...] = (
     ("PWB-REQ-006 oracle", SPEC, "exact final encoded-byte counts"),
     (".18 briefing sentence", BRIEFING_PATCH, "the final encoded HTTP body for each authenticated derived read-only machine view response"),
     ("VIS-2 heading", VISION, "No evidence means Unknown, not success"),
+    ("per-source UTF-8 sentence", REGISTRY, "the exact UTF-8 blob before classification or parsing"),
+    ("PWB-REQ-006 primary warrant", SPEC, "primary: SEC-3"),
 )
 
-COMPRESSION = re.compile(r"\bzlib\b|\bgzip|content-encoding|\bbrotli|createGzip|createDeflate", re.I)
+COMPRESSION = re.compile(r"zlib|gzip|content-encoding|brotli|deflate|CompressionStream", re.I)
+
+# An issued direction opens C3 only if its words answer Q1 (a) or (b) and its
+# "WHAT MAY SHIP." paragraph names a coding. Any other decisions file that names
+# the direction beside a form of "withdraw" closes it again.
+READING_ANSWERS = (
+    "before any HTTP content coding is applied",
+    "as sent, after any HTTP content coding",
+)
+MAY_SHIP = "WHAT MAY SHIP."
+CODING = re.compile(r"gzip|brotli|any coding", re.I)
+WITHDRAW = re.compile(r"withdr[ae]w", re.I)
 HEX64 = re.compile(r"(?<![0-9a-f])[0-9a-f]{64}(?![0-9a-f])")
 
 
@@ -154,8 +170,30 @@ def check_ceilings(root: str) -> tuple[list[str], set[str]]:
     return findings, keys
 
 
+def direction_permits(root: str) -> bool:
+    direction = read(root, DIRECTION)
+    if direction is None:
+        return False
+    words = normalize(direction)
+    if MAY_SHIP not in words or not any(a in words for a in READING_ANSWERS):
+        return False
+    may_ship = re.split(r"\s3\.\s", words.split(MAY_SHIP, 1)[1], maxsplit=1)[0]
+    if not CODING.search(may_ship):
+        return False
+    name = os.path.basename(DIRECTION)
+    base = os.path.join(root, DECISIONS)
+    for entry in sorted(os.listdir(base)):
+        rel = f"{DECISIONS}/{entry}"
+        if rel in (DIRECTION, PACKET) or not entry.endswith(".md"):
+            continue
+        text = read(root, rel) or ""
+        if name in text and WITHDRAW.search(text):
+            return False
+    return True
+
+
 def check_no_compression(root: str) -> tuple[list[str], int, bool]:
-    if os.path.isfile(os.path.join(root, DIRECTION)):
+    if direction_permits(root):
         return [], 0, True
     findings, scanned = [], 0
     for top in ("apps", "packages"):
@@ -201,7 +239,29 @@ def check_packet_shape(root: str) -> tuple[list[str], int]:
     return findings, len(questions)
 
 
-def check_composition(root: str) -> tuple[list[str], int, list[str]]:
+def _apply_sequence(root: str, patch_rels: list[str], target_rel: str) -> tuple[str | None, list[str]]:
+    """Apply patches in order onto the target; skip any that do not apply."""
+    source = read(root, target_rel)
+    if source is None:
+        return None, patch_rels
+    skipped = []
+    with tempfile.TemporaryDirectory() as tmp:
+        dest = os.path.join(tmp, target_rel)
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        with open(dest, "w", encoding="utf-8") as fh:
+            fh.write(source)
+        for patch_rel in patch_rels:
+            proc = subprocess.run(
+                ["git", "apply", "--whitespace=nowarn", os.path.join(root, patch_rel)],
+                cwd=tmp, capture_output=True, text=True,
+            )
+            if proc.returncode != 0:
+                skipped.append(patch_rel)
+        with open(dest, encoding="utf-8") as fh:
+            return fh.read(), skipped
+
+
+def check_composition(root: str) -> tuple[list[str], int, list[str], int, list[str]]:
     by_path: dict[str, list[tuple[str, str]]] = {}
     for label, rel, text in QUOTES:
         by_path.setdefault(rel, []).append((label, text))
@@ -213,11 +273,13 @@ def check_composition(root: str) -> tuple[list[str], int, list[str]]:
             pdir = os.path.join(base, pkg, "proposed")
             if os.path.isdir(pdir):
                 patches += [f"{CANDIDATES}/{pkg}/proposed/{n}" for n in sorted(os.listdir(pdir)) if n.endswith(".patch")]
+    by_target: dict[str, list[str]] = {}
     for patch_rel in patches:
         text = read(root, patch_rel) or ""
         for target in re.findall(r"(?m)^\+\+\+ b/(\S+)", text):
             if target not in by_path:
                 continue
+            by_target.setdefault(target, []).append(patch_rel)
             after = _apply_alone(root, patch_rel, target)
             if after is None:
                 skipped.append(f"{patch_rel} -> {target}")
@@ -226,7 +288,17 @@ def check_composition(root: str) -> tuple[list[str], int, list[str]]:
             for label, quote in by_path[target]:
                 if normalize(quote) not in normalize(after):
                     findings.append(f"C5 {patch_rel} changes the quoted {label} in {target}")
-    return findings, applied, skipped
+    composed, not_composed = 0, []
+    for target, rels in sorted(by_target.items()):
+        after, missed = _apply_sequence(root, rels, target)
+        not_composed += [f"{rel} -> {target}" for rel in missed]
+        composed += len(rels) - len(missed)
+        if after is None:
+            continue
+        for label, quote in by_path[target]:
+            if normalize(quote) not in normalize(after):
+                findings.append(f"C5 composed patches to {target} change the quoted {label}")
+    return findings, applied, skipped, composed, not_composed
 
 
 def check(root: str = ROOT, verbose: bool = True) -> list[str]:
@@ -234,16 +306,19 @@ def check(root: str = ROOT, verbose: bool = True) -> list[str]:
     f2, keys = check_ceilings(root)
     f3, scanned, gated = check_no_compression(root)
     f4, nq = check_packet_shape(root)
-    f5, applied, skipped = check_composition(root)
+    f5, applied, skipped, composed, not_composed = check_composition(root)
     findings += f2 + f3 + f4 + f5
     if verbose:
         print(f"C1 quoted clauses: {len(QUOTES)} checked in source and packet")
         print(f"C2 response ceilings named: {len(keys)} ({', '.join(sorted(keys))})")
-        print("C3 compression sweep: gated off (direction exists)" if gated else f"C3 compression sweep: {scanned} non-test source files scanned")
+        print("C3 compression sweep: gated off (an issued direction permits compression)" if gated else f"C3 compression sweep: {scanned} non-test source files scanned")
         print(f"C4 open questions with a default: {nq}")
         print(f"C5 candidate patches touching quoted files applied alone: {applied}; not applicable alone: {len(skipped)}")
         for s in skipped:
             print(f"   not applicable alone: {s}")
+        print(f"C5 the same patches composed in sequence: {composed} applied; not applicable on top: {len(not_composed)}")
+        for s in not_composed:
+            print(f"   not applicable composed: {s}")
         for f in findings:
             print(f"FAIL {f}")
         print("OK" if not findings else f"{len(findings)} finding(s)")
@@ -304,6 +379,42 @@ def _sibling_patch(root: str) -> None:
         fh.write(f"diff --git a/{rel} b/{rel}\n" + diff)
 
 
+VALID_DIRECTION = (
+    "# Direction\n\n1. THE READING. Each response ceiling is measured on the body "
+    "before any HTTP content coding is applied.\n\n2. WHAT MAY SHIP. gzip only.\n"
+)
+
+
+def _issue_direction(root: str, text: str = VALID_DIRECTION) -> None:
+    with open(os.path.join(root, DIRECTION), "w", encoding="utf-8") as fh:
+        fh.write(text)
+
+
+def _land_compression(root: str, line: str = "const gz = require('node:zlib');") -> None:
+    _edit(root, ROUTES, "const observed = Buffer", f"{line}\n  const observed = Buffer")
+
+
+def _write_patch(root: str, name: str, before: list[str], after: list[str]) -> None:
+    import difflib
+    diff = "".join(difflib.unified_diff(before, after, f"a/{SPEC}", f"b/{SPEC}"))
+    dest = os.path.join(root, CANDIDATES, name, "proposed", "spec.md.patch")
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    with open(dest, "w", encoding="utf-8") as fh:
+        fh.write(f"diff --git a/{SPEC} b/{SPEC}\n" + diff)
+
+
+def _composed_patches(root: str) -> None:
+    """a inserts a line after the quoted sentence; b, written on top of a,
+    rewrites the quote. b alone does not apply; a then b does."""
+    with open(os.path.join(root, SPEC), encoding="utf-8") as fh:
+        lines = fh.read().splitlines(keepends=True)
+    idx = next(i for i, line in enumerate(lines) if "explicit byte ceiling." in line)
+    with_a = lines[:idx + 1] + ["Selftest inserted line.\n"] + lines[idx + 1:]
+    with_b = with_a[:idx] + [with_a[idx].replace("explicit byte ceiling.", "explicit byte allowance.")] + with_a[idx + 1:]
+    _write_patch(root, "zz-selftest-a", lines, with_a)
+    _write_patch(root, "zz-selftest-b", with_a, with_b)
+
+
 def selftest() -> int:
     cases = [
         ("baseline passes", None, None, True),
@@ -312,12 +423,19 @@ def selftest() -> int:
         ("C2 registry gains an unnamed response ceiling", "C2", lambda r: _edit(r, REGISTRY, '"maxHumanResponseBytes": "the final', '"maxOtherResponseBytes": "the final encoded HTTP body for x",\n        "maxHumanResponseBytes": "the final'), False),
         ("C2 packet drops the briefing ceiling", "C2", lambda r: _edit(r, PACKET, "`maxBriefingResponseBytes`", "`the briefing ceiling`"), False),
         ("C3 compression code lands before a direction", "C3", lambda r: _edit(r, ROUTES, "const observed = Buffer", "const gz = require('node:zlib');\n  const observed = Buffer"), False),
-        ("C3 an issued direction gates the sweep off", None, lambda r: (_edit(r, ROUTES, "const observed = Buffer", "const gz = require('node:zlib');\n  const observed = Buffer"), open(os.path.join(r, DIRECTION), "w").close()), True),
+        ("C3 an issued direction gates the sweep off", None, lambda r: (_land_compression(r), _issue_direction(r)), True),
+        ("C3 an empty direction file does not gate", "C3", lambda r: (_land_compression(r), _issue_direction(r, "")), False),
+        ("C3 a direction without a Q1 reading does not gate", "C3", lambda r: (_land_compression(r), _issue_direction(r, VALID_DIRECTION.replace("before any HTTP content coding is applied", "somehow"))), False),
+        ("C3 a direction without WHAT MAY SHIP does not gate", "C3", lambda r: (_land_compression(r), _issue_direction(r, VALID_DIRECTION.replace("WHAT MAY SHIP.", "SHIPPING."))), False),
+        ("C3 a direction that ships no coding does not gate", "C3", lambda r: (_land_compression(r), _issue_direction(r, VALID_DIRECTION.replace("gzip only.", "Nothing."))), False),
+        ("C3 a withdrawal record reopens the sweep", "C3", lambda r: (_land_compression(r), _issue_direction(r), open(os.path.join(r, DECISIONS, "SELFTEST-WITHDRAWAL.md"), "w").write("The owner withdrew POLARIS-RESPONSE-CEILING-READING-DIRECTION.md.\n")), False),
+        ("C3 CompressionStream('deflate') is caught", "C3", lambda r: _land_compression(r, "const cs = new CompressionStream('deflate');"), False),
         ("C3 sweep over zero files", ("C3", "C1"), lambda r: shutil.rmtree(os.path.join(r, "apps")), False),
         ("C4 banner removed", "C4", lambda r: _edit(r, PACKET, "**Candidate — binds nothing.**", "**Draft.**"), False),
         ("C4 a question loses its default", "C4", lambda r: _edit(r, PACKET, "**Default if unanswered:** (a). No new dependency", "No new dependency"), False),
         ("C4 packet quotes a 64-hex digest", "C4", lambda r: _edit(r, PACKET, "## Impact\n", "## Impact\n\n" + "ab" * 32 + "\n"), False),
         ("C5 a sibling patch rewrites a quoted sentence", "C5", _sibling_patch, False),
+        ("C5 two patches composed rewrite a quoted sentence", "C5", _composed_patches, False),
     ]
     failed = 0
     for name, prefix, mutate, expect_ok in cases:
