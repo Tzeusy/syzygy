@@ -58,7 +58,7 @@ scripts/context_load.py rfcs/RFC-0010/README.md \
   rfcs/RFC-0003/governance-homes-and-owner-acts.md doctrine:vision.md
 ```
 
-Measured: **22,059 words ≈ 29,780 estimated tokens.** Band position and
+Measured: **24,529 words ≈ 33,114 estimated tokens.** Band position and
 disposition against the proposed (non-installed) budget lines are owned by
 `CONTEXT-BUDGET-REPORT.md` §1, computed from this anchored figure; this
 fixture's prose makes no band claim of its own. *(An earlier revision of
@@ -127,7 +127,7 @@ module are in `CONTEXT-BUDGET-REPORT.md` §3.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`62c79ff4ddd3da95…`.
+`4f30a1317d7ecb31…`.
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a

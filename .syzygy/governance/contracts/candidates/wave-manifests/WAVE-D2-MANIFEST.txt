@@ -2,4 +2,4 @@
 # 1 module(s); subset of ACTIVE-CONTRACT-MANIFEST.txt; rows sorted by codepoint order of the path.
 # Generated while this wave is unperformed; after a recorded owner act, these exact bytes become immutable history.
 # While unperformed, this file's current sha256 is the offered argument of `ACCEPT FOUNDATIONAL WAVE D2: <sha256>`.
-02f3d6dc3680179485c3ea2ff1e25a42a122c6dafec86d3a26faf56503fe1400  rfcs/RFC-0010/effects-recovery-and-stop.md
+c86150f570d3bb114096a6c37a9f882dc18cee5e4deb7b59cdf7bd29dfb49c96  rfcs/RFC-0010/effects-recovery-and-stop.md

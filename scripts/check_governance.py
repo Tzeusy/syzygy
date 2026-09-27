@@ -4209,6 +4209,11 @@ DIGEST_SCOPE_EXEMPT = (
      "arguments, and they are written by build_budget_report.py from the "
      "same measurement CG-18 independently recomputes — the fixtures "
      "themselves are exempt for the same reason"),
+    (f"{CANDIDATES}/round-2026-08g/FINAL-OWNER-AND-SPEC-CLOSURE-PREFLIGHT.md",
+     "a dated measurement of the six wave manifests at the commit it names; "
+     "its truncated digests record what was measured then, and the round "
+     "record is frozen, so a later re-quote of an unperformed wave cannot "
+     "be reflected in it"),
 )
 
 

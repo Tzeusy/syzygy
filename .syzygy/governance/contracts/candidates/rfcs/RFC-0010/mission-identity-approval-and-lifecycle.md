@@ -28,14 +28,28 @@ authorization), SEC-1..SEC-5; owner direction OD-R10-1/OD-R10-2 (recorded in
 the rev10 owner-direction record, a bootstrap process artifact retained with
 the delivery packet).
 
+*Orientation (non-normative; the clauses govern).* This module decides what a
+Mission is and where its authority stops. Mission Control is a
+workspace-level operator domain served by the one canonical Syzygy service,
+never a fourth truth surface; a Mission binds, at minimum, its objective,
+target, pinned inputs and initiating owner act; its lifecycle is a candidate vocabulary in
+which no park is indefinite; and a mission is authority to proceed inside
+the gates, never to skip one. The clauses carrying the weight are the
+Mission's identity and pinned inputs (**RFC10-4**), the lifecycle and its
+bounded-park rule (**RFC10-5**), and the phase rule that binds the whole
+package (**RFC10-16**); **RFC10-24** states what must hold before any
+mission may operate.
+
 ## 1. Scope of this module
 
-The platform boundary (one service, one semantic API, many clients —
-RFC10-1..3); Mission identity, approval provenance at the identity level, the
-lifecycle vocabulary and its bounded-park rule, and the mission/work seam
-(RFC10-4..6); where project-bound mission artifacts live (RFC10-14); and the
-binding phase rule at the OpenSpec seam (RFC10-16), which binds the whole
-package.
+- The platform boundary (one service, one semantic API, many clients —
+  RFC10-1..3);
+- Mission identity, approval provenance at the identity level, the lifecycle
+  vocabulary and its bounded-park rule, and the mission/work seam
+  (RFC10-4..6);
+- where project-bound mission artifacts live (RFC10-14); and
+- the binding phase rule at the OpenSpec seam (RFC10-16), which binds the
+  whole package.
 
 ## 2. The contract
 
@@ -74,24 +88,49 @@ corresponding act for owner attendance and nothing more — a machine
 credential can never itself produce the owner act the submission awaits
 (RFC10-8, RFC3-16(a)).
 
+*Diagram (non-normative; the clauses govern):* the service-and-client
+topology of RFC10-2, with RFC10-3's admission rule for machine clients.
+
+```mermaid
+flowchart LR
+    subgraph SVC["one canonical long-lived Syzygy control-plane service"]
+        API["one semantic API; owns runtime state<br/>same identities, evaluations, evidence, missions,<br/>attention items and policy results to every client"]
+    end
+    UI["web UI, including Mission Control's"] --> API
+    subgraph MC["machine clients: admitted only under RFC5-5,<br/>RFC5-6-shaped credentials, deny-by-default scopes"]
+        CLI["official syzygy CLI"]
+        AD["MCP or equivalent adapter"]
+        SC["scripts"]
+        FW["fleet workers"]
+    end
+    CLI --> API
+    AD --> API
+    SC --> API
+    FW --> API
+```
+
 ### 2.2 Mission identity and scope
 
 **RFC10-4.** A **Mission** is a first-class identified entity of RFC1-7's
 **mission extension profile** (minted under RFC 0001's identity rules; this
 contract is the profile-defining RFC, and the minting authority is the
 control-plane service at approval submission, deterministic over the
-objective, target, and initiating act) binding at minimum: its **objective and
-rationale**; its **target** (workspace, projects, capabilities, and/or
-requirements); its **exact pinned inputs** — the doctrine, contract,
-specification, policy, and evaluation revisions it runs under, by digest or
-revision identity; its **initiating owner act** (mission approval is an
-authorization-bearing act under RFC3-16(a) — a valid state-(1) or state-(2)
-act is effective and its exact provenance state is rendered; an absent,
-invalid, or machine-submitted record authorizes nothing); its **parent mission**, if any;
-its lifecycle state and terminal outcome. Pinned inputs are immutable for
-the mission's life: a change to any pinned input does not silently retarget
-a running mission — it raises an escalation (RFC10-13) whose choices include
-re-approval against the new inputs.
+objective, target, and initiating act) binding at minimum:
+
+- its **objective and rationale**;
+- its **target** (workspace, projects, capabilities, and/or requirements);
+- its **exact pinned inputs** — the doctrine, contract, specification, policy,
+  and evaluation revisions it runs under, by digest or revision identity;
+- its **initiating owner act** (mission approval is an authorization-bearing
+  act under RFC3-16(a) — a valid state-(1) or state-(2) act is effective and
+  its exact provenance state is rendered; an absent, invalid, or
+  machine-submitted record authorizes nothing);
+- its **parent mission**, if any;
+- its lifecycle state and terminal outcome.
+
+Pinned inputs are immutable for the mission's life: a change to any pinned
+input does not silently retarget a running mission — it raises an escalation
+(RFC10-13) whose choices include re-approval against the new inputs.
 
 **RFC10-5.** The candidate mission lifecycle vocabulary is:
 
@@ -145,29 +184,79 @@ substitute for the human resolution act where the paragraph above owes one,
 and does not mark the condition cleared. It ends the mission and fires
 RFC10-19's duties.
 
+*Diagram (non-normative; the clauses govern):* the candidate lifecycle
+vocabulary listed in RFC10-5, drawn as a state machine.
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    state "any non-terminal state" as NT {
+        draft --> AA
+        AA --> approved
+        approved --> running
+        running --> paused
+        paused --> running
+        running --> blocked
+        blocked --> running : on unblock
+    }
+    state "awaiting-approval" as AA
+    draft --> expired : maximum time to first dispatch (RFC10-17(a))
+    AA --> expired : maximum time to first dispatch (RFC10-17(a))
+    approved --> expired : maximum time to first dispatch (RFC10-17(a))
+    blocked --> expired : park expiry
+    paused --> expired : park expiry
+    running --> failed : RFC10-18, RFC10-20(d)
+    paused --> failed : RFC10-18, RFC10-20(d)
+    blocked --> failed : RFC10-18, RFC10-20(d)
+    NT --> cancelled : human act
+    NT --> expired : human act
+    running --> completed
+```
+
+*Diagram (non-normative; the clauses govern):* how the maximum park duration
+of a `blocked` or `paused` mission is found, and what happens at it.
+
+```mermaid
+flowchart TD
+    P["a park: blocked or paused,<br/>whatever gave rise to it"] --> D{"maximum park duration<br/>declared by the envelope?"}
+    D -->|"yes"| M1["the declared maximum"]
+    D -->|"no"| A{"did the park mint<br/>an Attention Item?"}
+    A -->|"yes"| M2["that item's expiry (RFC10-12)"]
+    A -->|"no"| M3["the envelope's shortest declared<br/>duration-typed maximum<br/>(counts and rates are not durations)"]
+    M1 --> X["at the maximum: expired, a terminal state<br/>whose reason is recorded;<br/>a termination, never a resolution"]
+    M2 --> X
+    M3 --> X
+```
+
 **RFC10-6.** **A mission is not work, and work is never proof.** Missions
 authorize the *materialization* of work items; the work items themselves,
-their states, dispatch, execution records, and evidence remain entirely
-RFC 0008/0002 semantics. A mission's completion predicate is evaluated
-against **evidence** (RFC 0002), never against work having been performed.
-No mission bypasses evidence, reconciliation, consent (RFC5-12), egress
-(RFC5-14), or execution-profile (RFC5-18) gates — a mission is authority to
-*proceed inside* the gates, never authority to skip one. The completion
-predicate declares the **minimum RFC2-25 evidence tier** it accepts
-(unstated means, per RFC10-7's narrow reading, the strongest applicable
-tier), and the completion render discloses the tier actually achieved
-(VIS-2) — "all work items closed" or worker assertion alone never
+their states, dispatch, execution records, and evidence remain entirely RFC
+0008/0002 semantics. A mission's completion predicate is evaluated against
+**evidence** (RFC 0002), never against work having been performed. No mission
+bypasses evidence, reconciliation, consent (RFC5-12), egress (RFC5-14), or
+execution-profile (RFC5-18) gates — a mission is authority to *proceed inside*
+the gates, never authority to skip one.
+
+The completion predicate declares the **minimum RFC2-25 evidence tier** it
+accepts (unstated means, per RFC10-7's narrow reading, the strongest
+applicable tier), and the completion render discloses the tier actually
+achieved (VIS-2) — "all work items closed" or worker assertion alone never
 satisfies a conforming predicate.
 
 Where two or more admitted evidence artifacts bearing on one completion
 predicate support opposing conclusions, **the predicate is not satisfied**:
 the disagreement is recorded as evidence, the predicate's conclusion renders
 Unknown, and the condition is an escalation trigger under RFC10-13. It is
-never resolved by recency, by tier where the tiers are equal, by the
-executing principal's selection among sources, or by any precedence rule.
-Where the disagreeing artifacts support co-unsatisfiable authoritative
-claims, RFC2-15's Contradiction machinery governs and owner adjudication is
-the only exit.
+never resolved
+
+- by recency,
+- by tier where the tiers are equal,
+- by the executing principal's selection among sources, or
+- by any precedence rule.
+
+Where the disagreeing artifacts support co-unsatisfiable authoritative claims,
+RFC2-15's Contradiction machinery governs and owner adjudication is the only
+exit.
 
 ### 2.3 Project-bound mission homes
 
@@ -181,23 +270,53 @@ mission-approval **act record** does not live here: it is appended to
 (RFC3-16(b) item 3) — the in-tree envelope file plus any stamp is never
 itself the approval.
 
+*Diagram (non-normative; the clauses govern):* where RFC10-14 places a
+project-bound mission's artifacts, and where the approval act record goes
+instead.
+
+```mermaid
+flowchart LR
+    subgraph H[".syzygy/work/missions/&lt;mission-id&gt;/ (governed project home)"]
+        MR["mission record"]
+        EN["envelope"]
+        CP["checkpoints"]
+        AI["attention items scoped to it"]
+    end
+    subgraph D[".syzygy/governance/decisions/"]
+        AR["mission-approval act record"]
+    end
+    AR -->|"binds the envelope's exact digest<br/>(RFC3-16(b) item 3)"| EN
+```
+
 ### 2.4 Authority boundary at the OpenSpec seam (binding phase rule)
 
-**RFC10-16.** This contract schedules nothing: **it is not a specification
-of record from which implementation work may be scheduled**. No
-implementation work for user-observable Mission Control behavior — mission
-creation/approval flows, lifecycle displays, envelope editing, attention
-queue rendering, CLI commands, API endpoints and their answers,
-MCP-or-equivalent tools — may be scheduled solely from this RFC — including everything RFC10-17..22
-requires of a runtime. Before
-implementation, every observable consequence either maps to an approved
-OpenSpec requirement and scenario in the governance root's `openspec/**`
-plane, or carries a reviewed N/A judgment proving it purely structural
-with no independently testable behavior. At surface specification a
-clause-to-requirement coverage matrix over RFC10-1..RFC10-22 is produced —
-**that matrix is review material, never authority**. This clause creates
-no OpenSpec content now (none may exist during bootstrap). (Shape-parallel
-with RFC6-28, RFC7-38, RFC8-32, RFC9-52.)
+**RFC10-16.** This contract schedules nothing: **it is not a specification of
+record from which implementation work may be scheduled**.
+
+No implementation work for user-observable Mission Control behavior —
+
+- mission creation/approval flows,
+- lifecycle displays,
+- envelope editing,
+- attention queue rendering,
+- CLI commands,
+- API endpoints and their answers,
+- MCP-or-equivalent tools —
+
+may be scheduled solely from this RFC — including everything RFC10-17..22
+requires of a runtime.
+
+Before implementation, every observable consequence either
+
+- maps to an approved OpenSpec requirement and scenario in the governance
+  root's `openspec/**` plane, or
+- carries a reviewed N/A judgment proving it purely structural with no
+  independently testable behavior.
+
+At surface specification a clause-to-requirement coverage matrix over
+RFC10-1..RFC10-22 is produced — **that matrix is review material, never
+authority**. This clause creates no OpenSpec content now (none may exist
+during bootstrap). (Shape-parallel with RFC6-28, RFC7-38, RFC8-32, RFC9-52.)
 
 ### 2.5 Doctrine precondition on operation
 
@@ -208,9 +327,15 @@ approves the exact mission and exact envelope. That ruling satisfies this
 clause's owner-ruling alternative; it does not accept RFC 0010, sign any
 OpenSpec behavior, or approve or start a mission. RFC 0010 remains candidate
 and binds nothing, so no mission may operate or leave `awaiting-approval`
-unless this contract is accepted, its required OpenSpec behavior is signed,
-RFC10-16 is satisfied, the exact mission and envelope carry effective owner
-acts under RFC3-16(a), and every other independent mission gate passes.
+unless
+
+- this contract is accepted,
+- its required OpenSpec behavior is signed,
+- RFC10-16 is satisfied,
+- the exact mission and envelope carry effective owner acts under RFC3-16(a),
+  and
+- every other independent mission gate passes.
+
 State (1) and state (2) acts may satisfy the owner-act gate with their exact
 provenance state rendered. Satisfaction of the doctrine alternative never
 discharges RFC10-16 or any effect-specific gate.

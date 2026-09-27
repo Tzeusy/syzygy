@@ -26,40 +26,62 @@ map, lookup rule, package-level integration and deferrals: `README.md`.
 guess); SEC-2 (deny-by-default context/tool grants); owner direction
 OD-R10-3/OD-R10-4.
 
+*Orientation (non-normative; the clauses govern).* This module decides what a
+Context Packet is and what may be trusted about it, without claiming that
+deterministic selection is solved. A governed run requires an immutable,
+digest-bound packet that reports its envelope and permissions and is never
+itself an authorization source; the packet digest is part of every resulting
+execution record; inference may add suggested context and never suppress
+mandatory context; and incomplete context is Unknown and by default the run
+does not launch. The clauses carrying the weight are packet identity
+(**RFC11-1**), the incomplete-is-Unknown rule (**RFC11-6**), and the phase
+rule that binds the whole package (**RFC11-12**).
+
 ## 1. Scope of this module
 
-What a Context Packet **is** and what may be trusted about it: identity and
-immutability (RFC11-1..3); the mandatory/suggested distinction (RFC11-5);
-the incomplete-is-Unknown rule (RFC11-6); the no-second-truth-store rule
-(RFC11-7); governed memory (RFC11-8..9); agent/model profiles (RFC11-10);
-and the binding phase rule (RFC11-12), which binds the whole package. This
-module does **not** claim deterministic selection is solved; how the
+What a Context Packet **is** and what may be trusted about it:
+
+- identity and immutability (RFC11-1..3);
+- the mandatory/suggested distinction (RFC11-5);
+- the incomplete-is-Unknown rule (RFC11-6);
+- the no-second-truth-store rule (RFC11-7);
+- governed memory (RFC11-8..9);
+- agent/model profiles (RFC11-10); and
+- the binding phase rule (RFC11-12), which binds the whole package.
+
+This module does **not** claim deterministic selection is solved; how the
 mandatory set is derived is module 2's subject.
 
 ## 2. The contract
 
 ### 2.1 Context packet identity
 
-**RFC11-1.** A **Context Packet** is a versioned, **immutable**,
-digest-bound execution artifact, minted per compiled run. It identifies, at
-minimum: the **objective** (mission, plan, work item, review, or query task
-it serves — by stable identity); the **project and workspace identity**; the
-**selected evaluation and as-of instant** (RFC 0002's temporal machinery);
-the **exact doctrine rules** included, by identifier; the **exact RFC
-clauses**, by clause ID at stated revision/digest; the **exact OpenSpec
-requirements and scenarios**, once such exist; the **topology and craft
-policies** included; the **work warrant and autonomy envelope** governing
-the run (RFC10-7 — the envelope is a mandatory input for any
-mission-spawned run); relevant **code, test, and evidence references**, by
-identity; the **active decisions, contradictions, challenges, and Unknowns**
-in scope; the **allowed tools and permissions** (deny-by-default, within
-the envelope); the **context-compiler and adapter versions**; the
-**explicitly omitted candidate context, each with its reason**; and the
-packet's **final digest**. A packet **reports** the envelope and
-permissions it was compiled under; it is never itself an authorization
-source — enforcement re-derives every permission from the envelope and its
-act provenance at the choke point (RFC10-8, RFC3-16(a)); whoever mints
-packets grants nothing.
+**RFC11-1.** A **Context Packet** is a versioned, **immutable**, digest-bound
+execution artifact, minted per compiled run. It identifies, at minimum:
+
+- the **objective** (mission, plan, work item, review, or query task it serves
+  — by stable identity);
+- the **project and workspace identity**;
+- the **selected evaluation and as-of instant** (RFC 0002's temporal
+  machinery);
+- the **exact doctrine rules** included, by identifier;
+- the **exact RFC clauses**, by clause ID at stated revision/digest;
+- the **exact OpenSpec requirements and scenarios**, once such exist;
+- the **topology and craft policies** included;
+- the **work warrant and autonomy envelope** governing the run (RFC10-7 — the
+  envelope is a mandatory input for any mission-spawned run);
+- relevant **code, test, and evidence references**, by identity;
+- the **active decisions, contradictions, challenges, and Unknowns** in scope;
+- the **allowed tools and permissions** (deny-by-default, within the
+  envelope);
+- the **context-compiler and adapter versions**;
+- the **explicitly omitted candidate context, each with its reason**; and
+- the packet's **final digest**.
+
+A packet **reports** the envelope and permissions it was compiled under; it is
+never itself an authorization source — enforcement re-derives every permission
+from the envelope and its act provenance at the choke point (RFC10-8,
+RFC3-16(a)); whoever mints packets grants nothing.
 
 **RFC11-2.** The packet digest is part of every resulting **Execution
 Record** (RFC8-18..RFC8-20 / RFC 0002 evidence): an execution record for a compiled
@@ -83,17 +105,34 @@ may **never suppress, demote, or replace** mandatory deterministic context.
 A packet distinguishes its mandatory core from its suggested additions.
 
 **RFC11-6.** **Incomplete is Unknown, and Unknown blocks when policy says
-complete.** If required context cannot be determined, conflicts internally
-(two applicable rules contradict — RFC 0002's contradiction machinery), is
-stale against the selected evaluation, or is itself Unknown, the packet is
-marked **incomplete/Unknown with the gap named**, and **by default the run
-does not launch** — the condition escalates (RFC10-12) rather than
-proceeding on silently thinned context. Proceeding on disclosed-incomplete
-context is lawful only under an **explicit, owner-visible relaxation** in
-the governing policy or envelope — never an unstated default (the
-fail-closed posture of RFC5-14, RFC5-16, and SEC-5 applies here too).
-Staleness and contradiction are disclosed *inside* the packet even where a
-relaxation permits proceeding.
+complete.** If required context
+
+- cannot be determined,
+- conflicts internally (two applicable rules contradict — RFC 0002's
+  contradiction machinery),
+- is stale against the selected evaluation, or
+- is itself Unknown,
+
+the packet is marked **incomplete/Unknown with the gap named**, and **by
+default the run does not launch** — the condition escalates (RFC10-12) rather
+than proceeding on silently thinned context.
+
+Proceeding on disclosed-incomplete context is lawful only under an **explicit,
+owner-visible relaxation** in the governing policy or envelope — never an
+unstated default (the fail-closed posture of RFC5-14, RFC5-16, and SEC-5
+applies here too). Staleness and contradiction are disclosed *inside* the
+packet even where a relaxation permits proceeding.
+
+*Diagram (non-normative; the clauses govern):* what RFC11-6 does with a
+packet whose required context is incomplete.
+
+```mermaid
+flowchart TD
+    C["required context cannot be determined, conflicts internally,<br/>is stale against the selected evaluation, or is itself Unknown"] --> M["packet marked incomplete/Unknown,<br/>with the gap named"]
+    M --> R{"explicit, owner-visible relaxation<br/>in the governing policy or envelope?"}
+    R -->|"no: the default"| B["the run does not launch;<br/>the condition escalates (RFC10-12)"]
+    R -->|"yes"| P["proceeding on disclosed-incomplete context<br/>is lawful only under that relaxation;<br/>staleness and contradiction are still<br/>disclosed inside the packet"]
+```
 
 **RFC11-7.** **No second truth store.** Selection metadata is present in, or
 deterministically derived from, the active governed artifacts themselves;
@@ -119,47 +158,71 @@ under RFC3-16(a): without owner-act provenance it binds nothing and never
 enters mandatory context as an interpretation.
 
 **RFC11-9.** **Retention and privacy boundaries** (no storage engine chosen
-here): governed memory lives in governed homes (RFC 0003 discipline);
-secret material never enters packets or memory (SEC-5, RFC5-16/17); any
-packet content crossing an egress boundary (e.g. to a model provider) is
-subject to the egress-consent gate (RFC5-14/15) — a packet is not a consent
-loophole; retention/deletion of non-canonical raw material (transcripts,
-scratch) is a declared policy, while canonical memory follows its home's
-lifecycle (RFC3-16 category lifecycles), never silent deletion.
+here):
+
+- governed memory lives in governed homes (RFC 0003 discipline);
+- secret material never enters packets or memory (SEC-5, RFC5-16/17);
+- any packet content crossing an egress boundary (e.g. to a model provider) is
+  subject to the egress-consent gate (RFC5-14/15) — a packet is not a consent
+  loophole;
+- retention/deletion of non-canonical raw material (transcripts, scratch) is a
+  declared policy, while canonical memory follows its home's lifecycle
+  (RFC3-16 category lifecycles), never silent deletion.
 
 ### 2.4 Agent and model profiles
 
-**RFC11-10.** Work routing may consult a minimal **agent/model profile** —
-an optional extension identifying, at most need: supported tools and skills;
-data/egress permissions; task and risk classes served; context capacity;
-cost and latency class; historical evidence of quality (as identified
-evidence, not reputation prose); independence requirements (for review
-roles — the fresh-context property is a profile fact); and fallback order.
-Profiles are versioned, and **no current model or provider name is
-hard-coded as permanent semantics** — names are data in profile instances,
-never constants in contracts. A profile can narrow what reaches an agent
-(capacity, permissions); it can never widen an envelope (RFC10-8). Profile
-fields that *satisfy an envelope-required gate* — independence,
-permissions, risk classes served — are authorization-bearing under
-RFC3-16(a): they satisfy the gate only when backed by owner-act provenance
-or identified evidence; a self-asserted field **fails closed** for gate
-satisfaction and the gate stands unsatisfied.
+**RFC11-10.** Work routing may consult a minimal **agent/model profile** — an
+optional extension identifying, at most need:
+
+- supported tools and skills;
+- data/egress permissions;
+- task and risk classes served;
+- context capacity;
+- cost and latency class;
+- historical evidence of quality (as identified evidence, not reputation
+  prose);
+- independence requirements (for review roles — the fresh-context property is
+  a profile fact); and
+- fallback order.
+
+Profiles are versioned, and **no current model or provider name is hard-coded
+as permanent semantics** — names are data in profile instances, never
+constants in contracts. A profile can narrow what reaches an agent (capacity,
+permissions); it can never widen an envelope (RFC10-8).
+
+Profile fields that *satisfy an envelope-required gate* — independence,
+permissions, risk classes served — are authorization-bearing under RFC3-16(a):
+they satisfy the gate only when backed by owner-act provenance or identified
+evidence; a self-asserted field **fails closed** for gate satisfaction and the
+gate stands unsatisfied.
 
 ### 2.5 Authority boundary at the OpenSpec seam (binding phase rule)
 
-**RFC11-12.** This contract schedules nothing: **it is not a specification
-of record from which implementation work may be scheduled**. No
-implementation work for user-observable Context Compiler behavior — packet
-inspection views, CLI commands, API endpoints, compiler diagnostics,
-omission reports — may be scheduled solely from this RFC. Before
-implementation, every observable consequence either maps to an approved
-OpenSpec requirement and scenario in the governance root's `openspec/**`
-plane, or carries a reviewed N/A judgment proving it purely structural
-with no independently testable behavior. At surface specification a
-clause-to-requirement coverage matrix over RFC11-1..RFC11-12 is produced —
-**that matrix is review material, never authority**. This clause creates
-no OpenSpec content now (none may exist during bootstrap). (Shape-parallel
-with RFC6-28, RFC7-38, RFC8-32, RFC9-52, RFC10-16.)
+**RFC11-12.** This contract schedules nothing: **it is not a specification of
+record from which implementation work may be scheduled**.
+
+No implementation work for user-observable Context Compiler behavior —
+
+- packet inspection views,
+- CLI commands,
+- API endpoints,
+- compiler diagnostics,
+- omission reports —
+
+may be scheduled solely from this RFC.
+
+Before implementation, every observable consequence either
+
+- maps to an approved OpenSpec requirement and scenario in the governance
+  root's `openspec/**` plane, or
+- carries a reviewed N/A judgment proving it purely structural with no
+  independently testable behavior.
+
+At surface specification a clause-to-requirement coverage matrix over
+RFC11-1..RFC11-12 is produced — **that matrix is review material, never
+authority**. This clause creates no OpenSpec content now (none may exist
+during bootstrap). (Shape-parallel with RFC6-28, RFC7-38, RFC8-32, RFC9-52,
+RFC10-16.)
 
 ## 8. Owner questions
 

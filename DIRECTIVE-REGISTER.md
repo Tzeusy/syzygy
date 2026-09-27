@@ -815,46 +815,46 @@ Candidate — **binds nothing.** RFC-0010 and RFC-0011, plus the candidate copie
 | `RFC9-50` | No ambient motion at V0 | `.syzygy/governance/contracts/candidates/rfcs/RFC-0009/interaction-parity-and-release.md`:289 |
 | `RFC9-51` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0009/interaction-parity-and-release.md`:295 |
 | `RFC9-52` | This contract schedules nothing | `.syzygy/governance/contracts/candidates/rfcs/RFC-0009/interaction-parity-and-release.md`:304 |
-| `RFC10-1` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:44 |
-| `RFC10-2` | Service-and-client boundary | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:53 |
-| `RFC10-3` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:67 |
-| `RFC10-4` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:79 |
-| `RFC10-5` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:96 |
-| `RFC10-6` | A mission is not work, and work is never proof | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:148 |
-| `RFC10-7` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:42 |
-| `RFC10-8` | No self-widening — the load-bearing rule | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:109 |
-| `RFC10-9` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:149 |
-| `RFC10-10` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:167 |
-| `RFC10-11` | Bound exhaustion never self-extends | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:202 |
-| `RFC10-12` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:215 |
-| `RFC10-13` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:231 |
-| `RFC10-14` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:174 |
+| `RFC10-1` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:58 |
+| `RFC10-2` | Service-and-client boundary | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:67 |
+| `RFC10-3` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:81 |
+| `RFC10-4` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:114 |
+| `RFC10-5` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:135 |
+| `RFC10-6` | A mission is not work, and work is never proof | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:231 |
+| `RFC10-7` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:59 |
+| `RFC10-8` | No self-widening — the load-bearing rule | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:139 |
+| `RFC10-9` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:204 |
+| `RFC10-10` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:226 |
+| `RFC10-11` | Bound exhaustion never self-extends | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:279 |
+| `RFC10-12` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:292 |
+| `RFC10-13` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:315 |
+| `RFC10-14` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:263 |
 | `RFC10-15` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0009/semantic-geography.md`:181 |
-| `RFC10-16` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:186 |
-| `RFC10-17` | Budget is reserved, and reservation is enforcement, never accounting alone | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/budget-reservation.md`:42 |
-| `RFC10-18` | Completion is reported by the executor and established by another | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/effects-recovery-and-stop.md`:43 |
-| `RFC10-19` | Effects are classified before they are authorized | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/effects-recovery-and-stop.md`:152 |
-| `RFC10-20` | What stop guarantees | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/effects-recovery-and-stop.md`:244 |
-| `RFC10-21` | Cross-project composites carry every embedded project's consent requirement | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/portfolio-and-cross-project-consent.md`:57 |
-| `RFC10-22` | The attention queue is bounded | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:244 |
-| `RFC10-23` | Effect dimensions are recorded separately, and no single predicate collapses them | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/effects-recovery-and-stop.md`:291 |
-| `RFC10-24` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:204 |
-| `RFC11-1` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:43 |
-| `RFC11-2` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:64 |
-| `RFC11-3` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:71 |
-| `RFC11-4` | Mandatory context is selected deterministically | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/deterministic-selection-and-budget.md`:42 |
-| `RFC11-5` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:80 |
-| `RFC11-6` | Incomplete is Unknown, and Unknown blocks when policy says complete | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:85 |
-| `RFC11-7` | No second truth store | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:98 |
-| `RFC11-8` | Raw chat history is not canonical project memory | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:106 |
-| `RFC11-9` | Retention and privacy boundaries | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:121 |
-| `RFC11-10` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:132 |
-| `RFC11-11` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/deterministic-selection-and-budget.md`:148 |
-| `RFC11-12` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:150 |
-| `RFC11-13` | Every active contract declares its implementation boundary | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/deterministic-selection-and-budget.md`:71 |
-| `RFC11-14` | Dependency traversal is defined, bounded, and recorded | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/deterministic-selection-and-budget.md`:100 |
-| `RFC11-15` | Doctrine and craft rule ownership is declared, not judged | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/deterministic-selection-and-budget.md`:128 |
-| `RFC11-16` | constrains is consumed clause-first | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/deterministic-selection-and-budget.md`:140 |
+| `RFC10-16` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:293 |
+| `RFC10-17` | Budget is reserved, and reservation is enforcement, never accounting alone | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/budget-reservation.md`:52 |
+| `RFC10-18` | Completion is reported by the executor and established by another | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/effects-recovery-and-stop.md`:60 |
+| `RFC10-19` | Effects are classified before they are authorized | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/effects-recovery-and-stop.md`:192 |
+| `RFC10-20` | What stop guarantees | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/effects-recovery-and-stop.md`:313 |
+| `RFC10-21` | Cross-project composites carry every embedded project's consent requirement | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/portfolio-and-cross-project-consent.md`:68 |
+| `RFC10-22` | The attention queue is bounded | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md`:331 |
+| `RFC10-23` | Effect dimensions are recorded separately, and no single predicate collapses them | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/effects-recovery-and-stop.md`:374 |
+| `RFC10-24` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md`:323 |
+| `RFC11-1` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:59 |
+| `RFC11-2` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:86 |
+| `RFC11-3` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:93 |
+| `RFC11-4` | Mandatory context is selected deterministically | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/deterministic-selection-and-budget.md`:58 |
+| `RFC11-5` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:102 |
+| `RFC11-6` | Incomplete is Unknown, and Unknown blocks when policy says complete | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:107 |
+| `RFC11-7` | No second truth store | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:137 |
+| `RFC11-8` | Raw chat history is not canonical project memory | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:145 |
+| `RFC11-9` | Retention and privacy boundaries | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:160 |
+| `RFC11-10` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:174 |
+| `RFC11-11` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/deterministic-selection-and-budget.md`:188 |
+| `RFC11-12` | — | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md`:201 |
+| `RFC11-13` | Every active contract declares its implementation boundary | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/deterministic-selection-and-budget.md`:99 |
+| `RFC11-14` | Dependency traversal is defined, bounded, and recorded | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/deterministic-selection-and-budget.md`:141 |
+| `RFC11-15` | Doctrine and craft rule ownership is declared, not judged | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/deterministic-selection-and-budget.md`:168 |
+| `RFC11-16` | constrains is consumed clause-first | `.syzygy/governance/contracts/candidates/rfcs/RFC-0011/deterministic-selection-and-budget.md`:180 |
 
 ## Cited without a definition site
 

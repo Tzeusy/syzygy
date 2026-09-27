@@ -2,8 +2,8 @@
 # 5 module(s); subset of ACTIVE-CONTRACT-MANIFEST.txt; rows sorted by codepoint order of the path.
 # Generated while this wave is unperformed; after a recorded owner act, these exact bytes become immutable history.
 # While unperformed, this file's current sha256 is the offered argument of `ACCEPT FOUNDATIONAL WAVE D1: <sha256>`.
-862691ffbd97c1f81171395b5b3f39f7f1fd85cab510a7a65877c337e0413495  rfcs/RFC-0010/README.md
-45211663bee3e28215800c879ad98e424b8bbf2f0ffa3098b2e216cabb28d1e0  rfcs/RFC-0010/budget-reservation.md
-98fa3a214df31d36a9e9cdc03a8e656f8d8fe6e5287f98fe6a6bb82e178c7036  rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md
-5c3af76a37216d7e98926fe64af2cb64f9a98e6e6a79164edf7dcc64f1432b02  rfcs/RFC-0010/portfolio-and-cross-project-consent.md
-d48bb558cb6c3dac34d880126a2d5388a5a740cc23bd26122a232a2c06f4cda9  rfcs/RFC-0010/prevention-envelope-and-attention.md
+66f91ed0ed3201bcd51d451b7318404d820f07a4d52de4fedc9784b4b5644b1d  rfcs/RFC-0010/README.md
+c6de80fd8aff7e36c1aa6fa00413084b3285b8accb1dbffefe96f1203eb89a8d  rfcs/RFC-0010/budget-reservation.md
+8bf975a1648dae7c6527c499554a01e180ffb9b82f603f0551c14685d4cf083d  rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md
+6c30a7a29df54eb682819ddd601304808d79356ca5160424c176e453c49b9fde  rfcs/RFC-0010/portfolio-and-cross-project-consent.md
+14b2af63a3b73a5afcc77ec7e4ee23e23a7e50f593aa5d73e713202e9eeddaf0  rfcs/RFC-0010/prevention-envelope-and-attention.md

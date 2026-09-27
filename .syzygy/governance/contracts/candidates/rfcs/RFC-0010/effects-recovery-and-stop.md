@@ -25,34 +25,52 @@ Rationale, amendment history, and violation cases:
 
 **Serves:** VIS-2, VIS-4; SEC-3, SEC-4.
 
+*Orientation (non-normative; the clauses govern).* This module decides what
+happens after something goes wrong. Executing agents may report completion
+and may never establish it; whether effects were applied is established,
+not asserted, and Unknown effects are treated as applied; every effect class
+an envelope permits is classified before it is authorized, and applied
+effects are dispositioned when the mission fails, is cancelled or expires; and a stop is synchronous
+and bounded, with a stop that cannot complete an outcome rather than a wait.
+The clauses carrying the weight are **RFC10-18** with **RFC10-18(a)**
+(completion and the effects-applied determination), **RFC10-19**
+(classification, compensation and recovery) and **RFC10-20** (what stop
+guarantees).
+
 ## 1. Scope of this module — the correction plane
 
-The prevention plane (modules 1–3, 5) makes out-of-envelope acts impossible
-at Syzygy's choke points. Prevention is not enough, because prevention only
-ever addresses the *future*. This module addresses the *past*: work already
+The prevention plane (modules 1–3, 5) makes out-of-envelope acts impossible at
+Syzygy's choke points. Prevention is not enough, because prevention only ever
+addresses the *future*. This module addresses the *past*: work already
 dispatched, money already spent, effects already applied, and a human who
 needs to be able to stop all of it. Pause is not rollback; refusing the next
-act does not undo the last one. It fixes: independent completion
-adjudication and the independently established effects-applied determination
-(RFC10-18, RFC10-18(a)); effect classification, compensation, recovery and
-sibling disposition (RFC10-19, RFC10-19(a)); what stop guarantees
-(RFC10-20); and the separately recorded effect dimensions (RFC10-23).
+act does not undo the last one.
+
+It fixes:
+
+- independent completion adjudication and the independently established
+  effects-applied determination (RFC10-18, RFC10-18(a));
+- effect classification, compensation, recovery and sibling disposition
+  (RFC10-19, RFC10-19(a));
+- what stop guarantees (RFC10-20); and
+- the separately recorded effect dimensions (RFC10-23).
 
 ## 2. The contract
 
 **RFC10-18. Completion is reported by the executor and established by
 another.** A mission's executing agents, fleets, and workers **may report**
-that the completion predicate is satisfied and **may never establish it**.
-The `running → completed` transition is taken only by (a) an owner act, or
-(b) a declared, owner-approved evaluation independent of the executing
-principal and whose supporting evidence is `gate-backed` (RFC2-25) — never by
-the principal that performed the work, and never by a principal that
-principal routed. **Independence is transitive, and established rather than
-asserted:** a principal routed by the executing principal at *any* depth is
-not independent, and the establisher is named in the envelope at approval
-time — the **completion establisher is a required envelope field under
-RFC10-7's minimum**, honored under RFC10-9's provenance rule, and a derived
-child mission **inherits its parent's declared establisher** (RFC10-8) — so
+that the completion predicate is satisfied and **may never establish it**. The
+`running → completed` transition is taken only by (a) an owner act, or (b) a
+declared, owner-approved evaluation independent of the executing principal and
+whose supporting evidence is `gate-backed` (RFC2-25) — never by the principal
+that performed the work, and never by a principal that principal routed.
+
+**Independence is transitive, and established rather than asserted:** a
+principal routed by the executing principal at *any* depth is not independent,
+and the establisher is named in the envelope at approval time — the
+**completion establisher is a required envelope field under RFC10-7's
+minimum**, honored under RFC10-9's provenance rule, and a derived child
+mission **inherits its parent's declared establisher** (RFC10-8) — so
 independence is a property of the approved envelope rather than a runtime
 selection. An establisher chosen after the fact by the party whose work it
 adjudicates is not independent, whatever relation it declares.
@@ -70,48 +88,57 @@ RFC10-18(a), never as asserted by the executing principal**:
   keyed to `failed`, `cancelled` and `expired`, and RFC10-19 states that
   `blocked` discharges none of them — so routing an effect-bearing mission to
   `blocked` would place it outside the correction plane entirely.
-- **With no applied effects it enters `blocked`** with an Attention Item.
-  **No human resolution act is owed for this block, and this clause says so
-  rather than implying one.** RFC10-5's human-resolution rule is scoped to
-  blocks arising under RFC10-8 or RFC10-11; an RFC10-18-sourced block arises
-  under neither, and an earlier revision cited RFC10-5 for an obligation
-  RFC10-5's own scope excludes. What bounds this park is RFC10-5's **maximum
-  park duration**, which holds for every block class: at the maximum the
-  mission transitions to `expired`, RFC10-19's duties fire, and RFC10-17(a)
-  releases the reservation. A human resolution act stays *available* and is
-  the better exit; it is simply not owed.
+- **With no applied effects it enters `blocked`** with an Attention Item. **No
+  human resolution act is owed for this block, and this clause says so rather
+  than implying one.** RFC10-5's human-resolution rule is scoped to blocks
+  arising under RFC10-8 or RFC10-11; an RFC10-18-sourced block arises under
+  neither, and an earlier revision cited RFC10-5 for an obligation RFC10-5's
+  own scope excludes. What bounds this park is RFC10-5's **maximum park
+  duration**, which holds for every block class: at the maximum the mission
+  transitions to `expired`, RFC10-19's duties fire, and RFC10-17(a) releases
+  the reservation. A human resolution act stays *available* and is the better
+  exit; it is simply not owed.
 
 An unstated minimum evidence tier means `gate-backed`;
 "the strongest applicable tier" (RFC10-6) is never a judgment the executing
 principal makes for itself.
 
 **RFC10-18(a). Whether effects were applied is established, not asserted.**
-One predicate — *have external-mutation effects (RFC10-23 dimension (ii))
-been applied under this mission?* — decides whether the correction plane
-engages at all. **This sub-clause governs that predicate wherever it
-appears**, not only in the branch above: RFC10-19's `with effects already
-applied` trigger, RFC10-19(a)'s `after applying effects` gate, RFC10-20(c)'s
-`any effect already applied`, and RFC10-17(a)'s applied-effects row selection
-are the same determination and are subject to every rule below, including
-the fail-closed Unknown rule. That enumeration covers every site in the
-current package, and **any future clause keying on this predicate is
-governed by this sub-clause by that fact alone, named here or not** — a
-predicate that has an establisher in one clause and none in a clause that
-carries its duties is not established. The executing principal **may
-report** on it and **may never establish** it, on the terms RFC10-18 sets
-for completion. A branch selector chosen by the party it routes is not a
-determination, so this one carries all four of completion's requirements:
+One predicate — *have external-mutation effects (RFC10-23 dimension (ii)) been
+applied under this mission?* — decides whether the correction plane engages at
+all.
 
-- **Evaluator.** The same class of party RFC10-18 requires for `running →
-  completed`: an owner act, or a declared, owner-approved evaluation
-  independent — transitively — of the executing principal and of every
-  principal it routed, **named in the envelope at approval time on the same
-  terms as the completion establisher, and inherited by derived children
+**This sub-clause governs that predicate wherever it appears**, not only in
+the branch above:
+
+- RFC10-19's `with effects already applied` trigger,
+- RFC10-19(a)'s `after applying effects` gate,
+- RFC10-20(c)'s `any effect already applied`, and
+- RFC10-17(a)'s applied-effects row selection
+
+are the same determination and are subject to every rule below, including the
+fail-closed Unknown rule. That enumeration covers every site in the current
+package, and **any future clause keying on this predicate is governed by this
+sub-clause by that fact alone, named here or not** — a predicate that has an
+establisher in one clause and none in a clause that carries its duties is not
+established.
+
+The executing principal **may report** on it and **may never establish** it,
+on the terms RFC10-18 sets for completion. A branch selector chosen by the
+party it routes is not a determination, so this one carries all four of
+completion's requirements:
+
+- **Evaluator.** The same class of party RFC10-18 requires for
+  `running → completed`: an owner act, or a declared, owner-approved
+  evaluation independent — transitively — of the executing principal and of
+  every principal it routed, **named in the envelope at approval time on the
+  same terms as the completion establisher, and inherited by derived children
   (RFC10-8)**.
 - **Evidence.** The mission's guardrail decision record (RFC10-10), each run's
   execution record (RFC4-18..RFC4-21), and the envelope's declared effect
-  classification (RFC10-19), retained for the mission's full retention horizon.
-  A determination whose evidence has aged out is Unknown, not negative.
+  classification (RFC10-19), retained for the mission's full retention
+  horizon. A determination whose evidence has aged out is Unknown, not
+  negative.
 - **Minimum evidence tier.** `gate-backed` (RFC2-25). A `report-fact`
   assertion by the executor is admissible as evidence and is never the
   determination.
@@ -121,8 +148,8 @@ determination, so this one carries all four of completion's requirements:
   draws for enforcement and RFC10-20 for stop. Syzygy's records cannot
   establish that an unmediated effect did *not* occur, so this predicate
   resolves **Unknown** where the envelope names any such surface — **and
-  equally where the granted credentials, tools, and execution profiles
-  reach beyond what declared adapter coverage observes: the Unknown keys on
+  equally where the granted credentials, tools, and execution profiles reach
+  beyond what declared adapter coverage observes: the Unknown keys on
   established coverage, never on the envelope's own declaration alone** —
   unless an independent adapter-backed observation (RFC 0004) covers the
   surface in question.
@@ -149,14 +176,28 @@ correction plane: **Unknown effects are never read as no effects.** The cost of
 that reading is a compensation attempted needlessly; the cost of the other is
 an applied effect nobody is told about.
 
+*Diagram (non-normative; the clauses govern):* where no independent
+establisher exists for a mission's objective class, which state the mission
+enters (RFC10-18, with RFC10-18(a)'s fail-closed Unknown rule).
+
+```mermaid
+flowchart TD
+    N["no independent establisher exists<br/>for the mission's objective class:<br/>the mission never reaches completed"] --> Q{"effects applied?<br/>established under RFC10-18(a),<br/>never asserted by the executing principal"}
+    Q -->|"applied"| F["failed<br/>RFC10-19's duties fire"]
+    Q -->|"Unknown: treated as applied"| F
+    Q -->|"no applied effects"| B["blocked, with an Attention Item<br/>no human resolution act is owed;<br/>one stays available"]
+    B -->|"at RFC10-5's maximum park duration"| E["expired<br/>RFC10-19's duties fire;<br/>RFC10-17(a) releases the reservation"]
+```
+
 **RFC10-19. Effects are classified before they are authorized.** Every effect
 class an envelope permits is declared **atomically-reversible**,
 **compensatable** (with the compensating action named and its **maximum cost
 declared**), or **irreversible**. An effect class not so classified is not
 authorized — RFC10-7's unstated-is-narrowest rule applied to effects.
+
 **`atomically-reversible` means exactly this and nothing wider: reversal is
-performed automatically and atomically by the mediating transaction as part
-of the same act, such that no post-hoc action exists to attempt.** It is a
+performed automatically and atomically by the mediating transaction as part of
+the same act, such that no post-hoc action exists to attempt.** It is a
 guarantee of the mediating surface, evidenced at classification time — never
 an assertion of the envelope author — and **any effect class that does not
 meet that definition and is not declared irreversible is compensatable by
@@ -164,28 +205,37 @@ force. There is no generic `reversible` class.** An envelope permitting any
 irreversible class states that class explicitly on its own face; **a
 destructive-operation class reaches a mission only where the envelope names
 it, never by inheritance from an execution profile's standing approval
-(RFC5-22)**. Where a mission enters `failed`, `cancelled`, or `expired` with
-effects already applied: every compensatable effect's compensating action is
-attempted and its outcome recorded as evidence; every atomically-reversible
-effect's reversal is **verified from the mediating surface's transaction
-record** — a reversal that cannot be verified reclassifies the effect as
-irreversible for this mission, under the reclassification rule below; every
-irreversible effect is enumerated in a single Attention Item naming what
-cannot be undone; and the mission's terminal reason (RFC10-5) states the
-disposition of every applied effect **in every recorded dimension
-(RFC10-23)**. **Every effect instance records: its effect class and
-dimension, the surface it touched, the acting principal, the establishing
-evidence, its reversal or compensation action and that action's funding, and
-the outcome.** **Pause is not rollback**: transitioning to `paused` or
-`blocked` discharges no obligation under this clause. A **named recovery
-owner** — the owner, or a principal the envelope designates — is bound at
-approval time; the recovery owner's duties are to route and attend the
-recovery, and **a machine principal so designated is an owner-act submission
-channel only (RFC10-3): it may execute declared compensating actions within
-`recovery_reserve` and may authorize nothing beyond them**. Resumption from
-`paused` re-verifies the pinned inputs (RFC10-4), the remaining reserved
-budget (RFC10-17), and the envelope's continued act provenance (RFC10-9)
-before any dispatch.
+(RFC5-22)**.
+
+Where a mission enters `failed`, `cancelled`, or `expired` with effects
+already applied:
+
+- every compensatable effect's compensating action is attempted and its
+  outcome recorded as evidence;
+- every atomically-reversible effect's reversal is **verified from the
+  mediating surface's transaction record** — a reversal that cannot be
+  verified reclassifies the effect as irreversible for this mission, under the
+  reclassification rule below;
+- every irreversible effect is enumerated in a single Attention Item naming
+  what cannot be undone; and
+- the mission's terminal reason (RFC10-5) states the disposition of every
+  applied effect **in every recorded dimension (RFC10-23)**.
+
+**Every effect instance records: its effect class and dimension, the surface
+it touched, the acting principal, the establishing evidence, its reversal or
+compensation action and that action's funding, and the outcome.**
+
+**Pause is not rollback**: transitioning to `paused` or `blocked` discharges
+no obligation under this clause.
+
+A **named recovery owner** — the owner, or a principal the envelope designates
+— is bound at approval time; the recovery owner's duties are to route and
+attend the recovery, and **a machine principal so designated is an owner-act
+submission channel only (RFC10-3): it may execute declared compensating
+actions within `recovery_reserve` and may authorize nothing beyond them**.
+Resumption from `paused` re-verifies the pinned inputs (RFC10-4), the
+remaining reserved budget (RFC10-17), and the envelope's continued act
+provenance (RFC10-9) before any dispatch.
 
 **A compensating action that cannot be funded is an escalation, not a
 silence.** Where the `recovery_reserve` (RFC10-17) is insufficient
@@ -206,6 +256,22 @@ attempt established it could not, and the record must carry the second fact
 too. Where compensation succeeds for some effects and fails for others, the
 outcome is recorded **per effect**; a partially compensated mission is never
 rendered as compensated.
+
+*Diagram (non-normative; the clauses govern):* the disposition of one applied
+effect, by its declared class, when a mission enters `failed`, `cancelled`,
+or `expired` (RFC10-19).
+
+```mermaid
+flowchart TD
+    E["applied effect"] --> K{"declared class"}
+    K -->|"atomically-reversible"| V["reversal verified from the<br/>mediating surface's transaction record"]
+    K -->|"compensatable"| CF{"recovery_reserve sufficient<br/>to run the compensating action?"}
+    K -->|"irreversible"| AI["enumerated in the single Attention Item<br/>naming what cannot be undone"]
+    V -->|"reversal cannot be verified:<br/>reclassified irreversible"| AI
+    CF -->|"yes"| CA["compensating action attempted;<br/>outcome recorded per effect"]
+    CF -->|"no: escalation trigger (RFC10-13);<br/>uncompensated-for-want-of-budget"| AI
+    CA -->|"fails: reclassified irreversible;<br/>stated uncompensated"| AI
+```
 
 **RFC10-19(a). Sibling disposition after a partial failure is a declared
 policy input, never an inference.** Where one run or child mission fails after
@@ -235,72 +301,88 @@ than its absence: siblings stop, what can be undone is undone, and what
 cannot is enumerated.
 
 Two assumptions this clause refuses, because making either is the common
-error: **one failure does not automatically invalidate a sibling** — outputs
-may be genuinely independent, and forcing compensation destroys correct work;
-and **a completed sibling is not automatically still valid** — it may have
-consumed the failed sibling's partial output. The declared policy is what
-decides between them.
+error:
 
-**RFC10-20. What stop guarantees.** A human stop, cancellation, or expiry of
-a mission (RFC10-5) has three effects, all immediate at the act: **(a)** no
-further work is dispatched and no further Syzygy-mediated act is admitted
-under that mission; **(b)** every run Syzygy launched under the mission is
-terminated together with its descendants, through the kill switch RFC5-21
-requires of every isolation class — a stop that leaves Syzygy-launched runs
-executing does not conform — **and the stop propagates transitively to every
-child mission derived from it (RFC10-8) and to their descendants**: a
-descendant mission is stopped as if the act had named it, its own runs
-terminated under this same limb, and its reservation dispositioned under
-RFC10-17(a). A stop record reporting (a) and (b) complete while any descendant
-mission may still dispatch does not conform, and the **enumeration of the
-descendant missions reached** is part of the record. RFC10-8 makes child missions
-reservations against the parent; without this limb a parent stop left the
-children it authorized dispatching; **(c)** each terminated run's partial state is
-checkpointed and recorded as evidence, and any effect already applied is
-classified and dispositioned under RFC10-19 — for a run limb (b) failed to
-terminate, (c)'s determination completes when that run's records exist or
-resolves Unknown, and limb (d) routes that case rather than leaving it
-waiting. Effects produced outside
-Syzygy's mediation by externally-granted credentials are **not** covered by
-(b); the mission's stop record states that boundary explicitly rather than
-implying a completeness the runtime cannot deliver (RFC10-10).
+- **one failure does not automatically invalidate a sibling** — outputs may be
+  genuinely independent, and forcing compensation destroys correct work; and
+- **a completed sibling is not automatically still valid** — it may have
+  consumed the failed sibling's partial output.
+
+The declared policy is what decides between them.
+
+**RFC10-20. What stop guarantees.** A human stop, cancellation, or expiry of a
+mission (RFC10-5) has three effects, all immediate at the act:
+
+- **(a)** no further work is dispatched and no further Syzygy-mediated act is
+  admitted under that mission;
+- **(b)** every run Syzygy launched under the mission is terminated together
+  with its descendants, through the kill switch RFC5-21 requires of every
+  isolation class — a stop that leaves Syzygy-launched runs executing does not
+  conform — **and the stop propagates transitively to every child mission
+  derived from it (RFC10-8) and to their descendants**: a descendant mission
+  is stopped as if the act had named it, its own runs terminated under this
+  same limb, and its reservation dispositioned under RFC10-17(a). A stop
+  record reporting (a) and (b) complete while any descendant mission may still
+  dispatch does not conform, and the **enumeration of the descendant missions
+  reached** is part of the record. RFC10-8 makes child missions reservations
+  against the parent; without this limb a parent stop left the children it
+  authorized dispatching;
+- **(c)** each terminated run's partial state is checkpointed and recorded as
+  evidence, and any effect already applied is classified and dispositioned
+  under RFC10-19 — for a run limb (b) failed to terminate, (c)'s determination
+  completes when that run's records exist or resolves Unknown, and limb (d)
+  routes that case rather than leaving it waiting.
+
+Effects produced outside Syzygy's mediation by externally-granted credentials
+are **not** covered by (b); the mission's stop record states that boundary
+explicitly rather than implying a completeness the runtime cannot deliver
+(RFC10-10).
 
 **(d) A stop that cannot complete is an outcome, not a wait.** The envelope
 declares a **maximum stop latency**; **an undeclared maximum means a stated
-finite default: the isolation class's declared kill-report interval, and
-where the class declares none, the envelope's shortest declared
-duration-typed bound — at minimum the wall-clock budget every runnable
-mission has (RFC10-5)**. The act does not return until (a) and (b) hold or
-that bound elapses: synchronous, and bounded. Where the kill mechanism
-reports failure for a run, **or the bound elapses with neither success nor a
-failure report — a hang is a failed stop, and this third exit is stated so
-that no reading leaves the act blocking forever** — the act returns having
-failed to stop and says so: the mission enters `failed` — never `paused` or
-`blocked`, which discharge none of RFC10-19's duties — an Attention Item
-enumerates each run that did not terminate and each effect surface it may
-still reach, each such run's reservation is retained and named under
-RFC10-17(a), and the stop record states the boundary. **An isolation class
-admits mission runs only where its kill mechanism reports success or failure
-within a declared finite interval — this is this clause's own admission
-requirement on the isolation class, stated here and not attributed to
-RFC5-21** (RFC5-21 requires the kill switch; the failure-signal floor and
-its interval are this clause's): a class without that property is not one a
-mission may run under, because a stop with no failure path is an unbounded
-latency under a different name.
+finite default: the isolation class's declared kill-report interval, and where
+the class declares none, the envelope's shortest declared duration-typed bound
+— at minimum the wall-clock budget every runnable mission has (RFC10-5)**. The
+act does not return until (a) and (b) hold or that bound elapses: synchronous,
+and bounded. Where the kill mechanism reports failure for a run, **or the
+bound elapses with neither success nor a failure report — a hang is a failed
+stop, and this third exit is stated so that no reading leaves the act blocking
+forever** — the act returns having failed to stop and says so: the mission
+enters `failed` — never `paused` or `blocked`, which discharge none of
+RFC10-19's duties — an Attention Item enumerates each run that did not
+terminate and each effect surface it may still reach, each such run's
+reservation is retained and named under RFC10-17(a), and the stop record
+states the boundary. **An isolation class admits mission runs only where its
+kill mechanism reports success or failure within a declared finite interval —
+this is this clause's own admission requirement on the isolation class, stated
+here and not attributed to RFC5-21** (RFC5-21 requires the kill switch; the
+failure-signal floor and its interval are this clause's): a class without that
+property is not one a mission may run under, because a stop with no failure
+path is an unbounded latency under a different name.
+
+*Diagram (non-normative; the clauses govern):* how the stop act returns under
+RFC10-20(d) — synchronous, and bounded by the maximum stop latency.
+
+```mermaid
+flowchart TD
+    S["human stop, cancellation, or expiry"] --> W{"which comes first?"}
+    W -->|"(a) and (b) hold"| R1["the act returns with (a) and (b) holding"]
+    W -->|"the kill mechanism reports failure for a run"| R2["the act returns having failed to stop, and says so:<br/>mission enters failed, never paused or blocked;<br/>an Attention Item enumerates each run that did not terminate<br/>and each effect surface it may still reach;<br/>each such run's reservation is retained and named;<br/>the stop record states the boundary"]
+    W -->|"the bound elapses with neither<br/>success nor a failure report"| R2
+```
 
 **RFC10-23. Effect dimensions are recorded separately, and no single
 predicate collapses them.** Every mission records, each in its own
 dimension:
 
 1. **project mutation** — drafts, proposals, and submissions inside the
-   `.syzygy/**` and `openspec/**` namespaces of the mission's declared
-   target projects, rendered unadopted (RFC3-16);
+   `.syzygy/**` and `openspec/**` namespaces of the mission's declared target
+   projects, rendered unadopted (RFC3-16);
 2. **external-system mutation** — any state change outside those namespaces
    other than dimensions (iii) and (iv);
-3. **external disclosure** — content crossing an egress boundary, lawful
-   only under the RFC5-14/RFC5-15 consent gates, recorded with the
-   provider, the covering consent record, and the content classes
-   disclosed;
+3. **external disclosure** — content crossing an egress boundary, lawful only
+   under the RFC5-14/RFC5-15 consent gates, recorded with the provider, the
+   covering consent record, and the content classes disclosed;
 4. **resource consumption** — metered spend accounted under RFC10-17.
 
 The correction plane's effects-applied predicate (RFC10-18(a)) engages on
@@ -309,6 +391,19 @@ dimensions. `propose-only` (RFC10-7) bounds dimension (ii) to nothing and
 is **never rendered as "no effects"** where dimension (i), (iii), or (iv)
 is non-empty: a mission that disclosed content and spent budget had
 effects, and the record says which kind, under which authorization.
+
+*Diagram (non-normative; the clauses govern):* the four recorded effect
+dimensions, and the one the effects-applied predicate reads.
+
+```mermaid
+flowchart LR
+    T["a mission's terminal record<br/>states all four dimensions"] --> D1["(i) project mutation"]
+    T --> D2["(ii) external-system mutation"]
+    T --> D3["(iii) external disclosure"]
+    T --> D4["(iv) resource consumption"]
+    P["effects-applied predicate<br/>RFC10-18(a)"] -->|"engages on (ii) alone"| D2
+    PO["propose-only<br/>RFC10-7"] -->|"bounds to nothing"| D2
+```
 
 ---
 

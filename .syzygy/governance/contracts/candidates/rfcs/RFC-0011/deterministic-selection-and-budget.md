@@ -25,48 +25,76 @@ map, lookup rule, package-level integration and deferrals: `README.md`.
 **Serves:** VIS-7 (deterministic identity), SEC-2; owner direction
 OD-R10-3/OD-R10-4.
 
+*Orientation (non-normative; the clauses govern).* This module decides how a
+packet's mandatory set is derived. Mandatory context is selected
+deterministically — same inputs, same selection — from a stated minimum set
+of inputs, and always includes what each selected contract's
+implementation-boundary declaration names; dependency traversal follows defined, recorded rules, and
+undecidable applicability makes the packet incomplete; and budget pressure
+never justifies dropping mandatory context. The clauses carrying the weight
+are the selection inputs (**RFC11-4**), the traversal rules
+(**RFC11-14**), and the budget posture with its non-shardable core
+(**RFC11-11**). The module is acceptable only when its selection rules can
+reproduce the blind golden selection fixtures.
+
 ## 1. Scope of this module
 
-How a packet's **mandatory set is derived**: the deterministic selection
-inputs (RFC11-4), the implementation-boundary declaration every selected
-contract must carry (RFC11-13), the traversal rules (RFC11-14), doctrine
-and craft ownership metadata (RFC11-15), clause-anchored constraint
-consumption (RFC11-16), and the context-budget posture with the
-non-shardable core (RFC11-11). This module is acceptable only when its
-selection rules can reproduce the blind golden selection fixtures — the
-acceptance criterion is stated with the fixtures, not here, because a
-criterion inside its own subject cannot gate it.
+How a packet's **mandatory set is derived**:
+
+- the deterministic selection inputs (RFC11-4),
+- the implementation-boundary declaration every selected contract must carry
+  (RFC11-13),
+- the traversal rules (RFC11-14),
+- doctrine and craft ownership metadata (RFC11-15),
+- clause-anchored constraint consumption (RFC11-16), and
+- the context-budget posture with the non-shardable core (RFC11-11).
+
+This module is acceptable only when its selection rules can reproduce the
+blind golden selection fixtures — the acceptance criterion is stated with the
+fixtures, not here, because a criterion inside its own subject cannot gate it.
 
 ## 2. The contract
 
 **RFC11-4.** **Mandatory context is selected deterministically** — same
-inputs, same selection — from, at minimum: stable entity and relation
-identities in the objective's scope; the work/mission warrant; affected
-capabilities and components; contract dependencies (`depends_on`,
-traversed under RFC11-14) and clause-anchored cross-contract constraints
-(`constrains`, consumed under RFC11-16); explicit `applies_to` and
-clause-level metadata (the contract-index projection — a rebuildable
-RFC11-7 projection of the governed artifacts' own front matter and clause
-text); declared doctrine and craft ownership metadata (RFC11-15); the
-declared risk and change class; and the active state/evaluation. The
-selection rule set is versioned with the compiler (RFC11-1's version
-identity). The mandatory set always includes, for every selected contract,
-**what that contract's implementation-boundary declaration names
-(RFC11-13)**, consumed from the contract's own index and recorded in the
-packet: the declared kind and named clause, always; and, where the declared
-kind is `requires-openspec` **and the task itself sits on that boundary** —
-authoring or scheduling observable behavior at the OpenSpec seam — the
-module **defining** the named phase-rule clause. An index's restatement of
-a phase rule is never the clause: the restatement points, the defining
-module carries. A packet that selects a contract without loading its index
-records the declaration verbatim together with the digest of the index it
-was read from. A selector never searches for a clause class a contract does
-not claim to have; a selected contract with no implementation-boundary declaration
-renders the packet **incomplete under RFC11-6**. Before selecting from any
-generated projection, the compiler **verifies the projection regenerates
-faithfully from the governed artifacts** (RFC11-7); selection from a stale
-or unfaithful projection is a violation, and the packet records the
-projection verification it performed.
+inputs, same selection — from, at minimum:
+
+- stable entity and relation identities in the objective's scope;
+- the work/mission warrant;
+- affected capabilities and components;
+- contract dependencies (`depends_on`, traversed under RFC11-14) and
+  clause-anchored cross-contract constraints (`constrains`, consumed under
+  RFC11-16);
+- explicit `applies_to` and clause-level metadata (the contract-index
+  projection — a rebuildable RFC11-7 projection of the governed artifacts' own
+  front matter and clause text);
+- declared doctrine and craft ownership metadata (RFC11-15);
+- the declared risk and change class; and
+- the active state/evaluation.
+
+The selection rule set is versioned with the compiler (RFC11-1's version
+identity).
+
+The mandatory set always includes, for every selected contract, **what that
+contract's implementation-boundary declaration names (RFC11-13)**, consumed
+from the contract's own index and recorded in the packet:
+
+- the declared kind and named clause, always; and,
+- where the declared kind is `requires-openspec` **and the task itself sits on
+  that boundary** — authoring or scheduling observable behavior at the
+  OpenSpec seam — the module **defining** the named phase-rule clause.
+
+An index's restatement of a phase rule is never the clause: the restatement
+points, the defining module carries. A packet that selects a contract without
+loading its index records the declaration verbatim together with the digest of
+the index it was read from. A selector never searches for a clause class a
+contract does not claim to have; a selected contract with no
+implementation-boundary declaration renders the packet **incomplete under
+RFC11-6**.
+
+Before selecting from any generated projection, the compiler **verifies the
+projection regenerates faithfully from the governed artifacts** (RFC11-7);
+selection from a stale or unfaithful projection is a violation, and the packet
+records the projection verification it performed.
 
 **RFC11-13. Every active contract declares its implementation boundary.**
 Each active contract carries, in the front matter of its index (the package
@@ -82,11 +110,11 @@ implementation_boundary:
   user-observable consequences of the contract receive approved OpenSpec
   requirements before implementation, and the named clause is where that
   boundary is stated.
-- `none` states that the contract fixes structural design invariants with
-  no independently observable behavior of its own; the per-clause routing
+- `none` states that the contract fixes structural design invariants with no
+  independently observable behavior of its own; the per-clause routing
   classification supporting that claim is recorded review material, never
-  authority, and the declaration — not the classification — is what a
-  selector consumes.
+  authority, and the declaration — not the classification — is what a selector
+  consumes.
 - `craft-policy` states that the contract's observable consequences are
   governed by a named craft policy rather than an OpenSpec phase rule; the
   `clause` field then names the craft clause that owns the boundary.
@@ -97,33 +125,45 @@ whose declaration is absent, or whose named clause does not exist, makes
 every packet selecting that contract **incomplete (RFC11-6)** — never
 silently complete.
 
+*Diagram (non-normative; the clauses govern):* what RFC11-4, with RFC11-13,
+puts in the mandatory set for each selected contract's
+implementation-boundary declaration.
+
+```mermaid
+flowchart TD
+    S["a selected contract"] --> D{"declaration present in its index,<br/>and its named clause exists?"}
+    D -->|"no"| I["packet incomplete (RFC11-6),<br/>never silently complete"]
+    D -->|"yes"| K["always: the declared kind and named clause,<br/>consumed from the contract's own index<br/>and recorded in the packet"]
+    K --> T{"kind requires-openspec and the task<br/>itself sits on that boundary?"}
+    T -->|"yes"| L["also: the module defining the named<br/>phase-rule clause (an index's restatement<br/>is never the clause)"]
+```
+
 **RFC11-14. Dependency traversal is defined, bounded, and recorded.** The
 mandatory set is computed by these rules, and no rule admits unstated
 narrowing:
 
-1. **Start** from the task's directly governed entities, clauses, and
-   declared change class.
-2. **Direct `depends_on`.** Add the direct `depends_on` obligations of
-   every selected module. An edge is **satisfied by loading at least one
-   module of the depended-on contract; where an edge is left unsatisfied,
-   the clause identities the loaded modules cite from the depended-on
-   contract are enumerated and disposed of individually in the omission
-   register.**
-3. **No silent transitivity.** Traverse beyond direct edges only where an
-   edge is explicitly marked transitive.
+1. **Start** from the task's directly governed entities, clauses, and declared
+   change class.
+2. **Direct `depends_on`.** Add the direct `depends_on` obligations of every
+   selected module. An edge is **satisfied by loading at least one module of
+   the depended-on contract; where an edge is left unsatisfied, the clause
+   identities the loaded modules cite from the depended-on contract are
+   enumerated and disposed of individually in the omission register.**
+3. **No silent transitivity.** Traverse beyond direct edges only where an edge
+   is explicitly marked transitive.
 4. **Constraints.** Load a `constrains` source clause when the task touches
    the declared seam (RFC11-16).
 5. **Citations are not reliances.** Never traverse `cites` automatically.
-6. **Termination.** Stop at identities already included: a module, clause,
-   or artifact enters the mandatory set once, and re-encountering it adds
+6. **Termination.** Stop at identities already included: a module, clause, or
+   artifact enters the mandatory set once, and re-encountering it adds
    nothing.
 7. **Omissions are enumerated.** Every excluded applicable candidate is
    recorded in the packet's omission register with its reason.
 8. **Undecidable fails closed.** Where applicability is undecidable from
    declared metadata, the packet is incomplete (RFC11-6) — never silently
    thinned.
-9. **Scope travels.** The task's scope and risk class are part of the
-   packet identity (RFC11-1).
+9. **Scope travels.** The task's scope and risk class are part of the packet
+   identity (RFC11-1).
 
 **RFC11-15. Doctrine and craft rule ownership is declared, not judged.**
 Selection of doctrine rules and craft policy clauses consumes deterministic
