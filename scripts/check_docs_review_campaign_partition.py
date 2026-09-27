@@ -165,6 +165,7 @@ CAMPAIGNS = (
         r"R-POLARIS-RETENTION-POSTURE-.*\.md",
     ),
     campaign("exact-source", "P-81 exact-source gate", r"R-PWB-EXACT-SOURCE-.*\.md"),
+    campaign("item-depth", "P-81 item-depth gate", r"R-PWB-ITEM-DEPTH-.*\.md"),
     campaign("machine-view", "P-72 machine-view gate", r"R-PWB-MACHINE-VIEW-.*\.md"),
     campaign("opening-band", "P-71 opening-band gate", r"R-PWB-OPENING-BAND-.*\.md"),
     campaign(

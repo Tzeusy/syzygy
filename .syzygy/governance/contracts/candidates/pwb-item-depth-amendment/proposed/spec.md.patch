@@ -1,7 +1,7 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -813,42 +813,76 @@
+@@ -813,50 +813,110 @@
    parent_requirements: [three-surface-poc-experience/POC-REQ-031]
  ```
 
@@ -26,13 +26,28 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 +shared model. The argument band SHALL NOT create intent, authority, status or
 +a capability identity. The contract band SHALL contain only captured governing
 +identities and verbatim-reachable current requirement/scenario, governing
-+doctrine and non-goal text. When the evaluation captures no unique declared
-+mapping from the item to such current intent, the contract band SHALL collapse
-+to one honest absence carrying the item's Unknown reason and resolution route;
-+it SHALL NOT infer a mapping from a label, basename, similarity or generated
-+prose. Draft capabilities SHALL remain unadopted. Proposed deltas SHALL be
-+adjacent to current text, visibly distinct, non-anchorable and unable to grant
-+status; competing proposals SHALL remain separate candidate futures.
++doctrine and non-goal text.
++
++Each contract band SHALL carry an item-to-intent relation claim whose stable
++semantic identity is the tuple of the item's stable claim identity and the
++fixed relation role `governing-intent`, at the same evaluation. This relation
++claim is distinct from the item claim and SHALL NOT change or borrow the item's
++epistemic tuple. Exactly one captured declared governing relation makes the
++relation claim Observed and the band renders that current intent verbatim. No
++captured governing relation makes the relation claim Unknown with the
++RFC2-24 reason `missing-declaration` and its resolution route. Mutually
++exclusive captured governing relations make it Unknown with
++`contradicted-pending-adjudication` and the owner-adjudication route. The band
++SHALL NOT infer a relation from a label, basename, similarity or generated
++prose. The relation claim's complete PWB-REQ-007 tuple SHALL be recoverable in
++both channels under PWB-REQ-020.
++
++Only an item detail for a matching declared capability may render active or
++proposed OpenSpec work. There, draft capabilities SHALL remain unadopted and
++proposed deltas SHALL be adjacent to current text, visibly distinct,
++non-anchorable and unable to grant status; competing proposals SHALL remain
++separate candidate futures. A non-capability item detail SHALL render no
++proposal material.
 +
 +The catalog-to-detail-to-exact-source path SHALL preserve the item's stable
 +identity and complete epistemic state at every altitude, in both channels,
@@ -58,34 +73,43 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 -  rendered adopted, proposal substituted/interleaved/anchored/green, or
 -  competing proposals collapsed.
 +- **Case (sweep)**: enumerate the complete declared `catalog-entry` population
-+  at an evaluation that includes a uniquely mapped current intent, an item with
-+  no declared intent mapping, a draft capability, a contradicted item and two
-+  incompatible proposals.
++  at an evaluation that includes a uniquely mapped current intent, an Observed
++  item whose relation is `missing-declaration`, a contradicted relation, a
++  draft capability, a non-capability item with a proposal in the source
++  population and two incompatible capability proposals.
 +- **Observable**: every declared item reaches exactly one item detail; Base
-+  mode, stable identity, complete epistemic state, band class/order, verbatim
-+  current text or honest absence, proposal lifecycle, non-anchorability and
-+  separate futures are recoverable in both channels.
++  mode, item and relation identities, their distinct complete epistemic states,
++  band class/order, verbatim current text or honest relation absence, and the
++  capability-only proposal lifecycle, non-anchorability and separate futures
++  are recoverable in both channels.
 +- **Oracle**: derive the expected item population and identity/state tuples
-+  from the shared model; derive item-to-intent mappings only from captured
-+  declared relations; compare current requirement/scenario, doctrine and
-+  non-goal bytes to their owning artifacts; compare proposal identities and
-+  exclusivity to captured changes; exhaust detail, band and anchor populations;
++  from the shared model; independently derive the fixed-role relation identity,
++  declared relation cardinality, RFC2-24 reason and route from captured
++  authority; compare current requirement/scenario, doctrine and non-goal bytes
++  to their owning artifacts; compare proposal identities and exclusivity to
++  captured capability changes; exhaust detail, band and anchor populations;
 +  and perform a static-source sweep for normative copies. Exact population,
-+  identity/state equality, exact bytes/order, exactly one class per block,
-+  honest absence for every unmapped item, zero stored copies and zero proposal
++  separate item/relation tuple equality, exact bytes/order, exactly one class
++  per block, honest relation absence for every unmapped or contradicted item,
++  zero non-capability proposal blocks, zero stored copies and zero proposal
 +  authority decide.
 +- **Oracle independence**: expected items and tuples come from the shared model,
-+  while current/proposed artifacts, declared mappings and exclusivity inputs
-+  come from captured authority, never from Polaris or route output.
++  while relation cardinality, RFC2-24 values, current/proposed artifacts,
++  declared mappings and exclusivity inputs come from captured authority and
++  hard-coded accepted vocabularies, never from Polaris or route output.
 +- **Mutation proof**: independently drop and duplicate an item detail, map an
-+  item by label alone, remove the unmapped-item absence, reorder two bands,
-+  assign two classes to one block, substitute proposal text for current text,
-+  and source a reality fact outside the shared model; confirm the oracle fails
-+  before restoration and reports the complete item denominator each time.
++  item by label alone, assign the item's tuple to its absent relation, remove
++  or alter the relation reason/route, render a proposal in a non-capability
++  detail, reorder two bands, assign two classes to one block, substitute
++  proposal text for current text, and source a reality fact outside the shared
++  model; confirm the oracle fails before restoration and reports the complete
++  item and relation denominators each time.
 +- **Falsifier**: a missing/duplicate item detail, changed item identity or
-+  epistemic state, inferred or ambiguous intent mapping, hidden empty contract
-+  band, missing/misordered/multiply-classed band, summarized normative text,
-+  second reality computation, draft rendered adopted, proposal substituted,
++  epistemic state, relation identity/state collapsed into the item, inferred
++  intent mapping, absent or invalid relation reason/route, hidden empty contract
++  band, proposal material in a non-capability detail,
++  missing/misordered/multiply-classed band, summarized normative text, second
++  reality computation, draft rendered adopted, proposal substituted,
 +  interleaved, anchored or green, or competing proposals collapsed.
 
 -#### Scenario: Proposed work stays beside exact current intent
@@ -95,12 +119,25 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 -- **THEN** the contract band renders current requirement text verbatim
 -- **AND** the proposal remains adjacent, distinct, non-anchorable and non-status-bearing
 +- **WHEN** a reader opens a declared catalog item from the catalog
-+- **THEN** its detail preserves the item's identity and epistemic state and its
-+  contract band renders uniquely declared current intent verbatim
-+- **AND** if no unique declared mapping exists, the band renders one honest
-+  Unknown absence with reason and route rather than guessed intent
-+- **AND** every proposal remains adjacent, distinct, non-anchorable,
-+  non-status-bearing and separate from competing candidate futures
++- **THEN** its detail preserves the item's identity and epistemic state and
++  separately renders the fixed-role item-to-intent relation claim
++- **AND** exactly one captured declared relation renders current intent verbatim
++- **AND** an absent or contradicted relation renders its own RFC2-24 Unknown
++  reason and route without changing the item's tuple or guessing intent
++- **AND** proposal material appears only for a matching declared capability,
++  where it remains adjacent, distinct, non-anchorable, non-status-bearing and
++  separate from competing candidate futures
 
  ```yaml
  warrants:
+   primary: RFC7-17
+-  doctrine: [VIS-1, VIS-2, VIS-4]
++  doctrine: [VIS-1, VIS-2, VIS-4, VIS-7]
+-  contracts: [RFC1-14, RFC1-27, RFC7-12, RFC7-13, RFC7-14, RFC7-15, RFC7-17, RFC7-18, RFC7-26, RFC7-27, RFC7-29, RFC7-33]
++  contracts: [RFC1-14, RFC1-27, RFC2-24, RFC6-14, RFC6-22, RFC7-12, RFC7-13, RFC7-14, RFC7-15, RFC7-17, RFC7-18, RFC7-26, RFC7-27, RFC7-29, RFC7-33]
+-  policies: [CC-BAR-3, CC-BAR-5, CC-TEST-5]
++  policies: [CC-BAR-3, CC-BAR-5, CC-TEST-5, CC-TEST-6]
+   decisions: [POLARIS-DIR-2026-08-31]
+   topology: []
+   parent_requirements: []
+ ```

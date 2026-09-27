@@ -1,0 +1,11 @@
+RAW FRESH-CONTEXT REVIEW — PR #128
+Reviewed commit: 39707e9e2ad4f7671df2a5f728f87d1ae786be79
+Base commit: a42d9c0b6b501f3df453e4b4ac5b9378a594e027
+Manifest-file SHA-256: 1b9b70c091db566be9ec472d0e1f4bc2bf7203d0cf97056c87cdbc8d435f009a
+Verdict: REVISE
+
+1. BLOCKING — `.syzygy/governance/contracts/candidates/pwb-item-depth-amendment/proposed/spec.md.patch:31`: the unmapped-relation case requires “the item’s Unknown reason,” but a modeled catalog item is Observed and has no Unknown reason. The mapping absence needs its own typed state/identity/reason/route (or another deterministic rule) while preserving the item tuple. Thread: https://github.com/Tzeusy/syzygy/pull/128#discussion_r4114090317
+2. BLOCKING — `.syzygy/governance/contracts/candidates/pwb-item-depth-amendment/proposed/spec.md.patch:33`: generalizing proposal-future clauses to all item details conflicts with unchanged PWB-REQ-013, which permits proposed work only in an affected capability detail. Non-capability items explicitly remain non-capabilities. Reconcile PWB-REQ-013 in the same delta or scope proposal obligations to capability item details. Thread: https://github.com/Tzeusy/syzygy/pull/128#discussion_r4114088059
+3. BLOCKING — `scripts/build_pwb_item_depth_amendment.py:373`: adoption applies patches serially before whole-package validation. Independent scratch counterexample corrupted the last patch; return code 1 left four signed subjects changed. Preflight/materialize the complete proposed map before any real write and add a no-partial-write mutant. Thread: https://github.com/Tzeusy/syzygy/pull/128#discussion_r4114084978
+
+Confirmed: 11-row manifest and digest regenerate; five tracked sibling spec patches compose both orders; live PR #121 at 82cc6c4 and #124 at a7eda10 also compose both orders; `.30` remains separate and names PWB-REQ-015 downstream; no current `openspec/**`, act, implementation, or runtime bytes changed; item-depth act record and successor-chain link are absent; phrase is explicitly not offered; CG-26 triple deferral matches repository instructions. Focused builder check/selftest (14/14), governance (32 OK/20 WARN/0 FAIL), governance selftest (267/0), docs partition (243 assigned/0 unmatched/0 overlap), diff check, and hosted node/governance checks passed. PR remains Draft with three unresolved correction threads; no merge or Beads mutation.
