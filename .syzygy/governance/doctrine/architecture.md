@@ -22,7 +22,8 @@ Syzygy governs an orthogonal, **in-tree** plane at the governance root. Its
 namespaces, `openspec/**` and `.syzygy/**`** (vision.md VIS-5), and no
 manifest, configuration, or convention may widen it. Syzygy may *read*
 declared implementation and evidence sources anywhere in the project, but may
-never create, modify, move, or delete project content outside its two roots.
+never directly create, modify, move, or delete project content outside its two
+roots.
 Every other authority — version-control metadata, the work scheduler, CI,
 runtime systems — it affects only through typed, explicitly authorized
 adapters (see typed authority); those stores are never Syzygy-owned

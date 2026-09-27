@@ -92,9 +92,9 @@ genome-completeness. It may raise a **challenge**:
 - By default an open inferred challenge suspends the displayed claim to
   Unknown, showing its inferred provenance beside the deterministic evidence
   it questions, until a human or a declared deterministic policy resolves it.
-- The suspended claim's deterministic basis stays visible; inference never
-  silently overrides or replaces it. Resolving the challenge is what restores
-  or revises the status.
+- Inference never silently overrides or replaces deterministic evidence: the
+  suspended claim's deterministic basis stays visible, and resolving the
+  challenge is what restores or revises the status.
 - **Admissibility:** a challenge names one exact claim, states a specific
   falsifiable concern, carries its inference provenance, and can be resolved
   on its own. Mere model uncertainty is not a challenge. Detailed criteria

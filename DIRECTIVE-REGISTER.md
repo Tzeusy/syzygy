@@ -30,13 +30,13 @@ defining its identifiers renders an empty table rather than a stale one.
 
 | Identifier | Title, as the corpus marks it | Defined at |
 |---|---|---|
-| `VIS-1` | Comprehensible truth first; never comprehensible fiction | `.syzygy/governance/doctrine/vision.md`:90 |
-| `VIS-2` | No evidence means Unknown, not success | `.syzygy/governance/doctrine/vision.md`:108 |
-| `VIS-3` | Human interpretability is a core tenet | `.syzygy/governance/doctrine/vision.md`:120 |
-| `VIS-4` | Humans steer the vision; agents shape within it | `.syzygy/governance/doctrine/vision.md`:137 |
-| `VIS-5` | Syzygy never writes code; direct writes are confined to two namespaces | `.syzygy/governance/doctrine/vision.md`:162 |
-| `VIS-6` | Syzygy is derived, with two closed exceptions | `.syzygy/governance/doctrine/vision.md`:194 |
-| `VIS-7` | The observatory itself must be trustworthy | `.syzygy/governance/doctrine/vision.md`:213 |
+| `VIS-1` | Comprehensible truth first; never comprehensible fiction | `.syzygy/governance/doctrine/vision.md`:91 |
+| `VIS-2` | No evidence means Unknown, not success | `.syzygy/governance/doctrine/vision.md`:109 |
+| `VIS-3` | Human interpretability is a core tenet | `.syzygy/governance/doctrine/vision.md`:121 |
+| `VIS-4` | Humans steer the vision; agents shape within it | `.syzygy/governance/doctrine/vision.md`:138 |
+| `VIS-5` | Syzygy never writes code; direct writes are confined to two namespaces | `.syzygy/governance/doctrine/vision.md`:163 |
+| `VIS-6` | Syzygy is derived, with two closed exceptions | `.syzygy/governance/doctrine/vision.md`:196 |
+| `VIS-7` | The observatory itself must be trustworthy | `.syzygy/governance/doctrine/vision.md`:215 |
 
 ## Security doctrine — `SEC`
 

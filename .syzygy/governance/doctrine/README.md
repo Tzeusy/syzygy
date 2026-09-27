@@ -48,12 +48,13 @@ aspirational: every rule is written so that a violation is recognizable.
   work scheduler. "Agent toolchain" and "actuator toolchain" name the same
   role. Syzygy shows the difference between desired and observed state; the
   actuator toolchain closes it (vision.md, Thesis). Syzygy is not itself an
-  actuator: it writes no implementation code (VIS-5, VIS-6), and its effects
+  actuator: it writes no implementation code (VIS-5), and its effects
   reach code only through dispatched work (architecture.md).
 - **Rule identifiers** — vision.md's rules are `VIS-1`–`VIS-7`; security.md's
   are `SEC-1`–`SEC-5`. They are deliberately distinct from the release stages
   `V0`/`V1` (v1.md), so a rule citation never reads as a stage. Identifiers
-  are stable: text is amended in place, and a retired number is never reused.
+  are stable after adoption: text is amended in place, and a rule is retired
+  rather than renumbered.
 
 ## Reading order
 
@@ -88,4 +89,4 @@ Doctrine does not hold:
   topology in `.syzygy/governance/`).
 
 Doctrine is slow to change. The owner adopts every amendment, and downstream
-artifacts are re-checked for alignment when it changes.
+artifacts must be re-checked for alignment when it changes.

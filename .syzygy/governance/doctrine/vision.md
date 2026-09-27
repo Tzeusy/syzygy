@@ -28,7 +28,7 @@ It keeps three kinds of state apart:
 
 Scheduled or completed work is never proof that the implementation satisfies
 intent. Syzygy computes the difference between desired and observed state,
-shows it, and drives the existing actuator toolchain to close it. **Showing
+shows it, and harnesses the existing actuator toolchain to close it. **Showing
 the truth is the soul of the product.**
 
 ## The human problem, and whose it is
@@ -68,8 +68,9 @@ spatially and visually, and agents, through machine-queryable endpoints.
   working proof-of-concept on all three axes — intent, work, and code —
   including one end-to-end propagation slice (v1.md).
 - **Not a documentation portal.** Rendering and drafting governance artifacts
-  is a means. Intent changes must produce dispatched work; a Syzygy that never
-  dispatches work has failed, however good its documents look.
+  is a means; what sets Syzygy apart is that intent changes produce dispatched
+  work. A Syzygy that never dispatches work has failed, however good its
+  documents look.
 - **Not a replacement for its substrate.** The spec, work-scheduling, and
   orchestration tools remain the mechanisms; Syzygy integrates them
   (architecture.md, "adapters").
@@ -126,8 +127,8 @@ correctly. A failure is recorded on the artifact's surface.
 
 - In the Syzygy repository, a failing artifact freezes **autonomous
   adoption, not agent authorship**: agents may draft repairs, but every
-  amendment requires owner adoption until the artifact passes a fresh-reader
-  review.
+  amendment to that artifact requires owner adoption until it passes a
+  fresh-reader review.
 - In governed projects the failure is shown as status; whether to freeze is
   that project's own policy (Syzygy does not enforce outward).
 
@@ -168,7 +169,8 @@ namespaces.** Syzygy's **direct project-content writes** touch only:
 
 No manifest, configuration, or convention may widen that set. Syzygy may
 *read* declared implementation and evidence sources anywhere, but may never
-create, modify, move, or delete project content outside those two roots.
+directly create, modify, move, or delete project content outside those two
+roots.
 
 Everything else — version-control metadata such as commits and tags, the
 work scheduler, CI, runtime systems — Syzygy affects only through **typed,

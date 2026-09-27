@@ -70,10 +70,28 @@ Other artifacts cite these by name or position, so each is unchanged:
 
 ## Review
 
-VIS-3 calls for a fresh-reader review on material amendment. One independent
-reader, given only the rewritten files, restates each rule and flags any
-drift from the prior text. Its raw output is kept beside this packet as
-`DOCTRINE-AMENDMENT-D5-READABILITY-REVIEW-1-RAW.md`.
+VIS-3 requires a fresh-reader review on material amendment. One independent
+reader, given only the old and new files, restated every rule from the new
+text alone and then audited the new text against the old for drift. The raw
+output is [`DOCTRINE-AMENDMENT-D5-READABILITY-REVIEW-1-RAW.md`](DOCTRINE-AMENDMENT-D5-READABILITY-REVIEW-1-RAW.md),
+with verdict **CONFIRM WITH EXCEPTIONS** and no material findings.
+
+How its findings were handled:
+
+- **B1–B8** (minor drift: dropped qualifiers, "must" softened to a
+  description, one narrowed prohibition, "drives" for "harnesses") — each
+  applied with the reviewer's suggested wording.
+- **N1** (which substrate v1.md's ai-bootstrap sentence names) — applied as
+  "initial *actuator* substrate". This joins judgment call 1 above.
+- **N3** (the actuator bullet cited VIS-6 for code writes) — citation reduced
+  to VIS-5.
+- **N2** (the actuator bullet counts "a human working by hand", while VIS-5
+  says materialization is only ever "a worker acting on scheduled work") —
+  left for the owner, as part of judgment call 2.
+- **Task A clarity notes 1–10** describe the adopted text as much as the
+  rewrite; none was introduced by D5. They are left for a later amendment.
+
+By the owner's direction, the fixes were not sent for a second review round.
 
 ## On adoption
 
