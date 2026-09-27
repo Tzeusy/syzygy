@@ -1,8 +1,8 @@
 # Polaris tree-form and diagram amendment
 
-> **Status:** Proposal. It binds nothing until the owner adopts it (VIS-4).
-> The owner answers two questions (below) in plain words; the first adopts
-> the specification change and authorizes its implementation.
+> **Status:** Adopted 2026-09-28, with implementation authorized and question
+> 2 ruled "Permitted". The record is
+> [`POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md`](POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md).
 
 Generated Polaris pages will read as abstraction trees. Every structural
 relationship that a diagram explains better than prose will get a diagram
@@ -249,6 +249,5 @@ VIS-3 requires a fresh-reader review.
       the identity route (original or repair, with an omitted disposition for
       undrawable relationships), the sanitizer allow-list in this packet, and
       where a gap is disclosed.
-- **Stopping point.** These review-4 repairs have not been re-reviewed. Four
-  rounds each found narrower problems. Adopting now, or asking for a fifth
-  confirmation first, is the owner's call.
+- **Stopping point.** The owner adopted without a fifth review. The review-4
+  repairs stand as drafted.

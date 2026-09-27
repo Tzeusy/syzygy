@@ -31,9 +31,12 @@ bytes retain their original candidate banners; the acts determine their status.
 on 2026-09-13. It extends seven generator requirements and adds discovery and
 owner clarification as 030/031. Read the predecessor together with
 [the adopted amendment](openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md):
-31 requirements and 177 scenarios in the effective composition. Its reviewed
+31 requirements and 182 scenarios in the effective composition. Its reviewed
 candidate-era banners remain unchanged; the act determines status. This is
 specification adoption, with no new implementation or effect permission inferred.
+On 2026-09-28 the owner adopted the [tree-form and diagram amendment](.syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md)
+to REQ-004, which adds five scenarios, authorized its generator
+implementation, and ruled that sanitized static SVG is inert under PWB-REQ-006.
 
 Implementation is in progress. Completion requires the full owner workflow and
 reviewed output from the unchanged generator on two separately admitted real

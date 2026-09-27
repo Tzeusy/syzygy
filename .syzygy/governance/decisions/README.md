@@ -33,6 +33,7 @@ These carry rulings the owner has actually made.
 | [`DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md`](DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md) | Doctrine amendment **D1**, in force |
 | [`DOCTRINE-AMENDMENT-D5-READABILITY.md`](DOCTRINE-AMENDMENT-D5-READABILITY.md) | Doctrine amendment **D5**, in force — adopted 2026-09-27; the readability rewrite, closing P-25 and P-25(c) |
 | [`DOCTRINE-AMENDMENT-D6-TREE-STYLE.md`](DOCTRINE-AMENDMENT-D6-TREE-STYLE.md) | Doctrine amendment **D6**, in force — adopted 2026-09-27; the tree-style restyle under CC-REV-8, with eight diagrams |
+| [`POLARIS-TREE-FORM-AMENDMENT.md`](POLARIS-TREE-FORM-AMENDMENT.md) · [`…-ADOPTION.md`](POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md) | Polaris tree-form and diagram amendment to REQ-polaris-generation-004, in force — adopted 2026-09-28 with implementation authorized; rules sanitized static SVG inert under PWB-REQ-006 |
 | [`DOCTRINE-AMENDMENT-LOG.md`](DOCTRINE-AMENDMENT-LOG.md) | Every doctrine amendment, one row each |
 | [`WAVE-A-INSTALL-SHAPE-DECISION.md`](WAVE-A-INSTALL-SHAPE-DECISION.md) | **P-33 ruled 2026-08-16** — install shape (M), recorded in the packet's own template |
 | [`LAUNCH-GATE-AUTHORITY-DECISION.md`](LAUNCH-GATE-AUTHORITY-DECISION.md) | **P-34 ruled 2026-08-16** — launch-gate v2.4 approved as process policy, arm (a), residuals disclosed |
