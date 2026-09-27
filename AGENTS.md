@@ -467,8 +467,8 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   returns clean, yet editing one word regenerates the argument and retires any
   confirmation bound to it. Grep
   `contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md` for
-  the path too. Its false "Nothing is implemented" sentence is queued as P-59
-  for exactly this reason; do not repair it.
+  the path too. An owner-directed edit is lawful: re-mint the act-4 row's
+  digest in the same commit (CG-7c/7d/7e fail until you do).
 - Every `round-*` directory now carries a `README.md` naming what the round
   settled, where that settlement lives now, and its live-input cautions;
   `contracts/candidates/ROUND-ESTATE.md` is the route across all eleven. The
