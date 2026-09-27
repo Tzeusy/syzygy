@@ -611,10 +611,13 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   performing act decides; register `LABEL/DIR/SUBJECT/ACT`, the
   `ACT_DIGEST_COPY_FILES` row and an existence-gated activation at drafting
   time, and add the chain link with the act. A packet that quotes a bare
-  digest (no `<PHRASE>: <digest>` form) is invisible to CG-7d and caught only
-  by CG-7e, so a rule-6 mutation must rewrite *every* copy (`sed s///g`),
-  not the first match — a `str.replace(..., 1)` hit an unregistered copy and
-  reported a false pass.
+  digest (no `<PHRASE>: <digest>` form) is invisible to CG-7d. Until
+  `syzygy-eau` CG-7e missed it too: it only asked whether the current digest
+  appears *somewhere* in the file, so a stale bare `Manifest SHA-256:` copy
+  passed beside a correct phrase-linked one. CG-7e now checks each literal
+  bare heading against that file's own declared digest. A rule-6 mutation
+  must still rewrite *every* copy (`sed s///g`), not the first match — a
+  `str.replace(..., 1)` hit an unregistered copy and reported a false pass.
 - **CG-26 is one coupled triple: register it once, at merge.** Several
   packages each adding their builder to the PROJECT-STATUS battery, the
   hosted workflow and the count sentence conflict pairwise and each counts
