@@ -1,0 +1,106 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -813,42 +813,76 @@
+   parent_requirements: [three-surface-poc-experience/POC-REQ-031]
+ ```
+
+-### Requirement: PWB-REQ-015 — Capability detail preserves authority bands and exact intent
++### Requirement: PWB-REQ-015 — Item detail preserves authority bands and exact intent
+
+ Group: Presentation. Form: **invariant**.
+
+-Every capability deep dive SHALL contain, in order, an `argument` band marked
+-non-normative, a `contract` band with verbatim current requirement/scenario,
+-governing doctrine and non-goal text, and a `reality` band sourced only from
+-the shared model. Draft capabilities SHALL remain unadopted. Proposed deltas SHALL be adjacent to current text,
+-visibly distinct, non-anchorable and unable to grant status; competing
+-proposals SHALL remain separate candidate futures.
++Every item in the complete declared `catalog-entry` population SHALL have one
++item-detail reading keyed by that item's stable semantic claim identity. An
++existing capability deep dive SHALL be that reading for the matching declared
++catalog item; no second detail or identity SHALL be created for it.
++
++Every item detail SHALL contain, in order, an `argument` band marked
++non-normative, a `contract` band, and a `reality` band sourced only from the
++shared model. The argument band SHALL NOT create intent, authority, status or
++a capability identity. The contract band SHALL contain only captured governing
++identities and verbatim-reachable current requirement/scenario, governing
++doctrine and non-goal text. When the evaluation captures no unique declared
++mapping from the item to such current intent, the contract band SHALL collapse
++to one honest absence carrying the item's Unknown reason and resolution route;
++it SHALL NOT infer a mapping from a label, basename, similarity or generated
++prose. Draft capabilities SHALL remain unadopted. Proposed deltas SHALL be
++adjacent to current text, visibly distinct, non-anchorable and unable to grant
++status; competing proposals SHALL remain separate candidate futures.
++
++The catalog-to-detail-to-exact-source path SHALL preserve the item's stable
++identity and complete epistemic state at every altitude, in both channels,
++without making a URL, label, path or coordinate part of that identity.
+ The default reading mode SHALL be `Base` and include observed reality. Every
+ block SHALL carry exactly one of the three band-class attributes. No
+ reorganized or stored normative copy of doctrine, non-goal, requirement or
+ scenario text SHALL exist outside its owning artifact.
+
+-- **Case (sweep)**: enumerate every capability deep dive at an evaluation that
+-  includes current intent, a draft capability and two incompatible proposals.
+-- **Observable**: Base mode, band class/order, verbatim current text, proposal lifecycle,
+-  non-anchorability and separate futures are recoverable in both channels.
+-- **Oracle**: compare current requirement/scenario, doctrine and non-goal bytes
+-  to their owning artifacts, compare
+-  proposal identities/exclusivity to captured changes, exhaust band and anchor
+-  populations and perform a static-source sweep for normative copies; exact
+-  bytes/order, exactly one class per block, zero stored copies and zero proposal
+-  authority decide.
+-- **Oracle independence**: current/proposed artifacts and exclusivity inputs
+-  come from captured OpenSpec state, not Polaris.
+-- **Falsifier**: a missing/misordered band, summarized normative text, draft
+-  rendered adopted, proposal substituted/interleaved/anchored/green, or
+-  competing proposals collapsed.
++- **Case (sweep)**: enumerate the complete declared `catalog-entry` population
++  at an evaluation that includes a uniquely mapped current intent, an item with
++  no declared intent mapping, a draft capability, a contradicted item and two
++  incompatible proposals.
++- **Observable**: every declared item reaches exactly one item detail; Base
++  mode, stable identity, complete epistemic state, band class/order, verbatim
++  current text or honest absence, proposal lifecycle, non-anchorability and
++  separate futures are recoverable in both channels.
++- **Oracle**: derive the expected item population and identity/state tuples
++  from the shared model; derive item-to-intent mappings only from captured
++  declared relations; compare current requirement/scenario, doctrine and
++  non-goal bytes to their owning artifacts; compare proposal identities and
++  exclusivity to captured changes; exhaust detail, band and anchor populations;
++  and perform a static-source sweep for normative copies. Exact population,
++  identity/state equality, exact bytes/order, exactly one class per block,
++  honest absence for every unmapped item, zero stored copies and zero proposal
++  authority decide.
++- **Oracle independence**: expected items and tuples come from the shared model,
++  while current/proposed artifacts, declared mappings and exclusivity inputs
++  come from captured authority, never from Polaris or route output.
++- **Mutation proof**: independently drop and duplicate an item detail, map an
++  item by label alone, remove the unmapped-item absence, reorder two bands,
++  assign two classes to one block, substitute proposal text for current text,
++  and source a reality fact outside the shared model; confirm the oracle fails
++  before restoration and reports the complete item denominator each time.
++- **Falsifier**: a missing/duplicate item detail, changed item identity or
++  epistemic state, inferred or ambiguous intent mapping, hidden empty contract
++  band, missing/misordered/multiply-classed band, summarized normative text,
++  second reality computation, draft rendered adopted, proposal substituted,
++  interleaved, anchored or green, or competing proposals collapsed.
+
+-#### Scenario: Proposed work stays beside exact current intent
++#### Scenario: Catalog item reaches exact current intent or honest absence
+
+-- **WHEN** a declared capability has an active proposal
+-- **THEN** the contract band renders current requirement text verbatim
+-- **AND** the proposal remains adjacent, distinct, non-anchorable and non-status-bearing
++- **WHEN** a reader opens a declared catalog item from the catalog
++- **THEN** its detail preserves the item's identity and epistemic state and its
++  contract band renders uniquely declared current intent verbatim
++- **AND** if no unique declared mapping exists, the band renders one honest
++  Unknown absence with reason and route rather than guessed intent
++- **AND** every proposal remains adjacent, distinct, non-anchorable,
++  non-status-bearing and separate from competing candidate futures
+
+ ```yaml
+ warrants:
