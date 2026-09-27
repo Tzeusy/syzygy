@@ -137,3 +137,45 @@ marked retired, so historical citations still resolve.
 
 *Violation:* deleting a retired `CC-DEP-2` and shifting `CC-DEP-3…7` up by
 one, silently re-pointing every existing citation at the wrong rule.
+
+## CC-REV-8 — Documents are abstraction trees, with diagrams where structure beats prose
+
+Every governed document (`.syzygy/**`, `openspec/**`) and every document
+Syzygy generates for a governed project is written so that a reader can stop
+at any depth and still hold a correct answer.
+
+- **Answer first.** Each document and each section opens with its conclusion
+  in one sentence or one bullet; support follows.
+- **Every level summarizes its subtree.** Truncating at any depth leaves a
+  coarser answer, never a missing one.
+  - Deeper levels add resolution, never new conclusions.
+  - A caveat that changes the answer belongs in the parent, not a leaf.
+- **Abstraction falls with depth.** Outcome or rule at the top; concepts and
+  conditions below; mechanisms below that; evidence at the leaves.
+  - Identifiers, paths, numbers, and digests sink to the lowest level that
+    needs them.
+  - One idea per bullet: a long bullet is split into parent and children,
+    never compressed.
+- **Diagrams wherever structure beats prose.** Flows, lifecycles, state
+  machines, boundaries, dependencies, and placements get a diagram, using
+  real names.
+  - Diagram source is text in the document (Mermaid by default), so it is
+    diffed and reviewed like prose.
+  - A diagram asserts nothing the text does not, and every encoding means
+    what its legend says (VIS-7). In generated documents, diagram elements
+    carry the same Observed / Inferred / Unknown labels as the claims they
+    draw.
+- **Format requirements win.** Headings, identifiers, and markup that parsers
+  or citations depend on stay as they are: OpenSpec requirement and scenario
+  headings, rule and clause lead-ins (`**VIS-2 — …**`), and cited section
+  titles.
+- **Normative text keeps its qualifiers attached.** A condition, exception,
+  or modal verb stays in the bullet it qualifies; splitting it into a sibling
+  changes the rule.
+
+This rule governs form. What a document may claim is governed by CC-REV-3
+and CC-REV-5.
+
+*Violation:* a contract module whose operative rule sits in the fourth
+paragraph of a section, after three paragraphs of history; a generated
+project page that describes a six-stage pipeline in prose with no diagram.
