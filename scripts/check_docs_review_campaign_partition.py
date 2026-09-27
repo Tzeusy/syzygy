@@ -197,6 +197,11 @@ CAMPAIGNS = (
         "P-73 edit/repair deletion gate",
         r"R-POLARIS-EDIT-REPAIR-DELETION-.*\.md",
     ),
+    campaign(
+        "dov27-response-ceiling",
+        "P-77 Q2 response-ceiling reading gate",
+        r"R-DOV27-.*\.md",
+    ),
 )
 
 

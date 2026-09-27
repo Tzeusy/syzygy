@@ -3,7 +3,7 @@
 > **Candidate — binds nothing.** This packet is an inert offering. It
 > performs no act, records no ruling, adopts nothing, authorizes no
 > implementation and changes no accepted artifact. It puts **one** reading
-> to you, with four smaller questions that follow from it, and gives the
+> to you, with five smaller questions that follow from it, and gives the
 > exact text of the dated owner direction that would give your answers
 > effect. Until you issue that direction in your own words, in your own
 > session, nothing here has any effect. A commit, a merged pull request, a
@@ -89,10 +89,11 @@ manifest, no recorder script and no act phrase, and registers nothing in
    has no phrase and no subject digest, so there is nothing for them to
    check.
 
-If you would rather this were a digest-bound act, say so; that is not an
-arm this packet drafts, because the only subject such an act could bind
-is a new declaration file that restates a sentence the registry already
-holds, which is a second home for the same fact.
+P-77's word is "act", so the choice of instrument is yours: it is
+question Q6 below. A digest-bound act is not an arm this packet drafts,
+because the only subject such an act could bind is a new declaration file
+that restates a sentence the registry already holds, which is a second
+home for the same fact.
 
 ## What is true today
 
@@ -134,6 +135,23 @@ on, unless marked.
   counts". The word "encoded" carries the same two readings there.
 - **No test can tell the readings apart today.** With nothing compressed,
   both readings give the same number for every response.
+- **No response body carries the daemon's credential.** Swept over the
+  137 non-test TypeScript sources under `apps/*/src` and `packages/*/src`
+  (the same population as the compression sweep) for `expectedToken`,
+  `provision.token` and `.token`: 9 matching lines. The credential value
+  is read once into `expectedToken` (`packages/cap1-daemon/src/server.ts`
+  line 207) and passed only to `verifyCredential` (line 255), which
+  returns `{ admitted, clientClass }` and never the token. The other hits
+  are the credential file name, the file writer's comment, the admission
+  length test and a CSS design-token field. A second method, `grep -rn`
+  over the same trees, returned the same lines. The status strip carries
+  only the label `credentialProvision` (`'minted'` or `'reused'`,
+  `apps/three-surface-poc/src/routes.ts`), never the credential. This
+  matters because compression side channels of the BREACH class read a
+  secret out of a compressed body that also reflects attacker input.
+  `[Inferred]` Butlers text that passed the secret-classification
+  detectors is served, and no detector is proven complete, so "no secret
+  in any body" is not claimed; only "no credential in any body".
 
 ## The ceilings this reading covers
 
@@ -174,24 +192,39 @@ encoded HTTP body" means the body after content coding, exactly as it
 leaves the daemon.
 
 - Compression changes what is measured. The human ceiling would stop
-  binding at any page size the project currently produces (the funnel's
-  largest human page is about 14 times inside it once compressed), and
-  the refused 2026-09-13 page would have been served.
+  binding at any page size the project currently produces: the funnel's
+  measured human page is about 20 times inside it once compressed, and
+  the refused 2026-09-13 page would be about 14 times inside it at the
+  funnel's measured ratio (an extrapolation, not a measurement). That
+  refused page would have been served.
 - The answer depends on the client. The same evaluation could be refused
   to a client that does not ask for gzip and served to one that does,
   because the identity-coded body is larger.
 - The words fit this reading at least as well as Reading 1.
+- `[Observed]` The same `resourceLimitSemantics` object says "UTF-8" in
+  so many words when it means the character encoding:
+  `maxBytesPerSource` reads "the exact UTF-8 blob before classification or
+  parsing". The two response ceilings say "the final encoded HTTP body"
+  instead. A reader may take that contrast as a sign the author meant the
+  body as sent. The packet draws no conclusion from it; it is put to you
+  as evidence either way.
 - `[Inferred]` It turns a refusal that is recorded and shown into a
   success, for the same bytes of content. That is the direction the funnel
   flagged as the one VIS-2 ("No evidence means Unknown, not success")
   cares about. It is not a VIS-2 violation by itself — a served page is not
-  a claim of convergence — but it loosens a safety limit that PWB-REQ-006
-  names SEC-3 as its warrant for.
+  a claim of convergence — but it loosens a safety limit whose requirement
+  names SEC-3 as its primary warrant. `[Observed]` PWB-REQ-006's
+  `warrants:` block in the specification above reads `primary: SEC-3`.
 
 ## Open questions
 
 Each question below is yours. The drafter's recommendation is marked;
 nothing here decides it.
+
+**The defaults of Q2 to Q5 take effect only once Q1 is answered (a) or
+(b).** While Q1 is unanswered or answered (c), nothing ships and those
+defaults decide nothing. Some of them (Q3 (a), Q5 (a)) are affirmative
+choices, which is safe only because of this rule.
 
 ### Q1 — Which reading does each response ceiling bear?
 
@@ -268,6 +301,20 @@ fixes one reading raises it before this direction is issued.
 
 **Default if unanswered:** (a). No new dependency is added on any arm.
 
+### Q6 — Which instrument gives your answers effect?
+
+P-77 says "a dated owner act". The section "Why this is a plain dated
+direction" above argues for a plain direction; the choice is yours.
+
+- **(a) A plain dated owner direction**, recorded like the retention-posture
+  direction *(recommended)*. No digest, no manifest, no recorder.
+- **(b) A digest-bound act.** The drafter would first need a subject to
+  bind; see the section above for why that subject would be a second home
+  for a registry sentence.
+
+**Default if unanswered:** no instrument is issued, so compression does not
+ship. This default applies whatever the answer to Q1.
+
 ## What is the drafter's and not yours
 
 These are design choices inside the recommended arms. Say if you want any
@@ -279,11 +326,15 @@ changed.
    uncompressed on every arm.
 3. The compression threshold (the smallest body worth compressing) is an
    implementation detail of slice 4b and is not a governed value.
+4. One weak ETag per body across content codings. A weak validator
+   compares meaning, not bytes, and the gzip and uncompressed forms of one
+   body carry the same content.
 
 ## The proposed direction text
 
-For Q1 (a), Q2 (a), Q3 (a), Q4 (a), Q5 (a). Other answers change the
-marked paragraphs; the drafter will redraft on request.
+For Q1 (a), Q2 (a), Q3 (a), Q4 (a), Q5 (a), Q6 (a). Other answers change
+the marked paragraphs; the drafter will redraft on request. Q6 (b) replaces
+the whole instrument.
 
 ```
 OWNER DIRECTION — WHAT THE POLARIS RESPONSE CEILINGS MEASURE UNDER
@@ -358,9 +409,10 @@ including this packet.
 
 `[Observed]` This packet changes no file that any other candidate package
 patches, and it binds no digest, so it is **outside** the landing order
-you set on 2026-09-23 (`.21` → `.30` → `.22` → lane B, then `.20` and
-`.18`). No manifest has to be regenerated because of it, and it has to be
-regenerated after none.
+you set on 2026-09-23 (`.21` → `.30` → `.22` → lane B). It is equally
+independent of `.20` and `.18`, whose order that ruling does not fix. No
+manifest has to be regenerated because of it, and it has to be regenerated
+after none.
 
 What it does depend on is the **words** it quotes. The check script
 compares each quoted clause with the file it comes from:
@@ -372,7 +424,8 @@ compares each quoted clause with the file it comes from:
   revisited before it is issued.
 - If `.21`, `.30`, `.22` or lane B changes the PWB-REQ-006 sentences quoted
   above, the check fails the same way. `[Observed]` None of their current
-  proposed patches touches those sentences.
+  proposed patches touches those sentences, applied alone or composed in
+  sequence (the check does both).
 
 It can therefore be issued before, between or after any of those acts.
 
@@ -386,7 +439,12 @@ It can therefore be issued before, between or after any of those acts.
   whether or not the client accepts gzip; a body that compresses larger is
   sent uncompressed; the sent size never exceeds the checked size; every
   compressed response carries `Vary: Accept-Encoding`; the 503 failure body
-  is uncompressed.
+  is uncompressed. For conditional GET (slice 4a, already on `main`): a
+  304 carries `Vary: Accept-Encoding` whenever the 200 it stands for would;
+  one body has one weak ETag whether it is sent compressed or not, and an
+  `If-None-Match` taken from either form matches the other; a 304 body is
+  empty and never compressed. The shared weak ETag is the drafter's
+  choice, listed below.
 - **What changes for readers.** Nothing on the page. Machine clients that
   accept gzip receive about 15% of today's bytes.
 - **What does not change.** The registry entry, the specification, the
@@ -406,11 +464,31 @@ Acceptance criteria:
    only lawful one.
 3. The instrument argument ("plain dated direction") holds against the
    continuation act's triggers and against P-77's words.
-4. Every question has a stated default if unanswered, and every default
-   is the fail-closed one.
+4. Every question has a stated default if unanswered, and no combination
+   of defaults lets compression ship.
 5. The proposed direction text changes no governed byte and widens no
    act.
 6. Nothing in the packet decides a question that belongs to the owner.
+
+### Review record
+
+Round 1: `docs/reviews/R-DOV27-RESPONSE-CEILING-PACKET-RAW.md`, a
+fresh-context review of commit `2bb75cf`. Verdict: REVISE. Every finding
+and what was done:
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| F1 — the landing order credited to the owner added ".20 and .18" | revise | Fixed. The order reads `.21` → `.30` → `.22` → lane B, and the packet says it is equally independent of `.20` and `.18`. |
+| F2 — the registry's own "UTF-8 blob" versus "encoded HTTP body" contrast was not put to the owner | note | Fixed. Quoted under Reading 2, with no conclusion drawn; the check now tests the quote. |
+| F3 — the SEC-3 warrant was not quoted | note | Fixed. `primary: SEC-3` is quoted from PWB-REQ-006's warrants and tested. |
+| F4 — "14 times" applied to the measured page | note | Fixed. The measured page is about 20 times inside; 14 times is the extrapolation for the refused 2026-09-13 page. |
+| F5 — `syzygy-dov.24` "in drafting" | withdrawn by the reviewer | No change. |
+| F6 — conditional GET tests and security posture missing | note | Fixed. ETag, 304 and `Vary` tests added; an observed credential sweep (137 files, 9 lines) added under "What is true today", with what it does not prove. |
+| F7 — checker gaps | note | Fixed. C3 now opens only on an issued direction whose content answers Q1 (a) or (b) and permits a coding, and closes again on a withdrawal record; its pattern catches `CompressionStream`, `deflate` and `brotli` in any form; C5 also applies every patch to a quoted file composed in sequence. Each has a new selftest. |
+| F8 — affirmative defaults, and the instrument not put as a question | note | Fixed. Q2–Q5 defaults apply only once Q1 is (a) or (b); Q6 asks which instrument, defaulting to none. |
+
+The reviewer's out-of-scope note (a stale "Notes to self" line in
+`AGENTS.md`) is for the lead and is not handled here.
 
 ## How to check this packet
 
