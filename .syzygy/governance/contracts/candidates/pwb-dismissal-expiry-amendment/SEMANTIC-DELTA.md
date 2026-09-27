@@ -33,7 +33,7 @@ the compliance consequence.]
 
 **Author:** Claude drafting worker for `syzygy-dov.29`.
 
-**Date:** 2026-09-26; repaired 2026-09-27 after review rounds 1, 2 and 3.
+**Date:** 2026-09-26; repaired 2026-09-27 after review rounds 1, 2, 3 and 4.
 **Baseline:** `3ee61c7`.
 
 ## What the owner asked for
@@ -299,10 +299,14 @@ PWB-REQ-007's SHALL paragraph. In plain terms it says:
 - **When it is in effect.** "only while all three hold: the evaluation
   carries the claim identity the record names, the evaluation's as-of instant
   is earlier than the record's expiry instant, and the claim's primary reason
-  is the one the record dismissed". An as-of instant equal to the expiry
-  instant means lapsed. "The evaluation SHALL decide this from its own as-of
-  instant and never from the instant a page or answer is read, so a dismissal
-  lapses only through a new identified evaluation."
+  is the one the record dismissed, which only an Unknown claim can meet,
+  since only an Unknown claim carries a primary reason". That rests on
+  RFC2-24: the closed reason list "covers Unknown states only", and every
+  Unknown claim "carries exactly one primary reason from this list". An
+  as-of instant equal to the expiry instant means lapsed. "The evaluation
+  SHALL decide this from its own as-of instant and never from the instant a
+  page or answer is read, so a dismissal lapses only through a new
+  identified evaluation."
 - **What it shows.** It "replaces the claim's status rendering and never its
   facts": label, tier, both reason kinds, resolution route, freshness,
   challenge state, claim identity and evaluation identity stay visible and
@@ -324,9 +328,14 @@ PWB-REQ-007's SHALL paragraph. In plain terms it says:
   classes are tested in this order and a record is disclosed in the first
   whose test it meets, so no record meets two:
   - *refused* — the record lacks an author, reason, expiry instant, claim
-    identity or dismissed primary reason, or itself names, as the reason it
-    dismisses, a reason that may not be dismissed; "a record is never
-    refused because of the state of the claim it names";
+    identity or dismissed primary reason; or does not itself state that its
+    author is a human, as with a model, agent or automated process; or
+    carries an expiry that is not a readable instant, or a dismissed reason
+    outside the closed Unknown reasons; or itself names, as the reason it
+    dismisses, a reason that may not be dismissed. "A record is never
+    refused because of the state of the claim it names." A refused record is
+    listed among the evaluation's refused records, with its record identity,
+    the test that refused it and whatever else it states;
   - *bound to a retired identity* — otherwise, RFC1-12: the evaluation
     records the claim identity it names as retired by a split or merge; it
     is never transferred to a successor, and dismissing a successor needs a
@@ -342,6 +351,17 @@ PWB-REQ-007's SHALL paragraph. In plain terms it says:
     that failed and "never states whether the record once took effect", so a
     record whose claim or reason never matched is lapsed under the same
     condition as one whose claim or reason changed.
+
+  The author test reads the record alone. An evaluation cannot tell who
+  wrote a file, so a record that does not state a human author is refused
+  rather than guessed at. [Inferred] The rule follows from two sources
+  together. The owner's P-79 answer makes a dismissal "an amendment — CC-REV-2
+  delta plus a new act". VIS-4 says of shape-defining deltas that "Syzygy
+  and its agents may draft them, never adopt them". It allows LLM adoption
+  of behavioral spec changes only "in principle", behind a doctrine
+  amendment that has not been made. Whether "a human" should read "the
+  owner" is packet question 3. Under either answer every record still falls
+  in exactly one class.
 
   Retirement and the uncarried-identity lapse are both decided on the
   evaluation's side: the evaluation either records a retirement or does not
@@ -359,17 +379,19 @@ are added after "Missing current evidence remains explicit Unknown":
   shows it dismissed (see point 4 above on retention).
 - *A dismissal replaces the rendering, never the facts* — human/machine parity
   on the claim's own surface, aggregate counts kept (freshness included), no
-  favourable aggregate, and the refused-record cases, where a record is
-  refused for the reason it itself dismisses, never for the claim's current
-  reason.
+  favourable aggregate, and the refused-record cases: a record missing a
+  field, one whose stated author is a model, one whose expiry is not a
+  readable instant, and one refused for the reason it itself dismisses,
+  never for the claim's current reason.
 - *A record that no longer applies is lapsed or retired, never refused* —
   reason drift gives lapsed, even when the claim's new reason may not be
   dismissed; an identity the evaluation records as retired gives bound to a
-  retired identity; an identity the evaluation does not carry gives lapsed;
+  retired identity; an identity the evaluation neither carries nor records
+  as retired gives lapsed;
   no record is shown as refused.
 
-Warrants gain VIS-6 (doctrine) and RFC1-12, RFC1-20, RFC1-25, RFC2-1 and
-RFC2-15 (contracts).
+Warrants gain VIS-4 and VIS-6 (doctrine) and RFC1-12, RFC1-20, RFC1-25,
+RFC2-1 and RFC2-15 (contracts).
 
 ## Same-change propagation
 
@@ -420,6 +442,10 @@ findings (N1, N2) and nine notes. The raw is kept verbatim at
 dispositioned in the packet's review record. Round 3 (fresh context, over
 `8307180`) returned **REVISE**: one revise finding (R1) and seven notes. The
 raw is kept verbatim at `docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-3-RAW.md`
-and each finding is dispositioned in the packet's review record. Every repair
-retires the round before it (rule 10); a confirmation round must bind the
-new manifest digest.
+and each finding is dispositioned in the packet's review record. Round 4
+(fresh context, over `b28bc18`) returned **REVISE**: one revise finding (R2)
+and four notes. The raw is kept verbatim at
+`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-4-RAW.md` and each finding is
+dispositioned in the packet's review record. Every repair retires the round
+before it (rule 10); a confirmation round must bind the new manifest
+digest.

@@ -4,14 +4,15 @@
 > carries no verdict and performs no act. The reviewer must not receive the
 > drafting conversation or a desired verdict.
 
-**Round 4 is a confirmation round.** Round 1 returned REVISE over
-`9b18409` (pre-rebase), round 2 returned REVISE over `82cc6c4` and round 3
-returned REVISE over `8307180`; their raws are
-`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-RAW.md`,
-`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-2-RAW.md` and
-`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-3-RAW.md`, and every finding is
+**Round 5 is a confirmation round.** Round 1 returned REVISE over
+`9b18409` (pre-rebase), round 2 returned REVISE over `82cc6c4`, round 3
+returned REVISE over `8307180` and round 4 returned REVISE over `b28bc18`;
+their raws are `docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-RAW.md`,
+`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-2-RAW.md`,
+`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-3-RAW.md` and
+`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-4-RAW.md`, and every finding is
 dispositioned in the review record at the end of `OWNER-DECISION-PACKET.md`.
-The round-4 reviewer checks each disposition against the raws and the current
+The round-5 reviewer checks each disposition against the raws and the current
 bytes, then applies the criteria below afresh.
 
 ## Exact review inputs
@@ -23,11 +24,11 @@ Give the fresh reviewer only:
   `proposed/*.patch` files;
 - `scripts/build_pwb_dismissal_expiry_amendment.py` and the matching
   registration diff in `scripts/check_governance.py`;
-- the round-1, round-2 and round-3 raws named above;
+- the round-1 to round-4 raws named above;
 - the signed PWB eleven-artifact subject;
 - PWB-REQ-007, PWB-REQ-001, RFC1-5, RFC1-12, RFC1-18, RFC1-20, RFC1-25, RFC2-1, RFC2-13, RFC2-14,
-  RFC2-15, RFC2-24, RFC2-25, RFC6-14, RFC6-17, VIS-2 and VIS-6 at their
-  definition sites;
+  RFC2-15, RFC2-24, RFC2-25, RFC6-14, RFC6-17, VIS-2, VIS-4 and VIS-6 at
+  their definition sites;
 - CC-REV-1, CC-REV-2, CC-REV-4 and CC-REV-6;
 - the semantic-delta template and normative-change workflow;
 - the P-79 ruling row, the 2026-09-23 retention direction, and the M12
@@ -69,8 +70,10 @@ review.
    record could dismiss without authority, and a valid record that no longer
    applies is shown as lapsed or bound to a retired identity, never refused.
    Every reachable record state falls in exactly one class under the stated
-   order, and the scenarios agree with the paragraph. The expiry boundary is
-   exact.
+   order, including a complete record whose stated author is not a human,
+   one with a malformed value, and, under each answer to packet question 3,
+   one by a human who is not the owner. The scenarios agree with the
+   paragraph. The expiry boundary is exact.
 9. **Same-change propagation.** All eleven subjects; the six patched files
    change together and the other five stay exact.
 10. **Coverage rows.** Test the thirteen repair-row changes independently,
@@ -84,7 +87,10 @@ review.
     orders and the sequential run.
 13. **Builder fail-closed behaviour.** Run `--check`, `--selftest` and
     `--diff`; independently mutate at least the paragraph, a scenario, a
-    warrant, a coverage row, the manifest and a composition outcome.
+    warrant, a coverage row, the manifest and a composition outcome. The
+    builder claims the proposed `spec.md` is pinned whole and the other five
+    patched files only by regeneration and named tokens: test that claim
+    exactly, in both directions.
 14. **Governance hygiene.** No bound byte edited; no performed act's argument
     or truncated digest quoted; no observed-repository path backticked;
     phrase and copy registered with no successor-chain link; CG-26 lists

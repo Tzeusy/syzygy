@@ -7,7 +7,7 @@
 > stale; it is not offered until the exact bytes pass a fresh independent
 > review.
 
-Date: 2026-09-26; repaired 2026-09-27 after review rounds 1, 2 and 3 (all
+Date: 2026-09-26; repaired 2026-09-27 after review rounds 1, 2, 3 and 4 (all
 REVISE; see the review record at the end). Gate bead: `syzygy-dov.29`
 (P-79 question 5, M12 slice 4).
 
@@ -22,7 +22,7 @@ PWB behavior subject. Six rows hash proposed bytes and five hash current
 bytes.
 
 Manifest SHA-256:
-`9f4063d303e75b893bc7348df0aef9e5e84c381df6ae98b3d15b4b7c22af9838`
+`0d063de03be54bd9b8b10edbc8362d864010c1a11225cbc6401091cee9c37f4e`
 
 The builder writes the manifest; this digest was computed from it by script.
 Any change to a patch, the manifest or the subject retires it.
@@ -53,11 +53,14 @@ Under the drafted text:
   separately as dismissed, and no count treats it as resolved or good;
 - a record that dismisses nothing is shown as exactly one of three things,
   checked in this order and shown as the first that fits: **refused**
-  (incomplete, or itself tries to dismiss a reason that may not be
-  dismissed — never because of what has happened to the claim), then
+  (incomplete; not stating that its author is a human, as with a record
+  written by a model or agent; carrying an expiry that is not a readable
+  instant or a reason outside the closed list; or itself trying to dismiss a
+  reason that may not be dismissed — never because of what has happened to
+  the claim; listed among the evaluation's refused records), then
   **bound to a retired identity** (the evaluation records that the claim it
   named was split or merged away; a new record is needed for the
-  successor), then **lapsed** (its expiry has passed, the evaluation no
+  successor), then **lapsed** (its expiry has been reached, the evaluation no
   longer shows the claim it names — for example because the declaration
   behind it was deleted — or the claim's reason is not the one it named,
   even when that reason may not be dismissed). A lapsed record says which
@@ -97,11 +100,18 @@ The full reasoning, with every contract clause quoted, is in
    not write to. Your question-4 answer reads "write act deferred", and this
    package gives Syzygy no way to write a record. Which path should the records use,
    and do you author them by hand until a write act exists?
-3. **Who may dismiss?** The draft requires an attributed human author. With
-   multi-user support forbidden, the only author today is you. Should the
-   text say "the owner" rather than "a human"? RFC1-12 says "re-dismissal is
-   an owner act", so the coverage row for that part (RFC1-12.r3) stays
-   `unknown-uncovered` until you answer.
+3. **Who may dismiss?** The draft requires an attributed human author, and
+   refuses any record that does not itself state that its author is a human,
+   such as one written by a model or agent. That follows from two things
+   together [Inferred]: your P-79 answer makes a dismissal an amendment, and
+   VIS-4 lets agents "draft them, never adopt them". With multi-user support
+   forbidden, the only author today is you. Should the text say "the owner"
+   rather than "a human"? Either answer leaves every record in exactly one
+   class. Under the drafted words, a record by a human who is not you is in
+   effect like any other. If you answer "the owner", the refused test becomes
+   "does not state that its author is the owner", and that record is
+   refused. RFC1-12 says "re-dismissal is an owner act", so the coverage row
+   for that part (RFC1-12.r3) stays `unknown-uncovered` until you answer.
 4. **Which claims may be dismissed?** The draft says Unknown claims only,
    excluding contradictions. The contracts speak of dismissing a *gap*; the
    draft reads an Unknown PWB claim as the gap it discloses. That reading is
@@ -158,10 +168,10 @@ The full reasoning, with every contract clause quoted, is in
 
 The act phrase for this manifest would be:
 
-`SIGN OFF PWB DISMISSAL-EXPIRY AMENDMENT: 9f4063d303e75b893bc7348df0aef9e5e84c381df6ae98b3d15b4b7c22af9838`
+`SIGN OFF PWB DISMISSAL-EXPIRY AMENDMENT: 0d063de03be54bd9b8b10edbc8362d864010c1a11225cbc6401091cee9c37f4e`
 
 It is registered so governance checks see it go stale, but it is **not
-offered**: rounds 1, 2 and 3 returned REVISE and no review has confirmed these
+offered**: rounds 1 to 4 returned REVISE and no review has confirmed these
 bytes. If you reply with this phrase now, nothing is performed. A future
 recorder must reject a digest that differs from the manifest then present and
 must prove every manifest row against the tree after the patches are
@@ -320,5 +330,27 @@ asserts.
 | N-A3 | NOTE | Review record named off-branch commits; the `96ee305` rebase was unrecorded | Repaired. A dated correction in the round-1 paragraph names the reachable chain on `96ee305` and says which commits are unreachable; the impact ledger records both later bases. |
 | N-B1 | NOTE | "and"→"or" (M2), the refused guard (M7) and "as lapsed and as refused" (M14) survived; `SCENARIO_ONCE` tested itself | Repaired. The three in-effect tests are one rule, so the connectives are pinned (M2 killed). Retirement is pinned to the evaluation's record, and refusal by an uncarried claim is forbidden wording (M7 and its reversal killed). A record put in two classes is forbidden wording (M14 killed). The self-test asserts the `SCENARIO_ONCE` population and its own total as literals: dropping a phrase from `SCENARIO_ONCE` now fails with "once-only scenario phrase population changed". The additive mutants M1 and M9 are also killed now: "not counted" is forbidden, and a permissive source now includes "SHALL dismiss". |
 | N-C1 | NOTE | RFC1-12.r1 credited `covered` while "re-dismissal is an owner act" rests on question 3 | Repaired. RFC1-12.r1 now covers the no-transfer rule only, and says the retired class is unreachable until PWB records a retirement. New row RFC1-12.r3, "re-dismissal of a successor is an owner act", is `unknown-uncovered` until you answer question 3. Totals 628 / 141 / 242 / 245. The delta's "a valid owner act is never shown as refused" now reads "a complete record". |
-| N-C2 | NOTE | VIS-2: an unreadable or homeless record set could yield a dismissed count of 0 | Repaired. When the record set cannot be read, or no home is designated, the evaluation "dismisses no claim and SHALL disclose its dismissed count and the count of each record class below as Unknown, never as zero". The Case and Falsifier lines cover it. |
+| N-C2 | NOTE | VIS-2: an unreadable or homeless record set could yield a dismissed count of 0 | Repaired. When the record set cannot be read, or no home is designated, the evaluation "dismisses no claim and SHALL disclose its dismissed count and the count of each record class below as Unknown, never as zero". The Case and Falsifier lines cover it. *Round-4 correction (N-B2): true of the spec bytes only; the builder pinned neither line until round 4.* |
 | N-C3 | NOTE | Two records in effect for one claim were in no class | Repaired by disclosure: "When more than one record is in effect for the same claim, each is disclosed that way beside the claim and the claim is counted once as dismissed." |
+
+Round 4: a fresh-context confirmation review over commit `b28bc18` returned
+**REVISE** with one revise finding and four notes, and resolved every
+round-3 finding. The raw is kept verbatim at
+`docs/reviews/R-DOV29-DISMISSAL-EXPIRY-DELTA-4-RAW.md` (verdict line 2; the
+closing verdict section repeats it). The builder's self-test went from 136
+to 174 mutants killed.
+
+| # | Kind | Finding (short) | Disposition |
+|---|---|---|---|
+| R2 | REVISE | A complete record written by a model or agent was in no class, or else in effect | Repaired. The refused test now checks the author on the record itself: a record is refused "when it does not itself state that its author is a human, as with every record whose stated author is a model, agent or automated process, since the evaluation takes the author's kind from the record alone and never infers it". An author that cannot be verified is therefore refused. Scenario 2 and the Case line add that record. VIS-4 joins the warrants. Question 3 now states the class of a record by a human other than you under each answer, without choosing one. The reviewer's mutant Q5 fails the builder. |
+| N-A4 | NOTE | Scenario 3's third record admitted a retired identity | Repaired. The third record "names a claim identity the evaluation neither carries nor records as retired". |
+| N-A5 | NOTE | Malformed values fell to lapsed; refused records had no place; the Unknown test was unstated | Repaired. A record whose expiry "is not a readable instant" or whose dismissed reason "is not one of the closed Unknown reasons" is refused. "A refused record is disclosed among the evaluation's refused records with its record identity, the test that refused it and whatever author, reason, expiry instant and claim identity it states." The in-effect reason test now says it is one "which only an Unknown claim can meet, since only an Unknown claim carries a primary reason", resting on RFC2-24 (quoted in `SEMANTIC-DELTA.md`). |
+| N-A6 | NOTE | "its expiry has passed" inexact at equality | Repaired. The plain-language list says "its expiry has been reached". |
+| N-B2 | NOTE | Case, Oracle and Falsifier extensions unpinned; rule strings could be weakened; case-insensitivity untested | Repaired by a whole-file pin. The builder holds the six edits to PWB-REQ-007 as literal text. The proposed `spec.md` must equal the current file with those edits applied, byte for byte, so any added, dropped or changed byte anywhere in the file fails `--check`. The self-test runs the reviewer's eleven surviving spec mutants (Q5, Q9, Q12–Q20) and a byte added outside PWB-REQ-007; each fails the pin. The rule tables now only name which rule a drift broke; their digest is pinned, so a rule weakened, dropped or added in one place (B3) fails the self-test. Each forbidden wording is also tested with its case swapped (B10). The builder's docstring states what is and is not pinned: the other five patched files are pinned only by regeneration and named tokens. |
+
+Builder mutants for this round were run by the drafter, each on a copy of the
+builder that was then deleted, using `--check` and `--selftest`: 11 of 11
+killed. They were the reviewer's B1, B3, B4, B10 and B11; the author rule
+dropped; the pin disabled; the pin blind past PWB-REQ-007; one pinned edit
+skipped; composition checked against the unpatched base; and VIS-4 dropped
+from the required warrants.

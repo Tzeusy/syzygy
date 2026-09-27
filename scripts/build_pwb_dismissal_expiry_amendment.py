@@ -14,6 +14,16 @@ shared file, which patch pairs compose in both orders and which collide, so a
 drifted sibling or a new shared file fails the check instead of passing it.
 The composing siblings are also applied together, in table order, before this
 package's patch, so a pairwise pass cannot hide a sequential failure.
+
+What is pinned, exactly. The proposed spec.md is pinned whole: it must equal
+the current spec.md with SPEC_EDITS applied inside PWB-REQ-007, byte for
+byte. The rule tables only name which rule a drift broke, and their digest is
+pinned. GOVERNING-DEPENDENCIES.md and CONTRACT-COVERAGE.md are regenerated and
+compared byte for byte. proposal.md, CAPABILITY-COVERAGE.md and
+CONTRACT-COVERAGE-REPAIR-DELTA.md are pinned only by named tokens (the
+proposal bullet, row 32 and its totals, the thirteen repair rows) and
+otherwise only by the manifest digest. The patch files' own bytes are not
+pinned beyond what they produce.
 """
 
 from __future__ import annotations
@@ -175,11 +185,31 @@ PARAGRAPH_RULES = {
         "instant, claim identity or dismissed primary reason"
     ),
     "refused by its own reason": (
-        "or itself names, as the reason it dismisses, a primary reason that "
-        "may not be dismissed"
+        "or when it itself names, as the reason it dismisses, a primary reason "
+        "that may not be dismissed"
+    ),
+    # Author authority is a test on the record itself (round-4 R2).
+    "refused by its author": (
+        "when it does not itself state that its author is a human, as with "
+        "every record whose stated author is a model, agent or automated "
+        "process, since the evaluation takes the author's kind from the "
+        "record alone and never infers it"
+    ),
+    "refused by a malformed value": (
+        "when its expiry instant is not a readable instant or its dismissed "
+        "primary reason is not one of the closed Unknown reasons"
     ),
     "never refused by claim state": (
-        "a record is never refused because of the state of the claim it names"
+        "A record is never refused because of the state of the claim it names"
+    ),
+    "refused records placed": (
+        "A refused record is disclosed among the evaluation's refused records "
+        "with its record identity, the test that refused it and whatever "
+        "author, reason, expiry instant and claim identity it states"
+    ),
+    "in effect only when Unknown": (
+        "which only an Unknown claim can meet, since only an Unknown claim "
+        "carries a primary reason"
     ),
     "lapse conditions": (
         "Otherwise it is a lapsed record when the evaluation's as-of instant "
@@ -235,7 +265,11 @@ SCENARIO_RULES = {
         ),
         "refused records": (
             "or `challenge-suspended`, each dismiss nothing and are disclosed "
-            "as refused records"
+            "among the evaluation's refused records"
+        ),
+        "refused by its author": "a record whose stated author is a model",
+        "refused by a malformed value": (
+            "a record whose expiry instant is not a readable instant"
         ),
     },
     SCENARIOS[2]: {
@@ -249,6 +283,10 @@ SCENARIO_RULES = {
             "a split or merge"
         ),
         "no transfer": "is never transferred to a successor",
+        "neither carried nor retired": (
+            "a third complete record names a claim identity the evaluation "
+            "neither carries nor records as retired"
+        ),
         "uncarried identity lapses": (
             "the third is disclosed as lapsed with the condition that the "
             "evaluation does not carry its claim identity"
@@ -281,9 +319,198 @@ FORBIDDEN = {
 }
 # The selftest's total, fixed so that a rule removed from any table above
 # fails the selftest instead of lowering its count.
-EXPECTED_KILLED = 136
+EXPECTED_KILLED = 174
 REQUIRED_WARRANTS = (
-    "VIS-6", "RFC1-12", "RFC1-20", "RFC1-25", "RFC2-1", "RFC2-15"
+    "VIS-4", "VIS-6", "RFC1-12", "RFC1-20", "RFC1-25", "RFC2-1", "RFC2-15"
+)
+# The rule tables above name which rule a drifted paragraph or scenario
+# breaks; they are not the guard on the bytes (SPEC_EDITS below is). Their
+# digest is pinned so that a rule weakened, dropped or added in one place
+# fails the selftest instead of passing with its own derived mutant.
+RULE_TABLES_SHA256 = "cc34f7295b0a35aacb964af03dccd9946d538d84bc94f99936dc2be590c283c1"
+# The whole proposed spec.md, pinned by construction: it must equal the
+# current spec.md with each (anchor, replacement) pair applied once inside
+# PWB-REQ-007, and every other byte of the file unchanged. Each anchor must
+# occur exactly once in the current PWB-REQ-007 section.
+SPEC_EDITS = (
+    (
+        """\
+- **Case (sweep)**: enumerate every project entity, claim and aggregate across
+""",
+        """\
+A claim MAY carry the `dismissed-by-decision` sibling surface state, and only
+under a dismissal record: an attributed human decision that names the
+dismissed claim's semantic Claim identity and the primary reason it dismisses,
+states a reason and an expiry instant, and is committed to the governed plane.
+Every dismissal record present in the governed plane at an evaluation's
+snapshot is an identified input of that evaluation. When an evaluation cannot
+read that record set, or no governed-plane home for dismissal records is
+designated, it dismisses no claim and SHALL disclose its dismissed count and
+the count of each record class below as Unknown, never as zero. Only a claim
+whose label is Unknown MAY be dismissed, and never one whose primary reason is
+`contradicted-pending-adjudication`, which leaves only by owner adjudication,
+or `challenge-suspended`, which leaves only through its challenge's
+resolution. Nothing else dismisses a claim: not a view preference, a query
+parameter, browser or daemon state, an owner note or a model assertion. A
+dismissal is in effect at an evaluation only while all three hold: the
+evaluation carries the claim identity the record names, the evaluation's as-of
+instant is earlier than the record's expiry instant, and the claim's primary
+reason is the one the record dismissed, which only an Unknown claim can meet,
+since only an Unknown claim carries a primary reason. The evaluation SHALL
+decide this from its own as-of instant and never from the instant a page or
+answer is read, so a dismissal lapses only through a new identified
+evaluation. While a dismissal is in effect, the sibling state replaces the
+claim's status rendering and never its facts: the claim's label, tier, primary
+and secondary reasons, resolution route, freshness, challenge state, claim
+identity and evaluation identity stay visible and unchanged beside the
+dismissal's reason, expiry instant, author and record identity, on the same
+surface as the claim and without further disclosure, identically in the human
+and machine views. When more than one record is in effect for the same claim,
+each is disclosed that way beside the claim and the claim is counted once as
+dismissed. A dismissal SHALL not change any tuple value, render as a positive,
+resolved, aligned or current state, or count as resolved or favourable in any
+aggregate. Dismissed members SHALL remain in every per-label, tier, freshness
+and reason count of an aggregate, and SHALL additionally be counted and
+expandable as a sibling state. A record that dismisses nothing is disclosed in
+exactly one of three classes, each distinct from the others and from a
+dismissal in effect, identically in the human and machine views. The classes
+are tested in order, refused first, then bound to a retired identity, then
+lapsed, and a record is disclosed in the first class whose test it meets. It
+is a refused record when it lacks an author, reason, expiry instant, claim
+identity or dismissed primary reason; when it does not itself state that its
+author is a human, as with every record whose stated author is a model, agent
+or automated process, since the evaluation takes the author's kind from the
+record alone and never infers it; when its expiry instant is not a readable
+instant or its dismissed primary reason is not one of the closed Unknown
+reasons; or when it itself names, as the reason it dismisses, a primary reason
+that may not be dismissed. A record is never refused because of the state of
+the claim it names. A refused record is disclosed among the evaluation's
+refused records with its record identity, the test that refused it and
+whatever author, reason, expiry instant and claim identity it states.
+Otherwise it is bound to a retired identity when the evaluation records the
+claim identity it names as retired by a split or merge; it is never
+transferred to a successor, it is disclosed beside the retirement record, and
+dismissing a successor needs a new record. Otherwise it is a lapsed record
+when the evaluation's as-of instant is not earlier than its expiry instant,
+the evaluation does not carry the claim identity it names, or the claim's
+primary reason is not the one it dismissed, including because the claim is not
+Unknown or its primary reason is one that may not be dismissed. A lapsed
+record is disclosed with its reason, expiry instant, author, record identity
+and the condition that lapsed it, beside the claim when the evaluation carries
+it and otherwise among the evaluation's lapsed records; the condition names
+the test that failed and never states whether the record once took effect, so
+a record whose claim or reason never matched is lapsed under the same
+condition as one whose claim or reason changed.
+
+- **Case (sweep)**: enumerate every project entity, claim and aggregate across
+""",
+    ),
+    (
+        """\
+  out-of-vocabulary and missing-currency cases.
+- **Observable**: human and machine views expose identical complete tuples;
+""",
+        """\
+  out-of-vocabulary and missing-currency cases, and dismissal records that
+  are in effect, lapse at or after their expiry instant, outlive a change of
+  the dismissed primary reason, name a claim identity the evaluation does not
+  carry, share one claim, are bound to a retired identity, or are refused,
+  including for an author not stated to be human or an unreadable expiry
+  instant, and a record set that cannot be read.
+- **Observable**: human and machine views expose identical complete tuples;
+""",
+    ),
+    (
+        """\
+  zero invalid, missing or folded values decides.
+- **Oracle independence**: the checker hard-codes the accepted vocabularies and
+""",
+        """\
+  decide each dismissal record against each evaluation's own as-of instant
+  with the checker's own statement of the rule; zero invalid, missing or
+  folded values decides.
+- **Oracle independence**: the checker hard-codes the accepted vocabularies and
+""",
+    ),
+    (
+        """\
+  total, or an aggregate claims its own headline status.
+
+""",
+        """\
+  total, an aggregate claims its own headline status, or a dismissal changes
+  a tuple value, takes effect without a governed-plane record, lapses or
+  persists by reading time rather than by evaluation, hides the dismissed
+  claim's facts, leaves an aggregate's label, tier, freshness or reason
+  counts, counts as resolved or favourable in an aggregate, or discloses a
+  record that dismisses nothing in any class but the first, in the stated
+  order, whose test it meets, or an unreadable record set yields a dismissed
+  or record-class count of zero.
+
+""",
+    ),
+    (
+        """\
+```yaml
+""",
+        """\
+#### Scenario: A dismissal lapses only through a new evaluation
+
+- **WHEN** a dismissal record for an Unknown claim states an expiry instant,
+  one evaluation's as-of instant falls before that instant and a second
+  evaluation's as-of instant equals it exactly
+- **THEN** the first evaluation renders the claim `dismissed-by-decision`
+  beside its unchanged tuple and the dismissal's reason, expiry instant,
+  author and record identity, and reading the first evaluation again after
+  the expiry instant has passed renders the same claim state
+- **AND** the second evaluation renders the claim without the sibling state
+  and discloses the record as lapsed, and each evaluation carries the tuple
+  values it derives from its own snapshot and as-of instant, none of them
+  changed by the dismissal
+
+#### Scenario: A dismissal replaces the rendering, never the facts
+
+- **WHEN** a dismissal is in effect for a claim
+- **THEN** the human and machine views carry the same sibling state and the
+  same complete tuple on the claim's own surface, and every aggregate keeps
+  the claim in its per-label, tier, freshness and reason counts, counts it
+  additionally as dismissed and never counts it as resolved or favourable
+- **AND** a record without an author, reason or expiry instant, a record
+  whose stated author is a model, a record whose expiry instant is not a
+  readable instant, and a record whose own dismissed primary reason is
+  `contradicted-pending-adjudication` or `challenge-suspended`, each dismiss
+  nothing and are disclosed among the evaluation's refused records
+
+#### Scenario: A record that no longer applies is lapsed or retired, never refused
+
+- **WHEN** a complete dismissal record names a primary reason that is no
+  longer the claim's primary reason at an evaluation, a second complete
+  record names a claim identity that the evaluation records as retired by a
+  split or merge, and a third complete record names a claim identity the
+  evaluation neither carries nor records as retired
+- **THEN** the first record dismisses nothing and is disclosed beside the
+  claim as lapsed, with the condition that lapsed it, even when the claim's
+  new primary reason is one that may not be dismissed
+- **AND** the second record is never transferred to a successor and is
+  disclosed as bound to a retired identity beside the retirement record, the
+  third is disclosed as lapsed with the condition that the evaluation does
+  not carry its claim identity, and no record is disclosed as refused
+
+```yaml
+""",
+    ),
+    (
+        """\
+  doctrine: [VIS-1, VIS-2, VIS-7]
+  contracts: [RFC1-18, RFC1-19, RFC1-24, RFC2-9, RFC2-10, RFC2-23, RFC2-24, RFC2-25, RFC6-14, RFC6-17, RFC7-16, RFC7-33]
+  policies: [CC-BAR-3, CC-BAR-4, CC-TEST-5, CC-TEST-6]
+""",
+        """\
+  doctrine: [VIS-1, VIS-2, VIS-4, VIS-6, VIS-7]
+  contracts: [RFC1-12, RFC1-18, RFC1-19, RFC1-20, RFC1-24, RFC1-25, RFC2-1, RFC2-9, RFC2-10, RFC2-15, RFC2-23, RFC2-24, RFC2-25, RFC6-14, RFC6-17, RFC7-16, RFC7-33]
+  policies: [CC-BAR-3, CC-BAR-4, CC-TEST-5, CC-TEST-6]
+""",
+    ),
 )
 PROPOSAL_TOKEN = (
     "A claim that renders Unknown may carry a recorded, attributed human "
@@ -417,14 +644,65 @@ def forbidden_findings(where: str, text: str) -> list[str]:
     ]
 
 
-def requirement_findings(spec: bytes) -> list[str]:
-    """The paragraph, the scenarios and the warrants sit inside PWB-REQ-007."""
-    text = spec.decode("utf-8")
+def rule_tables_digest() -> str:
+    tables = (
+        PARAGRAPH_RULES, SCENARIO_RULES, SCENARIO_ONCE, FORBIDDEN,
+        REQUIRED_WARRANTS,
+    )
+    return sha256(repr(tables).encode("utf-8"))
+
+
+def expected_spec(base: str) -> tuple[str | None, list[str]]:
+    """The current spec with SPEC_EDITS applied inside PWB-REQ-007 only."""
+    start = base.find(REQUIREMENT)
+    end = base.find(NEXT_REQUIREMENT, start)
+    if start < 0 or end < 0:
+        return None, ["current spec lacks PWB-REQ-007 or its following requirement"]
+    section = base[start:end]
     findings: list[str] = []
+    for anchor, replacement in SPEC_EDITS:
+        if section.count(anchor) != 1:
+            findings.append(
+                "current PWB-REQ-007 does not carry the pinned anchor exactly "
+                f"once: {anchor.splitlines()[0]!r}"
+            )
+            continue
+        section = section.replace(anchor, replacement, 1)
+    if findings:
+        return None, findings
+    return base[:start] + section + base[end:], []
+
+
+def pin_findings(text: str, base: str) -> list[str]:
+    want, findings = expected_spec(base)
+    if want is None:
+        return findings
+    if text == want:
+        return []
+    got_lines, want_lines = text.splitlines(), want.splitlines()
+    for number, (got, wanted) in enumerate(zip(got_lines, want_lines), 1):
+        if got != wanted:
+            break
+    else:
+        number = min(len(got_lines), len(want_lines)) + 1
+        got = got_lines[number - 1] if number <= len(got_lines) else "<end>"
+        wanted = want_lines[number - 1] if number <= len(want_lines) else "<end>"
+    return [
+        f"proposed spec differs from the pinned text at line {number}: "
+        f"got {got!r}, want {wanted!r}"
+    ]
+
+
+def requirement_findings(spec: bytes, base: bytes | None = None) -> list[str]:
+    """The proposed spec equals the pinned text; the rules name what drifted."""
+    text = spec.decode("utf-8")
+    if base is None:
+        base = (ROOT / SPEC).read_bytes()
+    findings = pin_findings(text, base.decode("utf-8"))
     start = text.find(REQUIREMENT)
     end = text.find(NEXT_REQUIREMENT, start)
     if start < 0 or end < 0:
-        return ["PWB-REQ-007 or its following requirement is missing"]
+        return findings + ["PWB-REQ-007 or its following requirement is missing"]
     section = text[start:end]
     if text.count(PARAGRAPH_OPENING) != 1:
         findings.append("missing or duplicate dismissal paragraph")
@@ -580,7 +858,9 @@ def composition_findings(
             second = _compose(target, [mine[sibling.name], sibling])
             if first is not None and second is not None and first == second:
                 outcome = "compose"
-                if target == SPEC and requirement_findings(first):
+                if target == SPEC and requirement_findings(
+                    first, _compose(target, [sibling])
+                ):
                     findings.append(f"{name} composition misplaces this package's text")
             elif first is None and second is None:
                 outcome = "collide"
@@ -614,7 +894,9 @@ def sequential_findings(
         result = _compose(_target(patch), order + [patch])
         if result is None:
             findings.append(f"{name} does not apply after its composing siblings in order")
-        elif _target(patch) == SPEC and requirement_findings(result):
+        elif _target(patch) == SPEC and requirement_findings(
+            result, _compose(_target(patch), order)
+        ):
             findings.append("sequential composition misplaces this package's text")
     return findings
 
@@ -917,6 +1199,99 @@ def selftest() -> int:
         return _fail("two-class scenario mutation passed")
     killed += 1
 
+    # Round-4 review mutants. Each adds, reverses or drops required text
+    # that no rule above pins whole; the spec pin must fail each one.
+    def reworded(old: str, new: str) -> bytes | None:
+        pattern = r"\s+".join(re.escape(word) for word in old.split())
+        if len(re.findall(pattern, text)) != 1:
+            return None
+        return re.sub(pattern, new, text, count=1).encode()
+
+    round4 = {
+        "Q5 model author in effect": (
+            "condition as one whose claim or reason changed.",
+            "condition as one whose claim or reason changed. A record whose "
+            "author is a model is in effect like any other.",
+        ),
+        "Q9 re-read flips": (
+            "renders the same claim state",
+            "renders the same claim state until it is re-read, then without it",
+        ),
+        "Q12 renders green": (
+            "the claim is counted once as dismissed.",
+            "the claim is counted once as dismissed (though it renders green).",
+        ),
+        "Q13 read-time lapse": (
+            "condition as one whose claim or reason changed.",
+            "condition as one whose claim or reason changed. A page read after "
+            "the expiry instant shows the claim undismissed.",
+        ),
+        "Q14 refused or lapsed": (
+            "are disclosed among the evaluation's refused records",
+            "are disclosed among the evaluation's refused records or as lapsed "
+            "records",
+        ),
+        "Q15 successor transfer": (
+            "and dismissing a successor needs a new record.",
+            "and the record then applies to the successor.",
+        ),
+        "Q16 class parity dropped": (
+            "from a dismissal in effect, identically in the human and machine "
+            "views. The classes",
+            "from a dismissal in effect. The classes",
+        ),
+        "Q17 oracle clause dropped": (
+            "as-of instant with the checker's own statement of the rule; zero",
+            "as-of instant; zero",
+        ),
+        "Q18 case clause dropped": (
+            "expiry instant, and a record set that cannot be read.",
+            "expiry instant.",
+        ),
+        "Q19 falsifier clause dropped": (
+            "whose test it meets, or an unreadable record set yields a "
+            "dismissed or record-class count of zero.",
+            "whose test it meets.",
+        ),
+        "Q20 headline narrowed": (
+            "expandable as a sibling state.",
+            "expandable as a sibling state, and the Unknown headline shows "
+            "only undismissed members.",
+        ),
+        "byte outside PWB-REQ-007": (
+            "### Requirement: PWB-REQ-004",
+            "### Requirement: PWB-REQ-004\n\nA dismissal MAY apply here.",
+        ),
+    }
+    for name, (old, new) in round4.items():
+        mutated = reworded(old, new)
+        if mutated is None:
+            return _fail(f"round-4 fixture does not match once: {name}")
+        found = requirement_findings(mutated)
+        if not any(f.startswith("proposed spec differs from the pinned text") for f in found):
+            return _fail(f"round-4 mutation passed the spec pin: {name}")
+        killed += 1
+    base_text = (ROOT / SPEC).read_text()
+    for anchor, _ in SPEC_EDITS:
+        base_start = base_text.index(REQUIREMENT)
+        at = base_text.index(anchor, base_start)
+        drifted = (base_text[:at + 1] + "~" + base_text[at + 1:]).encode()
+        expected = (
+            "current PWB-REQ-007 does not carry the pinned anchor exactly "
+            f"once: {anchor.splitlines()[0]!r}"
+        )
+        if expected not in requirement_findings(spec, drifted):
+            return _fail(f"drifted anchor passed: {anchor.splitlines()[0]}")
+        killed += 1
+
+    # Forbidden wording is matched regardless of case.
+    for label, sentence in fixtures.items():
+        swapped = sentence.swapcase()
+        in_paragraph = (text[:case].rstrip("\n") + " " + swapped + "\n\n" + text[case:]).encode()
+        if f"dismissal paragraph uses forbidden {label} wording" not in requirement_findings(in_paragraph):
+            return _fail(f"case-swapped forbidden wording passed: {label}")
+        killed += 1
+
     # Each required warrant removed from PWB-REQ-007's block only.
     warrants_at = text.index(WARRANTS, text.index(REQUIREMENT))
     block_end = text.index("```\n", warrants_at + len(WARRANTS)) + 4
@@ -1057,6 +1432,8 @@ def selftest() -> int:
         SCENARIOS[0]: ("the first evaluation renders", "without the sibling state"),
     }:
         return _fail("once-only scenario phrase population changed")
+    if rule_tables_digest() != RULE_TABLES_SHA256:
+        return _fail("rule tables changed without their pinned digest")
     if killed != EXPECTED_KILLED:
         return _fail(f"{killed} mutants killed, expected {EXPECTED_KILLED}")
     print(
@@ -1068,7 +1445,9 @@ def selftest() -> int:
         f"rules, {len(FORBIDDEN)} forbidden wordings x paragraph/scenario, "
         f"{sum(len(p) for p in SCENARIO_ONCE.values())} once-only scenario "
         "phrases, a dropped fact, the scenario-2 reversion, three round-3 "
-        "mutants, "
+        f"mutants, {len(round4)} round-4 mutants against the whole-spec pin, "
+        f"{len(SPEC_EDITS)} drifted pin anchors, {len(fixtures)} case-swapped "
+        "forbidden wordings, "
         f"{len(REQUIRED_WARRANTS)} warrants, "
         "dependency and contract-coverage drift, proposal, capability row and "
         f"totals, {len(REPAIR_DISPOSITIONS)} repair rows, patch drift, "
