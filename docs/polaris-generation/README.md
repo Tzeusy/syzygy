@@ -4,8 +4,7 @@ Candidate authoring guidance, not an adopted specification or a runnable
 generator. It complements the existing renderer; it does not change its
 accepted behavior.
 
-This kit grants no source access, provider egress, authorship adoption or
-release.
+This kit grants no source access, provider egress, authorship adoption or release.
 
 ## The product we are building
 
