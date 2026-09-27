@@ -621,7 +621,11 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   sweep narrower than claimed) — against that file's own declared digests;
   the two container-manifest headings are checked exemptions, hashed live.
   A digest cited inline mid-sentence is not a heading and stays unchecked
-  (3 in `pwb-effect-acts/OWNER-SIGNOFF-PACKET.md`). A rule-6 mutation
+  (3 in `pwb-effect-acts/OWNER-SIGNOFF-PACKET.md`), and so do **12 unlabeled
+  copies of act arguments that are live today** (act-identity lines, table
+  cells, a checksum row, one owner phrase) — a corrupted one still passes
+  beside a correct copy. Shape-matching kept leaking over three reviews;
+  the structural fix is `syzygy-wh1`. A rule-6 mutation
   must still rewrite *every* copy (`sed s///g`), not the first match — a
   `str.replace(..., 1)` hit an unregistered copy and reported a false pass.
 - **CG-26 is one coupled triple: register it once, at merge.** Several
