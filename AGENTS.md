@@ -197,6 +197,11 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
 
 ### Guardrails (keep even when old)
 
+- When testing a launch-gate schema successor, distinguish the historical
+  record-commit schema from the worktree-versus-HEAD drift comparison. Run
+  the full selftests under both schema versions; synthetic base records must
+  use their fixture schema version rather than a hard-coded predecessor.
+
 - Contract amendment tooling reads both installed `contracts/rfcs/` and mirrored `contracts/candidates/rfcs/` bytes. Probe both locations in isolation: current indexes and budget fixtures derive from the candidate copies, while performed manifests remain immutable. Regenerating the active manifest does not establish successor authority.
 
 - Polaris guide links open synchronously on click; ignore the matching queued
@@ -328,15 +333,22 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
 
 ### Governance prose and docs
 
+- CAP1 keeps its adopted `CAP1-REQ-*` identities. The generic th-projects
+  `spec-trace-check.py` expects `REQ-<spec>-NNN`; disclose that format
+  mismatch and compare the exact predecessor IDs independently, never
+  rename adopted requirements to satisfy the generic checker.
+
 - **A page-level "may be stale" banner discharges CG-27 while a false
   sentence stands.** Three default-path pages carried inverted act claims for
   nineteen days behind such banners. Mark staleness **at the stale sentence**,
   keeping the superseded text quoted and dated; never rely on a page banner to
   cover a specific false claim.
-- CG-27's historical exemption is **paragraph-scoped, and a Markdown table is
-  one paragraph** — an incidental `superseded`/`historical` token anywhere in
-  a table (a filename counts) exempts every current-state claim in it.
-  Verified by mutating the block. Tracked as a check-quality bug.
+- CG-27 keeps paragraph scope for prose but evaluates valid GFM tables
+  **row-by-row**. A sibling row's historical, owner, or as-of token cannot
+  exempt or satisfy the claim row. Its lightweight table recognizer preserves
+  pipe-less data rows and one-column tables, ignores indented code and valid
+  fences (a backtick fence info string cannot contain a backtick), and decides
+  a trailing pipe from the parity of preceding backslashes.
 - A page that restates state it does not own goes stale silently. Cite
   `PROJECT-STATUS.md` or the act record instead of repeating the row.
 - **"Historical" never means "safe to relocate."** Sweep for citers first:
