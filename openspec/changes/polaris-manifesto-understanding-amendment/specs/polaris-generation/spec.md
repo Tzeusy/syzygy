@@ -75,7 +75,7 @@ warrants:
 
 ### Requirement: Understandable reading depths
 
-The presentation SHALL open with a clear core introduction and provide a coherent concise reading path through the project argument to deeper capability and exact-source material. It SHALL provide contents, terminology and relationship assets where supported and useful. Required stopping depths SHALL independently answer: opening—purpose and central thesis; concise account—motives, promises and boundaries; deeper account—capability relationships, material design choices and exact-source access. Each depth SHALL retain a true coarser account; content available only at a deeper level SHALL NOT discharge an earlier level's obligation. Supported gaps remain explicit at the depth they affect. Every requested asset SHALL have an explicit produced, reasoned-omission or unresolved disposition. An asset required by the request, reading obligation or frozen acceptance criteria SHALL remain unmet when support, permission or renderer capability is unavailable. Optional omission SHALL NOT excuse an unmet reading-depth obligation; silent omission, decorative approximation or an unapproved textual substitute SHALL NOT discharge a required asset. The primary narrative SHALL use RFC7-13's default altitude order unless the owner rules otherwise; alternative named narratives remain subject to the same per-altitude and exact-leaf obligations. Capability deep dives SHALL preserve RFC7-17's three authority classes and default argument/contract/reality ordering. The argument band SHALL include the motivating principle/decision and related capabilities with their support; the contract band SHALL include accepted contract and declared topology-placement references alongside operative requirements/scenarios; the reality band SHALL retain the four SDR-3 implementation-mapping classes queryably distinct and intent-adoption/amendment/dismissal history, not substitute a commit log. Catalog membership SHALL come from declared capabilities, with drafts unadopted and missing declarations explicit; empty bands SHALL retain an honest absence line. The editorial plan SHALL identify the central reader question, supported thesis, progression of explanations, material tensions, stopping-depth obligations and reasons for diagram, glossary and deep-dive selection for the chosen audience. Material editorial omissions SHALL have reasons, and a qualification reversing a promise SHALL remain at the affected depth. A diagram SHALL identify the relationship it clarifies, with support for factual edges as well as nodes; a figure quota SHALL NOT establish explanatory value. Optional depth SHALL answer a distinct useful question; a component deep dive SHALL explain supported purpose, responsibility, neighboring interactions and limits rather than repeat its parent or dump source text. Glossaries SHALL explain concepts where needed for comprehension. Project-specific headings and composition SHALL preserve the existing primary altitude order, authority bands and required populations; missing content SHALL remain honestly absent or Unknown, not invented to fill a template.
+The presentation SHALL open with a clear core introduction and provide a coherent concise reading path through the project argument to deeper capability and exact-source material. It SHALL provide contents, terminology and relationship assets where supported and useful. Required stopping depths SHALL independently answer: opening—purpose and central thesis; concise account—motives, promises and boundaries; deeper account—capability relationships, material design choices and exact-source access. Each depth SHALL retain a true coarser account; content available only at a deeper level SHALL NOT discharge an earlier level's obligation. Supported gaps remain explicit at the depth they affect. Every requested asset SHALL have an explicit produced, reasoned-omission or unresolved disposition. An asset required by the request, reading obligation or frozen acceptance criteria SHALL remain unmet when support, permission or renderer capability is unavailable. Optional omission SHALL NOT excuse an unmet reading-depth obligation; silent omission, decorative approximation or an unapproved textual substitute SHALL NOT discharge a required asset. The primary narrative SHALL use RFC7-13's default altitude order unless the owner rules otherwise; alternative named narratives remain subject to the same per-altitude and exact-leaf obligations. Capability deep dives SHALL preserve RFC7-17's three authority classes and default argument/contract/reality ordering. The argument band SHALL include the motivating principle/decision and related capabilities with their support; the contract band SHALL include accepted contract and declared topology-placement references alongside operative requirements/scenarios; the reality band SHALL retain the four SDR-3 implementation-mapping classes queryably distinct and intent-adoption/amendment/dismissal history, not substitute a commit log. Catalog membership SHALL come from declared capabilities, with drafts unadopted and missing declarations explicit; empty bands SHALL retain an honest absence line. The editorial plan SHALL identify the central reader question, supported thesis, progression of explanations, material tensions, stopping-depth obligations and reasons for diagram, glossary and deep-dive selection for the chosen audience. Material editorial omissions SHALL have reasons, and a qualification reversing a promise SHALL remain at the affected depth. A diagram SHALL identify the relationship it clarifies, with support for factual edges as well as nodes; a figure quota SHALL NOT establish explanatory value. Optional depth SHALL answer a distinct useful question; a component deep dive SHALL explain supported purpose, responsibility, neighboring interactions and limits rather than repeat its parent or dump source text. Glossaries SHALL explain concepts where needed for comprehension. Project-specific headings and composition SHALL preserve the existing primary altitude order, authority bands and required populations; missing content SHALL remain honestly absent or Unknown, not invented to fill a template. Each section SHALL be an abstraction tree under CC-REV-8: it opens with its answer in one sentence or one bullet, and each parent block truly summarizes its children, so truncating the generated account at any nesting depth leaves a coarser true account. Required headings, the altitude order, authority bands and verbatim exact-source text keep their structure; a generated summary above verbatim text is marked generated, never replaces that text or presents a paraphrase as it, and leaves the leaf as the owning text. Tree form keeps REQ-polaris-generation-002's coherent project-specific argument. Authoring may propose structural relationships for diagrams, but only the independent rendered-design review fixes which ones require a diagram: it enumerates the flows, lifecycles, state machines, boundaries, dependencies and placements that the rendered account explains and that, in its judgment, a diagram would explain better than prose, and its review record retains that enumeration and the relationships it judged prose-sufficient. Coverage is judged per enumerated relationship, never by figure count; a relationship judged prose-sufficient needs no diagram unless the request, a reading obligation or frozen acceptance criteria require one on another basis. A diagram is drawable only when admitted premises support at least one edge of the enumerated relationship, and the review record names whether each enumerated relationship was drawable. An undrawable enumerated relationship is not a required asset on the strength of the enumeration alone: it carries an omitted disposition with its reason, its gap is disclosed in the rendered account at the depth it affects, and the required-asset sentence above does not apply to it unless the request, a reading obligation or frozen acceptance criteria require that visual on another basis, in which case it remains unmet. Every drawable enumerated relationship is a required relationship asset with its own identity under REQ-polaris-generation-019, issued by the trusted recorded authoring operation that introduces it, original or repair, and is produced or, lacking renderer capability or permission, unresolved; an unresolved or missing one is a blocking finding. A diagram SHALL be retained as declarative source with its asset and rendered as inert static output; it asserts no relationship the account does not state, every node, edge and label it draws has admitted support, and an unsupported element is never drawn but disclosed as a gap. A drawn element carries its Observed, Inferred or Unknown marking into the render and its text equivalent, and may be Unknown only where admitted support establishes the element and its state is Unknown.
 
 ID: REQ-polaris-generation-004
 Source: RFC7-13; governing warrants below.
@@ -156,6 +156,61 @@ Scope: v1-mandatory
 - **AND** source/catalog navigation cannot become the only way to understand the
   thesis, while required exact-source access remains available.
 
+#### Scenario: Section reads as an abstraction tree
+
+- **WHEN** a section explains a concept through its components and mechanisms
+- **THEN** it opens with its answer in one sentence or one bullet and nests the
+  components beneath it, each parent summarizing its children
+- **AND** truncating the generated account at any nesting depth leaves a true
+  coarser account, a conclusion stated only at depth fails review, and a
+  generated summary above verbatim exact-source text is marked generated and
+  never presented as that text
+
+#### Scenario: Supported structure gets its diagram
+
+- **WHEN** the rendered account explains a dependency structure among several
+  components, admitted premises support each dependency, and the independent
+  rendered-design review judges a diagram clearer than prose
+- **THEN** the section includes a diagram of exactly those dependencies with
+  support for each node, edge and label, and its declarative source is
+  retained with the asset
+- **AND** an Inferred edge renders with its Inferred marking in both the diagram
+  and its text equivalent
+
+#### Scenario: Relationship that needs a diagram has none
+
+- **WHEN** the independent rendered-design review enumerates a relationship that
+  a diagram would explain better than prose, its premises support drawing it,
+  and the draft has no diagram for it
+- **THEN** a blocking finding is raised and the review record retains the
+  enumeration that produced it
+- **AND** the finding stands even if the authoring stage never proposed the
+  relationship, unrelated extra figures cannot stand in for it, an undrawable
+  relationship takes a recorded omission instead unless another basis requires
+  that visual, and one the review judges prose-sufficient needs neither unless
+  another basis requires it
+
+#### Scenario: Partly supported diagram
+
+- **WHEN** admitted premises support some elements of a required relationship
+  diagram but not others
+- **THEN** only the supported elements are drawn, the unsupported ones are
+  disclosed beside the diagram as a gap, and the asset is produced with that
+  gap recorded
+- **AND** an unsupported element is never drawn, whether marked Inferred,
+  Unknown or not at all, and supported nodes drawn with none of the
+  relationship's edges are not a produced diagram
+
+#### Scenario: Diagram rendered inertly from declarative source
+
+- **WHEN** a generated diagram is rendered into a page
+- **THEN** it is static output containing only shapes, paths, text and styling,
+  with no script, event-handler attribute, animation, `foreignObject`, link, or
+  external or unsafe-scheme reference
+- **AND** when no inert renderer is available or rendering fails, its
+  disposition is unresolved and, the asset being required, readiness is
+  blocked
+
 Form: state projection/query.
 
 - **Case:** Run the named scenarios using controlled input snapshots, provider outcomes and lifecycle events.
@@ -169,7 +224,7 @@ warrants:
   primary: RFC7-13
   doctrine: [VIS-1, VIS-3, VIS-7]
   contracts: [RFC7-13, RFC7-14, RFC7-19, RFC7-15, RFC7-16, RFC7-17, RFC7-18]
-  policies: [CC-SPEC-2, CC-SPEC-4]
+  policies: [CC-SPEC-2, CC-SPEC-4, CC-REV-8]
   decisions: [SDR-3]
   topology: []
   parent_requirements: []
