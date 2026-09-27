@@ -1,8 +1,7 @@
 # Doctrine amendment D5 — readability rewrite
 
-> **Status:** Proposal. It binds nothing until the owner adopts it (VIS-4).
-> The owner adopts by saying so plainly; no phrase or digest is required
-> (D1 precedent).
+> **Status:** Adopted 2026-09-27 — the owner's words: "Adopt D5". In force.
+> Adopted by plain statement, as D1 was; no phrase or digest is involved.
 
 ## What it does
 
@@ -40,7 +39,7 @@ Other artifacts cite these by name or position, so each is unchanged:
 - the two sentences pending amendment D3 anchors on (the loop paragraph in
   architecture.md and the "Not autonomous." bullet in vision.md).
 
-## Judgment calls for the owner
+## Judgment calls (adopted as drafted)
 
 1. **One new inferred sentence.** The glossary's substrate bullet now says the
    `/th-*` skills "are published as the public ai-bootstrap toolchain that
@@ -93,9 +92,9 @@ How its findings were handled:
 
 By the owner's direction, the fixes were not sent for a second review round.
 
-## On adoption
+## Adoption
 
-1. Fill D5's date and the owner's words in `DOCTRINE-AMENDMENT-LOG.md`, and
-   change this packet's status to adopted.
-2. Merge the branch.
-3. Close P-25 and P-25(c) in `PENDING-OWNER-DECISIONS.md`.
+The owner adopted D5 on 2026-09-27 with the words "Adopt D5", leaving all
+three judgment calls as drafted. On adoption the amendment log row was dated,
+P-25 and P-25(c) moved from the pending register to `DECISION-HISTORY.md`, and
+the branch merged.
