@@ -56,61 +56,61 @@ Owner-approved craft. 55 identifiers, defined across 8 files.
 
 | Identifier | Title, as the corpus marks it | Defined at |
 |---|---|---|
-| `CC-BAR-1` | Canonical bar adopted; precedence fixed | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:10 |
-| `CC-BAR-2` | Syzygy definition of done | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:43 |
-| `CC-BAR-3` | Comprehensible truth is a merge constraint | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:67 |
-| `CC-BAR-4` | No green without current evidence is a release constraint | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:88 |
-| `CC-BAR-5` | Risk floors no implementing agent may downgrade | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:107 |
-| `CC-BAR-6` | Evidence and review scale with declared risk, floors excepted | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:142 |
-| `CC-BAR-7` | Changes stay reviewable | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:161 |
-| `CC-DEP-1` | Liberal experimentation, disciplined promotion | `.syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md`:12 |
-| `CC-DEP-2` | Stable identities anchor everything | `.syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md`:49 |
-| `CC-DEP-3` | .syzygy/ is schema-versioned; migrations are identity-preserving | `.syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md`:69 |
-| `CC-DEP-4` | External effects only through typed, explicitly authorized adapters | `.syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md`:90 |
-| `CC-DEP-5` | Public interfaces are contracts with a compatibility story | `.syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md`:104 |
-| `CC-DEP-6` | One kernel; surfaces never fork semantics | `.syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md`:123 |
-| `CC-OBS-1` | Observation is deterministic; freshness is identity-bearing | `.syzygy/governance/policies/craft-and-care/observability-and-operations.md`:11 |
-| `CC-OBS-2` | Inference is never rendered as observed fact | `.syzygy/governance/policies/craft-and-care/observability-and-operations.md`:33 |
-| `CC-OBS-3` | Degradation is labelled; fidelity is never invented | `.syzygy/governance/policies/craft-and-care/observability-and-operations.md`:48 |
-| `CC-OBS-4` | Operational failures leave durable, identified traces | `.syzygy/governance/policies/craft-and-care/observability-and-operations.md`:67 |
-| `CC-OBS-5` | Authoritative effects are idempotent | `.syzygy/governance/policies/craft-and-care/observability-and-operations.md`:82 |
-| `CC-OBS-6` | Syzygy's own operations meet the evidence bar it renders | `.syzygy/governance/policies/craft-and-care/observability-and-operations.md`:96 |
-| `CC-PERF-1` | The only legal currency for performance is declared scope | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:11 |
-| `CC-PERF-2` | Derived conveniences are sacrificial; correctness of caches is not optional | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:24 |
-| `CC-PERF-3` | Performance claims carry measurement evidence | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:35 |
-| `CC-PROV-1` | Execution records are evidence artifacts | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:12 |
-| `CC-PROV-2` | Every run leaves a structured summary; the preserved set is closed | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:29 |
-| `CC-PROV-3` | Transcript retention is bounded; provenance retention is not | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:53 |
-| `CC-PROV-4` | Report facts are not the facts they report | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:66 |
-| `CC-PROV-5` | Missing cost renders Unknown, never zero | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:87 |
-| `CC-PROV-6` | Materialization is an immutable one-way mapping | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:101 |
-| `CC-PROV-7` | Inherited mutations are accounted in the parent run summary | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:116 |
-| `CC-REV-1` | Mandatory independent review classes | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:12 |
-| `CC-REV-2` | The same-logical-change rule | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:52 |
-| `CC-REV-3` | No hidden duplicate authority | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:76 |
-| `CC-REV-4` | Fresh-reader review for normative artifacts | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:94 |
-| `CC-REV-5` | Epistemic labels in documentation | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:107 |
-| `CC-REV-6` | Review findings are dispositioned, never dropped | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:120 |
-| `CC-REV-7` | Identifiers are stable; retire, never renumber | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:131 |
-| `CC-REV-8` | Documents are abstraction trees, with diagrams where structure beats prose | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:141 |
-| `CC-SEC-1` | Default-deny is the born state of every surface | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:16 |
-| `CC-SEC-2` | Egress is consent-checked in code, at every path | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:31 |
-| `CC-SEC-3` | Observed code never executes outside an accepted profile | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:45 |
-| `CC-SEC-4` | Writes are consented, attributed, atomic, revertable | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:58 |
-| `CC-SEC-5` | Secrets fail closed at every boundary | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:71 |
-| `CC-SEC-6` | Provenance retains hashes, never secret-bearing bodies | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:88 |
-| `CC-TEST-1` | Every defect fix ships a reproducing test; exceptions are rare and recorded | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:13 |
-| `CC-TEST-2` | Gate claims require retained, resolvable gate artifacts | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:28 |
-| `CC-TEST-3` | Determinism is verified, not assumed | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:65 |
-| `CC-TEST-4` | Deterministic or quarantined; a flaky gate poisons evidence | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:81 |
-| `CC-TEST-5` | Verification scope is declared; tests-as-spec is an explicit designation | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:106 |
-| `CC-TEST-6` | Unknown and absence paths are first-class test targets | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:121 |
-| `CC-TEST-7` | Re-check record: canonical bars 9 and 10 admitted without conflict | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:136 |
-| `CC-VIZ-1` | Every encoding declares source, units, legend, Unknown behavior, and freshness | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:48 |
-| `CC-VIZ-2` | No decorative element may silently misstate project truth | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:61 |
-| `CC-VIZ-3` | Unknowns are visible, aggregated honestly, never disappeared | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:74 |
-| `CC-VIZ-4` | Non-3D paths are co-equal and semantically equivalent | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:95 |
-| `CC-VIZ-5` | Layout is reproducible; geography is stable; analytical planes are labelled | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:108 |
+| `CC-BAR-1` | Canonical bar adopted; precedence fixed | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:12 |
+| `CC-BAR-2` | Syzygy definition of done | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:45 |
+| `CC-BAR-3` | Comprehensible truth is a merge constraint | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:74 |
+| `CC-BAR-4` | No green without current evidence is a release constraint | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:97 |
+| `CC-BAR-5` | Risk floors no implementing agent may downgrade | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:119 |
+| `CC-BAR-6` | Evidence and review scale with declared risk, floors excepted | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:159 |
+| `CC-BAR-7` | Changes stay reviewable | `.syzygy/governance/policies/craft-and-care/engineering-bar.md`:182 |
+| `CC-DEP-1` | Liberal experimentation, disciplined promotion | `.syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md`:16 |
+| `CC-DEP-2` | Stable identities anchor everything | `.syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md`:68 |
+| `CC-DEP-3` | .syzygy/ is schema-versioned; migrations are identity-preserving | `.syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md`:91 |
+| `CC-DEP-4` | External effects only through typed, explicitly authorized adapters | `.syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md`:114 |
+| `CC-DEP-5` | Public interfaces are contracts with a compatibility story | `.syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md`:136 |
+| `CC-DEP-6` | One kernel; surfaces never fork semantics | `.syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md`:159 |
+| `CC-OBS-1` | Observation is deterministic; freshness is identity-bearing | `.syzygy/governance/policies/craft-and-care/observability-and-operations.md`:17 |
+| `CC-OBS-2` | Inference is never rendered as observed fact | `.syzygy/governance/policies/craft-and-care/observability-and-operations.md`:43 |
+| `CC-OBS-3` | Degradation is labelled; fidelity is never invented | `.syzygy/governance/policies/craft-and-care/observability-and-operations.md`:62 |
+| `CC-OBS-4` | Operational failures leave durable, identified traces | `.syzygy/governance/policies/craft-and-care/observability-and-operations.md`:82 |
+| `CC-OBS-5` | Authoritative effects are idempotent | `.syzygy/governance/policies/craft-and-care/observability-and-operations.md`:99 |
+| `CC-OBS-6` | Syzygy's own operations meet the evidence bar it renders | `.syzygy/governance/policies/craft-and-care/observability-and-operations.md`:114 |
+| `CC-PERF-1` | The only legal currency for performance is declared scope | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:19 |
+| `CC-PERF-2` | Derived conveniences are sacrificial; correctness of caches is not optional | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:36 |
+| `CC-PERF-3` | Performance claims carry measurement evidence | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:48 |
+| `CC-PROV-1` | Execution records are evidence artifacts | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:24 |
+| `CC-PROV-2` | Every run leaves a structured summary; the preserved set is closed | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:45 |
+| `CC-PROV-3` | Transcript retention is bounded; provenance retention is not | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:71 |
+| `CC-PROV-4` | Report facts are not the facts they report | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:88 |
+| `CC-PROV-5` | Missing cost renders Unknown, never zero | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:113 |
+| `CC-PROV-6` | Materialization is an immutable one-way mapping | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:128 |
+| `CC-PROV-7` | Inherited mutations are accounted in the parent run summary | `.syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md`:152 |
+| `CC-REV-1` | Mandatory independent review classes | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:16 |
+| `CC-REV-2` | The same-logical-change rule | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:71 |
+| `CC-REV-3` | No hidden duplicate authority | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:110 |
+| `CC-REV-4` | Fresh-reader review for normative artifacts | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:129 |
+| `CC-REV-5` | Epistemic labels in documentation | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:145 |
+| `CC-REV-6` | Review findings are dispositioned, never dropped | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:161 |
+| `CC-REV-7` | Identifiers are stable; retire, never renumber | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:176 |
+| `CC-REV-8` | Documents are abstraction trees, with diagrams where structure beats prose | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:188 |
+| `CC-SEC-1` | Default-deny is the born state of every surface | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:28 |
+| `CC-SEC-2` | Egress is consent-checked in code, at every path | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:46 |
+| `CC-SEC-3` | Observed code never executes outside an accepted profile | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:63 |
+| `CC-SEC-4` | Writes are consented, attributed, atomic, revertable | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:84 |
+| `CC-SEC-5` | Secrets fail closed at every boundary | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:101 |
+| `CC-SEC-6` | Provenance retains hashes, never secret-bearing bodies | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:128 |
+| `CC-TEST-1` | Every defect fix ships a reproducing test; exceptions are rare and recorded | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:15 |
+| `CC-TEST-2` | Gate claims require retained, resolvable gate artifacts | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:31 |
+| `CC-TEST-3` | Determinism is verified, not assumed | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:75 |
+| `CC-TEST-4` | Deterministic or quarantined; a flaky gate poisons evidence | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:97 |
+| `CC-TEST-5` | Verification scope is declared; tests-as-spec is an explicit designation | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:136 |
+| `CC-TEST-6` | Unknown and absence paths are first-class test targets | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:156 |
+| `CC-TEST-7` | Re-check record: canonical bars 9 and 10 admitted without conflict | `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`:175 |
+| `CC-VIZ-1` | Every encoding declares source, units, legend, Unknown behavior, and freshness | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:69 |
+| `CC-VIZ-2` | No decorative element may silently misstate project truth | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:89 |
+| `CC-VIZ-3` | Unknowns are visible, aggregated honestly, never disappeared | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:104 |
+| `CC-VIZ-4` | Non-3D paths are co-equal and semantically equivalent | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:128 |
+| `CC-VIZ-5` | Layout is reproducible; geography is stable; analytical planes are labelled | `.syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md`:143 |
 
 ## Specification-acceptance standard — `CC-SPEC`
 
