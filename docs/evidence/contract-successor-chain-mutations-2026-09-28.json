@@ -1,0 +1,440 @@
+{
+  "record": "rule-6 mutation evidence: contract successor chain tooling (review R-TREE-STYLE-TOOLING-1 repairs)",
+  "date": "2026-09-28",
+  "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15",
+  "method": "Scratch clone of branch tooling/contract-successor-chain checked out at `commit`. For each mutant the `old` fragment (asserted to occur exactly once in `file`) was replaced by `new`, the named selftest was run, and the file was restored from saved bytes and its sha256 re-checked; `git status --porcelain` was empty after the last mutant. A mutant is killed when the selftest exits non-zero with at least one named failing fixture.",
+  "baseline": {
+    "scripts/check_governance.py": "305 fixtures, 0 failing — a check that cannot fail is not a check",
+    "scripts/build_contract_readability_restyle.py": "22 fixtures, 0 failing",
+    "scripts/record_contract_readability_restyle.py": "33 fixtures, 0 failing"
+  },
+  "totals": {
+    "mutants": 26,
+    "killed": 26,
+    "survived": 0
+  },
+  "restored_byte_identical": true,
+  "mutants": [
+    {
+      "id": "M1-exact-population",
+      "finding": "M1",
+      "file": "scripts/check_governance.py",
+      "old": "require_exact_paths(link_rows, subject, link_paths)",
+      "new": "None",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "305 fixtures, 3 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h contract successor reordered rejected",
+        "CG-7h contract successor alias rejected",
+        "CG-7h restyle link unsorted rejected"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M1-exact-count",
+      "finding": "M1",
+      "file": "scripts/check_governance.py",
+      "old": "len(link_paths))",
+      "new": "len(link_body.splitlines()))",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "305 fixtures, 8 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h contract successor extra rejected",
+        "CG-7h contract successor extra-bootstrap rejected",
+        "CG-7h contract successor extra-rendering rejected",
+        "CG-7h contract successor missing-row rejected",
+        "CG-7h restyle link empty rejected",
+        "CG-7h restyle link extra-rendering rejected",
+        "CG-7h restyle link rendering-only rejected",
+        "CG-7h restyle link missing-row rejected"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M1-restyle-tuple-keeps-rendering",
+      "finding": "M1",
+      "file": "scripts/check_governance.py",
+      "old": "    if path != CONTRACT_RESTYLE_EXCLUDED)",
+      "new": "    if path != \"\")",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "305 fixtures, 7 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h closed link tuples: bootstrap literal equals the manifest's 30 paths; restyle is those minus the rendering module; no-signal is a sorted bootstrap subset",
+        "CG-7h 29-row restyle link alone passes at 107 (no-signal gap allowed)",
+        "CG-7h both contract links performed pass at 111 with the restyle digest overriding the no-signal rows",
+        "CG-7h restyle link empty rejected",
+        "CG-7h restyle link extra-rendering rejected",
+        "CG-7h restyle link rendering-only rejected",
+        "CG-7h restyle link missing-row rejected"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M1-restyle-link-binds-bootstrap-tuple",
+      "finding": "M1",
+      "file": "scripts/check_governance.py",
+      "old": "     CONTRACT_RESTYLE_PATHS),",
+      "new": "     GENERAL_BOOTSTRAP_CONTRACT_PATHS),",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "305 fixtures, 8 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h closed link tuples: bootstrap literal equals the manifest's 30 paths; restyle is those minus the rendering module; no-signal is a sorted bootstrap subset",
+        "CG-7h 29-row restyle link alone passes at 107 (no-signal gap allowed)",
+        "CG-7h both contract links performed pass at 111 with the restyle digest overriding the no-signal rows",
+        "CG-7h restyle link empty rejected",
+        "CG-7h restyle link extra-rendering rejected",
+        "CG-7h restyle link rendering-only rejected",
+        "CG-7h restyle link missing-row rejected",
+        "CG-7h restyle link both-earlier-bytes rejected"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M1-predecessor-row-check-off",
+      "finding": "M1",
+      "file": "scripts/check_governance.py",
+      "old": "            if path not in bootstrap_contract_paths:",
+      "new": "            if False:",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "305 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h restyle link outside-path rejected"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M3-order-inverted",
+      "finding": "M3",
+      "file": "scripts/check_governance.py",
+      "old": "and later[8] < position]",
+      "new": "and later[8] > position]",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "305 fixtures, 3 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h both contract links performed pass at 111 with the restyle digest overriding the no-signal rows",
+        "CG-7h restyle link shadow rejected",
+        "CG-7h restyle link shadow-nsbytes rejected"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M3-order-finding-off",
+      "finding": "M3",
+      "file": "scripts/check_governance.py",
+      "old": "        if performed_before:",
+      "new": "        if False:",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "305 fixtures, 2 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h restyle link shadow rejected",
+        "CG-7h restyle link shadow-nsbytes rejected"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "N4-only-immediate-predecessor",
+      "finding": "N4",
+      "file": "scripts/check_governance.py",
+      "old": "            broken.append(label)",
+      "new": "            broken[:] = [label]",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "305 fixtures, 1 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h restyle link three-link-cascade rejected"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "CG7h-latest-digest-off",
+      "finding": "chain",
+      "file": "scripts/check_governance.py",
+      "old": "            require_latest(where, values, link_digest, subject)",
+      "new": "            pass",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "305 fixtures, 2 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h contract successor conflict rejected",
+        "CG-7h restyle link digest-mismatch rejected"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "CG7h-candidate-examined",
+      "finding": "chain",
+      "file": "scripts/check_governance.py",
+      "old": "        if not (any(mentions) or link_dedicated):",
+      "new": "        if False:",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "305 fixtures, 7 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h complete transaction population passes at 76",
+        "CG-7h unsigned successor manifest grants no supersession",
+        "CG-7h valid 11-row successor passes at 89",
+        "CG-7h valid truth-and-readiness successor passes at 102 with state-(1) rows preserved as history",
+        "CG-7h exact two-module contract successor passes at 80",
+        "CG-7h 29-row restyle link alone passes at 107 (no-signal gap allowed)",
+        "CG-7h unrecorded restyle candidate over bootstrap bytes examines only the bootstrap population"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "CG7h-malformed-line-off",
+      "finding": "chain",
+      "file": "scripts/check_governance.py",
+      "old": "            if any(not phrase.fullmatch(line) for line in link_mentions):",
+      "new": "            if False:",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "305 fixtures, 7 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h contract successor malformed-aggregate-original rejected",
+        "CG-7h contract successor malformed-extra-dedicated rejected",
+        "CG-7h contract successor malformed-extra-aggregate rejected",
+        "CG-7h contract successor unmatched-backtick rejected",
+        "CG-7h contract successor duplicate-quoted rejected",
+        "CG-7h contract successor duplicate-indented rejected",
+        "CG-7h contract successor trailing-prose rejected"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "CG7h-body-digest-off",
+      "finding": "chain",
+      "file": "scripts/check_governance.py",
+      "old": "        if body_digest != link_digest:",
+      "new": "        if False:",
+      "selftest": "python3 scripts/check_governance.py --selftest",
+      "exit": 1,
+      "selftest_summary": "305 fixtures, 2 failing — a check that cannot fail is not a check",
+      "failed_fixtures": [
+        "CG-7h contract successor missing-body rejected",
+        "CG-7h contract successor stale-digest rejected"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "N2-changes-nothing-off",
+      "finding": "N2",
+      "file": "scripts/build_contract_readability_restyle.py",
+      "old": "        if results[0] == installed:",
+      "new": "        if False:",
+      "selftest": "python3 scripts/build_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "22 fixtures, 1 failing",
+      "failed_fixtures": [
+        "identity (no-op) patch rejected as changing nothing: got ['manifest differs from exact regeneration over the proposed bytes']"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "N3-unrecorded-apply",
+      "finding": "N3",
+      "file": "scripts/build_contract_readability_restyle.py",
+      "old": "    if not recorded:",
+      "new": "    if False:",
+      "selftest": "python3 scripts/build_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "22 fixtures, 3 failing",
+      "failed_fixtures": [
+        "apply --at-adoption without act records refused",
+        "apply --at-adoption over an edited record or an unpinned recorder refused, nothing written",
+        "apply --at-adoption after a valid record installs manifest bytes on both mirrors"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "N3-records-not-validated",
+      "finding": "N3",
+      "file": "scripts/build_contract_readability_restyle.py",
+      "old": "        recorded = _recorder().check(root, pins=pins)",
+      "new": "        recorded = True",
+      "selftest": "python3 scripts/build_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "22 fixtures, 3 failing",
+      "failed_fixtures": [
+        "apply --at-adoption without act records refused",
+        "apply --at-adoption over an edited record or an unpinned recorder refused, nothing written",
+        "apply --at-adoption after a valid record installs manifest bytes on both mirrors"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "builder-headings-off",
+      "finding": "builder",
+      "file": "scripts/build_contract_readability_restyle.py",
+      "old": "    if headings(before) != headings(after):",
+      "new": "    if False:",
+      "selftest": "python3 scripts/build_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "22 fixtures, 1 failing",
+      "failed_fixtures": [
+        "heading change rejected: got ['manifest differs from exact regeneration over the proposed bytes']"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "builder-excludes-other-module",
+      "finding": "M1",
+      "file": "scripts/build_contract_readability_restyle.py",
+      "old": "EXCLUDED = (\"rfcs/RFC-0007/rendering-and-surface.md\",)",
+      "new": "EXCLUDED = (\"rfcs/RFC-0007/README.md\",)",
+      "selftest": "python3 scripts/build_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "22 fixtures, 9 failing",
+      "failed_fixtures": [
+        "unwritten manifest not reported: [\"restyle population differs from CG-7h's closed 29-path CONTRACT_RESTYLE_PATHS\"]",
+        "valid 29-patch package verifies, scratch structure included: got [\"restyle population differs from CG-7h's closed 29-path CONTRACT_RESTYLE_PATHS\"]",
+        "manifest population is not the 29 non-excluded modules",
+        "manifest row digest mismatch rejected: got [\"restyle population differs from CG-7h's closed 29-path CONTRACT_RESTYLE_PATHS\"]",
+        "manifest row order rejected: got [\"restyle population differs from CG-7h's closed 29-path CONTRACT_RESTYLE_PATHS\"]",
+        "CG-17 routing break on the patched tree rejected: got [\"restyle population differs from CG-7h's closed 29-path CONTRACT_RESTYLE_PATHS\"]",
+        "verify_final_prespec failure on the patched tree rejected: got [\"restyle population differs from CG-7h's closed 29-path CONTRACT_RESTYLE_PATHS\"]",
+        "restored package verifies again: got [\"restyle population differs from CG-7h's closed 29-path CONTRACT_RESTYLE_PATHS\"]",
+        "apply --at-adoption after a valid record installs manifest bytes on both mirrors"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M2-phrase-search",
+      "finding": "M2",
+      "file": "scripts/record_contract_readability_restyle.py",
+      "old": "    m = PHRASE.fullmatch(phrase or \"\")",
+      "new": "    m = PHRASE.search(phrase or \"\")",
+      "selftest": "python3 scripts/record_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "33 fixtures, 1 failing",
+      "failed_fixtures": [
+        "phrase with trailing words refused"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M2-argument-unchecked",
+      "finding": "M2",
+      "file": "scripts/record_contract_readability_restyle.py",
+      "old": "    if argument != sha:",
+      "new": "    if False:",
+      "selftest": "python3 scripts/record_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "33 fixtures, 2 failing",
+      "failed_fixtures": [
+        "wrong digest argument refused",
+        "real package: wrong digest refused"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M2-unpinned-allowed",
+      "finding": "M2",
+      "file": "scripts/record_contract_readability_restyle.py",
+      "old": "    if None in pins:",
+      "new": "    if False:",
+      "selftest": "python3 scripts/record_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "33 fixtures, 4 failing",
+      "failed_fixtures": [
+        "unpinned recorder refused",
+        "partly pinned recorder refused",
+        "recorded act with unset pins fails check",
+        "real package: unpinned refused"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M2-pinned-manifest-unchecked",
+      "finding": "M2",
+      "file": "scripts/record_contract_readability_restyle.py",
+      "old": "    if current != pins.manifest_sha:",
+      "new": "    if False:",
+      "selftest": "python3 scripts/record_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "33 fixtures, 2 failing",
+      "failed_fixtures": [
+        "manifest differing from the pinned digest refused",
+        "manifest drift after recording"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M2-raw-sha-unchecked",
+      "finding": "M2",
+      "file": "scripts/record_contract_readability_restyle.py",
+      "old": "    if digest(raw) != pins.review_sha:",
+      "new": "    if False:",
+      "selftest": "python3 scripts/record_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "33 fixtures, 1 failing",
+      "failed_fixtures": [
+        "review raw sha mismatch refused"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M2-verdict-unchecked",
+      "finding": "M2",
+      "file": "scripts/record_contract_readability_restyle.py",
+      "old": "    if not any(verdict in head for verdict in VERDICTS):",
+      "new": "    if False:",
+      "selftest": "python3 scripts/record_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "33 fixtures, 2 failing",
+      "failed_fixtures": [
+        "review raw with REVISE verdict refused",
+        "review raw with verdict past the four-line head refused"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M2-raw-digest-unchecked",
+      "finding": "M2",
+      "file": "scripts/record_contract_readability_restyle.py",
+      "old": "    if f\"Manifest SHA-256: {pins.manifest_sha}\" not in head:",
+      "new": "    if False:",
+      "selftest": "python3 scripts/record_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "33 fixtures, 1 failing",
+      "failed_fixtures": [
+        "review raw binding another manifest digest refused"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "M2-module-pinned",
+      "finding": "M2",
+      "file": "scripts/record_contract_readability_restyle.py",
+      "old": "FROZEN_MANIFEST_SHA = None",
+      "new": "FROZEN_MANIFEST_SHA = \"0\" * 64",
+      "selftest": "python3 scripts/record_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "33 fixtures, 1 failing",
+      "failed_fixtures": [
+        "module pins are unset until the package is reviewed"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    },
+    {
+      "id": "N1-package-not-verified",
+      "finding": "N1",
+      "file": "scripts/record_contract_readability_restyle.py",
+      "old": "        findings = package.check(root)",
+      "new": "        findings = []",
+      "selftest": "python3 scripts/record_contract_readability_restyle.py --selftest",
+      "exit": 1,
+      "selftest_summary": "33 fixtures, 1 failing",
+      "failed_fixtures": [
+        "real package: tampered patch refused by the builder's findings"
+      ],
+      "commit": "2fd8082f4abea0d10b3a5543db047f52d6dbdd15"
+    }
+  ]
+}
