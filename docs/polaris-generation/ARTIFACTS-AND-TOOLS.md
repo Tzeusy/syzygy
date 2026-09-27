@@ -15,8 +15,8 @@ implemented API.
 Each stage is specified to run inside an identified, bounded request and to
 return an identified outcome; authorization is verified outside the LLM.
 
-This kit grants no source access, provider egress, authorship adoption or
-release. A real provider requires recorded per-project, provider and content
+This kit grants no source access, provider egress, authorship adoption or release.
+A real provider requires recorded per-project, provider and content
 consent under SEC-2.
 
 **Request.** A request identifies:
