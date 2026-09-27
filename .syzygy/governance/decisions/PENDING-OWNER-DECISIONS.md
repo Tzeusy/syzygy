@@ -930,6 +930,14 @@ table through this lens:
 
 Where this index and a row disagree, the row wins and this index is stale.
 
+> **Updated 2026-09-27 (doctrine amendment D5 adopted):** **P-25 and
+> P-25(c) resolved** — both edits were applied inside D5
+> ([`DOCTRINE-AMENDMENT-D5-READABILITY.md`](DOCTRINE-AMENDMENT-D5-READABILITY.md)),
+> and the rows moved to `DECISION-HISTORY.md`. The open section now holds
+> **19** rows and the acceptance-act section **5** [Observed 2026-09-27: split
+> on `## ` headings, rows matching `^\| P-[^|]` at line start]. Earlier
+> counts in this file are as of their own dates.
+
 ## Open, and only the owner can dispose
 
 | # | Decision | Type | Blocks / earliest gate | Owning record |
@@ -943,8 +951,6 @@ Where this index and a row disagree, the row wins and this index is stale.
 | P-20 | The fixture-set acceptance posture — the residue P-29 owns; coverage itself is closed (ten fixtures) | deferred | with P-29 | `round-2026-08/ROUND-DISPOSITIONS.md`; `round-2026-08b/FINAL-CONTEXT-COMPILER-FIXTURE-REPORT.md` |
 | P-21 | Is `constrains:` the right relation for one-way constraints (arm a)? The declaration's **presence** was ratified when the Wave A and B acts were performed 2026-08-17 (§7 item 18: "the acts ratify its presence" while (a) rides in **unruled**) — the sub-question itself remains open; its consumer clause sits in deferred Wave C2 | ruling | before Wave C2 is offered, or at the first consumer of the relation | `round-2026-08c/CONTRACT-RELATION-CLOSURE-REPORT.md`; acceptance record §7 item 18 |
 | P-23 | Mission-safety stage placement — hold the correction plane for V1 (propose-only V0), or ship it with V0; the ceiling and the plane move together | deferred with waves | D1/D2 offer | `round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md`; `round-2026-08b/reviews/RC-7-mission-safety-RAW.md` |
-| P-25 | Editorial doctrine amendment qualifying the three "README glossary" citations (drafted, not performed); three terms remain undefined anywhere reachable | doctrine amendment — only the owner applies | none | `policy-candidates/DOCTRINE-EDITORIAL-AMENDMENT-GLOSSARY-CITATION.md` |
-| P-25(c) | The `actuator` definition — a minimal doctrine amendment with the exact glossary insertion, one inferred sentence flagged for the owner | doctrine amendment — only the owner applies | none | `policy-candidates/DOCTRINE-AMENDMENT-ACTUATOR-DEFINITION.md` |
 | P-27 | RFC10-18's correction-plane routing defects (RC-11) and RC-10's undisclosed residue — all inside deferred D-wave modules | deferred with waves | D1/D2 offer | `round-2026-08b/DISPOSITIONS-RC-11-RC-12.md` |
 | P-29 | The Wave C2 acceptance criterion — write the blind-fixture reproduction standard into the manifest (arm a), or delete the conditional sentence and defer knowingly (arm b) | deferred with waves | Wave C2 re-offer | `round-2026-08d/reviews/RD-23-wave-c2-RAW.md` B1/B2 |
 | P-30 | Form of the stop/containment repair — D1-side floor limbs (i), move RFC10-20 to D1 (ii), or merge the D acts (iii) | deferred with waves | D1/D2 re-offer | `round-2026-08d/reviews/RD-20…RD-21…RD-13…RD-14` raw reviews |

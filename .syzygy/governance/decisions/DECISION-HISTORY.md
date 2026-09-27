@@ -12,6 +12,20 @@
 > cells — are preserved verbatim in git history at commit `9c43fc5`
 > (`git show 9c43fc5:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`).
 
+## Resolved on 2026-09-27 (P-25, P-25(c) — doctrine amendment D5)
+
+The owner adopted doctrine amendment D5, a readability rewrite of all six
+doctrine files, with the words "Adopt D5". D5 applies both pending editorial
+amendments: the glossary citations name their file (P-25(a)) and the
+glossary defines *actuator* (P-25(c)). Record:
+[`DOCTRINE-AMENDMENT-D5-READABILITY.md`](DOCTRINE-AMENDMENT-D5-READABILITY.md).
+The rows as they stood in the register:
+
+| `P-nn` | Question | Kind | Blocks | Source |
+|---|---|---|---|---|
+| P-25 | Editorial doctrine amendment qualifying the three "README glossary" citations (drafted, not performed); three terms remain undefined anywhere reachable | doctrine amendment — only the owner applies | none | `policy-candidates/DOCTRINE-EDITORIAL-AMENDMENT-GLOSSARY-CITATION.md` |
+| P-25(c) | The `actuator` definition — a minimal doctrine amendment with the exact glossary insertion, one inferred sentence flagged for the owner | doctrine amendment — only the owner applies | none | `policy-candidates/DOCTRINE-AMENDMENT-ACTUATOR-DEFINITION.md` |
+
 ## Resolved on 2026-09-21 (the Polaris pursuit rulings, P-68…P-83)
 
 The sixteen rows filed 2026-09-13 through 2026-09-17 by the Polaris

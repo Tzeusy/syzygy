@@ -1,3 +1,5 @@
+> **Applied 2026-09-27 within doctrine amendment D5** (`../../../decisions/DOCTRINE-AMENDMENT-D5-READABILITY.md`); P-25(a) is closed. The drafting text below is unchanged.
+
 # Proposed editorial doctrine amendment — the "README glossary" citation
 
 > **Candidate. Proposed, not performed.** This file changes nothing. Doctrine
