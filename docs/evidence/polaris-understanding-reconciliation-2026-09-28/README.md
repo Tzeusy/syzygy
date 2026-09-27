@@ -68,8 +68,13 @@ path, old/new fragments, and specific refusal for every mutant. Retain that
 output alongside the exact-head validation report. The legacy original recorder
 selftests still exercise its owner-instruction and duplicate-act guards.
 
-The existing CG-7e act-copy registration remains applicable to the unchanged
-historical manifest, dedicated act and aggregate block. This supplement has no
-act phrase or new act-copy registration. The candidate battery remains unchanged;
-the final reviewed patch adds the two passing checker commands to both local
-and hosted lists and derives their count from those actual lists.
+The existing CG-7e owner-act registration still verifies the unchanged historical
+manifest, dedicated act and aggregate block. The retained raw reviews quote the
+performed CC-SPEC policy digest as a reviewed input, so their exact path/hash
+lines have explicit historical-copy registrations. A stale line fails even if a
+correct digest appears elsewhere. This is evidence registration, never an act.
+The shared governance checker is frozen through C3; its C3 bytes remain checked
+as history so later unrelated checker changes need not rewrite this record.
+The candidate battery remains unchanged; the final reviewed patch adds the two
+passing commands to both local and hosted lists and derives their count from
+those actual lists.

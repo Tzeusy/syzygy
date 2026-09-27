@@ -212,12 +212,13 @@ RAW = EVIDENCE + 'REVIEW-RAW.md'
 SUPPLEMENT = EVIDENCE + 'technical-record.json'
 PLACEHOLDER = '__C2_RAW_REVIEW_SHA256__'
 SCRIPT = 'scripts/record_polaris_understanding_adoption.py'
+CHECK_GOV = 'scripts/check_governance.py'
 POLICY = '.syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md'
 VISION = '.syzygy/governance/doctrine/vision.md'
 DOC_PATHS = ('PROJECT-STATUS.md', '.syzygy/governance/decisions/README.md',
              '.github/workflows/governance-docs.yml')
 FROZEN_PATHS = (EVIDENCE + 'README.md', PROOF, TEMPLATE, DOC_PATCH, DOC_IMAGES, SCRIPT,
-                POLICY, VISION, *DOC_PATHS)
+                CHECK_GOV, POLICY, VISION, *DOC_PATHS)
 TREE_REVIEWS = tuple('.syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-REVIEW-'
                      + str(n) + '-RAW.md' for n in range(1, 5))
 
@@ -451,12 +452,12 @@ def reviewed_template(evidence):
     require(set(p for p, _ in bindings) == set(FROZEN_PATHS) | {INPUTS}, 'C1 review input population')
     for path, sha in bindings:
         require(digest(evidence.blob(c1, path)) == sha, 'C1 review blob mismatch: ' + path)
-        if path not in DOC_PATHS:
+        if path not in (*DOC_PATHS, CHECK_GOV):
             require(digest(evidence.current(path)) == sha, 'review retired by changed input: ' + path)
     # Validate the complete original freeze using its own immutable doc before-images.
     class Frozen(Evidence):
         def current(self, path):
-            return evidence.blob(c1, path) if path in DOC_PATHS else evidence.current(path)
+            return evidence.blob(c1, path) if path in (*DOC_PATHS, CHECK_GOV) else evidence.current(path)
         def blob(self, commit, path):
             return evidence.blob(commit, path)
         def ancestor(self, earlier, later):
@@ -478,6 +479,8 @@ def check_evidence(evidence):
         require(c3 != c2, 'C3 technical record must follow C2 review')
         evidence.ancestor(c2, c3)
         require(evidence.blob(c3, SUPPLEMENT) == expected, 'retained C3 technical record changed')
+    governance_source = evidence.blob(c3, CHECK_GOV) if c3 else evidence.current(CHECK_GOV)
+    require(governance_source == evidence.blob(c1, CHECK_GOV), 'governance registration source changed before C3')
     for path, pair in images.items():
         require(set(pair) == {'before_sha256', 'after_sha256'}, 'documentation image schema')
         require(digest(evidence.blob(c1, path)) == pair['before_sha256'], 'documentation before-image: ' + path)
@@ -531,7 +534,7 @@ def reconciliation_selftest():
     if (ROOT / RAW).exists():
         match = re.search(r'^Reviewed commit: ([0-9a-f]{40})$', source.current(RAW).decode(), re.M)
         require(match is not None, 'selftest C1 identity')
-        for path in DOC_PATHS:
+        for path in (*DOC_PATHS, CHECK_GOV):
             before[path] = source.blob(match.group(1), path)
 
     class Fixture(Evidence):
@@ -638,13 +641,15 @@ def reconciliation_selftest():
     mutate(SCRIPT, 'review retired by changed input')
     mutate(PROOF, 'review retired by changed input')
     mutate(DOC_PATHS[0], 'documentation after-image')
+    mutate(CHECK_GOV, 'governance registration source changed before C3')
     # C3 has a different source for documentation: its immutable commit, not
     # today's status page. Exercise that path as well as the pre-commit gate.
     fixture.introductions[SUPPLEMENT] = c3
-    fixture.recorded = {path: fixture.current(path) for path in (SUPPLEMENT, *DOC_PATHS)}
+    fixture.recorded = {path: fixture.current(path) for path in (SUPPLEMENT, CHECK_GOV, *DOC_PATHS)}
     check_evidence(fixture)
     mutate(SUPPLEMENT, 'retained C3 technical record changed', historical=c3)
     mutate(DOC_PATHS[0], 'documentation after-image', historical=c3)
+    mutate(CHECK_GOV, 'governance registration source changed before C3', historical=c3)
     fixture.files[DOC_PATHS[0]] += b'\nUnrelated later status-page update.\n'
     check_evidence(fixture)
     fixture.files[DOC_PATHS[0]] = fixture.recorded[DOC_PATHS[0]]

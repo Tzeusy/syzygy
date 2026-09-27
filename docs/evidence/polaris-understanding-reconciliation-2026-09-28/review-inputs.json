@@ -22,7 +22,7 @@
     },
     {
       "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/README.md",
-      "sha256": "dc76ff5fbaee51a044d66f77bba167b30cccd55ee92574934d7d90c77e5cf832"
+      "sha256": "57a6af1c4a56c5307c6455d5597e634463a21472386f421e0f8b04f1856bb66d"
     },
     {
       "path": "docs/evidence/polaris-understanding-reconciliation-2026-09-28/documentation-images.json",
@@ -41,8 +41,12 @@
       "sha256": "582f5be9a744254e7ebc3c0ea79907d1dca92d9511c78c4807a7ea257ead9ecb"
     },
     {
+      "path": "scripts/check_governance.py",
+      "sha256": "2e13804d06459fe69dfcceb0cebfc69702169936d19fe4a783473d9ed5d52b09"
+    },
+    {
       "path": "scripts/record_polaris_understanding_adoption.py",
-      "sha256": "7231258f2fadbc0ced543602b74fbcb8f5e6d753e454cce8470c63ee9f180845"
+      "sha256": "b75090faab2ffed86b52e45ff09aa2e5c3fe0591a5e0f0fd489a36e31ac03a9f"
     }
   ],
   "version": 1
