@@ -1,0 +1,28 @@
+--- a/PROJECT-STATUS.md
++++ b/PROJECT-STATUS.md
+@@ -55,2 +55,3 @@
+-  - [Unknown] Exact-digest recording/checker reconciliation for the observed
+-    2026-09-28 adoption is pending; the owner adopted the 31/182 composition.
++  - [Observed] The later [technical digest reconciliation](docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json)
++    links that existing owner adoption to its exact REQ-004 bytes. The record
++    adds no adoption or permission; run the checker in the battery below.
+@@ -312,0 +314,2 @@
++python3 scripts/record_polaris_understanding_adoption.py --check
++python3 scripts/record_polaris_understanding_adoption.py --selftest
+@@ -352 +355 @@
+-The thirty-six checks above are the same thirty-six the hosted workflow runs
++The thirty-eight checks above are the same thirty-eight the hosted workflow runs
+--- a/.syzygy/governance/decisions/README.md
++++ b/.syzygy/governance/decisions/README.md
+@@ -58 +58 @@
+-| [`POLARIS-TREE-FORM-AMENDMENT.md`](POLARIS-TREE-FORM-AMENDMENT.md) · [`…-ADOPTION.md`](POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md) | Polaris tree-form and diagram amendment to REQ-polaris-generation-004, in force — adopted 2026-09-28 with implementation authorized; rules sanitized static SVG inert under PWB-REQ-006. [Unknown] Exact-digest recording/checker reconciliation is pending for this observed owner adoption (31/182). |
++| [`POLARIS-TREE-FORM-AMENDMENT.md`](POLARIS-TREE-FORM-AMENDMENT.md) · [`…-ADOPTION.md`](POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md) | Polaris tree-form and diagram amendment to REQ-polaris-generation-004, in force — adopted 2026-09-28 with implementation authorized; rules sanitized static SVG inert under PWB-REQ-006. [Observed] [Later technical digest reconciliation](../../../docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json) records its exact REQ-004 subject; it grants no adoption or permission. |
+--- a/.github/workflows/governance-docs.yml
++++ b/.github/workflows/governance-docs.yml
+@@ -163,0 +164,6 @@
++      - name: understanding adoption exact-digest chain
++        run: python3 scripts/record_polaris_understanding_adoption.py --check
++
++      - name: understanding adoption chain selftests
++        run: python3 scripts/record_polaris_understanding_adoption.py --selftest
++

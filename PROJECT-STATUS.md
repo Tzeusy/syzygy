@@ -52,6 +52,9 @@ authority and no model yet called on the current path.
     to REQ-004, which adds five scenarios, authorized its generator
     implementation, and ruled that sanitized static SVG is inert under
     PWB-REQ-006.
+  - [Observed] The later [technical digest reconciliation](docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json)
+    links that existing owner adoption to its exact REQ-004 bytes. The record
+    adds no adoption or permission; run the checker in the battery below.
 
 **Implementation is in progress.**
 
@@ -308,6 +311,8 @@ output; it is the canonical battery.
 ```sh
 python3 scripts/check_governance.py
 python3 scripts/check_governance.py --selftest
+python3 scripts/record_polaris_understanding_adoption.py --check
+python3 scripts/record_polaris_understanding_adoption.py --selftest
 python3 scripts/launch_gate_results.py --selftest            # historical Markdown records
 python3 scripts/validate_launch_administration.py --selftest # the structured record path
 python3 scripts/render_launch_administration.py --selftest
@@ -347,7 +352,7 @@ python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
 ```
 
-The thirty-six checks above are the same thirty-six the hosted workflow runs
+The thirty-eight checks above are the same thirty-eight the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.

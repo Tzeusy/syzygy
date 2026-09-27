@@ -11,6 +11,9 @@ import json
 from pathlib import Path
 import re
 import tempfile
+import subprocess
+import sys
+from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[1]
 CHANGE = "openspec/changes/polaris-manifesto-understanding-amendment/"
@@ -130,7 +133,7 @@ def block(content):
     return f"<!-- {MARKER}:BEGIN -->\n{content}<!-- {MARKER}:END -->\n"
 
 
-def check(root):
+def check_original(root):
     sha = validate(root)
     actual = read(root, ACT).decode()
     match = re.search(r"^Act instant: (.+)$", actual, re.M)
@@ -154,7 +157,7 @@ def record(root, instruction, instant):
         stream.write(content)
     with (root / AGGREGATE).open("ab") as stream:
         stream.write(("\n" + block(content)).encode())
-    check(root)
+    check_original(root)
 
 
 def selftest():
@@ -163,7 +166,7 @@ def selftest():
         root = Path(directory)
         for rel in [REVIEW, *[p for p, _ in bindings]]:
             target = root / rel; target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(read(ROOT, rel))
+            target.write_bytes(git_blob(ROOT, HISTORICAL, rel))
         (root / MANIFEST).parent.mkdir(parents=True, exist_ok=True)
         (root / MANIFEST).write_bytes(canonical(current_subject(root)))
         (root / AGGREGATE).parent.mkdir(parents=True, exist_ok=True)
@@ -181,27 +184,536 @@ def selftest():
         record(root, "Adopt it", "2026-09-13T00:00:00Z")
         refuses(lambda: record(root, "Adopt it", "2026-09-13T00:00:00Z"))
         with (root / AGGREGATE).open("a") as stream: stream.write("\nLater unrelated record.\n")
-        check(root)
+        check_original(root)
         with (root / AGGREGATE).open("a") as stream: stream.write(block(read(root, ACT).decode()))
-        refuses(lambda: check(root))
+        refuses(lambda: check_original(root))
     print("PASS subject drift, extra file, wrong instruction, invalid instant, duplicate act, non-tail readback and duplicated aggregate")
+
+
+# The later record is technical evidence of the owner's existing act. It cannot
+# perform adoption, change an old act, or admit any other changed subject.
+HISTORICAL = '3c915991fbb0eebc38f8daaaea4d05679914b6b8'
+ADOPTION = '077089d6268323c86fab9f6a5c32217e4955c006'
+BASELINE = 'f7d80ca6b0f89b4005c52de6b01958d75f71cec5'
+SPEC = CHANGE + 'specs/polaris-generation/spec.md'
+PREDECESSOR = 'openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md'
+DIRECTION = '.syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md'
+PACKET = '.syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT.md'
+OLD_SHA = 'b7c95f57ca5f67a18570b7124d20b223dff99aea2a936efef76d5940a400f93f'
+NEW_SHA = '6841e63cda0ccdb81966a6fabbdfaf3721910df8ea04959711eb59843859ba58'
+MANIFEST_SHA = '3f4b96956b85a268532521ee5d0b1212d28537af7fddf09f89c877bd54bbc40d'
+EVIDENCE = 'docs/evidence/polaris-understanding-reconciliation-2026-09-28/'
+PROOF = EVIDENCE + 'proof.json'
+TEMPLATE = EVIDENCE + 'technical-record-template.json'
+INPUTS = EVIDENCE + 'review-inputs.json'
+DOC_PATCH = EVIDENCE + 'final-documentation.patch'
+DOC_IMAGES = EVIDENCE + 'documentation-images.json'
+RAW = EVIDENCE + 'REVIEW-RAW.md'
+SUPPLEMENT = EVIDENCE + 'technical-record.json'
+PLACEHOLDER = '__C2_RAW_REVIEW_SHA256__'
+SCRIPT = 'scripts/record_polaris_understanding_adoption.py'
+CHECK_GOV = 'scripts/check_governance.py'
+POLICY = '.syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md'
+VISION = '.syzygy/governance/doctrine/vision.md'
+DOC_PATHS = ('PROJECT-STATUS.md', '.syzygy/governance/decisions/README.md',
+             '.github/workflows/governance-docs.yml')
+FROZEN_PATHS = (EVIDENCE + 'README.md', PROOF, TEMPLATE, DOC_PATCH, DOC_IMAGES, SCRIPT,
+                CHECK_GOV, POLICY, VISION, *DOC_PATHS)
+TREE_REVIEWS = tuple('.syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-REVIEW-'
+                     + str(n) + '-RAW.md' for n in range(1, 5))
+
+
+def require(condition, reason):
+    if not condition:
+        raise ValueError(reason)
+
+
+def git_output(root, *args):
+    result = subprocess.run(['git', '-C', str(root), *args], capture_output=True)
+    require(result.returncode == 0, 'Git evidence unavailable: ' + ' '.join(args))
+    return result.stdout
+
+
+def git_blob(root, commit, path):
+    require(bool(re.fullmatch('[0-9a-f]{40}', commit)), 'invalid evidence commit')
+    require(git_output(root, 'cat-file', '-t', commit + ':' + path).strip() == b'blob',
+            'evidence object is not a blob: ' + path)
+    return git_output(root, 'show', commit + ':' + path)
+
+
+class Evidence:
+    """Read-only evidence seams; selftests replace these reads in memory."""
+    def __init__(self, root):
+        self.root = root
+
+    def current(self, path):
+        try:
+            return read(self.root, path)
+        except FileNotFoundError as exc:
+            raise ValueError('missing evidence: ' + path) from exc
+
+    def blob(self, commit, path):
+        return git_blob(self.root, commit, path)
+
+    def ancestor(self, earlier, later):
+        git_output(self.root, 'merge-base', '--is-ancestor', earlier, later)
+
+    def introduction(self, path):
+        commits = git_output(self.root, 'log', '--diff-filter=A', '--format=%H',
+                             'HEAD', '--', path).decode().splitlines()
+        require(len(commits) <= 1, 'reintroduced evidence: ' + path)
+        return commits[0] if commits else None
+
+
+def aggregate_block(data):
+    begin = f'<!-- {MARKER}:BEGIN -->\n'.encode()
+    end = f'<!-- {MARKER}:END -->\n'.encode()
+    require(data.count(begin) == data.count(end) == 1, 'aggregate block population')
+    start = data.index(begin)
+    stop = data.index(end) + len(end)
+    require(stop > start, 'aggregate block order')
+    return data[start:stop]
+
+
+def req004_parts(data):
+    headings = list(re.finditer(rb'(?m)^### Requirement: [^\n]+\n', data))
+    matches = []
+    for index, heading in enumerate(headings):
+        end = headings[index + 1].start() if index + 1 < len(headings) else len(data)
+        if re.search(rb'(?m)^ID: REQ-polaris-generation-004$', data[heading.start():end]):
+            matches.append((heading.start(), end))
+    require(len(matches) == 1, 'REQ-004 identity ambiguous')
+    start, end = matches[0]
+    return data[:start], data[start:end], data[end:]
+
+
+def composition(base, overlay):
+    """Recount this pinned base/overlay using independent regex and line scans.
+
+    This is deliberately the fixed two-source proof, not the evolving generic
+    counter. The immutable manifest identifies the seven replacements and two
+    additions; no removal or rename is admitted by this reconciliation.
+    """
+    def regex_counts(data):
+        headings = list(re.finditer(rb'(?m)^### Requirement: [^\n]+$', data))
+        result = {}
+        for index, heading in enumerate(headings):
+            end = headings[index + 1].start() if index + 1 < len(headings) else len(data)
+            block_data = data[heading.start():end]
+            ids = re.findall(rb'^ID: (REQ-polaris-generation-[0-9]{3})$', block_data, re.M)
+            require(len(ids) == 1 and ids[0] not in result, 'composition requirement identity')
+            result[ids[0]] = len(re.findall(rb'^#### Scenario:', block_data, re.M))
+        return result
+
+    def line_counts(data):
+        result = {}
+        current = None
+        headings = 0
+        for line in data.splitlines():
+            if line.startswith(b'### Requirement: '):
+                headings += 1
+                current = None
+            elif line.startswith(b'ID: REQ-polaris-generation-'):
+                current = line.removeprefix(b'ID: ')
+                require(current not in result, 'composition duplicate identity')
+                result[current] = 0
+            elif line.startswith(b'#### Scenario:'):
+                require(current is not None, 'composition scenario without identity')
+                result[current] += 1
+        require(headings == len(result), 'composition heading population')
+        return result
+
+    results = []
+    for parse in (regex_counts, line_counts):
+        original, amended = parse(base), parse(overlay)
+        expected_modified = {('REQ-polaris-generation-' + n).encode()
+                             for n in ('002', '004', '006', '009', '012', '014', '019')}
+        expected_added = {b'REQ-polaris-generation-030', b'REQ-polaris-generation-031'}
+        require(set(amended) & set(original) == expected_modified, 'composition replacement population')
+        require(set(amended) - set(original) == expected_added, 'composition addition population')
+        results.append(original | amended)
+    require(results[0] == results[1], 'composition parsers disagree')
+    return {'requirements': len(results[0]), 'scenarios': sum(results[0].values())}
+
+
+def baseline_proof(evidence):
+    """Validate both source links without claiming the supplement exists."""
+    old_manifest = evidence.blob(HISTORICAL, MANIFEST)
+    require(digest(old_manifest) == MANIFEST_SHA, 'historical manifest identity')
+    require(evidence.current(MANIFEST) == old_manifest, 'historical manifest changed')
+    manifest = json.loads(old_manifest)
+    population = sorted(CHANGE + name for name in NAMES)
+    require([row['path'] for row in manifest['artifacts']] == population,
+            'historical subject population')
+    historical_review = evidence.blob(HISTORICAL, REVIEW)
+    require(digest(historical_review) == REVIEW_SHA, 'historical review identity')
+    require(evidence.current(REVIEW) == historical_review, 'historical review changed')
+    bindings = re.findall(r'^- `([^`]+)`: `([0-9a-f]{64})`$', historical_review.decode(), re.M)
+    require(len(bindings) == len(dict(bindings)) == 12, 'historical review population')
+    for path, sha in bindings:
+        require(digest(evidence.blob(HISTORICAL, path)) == sha,
+                'historical reviewed blob mismatch: ' + path)
+    rows = []
+    for row in manifest['artifacts']:
+        path = row['path']
+        old = evidence.blob(HISTORICAL, path)
+        adopted = evidence.blob(ADOPTION, path)
+        require(digest(old) == row['sha256'], 'historical subject hash: ' + path)
+        expected = NEW_SHA if path == SPEC else row['sha256']
+        require(digest(adopted) == expected, 'adoption blob mismatch: ' + path)
+        require(evidence.current(path) == adopted, 'current subject drift: ' + path)
+        rows.append({'path': path, 'historical_sha256': digest(old),
+                     'adopted_sha256': digest(adopted), 'changed': old != adopted})
+    actual = sorted(p.relative_to(evidence.root).as_posix()
+                    for p in (evidence.root / CHANGE).rglob('*') if p.is_file())
+    require(actual == population, 'current subject population')
+    old_act = evidence.blob(HISTORICAL, ACT)
+    match = re.search(r'^Act instant: (.+)$', old_act.decode(), re.M)
+    require(match is not None and old_act.decode() == body(MANIFEST_SHA, match.group(1)),
+            'historical act identity')
+    require(evidence.current(ACT) == old_act, 'historical act changed')
+    old_block = aggregate_block(evidence.blob(HISTORICAL, AGGREGATE))
+    require(old_block == block(old_act.decode()).encode(), 'historical aggregate mismatch')
+    require(aggregate_block(evidence.current(AGGREGATE)) == old_block, 'aggregate act changed')
+    preserved = []
+    for path in (DIRECTION, PACKET, *TREE_REVIEWS):
+        adopted = evidence.blob(ADOPTION, path)
+        require(evidence.current(path) == adopted, 'owner evidence changed: ' + path)
+        preserved.append({'path': path, 'sha256': digest(adopted)})
+    direction = evidence.blob(ADOPTION, DIRECTION).decode()
+    # Exact full-file preservation above is the source binding. These assertions
+    # make the subject correspondence visible and reject an ambiguous source.
+    for phrase in ('"1. Adopt and implement the Polaris tree-form amendment", 2. Permitted, 3.\n  Adopt now"',
+                   'amended REQ-polaris-generation-004', 'as merged with this record.',
+                   '31 requirements and 182 scenarios.'):
+        require(direction.count(phrase) == 1, 'owner-to-subject correspondence')
+    old_spec = evidence.blob(HISTORICAL, SPEC)
+    new_spec = evidence.blob(ADOPTION, SPEC)
+    require(digest(old_spec) == OLD_SHA, 'old spec identity')
+    before, old_req, after = req004_parts(old_spec)
+    new_before, new_req, new_after = req004_parts(new_spec)
+    require((before, after) == (new_before, new_after), 'change outside REQ-004')
+    old_scenarios = re.findall(rb'^#### Scenario: (.+)$', old_req, re.M)
+    new_scenarios = re.findall(rb'^#### Scenario: (.+)$', new_req, re.M)
+    added = [s.decode() for s in new_scenarios if s not in old_scenarios]
+    require(len(added) == 5 and all(s in new_scenarios for s in old_scenarios), 'scenario delta')
+    base = evidence.blob(HISTORICAL, PREDECESSOR)
+    require(evidence.current(PREDECESSOR) == base, 'predecessor drift')
+    totals = [composition(base, spec) for spec in (old_spec, new_spec)]
+    require(totals == [{'requirements': 31, 'scenarios': 177},
+                       {'requirements': 31, 'scenarios': 182}], 'effective composition')
+    evidence.ancestor(HISTORICAL, ADOPTION)
+    return {'version': 1, 'historical_commit': HISTORICAL, 'owner_adoption_commit': ADOPTION,
+            'integration_base': BASELINE, 'manifest_sha256': digest(old_manifest),
+            'historical_act_sha256': digest(old_act), 'aggregate_block_sha256': digest(old_block),
+            'subjects': rows, 'preserved_owner_evidence': preserved,
+            'composition_before': totals[0], 'composition_after': totals[1],
+            'added_scenarios': added, 'changed_requirements': ['REQ-polaris-generation-004']}
+
+
+def candidate_check(evidence):
+    proof = baseline_proof(evidence)
+    require(evidence.current(PROOF) == canonical(proof), 'candidate proof mismatch')
+    inputs = json.loads(evidence.current(INPUTS))
+    require(set(inputs) == {'version', 'files'} and inputs['version'] == 1,
+            'review input schema')
+    require([r['path'] for r in inputs['files']] == sorted(FROZEN_PATHS), 'review input population')
+    for row in inputs['files']:
+        require(set(row) == {'path', 'sha256'}, 'review input row schema')
+        require(digest(evidence.current(row['path'])) == row['sha256'],
+                'candidate input drift: ' + row['path'])
+    template = evidence.current(TEMPLATE)
+    require(template.count(PLACEHOLDER.encode()) == 1, 'template placeholder population')
+    require(json.loads(template)['proof_sha256'] == digest(evidence.current(PROOF)), 'template proof binding')
+    after = documentation_after_images(evidence)
+    expected_images = {path: {'before_sha256': digest(evidence.current(path)),
+                             'after_sha256': digest(after[path])} for path in DOC_PATHS}
+    require(evidence.current(DOC_IMAGES) == canonical(expected_images), 'documentation image mismatch')
+    return proof
+
+
+def reviewed_template(evidence):
+    raw = evidence.current(RAW)
+    text = raw.decode()
+    verdicts = re.findall(r'^Verdict:([^\n]*)$', text, re.M)
+    require(verdicts == [' PASS'], 'independent review not confirming: expected exactly one PASS verdict header')
+    commits = re.findall(r'^Reviewed commit:([^\n]*)$', text, re.M)
+    require(len(commits) == 1, 'C1 review commit population')
+    require(re.fullmatch(r' [0-9a-f]{40}', commits[0]) is not None, 'invalid C1 review commit')
+    c1 = commits[0][1:]
+    evidence.ancestor(BASELINE, c1)
+    evidence.ancestor(c1, 'HEAD')
+    c2 = evidence.introduction(RAW)
+    require(c2 is not None and c2 != c1, 'C2 raw review must be retained after C1')
+    evidence.ancestor(c1, c2)
+    require(evidence.blob(c2, RAW) == raw, 'retained C2 review changed')
+    bindings = re.findall(r'^- `([^`]+)`: `([0-9a-f]{64})`$', text, re.M)
+    require(len(bindings) == len(set(p for p, _ in bindings)), 'duplicate C1 review input')
+    require(set(p for p, _ in bindings) == set(FROZEN_PATHS) | {INPUTS}, 'C1 review input population')
+    for path, sha in bindings:
+        require(digest(evidence.blob(c1, path)) == sha, 'C1 review blob mismatch: ' + path)
+        if path not in (*DOC_PATHS, CHECK_GOV):
+            require(digest(evidence.current(path)) == sha, 'review retired by changed input: ' + path)
+    # Validate the complete original freeze using its own immutable doc before-images.
+    class Frozen(Evidence):
+        def current(self, path):
+            return evidence.blob(c1, path) if path in (*DOC_PATHS, CHECK_GOV) else evidence.current(path)
+        def blob(self, commit, path):
+            return evidence.blob(commit, path)
+        def ancestor(self, earlier, later):
+            return evidence.ancestor(earlier, later)
+    candidate_check(Frozen(evidence.root))
+    template = evidence.current(TEMPLATE)
+    return template.replace(PLACEHOLDER.encode(), digest(raw).encode()), c1
+
+
+def check_evidence(evidence):
+    baseline_proof(evidence)
+    expected, c1 = reviewed_template(evidence)
+    require(evidence.current(SUPPLEMENT) == expected, 'technical record differs from reviewed template')
+    images = json.loads(evidence.current(DOC_IMAGES))
+    require(set(images) == set(DOC_PATHS), 'documentation population')
+    c3 = evidence.introduction(SUPPLEMENT)
+    if c3 is not None:
+        c2 = evidence.introduction(RAW)
+        require(c3 != c2, 'C3 technical record must follow C2 review')
+        evidence.ancestor(c2, c3)
+        require(evidence.blob(c3, SUPPLEMENT) == expected, 'retained C3 technical record changed')
+    governance_source = evidence.blob(c3, CHECK_GOV) if c3 else evidence.current(CHECK_GOV)
+    require(governance_source == evidence.blob(c1, CHECK_GOV), 'governance registration source changed before C3')
+    for path, pair in images.items():
+        require(set(pair) == {'before_sha256', 'after_sha256'}, 'documentation image schema')
+        require(digest(evidence.blob(c1, path)) == pair['before_sha256'], 'documentation before-image: ' + path)
+        # Freeze the final documentation at C3, not every future status-page edit.
+        after = evidence.blob(c3, path) if c3 else evidence.current(path)
+        require(digest(after) == pair['after_sha256'], 'documentation after-image: ' + path)
+    return c1
+
+
+def check(root):
+    return check_evidence(Evidence(root))
+
+
+def documentation_after_images(evidence):
+    """Apply the frozen patch to its frozen before-images in a scratch directory."""
+    patch = evidence.current(DOC_PATCH)
+    paths = re.findall(rb'^\+\+\+ b/(.+)$', patch, re.M)
+    require(sorted(p.decode() for p in paths) == sorted(DOC_PATHS), 'documentation patch population')
+    with tempfile.TemporaryDirectory() as directory:
+        scratch = Path(directory)
+        for path in DOC_PATHS:
+            target = scratch / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(evidence.current(path))
+        result = subprocess.run(['git', 'apply', '--unidiff-zero', '--check', '-'], cwd=scratch,
+                                input=patch, capture_output=True)
+        require(result.returncode == 0, 'documentation patch does not apply')
+        result = subprocess.run(['git', 'apply', '--unidiff-zero', '-'], cwd=scratch,
+                                input=patch, capture_output=True)
+        require(result.returncode == 0, 'documentation patch application failed')
+        return {path: (scratch / path).read_bytes() for path in DOC_PATHS}
+
+
+def reconciliation_selftest():
+    """Exercise the checker through memory reads; never mutate the real corpus."""
+    class Cached(Evidence):
+        def __init__(self, root):
+            super().__init__(root)
+            self.cache = {}
+        def blob(self, commit, path):
+            key = (commit, path)
+            if key not in self.cache:
+                self.cache[key] = super().blob(commit, path)
+            return self.cache[key]
+    source = Cached(ROOT)
+    c1 = 'f' * 40
+    c2 = 'e' * 40
+    c3 = 'd' * 40
+    before = {path: source.current(path) for path in (*FROZEN_PATHS, INPUTS)}
+    # Selftests also run after C3. Recover the reviewed C1 docs when available.
+    if (ROOT / RAW).exists():
+        match = re.search(r'^Reviewed commit: ([0-9a-f]{40})$', source.current(RAW).decode(), re.M)
+        require(match is not None, 'selftest C1 identity')
+        for path in (*DOC_PATHS, CHECK_GOV):
+            before[path] = source.blob(match.group(1), path)
+
+    class Fixture(Evidence):
+        def __init__(self):
+            super().__init__(ROOT)
+            self.files = dict(before)
+            self.blobs = {}
+            self.introductions = {RAW: c2, SUPPLEMENT: None}
+            self.recorded = {}
+        def current(self, path):
+            if path in self.files:
+                require(self.files[path] is not None, 'missing evidence: ' + path)
+                return self.files[path]
+            return source.current(path)
+        def blob(self, commit, path):
+            if (commit, path) in self.blobs:
+                return self.blobs[(commit, path)]
+            if commit == c1:
+                return before[path]
+            if commit == c2 and path == RAW:
+                return raw
+            if commit == c3:
+                return self.recorded[path]
+            return source.blob(commit, path)
+        def ancestor(self, earlier, later):
+            if set((earlier, later)) & {c1, c2, c3}:
+                return
+            return source.ancestor(earlier, later)
+        def introduction(self, path):
+            return self.introductions.get(path)
+
+    fixture = Fixture()
+    raw = ('Verdict: PASS\nReviewed commit: ' + c1 + '\n' + ''.join(
+        '- `' + path + '`: `' + digest(data) + '`\n' for path, data in sorted(before.items()))).encode()
+    fixture.files[RAW] = raw
+    fixture.files[SUPPLEMENT] = before[TEMPLATE].replace(PLACEHOLDER.encode(), digest(raw).encode())
+    fixture.files.update(documentation_after_images(fixture))
+    check_evidence(fixture)
+    witnesses = []
+    commit = git_output(ROOT, 'rev-parse', 'HEAD').decode().strip()
+
+    def mutate(path, reason, *, historical=None, old=b'', new=b'\nmutated\n', missing=False):
+        key = (historical, path) if historical else path
+        mapping = fixture.blobs if historical else fixture.files
+        existed = key in mapping
+        saved = mapping.get(key)
+        original = fixture.blob(historical, path) if historical else fixture.current(path)
+        if not old:
+            length = min(32, len(original))
+            old = original[-length:]
+            while original.count(old) != 1:
+                length = min(length * 2, len(original))
+                old = original[-length:]
+            new = old + new
+        require(original.count(old) == 1, 'selftest mutation fragment not unique: ' + path)
+        mapping[key] = None if missing else original.replace(old, new, 1)
+        if path == RAW and not historical:
+            fixture.blobs[(c2, RAW)] = mapping[key]
+        try:
+            check_evidence(fixture)
+        except ValueError as exc:
+            require(reason in str(exc), 'wrong refusal: ' + str(exc) + '; wanted ' + reason)
+            witnesses.append({'commit': commit, 'path': path, 'git_commit': historical,
+                              'operation': 'remove' if missing else 'replace-once',
+                              'old': old.decode(), 'new': None if missing else new.decode(),
+                              'refusal': str(exc)})
+        else:
+            raise AssertionError('mutation accepted: ' + path)
+        finally:
+            if existed: mapping[key] = saved
+            else: mapping.pop(key, None)
+            if path == RAW and not historical:
+                fixture.blobs.pop((c2, RAW), None)
+
+    mutate(MANIFEST, 'historical manifest changed')
+    mutate(MANIFEST, 'historical manifest identity', historical=HISTORICAL)
+    mutate(ACT, 'historical act changed')
+    mutate(AGGREGATE, 'aggregate act changed', old=block(source.current(ACT).decode()).encode(),
+           new=block(source.current(ACT).decode().replace('Owner: Tzeusy', 'Owner: Mutant')).encode())
+    mutate(SPEC, 'historical reviewed blob mismatch', historical=HISTORICAL)
+    mutate(SPEC, 'adoption blob mismatch', historical=ADOPTION)
+    mutate(SPEC, 'current subject drift')
+    mutate(CHANGE + 'tasks.md', 'current subject drift')
+    mutate(DIRECTION, 'owner evidence changed')
+    mutate(DIRECTION, 'missing evidence', missing=True)
+    mutate(DIRECTION, 'owner evidence changed', historical=ADOPTION)
+    mutate(SUPPLEMENT, 'missing evidence', missing=True)
+    mutate(SUPPLEMENT, 'technical record differs', old=fixture.current(SUPPLEMENT), new=b'{}\n')
+    mutate(RAW, 'retained C2 review changed', historical=c2)
+    mutate(SUPPLEMENT, 'technical record differs', old=NEW_SHA.encode(), new=b'0' * 64)
+    mutate(SUPPLEMENT, 'technical record differs', old=SPEC.encode(), new=b'wrong/path')
+    mutate(SUPPLEMENT, 'technical record differs', old=b'"version": 1', new=b'"version": 1, "extra_subject": "unreviewed"')
+    mutate(RAW, 'independent review not confirming', old=b'Verdict: PASS', new=b'Verdict: REVISE')
+    mutate(RAW, 'independent review not confirming', old=b'Verdict: PASS', new=b'Verdict: REVISE\nVerdict: PASS')
+    mutate(RAW, 'independent review not confirming', old=b'Verdict: PASS', new=b'Verdict: PASS\nVerdict: PASS')
+    mutate(RAW, 'C1 review commit population', old=('Reviewed commit: ' + c1).encode(),
+           new=('Reviewed commit: wrong\nReviewed commit: ' + c1).encode())
+    mutate(RAW, 'C1 review commit population', old=('Reviewed commit: ' + c1).encode(),
+           new=('Reviewed commit: ' + c1 + '\nReviewed commit: ' + 'a' * 40).encode())
+    mutate(RAW, 'invalid C1 review commit', old=c1.encode(), new=b'bad-commit')
+    mutate(RAW, 'C1 review input population', old=('- `' + TEMPLATE + '`:').encode(), new=b'- `wrong/template`:')
+    mutate(TEMPLATE, 'review retired by changed input')
+    mutate(INPUTS, 'review retired by changed input')
+    mutate(SCRIPT, 'review retired by changed input')
+    mutate(PROOF, 'review retired by changed input')
+    mutate(DOC_PATHS[0], 'documentation after-image')
+    mutate(CHECK_GOV, 'governance registration source changed before C3')
+    # C3 has a different source for documentation: its immutable commit, not
+    # today's status page. Exercise that path as well as the pre-commit gate.
+    fixture.introductions[SUPPLEMENT] = c3
+    fixture.recorded = {path: fixture.current(path) for path in (SUPPLEMENT, CHECK_GOV, *DOC_PATHS)}
+    check_evidence(fixture)
+    mutate(SUPPLEMENT, 'retained C3 technical record changed', historical=c3)
+    mutate(DOC_PATHS[0], 'documentation after-image', historical=c3)
+    mutate(CHECK_GOV, 'governance registration source changed before C3', historical=c3)
+    fixture.files[DOC_PATHS[0]] += b'\nUnrelated later status-page update.\n'
+    check_evidence(fixture)
+    fixture.files[DOC_PATHS[0]] = fixture.recorded[DOC_PATHS[0]]
+    for path, replacement, reason in ((RAW, None, 'C2 raw review must be retained'),
+                                       (SUPPLEMENT, c2, 'C3 technical record must follow C2')):
+        saved = fixture.introductions[path]
+        fixture.introductions[path] = replacement
+        try:
+            check_evidence(fixture)
+        except ValueError as exc:
+            require(reason in str(exc), 'wrong introduction refusal: ' + str(exc))
+            witnesses.append({'commit': commit, 'path': path, 'operation': 'replace-introduction-seam',
+                              'old': saved, 'new': replacement, 'refusal': str(exc)})
+        else:
+            raise AssertionError('introduction mutation accepted')
+        finally:
+            fixture.introductions[path] = saved
+    print('PASS reconciliation selftest: 3 valid states (before C3, committed C3, later docs); ' + str(len(witnesses)) + ' trust-boundary mutations refused; owner direction and technical proof remain distinct.')
+    print('RULE6-WITNESSES ' + json.dumps(witnesses, sort_keys=True))
+
+
+def render_reconciliation(root):
+    evidence = Evidence(root)
+    expected, _ = reviewed_template(evidence)
+    record = json.loads(expected)
+    today = datetime.now(ZoneInfo(record['recording_timezone'])).date().isoformat()
+    require(record['recording_date'] == today, 'recording date moved; re-freeze and re-review')
+    # Exclusive append of a new technical record; no owner act or aggregate write.
+    with (root / SUPPLEMENT).open('xb') as stream:
+        stream.write(expected)
+    require(read(root, SUPPLEMENT) == expected, 'technical record readback')
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
-    for action in ["prepare", "record", "check", "selftest"]: mode.add_argument("--" + action, action="store_true")
-    parser.add_argument("--owner-instruction"); parser.add_argument("--instant")
+    for action in ['prepare', 'record', 'check', 'selftest', 'candidate-check', 'render-reconciliation']:
+        mode.add_argument('--' + action, action='store_true')
+    parser.add_argument('--owner-instruction'); parser.add_argument('--instant')
     args = parser.parse_args()
-    if args.selftest: selftest()
-    elif args.prepare:
-        with (ROOT / MANIFEST).open("xb") as stream: stream.write(canonical(current_subject(ROOT)))
-        print("Prepared exact reviewed amendment manifest; no act recorded")
-    elif args.record:
-        record(ROOT, args.owner_instruction, args.instant)
-        print("Recorded explicit owner adoption; bootstrap provenance; A1 absent")
-    else:
-        check(ROOT); print("PASS exact amendment and dedicated/aggregate adoption records")
+    try:
+        if args.selftest:
+            selftest()
+            reconciliation_selftest()
+        elif args.candidate_check:
+            candidate_check(Evidence(ROOT))
+            print('PASS owner direction observed; 8 historical rows, 7 unchanged, 1 reconciled candidate; 31/177 -> 31/182. Exact digest reconciliation remains unresolved pending independent review and technical record.')
+        elif args.prepare:
+            with (ROOT / MANIFEST).open('xb') as stream: stream.write(canonical(current_subject(ROOT)))
+            print('Prepared exact reviewed amendment manifest; no act recorded')
+        elif args.record:
+            record(ROOT, args.owner_instruction, args.instant)
+            print('Recorded explicit owner adoption; bootstrap provenance; A1 absent')
+        elif args.render_reconciliation:
+            render_reconciliation(ROOT)
+            print('Rendered reviewed technical supplement only; apply reviewed documentation patch before --check')
+        else:
+            c1 = check(ROOT)
+            print('PASS owner direction observed; exact digest reconciled: 8 historical rows, 7 unchanged, REQ-004 adoption/current bytes; 31 requirements/182 scenarios; C1 ' + c1 + '. Technical evidence does not perform adoption or grant permission.')
+    except (ValueError, OSError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        print('FAIL exact digest reconciliation unresolved: ' + str(exc), file=sys.stderr)
+        return 1
+    return 0
 
-if __name__ == "__main__":
-    main()
+
+if __name__ == '__main__':
+    raise SystemExit(main())

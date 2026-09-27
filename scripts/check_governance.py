@@ -2686,6 +2686,22 @@ ACT_HISTORICAL_DIGEST_COPY_FILES = {
 }
 
 
+# Retained reconciliation reviews quote the performed policy's exact input hash.
+# These are historical evidence copies, never new/current owner offerings.
+POLARIS_UNDERSTANDING_REVIEW_POLICY_DIGEST = "6093dbbe519dad6c35a5aaeeb31355d2e435d76ec4f0c2c9affb0d1e5b6b5621"
+POLARIS_UNDERSTANDING_REVIEW_COPIES = (
+    "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-1-RAW.md",
+    "docs/evidence/polaris-understanding-reconciliation-2026-09-28/REVIEW-RAW.md",
+)
+for _review_copy in POLARIS_UNDERSTANDING_REVIEW_COPIES:
+    ACT_HISTORICAL_DIGEST_COPY_FILES[_review_copy] = {
+        CC_SPEC_LABEL: ((POLARIS_UNDERSTANDING_REVIEW_POLICY_DIGEST, re.compile(
+            r"^- `" + re.escape(CC_SPEC_SUBJECT) + r"`: `"
+            + POLARIS_UNDERSTANDING_REVIEW_POLICY_DIGEST + r"`$", re.M
+        )),),
+    }
+
+
 def _activate_pwb_effect_amendment_act_copy_registries():
     """Re-register a superseded effect act's copies as history once its
     amendment record exists.
@@ -6597,6 +6613,12 @@ def selftest():
     cases.append(("CG-7e file declaring an act it does not carry detected",
                   c.rows[0][0] == "FAIL"))
 
+    for review_copy in POLARIS_UNDERSTANDING_REVIEW_COPIES:
+        for valid in (True, False):
+            row = _selftest_cg7e_wrong_historical(review_copy, valid)
+            cases.append((f"CG-7e reconciliation {os.path.basename(review_copy)} "
+                          + ("historical copy valid" if valid else "changed copy refused despite decoy"),
+                          row[0] == ("OK" if valid else "FAIL") and row[2] == 1))
     row = _selftest_cg7e_wrong_historical()
     cases.append(("CG-7e decoy old digest cannot mask mutated act-6 line",
                   row[0] == "FAIL"
@@ -7200,7 +7222,7 @@ def _selftest_fake_performed_table():
     return c.row("CG-7d")
 
 
-def _selftest_cg7e_wrong_historical():
+def _selftest_cg7e_wrong_historical(review_copy=None, valid=False):
     class Cap:
         def __init__(self): self.rows = []
         def add(self, status, name, examined, n, unit, note=None, details=None):
@@ -7218,21 +7240,28 @@ def _selftest_cg7e_wrong_historical():
     current_files = dict(ACT_DIGEST_COPY_FILES)
     history_files = dict(ACT_HISTORICAL_DIGEST_COPY_FILES)
     try:
-        subject = "policy.md"
+        subject = CC_SPEC_SUBJECT if review_copy else "policy.md"
         full = os.path.join(d, subject)
+        os.makedirs(os.path.dirname(full), exist_ok=True)
         with open(full, "w", encoding="utf-8") as fh:
             fh.write("current policy\n")
         current = sha256_file(full)
-        old = "9" * 64
+        old = POLARIS_UNDERSTANDING_REVIEW_POLICY_DIGEST if review_copy else "9" * 64
         record = os.path.join(d, PERFORMED_ACT_RECORD)
         os.makedirs(os.path.dirname(record), exist_ok=True)
         with open(record, "w", encoding="utf-8") as fh:
             fh.write(f"{CC_SPEC_LABEL}@{old}\n{CC_SPEC_LABEL}@{current}\n")
-        with open(os.path.join(d, "historical.md"), "w", encoding="utf-8") as fh:
-            fh.write(
-                f"{CC_SPEC_LABEL}@{current}\n"
-                f"<!-- decoy old digest: {old} -->\n"
-            )
+        copy_path = review_copy or "historical.md"
+        os.makedirs(os.path.dirname(os.path.join(d, copy_path)), exist_ok=True)
+        with open(os.path.join(d, copy_path), "w", encoding="utf-8") as fh:
+            if review_copy:
+                quoted = old if valid else "0" * 64
+                fh.write(f"- `{CC_SPEC_SUBJECT}`: `{quoted}`\n<!-- decoy: {old} -->\n")
+            else:
+                fh.write(
+                    f"{CC_SPEC_LABEL}@{current}\n"
+                    f"<!-- decoy old digest: {old} -->\n"
+                )
 
         specs = ((
             CC_SPEC_LABEL, subject,
@@ -7248,8 +7277,11 @@ def _selftest_cg7e_wrong_historical():
                 r"^" + re.escape(CC_SPEC_LABEL) + r"@" + old + r"$", re.M
             )),),
         }
+        if review_copy:
+            ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+            ACT_HISTORICAL_DIGEST_COPY_FILES[review_copy] = history_files[review_copy]
         c = Cap()
-        cg7e_act_digest_copies(["historical.md"], c)
+        cg7e_act_digest_copies([copy_path], c)
         return c.row("CG-7e")
     finally:
         ACT_DIGEST_COPY_FILES.clear()
