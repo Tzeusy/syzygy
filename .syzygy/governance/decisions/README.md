@@ -31,6 +31,7 @@ These carry rulings the owner has actually made.
 | [`SURFACE-DECISION-RECORD.md`](SURFACE-DECISION-RECORD.md) | **SDR-1…37** — the standing body of prior owner rulings (SDR-34…37 record the 2026-08-16 P-31/P-36/P-37/P-40 rulings). The largest single source of settled ground |
 | [`OWNER-ANSWERS-2026-08-01.md`](OWNER-ANSWERS-2026-08-01.md) | The owner's answers to the 2026-08-01 question set |
 | [`DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md`](DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md) | Doctrine amendment **D1**, in force |
+| [`DOCTRINE-AMENDMENT-LOG.md`](DOCTRINE-AMENDMENT-LOG.md) | Every doctrine amendment, one row each |
 | [`WAVE-A-INSTALL-SHAPE-DECISION.md`](WAVE-A-INSTALL-SHAPE-DECISION.md) | **P-33 ruled 2026-08-16** — install shape (M), recorded in the packet's own template |
 | [`LAUNCH-GATE-AUTHORITY-DECISION.md`](LAUNCH-GATE-AUTHORITY-DECISION.md) | **P-34 ruled 2026-08-16** — launch-gate v2.4 approved as process policy, arm (a), residuals disclosed |
 | [`PROJECT-OPERATING-CONSTRAINTS-DECISION.md`](PROJECT-OPERATING-CONSTRAINTS-DECISION.md) | **P-35 ruled 2026-08-16** — the operating-constraints table, Unknowns kept |
@@ -136,6 +137,7 @@ group of rows gathered so the owner can answer them in one sitting:
 
 | `P-nn` | Question | Packet |
 |---|---|---|
+| **P-25, P-25(c)** | Doctrine amendment **D5**: a readability rewrite of all six doctrine files that also applies the glossary-citation and *actuator* amendments | [`DOCTRINE-AMENDMENT-D5-READABILITY.md`](DOCTRINE-AMENDMENT-D5-READABILITY.md) |
 | **P-12** | The knowledge-hygiene craft policy | [`KNOWLEDGE-HYGIENE-DECISION.md`](KNOWLEDGE-HYGIENE-DECISION.md) |
 | **P-45…P-48** | The four Administration-1 owner inputs (resource envelope, effort ceiling, F2 disposition, stop condition) | [`ADMINISTRATION-1-OWNER-INPUTS-DECISION.md`](ADMINISTRATION-1-OWNER-INPUTS-DECISION.md) |
 | **P-54…P-59, P-66** | *(Ruled 2026-09-07 — record [`DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md`](DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md); the seven rows have left [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) for [`DECISION-HISTORY.md`](DECISION-HISTORY.md), which is where a reader checks whether any row in this table is still open.)* Seven questions about the written estate: the OpenSpec config's vendor boilerplate, the two empty OpenSpec lifecycle directories, the spent Capability 1 prompt at the repository root, whether `openspec/` gets a navigation page, the two front doors that name different founding rules, the public overview that still says nothing is implemented, and CC-SPEC's amendment banner naming five of nine phase rules on frozen bytes | [`DOCUMENTATION-ESTATE-DECISION-PACKET.md`](DOCUMENTATION-ESTATE-DECISION-PACKET.md) |
