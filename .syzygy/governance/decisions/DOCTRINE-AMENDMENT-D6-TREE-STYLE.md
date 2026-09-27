@@ -1,6 +1,6 @@
 # Doctrine amendment D6 — tree style and diagrams
 
-> **Status:** Proposal. It binds nothing until the owner adopts it (VIS-4).
+> **Status:** Adopted 2026-09-27 by the owner ("Adopt D6"); in force as doctrine amendment D6.
 > The owner adopts by saying so plainly, as with D1 and D5.
 
 D6 restyles all six doctrine files to CC-REV-8 without changing what any rule
@@ -63,7 +63,3 @@ VIS-3 requires a fresh-reader review.
   are notes only. Under the notes-only stopping rule they clear these bytes,
   and they are left for the next doctrine edit rather than repaired here, since
   a repair would retire this confirmation.
-
-## On adoption
-
-Date D6 in `DOCTRINE-AMENDMENT-LOG.md`, mark this packet adopted, and merge.
