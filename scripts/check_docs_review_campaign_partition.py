@@ -207,6 +207,11 @@ CAMPAIGNS = (
         "P-73 edit/repair deletion gate",
         r"R-POLARIS-EDIT-REPAIR-DELETION-.*\.md",
     ),
+    campaign(
+        "dov29-dismissal-expiry-delta",
+        "P-79 Q5 dismissal-expiry gate",
+        r"R-DOV29-.*\.md",
+    ),
 )
 
 

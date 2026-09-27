@@ -1,5 +1,5 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md b/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
-index 4521afb..feac2b7 100644
+index 4521afb..fb35f26 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
 @@ -8,7 +8,7 @@
@@ -7,7 +7,7 @@ index 4521afb..feac2b7 100644
  
  Accepted RFC 0001–0009 clauses: **324**.
 -Effective consequence rows: **622** — 137 covered, 237 Unknown uncovered, 248 believed not applicable.
-+Effective consequence rows: **625** — 143 covered, 236 Unknown uncovered, 246 believed not applicable.
++Effective consequence rows: **627** — 141 covered, 240 Unknown uncovered, 246 believed not applicable.
  
  Every accepted clause has at least one effective consequence row. A
  `believed-not-applicable` row is an author/reviewer judgment, never an
@@ -17,8 +17,8 @@ index 4521afb..feac2b7 100644
  
 -`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `77f6b685f7a92eff39d874b92ed36b99e832ded16d1970f1242b6750641b5349`
 -supersedes 71 base rows with 80 effective rows.
-+`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `4fe8e6c3b39d6421fcedf65d44cf74f43100a696b3370f6eec580573d8fba9cc`
-+supersedes 76 base rows with 88 effective rows.
++`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `8d448e6216606ef5a37aaa81003c2be53a3dfe825ac8ed0970edd18a30291a04`
++supersedes 77 base rows with 91 effective rows.
  
  ## Verification
  

@@ -12,6 +12,8 @@ The package is drafted against the current tree and is proposed to land after
 every sibling PWB package. The sibling-composition table below records, per
 shared file, which patch pairs compose in both orders and which collide, so a
 drifted sibling or a new shared file fails the check instead of passing it.
+The composing siblings are also applied together, in table order, before this
+package's patch, so a pairwise pass cannot hide a sequential failure.
 """
 
 from __future__ import annotations
@@ -83,6 +85,7 @@ PRECEDING_SCENARIO = "#### Scenario: Missing current evidence remains explicit U
 SCENARIOS = (
     "#### Scenario: A dismissal lapses only through a new evaluation",
     "#### Scenario: A dismissal replaces the rendering, never the facts",
+    "#### Scenario: A record that no longer applies is lapsed or retired, never refused",
 )
 WARRANTS = "```yaml\nwarrants:"
 # Each rule the new paragraph must state, compared after whitespace folding.
@@ -91,16 +94,24 @@ PARAGRAPH_RULES = {
     "reason and expiry": "states a reason and an expiry instant",
     "governed-plane record": "is committed to the governed plane",
     "identified evaluation input": (
-        "bound as an identified input of every evaluation that reads it"
+        "Every dismissal record present in the governed plane at an "
+        "evaluation's snapshot is an identified input of that evaluation"
     ),
     "Unknown-only scope": "Only a claim whose label is Unknown MAY be dismissed",
     "contradiction exclusion": (
         "never one whose primary reason is `contradicted-pending-adjudication`"
     ),
+    "challenge exclusion": (
+        "or `challenge-suspended`, which leaves only through its challenge's "
+        "resolution"
+    ),
     "no other dismissal source": "Nothing else dismisses a claim",
+    "expiry boundary": (
+        "only while that evaluation's as-of instant is earlier than the "
+        "record's expiry instant"
+    ),
     "reason currency": (
-        "its reason is current only while the claim's primary reason is still "
-        "the one the record dismissed"
+        "the claim's primary reason is still the one the record dismissed"
     ),
     "as-of instant only": (
         "SHALL decide this from its own as-of instant and never from the "
@@ -112,20 +123,89 @@ PARAGRAPH_RULES = {
     "facts stay visible": (
         "replaces the claim's status rendering and never its facts"
     ),
-    "human and machine parity": "identically in the human and machine views",
+    "same surface": (
+        "on the same surface as the claim and without further disclosure"
+    ),
+    "human and machine parity": (
+        "disclosure, identically in the human and machine views"
+    ),
     "no tuple change": "SHALL not change any tuple value",
     "never positive": "render as a positive, resolved, aligned or current state",
     "no favourable aggregate": (
         "count as resolved or favourable in any aggregate"
     ),
+    "aggregate counts kept": (
+        "Dismissed members SHALL remain in every per-label, tier and reason "
+        "count of an aggregate"
+    ),
     "aggregate expansion": (
-        "aggregates SHALL count dismissed members separately and expand to them"
+        "SHALL additionally be counted and expandable as a sibling state"
+    ),
+    "three disclosed classes": (
+        "is disclosed in exactly one of three classes, each distinct from the "
+        "others and from a dismissal in effect"
     ),
     "refused records disclosed": (
-        "dismisses nothing, and the evaluation discloses it as a refused record"
+        "It is a refused record when it lacks an author, reason, expiry "
+        "instant, claim identity or dismissed primary reason"
+    ),
+    "lapse conditions": (
+        "the evaluation's as-of instant is not earlier than its expiry "
+        "instant, or the claim's primary reason is no longer the one it "
+        "dismissed"
+    ),
+    "lapsed records disclosed": (
+        "a lapsed record is disclosed beside the claim with its reason, expiry "
+        "instant, author, record identity and the condition that lapsed it"
+    ),
+    "retired identity": (
+        "It is bound to a retired identity when a split or merge has retired "
+        "the claim identity it names; it is never transferred to a successor"
     ),
 }
-REQUIRED_WARRANTS = ("VIS-6", "RFC1-20", "RFC1-25", "RFC2-1", "RFC2-15")
+# Each rule a scenario's body must state, compared after whitespace folding.
+SCENARIO_RULES = {
+    SCENARIOS[0]: {
+        "boundary evaluations": (
+            "one evaluation's as-of instant falls before that instant and a "
+            "second evaluation's as-of instant equals it exactly"
+        ),
+        "re-read unchanged": (
+            "reading the first evaluation again after the expiry instant has "
+            "passed renders the same claim state"
+        ),
+        "lapsed at the boundary": "discloses the record as lapsed",
+        "no tuple change": "none of them changed by the dismissal",
+    },
+    SCENARIOS[1]: {
+        "parity on the claim's surface": (
+            "carry the same sibling state and the same complete tuple on the "
+            "claim's own surface"
+        ),
+        "aggregate counts kept": (
+            "keeps the claim in its per-label, tier and reason counts"
+        ),
+        "refused records": (
+            "or `challenge-suspended`, each dismiss nothing and are disclosed "
+            "as refused records"
+        ),
+    },
+    SCENARIOS[2]: {
+        "reason drift lapses": "is disclosed beside the claim as lapsed",
+        "no transfer": "is never transferred to a successor",
+        "never refused": "neither record is disclosed as refused",
+    },
+}
+# Wording that would let a dismissal act by reading time or leave the page.
+FORBIDDEN = {
+    "clock": r"clock",
+    "hide": r"\bhid(?:e|es|den|ing)\b",
+    "collapse": r"collaps",
+    "expire-on-read": r"expir\w*[- ]on[- ]read",
+}
+REQUIRED_WARRANTS = (
+    "VIS-6", "RFC1-12", "RFC1-20", "RFC1-25", "RFC2-1", "RFC2-15"
+)
 PROPOSAL_TOKEN = (
     "A claim that renders Unknown may carry a recorded, attributed human "
     "dismissal with a reason and an expiry, committed to the governed plane."
@@ -138,15 +218,20 @@ CAPABILITY_ROW = (
 CAPABILITY_TOTALS = (
     "Totals: 26 covered, 6 lawfully out of scope, 0 Unknown/unresolved; 32 total."
 )
+# The gap rows stay Unknown until the owner decides which gap a claim-level
+# dismissal binds (packet question 4); unadopted-draft is a used state.
 REPAIR_DISPOSITIONS = {
-    "RFC1-20.r1": ("RFC1-20.c1", "covered:PWB-REQ-007"),
-    "RFC1-25.r1": ("RFC1-25.c14", "covered:PWB-REQ-007"),
+    "RFC1-12.r1": ("RFC1-12.c1", "covered:PWB-REQ-007"),
+    "RFC1-12.r2": ("RFC1-12.c1", "believed-not-applicable"),
+    "RFC1-20.r1": ("RFC1-20.c1", "unknown-uncovered"),
+    "RFC1-25.r1": ("RFC1-25.c14", "unknown-uncovered"),
     "RFC1-25.r2": ("RFC1-25.c14", "believed-not-applicable"),
     "RFC2-1.r2": ("RFC2-1.c12", "unknown-uncovered"),
     "RFC2-1.r3": ("RFC2-1.c12", "covered:PWB-REQ-007"),
-    "RFC2-15.r1": ("RFC2-15.c2", "covered:PWB-REQ-007"),
+    "RFC2-15.r1": ("RFC2-15.c2", "unknown-uncovered"),
     "RFC6-14.r4": ("RFC6-14.c5", "covered:PWB-REQ-007"),
     "RFC6-14.r5": ("RFC6-14.c5", "believed-not-applicable"),
+    "RFC6-14.r6": ("RFC6-14.c5", "unknown-uncovered"),
     "RFC6-17.r7": ("RFC6-17.c2", "covered:PWB-REQ-007"),
 }
 
@@ -235,8 +320,23 @@ def proposed_bytes(
         return {rel: (base / rel).read_bytes() for rel in BEHAVIOR_SUBJECTS}
 
 
+def scenario_body(text: str, heading: str) -> str:
+    """A scenario's text from its heading to the next heading or warrants."""
+    start = text.index(heading) + len(heading)
+    stops = [at for at in (text.find("\n#### ", start), text.find("\n```yaml", start)) if at >= 0]
+    return text[start:min(stops)] if stops else text[start:]
+
+
+def forbidden_findings(where: str, text: str) -> list[str]:
+    return [
+        f"{where} uses forbidden {label} wording"
+        for label, pattern in FORBIDDEN.items()
+        if re.search(pattern, text, re.IGNORECASE)
+    ]
+
+
 def requirement_findings(spec: bytes) -> list[str]:
-    """The paragraph, both scenarios and the warrants sit inside PWB-REQ-007."""
+    """The paragraph, the scenarios and the warrants sit inside PWB-REQ-007."""
     text = spec.decode("utf-8")
     findings: list[str] = []
     start = text.find(REQUIREMENT)
@@ -258,6 +358,7 @@ def requirement_findings(spec: bytes) -> list[str]:
             for label, rule in PARAGRAPH_RULES.items():
                 if fold(rule) not in paragraph:
                     findings.append(f"dismissal paragraph lacks {label}")
+            findings.extend(forbidden_findings("dismissal paragraph", paragraph))
     preceding = section.find(PRECEDING_SCENARIO)
     warrants = section.find(WARRANTS)
     for heading in SCENARIOS:
@@ -269,6 +370,12 @@ def requirement_findings(spec: bytes) -> list[str]:
             findings.append(
                 f"scenario is not in the required PWB-REQ-007 position: {heading}"
             )
+            continue
+        body = fold(scenario_body(section, heading))
+        for label, rule in SCENARIO_RULES[heading].items():
+            if fold(rule) not in body:
+                findings.append(f"scenario lacks {label}: {heading}")
+        findings.extend(forbidden_findings(f"scenario {heading}", body))
     block = section[warrants:] if warrants >= 0 else ""
     for authority in REQUIRED_WARRANTS:
         if not re.search(rf"[\[ ,]{re.escape(authority)}[\],]", block):
@@ -404,6 +511,29 @@ def composition_findings(
     return findings
 
 
+def sequential_findings(
+    mine: dict[str, pathlib.Path] | None = None,
+    declared: dict[tuple[str, str], str] | None = None,
+) -> list[str]:
+    """Apply every composing sibling patch in table order, then this one."""
+    if mine is None:
+        mine = {patch.name: patch for patch in patch_files()}
+    declared = DECLARED_COMPOSITION if declared is None else declared
+    findings: list[str] = []
+    for name, patch in sorted(mine.items()):
+        order = [
+            ROOT / directory / "proposed" / name
+            for sibling, directory in SIBLINGS.items()
+            if declared.get((sibling, name)) == "compose"
+        ]
+        result = _compose(_target(patch), order + [patch])
+        if result is None:
+            findings.append(f"{name} does not apply after its composing siblings in order")
+        elif _target(patch) == SPEC and requirement_findings(result):
+            findings.append("sequential composition misplaces this package's text")
+    return findings
+
+
 def render(values: dict[pathlib.Path, bytes]) -> str:
     lines = [
         f"# {TITLE}",
@@ -456,6 +586,7 @@ def check() -> list[str]:
     findings.extend(dependency_findings(proposed))
     findings.extend(companion_findings(proposed))
     findings.extend(composition_findings())
+    findings.extend(sequential_findings())
     target = ROOT / MANIFEST_OUT
     if not target.is_file():
         findings.append(f"manifest missing: {MANIFEST_OUT}")
@@ -576,12 +707,58 @@ def selftest() -> int:
                 return _fail(f"{name} scenario mutation passed: {heading}")
             killed += 1
 
+    # One mutant per scenario-body rule, each isolating its own finding.
+    for heading, rules in SCENARIO_RULES.items():
+        body = scenario_body(text, heading)
+        at = text.index(heading) + len(heading)
+        for label, rule in rules.items():
+            folded = fold(body)
+            if folded.count(fold(rule)) != 1:
+                return _fail(f"scenario-rule fixture is not unique: {label}")
+            mutated = (
+                text[:at] + "\n\n" + folded.replace(fold(rule), "[removed]", 1)
+                + text[at + len(body):]
+            ).encode()
+            if f"scenario lacks {label}: {heading}" not in requirement_findings(mutated):
+                return _fail(f"scenario-rule mutation passed: {label}")
+            killed += 1
+
+    # Each forbidden wording, once in the paragraph and once in a scenario.
+    fixtures = {
+        "clock": "The reader's clock decides it.",
+        "hide": "A page MAY hide the dismissed claim.",
+        "collapse": "A view MAY collapse the claim's facts.",
+        "expire-on-read": "A dismissal MAY expire on read.",
+    }
+    first_heading = SCENARIOS[0]
+    first_body_end = text.index(first_heading) + len(first_heading) + len(
+        scenario_body(text, first_heading)
+    )
+    for label, sentence in fixtures.items():
+        if [name for name, pattern in FORBIDDEN.items()
+                if re.search(pattern, sentence, re.IGNORECASE)] != [label]:
+            return _fail(f"forbidden fixture does not isolate: {label}")
+        in_paragraph = (text[:case] .rstrip("\n") + " " + sentence + "\n\n" + text[case:]).encode()
+        if f"dismissal paragraph uses forbidden {label} wording" not in requirement_findings(in_paragraph):
+            return _fail(f"forbidden paragraph wording passed: {label}")
+        in_scenario = (
+            text[:first_body_end] + "\n  " + sentence + text[first_body_end:]
+        ).encode()
+        if f"scenario {first_heading} uses forbidden {label} wording" not in requirement_findings(in_scenario):
+            return _fail(f"forbidden scenario wording passed: {label}")
+        killed += 2
+
     # Each required warrant removed from PWB-REQ-007's block only.
     warrants_at = text.index(WARRANTS, text.index(REQUIREMENT))
     block_end = text.index("```\n", warrants_at + len(WARRANTS)) + 4
     block = text[warrants_at:block_end]
     for authority in REQUIRED_WARRANTS:
-        stripped = re.sub(rf", {re.escape(authority)}(?=[,\]])", "", block, count=1)
+        stripped = re.sub(
+            rf"(?<=\[){re.escape(authority)}, |, {re.escape(authority)}(?=[,\]])",
+            "",
+            block,
+            count=1,
+        )
         if stripped == block:
             return _fail(f"warrant fixture matched nothing: {authority}")
         mutated = (text[:warrants_at] + stripped + text[block_end:]).encode()
@@ -598,7 +775,7 @@ def selftest() -> int:
         return _fail("generated dependency drift passed")
     coverage_drift = dict(proposed)
     coverage_drift[CONTRACT_COVERAGE] = proposed[CONTRACT_COVERAGE].replace(
-        b"143 covered", b"144 covered", 1
+        b"141 covered", b"142 covered", 1
     )
     if coverage_drift[CONTRACT_COVERAGE] == proposed[CONTRACT_COVERAGE] or not companion_findings(coverage_drift):
         return _fail("generated contract-coverage drift passed")
@@ -688,17 +865,34 @@ def selftest() -> int:
         return _fail("declared but unobserved sibling pair passed")
     killed += 2
 
-    if composition_findings():
+    # Sequential order: a broken patch, and a colliding sibling put in order.
+    with tempfile.TemporaryDirectory() as scratch:
+        broken = pathlib.Path(scratch) / "spec.md.patch"
+        broken.write_text(corrupted)
+        mine = {patch.name: patch for patch in patch_files()}
+        mine["spec.md.patch"] = broken
+        if not sequential_findings(mine=mine):
+            return _fail("corrupted patch passed sequential composition")
+    forced = dict(DECLARED_COMPOSITION)
+    forced[("lane-b", "spec.md.patch")] = "compose"
+    if not sequential_findings(declared=forced):
+        return _fail("a colliding sibling passed sequential composition")
+    killed += 2
+
+    if composition_findings() or sequential_findings():
         return _fail("sibling composition does not verify")
     print(
         f"selftest: {killed} mutants killed — stale manifest, path order, patch "
         f"population, {len(PARAGRAPH_RULES)} paragraph rules, paragraph "
         f"missing/duplicate/placement, {len(SCENARIOS)} scenarios x "
-        f"missing/duplicate/placement, {len(REQUIRED_WARRANTS)} warrants, "
+        "missing/duplicate/placement, "
+        f"{sum(len(rules) for rules in SCENARIO_RULES.values())} scenario-body "
+        f"rules, {len(FORBIDDEN)} forbidden wordings x paragraph/scenario, "
+        f"{len(REQUIRED_WARRANTS)} warrants, "
         "dependency and contract-coverage drift, proposal, capability row and "
         f"totals, {len(REPAIR_DISPOSITIONS)} repair rows, patch drift, "
-        f"{len(DECLARED_COMPOSITION)} composition outcomes and two table-shape "
-        "mutants all fail closed"
+        f"{len(DECLARED_COMPOSITION)} composition outcomes, two table-shape "
+        "and two sequential-order mutants all fail closed"
     )
     return 0
 
@@ -751,8 +945,9 @@ def main(argv: list[str]) -> int:
             f"PWB dismissal-expiry manifest matches {len(BEHAVIOR_SUBJECTS)} "
             f"proposed subjects ({len(PATCHED)} patched, "
             f"{len(BEHAVIOR_SUBJECTS) - len(PATCHED)} unchanged); requirement, "
-            "companion, dependency regeneration and "
-            f"{len(DECLARED_COMPOSITION)} declared sibling-composition outcomes verify"
+            "companion, dependency regeneration, "
+            f"{len(DECLARED_COMPOSITION)} declared sibling-composition outcomes "
+            "and the sequential sibling order verify"
         )
         return 0
     if not args.write:

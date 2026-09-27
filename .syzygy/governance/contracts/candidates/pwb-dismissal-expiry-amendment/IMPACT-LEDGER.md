@@ -12,22 +12,26 @@ result.
 
 ## Discovery method and denominator
 
-[Observed] Method 1 listed every path from `git ls-files -z` at the baseline
-and scanned each file's decoded text with Python, counting files and
-occurrences. Denominator: **1,537 tracked files**. Four failed UTF-8 decoding
-and were skipped, all PNG captures:
+[Observed] Method 1 listed every blob from `git ls-tree -r -z 3ee61c7`, read
+each through `git cat-file --batch`, decoded it as UTF-8 and counted, per
+pattern, the files containing it and Python `str.count` occurrences.
+Denominator: **1,537 tracked files**. Four failed UTF-8 decoding and were
+skipped (none contains any pattern as bytes), all PNG captures:
 
 - `docs/evidence/orrery-height-repaired-narrow-2026-09-09.png`
 - `docs/evidence/orrery-height-repaired-wide-2026-09-09.png`
 - `docs/evidence/polaris-existing-orrery-narrow-2026-09-09.png`
 - `docs/evidence/polaris-existing-orrery-wide-2026-09-09.png`
 
-[Observed] Method 2, fixed-string `git grep -F`, reproduced the file and
-occurrence counts for the first three rows and `RFC2-15`.
+[Observed] Method 2, run for every row: `git grep -F -l -e <pattern> 3ee61c7
+| wc -l` for files and `git grep -F -o -e <pattern> 3ee61c7 | wc -l` for
+occurrences (`-o` prints one line per match; `-c` counts matching *lines* and
+gives 515 for the first row, which is not an occurrence count). Both methods
+give every figure below.
 
 | Pattern | Files | Occurrences |
 |---|---:|---:|
-| `PWB-REQ-007` | 114 | 541 |
+| `PWB-REQ-007` | 113 | 540 |
 | `dismissed-by-decision` | 39 | 48 |
 | `CHALLENGE_STATES` | 8 | 33 |
 | `RFC2-15` | 45 | 150 |
@@ -42,39 +46,62 @@ packet, and two lines of the retained M13 funnel raw review. All were read;
 none states PWB-REQ-007's dismissal behaviour, so none needs a change here.
 Raw reviews are never edited.
 
+[Observed] Range forms, which the continuation sweep above does not reach:
+Python `re` pattern `PWB-REQ-(\d{3}) ?(?:\.\.|…|–) ?(?:PWB-REQ-)?(\d{3})`,
+case-sensitive, over the same 1,533 decoded files, keeping each range whose
+endpoints bracket 007. 13 lines in 9 files carry a range; 7 lines in 6 files
+span 007: `docs/PWB-IMPLEMENTATION-PLAN.md:1402` (`001…007`), the dated P2-7
+mutation record, line 2 (`001..007`, already in the continuation list),
+`packages/three-surface-poc-core/src/project-shape-model.ts:2` (`001…007`,
+a file comment), two lines of the 2026-09-13 pursuit data file and one of
+its harvest file (`001..022`), and
+`docs/reviews/R-PWB-LIVE-EXACT-HEAD-TRUTH-RAW.md:72` (`001…022`). All were
+read; each names a scope of requirements, none states dismissal behaviour,
+and none needs a change here.
+
 ## The eleven subject rows
 
 | Row | Effect |
 |---|---|
 | `.openspec.yaml` | unchanged |
 | `CAPABILITY-COVERAGE.md` | row 32 added; totals 26 covered, 6 out of scope, 32 |
-| `CONTRACT-COVERAGE-REPAIR-DELTA.md` | one row changed, eight added, totals line |
-| `CONTRACT-COVERAGE.md` | regenerated: 625 rows, 143 covered, 236 Unknown, 246 believed not applicable |
-| `GOVERNING-DEPENDENCIES.md` | regenerated: 99 distinct authorities (was 96) |
+| `CONTRACT-COVERAGE-REPAIR-DELTA.md` | one row changed, eleven added, totals line |
+| `CONTRACT-COVERAGE.md` | regenerated: 627 rows, 141 covered, 240 Unknown, 246 believed not applicable (was 622, 137, 237, 248) |
+| `GOVERNING-DEPENDENCIES.md` | regenerated: 100 distinct authorities (was 96) |
 | three `contract-coverage-matrix/` files | unchanged |
 | `design.md` | unchanged |
 | `proposal.md` | one bullet added |
-| `spec.md` | PWB-REQ-007 only: paragraph, Case, Oracle, Falsifier, two scenarios, warrants |
+| `spec.md` | PWB-REQ-007 only: paragraph, Case, Oracle, Falsifier, three scenarios, warrants |
 
 ## Contract-coverage repair rows
 
-Each new row splits a base row the audited matrix gave one disposition.
+Each new row splits a base row the audited matrix gave one disposition. The
+repair delta's declared totals become 91 rows, 77 superseded base rows, 65
+covered, 20 Unknown uncovered and 6 believed not applicable (was 80, 71, 61,
+16, 3). [Observed: builder `--check` and the coverage generator]
 
 | Row | Supersedes | Disposition | Why |
 |---|---|---|---|
-| RFC6-17.r7 | RFC6-17.c2 | covered (was Unknown) | aggregates now count dismissed members separately and expand to them |
-| RFC1-20.r1 | RFC1-20.c1 | covered | the paragraph and first scenario state the as-of-instant rule |
-| RFC1-25.r1 | RFC1-25.c14 | covered | `dismisses`: reason and expiry mandatory, never green |
+| RFC6-17.r7 | RFC6-17.c2 | covered (was Unknown) | dismissed members stay in every per-label, tier and reason count and are additionally counted and expandable |
+| RFC1-12.r1 | RFC1-12.c1 | covered | a dismissal bound to a retired claim identity is never transferred and is disclosed as bound to a retired identity [Inferred: PWB specifies no split or merge, so the rule is conditional] |
+| RFC1-12.r2 | RFC1-12.c1 | believed not applicable | challenges and claims across split or merge; no split or merge behaviour is specified, as the base row said |
+| RFC1-20.r1 | RFC1-20.c1 | Unknown, uncovered (was believed not applicable) | the clause is about a gap; the paragraph states the rule for claims |
+| RFC1-25.r1 | RFC1-25.c14 | Unknown, uncovered (was believed not applicable) | `dismisses` is typed Decision to Gap; the record names a claim |
 | RFC1-25.r2 | RFC1-25.c14 | believed not applicable | `challenges`/`adjudicates`: the POC has no challenge mechanism; base disposition kept |
 | RFC2-1.r2 | RFC2-1.c12 | Unknown, uncovered | decisions affecting precedence are not made evaluation inputs by this change; left honest rather than claimed |
-| RFC2-1.r3 | RFC2-1.c12 | covered | dismissal records are identified evaluation inputs |
-| RFC2-15.r1 | RFC2-15.c2 | covered | the two exits, and facts staying visible beside the dismissal |
+| RFC2-1.r3 | RFC2-1.c12 | covered | every dismissal record present at the evaluation's snapshot is an identified input |
+| RFC2-15.r1 | RFC2-15.c2 | Unknown, uncovered (was believed not applicable) | the clause is about a gap; the paragraph states the rule for claims |
 | RFC6-14.r4 | RFC6-14.c5 | covered | `dismissed-by-decision` travels beside the unchanged tuple in machine views |
-| RFC6-14.r5 | RFC6-14.c5 | believed not applicable | the other sibling states and `challenge-pending`; base disposition kept |
+| RFC6-14.r5 | RFC6-14.c5 | believed not applicable | `challenge-pending` and `editorial-draft`; base disposition kept |
+| RFC6-14.r6 | RFC6-14.c5 | Unknown, uncovered | `unadopted-draft` travel; RFC6-17.r2 already calls that state used, so it cannot be believed not applicable here |
 
-[Inferred — a review point] RFC6-14.r5 keeps the base disposition, while the
-existing RFC6-17.r2 says `unadopted-draft` is "used". A reviewer may find r5
-should be Unknown instead. It is packet question 10.
+[Inferred] RFC1-20.r1, RFC1-25.r1 and RFC2-15.r1 stay Unknown because the
+contracts dismiss a *gap* (RFC1-18 gives Claim and Gap separate identities;
+RFC1-5 lists Gap as "V0 surfaces absence; V1 computes gaps"), while the
+drafted paragraph binds a record to a claim. Reading an Unknown PWB claim as
+the gap it discloses is an inference, and until the owner answers packet
+question 4 no row may rest on it. The paragraph still states the full rule
+for claims; only the contract credit waits.
 
 ## Consumers outside the subject
 
@@ -89,14 +116,21 @@ should be Unknown instead. It is packet question 10.
   secret-classification policy candidate, and two retained raw reviews.
   Performed records and raws keep their history. The two candidates' pins
   would go stale on adoption; this package does not repair them. [Observed]
-- **Sibling packages.** 15 declared composition outcomes, checked by the
-  builder; see `SEMANTIC-DELTA.md`. [Observed]
+- **Sibling packages.** 15 declared composition outcomes, each checked in
+  both orders, plus one sequential run applying every composing sibling in
+  table order (`.21`, `.30`, `.22`, `.20`) before this package; see
+  `SEMANTIC-DELTA.md`. [Observed]
 - **Governance checks.** `check_governance.py` registers the phrase, the
   packet copy and an existence-gated act-record copy, with a selftest that
   the unperformed act registers no act-record copy. No `PWB_SUCCESSOR_CHAIN`
   link is added and CG-26's battery lists are untouched. [Observed]
-- **Retention direction (2026-09-23).** Unchanged. Under the drafted arm a
-  dismissal is not among the three retained per-claim fields. [Inferred]
+- **Retention direction (2026-09-23).** Not settled by this package. A
+  dismissal is not among the three retained per-claim fields, but the first
+  scenario requires a retained evaluation, read again later, to render the
+  same claim state, which includes the dismissal's reason, expiry, author and
+  record identity. That needs the record's bytes to stay reachable, or a
+  fourth retained field. Packet question 7 routes this to the owner as a
+  possible retention change. [Inferred]
 - **Status pages.** `PROJECT-STATUS.md` and the pending register are not
   edited by this candidate. [Observed]
 
