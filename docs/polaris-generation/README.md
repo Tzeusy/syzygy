@@ -39,8 +39,16 @@ The agreed product direction is synthesized in the [formal understanding amendme
 
 1. Read [the authoring guide](AUTHORING.md) for the reader experience and pass prompts.
 2. Prepare the inputs and handoffs in [artifacts and tools](ARTIFACTS-AND-TOOLS.md).
-3. Inspect [the synthetic example](example.json). It illustrates one small handoff;
-   it is neither a complete manifesto nor a successful generator run.
+3. Inspect the [synthetic examples](example.json). `validatedInventoryExample`
+   is the one block the current behavior test passes to the pure
+   `validateStage("inventory", payload, context)` seam. It checks provider-local
+   inventory structure and source coverage only. `illustrativeUnderstandingExample`
+   is teaching material marked `executable: false` and
+   `schemaStatus: "illustrative-not-registered"`; no stage validator consumes it.
+   Both blocks are synthetic, and `providerCallPerformed` is false. Run
+   `npm run test:polaris-generation` to exercise the inventory seam. Parsing the
+   JSON proves syntax only; it does not validate the example or establish a
+   generator run.
 4. Before any real provider dispatch, obtain separately effective per-project
    consent naming the permitted provider and content classes (SEC-2). A future
    egress decision must also name the destination route and retention for sent

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { stageSchema, validateStage, reviewVerdict } from './provider-draft.js';
 
@@ -30,6 +31,55 @@ describe('provider-local intermediate validation', () => {
     const schema = stageSchema('author');
     schema.schema = stageSchema('inventory').schema;
     expect(stageSchema('author')).not.toEqual(schema);
+  });
+
+  it('validates the checked-in synthetic inventory block as an isolated clone', () => {
+    const example = JSON.parse(readFileSync(new URL('../../../docs/polaris-generation/example.json', import.meta.url), 'utf8')) as {
+      synthetic: boolean;
+      providerCallPerformed: boolean;
+      validatedInventoryExample: {
+        stage: 'inventory';
+        context: { sources: { sourceId: string; text: string }[]; requestedAssets: unknown[] };
+        payload: { entries: { id: string; sourceIds: string[]; statement: string; kind: string; disposition: { kind: string; reason: string; references: string[] } }[] };
+      };
+      illustrativeUnderstandingExample: { executable: boolean; schemaStatus: string };
+    };
+    const inventoryExample = example.validatedInventoryExample;
+    const { context, payload } = inventoryExample;
+    const inputSnapshot = structuredClone({ context, payload });
+
+    expect(example.synthetic).toBe(true);
+    expect(example.providerCallPerformed).toBe(false);
+    expect(Object.keys(inventoryExample).sort()).toEqual(['context', 'payload', 'stage']);
+    expect(inventoryExample.stage).toBe('inventory');
+    expect(Object.keys(context).sort()).toEqual(['requestedAssets', 'sources']);
+    expect(context.requestedAssets).toEqual([]);
+    expect(context.sources.every(source => Object.keys(source).sort().join(',') === 'sourceId,text')).toBe(true);
+    expect(example.illustrativeUnderstandingExample.executable).toBe(false);
+    expect(example.illustrativeUnderstandingExample.schemaStatus).toBe('illustrative-not-registered');
+
+    const first = validateStage('inventory', payload, context) as typeof payload;
+    const second = validateStage('inventory', payload, context) as typeof payload;
+    expect(first).toEqual(payload);
+    expect(second).toEqual(payload);
+    expect(first).not.toBe(payload);
+    expect(first.entries).not.toBe(payload.entries);
+    expect(first.entries[0]).not.toBe(payload.entries[0]);
+    expect(first.entries[0]!.disposition).not.toBe(payload.entries[0]!.disposition);
+    expect(first.entries[0]!.disposition.references).not.toBe(payload.entries[0]!.disposition.references);
+    expect(second).not.toBe(first);
+    expect(second.entries).not.toBe(first.entries);
+    expect(second.entries[0]!.disposition).not.toBe(first.entries[0]!.disposition);
+    expect({ context, payload }).toEqual(inputSnapshot);
+
+    first.entries[0]!.disposition.references[0] = 'changed only in the first validated clone';
+    expect(second).toEqual(payload);
+    expect({ context, payload }).toEqual(inputSnapshot);
+
+    const { statement, ...entryMissingStatement } = payload.entries[0]!;
+    expect(statement).toBeTypeOf('string');
+    const invalidPayload = { ...payload, entries: [entryMissingStatement, ...payload.entries.slice(1)] };
+    expect(() => validateStage('inventory', invalidPayload, context)).toThrow();
   });
 
   it('refuses missing admitted sources, unknown support and duplicate local identities', () => {
