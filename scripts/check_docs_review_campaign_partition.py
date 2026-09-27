@@ -142,6 +142,11 @@ CAMPAIGNS = (
         r"R-CG7E-BARE-DIGEST-.*\.md",
     ),
     campaign(
+        "tree-style-restyle",
+        "Tree-style restyle (CC-REV-8)",
+        r"R-TREE-STYLE-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d+-RAW\.md",
+    ),
+    campaign(
         "pwb-scoped-attributes",
         "P-68 scoped-attributes package",
         r"R-PWB-SCOPED-ATTRIBUTES-.*\.md",
