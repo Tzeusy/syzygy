@@ -32,7 +32,8 @@ while the owner source and Git blobs are Observed. Missing proof is Unknown.
 2. A fresh reviewer inspects C1 and its governing references, tests the checker,
    and decides whether the exact owner-to-subject correspondence satisfies
    CC-SPEC-10. Store their complete, unchanged output as `REVIEW-RAW.md` in C2.
-   The raw must contain one `Verdict: PASS` only when confirming, one
+   The raw must contain exactly one total `Verdict:` header, with complete value
+   `PASS` only when confirming, and exactly one total `Reviewed commit:` header:
    `Reviewed commit: <full C1 SHA>` line, and one `- \`path\`: \`sha256\`` line
    for every path in `review-inputs.json` plus that manifest itself. Those
    hashes are scripted; the raw is outside its own reviewed population.

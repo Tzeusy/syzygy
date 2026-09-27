@@ -434,10 +434,12 @@ def candidate_check(evidence):
 def reviewed_template(evidence):
     raw = evidence.current(RAW)
     text = raw.decode()
-    require(len(re.findall(r'^Verdict: PASS$', text, re.M)) == 1, 'independent review not confirming')
-    commits = re.findall(r'^Reviewed commit: ([0-9a-f]{40})$', text, re.M)
+    verdicts = re.findall(r'^Verdict:([^\n]*)$', text, re.M)
+    require(verdicts == [' PASS'], 'independent review not confirming: expected exactly one PASS verdict header')
+    commits = re.findall(r'^Reviewed commit:([^\n]*)$', text, re.M)
     require(len(commits) == 1, 'C1 review commit population')
-    c1 = commits[0]
+    require(re.fullmatch(r' [0-9a-f]{40}', commits[0]) is not None, 'invalid C1 review commit')
+    c1 = commits[0][1:]
     evidence.ancestor(BASELINE, c1)
     evidence.ancestor(c1, 'HEAD')
     c2 = evidence.introduction(RAW)
@@ -500,10 +502,10 @@ def documentation_after_images(evidence):
             target = scratch / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(evidence.current(path))
-        result = subprocess.run(['git', 'apply', '--check', '-'], cwd=scratch,
+        result = subprocess.run(['git', 'apply', '--unidiff-zero', '--check', '-'], cwd=scratch,
                                 input=patch, capture_output=True)
         require(result.returncode == 0, 'documentation patch does not apply')
-        result = subprocess.run(['git', 'apply', '-'], cwd=scratch,
+        result = subprocess.run(['git', 'apply', '--unidiff-zero', '-'], cwd=scratch,
                                 input=patch, capture_output=True)
         require(result.returncode == 0, 'documentation patch application failed')
         return {path: (scratch / path).read_bytes() for path in DOC_PATHS}
@@ -523,6 +525,7 @@ def reconciliation_selftest():
     source = Cached(ROOT)
     c1 = 'f' * 40
     c2 = 'e' * 40
+    c3 = 'd' * 40
     before = {path: source.current(path) for path in (*FROZEN_PATHS, INPUTS)}
     # Selftests also run after C3. Recover the reviewed C1 docs when available.
     if (ROOT / RAW).exists():
@@ -536,6 +539,8 @@ def reconciliation_selftest():
             super().__init__(ROOT)
             self.files = dict(before)
             self.blobs = {}
+            self.introductions = {RAW: c2, SUPPLEMENT: None}
+            self.recorded = {}
         def current(self, path):
             if path in self.files:
                 require(self.files[path] is not None, 'missing evidence: ' + path)
@@ -548,13 +553,15 @@ def reconciliation_selftest():
                 return before[path]
             if commit == c2 and path == RAW:
                 return raw
+            if commit == c3:
+                return self.recorded[path]
             return source.blob(commit, path)
         def ancestor(self, earlier, later):
-            if c1 in (earlier, later) or c2 in (earlier, later):
+            if set((earlier, later)) & {c1, c2, c3}:
                 return
             return source.ancestor(earlier, later)
         def introduction(self, path):
-            return c2 if path == RAW else None
+            return self.introductions.get(path)
 
     fixture = Fixture()
     raw = ('Verdict: PASS\nReviewed commit: ' + c1 + '\n' + ''.join(
@@ -618,14 +625,44 @@ def reconciliation_selftest():
     mutate(SUPPLEMENT, 'technical record differs', old=SPEC.encode(), new=b'wrong/path')
     mutate(SUPPLEMENT, 'technical record differs', old=b'"version": 1', new=b'"version": 1, "extra_subject": "unreviewed"')
     mutate(RAW, 'independent review not confirming', old=b'Verdict: PASS', new=b'Verdict: REVISE')
-    mutate(RAW, 'C1 review commit population', old=c1.encode(), new=b'bad-commit')
+    mutate(RAW, 'independent review not confirming', old=b'Verdict: PASS', new=b'Verdict: REVISE\nVerdict: PASS')
+    mutate(RAW, 'independent review not confirming', old=b'Verdict: PASS', new=b'Verdict: PASS\nVerdict: PASS')
+    mutate(RAW, 'C1 review commit population', old=('Reviewed commit: ' + c1).encode(),
+           new=('Reviewed commit: wrong\nReviewed commit: ' + c1).encode())
+    mutate(RAW, 'C1 review commit population', old=('Reviewed commit: ' + c1).encode(),
+           new=('Reviewed commit: ' + c1 + '\nReviewed commit: ' + 'a' * 40).encode())
+    mutate(RAW, 'invalid C1 review commit', old=c1.encode(), new=b'bad-commit')
     mutate(RAW, 'C1 review input population', old=('- `' + TEMPLATE + '`:').encode(), new=b'- `wrong/template`:')
     mutate(TEMPLATE, 'review retired by changed input')
     mutate(INPUTS, 'review retired by changed input')
     mutate(SCRIPT, 'review retired by changed input')
     mutate(PROOF, 'review retired by changed input')
     mutate(DOC_PATHS[0], 'documentation after-image')
-    print('PASS reconciliation selftest: 1 valid chain; ' + str(len(witnesses)) + ' trust-boundary mutations refused; owner direction and technical proof remain distinct.')
+    # C3 has a different source for documentation: its immutable commit, not
+    # today's status page. Exercise that path as well as the pre-commit gate.
+    fixture.introductions[SUPPLEMENT] = c3
+    fixture.recorded = {path: fixture.current(path) for path in (SUPPLEMENT, *DOC_PATHS)}
+    check_evidence(fixture)
+    mutate(SUPPLEMENT, 'retained C3 technical record changed', historical=c3)
+    mutate(DOC_PATHS[0], 'documentation after-image', historical=c3)
+    fixture.files[DOC_PATHS[0]] += b'\nUnrelated later status-page update.\n'
+    check_evidence(fixture)
+    fixture.files[DOC_PATHS[0]] = fixture.recorded[DOC_PATHS[0]]
+    for path, replacement, reason in ((RAW, None, 'C2 raw review must be retained'),
+                                       (SUPPLEMENT, c2, 'C3 technical record must follow C2')):
+        saved = fixture.introductions[path]
+        fixture.introductions[path] = replacement
+        try:
+            check_evidence(fixture)
+        except ValueError as exc:
+            require(reason in str(exc), 'wrong introduction refusal: ' + str(exc))
+            witnesses.append({'commit': commit, 'path': path, 'operation': 'replace-introduction-seam',
+                              'old': saved, 'new': replacement, 'refusal': str(exc)})
+        else:
+            raise AssertionError('introduction mutation accepted')
+        finally:
+            fixture.introductions[path] = saved
+    print('PASS reconciliation selftest: 3 valid states (before C3, committed C3, later docs); ' + str(len(witnesses)) + ' trust-boundary mutations refused; owner direction and technical proof remain distinct.')
     print('RULE6-WITNESSES ' + json.dumps(witnesses, sort_keys=True))
 
 
