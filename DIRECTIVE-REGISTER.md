@@ -20,7 +20,7 @@ what `P-nn`, `RD-nn`, `CG-nn` and the rest mean. This page lists the
 "what kind of thing is this?" and "where does it live?"; neither answers
 "what does it say?", because only the clause does.
 
-**764 identifiers, 8 families**, recomputed from the files named
+**765 identifiers, 8 families**, recomputed from the files named
 in each section every time the generator runs. A family whose files stop
 defining its identifiers renders an empty table rather than a stale one.
 
@@ -52,7 +52,7 @@ defining its identifiers renders an empty table rather than a stale one.
 
 ## Craft-and-care policy — `CC`
 
-Owner-approved craft. 54 identifiers, defined across 8 files.
+Owner-approved craft. 55 identifiers, defined across 8 files.
 
 | Identifier | Title, as the corpus marks it | Defined at |
 |---|---|---|
@@ -92,6 +92,7 @@ Owner-approved craft. 54 identifiers, defined across 8 files.
 | `CC-REV-5` | Epistemic labels in documentation | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:107 |
 | `CC-REV-6` | Review findings are dispositioned, never dropped | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:120 |
 | `CC-REV-7` | Identifiers are stable; retire, never renumber | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:131 |
+| `CC-REV-8` | Documents are abstraction trees, with diagrams where structure beats prose | `.syzygy/governance/policies/craft-and-care/review-and-documentation.md`:141 |
 | `CC-SEC-1` | Default-deny is the born state of every surface | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:16 |
 | `CC-SEC-2` | Egress is consent-checked in code, at every path | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:31 |
 | `CC-SEC-3` | Observed code never executes outside an accepted profile | `.syzygy/governance/policies/craft-and-care/security-and-secrets.md`:45 |
