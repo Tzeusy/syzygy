@@ -5,7 +5,9 @@
 > review and gives no verdict. Round 1 returned REVISE over commit
 > `5323721` (`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-RAW.md`); round 2
 > returned REVISE over `35e497b`
-> (`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-2-RAW.md`). The round-2
+> (`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-2-RAW.md`); round 3 returned
+> REVISE over `64746a4`
+> (`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-3-RAW.md`). The round-3
 > repair has not been reviewed.
 
 ## Status of the package under review
@@ -35,9 +37,9 @@ earlier bytes (verification rule 10).
   - `.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md`;
   - SEC-4 and SEC-5 in `.syzygy/governance/doctrine/security.md`;
   - `docs/design/POLARIS-M8-PORTABILITY-FUNNEL.md`, question 3 and slice 6.
-- For a confirmation round: the round-1 and round-2 raws and the packet's
-  "Review record" tables, to check each disposition against the repaired
-  bytes.
+- For a confirmation round: the round-1, round-2 and round-3 raws and the
+  packet's "Review record" tables, to check each disposition against the
+  repaired bytes.
 - For comparison, the Butlers originals:
   - the Butlers consent record and its act in `.syzygy/governance/decisions/`;
   - `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`;
@@ -65,8 +67,30 @@ history, or any other candidate package.
 6. Do the `--selftest` mutants each break a distinct check, and does any
    check in `check()` have no mutant?
 7. Are the [Observed] labels backed by a sweep with a stated denominator?
-8. For a confirmation round: is each round-1 and round-2 finding repaired
-   as its disposition says, and did any repair introduce a new defect?
+8. For a confirmation round: is each finding of rounds 1 to 3 repaired as
+   its disposition says, and did any repair introduce a new defect?
+9. Does `--check` pin everything each draft says about what may be read,
+   how, and where the result may go, as the packet's "How to verify" list
+   says? Can any widening of a draft still pass it?
 
 Store the verdict word exactly and the raw output unchanged, in a file whose
 name ends in `-RAW.md` under `docs/reviews/`.
+
+## The raw's head
+
+This package has three act arguments, so the head carries all three on one
+line. The first four non-blank lines of the raw must be, in order:
+
+```text
+# <title of the review>
+Verdict: <verdict word>
+Reviewed commit: <40 hex digits>
+Manifest rows (act arguments, proposed-bytes sha256): consent <64 hex>; registry <64 hex>; policy <64 hex>
+```
+
+As a Python `re` pattern matched against the fourth non-blank line:
+`^Manifest rows \(act arguments, proposed-bytes sha256\): consent ([0-9a-f]{64}); registry ([0-9a-f]{64}); policy ([0-9a-f]{64})$`.
+Each digest is that act's manifest *row*: the SHA-256 of the proposed bytes
+(for the policy, its current bytes with the patch applied), which is the
+act argument and which `--check` prints. It is never the SHA-256 of a
+manifest file. Round 3's raw already used this form.

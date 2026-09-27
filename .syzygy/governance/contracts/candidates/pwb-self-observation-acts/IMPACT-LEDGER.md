@@ -50,7 +50,11 @@ Denominator: the 348 tracked files under `apps/`, `packages/` and
 `66114ac` and then onto `08d4d02`. Re-run at the rebased round-2 head over
 the same 348 files, the sweep finds 22 lines [Observed]. The one extra line
 is this package's own builder, whose count went from 2 to 3 in the round-1
-repair; the 16 lines under `apps/` and `packages/` are unchanged.
+repair; the 16 lines under `apps/` and `packages/` are unchanged. The
+branch was then rebased onto `96ee305` (#130); `35e497b`, the round-2
+reviewed commit, is also on no remote ref. Re-run at the round-3 repair on
+that base, over the same 348 files, the sweep still finds 22 lines, with
+3 in this package's builder [Observed].
 
 [Observed] 21 matching lines. The version string names two different
 things, so the lines split three ways:
@@ -114,9 +118,9 @@ below are unchanged. The five are:
 - `pwb-scoped-attributes-amendment` (lane B)
 - `pwb-missing-currency-disclosure-scenario` (`.20`)
 
-`dov.29` has no committed package on this base or on `08d4d02`
-[Observed]. Each of these acts forces the registry-entry manifest here to
-be regenerated.
+`dov.29` has no committed package on this base, on `08d4d02` or on `96ee305`
+[Observed]. Each of these acts forces the registry-entry manifest here to be
+regenerated.
 
 ## Sweep 4 — collisions with other candidate patches
 
@@ -126,16 +130,17 @@ candidate package's `proposed/` directory: a patch fails if its `+++ b/`
 target is one of the three targets, and any file fails if its name is one
 of the three targets' names.
 
-[Observed] At `6eb406d`, and again at the round-2 head on `08d4d02`, the
-other packages hold 21 `proposed/` files in 7 packages, all of them
-patches, listed recursively. 0 target the policy or either install path,
-and 0 share a name with any of the three. The round-1 builder found 20 at
-`3ee61c7` because its glob was one level deep and missed the nested
+[Observed] At `6eb406d`, at the round-2 head on `08d4d02`, and again at the
+round-3 repair on `96ee305`, the other packages hold 21 `proposed/` files in 7
+packages, all of them patches, listed recursively. 0 target the policy or
+either install path, and 0 share a name with any of the three. The round-1
+builder found 20 at `3ee61c7` because its glob was one level deep and missed
+the nested
 `pwb-scoped-attributes-amendment/proposed/contract/RFC-0007-rendering-and-surface.md.patch`;
-the population did not grow. The glob is now recursive, and a selftest
-case with a nested sibling patch requires it. The only patch that touches
-the Butlers registry entry is `.18`'s, and that is a different file from
-the self entry.
+the population did not grow. The glob is now recursive, and a selftest case
+with a nested sibling patch requires it. The only patch that touches the
+Butlers registry entry is `.18`'s, and that is a different file from the self
+entry.
 
 ## Sweep 5 — the observed pair
 

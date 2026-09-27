@@ -1,9 +1,13 @@
 # Semantic delta PWB-SELF-1 — three acts for a test-only self-observation
 
 > **Candidate — binds nothing.** Drafted by an agent under the owner's
-> 2026-09-21 ruling on P-74 question 3, which asks for three separate, dated
-> owner acts and authorizes drafting them, nothing more. Round 1 of review
-> returned REVISE; these bytes are the repair and are not yet reviewed (see
+> 2026-09-21 answer to P-74 question 3, "three acts scoped to a test-only
+> self-observation (consent record, second registry entry, secret-policy
+> extension) before slice 6 runs". That the acts are separate and dated is
+> the record's reading, in its "What it means" column, not the owner's
+> answer; that the answer authorizes drafting and nothing more is this
+> drafter's reading [Inferred]. Rounds 1, 2 and 3 of review each returned
+> REVISE; these bytes are the round-3 repair and are not yet reviewed (see
 > "Review"). Silence, a commit, a merged pull request or a passing
 > check performs no act.
 
@@ -170,7 +174,10 @@ See `IMPACT-LEDGER.md`. In short:
 ## Review
 
 Round 1: REVISE, over commit `5323721`, retained verbatim at
-`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-RAW.md`. Every finding is
-dispositioned in the packet's "Review record". The repair has not been
-reviewed. `REVIEW-BRIEF.md` states what a fresh-context reviewer is to be
-given.
+`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-RAW.md`. Round 2: REVISE, over
+`35e497b`, retained at `docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-2-RAW.md`.
+Round 3: REVISE, over `64746a4`, retained at
+`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-3-RAW.md`. Every finding of each
+round is dispositioned in the packet's "Review record". The round-3 repair has
+not been reviewed. `REVIEW-BRIEF.md` states what a fresh-context reviewer is
+to be given.

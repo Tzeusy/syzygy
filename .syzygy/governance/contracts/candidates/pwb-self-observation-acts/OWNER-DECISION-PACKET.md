@@ -3,9 +3,10 @@
 > **Candidate — binds nothing.** Prepared by an agent under the owner's
 > 2026-09-21 ruling on P-74 question 3, in
 > `.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`.
-> That ruling authorizes drafting and nothing more. Effect would come only
-> from three separate owner acts, each dated and each over its own exact
-> bytes. Silence, a commit, a review, a merged pull request or a passing
+> Neither cell of that row mentions drafting; that it authorizes drafting
+> and nothing more is this drafter's reading [Inferred]. Effect would come
+> only from three separate owner acts, each dated and each over its own
+> exact bytes. Silence, a commit, a review, a merged pull request or a passing
 > check performs no act. No act record is written here.
 
 ## What this package is, in one paragraph
@@ -26,9 +27,9 @@ This directory drafts those three:
 
 `SEMANTIC-DELTA.md` says what each act changes. `IMPACT-LEDGER.md` says
 what depends on each, with the sweeps that found them. `REVIEW-BRIEF.md`
-says what an independent reviewer should be given. Rounds 1 and 2 of
-review returned REVISE; this is the round-2 repair, not yet reviewed. The
-"Review record" at the end says what changed for each finding.
+says what an independent reviewer should be given. Rounds 1, 2 and 3 of
+review each returned REVISE; this is the round-3 repair, not yet reviewed.
+The "Review record" at the end says what changed for each finding.
 
 ## What each act would allow, in plain words
 
@@ -217,10 +218,12 @@ it.
    extension". The M8 funnel's recommendation behind that answer
    (`docs/design/POLARIS-M8-PORTABILITY-FUNNEL.md`, question 3) spells it
    out as "an extension of the existing secret-classification policy to the
-   observing project's own tree"; that wording is the funnel's, not yours
-   [Observed, quoted]. So act 3 patches the one policy file, and the
-   Butlers window described above follows from that choice. Nothing to
-   decide here unless you want to reopen the ruling.
+   observing project's own tree". That is the option you selected, as the
+   funnel worded it: the rulings record says you "took the recommended
+   option on each with no edits" [Observed, quoted]. So act 3 patches the
+   one policy file, and the Butlers window described above follows from
+   that choice. Nothing to decide here unless you want to reopen the
+   ruling.
 3. **Which file starts the self-observation?** *Proposal:*
    `.syzygy/governance/doctrine/README.md`. This repository has no catalog,
    no root summary and no precedence table in the grammar the observer
@@ -274,8 +277,10 @@ it.
     requirement names this pair. PWB-REQ-005 says "The consent subject SHALL
     be exactly `(observing Syzygy project, configured Butlers
     repository)`", and the M8 portability funnel says "No approved
-    requirement names a self-observation". The ruling forbids editing
-    PWB-REQ-005. A sibling answer bears on this: your P-76 answer to
+    requirement names a self-observation". The record's reading of the
+    P-74 row, in its "What it means" column and not your answer, says "The
+    consent record, the registry entry and PWB-REQ-005 are edited on no
+    arm". A sibling answer bears on this: your P-76 answer to
     question 2 was "an observing project reading its own tree, recorded
     here, needs no consent record, registry entry or act". That covers M7
     slice 3, which reads Syzygy's own governed corpus, the same doctrine
@@ -320,10 +325,21 @@ python3 scripts/check_governance.py
 
 `--check` re-derives all three manifests. It also checks:
 
-- that the drafted files and the patched policy say what this packet says;
-- that the consent's grant paragraph is exactly the closed six-file grant,
-  and that the policy scope and registry entry name the same six paths and
-  the same versions;
+- that everything each draft says about what may be read, how, and where
+  the result may go is exactly the text the builder pins. For the consent
+  that is its head (title to revocation state: pair, content class,
+  purpose, locator, status) and its whole "Scope" section (the closed
+  six-file grant, the version pins, the never-served sentence and every
+  exclusion). For the registry entry it is the file head, the entry's key
+  set, and eleven values: purpose, authorization modes, provenance
+  disclosure, the two implementation sentences, typed authority, surface
+  exposure, input classes, resource limits, the self-reference rule and
+  the adoption status. For the policy it is the whole self-observation
+  scope. The pins live in the builder, so regenerating a manifest can
+  never pass a widened draft;
+- that the values the builder does not pin still agree: the pair, the
+  observer version, the PWB specification digest, the six paths in the
+  registry entry, and a semantics sentence for every resource limit;
 - that the patch still applies to the policy (act 3 pending), or that the
   policy already holds the patched bytes (installed);
 - that each install target is free (pending) or holds exactly the drafted
@@ -337,7 +353,8 @@ also replaces each check `--check` calls with one that always reports a
 problem, and requires `--check` to report it. Then it applies the three acts
 in all six orders in a scratch copy, and requires `--check` to pass after
 each act and a repeated act to be refused. It also requires `--apply` to
-install nothing over a package that does not verify. "Installed" means only
+install nothing over a package that does not verify, or without
+`--at-adoption`. "Installed" means only
 that the bytes are in place; only your act makes an act performed. The
 count it prints is the number of those cases. `--diff` prints the policy
 change in full.
@@ -366,7 +383,7 @@ changed. No confirmation review has been run.
 | F7 — sweep 2 missed a line; Butlers authority chain beyond the version not named | note | **Repaired.** Sweep 2 is re-run by fixed string at `6eb406d` over the 348 tracked files under `apps/`, `packages/` and `scripts/`: 21 lines, classified in a table as 10 policy-version lines in 4 files, 6 observer-version lines and 5 script lines. It now lists the act identity, recording tag, act-record paths, supersession target and act instant the policy object names. "What happens to Butlers" above says the same. |
 | F8 — several `check()` predicates had no mutant; no call-site mutants | note | **Repaired.** Added mutants for database and network access, log, stored evaluation, walkthrough record, non-object resource limits, an empty seed list, all five scope sentences, and two Status lines, plus mutants for every new predicate. Each of the eight finders `check()` calls is replaced in turn with one returning a sentinel, and `check()` must surface it. The count went from 44 to 118; 36 of those are the adoption-order steps. |
 | F9 — registry reused Butlers discovery and implementation identities | note | **Repaired.** The self entry has its own `discoveryVersion`, `pwb-self-discovery-v1-candidate.1`, and names no `implementationId` or `implementationVersion` until slice 6 does; its `implementation` sentence says so. The builder fails on a shared discovery version or a named implementation. |
-| F10 — `selfReferenceRule` left the file/copy distinction and part of the population implicit; no registry counterpart | note | **Repaired.** The rule now reads as the review suggested: no object read as an observed Git blob, naming manifests, packets and the acceptance-act record, is an authority input, and authority for this pair is never inherited from another pair, including through expectations keyed only by the observing project. The registry entry carries the same rule. A builder predicate requires it in both. |
+| F10 — `selfReferenceRule` left the file/copy distinction and part of the population implicit; no registry counterpart | note | **Repaired.** The rule now reads as the review suggested: no object read as an observed Git blob, naming manifests, packets and the acceptance-act record, is an authority input, and authority for this pair is never inherited from another pair, including through expectations keyed only by the observing project. The registry entry carries the same rule. A builder predicate requires it in both. *Corrected 2026-09-27 (round 3, R2):* that predicate required only the fragment "is never inherited from another pair", so a rule cut down to that fragment passed. The builder now pins the whole rule in both by exact value, and that mutant is a selftest case. |
 | F11 — composition sweep saw only patches | note | **Repaired.** It now reads every file under every other package's `proposed/`, and fails on a patch targeting any of the three files or any file sharing a target's name. A selftest mutant drafts a whole registry file in a sibling. At `6eb406d` the other packages hold 21 `proposed/` files in 7 packages, all patches, none colliding. |
 
 Round 2: **REVISE**, over commit `35e497b`, retained verbatim at
@@ -378,8 +395,8 @@ arguments did not. The round-2 verdict covers none of the current bytes
 
 | Finding | Severity | Disposition |
 |---|---|---|
-| N1 — "retires or rebases" presented as the owner's ruling | revise | **Repaired.** The packet and the ledger now quote the owner's answer cell, "Retire it in the adoption change (Recommended)", and say it was given for `.18`. The rebase branch is gone. Applying the same handling to act 3's adoption change is marked a proposal [Inferred]. A sweep of the whole package for owner-attributed sentences found four more that quoted the P-74 row's "What it means" column as the owner's words: the packet's opening paragraph, two sentences of `SEMANTIC-DELTA.md`, and the consent draft ("separate, dated"). Each now quotes the answer cell, or names the column as the record's reading. |
-| N2 — `--check` did not enforce a closed consent population | revise | **Repaired in the builder.** `consent_findings` now requires the consent's grant paragraph, from "## Scope" to the version pins, to equal one exact closed-grant text, whitespace-normalized. The reviewer's four widening mutants (another path, "closed … at most six" dropped, links followed, the working tree added) are selftest cases, and each fails. The packet's `--check` list now says what is checked. |
+| N1 — "retires or rebases" presented as the owner's ruling | revise | **Repaired.** The packet and the ledger now quote the owner's answer cell, "Retire it in the adoption change (Recommended)", and say it was given for `.18`. The rebase branch is gone. Applying the same handling to act 3's adoption change is marked a proposal [Inferred]. A sweep of the whole package for owner-attributed sentences found four more that quoted the P-74 row's "What it means" column as the owner's words: the packet's opening paragraph, two sentences of `SEMANTIC-DELTA.md`, and the consent draft ("separate, dated"). Each now quotes the answer cell, or names the column as the record's reading. *Corrected 2026-09-27 (round 3, R1):* the sweep's pattern could not match "ruling", and two more sites remained; see round 3. |
+| N2 — `--check` did not enforce a closed consent population | revise | **Repaired in the builder.** `consent_findings` now requires the consent's grant paragraph, from "## Scope" to the version pins, to equal one exact closed-grant text, whitespace-normalized. The reviewer's four widening mutants (another path, "closed … at most six" dropped, links followed, the working tree added) are selftest cases, and each fails. The packet's `--check` list now says what is checked. *Corrected 2026-09-27 (round 3, R2):* its first bullet still said the drafts "say what this packet says", which 29 widening mutants passed; see round 3. |
 | N3 — `6eb406d` unreachable; sweep 2 reads 22 at the head | note | **Repaired.** The review record above names both rebases. The ledger keeps the `6eb406d` table, adds the 22-line re-run at the round-2 head with the builder's third line named, and states which tree the 1,552 figure counted. |
 | N4 — sweep 3 and 4 denominators were one level deep | note | **Repaired.** Both now give the recursive counts (22 patches in 8 packages; 21 sibling files in 7) and name the nested RFC-0007 patch. The 20→21 change is explained by the glob, not by growth. |
 | N5 — four selftest survivors (M1, M2, M6, M8) | note | **Repaired.** New cases: a nested sibling patch (kills M1); `--apply` over a package with a corrupted manifest must install nothing (kills M2); the policy checked against a tree with no doctrine README (isolates and kills M6). The "names no phase-A seed" predicate was redundant with population equality and is removed (M8); the empty-list mutant stays and is killed by equality. Each of the three mutants and a mutant disabling the grant check was run against a copy of the builder and failed `--selftest`. Count 118 → 125. |
@@ -402,3 +419,44 @@ quoted the M8 funnel's recommendation as the option you chose; it now quotes
 your answer cell and names the funnel as the source of the longer wording.
 The P-74 question 3, P-76 question 2 and `.18` question 4 quotations already
 matched their answer cells and are unchanged.
+
+Round 3: **REVISE**, over commit `64746a4`, retained verbatim at
+`docs/reviews/R-DOV25-SELF-OBSERVATION-ACTS-3-RAW.md`. Before round 3 the
+branch had been rebased onto `96ee305` (#130); the round-3 repair below was
+made on that base. `35e497b` and the round-2 repair commits as first made
+are on no remote ref; the figures they carried were re-derived at the
+round-3 repair (sweep 2: 22 lines over 348 files; sweep 4: 21 sibling
+files in 7 packages; 20 files carry the PWB specification digest; 1,561
+tracked files). The repair changes only the builder and prose: all three
+act arguments above are unchanged. The round-3 verdict covers none of the
+current bytes (verification rule 10). No confirmation review has been run.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| R1 — two sentences still presented the P-74 "What it means" column as the ruling; the round-2 sweep could not match "ruling" | revise | **Repaired.** Open question 10 now names the column as the record's reading and quotes it, as `SEMANTIC-DELTA.md` already did. The delta's banner quotes the answer cell and names "separate, dated" as the column's reading. The sweep below was widened and re-run. |
+| R2 — "`--check` verifies the drafts say what this packet says"; 29 widening mutants passed | revise | **Repaired in the builder (option b).** The builder now pins by exact value the consent's head and whole "Scope" section, the registry file head, the entry's key set and eleven entry values, and the policy's whole self-observation scope. The individual phrase checks those pins subsume are removed. All 29 reviewer mutants are selftest cases, and each fails. The `--check` list above now names exactly what is pinned and what is checked some other way. The F10 and round-2 N1/N2 dispositions carry dated corrections. The consent's bytes did not change, so note n6 is left alone. |
+| n1 — the occupied-target case failed for the wrong reason | note | **Repaired.** The fixture is now a full scratch copy, so the drafted source exists and only the byte comparison can fail it. Replacing that comparison with `True` now fails `--selftest`. |
+| n2 — B15 and B20 survived | note | **Repaired.** The no-op case now compares the proposed policy with itself, which only the no-op predicate can see. A new case requires `--apply` without `--at-adoption` to install nothing, even over a package that verifies. Both builder mutants now fail `--selftest`. |
+| n3 — the rebase onto `96ee305` was unrecorded | note | **Repaired** in the paragraph above and in `IMPACT-LEDGER.md`. |
+| n4 — stale `SEMANTIC-DELTA.md` banner | note | **Repaired.** The banner and its "Review" section name all three rounds. |
+| n5 — "not yours"; "authorizes drafting and nothing more" unlabelled | note | **Repaired.** Open question 2 calls the funnel's words the option you selected, quoting the record's "took the recommended option on each with no edits". Both "authorizes drafting" sentences are labelled [Inferred]. |
+| n6 — two over-long consent lines | note | **Not changed.** They are inside act 1's argument, and this repair does not otherwise touch the consent. |
+
+**Builder mutants, round 3.** Each check in the three rewritten finders,
+the occupied-target byte comparison, the no-op check and the
+`--at-adoption` guard was disabled in turn in a copy of the builder: 20
+builder mutants, each failing `--selftest` [Observed]. `--selftest` now
+prints 158 (125, plus 9 consent, 14 registry and 9 policy mutants, plus the
+`--at-adoption` case).
+
+**Attribution sweep, widened 2026-09-27.** Python `re`, case-insensitive,
+over every tracked file in this package and the builder (11 files). A line
+is read when it matches `\brulings?\b`, or when it matches
+`\b(rul(?:e|ed|es)|chose|chosen|decided|answer(?:ed|s)?|set|reading|asks?|requires?|forbids?|says?|authori[sz]es?)\b`
+and also `\b(owner|owner's|you|your|P-\d+|sitting|record)\b`. It returned
+47 lines before this repair, and all 47 were read. Three sites attributed
+something outside an answer cell to the owner: the two R1 sites and the
+"authorizes drafting" sentence of n5 (in this packet's banner and in the
+delta's). All three are repaired above. The consent's "the three acts the
+P-74 question 3 ruling requires" matches the Ruled cell ("Q3 three acts
+scoped to …") and is inside act 1's argument, so it is unchanged.
