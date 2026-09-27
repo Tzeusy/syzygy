@@ -315,6 +315,34 @@ def load_serial_apply_mutation() -> dict[str, object]:
     return value
 
 
+def historical_source_exactness(mutation: dict[str, object]) -> tuple[bool, str]:
+    source_commit = mutation.get("sourceCommit")
+    source_file = mutation.get("file")
+    if not isinstance(source_commit, str) or not isinstance(source_file, str):
+        raise ValueError("serial-apply mutation fixture has no historical source")
+    done = subprocess.run(
+        ["git", "show", f"{source_commit}:{source_file}"],
+        cwd=ROOT,
+        capture_output=True,
+    )
+    if done.returncode != 0:
+        raise ValueError(
+            "serial-apply historical source is unavailable: "
+            + done.stderr.decode(errors="replace").strip()
+        )
+    source = done.stdout.decode()
+    replacements = mutation.get("sourceReplacements")
+    if not isinstance(replacements, list) or not replacements:
+        raise ValueError("serial-apply mutation fixture has no source replacements")
+    exact = all(
+        isinstance(replacement, dict)
+        and isinstance(replacement.get("new"), str)
+        and source.count(replacement["new"]) == 1
+        for replacement in replacements
+    )
+    return exact, sha256(done.stdout)
+
+
 def prepare_cli_scratch(
     base: pathlib.Path,
     mutation: dict[str, object],
@@ -406,6 +434,7 @@ def run_cli_apply_regression(
 
 def cli_apply_regression() -> tuple[bool, dict[str, object]]:
     mutation = load_serial_apply_mutation()
+    historical_exact, historical_source_sha256 = historical_source_exactness(mutation)
     current = run_cli_apply_regression(mutation, restore_serial_apply=False)
     historical = run_cli_apply_regression(mutation, restore_serial_apply=True)
     expected_historical_changes = [
@@ -413,10 +442,19 @@ def cli_apply_regression() -> tuple[bool, dict[str, object]]:
         (CHANGE / "design.md").as_posix(),
         (CHANGE / "proposal.md").as_posix(),
     ]
+    custom_refusal_control = dict(current)
+    custom_refusal_control["stdout"] = "refusing: owner act and atomic recorder are absent\n"
+    custom_refusal_control["stderr"] = ""
+    def refusal_oracle(result: dict[str, object]) -> bool:
+        return (
+            result["exit"] == 2
+            and result["predicateHeld"] is True
+            and result["changedSubjects"] == []
+        )
     caught = (
-        current["exit"] == 2
-        and "unrecognized arguments: --apply --at-adoption" in str(current["stderr"])
-        and current["predicateHeld"] is True
+        historical_exact
+        and refusal_oracle(current)
+        and refusal_oracle(custom_refusal_control)
         and historical["exit"] == 1
         and historical["predicateHeld"] is False
         and historical["changedSubjects"] == expected_historical_changes
@@ -424,7 +462,10 @@ def cli_apply_regression() -> tuple[bool, dict[str, object]]:
     return caught, {
         "mutation": mutation,
         "current": current,
+        "customRefusalControl": custom_refusal_control,
         "historicalSerialApply": historical,
+        "historicalSourceExact": historical_exact,
+        "historicalSourceSha256": historical_source_sha256,
         "expectedHistoricalChangedSubjects": expected_historical_changes,
         "outcome": "killed" if caught else "survived",
     }
@@ -513,8 +554,10 @@ def selftest(evidence_path: pathlib.Path | None = None) -> int:
             "method": (
                 "The public CLI ran in two isolated scratch repositories with the exact "
                 "final-patch corruption recorded below. The current builder had to reject "
-                "the removed apply command with all six signed subjects byte-identical. "
-                "The exact serial writer fragments from sourceCommit were then restored; "
+                "the removed apply command with exit 2 and all six signed subjects "
+                "byte-identical; stderr wording was not part of the oracle. Each recorded "
+                "serial-writer new fragment was independently required to occur exactly "
+                "once in sourceCommit before those historical fragments were restored; "
                 "that mutant had to change the first three subjects before the corrupted "
                 "final patch failed. No live signed subject was written."
             ),

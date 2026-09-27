@@ -17,8 +17,8 @@
       "new": "def apply_at_adoption() -> int:\n    for patch in patch_files():\n        code, error = apply_patch(ROOT, patch)\n        if code != 0:\n            print(f\"refusing partial adoption: {patch.name}: {error}\")\n            return 1\n    print(\"applied proposed readability successor; owner-act recorder must finish atomically\")\n    return 0\n\n\ndef main(argv: list[str]) -> int:\n"
     },
     {
-      "old": "    parser.add_argument(\"--write\", action=\"store_true\")\n    parser.add_argument(\"--selftest-evidence\", type=pathlib.Path)\n    args = parser.parse_args(argv)\n",
-      "new": "    parser.add_argument(\"--write\", action=\"store_true\")\n    parser.add_argument(\"--apply\", action=\"store_true\")\n    parser.add_argument(\"--at-adoption\", action=\"store_true\")\n    parser.add_argument(\"--selftest-evidence\", type=pathlib.Path)\n    args = parser.parse_args(argv)\n"
+      "old": "    parser.add_argument(\"--write\", action=\"store_true\")\n    parser.add_argument(\"--selftest-evidence\", type=pathlib.Path)\n    args = parser.parse_args(argv)\n    if args.selftest_evidence is not None and not args.selftest:\n        parser.error(\"--selftest-evidence requires --selftest\")\n    if args.selftest:\n        return selftest(args.selftest_evidence)\n",
+      "new": "    parser.add_argument(\"--write\", action=\"store_true\")\n    parser.add_argument(\"--apply\", action=\"store_true\")\n    parser.add_argument(\"--at-adoption\", action=\"store_true\")\n    args = parser.parse_args(argv)\n    if args.selftest:\n        return selftest()\n"
     },
     {
       "old": "    if args.write:\n        return write()\n    if args.diff:\n",
