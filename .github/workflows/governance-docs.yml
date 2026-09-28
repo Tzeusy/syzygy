@@ -154,6 +154,20 @@ jobs:
       - name: record_contract_readability_restyle --selftest
         run: python3 scripts/record_contract_readability_restyle.py --selftest
 
+      # The specification-policy readability restyle: the same shape, over
+      # CC-SPEC and CC-IMPACT.
+      - name: build_spec_policy_readability_restyle --check
+        run: python3 scripts/build_spec_policy_readability_restyle.py --check
+
+      - name: build_spec_policy_readability_restyle --selftest
+        run: python3 scripts/build_spec_policy_readability_restyle.py --selftest
+
+      - name: record_spec_policy_readability_restyle --check
+        run: python3 scripts/record_spec_policy_readability_restyle.py --check
+
+      - name: record_spec_policy_readability_restyle --selftest
+        run: python3 scripts/record_spec_policy_readability_restyle.py --selftest
+
       - name: build_three_surface_poc_spec_dependencies --check
         run: python3 scripts/build_three_surface_poc_spec_dependencies.py --check
 

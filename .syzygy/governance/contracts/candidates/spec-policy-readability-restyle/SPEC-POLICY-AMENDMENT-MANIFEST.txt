@@ -1,0 +1,10 @@
+# SPECIFICATION POLICY READABILITY RESTYLE AMENDMENT MANIFEST
+# The two in-force specification policies; rows sorted by codepoint path.
+# Paths are relative to the repository root.
+# These rows bind only by the owner act that names this file's digest in
+# ACCEPTANCE-ACT-RECORD.md; until that act is performed they bind nothing.
+# Rows hash the PROPOSED bytes: each policy with its
+# proposed/<file name>.patch applied. They match the tree only after
+# --apply --at-adoption.
+e08270a2d2589aafaad59d9958683f094fb6170b38cfaa30e49f48c41645989c  .syzygy/governance/contracts/candidates/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md
+38c0e629efa6fb6acdb3c7d0f63b02518191d03221ae290a6bbc691fc697a90e  .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md
