@@ -2,7 +2,7 @@
   "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
   "mutants": [
     {
-      "commit": "c4a7ef484157d594e0bfa4bef8471f70bba958b9",
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
       "file": "scripts/record_polaris_understanding_adoption.py",
       "killed": true,
       "new": "require(True or digest(evidence.blob(c1, POLICY)) in performed",
@@ -10,7 +10,7 @@
       "refusal": "AssertionError: mutation accepted: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md"
     },
     {
-      "commit": "c4a7ef484157d594e0bfa4bef8471f70bba958b9",
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
       "file": "scripts/record_polaris_understanding_adoption.py",
       "killed": true,
       "new": "    pass\n",
@@ -18,15 +18,15 @@
       "refusal": "AssertionError: mutation accepted: scripts/record_polaris_understanding_adoption.py"
     },
     {
-      "commit": "c4a7ef484157d594e0bfa4bef8471f70bba958b9",
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
       "file": "scripts/record_polaris_understanding_adoption.py",
       "killed": true,
       "new": "require(True or verdicts in ([' CONFIRM'], [' CONFIRM WITH EXCEPTIONS']),",
       "old": "require(verdicts in ([' CONFIRM'], [' CONFIRM WITH EXCEPTIONS']),",
-      "refusal": "AssertionError: mutation accepted: docs/evidence/polaris-understanding-reconciliation-2026-09-28/HISTORY-REVIEW-1-RAW.md"
+      "refusal": "AssertionError: mutation accepted: docs/evidence/polaris-understanding-reconciliation-2026-09-28/HISTORY-REVIEW-10-RAW.md"
     },
     {
-      "commit": "c4a7ef484157d594e0bfa4bef8471f70bba958b9",
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
       "file": "scripts/record_polaris_understanding_adoption.py",
       "killed": true,
       "new": "require(True or bindings == [digest(evidence.current(SCRIPT))],",
@@ -34,15 +34,15 @@
       "refusal": "AssertionError: mutation accepted: scripts/record_polaris_understanding_adoption.py"
     },
     {
-      "commit": "c4a7ef484157d594e0bfa4bef8471f70bba958b9",
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
       "file": "scripts/record_polaris_understanding_adoption.py",
       "killed": true,
       "new": "require(True or evidence.blob(intro, path) == evidence.current(path)",
       "old": "require(evidence.blob(intro, path) == evidence.current(path)",
-      "refusal": "AssertionError: mutation accepted: docs/evidence/polaris-understanding-reconciliation-2026-09-28/HISTORY-REVIEW-1-RAW.md"
+      "refusal": "AssertionError: mutation accepted: docs/evidence/polaris-understanding-reconciliation-2026-09-28/HISTORY-REVIEW-10-RAW.md"
     },
     {
-      "commit": "c4a7ef484157d594e0bfa4bef8471f70bba958b9",
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
       "file": "scripts/record_polaris_understanding_adoption.py",
       "killed": true,
       "new": "require(True or reviews, 'no history",
@@ -50,7 +50,7 @@
       "refusal": "IndexError: list index out of range"
     },
     {
-      "commit": "c4a7ef484157d594e0bfa4bef8471f70bba958b9",
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
       "file": "scripts/record_polaris_understanding_adoption.py",
       "killed": true,
       "new": "require(True or intro is not None, 'history review not retained",
@@ -58,12 +58,76 @@
       "refusal": "FAIL exact digest reconciliation unresolved: expected string or bytes-like object"
     },
     {
-      "commit": "c4a7ef484157d594e0bfa4bef8471f70bba958b9",
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
       "file": "scripts/record_polaris_understanding_adoption.py",
       "killed": true,
       "new": "if path not in HISTORY_PATHS + (PROOF,):",
       "old": "if path not in HISTORY_PATHS:",
       "refusal": "FAIL exact digest reconciliation unresolved: wrong refusal: candidate proof mismatch; wanted review retired by changed input"
+    },
+    {
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "text = evidence.current(reviews[0]).decode()",
+      "old": "text = evidence.current(reviews[-1]).decode()",
+      "refusal": "FAIL exact digest reconciliation unresolved: latest history review not confirming: docs/evidence/polaris-understanding-reconciliation-2026-09-28/HISTORY-REVIEW-10-RAW.md"
+    },
+    {
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "reviews = sorted(set(added) | set(listed))",
+      "old": "reviews = sorted(set(added) | set(listed), key=number)",
+      "refusal": "FAIL exact digest reconciliation unresolved: history review numbering is not 1..n"
+    },
+    {
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(verdicts[:1] in ([' CONFIRM'], [' CONFIRM WITH EXCEPTIONS']),",
+      "old": "require(verdicts in ([' CONFIRM'], [' CONFIRM WITH EXCEPTIONS']),",
+      "refusal": "AssertionError: mutation accepted: docs/evidence/polaris-understanding-reconciliation-2026-09-28/HISTORY-REVIEW-10-RAW.md"
+    },
+    {
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(bindings[:1] == [digest(evidence.current(SCRIPT))],",
+      "old": "require(bindings == [digest(evidence.current(SCRIPT))],",
+      "refusal": "AssertionError: mutation accepted: docs/evidence/polaris-understanding-reconciliation-2026-09-28/HISTORY-REVIEW-10-RAW.md"
+    },
+    {
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "POLICY_ACT = re.compile(r'CONFIRM",
+      "old": "POLICY_ACT = re.compile(r'^CONFIRM",
+      "refusal": "AssertionError: mutation accepted: .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md"
+    },
+    {
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "HISTORY_REVIEW = re.compile(r'HISTORY-REVIEW-([0-9]+)-RAW",
+      "old": "HISTORY_REVIEW = re.compile(r'HISTORY-REVIEW-([1-9][0-9]*)-RAW",
+      "refusal": "FAIL exact digest reconciliation unresolved: latest history review not confirming: docs/evidence/polaris-understanding-reconciliation-2026-09-28/HISTORY-REVIEW-011-RAW.md"
+    },
+    {
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True or [number(p) for p in reviews] == list(range(1, len(reviews) + 1)),",
+      "old": "require([number(p) for p in reviews] == list(range(1, len(reviews) + 1)),",
+      "refusal": "AssertionError: history review population mutation accepted"
+    },
+    {
+      "commit": "b949a680ed353e304dd71de4f4fc2bf753e9b66d",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True or not deleted, 'history review deleted",
+      "old": "require(not deleted, 'history review deleted",
+      "refusal": "FAIL exact digest reconciliation unresolved: wrong refusal: missing evidence: docs/evidence/polaris-understanding-reconciliation-2026-09-28/HISTORY-REVIEW-10-RAW.md; wanted history review deleted"
     }
   ],
   "version": 1
