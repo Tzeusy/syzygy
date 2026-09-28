@@ -1661,6 +1661,23 @@ CC_SPEC_LABEL = "CONFIRM CRAFT AMENDMENT: CC-SPEC"
 CC_SPEC_SUBJECT = (
     f"{CANDIDATES}/policy-candidates/"
     "SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md")
+CC_IMPACT_LABEL = "CONFIRM CRAFT AMENDMENT: CC-IMPACT"
+CC_IMPACT_SUBJECT = (
+    f"{CANDIDATES}/policy-candidates/"
+    "SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md")
+#: The specification-policy readability restyle: one owner phrase over a
+#: two-row manifest. Its recorder
+#: (`scripts/record_spec_policy_readability_restyle.py`) writes one
+#: recorder-generated `CONFIRM CRAFT AMENDMENT: CC-…@<row>` line per row, so
+#: every check that reads the craft acts' latest digests reads the successor.
+SPEC_POLICY_RESTYLE_LABEL = "CONFIRM SPECIFICATION POLICY READABILITY RESTYLE"
+SPEC_POLICY_RESTYLE_DIR = f"{CANDIDATES}/spec-policy-readability-restyle"
+SPEC_POLICY_RESTYLE_SUBJECT = (
+    f"{SPEC_POLICY_RESTYLE_DIR}/SPEC-POLICY-AMENDMENT-MANIFEST.txt")
+SPEC_POLICY_RESTYLE_ACT = (
+    f"{DECISIONS}/SPEC-POLICY-READABILITY-RESTYLE-ADOPTION-ACT.md")
+SPEC_POLICY_RESTYLE_ROWS = ((CC_IMPACT_LABEL, CC_IMPACT_SUBJECT),
+                            (CC_SPEC_LABEL, CC_SPEC_SUBJECT))
 GENERAL_BOOTSTRAP_POPULATIONS = (7, 30, 5)
 #: Round-2026-08d wave structure: the all-in-one act-1 phrase is retired;
 #: six wave manifests partition the active set and each one's own sha256 is
@@ -2176,6 +2193,9 @@ def _act_subjects():
     out.append((POLARIS_UNDERSTANDING_LABEL, POLARIS_UNDERSTANDING_SUBJECT,
                 re.compile(re.escape(POLARIS_UNDERSTANDING_LABEL)
                            + r"\s*:\s*`?([0-9a-f]{64})")))
+    out.append((SPEC_POLICY_RESTYLE_LABEL, SPEC_POLICY_RESTYLE_SUBJECT,
+                re.compile(re.escape(SPEC_POLICY_RESTYLE_LABEL)
+                           + r"\s*:\s*`?([0-9a-f]{64})")))
     for label, subject, _act in PWB_EFFECT_ACTS:
         if not any(l == label for l, _rel, _pat in out):
             out.append((label, subject, re.compile(
@@ -2246,16 +2266,18 @@ def _performed_act_digests(act_subjects=None, record=None):
     lines = record.splitlines()
     for label, _subject, phrase_arg in specs:
         values = found[label]
-        for line in lines:
-            m = phrase_arg.fullmatch(line.strip())
-            if m and m.group(1) not in values:
-                values.append(m.group(1))
+        # Both shapes are read in one pass, so the tuple is in record order:
+        # its last value is the latest performance whichever shape carried it.
+        patterns = [phrase_arg]
         nested = NESTED_PERFORMED_ARGUMENT_PATTERNS.get(label)
         if nested:
-            for line in lines:
-                m = nested.fullmatch(line.strip())
+            patterns.append(nested)
+        for line in lines:
+            for pattern in patterns:
+                m = pattern.fullmatch(line.strip())
                 if m and m.group(1) not in values:
                     values.append(m.group(1))
+                    break
     return {label: tuple(values) for label, values in found.items()}
 
 #: Files that quote a stale act argument *as* a retired value, on purpose —
@@ -2764,6 +2786,74 @@ def _activate_pwb_effect_amendment_act_copy_registries():
 _activate_pwb_effect_amendment_act_copy_registries()
 
 
+#: The act-time digests the specification-policy restyle supersedes as the
+#: current policy state: act 7's CC-IMPACT argument and the bootstrap
+#: transaction's CC-SPEC row (row 5 of its act, line 11 of its manifest).
+CC_IMPACT_ACT_7_DIGEST = (
+    "cd6ec838e701f0258889d0c3c2776fc91fe1686829379b789ae5b151b04c27c0")
+CC_SPEC_TRANSACTION_DIGEST = (
+    "6093dbbe519dad6c35a5aaeeb31355d2e435d76ec4f0c2c9affb0d1e5b6b5621")
+
+
+def _activate_spec_policy_restyle_copy_registries(registry=None, history=None,
+                                                  root=None):
+    """Register the restyle's copies; once performed, pin the old ones as history.
+
+    The packet is registered when it exists. Once the dedicated act record
+    exists, the act record and the package manifest carry the current
+    CC-SPEC and CC-IMPACT digests, and every earlier copy that may not be
+    rewritten (act 7's offering row, the bootstrap transaction's row and
+    its semantics table) is pinned to its exact act-time line instead.
+    """
+    registry = ACT_DIGEST_COPY_FILES if registry is None else registry
+    history = ACT_HISTORICAL_DIGEST_COPY_FILES if history is None else history
+    base = ROOT if root is None else root
+    packet = f"{SPEC_POLICY_RESTYLE_DIR}/OWNER-DECISION-PACKET.md"
+    if os.path.isfile(os.path.join(base, packet)):
+        registry[packet] = (SPEC_POLICY_RESTYLE_LABEL,)
+    if not os.path.isfile(os.path.join(base, SPEC_POLICY_RESTYLE_ACT)):
+        return
+    for record in (f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md",
+                   f"{CRAFT}/INSTALL-RECORD.md"):
+        if SPEC_POLICY_RESTYLE_LABEL not in registry.get(record, ()):
+            registry[record] = registry.get(record, ()) + (
+                SPEC_POLICY_RESTYLE_LABEL,)
+    registry[SPEC_POLICY_RESTYLE_ACT] = (
+        SPEC_POLICY_RESTYLE_LABEL, CC_IMPACT_LABEL, CC_SPEC_LABEL)
+    registry[SPEC_POLICY_RESTYLE_SUBJECT] = (CC_IMPACT_LABEL, CC_SPEC_LABEL)
+    transaction_row = (
+        r"^\| 5 \| `confirm-craft-amendment` \| in-force policy "
+        r"`SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE\.md` "
+        r"\(CC-SPEC-1\.\.11\) \| `" + CC_SPEC_TRANSACTION_DIGEST + r"` \|")
+    superseded = {
+        f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md":
+            (CC_IMPACT_LABEL, CC_IMPACT_ACT_7_DIGEST,
+             r"^\| 7 \| `" + re.escape(CC_IMPACT_LABEL) + r"@"
+             + CC_IMPACT_ACT_7_DIGEST + r"` \|"),
+        f"{GENERAL_BOOTSTRAP_DIR}/ACT-SEMANTICS.md":
+            (CC_SPEC_LABEL, CC_SPEC_TRANSACTION_DIGEST, transaction_row),
+        GENERAL_BOOTSTRAP_ACT:
+            (CC_SPEC_LABEL, CC_SPEC_TRANSACTION_DIGEST, transaction_row),
+        GENERAL_BOOTSTRAP_SUBJECT:
+            (CC_SPEC_LABEL, CC_SPEC_TRANSACTION_DIGEST,
+             r"^" + CC_SPEC_TRANSACTION_DIGEST + r"  "
+             + re.escape(CC_SPEC_SUBJECT) + r"$"),
+    }
+    for rel, (label, performed_digest, pattern) in superseded.items():
+        current = registry.get(rel)
+        if current is not None:
+            remaining = tuple(lab for lab in current if lab != label)
+            if remaining:
+                registry[rel] = remaining
+            else:
+                del registry[rel]
+        history.setdefault(rel, {})[label] = (
+            (performed_digest, re.compile(pattern, re.M)),)
+
+
+_activate_spec_policy_restyle_copy_registries()
+
+
 #: The bare-copy *shape* every PWB owner packet and act record uses for
 #: convenience, ahead of the phrase line CG-7d reads: a heading/label line
 #: — optionally qualified ("Behavior manifest", "Effect manifest",
@@ -3204,7 +3294,9 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                                scoped_manifest_body=None,
                                scoped_manifest_digest=None,
                                contract_chain_inputs=None,
-                               contract_chain=None):
+                               contract_chain=None,
+                               spec_policy_inputs=None,
+                               impact_digest=None):
     """The performed transaction binds every current and nested subject.
 
     CG-7d permits old *performed* digests so append-only history remains true.
@@ -3239,6 +3331,17 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
     fail validation is a finding against each later performed link; an
     earlier link with no records is an allowed gap. Unsigned candidates
     never replace the original current-byte expectations.
+    The specification-policy restyle is a separate successor to CC-SPEC's
+    transaction row and to act 7. It is valid only when both records carry
+    exactly one bare `LABEL: <sha256>` line agreeing with its two-row
+    manifest, one recorder-generated `CC-…@<row>` line per row, one agreeing
+    act instant, and both rows equal today's policy bytes. While valid, the
+    transaction's CC-SPEC row and the bootstrap act's CC-SPEC record are
+    act-time history; otherwise they stay current and today's bytes are
+    compared against them. The latest performed CC-IMPACT digest in the
+    aggregate must equal today's bytes whether or not the successor exists.
+    `spec_policy_inputs`, when given, is `(dedicated record, manifest body,
+    manifest digest)`; `impact_digest` replaces CC-IMPACT's current digest.
     `contract_chain_inputs`, when given, maps each link label to
     `(dedicated record, manifest body, manifest digest)`; an absent label
     reads as no records and no manifest. `contract_chain` replaces the chain
@@ -3351,6 +3454,71 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
     recorded = _performed_act_digests(specs, record=act_record)
     dedicated = _performed_act_digests(specs, record=dedicated_record)
 
+    # The specification-policy restyle successor, judged before the
+    # bootstrap's CC-SPEC predicates that it supersedes.
+    if spec_policy_inputs is None:
+        spec_policy_inputs = (read_if_present(SPEC_POLICY_RESTYLE_ACT),
+                              read_if_present(SPEC_POLICY_RESTYLE_SUBJECT),
+                              current_digest(SPEC_POLICY_RESTYLE_SUBJECT))
+    spec_dedicated, spec_body, spec_digest = spec_policy_inputs
+    spec_phrases = [tuple(line for line in text.splitlines()
+                          if SPEC_POLICY_RESTYLE_LABEL in line)
+                    for text in (act_record, spec_dedicated)]
+    spec_attempted = any(spec_phrases) or bool(spec_dedicated)
+    spec_valid = False
+    spec_examined = 0
+    if spec_attempted:
+        before_spec = len(findings)
+        expected_phrase = f"{SPEC_POLICY_RESTYLE_LABEL}: {spec_digest}"
+        for where, lines in zip((PERFORMED_ACT_RECORD, SPEC_POLICY_RESTYLE_ACT),
+                                spec_phrases):
+            if list(lines) != [expected_phrase]:
+                findings.append(
+                    f"{where} — expected exactly one bare "
+                    f"`{SPEC_POLICY_RESTYLE_LABEL}: <sha256>` line agreeing "
+                    f"with {SPEC_POLICY_RESTYLE_SUBJECT} "
+                    f"({(spec_digest or 'absent')[:12]}…), found "
+                    f"{len(lines)} occurrence(s) of the label")
+        if hashlib.sha256(spec_body.encode()).hexdigest() != spec_digest:
+            findings.append(f"{SPEC_POLICY_RESTYLE_SUBJECT} — manifest body "
+                            f"digest differs from current subject digest")
+        spec_rows = manifest_rows(spec_body, SPEC_POLICY_RESTYLE_SUBJECT,
+                                  len(SPEC_POLICY_RESTYLE_ROWS))
+        require_exact_paths(spec_rows, SPEC_POLICY_RESTYLE_SUBJECT,
+                            [path for _label, path in SPEC_POLICY_RESTYLE_ROWS])
+        by_path = {path: sha for sha, path, _line in spec_rows}
+        for label, path in SPEC_POLICY_RESTYLE_ROWS:
+            line = f"{label}@{by_path.get(path)}"
+            for where, text in ((PERFORMED_ACT_RECORD, act_record),
+                                (SPEC_POLICY_RESTYLE_ACT, spec_dedicated)):
+                if text.splitlines().count(line) != 1:
+                    findings.append(
+                        f"{where} — expected exactly one recorder-generated "
+                        f"`{label}@<row>` line naming the manifest row for "
+                        f"`{path}`")
+            actual = current_digest(path)
+            if actual is None or actual != by_path.get(path):
+                findings.append(
+                    f"{SPEC_POLICY_RESTYLE_SUBJECT} — `{path}` hashes to "
+                    f"{(actual or 'absent')[:12]}…, expected "
+                    f"{(by_path.get(path) or 'no row')[:12]}…")
+        instants = [line for line in spec_dedicated.splitlines()
+                    if line.startswith("Act instant:")]
+        record_lines = act_record.splitlines()
+        phrase_at = next((index for index, line in enumerate(record_lines)
+                          if line == expected_phrase), None)
+        above = ([line for line in record_lines[:phrase_at]
+                  if line.startswith("Act instant:")]
+                 if phrase_at is not None else [])
+        if (len(instants) != 1 or not ACT_INSTANT_LINE.fullmatch(instants[0])
+                or not above or above[-1] != instants[0]):
+            findings.append(
+                f"{SPEC_POLICY_RESTYLE_ACT} — the dedicated record's single "
+                f"`Act instant:` line must be the nearest one above the act "
+                f"phrase in {PERFORMED_ACT_RECORD}")
+        spec_valid = len(findings) == before_spec
+        spec_examined = 4 + 3 * len(SPEC_POLICY_RESTYLE_ROWS) + 1
+
     def require_latest(where, values, expected, subject):
         if expected is None:
             findings.append(f"{where} — subject `{subject}` is absent")
@@ -3374,9 +3542,35 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
     require_latest(GENERAL_BOOTSTRAP_ACT,
                    dedicated.get(GENERAL_BOOTSTRAP_LABEL, ()),
                    transaction_digest, GENERAL_BOOTSTRAP_SUBJECT)
-    require_latest(GENERAL_BOOTSTRAP_ACT,
-                   dedicated.get(CC_SPEC_LABEL, ()),
-                   policy_digest, CC_SPEC_SUBJECT)
+    transaction_row = re.search(
+        r"^([0-9a-f]{64})  " + re.escape(CC_SPEC_SUBJECT) + r"$",
+        manifest_body, re.M)
+    if spec_valid:
+        # The bootstrap act's CC-SPEC record is history: it must still name
+        # the transaction's own row, never today's bytes.
+        values = dedicated.get(CC_SPEC_LABEL, ())
+        row = transaction_row.group(1) if transaction_row else None
+        if not values or row is None or values[-1] != row:
+            findings.append(
+                f"{GENERAL_BOOTSTRAP_ACT} — latest CC-SPEC record "
+                f"{(values[-1] if values else 'absent')[:12]}… does not name "
+                f"the transaction's CC-SPEC row {(row or 'absent')[:12]}…")
+        else:
+            details.append(
+                f"[historical] {GENERAL_BOOTSTRAP_ACT} — CC-SPEC {row[:12]}… "
+                f"superseded by {SPEC_POLICY_RESTYLE_SUBJECT}")
+    else:
+        require_latest(GENERAL_BOOTSTRAP_ACT,
+                       dedicated.get(CC_SPEC_LABEL, ()),
+                       policy_digest, CC_SPEC_SUBJECT)
+    if impact_digest is None:
+        impact_digest = current_digest(CC_IMPACT_SUBJECT)
+    impact_specs = ((CC_IMPACT_LABEL, CC_IMPACT_SUBJECT,
+                     re.compile(re.escape(CC_IMPACT_LABEL)
+                                + r"\s*@\s*`?([0-9a-f]{64})")),)
+    require_latest(PERFORMED_ACT_RECORD,
+                   _performed_act_digests(impact_specs, record=act_record)
+                   .get(CC_IMPACT_LABEL, ()), impact_digest, CC_IMPACT_SUBJECT)
 
     top_expected, contract_expected, pwb_expected = GENERAL_BOOTSTRAP_POPULATIONS
     top_rows = manifest_rows(
@@ -3458,6 +3652,12 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
 
     for expected, path, line_no in top_rows:
         rel = repo_subject(path, GENERAL_BOOTSTRAP_SUBJECT, line_no)
+        if spec_valid and rel == CC_SPEC_SUBJECT:
+            details.append(
+                f"[historical] {GENERAL_BOOTSTRAP_SUBJECT}:{line_no} — "
+                f"act-time CC-SPEC row superseded by "
+                f"{SPEC_POLICY_RESTYLE_SUBJECT}")
+            continue
         actual = current_digest(rel) if rel else None
         if actual != expected:
             findings.append(
@@ -3647,11 +3847,15 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         2 * len(attempted_links) + len(successor_rows)
         if successor_attempted else 0)
     contract_link_rows = sum(len(rows) for _l, _s, rows, _v in contract_links)
-    examined = (4 + len(top_rows) + len(contract_rows) + len(pwb_rows)
+    examined = (5 + spec_examined + len(top_rows) + len(contract_rows)
+                + len(pwb_rows)
                 + len(contract_rows) + successor_examined
                 + 2 * len(contract_links) + contract_link_rows)
     details.append(
-        f"[population] 4 act-record predicates + {len(top_rows)} top-level "
+        f"[population] 5 act-record predicates"
+        + (f" + {spec_examined} specification-policy restyle predicates"
+           if spec_attempted else "")
+        + f" + {len(top_rows)} top-level "
         f"subjects + {len(contract_rows)} contract rows + {len(pwb_rows)} PWB "
         f"rows + {len(contract_rows)} installed/candidate mirror pairs"
         + (f" + {2 * len(attempted_links)} successor act predicates + "
@@ -6985,8 +7189,71 @@ def selftest():
                   and any("latest performed digest" in d for d in row[4])))
 
     row = _selftest_cg7h("valid")
-    cases.append(("CG-7h complete transaction population passes at 76",
-                  row[0] == "OK" and row[2] == 76 and row[3] == 0))
+    cases.append(("CG-7h complete transaction population passes at 77",
+                  row[0] == "OK" and row[2] == 77 and row[3] == 0))
+
+    # The restyle's copy registries: the packet alone before the act; after
+    # it, the act-time CC-SPEC/CC-IMPACT copies move to history.
+    import tempfile
+    with tempfile.TemporaryDirectory() as scratch:
+        registry = {f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md":
+                        (CC_IMPACT_LABEL, "ACCEPT TOPOLOGY"),
+                    f"{GENERAL_BOOTSTRAP_DIR}/ACT-SEMANTICS.md": (CC_SPEC_LABEL,)}
+        history = {}
+        packet = f"{SPEC_POLICY_RESTYLE_DIR}/OWNER-DECISION-PACKET.md"
+        for rel in (packet,):
+            os.makedirs(os.path.dirname(os.path.join(scratch, rel)), exist_ok=True)
+            open(os.path.join(scratch, rel), "w").close()
+        _activate_spec_policy_restyle_copy_registries(registry, history, scratch)
+        cases.append(("CG-7e spec-policy restyle packet registered, nothing moved before the act",
+                      registry.get(packet) == (SPEC_POLICY_RESTYLE_LABEL,)
+                      and not history
+                      and registry[f"{GENERAL_BOOTSTRAP_DIR}/ACT-SEMANTICS.md"]
+                      == (CC_SPEC_LABEL,)))
+        os.makedirs(os.path.dirname(os.path.join(scratch, SPEC_POLICY_RESTYLE_ACT)),
+                    exist_ok=True)
+        open(os.path.join(scratch, SPEC_POLICY_RESTYLE_ACT), "w").close()
+        _activate_spec_policy_restyle_copy_registries(registry, history, scratch)
+        final = f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md"
+        cases.append(("CG-7e performed spec-policy restyle pins the act-time copies as history",
+                      registry[final] == ("ACCEPT TOPOLOGY",)
+                      and f"{GENERAL_BOOTSTRAP_DIR}/ACT-SEMANTICS.md" not in registry
+                      and history[final][CC_IMPACT_LABEL][0][0] == CC_IMPACT_ACT_7_DIGEST
+                      and history[GENERAL_BOOTSTRAP_SUBJECT][CC_SPEC_LABEL][0][0]
+                      == CC_SPEC_TRANSACTION_DIGEST
+                      and registry[SPEC_POLICY_RESTYLE_ACT]
+                      == (SPEC_POLICY_RESTYLE_LABEL, CC_IMPACT_LABEL, CC_SPEC_LABEL)
+                      and SPEC_POLICY_RESTYLE_LABEL
+                      in registry[f"{CRAFT}/INSTALL-RECORD.md"]))
+
+    # The specification-policy restyle successor (and act 7's CC-IMPACT).
+    row = _selftest_cg7h("impact-drift")
+    cases.append(("CG-7h CC-IMPACT drift from its latest performed digest detected",
+                  row[0] == "FAIL"
+                  and any(CC_IMPACT_SUBJECT in d and "latest performed digest" in d
+                          for d in row[4])))
+    row = _selftest_cg7h("spec-unrecorded")
+    cases.append(("CG-7h unrecorded spec-policy restyle leaves the bootstrap current at 77",
+                  row[0] == "OK" and row[2] == 77))
+    row = _selftest_cg7h("spec-unrecorded-applied")
+    cases.append(("CG-7h spec-policy restyle bytes without an act rejected",
+                  row[0] == "FAIL"
+                  and any("latest performed digest" in d for d in row[4])))
+    row = _selftest_cg7h("spec-valid")
+    cases.append(("CG-7h valid spec-policy restyle passes at 88 with the CC-SPEC row as history",
+                  row[0] == "OK" and row[2] == 88 and row[3] == 0
+                  and any(d.startswith("[historical]") and "act-time CC-SPEC row" in d
+                          for d in row[4])))
+    for spec_kind, want in (
+            ("spec-drift", "hashes to"),
+            ("spec-impact-drift", "hashes to"),
+            ("spec-phrase-mismatch", "expected exactly one bare"),
+            ("spec-nested-missing", "recorder-generated"),
+            ("spec-instant-mismatch", "Act instant"),
+            ("spec-bootstrap-rewritten", "does not name the transaction's CC-SPEC row")):
+        row = _selftest_cg7h(spec_kind)
+        cases.append((f"CG-7h spec-policy restyle {spec_kind} rejected",
+                      row[0] == "FAIL" and any(want in d for d in row[4])))
 
     row = _selftest_cg7h("top-level-drift")
     cases.append(("CG-7h top-level transaction subject drift detected",
@@ -7013,7 +7280,7 @@ def selftest():
 
     row = _selftest_cg7h("candidate-successor-no-act")
     cases.append(("CG-7h unsigned successor manifest grants no supersession",
-                  row[0] == "FAIL" and row[2] == 76))
+                  row[0] == "FAIL" and row[2] == 77))
 
     row = _selftest_cg7h("successor-one-record")
     cases.append(("CG-7h one-sided successor act rejected",
@@ -7026,8 +7293,8 @@ def selftest():
                   and any("latest performed digest" in d for d in row[4])))
 
     row = _selftest_cg7h("valid-successor")
-    cases.append(("CG-7h valid 11-row successor passes at 89",
-                  row[0] == "OK" and row[2] == 89 and row[3] == 0))
+    cases.append(("CG-7h valid 11-row successor passes at 90",
+                  row[0] == "OK" and row[2] == 90 and row[3] == 0))
 
     row = _selftest_cg7h("successor-current-drift")
     cases.append(("CG-7h post-successor current artifact drift detected",
@@ -7043,9 +7310,9 @@ def selftest():
                               for d in row[4])))
 
     row = _selftest_cg7h("valid-truth-successor")
-    cases.append(("CG-7h valid truth-and-readiness successor passes at 102 "
+    cases.append(("CG-7h valid truth-and-readiness successor passes at 103 "
                   "with state-(1) rows preserved as history",
-                  row[0] == "OK" and row[2] == 102 and row[3] == 0
+                  row[0] == "OK" and row[2] == 103 and row[3] == 0
                   and any("[historical] " + PWB_STATE1_SUBJECT in d
                           for d in row[4])))
 
@@ -7082,8 +7349,8 @@ def selftest():
                           for d in row[4])))
 
     row = _selftest_cg7h("contract-valid")
-    cases.append(("CG-7h exact two-module contract successor passes at 80",
-                  row[0] == "OK" and row[2] == 80 and row[3] == 0))
+    cases.append(("CG-7h exact two-module contract successor passes at 81",
+                  row[0] == "OK" and row[2] == 81 and row[3] == 0))
     no_signal_for = f"for `{POLARIS_NO_SIGNAL_LABEL}`, found"
     contract_failures = {
         "candidate-only": "installed `rfcs/RFC-0008/state-vocabulary-and-cost.md`",
@@ -7142,24 +7409,24 @@ def selftest():
                   and [link[4] for link in CONTRACT_SUCCESSOR_CHAIN]
                   == [POLARIS_NO_SIGNAL_PATHS, CONTRACT_RESTYLE_PATHS]))
     row = _selftest_cg7h("restyle-valid")
-    cases.append(("CG-7h 29-row restyle link alone passes at 107 "
+    cases.append(("CG-7h 29-row restyle link alone passes at 108 "
                   "(no-signal gap allowed)",
-                  row[0] == "OK" and row[2] == 107 and row[3] == 0))
+                  row[0] == "OK" and row[2] == 108 and row[3] == 0))
     row = _selftest_cg7h("restyle-both-performed")
     cases.append(("CG-7h both contract links performed pass at 111 with the "
                   "restyle digest overriding the no-signal rows",
-                  row[0] == "OK" and row[2] == 111 and row[3] == 0
+                  row[0] == "OK" and row[2] == 112 and row[3] == 0
                   and any("superseded by " + CONTRACT_RESTYLE_SUBJECT in d
                           and "[historical] " + POLARIS_NO_SIGNAL_SUBJECT in d
                           for d in row[4])))
     row = _selftest_cg7h("restyle-inserted-earlier")
     cases.append(("CG-7h no-signal section above the restyle with an earlier "
-                  "act instant passes at 111 as superseded history",
-                  row[0] == "OK" and row[2] == 111 and row[3] == 0))
+                  "act instant passes at 112 as superseded history",
+                  row[0] == "OK" and row[2] == 112 and row[3] == 0))
     row = _selftest_cg7h("restyle-candidate-inert")
     cases.append(("CG-7h unrecorded restyle candidate over bootstrap bytes "
                   "examines only the bootstrap population",
-                  row[0] == "OK" and row[2] == 76))
+                  row[0] == "OK" and row[2] == 77))
     restyle_for = f"for `{CONTRACT_RESTYLE_LABEL}`, found"
     restyle_failures = {
         "one-record": f"record {restyle_for} 0",
@@ -8329,11 +8596,51 @@ def _selftest_cg7h(kind):
                 current[f"{CONTRACT_ROOT}/{path}"] = sha
                 current[f"{CANDIDATES}/{path}"] = sha
 
+    # CC-IMPACT (act 7) and the specification-policy restyle successor.
+    impact = digest("impact")
+    # Ahead of every link's section, so no link's section scoping sees it.
+    performed = f"{CC_IMPACT_LABEL}@{impact}\n" + performed
+    current[CC_IMPACT_SUBJECT] = mismatched if kind == "impact-drift" else impact
+    spec_inputs = ("", "", None)
+    if kind.startswith("spec-"):
+        restyled = {CC_IMPACT_SUBJECT: digest("impact-restyled"),
+                    CC_SPEC_SUBJECT: digest("spec-restyled")}
+        spec_manifest = "# restyle\n" + "".join(
+            f"{restyled[path]}  {path}\n" for _label, path in SPEC_POLICY_RESTYLE_ROWS)
+        spec_digest = digest(spec_manifest)
+        spec_dedicated = ""
+        if kind != "spec-unrecorded" and kind != "spec-unrecorded-applied":
+            instant = "Act instant: 2026-09-28T12:00:00Z"
+            nested = [f"{label}@{restyled[path]}"
+                      for label, path in SPEC_POLICY_RESTYLE_ROWS]
+            phrase = f"{SPEC_POLICY_RESTYLE_LABEL}: {spec_digest}"
+            aggregate_block = [instant, "", phrase, *nested]
+            dedicated_block = list(aggregate_block)
+            if kind == "spec-phrase-mismatch":
+                aggregate_block[2] = f"{SPEC_POLICY_RESTYLE_LABEL}: {mismatched}"
+            elif kind == "spec-nested-missing":
+                dedicated_block.remove(nested[1])
+            elif kind == "spec-instant-mismatch":
+                dedicated_block[0] = "Act instant: 2026-09-28T12:00:01Z"
+            elif kind == "spec-bootstrap-rewritten":
+                dedicated += policy_row.format(digest=restyled[CC_SPEC_SUBJECT])
+            performed += "\n".join(aggregate_block) + "\n"
+            spec_dedicated = "\n".join(dedicated_block) + "\n"
+        if kind != "spec-unrecorded":
+            current[CC_SPEC_SUBJECT] = restyled[CC_SPEC_SUBJECT]
+            current[CC_IMPACT_SUBJECT] = restyled[CC_IMPACT_SUBJECT]
+        if kind == "spec-drift":
+            current[CC_SPEC_SUBJECT] = mismatched
+        elif kind == "spec-impact-drift":
+            current[CC_IMPACT_SUBJECT] = mismatched
+        spec_inputs = (spec_dedicated, spec_manifest, spec_digest)
+
     c = Cap()
     cg7h_general_bootstrap_act(
         c, act_record=performed, dedicated_record=dedicated,
         manifest_body=manifest, transaction_digest=transaction,
-        policy_digest=policy, contract_manifest_body=contract_manifest,
+        policy_digest=current[CC_SPEC_SUBJECT],
+        contract_manifest_body=contract_manifest,
         pwb_manifest_body=pwb_manifest, current_digests=current,
         successor_act_record=performed,
         successor_dedicated_record=successor_dedicated,
@@ -8344,7 +8651,8 @@ def _selftest_cg7h(kind):
         truth_manifest_digest=truth_digest,
         contract_chain_inputs=contract_inputs,
         contract_chain=(CONTRACT_SUCCESSOR_CHAIN + (THIRD_LINK,)
-                        if kind == "restyle-three-link-cascade" else None))
+                        if kind == "restyle-three-link-cascade" else None),
+        spec_policy_inputs=spec_inputs)
     return c.row("CG-7h")
 
 
