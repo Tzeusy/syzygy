@@ -700,7 +700,8 @@ def reconciliation_selftest():
     check_evidence(fixture)
     fixture.files[DOC_PATHS[0]] = fixture.recorded[DOC_PATHS[0]]
     for path, replacement, reason in ((RAW, None, 'C2 raw review must be retained'),
-                                       (SUPPLEMENT, c2, 'C3 technical record must follow C2')):
+                                       (SUPPLEMENT, c2, 'C3 technical record must follow C2'),
+                                       (history_path, None, 'history review not retained')):
         saved = fixture.introductions[path]
         fixture.introductions[path] = replacement
         try:
