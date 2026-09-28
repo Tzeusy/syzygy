@@ -6,6 +6,9 @@
 
 Both packages are restyled to CC-REV-8 under
 [`OWNER-DIRECTION-2026-09-28-TREE-STYLE-ROLLOUT.md`](../../decisions/OWNER-DIRECTION-2026-09-28-TREE-STYLE-ROLLOUT.md).
+The owner adopted the restyle on 2026-09-28
+([`OWNER-ADOPTION-2026-09-28-TREE-STYLE-RESTYLES.md`](../../decisions/OWNER-ADOPTION-2026-09-28-TREE-STYLE-RESTYLES.md));
+the packages stay deferred-wave candidates.
 No clause text changes. Each module gains an orientation paragraph and
 non-normative diagrams, 17 in all.
 
