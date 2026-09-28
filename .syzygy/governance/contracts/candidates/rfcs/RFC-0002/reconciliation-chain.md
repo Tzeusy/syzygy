@@ -37,27 +37,35 @@ staging), and the acceptance answers to §8 q3 and q4.
 This module owns **what happens to work and intent after they meet**: when two
 authoritative claims cannot both hold, when desired state simply is not real
 yet, when a subject counts as Aligned or a scope as Converged, and what a
-merged change has and has not proved. Read it to answer: *does this merge mean
-anything yet, and if not, what would make it mean something?* It presupposes
-module 1 — a reconciliation evaluation is an ordinary identified evaluation,
-and the chain's verdicts are claim instances inside ordinary observation
-records.
+merged change has and has not proved. Merging proves nothing until a
+reconciliation evaluation checks the merged change against the intent revision
+that warranted it (RFC2-18), and a contradiction is never merged with a gap
+(RFC2-15, RFC2-17). Read it to answer: *does this merge mean anything yet, and
+if not, what would make it mean something?*
 
-Four rules carry most of the weight. **Contradiction and gap are different
-entities with different exits** — adjudication versus evidence-or-dismissal —
-and no surface, count, or UI string may merge them (RFC2-15, RFC2-17).
-**Merging proves nothing**: merged work enters the chain at
-`reconciliation-pending` and stays there until a reconciliation evaluation
-checks it against the *exact intent revision that warranted it* (RFC2-18) —
-and at V0 the honest rendering of that absence, "a wall of such Unknowns on a
-fleet-built project", is correct output, not a defect (RFC2-19). **Scheduler
-closure never implies `reconciled`** (RFC2-20). And **chain state is computed
-from snapshot items alone** — merge facts plus the prior verdicts admitted
-under RFC2-1 item 10 — never from records read outside the snapshot, which is
-what keeps two implementations with different retention from disagreeing.
-
-[Observed] No surveyed substrate provides the reconciliation evaluation — no
-object, no field, no convention exists for it anywhere; this module creates it.
+- **What it presupposes.** Module 1.
+  - A reconciliation evaluation is an ordinary identified evaluation.
+  - The chain's verdicts are claim instances inside ordinary observation
+    records.
+- **Four rules carry most of the weight.**
+  - **Contradiction and gap are different entities with different exits** —
+    adjudication versus evidence-or-dismissal — and no surface, count, or UI
+    string may merge them (RFC2-15, RFC2-17).
+  - **Merging proves nothing.** Merged work enters the chain at
+    `reconciliation-pending` and stays there until a reconciliation
+    evaluation checks it against the *exact intent revision that warranted
+    it* (RFC2-18).
+    - At V0 the honest rendering of that absence, "a wall of such Unknowns on
+      a fleet-built project", is correct output, not a defect (RFC2-19).
+  - **Scheduler closure never implies `reconciled`** (RFC2-20).
+  - **Chain state is computed from snapshot items alone** — merge facts plus
+    the prior verdicts admitted under RFC2-1 item 10 — never from records
+    read outside the snapshot.
+    - That is what keeps two implementations with different retention from
+      disagreeing.
+- **What is new here.** [Observed] No surveyed substrate provides the
+  reconciliation evaluation — no object, no field, no convention exists for
+  it anywhere; this module creates it.
 
 ---
 
@@ -131,9 +139,8 @@ here as binding; the substrate survey behind it is archived corpus, informative
 only — the rule stands without it.]
 
 **RFC2-18 — The chain.** Every materialized work item that reaches merge enters
-a first-class chain on its durable identity: `merged →
-reconciliation-pending → (reconciliation evaluation) → reconciled@E |
-unsatisfied | contradiction-raised | Unknown(reason)`.
+a first-class chain on its durable identity:
+`merged → reconciliation-pending → (reconciliation evaluation) → reconciled@E | unsatisfied | contradiction-raised | Unknown(reason)`.
 
 Chain state at any evaluation is computed **from snapshot items alone** — the
 merge facts carried by RFC2-1 items 1 and 3 plus the prior chain verdicts
@@ -153,22 +160,26 @@ different record retention compute different chain states over one snapshot
   admitted to that evaluation (RFC2-1 item 10) — two snapshot-identified
   inputs, and nothing else.
 - The **reconciliation evaluation** is an ordinary identified status evaluation
-  (RFC2-3) whose snapshot must include, at minimum: the post-merge revision of
-  every affected repository; the **exact intent revision** — requirement,
-  scenario, or governance clause version — cited by the work item's warrant, as
-  pinned in the immutable materialization record (SDR-7); and the verification
-  evidence claimed for satisfaction. The chain's verdict binds to the warranted
-  revision. Assessing the same merged change against the *current* intent
-  revision is permitted — but as a **second claim within the same evaluation,
-  not a second evaluation**: identity is exactly (snapshot, as-of) and both
-  revisions are inputs of **one** snapshot, so nothing remains to identify a
-  second evaluation with, and inventing a purpose or kind tag to do it would
-  reopen the closed identity scheme through a side door. The two assessments
-  are distinguished by their `cites` target — pinned versus current intent
-  revision, already different durable identities under RFC1-18 — and only the
-  warranted-revision claim carries the chain verdict. Intent drift after merge
-  therefore surfaces as a new gap on the current-revision claim, never as
-  retroactive failure of the work.
+  (RFC2-3) whose snapshot must include, at minimum:
+  - the post-merge revision of every affected repository;
+  - the **exact intent revision** — requirement, scenario, or governance
+    clause version — cited by the work item's warrant, as pinned in the
+    immutable materialization record (SDR-7);
+  - and the verification evidence claimed for satisfaction.
+
+  The chain's verdict binds to the warranted revision.
+  - Assessing the same merged change against the *current* intent revision is
+    permitted — but as a **second claim within the same evaluation, not a
+    second evaluation**: identity is exactly (snapshot, as-of) and both
+    revisions are inputs of **one** snapshot, so nothing remains to identify a
+    second evaluation with, and inventing a purpose or kind tag to do it
+    would reopen the closed identity scheme through a side door.
+  - The two assessments are distinguished by their `cites` target — pinned
+    versus current intent revision, already different durable identities
+    under RFC1-18 — and only the warranted-revision claim carries the chain
+    verdict.
+  - Intent drift after merge therefore surfaces as a new gap on the
+    current-revision claim, never as retroactive failure of the work.
 
   **The two claims render as one paired state, never as two independent
   numbers** *(ruled at acceptance by owner decision on §8 q4).* Where a
@@ -181,29 +192,34 @@ different record retention compute different chain states over one snapshot
   accurate. [Inferred] The obligation is on the **pairing**, not on any
   particular wording; RFC6-17's aggregation disclosure applies to each half
   independently.
-- **Outcomes.** `reconciled@E`: the merged change satisfies the warranted
-  intent revision — a positive status claim requiring gate-backed Observed
-  evidence (RFC2-25), always rendered with its evaluation identity. For
-  doc-only and governance-only work the gate may be a **governed
-  diff-satisfies-clause check** whose retained output is the gate artifact
-  (RFC4-13 route 4 — requiring a lawfully adopted checker definition plus an
-  execution artifact binding exact inputs and revisions, RFC4-13(b);
-  determinism alone does not suffice). **`unsatisfied`**: the warranted intent
-  revision is not satisfied by the merged change and nothing is
-  co-unsatisfiable — by RFC2-15's own definitions that is a **gap**, so this
-  outcome opens a gap, or routes upward to the owner as a spec-indictment (the
-  loop's one upward arrow); it renders *merged, evaluated, unsatisfied*, never
-  silently reopened and never green. **`contradiction-raised`**: the evaluation
-  found authoritative claims in scope that cannot simultaneously be satisfied —
-  a **Contradiction** is minted per RFC1-5/RFC1-18(b)/RFC2-15, the affected
-  conclusion renders Unknown (reason #8 `contradicted-pending-adjudication`,
-  `suspended` tier), and its only lawful exit is an `adjudicates` Decision
-  (RFC1-25): never resolved by precedence, never auto-scheduled into work, and
-  specifically never routed into work through a gap opened on its behalf. The
-  two negative outcomes are separately named, separately counted, and
-  separately routed — the word reservation of RFC2-17 binds them.
-  `Unknown(reason)`: the evaluation could not decide; rendered with its RFC2-24
-  reason.
+- **Outcomes.**
+  - `reconciled@E`: the merged change satisfies the warranted intent
+    revision — a positive status claim requiring gate-backed Observed
+    evidence (RFC2-25), always rendered with its evaluation identity.
+    - For doc-only and governance-only work the gate may be a **governed
+      diff-satisfies-clause check** whose retained output is the gate
+      artifact (RFC4-13 route 4 — requiring a lawfully adopted checker
+      definition plus an execution artifact binding exact inputs and
+      revisions, RFC4-13(b); determinism alone does not suffice).
+  - **`unsatisfied`**: the warranted intent revision is not satisfied by the
+    merged change and nothing is co-unsatisfiable — by RFC2-15's own
+    definitions that is a **gap**, so this outcome opens a gap, or routes
+    upward to the owner as a spec-indictment (the loop's one upward arrow);
+    it renders *merged, evaluated, unsatisfied*, never silently reopened and
+    never green.
+  - **`contradiction-raised`**: the evaluation found authoritative claims in
+    scope that cannot simultaneously be satisfied —
+    - a **Contradiction** is minted per RFC1-5/RFC1-18(b)/RFC2-15,
+    - the affected conclusion renders Unknown (reason #8
+      `contradicted-pending-adjudication`, `suspended` tier),
+    - and its only lawful exit is an `adjudicates` Decision (RFC1-25): never
+      resolved by precedence, never auto-scheduled into work, and
+      specifically never routed into work through a gap opened on its
+      behalf.
+  - The two negative outcomes are separately named, separately counted, and
+    separately routed — the word reservation of RFC2-17 binds them.
+  - `Unknown(reason)`: the evaluation could not decide; rendered with its
+    RFC2-24 reason.
 - **Record.** The verdict is a claim instance inside an ordinary observation
   record (RFC2-6); no new record type exists. Its durable identity links
   warrant → materialization record → merge fact → reconciliation verdict,
@@ -211,6 +227,20 @@ different record retention compute different chain states over one snapshot
   *reconciled at E with evidence* vs *merged, not yet evaluated* vs *evaluated
   and unsatisfied* vs *evaluated, contradiction raised*. That verdict record is
   what a later evaluation admits under RFC2-1 item 10.
+
+*Diagram (non-normative; the clauses govern):* the RFC2-18 chain and where outcomes route.
+
+```mermaid
+flowchart LR
+  M["merged<br/>execution state, never green"] --> P["reconciliation-pending"]
+  P --> R{"reconciliation evaluation<br/>against the warranted intent revision"}
+  R --> OK["reconciled@E<br/>gate-backed Observed evidence"]
+  R --> U["unsatisfied"]
+  R --> C["contradiction-raised"]
+  R --> X["Unknown(reason)"]
+  U --> G["opens a gap, or routes upward<br/>to the owner as a spec-indictment"]
+  C --> A["Contradiction: only exit is an<br/>adjudicates Decision; never routed into work"]
+```
 
 **RFC2-19 — Trigger and staging.** The loop is human-triggered: reconciliation
 evaluations run inside a deliberately triggered propagate/sync or observation
@@ -224,23 +254,26 @@ Nothing in V0 may simulate the verdict.
 **RFC2-19(a) — What that Unknown carries, and does not** *(drafted arm —
 see the bracketed note below; identifier minted 2026-08-10, RD30-12, so
 the exemption is anchorable under verification rule 8 rather than citable
-only as prose near RFC2-19).* The V0 rendering above is an **absence of a computed
-reconciliation verdict**, not a claim whose evidence is missing. It is
-therefore **chain-state-local**: the `reconciliation-pending` state and the
-"reconciliation evidence absent / Unknown" rendering it produces are **never
-stamped with, counted among, or absorbed by an aggregate of RFC2-24 Unknown
-reasons**, and never contribute to a project's Unknown-reason totals. This is
-the exemption RFC8-12 states for its four absence values, applied to the one
-chain state V0 renders most: no reason from the twelve describes "the
-evaluation that would decide this is deliberately not computed at this stage" —
-#2 `missing-evidence` names a claim whose evidence was sought and not found,
-which misdescribes a verdict never sought — and RFC2-24 forbids minting,
-spelling, or force-fitting one that the list does not carry. The condition is
-disclosed as a **fact of the render** in RFC2-24's own terms: named, counted in
-its own right, expandable, and routed to its resolving action (run a
-reconciliation evaluation). The rendering still carries the durable identity,
-the merge fact, and the warranted intent revision the verdict would bind to,
-so nothing about it is silent.
+only as prose near RFC2-19).* The V0 rendering above is an **absence of a
+computed reconciliation verdict**, not a claim whose evidence is missing.
+
+- It is therefore **chain-state-local**: the `reconciliation-pending` state
+  and the "reconciliation evidence absent / Unknown" rendering it produces are
+  **never stamped with, counted among, or absorbed by an aggregate of RFC2-24
+  Unknown reasons**, and never contribute to a project's Unknown-reason
+  totals.
+- This is the exemption RFC8-12 states for its four absence values, applied to
+  the one chain state V0 renders most: no reason from the twelve describes
+  "the evaluation that would decide this is deliberately not computed at this
+  stage" — #2 `missing-evidence` names a claim whose evidence was sought and
+  not found, which misdescribes a verdict never sought — and RFC2-24 forbids
+  minting, spelling, or force-fitting one that the list does not carry.
+- The condition is disclosed as a **fact of the render** in RFC2-24's own
+  terms: named, counted in its own right, expandable, and routed to its
+  resolving action (run a reconciliation evaluation).
+- The rendering still carries the durable identity, the merge fact, and the
+  warranted intent revision the verdict would bind to, so nothing about it is
+  silent.
 
 > **[P-31 — drafted arm, awaiting an owner ruling.]** RD-15 finding 3 found
 > this rendering bound to no RFC2-24 reason. Two routes close it: a thirteenth
@@ -309,25 +342,31 @@ Case 5 spans this module and module 4 and is held at the package level
 
 ## 5. Integration (module-local)
 
-**Relies on RFC 0001:** the relation vocabulary realizing Aligned as a claim
-predicate; Contradiction minting (RFC1-5, RFC1-18(b)) and the `adjudicates`
-Decision (RFC1-25) that is a Contradiction's only lawful exit; the `cites`
-targets (RFC1-18) distinguishing pinned from current intent revision; the
-materialization record (SDR-7) the chain joins through. **Relies on RFC 0004:**
-RFC4-13 route 4 and its governed-checker requirement (RFC4-13(b)), the
-`gate-backed` route by which doc-only and governance-only work reaches
-`reconciled@E`.
+- **Relies on RFC 0001:**
+  - the relation vocabulary realizing Aligned as a claim predicate;
+  - Contradiction minting (RFC1-5, RFC1-18(b)) and the `adjudicates` Decision
+    (RFC1-25) that is a Contradiction's only lawful exit;
+  - the `cites` targets (RFC1-18) distinguishing pinned from current intent
+    revision;
+  - the materialization record (SDR-7) the chain joins through.
+- **Relies on RFC 0004:** RFC4-13 route 4 and its governed-checker requirement
+  (RFC4-13(b)), the `gate-backed` route by which doc-only and governance-only
+  work reaches `reconciled@E`.
 
-**Provides to RFC 0003:** the chain-state and verdict semantics it must
-physically encode — with no new record type, since a verdict is an ordinary
-claim instance. **Provides to RFC 0004:** the substrate-term translation duty
-of RFC2-17, which RFC4-6 realizes. **Provides to RFC 0008:** the chain states
-Trajectory renders and the paired-state obligation its aggregates must satisfy.
-**Provides to RFC 0010:** the completion predicates and contradiction-escalation
-conditions a bounded Mission terminates on. **Provides to the rest of this
-package:** the contradiction condition behind Unknown reason #8 and the
-`suspended` tier (module 4), and the gap exit rendered as *dismissed by
-decision* (module 4's sibling surface states).
+- **Provides to RFC 0003:** the chain-state and verdict semantics it must
+  physically encode — with no new record type, since a verdict is an ordinary
+  claim instance.
+- **Provides to RFC 0004:** the substrate-term translation duty of RFC2-17,
+  which RFC4-6 realizes.
+- **Provides to RFC 0008:** the chain states Trajectory renders and the
+  paired-state obligation its aggregates must satisfy.
+- **Provides to RFC 0010:** the completion predicates and
+  contradiction-escalation conditions a bounded Mission terminates on.
+- **Provides to the rest of this package:**
+  - the contradiction condition behind Unknown reason #8 and the `suspended`
+    tier (module 4),
+  - and the gap exit rendered as *dismissed by decision* (module 4's sibling
+    surface states).
 
 ## 8. Owner questions (stubs; full text and reasoning in history)
 

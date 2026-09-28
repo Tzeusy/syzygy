@@ -15,7 +15,7 @@
 > object from a waiver against one that does (review RC-12 §5), and
 > every row below says `candidate budget exception`, never `waiver`.
 
-**As-of commit:** `53ac7b5da33ddb2dea33e3c85e39c5d312f54ab7`  *(plus uncommitted working-tree edits at generation time)*
+**As-of commit:** `b49c9f4ed5c5ac338b0b02d83523e243d335c474`  *(plus uncommitted working-tree edits at generation time)*
 
 This file is regenerated in the *same change* that moves any measured
 file. Two independent currency tests exist and neither is this line:
@@ -32,16 +32,16 @@ the *measurement*, never the *selection*.
 
 | Fixture | Files | Words | Est. tokens (×1.35) | Disposition vs the proposed trigger | Packet digest |
 |---|---:|---:|---:|---|---|
-| `context-selection-1-polaris-narrative.md` | 5 | 15,218 | 20,544 | **above the proposed trigger** by 2.7% | `8079198e75183fcd…` |
-| `context-selection-10-trajectory-lifecycle.md` | 12 | 40,051 | 54,069 | **above the proposed trigger** by 170.3% | `bed2a2b12ae23ca1…` |
-| `context-selection-2-trajectory-adapter.md` | 8 | 19,921 | 26,893 | **above the proposed trigger** by 34.5% | `2ab80354e3751f45…` |
-| `context-selection-3-orrery-lens.md` | 5 | 15,899 | 21,464 | **above the proposed trigger** by 7.3% | `6f39c530e1eada2d…` |
-| `context-selection-4-execution-profile.md` | 6 | 11,842 | 15,987 | above the proposed default band, under the proposed trigger | `3df58957f651580c…` |
-| `context-selection-5-cross-project-mission.md` | 11 | 24,529 | 33,114 | **above the proposed trigger** by 65.6% | `4f30a1317d7ecb31…` |
-| `context-selection-6-doctrine-amendment.md` | 6 | 13,057 | 17,627 | above the proposed default band, under the proposed trigger | `98649eefd662e5d0…` |
-| `context-selection-7-kernel-identity.md` | 5 | 17,522 | 23,655 | **above the proposed trigger** by 18.3% | `774620f7a714a1cc…` |
-| `context-selection-8-openspec-authoring.md` | 6 | 25,607 | 34,569 | **above the proposed trigger** by 72.8% | `c5b4f6039e3aeeed…` |
-| `context-selection-9-evidence-adapter.md` | 12 | 26,497 | 35,771 | **above the proposed trigger** by 78.9% | `ad9d6297a7def203…` |
+| `context-selection-1-polaris-narrative.md` | 5 | 16,041 | 21,655 | **above the proposed trigger** by 8.3% | `79be6efbdeacbb8c…` |
+| `context-selection-10-trajectory-lifecycle.md` | 12 | 42,603 | 57,514 | **above the proposed trigger** by 187.6% | `38f34c4e98c91ded…` |
+| `context-selection-2-trajectory-adapter.md` | 8 | 21,499 | 29,024 | **above the proposed trigger** by 45.1% | `c817716d7519e8db…` |
+| `context-selection-3-orrery-lens.md` | 5 | 16,841 | 22,735 | **above the proposed trigger** by 13.7% | `b1901d135aeeef22…` |
+| `context-selection-4-execution-profile.md` | 6 | 12,799 | 17,279 | above the proposed default band, under the proposed trigger | `79cd2ba711eb3e47…` |
+| `context-selection-5-cross-project-mission.md` | 11 | 24,899 | 33,614 | **above the proposed trigger** by 68.1% | `120d199c9cd19f97…` |
+| `context-selection-6-doctrine-amendment.md` | 6 | 13,427 | 18,126 | above the proposed default band, under the proposed trigger | `5c4e8b910af77a1b…` |
+| `context-selection-7-kernel-identity.md` | 5 | 18,360 | 24,786 | **above the proposed trigger** by 23.9% | `f5d5f881f4a2d26f…` |
+| `context-selection-8-openspec-authoring.md` | 6 | 26,460 | 35,721 | **above the proposed trigger** by 78.6% | `18c579fdac8c19f5…` |
+| `context-selection-9-evidence-adapter.md` | 12 | 28,434 | 38,386 | **above the proposed trigger** by 91.9% | `db9cadd89be0d477…` |
 
 **8 of 10 fixtures are above the proposed 20,000-token trigger.**
 
@@ -71,7 +71,7 @@ printed at the foot of §5.
 
 ### `context-selection-1-polaris-narrative.md`
 
-- **Measured:** 15,218 words ≈ 20,544 estimated tokens — 2.7% above the proposed trigger.
+- **Measured:** 16,041 words ≈ 21,655 estimated tokens — 8.3% above the proposed trigger.
 - **Reason:** [Unknown] — not declared in the fixture
 - **Scope:** [Unknown] — not declared in the fixture
 - **Reviewer:** [Unknown] — not declared in the fixture
@@ -80,7 +80,7 @@ printed at the foot of §5.
 
 ### `context-selection-10-trajectory-lifecycle.md`
 
-- **Measured:** 40,051 words ≈ 54,069 estimated tokens — 170.3% above the proposed trigger.
+- **Measured:** 42,603 words ≈ 57,514 estimated tokens — 187.6% above the proposed trigger.
 - **Reason:** The undivided lifecycle warrant spans kernel work identity (RFC-0001, indivisible), all three planes of the work surface (RFC-0008 in full), the mission-side reservation/release seam (RFC-0010 module 3), the state vocabularies and record envelope the chain joins on, and the surface-selection contract every rendering obeys. Every file answers a clause the warrant's own text names. The size is a property of the warrant's breadth, not of padding
 - **Scope:** Amendments spanning the **whole** work-item lifecycle seam — identity + dispatch + materialization + accounting + release together, for mission-spawned work. A warrant touching only one segment takes the matching shard below instead
 - **Reviewer:** **Unassigned.** This fixture is new at round-2026-08d; independent review is owed at the round's review pass, and this row says so rather than borrowing a signature from a review that never saw it
@@ -89,7 +89,7 @@ printed at the foot of §5.
 
 ### `context-selection-2-trajectory-adapter.md`
 
-- **Measured:** 19,921 words ≈ 26,893 estimated tokens — 34.5% above the proposed trigger.
+- **Measured:** 21,499 words ≈ 29,024 estimated tokens — 45.1% above the proposed trigger.
 - **Reason:** An authorization-bearing derivation-mapping edit cannot shed (i) the act contract that makes the edited artifact honored — RFC3-16(a)/(b)/(c), whose smallest load unit is one module (word cost in `CONTEXT-BUDGET-REPORT.md` §3); (ii) the consuming state vocabulary the mapping projects into (RFC8-12/13, tables read verbatim); (iii) the adapter contract bounding what the adapter may write; or (iv) the SEC-3 premise that makes (i) necessary. The only measured configuration under the trigger is reached by dropping (i), which RFC11-5 forbids and which this fixture's own reasoning refuses
 - **Scope:** Work-provider adapter changes that edit an **RFC3-16(a) authorization-bearing** derivation mapping. Does **not** cover: the approval ceremony for such a mapping (a separate, smaller packet); mapping edits that are not authorization-bearing; adapter changes touching execution-record capture or fidelity joins, which is fixture 9's class
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed
@@ -98,7 +98,7 @@ printed at the foot of §5.
 
 ### `context-selection-3-orrery-lens.md`
 
-- **Measured:** 15,899 words ≈ 21,464 estimated tokens — 7.3% above the proposed trigger.
+- **Measured:** 16,841 words ≈ 22,735 estimated tokens — 13.7% above the proposed trigger.
 - **Reason:** [Unknown] — not declared in the fixture
 - **Scope:** [Unknown] — not declared in the fixture
 - **Reviewer:** [Unknown] — not declared in the fixture
@@ -107,7 +107,7 @@ printed at the foot of §5.
 
 ### `context-selection-5-cross-project-mission.md`
 
-- **Measured:** 24,529 words ≈ 33,114 estimated tokens — 65.6% above the proposed trigger.
+- **Measured:** 24,899 words ≈ 33,614 estimated tokens — 68.1% above the proposed trigger.
 - **Reason:** A mission draft must state, in the artifact itself, every dimension the RFC-0010 package defines — identity and pinned inputs (module 1), the envelope and its attention posture (module 2), budget reservation under the six-quantity model (module 3), stop conditions and effect/recovery duties (module 4), and the two-project consent plane (module 5). Dropping a module drops the defining text of a section the drafter must write. The packet-provenance module and the act machinery are what make the draft's obligations and its approval honorable
 - **Scope:** Drafting a cross-project mission and its envelope for owner approval. Does **not** cover: the approval ceremony itself; single-project missions (module 5 may then be omitted and the packet re-measured); mission *operation* tasks, which are inadmissible until the D3 precondition clears (RFC10-24)
 - **Reviewer:** **Unassigned.** This selection was re-derived 2026-08-08 after the owner-ordered RFC-0010/0011 package split; the RC-12 waiver review covered other fixtures and never this one. Independent review is owed at the round's review pass and this row says so rather than borrowing a signature
@@ -116,7 +116,7 @@ printed at the foot of §5.
 
 ### `context-selection-7-kernel-identity.md`
 
-- **Measured:** 17,522 words ≈ 23,655 estimated tokens — 18.3% above the proposed trigger.
+- **Measured:** 18,360 words ≈ 24,786 estimated tokens — 23.9% above the proposed trigger.
 - **Reason:** RFC-0001 is indivisible (its justified oversize is recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md` and in the verifier's justification table, *not* in RFC-0001 itself, which records no waiver), and an identity change genuinely needs the minting/continuity scheme (RFC1-11), the evaluation identity a claim resolves against, the constitutional temporal model, and the floor text it may not weaken
 - **Scope:** Kernel identity and continuity changes — minting, successor edges, split/merge, and the continuity links recorded across them — **where CC-BAR-5 floor 7 is the declared classifier**. Does **not** cover: the adoption ceremony for such a change (RFC-0003 stays deferred to that packet, as this fixture already rules); `.syzygy/**` schema migrations that do not alter minting; changes to challenge, reconciliation or rendering semantics, which pull further RFC-0002 modules and must be re-measured (scope tightened by RC-12)
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed
@@ -125,7 +125,7 @@ printed at the foot of §5.
 
 ### `context-selection-8-openspec-authoring.md`
 
-- **Measured:** 25,607 words ≈ 34,569 estimated tokens — 72.8% above the proposed trigger.
+- **Measured:** 26,460 words ≈ 35,721 estimated tokens — 78.6% above the proposed trigger.
 - **Reason:** RFC-0001 is indivisible (its justified oversize is recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`, *not* in RFC-0001 itself, which records no waiver) and requirement authoring genuinely needs the capability/requirement identity model (RFC1-14/RFC1-15), both modules of the surface contract that makes the behaviour observable (RFC-0007 — including the module carrying its phase rule RFC7-38, forced by the on-seam rule, which dictates the clause-to-requirement coverage matrix the author must produce), the adoption gate the delta must pass (VIS-3/VIS-4), and the verification bar the requirement must be testable against
 - **Scope:** OpenSpec requirement authoring against an adopted capability **whose surface contract is RFC-0007 (Polaris)**. It does **not** stretch to another surface contract: this fixture names "a capability whose surface contract is smaller" as the narrowing that retires the waiver, so applying it there applies it to the case that voids it. Does not cover review of the authored delta, which pulls `craft:review-and-documentation.md` instead (scope tightened by RC-12)
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed
@@ -134,7 +134,7 @@ printed at the foot of §5.
 
 ### `context-selection-9-evidence-adapter.md`
 
-- **Measured:** 26,497 words ≈ 35,771 estimated tokens — 78.9% above the proposed trigger.
+- **Measured:** 28,434 words ≈ 38,386 estimated tokens — 91.9% above the proposed trigger.
 - **Reason:** The evidence plane is the corpus's widest authorization surface. RFC-0004 gates six clauses across three of its modules under RFC3-16(a) (see `RFC-0004/README.md`), so an authorization-bearing change here needs the whole four-module package, the tier vocabulary it emits into, the profile contract that defines its one self-sufficient route, and the act machinery that makes any of it honored
 - **Scope:** Evidence-adapter changes touching gate provenance (RFC4-13 routes), capture cadence or retention (RFC4-16), or fidelity labels (RFC4-24/25), **where the warrant spans the retention × cause coupling** — i.e. where a `reduced-fidelity` cause depends on a retention-horizon fact. A warrant touching **labels only**, with no RFC4-16 dependency, is **out of scope** and takes the smaller shard instead. Does not cover changes that also touch work-state rendering (fixture 2's class), or that add prose fields to a record, which pulls `RFC-0005/consent-egress-secrets` (scope tightened by RC-12)
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed
@@ -143,43 +143,43 @@ printed at the foot of §5.
 
 ## 3. Contract modules — the corpus this budget is spent on
 
-**39 modules, 122,391 words.** The 7,000-word per-module
+**39 modules, 130,155 words.** The 7,000-word per-module
 ceiling and the 35–50k corpus target band are the compaction charter's,
 recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`; both are
 candidate figures under the same non-installed policy as §1's trigger.
 
 | Module | Words | Over the 7,000 ceiling |
 |---|---:|---|
-| `rfcs/RFC-0001-project-graph-identity-state-planes.md` | 9,124 | **yes** |
-| `rfcs/RFC-0002/README.md` | 2,158 | — |
-| `rfcs/RFC-0002/challenge-lifecycle.md` | 2,245 | — |
-| `rfcs/RFC-0002/reconciliation-chain.md` | 2,931 | — |
-| `rfcs/RFC-0002/rendering-vocabularies.md` | 2,769 | — |
-| `rfcs/RFC-0002/snapshot-and-evaluation-core.md` | 2,100 | — |
-| `rfcs/RFC-0003/README.md` | 1,063 | — |
-| `rfcs/RFC-0003/governance-homes-and-owner-acts.md` | 4,853 | — |
-| `rfcs/RFC-0003/manifests-and-namespace.md` | 5,483 | — |
-| `rfcs/RFC-0004/README.md` | 1,752 | — |
-| `rfcs/RFC-0004/execution-record.md` | 1,839 | — |
-| `rfcs/RFC-0004/fidelity-joins-and-mappings.md` | 2,050 | — |
-| `rfcs/RFC-0004/general-contract.md` | 1,686 | — |
-| `rfcs/RFC-0004/named-adapters.md` | 3,740 | — |
-| `rfcs/RFC-0005/README.md` | 2,066 | — |
-| `rfcs/RFC-0005/admission-and-boundary.md` | 3,982 | — |
-| `rfcs/RFC-0005/consent-egress-secrets.md` | 2,450 | — |
-| `rfcs/RFC-0005/execution-profiles.md` | 2,224 | — |
-| `rfcs/RFC-0006-cross-surface-selection-query-drawer.md` | 5,415 | — |
-| `rfcs/RFC-0007/README.md` | 2,493 | — |
-| `rfcs/RFC-0007/narrative-contract.md` | 5,317 | — |
+| `rfcs/RFC-0001-project-graph-identity-state-planes.md` | 9,544 | **yes** |
+| `rfcs/RFC-0002/README.md` | 2,415 | — |
+| `rfcs/RFC-0002/challenge-lifecycle.md` | 2,414 | — |
+| `rfcs/RFC-0002/reconciliation-chain.md` | 3,073 | — |
+| `rfcs/RFC-0002/rendering-vocabularies.md` | 2,902 | — |
+| `rfcs/RFC-0002/snapshot-and-evaluation-core.md` | 2,261 | — |
+| `rfcs/RFC-0003/README.md` | 1,210 | — |
+| `rfcs/RFC-0003/governance-homes-and-owner-acts.md` | 5,076 | — |
+| `rfcs/RFC-0003/manifests-and-namespace.md` | 5,786 | — |
+| `rfcs/RFC-0004/README.md` | 1,997 | — |
+| `rfcs/RFC-0004/execution-record.md` | 1,958 | — |
+| `rfcs/RFC-0004/fidelity-joins-and-mappings.md` | 2,291 | — |
+| `rfcs/RFC-0004/general-contract.md` | 1,933 | — |
+| `rfcs/RFC-0004/named-adapters.md` | 3,930 | — |
+| `rfcs/RFC-0005/README.md` | 2,371 | — |
+| `rfcs/RFC-0005/admission-and-boundary.md` | 4,374 | — |
+| `rfcs/RFC-0005/consent-egress-secrets.md` | 2,856 | — |
+| `rfcs/RFC-0005/execution-profiles.md` | 2,506 | — |
+| `rfcs/RFC-0006-cross-surface-selection-query-drawer.md` | 5,748 | — |
+| `rfcs/RFC-0007/README.md` | 2,669 | — |
+| `rfcs/RFC-0007/narrative-contract.md` | 5,574 | — |
 | `rfcs/RFC-0007/rendering-and-surface.md` | 4,663 | — |
-| `rfcs/RFC-0008/README.md` | 2,046 | — |
-| `rfcs/RFC-0008/accounting-reconciliation-and-release.md` | 3,797 | — |
-| `rfcs/RFC-0008/identity-authority-materialization.md` | 2,710 | — |
-| `rfcs/RFC-0008/state-vocabulary-and-cost.md` | 4,138 | — |
-| `rfcs/RFC-0009/README.md` | 2,173 | — |
-| `rfcs/RFC-0009/interaction-parity-and-release.md` | 3,514 | — |
-| `rfcs/RFC-0009/semantic-geography.md` | 7,869 | **yes** |
-| `rfcs/RFC-0009/visual-grammar-and-lenses.md` | 6,088 | — |
+| `rfcs/RFC-0008/README.md` | 2,310 | — |
+| `rfcs/RFC-0008/accounting-reconciliation-and-release.md` | 4,248 | — |
+| `rfcs/RFC-0008/identity-authority-materialization.md` | 3,023 | — |
+| `rfcs/RFC-0008/state-vocabulary-and-cost.md` | 4,400 | — |
+| `rfcs/RFC-0009/README.md` | 2,341 | — |
+| `rfcs/RFC-0009/interaction-parity-and-release.md` | 3,795 | — |
+| `rfcs/RFC-0009/semantic-geography.md` | 8,362 | **yes** |
+| `rfcs/RFC-0009/visual-grammar-and-lenses.md` | 6,472 | — |
 | `rfcs/RFC-0010/README.md` | 1,733 | — |
 | `rfcs/RFC-0010/budget-reservation.md` | 1,841 | — |
 | `rfcs/RFC-0010/effects-recovery-and-stop.md` | 3,291 | — |

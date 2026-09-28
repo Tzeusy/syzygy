@@ -35,28 +35,37 @@ Trajectory charter.
 
 *If this section and a clause ever disagree, the clause wins.*
 
-This module owns **what Trajectory is, what it may never become, what it is
-made of, and who is authoritative at each stage of a work item's life**: the
-three-plane rendering duty and the binding anti-thesis (RFC8-1/8-2), the
-rebuildable-projection rule (RFC8-3), the ontology as a projection of RFC 0001
-rather than a fork (RFC8-4/8-5/8-6), the approved-Proposal lifecycle and the
-"What remains?" enumeration with its orphaned-work Contradiction and
-exclusivity rules (RFC8-7/8-8), the SDR-18 ownership boundary against Polaris
-(RFC8-9), and materialization as a one-way door with divergence rendered but
-never adjudicated (RFC8-10/8-11). Read it to answer: *what work exists, under
-whose authority, and which store is allowed to say so?*
+This module decides what work exists, under whose authority, and which store
+is allowed to say so. Two rules carry most of the weight: **Trajectory never
+holds a second editable store of a scheduler-owned field** (RFC8-2(a),
+RFC8-7, RFC8-11), and **a scheduler work item with no materialization record
+is a Contradiction, not a badge** (RFC8-8, RFC8-10).
 
-Two rules carry most of the weight. **Trajectory never holds a second editable
-store of a scheduler-owned field** (RFC8-2(a), RFC8-7, RFC8-11) — post-materialization
-lifecycle state is read at the answering evaluation and re-derived, never
-merged; capturing that a transition *occurred* is a different, permitted act.
-And **a scheduler work item with no materialization record is a Contradiction,
-not a badge** (RFC8-8, RFC8-10) — routed to owner adjudication as its only
-lawful exit, never filtered, never absorbed as ordinary work.
-
-The normalized work-state vocabulary this module's enumerations feed is
-defined in module 2 (RFC8-12/8-13); the change-accounting chain that runs
-through RFC8-10's materialization join is in module 3 (RFC8-21).
+- **What it owns:** what Trajectory is, what it may never become, what it is
+  made of, and who is authoritative at each stage of a work item's life.
+  - The three-plane rendering duty and the binding anti-thesis
+    (RFC8-1/8-2).
+  - The rebuildable-projection rule (RFC8-3).
+  - The ontology as a projection of RFC 0001 rather than a fork
+    (RFC8-4/8-5/8-6).
+  - The approved-Proposal lifecycle and the "What remains?" enumeration with
+    its orphaned-work Contradiction and exclusivity rules (RFC8-7/8-8).
+  - The SDR-18 ownership boundary against Polaris (RFC8-9).
+  - Materialization as a one-way door, with divergence rendered but never
+    adjudicated (RFC8-10/8-11).
+- **The question it answers:** *what work exists, under whose authority, and
+  which store is allowed to say so?*
+- **The two weight-bearing rules, in more detail:**
+  - **No second editable store.** Post-materialization lifecycle state is
+    read at the answering evaluation and re-derived, never merged; capturing
+    that a transition *occurred* is a different, permitted act.
+  - **Orphaned work is a Contradiction.** It is routed to owner adjudication
+    as its only lawful exit, never filtered, never absorbed as ordinary work.
+- **Neighbours in the package:**
+  - The normalized work-state vocabulary this module's enumerations feed is
+    defined in module 2 (RFC8-12/8-13).
+  - The change-accounting chain that runs through RFC8-10's materialization
+    join is in module 3 (RFC8-21).
 
 ---
 
@@ -74,12 +83,15 @@ and observed (merge facts, verification evidence, reconciliation verdicts) —
 Every rendered item carries its plane; an item whose plane cannot be
 determined is counted and rendered Unknown, never omitted or guessed.
 
-**RFC8-2.** **The anti-thesis is binding.** Trajectory must not be: (a) a
-second editable store of any scheduler-owned field (RFC4-5, inward limb);
-(b) a view in which scheduler closure renders as done, green, or complete
-(RFC2-20); (c) a board showing current state that cannot answer "what did the
-fleet change, at what cost, under whose authority" for a past window at the
-fidelity the preserved records support.
+**RFC8-2.** **The anti-thesis is binding.** Trajectory must not be:
+
+- (a) a second editable store of any scheduler-owned field (RFC4-5, inward
+  limb);
+- (b) a view in which scheduler closure renders as done, green, or complete
+  (RFC2-20);
+- (c) a board showing current state that cannot answer "what did the fleet
+  change, at what cost, under whose authority" for a past window at the
+  fidelity the preserved records support.
 
 **RFC8-3.** Trajectory is a **rebuildable projection** (VIS-6) over the kernel,
 the `.syzygy/work/**` plane (RFC3-19), and the typed adapters — never
@@ -104,15 +116,18 @@ projection of RFC1-5, with these bindings:
 | Reconciliation | Reconciliation evaluation and its verdict claim (RFC2-18) |
 | Warrant | The `motivates` edge / a Decision — deliberately not reified (RFC1-8) |
 
-**RFC8-5.** **Deliberate non-reifications**, recorded: an **idea** is personal
-presentation state (VIS-6, exception (a)) until promoted into a Proposal —
-never truth-bearing, never enumerated as work. A **milestone** is an
-annotation-profile entity (RFC1-7), a lens for aggregation and compaction
-boundaries, never itself work or a warrant. There is **no Feature entity**
-(RFC1-32): "feature request" is intake vocabulary that must resolve to a
-Capability identity before any status attaches. A **contradiction** and a
-**dismissal** render here (as a blocker on a conclusion; as *dismissed by
-decision*) but are never work items, never auto-scheduled (RFC1-21/20).
+**RFC8-5.** **Deliberate non-reifications**, recorded:
+
+- an **idea** is personal presentation state (VIS-6, exception (a)) until
+  promoted into a Proposal — never truth-bearing, never enumerated as work;
+- a **milestone** is an annotation-profile entity (RFC1-7), a lens for
+  aggregation and compaction boundaries, never itself work or a warrant;
+- there is **no Feature entity** (RFC1-32): "feature request" is intake
+  vocabulary that must resolve to a Capability identity before any status
+  attaches;
+- a **contradiction** and a **dismissal** render here (as a blocker on a
+  conclusion; as *dismissed by decision*) but are never work items, never
+  auto-scheduled (RFC1-21/20).
 
 **RFC8-6.** A **compaction record** is a durable, identified record under
 `.syzygy/work/**` (schema: RFC 0003) naming what it summarized, what it
@@ -128,25 +143,30 @@ RFC1-28 entity, in RFC1-31's state names, **with
 `queued-for-materialization` added as a work-plane fact rather than a kernel
 state** — RFC1-31 does not carry that name, and this package reports the
 omission rather than diverging from it silently (§5, §8 q2).
-`queued-for-materialization` is a **recorded queue act in `.syzygy/work/**` on
-an approved Proposal** — not a new kernel lifecycle state and **never named
-"scheduled"** (scheduling is typed-authority-routed to the work scheduler)
-[Observed: architecture.md, typed authority]. The lifecycle terminates at
-`materialized` (RFC1-29).
+
+- `queued-for-materialization` is a **recorded queue act in
+  `.syzygy/work/**` on an approved Proposal** — not a new kernel lifecycle
+  state and **never named "scheduled"** (scheduling is
+  typed-authority-routed to the work scheduler) [Observed: architecture.md,
+  typed authority].
+- The lifecycle terminates at `materialized` (RFC1-29).
 
 **Post-materialization withdrawal and supersession are scheduler lifecycle
-state, and Syzygy never holds a mutable record of it.** They are **read from
-the scheduler at the answering evaluation** (RFC4-15), **rendered against the
-materialization record's join** (RFC8-10/8-11), stamped with that evaluation,
-and discarded and re-derived at the next — never merged (RFC4-5, inward limb).
-**No annotation, field, log, or appended entry recording post-materialization
-scheduler state may be written onto the materialization record, and no
-`.syzygy/work/**` transition may record it** — the record is immutable
-(RFC1-29), a durable copy of a scheduler-owned mutable field is RFC8-2(a)'s
-second editable store, and RFC8-11 forbids later correction, so such an
-annotation could never be repaired once it diverged. Regret is expressed as a
-**new Proposal citing the old one** (RFC1-31), not as a mutation of either
-store.
+state, and Syzygy never holds a mutable record of it.**
+
+- They are **read from the scheduler at the answering evaluation** (RFC4-15),
+  **rendered against the materialization record's join** (RFC8-10/8-11),
+  stamped with that evaluation, and discarded and re-derived at the next —
+  never merged (RFC4-5, inward limb).
+- **No annotation, field, log, or appended entry recording
+  post-materialization scheduler state may be written onto the
+  materialization record, and no `.syzygy/work/**` transition may record
+  it** — the record is immutable (RFC1-29), a durable copy of a
+  scheduler-owned mutable field is RFC8-2(a)'s second editable store, and
+  RFC8-11 forbids later correction, so such an annotation could never be
+  repaired once it diverged.
+- Regret is expressed as a **new Proposal citing the old one** (RFC1-31), not
+  as a mutation of either store.
 
 **Capturing that a withdrawal or supersession *occurred* is permitted — and
 required where a durable Syzygy record depends on the fact (RFC4-16(2)).** An
@@ -162,56 +182,97 @@ not beating the retention horizon: a transition lost to substrate GC before
 capture renders **Unknown citing the retention event** (RFC4-16(3)), and
 nothing here licenses that loss. [Inferred]
 
+*Diagram (non-normative; the clauses govern):* the approved-Proposal
+lifecycle RFC8-7 renders, with the one stage that is a work-plane fact rather
+than a kernel state, and the handover to the scheduler at `materialized`.
+
+```mermaid
+stateDiagram-v2
+  direction LR
+  state "under review" as under_review
+  state "queued-for-materialization" as queued_for_materialization
+  drafted --> under_review
+  under_review --> approved
+  approved --> queued_for_materialization: recorded queue act in .syzygy/work/**
+  queued_for_materialization --> materialized: materialization record (RFC1-29)
+  materialized --> [*]: lifecycle terminates here
+  note right of queued_for_materialization
+    work-plane fact, not a kernel state;
+    never named "scheduled"
+  end note
+  note right of materialized
+    afterwards the scheduler is authoritative;
+    withdrawal and supersession are read
+    from it, never held as a mutable Syzygy record
+  end note
+```
+
 **RFC8-8.** **"What remains?" enumerates three planes, each labeled:**
-(a) approved normative claims (requirements, governance clauses) covered by no
-approved execution-intent Proposal — at V0 this is absence surfacing, not gap
-computation [Observed: v1.md, V0/V1 gap boundary]; (b) approved execution
-intent not yet materialized — from `.syzygy/work/**`, queue order visible;
-(c) open materialized work items — from the scheduler read (RFC4-15) at the
-answering evaluation, **each checked against the materialization record**
-(RFC8-10). Drafted (unapproved) proposals render as *unadopted draft* (RFC2-25
-sibling state) — enumerable, never counted among approved intent, never
-anchoring any remaining-work total.
+
+- (a) approved normative claims (requirements, governance clauses) covered by
+  no approved execution-intent Proposal — at V0 this is absence surfacing,
+  not gap computation [Observed: v1.md, V0/V1 gap boundary];
+- (b) approved execution intent not yet materialized — from
+  `.syzygy/work/**`, queue order visible;
+- (c) open materialized work items — from the scheduler read (RFC4-15) at the
+  answering evaluation, **each checked against the materialization record**
+  (RFC8-10).
+
+Drafted (unapproved) proposals render as *unadopted draft* (RFC2-25 sibling
+state) — enumerable, never counted among approved intent, never anchoring any
+remaining-work total.
 
 **Orphaned work is a Contradiction, not a badge.** A scheduler work item
 matching **no materialization record** is an **orphaned-work Contradiction**
 (RFC1-29, final paragraph): two stores answering one question, no pinned
 intent revision for RFC2-18 to bind to, no warrant traceable through
-`materializes`. Trajectory is the only surface enumerating scheduler work
-items, so the obligation lands here: the enumeration **must** perform the
-check, mint the Contradiction (RFC1-5/RFC1-18(b)), route it to **owner
-adjudication as its only lawful exit** (RFC1-21; RFC2-15), render the affected
-conclusion Unknown (reason #8 `contradicted-pending-adjudication`, `suspended`
-tier), and render the finding itself — **never silently adopted into a record,
-never silently deleted, never read as evidence that materialization happened**.
-It is **exempt from filtering** (§8 q4). Re-materialization after a partial
-failure must **cite and supersede the orphan finding** in the new record. An
-orphaned work item is **not** Unknown-provenance and never renders as one
-(RFC8-23).
+`materializes`.
+
+- Trajectory is the only surface enumerating scheduler work items, so the
+  obligation lands here: the enumeration **must**
+  - perform the check;
+  - mint the Contradiction (RFC1-5/RFC1-18(b));
+  - route it to **owner adjudication as its only lawful exit** (RFC1-21;
+    RFC2-15);
+  - render the affected conclusion Unknown (reason #8
+    `contradicted-pending-adjudication`, `suspended` tier);
+  - and render the finding itself — **never silently adopted into a record,
+    never silently deleted, never read as evidence that materialization
+    happened**.
+- It is **exempt from filtering** (§8 q4).
+- Re-materialization after a partial failure must **cite and supersede the
+  orphan finding** in the new record.
+- An orphaned work item is **not** Unknown-provenance and never renders as
+  one (RFC8-23).
 
 **Exclusivity binds every enumeration and every total.** Every Proposal
-declares an exclusivity group (RFC1-27). Trajectory's queue, its "what
-remains" enumeration, and **every remaining-work total, count, or aggregate**
-must never union — or sum across — two proposals in one exclusivity group, or
-proposals whose compatibility is undeclared. The honest render is ***N
-candidate futures*, selectable one at a time** (RFC1-27; VIS-1), carrying
-RFC6-24's explicit scenario context; a context naming two members of one group
-resolves `incompatible-scenario` (RFC6-5), never a merged scene and never a
-summed count. Two approved exclusive proposals are **one** unit of remaining
-work with two candidate shapes, never two — the drafted-proposal rule above
-excludes only *drafts* and does not discharge this.
+declares an exclusivity group (RFC1-27).
+
+- Trajectory's queue, its "what remains" enumeration, and **every
+  remaining-work total, count, or aggregate** must never union — or sum
+  across — two proposals in one exclusivity group, or proposals whose
+  compatibility is undeclared.
+- The honest render is ***N candidate futures*, selectable one at a time**
+  (RFC1-27; VIS-1), carrying RFC6-24's explicit scenario context; a context
+  naming two members of one group resolves `incompatible-scenario` (RFC6-5),
+  never a merged scene and never a summed count.
+- Two approved exclusive proposals are **one** unit of remaining work with
+  two candidate shapes, never two — the drafted-proposal rule above excludes
+  only *drafts* and does not discharge this.
 
 **RFC8-9.** Per SDR-18, **Trajectory owns the drafting queue and the work
 lifecycle** — **an ownership asserted against Polaris, not against the work
-scheduler**. Queue state, assignment, and progress live in this surface and
-**Polaris renders that state read-only** (RFC7-24); Polaris owns the
-contextual intent-authoring and adoption experience. Nothing here qualifies
-architecture.md's typed-authority row: after materialization the **scheduler**
-is authoritative for work lifecycle state (RFC8-10; RFC1-29), Trajectory
-renders it and never stores it (RFC8-2/8-3). An intent-shaped queue item (a
-spec or governance delta) renders in Trajectory's queue and adopts through
-Polaris; the underlying Proposal and its state are one and the same in both
-surfaces (RFC6-3).
+scheduler**.
+
+- Queue state, assignment, and progress live in this surface and **Polaris
+  renders that state read-only** (RFC7-24); Polaris owns the contextual
+  intent-authoring and adoption experience.
+- Nothing here qualifies architecture.md's typed-authority row: after
+  materialization the **scheduler** is authoritative for work lifecycle state
+  (RFC8-10; RFC1-29), Trajectory renders it and never stores it (RFC8-2/8-3).
+- An intent-shaped queue item (a spec or governance delta) renders in
+  Trajectory's queue and adopts through Polaris; the underlying Proposal and
+  its state are one and the same in both surfaces (RFC6-3).
 
 ### 3.4 Materialization rendering
 
@@ -219,27 +280,47 @@ surfaces (RFC6-3).
 the immutable materialization record — **proposal identity, work-item identity
 set, and the pinned warranted intent revision** (RFC1-29; RFC1-5), all three
 **required**, none conditional — is the join Trajectory walks in both
-directions. The pinned revision is load-bearing: RFC2-18's verdict binds to
-it, RFC8-21's chain runs through it, and RFC8-28's four-way distinction has
-nothing to evaluate `reconciled@E` *against* without it. Trajectory
-additionally renders the **materializing evaluation** alongside the record — a
-Trajectory-side extension, not a kernel record component (§5). After
-materialization the scheduler is authoritative for lifecycle state;
-`.syzygy/work/**` plan state is never rendered as current for a materialized
-item. **A missing record is a finding, not a silent skip:** a scheduler work
-item matching no materialization record is the orphaned-work Contradiction,
-handled per RFC8-8 — never absorbed as ordinary work, never treated as
-evidence that materialization occurred. Until the record exists,
-materialization has not occurred, whatever the scheduler holds (RFC1-29).
+directions.
+
+- The pinned revision is load-bearing: RFC2-18's verdict binds to it,
+  RFC8-21's chain runs through it, and RFC8-28's four-way distinction has
+  nothing to evaluate `reconciled@E` *against* without it.
+- Trajectory additionally renders the **materializing evaluation** alongside
+  the record — a Trajectory-side extension, not a kernel record component
+  (§5).
+- After materialization the scheduler is authoritative for lifecycle state;
+  `.syzygy/work/**` plan state is never rendered as current for a
+  materialized item.
+- **A missing record is a finding, not a silent skip:** a scheduler work item
+  matching no materialization record is the orphaned-work Contradiction,
+  handled per RFC8-8 — never absorbed as ordinary work, never treated as
+  evidence that materialization occurred.
+- Until the record exists, materialization has not occurred, whatever the
+  scheduler holds (RFC1-29).
+
+*Diagram (non-normative; the clauses govern):* the materialization record as
+the two-way join between the approved Proposal and the scheduler's work
+items, and the orphaned-work branch when a work item joins to no record.
+
+```mermaid
+flowchart LR
+  P["Approved execution-intent Proposal<br/>(.syzygy/work/**)"]
+  R["Materialization record — immutable<br/>proposal identity · work-item identity set ·<br/>pinned warranted intent revision"]
+  W["Scheduler work item(s)<br/>scheduler authoritative for lifecycle"]
+  P <--> R
+  R <--> W
+  X["Scheduler work item matching<br/>no materialization record"] --> C["Orphaned-work Contradiction<br/>owner adjudication only (RFC8-8)"]
+```
 
 **RFC8-11.** **Divergence renders; Trajectory never adjudicates it.**
-Substrate-side edits of Syzygy-written pointers (the warrant reference,
-RFC4-17) render as substrate annotations ("edited in substrate at T; not a
-warrant claim"): the `.syzygy/work/**` record stays authoritative, the pointer
-is re-asserted at the next evaluation, and no contradiction is manufactured on
-the chain's load-bearing join (RFC4-5, outward limb). Divergence between the
-record and later scheduler state is a fact about the scheduler, never grounds
-to rewrite the record (RFC1-29).
+
+- Substrate-side edits of Syzygy-written pointers (the warrant reference,
+  RFC4-17) render as substrate annotations ("edited in substrate at T; not a
+  warrant claim"): the `.syzygy/work/**` record stays authoritative, the
+  pointer is re-asserted at the next evaluation, and no contradiction is
+  manufactured on the chain's load-bearing join (RFC4-5, outward limb).
+- Divergence between the record and later scheduler state is a fact about the
+  scheduler, never grounds to rewrite the record (RFC1-29).
 
 ---
 
@@ -268,64 +349,83 @@ and are never renumbered. Cases 4 and 12 span modules and are held in
 
 ## 5. Integration — this module
 
-**Relies on RFC 0001:** the closed entity/relation vocabulary RFC8-4 projects
-(RFC1-5/25) and the warrant edge it deliberately does not reify (RFC1-8); the
-annotation-profile entity behind *milestone* (RFC1-7); plan-item resolution and
-one-way materialization including the orphaned-work Contradiction
-(RFC1-28/29/30) and the pre-materialization lifecycle state names (RFC1-31);
-exclusivity groups and *N candidate futures* (RFC1-27); plane assignment
-(RFC1-22/23); no-Feature (RFC1-32); gap exits and adjudication-only
-Contradiction exits (RFC1-20/21), with Contradiction minting per RFC1-18(b).
-**RFC 0002:** the *unadopted draft* sibling state and the tier registry
-(RFC2-25); the Unknown rendering of a conclusion suspended pending
-adjudication (RFC2-15); scheduler closure never rendering as done (RFC2-20);
-the reconciliation verdict that binds to RFC8-10's pinned intent revision
-(RFC2-18). **RFC 0003:** `.syzygy/work/**` schemas for plan items, queue acts,
-materialization records, Execution Records, and compaction records (RFC3-19).
-**RFC 0004:** the two-limb anti-duplication invariant this module applies in
-both directions (RFC4-5); the faithful scheduler feed read at the answering
-evaluation (RFC4-15); capture-before-horizon and its declared maximum
-inter-pass interval (RFC4-16, incl. RFC4-16(2)/(3)); Syzygy-written pointers
-and their substrate-side edits (RFC4-17); hosting PR facts as Evidence
-(RFC4-11); verification runs (RFC4-13); Execution Records (RFC4-18/19).
-**RFC 0006:** the one-and-the-same Proposal across surfaces (RFC6-3); the
-closed navigation-outcome set incl. `incompatible-scenario` (RFC6-5); explicit
-singular scenario context (RFC6-24). **RFC 0007:** Polaris rendering queue
-state read-only (RFC7-24).
+- **Relies on RFC 0001:**
+  - the closed entity/relation vocabulary RFC8-4 projects (RFC1-5/25) and the
+    warrant edge it deliberately does not reify (RFC1-8);
+  - the annotation-profile entity behind *milestone* (RFC1-7);
+  - plan-item resolution and one-way materialization including the
+    orphaned-work Contradiction (RFC1-28/29/30) and the pre-materialization
+    lifecycle state names (RFC1-31);
+  - exclusivity groups and *N candidate futures* (RFC1-27);
+  - plane assignment (RFC1-22/23);
+  - no-Feature (RFC1-32);
+  - gap exits and adjudication-only Contradiction exits (RFC1-20/21), with
+    Contradiction minting per RFC1-18(b).
+- **RFC 0002:**
+  - the *unadopted draft* sibling state and the tier registry (RFC2-25);
+  - the Unknown rendering of a conclusion suspended pending adjudication
+    (RFC2-15);
+  - scheduler closure never rendering as done (RFC2-20);
+  - the reconciliation verdict that binds to RFC8-10's pinned intent revision
+    (RFC2-18).
+- **RFC 0003:** `.syzygy/work/**` schemas for plan items, queue acts,
+  materialization records, Execution Records, and compaction records
+  (RFC3-19).
+- **RFC 0004:**
+  - the two-limb anti-duplication invariant this module applies in both
+    directions (RFC4-5);
+  - the faithful scheduler feed read at the answering evaluation (RFC4-15);
+  - capture-before-horizon and its declared maximum inter-pass interval
+    (RFC4-16, incl. RFC4-16(2)/(3));
+  - Syzygy-written pointers and their substrate-side edits (RFC4-17);
+  - hosting PR facts as Evidence (RFC4-11);
+  - verification runs (RFC4-13);
+  - Execution Records (RFC4-18/19).
+- **RFC 0006:**
+  - the one-and-the-same Proposal across surfaces (RFC6-3);
+  - the closed navigation-outcome set incl. `incompatible-scenario`
+    (RFC6-5);
+  - explicit singular scenario context (RFC6-24).
+- **RFC 0007:** Polaris rendering queue state read-only (RFC7-24).
 
 **Foundation defect reported (not silently diverged from) — outstanding.**
 **RFC1-28/31 omit the queued-for-materialization stage** of the owner-ratified
-pre-materialization lifecycle (SDR-7 context). RFC8-7 realizes it as a recorded
-work-plane fact on the approved Proposal, minting no kernel state; RFC 0001
-should confirm that reading or add the state (§8 q2). Four further defects
-reported against RFC 0001/0002 are **closed**; the trail is in
-`../../history/RFC-0008-history.md` §5, and no RFC 0001 or RFC 0002 change is
-outstanding on any of them.
+pre-materialization lifecycle (SDR-7 context).
+
+- RFC8-7 realizes it as a recorded work-plane fact on the approved Proposal,
+  minting no kernel state; RFC 0001 should confirm that reading or add the
+  state (§8 q2).
+- Four further defects reported against RFC 0001/0002 are **closed**; the
+  trail is in `../../history/RFC-0008-history.md` §5, and no RFC 0001 or
+  RFC 0002 change is outstanding on any of them.
 
 **Extension flagged (not a defect).** RFC8-10 renders the **materializing
-evaluation** alongside the materialization record. RFC1-29 and RFC1-5 name
-three components and do not include it; it is a **Trajectory-side rendering
-extension, not a kernel record component**, and this RFC does not add it to a
-kernel-owned immutable record by assertion. RFC 0001 may adopt it as a fourth
-component if the owner wishes; until then nothing binds on it.
+evaluation** alongside the materialization record.
 
-**Provides to RFC 0007:** the SDR-18 boundary (RFC8-9) — drafting queue and
-work lifecycle here, contextual intent authoring and adoption there.
-**To RFC 0010:** the materialization join, the one-way-door rule, and the
-orphaned-work Contradiction a Mission must respect before it may treat work as
-authorized.
+- RFC1-29 and RFC1-5 name three components and do not include it; it is a
+  **Trajectory-side rendering extension, not a kernel record component**, and
+  this RFC does not add it to a kernel-owned immutable record by assertion.
+- RFC 0001 may adopt it as a fourth component if the owner wishes; until then
+  nothing binds on it.
+
+- **Provides to RFC 0007:** the SDR-18 boundary (RFC8-9) — drafting queue and
+  work lifecycle here, contextual intent authoring and adoption there.
+- **To RFC 0010:** the materialization join, the one-way-door rule, and the
+  orphaned-work Contradiction a Mission must respect before it may treat work
+  as authorized.
 
 ---
 
 ## 7. Deliberately deferred — this module
 
-Physical schemas for plan items, queue records, materialization records, and
-compaction records → RFC 0003. Queue and board presentation, filters, and
-saved views → craft and personal presentation state (VIS-6, exception (a)),
-subject to the non-deferring layout obligation in `README.md` §7. The
-confirmation-path enumeration behind RFC1-21 → shared with RFC 0002; this RFC
-renders the outcome, not the mechanism. Cross-project work views → portfolio
-profile (SDR-29/30).
+- Physical schemas for plan items, queue records, materialization records,
+  and compaction records → RFC 0003.
+- Queue and board presentation, filters, and saved views → craft and personal
+  presentation state (VIS-6, exception (a)), subject to the non-deferring
+  layout obligation in `README.md` §7.
+- The confirmation-path enumeration behind RFC1-21 → shared with RFC 0002;
+  this RFC renders the outcome, not the mechanism.
+- Cross-project work views → portfolio profile (SDR-29/30).
 
 ---
 

@@ -40,23 +40,29 @@ questions: `../../history/RFC-0003-history.md`.
 
 This module is the semantic contract for **what lives on disk and who may
 write it**: field *meanings* and *write authority*, never storage engines or
-serialization beyond what authority requires.
+serialization beyond what authority requires. Its weight sits in **RFC3-2**
+(every field has exactly one writer, from four classes), **RFC3-3** (no
+manifest field may widen Syzygy's two-namespace write universe) and
+**RFC3-4** (location, not any field value, designates the governance root).
 
-- **§2.1** the one-writer rule and write containment — no manifest field may
-  widen Syzygy's two-namespace write universe.
-- **§2.2** the project declaration `.syzygy/project.yaml` (location is
-  designation; closed field set) and consent as recorded, revocable,
-  per-(project, repository) and per-(project, provider) records whose
-  withdrawal degrades claims to Unknown rather than erasing history.
-- **§2.3** the workspace manifest: personal presentation state, never
+- **§2.1 Principles and containment.** The one-writer rule and write
+  containment — no manifest field may widen Syzygy's two-namespace write
+  universe.
+- **§2.2 The project declaration.** `.syzygy/project.yaml` (location is
+  designation; closed field set) and consent.
+  - Consent is recorded, revocable, per-(project, repository) and
+    per-(project, provider).
+  - Withdrawal degrades claims to Unknown rather than erasing history.
+- **§2.3 The workspace manifest.** Personal presentation state, never
   authoritative for project-internal truth; asymmetric relation rendering.
-- **§2.4–§2.7** surface namespaces and `work/**` authority, cache/local,
-  identity-preserving migration, the `openspec/**` boundary.
-- **§2.8** nesting as **composition by declaration** — a subproject is a whole
+- **§2.4–§2.7 Namespaces and migration.** Surface namespaces and `work/**`
+  authority, cache/local, identity-preserving migration, the `openspec/**`
+  boundary.
+- **§2.8 Nesting.** **Composition by declaration** — a subproject is a whole
   governed Project related by declared edges, never a second root inside one
   repository.
-- **§3** violation cases; **§7** the open owner questions carried by this
-  module (q1, q2).
+- **§2.9** the OpenSpec seam; **§3** violation cases; **§4** integration;
+  **§7** the open owner questions carried by this module (q1, q2).
 
 Clause identities are package-wide: this module holds **every `RFC3-n` number
 other than RFC3-15, RFC3-16, RFC3-17 and their lettered sub-clauses**, which
@@ -94,96 +100,135 @@ rather than renumber.
 ### 2.1 Manifest principles and write containment
 
 **RFC3-1.** Manifests are **semantic contracts**: which fields exist, what
-each means, and who may write it. Serialization is bound only where doctrine
-already binds it: the project declaration is the file `.syzygy/project.yaml`
-(name and location fixed by architecture.md's layout); everything else in
-this RFC names no file format, storage engine, or wire encoding. The `.yaml`
-filename is already a wire-format commitment, so its **exact dialect** (YAML
-version, coercion rules, duplicate-key handling) **is fixed by the first
-accepted spec that parses it, and is a conformance item from then on**: two
-implementations disagreeing on whether one `project.yaml` parses — and
-therefore on whether a governance root exists — is a contradiction routed to
-the owner, never a dialect-preference each side may keep.
+each means, and who may write it.
+
+- Serialization is bound only where doctrine already binds it: the project
+  declaration is the file `.syzygy/project.yaml` (name and location fixed by
+  architecture.md's layout); everything else in this RFC names no file
+  format, storage engine, or wire encoding.
+- The `.yaml` filename is already a wire-format commitment, so its **exact
+  dialect** (YAML version, coercion rules, duplicate-key handling) **is fixed
+  by the first accepted spec that parses it, and is a conformance item from
+  then on**.
+- Two implementations disagreeing on whether one `project.yaml` parses — and
+  therefore on whether a governance root exists — is a contradiction routed
+  to the owner, never a dialect-preference each side may keep.
 
 **RFC3-2.** **Every manifest field names exactly one write authority**, from
-**four** classes: **owner-adopted** (only the owner adopts the value; Syzygy
-may draft, per VIS-4), **Syzygy-drafted** (Syzygy authors, value renders
-unadopted until owner sign-off), **Syzygy-maintained** (mechanical values
-Syzygy writes under this RFC's own rules, e.g. schema-version stamps under
-§2.6), and **kernel-recorded** (values the kernel writes as a factual record
-of a **non-owner actor's** submission). No field has two writers; a field
-whose authority is not declared by its governing RFC may not exist.
+**four** classes:
+
+- **owner-adopted** (only the owner adopts the value; Syzygy may draft, per
+  VIS-4);
+- **Syzygy-drafted** (Syzygy authors, value renders unadopted until owner
+  sign-off);
+- **Syzygy-maintained** (mechanical values Syzygy writes under this RFC's own
+  rules, e.g. schema-version stamps under §2.6);
+- **kernel-recorded** (values the kernel writes as a factual record of a
+  **non-owner actor's** submission).
+
+No field has two writers; a field whose authority is not declared by its
+governing RFC may not exist.
 
 **The fourth class, `kernel-recorded`** (owner decision **B19**, minted with
 RFC3-15's `records/` category), covers a fact the kernel authors **on someone
 else's act**: a challenge admission or rejection record, a submitted
-withdrawal, a walkthrough execution record. The writer is single, so the
-one-writer rule holds; what distinguishes the class is that the **content
-originates outside the kernel and outside the owner**, so the record asserts
-*that a submission occurred*, never that its content is true. **A
-`kernel-recorded` value is never authorization-bearing**: it records, and
-recording authorizes nothing. Anything in this class that *would* authorize —
-a resolution policy, a sweep policy, an approval — is by that fact not in
-this class and falls under RFC3-16(a) instead.
+withdrawal, a walkthrough execution record.
+
+- The writer is single, so the one-writer rule holds; what distinguishes the
+  class is that the **content originates outside the kernel and outside the
+  owner**, so the record asserts *that a submission occurred*, never that its
+  content is true.
+- **A `kernel-recorded` value is never authorization-bearing**: it records,
+  and recording authorizes nothing.
+- Anything in this class that *would* authorize — a resolution policy, a
+  sweep policy, an approval — is by that fact not in this class and falls
+  under RFC3-16(a) instead.
 
 **Which lifecycle transitions mint a record.** A `records/` fact is minted
 on exactly **two triggers**, and no others — the same set RFC3-15's
-`records/` cell states, so the two clauses can never be read apart: **(1)
-an actor's submission** — a challenge submitted (and its admission or
-rejection), a withdrawal submitted, a walkthrough run submitted; **(2) the
-pre-declared deterministic challenge-sweep policy resolving an
-expiry-eligible challenge as `expired`** (RFC2-13; owner decision B1). **Owner
-resolution acts** — upholding, dismissing, or expiring a challenge by
+`records/` cell states, so the two clauses can never be read apart:
+
+- **(1) an actor's submission** — a challenge submitted (and its admission or
+  rejection), a withdrawal submitted, a walkthrough run submitted;
+- **(2) the pre-declared deterministic challenge-sweep policy resolving an
+  expiry-eligible challenge as `expired`** (RFC2-13; owner decision B1).
+
+**Owner resolution acts** — upholding, dismissing, or expiring a challenge by
 decision — are Decisions in `decisions/` (RFC3-15), referenced from the
-record, never minted into `records/`. **Kernel-computed expiry *eligibility*** — a
-challenge's declared bound having passed (RFC2-3, RFC2-13) — is **derived
-state computed at each evaluation** from the admission record's instant and
-the declared bound; the *eligibility* mints **no record**, because it
-involves no act and is reproducible from snapshot inputs the tree already
-holds, so minting it would add a snapshot input (RFC2-1 item 9) that pure
-recomputation created. The **resolution** that ends the suspension is a
-different thing: per RFC2-13 (owner decision B1), an expiry-eligible
-challenge keeps suspending until a **recorded resolution act** — a human
-resolution in `decisions/`, or the pre-declared deterministic policy
-sweep's resolution record in `records/` (RFC3-15's `records/` cell names
-it) — and that act is an authoritative input of a new snapshot. The
-sweep's resolution is not eligibility wearing a record: eligibility is a
-pure function of (snapshot, as-of) and re-derives at every evaluation,
-while the resolution happens **once, at the sweep execution's own
-instant** — *when* the suspension lifted is derivable from no snapshot
-input the tree already held, and that instant is exactly what the record
-fixes as the new snapshot's authoritative input. And the record authorizes
-nothing of itself: its authority is the kernel's verification that the
-resolving policy carries an effective owner act under **RFC3-16(a)** and was declared
-before the challenge was admitted (RFC2-13's pre-declaration requirement)
-— never the record's own say-so — so an unbacked resolution record is
-inadmissible and the suspension holds. (Shape-parallel with RFC3-17(a)'s
-admission-record authority rule.)
+record, never minted into `records/`. **Kernel-computed expiry
+*eligibility*** — a challenge's declared bound having passed (RFC2-3,
+RFC2-13) — is **derived state computed at each evaluation** from the
+admission record's instant and the declared bound; the *eligibility* mints
+**no record**, because it involves no act and is reproducible from snapshot
+inputs the tree already holds, so minting it would add a snapshot input
+(RFC2-1 item 9) that pure recomputation created.
+
+The **resolution** that ends the suspension is a different thing:
+
+- Per RFC2-13 (owner decision B1), an expiry-eligible challenge keeps
+  suspending until a **recorded resolution act** — a human resolution in
+  `decisions/`, or the pre-declared deterministic policy sweep's resolution
+  record in `records/` (RFC3-15's `records/` cell names it) — and that act is
+  an authoritative input of a new snapshot.
+- The sweep's resolution is not eligibility wearing a record: eligibility is
+  a pure function of (snapshot, as-of) and re-derives at every evaluation,
+  while the resolution happens **once, at the sweep execution's own
+  instant** — *when* the suspension lifted is derivable from no snapshot
+  input the tree already held, and that instant is exactly what the record
+  fixes as the new snapshot's authoritative input.
+- And the record authorizes nothing of itself: its authority is the kernel's
+  verification that the resolving policy carries an effective owner act under
+  **RFC3-16(a)** and was declared before the challenge was admitted (RFC2-13's
+  pre-declaration requirement) — never the record's own say-so — so an
+  unbacked resolution record is inadmissible and the suspension holds.
+  (Shape-parallel with RFC3-17(a)'s admission-record authority rule.)
+
+*Diagram (non-normative; the clauses govern):* which steps in a challenge's
+expiry path mint a `records/` fact.
+
+```mermaid
+flowchart TD
+    SUB["Actor submits a challenge"] -->|"mints: submission and<br/>admission or rejection record"| ADM["Admitted challenge<br/>suspending"]
+    ADM --> EL["Declared bound passes:<br/>expiry eligibility, derived at each evaluation,<br/>mints no record"]
+    EL --> RES{"Recorded resolution act?"}
+    RES -->|"owner resolution"| DEC["Decision in decisions/,<br/>referenced from the record;<br/>authoritative input of a new snapshot"]
+    RES -->|"pre-declared sweep policy"| REC["Sweep's resolution record<br/>in records/"]
+    REC --> SW{"Kernel verifies: policy carries<br/>an effective owner act under RFC3-16(a),<br/>declared before admission?"}
+    SW -->|"yes"| LIFT["Authoritative input of a new snapshot;<br/>suspension ends"]
+    SW -->|"no"| INA["Record inadmissible;<br/>suspension holds"]
+    RES -->|"none yet"| ADM
+```
 
 **RFC3-3.** **Direct-write containment.** No field of any manifest — project
 declaration, workspace manifest, or any `.syzygy/**` artifact — may
 authorize, imply, or configure a Syzygy direct write outside `openspec/**`
-and `.syzygy/**` (VIS-5). Fields naming paths outside the two namespaces are
-**read/observation declarations only** (declared source roots, evidence
-locations). A field purporting to grant write access elsewhere is
-**inoperative** — Syzygy must not honor it — and its presence is surfaced as
-a contradiction routed to the owner, never silently ignored or silently
-obeyed.
+and `.syzygy/**` (VIS-5).
+
+- Fields naming paths outside the two namespaces are **read/observation
+  declarations only** (declared source roots, evidence locations).
+- A field purporting to grant write access elsewhere is **inoperative** —
+  Syzygy must not honor it — and its presence is surfaced as a contradiction
+  routed to the owner, never silently ignored or silently obeyed.
 
 ### 2.2 The project declaration — `.syzygy/project.yaml`
 
 **RFC3-4.** **Location is designation.** The project declaration lives at
 `.syzygy/project.yaml` in exactly one repository, and that location — not any
 field value — is what designates the repository as the Project's governance
-root. A repository carries at most one `.syzygy/` plane, at its root, and is
-the governance root of at most one Project. A declaration purporting to
-designate a *different* repository as root, or a Project resolving to two
-roots, is a contradiction per RFC1-1 — routed to the owner, never repaired
-silently. A Project resolving to **zero** roots mints no contradiction:
-RFC1-1's zero-roots rule (cited, not restated) surfaces that case at the
-workspace/manifest level, unevaluable as a Project and rendered Unknown
-(`missing-declaration`), with no kernel contradiction to route. *(Designation by field value was rejected: a field can
-dangle or lie; a file's location cannot — history §6.)*
+root.
+
+- A repository carries at most one `.syzygy/` plane, at its root, and is the
+  governance root of at most one Project.
+- A declaration purporting to designate a *different* repository as root, or
+  a Project resolving to two roots, is a contradiction per RFC1-1 — routed to
+  the owner, never repaired silently.
+- A Project resolving to **zero** roots mints no contradiction: RFC1-1's
+  zero-roots rule (cited, not restated) surfaces that case at the
+  workspace/manifest level, unevaluable as a Project and rendered Unknown
+  (`missing-declaration`), with no kernel contradiction to route.
+
+*(Designation by field value was rejected: a field can dangle or lie; a
+file's location cannot — history §6.)*
 
 **RFC3-5.** The declaration's top-level field set is **closed** at:
 
@@ -235,26 +280,31 @@ observation by one project must not silently admit another.
 
 **RFC3-8.** **Revocation and withdrawal.** Revoking consent is a recorded
 governance act — narrowing or withdrawal — never deletion of the record.
-Effect on **claim values**, always through the next identified evaluation
-(RFC2-4): dependent claims render Unknown
-(`unconsented-source-or-provider`); inference overlays for a withdrawn
-provider are not computed (RFC2-7); prior observation records remain —
-immutable, VIS-6, exception (b) — but render with the withdrawal visible
-(RFC2-23, "Consent withdrawn"). Effect on **rendering**, immediately at the
-revocation record: every subsequent served render of a dependent claim
-carries the withdrawal label before and independent of that evaluation
-(RFC5-11). Enforcement — what may be read, egressed, or launched — stops at
-the next act, not at the next evaluation (RFC5-11). Withdrawal never rewrites
-history and never silently empties a surface.
 
-**RFC3-9.** **Drafting and repair.** On a newly governed or undeclared
-project, Syzygy may draft declaration content (membership, declaration
-references) as first-pass work [Observed: v1.md, non-code writes]; drafted
-values render unadopted and bind nothing until owner sign-off. An unparseable
-or invalid `project.yaml` renders every dependent claim Unknown; Syzygy never
-auto-repairs it — a repair is a Proposal (RFC1-27) through the owner gate,
-and Syzygy never overwrites a governance artifact it did not author without
-surfacing the conflict (SEC-4).
+- Effect on **claim values**, always through the next identified evaluation
+  (RFC2-4):
+  - dependent claims render Unknown (`unconsented-source-or-provider`);
+  - inference overlays for a withdrawn provider are not computed (RFC2-7);
+  - prior observation records remain — immutable, VIS-6, exception (b) — but
+    render with the withdrawal visible (RFC2-23, "Consent withdrawn").
+- Effect on **rendering**, immediately at the revocation record: every
+  subsequent served render of a dependent claim carries the withdrawal label
+  before and independent of that evaluation (RFC5-11).
+- Enforcement — what may be read, egressed, or launched — stops at the next
+  act, not at the next evaluation (RFC5-11).
+
+Withdrawal never rewrites history and never silently empties a surface.
+
+**RFC3-9.** **Drafting and repair.**
+
+- On a newly governed or undeclared project, Syzygy may draft declaration
+  content (membership, declaration references) as first-pass work [Observed:
+  v1.md, non-code writes]; drafted values render unadopted and bind nothing
+  until owner sign-off.
+- An unparseable or invalid `project.yaml` renders every dependent claim
+  Unknown; Syzygy never auto-repairs it — a repair is a Proposal (RFC1-27)
+  through the owner gate, and Syzygy never overwrites a governance artifact it
+  did not author without surfacing the conflict (SEC-4).
 
 ### 2.3 The workspace manifest (platform level)
 
@@ -307,14 +357,16 @@ finding, not adjudication-blocked.
 
 **The Project→Project dependency relation is named `depends-on`, and the name
 collides deliberately** (owner decision **B20**, taken having been shown the
-collision and its consequence). It is a **portfolio-profile** relation
-(RFC1-7), Project→Project, of **Desired (declared)** semantic class and
-**owner-adopted** authority. RFC1-25's V0 `depends_on` is a different
-relation entirely, closed to two endpoint pairs — Work item→Work item
-(execution class, scheduler-authoritative) and Code element→Code element
-(observed class). RFC1-26 permits profiles to **add** relations but not to
-**re-type** the closed set: this relation is an addition, and `depends_on` is
-not widened to a third endpoint pair.
+collision and its consequence).
+
+- It is a **portfolio-profile** relation (RFC1-7), Project→Project, of
+  **Desired (declared)** semantic class and **owner-adopted** authority.
+- RFC1-25's V0 `depends_on` is a different relation entirely, closed to two
+  endpoint pairs — Work item→Work item (execution class,
+  scheduler-authoritative) and Code element→Code element (observed class).
+- RFC1-26 permits profiles to **add** relations but not to **re-type** the
+  closed set: this relation is an addition, and `depends_on` is not widened
+  to a third endpoint pair.
 
 **The consequence of the collision is normative, not stylistic.** The two
 names differ by exactly one character, across different semantic classes with
@@ -322,12 +374,16 @@ different authorities, so **the names do not separate the senses and the whole
 separation is carried by RFC1-25(b)'s twelve-pair anti-conflation invariant**
 — which is for that reason a mechanically checkable rule and a named
 test-coverage obligation of the first implementation slice, rather than the
-prose rule a distinct verb would have allowed. Any surface, legend, query, or
-count that unions this relation with `depends_on`, or treats either as
-evidence of the other, violates RFC1-25(b); labelling the union does not cure
-it. A reader going by relation names alone **will** conflate them, so
-conformance rests on the invariant being tested, not on the reader being
-careful. [Inferred — the collision is the owner's decision; its elevation of
+prose rule a distinct verb would have allowed.
+
+- Any surface, legend, query, or count that unions this relation with
+  `depends_on`, or treats either as evidence of the other, violates
+  RFC1-25(b); labelling the union does not cure it.
+- A reader going by relation names alone **will** conflate them, so
+  conformance rests on the invariant being tested, not on the reader being
+  careful.
+
+[Inferred — the collision is the owner's decision; its elevation of
 RFC1-25(b) from prose to a tested invariant is this RFC's, recorded so the
 cost of the naming choice stays attached to the choice.]
 
@@ -354,23 +410,28 @@ clause restates its schema consequence and requests no amendment.
 ### 2.5 Cache and local state
 
 **RFC3-20.** **`.syzygy/cache/` is rebuildable projection, nothing else**
-(VIS-6). The deletion-safety invariant: deleting `cache/` in its entirety, at
-any instant, changes no truth, status, work, consent, or authoritative
-artifact — everything in it is re-derivable from the artifacts that own its
-facts. Nothing in `cache/` may be cited as evidence, serve as a snapshot
-input, hold Genome membership, or be the only home of any fact. Observation
-records are **not** cache: they are non-rebuildable historical evidence
-(VIS-6, exception (b)) and must not live where deletion is declared safe.
-Syzygy deletes `cache/` at offboarding (architecture.md).
+(VIS-6).
+
+- The deletion-safety invariant: deleting `cache/` in its entirety, at any
+  instant, changes no truth, status, work, consent, or authoritative artifact
+  — everything in it is re-derivable from the artifacts that own its facts.
+- Nothing in `cache/` may be cited as evidence, serve as a snapshot input,
+  hold Genome membership, or be the only home of any fact.
+- Observation records are **not** cache: they are non-rebuildable historical
+  evidence (VIS-6, exception (b)) and must not live where deletion is
+  declared safe.
+- Syzygy deletes `cache/` at offboarding (architecture.md).
 
 **RFC3-21.** **`.syzygy/local/` is personal presentation state** — VIS-6,
-exception (a): layouts, filters, bookmarks, unpromoted notes. It is never
-truth-bearing, never a snapshot input, and may never affect truth, work,
-status, or certificates. The **only** path by which its content gains
-authority is promotion: an explicit act committing the content out to the
-governed plane as an attributed, reasoned annotation or dismissal (VIS-6). At
-offboarding Syzygy exports `local/` to the owner; deleting it loses personal
-state only, never truth.
+exception (a): layouts, filters, bookmarks, unpromoted notes.
+
+- It is never truth-bearing, never a snapshot input, and may never affect
+  truth, work, status, or certificates.
+- The **only** path by which its content gains authority is promotion: an
+  explicit act committing the content out to the governed plane as an
+  attributed, reasoned annotation or dismissal (VIS-6).
+- At offboarding Syzygy exports `local/` to the owner; deleting it loses
+  personal state only, never truth.
 
 ### 2.6 Schema versioning and migration of `.syzygy/**`
 
@@ -391,23 +452,27 @@ after it (trust-floor link rule). A change that would alter any of these is a
 own adoption gate.
 
 **RFC3-24.** **Migration is an explicit, reviewed, revertable act.**
-Migrations run only as a deliberate act, never lazily on read — a read must
-never mutate the plane (idempotence, RFC2-22). Each executed migration is
-attributed to Syzygy, atomic, and individually revertable (SEC-4), and
-records what it transformed. Migration definitions fall under the craft
-cluster's mandatory independent-review class 5 — "`.syzygy/**` schema
-migrations, any identity-affecting store change" (CC-REV-1) — and under this
-RFC once accepted: migrating to a schema no accepted contract defines is a
-violation.
 
-**RFC3-25.** **Forward and backward behavior.** A Syzygy build reading a
-plane whose stamped version is **newer** than it understands must not write
-to that plane and must not downgrade it; content it cannot interpret renders
-Unknown — never partially parsed and presented as whole (VIS-1; RFC2-23
-partial-snapshot rule). A plane **older** than current is read via the
-declared migration path and upgraded only by the explicit act of RFC3-24.
-There is no in-place downgrade obligation: reverting a migration is the
-version-control revert of its atomic write.
+- Migrations run only as a deliberate act, never lazily on read — a read must
+  never mutate the plane (idempotence, RFC2-22).
+- Each executed migration is attributed to Syzygy, atomic, and individually
+  revertable (SEC-4), and records what it transformed.
+- Migration definitions fall under the craft cluster's mandatory
+  independent-review class 5 — "`.syzygy/**` schema migrations, any
+  identity-affecting store change" (CC-REV-1) — and under this RFC once
+  accepted: migrating to a schema no accepted contract defines is a
+  violation.
+
+**RFC3-25.** **Forward and backward behavior.**
+
+- A Syzygy build reading a plane whose stamped version is **newer** than it
+  understands must not write to that plane and must not downgrade it; content
+  it cannot interpret renders Unknown — never partially parsed and presented
+  as whole (VIS-1; RFC2-23 partial-snapshot rule).
+- A plane **older** than current is read via the declared migration path and
+  upgraded only by the explicit act of RFC3-24.
+- There is no in-place downgrade obligation: reverting a migration is the
+  version-control revert of its atomic write.
 
 **RFC3-26.** **`openspec/**` is outside Syzygy's migration authority.**
 Schema versioning and migration in this section govern `.syzygy/**` only.
@@ -417,13 +482,17 @@ for its own convenience (architecture.md, schema ownership).
 
 ### 2.7 `openspec/**` interoperability
 
-**RFC3-27.** What Syzygy **reads** from `openspec/**`: requirement and
-scenario content under the artifact contract's own identity scheme, held by
-the kernel as (artifact identity, anchor) references (RFC1-15);
-changeset/adoption state as facts; spec structure for rendering. The kernel
-never claims ownership of spec content or identity — the artifact contract is
-the external authority, and the OpenSpec CLI is a substitutable adapter
-beneath a non-substitutable artifact contract.
+**RFC3-27.** What Syzygy **reads** from `openspec/**`:
+
+- requirement and scenario content under the artifact contract's own identity
+  scheme, held by the kernel as (artifact identity, anchor) references
+  (RFC1-15);
+- changeset/adoption state as facts;
+- spec structure for rendering.
+
+The kernel never claims ownership of spec content or identity — the artifact
+contract is the external authority, and the OpenSpec CLI is a substitutable
+adapter beneath a non-substitutable artifact contract.
 
 **RFC3-28.** **Spec anchors (SDR-32).** Adapter contracts must support
 resolvable spec anchors — stable references into `openspec/**` that claims,
@@ -445,34 +514,59 @@ repository root designates nothing and is surfaced as a finding.
 
 **RFC3-30.** **Dual roles are lawful and per-pair.** One repository may
 simultaneously be the governance root of its own Project and a declared
-observed-source repository of one or more other Projects. Role and consent
-are properties of the *(Project, repository)* pair (RFC3-7), never global:
-Project A observing repository R requires A's own consent record for R,
-regardless of R's role elsewhere. An observing Project reads the observed
-repository's entire tree — **including its `.syzygy/**` and `openspec/**`
-plane — read-only**: A's direct-write universe is A's own governance root's
-two namespaces and nothing else (VIS-5); A never writes, migrates, or
-"repairs" B's plane.
+observed-source repository of one or more other Projects.
+
+- Role and consent are properties of the *(Project, repository)* pair
+  (RFC3-7), never global: Project A observing repository R requires A's own
+  consent record for R, regardless of R's role elsewhere.
+- An observing Project reads the observed repository's entire tree —
+  **including its `.syzygy/**` and `openspec/**` plane — read-only**: A's
+  direct-write universe is A's own governance root's two namespaces and
+  nothing else (VIS-5); A never writes, migrates, or "repairs" B's plane.
 
 **Governing policy is a property of the *observing* project's governance
 root.** Project A screens, bounds, and classifies everything it ingests under
 **A's** policies in A's own plane: secret detection (SEC-5; RFC5-16,
 RFC4-12), currency bounds (RFC2-9), retention bound (RFC4-16), egress
-content-class rules (RFC5-14). Each is an owner-approved declaration widening
-what Syzygy may honor, so **each is honored only under RFC3-16(a)** — A's own
-plane being the source is necessary and not sufficient, since A's plane is
-writable by the untrusted actor class too (SEC-3's class, extended to
-committed artifacts by the premise RFC3-16(a) states): a worker-minted policy
-in A's own tree weakens A's screening exactly as a permissive policy adopted
-from B's would. Content read from an observed-source plane — **including that
-plane's `.syzygy/governance/**`** — is **data about B, never governing policy
-for A**, and never a snapshot input to A's evaluations in the policy-version
-role (RFC2-1 item 7 records *A's* policy versions). This is the dual of
-RFC3-32. RFC2-9's currency-bound ambiguity resolves identically: **A's
-declared bound governs A's claims about B**, whatever bound B declares for
-its own. [Inferred] The nearest-plane reading would let a compromised B ship
-a permissive policy weakening the screening of B's own content as it enters A
+content-class rules (RFC5-14).
+
+- Each is an owner-approved declaration widening what Syzygy may honor, so
+  **each is honored only under RFC3-16(a)** — A's own plane being the source
+  is necessary and not sufficient, since A's plane is writable by the
+  untrusted actor class too (SEC-3's class, extended to committed artifacts
+  by the premise RFC3-16(a) states): a worker-minted policy in A's own tree
+  weakens A's screening exactly as a permissive policy adopted from B's
+  would.
+- Content read from an observed-source plane — **including that plane's
+  `.syzygy/governance/**`** — is **data about B, never governing policy for
+  A**, and never a snapshot input to A's evaluations in the policy-version
+  role (RFC2-1 item 7 records *A's* policy versions). This is the dual of
+  RFC3-32.
+- RFC2-9's currency-bound ambiguity resolves identically: **A's declared
+  bound governs A's claims about B**, whatever bound B declares for its own.
+
+[Inferred] The nearest-plane reading would let a compromised B ship a
+permissive policy weakening the screening of B's own content as it enters A
 — the source choosing its own scrutiny.
+
+*Diagram (non-normative; the clauses govern):* what Project A may do to its
+own governance root versus a repository it observes.
+
+```mermaid
+flowchart LR
+    subgraph AR["A's governance root"]
+        AW["openspec/** and .syzygy/**:<br/>A's whole direct-write universe"]
+        AP["A's policies: honored only<br/>under RFC3-16(a)"]
+    end
+    subgraph BR["Observed-source repository of B"]
+        BT["Entire tree, including B's<br/>.syzygy/** and openspec/** plane"]
+    end
+    CON["A's consent record for B's repository<br/>(per Project, repository pair)"]
+    AE["A's evaluations<br/>(data about B)"]
+    CON -->|"required for observation<br/>(necessary, not sufficient)"| BT
+    BT -->|"read-only; data about B,<br/>never governing policy for A"| AE
+    AP -->|"screens, bounds, classifies<br/>everything A ingests"| BT
+```
 
 **RFC3-31.** **Nesting is composition by declaration.** A "subproject" is a
 full governed Project with its own governance root, owner consent, and plane.
@@ -511,32 +605,38 @@ stale. RFC7-37 binds the same obligation on the narrative side.
 ### 2.9 Authority boundary at the OpenSpec seam (binding phase rule)
 
 **RFC3-33.** This contract schedules nothing: **it is not a specification of
-record from which implementation work may be scheduled**. No implementation
-work for user-observable consequences of this contract — governance-home
-layout behavior, project declaration and manifest validation flows, owner-act
-ceremony surfaces, provenance and effective-status rendering — may be
-scheduled solely from this RFC. Before implementation, every observable
-consequence either maps to an approved OpenSpec requirement and scenario in
-the governance root's `openspec/**` plane, or carries a reviewed N/A judgment
-proving it purely structural with no independently testable behavior. **The
-reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a recorded
-owner judgment homed in `decisions/` (RFC3-15), and the judgment is honored
-only through an effective owner act under RFC3-16(a), in state (1) or state
-(2), with that state rendered; absent or invalid acts map nothing and leave
-the consequence unmapped and Unknown, never covered (RFC3-16(a)'s effect
-rule; VIS-2).
+record from which implementation work may be scheduled**.
 
-**Rows are per observable consequence, not per clause.** A clause with five
-observable consequences and one mapped requirement is not covered; the matrix
-discloses the consequences it enumerates for each clause, so a
-complete-looking matrix over under-enumerated consequences is a defect of the
-matrix. At
-surface specification a clause-to-requirement coverage matrix over
-RFC3-1..RFC3-33 is produced — **that matrix is review material, never
-authority**. This clause creates no OpenSpec content now (none may exist
-during bootstrap). This clause binds the whole RFC 0003 package, not this
-module alone. (Shape-parallel with RFC6-28, RFC7-38, RFC8-32, RFC9-52,
-RFC10-16, RFC11-12.)
+- No implementation work for user-observable consequences of this contract —
+  governance-home layout behavior, project declaration and manifest
+  validation flows, owner-act ceremony surfaces, provenance and
+  effective-status rendering — may be scheduled solely from this RFC.
+- Before implementation, every observable consequence either maps to an
+  approved OpenSpec requirement and scenario in the governance root's
+  `openspec/**` plane, or carries a reviewed N/A judgment proving it purely
+  structural with no independently testable behavior.
+
+**The reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a
+recorded owner judgment homed in `decisions/` (RFC3-15), and the judgment is
+honored only through an effective owner act under RFC3-16(a), in state (1) or
+state (2), with that state rendered; absent or invalid acts map nothing and
+leave the consequence unmapped and Unknown, never covered (RFC3-16(a)'s
+effect rule; VIS-2).
+
+**Rows are per observable consequence, not per clause.**
+
+- A clause with five observable consequences and one mapped requirement is
+  not covered; the matrix discloses the consequences it enumerates for each
+  clause, so a complete-looking matrix over under-enumerated consequences is
+  a defect of the matrix.
+- At surface specification a clause-to-requirement coverage matrix over
+  RFC3-1..RFC3-33 is produced — **that matrix is review material, never
+  authority**.
+
+This clause creates no OpenSpec content now (none may exist during
+bootstrap). This clause binds the whole RFC 0003 package, not this module
+alone. (Shape-parallel with RFC6-28, RFC7-38, RFC8-32, RFC9-52, RFC10-16,
+RFC11-12.)
 
 ## 3. Violation cases
 
@@ -638,17 +738,21 @@ the reasoning RFC3-16(a) extends to authorizations.
 
 ## 6. Deliberately deferred
 
-Concrete field grammars, YAML dialect rules, and validation tooling →
-implementation under accepted contracts. Snapshot physical representation and
-the observation-record storage home → RFC 0004 (constrained by RFC3-20/22).
-Machine-client consent verification and consent-surface rendering mechanics →
-RFC 0005. Internal schemas of `intent/`, `work/`, `map/` → RFCs 0007–0009
-(namespace class fixed in RFC3-18/19). Retention/compaction policy for
-`work/**` execution records (SDR-10) → RFC 0004 + quality policy.
-Multi-workspace and multi-user manifests → deferred with multi-user (v1.md).
-Cross-project relation *type vocabulary* beyond
-`subproject-of`/`contains-project`/`depends-on` → portfolio profile RFC
-material (RFC1-7).
+- Concrete field grammars, YAML dialect rules, and validation tooling →
+  implementation under accepted contracts.
+- Snapshot physical representation and the observation-record storage home →
+  RFC 0004 (constrained by RFC3-20/22).
+- Machine-client consent verification and consent-surface rendering
+  mechanics → RFC 0005.
+- Internal schemas of `intent/`, `work/`, `map/` → RFCs 0007–0009 (namespace
+  class fixed in RFC3-18/19).
+- Retention/compaction policy for `work/**` execution records (SDR-10) →
+  RFC 0004 + quality policy.
+- Multi-workspace and multi-user manifests → deferred with multi-user
+  (v1.md).
+- Cross-project relation *type vocabulary* beyond
+  `subproject-of`/`contains-project`/`depends-on` → portfolio profile RFC
+  material (RFC1-7).
 
 ---
 

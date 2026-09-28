@@ -7203,6 +7203,13 @@ def selftest():
     recorder = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(recorder)
     real_aggregate = read(PERFORMED_ACT_RECORD)
+    # Once the act is performed the real aggregate carries its block; the
+    # fixture appends its own, so the performed one is set aside first.
+    begin = real_aggregate.find(f"\n<!-- {recorder.MARKER}:BEGIN -->")
+    if begin != -1:
+        end_marker = f"<!-- {recorder.MARKER}:END -->\n"
+        end = real_aggregate.index(end_marker, begin) + len(end_marker)
+        real_aggregate = real_aggregate[:begin] + real_aggregate[end:]
     real_instant = "2026-09-28T00:00:00Z"
     real_body = recorder.body(
         "a" * 64, real_instant, recorder.Pins("a" * 64, "r.md", "b" * 64))

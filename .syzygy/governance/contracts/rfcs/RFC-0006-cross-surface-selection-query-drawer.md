@@ -37,16 +37,30 @@ Rationale, amendment history, and rejected alternatives:
 
 *If this map and a clause ever disagree, the clause wins.*
 
-One identity space (§3.1) · nine typed resolution outcomes, nothing fails
-silently (§3.2) · rename-proof URLs, two temporalities (§3.3) · machine
-answers carry the same facts and labels humans see (§3.4) · one evidence
-drawer per selection (§3.5) · rendering equivalence (§3.6) · explicit scenario
-context — base, proposed, historical (§3.7) · consent and secrets render as
-policy states, never as absence (§3.8) · this contract schedules no
-implementation work (§3.9).
+This module decides how anything in the project graph is selected, pinned in
+a URL, resolved and queried, so that the three surfaces and the machine
+endpoints never tell different truths about one selection. Three clauses
+carry the weight: RFC6-5 (every reference resolves to exactly one typed
+outcome, and nothing fails silently), RFC6-18 (one kernel-computed fact set
+per selection, behind the one evidence drawer) and RFC6-22 (the equivalence
+definition over which RFC6-23 forbids contradiction).
 
-Then: §4 violation cases · §5 integration · §6 alternatives (in history) ·
-§7 deferrals · §8 open questions. Contract range RFC6-1…RFC6-28, no gaps.
+- **What a selection is and how it resolves.**
+  - One identity space (§3.1).
+  - Nine typed resolution outcomes, nothing fails silently (§3.2).
+- **How a selection travels.**
+  - Rename-proof URLs, two temporalities (§3.3).
+  - Explicit scenario context — base, proposed, historical (§3.7).
+- **What every consumer receives.**
+  - Machine answers carry the same facts and labels humans see (§3.4).
+  - One evidence drawer per selection (§3.5).
+  - Rendering equivalence (§3.6).
+  - Consent and secrets render as policy states, never as absence (§3.8).
+- **What it does not do.** This contract schedules no implementation work
+  (§3.9).
+- **After the contract.** §4 violation cases · §5 integration ·
+  §6 alternatives (in history) · §7 deferrals · §8 open questions.
+  - Contract range RFC6-1…RFC6-28, no gaps.
 
 ---
 
@@ -94,25 +108,29 @@ rather than renumber.
 **RFC6-1 — One selection identity space.** *(refines SC-1)* A **selection
 reference** is the tuple **(entity kind, durable entity identity)**, optionally
 qualified by an **evaluation identity** and a **scenario context** (§3.7).
-Entity kinds and identities are exactly RFC 0001's (RFC1-5, RFC1-9/10): the
-kernel mints nothing new for selection, and **no surface-local handle — file
-path, node index, work-item row, layout coordinate, scene object id — is ever
-a selection identity**. Surfaces may keep private handles for rendering; every
-handle must resolve to a selection reference before it crosses a surface
-boundary, a URL, or an endpoint.
+
+- Entity kinds and identities are exactly RFC 0001's (RFC1-5, RFC1-9/10): the
+  kernel mints nothing new for selection, and **no surface-local handle — file
+  path, node index, work-item row, layout coordinate, scene object id — is
+  ever a selection identity**.
+- Surfaces may keep private handles for rendering; every handle must resolve
+  to a selection reference before it crosses a surface boundary, a URL, or an
+  endpoint.
 
 **RFC6-2 — Everything selectable, one way.** Every V0-core entity (RFC1-5),
 and every entity of an extension profile loaded **for the project** (RFC1-7 —
 the mission profile's Mission and Attention Item included, on the staging
-RFC1-7 states for that profile), is selectable by reference. **Entities loaded
-at the workspace level rather than for a project are outside this clause and
-are deferred with the portfolio profile** (SDR-29/30; §7): RFC6-8 pins a
-selection inside a project identity and has no workspace-identity limb, so
-declaring such an entity selectable here would make it selectable with no URL
-form, against RFC6-12's openable-in-any-surface rule and VIS-7's link rule.
-Selection targets the **durable identity level**
-(SDR-2): selecting a claim or gap selects its durable identity; the evaluation
-qualifier picks which instance answers.
+RFC1-7 states for that profile), is selectable by reference.
+
+- **Entities loaded at the workspace level rather than for a project are
+  outside this clause and are deferred with the portfolio profile**
+  (SDR-29/30; §7): RFC6-8 pins a selection inside a project identity and has
+  no workspace-identity limb, so declaring such an entity selectable here
+  would make it selectable with no URL form, against RFC6-12's
+  openable-in-any-surface rule and VIS-7's link rule.
+- Selection targets the **durable identity level** (SDR-2): selecting a claim
+  or gap selects its durable identity; the evaluation qualifier picks which
+  instance answers.
 
 **RFC6-3 — Cross-surface synchronization.** One selection reference resolves
 **identically in all three surfaces**: same entity, same evaluation, same
@@ -170,6 +188,30 @@ over a value domain in which two conforming surfaces could lawfully answer
 differently for one (reference, evaluation identity, scenario context) — a
 disagreement RFC6-23 makes release-blocking. [Inferred — the ordering; Observed
 — the fail-closed direction from SEC-5's unclassifiable rule and RFC6-26/27.]
+
+*Diagram (non-normative; the clauses govern):* the RFC6-5 precedence — the
+first condition that holds names the kernel outcome; not-applicable sits
+outside it.
+
+```mermaid
+flowchart TD
+    R["Selectable reference at one evaluation<br/>and scenario context"] --> E{"Content excluded by<br/>secret-detection policy?"}
+    E -->|yes| O1["1 excluded"]
+    E -->|no| U{"Requires an unconsented<br/>source or provider?"}
+    U -->|yes| O2["2 unconsented"]
+    U -->|no| I{"Scenario names proposals<br/>the kernel may not union?"}
+    I -->|yes| O3["3 incompatible-scenario"]
+    I -->|no| X{"Kernel cannot resolve<br/>the reference at all?"}
+    X -->|yes| O4["4 unresolvable"]
+    X -->|no| T{"Durable identity retired?"}
+    T -->|yes| O5["5 retired"]
+    T -->|no| A{"Entity absent from the selected<br/>evaluation's snapshot?"}
+    A -->|yes| O6["6 resolved-absent"]
+    A -->|no| K{"Governing claims<br/>render Unknown?"}
+    K -->|yes| O7["7 unknown"]
+    K -->|no| O8["8 resolved"]
+    NA["not-applicable: per surface only, in place of<br/>that surface's projection; the kernel outcome stands"]
+```
 
 **RFC6-6 — Outcomes are not Unknown reasons.** `not-applicable`, `retired`,
 `resolved-absent`, and `unresolvable` are **navigation outcomes**, not claim
@@ -236,28 +278,36 @@ bidirectional obligation.
 
 **RFC6-14 — Label parity.** Every entity and claim instance in a
 machine answer carries its epistemic state **verbatim from the RFC 0002
-vocabulary**: the label (Observed / Inferred / Unknown), the rendering tier
-(RFC2-25), the Unknown reason where applicable (RFC2-24), and the freshness
-state (RFC2-10). **Secondary Unknown annotations travel with the primary**,
-verbatim and marked as secondary (RFC2-24 opens them and closes their
-vocabulary to the same twelve); an answer carrying the primary alone has
-dropped part of the claim instance's epistemic state. **An aggregate carries
-no epistemic state of its own** — no aggregate-level label, tier, Unknown
-reason, or freshness state — and carries instead its members' composition per
-RFC6-17: RFC 0002 defines those four for claim instances, not for sets, and a
-headline label over mixed membership is VIS-1's named violation ("rendering
-that region green because its neighbors are green") whether or not an honest
-composition is disclosed beside it. **A machine answer never omits epistemic
-state**: an answer
-listing entities without their labels, or a count that folds Unknowns into a
-total silently, is a violation — an agent must be exactly as unable to mistake
-Unknown for success as the owner is (VIS-2). Sibling surface states
-(*dismissed by decision*, *unadopted draft*, *editorial draft* — the three
-RFC2-25 places deliberately outside the registry) travel with the same
-fidelity, and so does `challenge-pending` (RFC2-13) — the named disclosure a
-claim carries while a submitted, not-yet-admitted challenge stands against it.
-It is neither a tier nor an Unknown reason and never displaces the four values
-above; it travels **beside** them.
+vocabulary**:
+
+- the label (Observed / Inferred / Unknown);
+- the rendering tier (RFC2-25);
+- the Unknown reason where applicable (RFC2-24); and
+- the freshness state (RFC2-10).
+
+**Secondary Unknown annotations travel with the primary**, verbatim and marked
+as secondary (RFC2-24 opens them and closes their vocabulary to the same
+twelve); an answer carrying the primary alone has dropped part of the claim
+instance's epistemic state.
+
+**An aggregate carries no epistemic state of its own** — no aggregate-level
+label, tier, Unknown reason, or freshness state — and carries instead its
+members' composition per RFC6-17: RFC 0002 defines those four for claim
+instances, not for sets, and a headline label over mixed membership is
+VIS-1's named violation ("rendering that region green because its neighbors
+are green") whether or not an honest composition is disclosed beside it.
+
+**A machine answer never omits epistemic state**: an answer listing entities
+without their labels, or a count that folds Unknowns into a total silently, is
+a violation — an agent must be exactly as unable to mistake Unknown for
+success as the owner is (VIS-2).
+
+Sibling surface states (*dismissed by decision*, *unadopted draft*, *editorial
+draft* — the three RFC2-25 places deliberately outside the registry) travel
+with the same fidelity, and so does `challenge-pending` (RFC2-13) — the named
+disclosure a claim carries while a submitted, not-yet-admitted challenge
+stands against it. It is neither a tier nor an Unknown reason and never
+displaces the four values above; it travels **beside** them.
 
 **RFC6-15 — Every answer is evaluation-stamped.** Every query answer names the
 evaluation identity (source snapshot + as-of instant) it was computed at.
@@ -274,26 +324,34 @@ partial-snapshot rule, applied to queries).
 **RFC6-17 — Aggregation discloses.** *(SDR-25, SDR-27, RFC2-24 rendering rule,
 unified)* Any aggregate — in a scene, a table, or a machine answer — discloses
 its membership count and epistemic composition and supports expansion to its
-members. **The disclosed composition is the full RFC6-22 equivalence tuple**:
-per-label, per-tier, per-Unknown-reason and per-freshness-state counts, **the
-sibling surface states**, the `challenge-pending` disclosure (RFC2-13), and —
-where the aggregate's members carry them — per-value counts of the **chain
-state** and the **normalized work state** of RFC6-19 class 8, so an aggregate
-can never satisfy this clause in full while disclosing nothing about
-reconciliation. **Per-Unknown-reason counts are computed over primary reasons
-only** — one claim instance contributes exactly one — with secondary
-annotations (RFC2-24) disclosed separately and never folded into the primary
-counts; otherwise two conforming surfaces could produce different Unknown-reason
-totals over one declared scope while both satisfying this clause, which RFC6-23
-would then class as a release-blocking disagreement. The tier counts cover
-**all six** of RFC2-25's
-tiers (`gate-backed`, `report-fact`, `asserted-by-worker`, `reduced-fidelity`,
-`declared-only`, `suspended`), not a subset, and the sibling surface states are
-the three RFC2-25 places deliberately outside the registry (*dismissed
-by decision*, *unadopted draft*, *editorial draft*, per RFC6-14) — never label
-and Unknown reason alone. The aggregation obligation is exactly as wide as the
-equivalence obligation over the same objects: labels may not be dropped at the
-moment elements merge. "Observed ×30" is honest only when the reader can also
+members.
+
+**The disclosed composition is the full RFC6-22 equivalence tuple**:
+
+- per-label, per-tier, per-Unknown-reason and per-freshness-state counts;
+- **the sibling surface states**;
+- the `challenge-pending` disclosure (RFC2-13); and
+- where the aggregate's members carry them, per-value counts of the **chain
+  state** and the **normalized work state** of RFC6-19 class 8,
+
+so an aggregate can never satisfy this clause in full while disclosing nothing
+about reconciliation.
+
+**Per-Unknown-reason counts are computed over primary reasons only** — one
+claim instance contributes exactly one — with secondary annotations (RFC2-24)
+disclosed separately and never folded into the primary counts; otherwise two
+conforming surfaces could produce different Unknown-reason totals over one
+declared scope while both satisfying this clause, which RFC6-23 would then
+class as a release-blocking disagreement.
+
+The tier counts cover **all six** of RFC2-25's tiers (`gate-backed`,
+`report-fact`, `asserted-by-worker`, `reduced-fidelity`, `declared-only`,
+`suspended`), not a subset, and the sibling surface states are the three
+RFC2-25 places deliberately outside the registry (*dismissed by decision*,
+*unadopted draft*, *editorial draft*, per RFC6-14) — never label and Unknown
+reason alone. The aggregation obligation is exactly as wide as the equivalence
+obligation over the same objects: labels may not be dropped at the moment
+elements merge. "Observed ×30" is honest only when the reader can also
 see that all 30 are `reduced-fidelity` and 12 are stale; "Inferred ×8" only
 when it discloses that all eight are `asserted-by-worker` — the one tier whose
 parent label is Inferred — with no retained artifact.
@@ -303,16 +361,19 @@ parent label is Inferred — with no retained artifact.
 **RFC6-18 — One drawer, one fact set.** *(SC-4, adopted as binding)* For one
 (selection reference, evaluation identity, scenario context) the kernel
 computes **one fact set**, consumed by every surface and by the endpoints.
+
 Surfaces may differ in presentation — ordering, grouping, progressive
 disclosure, SDR-17's minimal-by-default status display — they may **not**
 differ in which facts, labels, or provenance exist: the full fact set is
 reachable from every surface, and two surfaces showing different evidence for
 one selection at one evaluation is a **kernel defect, not a UI
-inconsistency**. The public-facing name of this fact set is **"Why this
-answer?"** — several of its classes are authority, policy, and work, not
-evidence, so "evidence drawer" names the container's dominant class, never
-its extent; both names denote the one fact set and neither adds or subtracts
-a fact. The human and machine paths receive the same facts (RFC6-13).
+inconsistency**.
+
+The public-facing name of this fact set is **"Why this answer?"** — several
+of its classes are authority, policy, and work, not evidence, so "evidence
+drawer" names the container's dominant class, never its extent; both names
+denote the one fact set and neither adds or subtracts a fact. The human and
+machine paths receive the same facts (RFC6-13).
 
 **RFC6-19 — Drawer content classes.** The fact set contains, per selection:
 
@@ -350,25 +411,29 @@ a fact. The human and machine paths receive the same facts (RFC6-13).
 7. **Policy visibility** — exclusions (with counts), the **coverage
    boundary**, and consent state (§3.8). The coverage boundary is the union
    of two defined constructs, never a free-standing judgment about what the
-   evaluation "could observe": the producing evaluation's executed **mapping
-   coverage records** (RFC4-27 — which pass ran, over which declared scope
-   with exclusions counted, with which observer/adapter versions, and what it
-   found; deterministic facts inside the observation record, RFC2-6) and, where
-   the snapshot was partial, its **explicitly declared captured scope**
-   (RFC2-23, partial-snapshot rule).
+   evaluation "could observe":
+   - the producing evaluation's executed **mapping coverage records**
+     (RFC4-27 — which pass ran, over which declared scope with exclusions
+     counted, with which observer/adapter versions, and what it found;
+     deterministic facts inside the observation record, RFC2-6) and,
+   - where the snapshot was partial, its **explicitly declared captured
+     scope** (RFC2-23, partial-snapshot rule).
 8. **Work and reconciliation state** — where work bears on the selection,
    **two fields, never folded into one and never rendered as proof of
-   satisfaction** (work is never proof): (i) the relevant items' **chain
-   state**, defined at RFC2-18 (`merged`, `reconciliation-pending`,
-   `reconciled@E`, `unsatisfied`, `contradiction-raised`, `Unknown(reason)`)
-   and read at this evaluation under RFC2-19's V0 staging — this is the
-   selection's reconciliation state, and an uncomputed reconciliation renders
-   Unknown, never green; and (ii) the items' **normalized work state**
-   (RFC8-12 — a forward reference, informative until RFC 0008 is accepted:
-   until then the field is not required, its absence renders as absence, and
-   nothing may be substituted for it). Trajectory's rendering of the chain
-   state is RFC8-28, likewise informative until RFC 0008 is accepted; the
-   definition this class binds is RFC2-18's.
+   satisfaction** (work is never proof):
+   - (i) the relevant items' **chain state**, defined at RFC2-18 (`merged`,
+     `reconciliation-pending`, `reconciled@E`, `unsatisfied`,
+     `contradiction-raised`, `Unknown(reason)`) and read at this evaluation
+     under RFC2-19's V0 staging — this is the selection's reconciliation
+     state, and an uncomputed reconciliation renders Unknown, never green;
+     and
+   - (ii) the items' **normalized work state** (RFC8-12 — a forward
+     reference, informative until RFC 0008 is accepted: until then the field
+     is not required, its absence renders as absence, and nothing may be
+     substituted for it).
+
+   Trajectory's rendering of the chain state is RFC8-28, likewise informative
+   until RFC 0008 is accepted; the definition this class binds is RFC2-18's.
 
 **RFC6-20 — Drawer links obey the floor.** Every internal link in the fact set
 resolves to its identified target; the kernel does not emit a reference it
@@ -445,6 +510,20 @@ carries exactly one scenario context; absent an explicit one, the context is
   design* is a separate deferred candidate-design bundle (RFC9-41; §7); nothing
   in this clause depends on it.
 
+*Diagram (non-normative; the clauses govern):* how RFC6-24 settles a
+selection's one scenario context.
+
+```mermaid
+flowchart TD
+    S["Selection"] --> Q{"Explicit scenario context?"}
+    Q -->|"none, or Base"| B["Base: base graph at the selected evaluation,<br/>no proposal overlay"]
+    B -.->|"non-default revision"| M["Still Base, with an explicit<br/>non-default marker naming the revision"]
+    Q -->|Proposed| P{"Proposal set mutually compatible?"}
+    P -->|yes| PO["Base evaluation + selected proposals:<br/>distinct from observed, no status authority"]
+    P -->|"two in one exclusivity group,<br/>or undeclared compatibility"| IS["Refused: incompatible-scenario,<br/>N candidate futures, one at a time"]
+    Q -->|Historical| H["Superseded evaluation against its immutable<br/>observation record, staleness visible"]
+```
+
 **RFC6-25 — Context travels with the selection.** Cross-surface
 synchronization (RFC6-3), URLs (RFC6-8), and query answers all carry the
 scenario context. A surface may never silently swap context — rendering a
@@ -473,33 +552,34 @@ trust-floor violation, identical in gravity to one in a tooltip.
 **RFC6-28 — This contract schedules nothing.** This RFC fixes the semantics of
 selection, URLs, resolution outcomes, the evidence drawer, and the machine
 query plane; it is **not a specification of record from which implementation
-work may be scheduled**. No implementation work for **user-observable behavior
-under this contract** — selection and URL behavior, the nine typed resolution
-outcomes, retirement rendering, drawer content, endpoint answers and their
-label parity — may be scheduled solely from this RFC: before implementation,
-every observable consequence of **every clause of this contract other than
-this one** must either **map to an approved OpenSpec requirement or scenario**
-in the governance root's `openspec/**` plane, or carry an **explicit, reviewed
-N/A judgment** recording why that consequence needs no requirement. **The
-reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a recorded
-owner judgment homed in `decisions/` (RFC3-15), and the judgment is honored only
-through an effective owner act under RFC3-16(a), in state (1) or state (2),
-with that state rendered; absent or invalid acts map nothing and leave the
-consequence unmapped and Unknown, never covered (RFC3-16(a)'s effect rule;
-VIS-2).
+work may be scheduled**.
+
+No implementation work for **user-observable behavior under this contract** —
+selection and URL behavior, the nine typed resolution outcomes, retirement
+rendering, drawer content, endpoint answers and their label parity — may be
+scheduled solely from this RFC: before implementation, every observable
+consequence of **every clause of this contract other than this one** must
+either **map to an approved OpenSpec requirement or scenario** in the
+governance root's `openspec/**` plane, or carry an **explicit, reviewed N/A
+judgment** recording why that consequence needs no requirement.
+
+**The reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a
+recorded owner judgment homed in `decisions/` (RFC3-15), and the judgment is
+honored only through an effective owner act under RFC3-16(a), in state (1) or
+state (2), with that state rendered; absent or invalid acts map nothing and
+leave the consequence unmapped and Unknown, never covered (RFC3-16(a)'s effect
+rule; VIS-2).
 
 **Rows are per observable consequence, not per clause.** A clause with five
 observable consequences and one mapped requirement is not covered; the matrix
 discloses the consequences it enumerates for each clause, so a
 complete-looking matrix over under-enumerated consequences is a defect of the
-matrix. The
-surface-specification phase
-must produce, as a deliverable, a **clause-to-requirement coverage matrix**
-for this RFC — every clause mapped to requirement identities or to its
-reviewed N/A — and that matrix is review material, never authority. This
-clause creates no OpenSpec content now (none may exist during bootstrap); it
-binds the phase boundary so RFC prose is never quietly treated as an
-implementable behavioral spec.
+matrix. The surface-specification phase must produce, as a deliverable, a
+**clause-to-requirement coverage matrix** for this RFC — every clause mapped
+to requirement identities or to its reviewed N/A — and that matrix is review
+material, never authority. This clause creates no OpenSpec content now (none
+may exist during bootstrap); it binds the phase boundary so RFC prose is never
+quietly treated as an implementable behavioral spec.
 
 ---
 

@@ -64,7 +64,7 @@ scripts/context_load.py doctrine:vision.md doctrine:v1.md \
   rfcs/RFC-0003/README.md rfcs/RFC-0003/governance-homes-and-owner-acts.md
 ```
 
-Measured: **13,057 words ≈ 17,627 estimated tokens.** Band position is
+Measured: **13,427 words ≈ 18,126 estimated tokens.** Band position is
 owned by `CONTEXT-BUDGET-REPORT.md` §1, computed from this anchored
 figure; this fixture's prose makes no band claim of its own. The proposed
 band and trigger live in the candidate knowledge-hygiene craft policy,
@@ -149,7 +149,7 @@ the amendment clarifies. Word costs for every module are in
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`98649eefd662e5d0…` (recompute: `cat <mandatory files> | sha256sum`).
+`5c4e8b910af77a1b…` (recompute: `cat <mandatory files> | sha256sum`).
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a
