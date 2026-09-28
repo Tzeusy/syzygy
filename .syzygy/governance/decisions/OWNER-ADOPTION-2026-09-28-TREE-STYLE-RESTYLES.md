@@ -17,7 +17,9 @@ batch in their own words; this record quotes the answers.
   - **RFC 0001–0009 package** — the owner's words select the offered act
     `ADOPT CONTRACT READABILITY RESTYLE` over the package manifest in
     `../contracts/candidates/contract-readability-restyle/`. Its dedicated act
-    record, written by the recorder, carries the exact phrase and argument.
+    record,
+    [`CONTRACT-READABILITY-RESTYLE-ADOPTION-ACT.md`](CONTRACT-READABILITY-RESTYLE-ADOPTION-ACT.md),
+    written by the recorder, carries the exact phrase and argument.
 - **Specification policies (CC-SPEC, CC-IMPACT):**
   - **"Close #5, use restyle"** — draft PR #5 (`syzygy-2dn`, the compact
     rewrite) closes without merge; the meaning-preserving restyle owns the two

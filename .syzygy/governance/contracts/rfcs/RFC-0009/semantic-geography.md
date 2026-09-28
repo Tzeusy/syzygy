@@ -33,17 +33,41 @@ SDR-29, SDR-30. Package-level `Serves`: `README.md`.
 
 *If this section and a clause disagree, the clause wins.*
 
-This module owns **where things are and why they are there**: surface identity
-and the semantics-only boundary; what may and may never anchor position; the one
-home geography versus explicitly selected analytical planes; the layout input
-tuple and the determinism, append-stability and relocation obligations built on
-it; shared-component placement and identity counting; repository and authority
-overlays. Read it to answer: *may this thing move? what does nearness mean? who
-may re-lay the map? where does a shared or undeclared component live? what does
-this count?* For colour, height, edges, lenses, scenes and aggregates, read
-`visual-grammar-and-lenses.md` (RFC9-24..RFC9-45); for equivalence, release
-gates, performance, motion and the OpenSpec boundary,
-`interaction-parity-and-release.md` (RFC9-46..RFC9-52).
+This module decides **where things are on the map and why they are there**: home
+position is anchored to declared identity, never to measurement, paths or
+inference, and a declared entity's home coordinates change only on a closed set
+of rendered, announced triggers. Three clauses carry the weight: **RFC9-4** (the
+anchoring rule), **RFC9-9** with its sub-clauses (what nearness means, and how a
+reader tells its readings apart on screen), and **RFC9-14** with **RFC9-15(b)**
+(the layout input tuple, fixed within a version and regenerated only whole by
+owner act).
+
+Read it to answer: *may this thing move? what does nearness mean? who may
+re-lay the map? where does a shared or undeclared component live? what does
+this count?*
+
+- **Surface identity and scope** (§1, RFC9-1..RFC9-3) — what `map/` is, the
+  semantics-only boundary, and encoding provenance.
+- **Anchoring** (§2, RFC9-4..RFC9-8(a)) — what may and may never anchor
+  position.
+  - Capability identity continuity and the unmapped district.
+  - The portfolio as a derived, append-stable arrangement, and the
+    workspace-scope machinery its re-lay needs.
+- **Home geography versus analytical planes** (§3, RFC9-9..RFC9-13(a)).
+  - The three legend lines of nearness and the honored / not-honored channel.
+  - The mode boundary, lens switching, and personal presentation state.
+- **Layout determinism and stability** (§4, RFC9-14..RFC9-18).
+  - The layout input tuple, append-stability, and the closed
+    relocation-trigger set with its owner gate.
+  - Fixed locations with manual full refresh, forbidden churn, and the layout
+    version registry.
+- **Shared components and identity counting** (§5, RFC9-19..RFC9-21).
+- **Repository and authority overlays** (§6, RFC9-22..RFC9-23).
+- **Elsewhere in the package.**
+  - Colour, height, edges, lenses, scenes and aggregates:
+    `visual-grammar-and-lenses.md` (RFC9-24..RFC9-45).
+  - Equivalence, release gates, performance, motion and the OpenSpec
+    boundary: `interaction-parity-and-release.md` (RFC9-46..RFC9-52).
 
 ---
 
@@ -92,45 +116,72 @@ RFC1-13/14) → **component block** (declared topology entry) → **plot/buildin
 not modelled geometry — V0 owes no symbol-level layout contract. [Inferred —
 hierarchy composition; anchor level Observed per architecture.md and RFC1-13.]
 
-**RFC9-5.** **What may anchor geography:** adopted capability identities; adopted
-topology entries and their declared placements; declared implementation mappings
-— including `declared-only` tier mappings (RFC2-25): the *declaration* is the
-Observed fact that assigns the address, while the unverified satisfaction claim
-renders Unknown on the epistemic channels. **What may never anchor geography:**
-drafted/unadopted declarations (they render in the proposed treatment with an
-"unadopted" plate, outside the stable address space [Observed: v1.md; RFC1-14]);
-inferred mappings (inference may **annotate** geography — hatched, with
-provenance — never anchor it [Observed: trust-and-evidence.md]); file paths (a
-path is an attribute, never an identity; path-derived arrangement is confined to
-the unmapped district, RFC9-44); metrics of any kind; proposals (RFC1-22,
-proposed *state* plane); personal presentation state (VIS-6, exception (a)).
+*Diagram (non-normative; the clauses govern):* the home-geography spatial
+hierarchy and what places each level.
 
-**RFC9-6.** Capability identity continuity is RFC 0001's: rename changes a label
-and no coordinate (RFC1-10); split/merge mints successors with `succeeds` edges,
-rendered as an explicit identity event with both old and new identities visible —
-never a silent relocation (RFC1-11); retirement ghosts the district and is a
-rendered event. A selection or URL pinned to a retired district resolves per
-RFC6-11 — never a 404, never an auto-redirect.
+```mermaid
+flowchart TD
+    P["project"] --> D["capability district<br/>(anchor level, RFC1-13/14)"]
+    D --> B["component block<br/>(declared topology entry)"]
+    B --> PL["plot / building<br/>(code element, declared implementation mapping)"]
+    PL -.-> E["below source/test evidence:<br/>evidence listings, not modelled geometry"]
+```
+
+**RFC9-5.** **What may anchor geography:**
+
+- adopted capability identities;
+- adopted topology entries and their declared placements;
+- declared implementation mappings — including `declared-only` tier mappings
+  (RFC2-25): the *declaration* is the Observed fact that assigns the address,
+  while the unverified satisfaction claim renders Unknown on the epistemic
+  channels.
+
+**What may never anchor geography:**
+
+- drafted/unadopted declarations (they render in the proposed treatment with an
+  "unadopted" plate, outside the stable address space [Observed: v1.md;
+  RFC1-14]);
+- inferred mappings (inference may **annotate** geography — hatched, with
+  provenance — never anchor it [Observed: trust-and-evidence.md]);
+- file paths (a path is an attribute, never an identity; path-derived
+  arrangement is confined to the unmapped district, RFC9-44);
+- metrics of any kind;
+- proposals (RFC1-22, proposed *state* plane);
+- personal presentation state (VIS-6, exception (a)).
+
+**RFC9-6.** Capability identity continuity is RFC 0001's:
+
+- rename changes a label and no coordinate (RFC1-10);
+- split/merge mints successors with `succeeds` edges, rendered as an explicit
+  identity event with both old and new identities visible — never a silent
+  relocation (RFC1-11);
+- retirement ghosts the district and is a rendered event. A selection or URL
+  pinned to a retired district resolves per RFC6-11 — never a 404, never an
+  auto-redirect.
 
 **RFC9-7.** Code that maps to no declared capability renders Unknown — never
 silently inferred into a capability [Observed: v1.md] — and lives in the unmapped
 district (RFC9-44), never in a plausible-looking neighborhood.
 
 **RFC9-8.** The portfolio level is a **derived arrangement, not an entity**:
-projects placed deterministically by project identity; grouping and ordering are
-workspace-manifest concerns (SDR-29, RFC 0003); cross-project relations render
-only where declared, otherwise unconfirmed/asymmetric (SDR-30) — and inferred
-cross-project relations never anchor placement. Those declared relations are
-**portfolio-profile relations** (`depends-on`, `subproject-of`,
-`contains-project`; RFC1-7, RFC3-14, RFC3-31), not kernel relations, and they
-legend as themselves under RFC9-9's profile-relation rule — declared, with their
-profile and semantic class named, and never rendered or counted as RFC1-25's
-observed `depends_on`. A derived hierarchy view (RFC3-31, SDR-28) is a rendering
-over those declarations and never a plane fact. **Portfolio arrangement is
-append-stable on RFC9-15's terms:** onboarding a project must not perturb the
-placement of projects already arranged — determinism alone would permit a lawful
-reshuffle of the whole portfolio on every onboarding, and the spatial-memory
-premise applies at portfolio scale exactly as inside a project.
+
+- projects placed deterministically by project identity;
+- grouping and ordering are workspace-manifest concerns (SDR-29, RFC 0003);
+- cross-project relations render only where declared, otherwise
+  unconfirmed/asymmetric (SDR-30) — and inferred cross-project relations never
+  anchor placement.
+
+Those declared relations are **portfolio-profile relations** (`depends-on`,
+`subproject-of`, `contains-project`; RFC1-7, RFC3-14, RFC3-31), not kernel
+relations, and they legend as themselves under RFC9-9's profile-relation rule —
+declared, with their profile and semantic class named, and never rendered or
+counted as RFC1-25's observed `depends_on`. A derived hierarchy view (RFC3-31,
+SDR-28) is a rendering over those declarations and never a plane fact.
+**Portfolio arrangement is append-stable on RFC9-15's terms:** onboarding a
+project must not perturb the placement of projects already arranged —
+determinism alone would permit a lawful reshuffle of the whole portfolio on
+every onboarding, and the spatial-memory premise applies at portfolio scale
+exactly as inside a project.
 
 **RFC9-8(a) — The portfolio carries the machinery its obligation requires.** The
 portfolio is not a project — SDR-29 and RFC3-21 put its arrangement at
@@ -302,6 +353,20 @@ within that set. The residue is therefore **declared**, in four binding parts:
 [Inferred — part 2's reader-decidability requirement is load-bearing. An
 amendment keeping the third legend line while dropping part 2 or 3 has kept the
 disclaimer and lost the property it disclaims.]
+
+*Diagram (non-normative; the clauses govern):* how a reader decides, from the
+screen alone, which legend line applies to a nearness between two entities.
+
+```mermaid
+flowchart TD
+    N["A rendered nearness between two entities"] --> Q1{"Intra-district?<br/>(district boundary, RFC9-25)"}
+    Q1 -->|yes| R1["declared containment"]
+    Q1 -->|no| Q3{"Edge channel or its state suppressed<br/>for this region by a lawful narrowing?"}
+    Q3 -->|yes| R4["undecidable at this fidelity"]
+    Q3 -->|no| Q2{"Rendered declared-dependency edge<br/>in honored state? (RFC9-9(b))"}
+    Q2 -->|yes| R2["declared relatedness, best-effort"]
+    Q2 -->|no| R3["residual adjacency —<br/>carries no meaning"]
+```
 
 **RFC9-9(b) — The honored / not-honored state is a channel, and is registered as
 one.** The positional-expression state of a `declared-dependency` edge is a
@@ -519,15 +584,20 @@ release-gated, fixture-tested property (RFC9-47), not a trusted one. [Inferred �
 obligation; mechanism deliberately unspecified.]
 
 **RFC9-16.** **The closed relocation-trigger set.** A declared entity's home
-coordinates change only on: (a) capability/topology creation or retirement
-(append to free space; ghost then remove); (b) split/merge — rendered as an
-identity event per RFC9-6; (c) a declared placement change — announced with its
-governing decision or declaration link; (d) a **layout version change** —
-announced as a reorganisation event naming the old and new layout versions, with
-before/after reachable, **and carrying a recorded rationale naming what the new
-layout buys and what it moves** (recorded with the reorganisation event under
-`.syzygy/map/**`, RFC9-18). A version change with no recorded rationale is not a
-lawful trigger. Every trigger is a rendered event; none is a silent teleport. The
+coordinates change only on:
+
+- (a) capability/topology creation or retirement (append to free space; ghost
+  then remove);
+- (b) split/merge — rendered as an identity event per RFC9-6;
+- (c) a declared placement change — announced with its governing decision or
+  declaration link;
+- (d) a **layout version change** — announced as a reorganisation event naming
+  the old and new layout versions, with before/after reachable, **and carrying
+  a recorded rationale naming what the new layout buys and what it moves**
+  (recorded with the reorganisation event under `.syzygy/map/**`, RFC9-18). A
+  version change with no recorded rationale is not a lawful trigger.
+
+Every trigger is a rendered event; none is a silent teleport. The
 reorganisation event is also what coordinate-bearing personal state resolves
 against when found stale (RFC9-13(a)); announcing the move to the *scene* is not
 by itself announcing it to the reader's saved views.
@@ -613,6 +683,21 @@ existing doctrine — neither RFC3-18 nor doctrine supplied it. RFC9-16's
 obligations bind independently of the gate; the gate adds who may pull the
 trigger.]
 
+*Diagram (non-normative; the clauses govern):* the layout input tuple
+(RFC9-14, RFC9-14(a)) and the owner-gated full regeneration that writes a new
+baseline (RFC9-15(b), RFC9-16(d)).
+
+```mermaid
+flowchart LR
+    DS["declaration set"] --> F["placement: pure function<br/>(insertion order never an input)"]
+    LB["layout baseline<br/>(governed, immutable)"] --> F
+    LV["layout version<br/>(governed, RFC9-18)"] --> F
+    F --> BL["declared-identity base layout<br/>(inside the VIS-7 identity test)"]
+    AP["new declaration within a version"] -->|"joins; placed into free space,<br/>nothing relocates"| DS
+    OA["owner act under RFC9-16(d)"] --> RG["full regeneration<br/>(never partial, never automatic)"]
+    RG -->|"writes"| LB
+```
+
 **RFC9-17.** **Forbidden churn.** None of the following may change a declared
 entity's home coordinates: file move/rename/reformat or any refactor that
 preserves the declared mapping; any metric change in any lens; a new evaluation
@@ -651,17 +736,21 @@ the **layout version registry**; the other is RFC9-26's **channel registry**.)*
 **RFC9-19.** A code element or component may carry declared mappings to multiple
 capabilities (RFC1-17). The map must support all **three placement mechanisms**
 and never force a shared component into one arbitrary capability district
-[Observed: SDR-22]: (a) the **component/architecture plane** — an analytical
-plane (§3) rendering the full multi-capability edge structure; (b) a
-**shared-infrastructure district** in home geography, membership by declaration;
-(c) **multi-capability presence**: the component stands at its declared home
-placement, and every other mapped district renders a link marker that resolves to
-the one entity — **never a clone**. *(Mechanism (c) is available only where a
-**determinate** declared home exists; where declarations compete, RFC9-20 governs
-and the entity is Unknown-placed.)* Two separately selectable copies of one
-identity break identity-based counting (RFC1-17, RFC9-21) and selection identity
-(RFC6-1) — which, not the trust-floor link rule, is what the no-clone rule rests
-on.
+[Observed: SDR-22]:
+
+- (a) the **component/architecture plane** — an analytical plane (§3)
+  rendering the full multi-capability edge structure;
+- (b) a **shared-infrastructure district** in home geography, membership by
+  declaration;
+- (c) **multi-capability presence**: the component stands at its declared home
+  placement, and every other mapped district renders a link marker that
+  resolves to the one entity — **never a clone**.
+
+*(Mechanism (c) is available only where a **determinate** declared home exists;
+where declarations compete, RFC9-20 governs and the entity is Unknown-placed.)*
+Two separately selectable copies of one identity break identity-based counting
+(RFC1-17, RFC9-21) and selection identity (RFC6-1) — which, not the trust-floor
+link rule, is what the no-clone rule rests on.
 
 **RFC9-20.** Home placement of a multi-capability component comes only from
 declaration: a declared primary placement in topology, or declared
@@ -700,6 +789,18 @@ Unknown-placed aggregation — not in both (RFC9-21 double-counting against an
 identity with no home) and not in one (the tie-break re-entering through the
 count after being barred from the layout).
 
+*Diagram (non-normative; the clauses govern):* home placement and counting of
+a multi-capability component by how many declared homes it has in one scope
+(RFC9-19, RFC9-20).
+
+```mermaid
+flowchart TD
+    C["Multi-capability component, one scope"] --> Q{"Declared homes?<br/>(primary topology placement,<br/>shared-infrastructure membership,<br/>placed_in edges)"}
+    Q -->|none| U["placement-undeclared aggregation<br/>in the shared-infrastructure district<br/>(Unknown, missing-declaration)"]
+    Q -->|"one, determinate"| H["stands at its declared home;<br/>RFC9-19(c) link markers are available here<br/>(never a clone)"]
+    Q -->|"competing<br/>(co-unsatisfiable)"| X["Unknown-placed: conflict marker,<br/>adjudication route surfaced;<br/>counts once in the Unknown-placed aggregation"]
+```
+
 **RFC9-21.** **Identity-based counting, never double-counting.** Aggregates count
 each identity once per query subject (RFC1-17): a shared component counts once in
 each district that queries it and once at project scope. Because district totals
@@ -727,16 +828,20 @@ fact [Observed: SDR-23; architecture.md]. A repository present but unconsented
 renders as an explicit walled, Unknown-filled zone — never empty ground, which
 reads as "nothing there" (RFC1-3).
 
-**RFC9-23.** Authority and trust boundaries are a first-class overlay: governance
-root as a civic marker — legended as the only place Syzygy writes **project
-content directly** (VIS-5); adapter-mediated authorities (VCS metadata,
-scheduler, CI, runtime) as a distinct boundary kind with the adapter and its
-authorization visible; consent scopes rendered on the project's surface
-[Observed: SEC-2]; execution-profile boundaries [Observed: SEC-3; RFC5-20];
-secret-exclusion zones as sealed markers at a **declared minimum aggregation** —
-never content, and never a per-element match count (the granularity bound is
-RFC9-29) [Observed: SEC-5]. Write authority a reader cannot see is the surprise
-this overlay exists to prevent.
+**RFC9-23.** Authority and trust boundaries are a first-class overlay:
+
+- governance root as a civic marker — legended as the only place Syzygy writes
+  **project content directly** (VIS-5);
+- adapter-mediated authorities (VCS metadata, scheduler, CI, runtime) as a
+  distinct boundary kind with the adapter and its authorization visible;
+- consent scopes rendered on the project's surface [Observed: SEC-2];
+- execution-profile boundaries [Observed: SEC-3; RFC5-20];
+- secret-exclusion zones as sealed markers at a **declared minimum
+  aggregation** — never content, and never a per-element match count (the
+  granularity bound is RFC9-29) [Observed: SEC-5].
+
+Write authority a reader cannot see is the surprise this overlay exists to
+prevent.
 
 ---
 
@@ -777,29 +882,32 @@ Each is recognizable, not rhetorical:
 
 ## 8. Integration (module-scoped)
 
-**RFC 0001:** capability identity as the map anchor with
-rename/split/merge/retirement (RFC1-10/11/13/14); mapping classes never conflated
-(RFC1-16); multi-capability edges with identity-based counting (RFC1-17); state
-planes — proposed never anchors (RFC1-22); `placed_in` and `declared-dependency`
-(RFC1-25, minted by owner decisions **A7** and **A6**); the twelve-pair
-anti-conflation invariant (RFC1-25(b)); `placed_in` non-functional (RFC1-25(c));
-profile relations (RFC1-7, RFC1-26). **RFC 0002:** degradation-only time
-(RFC2-4); the recorded base layout in the observation record (RFC2-6);
-Contradiction treatment (RFC2-15); Unknown reasons (RFC2-24); tiers (RFC2-25).
-**RFC 0003:** `map/` as a schema-versioned governed namespace (RFC3-18);
-cache/local boundaries (RFC3-20/21); the RFC3-16(a) owner-act predicate;
-identity-preserving migration (RFC3-23); workspace-manifest arrangement (RFC3-21,
-RFC3-31); and, behind RFC9-8(a), the governance-home semantics themselves —
-the constitutional categories and their install gates (RFC3-15), the
-recorded-widening precedent for adding one (RFC3-15(a)), and the workspace
-manifest's classification as personal presentation state that is never a
-snapshot input (RFC3-10, RFC3-11). **RFC 0004:** code-element identity
-continuity (RFC4-12); mapping
-declaration sites (RFC4-26). **RFC 0005:** execution-profile boundaries
-(RFC5-20), rendered as a distinct boundary kind by RFC9-23's authority
-overlay. **RFC 0006:** selection references and cross-surface
-sync (RFC6-1/2/3); outcome set incl. retired/never-redirect (RFC6-5/11); the
-single drawer (RFC6-18/19).
+- **RFC 0001:** capability identity as the map anchor with
+  rename/split/merge/retirement (RFC1-10/11/13/14); mapping classes never
+  conflated (RFC1-16); multi-capability edges with identity-based counting
+  (RFC1-17); state planes — proposed never anchors (RFC1-22); `placed_in` and
+  `declared-dependency` (RFC1-25, minted by owner decisions **A7** and **A6**);
+  the twelve-pair anti-conflation invariant (RFC1-25(b)); `placed_in`
+  non-functional (RFC1-25(c)); profile relations (RFC1-7, RFC1-26).
+- **RFC 0002:** degradation-only time (RFC2-4); the recorded base layout in the
+  observation record (RFC2-6); Contradiction treatment (RFC2-15); Unknown
+  reasons (RFC2-24); tiers (RFC2-25).
+- **RFC 0003:** `map/` as a schema-versioned governed namespace (RFC3-18);
+  cache/local boundaries (RFC3-20/21); the RFC3-16(a) owner-act predicate;
+  identity-preserving migration (RFC3-23); workspace-manifest arrangement
+  (RFC3-21, RFC3-31); and, behind RFC9-8(a), the governance-home semantics
+  themselves:
+  - the constitutional categories and their install gates (RFC3-15);
+  - the recorded-widening precedent for adding one (RFC3-15(a));
+  - the workspace manifest's classification as personal presentation state
+    that is never a snapshot input (RFC3-10, RFC3-11).
+- **RFC 0004:** code-element identity continuity (RFC4-12); mapping
+  declaration sites (RFC4-26).
+- **RFC 0005:** execution-profile boundaries (RFC5-20), rendered as a distinct
+  boundary kind by RFC9-23's authority overlay.
+- **RFC 0006:** selection references and cross-surface sync (RFC6-1/2/3);
+  outcome set incl. retired/never-redirect (RFC6-5/11); the single drawer
+  (RFC6-18/19).
 
 **No forward reliance.** Every `depends_on` edge this module declares is
 satisfied by RFC 0001–RFC 0006, and every clause here is evaluable with those
@@ -829,14 +937,16 @@ RFC2-6's omission of the base layout (defect 5) is **resolved upstream** as of
 
 ## 9. Deliberately deferred (module-scoped)
 
-Layout algorithms and their tuning → post-acceptance spec material; none may
-weaken a clause here (RFC9-2). Interaction design, including the **form and cost
-of the return-to-home affordance** (RFC9-10(c) binds only that return is always
-available and discoverable, per **B21**; which action it is, how many steps it
-takes, and how it is placed and labelled, is not bound here) → craft-and-care.
-The analytical-plane catalog beyond the component/architecture plane →
-map-surface specs, each entering under RFC9-10. Modelled interiors below
-source/test evidence → post-V0 elaboration, no promise made.
+- Layout algorithms and their tuning → post-acceptance spec material; none may
+  weaken a clause here (RFC9-2).
+- Interaction design, including the **form and cost of the return-to-home
+  affordance** (RFC9-10(c) binds only that return is always available and
+  discoverable, per **B21**; which action it is, how many steps it takes, and
+  how it is placed and labelled, is not bound here) → craft-and-care.
+- The analytical-plane catalog beyond the component/architecture plane →
+  map-surface specs, each entering under RFC9-10.
+- Modelled interiors below source/test evidence → post-V0 elaboration, no
+  promise made.
 
 ---
 

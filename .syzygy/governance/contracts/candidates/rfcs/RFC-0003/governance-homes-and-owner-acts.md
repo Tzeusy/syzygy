@@ -38,22 +38,29 @@ questions: `../../history/RFC-0003-history.md`.
 
 This module fixes **where governance artifacts live, what lifecycle each
 class admits, and what makes an owner act real**. It is the part of RFC 0003
-that other RFCs cite most: every gate in the corpus that honors a consent, an
-approval, an adoption stamp, a policy, or a registry cites **RFC3-16(a)** from
-here rather than restating the obligation.
+that other RFCs cite most. Its weight sits in **RFC3-16(a)**, the owner-act
+provenance predicate that every gate in the corpus honoring a consent, an
+approval, an adoption stamp, a policy, or a registry cites rather than
+restating the obligation; in **RFC3-16(b)**, what every act must bind; and in
+**RFC3-16(c)**, the two provenance states.
 
-- **§1.1** the five constitutional `governance/` categories, closed except by
-  recorded owner widening (RFC3-15, RFC3-15(a)).
-- **§1.2** category-appropriate lifecycles; the self-declared stamp versus
-  effective status; **RFC3-16(a)** the effective-owner-act predicate — an
-  authorization needs a real human act, exact-digest and scope bound, in state
-  (1) or state (2), with its state rendered; independent correlation is what
-  permits state (2), not what makes the human act effective; **RFC3-16(b)**
-  what every act must bind; **RFC3-16(c)** the two provenance states, which
-  keeps a bootstrap act visibly uncorrelated and never independently verified.
-- **§1.3** the reserved `declarations/` category and the home of challenge
-  submissions and their admission records (RFC3-17, RFC3-17(a)).
-- **§2** violation cases; **§5** the open owner question carried here (q4).
+- **§1.1 Categories.** The five constitutional `governance/` categories,
+  closed except by recorded owner widening (RFC3-15, RFC3-15(a)).
+- **§1.2 Lifecycles and provenance.** Category-appropriate lifecycles; the
+  self-declared stamp versus effective status.
+  - **RFC3-16(a)** the effective-owner-act predicate — an authorization needs
+    a real human act, exact-digest and scope bound, in state (1) or state
+    (2), with its state rendered.
+  - Independent correlation is what permits state (2), not what makes the
+    human act effective.
+  - **RFC3-16(b)** what every act must bind.
+  - **RFC3-16(c)** the two provenance states, which keeps a bootstrap act
+    visibly uncorrelated and never independently verified.
+- **§1.3 Declarations and challenge records.** The reserved `declarations/`
+  category and the home of challenge submissions and their admission records
+  (RFC3-17, RFC3-17(a)).
+- **§2** violation cases; **§3** integration; **§4** deferred items; **§5**
+  the open owner question carried here (q4).
 
 Clause identities are package-wide: this module holds RFC3-15, RFC3-15(a),
 RFC3-16, RFC3-16(a), RFC3-16(b), RFC3-16(c), RFC3-17 and RFC3-17(a). No
@@ -71,12 +78,16 @@ rather than renumber.
 **RFC3-15.** The **five** constitutional categories of `.syzygy/governance/`
 hold, exclusively — "exclusively" bounding what each category may contain,
 and the five-category set itself being closed except by the two lawful
-widenings this RFC records: the owner amendment that minted `records/` (B19,
-RFC3-15(a)) and the **reservation** of `declarations/` at RFC3-17, which sits
-beside the five as an additional reserved category (drafted default; §5 q4
-OPEN) rather than inside any of them. A plane validator therefore accepts
-exactly these six names and rejects a seventh; neither rejecting
-`declarations/` nor admitting an unreserved directory is conforming:
+widenings this RFC records:
+
+- the owner amendment that minted `records/` (B19, RFC3-15(a)) and
+- the **reservation** of `declarations/` at RFC3-17, which sits beside the
+  five as an additional reserved category (drafted default; §5 q4 OPEN)
+  rather than inside any of them.
+
+A plane validator therefore accepts exactly these six names and rejects a
+seventh; neither rejecting `declarations/` nor admitting an unreserved
+directory is conforming:
 
 | Category | May contain | Install gate |
 |---|---|---|
@@ -202,25 +213,34 @@ as the boundary:
   floor).
 
 **The predicate.** Such an artifact is honored only through an **effective
-owner act**. An effective owner act is an actual human owner act whose record
-is current, attributable, scope-matched and bound to the artifact's exact
-digest under RFC3-16(b). Its provenance may be state (1), `owner-adopted
-(bootstrap, uncorrelated)`, or state (2), `Syzygy-verified`. Independent
-correlation distinguishes those states; it is not what makes the human act
-effective. Being present, well-formed, and correctly attributed *in the tree*
-is not sufficient. The premise, stated honestly: the plane is
-in-tree by design (architecture.md, FD-034), and changes materialize through
-fleet workers executing scheduled work (architecture.md's
-worker-materialization model), so workers routinely commit into it; SEC-3
-declares that actor class **untrusted regardless of who owns the project**
-for executed code, and this package **[Inferred]** extends the same
-classification to what those workers *commit* — an extension doctrine does
-not state in so many words but which follows from the two rules read
-together, and which every consuming gate rests on. A stored attribution field
-is therefore a claim by whoever wrote the file, never evidence of an owner
-act. This is the same reasoning that rejected designating the governance root
-by field value (a field can dangle or lie; provenance cannot), extended to
-the artifacts that authorize the dangerous acts.
+owner act**.
+
+- An effective owner act is an actual human owner act whose record is
+  current, attributable, scope-matched and bound to the artifact's exact
+  digest under RFC3-16(b).
+- Its provenance may be state (1), `owner-adopted (bootstrap, uncorrelated)`,
+  or state (2), `Syzygy-verified`.
+- Independent correlation distinguishes those states; it is not what makes
+  the human act effective.
+- Being present, well-formed, and correctly attributed *in the tree* is not
+  sufficient.
+
+The premise, stated honestly:
+
+- the plane is in-tree by design (architecture.md, FD-034), and changes
+  materialize through fleet workers executing scheduled work (architecture.md's
+  worker-materialization model), so workers routinely commit into it;
+- SEC-3 declares that actor class **untrusted regardless of who owns the
+  project** for executed code, and this package **[Inferred]** extends the
+  same classification to what those workers *commit* — an extension doctrine
+  does not state in so many words but which follows from the two rules read
+  together, and which every consuming gate rests on.
+
+A stored attribution field is therefore a claim by whoever wrote the file,
+never evidence of an owner act. This is the same reasoning that rejected
+designating the governance root by field value (a field can dangle or lie;
+provenance cannot), extended to the artifacts that authorize the dangerous
+acts.
 
 **Trust premise for state (1).** State (1) relies on the owner's trust in the
 recorded tree and does not prove the tree could not forge the record. A
@@ -236,16 +256,17 @@ uses the mechanism class chosen at acceptance (decision **A1**, reaffirmed at
 the rev8 rework): **correlation of the artifact to an owner-attended,
 Syzygy-mediated ceremony recorded in an independently kept audit trail** (the
 RFC5-25 trail — which must live outside `.syzygy/**` and outside the untrusted
-actor class's write reach, or the correlation proves nothing). The floor
-property that makes state (2) independently verifiable is satisfied by the
-trail's independence, not by anything the owner holds. **Owner-held key or
-attestation custody is not an open implementation alternative**: A1 explicitly
-declined to put custody burden on the owner, and replacing the ceremony+audit
-model with an owner-held key or attestation scheme requires a **later owner
-decision**, not an implementation choice. Within the chosen class,
-implementation remains free on ceremony UI, transport, audit-store technology,
-and record encoding. What every owner act must *bind* is fixed now, at
-RFC3-16(b).
+actor class's write reach, or the correlation proves nothing).
+
+- The floor property that makes state (2) independently verifiable is
+  satisfied by the trail's independence, not by anything the owner holds.
+- **Owner-held key or attestation custody is not an open implementation
+  alternative**: A1 explicitly declined to put custody burden on the owner,
+  and replacing the ceremony+audit model with an owner-held key or attestation
+  scheme requires a **later owner decision**, not an implementation choice.
+- Within the chosen class, implementation remains free on ceremony UI,
+  transport, audit-store technology, and record encoding.
+- What every owner act must *bind* is fixed now, at RFC3-16(b).
 
 **RFC3-16(b). What an owner act binds: protocol-neutral semantics.**
 RFC3-16(a) fixes when provenance is required; this sub-clause fixes what any
@@ -275,38 +296,50 @@ provenance state, binds at minimum all of:
    (1) records that no external correlation identity exists. Omitting the
    field is invalid; explicit absence is not independent verification.
 
-**Bootstrap and later correlation.** A state-(1) act satisfying items 1–8 and
-explicitly recording item 9 absent is effective under RFC3-16(a). State (1)
-remains available after an A1 mechanism exists, but only when the human owner
-explicitly chooses trusted-bootstrap provenance in the act itself. A failed,
-unavailable or indeterminate A1 attempt never creates state (1) and never
-changes a record claiming state (2) into state (1). Correlation upgrades a
-state-(1) act's provenance to state (2) without editing the artifact or
-retroactively changing the act's prior effects. A git commit/tag or tree
-record alone still proves neither human attendance nor state (2); the project
-deliberately trusts a recorded state-(1) act only because the owner chose that
-trust model. [Inferred — the binding set; Observed — the path-vs-content and
+**Bootstrap and later correlation.**
+
+- A state-(1) act satisfying items 1–8 and explicitly recording item 9 absent
+  is effective under RFC3-16(a).
+- State (1) remains available after an A1 mechanism exists, but only when the
+  human owner explicitly chooses trusted-bootstrap provenance in the act
+  itself.
+- A failed, unavailable or indeterminate A1 attempt never creates state (1)
+  and never changes a record claiming state (2) into state (1).
+- Correlation upgrades a state-(1) act's provenance to state (2) without
+  editing the artifact or retroactively changing the act's prior effects.
+- A git commit/tag or tree record alone still proves neither human attendance
+  nor state (2); the project deliberately trusts a recorded state-(1) act only
+  because the owner chose that trust model.
+
+[Inferred — the binding set; Observed — the path-vs-content and
 untrusted-tree premises from RFC3-16(a).]
 
-**Effect when the owner-act gate fails.** Missing, digest-mismatched,
-wrong-scope, stale, expired, superseded, revoked, unattributed or non-human act
-state blocks the dependent effect, renders the authorization Unknown and mints
-a contradiction routed to owner adjudication. Absence of A1 correlation alone
-does none of those: a valid state-(1) act takes effect and remains visibly
-uncorrelated. Failed or indeterminate correlation of a record claiming state
-(2) never silently downgrades it to state (1); trusted-bootstrap must be the
-explicit state of the human act. Blocking is not deletion: the artifact and
-its invalid act state both remain rendered.
+**Effect when the owner-act gate fails.**
+
+- Missing, digest-mismatched, wrong-scope, stale, expired, superseded,
+  revoked, unattributed or non-human act state blocks the dependent effect,
+  renders the authorization Unknown and mints a contradiction routed to owner
+  adjudication.
+- Absence of A1 correlation alone does none of those: a valid state-(1) act
+  takes effect and remains visibly uncorrelated.
+- Failed or indeterminate correlation of a record claiming state (2) never
+  silently downgrades it to state (1); trusted-bootstrap must be the explicit
+  state of the human act.
+- Blocking is not deletion: the artifact and its invalid act state both
+  remain rendered.
 
 **One predicate, one home.** Every consuming gate **cites this clause rather
-than restating the obligation**. The gates today: RFC5-15 and RFC5-18(c)
-cross-check it before acting; honored only under it are RFC5-14, RFC5-16
-(also read at RFC4-12 and RFC3-30), RFC4-13, RFC4-13(b) (a governed checker
-that can unblock positive status fixes the meaning of a certification),
-RFC4-16, RFC4-26, RFC4-7, RFC2-13, RFC4-23(2), RFC8-16, RFC9-26, RFC9-18,
-RFC9-45's walkthrough release policy and its leg-2 map walkthrough
-**judgment**, and RFC 0007's owner judgments RFC7-21, RFC7-25 and RFC7-31. On
-both walkthrough surfaces the *execution record* is `kernel-recorded` and
+than restating the obligation**. The gates today:
+
+- RFC5-15 and RFC5-18(c) cross-check it before acting;
+- honored only under it are RFC5-14, RFC5-16 (also read at RFC4-12 and
+  RFC3-30), RFC4-13, RFC4-13(b) (a governed checker that can unblock positive
+  status fixes the meaning of a certification), RFC4-16, RFC4-26, RFC4-7,
+  RFC2-13, RFC4-23(2), RFC8-16, RFC9-26, RFC9-18, RFC9-45's walkthrough
+  release policy and its leg-2 map walkthrough **judgment**, and RFC 0007's
+  owner judgments RFC7-21, RFC7-25 and RFC7-31.
+
+On both walkthrough surfaces the *execution record* is `kernel-recorded` and
 authorizes nothing, so it sits outside this predicate. [Inferred] Stating the
 obligation per artifact class instead would leave whichever class was patched
 last unguarded — the failure mode this single-predicate form exists to
@@ -314,20 +347,34 @@ prevent, and the same reason the clause's **subject** is the predicate rather
 than the examples beneath it. **This list tracks the gates; it does not bound
 them.**
 
+*Diagram (non-normative; the clauses govern):* how a gate treats an
+authorization-bearing artifact under RFC3-16(a) and RFC3-16(b).
+
+```mermaid
+flowchart TD
+    A["Authorization-bearing artifact<br/>(the RFC3-16(a) predicate)"] --> Q{"Effective owner act?<br/>human, current, attributable,<br/>scope-matched, exact digest"}
+    Q -->|"yes, state (1) or state (2)"| H["Honored,<br/>exact provenance state rendered"]
+    Q -->|"missing, digest-mismatched, wrong-scope,<br/>stale, expired, superseded, revoked,<br/>unattributed or non-human"| B["Dependent effect blocked;<br/>authorization rendered Unknown;<br/>contradiction routed to owner adjudication"]
+    B --> R["Artifact and invalid act state<br/>remain rendered, never deleted"]
+```
+
 **RFC3-16(c). Owner-adopted bootstrap act versus Syzygy-verified act.** An
 owner-act record exists in exactly one of **two provenance
 states**. Both are first-class and real; they are **never conflated**:
 
 **(1) Owner-adopted (bootstrap, uncorrelated).** A real human/social governance
 act, preserved as the **exact owner phrase**, **exact content digest**, act
-record and **recording commit/tag**. It may be performed before or after an A1
-mechanism exists; after A1 exists, the act must explicitly select state (1).
-It is effective only for its exact act type and scope. It is durable historical
-evidence — it is **not** independently verifiable to Syzygy. Every tree-resident record
-lies within the untrusted actor class's write reach (RFC3-16(a)'s premise),
-**including a committed acceptance-act record under
-`.syzygy/governance/decisions/`**; a same-tree committed record is therefore
-never, by itself, the independently verified effective status.
+record and **recording commit/tag**.
+
+- It may be performed before or after an A1 mechanism exists; after A1
+  exists, the act must explicitly select state (1).
+- It is effective only for its exact act type and scope.
+- It is durable historical evidence — it is **not** independently verifiable
+  to Syzygy. Every tree-resident record lies within the untrusted actor
+  class's write reach (RFC3-16(a)'s premise), **including a committed
+  acceptance-act record under `.syzygy/governance/decisions/`**; a same-tree
+  committed record is therefore never, by itself, the independently verified
+  effective status.
 
 **(2) Syzygy-verified.** An owner act either performed through the independent
 A1 ceremony and audit mechanism, or first recorded in state (1) and later
@@ -344,16 +391,15 @@ Consequences that bind:
   truthful render of state (1) is **"owner-adopted (bootstrap,
   uncorrelated)"**; **never "verified."**
 - A recorded correlation act under RFC3-16(b) **upgrades state (1) to state
-  (2) without editing
-  the artifact**: it binds the same exact digest, so correlation adds
-  provenance and changes no content (RFC3-16's rule that acts never edit what
-  they act on).
+  (2) without editing the artifact**: it binds the same exact digest, so
+  correlation adds provenance and changes no content (RFC3-16's rule that
+  acts never edit what they act on).
 - **A git commit or tag alone is never sufficient to establish a human act or
   state (2)**: the governed tree cannot prove who pushed it; it may serve as
   recorded context for a human-attended state-(1) act or as evidence within a
   correlation, never as the mechanism (RFC3-16(b)). An artifact with **no
-  owner-act record at all** is in neither
-  state and is effectively unadopted whatever its stamp claims (RFC3-16).
+  owner-act record at all** is in neither state and is effectively unadopted
+  whatever its stamp claims (RFC3-16).
 - Both valid provenance states may carry an effective owner act. Surfaces and
   APIs always expose the exact state and authorization basis. Correlation may
   upgrade state (1) to state (2) through a new evaluation; it never changes the
@@ -368,6 +414,20 @@ Consequences that bind:
 the untrusted-tree premise (RFC3-16(a)), the A1 mechanism class and A9
 interim posture, and the never-sufficient rule for commits and tags
 (RFC3-16(b)).]
+
+*Diagram (non-normative; the clauses govern):* the two provenance states of
+RFC3-16(c) and the one path between them.
+
+```mermaid
+flowchart LR
+    NONE["No owner-act record:<br/>in neither state,<br/>effectively unadopted"]
+    ACT["Human owner act<br/>binding RFC3-16(b) items 1–9<br/>(item 9 decides the state)"]
+    S1["State (1)<br/>owner-adopted (bootstrap, uncorrelated)<br/>rendered uncorrelated, never verified"]
+    S2["State (2)<br/>Syzygy-verified<br/>the only 'independently verified' state"]
+    ACT -->|"item 9 explicitly absent;<br/>trusted-bootstrap chosen in the act"| S1
+    ACT -->|"through the A1 ceremony<br/>and RFC5-25 audit trail"| S2
+    S1 -->|"recorded correlation act,<br/>same digest, no artifact edit"| S2
+```
 
 ### 1.3 The `declarations/` category, and where challenge records live
 
@@ -391,28 +451,37 @@ these artifacts other than `records/`.
 **Why `records/` and nothing else** (full reasoning: history RFC3-17(a)).
 RFC2-13 makes the admission-or-rejection record a *kernel fact written to the
 governed plane* and RFC2-1 item 9 makes it a **snapshot input**, so it is
-identity-bearing, durable and deletion-unsafe: `cache/` and `local/` are
-barred (RFC3-20/21), `intent/`/`work/`/`map/` are surface namespaces (RFC3-18)
-and no surface owns challenge state, and the artifact is not doctrine, not a
-contract, not a policy, and — decisively — **not a recorded owner decision**.
+identity-bearing, durable and deletion-unsafe:
+
+- `cache/` and `local/` are barred (RFC3-20/21);
+- `intent/`/`work/`/`map/` are surface namespaces (RFC3-18) and no surface
+  owns challenge state;
+- and the artifact is not doctrine, not a contract, not a policy, and —
+  decisively — **not a recorded owner decision**.
+
 The one challenge-adjacent thing `governance/` holds elsewhere is the
 *resolution policy* in `policies/`, which is not the challenge.
 
-**Consequences that bind.** The records are **minted by the kernel, never
-owner-authored**; the challenger's inference provenance — or a human
-challenger's attribution — is a **field of the record**, never its write
-authority. They are **immutable once written** (RFC2-6); a challenge is never
-edited to change its verdict. A `kernel-recorded` value is **never
-authorization-bearing** (RFC3-2), so nothing in `records/` is adopted or
-adoptable. **Resolution acts that are owner acts** — upholding, dismissing,
-or expiring a challenge — are recorded in `decisions/` (RFC3-15) and
-*referenced* from the challenge record, never embedded in it. Because
-`records/` sits inside `governance/**`, which fleet workers can write (the
-untrusted-writer premise at RFC3-16(a), extending SEC-3's actor class), an
-admission record's authority is the kernel's recomputation of the RFC2-13
-check over the snapshot, never the file's own say-so. [Observed — home,
-authority class and gate column from RFC3-15/RFC3-2 as amended by B19;
-durability and snapshot-input facts from RFC2-1 and RFC2-13.]
+**Consequences that bind.**
+
+- The records are **minted by the kernel, never owner-authored**; the
+  challenger's inference provenance — or a human challenger's attribution —
+  is a **field of the record**, never its write authority.
+- They are **immutable once written** (RFC2-6); a challenge is never edited
+  to change its verdict.
+- A `kernel-recorded` value is **never authorization-bearing** (RFC3-2), so
+  nothing in `records/` is adopted or adoptable.
+- **Resolution acts that are owner acts** — upholding, dismissing, or
+  expiring a challenge — are recorded in `decisions/` (RFC3-15) and
+  *referenced* from the challenge record, never embedded in it.
+- Because `records/` sits inside `governance/**`, which fleet workers can
+  write (the untrusted-writer premise at RFC3-16(a), extending SEC-3's actor
+  class), an admission record's authority is the kernel's recomputation of
+  the RFC2-13 check over the snapshot, never the file's own say-so.
+
+[Observed — home, authority class and gate column from RFC3-15/RFC3-2 as
+amended by B19; durability and snapshot-input facts from RFC2-1 and
+RFC2-13.]
 
 ---
 
@@ -497,12 +566,14 @@ internal schemas those RFCs own.
 
 ## 4. Deliberately deferred
 
-The internal schemas of the declaration artifacts homed at RFC3-17 → RFC 0004
-and the surface RFCs. The ceremony UI, transport, audit-store technology and
-record encoding of the A1 mechanism → first implementation slice, bounded by
-RFC3-16(b)'s binding set. The one-time bootstrap correlation act's operational
-procedure → the implementation slice that first provides the mechanism;
-RFC3-16(c) fixes what it must achieve, not how it runs.
+- The internal schemas of the declaration artifacts homed at RFC3-17 → RFC 0004
+  and the surface RFCs.
+- The ceremony UI, transport, audit-store technology and record encoding of
+  the A1 mechanism → first implementation slice, bounded by RFC3-16(b)'s
+  binding set.
+- The one-time bootstrap correlation act's operational procedure → the
+  implementation slice that first provides the mechanism; RFC3-16(c) fixes
+  what it must achieve, not how it runs.
 
 ---
 

@@ -94,7 +94,7 @@ scripts/context_load.py rfcs/RFC-0001-project-graph-identity-state-planes.md \
   doctrine:vision.md
 ```
 
-Measured: **40,051 words ≈ 54,069 estimated tokens.**
+Measured: **42,603 words ≈ 57,514 estimated tokens.**
 
 ## ⚠️ Far above the decomposition trigger — the class's honest floor, and the shard that is the real default
 
@@ -207,7 +207,7 @@ Suggestion never suppresses (RFC11-5).
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`bed2a2b12ae23ca1…` (recompute: `cat <mandatory files> | sha256sum`, with
+`38f34c4e98c91ded…` (recompute: `cat <mandatory files> | sha256sum`, with
 `doctrine:` resolved to `.syzygy/governance/doctrine/`). Measured, not
 compiled, by `scripts/context_load.py`; the placeholder digest here is
 overwritten by `build_budget_report.py` at first stamp and verified by

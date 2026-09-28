@@ -36,27 +36,35 @@ q4–5**, which this module owns and closes. Implements **owner decisions A5**
 
 This module owns **the three closed vocabularies every surface renders**: the
 degradation states an evaluation can fall into, the reasons an Unknown may
-carry, and the tiers that qualify how a claim displays. Read it to answer:
-*what exactly may I show, and what words may I show it in?* It presupposes
-module 1 — a tier and a reason stamp a claim instance — and it is the module
-every other RFC in the corpus cites most.
+carry, and the tiers that qualify how a claim displays. All three are closed —
+each changes only by amendment to this RFC — and only `gate-backed` Observed
+evidence may support a positive status claim (RFC2-23, RFC2-24, RFC2-25).
+Read it to answer: *what exactly may I show, and what words may I show it
+in?*
 
-Three rules carry most of the weight. **The twelve Unknown reasons are closed,
-and so is the secondary-annotation vocabulary — it is the same twelve**
-(RFC2-24): no implementation may mint, spell, or force-fit a value the list
-does not carry, because RFC6-14 requires machine answers to carry the reason
-verbatim and RFC6-22/23 make two renderings disagreeing release-blocking. A
-condition genuinely outside the twelve is disclosed as a **fact of the render**,
-never dressed as a reason. **The six tiers are closed and a tier never becomes
-a fourth epistemic label** (RFC2-25); only `gate-backed` Observed evidence may
-support a positive status claim — Aligned, Converged, reconciled, green. And
-absence is never zero: a missing quantity renders **Unknown, never zero**
-(RFC2-23, SDR-6).
-
-Outside the tier registry sit three closed **sibling surface states** —
-`dismissed-by-decision`, `unadopted-draft`, `editorial-draft` — which *replace*
-a status rendering, and `challenge-pending` (module 2), which *accompanies* an
-unchanged one.
+- **What it presupposes.** Module 1 — a tier and a reason stamp a claim
+  instance.
+  - It is the module every other RFC in the corpus cites most.
+- **Three rules carry most of the weight.**
+  - **The twelve Unknown reasons are closed, and so is the
+    secondary-annotation vocabulary — it is the same twelve** (RFC2-24).
+    - No implementation may mint, spell, or force-fit a value the list does
+      not carry, because RFC6-14 requires machine answers to carry the reason
+      verbatim and RFC6-22/23 make two renderings disagreeing
+      release-blocking.
+    - A condition genuinely outside the twelve is disclosed as a **fact of
+      the render**, never dressed as a reason.
+  - **The six tiers are closed and a tier never becomes a fourth epistemic
+    label** (RFC2-25).
+    - Only `gate-backed` Observed evidence may support a positive status
+      claim — Aligned, Converged, reconciled, green.
+  - **Absence is never zero.** A missing quantity renders **Unknown, never
+    zero** (RFC2-23, SDR-6).
+- **What sits outside the tier registry.**
+  - Three closed **sibling surface states** — `dismissed-by-decision`,
+    `unadopted-draft`, `editorial-draft` — which *replace* a status
+    rendering.
+  - `challenge-pending` (module 2), which *accompanies* an unchanged one.
 
 ---
 
@@ -70,13 +78,16 @@ rather than renumber.
 **RFC2-23 — Six degradation states, closed, each with its rendering
 obligation.** [Inferred — composed from trust-and-evidence.md staleness rules,
 SEC-2/SEC-5, and the closed snapshot rule.] The list below **is** the
-vocabulary: it changes only by amendment to this RFC, and no implementation may
-mint, spell, or force-fit a degradation state it does not carry. The closure is
-required for the reason RFC2-24's is — RFC 0004's adapters map their internal
-errors onto these states by declaration (RFC4-2 item 6), and a state existing
-in no vocabulary can be neither declared there nor checked for parity across
-surfaces (RFC6-22/23). A degradation genuinely outside the six is disclosed as
-a fact of the render, never dressed as one of them.
+vocabulary:
+
+- it changes only by amendment to this RFC, and no implementation may mint,
+  spell, or force-fit a degradation state it does not carry;
+- the closure is required for the reason RFC2-24's is — RFC 0004's adapters
+  map their internal errors onto these states by declaration (RFC4-2 item 6),
+  and a state existing in no vocabulary can be neither declared there nor
+  checked for parity across surfaces (RFC6-22/23);
+- a degradation genuinely outside the six is disclosed as a fact of the
+  render, never dressed as one of them.
 
 | State | Semantics | Rendering obligation |
 |---|---|---|
@@ -129,13 +140,17 @@ requirement.]
 | 11 | `reference-unresolvable` | The source **was** captured and the governing declaration **does** exist, but a cited internal anchor no longer resolves — an OpenSpec requirement or scenario reference broken by edit (RFC1-15), a topology or region anchor whose target is gone (RFC1-26) | Repair the reference, owned by the governed project |
 | 12 | `execution-blocked` | The declaration and the evidence route both exist, and the **execution that would produce the evidence was refused or prevented** — by execution profile, absent or withdrawn consent for the run, or an environment the profile could not satisfy. Distinct from #6, which is about a *source or provider* being unconsented rather than a *run* being blocked | **Unblock or authorize the run** (execution profile, consent, environment), then capture in a new snapshot |
 
-Reasons are distinct because their **resolution routes** are distinct: #9 is
-not #8 (challenge lifecycle versus adjudication); #10 is an input never in the
-evaluation, versus #2's present-but-unevidenced; #11 is a broken anchor over a
-captured source whose declaration exists, so neither #1 nor #10 fits; #12
-exists rather than annotating #2 because a reason names what would resolve it,
-and "go capture evidence" misdescribes the remedy when the capture path is the
-thing that is blocked. Per-reason amendment provenance is in the history file.
+Reasons are distinct because their **resolution routes** are distinct:
+
+- #9 is not #8 (challenge lifecycle versus adjudication);
+- #10 is an input never in the evaluation, versus #2's present-but-unevidenced;
+- #11 is a broken anchor over a captured source whose declaration exists, so
+  neither #1 nor #10 fits;
+- #12 exists rather than annotating #2 because a reason names what would
+  resolve it, and "go capture evidence" misdescribes the remedy when the
+  capture path is the thing that is blocked.
+
+Per-reason amendment provenance is in the history file.
 
 **Rendering rule.** Unknown regions may aggregate ("Unknown ×40") but must
 disclose reason counts and expand; every reason routes to its resolving action;
@@ -198,27 +213,47 @@ record from which implementation work may be scheduled**. No implementation
 work for user-observable consequences of this contract — evaluation and
 snapshot displays, claim and challenge rendering, Unknown-reason and
 rendering-tier presentation, reconciliation-chain and gap surfaces, API
-answers over epistemic state — may be scheduled solely from this RFC. Before
-implementation, every observable consequence either maps to an approved
-OpenSpec requirement and scenario in the governance root's `openspec/**`
-plane, or carries a reviewed N/A judgment proving it purely structural with
-no independently testable behavior. **The reviewed N/A judgment's home and
-gate.** A reviewed N/A judgment is a recorded owner judgment homed in
-`decisions/` (RFC3-15), and the judgment is honored only through an effective
-owner act under RFC3-16(a), in state (1) or state (2), with that state rendered;
-absent or invalid acts map nothing and leave the consequence unmapped and
-Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2).
+answers over epistemic state — may be scheduled solely from this RFC.
 
-**Rows are per observable consequence, not per clause.** A clause with five
-observable consequences and one mapped requirement is not covered; the matrix
-discloses the consequences it enumerates for each clause, so a
-complete-looking matrix over under-enumerated consequences is a defect of the
-matrix. At surface specification a
-clause-to-requirement coverage matrix over RFC2-1..RFC2-26 is produced —
-**that matrix is review material, never authority**. This clause creates no
-OpenSpec content now (none may exist during bootstrap). This clause binds the
-whole RFC 0002 package, not this module alone. (Shape-parallel with RFC6-28,
-RFC7-38, RFC8-32, RFC9-52, RFC10-16, RFC11-12.)
+Before implementation, every observable consequence either
+
+- maps to an approved OpenSpec requirement and scenario in the governance
+  root's `openspec/**` plane,
+- or carries a reviewed N/A judgment proving it purely structural with no
+  independently testable behavior.
+
+**The reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a
+recorded owner judgment homed in `decisions/` (RFC3-15), and the judgment is
+honored only through an effective owner act under RFC3-16(a), in state (1) or
+state (2), with that state rendered; absent or invalid acts map nothing and
+leave the consequence unmapped and Unknown, never covered (RFC3-16(a)'s effect
+rule; VIS-2).
+
+**Rows are per observable consequence, not per clause.**
+
+- A clause with five observable consequences and one mapped requirement is not
+  covered; the matrix discloses the consequences it enumerates for each
+  clause, so a complete-looking matrix over under-enumerated consequences is a
+  defect of the matrix.
+- At surface specification a clause-to-requirement coverage matrix over
+  RFC2-1..RFC2-26 is produced — **that matrix is review material, never
+  authority**.
+- This clause creates no OpenSpec content now (none may exist during
+  bootstrap).
+- This clause binds the whole RFC 0002 package, not this module alone.
+
+(Shape-parallel with RFC6-28, RFC7-38, RFC8-32, RFC9-52, RFC10-16, RFC11-12.)
+
+*Diagram (non-normative; the clauses govern):* RFC2-26's two routes for one consequence.
+
+```mermaid
+flowchart TD
+  Q["One observable consequence of this contract"] --> R{"Maps to an approved OpenSpec<br/>requirement and scenario?"}
+  R -->|"yes"| S["Precondition for implementation met"]
+  R -->|"no"| N{"Reviewed N/A judgment in decisions/,<br/>honored through an effective owner act<br/>under RFC3-16(a)?"}
+  N -->|"yes: state (1) or (2), rendered"| S
+  N -->|"absent or invalid act"| U["Unmapped and Unknown, never covered"]
+```
 
 ## 4. Violation cases
 
@@ -238,26 +273,34 @@ Case 5 spans this module and module 3 and is held at the package level
 
 ## 5. Integration (module-local)
 
-**Relies on RFC 0001:** the OpenSpec requirement/scenario references (RFC1-15)
-and topology/region anchors (RFC1-26) whose breakage reason #11 names.
-**Relies on RFC 0003:** RFC3-15's `decisions/` category as the home of the
-reviewed N/A judgment RFC2-26 admits, and RFC3-16(a)'s owner-act provenance
-predicate as the condition under which that judgment is honored.
-**Relies on RFC 0005:** the consent records (SEC-2/SEC-4) behind reason #6 and
-the *Consent withdrawn* degradation state, and the execution profiles whose
-refusal reason #12 names.
+- **Relies on RFC 0001:** the OpenSpec requirement/scenario references
+  (RFC1-15) and topology/region anchors (RFC1-26) whose breakage reason #11
+  names.
+- **Relies on RFC 0003:**
+  - RFC3-15's `decisions/` category as the home of the reviewed N/A judgment
+    RFC2-26 admits,
+  - and RFC3-16(a)'s owner-act provenance predicate as the condition under
+    which that judgment is honored.
+- **Relies on RFC 0005:**
+  - the consent records (SEC-2/SEC-4) behind reason #6 and the *Consent
+    withdrawn* degradation state,
+  - and the execution profiles whose refusal reason #12 names.
 
-**Provides to RFC 0003:** the reason and tier vocabularies it must physically
-encode as closed enumerations. **Provides to RFC 0004:** the tiers observers
-and adapters emit — `gate-backed`, `report-fact`, `asserted-by-worker`, and the
-`reduced-fidelity` tier whose labeling schema RFC 0004 defines (SDR-33) — and
-the degradation states RFC4-2 item 6 maps its internal errors onto.
-**Provides to RFC 0006 and RFCs 0007–0009:** the label+tier+reason triple every
-surface renders verbatim, the three sibling surface states, and the
-Unknown-aggregation rule — whose disclosure obligation is **RFC6-17's in full**,
-cited here and never restated so the two cannot drift. **Provides to
-RFC 0010/0011:** the Unknown semantics a Mission's evidence checks and a
-context packet's applicability rules resolve against.
+- **Provides to RFC 0003:** the reason and tier vocabularies it must
+  physically encode as closed enumerations.
+- **Provides to RFC 0004:**
+  - the tiers observers and adapters emit — `gate-backed`, `report-fact`,
+    `asserted-by-worker`, and the `reduced-fidelity` tier whose labeling
+    schema RFC 0004 defines (SDR-33) —
+  - and the degradation states RFC4-2 item 6 maps its internal errors onto.
+- **Provides to RFC 0006 and RFCs 0007–0009:**
+  - the label+tier+reason triple every surface renders verbatim,
+  - the three sibling surface states,
+  - and the Unknown-aggregation rule — whose disclosure obligation is
+    **RFC6-17's in full**, cited here and never restated so the two cannot
+    drift.
+- **Provides to RFC 0010/0011:** the Unknown semantics a Mission's evidence
+  checks and a context packet's applicability rules resolve against.
 
 ## 8. Owner questions (stubs; full text and reasoning in history)
 

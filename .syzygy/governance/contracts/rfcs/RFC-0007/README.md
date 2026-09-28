@@ -34,6 +34,13 @@ Polaris portion of SDR §5 question 10.
 
 ---
 
+*Package guide (non-normative; the clauses govern).* RFC 0007 governs
+Polaris, the intent surface, in two modules: `narrative-contract.md` decides
+what curated narrative may say and what binds each claim to the artifact that
+owns the fact; `rendering-and-surface.md` decides what the surface must show,
+prove and never blur. To find a clause, apply the lookup rule below to its
+number — no search is needed.
+
 ## Clause map and lookup rule
 
 **Every clause identity appears in exactly one module.** One `RFC7-n`
@@ -78,32 +85,40 @@ stale twice inside a digest set.
 
 *If this map and a clause disagree, the clause wins.*
 
-Polaris is the **intent surface**: an argued, progressively disclosed account —
-thesis → promises → architecture → capabilities → exact requirement text — with
-evidence and work one step away. Two load-bearing invariants govern everything
-in both modules:
+Polaris is an argued account of a project's intent that nothing may cite as
+authority: every load-bearing claim in it is anchored, marked or labelled, and
+three mechanisms stop a faithful paragraph from ever standing in for the rule
+it paraphrases.
 
-- **every load-bearing narrative claim is anchored, marked non-normative, or
-  epistemically labelled** — there is no fourth kind, and the check binds every
-  act that produces narrative, not one path through it (module 1, RFC7-2);
-- **nothing anywhere in Syzygy may cite a Polaris rendering as authority** —
-  deleting everything under `.syzygy/intent/**` changes no truth, status, work,
-  consent, or normative fact (module 1, RFC7-3).
-
-The feared failure is not fabricated prose but a *faithful paragraph later
-quoted instead of the rule*. Three mechanisms close the three doors to it:
-**citation** is closed by RFC7-3; **generation** by the non-citable
-`editorial-draft` state and its human adoption gate (RFC7-20/21); and **time**
-by anchors that record their target's state at authorship, so a cited rule that
-moved renders as drifted rather than as current (RFC7-10, RFC7-11(a)).
-
-Two further obligations span the package: every distinction either module draws
-is a **machine-readable attribute, recoverable without colour or layout, and
-reachable without a pointing device** (module 2, RFC7-33/34) — a distinction
-only pixels carry does not survive an endpoint response; and the surface's
-acceptance test is a **cold-open comprehension walkthrough** whose last prompt
-asks the reader to name one thing the project does not know about itself, so a
-surface passable only by confident green fails (module 2, RFC7-30/31).
+- **What Polaris is.** The **intent surface**: an argued, progressively
+  disclosed account — thesis → promises → architecture → capabilities → exact
+  requirement text — with evidence and work one step away.
+- **Two load-bearing invariants** govern everything in both modules:
+  - **every load-bearing narrative claim is anchored, marked non-normative, or
+    epistemically labelled** — there is no fourth kind, and the check binds
+    every act that produces narrative, not one path through it (module 1,
+    RFC7-2);
+  - **nothing anywhere in Syzygy may cite a Polaris rendering as authority** —
+    deleting everything under `.syzygy/intent/**` changes no truth, status,
+    work, consent, or normative fact (module 1, RFC7-3).
+- **The feared failure** is not fabricated prose but a *faithful paragraph
+  later quoted instead of the rule*. Three mechanisms close the three doors to
+  it:
+  - **citation** is closed by RFC7-3;
+  - **generation** by the non-citable `editorial-draft` state and its human
+    adoption gate (RFC7-20/21);
+  - **time** by anchors that record their target's state at authorship, so a
+    cited rule that moved renders as drifted rather than as current (RFC7-10,
+    RFC7-11(a)).
+- **Two further obligations span the package:**
+  - every distinction either module draws is a **machine-readable attribute,
+    recoverable without colour or layout, and reachable without a pointing
+    device** (module 2, RFC7-33/34) — a distinction only pixels carry does not
+    survive an endpoint response;
+  - the surface's acceptance test is a **cold-open comprehension walkthrough**
+    whose last prompt asks the reader to name one thing the project does not
+    know about itself, so a surface passable only by confident green fails
+    (module 2, RFC7-30/31).
 
 ## Scope
 
@@ -111,42 +126,55 @@ This package is the semantic contract of the intent surface: "a cohesive visual
 argument for what a project is, why it exists, what it promises, how it is
 architected, and what its specifications require, progressively disclosing from
 white-paper narrative into exact capabilities, requirements, contracts,
-evidence, and work" [Observed: SDR §2 charter]. It defines the **curated
-narrative model** (narrative, section, claim block, reading order, citation
-graph) as a **governed presentation artifact** per SDR-13 — versioned,
-attributed, revertible, human-readable, **non-authoritative**; claim blocks and
-source anchors including the target-state component; the verbatim specification
-leaf; the capability deep-dive band contract; generated editorial drafts and
-their adoption gate; the authoring acts, gates, and materiality review; the two
-reading modes and proposed-state rendering; the authority boundary; the
-fresh-reader comprehension test; machine parity and non-visual recoverability;
-and multi-project, subproject, and portfolio navigation. It is **semantics
-only**: no renderer, layout, file format, or stack.
+evidence, and work" [Observed: SDR §2 charter]. It defines:
+
+- the **curated narrative model** (narrative, section, claim block, reading
+  order, citation graph) as a **governed presentation artifact** per SDR-13 —
+  versioned, attributed, revertible, human-readable, **non-authoritative**;
+- claim blocks and source anchors including the target-state component;
+- the verbatim specification leaf;
+- the capability deep-dive band contract;
+- generated editorial drafts and their adoption gate;
+- the authoring acts, gates, and materiality review;
+- the two reading modes and proposed-state rendering;
+- the authority boundary;
+- the fresh-reader comprehension test;
+- machine parity and non-visual recoverability; and
+- multi-project, subproject, and portfolio navigation.
+
+It is **semantics only**: no renderer, layout, file format, or stack.
 
 ## 2. Doctrine grounding (non-normative)
 
-[Observed] Doctrine gives Polaris identity and anti-thesis at once: Syzygy is
-"not a documentation portal" — "a Syzygy from which no work is ever dispatched
-has failed, regardless of how good its documents look" [vision.md] — yet the
-intent surface must displace "the README-and-ad-hoc-investigation ritual as
-the owner's instinctive first stop" [vision.md, Success]. The charter's
-not-satisfied-by list binds (SDR §2). [Inferred] Two opposite failures must
-both be designed against: the **document browser** (authority present, no
-argument) and the **detached brochure** (argument present, prose unanchored —
-and, worse, *cited*). **The dangerous artifact is not fabricated prose but a
-faithful, correctly-derived paragraph later quoted instead of the rule** — a
-second source of doctrine formed with nothing amended. This is the failure mode
-RFC7-11(a), RFC7-12, and RFC7-14 cite.
+Doctrine and the owner's rulings SDR-13 to SDR-18 ground this package; each
+point below carries its own epistemic label.
 
-[Observed] The owner resolved the research's central governance question
-against its recommendation, and this package binds the rulings: SDR-13 — the
-narrative is **a governed presentation artifact**, explicitly *not* the
-recommended structure/prose split; SDR-14 — fresh-reader review is scoped to
-material changes and release milestones; SDR-15 — generated prose is a
-non-citable editorial draft until human adoption; SDR-16 — citation
-granularity is the claim block; SDR-17 — status is minimal by default;
-SDR-18 — Trajectory owns the drafting queue, Polaris the contextual
-authoring/adoption experience.
+- [Observed] **Identity and anti-thesis at once.** Syzygy is "not a
+  documentation portal" — "a Syzygy from which no work is ever dispatched has
+  failed, regardless of how good its documents look" [vision.md] — yet the
+  intent surface must displace "the README-and-ad-hoc-investigation ritual as
+  the owner's instinctive first stop" [vision.md, Success]. The charter's
+  not-satisfied-by list binds (SDR §2).
+- [Inferred] **Two opposite failures must both be designed against:**
+  - the **document browser** (authority present, no argument);
+  - the **detached brochure** (argument present, prose unanchored — and,
+    worse, *cited*).
+- [Inferred] **The dangerous artifact is not fabricated prose but a faithful,
+  correctly-derived paragraph later quoted instead of the rule** — a second
+  source of doctrine formed with nothing amended. This is the failure mode
+  RFC7-11(a), RFC7-12, and RFC7-14 cite.
+- [Observed] **The owner resolved the research's central governance question
+  against its recommendation**, and this package binds the rulings:
+  - SDR-13 — the narrative is **a governed presentation artifact**, explicitly
+    *not* the recommended structure/prose split;
+  - SDR-14 — fresh-reader review is scoped to material changes and release
+    milestones;
+  - SDR-15 — generated prose is a non-citable editorial draft until human
+    adoption;
+  - SDR-16 — citation granularity is the claim block;
+  - SDR-17 — status is minimal by default;
+  - SDR-18 — Trajectory owns the drafting queue, Polaris the contextual
+    authoring/adoption experience.
 
 ## 4. Violation cases — package-spanning
 
@@ -178,37 +206,59 @@ capability identity and no-silent-inference (RFC1-14); mapping-class
 distinctness (RFC1-16); the badge rule (RFC1-19), which reaches both modules;
 the plane rule (RFC1-22); the Claim entity and status routing (RFC1-5,
 RFC1-24) the narrative claim-block type name must stay distinct from; Proposal
-exclusivity (RFC1-27). **On RFC 0002:** the verbatim label + tier + reason +
-freshness vocabulary (RFC2-10/24/25) — including `editorial-draft`, minted as
-the third sibling surface state on this package's own reported distinction;
-the inference-overlay discipline (RFC2-7); the admissibility floor made
-operational (RFC2-12) behind RFC7-9; V0 reconciliation staging (RFC2-19); and
-the revision-binding pattern (RFC2-11, RFC2-18), which RFC7-10's target-state
-component **imitates and never extends** — RFC7-11(a) is a Polaris-local
-rendering marker over a resolving anchor and mints no RFC2-24 Unknown reason.
-Two reasons this package's clauses carry by name: **#11
-`reference-unresolvable`**, minted on this package's finding and retained by
-decision A5, which RFC7-11's broken anchor degrades a claim with; and **#6
-`unconsented-source-or-provider`**, which RFC7-40's unconsented branch cites
-through RFC3-6. The uncaptured-source rule (RFC2-2) is what bars an undeclared
-input to RFC7-40's answer.
-**On RFC 0003:** `intent/` as a schema-versioned governed namespace (RFC3-18)
-and its exclusion from cache (RFC3-20); spec anchors (RFC3-28) and the verbatim
-identity scheme (RFC3-27); workspace-manifest boundaries (RFC3-10…14); the
-closed project-declaration field set (RFC3-5) and the unconsented-entry rule
-(RFC3-6), both behind RFC7-40;
-governance declarations (RFC3-17); the `kernel-recorded` record home and the
-`decisions/` home (RFC3-15), the latter also behind RFC7-38's N/A judgment;
-child-label pass-through (RFC3-32); local-state rules (RFC3-21); and the
-**owner-act provenance predicate (RFC3-16(a))**, which gates four clauses
-across both modules — draft adoption (RFC7-21), the review verdict (RFC7-25),
-the comprehension-test judgment (RFC7-31), and RFC7-38's reviewed N/A
-judgment. **On RFC 0004:** the OpenSpec
-adapter's verbatim read and anchor obligations (RFC4-10); the anti-duplication
-invariant (RFC4-5). **On RFC 0005:** the egress choke point (RFC5-14/15) behind
-RFC7-20; act attribution (RFC5-25) behind RFC7-7. **On RFC 0006:** selection
-references, outcomes, URLs, label parity, the single drawer, the aggregation
-contract, and scenario contexts — cited throughout, duplicated nowhere.
+exclusivity (RFC1-27).
+
+**On RFC 0002:**
+
+- the verbatim label + tier + reason + freshness vocabulary (RFC2-10/24/25) —
+  including `editorial-draft`, minted as the third sibling surface state on
+  this package's own reported distinction;
+- the inference-overlay discipline (RFC2-7);
+- the admissibility floor made operational (RFC2-12) behind RFC7-9;
+- V0 reconciliation staging (RFC2-19); and
+- the revision-binding pattern (RFC2-11, RFC2-18), which RFC7-10's
+  target-state component **imitates and never extends** — RFC7-11(a) is a
+  Polaris-local rendering marker over a resolving anchor and mints no RFC2-24
+  Unknown reason.
+
+Two reasons this package's clauses carry by name:
+
+- **#11 `reference-unresolvable`**, minted on this package's finding and
+  retained by decision A5, which RFC7-11's broken anchor degrades a claim
+  with; and
+- **#6 `unconsented-source-or-provider`**, which RFC7-40's unconsented branch
+  cites through RFC3-6.
+
+The uncaptured-source rule (RFC2-2) is what bars an undeclared input to
+RFC7-40's answer.
+
+**On RFC 0003:**
+
+- `intent/` as a schema-versioned governed namespace (RFC3-18) and its
+  exclusion from cache (RFC3-20);
+- spec anchors (RFC3-28) and the verbatim identity scheme (RFC3-27);
+- workspace-manifest boundaries (RFC3-10…14);
+- the closed project-declaration field set (RFC3-5) and the
+  unconsented-entry rule (RFC3-6), both behind RFC7-40;
+- governance declarations (RFC3-17);
+- the `kernel-recorded` record home and the `decisions/` home (RFC3-15), the
+  latter also behind RFC7-38's N/A judgment;
+- child-label pass-through (RFC3-32);
+- local-state rules (RFC3-21); and
+- the **owner-act provenance predicate (RFC3-16(a))**, which gates four
+  clauses across both modules — draft adoption (RFC7-21), the review verdict
+  (RFC7-25), the comprehension-test judgment (RFC7-31), and RFC7-38's reviewed
+  N/A judgment.
+
+**On RFC 0004:** the OpenSpec adapter's verbatim read and anchor obligations
+(RFC4-10); the anti-duplication invariant (RFC4-5).
+
+**On RFC 0005:** the egress choke point (RFC5-14/15) behind RFC7-20; act
+attribution (RFC5-25) behind RFC7-7.
+
+**On RFC 0006:** selection references, outcomes, URLs, label parity, the
+single drawer, the aggregation contract, and scenario contexts — cited
+throughout, duplicated nowhere.
 
 **Defects reported (not silently diverged from):**
 
@@ -242,25 +292,28 @@ portfolio meta-project; Polaris-local status vocabulary or rollups) are in
 
 ## 7. Deliberately deferred — package-level
 
-Concrete `.syzygy/intent/**` schemas, file grammars, and anchor wire syntax →
-implementation under accepted contracts (RFC3-18 versioning and migration
-apply). Reader-controlled status density (SDR-17's "later") → post-acceptance
-spec material; the minimal default binds now. Live transclusion of Orrery
-scenes, and whose reproducibility obligations follow the embed → RFC 0009
-coordination; until then, link-out. Blast-radius preview of proposed changes →
-V1 gap-computation material (RFC2-19 staging); nothing in RFC7-26's proposed
-mode computes deltas. Certificate rendering → post-V1 certificate RFC.
-Portfolio-profile detail beyond RFC7-35/36 (cross-project saved selections,
-workspace URLs) → RFC 0006's portfolio-profile deferral. Composite maturity
-rendering → RFC 0002's deferral (RFC7-16); Polaris renders no composite number
-until it is discharged. Link-integrity verification cadence for the citation
-graph → quality policy; the obligation and its trust-floor consequence bind
-here. **That cadence reaches only anchors that exist and break** (RFC7-11) and,
-with RFC7-10's target-state component, anchors whose targets moved
-(RFC7-11(a)); it never reaches a load-bearing claim that **never carried an
-anchor at all**, which is caught only at the authoring act — which is why
-RFC7-2's check binds every path to curated narrative rather than the
-draft-adoption path alone.
+- Concrete `.syzygy/intent/**` schemas, file grammars, and anchor wire
+  syntax → implementation under accepted contracts (RFC3-18 versioning and
+  migration apply).
+- Reader-controlled status density (SDR-17's "later") → post-acceptance spec
+  material; the minimal default binds now.
+- Live transclusion of Orrery scenes, and whose reproducibility obligations
+  follow the embed → RFC 0009 coordination; until then, link-out.
+- Blast-radius preview of proposed changes → V1 gap-computation material
+  (RFC2-19 staging); nothing in RFC7-26's proposed mode computes deltas.
+- Certificate rendering → post-V1 certificate RFC.
+- Portfolio-profile detail beyond RFC7-35/36 (cross-project saved selections,
+  workspace URLs) → RFC 0006's portfolio-profile deferral.
+- Composite maturity rendering → RFC 0002's deferral (RFC7-16); Polaris
+  renders no composite number until it is discharged.
+- Link-integrity verification cadence for the citation graph → quality
+  policy; the obligation and its trust-floor consequence bind here.
+  - **That cadence reaches only anchors that exist and break** (RFC7-11) and,
+    with RFC7-10's target-state component, anchors whose targets moved
+    (RFC7-11(a)); it never reaches a load-bearing claim that **never carried
+    an anchor at all**, which is caught only at the authoring act — which is
+    why RFC7-2's check binds every path to curated narrative rather than the
+    draft-adoption path alone.
 
 ## 8. Owner questions — package index
 

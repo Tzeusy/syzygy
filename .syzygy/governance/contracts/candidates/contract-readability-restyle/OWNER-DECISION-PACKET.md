@@ -1,5 +1,9 @@
 # Contract readability restyle — owner decision packet
 
+> **PERFORMED 2026-09-28.** The owner adopted this package; the act record is
+> [`CONTRACT-READABILITY-RESTYLE-ADOPTION-ACT.md`](../../../decisions/CONTRACT-READABILITY-RESTYLE-ADOPTION-ACT.md).
+> The banner below is the one the packet was offered with.
+
 > **Status:** Proposal. It binds nothing until the owner performs the act
 > below (VIS-4). Until then the accepted RFC bytes stay exactly as the
 > general trusted-bootstrap transaction bound them.

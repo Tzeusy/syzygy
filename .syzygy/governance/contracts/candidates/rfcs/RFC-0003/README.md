@@ -23,6 +23,13 @@ uncorrelated) or Syzygy-verified, with the exact provenance state always
 visible (RFC3-16). Absent such a
 record, this contract binds nothing.
 
+RFC 0003 governs the project and workspace manifests and the `.syzygy/**`
+plane: who may write each field, where governance artifacts live, and what
+makes an owner act real. To find a clause, use its number alone: RFC3-15,
+RFC3-16, RFC3-17 and every lettered sub-clause are in
+`governance-homes-and-owner-acts.md`; every other `RFC3-n` is in
+`manifests-and-namespace.md` (the lookup rule below).
+
 This index is **navigational and non-normative**. It duplicates no clause. The
 binding text lives in the two modules; where this file and a clause disagree,
 the clause wins.
@@ -100,20 +107,50 @@ module and cited from the other.
   owning clause. Original numbering (1–14) is preserved package-wide, so the
   case numbers are non-contiguous within each file.
 
+*Diagram (non-normative; the clauses govern):* the same edges as the list
+above, adding nothing to it.
+
+```mermaid
+flowchart LR
+    subgraph M1["manifests-and-namespace.md"]
+        R2["RFC3-2<br/>kernel-recorded class"]
+        R78["RFC3-7/RFC3-8<br/>consent content, revocation"]
+        R30["RFC3-30<br/>observing project's policies"]
+        R39["RFC3-3, RFC3-9<br/>failure postures"]
+        R2021["RFC3-20/21<br/>cache/ and local/ bars"]
+    end
+    subgraph M2["governance-homes-and-owner-acts.md"]
+        R15["RFC3-15<br/>records/ and decisions/ rows"]
+        R16a["RFC3-16(a)<br/>owner-act predicate"]
+        R17a["RFC3-15(a), RFC3-17(a)<br/>durability bars"]
+    end
+    R2 ---|"minted together (B19)"| R15
+    R78 -->|"stored in decisions/"| R15
+    R78 -->|"attribution honored only under"| R16a
+    R30 -->|"honored only under"| R16a
+    R16a -->|"failure posture mirrors"| R39
+    R17a -->|"rest on"| R2021
+```
+
 ## Forward references are informative (package-level)
 
-Both modules cite sibling contracts that are not yet accepted — RFC 0007–0011
-clause numbers appear in RFC3-16(a)'s example list, in its gate inventory, in
-RFC3-15's `records/` cell, and at RFC3-32's narrative-side parallel. Every such
-citation is **informative until that RFC is accepted**: it names where an
-obligation will be discharged, or illustrates a class, and is never a
-dependency of this package's meaning; a renumbering in a sibling draft changes
-nothing here. Load-bearing citations are those to **adopted doctrine**, to the
-**SDR**, and to the sibling contracts each module's integration section names
-as reliances. This paragraph is navigational like the rest of this index — each
-module states the same rule in its own integration section, and RFC3-15's
-`records/` cell, the one such citation standing inside a normative enumeration,
-states its condition in the cell itself rather than relying on either.
+Both modules cite sibling contracts that are not yet accepted, and every such
+citation is **informative until that RFC is accepted**.
+
+- **Where they appear.** RFC 0007–0011 clause numbers appear in RFC3-16(a)'s
+  example list, in its gate inventory, in RFC3-15's `records/` cell, and at
+  RFC3-32's narrative-side parallel.
+- **What they do.** Such a citation names where an obligation will be
+  discharged, or illustrates a class, and is never a dependency of this
+  package's meaning; a renumbering in a sibling draft changes nothing here.
+- **What is load-bearing.** Citations to **adopted doctrine**, to the
+  **SDR**, and to the sibling contracts each module's integration section
+  names as reliances.
+
+This section is navigational like the rest of this index — each module states
+the same rule in its own integration section, and RFC3-15's `records/` cell,
+the one such citation standing inside a normative enumeration, states its
+condition in the cell itself rather than relying on either.
 
 ## Open questions (navigational — numbering is immutable)
 

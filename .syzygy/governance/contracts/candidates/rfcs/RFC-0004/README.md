@@ -37,6 +37,13 @@ SDR-8, SDR-9, SDR-10, SDR-31, SDR-32, SDR-33, and resolves SDR §5 question 7
 
 ---
 
+*Reading this package (non-normative):* RFC 0004 governs how Syzygy observes
+the outside world — what every observer and adapter must declare and emit,
+what each named integration may claim, what a run record must contain, and
+how honestly each fact is labeled. To find a clause, read `n` from its
+`RFC4-n` citation and take the module whose range in the clause map below
+contains it; the reader map further down summarizes what each module decides.
+
 ## Clause map and lookup rule
 
 **Every clause identity appears in exactly one module.** One `RFC4-n`
@@ -49,19 +56,24 @@ namespace, no duplicated normative clauses, no renumbering.
 | 3 — execution record | `execution-record.md` | RFC4-18..RFC4-21 |
 | 4 — fidelity, joins, mappings | `fidelity-joins-and-mappings.md` | RFC4-22..RFC4-30 |
 
-Module sizes are deliberately **not stated here**. A measurement copied into
-contract prose goes stale the moment any module moves, and moves this
-package's content digest for a reason that has nothing to do with what the
-package says. This artifact is governed by the applicable context-budget
-policy; the current measurement lives in the generated budget report
-`../../CONTEXT-BUDGET-REPORT.md`, which is regenerated, never transcribed.
+Module sizes are deliberately **not stated here**.
+
+- A measurement copied into contract prose goes stale the moment any module
+  moves, and moves this package's content digest for a reason that has
+  nothing to do with what the package says.
+- This artifact is governed by the applicable context-budget policy; the
+  current measurement lives in the generated budget report
+  `../../CONTEXT-BUDGET-REPORT.md`, which is regenerated, never transcribed.
 
 **Lookup rule (deterministic).** For any citation `RFC4-n`, read `n` as an
-integer and take the first row whose range contains it; a lettered sub-clause
-`RFC4-13(a)` / `RFC4-13(b)` lives with its parent RFC4-13, in module 2. The
-four ranges are contiguous and exhaustive over RFC4-1…RFC4-30 with no gaps, so
-the rule never needs a search. Modules are numbered for reading order only —
-citations name clauses, never modules.
+integer and take the first row whose range contains it.
+
+- A lettered sub-clause `RFC4-13(a)` / `RFC4-13(b)` lives with its parent
+  RFC4-13, in module 2.
+- The four ranges are contiguous and exhaustive over RFC4-1…RFC4-30 with no
+  gaps, so the rule never needs a search.
+- Modules are numbered for reading order only — citations name clauses,
+  never modules.
 
 **Reading order for a cold reader:** module 1 → 2 → 3 → 4. Module 1 is
 presupposed by all others; modules 2–4 are independently readable given it.
@@ -71,60 +83,96 @@ presupposed by all others; modules 2–4 are independently readable given it.
 *If this map and a clause disagree, the clause wins.*
 
 This package governs **how Syzygy sees the outside world**: every source (git,
-CI, the work scheduler, spec files, code) is read through a registered observer
-or adapter that declares up front what it reads, what it emits, its version,
-and how it fails. Four rules carry most of the weight, one per module:
+CI, the work scheduler, spec files, code) is read through a registered
+observer or adapter that declares up front what it reads, what it emits, its
+version, and how it fails.
 
-- an adapter **never silently normalizes, interpolates, or forgets**, and its
-  output is admissible only if it is registered (module 1, RFC4-2/RFC4-7);
-- **a green gate requires provenance, not just a file** — one of four routes,
-  or the outcome caps at `report-fact`, "an artifact asserting this exists"
-  (module 2, RFC4-13);
-- every fleet run gets an immutable **Execution Record** whose absent values
-  render **Unknown, never zero**, and whose indistinguishable runs are
-  disclosed rather than collapsed (module 3, RFC4-19/RFC4-20);
-- coarse data is labeled `reduced-fidelity` with its cause, liveness is never
-  guessed, and an absence claim needs an executed coverage record (module 4).
+**Four rules carry most of the weight, one per module:**
 
-Two further invariants span the package: **one store per fact** — Syzygy never
-keeps an editable copy of an external system's field, and never writes its own
-facts into external stores except as re-derivable pointers (RFC4-5); and
-Syzygy must be **fully truthful with zero toolchain changes** — richer
-instrumentation only upgrades labeled Unknowns and may never be required
-(RFC4-28, RFC4-29).
+- **Module 1** — an adapter **never silently normalizes, interpolates, or
+  forgets**, and its output is admissible only if it is registered
+  (RFC4-2/RFC4-7).
+- **Module 2** — **a green gate requires provenance, not just a file**: one
+  of four routes, or the outcome caps at `report-fact`, "an artifact
+  asserting this exists" (RFC4-13).
+- **Module 3** — every fleet run gets an immutable **Execution Record** whose
+  absent values render **Unknown, never zero**, and whose indistinguishable
+  runs are disclosed rather than collapsed (RFC4-19/RFC4-20).
+- **Module 4** — coarse data is labeled `reduced-fidelity` with its cause,
+  liveness is never guessed, and an absence claim needs an executed coverage
+  record.
+
+**Two further invariants span the package:**
+
+- **One store per fact** — Syzygy never keeps an editable copy of an external
+  system's field, and never writes its own facts into external stores except
+  as re-derivable pointers (RFC4-5).
+- Syzygy must be **fully truthful with zero toolchain changes** — richer
+  instrumentation only upgrades labeled Unknowns and may never be required
+  (RFC4-28, RFC4-29).
+
+*Diagram (non-normative; the clauses govern):* how the four modules depend on
+one another.
+
+```mermaid
+flowchart TD
+    M1["Module 1: general contract<br/>RFC4-1..RFC4-9<br/>declaration, emission, registry"]
+    M2["Module 2: named adapters<br/>RFC4-10..RFC4-17<br/>gate provenance, capture duties"]
+    M3["Module 3: execution record<br/>RFC4-18..RFC4-21<br/>the run envelope"]
+    M4["Module 4: fidelity, joins, mappings<br/>RFC4-22..RFC4-30<br/>labels, liveness, coverage"]
+    M1 -->|"presupposed by"| M2
+    M1 -->|"presupposed by"| M3
+    M1 -->|"presupposed by"| M4
+    M2 -->|"feeds records to"| M3
+    M2 -->|"emits labels and join bases defined in"| M4
+    M3 -->|"carries labels defined in"| M4
+```
 
 ## Scope
 
-This RFC is the contract between Syzygy and everything it observes: what any
-observer or adapter must declare and emit; the version registry and behavior
-under skew; the named adapters for the initial substrates (OpenSpec,
-git/hosting, code structure, test/CI/runtime reports, Beads); the **Execution
-Record** — an Evidence artifact under `.syzygy/work/**` (SDR-8) — and its
-**minimum durable run envelope**; model/timing/token/cost semantics under
-Unknown-never-zero (SDR-6); the provenance joins and worker-liveness rules; the
-reduced-fidelity labeling schema (SDR-33); declared-versus-inferred code
-mappings and the executed-coverage rule behind every absence claim (SDR-3/4);
-and the derivation-first posture (SDR-31). It is **contracts only**: no storage
-engine, wire format, transport, or language is chosen; physical schemas belong
-to RFC 0003.
+This RFC is the contract between Syzygy and everything it observes:
+
+- what any observer or adapter must declare and emit;
+- the version registry and behavior under skew;
+- the named adapters for the initial substrates (OpenSpec, git/hosting, code
+  structure, test/CI/runtime reports, Beads);
+- the **Execution Record** — an Evidence artifact under `.syzygy/work/**`
+  (SDR-8) — and its **minimum durable run envelope**;
+- model/timing/token/cost semantics under Unknown-never-zero (SDR-6);
+- the provenance joins and worker-liveness rules;
+- the reduced-fidelity labeling schema (SDR-33);
+- declared-versus-inferred code mappings and the executed-coverage rule
+  behind every absence claim (SDR-3/4);
+- and the derivation-first posture (SDR-31).
+
+It is **contracts only**: no storage engine, wire format, transport, or
+language is chosen; physical schemas belong to RFC 0003.
 
 ## 2. Doctrine grounding (non-normative)
 
-Doctrine routes every question about what currently exists to code, tests, CI,
-and runtime observations, and every effect on an external authority through a
-typed, explicitly authorized adapter — those stores are never Syzygy-owned
-namespaces [Observed: architecture.md; VIS-5]. Evidence must be durable,
-identified, and integrity-verifiable, carrying source, capture time, scope, and
-provenance [Observed: trust-and-evidence.md]. Observer, adapter, parser, and
-policy versions are themselves deterministic snapshot inputs, and an uncaptured
-source must not influence a claim [Observed: architecture.md; RFC2-1 item 7,
-RFC2-2]. A substrate audit found the installed actuator toolchain both richer
-and more forgetful than assumed [Observed — findings and citations in history];
-the owner resolved the resulting posture questions (SDR-5, SDR-8, SDR-31,
-SDR-32, SDR-33). [Inferred] The failure mode this contract guards against is
-the *confident adapter*: an integration that silently normalizes, silently
-interpolates, or silently forgets — manufacturing exactly the comprehensible
-fiction VIS-1 forbids.
+Doctrine and RFC 0002 route facts through typed adapters, durable evidence
+and versioned snapshot inputs; [Inferred] this contract applies that to guard
+against the *confident adapter*.
+
+- **Where facts come from.** Doctrine routes every question about what
+  currently exists to code, tests, CI, and runtime observations, and every
+  effect on an external authority through a typed, explicitly authorized
+  adapter — those stores are never Syzygy-owned namespaces [Observed:
+  architecture.md; VIS-5].
+- **What evidence is.** Evidence must be durable, identified, and
+  integrity-verifiable, carrying source, capture time, scope, and provenance
+  [Observed: trust-and-evidence.md].
+- **Versions are inputs.** Observer, adapter, parser, and policy versions are
+  themselves deterministic snapshot inputs, and an uncaptured source must not
+  influence a claim [Observed: architecture.md; RFC2-1 item 7, RFC2-2].
+- **Why the posture questions arose.** A substrate audit found the installed
+  actuator toolchain both richer and more forgetful than assumed [Observed —
+  findings and citations in history]; the owner resolved the resulting
+  posture questions (SDR-5, SDR-8, SDR-31, SDR-32, SDR-33).
+- **The failure mode.** [Inferred] The failure mode this contract guards
+  against is the *confident adapter*: an integration that silently
+  normalizes, silently interpolates, or silently forgets — manufacturing
+  exactly the comprehensible fiction VIS-1 forbids.
 
 ## 4. Violation cases — package-spanning
 
@@ -138,21 +186,36 @@ never renumbered. Only case 5 spans two modules and is held here.*
 
 ## 5. Integration — package-level
 
-**Relies on RFC 0001:** entity classes and minting authorities (RFC1-5,
-RFC1-9) — this package supplies the code-element identity obligations and the
-execution-run identity realization RFC1 delegates; the act-assignment rule
-(RFC1-23); materialization records (RFC1-29) as the warrant join. **On
-RFC 0002:** the evidence semantics execution records satisfy; the tier registry
-(RFC2-25) whose `gate-backed`/`report-fact`/`asserted-by-worker`/
-`reduced-fidelity` tiers these observers emit; Unknown reasons (RFC2-24);
-failure states (RFC2-23); the substrate-translation duty (RFC2-17) realized by
-RFC4-6. **On RFC 0003:** the RFC3-16(a) owner-act predicate, which gates six
-clauses across three modules — the registry entry (RFC4-7), the
-secret-detection policy version (RFC4-12), the oracle and governed-checker
-artifacts (RFC4-13/13(b)), the retention bound and inter-pass interval
-(RFC4-16), the staleness bound (RFC4-23), and the marker-adoption policy
-(RFC4-26). **On RFC 0005:** profile identity (RFC5-18(e)), policy-violation
-recording (RFC5-21), and prose-field storage authority (RFC5-17).
+**Relies on RFC 0001:**
+
+- entity classes and minting authorities (RFC1-5, RFC1-9) — this package
+  supplies the code-element identity obligations and the execution-run
+  identity realization RFC1 delegates;
+- the act-assignment rule (RFC1-23);
+- materialization records (RFC1-29) as the warrant join.
+
+**On RFC 0002:**
+
+- the evidence semantics execution records satisfy;
+- the tier registry (RFC2-25) whose
+  `gate-backed`/`report-fact`/`asserted-by-worker`/`reduced-fidelity` tiers
+  these observers emit;
+- Unknown reasons (RFC2-24);
+- failure states (RFC2-23);
+- the substrate-translation duty (RFC2-17) realized by RFC4-6.
+
+**On RFC 0003:** the RFC3-16(a) owner-act predicate, which gates six clauses
+across three modules —
+
+- the registry entry (RFC4-7),
+- the secret-detection policy version (RFC4-12),
+- the oracle and governed-checker artifacts (RFC4-13/13(b)),
+- the retention bound and inter-pass interval (RFC4-16),
+- the staleness bound (RFC4-23), and
+- the marker-adoption policy (RFC4-26).
+
+**On RFC 0005:** profile identity (RFC5-18(e)), policy-violation recording
+(RFC5-21), and prose-field storage authority (RFC5-17).
 
 **Foundation defects reported against RFC 0001 — all four resolved.** No
 RFC 0001 or RFC 0002 change is outstanding and none blocks acceptance. The
@@ -161,19 +224,25 @@ wording; the RFC1-5 execution-run identity licence; the RFC1-6 delegation
 overreach) is preserved with §8 q5's confirmation in
 `../../history/RFC-0004-history.md` §5.
 
-**Provides to:** **RFC 0003** — registry, envelope, coverage-record, and
-reduced-fidelity-label semantics to physically encode; **RFC 0005** — the
-machine-client surface adapters authenticate through and the SEC-3
-execution-profile boundary these observers stop at (RFC 0005's run-envelope
-obligations are carried as named rows of RFC4-19, so the envelope's minimum
-content is stated in one place); **RFC 0008** — the faithful substrate-state
-feed (RFC4-15) its normalized work ontology maps, and the liveness rules
-(RFC4-23) Trajectory renders; **RFC 0009** — the coverage records (RFC4-27)
-behind every empty plot; **RFC 0011** — the evidence-identity, capture-cadence,
-and adapter-boundary semantics a context packet binds against. **Not this
-RFC's:** retention-bound and staleness-bound *values* (quality/evidence
-policy); normalized work-state mapping (RFC 0008); live streaming and control
-(deferred, SDR-5).
+**Provides to:**
+
+- **RFC 0003** — registry, envelope, coverage-record, and
+  reduced-fidelity-label semantics to physically encode;
+- **RFC 0005** — the machine-client surface adapters authenticate through and
+  the SEC-3 execution-profile boundary these observers stop at (RFC 0005's
+  run-envelope obligations are carried as named rows of RFC4-19, so the
+  envelope's minimum content is stated in one place);
+- **RFC 0008** — the faithful substrate-state feed (RFC4-15) its normalized
+  work ontology maps, and the liveness rules (RFC4-23) Trajectory renders;
+- **RFC 0009** — the coverage records (RFC4-27) behind every empty plot;
+- **RFC 0011** — the evidence-identity, capture-cadence, and adapter-boundary
+  semantics a context packet binds against.
+
+**Not this RFC's:**
+
+- retention-bound and staleness-bound *values* (quality/evidence policy);
+- normalized work-state mapping (RFC 0008);
+- live streaming and control (deferred, SDR-5).
 
 ## 6. Alternatives considered
 
@@ -187,20 +256,24 @@ never by delegation to this one.
 
 ## 7. Deliberately deferred — package-level
 
-Physical schemas for the registry, envelope, coverage records, and labels →
-RFC 0003. Machine-client authentication for adapter/agent access, and every
-execution-profile question (fresh test execution, build-required parsing) →
-RFC 0005 (SEC-3 blocks until accepted). Normalized work-state vocabulary and
-its projection of RFC4-15's feed → RFC 0008. Retention-bound, staleness-bound,
-and currency-bound **values**, and RFC4-16(2)'s maximum inter-pass interval →
-quality/evidence policy; all four remain **undeclared open defaults**, and
-claims depending on them render Unknown until declared. Live streaming,
-intervention, and control — deferred with telemetry as their entry criterion
-(SDR-5). Inference-profile machinery over these sources (semantic clustering,
-drift challenges) → RFC 0002's challenge lifecycle and the inference profile;
-this RFC only feeds them deterministic inputs. Whether per-subworker report
-contracts are worth an actuator change → the co-evolution roadmap (RFC4-29),
-owner-paced.
+- Physical schemas for the registry, envelope, coverage records, and labels →
+  RFC 0003.
+- Machine-client authentication for adapter/agent access, and every
+  execution-profile question (fresh test execution, build-required parsing) →
+  RFC 0005 (SEC-3 blocks until accepted).
+- Normalized work-state vocabulary and its projection of RFC4-15's feed →
+  RFC 0008.
+- Retention-bound, staleness-bound, and currency-bound **values**, and
+  RFC4-16(2)'s maximum inter-pass interval → quality/evidence policy; all
+  four remain **undeclared open defaults**, and claims depending on them
+  render Unknown until declared.
+- Live streaming, intervention, and control — deferred with telemetry as their
+  entry criterion (SDR-5).
+- Inference-profile machinery over these sources (semantic clustering, drift
+  challenges) → RFC 0002's challenge lifecycle and the inference profile;
+  this RFC only feeds them deterministic inputs.
+- Whether per-subworker report contracts are worth an actuator change → the
+  co-evolution roadmap (RFC4-29), owner-paced.
 
 ## 8. Owner questions — package index
 
