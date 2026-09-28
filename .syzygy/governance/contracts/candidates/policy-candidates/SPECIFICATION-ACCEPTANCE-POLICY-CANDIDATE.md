@@ -1,12 +1,18 @@
 # Specification acceptance policy — candidate craft rule set
 
-> **Candidate. Binds nothing until its own `CONFIRM CRAFT AMENDMENT`
-> act.** Proposed at the 2026-08-10 launch-closure pass to close
-> launch-gate question E5 (no acceptance criteria existed for a
-> specification itself — "spec acceptance would be a vibe check").
-> Identifiers `CC-SPEC-1…11`; amended in place, never renumbered. The
-> testability sub-criterion (CC-SPEC-4) is the one E5 limb that had no
-> criterion even in candidate form before this file.
+> **In force:** acts 6 and 7 confirmed this file,
+> `SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`, and its sibling on
+> 2026-08-17, and later performed acts amend them; the acceptance record
+> (`../../../decisions/ACCEPTANCE-ACT-RECORD.md`) lists every confirmed
+> digest. The path, file name and title still say "candidate"; the act
+> record, not the path, decides status.
+>
+> Proposed at the 2026-08-10 launch-closure pass to close launch-gate
+> question E5 (no acceptance criteria existed for a specification itself —
+> "spec acceptance would be a vibe check"). Identifiers `CC-SPEC-1…11`;
+> amended in place, never renumbered. The testability sub-criterion
+> (CC-SPEC-4) is the one E5 limb that had no criterion even in candidate
+> form before this file.
 >
 > **Amended 2026-08-13** — the warrant rule, the requirement forms, the
 > adoption clause and the dependency declaration. The delta is
@@ -30,14 +36,38 @@
 > blocker: the f15 completion had wrongly declared CC-SPEC-8 the reviewed-
 > N/A rule's one home over the nine contract modules that already state it
 > with a stricter owner gate. **Blocker repaired same day** (D2-6 in the
-> same delta): CC-SPEC-8 now cites RFC1-33/RFC6-28/RFC7-38/RFC8-32/RFC9-52
-> for the judgment's home, gate, unit, and effect, keeping only the
-> production obligation and the "applicable" definition. The repair awaits
-> its one confirming review — a repair session cannot confirm its own
-> repairs. RD-69's five non-blocking findings are dispositioned open in
+> same delta): CC-SPEC-8 now cites the nine contract phase rules RFC1-33,
+> RFC2-26, RFC3-33, RFC4-30, RFC5-27, RFC6-28, RFC7-38, RFC8-32 and
+> RFC9-52 for the judgment's home, gate, unit, and effect, keeping only the
+> production obligation and the "applicable" definition. RD-70 confirmed
+> the repair (`VERDICT: CONFIRM WITH EXCEPTIONS`, raw at
+> `../round-2026-08i/reviews/RD-70-p41-p42-confirming-RAW.md`). RD-69's
+> five non-blocking findings are dispositioned open in
 > `../round-2026-08i/reviews/RD-69-DISPOSITION-REGISTER.md`.
 
+A specification is accepted against eleven clauses, CC-SPEC-1…11: what it
+must show as a whole, what each requirement must carry, what it must cover,
+and how its adoption is recorded. It is one model with the sibling
+shape-to-spec impact policy, which generates each specification's
+declaration from CC-SPEC-2.
+
+- **The specification as a whole:** one clear capability and scope
+  (CC-SPEC-1); explicit non-goals and Unknowns (CC-SPEC-5); implementation
+  detail only as required behavior (CC-SPEC-7); restatable by a fresh
+  technical reader (CC-SPEC-9).
+- **Each requirement:** names all its material governing warrants
+  (CC-SPEC-2); has a stable identity (CC-SPEC-3); is falsifiable in a named
+  form (CC-SPEC-4); silently selects no unresolved shape decision
+  (CC-SPEC-6).
+- **Coverage:** applicable contract clauses covered or lawfully N/A
+  (CC-SPEC-8); the capability's own obligations covered, demonstrably
+  (CC-SPEC-11).
+- **Adoption:** lawful adoption recorded at the exact digest (CC-SPEC-10).
+
 ## The rule
+
+The eleven clauses follow in order; italic parentheticals mostly record
+dated history (CC-SPEC-11's also states its scope against CC-SPEC-8).
 
 **CC-SPEC-1 — Capability and scope are clear.** The specification names
 one coherent capability, what is in it, and what is out. A reader can say
@@ -101,18 +131,16 @@ in this clause until 2026-08-13 and is removed: no admission act, register,
 or record class for a user need is defined by any authority in this
 repository. `[Observed]` — the sweep, re-run 2026-08-13 in the session that
 made this amendment rather than quoted from the review that prompted it.
-Python `re` `user\s+need`,
-case-insensitive, over `.syzygy/**` `*.md|*.yaml|*.json` — **371 files
-scanned, 2 files with hits**: this clause's own discussion of the class, and
-the review that found it. Second method, repo-wide over
-`.md|.py|.json|.yaml|.yml|.txt` — **784 files scanned, 3 files with hits**:
-those two, plus an untracked file absent from every commit. **No admission
-act, register, or record class is defined by any authority.** A class whose
-satisfying record
-an author may name at will is an unbounded escape hatch in the clause whose
-purpose is to close one. **Admitting the class requires first defining the
-admitting authority and record in the shape layer** — queued as a question,
-not assumed here.
+Python `re` `user\s+need`, case-insensitive, over `.syzygy/**`
+`*.md|*.yaml|*.json` — **371 files scanned, 2 files with hits**: this
+clause's own discussion of the class, and the review that found it. Second
+method, repo-wide over `.md|.py|.json|.yaml|.yml|.txt` — **784 files
+scanned, 3 files with hits**: those two, plus an untracked file absent from
+every commit. **No admission act, register, or record class is defined by
+any authority.** A class whose satisfying record an author may name at will
+is an unbounded escape hatch in the clause whose purpose is to close one.
+**Admitting the class requires first defining the admitting authority and
+record in the shape layer** — queued as a question, not assumed here.
 
 *(Widened and restated 2026-08-13, RD-51 f2/f4/f5/f6. The clause previously
 required a requirement to trace "to exactly one" of five sources. Three
@@ -127,11 +155,15 @@ describing a specification that does not exist. Those claims are withdrawn.
 The true statement: these are **queued** decisions whose rulings, once made,
 would become citable under `decisions[]`.)*
 
-**CC-SPEC-3 — Every requirement has a stable identity.** Identifiers are
-minted once, amended in place, never renumbered or reused, and a withdrawn
-requirement's identifier is **retired in place with its entry marked
-retired**, never deleted and never reissued — CC-REV-7's discipline
-extended to requirement identifiers, including its retirement limb.
+**CC-SPEC-3 — Every requirement has a stable identity.** CC-REV-7's
+discipline extended to requirement identifiers, including its retirement
+limb:
+
+- identifiers are minted once, amended in place, never renumbered or
+  reused;
+- a withdrawn requirement's identifier is **retired in place with its entry
+  marked retired**, never deleted and never reissued.
+
 *(Retirement limb added 2026-08-13, RD-51's finding that the clause
 extended CC-REV-7 to a new population while dropping half of it, leaving a
 withdrawn requirement with no lawful disposition.)*
@@ -211,15 +243,20 @@ applied to the spec itself — cited, not restated).
 **CC-SPEC-6 — No unresolved shape decision is silently selected.** If a
 requirement's content would settle an open owner question, the spec is
 blocked on that question — authoring around it by implication is the
-violation this rule exists to name. Following VIS-4's own rule for the
-analogous judgment, **this classification is contested by default and is
-never finally made by the party authoring the requirement**: the spec
-records which open questions it believes it does not settle, so a
-misclassification is findable after the fact, and a reviewer or the owner
-may reclassify at any time. *(Confirmer limb added 2026-08-13, RD-51's
-finding that the clause's trigger was a counterfactual with nobody assigned
-to evaluate it — the spec's own author was both the only party positioned
-to notice and the party least able to.)*
+violation this rule exists to name.
+
+Following VIS-4's own rule for the analogous judgment, **this
+classification is contested by default and is never finally made by the
+party authoring the requirement**:
+
+- the spec records which open questions it believes it does not settle, so
+  a misclassification is findable after the fact;
+- a reviewer or the owner may reclassify at any time.
+
+*(Confirmer limb added 2026-08-13, RD-51's finding that the clause's
+trigger was a counterfactual with nobody assigned to evaluate it — the
+spec's own author was both the only party positioned to notice and the
+party least able to.)*
 
 **CC-SPEC-7 — Implementation detail appears only when it is required
 behavior.** A stack, schema, or mechanism appears in a spec only if the
@@ -228,54 +265,83 @@ implementation, later.
 
 **CC-SPEC-8 — Applicable contract clauses are covered or lawfully N/A.**
 The clause-to-requirement coverage matrix (the phase-rule clauses'
-obligation) is produced with the spec; every applicable clause is covered
-by requirements or carries a reviewed N/A judgment. The matrix's unit is
-the contract's, not this clause's: **rows are per observable consequence,
-not per clause** (RFC1-33, RFC6-28) — a clause with five observable
-consequences and one mapped requirement is not covered.
+obligation) is produced with the spec.
+
+- Every applicable clause is covered by requirements or carries a reviewed
+  N/A judgment.
+- The matrix's unit is the contract's, not this clause's: **rows are per
+  observable consequence, not per clause** (RFC1-33, RFC6-28) — a clause
+  with five observable consequences and one mapped requirement is not
+  covered.
 
 **"Applicable", defined.** A contract clause is applicable to a
 specification when **the capability uses the entity, behavior, authority
-boundary, state vocabulary, or interface the clause governs**. A reviewer
-applies this test clause by clause against the specification's CC-SPEC-1
-scope statement; a clause governing something the capability neither
-renders, stores, transitions, queries, nor crosses is not applicable, and
-saying so is an N/A judgment, not an omission.
+boundary, state vocabulary, or interface the clause governs**.
+
+- A reviewer applies this test clause by clause against the
+  specification's CC-SPEC-1 scope statement.
+- A clause governing something the capability neither renders, stores,
+  transitions, queries, nor crosses is not applicable, and saying so is an
+  N/A judgment, not an omission.
 
 **The reviewed-N/A judgment's home, gate, unit, and effect rule are the
 contract's, not this clause's.** They are stated by the nine confirmed
 contract phase rules **RFC1-33, RFC2-26, RFC3-33, RFC4-30, RFC5-27, RFC6-28,
-RFC7-38, RFC8-32, and RFC9-52**: a reviewed N/A judgment is a recorded
-**owner** judgment homed in `decisions/`
-(RFC3-15), honored only through an effective owner act under **RFC3-16(a)**,
-in state (1) or state (2), with that state rendered; absent or invalid acts
-map nothing — the consequence remains unmapped and **renders Unknown, never
-covered** (VIS-2). This clause adds only the specification-side
-**production obligation**: the specification ships with its coverage
-matrix, and every N/A row in that matrix cites the owner judgment's record
-in `decisions/`, so the RFC3-16(a) gate can evaluate the act and expose its
-exact provenance state. A matrix
-whose N/A rows rest on anything less — the author's or a reviewer's
-say-so, a judgment recorded only inside the spec — does not discharge this
-clause. *(History: a confirmer limb was added 2026-08-13 against RD-51
-f15; the 2026-08-17 completion then declared this clause the rule's one
-home, with a reviewer-grade confirmer and no provenance predicate, over
-the nine contract modules that already state the rule with the owner gate
-— and defended that with an absence claim a 398-file sweep falsifies.
-RD-69 BLOCKER 1. Repaired 2026-08-17: the clause is reduced to a citation
-of those modules, keeping only the production obligation and the
-"applicable" definition; the contract's owner gate subsumes the 2026-08-13
-confirmer limb.)*
+RFC7-38, RFC8-32, and RFC9-52**:
+
+- a reviewed N/A judgment is a recorded **owner** judgment homed in
+  `decisions/` (RFC3-15);
+- it is honored only through an effective owner act under **RFC3-16(a)**,
+  in state (1) or state (2), with that state rendered;
+- absent or invalid acts map nothing — the consequence remains unmapped and
+  **renders Unknown, never covered** (VIS-2).
+
+This clause adds only the specification-side **production obligation**:
+
+- the specification ships with its coverage matrix;
+- every N/A row in that matrix cites the owner judgment's record in
+  `decisions/`, so the RFC3-16(a) gate can evaluate the act and expose its
+  exact provenance state.
+
+A matrix whose N/A rows rest on anything less — the author's or a
+reviewer's say-so, a judgment recorded only inside the spec — does not
+discharge this clause.
+
+*Diagram (non-normative; the rules govern):* one row of the coverage
+matrix, from an applicable clause's observable consequence to what renders.
+
+```mermaid
+flowchart TD
+    R["Row: one observable consequence<br/>of an applicable contract clause"] --> C{"Covered by<br/>requirements?"}
+    C -->|"yes"| COV["Covered"]
+    C -->|"no"| NA["Reviewed N/A row citing the owner<br/>judgment's record in decisions/"]
+    NA --> G{"Effective owner act<br/>under RFC3-16(a)?"}
+    G -->|"yes: state (1) or state (2)"| H["N/A honored,<br/>with that state rendered"]
+    G -->|"absent or invalid"| U["Maps nothing: consequence unmapped,<br/>renders Unknown, never covered"]
+    C -->|"neither, or N/A resting on say-so"| X["Clause not discharged;<br/>consequence unmapped, Unknown"]
+```
+
+*(History: a confirmer limb was added 2026-08-13 against RD-51 f15; the
+2026-08-17 completion then declared this clause the rule's one home, with a
+reviewer-grade confirmer and no provenance predicate, over the nine
+contract modules that already state the rule with the owner gate — and
+defended that with an absence claim a 398-file sweep falsifies. RD-69
+BLOCKER 1. Repaired 2026-08-17: the clause is reduced to a citation of
+those modules, keeping only the production obligation and the "applicable"
+definition; the contract's owner gate subsumes the 2026-08-13 confirmer
+limb.)*
 
 **CC-SPEC-9 — A fresh technical reader can restate it.** A specification is
 a normative artifact, so **CC-REV-4** and **VIS-3** apply unmodified: a
 reader with no authoring context restates intent and constraints correctly,
 and failure is recorded on the artifact's surface. This clause adds nothing
 and exists only so that E5's comprehensibility limb has a routed answer;
-the obligation is CC-REV-4's. *(Reduced to a citation 2026-08-13, RD-51
-f17 — the clause previously restated CC-REV-4 normatively, which CC-REV-3
-forbids: "documentation cites authoritative artifacts, it does not restate
-them normatively — a restated rule drifts and becomes a shadow authority.")*
+the obligation is CC-REV-4's.
+
+*(Reduced to a citation 2026-08-13, RD-51 f17 — the clause previously
+restated CC-REV-4 normatively, which CC-REV-3 forbids: "documentation cites
+authoritative artifacts, it does not restate them normatively — a restated
+rule drifts and becomes a shadow authority.")*
 
 **CC-SPEC-10 — Lawful adoption is recorded at the exact digest.**
 
@@ -296,7 +362,9 @@ them normatively — a restated rule drifts and becomes a shadow authority.")*
 > reaches this class.
 
 Until the adoption record exists the spec is a candidate like everything
-else. *(Restated 2026-08-13, RD-51 f12. The clause previously read "Lawful
+else.
+
+*(Restated 2026-08-13, RD-51 f12. The clause previously read "Lawful
 adoption under VIS-4 is recorded at the exact digest. Under the current
 doctrine state, this means owner adoption." Word-by-word against VIS-4 it
 **added** the digest binding — its genuine contribution — **paraphrased
@@ -314,12 +382,13 @@ CC-SPEC-8, which covers contract **clauses**; this clause covers the
 **capability's own obligations**.)*
 
 A specification demonstrates that its requirements cover the capability it
-declares, with a **coverage table** produced with the spec. The table's
-**population is the declared capability obligations** — each thing the
-CC-SPEC-1 scope statement says the capability does, renders, records, or
-refuses — counted, and declared by the spec itself. Each declared
-obligation is placed in **exactly one** of three sets, which sum to the
-population:
+declares, with a **coverage table** produced with the spec.
+
+- The table's **population is the declared capability obligations** —
+  each thing the CC-SPEC-1 scope statement says the capability does,
+  renders, records, or refuses — counted, and declared by the spec itself.
+- Each declared obligation is placed in **exactly one** of three sets,
+  which sum to the population:
 
 ```text
 covered                 named requirement IDs satisfy it
@@ -329,20 +398,24 @@ Unknown / unresolved    rendered with what would settle it, never
                         silently omitted (VIS-2)
 ```
 
-The completeness test is **bounded to the declared scope**: no proof is
-demanded over obligations the specification does not declare, and a
-reviewer who believes an obligation is missing from the population raises
-that against CC-SPEC-1's scope statement, not against this table. The
-table is **confirmed by a party other than the specification's author**
-(the CC-TEST-4 pattern, as CC-SPEC-8). A fresh engineer applies this
-clause by reading the scope statement, listing its obligations, and
-checking each against the table — no other context is required.
+- The completeness test is **bounded to the declared scope**: no proof is
+  demanded over obligations the specification does not declare, and a
+  reviewer who believes an obligation is missing from the population raises
+  that against CC-SPEC-1's scope statement, not against this table.
+- The table is **confirmed by a party other than the specification's
+  author** (the CC-TEST-4 pattern, as CC-SPEC-8).
+- A fresh engineer applies this clause by reading the scope statement,
+  listing its obligations, and checking each against the table — no other
+  context is required.
 
 ## What this policy is not
 
-Not a workflow (the th-projects feature-request workflow is referenced
-process, never authority); not a format (P-39 owns the medium); not a
-review procedure (CC-REV-1/2/4 own review). One fact, one home.
+One fact, one home — this policy is:
+
+- not a workflow (the th-projects feature-request workflow is referenced
+  process, never authority);
+- not a format (P-39 owns the medium);
+- not a review procedure (CC-REV-1/2/4 own review).
 
 ## Known open findings against this file
 
