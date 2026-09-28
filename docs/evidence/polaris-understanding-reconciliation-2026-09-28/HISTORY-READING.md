@@ -52,8 +52,8 @@ it already read the status pages and the governance checker, at C1.
 - **Rule-6 evidence.** [`history-reading-rule6.json`](history-reading-rule6.json)
   records each guard's mutant, its fragments and the commit it ran at; each
   one fails the selftest. Two fail by an exception rather than by their named
-  refusal; both still fail closed. The Git query's flags are exercised on a
-  scratch repository, not a fixture.
+  refusal; both still fail closed. The Git query's flags and the disk listing
+  are exercised on a scratch repository, not a fixture.
 - **Review rounds.**
   - Round 1 (`HISTORY-REVIEW-1-RAW.md`, REVISE): M1, a deleted raw was not
     refused, is answered by the Git population; M2, untested predicates, by

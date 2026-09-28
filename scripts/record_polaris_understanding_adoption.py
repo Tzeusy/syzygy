@@ -885,6 +885,12 @@ def history_population_selftest():
         added, _listed = Evidence(root).history_population()
         cases.append(('raw added by a merge commit counts as added',
                       EVIDENCE + 'HISTORY-REVIEW-5-RAW.md' in added))
+        # A raw on disk that no commit added.
+        raw(root, 'HISTORY-REVIEW-6-RAW.md', 'Verdict: CONFIRM\n')
+        added, listed = Evidence(root).history_population()
+        cases.append(('uncommitted raw is listed from disk',
+                      EVIDENCE + 'HISTORY-REVIEW-6-RAW.md' in listed
+                      and EVIDENCE + 'HISTORY-REVIEW-6-RAW.md' not in added))
     for label, ok in cases:
         require(ok, 'history population selftest: ' + label)
     print('PASS history population selftest: ' + str(len(cases)) + ' real-Git cases')
