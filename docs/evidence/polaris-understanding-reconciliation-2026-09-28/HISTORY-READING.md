@@ -66,6 +66,12 @@ it already read the status pages and the governance checker, at C1.
     by showing merge commits' additions; N2, lowercase or nested names, by
     the wider malformed-name refusal; N3, two surviving mutants, by an
     uncommitted-raw witness and a narrower exemption test.
+  - Round 4 (`HISTORY-REVIEW-4-RAW.md`, CONFIRM WITH EXCEPTIONS) binds the
+    current recorder. Its four notes stay open: a non-ASCII malformed name is
+    refused only while on disk; a near-miss name without `history-review` is
+    skipped; two witnesses have no rule-6 row of their own; and a committed
+    malformed or twice-added raw fails `--check` until the owner decides how
+    to clear it.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws
