@@ -1,5 +1,9 @@
 # Specification-policy readability restyle — owner decision packet
 
+> **PERFORMED 2026-09-28.** The owner adopted this package; the act record is
+> [`SPEC-POLICY-READABILITY-RESTYLE-ADOPTION-ACT.md`](../../../decisions/SPEC-POLICY-READABILITY-RESTYLE-ADOPTION-ACT.md).
+> The banner below is the one the packet was offered with.
+
 > **Status:** Proposal. It binds nothing until the owner performs the act
 > below (VIS-4). Until then CC-SPEC and CC-IMPACT stay exactly as acts 6 and
 > 7 and the general trusted-bootstrap transaction bound them.

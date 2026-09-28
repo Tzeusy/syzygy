@@ -237,3 +237,21 @@ f90ff5933fa461a4ab0b3de7876abe2aeb84eb6e6e2e6cb8a4e5176f9aa241f9  security-and-s
 The pending craft-confirmation act (act 2) now binds
 `CC-TEST-2@8157c0c63ff27341365c9c29e0f620bd7eb7b986fd40432e9c5a30891d3e0782`;
 the `7a716090…` argument above is stale and satisfies nothing.
+
+<!-- SPEC-POLICY-READABILITY-RESTYLE-ADOPTION:BEGIN -->
+**Specification-policy readability restyle confirmed — 2026-09-28.**
+The owner confirmed the CC-REV-8 restyle of both specification policies by
+writing `CONFIRM SPECIFICATION POLICY READABILITY RESTYLE: <manifest digest>` over
+`.syzygy/governance/contracts/candidates/spec-policy-readability-restyle/SPEC-POLICY-AMENDMENT-MANIFEST.txt`
+(sha256 `0abd08981ae693720c33c339b9d53ac2a4c42c141d0ad23be2e83e90c5cd000e`). The recorder derived the policies' confirmed digests from
+its rows:
+
+```text
+CONFIRM CRAFT AMENDMENT: CC-IMPACT@e08270a2d2589aafaad59d9958683f094fb6170b38cfaa30e49f48c41645989c
+CONFIRM CRAFT AMENDMENT: CC-SPEC@38c0e629efa6fb6acdb3c7d0f63b02518191d03221ae290a6bbc691fc697a90e
+```
+
+Both policies are in force at those digests, at their committed home. The
+earlier act-6, act-7 and transaction-row digests are act-time history. Act
+record: `.syzygy/governance/decisions/SPEC-POLICY-READABILITY-RESTYLE-ADOPTION-ACT.md`.
+<!-- SPEC-POLICY-READABILITY-RESTYLE-ADOPTION:END -->
