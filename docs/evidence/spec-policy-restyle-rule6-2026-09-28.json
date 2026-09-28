@@ -1,0 +1,174 @@
+{
+  "command": "python3 <file> --selftest",
+  "mutants": [
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/check_governance.py",
+      "killed": true,
+      "new": "            if False:",
+      "old": "            if list(lines) != [expected_phrase]:",
+      "result": "340 fixtures, 1 failing \u2014 a check that cannot fail is not a check"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/check_governance.py",
+      "killed": true,
+      "new": "        if False:",
+      "old": "        if hashlib.sha256(spec_body.encode()).hexdigest() != spec_digest:",
+      "result": "340 fixtures, 1 failing \u2014 a check that cannot fail is not a check"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/check_governance.py",
+      "killed": true,
+      "new": "                if False:",
+      "old": "                if text.splitlines().count(line) != 1:",
+      "result": "340 fixtures, 1 failing \u2014 a check that cannot fail is not a check"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/check_governance.py",
+      "killed": true,
+      "new": "            if False:",
+      "old": "            if actual is None or actual != by_path.get(path):",
+      "result": "340 fixtures, 2 failing \u2014 a check that cannot fail is not a check"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/check_governance.py",
+      "killed": true,
+      "new": "        if False and (len(instants) != 1 or not ACT_INSTANT_LINE.fullmatch(instants[0])",
+      "old": "        if (len(instants) != 1 or not ACT_INSTANT_LINE.fullmatch(instants[0])",
+      "result": "340 fixtures, 1 failing \u2014 a check that cannot fail is not a check"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/check_governance.py",
+      "killed": true,
+      "new": "        if False:",
+      "old": "        if not values or row is None or values[-1] != row:",
+      "result": "340 fixtures, 1 failing \u2014 a check that cannot fail is not a check"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/check_governance.py",
+      "killed": true,
+      "new": "    if False:\n        # The bootstrap act's",
+      "old": "    if spec_valid:\n        # The bootstrap act's",
+      "result": "340 fixtures, 2 failing \u2014 a check that cannot fail is not a check"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/check_governance.py",
+      "killed": true,
+      "new": "        if False:",
+      "old": "        if spec_valid and rel == CC_SPEC_SUBJECT:",
+      "result": "340 fixtures, 1 failing \u2014 a check that cannot fail is not a check"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/check_governance.py",
+      "killed": true,
+      "new": "    (lambda *a: None)(PERFORMED_ACT_RECORD,\n                   _performed_act_digests(impact_specs",
+      "old": "    require_latest(PERFORMED_ACT_RECORD,\n                   _performed_act_digests(impact_specs",
+      "result": "340 fixtures, 1 failing \u2014 a check that cannot fail is not a check"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/check_governance.py",
+      "killed": true,
+      "new": "                if m and m.group(1) not in values:\n                    values.insert(0, m.group(1))\n                    break",
+      "old": "                if m and m.group(1) not in values:\n                    values.append(m.group(1))\n                    break",
+      "result": "340 fixtures, 2 failing \u2014 a check that cannot fail is not a check"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/check_governance.py",
+      "killed": true,
+      "new": "                pass\n        history.setdefault(rel, {})[label] = (\n            (performed_digest",
+      "old": "                del registry[rel]\n        history.setdefault(rel, {})[label] = (\n            (performed_digest",
+      "result": "340 fixtures, 1 failing \u2014 a check that cannot fail is not a check"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/check_governance.py",
+      "killed": true,
+      "new": "    if False:\n        return",
+      "old": "    if not os.path.isfile(os.path.join(base, SPEC_POLICY_RESTYLE_ACT)):\n        return",
+      "result": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-1000/-home-tze-GitHub-syzygy/42f1d844-9fb6-4091-8261-544ed369daaf/scratchpad/wt-pkg/.syzygy/governance/decisions/SPEC-POLICY-READAB"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/build_spec_policy_readability_restyle.py",
+      "killed": true,
+      "new": "    if False:",
+      "old": "    if LEAD.findall(before) != LEAD.findall(after):",
+      "result": "14 fixtures, 1 failing"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/build_spec_policy_readability_restyle.py",
+      "killed": true,
+      "new": "    if False:",
+      "old": "    if headings(before) != headings(after):",
+      "result": "14 fixtures, 1 failing"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/build_spec_policy_readability_restyle.py",
+      "killed": true,
+      "new": "    if False:\n",
+      "old": "    if lost:\n",
+      "result": "14 fixtures, 1 failing"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/build_spec_policy_readability_restyle.py",
+      "killed": true,
+      "new": "    elif False:",
+      "old": "    elif target.read_text(encoding=\"utf-8\") != render(proposed):",
+      "result": "14 fixtures, 2 failing"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/build_spec_policy_readability_restyle.py",
+      "killed": true,
+      "new": "    if False:\n        print(f\"refusing to apply: no owner act",
+      "old": "    if not recorded:\n        print(f\"refusing to apply: no owner act",
+      "result": "14 fixtures, 2 failing"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/record_spec_policy_readability_restyle.py",
+      "killed": true,
+      "new": "    if False:\n        raise ValueError(f\"owner argument",
+      "old": "    if argument != sha:\n        raise ValueError(f\"owner argument",
+      "result": "33 fixtures, 2 failing"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/record_spec_policy_readability_restyle.py",
+      "killed": true,
+      "new": "    if False:",
+      "old": "    if sorted(rows) != sorted(path for _label, path in NESTED):",
+      "result": "KeyError: '.syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md'"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/record_spec_policy_readability_restyle.py",
+      "killed": true,
+      "new": "            if False:",
+      "old": "            if text.splitlines().count(line) != 1:",
+      "result": "33 fixtures, 3 failing"
+    },
+    {
+      "commit": "df5b3437ea85bdf78a64773f76fd29e6ec8ff62e",
+      "file": "scripts/record_spec_policy_readability_restyle.py",
+      "killed": true,
+      "new": "    if False:",
+      "old": "    if not any(verdict in head for verdict in VERDICTS):",
+      "result": "33 fixtures, 3 failing"
+    }
+  ],
+  "version": 1
+}
