@@ -268,11 +268,15 @@ class Evidence:
 
     def history_population(self):
         """Evidence paths ever added on HEAD's history, and those on disk."""
-        # Every commit, every parent: a raw renamed away or dropped by a merge
-        # still counts as added.
-        log = git_output(self.root, 'log', '--no-renames', '--full-history', '--diff-filter=A',
-                         '--name-only', '--format=', 'HEAD', '--', EVIDENCE).decode().splitlines()
-        return log, [EVIDENCE + p.name for p in (self.root / EVIDENCE).iterdir()]
+        # Every commit and every parent, merges included: a raw renamed away,
+        # dropped by a merge, or added by the merge itself still counts, and
+        # one path added on two branches appears twice.
+        log = git_output(self.root, 'log', '--no-renames', '--full-history',
+                         '--diff-merges=combined', '--diff-filter=A', '--name-only',
+                         '--format=', 'HEAD', '--', EVIDENCE).decode().splitlines()
+        base = self.root / EVIDENCE
+        return log, [EVIDENCE + p.relative_to(base).as_posix()
+                     for p in base.rglob('*') if p.is_file()]
 
     def introduction(self, path):
         commits = git_output(self.root, 'log', '--diff-filter=A', '--format=%H',
@@ -490,9 +494,13 @@ def history_reviews(evidence):
     """Every history review, numbered 1..n, none deleted after it was committed."""
     population = evidence.history_population()
     malformed = sorted({p for paths in population for p in paths
-                        if p.startswith(EVIDENCE + 'HISTORY-REVIEW')
+                        if p.startswith(EVIDENCE)
+                        and 'history-review' in p.rsplit('/', 1)[-1].lower()
                         and not HISTORY_REVIEW.fullmatch(p[len(EVIDENCE):])})
     require(not malformed, 'malformed history review name: ' + ', '.join(malformed))
+    twice = sorted({p for p in population[0] if population[0].count(p) > 1
+                    and p.startswith(EVIDENCE) and HISTORY_REVIEW.fullmatch(p[len(EVIDENCE):])})
+    require(not twice, 'history review added more than once: ' + ', '.join(twice))
     def named(paths):
         return {p for p in paths if p.startswith(EVIDENCE)
                 and HISTORY_REVIEW.fullmatch(p[len(EVIDENCE):])}
@@ -631,7 +639,8 @@ def reconciliation_selftest():
         def introduction(self, path):
             return self.introductions.get(path)
         def history_population(self):
-            listed = [p for p in (*history_paths, decoy_path) if self.files.get(p) is not None]
+            listed = [p for p, data in self.files.items()
+                      if p.startswith(EVIDENCE) and data is not None]
             return list(self.added), listed
 
     fixture = Fixture()
@@ -719,7 +728,8 @@ def reconciliation_selftest():
     mutate(history_paths[4], 'history review deleted', missing=True)
     # A leading zero or a suffix is refused, never skipped: a REVISE raw so
     # named would otherwise leave an earlier CONFIRM standing.
-    for malformed in (decoy_path, EVIDENCE + 'HISTORY-REVIEW-3-RAW-ADDENDUM.md'):
+    for malformed in (decoy_path, EVIDENCE + 'HISTORY-REVIEW-3-RAW-ADDENDUM.md',
+                      EVIDENCE + 'history-review-11-raw.md', EVIDENCE + 'sub/HISTORY-REVIEW-11-RAW.md'):
         fixture.added.append(malformed)
         fixture.files[malformed] = ('Verdict: REVISE\n- `' + SCRIPT + '`: `' + '0' * 64 + '`\n').encode()
         try:
@@ -746,6 +756,19 @@ def reconciliation_selftest():
     mutate(PROOF, 'review retired by changed input')
     mutate(DOC_PATHS[0], 'documentation after-image')
     mutate(CHECK_GOV, 'governance registration source changed before C3')
+    # A raw on disk that no commit added is refused, never ignored.
+    uncommitted = EVIDENCE + 'HISTORY-REVIEW-11-RAW.md'
+    fixture.files[uncommitted] = fixture.files[history_path]
+    try:
+        check_evidence(fixture)
+    except ValueError as exc:
+        require('history review not retained' in str(exc), 'wrong uncommitted refusal: ' + str(exc))
+        witnesses.append({'commit': commit, 'path': uncommitted, 'operation': 'add-uncommitted',
+                          'old': None, 'new': None, 'refusal': str(exc)})
+    else:
+        raise AssertionError('uncommitted history review accepted')
+    finally:
+        del fixture.files[uncommitted]
     # A numbering gap and an empty population, each removed from Git history
     # and disk alike, so the deletion guard cannot be what refuses them.
     for removed, reason in ((history_paths[4:5], 'history review numbering is not 1..n'),
@@ -831,6 +854,37 @@ def history_population_selftest():
         cases.append(('raw dropped by a merge counts as added',
                       EVIDENCE + 'HISTORY-REVIEW-3-RAW.md' in added
                       and EVIDENCE + 'HISTORY-REVIEW-3-RAW.md' not in listed))
+        # Two branches add the same raw; the merge keeps the side's CONFIRM.
+        raw(root, 'HISTORY-REVIEW-4-RAW.md', 'Verdict: REVISE\n')
+        git(root, 'add', '-A'); git(root, 'commit', '-qm', 'raw 4 on main')
+        git(root, 'checkout', '-q', '-b', 'side4', 'HEAD~1')
+        raw(root, 'HISTORY-REVIEW-4-RAW.md', 'Verdict: CONFIRM\n')
+        git(root, 'add', '-A'); git(root, 'commit', '-qm', 'raw 4 on side')
+        git(root, 'checkout', '-q', 'main')
+        subprocess.run(['git', '-C', str(root), 'merge', '-q', '--no-edit', 'side4'],
+                       capture_output=True)
+        (root / EVIDENCE / 'HISTORY-REVIEW-4-RAW.md').write_text('Verdict: CONFIRM\n')
+        git(root, 'add', '-A'); git(root, 'commit', '-qm', 'merge keeps side')
+        try:
+            history_reviews(Evidence(root))
+        except ValueError as exc:
+            cases.append(('one raw added on two branches refused',
+                          'added more than once' in str(exc)))
+        else:
+            cases.append(('one raw added on two branches refused', False))
+        # A raw added by a merge commit itself, then deleted.
+        git(root, 'checkout', '-q', '-b', 'side5')
+        raw(root, 'unrelated.md', 'x\n')
+        git(root, 'add', '-A'); git(root, 'commit', '-qm', 'side 5')
+        git(root, 'checkout', '-q', 'main')
+        git(root, 'merge', '-q', '--no-commit', '--no-ff', 'side5')
+        raw(root, 'HISTORY-REVIEW-5-RAW.md', 'Verdict: REVISE\n')
+        git(root, 'add', '-A'); git(root, 'commit', '-qm', 'merge adds raw 5')
+        git(root, 'rm', '-q', EVIDENCE + 'HISTORY-REVIEW-5-RAW.md')
+        git(root, 'commit', '-qm', 'delete raw 5')
+        added, _listed = Evidence(root).history_population()
+        cases.append(('raw added by a merge commit counts as added',
+                      EVIDENCE + 'HISTORY-REVIEW-5-RAW.md' in added))
     for label, ok in cases:
         require(ok, 'history population selftest: ' + label)
     print('PASS history population selftest: ' + str(len(cases)) + ' real-Git cases')
