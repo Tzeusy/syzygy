@@ -499,7 +499,9 @@ def selftest():
             results.append(("real package verifies", package.check(root) == []))
             patch = root / package.patch_for(NESTED[1][1])
             saved_patch = patch.read_bytes()
-            patch.write_bytes(saved_patch.replace(b"+> **In force.**", b"+> **In farce.**", 1))
+            tampered = saved_patch.replace(b"+> **In force:**", b"+> **In farce:**", 1)
+            results.append(("real package: tamper target present", tampered != saved_patch))
+            patch.write_bytes(tampered)
             refuses("real package: tampered patch refused by the builder's findings",
                     lambda: record(root, phrase, instant, True, pins),
                     "package does not verify: manifest differs from exact regeneration")
