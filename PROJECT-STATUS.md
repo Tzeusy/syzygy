@@ -55,6 +55,8 @@ authority and no model yet called on the current path.
   - [Observed] The later [technical digest reconciliation](docs/evidence/polaris-understanding-reconciliation-2026-09-28/technical-record.json)
     links that existing owner adoption to its exact REQ-004 bytes. The record
     adds no adoption or permission; run the checker in the battery below.
+    The checker reads CC-SPEC and its own bytes as history, bound by a
+    retained history review ([how](docs/evidence/polaris-understanding-reconciliation-2026-09-28/HISTORY-READING.md)).
 
 **Implementation is in progress.**
 
