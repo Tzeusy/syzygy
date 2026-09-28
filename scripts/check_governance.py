@@ -5611,7 +5611,9 @@ def selftest():
                   _is_raw_review(history_dir + "HISTORY-REVIEW-12-RAW.md")
                   and not _is_raw_review(history_dir + "HISTORY-REVIEW-03-RAW.md")
                   and not _is_raw_review(history_dir + "HISTORY-READING.md")
-                  and not _is_raw_review("docs/evidence/other/HISTORY-REVIEW-1-RAW.md")))
+                  and not _is_raw_review("docs/evidence/other/HISTORY-REVIEW-1-RAW.md")
+                  and not _is_raw_review("x/" + history_dir + "HISTORY-REVIEW-1-RAW.md")
+                  and not _is_raw_review(history_dir + "HISTORY-REVIEW-1-RAW.md.orig")))
 
     c = Cap()
     cg4b_no_accepted_claim([], c, corpus=[])

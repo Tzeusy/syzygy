@@ -28,15 +28,21 @@ it already read the status pages and the governance checker, at C1.
     `` - `scripts/record_polaris_understanding_adoption.py`: `<sha256>` ``.
   - "Latest" is the highest `<n>`, compared as a number; the raws are
     numbered 1 to n with no gap.
-  - A name that starts `HISTORY-REVIEW` but is not exactly
-    `HISTORY-REVIEW-<n>-RAW.md`, with no leading zero, is refused, never
-    skipped.
+  - Any file in this directory or below whose name contains
+    `history-review`, in any case, and is not exactly
+    `HISTORY-REVIEW-<n>-RAW.md` at the top level with no leading zero, is
+    refused, never skipped.
 - **Every history review is retained.**
   - Each raw's introducing commit holds the same bytes as today.
   - The population is every raw ever added on HEAD's history plus every raw on
-    disk, so a deleted raw is refused, not skipped. The Git query reads every
-    commit and every merge parent with rename detection off, so a raw renamed
-    into place, or added on a branch whose merge dropped it, still counts.
+    disk, so a deleted raw is refused, not skipped, and a raw on disk that no
+    commit added is refused as not retained.
+  - The Git query reads every commit and every merge parent, with rename
+    detection off and merge commits' own additions shown. A raw renamed into
+    place, added on a branch whose merge dropped it, or added by a merge
+    commit itself still counts.
+  - Each raw is added exactly once. A number added on two branches, so that a
+    merge could keep either verdict, is refused.
   - A later change to the recorder needs a new, higher-numbered raw; earlier
     raws stay unchanged. A later review of the same bytes supersedes an
     earlier verdict only by being a fresh review, retained beside it.
@@ -55,5 +61,16 @@ it already read the status pages and the governance checker, at C1.
   - Round 2 (`HISTORY-REVIEW-2-RAW.md`, REVISE): M1, a raw renamed away or
     dropped by a merge, is answered by the Git query's flags and the
     scratch-repository selftest; N1, malformed names, by their refusal.
-  - Round 1's N2 and round 2's N2 (four inputs with no drift mutant) predate
-    this change and stay open.
+  - Round 3 (`HISTORY-REVIEW-3-RAW.md`, REVISE): M1, a raw replaced through
+    a merge or added by a merge commit, is answered by the added-once rule and
+    by showing merge commits' additions; N2, lowercase or nested names, by
+    the wider malformed-name refusal; N3, two surviving mutants, by an
+    uncommitted-raw witness and a narrower exemption test.
+  - Notes answered here, not in code: round 1's N3 (this page quotes the
+    frozen README sentence), N4 (a later verdict supersedes only as a fresh,
+    retained review), N5 (two mutants fail by exception) and N6 (the raws
+    are raw review output); round 2's N3 and round 3's N1 (this list).
+  - Round 1's N1 (performance judged by line shape) is by design: the C1
+    digest is fixed and already performed.
+  - Round 1's N2, round 2's N2 and round 3's N4 (four inputs with no drift
+    mutant) predate this change and stay open.
