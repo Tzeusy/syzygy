@@ -1,7 +1,8 @@
 # Topology bundle tree-style restyle
 
-> **Status:** Proposal. It binds nothing until the owner adopts it (VIS-4).
-> The owner adopts by saying so plainly: "Adopt the topology restyle".
+> **Status:** Adopted by the owner on 2026-09-28
+> ([`OWNER-ADOPTION-2026-09-28-TREE-STYLE-RESTYLES.md`](OWNER-ADOPTION-2026-09-28-TREE-STYLE-RESTYLES.md)).
+> Act 3 (`ACCEPT TOPOLOGY`) remains unperformed.
 
 The nine topology members under `.syzygy/map/topology-candidates/` are
 restyled to CC-REV-8 for readability. No placement, boundary, identifier or

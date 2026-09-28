@@ -9,8 +9,8 @@ batch in their own words; this record quotes the answers.
   - **Craft restyle** — the nine craft-and-care rule files, per
     [`CRAFT-TREE-RESTYLE.md`](CRAFT-TREE-RESTYLE.md). Act 2 stays
     unperformed; its argument is re-quoted over the restyled bytes.
-  - **Topology restyle** — the candidate topology bundle, per its packet
-    in this directory (PR #140). Act 3 stays
+  - **Topology restyle** — the candidate topology bundle, per
+    [`TOPOLOGY-TREE-RESTYLE.md`](TOPOLOGY-TREE-RESTYLE.md). Act 3 stays
     unperformed; its argument is re-quoted over the restyled bytes.
   - **RFC 0010/0011 restyle** — the deferred-wave candidates. The wave offers
     C1, C2, D1 and D2 are re-quoted; none is performed.
