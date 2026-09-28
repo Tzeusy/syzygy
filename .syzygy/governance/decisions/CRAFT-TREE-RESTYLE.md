@@ -1,7 +1,7 @@
 # Craft-and-care tree-style restyle
 
-> **Status:** Proposal. It binds nothing until the owner adopts it (VIS-4).
-> The owner adopts by saying so plainly: "Adopt the craft restyle".
+> **Status:** Adopted by the owner on 2026-09-28
+> ([`OWNER-ADOPTION-2026-09-28-TREE-STYLE-RESTYLES.md`](OWNER-ADOPTION-2026-09-28-TREE-STYLE-RESTYLES.md)).
 
 The nine craft-and-care rule files are restyled to CC-REV-8. No rule,
 identifier, scope or citation changes.

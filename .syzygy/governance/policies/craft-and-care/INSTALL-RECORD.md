@@ -217,8 +217,8 @@ computed by script:
 the owner's 2026-09-28 direction, the rule files below were restyled to
 CC-REV-8: answer-first openings, shallow rule trees and captioned diagrams.
 No rule, identifier, scope or citation changed, and every heading and banner
-is byte-identical. The restyle binds as craft policy only when the owner
-adopts it ("Adopt the craft restyle",
+is byte-identical. The owner adopted the restyle on 2026-09-28
+(`../../decisions/OWNER-ADOPTION-2026-09-28-TREE-STYLE-RESTYLES.md`; packet
 `../../decisions/CRAFT-TREE-RESTYLE.md`). Current digests, computed by
 script:
 
