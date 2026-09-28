@@ -219,6 +219,14 @@ DOC_PATHS = ('PROJECT-STATUS.md', '.syzygy/governance/decisions/README.md',
              '.github/workflows/governance-docs.yml')
 FROZEN_PATHS = (EVIDENCE + 'README.md', PROOF, TEMPLATE, DOC_PATCH, DOC_IMAGES, SCRIPT,
                 CHECK_GOV, POLICY, VISION, *DOC_PATHS)
+# Read at C1, never at today's bytes: the status pages and the governance
+# checker move on, CC-SPEC takes owner-adopted successors, and this recorder
+# took its history reading after C3. CC-SPEC must still be a digest some
+# performed act confirmed; this recorder's current bytes are bound by the
+# latest history review instead (HISTORY-READING.md in the evidence package).
+HISTORY_PATHS = (*DOC_PATHS, CHECK_GOV, POLICY, SCRIPT)
+HISTORY_REVIEW = re.compile(r'HISTORY-REVIEW-([1-9][0-9]*)-RAW\.md')
+POLICY_ACT = re.compile(r'^CONFIRM CRAFT AMENDMENT: CC-SPEC@([0-9a-f]{64})$', re.M)
 TREE_REVIEWS = tuple('.syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-REVIEW-'
                      + str(n) + '-RAW.md' for n in range(1, 5))
 
@@ -257,6 +265,10 @@ class Evidence:
 
     def ancestor(self, earlier, later):
         git_output(self.root, 'merge-base', '--is-ancestor', earlier, later)
+
+    def history_reviews(self):
+        names = [p.name for p in (self.root / EVIDENCE).iterdir() if HISTORY_REVIEW.fullmatch(p.name)]
+        return [EVIDENCE + n for n in sorted(names, key=lambda n: int(HISTORY_REVIEW.fullmatch(n).group(1)))]
 
     def introduction(self, path):
         commits = git_output(self.root, 'log', '--diff-filter=A', '--format=%H',
@@ -452,12 +464,15 @@ def reviewed_template(evidence):
     require(set(p for p, _ in bindings) == set(FROZEN_PATHS) | {INPUTS}, 'C1 review input population')
     for path, sha in bindings:
         require(digest(evidence.blob(c1, path)) == sha, 'C1 review blob mismatch: ' + path)
-        if path not in (*DOC_PATHS, CHECK_GOV):
+        if path not in HISTORY_PATHS:
             require(digest(evidence.current(path)) == sha, 'review retired by changed input: ' + path)
+    performed = set(POLICY_ACT.findall(evidence.current(AGGREGATE).decode()))
+    require(digest(evidence.blob(c1, POLICY)) in performed, 'C1 CC-SPEC bytes are no performed CC-SPEC digest')
+    history_review(evidence)
     # Validate the complete original freeze using its own immutable doc before-images.
     class Frozen(Evidence):
         def current(self, path):
-            return evidence.blob(c1, path) if path in (*DOC_PATHS, CHECK_GOV) else evidence.current(path)
+            return evidence.blob(c1, path) if path in HISTORY_PATHS else evidence.current(path)
         def blob(self, commit, path):
             return evidence.blob(commit, path)
         def ancestor(self, earlier, later):
@@ -465,6 +480,23 @@ def reviewed_template(evidence):
     candidate_check(Frozen(evidence.root))
     template = evidence.current(TEMPLATE)
     return template.replace(PLACEHOLDER.encode(), digest(raw).encode()), c1
+
+
+def history_review(evidence):
+    """The latest retained history review must confirm this recorder's current bytes."""
+    reviews = evidence.history_reviews()
+    require(reviews, 'no history review binds the current recorder')
+    for path in reviews:
+        intro = evidence.introduction(path)
+        require(intro is not None, 'history review not retained: ' + path)
+        require(evidence.blob(intro, path) == evidence.current(path), 'retained history review changed: ' + path)
+    text = evidence.current(reviews[-1]).decode()
+    verdicts = re.findall(r'^Verdict:([^\n]*)$', text, re.M)
+    require(verdicts in ([' CONFIRM'], [' CONFIRM WITH EXCEPTIONS']),
+            'latest history review not confirming: ' + reviews[-1])
+    bindings = re.findall(r'^- `' + re.escape(SCRIPT) + r'`: `([0-9a-f]{64})`$', text, re.M)
+    require(bindings == [digest(evidence.current(SCRIPT))],
+            'latest history review does not bind the current recorder: ' + reviews[-1])
 
 
 def check_evidence(evidence):
@@ -534,15 +566,17 @@ def reconciliation_selftest():
     if (ROOT / RAW).exists():
         match = re.search(r'^Reviewed commit: ([0-9a-f]{40})$', source.current(RAW).decode(), re.M)
         require(match is not None, 'selftest C1 identity')
-        for path in (*DOC_PATHS, CHECK_GOV):
+        for path in HISTORY_PATHS:
             before[path] = source.blob(match.group(1), path)
+    history_path = EVIDENCE + 'HISTORY-REVIEW-1-RAW.md'
+    history_commit = 'c' * 40
 
     class Fixture(Evidence):
         def __init__(self):
             super().__init__(ROOT)
             self.files = dict(before)
             self.blobs = {}
-            self.introductions = {RAW: c2, SUPPLEMENT: None}
+            self.introductions = {RAW: c2, SUPPLEMENT: None, history_path: history_commit}
             self.recorded = {}
         def current(self, path):
             if path in self.files:
@@ -556,6 +590,8 @@ def reconciliation_selftest():
                 return before[path]
             if commit == c2 and path == RAW:
                 return raw
+            if commit == history_commit and path == history_path:
+                return self.files[history_path]
             if commit == c3:
                 return self.recorded[path]
             return source.blob(commit, path)
@@ -565,11 +601,16 @@ def reconciliation_selftest():
             return source.ancestor(earlier, later)
         def introduction(self, path):
             return self.introductions.get(path)
+        def history_reviews(self):
+            return [p for p in (history_path,) if self.files.get(history_path) is not None]
 
     fixture = Fixture()
     raw = ('Verdict: PASS\nReviewed commit: ' + c1 + '\n' + ''.join(
         '- `' + path + '`: `' + digest(data) + '`\n' for path, data in sorted(before.items()))).encode()
     fixture.files[RAW] = raw
+    fixture.files[history_path] = ('Verdict: CONFIRM\n- `' + SCRIPT + '`: `'
+                                   + digest(source.current(SCRIPT)) + '`\n').encode()
+    fixture.files[SCRIPT] = source.current(SCRIPT)
     fixture.files[SUPPLEMENT] = before[TEMPLATE].replace(PLACEHOLDER.encode(), digest(raw).encode())
     fixture.files.update(documentation_after_images(fixture))
     check_evidence(fixture)
@@ -638,7 +679,12 @@ def reconciliation_selftest():
     mutate(RAW, 'C1 review input population', old=('- `' + TEMPLATE + '`:').encode(), new=b'- `wrong/template`:')
     mutate(TEMPLATE, 'review retired by changed input')
     mutate(INPUTS, 'review retired by changed input')
-    mutate(SCRIPT, 'review retired by changed input')
+    mutate(SCRIPT, 'latest history review does not bind the current recorder')
+    mutate(history_path, 'latest history review not confirming', old=b'Verdict: CONFIRM', new=b'Verdict: REVISE')
+    mutate(history_path, 'no history review binds', missing=True)
+    mutate(history_path, 'retained history review changed', historical=history_commit)
+    mutate(AGGREGATE, 'no performed CC-SPEC digest', old=b'CC-SPEC@' + digest(before[POLICY]).encode(), new=b'CC-SPEC@' + b'0' * 64)
+    mutate(POLICY, 'C1 review blob mismatch', historical=c1)
     mutate(PROOF, 'review retired by changed input')
     mutate(DOC_PATHS[0], 'documentation after-image')
     mutate(CHECK_GOV, 'governance registration source changed before C3')
