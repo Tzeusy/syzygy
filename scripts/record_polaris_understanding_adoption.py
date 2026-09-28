@@ -268,8 +268,10 @@ class Evidence:
 
     def history_population(self):
         """Evidence paths ever added on HEAD's history, and those on disk."""
-        log = git_output(self.root, 'log', '--diff-filter=A', '--name-only', '--format=',
-                         'HEAD', '--', EVIDENCE).decode().splitlines()
+        # Every commit, every parent: a raw renamed away or dropped by a merge
+        # still counts as added.
+        log = git_output(self.root, 'log', '--no-renames', '--full-history', '--diff-filter=A',
+                         '--name-only', '--format=', 'HEAD', '--', EVIDENCE).decode().splitlines()
         return log, [EVIDENCE + p.name for p in (self.root / EVIDENCE).iterdir()]
 
     def introduction(self, path):
@@ -486,10 +488,15 @@ def reviewed_template(evidence):
 
 def history_reviews(evidence):
     """Every history review, numbered 1..n, none deleted after it was committed."""
+    population = evidence.history_population()
+    malformed = sorted({p for paths in population for p in paths
+                        if p.startswith(EVIDENCE + 'HISTORY-REVIEW')
+                        and not HISTORY_REVIEW.fullmatch(p[len(EVIDENCE):])})
+    require(not malformed, 'malformed history review name: ' + ', '.join(malformed))
     def named(paths):
         return {p for p in paths if p.startswith(EVIDENCE)
                 and HISTORY_REVIEW.fullmatch(p[len(EVIDENCE):])}
-    added, listed = map(named, evidence.history_population())
+    added, listed = map(named, population)
     def number(path):
         return int(HISTORY_REVIEW.fullmatch(path[len(EVIDENCE):]).group(1))
     reviews = sorted(set(added) | set(listed), key=number)
@@ -598,7 +605,7 @@ def reconciliation_selftest():
             self.blobs = {}
             self.introductions = {RAW: c2, SUPPLEMENT: None, decoy_path: history_commit,
                                   **{path: history_commit for path in history_paths}}
-            self.added = [*history_paths, decoy_path]
+            self.added = list(history_paths)
             self.recorded = {}
         def current(self, path):
             if path in self.files:
@@ -631,10 +638,9 @@ def reconciliation_selftest():
     raw = ('Verdict: PASS\nReviewed commit: ' + c1 + '\n' + ''.join(
         '- `' + path + '`: `' + digest(data) + '`\n' for path, data in sorted(before.items()))).encode()
     fixture.files[RAW] = raw
-    # Nine superseded REVISE raws, the confirming tenth (numeric order puts
-    # it last; text order would not), and a leading-zero name that is no
-    # history review at all.
-    for path in history_paths[:-1] + [decoy_path]:
+    # Nine superseded REVISE raws and the confirming tenth: numeric order puts
+    # it last; text order would not.
+    for path in history_paths[:-1]:
         fixture.files[path] = ('Verdict: REVISE\n- `' + SCRIPT + '`: `' + '0' * 64 + '`\n').encode()
     fixture.files[history_path] = ('Verdict: CONFIRM\n- `' + SCRIPT + '`: `'
                                    + digest(source.current(SCRIPT)) + '`\n').encode()
@@ -711,6 +717,22 @@ def reconciliation_selftest():
     mutate(history_path, 'latest history review not confirming', old=b'Verdict: CONFIRM', new=b'Verdict: REVISE')
     mutate(history_path, 'history review deleted', missing=True)
     mutate(history_paths[4], 'history review deleted', missing=True)
+    # A leading zero or a suffix is refused, never skipped: a REVISE raw so
+    # named would otherwise leave an earlier CONFIRM standing.
+    for malformed in (decoy_path, EVIDENCE + 'HISTORY-REVIEW-3-RAW-ADDENDUM.md'):
+        fixture.added.append(malformed)
+        fixture.files[malformed] = ('Verdict: REVISE\n- `' + SCRIPT + '`: `' + '0' * 64 + '`\n').encode()
+        try:
+            check_evidence(fixture)
+        except ValueError as exc:
+            require('malformed history review name' in str(exc), 'wrong malformed-name refusal: ' + str(exc))
+            witnesses.append({'commit': commit, 'path': malformed, 'operation': 'add-malformed-name',
+                              'old': None, 'new': None, 'refusal': str(exc)})
+        else:
+            raise AssertionError('malformed history review name accepted')
+        finally:
+            fixture.added.pop()
+            del fixture.files[malformed]
     mutate(history_path, 'latest history review not confirming', old=b'Verdict: CONFIRM\n',
            new=b'Verdict: CONFIRM\nVerdict: REVISE\n')
     mutate(history_path, 'does not bind the current recorder', old=b'`\n',
@@ -727,7 +749,7 @@ def reconciliation_selftest():
     # A numbering gap and an empty population, each removed from Git history
     # and disk alike, so the deletion guard cannot be what refuses them.
     for removed, reason in ((history_paths[4:5], 'history review numbering is not 1..n'),
-                            (history_paths + [decoy_path], 'no history review binds')):
+                            (history_paths, 'no history review binds')):
         saved_added, saved_files = list(fixture.added), {p: fixture.files[p] for p in removed}
         fixture.added = [p for p in fixture.added if p not in removed]
         for path in removed:
@@ -773,6 +795,47 @@ def reconciliation_selftest():
     print('RULE6-WITNESSES ' + json.dumps(witnesses, sort_keys=True))
 
 
+def history_population_selftest():
+    """Run the real Git population query over a scratch repository."""
+    def git(root, *args):
+        subprocess.run(['git', '-C', str(root), *args], check=True, capture_output=True)
+    def raw(root, name, text):
+        target = root / EVIDENCE / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text)
+    cases = []
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        git(root, 'init', '-q', '-b', 'main')
+        git(root, 'config', 'user.email', 'selftest@example.invalid')
+        git(root, 'config', 'user.name', 'selftest')
+        raw(root, 'HISTORY-REVIEW-1-RAW.md', 'Verdict: CONFIRM\n')
+        git(root, 'add', '-A'); git(root, 'commit', '-qm', 'raw 1')
+        # Renamed into place, then deleted.
+        raw(root, 'draft.md', 'Verdict: REVISE\n')
+        git(root, 'add', '-A'); git(root, 'commit', '-qm', 'draft')
+        git(root, 'mv', EVIDENCE + 'draft.md', EVIDENCE + 'HISTORY-REVIEW-2-RAW.md')
+        git(root, 'commit', '-qm', 'rename')
+        git(root, 'rm', '-q', EVIDENCE + 'HISTORY-REVIEW-2-RAW.md')
+        git(root, 'commit', '-qm', 'delete')
+        added, _listed = Evidence(root).history_population()
+        cases.append(('renamed then deleted raw counts as added',
+                      EVIDENCE + 'HISTORY-REVIEW-2-RAW.md' in added))
+        # Added on a side branch, dropped by an ours-merge.
+        git(root, 'checkout', '-q', '-b', 'side')
+        raw(root, 'HISTORY-REVIEW-3-RAW.md', 'Verdict: REVISE\n')
+        git(root, 'add', '-A'); git(root, 'commit', '-qm', 'raw 3')
+        git(root, 'checkout', '-q', 'main')
+        git(root, 'merge', '-q', '-s', 'ours', '--no-edit', 'side')
+        added, listed = Evidence(root).history_population()
+        cases.append(('raw dropped by a merge counts as added',
+                      EVIDENCE + 'HISTORY-REVIEW-3-RAW.md' in added
+                      and EVIDENCE + 'HISTORY-REVIEW-3-RAW.md' not in listed))
+    for label, ok in cases:
+        require(ok, 'history population selftest: ' + label)
+    print('PASS history population selftest: ' + str(len(cases)) + ' real-Git cases')
+
+
 def render_reconciliation(root):
     evidence = Evidence(root)
     expected, _ = reviewed_template(evidence)
@@ -796,6 +859,7 @@ def main():
         if args.selftest:
             selftest()
             reconciliation_selftest()
+            history_population_selftest()
         elif args.candidate_check:
             candidate_check(Evidence(ROOT))
             print('PASS owner direction observed; 8 historical rows, 7 unchanged, 1 reconciled candidate; 31/177 -> 31/182. Exact digest reconciliation remains unresolved pending independent review and technical record.')
