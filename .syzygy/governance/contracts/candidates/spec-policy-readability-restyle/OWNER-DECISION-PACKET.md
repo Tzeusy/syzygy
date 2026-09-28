@@ -75,8 +75,11 @@ permission.
   - [`R-TREE-STYLE-SPEC-POLICY-2-RAW.md`](../../../../../docs/reviews/R-TREE-STYLE-SPEC-POLICY-2-RAW.md)
     — CONFIRM WITH EXCEPTIONS, notes only.
 - **Package review**, over these exact bytes, the banner changes and the
-  tooling: pending. The recorder refuses to record until that review
-  confirms the manifest digest above.
+  tooling:
+  [`R-TREE-STYLE-SPEC-POLICY-PACKAGE-1-RAW.md`](../../../../../docs/reviews/R-TREE-STYLE-SPEC-POLICY-PACKAGE-1-RAW.md)
+  — CONFIRM WITH EXCEPTIONS, notes only; the notes are in
+  [`REVIEW-NOTES.md`](REVIEW-NOTES.md). The recorder is pinned to that review
+  and to the manifest digest above.
 - **Prerequisite, your ruling "R1: read as history":** the
   understanding-reconciliation recorder reads the CC-SPEC bytes it froze as
   history, so adopting this package does not retire that reconciliation

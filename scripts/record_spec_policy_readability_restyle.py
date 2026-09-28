@@ -32,7 +32,7 @@ The recorder is pinned to the reviewed package:
   `Manifest SHA-256: <FROZEN_MANIFEST_SHA>` — the digest of the manifest
   *file*, which is the argument the owner speaks, not a row digest.
 
-All three are `None` until the package and its confirming review exist.
+All three are pinned to the package and its confirming review.
 `--record` refuses while any pin is `None`, when the owner's phrase is not
 the exact `LABEL: <sha256>` form, when its argument differs from the current
 manifest digest, when that digest differs from the pin, when the raw's sha or
@@ -84,9 +84,9 @@ VERDICTS = ("Verdict: CONFIRM", "Verdict: CONFIRM WITH EXCEPTIONS")
 
 #: Pins to the reviewed package: the manifest digest the binding review
 #: re-derived (the act argument) and that review's raw, by path and sha256.
-FROZEN_MANIFEST_SHA = None
-REVIEW = None
-REVIEW_SHA = None
+FROZEN_MANIFEST_SHA = "0abd08981ae693720c33c339b9d53ac2a4c42c141d0ad23be2e83e90c5cd000e"
+REVIEW = "docs/reviews/R-TREE-STYLE-SPEC-POLICY-PACKAGE-1-RAW.md"
+REVIEW_SHA = "078f8aa18fbb143e9fe357901000154847eef3c8180e67bf14fb74c04ce0408b"
 
 Pins = namedtuple("Pins", "manifest_sha review review_sha")
 
