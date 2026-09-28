@@ -266,9 +266,11 @@ class Evidence:
     def ancestor(self, earlier, later):
         git_output(self.root, 'merge-base', '--is-ancestor', earlier, later)
 
-    def history_reviews(self):
-        names = [p.name for p in (self.root / EVIDENCE).iterdir() if HISTORY_REVIEW.fullmatch(p.name)]
-        return [EVIDENCE + n for n in sorted(names, key=lambda n: int(HISTORY_REVIEW.fullmatch(n).group(1)))]
+    def history_population(self):
+        """Evidence paths ever added on HEAD's history, and those on disk."""
+        log = git_output(self.root, 'log', '--diff-filter=A', '--name-only', '--format=',
+                         'HEAD', '--', EVIDENCE).decode().splitlines()
+        return log, [EVIDENCE + p.name for p in (self.root / EVIDENCE).iterdir()]
 
     def introduction(self, path):
         commits = git_output(self.root, 'log', '--diff-filter=A', '--format=%H',
@@ -482,9 +484,25 @@ def reviewed_template(evidence):
     return template.replace(PLACEHOLDER.encode(), digest(raw).encode()), c1
 
 
+def history_reviews(evidence):
+    """Every history review, numbered 1..n, none deleted after it was committed."""
+    def named(paths):
+        return {p for p in paths if p.startswith(EVIDENCE)
+                and HISTORY_REVIEW.fullmatch(p[len(EVIDENCE):])}
+    added, listed = map(named, evidence.history_population())
+    def number(path):
+        return int(HISTORY_REVIEW.fullmatch(path[len(EVIDENCE):]).group(1))
+    reviews = sorted(set(added) | set(listed), key=number)
+    require([number(p) for p in reviews] == list(range(1, len(reviews) + 1)),
+            'history review numbering is not 1..n')
+    deleted = sorted(set(added) - set(listed))
+    require(not deleted, 'history review deleted: ' + ', '.join(deleted))
+    return reviews
+
+
 def history_review(evidence):
     """The latest retained history review must confirm this recorder's current bytes."""
-    reviews = evidence.history_reviews()
+    reviews = history_reviews(evidence)
     require(reviews, 'no history review binds the current recorder')
     for path in reviews:
         intro = evidence.introduction(path)
@@ -568,7 +586,9 @@ def reconciliation_selftest():
         require(match is not None, 'selftest C1 identity')
         for path in HISTORY_PATHS:
             before[path] = source.blob(match.group(1), path)
-    history_path = EVIDENCE + 'HISTORY-REVIEW-1-RAW.md'
+    history_paths = [EVIDENCE + 'HISTORY-REVIEW-' + str(n) + '-RAW.md' for n in range(1, 11)]
+    history_path = history_paths[-1]
+    decoy_path = EVIDENCE + 'HISTORY-REVIEW-011-RAW.md'
     history_commit = 'c' * 40
 
     class Fixture(Evidence):
@@ -576,7 +596,9 @@ def reconciliation_selftest():
             super().__init__(ROOT)
             self.files = dict(before)
             self.blobs = {}
-            self.introductions = {RAW: c2, SUPPLEMENT: None, history_path: history_commit}
+            self.introductions = {RAW: c2, SUPPLEMENT: None, decoy_path: history_commit,
+                                  **{path: history_commit for path in history_paths}}
+            self.added = [*history_paths, decoy_path]
             self.recorded = {}
         def current(self, path):
             if path in self.files:
@@ -590,8 +612,8 @@ def reconciliation_selftest():
                 return before[path]
             if commit == c2 and path == RAW:
                 return raw
-            if commit == history_commit and path == history_path:
-                return self.files[history_path]
+            if commit == history_commit and path in self.introductions:
+                return self.files[path]
             if commit == c3:
                 return self.recorded[path]
             return source.blob(commit, path)
@@ -601,13 +623,19 @@ def reconciliation_selftest():
             return source.ancestor(earlier, later)
         def introduction(self, path):
             return self.introductions.get(path)
-        def history_reviews(self):
-            return [p for p in (history_path,) if self.files.get(history_path) is not None]
+        def history_population(self):
+            listed = [p for p in (*history_paths, decoy_path) if self.files.get(p) is not None]
+            return list(self.added), listed
 
     fixture = Fixture()
     raw = ('Verdict: PASS\nReviewed commit: ' + c1 + '\n' + ''.join(
         '- `' + path + '`: `' + digest(data) + '`\n' for path, data in sorted(before.items()))).encode()
     fixture.files[RAW] = raw
+    # Nine superseded REVISE raws, the confirming tenth (numeric order puts
+    # it last; text order would not), and a leading-zero name that is no
+    # history review at all.
+    for path in history_paths[:-1] + [decoy_path]:
+        fixture.files[path] = ('Verdict: REVISE\n- `' + SCRIPT + '`: `' + '0' * 64 + '`\n').encode()
     fixture.files[history_path] = ('Verdict: CONFIRM\n- `' + SCRIPT + '`: `'
                                    + digest(source.current(SCRIPT)) + '`\n').encode()
     fixture.files[SCRIPT] = source.current(SCRIPT)
@@ -681,13 +709,40 @@ def reconciliation_selftest():
     mutate(INPUTS, 'review retired by changed input')
     mutate(SCRIPT, 'latest history review does not bind the current recorder')
     mutate(history_path, 'latest history review not confirming', old=b'Verdict: CONFIRM', new=b'Verdict: REVISE')
-    mutate(history_path, 'no history review binds', missing=True)
+    mutate(history_path, 'history review deleted', missing=True)
+    mutate(history_paths[4], 'history review deleted', missing=True)
+    mutate(history_path, 'latest history review not confirming', old=b'Verdict: CONFIRM\n',
+           new=b'Verdict: CONFIRM\nVerdict: REVISE\n')
+    mutate(history_path, 'does not bind the current recorder', old=b'`\n',
+           new=b'`\n- `' + SCRIPT.encode() + b'`: `' + b'1' * 64 + b'`\n')
+    mutate(AGGREGATE, 'no performed CC-SPEC digest',
+           old=b'\nCONFIRM CRAFT AMENDMENT: CC-SPEC@' + digest(before[POLICY]).encode(),
+           new=b'\n> CONFIRM CRAFT AMENDMENT: CC-SPEC@' + digest(before[POLICY]).encode())
     mutate(history_path, 'retained history review changed', historical=history_commit)
     mutate(AGGREGATE, 'no performed CC-SPEC digest', old=b'CC-SPEC@' + digest(before[POLICY]).encode(), new=b'CC-SPEC@' + b'0' * 64)
     mutate(POLICY, 'C1 review blob mismatch', historical=c1)
     mutate(PROOF, 'review retired by changed input')
     mutate(DOC_PATHS[0], 'documentation after-image')
     mutate(CHECK_GOV, 'governance registration source changed before C3')
+    # A numbering gap and an empty population, each removed from Git history
+    # and disk alike, so the deletion guard cannot be what refuses them.
+    for removed, reason in ((history_paths[4:5], 'history review numbering is not 1..n'),
+                            (history_paths + [decoy_path], 'no history review binds')):
+        saved_added, saved_files = list(fixture.added), {p: fixture.files[p] for p in removed}
+        fixture.added = [p for p in fixture.added if p not in removed]
+        for path in removed:
+            fixture.files[path] = None
+        try:
+            check_evidence(fixture)
+        except ValueError as exc:
+            require(reason in str(exc), 'wrong population refusal: ' + str(exc))
+            witnesses.append({'commit': commit, 'path': EVIDENCE, 'operation': 'remove-history-reviews',
+                              'old': sorted(removed), 'new': None, 'refusal': str(exc)})
+        else:
+            raise AssertionError('history review population mutation accepted')
+        finally:
+            fixture.added = saved_added
+            fixture.files.update(saved_files)
     # C3 has a different source for documentation: its immutable commit, not
     # today's status page. Exercise that path as well as the pre-commit gate.
     fixture.introductions[SUPPLEMENT] = c3
