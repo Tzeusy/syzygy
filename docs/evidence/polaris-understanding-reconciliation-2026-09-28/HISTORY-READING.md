@@ -26,20 +26,34 @@ it already read the status pages and the governance checker, at C1.
     `CONFIRM WITH EXCEPTIONS`.
   - It carries exactly one line
     `` - `scripts/record_polaris_understanding_adoption.py`: `<sha256>` ``.
-  - "Latest" is the highest `<n>`, compared as a number; `<n>` has no
-    leading zero, and the raws are numbered 1 to n with no gap.
+  - "Latest" is the highest `<n>`, compared as a number; the raws are
+    numbered 1 to n with no gap.
+  - A name that starts `HISTORY-REVIEW` but is not exactly
+    `HISTORY-REVIEW-<n>-RAW.md`, with no leading zero, is refused, never
+    skipped.
 - **Every history review is retained.**
   - Each raw's introducing commit holds the same bytes as today.
   - The population is every raw ever added on HEAD's history plus every raw on
-    disk, so a deleted raw is refused, not skipped.
+    disk, so a deleted raw is refused, not skipped. The Git query reads every
+    commit and every merge parent with rename detection off, so a raw renamed
+    into place, or added on a branch whose merge dropped it, still counts.
   - A later change to the recorder needs a new, higher-numbered raw; earlier
     raws stay unchanged. A later review of the same bytes supersedes an
     earlier verdict only by being a fresh review, retained beside it.
-- **Where the raws live.** Here, beside the package, under
-  `docs/evidence/`. `check_governance.py` exempts raw reviews only under
-  `docs/reviews/` and the round directories, so a raw here must quote no
-  truncated digest (CG-15) and name no Butlers path (CG-1b).
+- **Where the raws live.** Here, beside the package. `check_governance.py`
+  classifies `HISTORY-REVIEW-<n>-RAW.md` in this directory as raw review
+  output, like `docs/reviews/*-RAW.md`, so a raw is stored unchanged.
 - **Rule-6 evidence.** [`history-reading-rule6.json`](history-reading-rule6.json)
   records each guard's mutant, its fragments and the commit it ran at; each
   one fails the selftest. Two fail by an exception rather than by their named
-  refusal; both still fail closed.
+  refusal; both still fail closed. The Git query's flags are exercised on a
+  scratch repository, not a fixture.
+- **Review rounds.**
+  - Round 1 (`HISTORY-REVIEW-1-RAW.md`, REVISE): M1, a deleted raw was not
+    refused, is answered by the Git population; M2, untested predicates, by
+    the ten-raw fixture.
+  - Round 2 (`HISTORY-REVIEW-2-RAW.md`, REVISE): M1, a raw renamed away or
+    dropped by a merge, is answered by the Git query's flags and the
+    scratch-repository selftest; N1, malformed names, by their refusal.
+  - Round 1's N2 and round 2's N2 (four inputs with no drift mutant) predate
+    this change and stay open.

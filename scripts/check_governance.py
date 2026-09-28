@@ -534,12 +534,20 @@ RAW_REVIEW_DIRS = (
 #: this lane, and `previews/` or `reviews-summary.md` are not segments. The
 #: tuple above is retained as the record of which rounds were registered by
 #: hand and why; it is no longer the population.
+#: The understanding-reconciliation recorder's history reviews are raw output
+#: kept beside the evidence package they bind (its HISTORY-READING.md).
+HISTORY_REVIEW_RAW = re.compile(
+    r"docs/evidence/polaris-understanding-reconciliation-2026-09-28/"
+    r"HISTORY-REVIEW-[1-9][0-9]*-RAW\.md")
+
+
 def _is_raw_review(rel):
     candidate_raw = (rel.startswith(f"{CANDIDATES}/")
                      and "reviews" in rel.split("/")[:-1])
     implementation_raw = (rel.startswith("docs/reviews/")
                           and rel.endswith("-RAW.md"))
-    return candidate_raw or implementation_raw
+    return (candidate_raw or implementation_raw
+            or HISTORY_REVIEW_RAW.fullmatch(rel) is not None)
 
 
 #: The two exemption enumerations below (`ACT_QUOTE_EXEMPT`,
@@ -5597,6 +5605,13 @@ def selftest():
                       "of it. Nothing here is accepted.\n")])
     cases.append(("CG-4b negated candidate banner exempted",
                   c.rows[0][0] == "OK"))
+
+    history_dir = "docs/evidence/polaris-understanding-reconciliation-2026-09-28/"
+    cases.append(("raw-review shape covers the reconciliation's history reviews only",
+                  _is_raw_review(history_dir + "HISTORY-REVIEW-12-RAW.md")
+                  and not _is_raw_review(history_dir + "HISTORY-REVIEW-03-RAW.md")
+                  and not _is_raw_review(history_dir + "HISTORY-READING.md")
+                  and not _is_raw_review("docs/evidence/other/HISTORY-REVIEW-1-RAW.md")))
 
     c = Cap()
     cg4b_no_accepted_claim([], c, corpus=[])
