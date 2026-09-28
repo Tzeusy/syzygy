@@ -7246,6 +7246,7 @@ def selftest():
                           for d in row[4])))
     for spec_kind, want in (
             ("spec-drift", "hashes to"),
+            ("spec-body-mismatch", "manifest body digest differs"),
             ("spec-impact-drift", "hashes to"),
             ("spec-phrase-mismatch", "expected exactly one bare"),
             ("spec-nested-missing", "recorder-generated"),
@@ -8608,6 +8609,9 @@ def _selftest_cg7h(kind):
         spec_manifest = "# restyle\n" + "".join(
             f"{restyled[path]}  {path}\n" for _label, path in SPEC_POLICY_RESTYLE_ROWS)
         spec_digest = digest(spec_manifest)
+        if kind == "spec-body-mismatch":
+            # Records agree with a digest the manifest body does not hash to.
+            spec_digest = mismatched
         spec_dedicated = ""
         if kind != "spec-unrecorded" and kind != "spec-unrecorded-applied":
             instant = "Act instant: 2026-09-28T12:00:00Z"

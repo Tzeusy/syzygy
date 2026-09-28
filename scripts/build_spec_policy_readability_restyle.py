@@ -362,6 +362,12 @@ def selftest() -> int:
         manifest.write_bytes(saved_manifest)
         cases.append(("apply without --at-adoption refused",
                       apply(root, at_adoption=False) == 2))
+        recorder = _recorder()
+        for rel in (recorder.AGGREGATE, recorder.INSTALL):
+            (root / rel).parent.mkdir(parents=True, exist_ok=True)
+            (root / rel).write_text("# Synthetic record\n")
+        cases.append(("apply before any act is recorded refused",
+                      apply(root, at_adoption=True) == 1 and not applied(root)))
         cases.append(("restored fixture verifies again", check(root) == []))
         for path in PATHS:
             (root / path).write_bytes(proposed[path])
