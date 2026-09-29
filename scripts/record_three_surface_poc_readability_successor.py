@@ -78,9 +78,9 @@ PREDECESSOR = {
 }
 
 #: Pins to the reviewed package.
-FROZEN_MANIFEST_SHA = None
-REVIEW = None
-REVIEW_SHA = None
+FROZEN_MANIFEST_SHA = "221f1ececa321bf0cc6cd5e01f401e9eada38466c3c00dde43095f8cb8a0cd4d"
+REVIEW = "docs/reviews/R-POC-READABILITY-SUCCESSOR-PACKAGE-1-RAW.md"
+REVIEW_SHA = "8170554c25040cf87f8b5e40342e959d1d94bfed976d8d41ca662b85d5acb255"
 
 Pins = namedtuple("Pins", "manifest_sha review review_sha")
 
