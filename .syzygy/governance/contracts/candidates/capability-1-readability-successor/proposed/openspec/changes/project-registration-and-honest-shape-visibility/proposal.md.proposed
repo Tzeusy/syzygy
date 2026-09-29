@@ -27,7 +27,12 @@ Optimistic answers are worse than none: a green badge computed from no
 evidence, a coverage report that hides unconsented sources, a single health
 score.
 
-**This capability comes first.** Every later view's evidence is
+Capability 1 is the truthful project foundation that every later view and
+every machine consumer builds on: registration, consent boundaries, a fixed
+human entry, seven independent shape answers, explanations and repository
+discoverability, with every Unknown carrying its reason.
+
+**This capability comes first.** Every later capability's evidence is
 uninterpretable without it. A comprehension view, a work view or a map over an
 unregistered project with an undisclosed consent boundary cannot be trusted.
 The first-specification sequence's ordering rule selects it: "the capability
@@ -77,7 +82,9 @@ requirements:
   - select an implementation language, framework, database, renderer, graph
     store or deployment model;
   - register or onboard a real external project during specification
-    authoring.
+    authoring;
+  - implement anything: the specification itself authorizes nothing to be
+    built.
 
   These are true scope boundaries, not promises that every item is next.
 

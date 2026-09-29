@@ -2,7 +2,9 @@
 """Build, check and record readability successors of signed specifications.
 
 A readability successor restyles a signed OpenSpec change for reading while
-keeping every requirement, scenario and warrant block. Each one is a package
+keeping every requirement heading, scenario heading and warrant block byte
+for byte. Requirement body text is not machine-guarded; its fidelity is the
+review's job. Each one is a package
 directory under `.syzygy/governance/contracts/candidates/` holding:
 
 - `SUCCESSOR.json` — the act label, record paths, the signed subjects and
@@ -442,7 +444,9 @@ def selftest():
              lambda b: b + b"\n" + p.block(read(p.root, p.act).decode()).encode(),
              "exactly one binding line"),
             ("aggregate marker duplicated", AGGREGATE,
-             lambda b: b + f"<!-- {p.marker}:BEGIN -->\n".encode(), "duplicated")):
+             lambda b: b + f"<!-- {p.marker}:BEGIN -->\n".encode(), "duplicated"),
+            ("aggregate section content edited", AGGREGATE,
+             lambda b: b.replace(b"Owner: Tzeusy", b"Owner: Other", 1), "act section")):
         original = read(p.root, rel)
         (p.root / rel).write_bytes(mutate(original))
         expect(label, p.check, needle)

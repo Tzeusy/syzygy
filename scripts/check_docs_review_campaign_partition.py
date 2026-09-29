@@ -147,6 +147,11 @@ CAMPAIGNS = (
         r"R-TREE-STYLE-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d+-RAW\.md",
     ),
     campaign(
+        "readability-successors",
+        "Readability successors",
+        r"R-(?:CAP1|POLARIS-BASE|POLARIS-UNDERSTANDING)-READABILITY-SUCCESSOR-\d+-RAW\.md",
+    ),
+    campaign(
         "pwb-scoped-attributes",
         "P-68 scoped-attributes package",
         r"R-PWB-SCOPED-ATTRIBUTES-.*\.md",
