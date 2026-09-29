@@ -1,0 +1,1638 @@
+{
+ "subject": "syzygy-gv1j load-deterministic restart sibling tests and non-vacuous cleanup observation",
+ "date": "2026-09-29",
+ "base": "7d9e165927d2c087ee431519c1336f2587744275",
+ "testedCommit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+ "scope": "apps/three-surface-poc/src/restart.test.ts only; restart.ts and restart-listener.mjs byte-identical to base.",
+ "host": {
+  "nproc": 12,
+  "nodeVersion": "v24.6.0"
+ },
+ "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/restart.test.ts --reporter=dot",
+ "testCountAtHead": 16,
+ "testCountAtBase": 16,
+ "loadGenerator": "N children of node -e \"for(;;){}\" started and stopped by the runner by recorded PID; no pkill, pgrep or killall anywhere.",
+ "baseline": {
+  "label": "base-load24",
+  "loadChildren": 24,
+  "loadPids": [
+   2989581,
+   2989582,
+   2989583,
+   2989584,
+   2989585,
+   2989591,
+   2989597,
+   2989604,
+   2989610,
+   2989612,
+   2989629,
+   2989648,
+   2989662,
+   2989665,
+   2989669,
+   2989675,
+   2989677,
+   2989688,
+   2989700,
+   2989707,
+   2989716,
+   2989722,
+   2989727,
+   2989740
+  ],
+  "loadPidsAliveAfter": [],
+  "commit": "7d9e165927d2c087ee431519c1336f2587744275",
+  "nodeVersion": "v24.6.0",
+  "runs": [
+   {
+    "run": 0,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 16.9
+   },
+   {
+    "run": 1,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 17.4
+   },
+   {
+    "run": 2,
+    "exit": 1,
+    "total": 16,
+    "passed": 15,
+    "failed": 1,
+    "failedNames": [
+     "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow"
+    ],
+    "seconds": 19.7
+   },
+   {
+    "run": 3,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 18.1
+   },
+   {
+    "run": 4,
+    "exit": 1,
+    "total": 16,
+    "passed": 15,
+    "failed": 1,
+    "failedNames": [
+     "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow"
+    ],
+    "seconds": 21.4
+   },
+   {
+    "run": 5,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 16.6
+   },
+   {
+    "run": 6,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 17.2
+   },
+   {
+    "run": 7,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 17.6
+   },
+   {
+    "run": 8,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 17.8
+   },
+   {
+    "run": 9,
+    "exit": 1,
+    "total": 16,
+    "passed": 14,
+    "failed": 2,
+    "failedNames": [
+     "one-listener POC restart on private fixture sockets hard-refuses listener-changed-after-signal after SIGTERM without spawning a successor",
+     "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow"
+    ],
+    "seconds": 20.0
+   },
+   {
+    "run": 10,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 16.3
+   },
+   {
+    "run": 11,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 15.7
+   },
+   {
+    "run": 12,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 16.2
+   },
+   {
+    "run": 13,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 16.7
+   },
+   {
+    "run": 14,
+    "exit": 1,
+    "total": 16,
+    "passed": 15,
+    "failed": 1,
+    "failedNames": [
+     "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow"
+    ],
+    "seconds": 16.8
+   },
+   {
+    "run": 15,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 16.7
+   },
+   {
+    "run": 16,
+    "exit": 1,
+    "total": 16,
+    "passed": 15,
+    "failed": 1,
+    "failedNames": [
+     "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow"
+    ],
+    "seconds": 17.4
+   },
+   {
+    "run": 17,
+    "exit": 1,
+    "total": 16,
+    "passed": 15,
+    "failed": 1,
+    "failedNames": [
+     "one-listener POC restart on private fixture sockets hard-refuses listener-changed-after-signal after SIGTERM without spawning a successor"
+    ],
+    "seconds": 16.9
+   },
+   {
+    "run": 18,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 16.1
+   },
+   {
+    "run": 19,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 17.1
+   },
+   {
+    "run": 20,
+    "exit": 1,
+    "total": 16,
+    "passed": 15,
+    "failed": 1,
+    "failedNames": [
+     "one-listener POC restart on private fixture sockets hard-refuses listener-changed-after-signal after SIGTERM without spawning a successor"
+    ],
+    "seconds": 16.4
+   },
+   {
+    "run": 21,
+    "exit": 1,
+    "total": 16,
+    "passed": 15,
+    "failed": 1,
+    "failedNames": [
+     "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow"
+    ],
+    "seconds": 19.5
+   },
+   {
+    "run": 22,
+    "exit": 1,
+    "total": 16,
+    "passed": 15,
+    "failed": 1,
+    "failedNames": [
+     "one-listener POC restart on private fixture sockets hard-refuses listener-changed-after-signal after SIGTERM without spawning a successor"
+    ],
+    "seconds": 20.2
+   },
+   {
+    "run": 23,
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failedNames": [],
+    "seconds": 18.9
+   }
+  ],
+  "totalRuns": 24,
+  "failedRuns": 9,
+  "testsExecuted": 384,
+  "testsFailed": 10,
+  "failuresByTest": {
+   "one-listener POC restart on private fixture sockets hard-refuses listener-changed-after-signal after SIGTERM without spawning a successor": 4,
+   "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow": 6
+  },
+  "meanSecondsPerRun": 17.6,
+  "leakAcrossAllRuns": {
+   "restrictedOrphansMinusS0": [],
+   "thisWorktreeFixtureRowsAny": [],
+   "unrestrictedOrphansMinusS0": []
+  },
+  "leakFinal": {
+   "restrictedOrphansMinusS0": [],
+   "thisWorktreeFixtureRowsAny": [],
+   "unrestrictedOrphansMinusS0": [],
+   "S0StillPresent": true
+  }
+ },
+ "baselineAuditOnlyTests": "The 150 ms identity-stays test (2 cases) and the vanished-identity slow test did not fail in any of the 24 baseline loaded runs (0 of 24 x 16 test executions); left unchanged, no follow-up needed on this evidence. Reproduction is probabilistic.",
+ "postChange": {
+  "load24": {
+   "label": "post-load24",
+   "loadChildren": 24,
+   "loadPids": [
+    3034859,
+    3034860,
+    3034861,
+    3034862,
+    3034863,
+    3034869,
+    3034880,
+    3034887,
+    3034892,
+    3034895,
+    3034910,
+    3034917,
+    3034920,
+    3034936,
+    3034937,
+    3034950,
+    3034967,
+    3034971,
+    3034977,
+    3034979,
+    3034992,
+    3034998,
+    3035007,
+    3035013
+   ],
+   "loadPidsAliveAfter": [],
+   "commit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+   "nodeVersion": "v24.6.0",
+   "runs": [
+    {
+     "run": 0,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 16.8
+    },
+    {
+     "run": 1,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 17.3
+    },
+    {
+     "run": 2,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 16.0
+    },
+    {
+     "run": 3,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 15.8
+    },
+    {
+     "run": 4,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 16.3
+    },
+    {
+     "run": 5,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 16.0
+    },
+    {
+     "run": 6,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 15.8
+    },
+    {
+     "run": 7,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 22.0
+    },
+    {
+     "run": 8,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 19.6
+    },
+    {
+     "run": 9,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 17.2
+    },
+    {
+     "run": 10,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 18.1
+    },
+    {
+     "run": 11,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 17.9
+    },
+    {
+     "run": 12,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 16.5
+    },
+    {
+     "run": 13,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 22.8
+    },
+    {
+     "run": 14,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 17.7
+    },
+    {
+     "run": 15,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 19.9
+    },
+    {
+     "run": 16,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 18.7
+    },
+    {
+     "run": 17,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 19.6
+    },
+    {
+     "run": 18,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 19.9
+    },
+    {
+     "run": 19,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 18.7
+    },
+    {
+     "run": 20,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 20.1
+    },
+    {
+     "run": 21,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 21.0
+    },
+    {
+     "run": 22,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 20.3
+    },
+    {
+     "run": 23,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 21.1
+    }
+   ],
+   "totalRuns": 24,
+   "failedRuns": 0,
+   "testsExecuted": 384,
+   "testsFailed": 0,
+   "failuresByTest": {},
+   "meanSecondsPerRun": 18.5,
+   "leakAcrossAllRuns": {
+    "restrictedOrphansMinusS0": [],
+    "thisWorktreeFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "leakFinal": {
+    "restrictedOrphansMinusS0": [],
+    "thisWorktreeFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": [],
+    "S0StillPresent": true
+   }
+  },
+  "load48": {
+   "label": "post-load48",
+   "loadChildren": 48,
+   "loadPids": [
+    3071367,
+    3071372,
+    3071373,
+    3071379,
+    3071384,
+    3071399,
+    3071400,
+    3071415,
+    3071424,
+    3071425,
+    3071426,
+    3071434,
+    3071443,
+    3071451,
+    3071465,
+    3071468,
+    3071480,
+    3071487,
+    3071499,
+    3071502,
+    3071511,
+    3071516,
+    3071525,
+    3071529,
+    3071538,
+    3071544,
+    3071546,
+    3071564,
+    3071573,
+    3071574,
+    3071590,
+    3071591,
+    3071598,
+    3071614,
+    3071621,
+    3071623,
+    3071631,
+    3071642,
+    3071644,
+    3071658,
+    3071663,
+    3071676,
+    3071679,
+    3071683,
+    3071693,
+    3071709,
+    3071713,
+    3071719
+   ],
+   "loadPidsAliveAfter": [],
+   "commit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+   "nodeVersion": "v24.6.0",
+   "runs": [
+    {
+     "run": 0,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 31.3
+    },
+    {
+     "run": 1,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 27.0
+    },
+    {
+     "run": 2,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 29.9
+    },
+    {
+     "run": 3,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 29.4
+    },
+    {
+     "run": 4,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 30.4
+    },
+    {
+     "run": 5,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 25.0
+    },
+    {
+     "run": 6,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 23.7
+    },
+    {
+     "run": 7,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 22.1
+    },
+    {
+     "run": 8,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 25.8
+    },
+    {
+     "run": 9,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 30.1
+    },
+    {
+     "run": 10,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 26.6
+    },
+    {
+     "run": 11,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 25.5
+    },
+    {
+     "run": 12,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 24.8
+    },
+    {
+     "run": 13,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 23.0
+    },
+    {
+     "run": 14,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 31.0
+    },
+    {
+     "run": 15,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 33.3
+    },
+    {
+     "run": 16,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 25.6
+    },
+    {
+     "run": 17,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 25.9
+    },
+    {
+     "run": 18,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 25.7
+    },
+    {
+     "run": 19,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 25.3
+    },
+    {
+     "run": 20,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 26.8
+    },
+    {
+     "run": 21,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 27.4
+    },
+    {
+     "run": 22,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 30.7
+    },
+    {
+     "run": 23,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 29.3
+    }
+   ],
+   "totalRuns": 24,
+   "failedRuns": 0,
+   "testsExecuted": 384,
+   "testsFailed": 0,
+   "failuresByTest": {},
+   "meanSecondsPerRun": 27.3,
+   "leakAcrossAllRuns": {
+    "restrictedOrphansMinusS0": [],
+    "thisWorktreeFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "leakFinal": {
+    "restrictedOrphansMinusS0": [],
+    "thisWorktreeFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": [],
+    "S0StillPresent": true
+   }
+  },
+  "control": {
+   "label": "post-control",
+   "loadChildren": 0,
+   "loadPids": [],
+   "loadPidsAliveAfter": [],
+   "commit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+   "nodeVersion": "v24.6.0",
+   "runs": [
+    {
+     "run": 0,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 6.7
+    },
+    {
+     "run": 1,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 6.9
+    },
+    {
+     "run": 2,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 6.1
+    },
+    {
+     "run": 3,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 6.2
+    },
+    {
+     "run": 4,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 6.3
+    },
+    {
+     "run": 5,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 6.3
+    },
+    {
+     "run": 6,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 6.2
+    },
+    {
+     "run": 7,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 6.4
+    },
+    {
+     "run": 8,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 6.3
+    },
+    {
+     "run": 9,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 6.4
+    },
+    {
+     "run": 10,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 6.5
+    },
+    {
+     "run": 11,
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failedNames": [],
+     "seconds": 6.5
+    }
+   ],
+   "totalRuns": 12,
+   "failedRuns": 0,
+   "testsExecuted": 192,
+   "testsFailed": 0,
+   "failuresByTest": {},
+   "meanSecondsPerRun": 6.4,
+   "leakAcrossAllRuns": {
+    "restrictedOrphansMinusS0": [],
+    "thisWorktreeFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "leakFinal": {
+    "restrictedOrphansMinusS0": [],
+    "thisWorktreeFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": [],
+    "S0StillPresent": true
+   }
+  }
+ },
+ "postChangeTotals": {
+  "runs": 60,
+  "testsExecuted": 960,
+  "testsFailed": 0
+ },
+ "processLeak": {
+  "S0": {
+   "definition": "ps rows containing test-fixtures/restart-listener.mjs with ppid 1, taken before the first run",
+   "pids": [
+    167879,
+    820587,
+    989664,
+    1095193,
+    1095497,
+    1098928,
+    1635362,
+    1637036,
+    1637043,
+    1640326,
+    2444792,
+    2688824,
+    2689585,
+    2709039,
+    2761632,
+    2777747,
+    2779896,
+    3063180,
+    3063492,
+    3063555,
+    3063649
+   ],
+   "count": 21,
+   "attribution": "pre-existing orphans from other paths, not this bead; never signalled (bead syzygy-vuv)"
+  },
+  "criterion": "this worktree/clone fixture-path rows with ppid 1 minus S0 empty after every run and every mutation row; unrestricted diff also stored"
+ },
+ "mutationRows": [
+  {
+   "id": "M1-held-mode-removed",
+   "file": "apps/three-surface-poc/src/restart.test.ts",
+   "old": "if (mode === 'held') writeFileSync(join(repo, 'hold-stop'), 'yes');",
+   "new": "if (false) writeFileSync(join(repo, 'hold-stop'), 'yes');",
+   "occurrencesRewritten": 1,
+   "testedCommit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+   "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/restart.test.ts --reporter=dot",
+   "expectedPredicate": "Timeout and changed-after-signal tests require a listener that outlives SIGTERM (held mode).",
+   "baselineExit": 0,
+   "baseline": {
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failingTests": [],
+    "fileLevelFailure": [],
+    "seconds": 6.1
+   },
+   "mutantExit": 1,
+   "mutant": {
+    "exit": 1,
+    "total": 16,
+    "passed": 13,
+    "failed": 3,
+    "failingTests": [
+     "one-listener POC restart on private fixture sockets hard-refuses listener-changed-after-signal after SIGTERM without spawning a successor",
+     "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow",
+     "one-listener POC restart on private fixture sockets reports a failed successor and lets a concurrent loser fail before signaling"
+    ],
+    "fileLevelFailure": [],
+    "seconds": 11.1
+   },
+   "result": "killed",
+   "expectedResult": "killed",
+   "restored": true,
+   "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/restart.test.ts": "553438aaab6c77aa17ef9003745490a6c6284dbc500ca9be5f9c8a412b8a6381",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47",
+    "apps/three-surface-poc/src/restart.ts": "a48e32d0eb080381b07f96e66758c7ea8132fa4d9322a3f8f1869f2743cabbe7"
+   },
+   "leakAfterBaseline": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "leakAfterMutant": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   }
+  },
+  {
+   "id": "M2-early-release",
+   "file": "apps/three-surface-poc/src/restart.test.ts",
+   "old": "const f = await startedFixture('held');\n    await expect(restartOnePocListener({ port: f.port, expectedScript: fixture, timeoutMs: 100 }))",
+   "new": "const f = await startedFixture('held');\n    writeFileSync(join(f.repo, 'release-stop'), 'release');\n    await expect(restartOnePocListener({ port: f.port, expectedScript: fixture, timeoutMs: 100 }))",
+   "occurrencesRewritten": 1,
+   "testedCommit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+   "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/restart.test.ts --reporter=dot",
+   "expectedPredicate": "The rejection must be listener-close-timeout, which needs the listener still held at the deadline.",
+   "baselineExit": 0,
+   "baseline": {
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failingTests": [],
+    "fileLevelFailure": [],
+    "seconds": 6.3
+   },
+   "mutantExit": 1,
+   "mutant": {
+    "exit": 1,
+    "total": 16,
+    "passed": 15,
+    "failed": 1,
+    "failingTests": [
+     "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow"
+    ],
+    "fileLevelFailure": [],
+    "seconds": 6.3
+   },
+   "result": "killed",
+   "expectedResult": "killed",
+   "restored": true,
+   "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/restart.test.ts": "553438aaab6c77aa17ef9003745490a6c6284dbc500ca9be5f9c8a412b8a6381",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47",
+    "apps/three-surface-poc/src/restart.ts": "a48e32d0eb080381b07f96e66758c7ea8132fa4d9322a3f8f1869f2743cabbe7"
+   },
+   "leakAfterBaseline": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "leakAfterMutant": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   }
+  },
+  {
+   "id": "M3-successor-injected-intact-assertion",
+   "file": "apps/three-surface-poc/src/restart.test.ts",
+   "old": "await waitForMarker(join(f.repo, 'shutdown-started'));\n    expect(exactPrivateFixtureProcesses().map(({ pid }) => pid)).toEqual([f.pid]);",
+   "new": "    await waitForMarker(join(f.repo, 'shutdown-started'));\n    const extraPort = await freePort();\n    const extra = spawn(process.execPath, [fixture, '--repo', f.repo, '--state-dir', f.stateDir, '--port', String(extraPort)], { cwd: process.cwd(), stdio: 'ignore' });\n    if (extra.pid === undefined) throw new Error('fixture process missing');\n    pids.push(extra.pid);\n    await readRevision(extraPort);\n    expect(exactPrivateFixtureProcesses().map(({ pid }) => pid)).toEqual([f.pid]);",
+   "occurrencesRewritten": 1,
+   "testedCommit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+   "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/restart.test.ts --reporter=dot",
+   "expectedPredicate": "No fixture process other than the held listener exists after the timeout (extra same-root fixture injected after SIGTERM).",
+   "baselineExit": 0,
+   "baseline": {
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failingTests": [],
+    "firstFailureLines": [],
+    "fileLevelFailure": [],
+    "seconds": 5.9
+   },
+   "mutantExit": 1,
+   "mutant": {
+    "exit": 1,
+    "total": 16,
+    "passed": 15,
+    "failed": 1,
+    "failingTests": [
+     "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow"
+    ],
+    "firstFailureLines": [
+     "AssertionError: expected [ 3157631, 3157654 ] to deeply equal [ 3157631 ]"
+    ],
+    "fileLevelFailure": [],
+    "seconds": 6.0
+   },
+   "result": "killed",
+   "expectedResult": "killed",
+   "restored": true,
+   "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/restart.test.ts": "553438aaab6c77aa17ef9003745490a6c6284dbc500ca9be5f9c8a412b8a6381",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47",
+    "apps/three-surface-poc/src/restart.ts": "a48e32d0eb080381b07f96e66758c7ea8132fa4d9322a3f8f1869f2743cabbe7"
+   },
+   "leakAfterBaseline": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "leakAfterMutant": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   }
+  },
+  {
+   "id": "M3b-successor-injected-weakened-assertion",
+   "file": "apps/three-surface-poc/src/restart.test.ts",
+   "old": "await waitForMarker(join(f.repo, 'shutdown-started'));\n    expect(exactPrivateFixtureProcesses().map(({ pid }) => pid)).toEqual([f.pid]);",
+   "new": "    await waitForMarker(join(f.repo, 'shutdown-started'));\n    const extraPort = await freePort();\n    const extra = spawn(process.execPath, [fixture, '--repo', f.repo, '--state-dir', f.stateDir, '--port', String(extraPort)], { cwd: process.cwd(), stdio: 'ignore' });\n    if (extra.pid === undefined) throw new Error('fixture process missing');\n    pids.push(extra.pid);\n    await readRevision(extraPort);\n    expect(exactPrivateFixtureProcesses().map(({ pid }) => pid)).toContain(f.pid);",
+   "occurrencesRewritten": 1,
+   "testedCommit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+   "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/restart.test.ts --reporter=dot",
+   "expectedPredicate": "Disclosure row: the weakened toContain form is blind to an injected successor (expected survived).",
+   "baselineExit": 0,
+   "baseline": {
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failingTests": [],
+    "firstFailureLines": [],
+    "fileLevelFailure": [],
+    "seconds": 5.9
+   },
+   "mutantExit": 1,
+   "mutant": {
+    "exit": 1,
+    "total": 16,
+    "passed": 15,
+    "failed": 1,
+    "failingTests": [
+     "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow"
+    ],
+    "firstFailureLines": [
+     "AssertionError: expected [ { pid: 3159278, uid: 1000, \u2026(3) } ] to deeply equal []"
+    ],
+    "fileLevelFailure": [],
+    "seconds": 6.1
+   },
+   "result": "killed",
+   "expectedResult": "killed",
+   "restored": true,
+   "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/restart.test.ts": "553438aaab6c77aa17ef9003745490a6c6284dbc500ca9be5f9c8a412b8a6381",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47",
+    "apps/three-surface-poc/src/restart.ts": "a48e32d0eb080381b07f96e66758c7ea8132fa4d9322a3f8f1869f2743cabbe7"
+   },
+   "leakAfterBaseline": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "leakAfterMutant": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "note": "Disclosure row, not a survivor: the weakened toContain form is caught only by the later post-release toEqual([]) assertion (first failure line is that assertion), so the intact toEqual([f.pid]) (M3) is the assertion that names the successor at the timeout instant."
+  },
+  {
+   "id": "M4-vacuous-observation",
+   "file": "apps/three-surface-poc/src/restart.test.ts",
+   "old": "remaining: exactPrivateFixtureProcesses().map(({ pid }) => pid),",
+   "new": "remaining: [1],",
+   "occurrencesRewritten": 1,
+   "testedCommit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+   "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/restart.test.ts --reporter=dot",
+   "expectedPredicate": "The cleanup observation is derived from the real process table; a non-empty observation fails inline and in afterAll.",
+   "baselineExit": 0,
+   "baseline": {
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failingTests": [],
+    "fileLevelFailure": [],
+    "seconds": 6.3
+   },
+   "mutantExit": 1,
+   "mutant": {
+    "exit": 1,
+    "total": 16,
+    "passed": 0,
+    "failed": 16,
+    "failingTests": [
+     "one-listener POC restart on private fixture sockets waits through one vanished post-SIGTERM identity, then starts exactly one successor after socket absence",
+     "one-listener POC restart on private fixture sockets refuses a listener-identity-unreadable identity before SIGTERM and leaves the old listener serving",
+     "one-listener POC restart on private fixture sockets refuses a listener-identity-incomplete identity before SIGTERM and leaves the old listener serving",
+     "one-listener POC restart on private fixture sockets times out with no successor while post-SIGTERM identity stays listener-identity-unreadable",
+     "one-listener POC restart on private fixture sockets times out with no successor while post-SIGTERM identity stays listener-identity-incomplete",
+     "one-listener POC restart on private fixture sockets hard-refuses listener-owner-mismatch after SIGTERM without spawning a successor",
+     "one-listener POC restart on private fixture sockets hard-refuses listener-changed-after-signal after SIGTERM without spawning a successor",
+     "one-listener POC restart on private fixture sockets closes one listener, reuses credential bytes and state dir, and serves only the new fixture revision",
+     "one-listener POC restart on private fixture sockets refuses an absent listener and ambiguous owner rows without signaling anyone",
+     "one-listener POC restart on private fixture sockets refuses unreadable same-UID process identity and retains the scratch root",
+     "one-listener POC restart on private fixture sockets ignores unreadable out-of-scope child churn before cmdline inspection",
+     "one-listener POC restart on private fixture sockets refuses PID reuse before signaling a changed process generation",
+     "one-listener POC restart on private fixture sockets refuses a listener generation changed between inspection and SIGTERM",
+     "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow",
+     "one-listener POC restart on private fixture sockets discovers an unreturned successor after a post-spawn identity refusal",
+     "one-listener POC restart on private fixture sockets reports a failed successor and lets a concurrent loser fail before signaling"
+    ],
+    "fileLevelFailure": [],
+    "seconds": 6.4
+   },
+   "result": "killed",
+   "expectedResult": "killed",
+   "restored": true,
+   "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/restart.test.ts": "553438aaab6c77aa17ef9003745490a6c6284dbc500ca9be5f9c8a412b8a6381",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47",
+    "apps/three-surface-poc/src/restart.ts": "a48e32d0eb080381b07f96e66758c7ea8132fa4d9322a3f8f1869f2743cabbe7"
+   },
+   "leakAfterBaseline": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "leakAfterMutant": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   }
+  },
+  {
+   "id": "M5-observation-push-skipped",
+   "file": "apps/three-surface-poc/src/restart.test.ts",
+   "old": "  cleanupObservations.push(observation);\n",
+   "new": "",
+   "occurrencesRewritten": 1,
+   "testedCommit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+   "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/restart.test.ts --reporter=dot",
+   "expectedPredicate": "afterAll denominator: observation count equals started-test count.",
+   "baselineExit": 0,
+   "baseline": {
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failingTests": [],
+    "fileLevelFailure": [],
+    "seconds": 6.4
+   },
+   "mutantExit": 1,
+   "mutant": {
+    "exit": 1,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failingTests": [],
+    "fileLevelFailure": [
+     "expected +0 to be 16 // Object.is equality"
+    ],
+    "seconds": 6.2
+   },
+   "result": "killed",
+   "expectedResult": "killed",
+   "restored": true,
+   "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/restart.test.ts": "553438aaab6c77aa17ef9003745490a6c6284dbc500ca9be5f9c8a412b8a6381",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47",
+    "apps/three-surface-poc/src/restart.ts": "a48e32d0eb080381b07f96e66758c7ea8132fa4d9322a3f8f1869f2743cabbe7"
+   },
+   "leakAfterBaseline": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "leakAfterMutant": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "preChangeForm": {
+    "baseCommit": "7d9e165927d2c087ee431519c1336f2587744275",
+    "oldFragment": "  cleanupObservations.push([]);\n",
+    "newFragment": "",
+    "baseline": {
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failingTests": [],
+     "fileLevelFailure": [],
+     "seconds": 6.8
+    },
+    "mutant": {
+     "exit": 0,
+     "total": 16,
+     "passed": 16,
+     "failed": 0,
+     "failingTests": [],
+     "fileLevelFailure": [],
+     "seconds": 7.2
+    },
+    "result": "survived",
+    "restored": true,
+    "leak": {
+     "restrictedOrphansMinusS0": [],
+     "thisCloneFixtureRowsAny": [],
+     "unrestrictedOrphansMinusS0": []
+    }
+   }
+  },
+  {
+   "id": "M6-live-pids-intact-with-seed",
+   "file": "apps/three-surface-poc/src/restart.test.ts",
+   "old": "  const observation: CleanupObservation = {",
+   "new": "  pids.push(process.pid);\n  const observation: CleanupObservation = {",
+   "occurrencesRewritten": 1,
+   "testedCommit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+   "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/restart.test.ts --reporter=dot",
+   "expectedPredicate": "A registered PID that is alive after drain (the runner itself, seeded) makes livePids non-empty and fails.",
+   "baselineExit": 0,
+   "baseline": {
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failingTests": [],
+    "fileLevelFailure": [],
+    "seconds": 6.1
+   },
+   "mutantExit": 1,
+   "mutant": {
+    "exit": 1,
+    "total": 16,
+    "passed": 0,
+    "failed": 16,
+    "failingTests": [
+     "one-listener POC restart on private fixture sockets waits through one vanished post-SIGTERM identity, then starts exactly one successor after socket absence",
+     "one-listener POC restart on private fixture sockets refuses a listener-identity-unreadable identity before SIGTERM and leaves the old listener serving",
+     "one-listener POC restart on private fixture sockets refuses a listener-identity-incomplete identity before SIGTERM and leaves the old listener serving",
+     "one-listener POC restart on private fixture sockets times out with no successor while post-SIGTERM identity stays listener-identity-unreadable",
+     "one-listener POC restart on private fixture sockets times out with no successor while post-SIGTERM identity stays listener-identity-incomplete",
+     "one-listener POC restart on private fixture sockets hard-refuses listener-owner-mismatch after SIGTERM without spawning a successor",
+     "one-listener POC restart on private fixture sockets hard-refuses listener-changed-after-signal after SIGTERM without spawning a successor",
+     "one-listener POC restart on private fixture sockets closes one listener, reuses credential bytes and state dir, and serves only the new fixture revision",
+     "one-listener POC restart on private fixture sockets refuses an absent listener and ambiguous owner rows without signaling anyone",
+     "one-listener POC restart on private fixture sockets refuses unreadable same-UID process identity and retains the scratch root",
+     "one-listener POC restart on private fixture sockets ignores unreadable out-of-scope child churn before cmdline inspection",
+     "one-listener POC restart on private fixture sockets refuses PID reuse before signaling a changed process generation",
+     "one-listener POC restart on private fixture sockets refuses a listener generation changed between inspection and SIGTERM",
+     "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow",
+     "one-listener POC restart on private fixture sockets discovers an unreturned successor after a post-spawn identity refusal",
+     "one-listener POC restart on private fixture sockets reports a failed successor and lets a concurrent loser fail before signaling"
+    ],
+    "fileLevelFailure": [],
+    "seconds": 6.3
+   },
+   "result": "killed",
+   "expectedResult": "killed",
+   "restored": true,
+   "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/restart.test.ts": "553438aaab6c77aa17ef9003745490a6c6284dbc500ca9be5f9c8a412b8a6381",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47",
+    "apps/three-surface-poc/src/restart.ts": "a48e32d0eb080381b07f96e66758c7ea8132fa4d9322a3f8f1869f2743cabbe7"
+   },
+   "leakAfterBaseline": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "leakAfterMutant": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   }
+  },
+  {
+   "id": "M6b-live-pids-blinded-with-seed",
+   "file": "apps/three-surface-poc/src/restart.test.ts",
+   "old": "  const observation: CleanupObservation = {",
+   "new": "  pids.push(process.pid);\n  const observation: CleanupObservation = {",
+   "occurrencesRewritten": 1,
+   "testedCommit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+   "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/restart.test.ts --reporter=dot",
+   "expectedPredicate": "Disclosure row: with the liveness filter blinded the same seed passes (expected survived), proving the seed exercises the check.",
+   "baselineExit": 0,
+   "baseline": {
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failingTests": [],
+    "fileLevelFailure": [],
+    "seconds": 6.4
+   },
+   "mutantExit": 0,
+   "mutant": {
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failingTests": [],
+    "fileLevelFailure": [],
+    "seconds": 6.3
+   },
+   "result": "survived",
+   "expectedResult": "survived",
+   "restored": true,
+   "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/restart.test.ts": "553438aaab6c77aa17ef9003745490a6c6284dbc500ca9be5f9c8a412b8a6381",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47",
+    "apps/three-surface-poc/src/restart.ts": "a48e32d0eb080381b07f96e66758c7ea8132fa4d9322a3f8f1869f2743cabbe7"
+   },
+   "leakAfterBaseline": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "leakAfterMutant": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "old2": "livePids: pids.filter(pid => readProcessProvenance(pid) !== undefined),",
+   "new2": "livePids: [],",
+   "note": "Survived by design: with the liveness filter blinded the seeded live PID passes, which shows the M6 seed exercises the check."
+  },
+  {
+   "id": "M7-changed-after-signal-check-removed",
+   "file": "apps/three-surface-poc/src/restart.ts",
+   "old": "if (!sameListener(first, current)) throw new RestartRefusal('listener-changed-after-signal');",
+   "new": "if (false) throw new RestartRefusal('listener-changed-after-signal');",
+   "occurrencesRewritten": 1,
+   "testedCommit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+   "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/restart.test.ts --reporter=dot",
+   "expectedPredicate": "The changed-after-signal test can only pass by observing the refusal.",
+   "baselineExit": 0,
+   "baseline": {
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failingTests": [],
+    "fileLevelFailure": [],
+    "seconds": 6.2
+   },
+   "mutantExit": 1,
+   "mutant": {
+    "exit": 1,
+    "total": 16,
+    "passed": 15,
+    "failed": 1,
+    "failingTests": [
+     "one-listener POC restart on private fixture sockets hard-refuses listener-changed-after-signal after SIGTERM without spawning a successor"
+    ],
+    "fileLevelFailure": [],
+    "seconds": 7.3
+   },
+   "result": "killed",
+   "expectedResult": "killed",
+   "restored": true,
+   "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/restart.test.ts": "553438aaab6c77aa17ef9003745490a6c6284dbc500ca9be5f9c8a412b8a6381",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47",
+    "apps/three-surface-poc/src/restart.ts": "a48e32d0eb080381b07f96e66758c7ea8132fa4d9322a3f8f1869f2743cabbe7"
+   },
+   "leakAfterBaseline": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "leakAfterMutant": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   }
+  },
+  {
+   "id": "M8-close-timeout-check-removed",
+   "file": "apps/three-surface-poc/src/restart.ts",
+   "old": "if (Date.now() >= deadline) throw new RestartRefusal('listener-close-timeout');",
+   "new": "if (false) throw new RestartRefusal('listener-close-timeout');",
+   "occurrencesRewritten": 2,
+   "testedCommit": "bad000200a7de2cddf4eddf3fa8c1197ab007e5b",
+   "command": "npx vitest run --project @syzygy/three-surface-poc-app --maxWorkers=1 --minWorkers=1 --testTimeout=60000 apps/three-surface-poc/src/restart.test.ts --reporter=dot",
+   "expectedPredicate": "The timeout test requires listener-close-timeout while the held listener stays open.",
+   "baselineExit": 0,
+   "baseline": {
+    "exit": 0,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "failingTests": [],
+    "firstFailureLines": [],
+    "fileLevelFailure": [],
+    "seconds": 6.8
+   },
+   "mutantExit": 1,
+   "mutant": {
+    "exit": 1,
+    "total": 16,
+    "passed": 13,
+    "failed": 3,
+    "failingTests": [
+     "one-listener POC restart on private fixture sockets times out with no successor while post-SIGTERM identity stays listener-identity-unreadable",
+     "one-listener POC restart on private fixture sockets times out with no successor while post-SIGTERM identity stays listener-identity-incomplete",
+     "one-listener POC restart on private fixture sockets times out without SIGKILL or spawning a successor when SIGTERM close is slow"
+    ],
+    "firstFailureLines": [
+     "Error: STACK_TRACE_ERROR",
+     "Error: STACK_TRACE_ERROR",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    "fileLevelFailure": [],
+    "seconds": 139.7
+   },
+   "result": "killed",
+   "expectedResult": "killed",
+   "restored": true,
+   "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/restart.test.ts": "553438aaab6c77aa17ef9003745490a6c6284dbc500ca9be5f9c8a412b8a6381",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47",
+    "apps/three-surface-poc/src/restart.ts": "a48e32d0eb080381b07f96e66758c7ea8132fa4d9322a3f8f1869f2743cabbe7"
+   },
+   "leakAfterBaseline": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "leakAfterMutant": {
+    "restrictedOrphansMinusS0": [],
+    "thisCloneFixtureRowsAny": [],
+    "unrestrictedOrphansMinusS0": []
+   },
+   "note": "Killed by Vitest per-test timeouts (the wait loop never times out against a held listener); mutant runtime 139.7 s; no process leaked."
+  }
+ ],
+ "preChangeCounterpart": "M5 preChangeForm inside its row: the base afterAll every(...) form survives deleting cleanupObservations.push([]) (exit 0, 16 passed), so it was vacuous.",
+ "sourceDigests": {
+  "restart.test.ts": {
+   "base": "6ee0719f4a40ec21fece8d7dd380a95be2a0805a702d228d8efd6cb3f85687ae",
+   "head": "553438aaab6c77aa17ef9003745490a6c6284dbc500ca9be5f9c8a412b8a6381"
+  },
+  "restart-listener.mjs": {
+   "base": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47",
+   "head": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47"
+  },
+  "restart.ts": {
+   "base": "a48e32d0eb080381b07f96e66758c7ea8132fa4d9322a3f8f1869f2743cabbe7",
+   "head": "a48e32d0eb080381b07f96e66758c7ea8132fa4d9322a3f8f1869f2743cabbe7",
+   "equal": true
+  }
+ }
+}

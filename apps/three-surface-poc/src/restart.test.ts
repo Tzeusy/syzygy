@@ -3,14 +3,19 @@ import { createServer } from 'node:net';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, readlinkSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { afterAll, afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { inspectPocPort, listenerPidFromSs, restartOnePocListener, RestartRefusal, type PocListener } from './restart.js';
 
 const fixture = resolve('apps/three-surface-poc/src/test-fixtures/restart-listener.mjs');
 const roots: string[] = [];
 const pids: number[] = [];
-const cleanupObservations: number[][] = [];
+interface CleanupObservation {
+  readonly remaining: number[];
+  readonly livePids: number[];
+}
+const cleanupObservations: CleanupObservation[] = [];
+let startedTests = 0;
 const ownerUid = process.getuid?.();
 
 interface ProcessIdentity {
@@ -80,6 +85,14 @@ async function waitForMarker(marker: string, timeoutMs = 5000): Promise<void> {
   const deadline = Date.now() + timeoutMs;
   while (!existsSync(marker)) {
     if (Date.now() >= deadline) throw new Error(`private fixture did not write ${marker}`);
+    await new Promise(resolveWait => setTimeout(resolveWait, 10));
+  }
+}
+
+async function waitForExit(pid: number, timeoutMs = 5000): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (readProcessProvenance(pid) !== undefined) {
+    if (Date.now() >= deadline) throw new Error(`private fixture process ${pid} did not exit`);
     await new Promise(resolveWait => setTimeout(resolveWait, 10));
   }
 }
@@ -263,6 +276,10 @@ async function drainPrivateFixtureProcesses(options: {
   }
 }
 
+beforeEach(() => {
+  startedTests += 1;
+});
+
 afterEach(async () => {
   for (const root of roots) {
     const repo = join(root, 'repo');
@@ -270,13 +287,24 @@ afterEach(async () => {
     if (existsSync(join(repo, 'hold-stop')) && !existsSync(release)) writeFileSync(release, 'release');
   }
   await drainPrivateFixtureProcesses();
-  cleanupObservations.push([]);
+  // The observation comes from the live process table and /proc liveness of
+  // every PID this test registered, so it cannot pass for any behaviour.
+  const observation: CleanupObservation = {
+    remaining: exactPrivateFixtureProcesses().map(({ pid }) => pid),
+    livePids: pids.filter(pid => readProcessProvenance(pid) !== undefined),
+  };
+  cleanupObservations.push(observation);
+  expect(observation.remaining).toEqual([]);
+  expect(observation.livePids).toEqual([]);
   pids.splice(0);
   for (const root of roots) rmSync(root, { recursive: true, force: true });
 });
 
 afterAll(() => {
-  expect(cleanupObservations.every((remaining) => remaining.length === 0)).toBe(true);
+  // Denominator: every test that started was observed once, so an empty or
+  // short observation list cannot pass the emptiness check below.
+  expect(cleanupObservations.length).toBe(startedTests);
+  expect(cleanupObservations.every(({ remaining, livePids }) => remaining.length === 0 && livePids.length === 0)).toBe(true);
   expect(exactPrivateFixtureProcesses()).toEqual([]);
 });
 
@@ -342,7 +370,9 @@ describe('one-listener POC restart on private fixture sockets', () => {
 
   it.each(['listener-owner-mismatch', 'listener-changed-after-signal'])(
     'hard-refuses %s after SIGTERM without spawning a successor', async code => {
-      const f = await startedFixture('slow');
+      // Held: the listener cannot close before the third inspection, so the
+      // changed-identity probe always sees a live socket under any load.
+      const f = await startedFixture('held');
       const credentialBefore = readFileSync(join(f.stateDir, 'machine-credential.token'));
       let inspections = 0;
       await expect(restartOnePocListener({
@@ -361,7 +391,7 @@ describe('one-listener POC restart on private fixture sockets', () => {
       expect(inspections).toBe(3);
       expect(readFileSync(join(f.stateDir, 'machine-credential.token'))).toEqual(credentialBefore);
       expect(readdirSync(f.stateDir)).toEqual(['machine-credential.token']);
-    },
+    }, 15_000,
   );
 
   it('closes one listener, reuses credential bytes and state dir, and serves only the new fixture revision', async () => {
@@ -462,12 +492,19 @@ describe('one-listener POC restart on private fixture sockets', () => {
   });
 
   it('times out without SIGKILL or spawning a successor when SIGTERM close is slow', async () => {
-    const f = await startedFixture('slow');
+    // Held: the listener cannot close until release-stop exists, so the 100 ms
+    // deadline is always the winner; every later wait is a state marker.
+    const f = await startedFixture('held');
     await expect(restartOnePocListener({ port: f.port, expectedScript: fixture, timeoutMs: 100 }))
       .rejects.toMatchObject({ code: 'listener-close-timeout' });
-    await new Promise(resolveWait => setTimeout(resolveWait, 350));
+    await waitForMarker(join(f.repo, 'shutdown-started'));
+    expect(exactPrivateFixtureProcesses().map(({ pid }) => pid)).toEqual([f.pid]);
+    expect(await readRevision(f.port)).toBe('old-revision');
+    writeFileSync(join(f.repo, 'release-stop'), 'release');
+    await waitForExit(f.pid);
+    expect(exactPrivateFixtureProcesses()).toEqual([]);
     expect(readdirSync(f.stateDir)).toEqual(['machine-credential.token']);
-  });
+  }, 15_000);
 
   it('discovers an unreturned successor after a post-spawn identity refusal', async () => {
     const f = await startedFixture();
