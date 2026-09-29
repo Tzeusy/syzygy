@@ -521,6 +521,118 @@
       "new": "pairs = [(path, package.predecessor[path], package.predecessor[path])",
       "old": "pairs = [(path, package.predecessor[path], installed[path])",
       "refusal": "FAIL exact digest reconciliation unresolved: performed successor row"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(row is None or row[1] == digest(current), 'current subject drift: ' + path)",
+      "old": "require(row == (digest(adopted), digest(current)), 'current subject drift: ' + path)",
+      "refusal": "AssertionError: mutation accepted: openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(row is None or row[0] == digest(adopted), 'current subject drift: ' + path)",
+      "old": "require(row == (digest(adopted), digest(current)), 'current subject drift: ' + path)",
+      "refusal": "AssertionError: mutation accepted: openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        if True:\n",
+      "old": "        if current != adopted:\n",
+      "refusal": "FAIL exact digest reconciliation unresolved: current subject drift: openspec/changes/polaris-manifesto-understanding-amendment/.openspec.yaml"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "    require(True,",
+      "old": "    require(digest(source) == SUCCESSOR_TOOL_SHA,",
+      "refusal": "AssertionError: unreviewed successor tool accepted"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "if False:",
+      "old": "if package.check() != 'performed-exact':",
+      "refusal": "FAIL exact digest reconciliation unresolved: unperformed successor granted rows"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "except (ValueError, OSError):",
+      "old": "except Exception:  # noqa: BLE001 - any failing package grants nothing",
+      "refusal": "RecursionError: maximum recursion depth exceeded while decoding a JSON array from a unicode string"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "except (ValueError, OSError, RecursionError, TypeError):",
+      "old": "except Exception:  # noqa: BLE001 - any failing package grants nothing",
+      "refusal": "AttributeError: 'list' object has no attribute 'values'"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        def successor_rows(self):\n            return {}",
+      "old": "        def successor_rows(self):\n            return evidence.successor_rows()",
+      "refusal": "FAIL exact digest reconciliation unresolved: current subject drift: openspec/changes/polaris-manifesto-understanding-amendment/proposal.md"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        if True:\n",
+      "old": "        if (self.root / SUCCESSOR_TOOL).is_file():\n",
+      "refusal": "FAIL exact digest reconciliation unresolved: [Errno 2] No such file or directory: '<tmpdir>/scripts/readability_successor.py'"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "key = path",
+      "old": "key = posixpath.normpath(path)",
+      "refusal": "FAIL exact digest reconciliation unresolved: two performed successors of one path accepted"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "rows[key] = (predecessor, successor)",
+      "old": "rows[key] = CONTESTED if key in rows else (predecessor, successor)",
+      "refusal": "FAIL exact digest reconciliation unresolved: two performed successors of one path accepted"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "rows[key] = CONTESTED if key in rows else (successor, successor)",
+      "old": "rows[key] = CONTESTED if key in rows else (predecessor, successor)",
+      "refusal": "FAIL exact digest reconciliation unresolved: performed successor row"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True, '')",
+      "old": "require(row != CONTESTED, 'two performed successors claim ' + path)",
+      "refusal": "FAIL exact digest reconciliation unresolved: contested refusal: current subject drift: openspec/changes/polaris-manifesto-understanding-amendment/proposal.md"
+    },
+    {
+      "commit": "5f7edaf19ae3a0c71319eefae75635081b95beba",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "pairs = [(path, package.predecessor[path], package.predecessor[path])",
+      "old": "pairs = [(path, package.predecessor[path], installed[path])",
+      "refusal": "FAIL exact digest reconciliation unresolved: performed successor row"
     }
   ],
   "version": 1
