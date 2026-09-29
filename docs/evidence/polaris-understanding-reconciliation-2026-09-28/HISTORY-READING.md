@@ -28,17 +28,24 @@ it already read the status pages and the governance checker, at C1.
     `` - `scripts/record_polaris_understanding_adoption.py`: `<sha256>` ``.
   - "Latest" is the highest `<n>`, compared as a number; the raws are
     numbered 1 to n with no gap.
-  - Any file in this directory or below whose name contains
-    `history-review`, in any case, and is not exactly
+  - Any file in this directory or below whose basename matches the pattern
+    `history[^a-z0-9]*review` (a case-insensitive search: the word history,
+    any run of characters other than ASCII letters and digits, including
+    none, then the word review) and is not exactly
     `HISTORY-REVIEW-<n>-RAW.md` at the top level with no leading zero, is
-    refused, never skipped.
+    refused, never skipped. So `HISTORY_REVIEW-5-RAW.md`,
+    `History Review 5.md` and `HistoryReview-5-RAW.md` are refused, whether on
+    disk or committed and later deleted.
 - **Every history review is retained.**
   - Each raw's introducing commit holds the same bytes as today.
   - The population is every raw ever added on HEAD's history plus every raw on
     disk, so a deleted raw is refused, not skipped, and a raw on disk that no
     commit added is refused as not retained.
   - The Git query reads every commit and every merge parent, with rename
-    detection off and merge commits' own additions shown. A raw renamed into
+    detection off and merge commits' own additions shown. Its output is
+    NUL-separated (`-z`), so a non-ASCII name is not quoted away and a name
+    holding a newline is not split; a name committed and then deleted is
+    refused as it is on disk. A raw renamed into
     place, added on a branch whose merge dropped it, or added by a merge
     commit itself still counts.
   - Each raw is added exactly once. A number added on two branches, so that a
@@ -51,9 +58,13 @@ it already read the status pages and the governance checker, at C1.
   output, like `docs/reviews/*-RAW.md`, so a raw is stored unchanged.
 - **Rule-6 evidence.** [`history-reading-rule6.json`](history-reading-rule6.json)
   records each guard's mutant, its fragments and the commit it ran at; each
-  one fails the selftest. Two fail by an exception rather than by their named
-  refusal; both still fail closed. The Git query's flags and the disk listing
-  are exercised on a scratch repository, not a fixture.
+  one fails the run named by its row (the recorder selftest, except the one
+  row that names the governance checker's selftest). Two fail by an exception
+  rather than by their named refusal; both still fail closed. The Git query's
+  flags and the disk listing are exercised on a scratch repository, not a
+  fixture. The two round-3 witnesses (dropping `| set(listed)`, and widening
+  the checker's raw-review exemption from a full match to a search) and the
+  guards for the NUL split and the near-miss pattern each have their own row.
 - **Review rounds.**
   - Round 1 (`HISTORY-REVIEW-1-RAW.md`, REVISE): M1, a deleted raw was not
     refused, is answered by the Git population; M2, untested predicates, by
@@ -66,12 +77,20 @@ it already read the status pages and the governance checker, at C1.
     by showing merge commits' additions; N2, lowercase or nested names, by
     the wider malformed-name refusal; N3, two surviving mutants, by an
     uncommitted-raw witness and a narrower exemption test.
-  - Round 4 (`HISTORY-REVIEW-4-RAW.md`, CONFIRM WITH EXCEPTIONS) binds the
-    current recorder. Its four notes stay open: a non-ASCII malformed name is
-    refused only while on disk; a near-miss name without `history-review` is
-    skipped; two witnesses have no rule-6 row of their own; and a committed
-    malformed or twice-added raw fails `--check` until the owner decides how
-    to clear it.
+  - Round 4 (`HISTORY-REVIEW-4-RAW.md`, CONFIRM WITH EXCEPTIONS) bound the
+    recorder as it stood then. Its four notes are answered as follows:
+    - N1, a non-ASCII malformed name refused only while on disk, by the NUL
+      split above.
+    - N2, a near-miss name without `history-review` skipped, by the wider
+      pattern above.
+    - N3, two witnesses without a rule-6 row, by their own rows.
+    - N4 is not a code change. A committed malformed or twice-added raw makes
+      `--check` fail, and stays failing: that is the fail-closed polarity, and
+      no clearing mechanism exists. Clearing one needs an owner decision; none
+      has been taken.
+  - Round 5 (`HISTORY-REVIEW-5-RAW.md`) is required, because the recorder
+    changed after round 4. Until that raw is retained, no history review binds
+    the current recorder and `--check` fails by design.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws
