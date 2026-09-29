@@ -20,6 +20,12 @@ it already read the status pages and the governance checker, at C1.
     shape; the C1 digest is fixed and already performed.
   - The other inputs, and every subject, are still compared against today's
     bytes.
+  - One exception: a subject may differ from its adopted bytes when a
+    performed readability successor (`scripts/readability_successor.py`)
+    replaced it. The successor must check as `performed-exact`, its recorded
+    predecessor for that file must equal the adopted digest, and its row must
+    equal today's bytes. A successor that is unperformed, drifted or broken
+    grants nothing.
 - **What binds the recorder now.** Its current bytes must equal the digest
   that the latest `HISTORY-REVIEW-<n>-RAW.md` in this directory binds.
   - That raw carries exactly one `Verdict:` header, `CONFIRM` or
@@ -66,7 +72,9 @@ it already read the status pages and the governance checker, at C1.
   the checker's raw-review exemption from a full match to a search) and the
   guards for the NUL split and the near-miss pattern each have their own row.
   Three more rows (round 6) pin the separator class, `search` against `match`,
-  and the NUL split against a newline split.
+  and the NUL split against a newline split. Five more (round 7) pin the
+  successor exception: its predecessor test, its row test, the performed
+  filter, the per-package gate, and the frozen view's delegation.
 - **Review rounds.**
   - Round 1 (`HISTORY-REVIEW-1-RAW.md`, REVISE): M1, a deleted raw was not
     refused, is answered by the Git population; M2, untested predicates, by
@@ -96,10 +104,14 @@ it already read the status pages and the governance checker, at C1.
     answered by round 6's change, recorded in
     [`RECORDER-REVIEW-NOTES.md`](RECORDER-REVIEW-NOTES.md); note 4 is enforced
     only by the dispatch brief.
-  - Round 6 (`HISTORY-REVIEW-6-RAW.md`) is required, because the recorder
-    changed after round 5 (three selftest fixtures; 22 real-Git cases, was 16).
-    Until that raw is retained, no history review binds the current recorder
-    and `--check` fails by design.
+  - Round 6 (`HISTORY-REVIEW-6-RAW.md`, CONFIRM) bound the recorder after
+    round 5's three selftest fixtures (22 real-Git cases, was 16).
+  - Round 7 (`HISTORY-REVIEW-7-RAW.md`) is required, because the recorder
+    changed after round 6 to accept performed readability successors (two
+    refusal witnesses in the reconciliation selftest, 56 mutations, was 54;
+    a successor-rows selftest on a synthetic package). Until that raw is
+    retained, no history review binds the current recorder and `--check`
+    fails by design.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws

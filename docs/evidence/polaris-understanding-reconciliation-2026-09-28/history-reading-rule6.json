@@ -249,6 +249,46 @@
       "new": ".decode(\n                             'utf-8', 'replace').replace('\\0', '\\n').splitlines()",
       "old": ".decode(\n                             'utf-8', 'replace').split('\\0')",
       "refusal": "FAIL exact digest reconciliation unresolved: history population selftest: newline-joined near-miss deleted refused"
+    },
+    {
+      "commit": "d50197fe3f45fec76f9e64eaa6f8e9d14bc0825a",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(successor == digest(current),",
+      "old": "require(predecessor == digest(adopted) and successor == digest(current),",
+      "refusal": "AssertionError: successor from a foreign predecessor accepted"
+    },
+    {
+      "commit": "d50197fe3f45fec76f9e64eaa6f8e9d14bc0825a",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(predecessor == digest(adopted),",
+      "old": "require(predecessor == digest(adopted) and successor == digest(current),",
+      "refusal": "AssertionError: bytes other than the successor row accepted"
+    },
+    {
+      "commit": "d50197fe3f45fec76f9e64eaa6f8e9d14bc0825a",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "performed = True",
+      "old": "performed = package.check() == 'performed-exact'",
+      "refusal": "FAIL exact digest reconciliation unresolved: unperformed successor granted rows"
+    },
+    {
+      "commit": "d50197fe3f45fec76f9e64eaa6f8e9d14bc0825a",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "            if True:\n                installed",
+      "old": "            if performed:\n                installed",
+      "refusal": "FAIL exact digest reconciliation unresolved: unperformed successor granted rows"
+    },
+    {
+      "commit": "d50197fe3f45fec76f9e64eaa6f8e9d14bc0825a",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        def successor_rows(self):\n            return {}",
+      "old": "        def successor_rows(self):\n            return evidence.successor_rows()",
+      "refusal": "FAIL exact digest reconciliation unresolved: current subject drift: openspec/changes/polaris-manifesto-understanding-amendment/proposal.md"
     }
   ],
   "version": 1
