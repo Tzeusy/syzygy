@@ -107,7 +107,7 @@ table routes each campaign to its last verdict of record.
 | Polaris generation admission validation | 1 | 2026-09-23 | `syzygy-u05.16`: source-population admission in `polaris-generation-core` sharing the provider-draft source-id and length bounds (PR #90) | `CONFIRM` (`R-PWB-U05-16-REVIEW-RAW.md:3`). |
 | P-73 edit/repair deletion gate | 5 | 2026-09-23 → 2026-09-26 | Edit/repair deletion scenario candidate package, `syzygy-dov.23` (PR #98; status-page registration PR #107; binds nothing) | `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-DELTA-REVIEW-RAW.md:3`), the P-73 quotation not byte-exact, repaired; confirmation `CONFIRM` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-DELTA-CONFIRMATION-RAW.md:3`). Registration: `REVISE` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-REGISTRATION-REVIEW-RAW.md:1`), repaired; confirmation `CONFIRM` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-REGISTRATION-CONFIRMATION-RAW.md:1`). Recount script (PR #119, gate-sitting direction §5): `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-RECOUNT-SCRIPT-REVIEW-RAW.md:1`), notes only; 177 at HEAD and 178 with the package applied, both re-derived independently by the reviewer. |
 
-The 56 rows partition the tracked directory at HEAD: 280 files, 280 assigned,
+The 56 rows partition the tracked directory at HEAD: 284 files, 284 assigned,
 no remainder [Observed — re-derived for HEAD dated 2026-09-28 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and

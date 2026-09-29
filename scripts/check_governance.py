@@ -1678,6 +1678,16 @@ SPEC_POLICY_RESTYLE_ACT = (
     f"{DECISIONS}/SPEC-POLICY-READABILITY-RESTYLE-ADOPTION-ACT.md")
 SPEC_POLICY_RESTYLE_ROWS = ((CC_IMPACT_LABEL, CC_IMPACT_SUBJECT),
                             (CC_SPEC_LABEL, CC_SPEC_SUBJECT))
+#: The Three-Surface POC readability successor: one sign-off over the
+#: package manifest; its recorder
+#: (`scripts/record_three_surface_poc_readability_successor.py`) checks the
+#: six signed subjects against predecessor or successor rows.
+POC_READABILITY_LABEL = "SIGN OFF THREE-SURFACE POC READABILITY SUCCESSOR"
+POC_READABILITY_DIR = f"{CANDIDATES}/three-surface-poc-readability-successor"
+POC_READABILITY_SUBJECT = (
+    f"{POC_READABILITY_DIR}/THREE-SURFACE-POC-READABILITY-SUCCESSOR-MANIFEST.txt")
+POC_READABILITY_ACT = (
+    f"{DECISIONS}/THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md")
 GENERAL_BOOTSTRAP_POPULATIONS = (7, 30, 5)
 #: Round-2026-08d wave structure: the all-in-one act-1 phrase is retired;
 #: six wave manifests partition the active set and each one's own sha256 is
@@ -2195,6 +2205,9 @@ def _act_subjects():
                            + r"\s*:\s*`?([0-9a-f]{64})")))
     out.append((SPEC_POLICY_RESTYLE_LABEL, SPEC_POLICY_RESTYLE_SUBJECT,
                 re.compile(re.escape(SPEC_POLICY_RESTYLE_LABEL)
+                           + r"\s*:\s*`?([0-9a-f]{64})")))
+    out.append((POC_READABILITY_LABEL, POC_READABILITY_SUBJECT,
+                re.compile(re.escape(POC_READABILITY_LABEL)
                            + r"\s*:\s*`?([0-9a-f]{64})")))
     for label, subject, _act in PWB_EFFECT_ACTS:
         if not any(l == label for l, _rel, _pat in out):
@@ -2852,6 +2865,24 @@ def _activate_spec_policy_restyle_copy_registries(registry=None, history=None,
 
 
 _activate_spec_policy_restyle_copy_registries()
+
+
+def _activate_poc_readability_copy_registry(registry=None, root=None):
+    """Register the POC successor's packet, and its records once performed."""
+    registry = ACT_DIGEST_COPY_FILES if registry is None else registry
+    base = ROOT if root is None else root
+    packet = f"{POC_READABILITY_DIR}/OWNER-DECISION-PACKET.md"
+    if os.path.isfile(os.path.join(base, packet)):
+        registry[packet] = (POC_READABILITY_LABEL,)
+    if not os.path.isfile(os.path.join(base, POC_READABILITY_ACT)):
+        return
+    record = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    if POC_READABILITY_LABEL not in registry.get(record, ()):
+        registry[record] = registry.get(record, ()) + (POC_READABILITY_LABEL,)
+    registry[POC_READABILITY_ACT] = (POC_READABILITY_LABEL,)
+
+
+_activate_poc_readability_copy_registry()
 
 
 #: The bare-copy *shape* every PWB owner packet and act record uses for
@@ -7225,6 +7256,31 @@ def selftest():
                       == (SPEC_POLICY_RESTYLE_LABEL, CC_IMPACT_LABEL, CC_SPEC_LABEL)
                       and SPEC_POLICY_RESTYLE_LABEL
                       in registry[f"{CRAFT}/INSTALL-RECORD.md"]))
+
+    # The POC readability successor: packet before the act, records after.
+    with tempfile.TemporaryDirectory() as scratch:
+        registry = {f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md": ("ACCEPT TOPOLOGY",)}
+        packet = f"{POC_READABILITY_DIR}/OWNER-DECISION-PACKET.md"
+        _activate_poc_readability_copy_registry(registry, scratch)
+        cases.append(("CG-7e POC readability successor registers nothing without its packet",
+                      packet not in registry))
+        for rel in (packet,):
+            os.makedirs(os.path.dirname(os.path.join(scratch, rel)), exist_ok=True)
+            open(os.path.join(scratch, rel), "w").close()
+        _activate_poc_readability_copy_registry(registry, scratch)
+        cases.append(("CG-7e POC readability packet registered, records not before the act",
+                      registry.get(packet) == (POC_READABILITY_LABEL,)
+                      and POC_READABILITY_ACT not in registry
+                      and registry[f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"]
+                      == ("ACCEPT TOPOLOGY",)))
+        os.makedirs(os.path.dirname(os.path.join(scratch, POC_READABILITY_ACT)),
+                    exist_ok=True)
+        open(os.path.join(scratch, POC_READABILITY_ACT), "w").close()
+        _activate_poc_readability_copy_registry(registry, scratch)
+        cases.append(("CG-7e performed POC readability successor registers both records",
+                      registry[POC_READABILITY_ACT] == (POC_READABILITY_LABEL,)
+                      and registry[f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"]
+                      == ("ACCEPT TOPOLOGY", POC_READABILITY_LABEL)))
 
     # The specification-policy restyle successor (and act 7's CC-IMPACT).
     row = _selftest_cg7h("impact-drift")
