@@ -27,14 +27,15 @@ it already read the status pages and the governance checker, at C1.
       file must equal the adopted digest, and its row must equal today's
       bytes.
     - The recorder runs the tool only when its sha256 equals the digest pinned
-      in the recorder (`SUCCESSOR_TOOL_SHA`), so a tool change needs a
-      recorder change and a new history review.
-    - A package that is unperformed, drifted, malformed or fails to check
-      grants nothing and blocks no other package.
-    - At most one package checks exact for a path: a later successor changes
-      the change directory, so the earlier one stops checking exact. A second
-      restyle of these subjects names the first restyle's bytes as its
-      predecessor, and the recorder refuses it until it learns that chain.
+      in the recorder (`SUCCESSOR_TOOL_SHA`), and executes the very bytes it
+      hashed. A tool change needs a recorder change and a new history review.
+    - A package that is unperformed, drifted, malformed (including a deeply
+      nested config) or fails to check grants nothing and blocks no other
+      package.
+    - Two performed-exact packages claiming one path are refused, whatever
+      their order. A second restyle of these subjects names the first
+      restyle's bytes as its predecessor, so the recorder refuses it until it
+      learns that chain.
     - What stays trusted: the act record, the acceptance-record block and the
       review raw the tool reads are read from the working tree, as the
       recorder reads its own act. A forged owner act is not detected here or
@@ -86,11 +87,13 @@ it already read the status pages and the governance checker, at C1.
   guards for the NUL split and the near-miss pattern each have their own row.
   Three more rows (round 6) pin the separator class, `search` against `match`,
   and the NUL split against a newline split. Five more (round 7) pin the
-  first form of the successor exception. Seven more (round 8) pin its current
-  form: the predecessor test, the row test, the tool pin, the performed
-  filter, the per-package exception scope, the frozen view's delegation and
-  the missing-tool guard. The rows cache has no row: removing it changes only
-  how often the tool runs.
+  first form of the successor exception, and seven more (round 8) its second.
+  Ten more (round 9) pin its current form: the predecessor test, the row
+  test, the tool pin, the performed filter, both halves of the per-package
+  exception scope, the frozen view's delegation, the missing-tool guard, the
+  two-claimant refusal and the row value. The rows cache has no row: removing
+  it changes only how often the tool runs. Recorded refusals replace
+  temporary directory names with `<tmpdir>`.
 - **Review rounds.**
   - Round 1 (`HISTORY-REVIEW-1-RAW.md`, REVISE): M1, a deleted raw was not
     refused, is answered by the Git population; M2, untested predicates, by
@@ -130,11 +133,17 @@ it already read the status pages and the governance checker, at C1.
     and raws, by the disclosure above. N4, four guards without a row, by the
     round-8 rows. N5, repeated tool loads, by the rows cache. N6 needed no
     change.
-  - Round 8 (`HISTORY-REVIEW-8-RAW.md`) is required, because the recorder
-    changed after round 7 (two refusal witnesses in the reconciliation
-    selftest, 56 mutations, was 54; a successor-rows selftest on synthetic
-    packages). Until that raw is retained, no history review binds the current
-    recorder and `--check` fails by design.
+  - Round 8 (`HISTORY-REVIEW-8-RAW.md`, REVISE): M1, two packages could
+    both check exact for one path with directory order deciding, is answered
+    by the two-claimant refusal. N1, a deeply nested config escaping the
+    exception scope, by catching `RecursionError`. N2, three guards without
+    a row, by the round-9 rows (`KeyError` and `TypeError` left the scope:
+    the tool reports config errors as `ValueError`). N3, a temporary path in
+    a refusal, by the `<tmpdir>` form. N4, a second read of the tool, by
+    executing the hashed bytes, which the selftest now loads the same way.
+  - Round 9 (`HISTORY-REVIEW-9-RAW.md`) is required, because the recorder
+    changed after round 8. Until that raw is retained, no history review binds
+    the current recorder and `--check` fails by design.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws

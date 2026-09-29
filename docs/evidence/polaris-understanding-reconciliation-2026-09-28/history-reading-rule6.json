@@ -345,6 +345,86 @@
       "new": "        if True:\n",
       "old": "        if tool.is_file():\n",
       "refusal": "FAIL exact digest reconciliation unresolved: [Errno 2] No such file or directory: '/tmp/tmp3n25cwo5/scripts/readability_successor.py'"
+    },
+    {
+      "commit": "90f12ae0935d09822ba011f5cbf709ed4e9f9d04",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require((evidence.successor_rows().get(path) or (0, 0))[1] == digest(current),",
+      "old": "require(evidence.successor_rows().get(path) == (digest(adopted), digest(current)),",
+      "refusal": "AssertionError: successor from a foreign predecessor accepted"
+    },
+    {
+      "commit": "90f12ae0935d09822ba011f5cbf709ed4e9f9d04",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require((evidence.successor_rows().get(path) or (0, 0))[0] == digest(adopted),",
+      "old": "require(evidence.successor_rows().get(path) == (digest(adopted), digest(current)),",
+      "refusal": "AssertionError: bytes other than the successor row accepted"
+    },
+    {
+      "commit": "90f12ae0935d09822ba011f5cbf709ed4e9f9d04",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "    require(True,",
+      "old": "    require(digest(source) == SUCCESSOR_TOOL_SHA,",
+      "refusal": "AssertionError: unreviewed successor tool accepted"
+    },
+    {
+      "commit": "90f12ae0935d09822ba011f5cbf709ed4e9f9d04",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "if False:",
+      "old": "if package.check() != 'performed-exact':",
+      "refusal": "FAIL exact digest reconciliation unresolved: unperformed successor granted rows"
+    },
+    {
+      "commit": "90f12ae0935d09822ba011f5cbf709ed4e9f9d04",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "except (ValueError, OSError):",
+      "old": "except (ValueError, OSError, RecursionError):",
+      "refusal": "RecursionError: maximum recursion depth exceeded while decoding a JSON array from a unicode string"
+    },
+    {
+      "commit": "90f12ae0935d09822ba011f5cbf709ed4e9f9d04",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "except RecursionError:",
+      "old": "except (ValueError, OSError, RecursionError):",
+      "refusal": "FAIL exact digest reconciliation unresolved: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+    },
+    {
+      "commit": "90f12ae0935d09822ba011f5cbf709ed4e9f9d04",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        def successor_rows(self):\n            return {}",
+      "old": "        def successor_rows(self):\n            return evidence.successor_rows()",
+      "refusal": "FAIL exact digest reconciliation unresolved: current subject drift: openspec/changes/polaris-manifesto-understanding-amendment/proposal.md"
+    },
+    {
+      "commit": "90f12ae0935d09822ba011f5cbf709ed4e9f9d04",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        if True:\n",
+      "old": "        if (self.root / SUCCESSOR_TOOL).is_file():\n",
+      "refusal": "FAIL exact digest reconciliation unresolved: [Errno 2] No such file or directory: '<tmpdir>/scripts/readability_successor.py'"
+    },
+    {
+      "commit": "90f12ae0935d09822ba011f5cbf709ed4e9f9d04",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True, '')",
+      "old": "require(path not in rows, 'two performed successors claim ' + path)",
+      "refusal": "AssertionError: two performed successors of one path accepted"
+    },
+    {
+      "commit": "90f12ae0935d09822ba011f5cbf709ed4e9f9d04",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "pairs = [(path, package.predecessor[path], package.predecessor[path])",
+      "old": "pairs = [(path, package.predecessor[path], installed[path])",
+      "refusal": "FAIL exact digest reconciliation unresolved: performed successor row"
     }
   ],
   "version": 1
