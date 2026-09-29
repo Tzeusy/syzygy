@@ -50,8 +50,11 @@ deployment or release permission.
   repaired; round 4 `CONFIRM`, over these exact manifest bytes
   ([`R-POC-READABILITY-SUCCESSOR-REVIEW-4-RAW.md`](../../../../../docs/reviews/R-POC-READABILITY-SUCCESSOR-REVIEW-4-RAW.md)).
 - **Package review**, over this packet, the recorder and its checker
-  registration: pending. The recorder refuses to record until that review
-  confirms the manifest digest above.
+  registration:
+  [`R-POC-READABILITY-SUCCESSOR-PACKAGE-1-RAW.md`](../../../../../docs/reviews/R-POC-READABILITY-SUCCESSOR-PACKAGE-1-RAW.md)
+  — `CONFIRM WITH EXCEPTIONS`, notes only; the notes are in
+  [`REVIEW-NOTES.md`](REVIEW-NOTES.md). The recorder is pinned to that review
+  and to the manifest digest above.
 - **Read-only checks:**
 
   ```text
