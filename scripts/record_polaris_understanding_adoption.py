@@ -26,10 +26,27 @@ ACT = ".syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION
 AGGREGATE = ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md"
 LABEL = "ADOPT POLARIS UNDERSTANDING AMENDMENT"
 MARKER = "POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION"
+# The readability-successor tool decides which successors count as performed,
+# so the recorder runs only the tool bytes its history review saw. A tool
+# change needs a new pin here, and so a new history review.
+SUCCESSOR_TOOL = "scripts/readability_successor.py"
+SUCCESSOR_TOOL_SHA = "88358478e495b77177a8d38c03623a4d9819652fe0682b181b48d7a6e6a78256"
 
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def successor_chain(pairs, start, end):
+    """Whether (predecessor, successor) pairs lead from start to end."""
+    reached, frontier = {start}, [start]
+    while frontier:
+        node = frontier.pop()
+        for predecessor, successor in pairs:
+            if predecessor == node and successor not in reached:
+                reached.add(successor)
+                frontier.append(successor)
+    return end in reached
 
 
 def read(root, rel):
@@ -269,27 +286,34 @@ class Evidence:
         return git_blob(self.root, commit, path)
 
     def successor_rows(self):
-        """{path: (predecessor, successor)} for every performed readability successor.
+        """{path: [(predecessor, successor), ...]} over every performed readability successor.
 
-        A package that does not check as performed-exact grants nothing here;
-        its own battery line reports why.
+        Only a package that checks as performed-exact contributes; a package
+        that fails to load or check contributes nothing and blocks no other.
+        The tool must be the reviewed bytes.
         """
-        spec = importlib.util.spec_from_file_location(
-            'readability_successor', self.root / 'scripts/readability_successor.py')
-        if not (self.root / 'scripts/readability_successor.py').is_file():
-            return {}
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        if getattr(self, '_successors', None) is not None:
+            return self._successors
+        tool = self.root / SUCCESSOR_TOOL
         rows = {}
-        for package in module.packages(self.root):
-            try:
-                performed = package.check() == 'performed-exact'
-            except (ValueError, OSError):
-                performed = False
-            if performed:
-                installed = package.manifest_rows()
-                for path in package.subjects:
-                    rows[path] = (package.predecessor[path], installed[path])
+        if tool.is_file():
+            require(digest(read(self.root, SUCCESSOR_TOOL)) == SUCCESSOR_TOOL_SHA,
+                    'successor tool differs from its reviewed digest: ' + SUCCESSOR_TOOL)
+            spec = importlib.util.spec_from_file_location('readability_successor', tool)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            for config in sorted((self.root / module.CANDIDATES).glob('*/' + module.CONFIG)):
+                try:
+                    package = module.Package(self.root, config.parent.relative_to(self.root).as_posix())
+                    if package.check() != 'performed-exact':
+                        continue
+                    installed = package.manifest_rows()
+                    pairs = [(path, package.predecessor[path], installed[path]) for path in package.subjects]
+                except (ValueError, OSError, KeyError, TypeError, json.JSONDecodeError):
+                    continue
+                for path, predecessor, successor in pairs:
+                    rows.setdefault(path, []).append((predecessor, successor))
+        self._successors = rows
         return rows
 
     def ancestor(self, earlier, later):
@@ -416,10 +440,10 @@ def baseline_proof(evidence):
         require(digest(adopted) == expected, 'adoption blob mismatch: ' + path)
         current = evidence.current(path)
         if current != adopted:
-            # A performed readability successor may replace adopted bytes, but
-            # only one whose recorded predecessor is exactly these bytes.
-            predecessor, successor = evidence.successor_rows().get(path, (None, None))
-            require(predecessor == digest(adopted) and successor == digest(current),
+            # Performed readability successors may replace adopted bytes, but
+            # only along a chain that starts at exactly these bytes.
+            require(successor_chain(evidence.successor_rows().get(path, []),
+                                    digest(adopted), digest(current)),
                     'current subject drift: ' + path)
         rows.append({'path': path, 'historical_sha256': digest(old),
                      'adopted_sha256': digest(adopted), 'changed': old != adopted})
@@ -752,9 +776,22 @@ def reconciliation_selftest():
     adopted_proposal = fixture.current(proposal)
     restyled = adopted_proposal + b'\nrestyled\n'
     fixture.files[proposal] = restyled
-    fixture.successors = {proposal: (digest(adopted_proposal), digest(restyled))}
+    fixture.successors = {proposal: [(digest(adopted_proposal), digest(restyled))]}
     check_evidence(fixture)
-    fixture.successors = {proposal: ('0' * 64, digest(restyled))}
+    # A second successor continues the chain from the first one's row.
+    middle = '2' * 64
+    fixture.successors = {proposal: [(middle, digest(restyled)), (digest(adopted_proposal), middle)]}
+    check_evidence(fixture)
+    fixture.successors = {proposal: [(middle, digest(restyled))]}
+    try:
+        check_evidence(fixture)
+    except ValueError as exc:
+        require('current subject drift' in str(exc), 'broken chain refusal: ' + str(exc))
+        witnesses.append({'commit': commit, 'path': proposal, 'operation': 'successor-broken-chain',
+                          'old': None, 'new': None, 'refusal': str(exc)})
+    else:
+        raise AssertionError('successor chain not starting at the adopted bytes accepted')
+    fixture.successors = {proposal: [('0' * 64, digest(restyled))]}
     try:
         check_evidence(fixture)
     except ValueError as exc:
@@ -763,7 +800,7 @@ def reconciliation_selftest():
                           'old': None, 'new': None, 'refusal': str(exc)})
     else:
         raise AssertionError('successor from a foreign predecessor accepted')
-    fixture.successors = {proposal: (digest(adopted_proposal), '1' * 64)}
+    fixture.successors = {proposal: [(digest(adopted_proposal), '1' * 64)]}
     try:
         check_evidence(fixture)
     except ValueError as exc:
@@ -1045,11 +1082,26 @@ def successor_rows_selftest():
         proposal = 'openspec/changes/example/proposal.md'
         rows = Evidence(root).successor_rows()
         require(set(rows) == set(package.subjects), 'performed successor rows population')
-        require(rows[proposal] == (package.predecessor[proposal], digest(read(root, proposal))),
+        require(rows[proposal] == [(package.predecessor[proposal], digest(read(root, proposal)))],
                 'performed successor row')
+        # A malformed sibling package grants nothing and blocks nothing.
+        broken = root / module.CANDIDATES / 'broken-readability-successor' / module.CONFIG
+        broken.parent.mkdir(parents=True)
+        broken.write_text('{')
+        require(Evidence(root).successor_rows() == rows, 'malformed sibling package changed the rows')
+        tool = root / SUCCESSOR_TOOL
+        reviewed = tool.read_bytes()
+        tool.write_bytes(reviewed + b'\n# edited\n')
+        try:
+            Evidence(root).successor_rows()
+        except ValueError as exc:
+            require('successor tool differs' in str(exc), 'edited tool refusal: ' + str(exc))
+        else:
+            raise AssertionError('unreviewed successor tool accepted')
+        tool.write_bytes(reviewed)
         (root / proposal).write_bytes(b'drifted\n')
         require(Evidence(root).successor_rows() == {}, 'drifted successor granted rows')
-    print('PASS successor rows selftest: absent tool, unperformed, performed and drifted packages')
+    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed sibling, edited tool and drifted packages')
 
 
 def main():
