@@ -1,0 +1,10 @@
+# Polaris understanding amendment readability successor sign-off — successor manifest
+# Signing off `SIGN OFF POLARIS UNDERSTANDING READABILITY SUCCESSOR: <sha256 of this file>` installs these rows.
+7e69d8445cf79fa4a5398138abf3cd1865bd0750cc53f44a98ef9904f1395f73  openspec/changes/polaris-manifesto-understanding-amendment/.openspec.yaml
+a9506370bb972502a8cb37c6a66c6e14c787bf6dab878cae2e1b0d62018c1acf  openspec/changes/polaris-manifesto-understanding-amendment/COVERAGE.md
+315207c0be81915f2461c1d94a8468a39171b98f1a11deeddd78e8ee676ba32e  openspec/changes/polaris-manifesto-understanding-amendment/GOVERNING-DEPENDENCIES.md
+2d961976b315d64f69bb5675e30614866b42fee75450bc6ab929f69e32d13d75  openspec/changes/polaris-manifesto-understanding-amendment/SYNTHESIS-MAP.json
+37a64e32d869414392a00a54c98a883ba9f8a5f575530998e5fd44d576f50fa8  openspec/changes/polaris-manifesto-understanding-amendment/design.md
+5077b38bd1883a97879f2bd5555ab305943b4e9f487611590149b4f0bbd380e9  openspec/changes/polaris-manifesto-understanding-amendment/proposal.md
+6841e63cda0ccdb81966a6fabbdfaf3721910df8ea04959711eb59843859ba58  openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md
+f0e78d5915f076af4117cb839dee0afb27303b2578eea488c952706e382df68c  openspec/changes/polaris-manifesto-understanding-amendment/tasks.md
