@@ -1,0 +1,59 @@
+# Polaris understanding readability successor — owner decision packet
+
+> **Status:** Proposal. It binds nothing until the owner performs the act
+> below (VIS-4). Until then the understanding amendment stays exactly as
+> `POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md` and the tree-form
+> amendment bound it.
+
+The package restyles the understanding amendment's proposal and design for
+reading, and replaces the proposal's pre-adoption banner with a present-tense
+status naming the adoption act and the tree-form amendment. The amendment's
+specification, coverage, synthesis map and tasks are unchanged, so every
+modified and added requirement stays byte-identical.
+
+## What you are asked to decide
+
+Whether to sign off the restyled proposal and design, in one act. To sign
+off, write exactly:
+
+```text
+SIGN OFF POLARIS UNDERSTANDING READABILITY SUCCESSOR: 86fce922659679537f6d8ca42d3e73e6b22f0bbeadecd96fa4d6c6275b1aec3b
+```
+
+The argument is the sha256 of [`SUCCESSOR-MANIFEST.txt`](SUCCESSOR-MANIFEST.txt),
+whose eight rows name each amendment file's digest after sign-off. If you say
+nothing, the current bytes stay in force.
+
+## What changes
+
+- **`proposal.md`.** A status banner naming both acts; the amendment's thesis
+  stated first — investigate, ask the owner, then argue the purpose; scope and
+  exclusions as shallow lists. Every claim is kept.
+- **`design.md`.** Its six sections — product intent, the research and
+  editorial loop, record ownership, clarification, evaluation and placement —
+  become short trees. Every decision and interface is kept.
+- **Unchanged:** `specs/…/spec.md`, `COVERAGE.md`, `GOVERNING-DEPENDENCIES.md`,
+  `SYNTHESIS-MAP.json`, `tasks.md`, `.openspec.yaml`, and the base generator
+  change.
+- **Recorder support.** `scripts/record_polaris_understanding_adoption.py`
+  checks the adopted bytes of all eight files. It now accepts a file whose
+  current bytes equal a performed readability successor's row, but only when
+  that successor's recorded predecessor is exactly the adopted digest. That
+  recorder change carries its own history review.
+
+To read the change: `python3 scripts/readability_successor.py --package
+.syzygy/governance/contracts/candidates/polaris-understanding-readability-successor --diff`.
+
+## What adopting does
+
+`scripts/readability_successor.py --record` writes the act record and its
+section in the acceptance record, then installs the two restyled files. Its
+`--check` then verifies all eight files against their rows.
+
+It widens no implementation authority and grants no project, source,
+provider, write, deployment or release permission.
+
+## Evidence
+
+- **Review:** pending. The tool refuses to record until a fresh review
+  confirms the manifest digest.
