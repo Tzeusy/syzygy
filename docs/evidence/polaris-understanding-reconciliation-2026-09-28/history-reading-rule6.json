@@ -225,6 +225,30 @@
       "new": "HISTORY_REVIEW_RAW.search(rel)",
       "old": "HISTORY_REVIEW_RAW.fullmatch(rel)",
       "refusal": "341 fixtures, 1 failing \u2014 a check that cannot fail is not a check"
+    },
+    {
+      "commit": "082a3319d662eb21d9b60f1a8af45da5caff7dab",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "re.compile(r'history[-_ ]*review'",
+      "old": "re.compile(r'history[^a-z0-9]*review'",
+      "refusal": "FAIL exact digest reconciliation unresolved: history population selftest: dot-separated near-miss on disk refused"
+    },
+    {
+      "commit": "082a3319d662eb21d9b60f1a8af45da5caff7dab",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "HISTORY_REVIEW_LIKE.match(p.rsplit",
+      "old": "HISTORY_REVIEW_LIKE.search(p.rsplit",
+      "refusal": "FAIL exact digest reconciliation unresolved: history population selftest: prefixed near-miss on disk refused"
+    },
+    {
+      "commit": "082a3319d662eb21d9b60f1a8af45da5caff7dab",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": ".decode(\n                             'utf-8', 'replace').replace('\\0', '\\n').splitlines()",
+      "old": ".decode(\n                             'utf-8', 'replace').split('\\0')",
+      "refusal": "FAIL exact digest reconciliation unresolved: history population selftest: newline-joined near-miss deleted refused"
     }
   ],
   "version": 1

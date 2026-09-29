@@ -65,6 +65,8 @@ it already read the status pages and the governance checker, at C1.
   fixture. The two round-3 witnesses (dropping `| set(listed)`, and widening
   the checker's raw-review exemption from a full match to a search) and the
   guards for the NUL split and the near-miss pattern each have their own row.
+  Three more rows (round 6) pin the separator class, `search` against `match`,
+  and the NUL split against a newline split.
 - **Review rounds.**
   - Round 1 (`HISTORY-REVIEW-1-RAW.md`, REVISE): M1, a deleted raw was not
     refused, is answered by the Git population; M2, untested predicates, by
@@ -88,9 +90,16 @@ it already read the status pages and the governance checker, at C1.
       `--check` fail, and stays failing: that is the fail-closed polarity, and
       no clearing mechanism exists. Clearing one needs an owner decision; none
       has been taken.
-  - Round 5 (`HISTORY-REVIEW-5-RAW.md`) is required, because the recorder
-    changed after round 4. Until that raw is retained, no history review binds
-    the current recorder and `--check` fails by design.
+  - Round 5 (`HISTORY-REVIEW-5-RAW.md`, CONFIRM WITH EXCEPTIONS) bound the
+    recorder as it stood then. Its notes 1 to 3 (the separator class and
+    `search` unpinned, no fixture for the NUL split, two benign survivors) are
+    answered by round 6's change, recorded in
+    [`RECORDER-REVIEW-NOTES.md`](RECORDER-REVIEW-NOTES.md); note 4 is enforced
+    only by the dispatch brief.
+  - Round 6 (`HISTORY-REVIEW-6-RAW.md`) is required, because the recorder
+    changed after round 5 (three selftest fixtures; 22 real-Git cases, was 16).
+    Until that raw is retained, no history review binds the current recorder
+    and `--check` fails by design.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws
