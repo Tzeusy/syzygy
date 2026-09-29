@@ -123,7 +123,7 @@ CAMPAIGNS = (
     campaign(
         "polaris-understanding",
         "Polaris understanding amendment",
-        r"R-POLARIS-UNDERSTANDING-.*\.md",
+        r"R-POLARIS-UNDERSTANDING-(?!READABILITY-SUCCESSOR-).*\.md",
     ),
     campaign("pwb-m1-lane-a", "PWB M1 lane A", r"R-PWB-M1-POLARIS-LANE-A-RAW\.md"),
     campaign(
