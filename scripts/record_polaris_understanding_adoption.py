@@ -226,6 +226,10 @@ FROZEN_PATHS = (EVIDENCE + 'README.md', PROOF, TEMPLATE, DOC_PATCH, DOC_IMAGES, 
 # latest history review instead (HISTORY-READING.md in the evidence package).
 HISTORY_PATHS = (*DOC_PATHS, CHECK_GOV, POLICY, SCRIPT)
 HISTORY_REVIEW = re.compile(r'HISTORY-REVIEW-([1-9][0-9]*)-RAW\.md')
+# A basename is a history-review name, and so must be strictly HISTORY_REVIEW, when
+# it matches this pattern (re.IGNORECASE, re.search): the word history, any run of
+# characters other than ASCII letters and digits (including none), the word review.
+HISTORY_REVIEW_LIKE = re.compile(r'history[^a-z0-9]*review', re.IGNORECASE)
 POLICY_ACT = re.compile(r'^CONFIRM CRAFT AMENDMENT: CC-SPEC@([0-9a-f]{64})$', re.M)
 TREE_REVIEWS = tuple('.syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-REVIEW-'
                      + str(n) + '-RAW.md' for n in range(1, 5))
@@ -272,8 +276,12 @@ class Evidence:
         # dropped by a merge, or added by the merge itself still counts, and
         # one path added on two branches appears twice.
         log = git_output(self.root, 'log', '--no-renames', '--full-history',
-                         '--diff-merges=combined', '--diff-filter=A', '--name-only',
-                         '--format=', 'HEAD', '--', EVIDENCE).decode().splitlines()
+                         '--diff-merges=combined', '--diff-filter=A', '--name-only', '-z',
+                         '--format=', 'HEAD', '--', EVIDENCE).decode(
+                             'utf-8', 'replace').split('\0')
+        # -z: paths arrive unquoted (core.quotePath cannot hide a non-ASCII name)
+        # and newline-safe; NUL-splitting leaves only empty separators to drop.
+        log = [p for p in log if p]
         base = self.root / EVIDENCE
         return log, [EVIDENCE + p.relative_to(base).as_posix()
                      for p in base.rglob('*') if p.is_file()]
@@ -495,7 +503,7 @@ def history_reviews(evidence):
     population = evidence.history_population()
     malformed = sorted({p for paths in population for p in paths
                         if p.startswith(EVIDENCE)
-                        and 'history-review' in p.rsplit('/', 1)[-1].lower()
+                        and HISTORY_REVIEW_LIKE.search(p.rsplit('/', 1)[-1])
                         and not HISTORY_REVIEW.fullmatch(p[len(EVIDENCE):])})
     require(not malformed, 'malformed history review name: ' + ', '.join(malformed))
     twice = sorted({p for p in population[0] if population[0].count(p) > 1
@@ -729,7 +737,8 @@ def reconciliation_selftest():
     # A leading zero or a suffix is refused, never skipped: a REVISE raw so
     # named would otherwise leave an earlier CONFIRM standing.
     for malformed in (decoy_path, EVIDENCE + 'HISTORY-REVIEW-3-RAW-ADDENDUM.md',
-                      EVIDENCE + 'history-review-11-raw.md', EVIDENCE + 'sub/HISTORY-REVIEW-11-RAW.md'):
+                      EVIDENCE + 'history-review-11-raw.md', EVIDENCE + 'sub/HISTORY-REVIEW-11-RAW.md',
+                      EVIDENCE + 'HISTORY_REVIEW-11-RAW.md', EVIDENCE + 'History Review 11 RAW.md'):
         fixture.added.append(malformed)
         fixture.files[malformed] = ('Verdict: REVISE\n- `' + SCRIPT + '`: `' + '0' * 64 + '`\n').encode()
         try:
@@ -891,6 +900,43 @@ def history_population_selftest():
         cases.append(('uncommitted raw is listed from disk',
                       EVIDENCE + 'HISTORY-REVIEW-6-RAW.md' in listed
                       and EVIDENCE + 'HISTORY-REVIEW-6-RAW.md' not in added))
+    # Committed then deleted names that core.quotePath or a line split would
+    # hide, and near-miss spellings; each is refused, never skipped, while a
+    # strictly named raw beside them still passes.
+    for label, name in (('non-ASCII name', 'HISTORY-REVIEW-2-RAW-\u00e9.md'),
+                        ('newline in name', 'history-review-2\nx.md'),
+                        ('underscore near-miss', 'HISTORY_REVIEW-2-RAW.md'),
+                        ('space near-miss', 'History Review 2 RAW.md'),
+                        ('run-together near-miss', 'HistoryReview-2-RAW.md')):
+        for deleted in (False, True):
+            with tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                git(root, 'init', '-q', '-b', 'main')
+                git(root, 'config', 'user.email', 'selftest@example.invalid')
+                git(root, 'config', 'user.name', 'selftest')
+                raw(root, 'HISTORY-REVIEW-1-RAW.md', 'Verdict: CONFIRM\n')
+                raw(root, name, 'Verdict: REVISE\n')
+                git(root, 'add', '-A'); git(root, 'commit', '-qm', 'strict raw and near miss')
+                if deleted:
+                    git(root, 'rm', '-q', '-f', EVIDENCE + name); git(root, 'commit', '-qm', 'delete')
+                try:
+                    history_reviews(Evidence(root))
+                    ok = False
+                except ValueError as exc:
+                    ok = 'malformed history review name' in str(exc)
+                cases.append((label + (' deleted' if deleted else ' on disk') + ' refused', ok))
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        git(root, 'init', '-q', '-b', 'main')
+        git(root, 'config', 'user.email', 'selftest@example.invalid')
+        git(root, 'config', 'user.name', 'selftest')
+        for n in (1, 2):
+            raw(root, 'HISTORY-REVIEW-' + str(n) + '-RAW.md', 'Verdict: CONFIRM\n')
+        raw(root, 'HISTORY-READING.md', 'x\n'); raw(root, 'history-reading-rule6.json', '{}\n')
+        git(root, 'add', '-A'); git(root, 'commit', '-qm', 'legitimate names')
+        cases.append(('strict names and unrelated history files pass',
+                      history_reviews(Evidence(root)) == [EVIDENCE + 'HISTORY-REVIEW-' + str(n)
+                                                          + '-RAW.md' for n in (1, 2)]))
     for label, ok in cases:
         require(ok, 'history population selftest: ' + label)
     print('PASS history population selftest: ' + str(len(cases)) + ' real-Git cases')
