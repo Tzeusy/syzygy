@@ -905,6 +905,9 @@ def history_population_selftest():
     # strictly named raw beside them still passes.
     for label, name in (('non-ASCII name', 'HISTORY-REVIEW-2-RAW-\u00e9.md'),
                         ('newline in name', 'history-review-2\nx.md'),
+                        ('dot-separated near-miss', 'history.review-2-RAW.md'),
+                        ('prefixed near-miss', 'old-history-review-2.md'),
+                        ('newline-joined near-miss', 'history\nreview.md'),
                         ('underscore near-miss', 'HISTORY_REVIEW-2-RAW.md'),
                         ('space near-miss', 'History Review 2 RAW.md'),
                         ('run-together near-miss', 'HistoryReview-2-RAW.md')):
