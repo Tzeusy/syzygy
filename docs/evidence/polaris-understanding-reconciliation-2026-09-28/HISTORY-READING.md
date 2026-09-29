@@ -89,12 +89,15 @@ it already read the status pages and the governance checker, at C1.
   Three more rows (round 6) pin the separator class, `search` against `match`,
   and the NUL split against a newline split. Five more (round 7) pin the
   first form of the successor exception, and seven more (round 8) its second.
-  Ten more (round 9) pin its current form: the predecessor test, the row
-  test, the tool pin, the performed filter, both halves of the per-package
-  exception scope, the frozen view's delegation, the missing-tool guard, the
-  two-claimant refusal and the row value. The rows cache has no row: removing
-  it changes only how often the tool runs. Recorded refusals replace
-  temporary directory names with `<tmpdir>`.
+  Ten more (round 9) pin its third form. Twelve more (round 10) pin its
+  current form: the predecessor test, the row test, the drift branch, the
+  tool pin, the performed filter, the per-package exception scope, the frozen
+  view's delegation, the missing-tool guard, the contested marking, both
+  halves of the stored row and the contested refusal. Two guards have no row.
+  The rows cache changes only how often the tool runs. Executing the hashed
+  bytes rather than re-reading the file closes a race between the hash and
+  the load, which no deterministic fixture can open. Recorded refusals
+  replace temporary directory names with `<tmpdir>`.
 - **Review rounds.**
   - Round 1 (`HISTORY-REVIEW-1-RAW.md`, REVISE): M1, a deleted raw was not
     refused, is answered by the Git population; M2, untested predicates, by
@@ -142,8 +145,15 @@ it already read the status pages and the governance checker, at C1.
     a row, by the round-9 rows. N3, a temporary path in
     a refusal, by the `<tmpdir>` form. N4, a second read of the tool, by
     executing the hashed bytes, which the selftest now loads the same way.
-  - Round 9 (`HISTORY-REVIEW-9-RAW.md`) is required, because the recorder
-    changed after round 8. Until that raw is retained, no history review binds
+  - Round 9 (`HISTORY-REVIEW-9-RAW.md`, REVISE): M1, a wrongly typed
+    sibling config escaping the per-package scope, is answered by containing
+    every exception there and three wrongly typed fixtures. N1, guards
+    without a row, by the round-10 rows and the two no-row statements above.
+    N2, a stale count of exception failures, and N3, a stale reference, by
+    this page. N4, a two-claimant refusal blocking unrelated paths, by
+    refusing only the contested path. N5, an unused import, removed.
+  - Round 10 (`HISTORY-REVIEW-10-RAW.md`) is required, because the recorder
+    changed after round 9. Until that raw is retained, no history review binds
     the current recorder and `--check` fails by design.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
