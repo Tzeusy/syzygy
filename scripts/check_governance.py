@@ -83,7 +83,9 @@ a report-only observation) · FAIL (findings that fail the run).
 
 import argparse
 from datetime import datetime
+import glob
 import hashlib
+import json
 import os
 import re
 import subprocess
@@ -1688,6 +1690,24 @@ POC_READABILITY_SUBJECT = (
     f"{POC_READABILITY_DIR}/THREE-SURFACE-POC-READABILITY-SUCCESSOR-MANIFEST.txt")
 POC_READABILITY_ACT = (
     f"{DECISIONS}/THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md")
+
+
+def _readability_successors(root=None):
+    """(package dir, label, act) for every generic readability successor.
+
+    Each package under the candidates tree that carries `SUCCESSOR.json` is
+    one offer, built and recorded by `scripts/readability_successor.py`.
+    """
+    base = ROOT if root is None else root
+    out = []
+    for path in sorted(glob.glob(os.path.join(base, CANDIDATES, "*", "SUCCESSOR.json"))):
+        with open(path, encoding="utf-8") as stream:
+            config = json.load(stream)
+        rel = os.path.relpath(os.path.dirname(path), base).replace(os.sep, "/")
+        out.append((rel, config["label"], config["act"]))
+    return out
+
+
 GENERAL_BOOTSTRAP_POPULATIONS = (7, 30, 5)
 #: Round-2026-08d wave structure: the all-in-one act-1 phrase is retired;
 #: six wave manifests partition the active set and each one's own sha256 is
@@ -2209,6 +2229,9 @@ def _act_subjects():
     out.append((POC_READABILITY_LABEL, POC_READABILITY_SUBJECT,
                 re.compile(re.escape(POC_READABILITY_LABEL)
                            + r"\s*:\s*`?([0-9a-f]{64})")))
+    for package, label, _act in _readability_successors():
+        out.append((label, f"{package}/SUCCESSOR-MANIFEST.txt",
+                    re.compile(re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
     for label, subject, _act in PWB_EFFECT_ACTS:
         if not any(l == label for l, _rel, _pat in out):
             out.append((label, subject, re.compile(
@@ -2883,6 +2906,24 @@ def _activate_poc_readability_copy_registry(registry=None, root=None):
 
 
 _activate_poc_readability_copy_registry()
+
+
+def _activate_readability_successor_copies(registry=None, root=None):
+    """Register each generic successor's packet, and its records once performed."""
+    registry = ACT_DIGEST_COPY_FILES if registry is None else registry
+    base = ROOT if root is None else root
+    record = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    for package, label, act in _readability_successors(base):
+        packet = f"{package}/OWNER-DECISION-PACKET.md"
+        if os.path.isfile(os.path.join(base, packet)):
+            registry[packet] = (label,)
+        if os.path.isfile(os.path.join(base, act)):
+            if label not in registry.get(record, ()):
+                registry[record] = registry.get(record, ()) + (label,)
+            registry[act] = (label,)
+
+
+_activate_readability_successor_copies()
 
 
 #: The bare-copy *shape* every PWB owner packet and act record uses for
@@ -7281,6 +7322,33 @@ def selftest():
                       registry[POC_READABILITY_ACT] == (POC_READABILITY_LABEL,)
                       and registry[f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"]
                       == ("ACCEPT TOPOLOGY", POC_READABILITY_LABEL)))
+
+    # Generic readability successors: discovered by SUCCESSOR.json; packet
+    # before the act, records after.
+    with tempfile.TemporaryDirectory() as scratch:
+        package = f"{CANDIDATES}/example-readability-successor"
+        act = f"{DECISIONS}/EXAMPLE-ACT.md"
+        os.makedirs(os.path.join(scratch, package))
+        with open(os.path.join(scratch, package, "SUCCESSOR.json"), "w") as stream:
+            json.dump({"label": "SIGN OFF EXAMPLE", "act": act}, stream)
+        registry = {f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md": ("ACCEPT TOPOLOGY",)}
+        _activate_readability_successor_copies(registry, scratch)
+        cases.append(("CG-7e readability successor without packet or act registers nothing",
+                      registry == {f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md": ("ACCEPT TOPOLOGY",)}
+                      and _readability_successors(scratch)
+                      == [(package, "SIGN OFF EXAMPLE", act)]))
+        open(os.path.join(scratch, package, "OWNER-DECISION-PACKET.md"), "w").close()
+        _activate_readability_successor_copies(registry, scratch)
+        cases.append(("CG-7e readability successor packet registered before the act",
+                      registry.get(f"{package}/OWNER-DECISION-PACKET.md") == ("SIGN OFF EXAMPLE",)
+                      and act not in registry))
+        os.makedirs(os.path.dirname(os.path.join(scratch, act)), exist_ok=True)
+        open(os.path.join(scratch, act), "w").close()
+        _activate_readability_successor_copies(registry, scratch)
+        cases.append(("CG-7e performed readability successor registers both records",
+                      registry[act] == ("SIGN OFF EXAMPLE",)
+                      and registry[f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"]
+                      == ("ACCEPT TOPOLOGY", "SIGN OFF EXAMPLE")))
 
     # The specification-policy restyle successor (and act 7's CC-IMPACT).
     row = _selftest_cg7h("impact-drift")

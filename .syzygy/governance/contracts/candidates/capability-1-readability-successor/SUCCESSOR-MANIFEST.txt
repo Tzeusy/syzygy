@@ -1,0 +1,9 @@
+# Capability 1 readability successor sign-off — successor manifest
+# Signing off `SIGN OFF CAPABILITY 1 READABILITY SUCCESSOR: <sha256 of this file>` installs these rows.
+727fc3b35bb3eb09ccede6d08cbc829ea0044b031816d47842ec2573bff99290  openspec/changes/project-registration-and-honest-shape-visibility/.openspec.yaml
+2f6f4de4650b6800b968d243dd5887919ea7d4da550413db570d6928ac7646e9  openspec/changes/project-registration-and-honest-shape-visibility/CAPABILITY-COVERAGE.md
+15431d8ba1fe25a61e4dc2713c4d51fad1cf6d25ef7a9103cc616265102289c9  openspec/changes/project-registration-and-honest-shape-visibility/CONTRACT-COVERAGE.md
+a00ccbf24f2e106ec3a396b8ae637097b4aaca9965548aab6d1cda0f37851c8e  openspec/changes/project-registration-and-honest-shape-visibility/GOVERNING-DEPENDENCIES.md
+12bb357f30c3f8a3107b507ddedaf2e715c974ca877db8f031699e6268a384ee  openspec/changes/project-registration-and-honest-shape-visibility/design.md
+cf8991e4bcc207b6c36a78a907dd2582f67b0b4ea6e526a2c0097a475bcd248b  openspec/changes/project-registration-and-honest-shape-visibility/proposal.md
+65b66c913cd2650881a9df8cb34a3c63b3f518041e83f45d2451980d9f1d0448  openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md

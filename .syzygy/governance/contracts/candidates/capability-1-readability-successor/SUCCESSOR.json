@@ -1,0 +1,23 @@
+{
+  "label": "SIGN OFF CAPABILITY 1 READABILITY SUCCESSOR",
+  "marker": "CAPABILITY-1-READABILITY-SUCCESSOR",
+  "act": ".syzygy/governance/decisions/CAPABILITY-1-READABILITY-SUCCESSOR-ACT.md",
+  "title": "Capability 1 readability successor sign-off",
+  "artifact": "specification:syzygy:capability-1:readability-successor",
+  "supersedes": "CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md and the CONTRACT-COVERAGE.md row of the general trusted-bootstrap transaction",
+  "scope": "readability restyle of the Capability 1 proposal and design, including a present-tense status banner in place of the pre-adoption candidate banner. The specification, both coverage tables and the generated dependencies are unchanged.",
+  "predecessor": {
+    "openspec/changes/project-registration-and-honest-shape-visibility/.openspec.yaml": "727fc3b35bb3eb09ccede6d08cbc829ea0044b031816d47842ec2573bff99290",
+    "openspec/changes/project-registration-and-honest-shape-visibility/proposal.md": "a9e170909acb672d7c46d02a6a8456511680feef4ef994ab5c297315961b735e",
+    "openspec/changes/project-registration-and-honest-shape-visibility/design.md": "a7a90828ed51fd5e98d8cbc9f35f2aa88b5cdd75f6a53f905b816dcc11267652",
+    "openspec/changes/project-registration-and-honest-shape-visibility/CAPABILITY-COVERAGE.md": "2f6f4de4650b6800b968d243dd5887919ea7d4da550413db570d6928ac7646e9",
+    "openspec/changes/project-registration-and-honest-shape-visibility/CONTRACT-COVERAGE.md": "15431d8ba1fe25a61e4dc2713c4d51fad1cf6d25ef7a9103cc616265102289c9",
+    "openspec/changes/project-registration-and-honest-shape-visibility/GOVERNING-DEPENDENCIES.md": "a00ccbf24f2e106ec3a396b8ae637097b4aaca9965548aab6d1cda0f37851c8e",
+    "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md": "65b66c913cd2650881a9df8cb34a3c63b3f518041e83f45d2451980d9f1d0448"
+  },
+  "pins": {
+    "manifest_sha": null,
+    "review": null,
+    "review_sha": null
+  }
+}
