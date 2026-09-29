@@ -84,7 +84,8 @@ it already read the status pages and the governance checker, at C1.
   row that names the governance checker's selftest). Some fail by an
   exception or a fixture's own assertion rather than by their named refusal;
   each still fails closed. The Git query's flags and the disk listing are
-  exercised on a scratch repository, not a fixture. The two round-3 witnesses (dropping `| set(listed)`, and widening
+  exercised on a scratch repository, not a fixture. The two round-3
+  witnesses (dropping `| set(listed)`, and widening
   the checker's raw-review exemption from a full match to a search) and the
   guards for the NUL split and the near-miss pattern each have their own row.
   Three more rows (round 6) pin the separator class, `search` against `match`,
@@ -96,15 +97,15 @@ it already read the status pages and the governance checker, at C1.
   both widths of the per-package exception scope, the frozen view's
   delegation, the missing-tool guard, path normalization, the contested
   marking, both halves of the stored row and the contested refusal. Three
-  guards have no row.
+  guards have no row:
   - The rows cache changes only how often the tool runs.
   - Executing the hashed bytes rather than re-reading the file closes a race
     between the hash and the load, which no deterministic fixture can open.
-  - Marking two identical claims as contested changes no outcome. Two exact
-    packages can make one identical claim only for a path neither changes,
-    where the predecessor equals the row and today's bytes. Such a row can
-    accept a subject only if it also names the adopted digest, which means
-    the subject has not drifted and no row is consulted.
+  - Two exact packages can make the same claim for a changed path: the same
+    restyle recorded on two branches and merged. The code marks that path
+    contested and refuses it, like any other pair of claimants, but no
+    fixture builds two such branches, so the identical-claim case has no row
+    of its own.
 
   Recorded refusals replace temporary directory names with `<tmpdir>`; row
   42 predates that form.
@@ -168,9 +169,16 @@ it already read the status pages and the governance checker, at C1.
     `AttributeError` and an untested identical-claim branch, by a
     listed-pins fixture and the no-row statement above. N2, one long line,
     by this page. N3 stands as round 9's N4.
-  - Round 11 (`HISTORY-REVIEW-11-RAW.md`) is required, because the recorder
-    changed after round 10. Until that raw is retained, no history review
-    binds the current recorder and `--check` fails by design.
+  - Round 11 (`HISTORY-REVIEW-11-RAW.md`, REVISE): M1, a false claim that
+    identical claims change no outcome, is answered by the corrected no-row
+    statement above; the code already refused them. N1 (three long lines) by
+    this page's line 87; lines 9 and 81 hold a link and a code span and stay
+    whole. N2, one package naming a file twice, fails closed and needs no
+    change. N3 stands as round 9's N4.
+  - Round 12 (`HISTORY-REVIEW-12-RAW.md`) is required, because this page
+    changed after round 11 and the recorder did not; the round binds the same
+    recorder bytes. Until a confirming raw is retained, `--check` fails by
+    design.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws
