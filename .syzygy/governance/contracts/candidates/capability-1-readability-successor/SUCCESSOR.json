@@ -16,8 +16,8 @@
     "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md": "65b66c913cd2650881a9df8cb34a3c63b3f518041e83f45d2451980d9f1d0448"
   },
   "pins": {
-    "manifest_sha": null,
-    "review": null,
-    "review_sha": null
+    "manifest_sha": "10db138947497200ad7c788ce4719ba515c61832e3138f1af42201ec84a8870d",
+    "review": "docs/reviews/R-CAP1-READABILITY-SUCCESSOR-2-RAW.md",
+    "review_sha": "1197bab77bc53546d4c1da414ebccaa97359170b8e9296d12d29976bd25e0fd1"
   }
 }

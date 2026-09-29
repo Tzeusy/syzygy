@@ -59,5 +59,13 @@ deployment or release permission.
 
 ## Evidence
 
-- **Review:** pending. The tool refuses to record until a fresh review
-  confirms the manifest digest.
+- **Review 1**
+  ([`R-CAP1-READABILITY-SUCCESSOR-1-RAW.md`](../../../../../docs/reviews/R-CAP1-READABILITY-SUCCESSOR-1-RAW.md)):
+  `REVISE` — two dropped claims and one false packet claim, all repaired.
+- **Review 2**
+  ([`R-CAP1-READABILITY-SUCCESSOR-2-RAW.md`](../../../../../docs/reviews/R-CAP1-READABILITY-SUCCESSOR-2-RAW.md)):
+  `CONFIRM WITH EXCEPTIONS` over the manifest digest above, notes only; the
+  notes and their dispositions are in [`REVIEW-NOTES.md`](REVIEW-NOTES.md).
+  The package is pinned to that review.
+- **Read-only check:** `python3 scripts/readability_successor.py --package
+  .syzygy/governance/contracts/candidates/capability-1-readability-successor --check`.
