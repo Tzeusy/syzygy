@@ -2,7 +2,7 @@
 
 **The generator separates acquisition, inference and presentation, records
 every run against one authoritative lifecycle, and never replaces authored
-presentation.** This document is design: it is not an accepted topology, an
+presentation merely because the source or a model improved.** This document is design: it is not an accepted topology, an
 implementation plan or a grant of effect authority. The specification owns
 observable behavior.
 
@@ -53,8 +53,8 @@ observable behavior.
     source paths are locators, not identity.
   - `INTERFACES.md` specifies the record fields, effect boundaries,
     budget and retry, and retention. Their schema and adapter registrations
-    are subject to contract-coverage review; this design does not record
-    that review's outcome.
+    must pass the contract-coverage review before sign-off; this design does
+    not record that review's outcome.
   - `ASSET-CONTRACT.md` specifies project-specific composition and the
     boundary between editorial and computed visuals. A required unsupported
     asset cannot silently disappear.
@@ -146,8 +146,8 @@ observable behavior.
 
 ### Treat editorial quality as an outcome
 
-- **Synthesis.** The task explains the project's distinctive argument, not
-  merely extracting headings or fitting source text into a fixed template.
+- **Synthesis.** The task must explain the project's distinctive argument,
+  not merely extract headings or fit source text into a fixed template.
   Supporting material keeps qualifications and opposing choices.
   Founder-like voice is an account of supported motives; generated
   quotations or invented biography fail.
@@ -181,7 +181,7 @@ behavior. For Butlers, these existing requirements stay controlling:
 | PWB-REQ-020 | Complete human/machine tuple parity | Both generated presentation and deterministic facts preserve their distinct identities/states |
 | PWB-REQ-021/022 | Existing walkthrough population and effective judgment predicate | New product validation is additional; it does not replace or auto-pass the existing walkthrough |
 
-- **Other projects.** The generic engine never forces them into Butlers'
+- **Other projects.** The generic engine must not force them into Butlers'
   categories or compiled source hashes. Their applicable adopted profiles and
   specifications govern project-specific population and exact-intent
   obligations.
