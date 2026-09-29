@@ -7,6 +7,7 @@
 import argparse
 from datetime import datetime
 import hashlib
+import posixpath
 import types
 import json
 from pathlib import Path
@@ -294,8 +295,9 @@ class Evidence:
 
         Only a package that checks as performed-exact contributes; a package
         that fails to load or check contributes nothing and blocks no other.
-        A path two performed-exact packages claim maps to CONTESTED, whatever
-        their order, and is refused when checked. The tool must be the reviewed bytes, and runs from the
+        Paths are normalized. A path two performed-exact packages claim maps
+        to CONTESTED, whatever their order or spelling, and is refused when
+        checked. The tool must be the reviewed bytes, and runs from the
         bytes that were hashed.
         """
         if getattr(self, '_successors', None) is not None:
@@ -313,7 +315,9 @@ class Evidence:
                 except Exception:  # noqa: BLE001 - any failing package grants nothing
                     continue
                 for path, predecessor, successor in pairs:
-                    rows[path] = CONTESTED if path in rows else (predecessor, successor)
+                    # Keyed by normalized path, so './x' and 'x' contest each other.
+                    key = posixpath.normpath(path)
+                    rows[key] = CONTESTED if key in rows else (predecessor, successor)
         self._successors = rows
         return rows
 
@@ -1085,6 +1089,12 @@ def successor_rows_selftest():
         require(Evidence(root).successor_rows() == rows, 'malformed sibling package changed the rows')
         broken.write_text('[' * 100000)
         require(Evidence(root).successor_rows() == rows, 'deeply nested sibling package changed the rows')
+        # A full sibling copy whose pins are a list fails inside the tool's check.
+        shutil.copytree(root / package.dir, broken.parent, dirs_exist_ok=True)
+        wrong = json.loads((root / package.dir / module.CONFIG).read_text())
+        wrong['pins'] = ['manifest_sha', 'review', 'review_sha']
+        broken.write_text(json.dumps(wrong))
+        require(Evidence(root).successor_rows() == rows, 'sibling with listed pins changed the rows')
         for field in ('label', 'predecessor', 'pins'):
             wrong = json.loads((root / package.dir / module.CONFIG).read_text())
             wrong[field] = 5 if field != 'pins' else []
@@ -1112,7 +1122,9 @@ def successor_rows_selftest():
         # It shares the proposal, unchanged, and restyles a file of its own.
         other = 'openspec/changes/example/design.md'
         (root / other).write_bytes(b'# Design\n\nlong prose\n')
-        config['predecessor'] = {path: digest(read(root, path)) for path in (proposal, other)}
+        # It spells the shared path differently; normalization still sees the claim.
+        config['predecessor'] = {'openspec/changes/example/./proposal.md': digest(read(root, proposal)),
+                                 other: digest(read(root, other))}
         (root / second / module.CONFIG).write_text(json.dumps(config))
         shutil.rmtree(root / second / 'proposed')
         (root / second / 'proposed' / other).parent.mkdir(parents=True)
