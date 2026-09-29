@@ -37,18 +37,6 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def successor_chain(pairs, start, end):
-    """Whether (predecessor, successor) pairs lead from start to end."""
-    reached, frontier = {start}, [start]
-    while frontier:
-        node = frontier.pop()
-        for predecessor, successor in pairs:
-            if predecessor == node and successor not in reached:
-                reached.add(successor)
-                frontier.append(successor)
-    return end in reached
-
-
 def read(root, rel):
     path = Path(rel)
     if path.is_absolute() or ".." in path.parts:
@@ -286,11 +274,16 @@ class Evidence:
         return git_blob(self.root, commit, path)
 
     def successor_rows(self):
-        """{path: [(predecessor, successor), ...]} over every performed readability successor.
+        """{path: (predecessor, successor)} over every performed readability successor.
 
         Only a package that checks as performed-exact contributes; a package
         that fails to load or check contributes nothing and blocks no other.
-        The tool must be the reviewed bytes.
+        At most one package checks as performed-exact for a path: a later
+        successor changes the change directory, so the earlier one stops
+        checking exact. A second restyle of these subjects therefore carries
+        the first restyle's bytes as its predecessor, and the recorder refuses
+        it until it learns to read that chain. The tool must be the reviewed
+        bytes.
         """
         if getattr(self, '_successors', None) is not None:
             return self._successors
@@ -312,7 +305,7 @@ class Evidence:
                 except (ValueError, OSError, KeyError, TypeError, json.JSONDecodeError):
                     continue
                 for path, predecessor, successor in pairs:
-                    rows.setdefault(path, []).append((predecessor, successor))
+                    rows[path] = (predecessor, successor)
         self._successors = rows
         return rows
 
@@ -440,10 +433,9 @@ def baseline_proof(evidence):
         require(digest(adopted) == expected, 'adoption blob mismatch: ' + path)
         current = evidence.current(path)
         if current != adopted:
-            # Performed readability successors may replace adopted bytes, but
-            # only along a chain that starts at exactly these bytes.
-            require(successor_chain(evidence.successor_rows().get(path, []),
-                                    digest(adopted), digest(current)),
+            # A performed readability successor may replace adopted bytes, but
+            # only one whose recorded predecessor is exactly these bytes.
+            require(evidence.successor_rows().get(path) == (digest(adopted), digest(current)),
                     'current subject drift: ' + path)
         rows.append({'path': path, 'historical_sha256': digest(old),
                      'adopted_sha256': digest(adopted), 'changed': old != adopted})
@@ -776,22 +768,9 @@ def reconciliation_selftest():
     adopted_proposal = fixture.current(proposal)
     restyled = adopted_proposal + b'\nrestyled\n'
     fixture.files[proposal] = restyled
-    fixture.successors = {proposal: [(digest(adopted_proposal), digest(restyled))]}
+    fixture.successors = {proposal: (digest(adopted_proposal), digest(restyled))}
     check_evidence(fixture)
-    # A second successor continues the chain from the first one's row.
-    middle = '2' * 64
-    fixture.successors = {proposal: [(middle, digest(restyled)), (digest(adopted_proposal), middle)]}
-    check_evidence(fixture)
-    fixture.successors = {proposal: [(middle, digest(restyled))]}
-    try:
-        check_evidence(fixture)
-    except ValueError as exc:
-        require('current subject drift' in str(exc), 'broken chain refusal: ' + str(exc))
-        witnesses.append({'commit': commit, 'path': proposal, 'operation': 'successor-broken-chain',
-                          'old': None, 'new': None, 'refusal': str(exc)})
-    else:
-        raise AssertionError('successor chain not starting at the adopted bytes accepted')
-    fixture.successors = {proposal: [('0' * 64, digest(restyled))]}
+    fixture.successors = {proposal: ('0' * 64, digest(restyled))}
     try:
         check_evidence(fixture)
     except ValueError as exc:
@@ -800,7 +779,7 @@ def reconciliation_selftest():
                           'old': None, 'new': None, 'refusal': str(exc)})
     else:
         raise AssertionError('successor from a foreign predecessor accepted')
-    fixture.successors = {proposal: [(digest(adopted_proposal), '1' * 64)]}
+    fixture.successors = {proposal: (digest(adopted_proposal), '1' * 64)}
     try:
         check_evidence(fixture)
     except ValueError as exc:
@@ -1082,7 +1061,7 @@ def successor_rows_selftest():
         proposal = 'openspec/changes/example/proposal.md'
         rows = Evidence(root).successor_rows()
         require(set(rows) == set(package.subjects), 'performed successor rows population')
-        require(rows[proposal] == [(package.predecessor[proposal], digest(read(root, proposal)))],
+        require(rows[proposal] == (package.predecessor[proposal], digest(read(root, proposal))),
                 'performed successor row')
         # A malformed sibling package grants nothing and blocks nothing.
         broken = root / module.CANDIDATES / 'broken-readability-successor' / module.CONFIG
@@ -1099,9 +1078,34 @@ def successor_rows_selftest():
         else:
             raise AssertionError('unreviewed successor tool accepted')
         tool.write_bytes(reviewed)
+        # A later successor sharing the path displaces the earlier one.
+        second = module.CANDIDATES + '/example-second-readability-successor'
+        shutil.copytree(root / package.dir, root / second)
+        config = json.loads((root / second / module.CONFIG).read_text())
+        config.update(label='SIGN OFF EXAMPLE SECOND READABILITY SUCCESSOR',
+                      marker='EXAMPLE-SECOND-READABILITY-SUCCESSOR',
+                      act='.syzygy/governance/decisions/EXAMPLE-SECOND-ACT.md',
+                      pins={'manifest_sha': None, 'review': None, 'review_sha': None})
+        # It shares the proposal, unchanged, and restyles a file of its own.
+        other = 'openspec/changes/example/design.md'
+        (root / other).write_bytes(b'# Design\n\nlong prose\n')
+        config['predecessor'] = {path: digest(read(root, path)) for path in (proposal, other)}
+        (root / second / module.CONFIG).write_text(json.dumps(config))
+        shutil.rmtree(root / second / 'proposed')
+        (root / second / 'proposed' / other).parent.mkdir(parents=True)
+        (root / second / 'proposed' / (other + '.proposed')).write_bytes(b'# Design\n\nShort.\n')
+        again = module.Package(root, second)
+        (root / again.manifest).write_text(again.render_manifest())
+        phrase = module.pin(again)
+        config['pins'] = again.pins
+        (root / second / module.CONFIG).write_text(json.dumps(config))
+        module.Package(root, second).record(phrase, '2026-09-29T00:00:01Z')
+        later = Evidence(root).successor_rows()
+        require(later.get(proposal) == (rows[proposal][1], rows[proposal][1]),
+                'later successor did not displace the earlier one')
         (root / proposal).write_bytes(b'drifted\n')
         require(Evidence(root).successor_rows() == {}, 'drifted successor granted rows')
-    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed sibling, edited tool and drifted packages')
+    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed sibling, edited tool, displaced and drifted packages')
 
 
 def main():
