@@ -17,8 +17,8 @@
     "openspec/changes/polaris-manifesto-understanding-amendment/tasks.md": "f0e78d5915f076af4117cb839dee0afb27303b2578eea488c952706e382df68c"
   },
   "pins": {
-    "manifest_sha": null,
-    "review": null,
-    "review_sha": null
+    "manifest_sha": "2bd0892a2d6b7ca09cfc06dd4325a1bc3cd3706852a08963836b17bd2c5d3b98",
+    "review": "docs/reviews/R-POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-2-RAW.md",
+    "review_sha": "5dae036a061f0493b10238b6b20277142cc41f4d08f1f8ef54340c79e5c83911"
   }
 }
