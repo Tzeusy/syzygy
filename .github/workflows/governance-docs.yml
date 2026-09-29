@@ -180,6 +180,12 @@ jobs:
       - name: record_three_surface_poc_readability_successor --selftest
         run: python3 scripts/record_three_surface_poc_readability_successor.py --selftest
 
+      - name: readability_successor --all --check
+        run: python3 scripts/readability_successor.py --all --check
+
+      - name: readability_successor --selftest
+        run: python3 scripts/readability_successor.py --selftest
+
       - name: build_three_surface_poc_spec_dependencies --check
         run: python3 scripts/build_three_surface_poc_spec_dependencies.py --check
 
