@@ -184,20 +184,34 @@ def composition_findings(
     return findings
 
 
-def dependency_patches_collide() -> bool:
+class LaneBPatchError(ValueError):
+    """Lane B's declaration patch does not apply to the base bytes alone."""
+
+
+def dependency_patches_collide(theirs: pathlib.Path | None = None) -> bool:
     """True when this package's and lane B's declaration patches conflict.
 
     Both rewrite the one generated digest line, so they cannot both apply.
     The composition is resolved by regenerating the declaration after the
     second specification patch lands, never by applying both diffs.
+
+    Lane B's patch is applied alone first: if it does not apply, the
+    collision predicate would be answering for the wrong patch, so this
+    raises LaneBPatchError instead of returning True. `theirs` overrides
+    the live lane B patch path (fixtures only).
     """
     mine = ROOT / PROPOSED / "GOVERNING-DEPENDENCIES.md.patch"
-    theirs = ROOT / LANE_B_DEPENDENCY_PATCH
+    theirs = ROOT / LANE_B_DEPENDENCY_PATCH if theirs is None else theirs
     if not (mine.is_file() and theirs.is_file()):
         return False
     with tempfile.TemporaryDirectory() as scratch:
         base = pathlib.Path(scratch)
         (base / DEPENDENCIES).parent.mkdir(parents=True, exist_ok=True)
+        (base / DEPENDENCIES).write_bytes((ROOT / DEPENDENCIES).read_bytes())
+        try:
+            _apply_all(base, [theirs])
+        except ValueError as error:
+            raise LaneBPatchError(str(error)) from error
         (base / DEPENDENCIES).write_bytes((ROOT / DEPENDENCIES).read_bytes())
         try:
             _apply_all(base, [theirs, mine])
@@ -334,10 +348,34 @@ def selftest() -> int:
     if composition_findings():
         print("SELFTEST FAILED: the spec patches do not compose with lane B")
         return 1
-    if not dependency_patches_collide():
+    try:
+        collide = dependency_patches_collide()
+    except LaneBPatchError as error:
+        print("SELFTEST FAILED: the lane B declaration patch does not apply "
+              f"to the base bytes on its own: {error}")
+        return 1
+    if not collide:
         print("SELFTEST FAILED: the declaration patches no longer collide; the "
               "packet's regeneration note must be re-derived")
         return 1
+    with tempfile.TemporaryDirectory() as scratch:
+        broken_theirs = pathlib.Path(scratch) / "GOVERNING-DEPENDENCIES.md.patch"
+        original_theirs = (ROOT / LANE_B_DEPENDENCY_PATCH).read_text()
+        corrupted_theirs = original_theirs.replace(
+            "-| `RFC7-34` | PWB-REQ-016 |", "-| `RFC7-34` | PWB-REQ-099 |", 1
+        )
+        if corrupted_theirs == original_theirs:
+            print("SELFTEST FAILED: the broken lane B patch fixture matched nothing")
+            return 1
+        broken_theirs.write_text(corrupted_theirs)
+        try:
+            dependency_patches_collide(theirs=broken_theirs)
+        except LaneBPatchError:
+            pass
+        else:
+            print("SELFTEST FAILED: a lane B declaration patch that does not "
+                  "apply was scored as a collision")
+            return 1
     print("selftest: closed population, byte drift, path order, subject drift, "
           "patch corruption, lane B composition (both orders and a corrupted "
           "case), generated-declaration tampering and the declaration-patch "
