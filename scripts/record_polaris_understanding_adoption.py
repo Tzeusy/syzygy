@@ -7,7 +7,6 @@
 import argparse
 from datetime import datetime
 import hashlib
-import importlib.util
 import types
 import json
 from pathlib import Path
@@ -31,6 +30,7 @@ MARKER = "POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION"
 # so the recorder runs only the tool bytes its history review saw. A tool
 # change needs a new pin here, and so a new history review.
 SUCCESSOR_TOOL = "scripts/readability_successor.py"
+CONTESTED = ('contested', 'contested')
 SUCCESSOR_TOOL_SHA = "88358478e495b77177a8d38c03623a4d9819652fe0682b181b48d7a6e6a78256"
 
 
@@ -294,8 +294,8 @@ class Evidence:
 
         Only a package that checks as performed-exact contributes; a package
         that fails to load or check contributes nothing and blocks no other.
-        Two performed-exact packages claiming one path are refused, whatever
-        their order. The tool must be the reviewed bytes, and runs from the
+        A path two performed-exact packages claim maps to CONTESTED, whatever
+        their order, and is refused when checked. The tool must be the reviewed bytes, and runs from the
         bytes that were hashed.
         """
         if getattr(self, '_successors', None) is not None:
@@ -310,11 +310,10 @@ class Evidence:
                         continue
                     installed = package.manifest_rows()
                     pairs = [(path, package.predecessor[path], installed[path]) for path in package.subjects]
-                except (ValueError, OSError, RecursionError):
+                except Exception:  # noqa: BLE001 - any failing package grants nothing
                     continue
                 for path, predecessor, successor in pairs:
-                    require(path not in rows, 'two performed successors claim ' + path)
-                    rows[path] = (predecessor, successor)
+                    rows[path] = CONTESTED if path in rows else (predecessor, successor)
         self._successors = rows
         return rows
 
@@ -444,8 +443,9 @@ def baseline_proof(evidence):
         if current != adopted:
             # A performed readability successor may replace adopted bytes, but
             # only one whose recorded predecessor is exactly these bytes.
-            require(evidence.successor_rows().get(path) == (digest(adopted), digest(current)),
-                    'current subject drift: ' + path)
+            row = evidence.successor_rows().get(path)
+            require(row != CONTESTED, 'two performed successors claim ' + path)
+            require(row == (digest(adopted), digest(current)), 'current subject drift: ' + path)
         rows.append({'path': path, 'historical_sha256': digest(old),
                      'adopted_sha256': digest(adopted), 'changed': old != adopted})
     actual = sorted(p.relative_to(evidence.root).as_posix()
@@ -797,6 +797,15 @@ def reconciliation_selftest():
                           'old': None, 'new': None, 'refusal': str(exc)})
     else:
         raise AssertionError('bytes other than the successor row accepted')
+    fixture.successors = {proposal: CONTESTED}
+    try:
+        check_evidence(fixture)
+    except ValueError as exc:
+        require('two performed successors claim' in str(exc), 'contested refusal: ' + str(exc))
+        witnesses.append({'commit': commit, 'path': proposal, 'operation': 'successor-contested',
+                          'old': None, 'new': None, 'refusal': str(exc)})
+    else:
+        raise AssertionError('contested successor accepted')
     fixture.files[proposal] = adopted_proposal
     fixture.successors = {}
     mutate(DIRECTION, 'owner evidence changed')
@@ -1076,6 +1085,11 @@ def successor_rows_selftest():
         require(Evidence(root).successor_rows() == rows, 'malformed sibling package changed the rows')
         broken.write_text('[' * 100000)
         require(Evidence(root).successor_rows() == rows, 'deeply nested sibling package changed the rows')
+        for field in ('label', 'predecessor', 'pins'):
+            wrong = json.loads((root / package.dir / module.CONFIG).read_text())
+            wrong[field] = 5 if field != 'pins' else []
+            broken.write_text(json.dumps(wrong))
+            require(Evidence(root).successor_rows() == rows, 'wrongly typed sibling ' + field + ' changed the rows')
         shutil.rmtree(broken.parent)
         tool = root / SUCCESSOR_TOOL
         reviewed = tool.read_bytes()
@@ -1117,15 +1131,13 @@ def successor_rows_selftest():
         module.Package(root, second).record(phrase, '2026-09-29T00:00:01Z')
         require([p.check() for p in module.packages(root)] == ['performed-exact'] * 2,
                 'both successors perform exactly')
-        try:
-            Evidence(root).successor_rows()
-        except ValueError as exc:
-            require('two performed successors claim' in str(exc), 'duplicate successor refusal: ' + str(exc))
-        else:
-            raise AssertionError('two performed successors of one path accepted')
+        contested = Evidence(root).successor_rows()
+        require(contested.get(proposal) == CONTESTED, 'two performed successors of one path accepted')
+        require(contested.get(other) == (config['predecessor'][other], digest(read(root, other))),
+                'a contested path blocked an uncontested one')
         (root / proposal).write_bytes(b'drifted\n')
         require(Evidence(root).successor_rows() == {}, 'drifted successor granted rows')
-    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed and deeply nested siblings, edited tool, two claimants and drifted packages')
+    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed, deeply nested and wrongly typed siblings, edited tool, two claimants and drifted packages')
 
 
 def main():

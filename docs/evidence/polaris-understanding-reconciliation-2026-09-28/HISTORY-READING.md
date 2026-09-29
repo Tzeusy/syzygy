@@ -29,11 +29,11 @@ it already read the status pages and the governance checker, at C1.
     - The recorder runs the tool only when its sha256 equals the digest pinned
       in the recorder (`SUCCESSOR_TOOL_SHA`), and executes the very bytes it
       hashed. A tool change needs a recorder change and a new history review.
-    - A package that is unperformed, drifted, malformed (including a deeply
-      nested config) or fails to check grants nothing and blocks no other
-      package.
-    - Two performed-exact packages claiming one path are refused, whatever
-      their order. A second restyle of these subjects names the first
+    - A package that is unperformed, drifted, malformed (a deeply nested or
+      wrongly typed config included) or fails to check grants nothing and
+      blocks no other package.
+    - Two performed-exact packages claiming one path are refused for that
+      path, whatever their order; other paths are unaffected. A second restyle of these subjects names the first
       restyle's bytes as its predecessor, so the recorder refuses it until it
       learns that chain.
     - What stays trusted: the act record, the acceptance-record block and the
@@ -79,8 +79,9 @@ it already read the status pages and the governance checker, at C1.
 - **Rule-6 evidence.** [`history-reading-rule6.json`](history-reading-rule6.json)
   records each guard's mutant, its fragments and the commit it ran at; each
   one fails the run named by its row (the recorder selftest, except the one
-  row that names the governance checker's selftest). Two fail by an exception
-  rather than by their named refusal; both still fail closed. The Git query's
+  row that names the governance checker's selftest). Some fail by an
+  exception or a fixture's own assertion rather than by their named refusal;
+  each still fails closed. The Git query's
   flags and the disk listing are exercised on a scratch repository, not a
   fixture. The two round-3 witnesses (dropping `| set(listed)`, and widening
   the checker's raw-review exemption from a full match to a search) and the
@@ -128,8 +129,9 @@ it already read the status pages and the governance checker, at C1.
   - Round 7 (`HISTORY-REVIEW-7-RAW.md`, REVISE) reviewed the first form of
     the successor exception. M1, the tool ran unbound, is answered by the tool
     pin. N1, a malformed sibling package failing the whole check, by
-    per-package isolation. N2, ranking by directory name, by the displacement
-    rule above (one exact package per path). N3, trust in working-tree acts
+    per-package isolation. N2, ranking by directory name, first by a
+    displacement rule that round 8 showed false, and now by the two-claimant
+    refusal. N3, trust in working-tree acts
     and raws, by the disclosure above. N4, four guards without a row, by the
     round-8 rows. N5, repeated tool loads, by the rows cache. N6 needed no
     change.
@@ -137,8 +139,7 @@ it already read the status pages and the governance checker, at C1.
     both check exact for one path with directory order deciding, is answered
     by the two-claimant refusal. N1, a deeply nested config escaping the
     exception scope, by catching `RecursionError`. N2, three guards without
-    a row, by the round-9 rows (`KeyError` and `TypeError` left the scope:
-    the tool reports config errors as `ValueError`). N3, a temporary path in
+    a row, by the round-9 rows. N3, a temporary path in
     a refusal, by the `<tmpdir>` form. N4, a second read of the tool, by
     executing the hashed bytes, which the selftest now loads the same way.
   - Round 9 (`HISTORY-REVIEW-9-RAW.md`) is required, because the recorder
