@@ -17,7 +17,7 @@ Whether to sign off the restyled proposal and design, in one act. To sign
 off, write exactly:
 
 ```text
-SIGN OFF POLARIS GENERATOR BASE READABILITY SUCCESSOR: 13d45770e2a8202892ec319b9e2ba3ec4ab127d587bf86d697e4e60efdc952d3
+SIGN OFF POLARIS GENERATOR BASE READABILITY SUCCESSOR: 6ab71229125b7fe6c718978185932395dd909bfbe60bfd86972c1d34f6effa59
 ```
 
 The argument is the sha256 of [`SUCCESSOR-MANIFEST.txt`](SUCCESSOR-MANIFEST.txt),
@@ -26,19 +26,20 @@ nothing, the current bytes stay in force.
 
 ## What changes
 
-- **`proposal.md`.** A status banner naming the adoption act and the
-  understanding amendment; the capability stated first; why, what changes,
-  scope and applicability as shallow lists. Every claim and exclusion is
-  kept.
+- **`proposal.md`.** A status banner naming the owner's 2026-09-12 act and
+  the understanding amendment; the capability stated first; why, what
+  changes, scope and applicability as shallow lists. Every claim and
+  exclusion is kept.
 - **`design.md`.** The design opens with its thesis and says what it is not;
   each decision becomes a short tree. The coexistence table with the PWB
   requirements is kept whole.
 - **Unchanged:** the specification, `tasks.md`, `.openspec.yaml`, every
   contract document in the change, and the two `docs/design/` sources.
-- **One side effect.** `scripts/polaris_generator_approval.py --check`
-  compares the 2026-09-12 approval offer with today's bytes. After sign-off
-  it reports the two restyled files as drifted, which is correct: the offer
-  records what was approved then. It is not in the battery.
+- **No new check failure.** `scripts/polaris_generator_approval.py --check`
+  compares the 2026-09-12 approval offer with today's bytes. It already
+  fails today, on governing-baseline drift in `05-CONTRACT-INDEX.yaml`, and
+  is not in the battery. After sign-off the two restyled files also differ
+  from the offer, which is correct: the offer records what was approved then.
 
 To read the change: `python3 scripts/readability_successor.py --package
 .syzygy/governance/contracts/candidates/polaris-generator-base-readability-successor --diff`.

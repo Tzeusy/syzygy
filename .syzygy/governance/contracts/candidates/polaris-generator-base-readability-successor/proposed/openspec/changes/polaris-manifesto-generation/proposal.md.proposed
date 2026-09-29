@@ -1,10 +1,12 @@
 # Polaris manifesto generation
 
-> **Status:** the owner adopted this specification, with scoped applicability
-> and implementation, in one act on 2026-09-12, recorded in
-> [`POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md`](../../../.syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md).
-> The understanding amendment (`../polaris-manifesto-understanding-amendment/`)
-> later replaced seven of its requirements. Project admission, provider
+> **Status:** on 2026-09-12 one owner phrase adopted this specification,
+> decided its scoped applicability and authorized its implementation,
+> recorded in
+> [`POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md`](../../../.syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md)
+> and its two sibling records. The understanding amendment
+> (`../polaris-manifesto-understanding-amendment/`) later replaced seven of
+> its requirements and added two. Project admission, provider
 > consent, authorship and release remain separate acts.
 
 **Polaris generates a project's manifesto: a coherent, browsable account of its
@@ -63,7 +65,7 @@ regenerate that experience for another project.
   remote service; multi-user collaboration; implicit model-provider egress;
   a second independent work queue.
   - These exclusions do not narrow cross-project reuse: independently
-    admitted projects use the same implementation.
+    admitted projects must use the same implementation.
 - **Not authorized here:** reading another real project, or sending Butlers
   content to a provider. The existing PWB continuation explicitly excludes
   those effects. Synthetic bundles may establish mechanics but cannot
