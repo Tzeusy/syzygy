@@ -32,8 +32,8 @@
     "openspec/changes/polaris-manifesto-generation/tasks.md": "d781a1b45fc0e4d216537f40a9e519d41df94eaf1ff252f3484c5f7fd5f794f6"
   },
   "pins": {
-    "manifest_sha": null,
-    "review": null,
-    "review_sha": null
+    "manifest_sha": "6ab71229125b7fe6c718978185932395dd909bfbe60bfd86972c1d34f6effa59",
+    "review": "docs/reviews/R-POLARIS-BASE-READABILITY-SUCCESSOR-2-RAW.md",
+    "review_sha": "88139639bf9bd52eb6a61eb5e72086666100da42c0d63522e7ec1eba4cd71556"
   }
 }
