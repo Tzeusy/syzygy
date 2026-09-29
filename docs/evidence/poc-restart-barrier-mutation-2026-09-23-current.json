@@ -1,0 +1,26 @@
+{
+  "subject": "syzygy-gsw held-socket barrier after current-main integration",
+  "date": "2026-09-23",
+  "testedCommit": "1a83f9518d8800770e1526a60937b5a907c6eddc",
+  "base": "a971361f1e66cc5cb0da6a3d06f51aaf96feac3a",
+  "focusedIterations": 20,
+  "focusedResult": "20 passed, 0 failed; 13 tests per run",
+  "mutation": {
+    "id": "held-socket-barrier-removed-current-main",
+    "file": "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs",
+    "old": "} else if (existsSync(join(repo, 'hold-probe')) && !existsSync(join(repo, 'hold-ack'))) {",
+    "new": "} else if (false) {",
+    "command": "npx vitest run apps/three-surface-poc/src/restart.test.ts --maxWorkers=1 --minWorkers=1 --testTimeout=60000 --reporter=verbose",
+    "expectedPredicate": "The concurrent loser waits for the observed close-phase hold acknowledgement before attempting restart.",
+    "baselineExit": 0,
+    "baselineResult": "13 passed, 0 failed",
+    "mutantExit": 1,
+    "mutantResult": "12 passed, 1 failed: hold-ack was not written",
+    "outcome": "killed",
+    "restored": true
+  },
+  "sourceDigestsAfterRestore": {
+    "apps/three-surface-poc/src/restart.test.ts": "97903b39917bb1bd58a4a6dcf05c7e34d6eef6a02bada31eaeba1dccad4fbfe9",
+    "apps/three-surface-poc/src/test-fixtures/restart-listener.mjs": "00c783bb7c3303d4d2c493e0ac54ed8a5c42655241b20b044461339b5fb21f47"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "subject": "syzygy-gsw stale private fixture audit",
+  "observedAt": "2026-09-23T09:48:29Z",
+  "action": "read-only audit; no signal or deletion performed",
+  "population": {
+    "exactFixtureProcesses": 8,
+    "uid1000": 8,
+    "exactWorktreeCwd": 8,
+    "ppid1Orphans": 8,
+    "scratchRootsPresent": 4,
+    "scratchRootsAlreadyAbsent": 4
+  },
+  "processes": [
+    { "pid": 1635362, "startTicks": 194863449, "uid": 1000, "ppid": 1, "state": "S", "port": 42159, "root": "/tmp/syzygy-private-restart-XsMul1", "rootExists": false },
+    { "pid": 1637036, "startTicks": 194864065, "uid": 1000, "ppid": 1, "state": "S", "port": 39873, "root": "/tmp/syzygy-private-restart-uXB3Gc", "rootExists": false },
+    { "pid": 1637043, "startTicks": 194864065, "uid": 1000, "ppid": 1, "state": "S", "port": 40315, "root": "/tmp/syzygy-private-restart-wPbgIb", "rootExists": false },
+    { "pid": 1640326, "startTicks": 194865482, "uid": 1000, "ppid": 1, "state": "S", "port": 46059, "root": "/tmp/syzygy-private-restart-vgucEN", "rootExists": false },
+    { "pid": 3063180, "startTicks": 196236969, "uid": 1000, "ppid": 1, "state": "S", "port": 34255, "root": "/tmp/syzygy-private-restart-g9LMqV", "rootExists": true },
+    { "pid": 3063492, "startTicks": 196237137, "uid": 1000, "ppid": 1, "state": "S", "port": 35889, "root": "/tmp/syzygy-private-restart-OzvW9V", "rootExists": true },
+    { "pid": 3063555, "startTicks": 196237251, "uid": 1000, "ppid": 1, "state": "S", "port": 45743, "root": "/tmp/syzygy-private-restart-X2diXx", "rootExists": true },
+    { "pid": 3063649, "startTicks": 196237331, "uid": 1000, "ppid": 1, "state": "S", "port": 40677, "root": "/tmp/syzygy-private-restart-Vj7Dmr", "rootExists": true }
+  ],
+  "safeDispositionPlan": [
+    "Coordinator/operator must re-read each listed PID immediately before action and require unchanged UID, startTicks, full fixture argv, worktree cwd, and listed port.",
+    "Signal only that individually verified PID with SIGTERM; never use a group, glob, name-only, or broad process signal.",
+    "Wait for each verified PID to disappear and preserve scratch until then.",
+    "Remove only the corresponding validated root after process disappearance; roots already absent require no deletion."
+  ]
+}
