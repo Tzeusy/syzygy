@@ -17,7 +17,7 @@ Whether to sign off the restyled proposal and design, in one act. To sign
 off, write exactly:
 
 ```text
-SIGN OFF POLARIS UNDERSTANDING READABILITY SUCCESSOR: 86fce922659679537f6d8ca42d3e73e6b22f0bbeadecd96fa4d6c6275b1aec3b
+SIGN OFF POLARIS UNDERSTANDING READABILITY SUCCESSOR: 2bd0892a2d6b7ca09cfc06dd4325a1bc3cd3706852a08963836b17bd2c5d3b98
 ```
 
 The argument is the sha256 of [`SUCCESSOR-MANIFEST.txt`](SUCCESSOR-MANIFEST.txt),
@@ -29,9 +29,10 @@ nothing, the current bytes stay in force.
 - **`proposal.md`.** A status banner naming both acts; the amendment's thesis
   stated first — investigate, ask the owner, then argue the purpose; scope and
   exclusions as shallow lists. Every claim is kept.
-- **`design.md`.** Its six sections — product intent, the research and
-  editorial loop, record ownership, clarification, evaluation and placement —
-  become short trees. Every decision and interface is kept.
+- **`design.md`.** A new opening sentence states the design's thesis —
+  supported understanding before writing, with review sending defects back
+  to the step that caused them — and the placement section becomes a short
+  tree. The other five sections are unchanged.
 - **Unchanged:** `specs/…/spec.md`, `COVERAGE.md`, `GOVERNING-DEPENDENCIES.md`,
   `SYNTHESIS-MAP.json`, `tasks.md`, `.openspec.yaml`, and the base generator
   change.

@@ -93,8 +93,8 @@ This change amends the exact adopted change at
   handling.
 - **Polaris:** clarification and research inspection within its existing
   owner flow; Trajectory keeps work ownership.
-- **Interfaces:** prompt, validator and renderer consume one supported
-  understanding. The existing intermediate wire format and linear repair
+- **Interfaces:** prompt, validator and renderer interfaces must consume one
+  supported understanding. The existing intermediate wire format and linear repair
   runner are not silently declared conformant to these additions.
 - **Authority unchanged.** The generator's authority remains what its
   performed acts say. This amendment claims neither an implementation
