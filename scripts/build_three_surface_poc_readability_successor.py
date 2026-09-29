@@ -349,7 +349,16 @@ def load_serial_apply_mutation() -> dict[str, object]:
     return value
 
 
-def historical_source_exactness(mutation: dict[str, object]) -> tuple[bool, str]:
+def historical_source_exactness(
+    mutation: dict[str, object],
+) -> tuple[bool | None, str | None]:
+    """Whether the fixture's replacements rebuild the historical source.
+
+    Provenance only: a rebase-merge leaves the recorded commit reachable from
+    no ref, so a checkout without it reports None rather than failing. The
+    regression itself (current CLI refuses; the restored serial apply writes
+    partially) needs no history and always runs.
+    """
     source_commit = mutation.get("sourceCommit")
     source_file = mutation.get("file")
     if not isinstance(source_commit, str) or not isinstance(source_file, str):
@@ -360,10 +369,7 @@ def historical_source_exactness(mutation: dict[str, object]) -> tuple[bool, str]
         capture_output=True,
     )
     if done.returncode != 0:
-        raise ValueError(
-            "serial-apply historical source is unavailable: "
-            + done.stderr.decode(errors="replace").strip()
-        )
+        return None, None
     source = done.stdout.decode()
     replacements = mutation.get("sourceReplacements")
     if not isinstance(replacements, list) or not replacements:
@@ -490,7 +496,7 @@ def cli_apply_regression() -> tuple[bool, dict[str, object]]:
             and result["changedSubjects"] == []
         )
     caught = (
-        historical_exact
+        historical_exact is not False
         and refusal_oracle(current)
         and refusal_oracle(custom_refusal_control)
         and historical["exit"] == 1
