@@ -1,5 +1,9 @@
 # Capability 1 readability successor — owner decision packet
 
+> **PERFORMED 2026-09-29.** The owner signed off this package; the act record is
+> [`CAPABILITY-1-READABILITY-SUCCESSOR-ACT.md`](../../../decisions/CAPABILITY-1-READABILITY-SUCCESSOR-ACT.md).
+> The banner below is the one the packet was offered with.
+
 > **Status:** Proposal. It binds nothing until the owner performs the act
 > below (VIS-4). Until then the Capability 1 specification stays exactly as
 > `CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md` and the general

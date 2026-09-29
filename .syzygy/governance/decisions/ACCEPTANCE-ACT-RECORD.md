@@ -618,3 +618,233 @@ provider, write, deployment or release permission.
 This is bootstrap owner provenance, not independent authorship verification,
 runtime evidence or product readiness.
 <!-- SPEC-POLICY-READABILITY-RESTYLE-ADOPTION:END -->
+
+<!-- THREE-SURFACE-POC-READABILITY-SUCCESSOR:BEGIN -->
+# Three-Surface POC readability successor sign-off
+
+Owner: Tzeusy
+
+Act instant: 2026-09-29T18:11:35Z
+
+Project identity: project:syzygy
+
+Artifact identity: specification:syzygy:three-surface-poc-experience:readability-successor
+
+Act type: sign off specification successor (successor to THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md and to the coverage row of the general trusted-bootstrap transaction)
+
+Provenance: owner-adopted (bootstrap, uncorrelated)
+
+A1 audit-record identity: explicitly absent
+
+The owner performed the act by writing exactly:
+
+```text
+SIGN OFF THREE-SURFACE POC READABILITY SUCCESSOR: 221f1ececa321bf0cc6cd5e01f401e9eada38466c3c00dde43095f8cb8a0cd4d
+```
+
+The argument is the sha256 of .syzygy/governance/contracts/candidates/three-surface-poc-readability-successor/THREE-SURFACE-POC-READABILITY-SUCCESSOR-MANIFEST.txt. It was recomputed at recording,
+matched the phrase, and equals the reviewed digest the recorder pins.
+
+Confirming review: docs/reviews/R-POC-READABILITY-SUCCESSOR-PACKAGE-1-RAW.md (sha256 8170554c25040cf87f8b5e40342e959d1d94bfed976d8d41ca662b85d5acb255)
+
+Signed subjects, predecessor and successor digests:
+
+| Subject | Predecessor | Successor |
+|---|---|---|
+| `openspec/changes/three-surface-poc-experience/.openspec.yaml` | `9187547d8cc17017ebd44132527d2d5e096d1ef9705de80cc4f1cf34531f6976` | `9187547d8cc17017ebd44132527d2d5e096d1ef9705de80cc4f1cf34531f6976` |
+| `openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md` | `f29a01f6a5725f4ac7085fa04a62de757fd16153d507ae5e415ae0b501fdc0a4` | `f29a01f6a5725f4ac7085fa04a62de757fd16153d507ae5e415ae0b501fdc0a4` |
+| `openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md` | `4bdcf6c6dbd07aad7d44fb1d6fbb9ae37ea56bed2ed66532231cdc37a71c1da4` | `f8b66a710f9e3242f79b26b9c02eb4f44c55cd8368b517cd856da80b2ecbe1c5` |
+| `openspec/changes/three-surface-poc-experience/design.md` | `0847bf5f78155712c13535a3de4a25be300ee6a726b5199e84e318103c28695c` | `6d39ea6f6111abaea32c74ce96c975ae53e077485f0ed8f7c97545e64d7ba295` |
+| `openspec/changes/three-surface-poc-experience/proposal.md` | `6459f56cba26e0bc38c71a4a93ea571aa11eabdc847c96c81f8afcf30b72eddb` | `0650a6a3bc50158dc793802b9dcd40057b3199b3f7e9f8341a5bdc79cbea941a` |
+| `openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` | `f0eda5b9ec8766e2b4b961fb2940c4ece7aa97b1c397e10d570abb04f5dd960e` | `bb9112a55a1cf2afdd6911815e80fa645f517f8a4e8b1b262ecf7381be515410` |
+
+Scope: readability restyle of the six-file Three-Surface POC specification.
+The 24 POC-REQ identities, their requirement words, scenarios and warrants
+are unchanged; the package builder verifies them.
+
+Supersession relationship: each subject is bound by its successor digest
+above. The earlier sign-off act and its digests are preserved as act-time
+history.
+
+Revocation relationship: none. This act widens no implementation direction
+and grants no source, provider, write, deployment or release permission.
+
+This is bootstrap owner provenance, not independent authorship verification,
+runtime evidence or product readiness.
+<!-- THREE-SURFACE-POC-READABILITY-SUCCESSOR:END -->
+
+<!-- CAPABILITY-1-READABILITY-SUCCESSOR:BEGIN -->
+# Capability 1 readability successor sign-off
+
+Owner: Tzeusy
+
+Act instant: 2026-09-29T18:11:35Z
+
+Project identity: project:syzygy
+
+Artifact identity: specification:syzygy:capability-1:readability-successor
+
+Act type: sign off specification successor (successor to CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md and the CONTRACT-COVERAGE.md row of the general trusted-bootstrap transaction)
+
+Provenance: owner-adopted (bootstrap, uncorrelated)
+
+A1 audit-record identity: explicitly absent
+
+The owner performed the act by writing exactly:
+
+```text
+SIGN OFF CAPABILITY 1 READABILITY SUCCESSOR: 10db138947497200ad7c788ce4719ba515c61832e3138f1af42201ec84a8870d
+```
+
+The argument is the sha256 of .syzygy/governance/contracts/candidates/capability-1-readability-successor/SUCCESSOR-MANIFEST.txt. It was recomputed at recording,
+matched the phrase, and equals the reviewed digest the package pins.
+
+Confirming review: docs/reviews/R-CAP1-READABILITY-SUCCESSOR-2-RAW.md (sha256 1197bab77bc53546d4c1da414ebccaa97359170b8e9296d12d29976bd25e0fd1)
+
+Signed subjects, predecessor and successor digests:
+
+| Subject | Predecessor | Successor |
+|---|---|---|
+| `openspec/changes/project-registration-and-honest-shape-visibility/.openspec.yaml` | `727fc3b35bb3eb09ccede6d08cbc829ea0044b031816d47842ec2573bff99290` | `727fc3b35bb3eb09ccede6d08cbc829ea0044b031816d47842ec2573bff99290` |
+| `openspec/changes/project-registration-and-honest-shape-visibility/CAPABILITY-COVERAGE.md` | `2f6f4de4650b6800b968d243dd5887919ea7d4da550413db570d6928ac7646e9` | `2f6f4de4650b6800b968d243dd5887919ea7d4da550413db570d6928ac7646e9` |
+| `openspec/changes/project-registration-and-honest-shape-visibility/CONTRACT-COVERAGE.md` | `15431d8ba1fe25a61e4dc2713c4d51fad1cf6d25ef7a9103cc616265102289c9` | `15431d8ba1fe25a61e4dc2713c4d51fad1cf6d25ef7a9103cc616265102289c9` |
+| `openspec/changes/project-registration-and-honest-shape-visibility/GOVERNING-DEPENDENCIES.md` | `a00ccbf24f2e106ec3a396b8ae637097b4aaca9965548aab6d1cda0f37851c8e` | `a00ccbf24f2e106ec3a396b8ae637097b4aaca9965548aab6d1cda0f37851c8e` |
+| `openspec/changes/project-registration-and-honest-shape-visibility/design.md` | `a7a90828ed51fd5e98d8cbc9f35f2aa88b5cdd75f6a53f905b816dcc11267652` | `12bb357f30c3f8a3107b507ddedaf2e715c974ca877db8f031699e6268a384ee` |
+| `openspec/changes/project-registration-and-honest-shape-visibility/proposal.md` | `a9e170909acb672d7c46d02a6a8456511680feef4ef994ab5c297315961b735e` | `4cda00e0df635a853360e22f7c9d3dde68424782a115d1eadf2b7ddeab5c869a` |
+| `openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md` | `65b66c913cd2650881a9df8cb34a3c63b3f518041e83f45d2451980d9f1d0448` | `65b66c913cd2650881a9df8cb34a3c63b3f518041e83f45d2451980d9f1d0448` |
+
+Scope: readability restyle of the Capability 1 proposal and design, including a present-tense status banner in place of the pre-adoption candidate banner. The specification, both coverage tables and the generated dependencies are unchanged. Every requirement, scenario and warrant block is
+unchanged; the successor tool verifies that structure.
+
+Supersession relationship: each subject is bound by its successor digest
+above. Earlier acts and their digests are preserved as act-time history.
+
+Revocation relationship: none. This act widens no implementation authority
+and grants no source, provider, write, deployment or release permission.
+
+This is bootstrap owner provenance, not independent authorship verification,
+runtime evidence or product readiness.
+<!-- CAPABILITY-1-READABILITY-SUCCESSOR:END -->
+
+<!-- POLARIS-GENERATOR-BASE-READABILITY-SUCCESSOR:BEGIN -->
+# Polaris generator base readability successor sign-off
+
+Owner: Tzeusy
+
+Act instant: 2026-09-29T18:11:35Z
+
+Project identity: project:syzygy
+
+Artifact identity: specification:syzygy:polaris-generation:base-readability-successor
+
+Act type: sign off specification successor (successor to the specification role of POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md for proposal.md and design.md; the applicability and implementation acts keep their own scopes)
+
+Provenance: owner-adopted (bootstrap, uncorrelated)
+
+A1 audit-record identity: explicitly absent
+
+The owner performed the act by writing exactly:
+
+```text
+SIGN OFF POLARIS GENERATOR BASE READABILITY SUCCESSOR: 6ab71229125b7fe6c718978185932395dd909bfbe60bfd86972c1d34f6effa59
+```
+
+The argument is the sha256 of .syzygy/governance/contracts/candidates/polaris-generator-base-readability-successor/SUCCESSOR-MANIFEST.txt. It was recomputed at recording,
+matched the phrase, and equals the reviewed digest the package pins.
+
+Confirming review: docs/reviews/R-POLARIS-BASE-READABILITY-SUCCESSOR-2-RAW.md (sha256 88139639bf9bd52eb6a61eb5e72086666100da42c0d63522e7ec1eba4cd71556)
+
+Signed subjects, predecessor and successor digests:
+
+| Subject | Predecessor | Successor |
+|---|---|---|
+| `docs/design/POLARIS-GENERATOR-DELIVERY.md` | `51f878fe4cb0dc90ca033ecef399a61d3fa2b825794bf69fdcb256dfc1e407bb` | `51f878fe4cb0dc90ca033ecef399a61d3fa2b825794bf69fdcb256dfc1e407bb` |
+| `docs/design/POLARIS-GENERATOR-OWNER-PACKET.md` | `a26ef879ee068198cc702a6ad20ab241fbadb9ff8902104eb755d08506d9b760` | `a26ef879ee068198cc702a6ad20ab241fbadb9ff8902104eb755d08506d9b760` |
+| `openspec/changes/polaris-manifesto-generation/.openspec.yaml` | `2f19e85bc27192bfcfbe4fcfb49c1e49b7569f6d840f97966b535a07da28bc59` | `2f19e85bc27192bfcfbe4fcfb49c1e49b7569f6d840f97966b535a07da28bc59` |
+| `openspec/changes/polaris-manifesto-generation/ADAPTER-DECLARATIONS.md` | `3836b93909611fd59890450383e897f9635ee4ba4cd4b5a22ccd611d9ea33564` | `3836b93909611fd59890450383e897f9635ee4ba4cd4b5a22ccd611d9ea33564` |
+| `openspec/changes/polaris-manifesto-generation/APPLICABILITY-DECISIONS.md` | `faeae75a1b265667db5969849dec52f8796da69af1407652b053b6554d26b23e` | `faeae75a1b265667db5969849dec52f8796da69af1407652b053b6554d26b23e` |
+| `openspec/changes/polaris-manifesto-generation/ASSET-CONTRACT.md` | `0804b40250c7bfb284bac97567e0278cfd16e6c8b5a5d5c25db28e8e7efb60d9` | `0804b40250c7bfb284bac97567e0278cfd16e6c8b5a5d5c25db28e8e7efb60d9` |
+| `openspec/changes/polaris-manifesto-generation/CAPABILITY-COVERAGE.md` | `4589e9ee4a5303fdc25d216a0a63e6d732c1185b5a1eb8bb23c7f1b8199b39e0` | `4589e9ee4a5303fdc25d216a0a63e6d732c1185b5a1eb8bb23c7f1b8199b39e0` |
+| `openspec/changes/polaris-manifesto-generation/DESIGN-ACCEPTANCE.md` | `d2ff62db58995ef1fe44b3b6044917743ab5546b56827ba492f1b8ff8580f067` | `d2ff62db58995ef1fe44b3b6044917743ab5546b56827ba492f1b8ff8580f067` |
+| `openspec/changes/polaris-manifesto-generation/EFFECT-HOST-DESIGN.md` | `11e5c16a9965774eba7e1743e3228fbb5a13c6857829ae79cd61fcc90c59d559` | `11e5c16a9965774eba7e1743e3228fbb5a13c6857829ae79cd61fcc90c59d559` |
+| `openspec/changes/polaris-manifesto-generation/ENTRY-AND-WALKTHROUGH.md` | `b65cd0f69b7800d683ae2d2e3b3053dde1d7c0607f430f90b033eef5c6817f96` | `b65cd0f69b7800d683ae2d2e3b3053dde1d7c0607f430f90b033eef5c6817f96` |
+| `openspec/changes/polaris-manifesto-generation/EXECUTION-PHASES.md` | `8e3e2c4494df964addb76a885a5b349051f5a0a543346ff4dc15f7c1598b1245` | `8e3e2c4494df964addb76a885a5b349051f5a0a543346ff4dc15f7c1598b1245` |
+| `openspec/changes/polaris-manifesto-generation/GOVERNING-DEPENDENCIES.md` | `4edf4fe9744370fc61c250926d353890ee6283eb4898e83709ab76e2b627dfa3` | `4edf4fe9744370fc61c250926d353890ee6283eb4898e83709ab76e2b627dfa3` |
+| `openspec/changes/polaris-manifesto-generation/INTERFACES.md` | `96e7e396c825d614503253ea45cd0c4317051516c5159e8f120d2786be7243dc` | `96e7e396c825d614503253ea45cd0c4317051516c5159e8f120d2786be7243dc` |
+| `openspec/changes/polaris-manifesto-generation/NAVIGATION-CONTRACT.md` | `e30570230c93516adb8d44e30bb810dc4df5ccde3f7d9a32a215214af3cdc321` | `e30570230c93516adb8d44e30bb810dc4df5ccde3f7d9a32a215214af3cdc321` |
+| `openspec/changes/polaris-manifesto-generation/OWNER-FLOW.md` | `414d845d91b52578c58474446d5feb6c7dc9f1185d8625e4c8ae794edc48c5a9` | `414d845d91b52578c58474446d5feb6c7dc9f1185d8625e4c8ae794edc48c5a9` |
+| `openspec/changes/polaris-manifesto-generation/SCHEMA-CONTRACT.md` | `722eea7233cfb913f4f2e21060f359d721a86336efa1a3851e31ba113a857e8f` | `722eea7233cfb913f4f2e21060f359d721a86336efa1a3851e31ba113a857e8f` |
+| `openspec/changes/polaris-manifesto-generation/SECURITY-CONTRACT.md` | `c6f2703a92a33d31fa5f0644cb4ce669048187d6aa72ce61a4c3aee90bdad6b5` | `c6f2703a92a33d31fa5f0644cb4ce669048187d6aa72ce61a4c3aee90bdad6b5` |
+| `openspec/changes/polaris-manifesto-generation/SOURCE-POLICY.md` | `af26acc453396d8b8ddbad94d939bd56f3d87b30ef2a0d3a411c378c48fbba89` | `af26acc453396d8b8ddbad94d939bd56f3d87b30ef2a0d3a411c378c48fbba89` |
+| `openspec/changes/polaris-manifesto-generation/WORK-STATE-CONTRACT.md` | `b86d0b944c395bbe66c4363d34be54531c55b6f72e76862626946851e199a986` | `b86d0b944c395bbe66c4363d34be54531c55b6f72e76862626946851e199a986` |
+| `openspec/changes/polaris-manifesto-generation/design.md` | `236f9e015449b52fdcb8b75365d8600c0c1096f10784d0030abe56c55fce90ec` | `19d4c147c0ba83693c1406f08186efc68dcc046a0352c3845a54b0a4f3351103` |
+| `openspec/changes/polaris-manifesto-generation/proposal.md` | `67970484f22a9882d09d896813d2b2b951cd87dd66ffb939a2001c092fc38651` | `ef7bc2a37a181bf6530493995ab47e78260989d2664f61e0165bcca852565f99` |
+| `openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md` | `a8199646c3b7953e8c4101d70d0307813dd1b3927d0b403f76c22d280dd6a89b` | `a8199646c3b7953e8c4101d70d0307813dd1b3927d0b403f76c22d280dd6a89b` |
+| `openspec/changes/polaris-manifesto-generation/tasks.md` | `d781a1b45fc0e4d216537f40a9e519d41df94eaf1ff252f3484c5f7fd5f794f6` | `d781a1b45fc0e4d216537f40a9e519d41df94eaf1ff252f3484c5f7fd5f794f6` |
+
+Scope: readability restyle of the Polaris generator proposal and design, with present-tense status in place of pre-adoption candidate language. The specification, every contract document and the other bound sources are unchanged, and the understanding amendment's overlay is untouched. Every requirement, scenario and warrant block is
+unchanged; the successor tool verifies that structure.
+
+Supersession relationship: each subject is bound by its successor digest
+above. Earlier acts and their digests are preserved as act-time history.
+
+Revocation relationship: none. This act widens no implementation authority
+and grants no source, provider, write, deployment or release permission.
+
+This is bootstrap owner provenance, not independent authorship verification,
+runtime evidence or product readiness.
+<!-- POLARIS-GENERATOR-BASE-READABILITY-SUCCESSOR:END -->
+
+<!-- POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR:BEGIN -->
+# Polaris understanding amendment readability successor sign-off
+
+Owner: Tzeusy
+
+Act instant: 2026-09-29T18:11:35Z
+
+Project identity: project:syzygy
+
+Artifact identity: specification:syzygy:polaris-generation:understanding-readability-successor
+
+Act type: sign off specification successor (successor to the specification role of POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md for the amendment's proposal.md and design.md; the tree-form amendment keeps its REQ-polaris-generation-004 bytes)
+
+Provenance: owner-adopted (bootstrap, uncorrelated)
+
+A1 audit-record identity: explicitly absent
+
+The owner performed the act by writing exactly:
+
+```text
+SIGN OFF POLARIS UNDERSTANDING READABILITY SUCCESSOR: 2bd0892a2d6b7ca09cfc06dd4325a1bc3cd3706852a08963836b17bd2c5d3b98
+```
+
+The argument is the sha256 of .syzygy/governance/contracts/candidates/polaris-understanding-readability-successor/SUCCESSOR-MANIFEST.txt. It was recomputed at recording,
+matched the phrase, and equals the reviewed digest the package pins.
+
+Confirming review: docs/reviews/R-POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-2-RAW.md (sha256 5dae036a061f0493b10238b6b20277142cc41f4d08f1f8ef54340c79e5c83911)
+
+Signed subjects, predecessor and successor digests:
+
+| Subject | Predecessor | Successor |
+|---|---|---|
+| `openspec/changes/polaris-manifesto-understanding-amendment/.openspec.yaml` | `7e69d8445cf79fa4a5398138abf3cd1865bd0750cc53f44a98ef9904f1395f73` | `7e69d8445cf79fa4a5398138abf3cd1865bd0750cc53f44a98ef9904f1395f73` |
+| `openspec/changes/polaris-manifesto-understanding-amendment/COVERAGE.md` | `a9506370bb972502a8cb37c6a66c6e14c787bf6dab878cae2e1b0d62018c1acf` | `a9506370bb972502a8cb37c6a66c6e14c787bf6dab878cae2e1b0d62018c1acf` |
+| `openspec/changes/polaris-manifesto-understanding-amendment/GOVERNING-DEPENDENCIES.md` | `315207c0be81915f2461c1d94a8468a39171b98f1a11deeddd78e8ee676ba32e` | `315207c0be81915f2461c1d94a8468a39171b98f1a11deeddd78e8ee676ba32e` |
+| `openspec/changes/polaris-manifesto-understanding-amendment/SYNTHESIS-MAP.json` | `2d961976b315d64f69bb5675e30614866b42fee75450bc6ab929f69e32d13d75` | `2d961976b315d64f69bb5675e30614866b42fee75450bc6ab929f69e32d13d75` |
+| `openspec/changes/polaris-manifesto-understanding-amendment/design.md` | `5b06017d100d635125b1b663be4d8ed766e41e9f66b0e85e218f3234eb51fd17` | `37a64e32d869414392a00a54c98a883ba9f8a5f575530998e5fd44d576f50fa8` |
+| `openspec/changes/polaris-manifesto-understanding-amendment/proposal.md` | `284859db3e1c4c5b763f8349584c35ac89d19dceef7d8a3b45238cf5f7d01ffd` | `6378d83eeba81d0dfe96f579f6d98059721efb816c67e2cd155b04e6c03b6f39` |
+| `openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md` | `6841e63cda0ccdb81966a6fabbdfaf3721910df8ea04959711eb59843859ba58` | `6841e63cda0ccdb81966a6fabbdfaf3721910df8ea04959711eb59843859ba58` |
+| `openspec/changes/polaris-manifesto-understanding-amendment/tasks.md` | `f0e78d5915f076af4117cb839dee0afb27303b2578eea488c952706e382df68c` | `f0e78d5915f076af4117cb839dee0afb27303b2578eea488c952706e382df68c` |
+
+Scope: readability restyle of the Polaris understanding amendment's proposal and design, with present-tense status in place of pre-adoption candidate language. The amendment's specification, coverage, synthesis map, tasks and the base generator change are unchanged. Every requirement, scenario and warrant block is
+unchanged; the successor tool verifies that structure.
+
+Supersession relationship: each subject is bound by its successor digest
+above. Earlier acts and their digests are preserved as act-time history.
+
+Revocation relationship: none. This act widens no implementation authority
+and grants no source, provider, write, deployment or release permission.
+
+This is bootstrap owner provenance, not independent authorship verification,
+runtime evidence or product readiness.
+<!-- POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR:END -->

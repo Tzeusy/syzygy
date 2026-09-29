@@ -1,5 +1,9 @@
 # Three-Surface POC readability successor — owner decision packet
 
+> **PERFORMED 2026-09-29.** The owner signed off this package; the act record is
+> [`THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md`](../../../decisions/THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md).
+> The banner below is the one the packet was offered with.
+
 > **Status:** Proposal. It binds nothing until the owner performs the act
 > below (VIS-4). Until then the signed POC specification stays exactly as
 > `THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md` and the general trusted-bootstrap

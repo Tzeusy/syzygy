@@ -1,8 +1,10 @@
 # From investigation to a manifesto
 
-Candidate design accompanying the formal amendment. Observable commitments live
-in `specs/polaris-generation/spec.md`; this file explains their design and intended
-placement. Source doctrine and existing owner/effect contracts remain controlling.
+**Polaris builds supported understanding before it writes: it investigates,
+asks, argues, then lets independent review send defects back to the step that
+caused them.** This file explains the amendment's design and intended
+placement; observable commitments live in `specs/polaris-generation/spec.md`.
+Source doctrine and existing owner/effect contracts remain controlling.
 
 ## Product intent
 
@@ -115,14 +117,18 @@ comparison waives no factual or visual blocker.
 
 ## Placement and compatibility
 
-- Core: discovery/understanding/argument contracts, dependency validation, bounded
-  repair control and versioned generation/review recipes.
-- App adapters: permitted discovery, owner input and classification, provider and
-  lifecycle effects with existing protected-host and audit requirements.
-- Polaris: inspectable research, contextual clarification, narrative composition,
-  supported diagrams and depth; no new queue or silent PWB truth-store split.
-- Evaluation tooling: source-derived external case/oracle records and real reader
-  evidence independent of internal generator completion flags.
+- **Core:** discovery, understanding and argument contracts; dependency
+  validation; bounded repair control; versioned generation and review
+  recipes.
+- **App adapters:** permitted discovery, owner input and classification,
+  provider and lifecycle effects, under the existing protected-host and audit
+  requirements.
+- **Polaris:** inspectable research, contextual clarification, narrative
+  composition, supported diagrams and depth; no new queue and no silent PWB
+  truth-store split.
+- **Evaluation tooling:** source-derived external case and oracle records,
+  and real reader evidence independent of internal generator completion
+  flags.
 
 The existing `pipeline.ts` and `provider-draft.ts` are intermediate mechanics.
 They do not yet discover repositories, represent this full understanding model,
