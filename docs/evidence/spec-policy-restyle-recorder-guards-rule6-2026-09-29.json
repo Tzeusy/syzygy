@@ -1,0 +1,53 @@
+{
+  "bead": "syzygy-u7iv",
+  "ranAtCommit": "3be3d7f28023ddfa170a7c22cd233e8cb3f65d37",
+  "script": "scripts/record_spec_policy_readability_restyle.py",
+  "baselineFixtures": 29,
+  "newFixtures": 34,
+  "mutants": [
+    {
+      "id": "M1",
+      "description": "M1 partial-record marker/label guard disabled (both aggregate and install variants share it)",
+      "old": "        if MARKER.encode() in text or LABEL.encode() in text:\n            raise ValueError(\"adoption already recorded or partial\")",
+      "new": "        if False:\n            raise ValueError(\"adoption already recorded or partial\")",
+      "exit": 1,
+      "failing": [
+        "FAIL  partial record (aggregate only) refused",
+        "FAIL  partial record (install only) refused"
+      ],
+      "outcome": "killed: only the two partial-record fixtures for aggregate/install fail (they share one guard line)"
+    },
+    {
+      "id": "M2",
+      "description": "M2 dedicated-act-exists guard disabled",
+      "old": "    if (root / ACT).exists():\n        raise ValueError(\"adoption already recorded or partial\")",
+      "new": "    if False:\n        raise ValueError(\"adoption already recorded or partial\")",
+      "exit": 1,
+      "failing": [],
+      "outcome": "killed by crash: without the guard record() reaches open(ACT,'x') and raises FileExistsError, not ValueError, so the selftest aborts on the ACT-only fixture (exit 1, no summary line)"
+    },
+    {
+      "id": "M3",
+      "description": "M3 already-installed refusal removed (allow_applied ignored)",
+      "old": "            if allow_applied:\n                return\n            raise ValueError(",
+      "new": "            if True:\n                return\n            raise ValueError(",
+      "exit": 1,
+      "failing": [
+        "FAIL  already-installed package bytes refused before recording"
+      ],
+      "outcome": "killed: only the already-installed refusal fixture fails"
+    },
+    {
+      "id": "M4",
+      "description": "M4 already-installed guard inverted (always refuses, even with allow_applied)",
+      "old": "            if allow_applied:\n                return\n",
+      "new": "            if False:\n                return\n",
+      "exit": 1,
+      "failing": [
+        "FAIL package bytes are already installed: record the act first, then --apply --at-adoption"
+      ],
+      "outcome": "killed by crash: verify_package raises inside the allow_applied fixture (uncaught ValueError, exit 1, no summary line); the refusal fixture still passes"
+    }
+  ],
+  "note": "Each mutant applied to a copy of the script text in place on the branch and restored; ranAtCommit is the fixture commit. Reproduce by replacing old with new and running --selftest."
+}
