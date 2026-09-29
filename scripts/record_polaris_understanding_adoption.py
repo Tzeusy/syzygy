@@ -7,7 +7,6 @@
 import argparse
 from datetime import datetime
 import hashlib
-import importlib.util
 import json
 from pathlib import Path
 import re
@@ -268,30 +267,6 @@ class Evidence:
     def blob(self, commit, path):
         return git_blob(self.root, commit, path)
 
-    def successor_rows(self):
-        """{path: (predecessor, successor)} for every performed readability successor.
-
-        A package that does not check as performed-exact grants nothing here;
-        its own battery line reports why.
-        """
-        spec = importlib.util.spec_from_file_location(
-            'readability_successor', self.root / 'scripts/readability_successor.py')
-        if not (self.root / 'scripts/readability_successor.py').is_file():
-            return {}
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        rows = {}
-        for package in module.packages(self.root):
-            try:
-                performed = package.check() == 'performed-exact'
-            except (ValueError, OSError):
-                performed = False
-            if performed:
-                installed = package.manifest_rows()
-                for path in package.subjects:
-                    rows[path] = (package.predecessor[path], installed[path])
-        return rows
-
     def ancestor(self, earlier, later):
         git_output(self.root, 'merge-base', '--is-ancestor', earlier, later)
 
@@ -414,13 +389,7 @@ def baseline_proof(evidence):
         require(digest(old) == row['sha256'], 'historical subject hash: ' + path)
         expected = NEW_SHA if path == SPEC else row['sha256']
         require(digest(adopted) == expected, 'adoption blob mismatch: ' + path)
-        current = evidence.current(path)
-        if current != adopted:
-            # A performed readability successor may replace adopted bytes, but
-            # only one whose recorded predecessor is exactly these bytes.
-            predecessor, successor = evidence.successor_rows().get(path, (None, None))
-            require(predecessor == digest(adopted) and successor == digest(current),
-                    'current subject drift: ' + path)
+        require(evidence.current(path) == adopted, 'current subject drift: ' + path)
         rows.append({'path': path, 'historical_sha256': digest(old),
                      'adopted_sha256': digest(adopted), 'changed': old != adopted})
     actual = sorted(p.relative_to(evidence.root).as_posix()
@@ -524,8 +493,6 @@ def reviewed_template(evidence):
             return evidence.blob(commit, path)
         def ancestor(self, earlier, later):
             return evidence.ancestor(earlier, later)
-        def successor_rows(self):
-            return evidence.successor_rows()
     candidate_check(Frozen(evidence.root))
     template = evidence.current(TEMPLATE)
     return template.replace(PLACEHOLDER.encode(), digest(raw).encode()), c1
@@ -656,9 +623,6 @@ def reconciliation_selftest():
                                   **{path: history_commit for path in history_paths}}
             self.added = list(history_paths)
             self.recorded = {}
-            self.successors = {}
-        def successor_rows(self):
-            return self.successors
         def current(self, path):
             if path in self.files:
                 require(self.files[path] is not None, 'missing evidence: ' + path)
@@ -746,34 +710,6 @@ def reconciliation_selftest():
     mutate(SPEC, 'adoption blob mismatch', historical=ADOPTION)
     mutate(SPEC, 'current subject drift')
     mutate(CHANGE + 'tasks.md', 'current subject drift')
-    # A performed readability successor replaces a subject only from its
-    # exact adopted predecessor.
-    proposal = CHANGE + 'proposal.md'
-    adopted_proposal = fixture.current(proposal)
-    restyled = adopted_proposal + b'\nrestyled\n'
-    fixture.files[proposal] = restyled
-    fixture.successors = {proposal: (digest(adopted_proposal), digest(restyled))}
-    check_evidence(fixture)
-    fixture.successors = {proposal: ('0' * 64, digest(restyled))}
-    try:
-        check_evidence(fixture)
-    except ValueError as exc:
-        require('current subject drift' in str(exc), 'wrong successor refusal: ' + str(exc))
-        witnesses.append({'commit': commit, 'path': proposal, 'operation': 'successor-wrong-predecessor',
-                          'old': None, 'new': None, 'refusal': str(exc)})
-    else:
-        raise AssertionError('successor from a foreign predecessor accepted')
-    fixture.successors = {proposal: (digest(adopted_proposal), '1' * 64)}
-    try:
-        check_evidence(fixture)
-    except ValueError as exc:
-        require('current subject drift' in str(exc), 'wrong successor refusal: ' + str(exc))
-        witnesses.append({'commit': commit, 'path': proposal, 'operation': 'successor-row-mismatch',
-                          'old': None, 'new': None, 'refusal': str(exc)})
-    else:
-        raise AssertionError('bytes other than the successor row accepted')
-    fixture.files[proposal] = adopted_proposal
-    fixture.successors = {}
     mutate(DIRECTION, 'owner evidence changed')
     mutate(DIRECTION, 'missing evidence', missing=True)
     mutate(DIRECTION, 'owner evidence changed', historical=ADOPTION)
