@@ -8,6 +8,7 @@ import argparse
 from datetime import datetime
 import hashlib
 import importlib.util
+import types
 import json
 from pathlib import Path
 import re
@@ -35,6 +36,21 @@ SUCCESSOR_TOOL_SHA = "88358478e495b77177a8d38c03623a4d9819652fe0682b181b48d7a6e6
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def successor_tool(root):
+    """The readability-successor tool, executed from the exact bytes that were hashed."""
+    source = read(root, SUCCESSOR_TOOL)
+    require(digest(source) == SUCCESSOR_TOOL_SHA,
+            'successor tool differs from its reviewed digest: ' + SUCCESSOR_TOOL)
+    module = types.ModuleType('readability_successor')
+    module.__file__ = str(root / SUCCESSOR_TOOL)
+    sys.modules['readability_successor'] = module
+    try:
+        exec(compile(source, module.__file__, 'exec'), module.__dict__)
+    finally:
+        sys.modules.pop('readability_successor', None)
+    return module
 
 
 def read(root, rel):
@@ -278,23 +294,15 @@ class Evidence:
 
         Only a package that checks as performed-exact contributes; a package
         that fails to load or check contributes nothing and blocks no other.
-        At most one package checks as performed-exact for a path: a later
-        successor changes the change directory, so the earlier one stops
-        checking exact. A second restyle of these subjects therefore carries
-        the first restyle's bytes as its predecessor, and the recorder refuses
-        it until it learns to read that chain. The tool must be the reviewed
-        bytes.
+        Two performed-exact packages claiming one path are refused, whatever
+        their order. The tool must be the reviewed bytes, and runs from the
+        bytes that were hashed.
         """
         if getattr(self, '_successors', None) is not None:
             return self._successors
-        tool = self.root / SUCCESSOR_TOOL
         rows = {}
-        if tool.is_file():
-            require(digest(read(self.root, SUCCESSOR_TOOL)) == SUCCESSOR_TOOL_SHA,
-                    'successor tool differs from its reviewed digest: ' + SUCCESSOR_TOOL)
-            spec = importlib.util.spec_from_file_location('readability_successor', tool)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
+        if (self.root / SUCCESSOR_TOOL).is_file():
+            module = successor_tool(self.root)
             for config in sorted((self.root / module.CANDIDATES).glob('*/' + module.CONFIG)):
                 try:
                     package = module.Package(self.root, config.parent.relative_to(self.root).as_posix())
@@ -302,9 +310,10 @@ class Evidence:
                         continue
                     installed = package.manifest_rows()
                     pairs = [(path, package.predecessor[path], installed[path]) for path in package.subjects]
-                except (ValueError, OSError, KeyError, TypeError, json.JSONDecodeError):
+                except (ValueError, OSError, RecursionError):
                     continue
                 for path, predecessor, successor in pairs:
+                    require(path not in rows, 'two performed successors claim ' + path)
                     rows[path] = (predecessor, successor)
         self._successors = rows
         return rows
@@ -1041,10 +1050,7 @@ def successor_rows_selftest():
     """Only a performed, exact readability successor grants rows; drift withdraws them."""
     import shutil
     import tempfile
-    spec = importlib.util.spec_from_file_location(
-        'readability_successor', ROOT / 'scripts/readability_successor.py')
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    module = successor_tool(ROOT)
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
         require(Evidence(root).successor_rows() == {}, 'successor rows without the successor tool')
@@ -1068,6 +1074,9 @@ def successor_rows_selftest():
         broken.parent.mkdir(parents=True)
         broken.write_text('{')
         require(Evidence(root).successor_rows() == rows, 'malformed sibling package changed the rows')
+        broken.write_text('[' * 100000)
+        require(Evidence(root).successor_rows() == rows, 'deeply nested sibling package changed the rows')
+        shutil.rmtree(broken.parent)
         tool = root / SUCCESSOR_TOOL
         reviewed = tool.read_bytes()
         tool.write_bytes(reviewed + b'\n# edited\n')
@@ -1078,7 +1087,7 @@ def successor_rows_selftest():
         else:
             raise AssertionError('unreviewed successor tool accepted')
         tool.write_bytes(reviewed)
-        # A later successor sharing the path displaces the earlier one.
+        # A second performed package over the same path is refused, not ranked.
         second = module.CANDIDATES + '/example-second-readability-successor'
         shutil.copytree(root / package.dir, root / second)
         config = json.loads((root / second / module.CONFIG).read_text())
@@ -1096,16 +1105,27 @@ def successor_rows_selftest():
         (root / second / 'proposed' / (other + '.proposed')).write_bytes(b'# Design\n\nShort.\n')
         again = module.Package(root, second)
         (root / again.manifest).write_text(again.render_manifest())
+        # Its own review raw, so the first package keeps checking exact.
+        first_raw = read(root, package.pins['review'])
         phrase = module.pin(again)
+        own_raw = 'docs/reviews/R-EXAMPLE-SECOND-RAW.md'
+        shutil.move(root / again.pins['review'], root / own_raw)
+        (root / package.pins['review']).write_bytes(first_raw)
+        again.pins['review'] = own_raw
         config['pins'] = again.pins
         (root / second / module.CONFIG).write_text(json.dumps(config))
         module.Package(root, second).record(phrase, '2026-09-29T00:00:01Z')
-        later = Evidence(root).successor_rows()
-        require(later.get(proposal) == (rows[proposal][1], rows[proposal][1]),
-                'later successor did not displace the earlier one')
+        require([p.check() for p in module.packages(root)] == ['performed-exact'] * 2,
+                'both successors perform exactly')
+        try:
+            Evidence(root).successor_rows()
+        except ValueError as exc:
+            require('two performed successors claim' in str(exc), 'duplicate successor refusal: ' + str(exc))
+        else:
+            raise AssertionError('two performed successors of one path accepted')
         (root / proposal).write_bytes(b'drifted\n')
         require(Evidence(root).successor_rows() == {}, 'drifted successor granted rows')
-    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed sibling, edited tool, displaced and drifted packages')
+    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed and deeply nested siblings, edited tool, two claimants and drifted packages')
 
 
 def main():
