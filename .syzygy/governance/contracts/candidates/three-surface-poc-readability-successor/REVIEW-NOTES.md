@@ -20,3 +20,9 @@ bytes it read, so the notes live here.
   mutation on every run, so the current bytes are covered by the battery.
 - **N4 — pin commit.** The pin commit changes only the recorder's three pin
   constants; `--check` and `--selftest` were re-run after it.
+
+**After the review.** One builder edit followed it: the serial-apply
+fixture's historical-source check reads a commit that the rebase left
+reachable from no ref, so hosted CI could not run it. The check now reports
+"unavailable" instead of failing; the regression it accompanies still runs.
+The manifest, patches, recorder and packet the review read are unchanged.
