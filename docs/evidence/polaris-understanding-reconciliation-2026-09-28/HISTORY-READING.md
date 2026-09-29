@@ -186,13 +186,20 @@ it already read the status pages and the governance checker, at C1.
     - N2: a failure in the package search itself, or a symlinked tool, fails
       the whole check rather than one package. That is fail-closed.
     - N3 stands as round 9's N4.
-  - Round 13 (`HISTORY-REVIEW-13-RAW.md`) is required. A simulated
-    adoption of the understanding successor showed the recorder's own
-    selftest refusing the installed restyle: its fixture granted no successor
-    rows. The fixture now starts from today's performed successors and builds
-    its successor cases from the adopted bytes, so the selftest passes before
-    and after the successor is performed. Until a confirming raw is retained,
-    `--check` fails by design.
+  - Round 13 (`HISTORY-REVIEW-13-RAW.md`, CONFIRM WITH EXCEPTIONS) binds
+    the current recorder. A simulated adoption of the understanding successor
+    had shown the recorder's own selftest refusing the installed restyle,
+    because its fixture granted no successor rows. The fixture now starts from
+    today's performed successors and builds its successor cases from the
+    adopted bytes, so the selftest passes before and after the successor is
+    performed. Its notes:
+    - N1: once the successor is performed, row 68 (the drift branch forced
+      on) survives, since every subject then has a successor row. That
+      mutation only makes the check stricter; the row reproduces before
+      adoption.
+    - N2: after adoption, rows 66, 73, 77 and 79 are still killed, with
+      different refusal text. Each row's refusal describes the tree at its
+      recorded commit.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws
