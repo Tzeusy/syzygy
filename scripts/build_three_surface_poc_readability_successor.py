@@ -78,16 +78,41 @@ def current_bytes(
     overrides: dict[pathlib.Path, bytes] | None = None,
 ) -> dict[pathlib.Path, bytes]:
     overrides = overrides or {}
+    installed_bytes = predecessor_bytes() if installed() else {}
     values: dict[pathlib.Path, bytes] = {}
     for rel in SUBJECTS:
         if rel in overrides:
             values[rel] = overrides[rel]
+            continue
+        if rel in installed_bytes:
+            values[rel] = installed_bytes[rel]
             continue
         target = ROOT / rel
         if not target.is_file():
             raise ValueError(f"missing signed subject: {rel}")
         values[rel] = target.read_bytes()
     return values
+
+
+def predecessor_bytes() -> dict[pathlib.Path, bytes]:
+    """The signed predecessor, rebuilt by reverse-applying the exact patches.
+
+    After sign-off the working tree carries the successor rows; the
+    candidate checks and fixtures still run over the predecessor.
+    """
+    with tempfile.TemporaryDirectory() as directory:
+        base = pathlib.Path(directory)
+        for rel in SUBJECTS:
+            target = base / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((ROOT / rel).read_bytes())
+        for patch in patch_files():
+            done = subprocess.run(
+                ["git", "apply", "-R", "--whitespace=nowarn", str(patch)],
+                cwd=base, capture_output=True, text=True)
+            if done.returncode != 0:
+                raise ValueError(f"{patch.name} does not reverse: {done.stderr.strip()}")
+        return {rel: (base / rel).read_bytes() for rel in SUBJECTS}
 
 
 def patch_files() -> list[pathlib.Path]:
@@ -299,6 +324,15 @@ def check(
     return findings, proposed
 
 
+def installed() -> bool:
+    """True once every signed subject carries its manifest row (after sign-off)."""
+    if not (ROOT / MANIFEST).is_file():
+        return False
+    rows = {path: digest for digest, path in
+            ROW_RE.findall((ROOT / MANIFEST).read_text(encoding="utf-8"))}
+    return rows == subject_digests(ROOT) and bool(rows)
+
+
 def subject_digests(base: pathlib.Path) -> dict[str, str]:
     return {
         rel.as_posix(): sha256((base / rel).read_bytes())
@@ -358,12 +392,16 @@ def prepare_cli_scratch(
             "build_three_surface_poc_spec_dependencies.py",
         )
     )
-    copied.extend(SUBJECTS)
     copied.extend(patch.relative_to(ROOT) for patch in patch_files())
     for rel in copied:
         target = base / rel
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / rel, target)
+    # The candidate-state subjects: the predecessor, rebuilt after sign-off.
+    for rel, data in current_bytes().items():
+        target = base / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
 
     corruption = mutation.get("patchCorruption")
     if not isinstance(corruption, dict):
@@ -601,6 +639,10 @@ def main(argv: list[str]) -> int:
     if not args.check:
         print("refusing: choose --check, --selftest, --diff or --write")
         return 2
+    if installed():
+        print("three-surface POC readability successor installed: all 6 signed "
+              "subjects carry their manifest rows")
+        return 0
     findings, proposed = check()
     if findings:
         print("THREE-SURFACE POC READABILITY CANDIDATE FINDINGS:")

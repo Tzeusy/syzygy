@@ -355,6 +355,10 @@ python3 scripts/build_spec_policy_readability_restyle.py --check   # spec-policy
 python3 scripts/build_spec_policy_readability_restyle.py --selftest
 python3 scripts/record_spec_policy_readability_restyle.py --check  # spec-policy restyle act: performed 2026-09-28; records regenerate exactly
 python3 scripts/record_spec_policy_readability_restyle.py --selftest
+python3 scripts/build_three_surface_poc_readability_successor.py --check   # POC readability successor: candidate = exact regeneration, or installed rows
+python3 scripts/build_three_surface_poc_readability_successor.py --selftest
+python3 scripts/record_three_surface_poc_readability_successor.py --check  # POC successor sign-off: "candidate-unperformed" until recorded
+python3 scripts/record_three_surface_poc_readability_successor.py --selftest
 python3 scripts/build_three_surface_poc_spec_dependencies.py --check
 python3 scripts/build_directive_register.py --check     # every identifier -> its definition site
 python3 scripts/build_directive_register.py --selftest
@@ -364,7 +368,7 @@ python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
 ```
 
-The forty-six checks above are the same forty-six the hosted workflow runs
+The fifty checks above are the same fifty the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.
