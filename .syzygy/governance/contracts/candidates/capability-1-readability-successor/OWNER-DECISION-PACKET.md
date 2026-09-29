@@ -19,7 +19,7 @@ Whether to sign off the restyled proposal and design, in one act. To sign
 off, write exactly:
 
 ```text
-SIGN OFF CAPABILITY 1 READABILITY SUCCESSOR: 23e8f91c39b9504936357d43069bea59a47463a854bf27a606963c6a08a96871
+SIGN OFF CAPABILITY 1 READABILITY SUCCESSOR: 10db138947497200ad7c788ce4719ba515c61832e3138f1af42201ec84a8870d
 ```
 
 The argument is the sha256 of [`SUCCESSOR-MANIFEST.txt`](SUCCESSOR-MANIFEST.txt),
@@ -30,16 +30,20 @@ nothing, the current bytes stay in force.
 
 - **`proposal.md`.** A present-tense status banner naming the adoption act;
   the capability stated first; scope, non-goals, outcomes and Unknowns as
-  shallow lists. Every claim is kept. "Impact" now names the separate
-  implementation authorization instead of saying nothing is authorized to be
-  built.
+  shallow lists. Every claim is kept. "Impact" also names the separate
+  implementation authorization, beside the non-goal that the specification
+  itself authorizes nothing to be built.
 - **`design.md`.** The design opens by saying what it is and points to the
   implementation plan; each decision (D1–D5) becomes a short tree. Every
   decision and trade-off is kept.
 - **Unchanged:** `specs/…/spec.md`, `CAPABILITY-COVERAGE.md`,
   `CONTRACT-COVERAGE.md`, `GOVERNING-DEPENDENCIES.md` and `.openspec.yaml`.
-  The pending consent candidate (`cap1-trusted-bootstrap-consent`, which
-  would replace CAP1-REQ-011 and part of 046) is therefore unaffected.
+- **One side effect.** The consent candidate `cap1-trusted-bootstrap-consent`
+  (untracked, in the root working tree since 2026-09-14) would replace
+  CAP1-REQ-011 and part of 046. It touches none of the files this act
+  changes, but its `BASELINE.json` pins the current `proposal.md` and
+  `design.md` digests. After sign-off, that baseline must be regenerated
+  before the candidate goes to review.
 
 To read the change: `python3 scripts/readability_successor.py --package
 .syzygy/governance/contracts/candidates/capability-1-readability-successor --diff`.
