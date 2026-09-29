@@ -175,8 +175,8 @@ it already read the status pages and the governance checker, at C1.
     this page's line 87; lines 9 and 81 hold a link and a code span and stay
     whole. N2, one package naming a file twice, fails closed and needs no
     change. N3 stands as round 9's N4.
-  - Round 12 (`HISTORY-REVIEW-12-RAW.md`, CONFIRM WITH EXCEPTIONS) binds
-    the current recorder; it reviewed the same recorder bytes as round 11
+  - Round 12 (`HISTORY-REVIEW-12-RAW.md`, CONFIRM WITH EXCEPTIONS) bound
+    the recorder as it stood then; it reviewed the same recorder bytes as round 11
     with this page corrected. Its notes need no recorder change:
     - N1: the tool finds a package's act block in the acceptance record by
       label substring, so a package whose label is contained in another's
@@ -186,6 +186,13 @@ it already read the status pages and the governance checker, at C1.
     - N2: a failure in the package search itself, or a symlinked tool, fails
       the whole check rather than one package. That is fail-closed.
     - N3 stands as round 9's N4.
+  - Round 13 (`HISTORY-REVIEW-13-RAW.md`) is required. A simulated
+    adoption of the understanding successor showed the recorder's own
+    selftest refusing the installed restyle: its fixture granted no successor
+    rows. The fixture now starts from today's performed successors and builds
+    its successor cases from the adopted bytes, so the selftest passes before
+    and after the successor is performed. Until a confirming raw is retained,
+    `--check` fails by design.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws

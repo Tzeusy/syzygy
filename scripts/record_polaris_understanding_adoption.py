@@ -685,7 +685,8 @@ def reconciliation_selftest():
                                   **{path: history_commit for path in history_paths}}
             self.added = list(history_paths)
             self.recorded = {}
-            self.successors = {}
+            # Today's performed successors, so the fixture tracks installed restyles.
+            self.successors = dict(source.successor_rows())
         def successor_rows(self):
             return self.successors
         def current(self, path):
@@ -778,12 +779,14 @@ def reconciliation_selftest():
     # A performed readability successor replaces a subject only from its
     # exact adopted predecessor.
     proposal = CHANGE + 'proposal.md'
-    adopted_proposal = fixture.current(proposal)
+    installed = dict(fixture.successors)
+    today = fixture.current(proposal)
+    adopted_proposal = fixture.blob(ADOPTION, proposal)
     restyled = adopted_proposal + b'\nrestyled\n'
     fixture.files[proposal] = restyled
-    fixture.successors = {proposal: (digest(adopted_proposal), digest(restyled))}
+    fixture.successors = {**installed, proposal: (digest(adopted_proposal), digest(restyled))}
     check_evidence(fixture)
-    fixture.successors = {proposal: ('0' * 64, digest(restyled))}
+    fixture.successors = {**installed, proposal: ('0' * 64, digest(restyled))}
     try:
         check_evidence(fixture)
     except ValueError as exc:
@@ -792,7 +795,7 @@ def reconciliation_selftest():
                           'old': None, 'new': None, 'refusal': str(exc)})
     else:
         raise AssertionError('successor from a foreign predecessor accepted')
-    fixture.successors = {proposal: (digest(adopted_proposal), '1' * 64)}
+    fixture.successors = {**installed, proposal: (digest(adopted_proposal), '1' * 64)}
     try:
         check_evidence(fixture)
     except ValueError as exc:
@@ -801,7 +804,7 @@ def reconciliation_selftest():
                           'old': None, 'new': None, 'refusal': str(exc)})
     else:
         raise AssertionError('bytes other than the successor row accepted')
-    fixture.successors = {proposal: CONTESTED}
+    fixture.successors = {**installed, proposal: CONTESTED}
     try:
         check_evidence(fixture)
     except ValueError as exc:
@@ -810,8 +813,8 @@ def reconciliation_selftest():
                           'old': None, 'new': None, 'refusal': str(exc)})
     else:
         raise AssertionError('contested successor accepted')
-    fixture.files[proposal] = adopted_proposal
-    fixture.successors = {}
+    fixture.files[proposal] = today
+    fixture.successors = installed
     mutate(DIRECTION, 'owner evidence changed')
     mutate(DIRECTION, 'missing evidence', missing=True)
     mutate(DIRECTION, 'owner evidence changed', historical=ADOPTION)
