@@ -289,6 +289,62 @@
       "new": "        def successor_rows(self):\n            return {}",
       "old": "        def successor_rows(self):\n            return evidence.successor_rows()",
       "refusal": "FAIL exact digest reconciliation unresolved: current subject drift: openspec/changes/polaris-manifesto-understanding-amendment/proposal.md"
+    },
+    {
+      "commit": "4ff4ab79c91ddf04675f36e4559338e54da0f281",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require((evidence.successor_rows().get(path) or (0, 0))[1] == digest(current),",
+      "old": "require(evidence.successor_rows().get(path) == (digest(adopted), digest(current)),",
+      "refusal": "AssertionError: successor from a foreign predecessor accepted"
+    },
+    {
+      "commit": "4ff4ab79c91ddf04675f36e4559338e54da0f281",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require((evidence.successor_rows().get(path) or (0, 0))[0] == digest(adopted),",
+      "old": "require(evidence.successor_rows().get(path) == (digest(adopted), digest(current)),",
+      "refusal": "AssertionError: bytes other than the successor row accepted"
+    },
+    {
+      "commit": "4ff4ab79c91ddf04675f36e4559338e54da0f281",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "require(True,",
+      "old": "require(digest(read(self.root, SUCCESSOR_TOOL)) == SUCCESSOR_TOOL_SHA,",
+      "refusal": "AssertionError: unreviewed successor tool accepted"
+    },
+    {
+      "commit": "4ff4ab79c91ddf04675f36e4559338e54da0f281",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "if False:",
+      "old": "if package.check() != 'performed-exact':",
+      "refusal": "FAIL exact digest reconciliation unresolved: unperformed successor granted rows"
+    },
+    {
+      "commit": "4ff4ab79c91ddf04675f36e4559338e54da0f281",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "except OSError:\n                    continue",
+      "old": "except (ValueError, OSError, KeyError, TypeError, json.JSONDecodeError):\n                    continue",
+      "refusal": "FAIL exact digest reconciliation unresolved: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+    },
+    {
+      "commit": "4ff4ab79c91ddf04675f36e4559338e54da0f281",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        def successor_rows(self):\n            return {}",
+      "old": "        def successor_rows(self):\n            return evidence.successor_rows()",
+      "refusal": "FAIL exact digest reconciliation unresolved: current subject drift: openspec/changes/polaris-manifesto-understanding-amendment/proposal.md"
+    },
+    {
+      "commit": "4ff4ab79c91ddf04675f36e4559338e54da0f281",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        if True:\n",
+      "old": "        if tool.is_file():\n",
+      "refusal": "FAIL exact digest reconciliation unresolved: [Errno 2] No such file or directory: '/tmp/tmp3n25cwo5/scripts/readability_successor.py'"
     }
   ],
   "version": 1
