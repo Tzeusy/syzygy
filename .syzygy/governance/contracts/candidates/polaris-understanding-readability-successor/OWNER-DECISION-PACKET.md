@@ -35,11 +35,13 @@ nothing, the current bytes stay in force.
 - **Unchanged:** `specs/…/spec.md`, `COVERAGE.md`, `GOVERNING-DEPENDENCIES.md`,
   `SYNTHESIS-MAP.json`, `tasks.md`, `.openspec.yaml`, and the base generator
   change.
-- **Recorder support.** `scripts/record_polaris_understanding_adoption.py`
-  checks the adopted bytes of all eight files. It now accepts a file whose
-  current bytes equal a performed readability successor's row, but only when
-  that successor's recorded predecessor is exactly the adopted digest. That
-  recorder change carries its own history review.
+- **Recorder support, needed before recording.**
+  `scripts/record_polaris_understanding_adoption.py` checks the adopted bytes
+  of all eight files, so installing the restyle would fail its `--check`. A
+  follow-up recorder change lets a file equal a performed readability
+  successor's row, but only when that successor's recorded predecessor is
+  exactly the adopted digest. It carries its own history review, and the act
+  is not recorded until it lands.
 
 To read the change: `python3 scripts/readability_successor.py --package
 .syzygy/governance/contracts/candidates/polaris-understanding-readability-successor --diff`.
