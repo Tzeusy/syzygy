@@ -1,5 +1,9 @@
 # Polaris generator base readability successor — owner decision packet
 
+> **PERFORMED 2026-09-29.** The owner signed off this package; the act record is
+> [`POLARIS-GENERATOR-BASE-READABILITY-SUCCESSOR-ACT.md`](../../../decisions/POLARIS-GENERATOR-BASE-READABILITY-SUCCESSOR-ACT.md).
+> The banner below is the one the packet was offered with.
+
 > **Status:** Proposal. It binds nothing until the owner performs the act
 > below (VIS-4). Until then the generator specification stays exactly as
 > `POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md` bound it.

@@ -1,53 +1,61 @@
 # Design — three-surface-poc-experience
 
-> Non-normative. Implementation guidance under the candidate spec; where
-> this file and the spec disagree, the spec governs. Stack choices here
-> are not required behavior (CC-SPEC-7) unless a requirement names them.
+The implementation extends the existing POC and keeps one `PocModel` as the
+only truth store. This file is non-normative; the specification governs where
+they disagree.
 
-## Shape
+## Data flow
 
-Extend the existing POC packages rather than fork them:
+```mermaid
+flowchart LR
+    G["Configured Git revision"] --> C["Code-structure observation"]
+    D["Beads Dolt revision"] --> W["Work-item observation"]
+    C --> M["One PocModel"]
+    W --> M
+    M --> P["Polaris"]
+    M --> T["Trajectory"]
+    M --> O["Orrery"]
+    M --> A["Machine answer"]
+```
 
-- `packages/three-surface-poc-core`: add two observation modules —
-  `code-structure.ts` (walks the configured repository at an exact git
-  revision; emits paths, sizes, digests, language classifications) and
-  `work-items.ts` (queries the Beads Dolt database read-only at the
-  registered prefix; records the Dolt head revision read). Both feed
-  the one `PocModel`; no second truth store.
-- `apps/three-surface-poc`: three surface routes sharing one design
-  token module; the exact tables remain the no-script and parity
-  backstop (POC-REQ-022). Client bundles are build outputs under
-  `build:poc`'s `tsc -b --force` discipline plus a bundler step —
-  never runtime-fetched (POC-REQ-021).
+- **Code structure:** `packages/three-surface-poc-core` observes paths, sizes,
+  digests and declared language classifications at an exact Git revision.
+- **Work items:** the same package reads the registered prefix from Dolt,
+  read-only, and records the Dolt revision.
+- **Shared truth:** both observations enter the same model used by human and
+  machine channels. No surface owns a second fact store.
+- **Script-less backstop:** server-rendered exact tables and routes remain
+  available when client enhancement is absent.
 
-## Surface sketches
+## Surfaces
 
-- **Polaris**: server-rendered, paginated article layout; sections
-  generated from intent entities with claim markers
-  (`data-claim-provenance`) driving the POC-REQ-031 sweep.
-- **Trajectory**: server-rendered board skeleton with a client
-  enhancement layer; declared status→column mapping as a checked-in
-  `as const` table; time lane computed from recorded instants only;
-  scope statement rendered from selection-rule constants.
-- **Orrery**: client-rendered spatial projection (candidate: deck.gl or
-  three.js UMD bundle, pinned and vendored through the build);
-  deterministic layout via a seeded, input-ordered treemap/grid — no
-  physics, no randomness. Legend generated from the same encoding
-  table the renderer consumes.
+- **Polaris — intent as a readable account.** Sections derive from intent
+  entities. Claim markers bind every positive statement to model provenance.
+- **Trajectory — work without the closure fallacy.** A declared status mapping
+  places items into columns. Recorded instants drive time. Scope and excluded
+  counts remain visible.
+- **Orrery — observed structure without invented meaning.** A deterministic
+  seeded layout projects directories and declared mappings. Its legend comes
+  from the same encoding table as the renderer.
 
 ## Parity
 
-Keep the independent comparator pattern: parity markers on every
-rendered fact; the sweep counts its denominator and compares against
-`GET /api/poc` (POC-REQ-020). Client-rendered facts must land in the
-DOM with the same markers so the existing wire-parity approach extends
-to enhanced surfaces.
+Every rendered fact carries the parity marker used by the independent sweep.
+The sweep reports its denominator and compares each value with `GET /api/poc`
+for the same evaluation. Client rendering adds presentation, never facts.
 
-## Test seams
+## Verification seams
 
-Each requirement's oracle names its seam: sentinel sweep (REQ-002),
-induced observer failure (REQ-003, REQ-013), double-run diff (REQ-004,
-REQ-041, REQ-050), direct Dolt SQL comparison (REQ-010, REQ-040),
-export mutation (REQ-012), marker-population sweeps with reported
-denominators (REQ-011, REQ-020, REQ-031, REQ-051, REQ-052, REQ-053,
-REQ-060, REQ-061). Rule-6 mutation checks apply per falsifier.
+- **Observation boundaries:** sentinel-content sweep, induced observer failure,
+  export mutation and direct Dolt comparison.
+- **Determinism:** repeated structure observations, repeated time rendering and
+  repeated Orrery layouts over one identified input.
+- **Complete populations:** work-prefix, claim, mapping, relationship,
+  accessibility and epistemic-marker sweeps with reported denominators.
+- **Cause-correct failure:** missing or unreadable sources render Unknown with
+  their reason; no partial or empty result is presented as complete.
+- **Mutation proof:** each requirement's falsifier is exercised at its named
+  seam before the corresponding check is trusted.
+
+Stack and library choices remain implementation decisions unless a requirement
+names their observable behavior.

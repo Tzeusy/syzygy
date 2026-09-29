@@ -1,151 +1,175 @@
-# Generator design — candidate
+# Generator design
 
-This document is a proposed design, not an accepted topology, implementation
-plan or grant of effect authority. The specification owns observable behavior.
+**The generator separates acquisition, inference and presentation, records
+every run against one authoritative lifecycle, and never replaces authored
+presentation merely because the source or a model improved.** This document is design: it is not an accepted topology, an
+implementation plan or a grant of effect authority. The specification owns
+observable behavior.
 
 ## Context
 
-The current renderer provides useful presentation primitives but takes a
-Butlers-specific model and two compiled reading selections. Reuse requires a
-project-neutral generation boundary and a lifecycle that can produce and review
-new assets. Existing RFC7 profile, editorial-draft, authorship and queue rules
-remain controlling. The practical product and authoring guidance is recorded in
-`docs/polaris-generation/README.md`. The current implementation proposal is
-`docs/design/POLARIS-GENERATOR-DELIVERY.md`.
+- **Starting point.** The current renderer provides useful presentation
+  primitives, but takes a Butlers-specific model and two compiled reading
+  selections. Reuse needs a project-neutral generation boundary, and a
+  lifecycle that can produce and review new assets.
+- **What stays controlling:** the existing RFC7 profile, editorial-draft,
+  authorship and queue rules.
+- **Related documents:** the practical product and authoring guidance,
+  `docs/polaris-generation/README.md`; the implementation proposal,
+  `docs/design/POLARIS-GENERATOR-DELIVERY.md`.
 
-## Goals / Non-Goals
+## Goals and non-goals
 
-**Goals:** One reusable generation path, meaningful project-specific synthesis,
-truthful reading depths, bounded execution/recovery, beautiful accessible assets,
-source drift handling, preservation of human authorship and inspectable evidence.
-
-**Non-Goals:** A new authority tier, a second work queue, automatic project or
-provider consent, autonomous adoption, implementation-code writes, or release.
-Synthetic providers prove mechanics only; real synthesis and reader evidence
-remain required for the full product outcome.
+- **Goals:** one reusable generation path; meaningful project-specific
+  synthesis; truthful reading depths; bounded execution and recovery;
+  beautiful, accessible assets; source-drift handling; preserved human
+  authorship; inspectable evidence.
+- **Non-goals:** a new authority tier; a second work queue; automatic project
+  or provider consent; autonomous adoption; implementation-code writes;
+  release.
+- **Evidence bar.** Synthetic providers prove mechanics only; the full product
+  outcome still needs real synthesis and reader evidence.
 
 ## Decisions
 
 ### Separate acquisition, inference and presentation
 
-Source acquisition evaluates the applicable project permission and classification
-rules. The generator consumes only the admitted snapshot and cannot crawl more
-files from a model suggestion. A request for additional information is returned
-as a bounded finding with the needed source class; it does not widen admission.
-
-The engine accepts a project-neutral bundle consisting of opaque project and
-snapshot identities, source references, their captured claims/states, declared
-concepts and exclusions. No caller-supplied `approved` flag is trusted. The
-admission adapter's evaluated result is checked at dispatch and reuse boundaries.
-A presentation profile is a separate input state; a missing or declined profile
-follows RFC7-5 rather than being silently constructed as adopted.
-
-The output is a versioned editorial asset bundle: Narrative, Sections, claim
-blocks, reading order, source anchors, typed supporting assets, generation provenance
-and review references. Identifiers follow the existing opaque identity discipline;
-labels and source paths are locators, not identity. The proposed record fields, effect boundaries, budget/retry and retention
-decisions are specified in INTERFACES.md. Their schema and adapter registrations
-must pass the contract-coverage review before sign-off. ASSET-CONTRACT.md specifies
-project-specific composition and the distinct editorial/computed visual boundary;
-required unsupported assets cannot silently disappear.
+- **Acquisition.** Source acquisition evaluates the applicable project
+  permission and classification rules. The generator consumes only the
+  admitted snapshot and cannot crawl more files from a model suggestion. A
+  request for more information returns as a bounded finding naming the
+  needed source class; it does not widen admission.
+- **Input.** The engine accepts a project-neutral bundle: opaque project and
+  snapshot identities, source references with their captured claims and
+  states, declared concepts and exclusions.
+  - No caller-supplied `approved` flag is trusted. The admission adapter's
+    evaluated result is checked at dispatch and reuse boundaries.
+  - A presentation profile is a separate input state. A missing or declined
+    profile follows RFC7-5; it is never silently constructed as adopted.
+- **Output.** A versioned editorial asset bundle: Narrative, Sections, claim
+  blocks, reading order, source anchors, typed supporting assets, generation
+  provenance and review references.
+  - Identifiers follow the existing opaque identity discipline; labels and
+    source paths are locators, not identity.
+  - `INTERFACES.md` specifies the record fields, effect boundaries,
+    budget and retry, and retention. Their schema and adapter registrations
+    must pass the contract-coverage review before sign-off; this design does
+    not record that review's outcome.
+  - `ASSET-CONTRACT.md` specifies project-specific composition and the
+    boundary between editorial and computed visuals. A required unsupported
+    asset cannot silently disappear.
 
 ### One authoritative lifecycle
 
-The runner records progress against the authoritative drafting work item, with
-an execution identity and immutable stage input/output references. It does not
-own an independent queue or store authored narrative under work. Polaris renders
-contextual draft review and authorship; Trajectory renders execution lifecycle.
-Trajectory owns that presentation relative to Polaris; after materialization the
-scheduler owns current work lifecycle. Both surfaces re-read it at the answering
-evaluation. Typed generation-control records own only stage, reservation,
-dispatch and finalization facts, never a mutable copy of scheduler-owned fields.
-The materialization join stays immutable; missing joins follow RFC8-8's orphaned
-work finding and owner-adjudication path.
-
-Execution progress and editorial state remain separate. A completed model stage
-can yield an invalid draft. A confirmed draft can still be awaiting a profile or
-human authorship act. A valid owner act is a warrant, not empirical comprehension
-or release evidence.
-
-Stage progression is admission → independent inventory/question preparation →
-source understanding → narrative design →
-drafting → independent fidelity review → actual rendered design review → bounded
-repair or ready-for-owner. This is execution detail, not a new kernel epistemic
-vocabulary. Failed, cancelled and uncertain effects are recorded explicitly; no
-state proceeds because a file exists or a provider returned HTTP success.
+- **One queue.** The runner records progress against the authoritative
+  drafting work item, with an execution identity and immutable stage input
+  and output references. It owns no independent queue and stores no authored
+  narrative under work.
+- **Who renders what.** Polaris renders contextual draft review and
+  authorship; Trajectory renders the execution lifecycle, and owns that
+  presentation relative to Polaris. After materialization the scheduler owns
+  current work lifecycle, and both surfaces re-read it at the answering
+  evaluation.
+- **Control records.** Typed generation-control records own only stage,
+  reservation, dispatch and finalization facts — never a mutable copy of
+  scheduler-owned fields. The materialization join stays immutable; a missing
+  join follows RFC8-8's orphaned-work finding and owner-adjudication path.
+- **Execution is not editorial state.** A completed model stage can yield an
+  invalid draft. A confirmed draft can still be awaiting a profile or a human
+  authorship act. A valid owner act is a warrant, not empirical comprehension
+  or release evidence.
+- **Stages:** admission → independent inventory and question preparation →
+  source understanding → narrative design → drafting → independent fidelity
+  review → actual rendered design review → bounded repair, or ready for
+  owner. This is execution detail, not a new kernel epistemic vocabulary.
+  Failed, cancelled and uncertain effects are recorded explicitly; no state
+  proceeds because a file exists or a provider returned HTTP success.
 
 ### Explicit bounds and recovery
 
-A run requires finite positive dispatch/content/usage/time limits before dispatch
-and a finite nonnegative repair-cycle limit. The admitted policy names their
-values; zero repair cycles means a failed review stops rather than repairs.
-Dispatch reserves the relevant remaining budget using the provider's available
-bounded request limits. A provider whose required usage cannot be bounded cannot
-be silently used under that policy. Actual receipts reconcile reservations and
-remain visible, including charges arriving after cancellation.
-
-A checkpoint binds project/snapshot, admission context, generation policy,
-provider/model/version, stage inputs and artifact digests. Resume re-evaluates
-permissions and verifies those bindings. It reuses completed valid stages; it
-cannot transfer old review evidence to edited content. The lifecycle adapter reserves budget and exclusive dispatch ownership durably
-before a provider effect. A possibly completed effect remains reserved and
-uncertain; it is not automatically redispatched. INTERFACES.md defines the
-reservation and authored-write commitment/receipt-recovery boundaries.
-Scheduler admission uses a fresh, identified observation for each dispatch.
-Local cancellation and the durable dispatch-admission transition are serialized;
-external scheduler changes are observed rather than included in that transaction.
-An already admitted attempt may be in flight, including the uncertain pre-send
-crash window. Later observed withdrawal stops further admissions and
-readiness and not-yet-committed finalization without rewriting an actual effect
-as stopped. Ready and authored-write commitment each recheck scheduler eligibility. The full
-protocol and its separate consent predicate are in INTERFACES.md.
-Duplicate request identities map to the same authoritative execution record;
-different identities cannot overwrite artifacts.
+- **Limits before dispatch.** A run needs finite positive dispatch, content,
+  usage and time limits, and a finite nonnegative repair-cycle limit. The
+  admitted policy names their values; zero repair cycles means a failed
+  review stops rather than repairs.
+- **Reservation.** Dispatch reserves the relevant remaining budget using the
+  provider's available bounded request limits. A provider whose required
+  usage cannot be bounded is never silently used under that policy. Actual
+  receipts reconcile reservations and stay visible, including charges that
+  arrive after cancellation.
+- **Checkpoints.** A checkpoint binds project and snapshot, admission
+  context, generation policy, provider, model and version, stage inputs and
+  artifact digests. Resume re-evaluates permissions and verifies those
+  bindings. It reuses completed valid stages; it never transfers old review
+  evidence to edited content.
+- **Effects are reserved first.** The lifecycle adapter durably reserves
+  budget and exclusive dispatch ownership before a provider effect. A
+  possibly completed effect stays reserved and uncertain; it is never
+  automatically redispatched. `INTERFACES.md` defines the reservation and the
+  authored-write commitment and receipt-recovery boundaries.
+- **Scheduler admission and cancellation.**
+  - Each dispatch uses a fresh, identified scheduler observation.
+  - Local cancellation and the durable dispatch-admission transition are
+    serialized; external scheduler changes are observed, not included in
+    that transaction.
+  - An already admitted attempt may be in flight, including the uncertain
+    pre-send crash window. A later observed withdrawal stops further
+    admissions, readiness and not-yet-committed finalization, without
+    rewriting an actual effect as stopped.
+  - Ready and authored-write commitment each recheck scheduler eligibility.
+    The full protocol and its separate consent predicate are in
+    `INTERFACES.md`.
+- **Idempotence.** Duplicate request identities map to the same
+  authoritative execution record; different identities cannot overwrite
+  artifacts.
 
 ### Preserve authored presentation
 
-Regeneration always produces a separate editorial candidate. It does not replace
-human-curated composition merely because source content or a model improved.
-Source drift remains visible on the existing narrative; the new candidate carries
-new input identity and needs its own applicable reviews and per-block authorship
-act. Finalization is conditionally committed against cancellation/rejection before
-any authored write. Atomic writes compare the expected predecessor, record an
-application receipt with the version, and surface conflicts; acknowledgment loss
-is reconciled without replaying the write or replacing later human edits.
-Individual reversals preserve attribution. Authored narrative remains in the
-repository's intent home and survives offboarding.
-
-Rejected drafts leave Polaris reading, search and adoption surfaces entirely.
-The work item records rejection. Permitted execution evidence is not an ambient
-copy of adoptable prose. Generated projections obey an explicit retention policy;
-curated composition is not disposable cache data. Export requires its own allowed
-content/destination and cannot imply publication or adoption.
+- **Regeneration makes a candidate.** It always produces a separate editorial
+  candidate and never replaces human-curated composition merely because the
+  source or a model improved. Source drift stays visible on the existing
+  narrative; the new candidate carries new input identity and needs its own
+  applicable reviews and per-block authorship act.
+- **Authored writes.** Finalization is conditionally committed against
+  cancellation or rejection before any authored write. Atomic writes compare
+  the expected predecessor, record an application receipt with the version,
+  and surface conflicts. A lost acknowledgment is reconciled without
+  replaying the write or replacing later human edits. Individual reversals
+  preserve attribution.
+- **Where authored narrative lives:** in the repository's intent home; it
+  survives offboarding.
+- **Rejection and retention.** A rejected draft leaves Polaris reading,
+  search and adoption surfaces entirely; the work item records the
+  rejection. Permitted execution evidence is not an ambient copy of adoptable
+  prose. Generated projections obey an explicit retention policy; curated
+  composition is not disposable cache data. Export needs its own allowed
+  content and destination, and implies neither publication nor adoption.
 
 ### Treat editorial quality as an outcome
 
-The synthesis task must explain the project's distinctive argument, not merely
-extract headings or fit source text into a fixed template. Supporting material
-must preserve qualifications and opposing choices. Founder-like voice is an
-account of supported motives; generated quotations or invented biography fail.
-
-Review takes the actual full default reading, supporting depths, source material
-and desktop/mobile captures. It records whether readers can restate the thesis,
-motives, promises, limits and capability relationships, find exact intent and
-identify an honest Unknown. Visual review evaluates hierarchy, pace, terminology,
-contents, reference dominance, navigation and responsive composition. Human
-judgment is recorded as such; a numeric score does not manufacture it.
-
-`DESIGN-ACCEPTANCE.md` makes the owner's manifesto expectation concrete for
-independent evaluation: purpose-first reading, coherent argument, concise prose,
-deliberate full-page composition, useful contents and terminology, unobtrusive
-evidence access, and accessible navigation. It includes the reported interface
-failures as blocking counterexamples. This is candidate review guidance, not
-evidence that the generated experience already passes.
+- **Synthesis.** The task must explain the project's distinctive argument,
+  not merely extract headings or fit source text into a fixed template.
+  Supporting material keeps qualifications and opposing choices.
+  Founder-like voice is an account of supported motives; generated
+  quotations or invented biography fail.
+- **Review inputs:** the actual full default reading, the supporting depths,
+  the source material, and desktop and mobile captures.
+- **What review records.** Whether readers can restate the thesis, motives,
+  promises, limits and capability relationships; find exact intent; and
+  identify an honest Unknown. Visual review evaluates hierarchy, pace,
+  terminology, contents, reference dominance, navigation and responsive
+  composition. Human judgment is recorded as such; a numeric score does not
+  manufacture it.
+- **`DESIGN-ACCEPTANCE.md`** makes the owner's manifesto expectation concrete
+  for independent evaluation: purpose-first reading, coherent argument,
+  concise prose, deliberate full-page composition, useful contents and
+  terminology, unobtrusive evidence access, accessible navigation. It lists
+  the reported interface failures as blocking counterexamples. It is review
+  guidance, not evidence that the generated experience already passes.
 
 ## Coexistence and applicability
 
-These requirements add a generation workflow. They do not replace adopted PWB
-behavior. For Butlers, the following existing requirements remain controlling:
+These requirements add a generation workflow; they do not replace adopted PWB
+behavior. For Butlers, these existing requirements stay controlling:
 
 | Existing requirement | Preserved obligation | New generator relationship |
 |---|---|---|
@@ -157,33 +181,40 @@ behavior. For Butlers, the following existing requirements remain controlling:
 | PWB-REQ-020 | Complete human/machine tuple parity | Both generated presentation and deterministic facts preserve their distinct identities/states |
 | PWB-REQ-021/022 | Existing walkthrough population and effective judgment predicate | New product validation is additional; it does not replace or auto-pass the existing walkthrough |
 
-The generic engine must not force other projects into Butlers' categories or
-compiled source hashes. Their applicable adopted profiles/specifications govern
-project-specific population and exact-intent obligations. If integration needs to
-change any PWB behavior above, that becomes an explicit amendment; it cannot be
-hidden under the declaration that no existing capability is modified.
+- **Other projects.** The generic engine must not force them into Butlers'
+  categories or compiled source hashes. Their applicable adopted profiles and
+  specifications govern project-specific population and exact-intent
+  obligations.
+- **Changing PWB behavior** is an explicit amendment; it is never hidden under
+  a declaration that no existing capability is modified.
 
-## Risks / Trade-offs
+## Protected effect host
 
-- A provider seam with synthetic fixtures makes mechanics testable but cannot
-  prove editorial intelligence. Two authorized real projects and changed-source
-  regeneration remain completion evidence.
-- Free-form generation is expressive but difficult to audit; structured blocks
-  and minimal anchors enable challenge without equating citation presence with
-  factual support.
-- Automatic replacement is convenient but would erase authorship. Separate
-  candidates and explicit acts preserve attribution and reversibility.
-- A shared visual system promotes reuse but must allow meaningful project-specific
-  composition. Identical shells with swapped names are not the target outcome.
-- The new schema, retention policy, adapter registrations and full applicable
-  contract coverage remain sign-off work. This initial design makes no claim that
-  those gates have already passed.
+`EFFECT-HOST-DESIGN.md` selects a separate local origin and process, and a
+narrow protected recorder, for the generator.
 
-### Protected effect host
+- Existing PWB routes and tokens stay a separate compatibility surface; they
+  do not authorize generator operations.
+- Real host provisioning and project, provider and write effects still need
+  their concrete permissions.
+- This is a product-specific effect boundary, not a new portfolio identity or
+  scheduling platform.
 
-EFFECT-HOST-DESIGN.md selects a separate local origin/process and a narrow
-protected recorder for the generator. Existing PWB routes and tokens remain a
-separate compatibility surface; they do not authorize generator operations.
-Real host provisioning and project/provider/write effects still need their
-concrete permissions. This is a product-specific effect boundary, not a new
-portfolio identity or scheduling platform.
+## Risks and trade-offs
+
+- **Synthetic fixtures prove mechanics, not intelligence.** A provider seam
+  with synthetic fixtures makes mechanics testable but cannot prove editorial
+  intelligence. Two authorized real projects and changed-source regeneration
+  remain completion evidence.
+- **Structure makes free-form generation auditable.** Free-form generation
+  is expressive but hard to audit; structured blocks and minimal anchors
+  allow challenge, without equating citation presence with factual support.
+- **Separate candidates keep authorship.** Automatic replacement is
+  convenient but would erase authorship; separate candidates and explicit
+  acts preserve attribution and reversibility.
+- **Shared visuals must still differ.** A shared visual system promotes reuse
+  but must allow meaningful project-specific composition. Identical shells
+  with swapped names are not the target outcome.
+- **Open gates.** The new schema, retention policy, adapter registrations and
+  full applicable contract coverage are sign-off obligations. This design
+  makes no claim that those gates have passed.

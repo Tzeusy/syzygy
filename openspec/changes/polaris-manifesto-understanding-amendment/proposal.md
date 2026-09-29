@@ -1,8 +1,16 @@
 # Polaris project understanding
 
-Candidate formal synthesis of the owner's agreed product direction. The owner's
-agreement to the three design documents authorizes this synthesis; it is not
-represented as adoption of these newly generated specification bytes.
+> **Status:** the owner adopted this amendment on 2026-09-13, recorded in
+> [`POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md`](../../../.syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md);
+> the tree-form amendment later replaced REQ-polaris-generation-004
+> ([`POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md`](../../../.syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md)).
+> It formalizes the product direction the owner agreed in three design
+> documents; that agreement authorized the synthesis, and the act adopted its
+> bytes.
+
+**Polaris investigates an unfamiliar project, asks the owner the questions
+that matter, and only then argues the project's purpose.** This amendment adds
+that discovery and clarification loop to the `polaris-generation` capability.
 
 ## Why
 
@@ -13,71 +21,81 @@ adopted specification already requires stronger real-source and reader proof;
 this amendment concretizes the discovery, understanding and clarification loop
 that makes the intended product achievable.
 
-## What Changes
+## What changes
 
-- Add accounted unfamiliar-project discovery and consequential owner clarification
-  as requirements 030 and 031 in the existing `polaris-generation` capability.
-- Extend seven existing requirements for reviewable understanding, project-specific
-  argument and supporting assets, research repair, dependent regeneration,
-  responsive reading, independent evaluation and versioned research records.
-- Preserve every predecessor requirement and scenario, its meaning and gates.
-  A research finding can reopen source understanding instead of only editing prose.
-- Specify independent oracle extensions for new owner premises, held-out profiles,
-  honest partial outcomes and evaluation of owner effort and unsuccessful attempts.
+- **Added:** accounted unfamiliar-project discovery and consequential owner
+  clarification, as requirements 030 and 031 in the existing
+  `polaris-generation` capability.
+- **Extended:** seven existing requirements, for reviewable understanding,
+  project-specific argument and supporting assets, research repair, dependent
+  regeneration, responsive reading, independent evaluation and versioned
+  research records.
+- **Preserved:** every predecessor requirement and scenario, its meaning and
+  gates. A research finding can reopen source understanding instead of only
+  editing prose.
+- **Evaluation:** independent oracle extensions for new owner premises,
+  held-out profiles, honest partial outcomes, and evaluation of owner effort
+  and unsuccessful attempts.
 
 ## Capabilities
 
-### Modified Capabilities
-
-- `polaris-generation`: research and clarification feeding supported manifesto
-  composition, with stronger independent evaluation.
-
-### New Capabilities
-
-None. Requirements 030/031 extend the same coherent capability; they do not
-create a second product or specification category.
+- **Modified:** `polaris-generation` — research and clarification feeding
+  supported manifesto composition, with stronger independent evaluation.
+- **New:** none. Requirements 030/031 extend the same coherent capability;
+  they create no second product or specification category.
 
 ## Amendment relation
 
 This change amends the exact adopted change at
-`openspec/changes/polaris-manifesto-generation/`. Its seven MODIFIED blocks carry
-complete predecessor clauses and scenarios plus the explicit additions. The other
-22 existing requirements remain in force unchanged. Two ADDED requirements extend
-the same ID family. Do not archive/sync this as an unrelated competing change.
-The original change remains at its bound path; no digest-bound byte is edited.
-`SYNTHESIS-MAP.json` identifies the predecessor and the three agreed source
-artifacts and routes every numbered source scenario to its requirement.
+`openspec/changes/polaris-manifesto-generation/`.
+
+- **Seven MODIFIED blocks** carry complete predecessor clauses and scenarios,
+  plus the explicit additions.
+- **The other 22 existing requirements** remain in force unchanged.
+- **Two ADDED requirements** extend the same ID family.
+- **Never archive or sync this as an unrelated competing change.** The
+  original change stays at its bound path; no digest-bound byte is edited.
+- **`SYNTHESIS-MAP.json`** identifies the predecessor and the three agreed
+  source artifacts, and routes every numbered source scenario to its
+  requirement.
 
 ## Scope and preserved boundaries
 
-Discovery follows the existing metadata-only start and source/effect admission
-boundary; it cannot inspect a repository to grant itself access. Supported profiles
-declare languages, source forms, repository boundaries and scale. “Any codebase”
-is not universal support: correct partial or refused cases retain their limits.
-Code, history, documents and owner answers each require their applicable content
-classification, read/use/egress and retention permissions. None are granted here.
-
-The agreed experience investigates first and clarifies consequential missing
-intent before a confident central thesis. It can expose supported partial findings
-while questions remain. The first operational profile is configuration to select
-under admission and evaluation, not an exemption from the mandatory behavior.
-
-All existing caller security, protected audit, work/lifecycle, budget, retention,
-identity, per-block authorship, source policy, exact-leaf, primary-altitude,
-authority-band and human/machine parity requirements remain applicable. The
-existing workspace/portfolio and computed-rendering boundaries are unchanged.
-This is not permission to adopt intent, execute observed code, deploy, release,
-activate a new provider or widen real-project reads.
+- **Admission comes first.** Discovery follows the existing metadata-only
+  start and source/effect admission boundary; it cannot inspect a repository
+  to grant itself access.
+- **Support is declared, not universal.** Supported profiles declare
+  languages, source forms, repository boundaries and scale. "Any codebase" is
+  not universal support: correct partial or refused cases keep their limits.
+- **Every source class needs its permissions.** Code, history, documents and
+  owner answers each need their applicable content classification,
+  read/use/egress and retention permissions. None are granted here.
+- **Investigate, then clarify, then argue.** The agreed experience
+  investigates first and clarifies consequential missing intent before a
+  confident central thesis. It can expose supported partial findings while
+  questions remain. The first operational profile is configuration to select
+  under admission and evaluation, not an exemption from the mandatory
+  behavior.
+- **Existing requirements stay applicable:** caller security, protected
+  audit, work and lifecycle, budget, retention, identity, per-block
+  authorship, source policy, exact leaf, primary altitude, authority bands
+  and human/machine parity. The workspace/portfolio and computed-rendering
+  boundaries are unchanged.
+- **No new permission.** This is not permission to adopt intent, execute
+  observed code, deploy, release, activate a new provider or widen
+  real-project reads.
 
 ## Impact
 
-Generation core needs research/clarification/argument records and dependency-aware
-repair. App adapters need bounded discovery and attributed question/input handling.
-Polaris needs clarification and research inspection within its existing owner flow;
-Trajectory retains work ownership. Prompt, validator and renderer interfaces must
-consume one supported understanding. The existing intermediate wire format and
-linear repair runner are not silently declared conformant to these additions.
-
-Before adoption, review the amendment's exact behavioral and source-class impacts.
-The existing generator authority remains what its performed acts say; this
-candidate claims neither an implementation extension nor completion.
+- **Generation core:** research, clarification and argument records, and
+  dependency-aware repair.
+- **App adapters:** bounded discovery, and attributed question and input
+  handling.
+- **Polaris:** clarification and research inspection within its existing
+  owner flow; Trajectory keeps work ownership.
+- **Interfaces:** prompt, validator and renderer interfaces must consume one
+  supported understanding. The existing intermediate wire format and linear repair
+  runner are not silently declared conformant to these additions.
+- **Authority unchanged.** The generator's authority remains what its
+  performed acts say. This amendment claims neither an implementation
+  extension nor completion.
