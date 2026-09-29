@@ -32,10 +32,12 @@ it already read the status pages and the governance checker, at C1.
     - A package that is unperformed, drifted, malformed (a deeply nested or
       wrongly typed config included) or fails to check grants nothing and
       blocks no other package.
-    - Two performed-exact packages claiming one path are refused for that
-      path, whatever their order; other paths are unaffected. A second restyle of these subjects names the first
-      restyle's bytes as its predecessor, so the recorder refuses it until it
-      learns that chain.
+    - Paths are normalized before they are compared, so `./x` and `x` are
+      one path. Two performed-exact packages claiming one path are refused
+      for that path, whatever their order or spelling; other paths are
+      unaffected.
+    - A second restyle of these subjects names the first restyle's bytes as
+      its predecessor, so the recorder refuses it until it learns that chain.
     - What stays trusted: the act record, the acceptance-record block and the
       review raw the tool reads are read from the working tree, as the
       recorder reads its own act. A forged owner act is not detected here or
@@ -81,23 +83,31 @@ it already read the status pages and the governance checker, at C1.
   one fails the run named by its row (the recorder selftest, except the one
   row that names the governance checker's selftest). Some fail by an
   exception or a fixture's own assertion rather than by their named refusal;
-  each still fails closed. The Git query's
-  flags and the disk listing are exercised on a scratch repository, not a
-  fixture. The two round-3 witnesses (dropping `| set(listed)`, and widening
+  each still fails closed. The Git query's flags and the disk listing are
+  exercised on a scratch repository, not a fixture. The two round-3 witnesses (dropping `| set(listed)`, and widening
   the checker's raw-review exemption from a full match to a search) and the
   guards for the NUL split and the near-miss pattern each have their own row.
   Three more rows (round 6) pin the separator class, `search` against `match`,
   and the NUL split against a newline split. Five more (round 7) pin the
   first form of the successor exception, and seven more (round 8) its second.
-  Ten more (round 9) pin its third form. Twelve more (round 10) pin its
-  current form: the predecessor test, the row test, the drift branch, the
-  tool pin, the performed filter, the per-package exception scope, the frozen
-  view's delegation, the missing-tool guard, the contested marking, both
-  halves of the stored row and the contested refusal. Two guards have no row.
-  The rows cache changes only how often the tool runs. Executing the hashed
-  bytes rather than re-reading the file closes a race between the hash and
-  the load, which no deterministic fixture can open. Recorded refusals
-  replace temporary directory names with `<tmpdir>`.
+  Ten more (round 9) pin its third form, and twelve more (round 10) its
+  fourth. Fourteen more (round 11) pin its current form: the predecessor
+  test, the row test, the drift branch, the tool pin, the performed filter,
+  both widths of the per-package exception scope, the frozen view's
+  delegation, the missing-tool guard, path normalization, the contested
+  marking, both halves of the stored row and the contested refusal. Three
+  guards have no row.
+  - The rows cache changes only how often the tool runs.
+  - Executing the hashed bytes rather than re-reading the file closes a race
+    between the hash and the load, which no deterministic fixture can open.
+  - Marking two identical claims as contested changes no outcome. Two exact
+    packages can make one identical claim only for a path neither changes,
+    where the predecessor equals the row and today's bytes. Such a row can
+    accept a subject only if it also names the adopted digest, which means
+    the subject has not drifted and no row is consulted.
+
+  Recorded refusals replace temporary directory names with `<tmpdir>`; row
+  42 predates that form.
 - **Review rounds.**
   - Round 1 (`HISTORY-REVIEW-1-RAW.md`, REVISE): M1, a deleted raw was not
     refused, is answered by the Git population; M2, untested predicates, by
@@ -152,9 +162,15 @@ it already read the status pages and the governance checker, at C1.
     N2, a stale count of exception failures, and N3, a stale reference, by
     this page. N4, a two-claimant refusal blocking unrelated paths, by
     refusing only the contested path. N5, an unused import, removed.
-  - Round 10 (`HISTORY-REVIEW-10-RAW.md`) is required, because the recorder
-    changed after round 9. Until that raw is retained, no history review binds
-    the current recorder and `--check` fails by design.
+  - Round 10 (`HISTORY-REVIEW-10-RAW.md`, REVISE): M1, a differently
+    spelled path escaping the contested refusal, is answered by path
+    normalization and an aliased-claimant fixture. N1, an untested
+    `AttributeError` and an untested identical-claim branch, by a
+    listed-pins fixture and the no-row statement above. N2, one long line,
+    by this page. N3 stands as round 9's N4.
+  - Round 11 (`HISTORY-REVIEW-11-RAW.md`) is required, because the recorder
+    changed after round 10. Until that raw is retained, no history review
+    binds the current recorder and `--check` fails by design.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws
