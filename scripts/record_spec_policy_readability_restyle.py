@@ -484,6 +484,56 @@ def selftest():
         refuses("aggregate without dedicated record", lambda: check(root, pins=pins),
                 "dedicated record is absent")
 
+    # Guard group: refusals that fire before anything is written.
+    def guard_root(directory):
+        root = Path(directory)
+        roots.append(root)
+        seed(root)
+        (root / MANIFEST).parent.mkdir(parents=True, exist_ok=True)
+        text = "# synthetic\n" + "".join(
+            f"{digest(path.encode())}  {path}\n"
+            for path in sorted(path for _label, path in NESTED))
+        (root / MANIFEST).write_text(text)
+        sha = digest(text.encode())
+        return root, sha, write_review(root, raw_rel, sha)
+
+    for label, target in (("aggregate only", AGGREGATE), ("install only", INSTALL)):
+        with tempfile.TemporaryDirectory() as directory:
+            root, sha, pins = guard_root(directory)
+            with (root / target).open("a") as stream:
+                stream.write(f"<!-- {MARKER}:BEGIN -->\n")
+            refuses(f"partial record ({label}) refused",
+                    lambda: record(root, f"{LABEL}: {sha}", instant, False, pins),
+                    "adoption already recorded or partial")
+    with tempfile.TemporaryDirectory() as directory:
+        root, sha, pins = guard_root(directory)
+        (root / ACT).write_text("stray dedicated record\n")
+        refuses("partial record (dedicated act only) refused",
+                lambda: record(root, f"{LABEL}: {sha}", instant, False, pins),
+                "adoption already recorded or partial")
+
+    class Installed:
+        @staticmethod
+        def applied(_root):
+            return True
+
+        @staticmethod
+        def check(_root):
+            return ["would-be finding"]
+
+    with tempfile.TemporaryDirectory() as directory:
+        root, sha, pins = guard_root(directory)
+        real_builder = builder
+        globals()["builder"] = lambda: Installed
+        try:
+            refuses("already-installed package bytes refused before recording",
+                    lambda: record(root, f"{LABEL}: {sha}", instant, True, pins),
+                    "package bytes are already installed")
+            results.append(("already-installed bytes pass with allow_applied",
+                            verify_package(root, allow_applied=True) is None))
+        finally:
+            globals()["builder"] = real_builder
+
     # Real group: the real, verifying package in a fixture root.
     package = builder()
     if not (ROOT / PACKAGE).is_dir() or package.applied(ROOT):
