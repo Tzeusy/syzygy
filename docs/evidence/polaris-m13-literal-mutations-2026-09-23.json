@@ -1,0 +1,420 @@
+{
+  "kind": "m13-literal-source-mutations",
+  "capturedAt": "2026-09-23T08:44:35.366Z",
+  "testedCommit": "a5b4e34b25019b75051b6901907406145feb1339",
+  "baselineAndMutantRunSeparately": true,
+  "records": [
+    {
+      "id": "exact-label-bare",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-copy.test.ts"
+      ],
+      "edits": [
+        {
+          "old": "${copy('label.exact-text')} — ${escapeHtml(path)}",
+          "replacement": "${copy('label.exact-text')}"
+        }
+      ],
+      "mustFail": "classifies each interpolated source control",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/baseline-0.json",
+        "exit": 0,
+        "total": 7,
+        "passed": 7,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/mutant-0.json",
+        "exit": 1,
+        "total": 7,
+        "passed": 5,
+        "failed": 2,
+        "failing": [
+          "Polaris copy roles (PWB-REQ-012) classifies each interpolated source control and preserves exact-source href order and multiplicity",
+          "Polaris copy roles (PWB-REQ-012) gives every summary and native anchor a distinct accessible name unless its href is identical"
+        ]
+      },
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "source-label-constant",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-copy.test.ts"
+      ],
+      "edits": [
+        {
+          "old": "${copy('label.source-record')} — ${escapeHtml(source.path)}",
+          "replacement": "${copy('label.source-record')} — constant"
+        }
+      ],
+      "mustFail": "classifies each interpolated source control",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/baseline-1.json",
+        "exit": 0,
+        "total": 7,
+        "passed": 7,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/mutant-1.json",
+        "exit": 1,
+        "total": 7,
+        "passed": 6,
+        "failed": 1,
+        "failing": [
+          "Polaris copy roles (PWB-REQ-012) classifies each interpolated source control and preserves exact-source href order and multiplicity"
+        ]
+      },
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "exact-href-identity-changed",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-copy.test.ts",
+        "apps/three-surface-poc/src/polaris-source-route.test.ts"
+      ],
+      "edits": [
+        {
+          "old": "sourceRouteHref(activeMountPrefix, identity)",
+          "replacement": "sourceRouteHref(activeMountPrefix, path)"
+        }
+      ],
+      "mustFail": "classifies each interpolated source control",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-source-route.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/baseline-2.json",
+        "exit": 0,
+        "total": 13,
+        "passed": 13,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-source-route.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/mutant-2.json",
+        "exit": 1,
+        "total": 13,
+        "passed": 10,
+        "failed": 3,
+        "failing": [
+          "Polaris copy roles (PWB-REQ-012) classifies each interpolated source control and preserves exact-source href order and multiplicity",
+          "Polaris copy roles (PWB-REQ-012) gives every summary and native anchor a distinct accessible name unless its href is identical",
+          "Polaris exact-source route (PWB-REQ-011 as amended; RFC7-1, RFC7-13) links to the route from the page only for admitted baseline-spec identities: each source row, item row, current-authority citation and depth-list dive names the same href"
+        ]
+      },
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "heading-fixed-offset",
+      "file": "apps/three-surface-poc/src/polaris-markdown.ts",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-markdown.test.ts",
+        "apps/three-surface-poc/src/polaris-reachability.test.ts"
+      ],
+      "edits": [
+        {
+          "old": "Math.min(6, anchorHeadingLevel + 1 + heading[1]!.length - shallowestHeading)",
+          "replacement": "Math.min(6, heading[1]!.length + 3)"
+        }
+      ],
+      "mustFail": "starts a shallowest ### one below its anchor",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-markdown.test.ts apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/baseline-3.json",
+        "exit": 0,
+        "total": 28,
+        "passed": 28,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-markdown.test.ts apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/mutant-3.json",
+        "exit": 1,
+        "total": 28,
+        "passed": 25,
+        "failed": 3,
+        "failing": [
+          "Polaris admitted-text Markdown presentation starts a shallowest ### one below its anchor while retaining relative depth",
+          "Polaris admitted-text Markdown presentation does not let a fenced or indented heading reset the fragment root",
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) keeps every rendered heading at most one level below its predecessor"
+        ]
+      },
+      "sourceSha256Before": "563224088a42d8ac54e2f253448c1d09f723701da23b47e357581d7e8174beba",
+      "sourceSha256After": "563224088a42d8ac54e2f253448c1d09f723701da23b47e357581d7e8174beba",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "selected-heading-reverts-to-three-hashes",
+      "file": "apps/three-surface-poc/src/polaris-reading.ts",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-reading.test.ts"
+      ],
+      "edits": [
+        {
+          "old": "heading === true ? '# ' : ''",
+          "replacement": "heading === true ? '### ' : ''"
+        }
+      ],
+      "mustFail": "preserves exact selected passages and the full declaration",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reading.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/baseline-4.json",
+        "exit": 0,
+        "total": 8,
+        "passed": 8,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reading.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/mutant-4.json",
+        "exit": 1,
+        "total": 8,
+        "passed": 7,
+        "failed": 1,
+        "failing": [
+          "reviewed project reading preserves exact selected passages and the full declaration"
+        ]
+      },
+      "sourceSha256Before": "f10e4355b182512457a89e77f11b296f6d412349f4c30ff94421eb88e5fcad6e",
+      "sourceSha256After": "f10e4355b182512457a89e77f11b296f6d412349f4c30ff94421eb88e5fcad6e",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "missing-digest-disclosure-empty",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-project-shape.test.ts"
+      ],
+      "edits": [
+        {
+          "old": "<small${copyAttr('sentence.no-body-read')}>${copy('sentence.no-body-read')}</small>",
+          "replacement": "<small${copyAttr('sentence.no-body-read')}></small>"
+        }
+      ],
+      "mustFail": "keeps every source record visible in six scoped columns",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-project-shape.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/baseline-5.json",
+        "exit": 0,
+        "total": 24,
+        "passed": 24,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-project-shape.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/mutant-5.json",
+        "exit": 1,
+        "total": 24,
+        "passed": 22,
+        "failed": 2,
+        "failing": [
+          "Polaris project-level sequence (PWB-REQ-010) keeps path-only identity counts distinct from body readability in the model and Polaris",
+          "Polaris project-level sequence (PWB-REQ-010) keeps every source record visible in six scoped columns with identity, rule, outcome, anchor and nonempty digest disclosure"
+        ]
+      },
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "source-table-not-bare",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-reachability.test.ts"
+      ],
+      "edits": [
+        {
+          "old": "tableRegion('polaris-shape-sources', `<table><thead><tr>",
+          "replacement": "tableRegion('polaris-shape-sources', `<table role=\"region\"><thead><tr>"
+        }
+      ],
+      "mustFail": "carries no pointer-only or layout-only affordance",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/baseline-6.json",
+        "exit": 0,
+        "total": 9,
+        "passed": 9,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/mutant-6.json",
+        "exit": 1,
+        "total": 9,
+        "passed": 8,
+        "failed": 1,
+        "failing": [
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules"
+        ]
+      },
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "source-target-inside-details",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-first-reading.test.ts"
+      ],
+      "edits": [
+        {
+          "old": "${tableRegion('polaris-shape-sources', `<table><thead><tr>",
+          "replacement": "<details><summary>Source records</summary>${tableRegion('polaris-shape-sources', `<table><thead><tr>"
+        },
+        {
+          "old": ", ' data-source-index')}\n  </section>\n  <section class=\"claim-section\" data-polaris-section=\"shape:exclusions\">",
+          "replacement": ", ' data-source-index')}</details>\n  </section>\n  <section class=\"claim-section\" data-polaris-section=\"shape:exclusions\">"
+        }
+      ],
+      "mustFail": "keeps each item population and the exclusions complete behind a native disclosure",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-first-reading.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/baseline-7.json",
+        "exit": 0,
+        "total": 8,
+        "passed": 8,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-first-reading.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/mutant-7.json",
+        "exit": 1,
+        "total": 8,
+        "passed": 7,
+        "failed": 1,
+        "failing": [
+          "Polaris progressive disclosure (PWB-REQ-011 as amended; PWB-LIVE-13) keeps each item population and the exclusions complete behind a native disclosure whose control names the count, leaves the sources table open for fragment navigation, and hides nothing by style"
+        ]
+      },
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "outline-heading-deleted",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-reachability.test.ts"
+      ],
+      "edits": [
+        {
+          "old": "missing[level]!.push(`<a href=\"#${escapeHtml(id)}\"${SCOPE}>${label} — ${escapeHtml(group)}</a>`);",
+          "replacement": "if (!id.includes('currency-probe')) missing[level]!.push(`<a href=\"#${escapeHtml(id)}\"${SCOPE}>${label} — ${escapeHtml(group)}</a>`);"
+        }
+      ],
+      "mustFail": "lists the four depths as native links in document order",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/baseline-8.json",
+        "exit": 0,
+        "total": 9,
+        "passed": 9,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/mutant-8.json",
+        "exit": 1,
+        "total": 9,
+        "passed": 8,
+        "failed": 1,
+        "failing": [
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) lists the four depths as native links in document order, reaching every group, catalog class, capability deep dive and evidence heading the state renders"
+        ]
+      },
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "early-shortcuts-inside-details",
+      "file": "apps/three-surface-poc/src/page-shell.ts",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-reachability.test.ts"
+      ],
+      "edits": [
+        {
+          "old": "${input.earlyLinks ?? ''}",
+          "replacement": "<details><summary>Group shortcuts</summary>${input.earlyLinks ?? ''}</details>"
+        }
+      ],
+      "mustFail": "keeps seven group shortcuts among the first ten tabs",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/baseline-9.json",
+        "exit": 0,
+        "total": 9,
+        "passed": 9,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/mutant-9.json",
+        "exit": 1,
+        "total": 9,
+        "passed": 8,
+        "failed": 1,
+        "failing": [
+          "Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        ]
+      },
+      "sourceSha256Before": "b031fb72c8b7769b5efcbc949d7295f6dd1b14ee5b865d141f5bffa74880b5c0",
+      "sourceSha256After": "b031fb72c8b7769b5efcbc949d7295f6dd1b14ee5b865d141f5bffa74880b5c0",
+      "restored": true,
+      "killed": true
+    },
+    {
+      "id": "hidden-count-constant",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts"
+      ],
+      "edits": [
+        {
+          "old": "drawer.querySelectorAll('a').length",
+          "replacement": "1"
+        }
+      ],
+      "mustFail": "gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count",
+      "baseline": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-accessibility.browser.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/baseline-10.json",
+        "exit": 0,
+        "total": 14,
+        "passed": 14,
+        "failed": 0,
+        "failing": []
+      },
+      "mutant": {
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-accessibility.browser.test.ts --reporter=json --outputFile=/tmp/syzygy-m13-mutation-RwePpI/mutant-10.json",
+        "exit": 1,
+        "total": 14,
+        "passed": 13,
+        "failed": 1,
+        "failing": [
+          "Polaris keyboard, non-visual and contrast checks in a real browser gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count"
+        ]
+      },
+      "sourceSha256Before": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "sourceSha256After": "bef3238f915241004c488d572d6d7d04c326313387f54ec97594b980908c9a36",
+      "restored": true,
+      "killed": true
+    }
+  ],
+  "summary": {
+    "planned": 11,
+    "killedAndRestored": 11
+  }
+}

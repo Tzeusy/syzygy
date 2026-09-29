@@ -13,7 +13,7 @@ const plan: ReadingPlan = {
 describe('reviewed project reading', () => {
   it('preserves exact selected passages and the full declaration', () => {
     const result = applyReadingPlan(text, plan);
-    expect(result).toEqual({ summary: '### Process Model\n\nWorkers run with explicit approval.\n\n### Storage Model\n\nRecords persist.', full: text, condensed: true });
+    expect(result).toEqual({ summary: '# Process Model\n\nWorkers run with explicit approval.\n\n# Storage Model\n\nRecords persist.', full: text, condensed: true });
   });
 
   it('retains the complete account after any source change, including a new unmarked qualification', () => {

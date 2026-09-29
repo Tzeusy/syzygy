@@ -201,7 +201,7 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
     } finally { await page.close(); }
   });
 
-  it('keeps source records compact while citation targets remain keyboard-reachable', async () => {
+  it('keeps complete source columns visible while citation targets remain keyboard-reachable', async () => {
     const { url } = pageUrl(ACCESSIBILITY_VARIANTS[0] as AccessibilityVariant);
     const page = await browser.newPage();
     try {
@@ -210,22 +210,64 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
       const id = await page.evaluate<string>(`document.querySelector('tr[data-polaris-source]').id`);
       await page.navigate('about:blank');
       await page.navigate(url + '#' + id);
-      const closed = await page.evaluate<{ open: boolean; hidden: boolean; targetOutsideDisclosure: boolean }>(`(() => {
+      const record = await page.evaluate<{ columns: number; identityVisible: boolean; labelVisible: boolean; targetOutsideDisclosure: boolean; noRowDisclosure: boolean }>(`(() => {
         const row = document.getElementById(${JSON.stringify(id)});
-        const record = row.querySelector('.source-record');
-        return { open: record.open, hidden: !record.querySelector('cite').checkVisibility(),
-          targetOutsideDisclosure: row.closest('details') === null };
+        return { columns: row.querySelectorAll('td').length,
+          identityVisible: row.querySelector('[data-parity-field="shape-source-identity"]').checkVisibility(),
+          labelVisible: row.querySelector('.source-record-label').checkVisibility(),
+          targetOutsideDisclosure: row.closest('details') === null,
+          noRowDisclosure: row.querySelector('details') === null };
       })()`);
-      expect(closed).toEqual({ open: false, hidden: true, targetOutsideDisclosure: true });
+      expect(record).toEqual({ columns: 6, identityVisible: true, labelVisible: true, targetOutsideDisclosure: true, noRowDisclosure: true });
+      await page.evaluate(`document.getElementById(${JSON.stringify(id)}).closest('.table-scroll').focus()`);
+      expect(await page.evaluate<boolean>(`document.activeElement.classList.contains('table-scroll')`)).toBe(true);
       await page.press('Tab');
-      expect(await page.evaluate<boolean>(`document.activeElement === document.getElementById(${JSON.stringify(id)}).querySelector('.source-record summary')`)).toBe(true);
-      await page.press('Enter');
-      expect(await page.evaluate<boolean>(`document.getElementById(${JSON.stringify(id)}).querySelector('.source-record cite').checkVisibility()`)).toBe(true);
-      await page.press('Enter');
-      await page.press('Tab');
-      const next = await page.evaluate<string | null>(`document.activeElement.closest('tr[data-polaris-source]')?.id ?? null`);
-      expect(next).not.toBeNull();
-      expect(next).not.toBe(id);
+      expect(await page.evaluate<boolean>(`document.activeElement !== document.body && document.activeElement.closest('details') === null`)).toBe(true);
+    } finally { await page.close(); }
+  });
+
+  it('gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count', async () => {
+    const rendered = renderVariant(ACCESSIBILITY_VARIANTS[0] as AccessibilityVariant, cleanups);
+    const file = join(pages, 'm13-outline.html');
+    writeFileSync(file, rendered.html);
+    const page = await browser.newPage();
+    try {
+      await page.setViewport(390, 844);
+      await page.navigate(pathToFileURL(file).href);
+      const initial = await page.evaluate<{ headings: string[]; targets: string[]; hidden: string; outside: boolean }>(`(() => {
+        const headings = [...document.querySelectorAll('main h2, main h3')];
+        const targets = [...document.querySelectorAll('.contents-list a[href^="#"]')].map(link => link.getAttribute('href').slice(1));
+        return { headings: headings.map(heading => heading.id), targets,
+          hidden: document.querySelector('[data-outline-hidden-count]').textContent,
+          outside: headings.every(heading => !!heading.id && !heading.closest('details')) };
+      })()`);
+      expect(initial.outside).toBe(true);
+      expect(initial.headings.length).toBeGreaterThan(15);
+      for (const id of initial.headings) expect(initial.targets.filter(target => target === id), id).toHaveLength(1);
+      expect(initial.hidden).toBe(`${initial.targets.length} links hidden`);
+      const firstTabs: (string | null)[] = [];
+      for (let index = 0; index < 8; index += 1) {
+        await page.press('Tab');
+        firstTabs.push(await page.evaluate<string | null>(`document.activeElement.getAttribute('href')`));
+      }
+      expect(firstTabs).toEqual(['#main-content', '#polaris-group-overview', '#polaris-group-boundaries', '#polaris-group-v1',
+        '#polaris-group-architecture', '#polaris-group-catalog', '#polaris-group-capability-detail', '#polaris-group-evidence-and-gaps']);
+      await page.evaluate(`new Promise(resolve => { const drawer = document.querySelector('.contents-list'); drawer.addEventListener('toggle', resolve, { once: true }); drawer.querySelector('summary').click(); })`);
+      expect(await page.evaluate<string>(`document.querySelector('[data-outline-hidden-count]').textContent`)).toBe('0 links hidden');
+      await page.evaluate(`new Promise(resolve => { const drawer = document.querySelector('.contents-list'); drawer.addEventListener('toggle', resolve, { once: true }); drawer.querySelector('summary').click(); })`);
+      expect(await page.evaluate<string>(`document.querySelector('[data-outline-hidden-count]').textContent`)).toBe(`${initial.targets.length} links hidden`);
+
+      const noScriptFile = join(pages, 'm13-outline-no-script.html');
+      writeFileSync(noScriptFile, rendered.html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, ''));
+      await page.navigate(pathToFileURL(noScriptFile).href);
+      const fallback = await page.evaluate<{ headings: number; targets: number; rows: number; count: string }>(`({
+        headings: document.querySelectorAll('main h2[id], main h3[id]').length,
+        targets: document.querySelectorAll('.contents-list a[href^="#"]').length,
+        rows: document.querySelectorAll('tr[data-polaris-source]').length,
+        count: document.querySelector('[data-outline-hidden-count]').textContent,
+      })`);
+      expect(fallback).toEqual({ headings: initial.headings.length, targets: initial.targets.length,
+        rows: 15, count: `${initial.targets.length} links in outline` });
     } finally { await page.close(); }
   });
 

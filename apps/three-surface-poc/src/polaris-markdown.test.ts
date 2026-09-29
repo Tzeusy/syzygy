@@ -7,6 +7,19 @@ describe('Polaris admitted-text Markdown presentation', () => {
       .toBe('<h4>Context</h4>\n<p>Only <strong>observed</strong> evidence\nmay count.</p>\n<h6>C#</h6>');
   });
 
+  it('starts a shallowest ### one below its anchor while retaining relative depth', () => {
+    expect(renderPolarisMarkdown('### Root\n\n#### Child')).toBe('<h4>Root</h4>\n<h5>Child</h5>');
+    expect(renderPolarisMarkdown('### Root\n\n#### Child', undefined, 4)).toBe('<h5>Root</h5>\n<h6>Child</h6>');
+    expect(renderPolarisMarkdown('# Root\n\n## Child\n\n#### Deep')).toBe('<h4>Root</h4>\n<h5>Child</h5>\n<h6>Deep</h6>');
+  });
+
+  it('does not let a fenced or indented heading reset the fragment root', () => {
+    const html = renderPolarisMarkdown('```md\n# not a heading\n```\n\n    ## literal\n\n### Actual');
+    expect(html).toContain('<h4>Actual</h4>');
+    expect(html).not.toContain('<h5>Actual</h5>');
+    expect(() => renderPolarisMarkdown('# Heading', undefined, 6)).toThrow('invalid Markdown anchor heading level');
+  });
+
   it('preserves qualifiers, literal code and unsupported syntax', () => {
     expect(renderPolarisMarkdown('*not* __accepted__; `**literal** <x>`\n\n~~unknown~~ and source_name_value'))
       .toBe('<p><em>not</em> <strong>accepted</strong>; <code>**literal** &lt;x&gt;</code></p>\n<p>~~unknown~~ and source_name_value</p>');

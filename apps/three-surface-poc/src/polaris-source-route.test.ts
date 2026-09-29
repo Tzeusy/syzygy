@@ -190,7 +190,7 @@ describe('Polaris exact-source route (PWB-REQ-011 as amended; RFC7-1, RFC7-13)',
   });
 
   it('links to the route from the page only for admitted baseline-spec identities: each source row, item row, current-authority citation and depth-list dive names the same href', () => {
-    const { model, identity } = observed();
+    const { model, shape, identity } = observed();
     const html = renderPolarisPage(model);
     const linked = sourceRouteIdentities(html);
     expect(linked.length).toBeGreaterThanOrEqual(3);
@@ -203,9 +203,10 @@ describe('Polaris exact-source route (PWB-REQ-011 as amended; RFC7-1, RFC7-13)',
     // The href is the one carrier of the identity: it round-trips exactly.
     const anchors = [...html.matchAll(/<a href="([^"]*\/polaris\/source\?identity=[^"]*)"[^>]*>([^<]*)<\/a>/g)];
     expect(anchors.length).toBe(linked.length);
+    const pathByIdentity = new Map(shape.sources.map(source => [source.identity, source.path]));
     anchors.forEach((anchor, index) => {
       expect(decode(anchor[1] as string)).toBe(sourceRouteHref('', linked[index] as string));
-      expect(anchor[2]).toBe('Exact text');
+      expect(anchor[2]).toBe(`Exact text — ${pathByIdentity.get(linked[index] as string)}`);
     });
     // The source row, the item rows of the baseline spec, and the depth list.
     const sourceRow = html.slice(html.indexOf(`id="polaris-source-${sourceSlug(PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH)}"`));

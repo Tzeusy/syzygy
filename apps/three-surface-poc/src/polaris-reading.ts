@@ -112,7 +112,7 @@ export function applyReadingPlan(text: string, plan: ReadingPlan): ProjectReadin
     if (relationships !== undefined) return '```relations\n' + JSON.stringify(relationships.map(({ from, to, body }) => ({
       from: text.slice(from.start, from.end), to: text.slice(to.start, to.end), description: text.slice(body.start, body.end),
     }))) + '\n```';
-    return format === 'flow' ? passage.replace(/^```\n/, '```flow\n') : `${heading === true ? '### ' : ''}${passage}`;
+    return format === 'flow' ? passage.replace(/^```\n/, '```flow\n') : `${heading === true ? '# ' : ''}${passage}`;
   }).join('\n\n');
   return { summary, full: text, condensed: true, ...(chapters === undefined ? {} : { chapters }), ...(figures === undefined ? {} : { figures }) };
 }

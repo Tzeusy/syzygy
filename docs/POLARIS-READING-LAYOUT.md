@@ -5,6 +5,23 @@ smaller screens the outline becomes an in-flow drawer. Section links move
 straight to their destinations; they do not animate through the entire document.
 Opening the drawer changes presentation only.
 
+The seven group shortcuts are native links ahead of the global navigation, so
+they remain available when the full four-depth outline is closed or scripts do
+not run. The server emits an outline link for every h2/h3 target in document
+order; fragment targets remain outside disclosures. A no-script drawer states
+its total link population. The optional local script recomputes the number
+hidden when the drawer opens, closes or changes at the viewport breakpoint;
+it stores no choice in cookies, storage or history. This is not catalog
+filtering or pagination: all facts, source rows and links remain in the HTML.
+
+Exact-source controls name the source path while their href remains the sole
+carrier of the revision-bound identity. Source records occupy scoped columns
+in the existing open, keyboard-scrollable table: identity, rule/pillar, and
+outcome/anchor/digest. A source with no admitted body digest says “no body
+read,” never an empty digest cell. Admitted Markdown headings map relative to
+the shallowest heading in their fragment and start below their anchoring
+heading; fenced and indented code cannot set that depth.
+
 The architecture reading supports source-backed explanatory assets:
 
 - Explicit `flow` fences render bounded sequences with a readable vertical

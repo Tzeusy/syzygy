@@ -219,12 +219,12 @@ describe('Polaris progressive disclosure (PWB-REQ-011 as amended; PWB-LIVE-13)',
     for (const details of itemPopulations) {
       const cls = /data-polaris-items="([^"]+)"/.exec(details.tag)?.[1];
       const count = shape.items.filter((item) => item.class === cls).length;
-      expect(details.inner).toContain(`>Show items (${count})</summary>`);
+      expect(details.inner).toContain(`>Show items (${count}) — ${cls}</summary>`);
       // A row is a table row or, for a statement-less class, a list entry.
       expect(details.inner.match(/<(?:tr|li) data-polaris-item="/g)?.length ?? 0).toBe(count);
     }
     expect(exclusionPopulations.length).toBe(1);
-    expect(exclusionPopulations[0]?.inner).toContain(`>Show exclusions (${shape.exclusions.length})</summary>`);
+    expect(exclusionPopulations[0]?.inner).toContain(`>Show exclusions (${shape.exclusions.length}) — ${shape.claim.claimId}</summary>`);
     expect(exclusionPopulations[0]?.inner.split('data-polaris-exclusion="').length).toBe(shape.exclusions.length + 1);
     // The sources table is not inside any disclosure: Chrome restarts
     // sequential focus at a details' first focusable after fragment
@@ -251,11 +251,12 @@ describe('Polaris progressive disclosure (PWB-REQ-011 as amended; PWB-LIVE-13)',
   it('reaches at least one requirement and one scenario verbatim from a first reading without treating Polaris as authority: the current-authority citation routes to the exact text and names the owning artifact', () => {
     const { html } = observed(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC);
     const detail = html.slice(html.indexOf('data-polaris-group="capability-detail"'), html.indexOf('data-polaris-group="evidence-and-gaps"'));
-    const links = [...detail.matchAll(/<a href="([^"]+)"[^>]*>Exact text<\/a>/g)];
+    const links = [...detail.matchAll(/<a href="([^"]+)"[^>]*>Exact text — ([^<]+)<\/a>/g)];
     expect(links.length).toBeGreaterThan(0);
     for (const link of links) {
       expect(decode(link[1] as string)).toContain('/polaris/source?identity=');
       expect(decodeURIComponent(decode(link[1] as string).split('identity=')[1] as string)).toContain('openspec/specs/');
+      expect(decode(link[2] as string)).toContain('openspec/specs/');
     }
     // No requirement text is copied onto the page itself: the page cites and
     // routes, the route renders (PWB-REQ-011 non-goal: no copied source).
