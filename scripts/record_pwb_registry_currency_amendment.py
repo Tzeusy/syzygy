@@ -67,6 +67,10 @@ CONFIRMATION_REVIEW_REL = pathlib.Path(
 FROZEN_SUBJECT = "4b59e39f501bae2a7ffbbe9dad5c76df2a8f85e5"
 PACKET_HEAD = "4b59e39f501bae2a7ffbbe9dad5c76df2a8f85e5"
 ACT_TYPE = "adopt-registry-entry"
+#: The discovery grammar the entry declares, unchanged by this amendment. The
+#: read gate's scope check expects the record to name it, as the predecessor
+#: record did.
+DISCOVERY_VERSION = "pwb-discovery-v2-candidate.1"
 ACT_LABEL = "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY"
 RECORD_REL = DECISIONS / "PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md"
 PREDECESSOR_REL = DECISIONS / "PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md"
@@ -168,6 +172,18 @@ def validate_artifact(
     return digest(manifest_bytes)
 
 
+#: The one head a packet may gain after the act, between its title and the
+#: banner it was offered with; nothing else in the presented bytes may move.
+PERFORMED_HEAD_RE = re.compile(
+    rb"\A(# [^\n]+\n\n)"
+    rb"> \*\*PERFORMED \d{4}-\d{2}-\d{2}\.\*\*[^\n]*\n(?:> [^\n]*\n)*\n"
+)
+
+
+def strip_performed_head(packet_bytes: bytes) -> bytes:
+    return PERFORMED_HEAD_RE.sub(rb"\1", packet_bytes, count=1)
+
+
 def validate_packet(
     root: pathlib.Path, argument: str, manifest_sha: str,
     packet_override: bytes | None = None, review_override: str | None = None,
@@ -185,7 +201,7 @@ def validate_packet(
             "owner packet carries a 64-hex token; the package declares its argument "
             "absent from every Markdown file and derived only from the manifest row"
         )
-    if committed_blob(root, PACKET_HEAD, OWNER_PACKET) != packet_bytes:
+    if committed_blob(root, PACKET_HEAD, OWNER_PACKET) != strip_performed_head(packet_bytes):
         raise ValueError("packet-head commit does not carry the presented packet bytes")
     review_path = root / CONFIRMATION_REVIEW_REL
     if review_override is None and not review_path.is_file():
@@ -236,8 +252,8 @@ Provenance state: `owner-adopted (bootstrap, uncorrelated)` — state (1),
 explicitly selected by performing the offered state-(1) phrase
 
 Supersession / revocation: this act supersedes, for the `{ACT_TYPE}` role
-only, the {PREDECESSOR_DATE} act recorded at `{PREDECESSOR_REL.as_posix()}`,
-whose argument `{superseded_digest}` was the subject's exact digest until
+only, the {PREDECESSOR_DATE} act recorded at `{PREDECESSOR_REL.as_posix()}`.
+Its argument `{superseded_digest}` was the subject's exact digest until
 this act's patch was applied. That record, its digest, its tag and the bytes
 it bound remain immutable history. This act is revoked only by a later exact
 owner act naming it.
@@ -276,7 +292,8 @@ Frozen provenance:
 ## Effect
 
 The amended adapter-registry entry (`polaris-butlers-project-shape`,
-version `{packet.PROPOSED_VERSION}`) is adopted in Syzygy's governance home
+version `{packet.PROPOSED_VERSION}`, discovery version
+`{DISCOVERY_VERSION}`) is adopted in Syzygy's governance home
 `.syzygy/governance/declarations/adapter-registry` for `project:syzygy` and
 the configured Butlers repository, in place of the {PREDECESSOR_DATE} entry
 (version `{packet.CURRENT_VERSION}`), with read-only authority and an empty
@@ -447,20 +464,23 @@ def selftest() -> int:
     results.append(("wrong owner argument rejected",
                     rejects(validate_artifact, "does not match the effect manifest row",
                             ROOT, "0" * 64, False)))
-    current_sha = digest((ROOT / packet.SUBJECT).read_bytes())
+    # Pre-adoption fixtures replay the subject as the frozen package saw it,
+    # so they hold before and after the patch is applied to the tree.
+    pre_subject = committed_blob(ROOT, FROZEN_SUBJECT, packet.SUBJECT)
+    current_sha = digest(pre_subject)
     results.append(("current (superseded) subject digest offered as argument rejected",
                     rejects(validate_artifact, "does not match the effect manifest row",
                             ROOT, current_sha, False)))
     pre = False
     try:
-        pre = validate_artifact(ROOT, exact, False) == manifest_sha
+        pre = validate_artifact(ROOT, exact, False, subject_override=pre_subject) == manifest_sha
     except ValueError as exc:
         print(f"  (exact-argument failure: {exc})")
     results.append(("exact argument validates before adoption", pre))
     results.append(("unapplied subject rejected in applied mode",
                     rejects(validate_artifact, "the patch was not applied",
-                            ROOT, exact, True)))
-    drifted_subject = (ROOT / packet.SUBJECT).read_bytes() + b"\n"
+                            ROOT, exact, True, subject_override=pre_subject)))
+    drifted_subject = pre_subject + b"\n"
     results.append(("subject bytes other than the superseded act's argument rejected",
                     rejects(validate_artifact, "not the superseded act's argument",
                             ROOT, exact, False, subject_override=drifted_subject)))
@@ -478,6 +498,19 @@ def selftest() -> int:
     results.append(("packet carrying a transcribed digest rejected",
                     rejects(validate_packet, "carries a 64-hex token",
                             ROOT, exact, manifest_sha, packet_override=leaked)))
+    frozen_packet = committed_blob(ROOT, PACKET_HEAD, OWNER_PACKET)
+    headed = strip_performed_head(packet_bytes)
+    results.append(("live packet is the frozen packet under at most one PERFORMED head",
+                    headed == frozen_packet))
+    title, rest = frozen_packet.split(b"\n\n", 1)
+    performed_only = title + b"\n\n> **PERFORMED 2026-09-30.** Recorded.\n\n" + rest
+    results.append(("PERFORMED head alone accepted",
+                    strip_performed_head(performed_only) == frozen_packet))
+    edited_below = performed_only.replace(b"binds nothing", b"binds everything", 1)
+    results.append(("edit beneath a PERFORMED head rejected",
+                    rejects(validate_packet, "packet-head commit does not carry",
+                            ROOT, exact, manifest_sha, packet_override=edited_below)))
+    packet_bytes = frozen_packet
     drifted = packet_bytes + b"\n"
     results.append(("packet bytes the packet head lacks rejected",
                     rejects(validate_packet, "packet-head commit does not carry",

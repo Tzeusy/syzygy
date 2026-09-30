@@ -139,6 +139,18 @@ jobs:
       - name: build_pwb_registry_currency_briefing_amendment --selftest
         run: python3 scripts/build_pwb_registry_currency_briefing_amendment.py --selftest
 
+      - name: record_pwb_registry_currency_amendment --check
+        run: python3 scripts/record_pwb_registry_currency_amendment.py --check 2356b9ed3235b3dff79caeb352803a30c446b7365a2a7ea74df302b9fa51386a --date 2026-09-30
+
+      - name: record_pwb_registry_currency_amendment --selftest
+        run: python3 scripts/record_pwb_registry_currency_amendment.py --selftest
+
+      - name: check_polaris_response_ceiling_reading --check
+        run: python3 scripts/check_polaris_response_ceiling_reading.py --check
+
+      - name: check_polaris_response_ceiling_reading --selftest
+        run: python3 scripts/check_polaris_response_ceiling_reading.py --selftest
+
       # The contract readability restyle: the candidate package regenerates
       # exactly, and its act recorder reports "not performed" (exit 0) until
       # the owner's act is recorded, then verifies both records.

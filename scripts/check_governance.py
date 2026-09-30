@@ -1522,6 +1522,8 @@ PWB_TRUTH_AMENDMENT_SUBJECT = (
     f"{PWB_TRUTH_AMENDMENT_DIR}/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt")
 PWB_TRUTH_AMENDMENT_ACT = (
     f"{DECISIONS}/PWB-TRUTH-READINESS-AMENDMENT-ACT.md")
+PWB_REGISTRY_CURRENCY_DIR = (
+    f"{CANDIDATES}/pwb-registry-currency-briefing-amendment")
 #: Lane B of the 2026-09-13 Polaris page-size funnel (P-67 question 2):
 #: registered before its packet exists so a stale argument copy fails CG-7d
 #: and CG-7e. Its manifest hashes proposed bytes (candidate patches applied),
@@ -1607,7 +1609,22 @@ PWB_EFFECT_AMENDMENT_ACTS = (
     (PWB_EFFECT_ACTS[2][0], PWB_EFFECT_ACTS[2][1], PWB_EFFECT_ACTS[2][2],
      f"{DECISIONS}/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md",
      "d71eadb612cf657983d96ad44415b832054dc37e51ea674e569d9b8f655d05d7"),
+    # The 2026-09-30 currency-and-briefing act supersedes the 2026-09-05
+    # amendment for the same registry subject.
+    (PWB_EFFECT_ACTS[2][0], PWB_EFFECT_ACTS[2][1],
+     f"{DECISIONS}/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md",
+     f"{DECISIONS}/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md",
+     "0765f4d534afad9003463790113fd433d250550091df783c1ff372d227643e4f"),
 )
+#: For a chained amendment row, the package that offered the predecessor
+#: amendment: its files hold the predecessor's argument as history once the
+#: later link is performed ("row" = manifest row, "phrase" = phrase line).
+PWB_EFFECT_AMENDMENT_OFFERINGS = {
+    f"{DECISIONS}/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md": {
+        f"{CANDIDATES}/pwb-truth-policy-amendment/PWB-EFFECT-AMENDMENT-MANIFEST.txt": "row",
+        f"{CANDIDATES}/pwb-truth-policy-amendment/OWNER-DECISION-PACKET.md": "phrase",
+    },
+}
 PWB_STATE1_SUBJECTS = tuple(sorted((
     "openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml",
     "openspec/changes/polaris-project-wide-butlers-model/proposal.md",
@@ -2427,6 +2444,12 @@ ACT_DIGEST_COPY_FILES = {
         PWB_EFFECT_ACT_LABELS[1:],
     f"{PWB_TRUTH_AMENDMENT_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_TRUTH_AMENDMENT_LABEL,) + PWB_EFFECT_ACT_LABELS[1:],
+    # The 2026-09-30 registry currency-and-briefing amendment offers the
+    # registry subject's current argument as its manifest's single row.
+    f"{PWB_REGISTRY_CURRENCY_DIR}/PWB-EFFECT-AMENDMENT-MANIFEST.txt":
+        (PWB_EFFECT_ACTS[2][0],),
+    # The battery's recorder line passes the registry act's argument.
+    "PROJECT-STATUS.md": (PWB_EFFECT_ACTS[2][0],),
     f"{PWB_SCOPED_AMENDMENT_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_SCOPED_AMENDMENT_LABEL,),
     f"{PWB_RENDER_MODE_DIR}/OWNER-DECISION-PACKET.md":
@@ -2797,16 +2820,23 @@ def _activate_pwb_effect_amendment_act_copy_registries():
             ACT_DIGEST_COPY_FILES[aggregate] = labels + (label,)
         ACT_DIGEST_COPY_FILES[act] = (label,)
         phrase_line = r"^" + re.escape(label) + r": " + performed_digest + r"$"
-        historical = {
-            f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md": phrase_line,
-            f"{PWB_EFFECT_ACTS_DIR}/PWB-EFFECT-ACTS-MANIFEST.txt":
-                r"^" + performed_digest + r"  " + re.escape(subject) + r"$",
-            f"{PWB_EFFECT_ACTS_DIR}/OWNER-SIGNOFF-PACKET.md": phrase_line,
-            f"{PWB_EFFECT_ACTS_DIR}/CANDIDATE-REPORT.md":
-                r"^\| `[a-z-]+` \| `" + re.escape(subject) + r"` \| `"
-                + performed_digest + r"` \|$",
-            predecessor: phrase_line,
-        }
+        manifest_row = r"^" + performed_digest + r"  " + re.escape(subject) + r"$"
+        if predecessor in PWB_EFFECT_AMENDMENT_OFFERINGS:
+            # A later link: its predecessor was itself an amendment, offered
+            # by that amendment's own package.
+            historical = {predecessor: phrase_line}
+            for rel, shape in PWB_EFFECT_AMENDMENT_OFFERINGS[predecessor].items():
+                historical[rel] = manifest_row if shape == "row" else phrase_line
+        else:
+            historical = {
+                f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md": phrase_line,
+                f"{PWB_EFFECT_ACTS_DIR}/PWB-EFFECT-ACTS-MANIFEST.txt": manifest_row,
+                f"{PWB_EFFECT_ACTS_DIR}/OWNER-SIGNOFF-PACKET.md": phrase_line,
+                f"{PWB_EFFECT_ACTS_DIR}/CANDIDATE-REPORT.md":
+                    r"^\| `[a-z-]+` \| `" + re.escape(subject) + r"` \| `"
+                    + performed_digest + r"` \|$",
+                predecessor: phrase_line,
+            }
         for rel, pattern in historical.items():
             current = ACT_DIGEST_COPY_FILES.get(rel)
             if current is not None:
@@ -2984,6 +3014,9 @@ BARE_DIGEST_HEADING_MANIFEST_EXEMPTIONS = {
         f"{PWB_EFFECT_ACTS_DIR}/PWB-EFFECT-ACTS-MANIFEST.txt",
     (f"{PWB_TRUTH_AMENDMENT_DIR}/OWNER-DECISION-PACKET.md", "effect manifest"):
         f"{PWB_TRUTH_AMENDMENT_DIR}/PWB-EFFECT-AMENDMENT-MANIFEST.txt",
+    (f"{DECISIONS}/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md",
+     "effect manifest"):
+        f"{PWB_REGISTRY_CURRENCY_DIR}/PWB-EFFECT-AMENDMENT-MANIFEST.txt",
 }
 
 

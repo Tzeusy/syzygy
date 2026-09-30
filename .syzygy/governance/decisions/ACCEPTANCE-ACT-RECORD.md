@@ -848,3 +848,31 @@ and grants no source, provider, write, deployment or release permission.
 This is bootstrap owner provenance, not independent authorship verification,
 runtime evidence or product readiness.
 <!-- POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR:END -->
+
+## PWB effect-act amendment — adopt-registry-entry — currency and briefing — performed 2026-09-30
+
+**Phrase, exactly as written by the owner (in-interaction, 2026-09-30):**
+
+```text
+ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: 2356b9ed3235b3dff79caeb352803a30c446b7365a2a7ea74df302b9fa51386a
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `adopt-registry-entry` / `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` |
+| Argument | SHA-256 of the artifact itself, recomputed at recording and equal to the phrase, the effect-manifest row and the artifact on disk after the package's patch was applied |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Supersession | the 2026-09-05 `adopt-registry-entry` act recorded at `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md`; that act, its digest and its tag remain immutable history |
+| Frozen subject / packet head | `4b59e39f501bae2a7ffbbe9dad5c76df2a8f85e5` / `4b59e39f501bae2a7ffbbe9dad5c76df2a8f85e5` |
+| Effect manifest | `.syzygy/governance/contracts/candidates/pwb-registry-currency-briefing-amendment/PWB-EFFECT-AMENDMENT-MANIFEST.txt`, SHA-256 `df174263c462db92001ea629116df9d51e2f7679db7676c3c5b29601081b4b13` |
+| Review outcome | `docs/reviews/R-PWB-REGISTRY-CURRENCY-BRIEFING-DELTA-CONFIRMATION-3-RAW.md`: `CONFIRM`, its head bound to the argument (the manifest row) |
+| Recording | `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md`; annotated tag `pwb-adopt-registry-entry-signed-2026-09-30` on the commit carrying these records |
+
+Effective status: this one amended artifact is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own PWB-REQ-005 role only.
+The other effect authorities, the plain continuation direction and the
+machine-view sign-off remain separate; no body read, write, egress,
+execution, deployment, release, recovery or mission authority follows from
+this act.

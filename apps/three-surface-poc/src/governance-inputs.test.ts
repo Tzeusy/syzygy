@@ -1,6 +1,7 @@
 // Governance-inputs loader: hermetic classification of what the tree
 // holds, and the real-tree evaluation of the three current PWB acts (the
-// 2026-09-02 consent act and the 2026-09-05 policy and registry amendments).
+// 2026-09-02 consent act, the 2026-09-05 policy amendment and the
+// 2026-09-30 registry amendment).
 //
 // The real-tree test reads only Syzygy's own governance tree. It never
 // touches a Butlers repository, and the reader it hands the observer is a
@@ -31,7 +32,7 @@ import {
 } from './governance-inputs.js';
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
-const EVALUATION_INSTANT = '2026-09-06T00:00:00Z';
+const EVALUATION_INSTANT = '2026-10-01T00:00:00Z';
 const CURRENT_COMMIT = 'f'.repeat(40);
 const cleanups: string[] = [];
 
@@ -182,7 +183,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     const tree = fakeTree();
     tree.files.delete(PWB_ACT_RECORDS.registry);
     tree.files.delete(PWB_AUTHORITY_ARTIFACTS.registry);
-    tree.tags.delete('pwb-adopt-registry-entry-signed-2026-09-05');
+    tree.tags.delete('pwb-adopt-registry-entry-signed-2026-09-30');
     const inputs = loaderFor(tree);
     expect(inputs.registry.artifact).toEqual({ kind: 'missing' });
     expect(inputs.registry.actRecord).toEqual({ kind: 'absent' });
@@ -256,7 +257,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     );
     tree.files.set(
       '.syzygy/governance/decisions/PWB-LATER-SUPERSESSION-ACT.md',
-      '# Later act\n\nAct identity: `PWB-LATER-2026-09-11`\n\nSupersession / revocation: supersedes `PWB-OBSERVER-REGISTRY-ENTRY-ADOPTION-AMENDMENT-2026-09-05`\n',
+      '# Later act\n\nAct identity: `PWB-LATER-2026-09-11`\n\nSupersession / revocation: supersedes `PWB-OBSERVER-REGISTRY-ENTRY-CURRENCY-BRIEFING-AMENDMENT-2026-09-30`\n',
     );
     const inputs = loaderFor(tree);
     expect(inputs.consent.lifecycle).toEqual({ revokedBy: '.syzygy/governance/decisions/PWB-LATER-REVOCATION-ACT.md' });
@@ -281,7 +282,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     expect(evaluation.policy.kind === 'invalid' && evaluation.policy.caseId).toBe('policy:superseded');
   });
 
-  it('the current policy and registry acts name their superseded 2026-09-02 records; the superseded records are not the evaluated acts', () => {
+  it('the current policy and registry acts name the records they supersede; the superseded records are not the evaluated acts', () => {
     const tree = fakeTree();
     for (const kind of ['policy', 'registry'] as const) {
       const record = tree.files.get(PWB_ACT_RECORDS[kind]) ?? '';

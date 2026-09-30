@@ -104,13 +104,41 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def current_bytes(override: bytes | None = None) -> bytes:
-    if override is not None:
-        return override
+#: The act that performed this amendment on 2026-09-30, and the package
+#: commit its owner was shown. Once the record exists the tree carries the
+#: proposed bytes, so the bytes the patch was drafted over are read from
+#: that commit instead of the tree.
+ACT_RECORD = pathlib.Path(
+    ".syzygy/governance/decisions/"
+    "PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md"
+)
+FROZEN_PACKAGE = "4b59e39f501bae2a7ffbbe9dad5c76df2a8f85e5"
+
+
+def performed() -> bool:
+    return (ROOT / ACT_RECORD).is_file()
+
+
+def live_bytes() -> bytes:
     target = ROOT / SUBJECT
     if not target.is_file():
         raise ValueError(f"missing amendment subject: {SUBJECT.as_posix()}")
     return target.read_bytes()
+
+
+def current_bytes(override: bytes | None = None) -> bytes:
+    """The bytes the patch applies to: the tree before the act, the frozen package commit after it."""
+    if override is not None:
+        return override
+    if not performed():
+        return live_bytes()
+    done = subprocess.run(
+        ["git", "-C", str(ROOT), "show", f"{FROZEN_PACKAGE}:{SUBJECT.as_posix()}"],
+        capture_output=True,
+    )
+    if done.returncode != 0:
+        raise ValueError(f"cannot read {SUBJECT.as_posix()} at {FROZEN_PACKAGE}")
+    return done.stdout
 
 
 def patch_files() -> list[pathlib.Path]:
@@ -282,6 +310,8 @@ def check() -> list[str]:
     target = ROOT / OUT
     findings.extend(manifest_findings(
         target.read_text() if target.is_file() else None, render(proposed)))
+    if performed() and live_bytes() != proposed:
+        findings.append(f"the act is performed but {SUBJECT.as_posix()} is not the proposed bytes")
     return findings
 
 
@@ -549,9 +579,11 @@ def main(argv: list[str]) -> int:
             for finding in findings:
                 print(f"  {finding}")
             return 1
+        state = ("performed: the subject carries the proposed bytes" if performed()
+                 else "the patch applies to the bound bytes")
         print(f"PWB registry currency-and-briefing amendment manifest matches the "
               f"1 proposed subject ({len(CURRENCY_CLASSES)} currency bounds, "
-              f"1 new response ceiling); the patch applies to the bound bytes")
+              f"1 new response ceiling); {state}")
         return 0
     if not args.write:
         print("refusing: regenerating the manifest changes the act argument; pass "
