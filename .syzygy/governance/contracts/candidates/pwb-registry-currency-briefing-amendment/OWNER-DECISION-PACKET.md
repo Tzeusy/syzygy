@@ -1,5 +1,10 @@
 # Owner decision packet — registry currency bounds and briefing ceiling
 
+> **PERFORMED 2026-09-30.** The owner adopted the amended registry entry;
+> the act record is
+> [`PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md`](../../../decisions/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md).
+> The banner below is the one the packet was offered with.
+
 > **Candidate — binds nothing.** Prepared by agents under the owner's
 > 2026-09-21 rulings in
 > `.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`,

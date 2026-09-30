@@ -60,6 +60,28 @@ EFFECT_SUBJECTS = tuple(
     )
 )
 ROW = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
+#: Effect rows a later performed act has superseded: once that act's record
+#: exists the row is history, fixed at the digest this package offered, and
+#: the tree no longer hashes to it.
+SUPERSEDED_ROWS = {
+    pathlib.Path(
+        ".syzygy/governance/declarations/adapter-registry/"
+        "POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json"
+    ): (
+        pathlib.Path(
+            ".syzygy/governance/decisions/"
+            "PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md"
+        ),
+        "0765f4d534afad9003463790113fd433d250550091df783c1ff372d227643e4f",
+    ),
+}
+
+
+def superseded_digest(rel: pathlib.Path) -> str | None:
+    entry = SUPERSEDED_ROWS.get(rel)
+    if entry is None or not (ROOT / entry[0]).is_file():
+        return None
+    return entry[1]
 
 
 def sha256(data: bytes) -> str:
@@ -101,7 +123,10 @@ def render(
         f"# {len(subjects)} artifacts; rows sorted by codepoint path.",
         f"# {effect}",
     ]
-    lines.extend(f"{sha256(values[rel])}  {rel.as_posix()}" for rel in subjects)
+    lines.extend(
+        f"{superseded_digest(rel) or sha256(values[rel])}  {rel.as_posix()}"
+        for rel in subjects
+    )
     return "\n".join(lines) + "\n"
 
 
@@ -135,6 +160,8 @@ def verify_manifest(
         target = ROOT / path
         if not target.is_file():
             findings.append(f"subject missing: {path}")
+        elif superseded_digest(pathlib.Path(path)) is not None:
+            continue
         elif sha256(target.read_bytes()) != digest:
             findings.append(f"subject digest mismatch: {path}")
     if text != expected:

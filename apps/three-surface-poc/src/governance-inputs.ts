@@ -40,19 +40,23 @@ export const PWB_AUTHORITY_ARTIFACTS: Readonly<Record<AuthorityKind, string>> = 
 };
 
 // The current act for each authority. Consent is the 2026-09-02 act; the
-// policy and registry acts are the 2026-09-05 amendments, each of which
-// supersedes its 2026-09-02 predecessor for its own role only. The
-// superseded records stay in the tree as immutable history and are named
-// here only as the expected supersession targets.
+// policy act is the 2026-09-05 amendment and the registry act the
+// 2026-09-30 currency-and-briefing amendment, each superseding its own
+// predecessor for its own role only. The superseded records stay in the
+// tree as immutable history and are named here only as the expected
+// supersession targets. The gate follows the 2026-09-30 registry act by the
+// owner's 2026-09-30 direction (decisions/
+// OWNER-INSTRUCTIONS-2026-09-29-30-READABILITY-AND-REGISTRY.md); nothing
+// here reads the entry's new currency or briefing fields.
 export const PWB_ACT_RECORDS: Readonly<Record<AuthorityKind, string>> = {
   consent: '.syzygy/governance/decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md',
   policy: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md',
-  registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md',
+  registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md',
 };
 
 export const PWB_SUPERSEDED_ACT_RECORDS: Readonly<Record<Exclude<AuthorityKind, 'consent'>, string>> = {
   policy: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md',
-  registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md',
+  registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md',
 };
 
 // The one project this daemon is authorized to observe on behalf of.
@@ -96,13 +100,13 @@ function pwbSyzygyButlersExpectations(evaluationInstant: string): BodyReadAuthor
       },
       registry: {
         artifactPath: PWB_AUTHORITY_ARTIFACTS.registry,
-        actIdentity: 'PWB-OBSERVER-REGISTRY-ENTRY-ADOPTION-AMENDMENT-2026-09-05',
+        actIdentity: 'PWB-OBSERVER-REGISTRY-ENTRY-CURRENCY-BRIEFING-AMENDMENT-2026-09-30',
         actType: 'adopt-registry-entry',
         phrasePrefix: 'ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY',
-        recordingTag: 'pwb-adopt-registry-entry-signed-2026-09-05',
+        recordingTag: 'pwb-adopt-registry-entry-signed-2026-09-30',
         scopeAnchors: [
           'polaris-butlers-project-shape',
-          '1.1.0-candidate.1',
+          '1.2.0-candidate.1',
           'pwb-discovery-v2-candidate.1',
           '.syzygy/governance/declarations/adapter-registry',
           'project:syzygy',
