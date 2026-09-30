@@ -58,7 +58,7 @@ Load the minimum for one correct decision; never "read everything."
 | A contract question | `contracts/candidates/TASK-ROUTER.md` (generated) |
 | "May I implement X?" | the authorizing act in `decisions/`; plans: `docs/CAPABILITY-1-IMPLEMENTATION-PLAN.md`, `docs/PWB-IMPLEMENTATION-PLAN.md` |
 | The Capability 1 specification | `openspec/changes/project-registration-and-honest-shape-visibility/` — adopted; amend only via CC-REV-2 |
-| The Three-Surface POC specification | `openspec/changes/three-surface-poc-experience/` — signed off; its `proposal.md` banner still says candidate and is bound, so cannot be corrected |
+| The Three-Surface POC specification | `openspec/changes/three-surface-poc-experience/` — signed off; amend only via CC-REV-2 |
 | Authoring a new spec | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md`; only owner sign-off binds it (VIS-4) |
 | Which acts exist, their phrases and ceremony | `contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`; packets per `decisions/README.md` |
 | Open owner questions | `decisions/PENDING-OWNER-DECISIONS.md` |
@@ -423,17 +423,14 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   a file listed in a performed act's manifest is bound (`ACCEPTANCE-ACT-RECORD.md`
   names the argument). `openspec/changes/polaris-project-wide-butlers-model/`
   is bound this way: it cannot take a status banner at all.
-- **A bound file's own banner can be permanently wrong, and correcting it is
-  forbidden.** Both adopted specifications still open "Candidate
-  specification… until that act, this change binds nothing" —
-  `project-registration-and-honest-shape-visibility/proposal.md` (bound by
-  `CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`) and
-  `three-surface-poc-experience/proposal.md` (bound by
-  `THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`). The act bound the bytes that say
-  it, so the sentence is now false and uncorrectable, in both directions:
-  the same shape as CC-SPEC/CC-IMPACT living under `policy-candidates/`.
-  Trust the act record and the routing table above; a package banner is
-  evidence of what a drafter believed, never of what binds.
+- **A bound file's own banner can be wrong, and only an owner-signed
+  successor may correct it.** An act binds the bytes that say "Candidate…
+  binds nothing", so the sentence turns false and stays false until a
+  readability successor (`scripts/readability_successor.py`) replaces the
+  file; the Capability 1, POC and Polaris proposals were corrected that way
+  on 2026-09-29. Until then, trust the act record and the routing table
+  above; a package banner is evidence of what a drafter believed, never of
+  what binds.
 - **A package's own manifest is part of the digest-binding corpus.** A sweep
   that excludes the directory under audit will call its files unbound when the
   sibling `*-MANIFEST.txt` carries them as rows (rule 4). This is how
