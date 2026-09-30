@@ -238,7 +238,7 @@ describe('observeProjectShapeSources — identities, instants and scope', () => 
     expect(observation.manifest.revision).toBe(COMMIT);
     expect(observation.observer).toEqual({
       observerId: 'polaris-butlers-project-shape',
-      observerVersion: '1.1.0-candidate.1',
+      observerVersion: '1.2.0-candidate.1',
       discoveryVersion: 'pwb-discovery-v2-candidate.1',
       implementationId: 'three-surface-poc-core/project-shape-observer',
       implementationVersion: '1.0.0',
@@ -265,7 +265,7 @@ describe('observeProjectShapeSources — identities, instants and scope', () => 
       revision: COMMIT,
       discoveryVersion: 'pwb-discovery-v2-candidate.1',
       observerId: 'polaris-butlers-project-shape',
-      observerVersion: '1.1.0-candidate.1',
+      observerVersion: '1.2.0-candidate.1',
       implementationId: 'three-surface-poc-core/project-shape-observer',
       implementationVersion: '1.0.0',
       manifestDigest: observation.manifest.digest,
@@ -315,7 +315,7 @@ describe('observeProjectShapeSources — reads only the phase A allowlist', () =
         scope: { repositoryId: REPOSITORY, contentClass: 'declared-project-shape-text', phase: 'A' },
         capturedAt: CAPTURED_AT,
         observerId: 'polaris-butlers-project-shape',
-        observerVersion: '1.1.0-candidate.1',
+        observerVersion: '1.2.0-candidate.1',
       });
     }
     expect(observation.degradation).toEqual({
@@ -781,7 +781,13 @@ describe('registry-bound constants', () => {
       implementationId: entry.implementationId,
       implementationVersion: entry.implementationVersion,
     });
-    expect(PWB_RESOURCE_LIMITS).toEqual(entry.resourceLimits);
+    // The 2026-09-30 registry act declares maxBriefingResponseBytes; the
+    // owner's direction that day keeps it unread until its own
+    // continuation, so the code carries every other limit and not that one.
+    const { maxBriefingResponseBytes: briefingCeiling, ...consumedLimits } = entry.resourceLimits as PwbResourceLimits & { maxBriefingResponseBytes?: number };
+    expect(typeof briefingCeiling).toBe('number');
+    expect(PWB_RESOURCE_LIMITS).toEqual(consumedLimits);
+    expect(Object.keys(PWB_RESOURCE_LIMITS)).not.toContain('maxBriefingResponseBytes');
     expect(PWB_FAILURE_STATES).toEqual(entry.failureStates);
     expect(entry.typedAuthority.workingTreeRead).toBe(false);
     expect(entry.typedAuthority.executeObservedCode).toBe(false);

@@ -461,7 +461,7 @@ describe('an admitted, fully readable fixture', () => {
         scope: shape.identity.scope,
         capturedAt: CAPTURED_AT,
         observerId: 'polaris-butlers-project-shape',
-        observerVersion: '1.1.0-candidate.1',
+        observerVersion: '1.2.0-candidate.1',
       });
       expect(source.itemDenominator.kind).toBe('known');
       expect(source.claim.epistemic).toEqual({ label: 'Observed', tier: 'report-fact', freshness: 'fresh' });

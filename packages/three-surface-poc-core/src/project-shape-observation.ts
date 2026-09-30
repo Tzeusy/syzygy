@@ -47,7 +47,7 @@ import {
 
 export const PWB_OBSERVER_IDENTITY = {
   observerId: 'polaris-butlers-project-shape',
-  observerVersion: '1.1.0-candidate.1',
+  observerVersion: '1.2.0-candidate.1',
   discoveryVersion: PWB_DISCOVERY_VERSION,
   implementationId: 'three-surface-poc-core/project-shape-observer',
   implementationVersion: '1.0.0',
