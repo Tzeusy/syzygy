@@ -334,7 +334,8 @@ class Act:
     def __init__(self, act_type, builder, label, record_name, identity, title,
                  frozen_subject, packet_head, confirmation_review, tag_stem,
                  effect, not_authorized, disposition_record=None,
-                 disposition_sha256=None, raw_findings_heading=None):
+                 disposition_sha256=None, raw_findings_heading=None,
+                 split_phrase_packet=False):
         self.act_type = act_type
         self.builder = builder
         self.label = label
@@ -362,6 +363,13 @@ class Act:
         # population. A configured disposition with no heading refuses before
         # marker comparison; case (a) never consults this field.
         self.raw_findings_heading = raw_findings_heading
+        # A packet drafted to carry its label and its manifest digest apart
+        # (a `Manifest SHA-256:` heading whose next non-blank line is the
+        # digest in a code span) rather than one `LABEL: digest` line. Such a
+        # packet must carry the label in a code span and exactly one digest
+        # heading, bound to the argument; the phrase is shown to the owner
+        # whole at the act.
+        self.split_phrase_packet = split_phrase_packet
         self._module = None
 
     @property
@@ -380,7 +388,12 @@ class Act:
 
     @property
     def manifest(self) -> pathlib.Path:
-        return self.module.BEHAVIOR_OUT
+        # The render-mode builder names its manifest BEHAVIOR_OUT and the
+        # opening-band builder MANIFEST_OUT; each builder names exactly one.
+        names = [n for n in ("BEHAVIOR_OUT", "MANIFEST_OUT") if hasattr(self.module, n)]
+        if len(names) != 1:
+            raise ValueError(f"{self.builder} must name exactly one manifest constant, found {names}")
+        return getattr(self.module, names[0])
 
     @property
     def subjects(self) -> tuple[pathlib.Path, ...]:
@@ -431,6 +444,45 @@ authorizes no implementation of the amended semantics: the pursuit bead
 under M14 opens only under a fresh, separate owner authorization, and the
 269-of-278 figure and the page-size effect are measured there, never
 assumed here.""",
+    ),
+    "opening-band": Act(
+        "opening-band",
+        "build_pwb_opening_band_scenario",
+        "SIGN OFF PWB OPENING-BAND SCENARIO",
+        "PWB-OPENING-BAND-SCENARIO-ACT.md",
+        "PWB-OPENING-BAND-SCENARIO-SIGNOFF",
+        "PWB opening-band scenario sign-off",
+        # main commit carrying the offered manifest and packet bytes; round 11
+        # read 9162d62, whose package bytes are identical to these
+        "3369410d1e08366b852422a457e473e5fec64f1c",
+        "3369410d1e08366b852422a457e473e5fec64f1c",
+        "docs/reviews/R-PWB-OPENING-BAND-SCENARIO-DELTA-CONFIRMATION-10-RAW.md",
+        "pwb-opening-band-scenario",
+        """PWB-REQ-010 gains one conditional scenario: if Polaris's first reading
+level renders an aggregate over the Unknown project-shape claims of one
+evaluation before the first capability catalog, there is exactly one such
+aggregate; it displaces no project-level category; it carries the
+PWB-REQ-007 label, tier and freshness with separate primary and secondary
+counts and no headline status; its population and counts equal the claims
+it names; every counted member stays disclosed at its own claim and
+reachable from the aggregate; and the machine answer carries the same
+aggregate (PWB-REQ-020, under the owner's 2026-09-26 wider reading of
+"disclosure"). The aggregate quantifies over project-shape Unknowns only;
+the currency probe and other region blocks are outside its population.
+Nothing requires the band to be built. `GOVERNING-DEPENDENCIES.md` is
+regenerated.""",
+        """This act authorizes no implementation: M4 slice 3 needs a separate
+owner implementation authorization, and slices 4 and 5 stay gated on the
+`syzygy-dov.26` amendment the OQ-1 answer routes them to. It describes no
+write into any observed repository, widens no content class, route or
+consent, and amends PWB-REQ-007, PWB-REQ-020 and POC-REQ-032 in no byte.
+The registry entry and secret-classification policy, whose declared
+governing-contract digest this amendment stales, are edited by no part of
+it.""",
+        disposition_record=".syzygy/governance/contracts/candidates/pwb-opening-band-scenario/ROUND-11-DISPOSITIONS.md",
+        disposition_sha256="0cc80226fb28bc49e836dff03d9bdb4c73884be2c8d7ae0a123f2c43e4221fea",
+        raw_findings_heading="## Findings",
+        split_phrase_packet=True,
     ),
 }
 
@@ -572,6 +624,24 @@ def validate_disposition(
     return act.disposition_record
 
 
+SPLIT_DIGEST_HEADING_RE = re.compile(
+    r"^Manifest SHA-256:[ \t]*\n(?:[ \t]*\n)*`([0-9a-f]{64})`[ \t]*$", re.MULTILINE)
+
+
+def validate_split_phrase(packet_text: str, act: Act, argument: str) -> None:
+    """A split-phrase packet names the label and binds exactly the argument."""
+    if f"`{act.label}`" not in packet_text:
+        raise ValueError("split-phrase packet does not name the act label in a code span")
+    if phrase_for(act, argument) in packet_text:
+        raise ValueError("split-phrase packet also carries a whole phrase; configure one form")
+    headings = SPLIT_DIGEST_HEADING_RE.findall(packet_text)
+    if len(headings) != 1:
+        raise ValueError(
+            f"split-phrase packet carries {len(headings)} Manifest SHA-256 headings, not exactly one")
+    if headings[0] != argument:
+        raise ValueError("split-phrase packet's Manifest SHA-256 heading does not bind the argument")
+
+
 def validate_packet(
     root: pathlib.Path, act: Act, argument: str,
     packet_override: bytes | None = None, review_override: str | None = None,
@@ -588,7 +658,9 @@ def validate_packet(
     if packet_override is None and not packet_path.is_file():
         raise ValueError(f"missing owner packet: {act.packet.as_posix()}")
     packet_bytes = packet_override if packet_override is not None else packet_path.read_bytes()
-    if packet_bytes.decode().count(phrase_for(act, argument)) != 1:
+    if getattr(act, "split_phrase_packet", False):
+        validate_split_phrase(packet_bytes.decode(), act, argument)
+    elif packet_bytes.decode().count(phrase_for(act, argument)) != 1:
         raise ValueError("owner packet does not contain exactly one exact phrase")
     if committed_blob(root, act.packet_head, act.packet) != packet_bytes:
         raise ValueError("packet-head commit does not carry the presented packet bytes")
@@ -1472,6 +1544,48 @@ def selftest_disposition() -> list[tuple[str, bool]]:
     return results
 
 
+def selftest_case_b_act(act, exact, packet_bytes, review, rejects) -> list[tuple[str, bool]]:
+    """Fixtures for a configured act bound to a notes-only verdict."""
+    out = []
+    staged = False
+    try:
+        _commit, verdict, disposition = validate_packet(ROOT, act, exact)
+        staged = verdict == "CONFIRM WITH EXCEPTIONS" and disposition == act.disposition_record
+    except ValueError as exc:
+        print(f"  ({act.act_type} packet-stage failure: {exc})")
+    out.append((f"{act.act_type}: notes-only verdict binds through its disposition record", staged))
+    if act.split_phrase_packet:
+        text = packet_bytes.decode()
+        heading = f"Manifest SHA-256:\n`{exact}`"
+        assert text.count(heading) == 1, "fixture packet lacks its split digest heading"
+        out.append((f"{act.act_type}: split heading bound to another digest rejected",
+                    rejects(validate_packet, "does not bind the argument", ROOT, act, exact,
+                            packet_override=text.replace(heading, f"Manifest SHA-256:\n`{'0' * 64}`").encode())))
+        out.append((f"{act.act_type}: two split digest headings rejected",
+                    rejects(validate_packet, "not exactly one", ROOT, act, exact,
+                            packet_override=text.replace(heading, heading + "\n\n" + heading).encode())))
+        out.append((f"{act.act_type}: split packet without the label rejected",
+                    rejects(validate_packet, "does not name the act label", ROOT, act, exact,
+                            packet_override=text.replace(f"`{act.label}`", "`SIGN OFF SOMETHING ELSE`").encode())))
+        out.append((f"{act.act_type}: split packet also carrying a whole phrase rejected",
+                    rejects(validate_packet, "also carries a whole phrase", ROOT, act, exact,
+                            packet_override=(text + "\n" + phrase_for(act, exact) + "\n").encode())))
+    out.append((f"{act.act_type}: packet bytes the packet head lacks rejected",
+                rejects(validate_packet, "packet-head commit does not carry",
+                        ROOT, act, exact, packet_override=packet_bytes + b"\n")))
+    out.append((f"{act.act_type}: review not binding the manifest rejected",
+                rejects(validate_packet, "does not bind the offered manifest", ROOT, act, exact,
+                        review_override=review.replace(f"Manifest SHA-256: {exact}", "Manifest SHA-256: " + "0" * 64, 1))))
+    out.append((f"{act.act_type}: REVISE verdict rejected outright",
+                rejects(validate_packet, "does not carry an accepted exact verdict line", ROOT, act, exact,
+                        review_override=review.replace("Verdict: CONFIRM WITH EXCEPTIONS", "Verdict: REVISE", 1))))
+    disposition = (ROOT / act.disposition_record).read_bytes()
+    out.append((f"{act.act_type}: edited disposition record rejected by its pin",
+                rejects(validate_packet, "do not match the pinned disposition_sha256", ROOT, act, exact,
+                        disposition_override=disposition + b"\n")))
+    return out
+
+
 def selftest() -> int:
     results = []
     for act in ACTS.values():
@@ -1509,6 +1623,11 @@ def selftest() -> int:
             staged = bool(reviewed_commit) and staged_verdict == "CONFIRM" and staged_disposition is None
         except ValueError as exc:
             print(f"  ({act.act_type} packet-stage failure: {exc})")
+        if act.disposition_record is not None:
+            # Case (b) acts: the CONFIRM-only fixtures below do not apply;
+            # their own fixtures follow.
+            results.extend(selftest_case_b_act(act, exact, packet_bytes, review, rejects))
+            continue
         results.append((f"{act.act_type}: packet and confirmation review bind the argument", staged))
         phrase = phrase_for(act, exact).encode()
         doubled = packet_bytes.replace(phrase, phrase + b"\n" + phrase, 1)
