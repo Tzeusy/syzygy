@@ -109,8 +109,8 @@ table routes each campaign to its last verdict of record.
 | P-73 edit/repair deletion gate | 5 | 2026-09-23 → 2026-09-26 | Edit/repair deletion scenario candidate package, `syzygy-dov.23` (PR #98; status-page registration PR #107; binds nothing) | `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-DELTA-REVIEW-RAW.md:3`), the P-73 quotation not byte-exact, repaired; confirmation `CONFIRM` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-DELTA-CONFIRMATION-RAW.md:3`). Registration: `REVISE` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-REGISTRATION-REVIEW-RAW.md:1`), repaired; confirmation `CONFIRM` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-REGISTRATION-CONFIRMATION-RAW.md:1`). Recount script (PR #119, gate-sitting direction §5): `CONFIRM WITH EXCEPTIONS` (`R-POLARIS-EDIT-REPAIR-DELETION-SCENARIO-RECOUNT-SCRIPT-REVIEW-RAW.md:1`), notes only; 177 at HEAD and 178 with the package applied, both re-derived independently by the reviewer. |
 | P-77 Q2 response-ceiling reading gate | 3 | 2026-09-27 | Response-ceiling reading decision packet and its checker, `syzygy-dov.27` (PR #117; binds nothing) | `REVISE` (`R-DOV27-RESPONSE-CEILING-PACKET-RAW.md:105`), one revise finding (F1, the landing order attributed to the owner) and seven notes, every one dispositioned in the packet's review record; confirmation `CONFIRM WITH EXCEPTIONS` (`R-DOV27-RESPONSE-CEILING-PACKET-2-RAW.md:200`), notes only (N1–N5): N1 and N5 left in place on the cleared bytes, N2–N4 routed to `syzygy-dov.31` (`R-DOV27-RESPONSE-CEILING-PACKET-2-DISPOSITIONS.md`). |
 
-The 57 rows partition the tracked directory at HEAD: 291 files, 291 assigned,
-no remainder [Observed — re-derived for HEAD dated 2026-09-29 by
+The 58 rows partition the tracked directory at HEAD: 294 files, 294 assigned,
+no remainder [Observed — re-derived for HEAD dated 2026-09-30 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
 derives dates from `git log --diff-filter=A`]. These are navigation figures,
