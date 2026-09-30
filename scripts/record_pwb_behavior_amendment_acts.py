@@ -115,8 +115,17 @@ below line 4 is read) and accepts exactly one of two cases, per
   ambiguous raw findings section, a raw with zero countable findings, a
   duplicated finding number in either text, or case (b) with no
   `disposition_record` configured on the Act) refuses with a specific error.
-  No `ACTS` entry currently names a `disposition_record` or
-  `raw_findings_heading`; wiring one is a later, separately reviewed change.
+  The `opening-band` entry names both (wired 2026-10-01, reviewed in
+  `docs/reviews/R-PWB-RECORDER-NOTES-ONLY-OPENING-BAND-WIRING-REVIEW-RAW.md`).
+
+Split-phrase packets. An Act may set `split_phrase_packet=True` when its
+owner packet shows the label and the digest apart: the label in a code span
+and exactly one `Manifest SHA-256:` heading whose next non-blank line is the
+digest in a code span, bound to the argument. Fenced code and HTML comments
+are blanked first, and the packet may not also carry a whole
+`LABEL: digest` phrase. The label check cannot tell a real offering from an
+incidental mention, so the session that records the act must show the owner
+the whole phrase.
 
 Pinning. `disposition_sha256` is the full sha256 of the disposition
 record's bytes, set once when an Act's package is drafted with a
@@ -150,6 +159,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import types
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -628,8 +638,16 @@ SPLIT_DIGEST_HEADING_RE = re.compile(
     r"^Manifest SHA-256:[ \t]*\n(?:[ \t]*\n)*`([0-9a-f]{64})`[ \t]*$", re.MULTILINE)
 
 
+
 def validate_split_phrase(packet_text: str, act: Act, argument: str) -> None:
-    """A split-phrase packet names the label and binds exactly the argument."""
+    """A split-phrase packet names the label and binds exactly the argument.
+
+    Fenced code blocks and HTML comments are blanked first (review finding 1,
+    `docs/reviews/R-PWB-RECORDER-NOTES-ONLY-OPENING-BAND-WIRING-REVIEW-RAW.md`):
+    a heading or label shown only as an example or hidden in a comment was
+    never shown to the owner as the packet's own.
+    """
+    packet_text = re.sub(r"<!--.*?-->", "", _strip_fenced_code(packet_text), flags=re.S)
     if f"`{act.label}`" not in packet_text:
         raise ValueError("split-phrase packet does not name the act label in a code span")
     if phrase_for(act, argument) in packet_text:
@@ -1570,6 +1588,22 @@ def selftest_case_b_act(act, exact, packet_bytes, review, rejects) -> list[tuple
         out.append((f"{act.act_type}: split packet also carrying a whole phrase rejected",
                     rejects(validate_packet, "also carries a whole phrase", ROOT, act, exact,
                             packet_override=(text + "\n" + phrase_for(act, exact) + "\n").encode())))
+        fenced = text.replace(heading, "```\n" + heading + "\n```")
+        out.append((f"{act.act_type}: digest heading shown only inside a code fence rejected",
+                    rejects(validate_packet, "not exactly one", ROOT, act, exact,
+                            packet_override=fenced.encode())))
+        out.append((f"{act.act_type}: digest heading hidden in an HTML comment rejected",
+                    rejects(validate_packet, "not exactly one", ROOT, act, exact,
+                            packet_override=text.replace(heading, "<!--\n" + heading + "\n-->").encode())))
+        out.append((f"{act.act_type}: heading with its digest on the same line rejected",
+                    rejects(validate_packet, "not exactly one", ROOT, act, exact,
+                            packet_override=text.replace(heading, f"Manifest SHA-256: `{exact}`").encode())))
+    for names, what in (((), "neither"), (("BEHAVIOR_OUT", "MANIFEST_OUT"), "both")):
+        stub = types.SimpleNamespace(**{n: pathlib.Path("x") for n in names})
+        probe = Act(act.act_type, "unused", act.label, "x.md", "x", "x", "0", "0", "x", "x", "", "")
+        probe._module = stub
+        out.append((f"{act.act_type}: builder naming {what} manifest constant refused",
+                    rejects(lambda: probe.manifest, "exactly one manifest constant")))
     out.append((f"{act.act_type}: packet bytes the packet head lacks rejected",
                 rejects(validate_packet, "packet-head commit does not carry",
                         ROOT, act, exact, packet_override=packet_bytes + b"\n")))
