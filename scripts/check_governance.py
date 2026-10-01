@@ -2138,6 +2138,15 @@ CONTRACT_RESTYLE_SUBJECT = (
     f"{CANDIDATES}/contract-readability-restyle/CONTRACT-AMENDMENT-MANIFEST.txt")
 CONTRACT_RESTYLE_ACT = (
     f"{DECISIONS}/CONTRACT-READABILITY-RESTYLE-ADOPTION-ACT.md")
+#: The RFC-0007 scoped-values contract successor, step 1 of lane B's two-act
+#: path. Registered at drafting time for its phrase and packet copy; it is
+#: deliberately NOT a `CONTRACT_SUCCESSOR_CHAIN` link yet, because a chain link
+#: asserts adoption order and only the performing act decides that.
+SCOPED_VALUES_LABEL = "SIGN OFF RFC-0007 SCOPED-VALUES AMENDMENT"
+SCOPED_VALUES_DIR = f"{CANDIDATES}/rfc7-scoped-values-successor"
+SCOPED_VALUES_SUBJECT = f"{SCOPED_VALUES_DIR}/CONTRACT-AMENDMENT-MANIFEST.txt"
+SCOPED_VALUES_ACT = f"{DECISIONS}/RFC7-SCOPED-VALUES-AMENDMENT-ACT.md"
+SCOPED_VALUES_PACKET = f"{SCOPED_VALUES_DIR}/OWNER-DECISION-PACKET.md"
 
 
 POLARIS_GENERATOR_APPROVAL_LABEL = (
@@ -2222,7 +2231,8 @@ def _act_subjects():
             re.compile(re.escape(PWB_RENDER_MODE_LABEL)
                        + r"\s*:\s*`?([0-9a-f]{64})"),
         ))
-    for label, subject in ((PWB_MACHINE_VIEW_LABEL, PWB_MACHINE_VIEW_SUBJECT),
+    for label, subject in ((SCOPED_VALUES_LABEL, SCOPED_VALUES_SUBJECT),
+                           (PWB_MACHINE_VIEW_LABEL, PWB_MACHINE_VIEW_SUBJECT),
                            (PWB_OPENING_BAND_LABEL, PWB_OPENING_BAND_SUBJECT),
                            (PWB_MISSING_CURRENCY_LABEL,
                             PWB_MISSING_CURRENCY_SUBJECT)):
@@ -2708,6 +2718,23 @@ def _activate_contract_restyle_packet_copy_registry(registry=None, root=None):
 
 
 _activate_contract_restyle_packet_copy_registry()
+
+
+def _activate_scoped_values_copy_registry(registry=None, root=None):
+    """Register the packet copy once the packet exists, and both record copies
+    once the dedicated act record exists (each its own transition signal)."""
+    registry = ACT_DIGEST_COPY_FILES if registry is None else registry
+    base = root or ROOT
+    if os.path.isfile(os.path.join(base, SCOPED_VALUES_PACKET)):
+        registry[SCOPED_VALUES_PACKET] = (SCOPED_VALUES_LABEL,)
+    if os.path.isfile(os.path.join(base, SCOPED_VALUES_ACT)):
+        labels = registry.get(PERFORMED_ACT_RECORD, ())
+        if SCOPED_VALUES_LABEL not in labels:
+            registry[PERFORMED_ACT_RECORD] = labels + (SCOPED_VALUES_LABEL,)
+        registry[SCOPED_VALUES_ACT] = (SCOPED_VALUES_LABEL,)
+
+
+_activate_scoped_values_copy_registry()
 
 
 #: Ordered owner-act successors to the bootstrap 30-row contract manifest:
@@ -7202,6 +7229,24 @@ def selftest():
                   present == {"selftest/OTHER.md": ("OTHER LABEL",),
                               CONTRACT_RESTYLE_PACKET:
                                   (CONTRACT_RESTYLE_LABEL,)}))
+    import tempfile as _tf_sv
+    with _tf_sv.TemporaryDirectory() as d:
+        pkt = os.path.join(d, SCOPED_VALUES_PACKET)
+        os.makedirs(os.path.dirname(pkt))
+        none, both = {}, {}
+        _activate_scoped_values_copy_registry(none, d)
+        open(pkt, "w").close()
+        _activate_scoped_values_copy_registry(both, d)
+        act_file = os.path.join(d, SCOPED_VALUES_ACT)
+        os.makedirs(os.path.dirname(act_file), exist_ok=True)
+        open(act_file, "w").close()
+        full = {PERFORMED_ACT_RECORD: ("OTHER LABEL",)}
+        _activate_scoped_values_copy_registry(full, d)
+    cases.append(("CG-7e scoped-values copies register only as each file appears",
+                  none == {} and both == {SCOPED_VALUES_PACKET: (SCOPED_VALUES_LABEL,)}
+                  and full == {PERFORMED_ACT_RECORD: ("OTHER LABEL", SCOPED_VALUES_LABEL),
+                               SCOPED_VALUES_PACKET: (SCOPED_VALUES_LABEL,),
+                               SCOPED_VALUES_ACT: (SCOPED_VALUES_LABEL,)}))
     cases.append(("CG-7e tracked restyle packet is registered at import",
                   os.path.isfile(os.path.join(ROOT, CONTRACT_RESTYLE_PACKET))
                   and ACT_DIGEST_COPY_FILES.get(CONTRACT_RESTYLE_PACKET)
