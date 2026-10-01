@@ -1661,6 +1661,12 @@ PWB_SUCCESSOR_CHAIN = (
      PWB_STATE1_SUBJECTS),
     (PWB_TRUTH_AMENDMENT_LABEL, PWB_TRUTH_AMENDMENT_SUBJECT,
      PWB_TRUTH_AMENDMENT_ACT, PWB_TRUTH_AMENDMENT_SUBJECTS),
+    # Performed 2026-10-01. The owner's readiness order (2026-09-23,
+    # POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md §6) is the
+    # opening band, then the render mode and the machine view, then lane B
+    # last, so lane B follows this link.
+    (PWB_OPENING_BAND_LABEL, PWB_OPENING_BAND_SUBJECT,
+     PWB_OPENING_BAND_ACT, PWB_OPENING_BAND_SUBJECTS),
     (PWB_SCOPED_AMENDMENT_LABEL, PWB_SCOPED_AMENDMENT_SUBJECT,
      PWB_SCOPED_AMENDMENT_ACT, PWB_SCOPED_AMENDMENT_SUBJECTS),
 )
@@ -2449,7 +2455,7 @@ ACT_DIGEST_COPY_FILES = {
     f"{PWB_REGISTRY_CURRENCY_DIR}/PWB-EFFECT-AMENDMENT-MANIFEST.txt":
         (PWB_EFFECT_ACTS[2][0],),
     # The battery's recorder line passes the registry act's argument.
-    "PROJECT-STATUS.md": (PWB_EFFECT_ACTS[2][0],),
+    "PROJECT-STATUS.md": (PWB_EFFECT_ACTS[2][0], PWB_OPENING_BAND_LABEL),
     f"{PWB_SCOPED_AMENDMENT_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_SCOPED_AMENDMENT_LABEL,),
     f"{PWB_RENDER_MODE_DIR}/OWNER-DECISION-PACKET.md":
@@ -3398,6 +3404,9 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                                scoped_dedicated_record=None,
                                scoped_manifest_body=None,
                                scoped_manifest_digest=None,
+                               opening_band_dedicated_record=None,
+                               opening_band_manifest_body=None,
+                               opening_band_manifest_digest=None,
                                contract_chain_inputs=None,
                                contract_chain=None,
                                spec_policy_inputs=None,
@@ -3547,6 +3556,12 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         scoped_manifest_body = read_if_present(PWB_SCOPED_AMENDMENT_SUBJECT)
     if scoped_manifest_digest is None:
         scoped_manifest_digest = current_digest(PWB_SCOPED_AMENDMENT_SUBJECT)
+    if opening_band_dedicated_record is None:
+        opening_band_dedicated_record = read_if_present(PWB_OPENING_BAND_ACT)
+    if opening_band_manifest_body is None:
+        opening_band_manifest_body = read_if_present(PWB_OPENING_BAND_SUBJECT)
+    if opening_band_manifest_digest is None:
+        opening_band_manifest_digest = current_digest(PWB_OPENING_BAND_SUBJECT)
 
     specs = (
         (GENERAL_BOOTSTRAP_LABEL, GENERAL_BOOTSTRAP_SUBJECT,
@@ -3699,6 +3714,9 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         PWB_SCOPED_AMENDMENT_LABEL: (
             scoped_dedicated_record, scoped_manifest_body,
             scoped_manifest_digest),
+        PWB_OPENING_BAND_LABEL: (
+            opening_band_dedicated_record, opening_band_manifest_body,
+            opening_band_manifest_digest),
     }
     attempted_links = []
     for label, subject, act_rel, subjects in PWB_SUCCESSOR_CHAIN:
@@ -8810,6 +8828,12 @@ def _selftest_cg7h(kind):
         truth_dedicated_record=truth_dedicated,
         truth_manifest_body=truth_manifest,
         truth_manifest_digest=truth_digest,
+        # Later PWB links are unperformed in every synthetic tree; without
+        # explicit empties they would read this repository's real records.
+        opening_band_dedicated_record="", opening_band_manifest_body="",
+        opening_band_manifest_digest=None,
+        scoped_dedicated_record="", scoped_manifest_body="",
+        scoped_manifest_digest=None,
         contract_chain_inputs=contract_inputs,
         contract_chain=(CONTRACT_SUCCESSOR_CHAIN + (THIRD_LINK,)
                         if kind == "restyle-three-link-cascade" else None),
