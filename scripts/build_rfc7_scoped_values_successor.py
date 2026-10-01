@@ -231,6 +231,15 @@ def apply(root: pathlib.Path, at_adoption: bool, pins=None) -> int:
         print("refusing to apply: no owner act is recorded; run "
               f"{RECORDER.as_posix()} --record first")
         return 1
+    return install(root)
+
+
+def install(root: pathlib.Path) -> int:
+    """Verify the package, then write the proposed bytes into both mirrors.
+
+    Shared by `apply` (the phrase-bound act) and the versioned sign-off
+    recorder, which validates its own records before calling it.
+    """
     findings = check(root)
     if findings:
         print("refusing to apply: the package does not verify")

@@ -62,6 +62,7 @@ Load the minimum for one correct decision; never "read everything."
 | Authoring a new spec | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md`; only owner sign-off binds it (VIS-4) |
 | Which acts exist, their phrases and ceremony | `contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`; packets per `decisions/README.md` |
 | Open owner questions | `decisions/PENDING-OWNER-DECISIONS.md` |
+| Signing off a PWB delta, registry entry or queued contract successor | `decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`; `scripts/record_versioned_signoff.py` (version tag, no phrase or digest) |
 | A launch-gate administration | structured JSON (`launch-gate-administration.schema.json`); the Markdown report is generated, never parsed |
 | Mission or Context-selection work | `contracts/candidates/DEFERRED-WAVE-POSTURE.md` first |
 | What a term means | `governance/doctrine/README.md` glossary, then `PROCESS-GLOSSARY.md` |
