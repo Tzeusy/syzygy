@@ -345,8 +345,12 @@ class Act:
                  frozen_subject, packet_head, confirmation_review, tag_stem,
                  effect, not_authorized, disposition_record=None,
                  disposition_sha256=None, raw_findings_heading=None,
-                 split_phrase_packet=False):
+                 split_phrase_packet=False, superseded_by=()):
         self.act_type = act_type
+        # Names of ACTS entries performed after this one. Once such an act's
+        # record exists, a row it re-patched is history here: the tree must
+        # hash to that later act's own manifest row, never to nothing.
+        self.superseded_by = tuple(superseded_by)
         self.builder = builder
         self.label = label
         self.record = DECISIONS / record_name
@@ -496,6 +500,7 @@ it.""",
         disposition_sha256="0cc80226fb28bc49e836dff03d9bdb4c73884be2c8d7ae0a123f2c43e4221fea",
         raw_findings_heading="## Findings",
         split_phrase_packet=True,
+        superseded_by=("render-mode",),
     ),
 }
 
@@ -531,6 +536,19 @@ def manifest_rows(text: str, act: Act) -> list[tuple[str, str]]:
     return rows
 
 
+def _later_row(root: pathlib.Path, act: Act, path: str) -> str | None:
+    """The digest a later performed act's manifest declares for `path`, when
+    one of `act.superseded_by` has its record in `root`; otherwise None."""
+    for name in act.superseded_by:
+        later = ACTS[name]
+        if not (root / later.record).is_file() or not (root / later.manifest).is_file():
+            continue
+        for sha, row_path in ROW_RE.findall((root / later.manifest).read_text()):
+            if row_path == path:
+                return sha
+    return None
+
+
 def validate_subject(
     root: pathlib.Path, act: Act, argument: str, applied: bool,
     manifest_override: bytes | None = None,
@@ -561,7 +579,7 @@ def validate_subject(
         for expected_sha, path in rows:
             target = root / path
             actual = digest(target.read_bytes()) if target.is_file() else "absent"
-            if actual != expected_sha:
+            if actual != expected_sha and actual != _later_row(root, act, path):
                 raise ValueError(f"manifest row does not hash the tree: {path}")
     else:
         findings = act.module.check()
@@ -1623,6 +1641,33 @@ def selftest_case_b_act(act, exact, packet_bytes, review, rejects) -> list[tuple
     return out
 
 
+def selftest_superseded_rows() -> list[tuple[str, bool]]:
+    """A row a later performed act re-patched is history only when that act's
+    record and manifest exist and name the path; mutate each predicate."""
+    import tempfile
+    earlier, later = ACTS["opening-band"], ACTS["render-mode"]
+    path = later.subjects[0].as_posix()
+    manifest_text = "".join(f"{'ab' * 32}  {p.as_posix()}\n" for p in later.subjects)
+    results = []
+    with tempfile.TemporaryDirectory() as tmp:
+        root = pathlib.Path(tmp)
+        (root / later.manifest).parent.mkdir(parents=True)
+        (root / later.record).parent.mkdir(parents=True, exist_ok=True)
+        results.append(("superseded rows: no later record leaves the row unsuperseded",
+                        _later_row(root, earlier, path) is None))
+        (root / later.record).write_text("record\n")
+        results.append(("superseded rows: record without its manifest leaves it unsuperseded",
+                        _later_row(root, earlier, path) is None))
+        (root / later.manifest).write_text(manifest_text)
+        results.append(("superseded rows: record and manifest supply the later digest",
+                        _later_row(root, earlier, path) == "ab" * 32))
+        results.append(("superseded rows: a path the later manifest lacks stays unsuperseded",
+                        _later_row(root, earlier, "no/such/path.md") is None))
+        results.append(("superseded rows: an act naming no later act never supersedes",
+                        _later_row(root, later, path) is None))
+    return results
+
+
 def selftest() -> int:
     results = []
     for act in ACTS.values():
@@ -1719,6 +1764,7 @@ def selftest() -> int:
             digest(rendered_aggregate.encode())
             == "7967bf357378235ee4da53e68bb47f8a48f7fc984be90dd3bc029a2e5bb71241",
         ))
+    results.extend(selftest_superseded_rows())
     results.extend(selftest_disposition())
     failing = 0
     for name, passed in results:

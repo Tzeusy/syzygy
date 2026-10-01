@@ -904,3 +904,31 @@ This act approves no policy, adopts no registry entry, widens no consent and
 authorizes no implementation of the amended semantics; no write, egress,
 execution, deployment, release, recovery or mission authority follows from
 this act.
+
+## PWB behavior amendment — render-mode — performed 2026-10-02
+
+**Phrase, exactly as written by the owner (in-interaction, 2026-10-02):**
+
+```text
+SIGN OFF PWB EXACT-SOURCE RENDER-MODE AMENDMENT: 527be5ac3732619608355ae9658c92cee45341e831521bc526398481dd915785
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Argument | SHA-256 of `.syzygy/governance/contracts/candidates/pwb-exact-source-render-mode-scenario/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt`, recomputed at recording and equal to the phrase |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Frozen subject / packet head | `4b2f0df92676dfb89ca600c15f349070251d74bb` / `4b2f0df92676dfb89ca600c15f349070251d74bb` |
+| Review outcome | `docs/reviews/R-PWB-EXACT-SOURCE-RENDER-MODE-DELTA-CONFIRMATION-3-RAW.md`: `CONFIRM WITH EXCEPTIONS`, bound to this manifest digest; disposition: `.syzygy/governance/contracts/candidates/pwb-exact-source-render-mode-scenario/ROUND-3-DISPOSITIONS.md` |
+| Ceremony verification | 11 of 11 manifest rows verified against the tree after the package's patches were applied; manifest digest equals the phrase `[Observed, this act]` |
+| Supersession | the latest link over the eleven-artifact PWB behavior population; every earlier act's rows remain immutable history |
+| Recording | `.syzygy/governance/decisions/PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md`; annotated tag `pwb-exact-source-render-mode-amendment-signed-2026-10-02` on the commit carrying these records |
+
+Effective status: the eleven-artifact PWB package is **signed behavioral
+authority — owner-adopted (bootstrap, uncorrelated)** at these bytes.
+
+This act approves no policy, adopts no registry entry, widens no consent and
+authorizes no implementation of the amended semantics; no write, egress,
+execution, deployment, release, recovery or mission authority follows from
+this act.
