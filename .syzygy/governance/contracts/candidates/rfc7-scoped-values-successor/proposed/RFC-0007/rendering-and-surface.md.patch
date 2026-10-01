@@ -1,14 +1,14 @@
 diff --git a/rfcs/RFC-0007/rendering-and-surface.md b/rfcs/RFC-0007/rendering-and-surface.md
-index d2eab9b..63dbc3a 100644
+index d2eab9b..d15bf9c 100644
 --- a/rfcs/RFC-0007/rendering-and-surface.md
 +++ b/rfcs/RFC-0007/rendering-and-surface.md
-@@ -209,13 +209,33 @@ claim-block **type name** (below), band membership and its authority class,
+@@ -209,13 +209,39 @@ claim-block **type name** (below), band membership and its authority class,
  curated-versus-computed provenance, adopted versus unadopted, editorial-draft
  state, proposal-context membership, review state, RFC7-11(a)'s
  **target-changed** state, label + tier + reason + freshness — is carried as a
 -**machine-readable attribute on the rendered unit**, served identically
-+**machine-readable attribute on the rendered unit** (except as the
-+interactive-surface paragraph below permits), served identically
++**machine-readable attribute on the rendered unit** (except, on the interactive
++surface alone, as the scope paragraph below permits), served identically
  through the machine-queryable endpoints (RFC6-13/14) and preserved in
  plain-text or exported renderings [Observed: agents are a first-class consumer
  from day one (vision.md); endpoints are V0-mandatory (v1.md)]. A distinction
@@ -16,23 +16,29 @@ index d2eab9b..63dbc3a 100644
  into an agent prompt, or a reader who cannot see it.
  
 +**Scope-carried values on the interactive surface.** The interactive surface
-+is the HTML page as rendered for a human reader, not the machine-queryable
-+endpoints (RFC6-13/14) and not any plain-text or exported rendering. On it
-+only, a distinction other than `non-citable` / `presentation-artifact` whose
-+value is the same for every unit under one enclosing element MAY be carried
-+once on that element, marked machine-readably as a scope, in place of on each
-+unit; this includes the evaluation identity RFC7-16 requires, and a
-+scope-carried freshness stays visible on the page itself (RFC7-16). A unit
-+under a scope then carries the value by expansion, under an inheritance rule
-+the governing specification states once and every oracle restates
-+independently. A scope never carries a value that is not the value of every
-+unit under it, never carries a unit's identity, states what it carries as text
-+on its own element (RFC7-34), and is expanded before any parity comparison.
-+The machine-queryable endpoints and every plain-text or exported rendering
-+carry every distinction on the unit itself, unchanged by this paragraph; an
-+agent or reader who needs a unit apart from its scope takes it from them, not
-+from a copy of the page. Non-citability is excluded because it must travel
-+with a unit wherever it goes: the sub-clause below stands in full.
++is the HTML document served for a browser to render. It is not the
++machine-queryable endpoints (RFC6-13/14) and not any plain-text or exported
++rendering, which are every output that is not that document. On it only, a
++distinction other than `non-citable` / `presentation-artifact` whose value is
++the same for every unit under one enclosing element MAY be carried once on
++that element, marked machine-readably as a scope, in place of on each unit;
++this includes the evaluation identity RFC7-16 requires, and a scope-carried
++freshness stays visible on the page itself (RFC7-16). A unit under a scope
++then carries the value by expansion, under an inheritance rule the governing
++specification states once and every oracle restates independently. A scope is
++valid only if every unit under it would carry that same value on itself: it
++never overrides, replaces or fills in for a unit's own attribute, a unit that
++carries a different value of its own invalidates the scope, and an invalid
++scope is not emitted. A scope never carries a unit's identity, states what it
++carries as text on its own element (RFC7-34), and is expanded before any
++parity comparison. The machine-queryable endpoints and every plain-text or
++exported rendering carry every distinction on the unit itself, unchanged by
++this paragraph, and so does any copy, share or export function the surface
++offers: it is produced from the expanded model, never from the scoped markup.
++Only a reader's own manual selection of part of the page can separate a unit
++from its scope's text, which the scope states visibly on its own element.
++Non-citability is excluded because it must travel with a unit wherever it
++goes: the sub-clause below stands in full.
 +
  **Non-citability travels, on every rendering.** Every narrative-model unit
  (RFC7-5) carries the **`non-citable` / `presentation-artifact`** attribute,

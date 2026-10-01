@@ -7,4 +7,4 @@
 # proposed/<path under rfcs/>.patch applied. They match the tree only
 # after --apply --at-adoption. Installed and candidate-mirror bytes are
 # required to match exactly.
-c1d760c368b0a42f60c83d2da488acf7f09fba2b47f6fd641180a4b5a213ca72  rfcs/RFC-0007/rendering-and-surface.md
+dcdab7d43505ffe185733822c52cba5fe5f73f28a67bc1287b706b1d2c4b1b2a  rfcs/RFC-0007/rendering-and-surface.md
