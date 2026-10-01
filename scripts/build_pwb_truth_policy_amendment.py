@@ -92,6 +92,23 @@ SUPERSEDED_ROWS = {
         ),
         "42d073cdeaf7fa7940c5e822b05213267ec1d0064faaaad092f21d264b76a2b1",
     ),
+    pathlib.Path(
+        "openspec/changes/polaris-project-wide-butlers-model/"
+        "CAPABILITY-COVERAGE.md"
+    ): (
+        pathlib.Path(
+            ".syzygy/governance/decisions/PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md"
+        ),
+        "517d698b55425701919132163d316c3c891097d7a7058281b404e89bd05adcac",
+    ),
+    pathlib.Path(
+        "openspec/changes/polaris-project-wide-butlers-model/design.md"
+    ): (
+        pathlib.Path(
+            ".syzygy/governance/decisions/PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md"
+        ),
+        "b89fae42697810692507b5a049aa66949a04afd95d1df1783e95d910e7bfb53e",
+    ),
 }
 
 
