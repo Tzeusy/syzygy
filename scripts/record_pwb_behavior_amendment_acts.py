@@ -422,10 +422,10 @@ ACTS = {
         "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md",
         "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-SIGNOFF",
         "PWB exact-source render-mode amendment sign-off",
-        # main commit carrying the offered manifest and packet bytes
-        "9d741859dceee935f256b99ebb68e095545b868b",
-        "9d741859dceee935f256b99ebb68e095545b868b",
-        "docs/reviews/R-PWB-EXACT-SOURCE-RENDER-MODE-DELTA-CONFIRMATION-RAW.md",
+        # main commit carrying the regenerated manifest and packet bytes
+        "4b2f0df92676dfb89ca600c15f349070251d74bb",
+        "4b2f0df92676dfb89ca600c15f349070251d74bb",
+        "docs/reviews/R-PWB-EXACT-SOURCE-RENDER-MODE-DELTA-CONFIRMATION-3-RAW.md",
         "pwb-exact-source-render-mode-amendment",
         """PWB-REQ-011 is amended so that the exact-source route serves every source
 the evaluation admitted as a classified blob, in exactly one render mode
@@ -454,6 +454,9 @@ authorizes no implementation of the amended semantics: the pursuit bead
 under M14 opens only under a fresh, separate owner authorization, and the
 269-of-278 figure and the page-size effect are measured there, never
 assumed here.""",
+        disposition_record=".syzygy/governance/contracts/candidates/pwb-exact-source-render-mode-scenario/ROUND-3-DISPOSITIONS.md",
+        disposition_sha256="1cf483ba217e342a8f7634255ee610d4c0aea226b881130aaf5fda8a12533724",
+        raw_findings_heading="## Findings",
     ),
     "opening-band": Act(
         "opening-band",
@@ -1637,15 +1640,24 @@ def selftest() -> int:
         results.append((f"{act.act_type}: wrong owner argument rejected",
                         rejects(validate_subject, "does not match manifest",
                                 ROOT, act, "0" * 64, False)))
+        # A performed act leaves the tree applied: the exact argument then
+        # validates in applied mode and the unapplied form no longer verifies.
+        performed = act.record.is_file()
         pre = False
         try:
-            pre = len(validate_subject(ROOT, act, exact, False)) == EXPECTED_ROWS
+            pre = len(validate_subject(ROOT, act, exact, performed)) == EXPECTED_ROWS
         except ValueError as exc:
             print(f"  ({act.act_type} exact-argument failure: {exc})")
-        results.append((f"{act.act_type}: exact argument validates before adoption", pre))
-        results.append((f"{act.act_type}: unapplied tree rejected in applied mode",
-                        rejects(validate_subject, "does not hash the tree",
-                                ROOT, act, exact, True)))
+        if performed:
+            results.append((f"{act.act_type}: exact argument validates after adoption", pre))
+            results.append((f"{act.act_type}: unapplied form rejected once performed",
+                            rejects(validate_subject, "package does not verify",
+                                    ROOT, act, exact, False)))
+        else:
+            results.append((f"{act.act_type}: exact argument validates before adoption", pre))
+            results.append((f"{act.act_type}: unapplied tree rejected in applied mode",
+                            rejects(validate_subject, "does not hash the tree",
+                                    ROOT, act, exact, True)))
         mutated_manifest = (ROOT / act.manifest).read_bytes().replace(b"\n", b"\n", 1) + b"#\n"
         results.append((f"{act.act_type}: manifest bytes the frozen subject lacks rejected",
                         rejects(validate_subject, "frozen subject does not carry",
