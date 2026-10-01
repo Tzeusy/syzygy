@@ -22,7 +22,7 @@ after** the three behavior patches under `proposed/` are applied. Three
 rows differ from the tree today; eight equal it.
 
 Behavior manifest SHA-256:
-`66885051782236eb3ffce6991fc8589170b015d0363aa6bd5389b59f52f8f05b`
+`ff460e8749f3ab14ca7f627cacf18bf12f6168864bae884b65eb69c1145684c9`
 
 The package also carries one **contract** patch,
 `proposed/contract/RFC-0007-rendering-and-surface.md.patch`, which is not a
@@ -172,7 +172,7 @@ in every case until an act says otherwise.
 The behavior act phrase for this manifest would be:
 
 ```
-SIGN OFF PWB SCOPED-ATTRIBUTES AMENDMENT: 66885051782236eb3ffce6991fc8589170b015d0363aa6bd5389b59f52f8f05b
+SIGN OFF PWB SCOPED-ATTRIBUTES AMENDMENT: ff460e8749f3ab14ca7f627cacf18bf12f6168864bae884b65eb69c1145684c9
 ```
 
 It is registered so that the governance checks see it go stale, but it is

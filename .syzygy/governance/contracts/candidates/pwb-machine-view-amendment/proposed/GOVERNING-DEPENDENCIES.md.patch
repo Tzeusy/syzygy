@@ -6,8 +6,8 @@ index 72cedb7..c9934a2 100644
  > here is overwritten and `--check` fails first. Identifiers only —
  > nothing here quotes or paraphrases any clause.
  >
--> Source: `spec.md` sha256 `42d073cdeaf7fa7940c5e822b05213267ec1d0064faaaad092f21d264b76a2b1` — 17 requirement(s), 96 distinct authorities.
-+> Source: `spec.md` sha256 `f57c37a8ae8fd287b9b3a807a6d641be327dbbffc13ec370de950bde2d23e2f8` — 17 requirement(s), 96 distinct authorities.
+-> Source: `spec.md` sha256 `9a44bdb6573ad3136ebd0d4fb8f8922fbd512c31896014068b29b851404615ae` — 17 requirement(s), 96 distinct authorities.
++> Source: `spec.md` sha256 `55faf0322302cdb429bff5761177d4c6bc46a031ee6686c48636e5a17b30035c` — 17 requirement(s), 96 distinct authorities.
  
  ## doctrine (8)
  

@@ -32,7 +32,7 @@ after** the four patches under `proposed/` are applied. Four rows differ
 from the tree today; seven equal it.
 
 Behavior manifest SHA-256:
-`5796c1541a90a109c0259a079d2262883942d1f97ac36c733ecf2c0c28763433`
+`527be5ac3732619608355ae9658c92cee45341e831521bc526398481dd915785`
 
 This packet wrapper is not an act subject. Once a review is retained
 against this package, changing this packet retires that review.
@@ -170,7 +170,7 @@ otherwise.
 The behavior act phrase for this manifest would be:
 
 ```
-SIGN OFF PWB EXACT-SOURCE RENDER-MODE AMENDMENT: 5796c1541a90a109c0259a079d2262883942d1f97ac36c733ecf2c0c28763433
+SIGN OFF PWB EXACT-SOURCE RENDER-MODE AMENDMENT: 527be5ac3732619608355ae9658c92cee45341e831521bc526398481dd915785
 ```
 
 It is registered so that the governance checks see it go stale, but it is

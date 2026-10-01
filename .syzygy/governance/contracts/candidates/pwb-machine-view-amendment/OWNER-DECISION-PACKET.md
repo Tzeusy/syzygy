@@ -37,7 +37,7 @@ after** the two patches under `proposed/` are applied. Two rows differ from
 the tree today; nine equal it.
 
 Behavior manifest SHA-256:
-`2a49a8d1d473d4347dadda1489488bc6556102c14e98e18bc58688ffeeb3ed6c`
+`3e41c872c1e536429d8f6e453dadc53ecfdb0d1c31b256d46bf5e3327a9368d1`
 
 This packet wrapper is not an act subject. Its bytes will be bound by the
 retained review of the package; changing this packet after that review
@@ -177,7 +177,7 @@ otherwise.
 The behavior act phrase for this manifest would be:
 
 ```
-SIGN OFF PWB MACHINE-VIEW AMENDMENT: 2a49a8d1d473d4347dadda1489488bc6556102c14e98e18bc58688ffeeb3ed6c
+SIGN OFF PWB MACHINE-VIEW AMENDMENT: 3e41c872c1e536429d8f6e453dadc53ecfdb0d1c31b256d46bf5e3327a9368d1
 ```
 
 It is written here so that the governance checks can see it go stale, and it
