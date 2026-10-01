@@ -2471,6 +2471,8 @@ ACT_DIGEST_COPY_FILES = {
     # record does.
     f"{PWB_RENDER_MODE_DIR}/ROUND-3-DISPOSITIONS.md":
         (PWB_RENDER_MODE_LABEL,),
+    f"{PWB_MACHINE_VIEW_DIR}/ROUND-7-DISPOSITIONS.md":
+        (PWB_MACHINE_VIEW_LABEL,),
     f"{PWB_OPENING_BAND_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_OPENING_BAND_LABEL,),
     # The round-11 disposition record beside the package carries the offered
