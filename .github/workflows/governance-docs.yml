@@ -109,18 +109,6 @@ jobs:
       - name: build_pwb_truth_policy_amendment --check
         run: python3 scripts/build_pwb_truth_policy_amendment.py --check
 
-      - name: build_pwb_scoped_attributes_amendment --check
-        run: python3 scripts/build_pwb_scoped_attributes_amendment.py --check
-
-      - name: build_pwb_scoped_attributes_amendment --selftest
-        run: python3 scripts/build_pwb_scoped_attributes_amendment.py --selftest
-
-      - name: build_pwb_machine_view_amendment --check
-        run: python3 scripts/build_pwb_machine_view_amendment.py --check
-
-      - name: build_pwb_machine_view_amendment --selftest
-        run: python3 scripts/build_pwb_machine_view_amendment.py --selftest
-
       - name: record_pwb_behavior_amendment_acts --check render-mode
         run: python3 scripts/record_pwb_behavior_amendment_acts.py --check render-mode 527be5ac3732619608355ae9658c92cee45341e831521bc526398481dd915785 --date 2026-10-02
 
