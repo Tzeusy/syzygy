@@ -2737,6 +2737,48 @@ def _activate_scoped_values_copy_registry(registry=None, root=None):
 _activate_scoped_values_copy_registry()
 
 
+#: Packages signed by version tag under
+#: `decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`:
+#: `(record stem, owner packet)`. A versioned sign-off carries no phrase and no
+#: digest argument, and a later version may change the package, so once a
+#: package has a `<stem>-SIGNOFF-v<M.m>.md` record its packet is no longer an
+#: act-argument copy: it is dropped from the copy registry and CG-7e skips it.
+#: The exemption is existence-gated and per package; every digest-bound act
+#: already performed, and doctrine and accepted contracts, keep their copies.
+VERSIONED_SIGNOFF_PACKAGES = (
+    ("RFC7-SCOPED-VALUES-AMENDMENT", SCOPED_VALUES_PACKET),
+    ("PWB-SCOPED-ATTRIBUTES-AMENDMENT",
+     f"{PWB_SCOPED_AMENDMENT_DIR}/OWNER-DECISION-PACKET.md"),
+)
+
+
+def _versioned_signoff_records(stem, root=None):
+    """Repo-relative dedicated records for one package, oldest version first."""
+    base = os.path.join(root or ROOT, DECISIONS)
+    found = []
+    if os.path.isdir(base):
+        for name in os.listdir(base):
+            m = re.fullmatch(re.escape(stem) + r"-SIGNOFF-v(\d+)\.(\d+)\.md", name)
+            if m:
+                found.append(((int(m.group(1)), int(m.group(2))),
+                              f"{DECISIONS}/{name}"))
+    return [rel for _version, rel in sorted(found)]
+
+
+def _versioned_exempt_files(root=None):
+    return {packet for stem, packet in VERSIONED_SIGNOFF_PACKAGES
+            if _versioned_signoff_records(stem, root)}
+
+
+def _apply_versioned_signoff_exemptions(registry=None, root=None):
+    registry = ACT_DIGEST_COPY_FILES if registry is None else registry
+    for packet in _versioned_exempt_files(root):
+        registry.pop(packet, None)
+
+
+_apply_versioned_signoff_exemptions()
+
+
 #: Ordered owner-act successors to the bootstrap 30-row contract manifest:
 #: `(label, subject manifest, dedicated act record, copy-registry activation,
 #: closed path tuple)`. Each link's manifest must bind exactly its own path
@@ -3107,6 +3149,7 @@ def cg7e_act_digest_copies(paths, res):
         for digest in digests:
             recognized.setdefault(digest, set()).add(label)
     findings, examined, registered = [], 0, []
+    versioned_exempt = _versioned_exempt_files()
     for rel in paths:
         if not rel.endswith((".md", ".txt")):
             continue
@@ -3116,6 +3159,8 @@ def cg7e_act_digest_copies(paths, res):
             continue
         body = read(rel)
         if not body:
+            continue
+        if rel in versioned_exempt:
             continue
         current_declared = ACT_DIGEST_COPY_FILES.get(rel, ())
         historical_declared = ACT_HISTORICAL_DIGEST_COPY_FILES.get(rel, {})
@@ -3445,6 +3490,9 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                                scoped_dedicated_record=None,
                                scoped_manifest_body=None,
                                scoped_manifest_digest=None,
+                               scoped_versioned_records=None,
+                               scoped_values_versioned_records=None,
+                               scoped_values_manifest_body=None,
                                machine_view_dedicated_record=None,
                                machine_view_manifest_body=None,
                                machine_view_manifest_digest=None,
@@ -3603,6 +3651,14 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         scoped_manifest_body = read_if_present(PWB_SCOPED_AMENDMENT_SUBJECT)
     if scoped_manifest_digest is None:
         scoped_manifest_digest = current_digest(PWB_SCOPED_AMENDMENT_SUBJECT)
+    if scoped_versioned_records is None:
+        scoped_versioned_records = _versioned_signoff_records(
+            "PWB-SCOPED-ATTRIBUTES-AMENDMENT")
+    if scoped_values_versioned_records is None:
+        scoped_values_versioned_records = _versioned_signoff_records(
+            "RFC7-SCOPED-VALUES-AMENDMENT")
+    if scoped_values_manifest_body is None:
+        scoped_values_manifest_body = read_if_present(SCOPED_VALUES_SUBJECT)
     if machine_view_dedicated_record is None:
         machine_view_dedicated_record = read_if_present(PWB_MACHINE_VIEW_ACT)
     if machine_view_manifest_body is None:
@@ -3792,7 +3848,11 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
             link_specs, record=successor_act_record).get(label, ())
         link_dedicated = _performed_act_digests(
             link_specs, record=dedicated_record_body).get(label, ())
-        if not (link_recorded or link_dedicated):
+        # A version-tagged sign-off (Scope A) binds the package's current
+        # manifest instead of a phrase digest, so a later version may move it.
+        versioned = (label == PWB_SCOPED_AMENDMENT_LABEL
+                     and bool(scoped_versioned_records))
+        if not (link_recorded or link_dedicated or versioned):
             continue
         findings_before_link = len(findings)
         if attempted_links and not attempted_links[-1][4]:
@@ -3805,9 +3865,10 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
             findings.append(
                 f"{act_rel} — successor act recorded without its predecessor "
                 f"act; the chain has a gap")
-        require_latest(
-            PERFORMED_ACT_RECORD, link_recorded, manifest_digest, subject)
-        require_latest(act_rel, link_dedicated, manifest_digest, subject)
+        if not versioned:
+            require_latest(
+                PERFORMED_ACT_RECORD, link_recorded, manifest_digest, subject)
+            require_latest(act_rel, link_dedicated, manifest_digest, subject)
         link_rows = manifest_rows(body, subject, len(subjects))
         require_exact_paths(link_rows, subject, subjects)
         link_valid = len(findings) == findings_before_link
@@ -3982,6 +4043,31 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                 f"[historical] {GENERAL_BOOTSTRAP_CONTRACT_MANIFEST} — "
                 f"{len(link_rows)} act-time module row(s) superseded by "
                 f"{subject}")
+
+    # A version-tagged contract sign-off (Scope A) binds the package's current
+    # manifest row instead of a phrase digest, after every digest-bound link.
+    if scoped_values_versioned_records:
+        before_versioned = len(findings)
+        if not bootstrap_valid or broken:
+            findings.append(
+                f"{scoped_values_versioned_records[-1]} — version-tagged contract "
+                f"sign-off recorded while the contract chain is invalid")
+        sv_rows = manifest_rows(
+            scoped_values_manifest_body, SCOPED_VALUES_SUBJECT, 1)
+        require_exact_paths(sv_rows, SCOPED_VALUES_SUBJECT,
+                            ("rfcs/RFC-0007/rendering-and-surface.md",))
+        for sha, path, line_no in sv_rows:
+            if path not in bootstrap_contract_paths:
+                findings.append(
+                    f"{SCOPED_VALUES_SUBJECT}:{line_no} — no predecessor "
+                    f"contract row for `{path}`")
+            elif len(findings) == before_versioned:
+                if path in contract_bound_by:
+                    details.append(
+                        f"[historical] {contract_bound_by[path]} — act-time "
+                        f"row for `{path}` superseded by {SCOPED_VALUES_SUBJECT}")
+                contract_overrides[path] = sha
+                contract_bound_by[path] = SCOPED_VALUES_SUBJECT
 
     for expected, path, line_no in contract_rows:
         expected = contract_overrides.get(path, expected)
@@ -7213,6 +7299,28 @@ def selftest():
                   row[0] == "FAIL"
                   and any("checked exemption" in x for x in row[4])))
 
+    # Version-tagged sign-off exemptions (Scope A): existence-gated per package.
+    import tempfile as _tempfile
+    with _tempfile.TemporaryDirectory() as _d:
+        _dec = os.path.join(_d, DECISIONS)
+        os.makedirs(_dec)
+        _registry = {packet: ("LABEL",) for _stem, packet in VERSIONED_SIGNOFF_PACKAGES}
+        _registry["other.md"] = ("LABEL",)
+        _none = _versioned_exempt_files(_d)
+        with open(os.path.join(_dec, "RFC7-SCOPED-VALUES-AMENDMENT-SIGNOFF-v1.0.md"), "w") as _fh:
+            _fh.write("record\n")
+        with open(os.path.join(_dec, "RFC7-SCOPED-VALUES-AMENDMENT-SIGNOFF-v1.x.md"), "w") as _fh:
+            _fh.write("not a version\n")
+        _one = _versioned_exempt_files(_d)
+        _apply_versioned_signoff_exemptions(_registry, _d)
+    cases.append(("CG-7e a package without a version-tagged record keeps its packet copy",
+                  _none == set()))
+    cases.append(("CG-7e a version-tagged record exempts only its own package's packet",
+                  _one == {SCOPED_VALUES_PACKET}
+                  and SCOPED_VALUES_PACKET not in _registry
+                  and "other.md" in _registry
+                  and len(_registry) == len(VERSIONED_SIGNOFF_PACKAGES)))
+
     absent = _selftest_polaris_edit_repair_candidate_registration(False)
     cases.append(("CG-7d/7e absent edit-repair manifest registers no candidate phrase or packet",
                   absent == (0, {})))
@@ -7606,6 +7714,21 @@ def selftest():
                   row[0] == "FAIL"
                   and any("PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt" in d
                           for d in row[4])))
+
+    row = _selftest_cg7h("scoped-versioned-valid")
+    cases.append(("CG-7h version-tagged PWB sign-off binds the current manifest",
+                  row[0] == "OK" and row[3] == 0))
+    row = _selftest_cg7h("scoped-versioned-drift")
+    cases.append(("CG-7h version-tagged PWB sign-off rejects a drifted subject",
+                  row[0] == "FAIL"
+                  and any(PWB_SCOPED_AMENDMENT_SUBJECTS[0] in d for d in row[4])))
+    row = _selftest_cg7h("scoped-values-versioned-valid")
+    cases.append(("CG-7h version-tagged contract sign-off binds the current row",
+                  row[0] == "OK" and row[3] == 0))
+    row = _selftest_cg7h("scoped-values-versioned-drift")
+    cases.append(("CG-7h version-tagged contract sign-off rejects installed drift",
+                  row[0] == "FAIL"
+                  and any("rendering-and-surface.md" in d for d in row[4])))
 
     row = _selftest_cg7h("contract-valid")
     cases.append(("CG-7h exact two-module contract successor passes at 81",
@@ -8433,6 +8556,7 @@ THIRD_LINK = ("SYNTHETIC THIRD CONTRACT LINK", "selftest/THIRD-MANIFEST.txt",
 
 
 def _selftest_cg7h(kind):
+    global PWB_SUCCESSOR_CHAIN
     class Cap:
         def __init__(self): self.rows = []
         def add(self, status, name, examined, n, unit, note=None, details=None):
@@ -8499,6 +8623,7 @@ def _selftest_cg7h(kind):
         "valid-truth-successor", "truth-one-record", "truth-conflict",
         "truth-current-drift", "truth-without-state1", "truth-10",
         "truth-candidate-no-act",
+        "scoped-versioned-valid", "scoped-versioned-drift",
     }
     successor_kinds = {
         "successor-one-record", "successor-conflict", "valid-successor",
@@ -8570,6 +8695,38 @@ def _selftest_cg7h(kind):
             # signed state-(1) rows no longer match current bytes and no
             # successor act exists: candidate bytes alone bind nothing
             pass
+
+    # Version-tagged sign-offs (Scope A): the current manifest binds the
+    # tree, with no phrase digest. The PWB chain is narrowed to the links this
+    # fixture performs so the scoped link has its predecessors.
+    scoped_versioned = {}
+    scoped_chain = None
+    if kind in ("scoped-versioned-valid", "scoped-versioned-drift"):
+        scoped_rows = [(digest(f"scoped-{i}"), path)
+                       for i, path in enumerate(PWB_SCOPED_AMENDMENT_SUBJECTS)]
+        for stated, path in scoped_rows:
+            current[path] = stated
+        if kind == "scoped-versioned-drift":
+            current[PWB_SCOPED_AMENDMENT_SUBJECTS[0]] = digest("post-scoped-drift")
+        scoped_manifest_text = "".join(f"{stated}  {path}\n" for stated, path in scoped_rows)
+        current[PWB_SCOPED_AMENDMENT_SUBJECT] = digest(scoped_manifest_text)
+        scoped_versioned = dict(
+            scoped_versioned_records=["PWB-SCOPED-ATTRIBUTES-AMENDMENT-SIGNOFF-v1.0.md"],
+            scoped_dedicated_record="", scoped_manifest_body=scoped_manifest_text,
+            scoped_manifest_digest=digest(scoped_manifest_text))
+        scoped_chain = tuple(link for link in PWB_SUCCESSOR_CHAIN
+                             if link[0] in (PWB_STATE1_LABEL, PWB_TRUTH_AMENDMENT_LABEL,
+                                            PWB_SCOPED_AMENDMENT_LABEL))
+    scoped_values = {}
+    if kind in ("scoped-values-versioned-valid", "scoped-values-versioned-drift"):
+        rfc7_path = "rfcs/RFC-0007/rendering-and-surface.md"
+        new_sha = digest("scoped-values-v1")
+        if kind == "scoped-values-versioned-valid":
+            current[f"{CONTRACT_ROOT}/{rfc7_path}"] = new_sha
+            current[f"{CANDIDATES}/{rfc7_path}"] = new_sha
+        scoped_values = dict(
+            scoped_values_versioned_records=["RFC7-SCOPED-VALUES-AMENDMENT-SIGNOFF-v1.0.md"],
+            scoped_values_manifest_body=f"{new_sha}  {rfc7_path}\n")
 
     if kind == "top-level-drift":
         current[top_paths[0]] = digest("drifted-top-level")
@@ -8898,6 +9055,9 @@ def _selftest_cg7h(kind):
         spec_inputs = (spec_dedicated, spec_manifest, spec_digest)
 
     c = Cap()
+    kept_chain = PWB_SUCCESSOR_CHAIN
+    if scoped_chain is not None:
+        PWB_SUCCESSOR_CHAIN = scoped_chain
     cg7h_general_bootstrap_act(
         c, act_record=performed, dedicated_record=dedicated,
         manifest_body=manifest, transaction_digest=transaction,
@@ -8919,12 +9079,16 @@ def _selftest_cg7h(kind):
         render_mode_manifest_digest=None,
         opening_band_dedicated_record="", opening_band_manifest_body="",
         opening_band_manifest_digest=None,
-        scoped_dedicated_record="", scoped_manifest_body="",
-        scoped_manifest_digest=None,
+        **{**dict(scoped_dedicated_record="", scoped_manifest_body="",
+                  scoped_manifest_digest=None, scoped_versioned_records=[],
+                  scoped_values_versioned_records=[],
+                  scoped_values_manifest_body=""),
+           **scoped_versioned, **scoped_values},
         contract_chain_inputs=contract_inputs,
         contract_chain=(CONTRACT_SUCCESSOR_CHAIN + (THIRD_LINK,)
                         if kind == "restyle-three-link-cascade" else None),
         spec_policy_inputs=spec_inputs)
+    PWB_SUCCESSOR_CHAIN = kept_chain
     return c.row("CG-7h")
 
 
