@@ -66,7 +66,7 @@ Silence, a partial answer, a commit or a merge performs nothing.
 The contract act phrase for this manifest would be:
 
 ```
-SIGN OFF RFC-0007 SCOPED-VALUES AMENDMENT: e9979e0592a77f60eb9914ff84eb9f9eaade8b38f38e1d321bcda2dd4c1c3e50
+SIGN OFF RFC-0007 SCOPED-VALUES AMENDMENT: 730f6acbf2ebef54ac713106f4965fb9a461c41bf3684f4af1c3a76944d7d2b0
 ```
 
 It is registered so that the governance checks see it go stale; it is **not
