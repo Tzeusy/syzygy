@@ -156,6 +156,11 @@ CAMPAIGNS = (
         "P-68 scoped-attributes package",
         r"R-PWB-SCOPED-ATTRIBUTES-.*\.md",
     ),
+    campaign(
+        "rfc7-scoped-values",
+        "RFC-0007 scoped-values successor",
+        r"R-RFC7-SCOPED-VALUES-SUCCESSOR-.*\.md",
+    ),
     *(
         campaign(
             f"polaris-m{number}",
