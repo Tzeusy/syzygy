@@ -1670,6 +1670,9 @@ PWB_SUCCESSOR_CHAIN = (
     # Performed 2026-10-02, after the opening band and before lane B.
     (PWB_RENDER_MODE_LABEL, PWB_RENDER_MODE_SUBJECT,
      PWB_RENDER_MODE_ACT, PWB_RENDER_MODE_SUBJECTS),
+    # Performed 2026-10-02, after the render mode and before lane B.
+    (PWB_MACHINE_VIEW_LABEL, PWB_MACHINE_VIEW_SUBJECT,
+     PWB_MACHINE_VIEW_ACT, PWB_MACHINE_VIEW_SUBJECTS),
     (PWB_SCOPED_AMENDMENT_LABEL, PWB_SCOPED_AMENDMENT_SUBJECT,
      PWB_SCOPED_AMENDMENT_ACT, PWB_SCOPED_AMENDMENT_SUBJECTS),
 )
@@ -2459,7 +2462,7 @@ ACT_DIGEST_COPY_FILES = {
         (PWB_EFFECT_ACTS[2][0],),
     # The battery's recorder line passes the registry act's argument.
     "PROJECT-STATUS.md": (PWB_EFFECT_ACTS[2][0], PWB_OPENING_BAND_LABEL,
-                          PWB_RENDER_MODE_LABEL),
+                          PWB_RENDER_MODE_LABEL, PWB_MACHINE_VIEW_LABEL),
     f"{PWB_SCOPED_AMENDMENT_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_SCOPED_AMENDMENT_LABEL,),
     f"{PWB_RENDER_MODE_DIR}/OWNER-DECISION-PACKET.md":
@@ -3415,6 +3418,9 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                                scoped_dedicated_record=None,
                                scoped_manifest_body=None,
                                scoped_manifest_digest=None,
+                               machine_view_dedicated_record=None,
+                               machine_view_manifest_body=None,
+                               machine_view_manifest_digest=None,
                                render_mode_dedicated_record=None,
                                render_mode_manifest_body=None,
                                render_mode_manifest_digest=None,
@@ -3570,6 +3576,12 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         scoped_manifest_body = read_if_present(PWB_SCOPED_AMENDMENT_SUBJECT)
     if scoped_manifest_digest is None:
         scoped_manifest_digest = current_digest(PWB_SCOPED_AMENDMENT_SUBJECT)
+    if machine_view_dedicated_record is None:
+        machine_view_dedicated_record = read_if_present(PWB_MACHINE_VIEW_ACT)
+    if machine_view_manifest_body is None:
+        machine_view_manifest_body = read_if_present(PWB_MACHINE_VIEW_SUBJECT)
+    if machine_view_manifest_digest is None:
+        machine_view_manifest_digest = current_digest(PWB_MACHINE_VIEW_SUBJECT)
     if render_mode_dedicated_record is None:
         render_mode_dedicated_record = read_if_present(PWB_RENDER_MODE_ACT)
     if render_mode_manifest_body is None:
@@ -3740,6 +3752,9 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         PWB_RENDER_MODE_LABEL: (
             render_mode_dedicated_record, render_mode_manifest_body,
             render_mode_manifest_digest),
+        PWB_MACHINE_VIEW_LABEL: (
+            machine_view_dedicated_record, machine_view_manifest_body,
+            machine_view_manifest_digest),
     }
     attempted_links = []
     for label, subject, act_rel, subjects in PWB_SUCCESSOR_CHAIN:
@@ -8853,6 +8868,8 @@ def _selftest_cg7h(kind):
         truth_manifest_digest=truth_digest,
         # Later PWB links are unperformed in every synthetic tree; without
         # explicit empties they would read this repository's real records.
+        machine_view_dedicated_record="", machine_view_manifest_body="",
+        machine_view_manifest_digest=None,
         render_mode_dedicated_record="", render_mode_manifest_body="",
         render_mode_manifest_digest=None,
         opening_band_dedicated_record="", opening_band_manifest_body="",
