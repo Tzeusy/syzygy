@@ -115,6 +115,18 @@ jobs:
       - name: record_pwb_behavior_amendment_acts --check machine-view
         run: python3 scripts/record_pwb_behavior_amendment_acts.py --check machine-view acabc7915e4461186b5878ce40cc0c62ed7cf91eadd7eead1cb179c80f672e72 --date 2026-10-02
 
+      - name: build_rfc7_scoped_values_successor --check
+        run: python3 scripts/build_rfc7_scoped_values_successor.py --check
+
+      - name: build_rfc7_scoped_values_successor --selftest
+        run: python3 scripts/build_rfc7_scoped_values_successor.py --selftest
+
+      - name: record_rfc7_scoped_values_successor --check
+        run: python3 scripts/record_rfc7_scoped_values_successor.py --check
+
+      - name: record_rfc7_scoped_values_successor --selftest
+        run: python3 scripts/record_rfc7_scoped_values_successor.py --selftest
+
       - name: record_pwb_behavior_amendment_acts --check opening-band
         run: python3 scripts/record_pwb_behavior_amendment_acts.py --check opening-band 7f80cb05f644dd1e4f49e7b212d6972ee4754e40682450e59a6c3245546d5c46 --date 2026-10-01
 
