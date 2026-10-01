@@ -461,6 +461,42 @@ assumed here.""",
         disposition_record=".syzygy/governance/contracts/candidates/pwb-exact-source-render-mode-scenario/ROUND-3-DISPOSITIONS.md",
         disposition_sha256="1cf483ba217e342a8f7634255ee610d4c0aea226b881130aaf5fda8a12533724",
         raw_findings_heading="## Findings",
+        superseded_by=("machine-view",),
+    ),
+    "machine-view": Act(
+        "machine-view",
+        "build_pwb_machine_view_amendment",
+        "SIGN OFF PWB MACHINE-VIEW AMENDMENT",
+        "PWB-MACHINE-VIEW-AMENDMENT-ACT.md",
+        "PWB-MACHINE-VIEW-AMENDMENT-SIGNOFF",
+        "PWB machine-view amendment sign-off",
+        # main commit carrying the regenerated manifest and packet bytes
+        "e58fd1cd1021734a6a617e87424ad3b531c3a61c",
+        "e58fd1cd1021734a6a617e87424ad3b531c3a61c",
+        "docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-6-RAW.md",
+        "pwb-machine-view-amendment",
+        """PWB-REQ-020 gains one block, inside the requirement and before its SHALL
+sentence, that names two closed categories of machine response served beside
+the machine answer: the derived read-only machine view, whose members are
+`GET /api/poc/polaris` and the prospective `GET /api/poc/briefing`, and the
+generated editorial draft view, whose member is `GET /polaris/draft/<runId>`.
+Every value a derived view serves is independently verified as derivable from
+the machine answer's own bytes. A member that needs a ceiling of its own is
+not served before the adapter-registry entry's resource envelope declares it.
+A route enters either category only by a later amendment to this specification
+naming it, and a route in neither category is neither admitted nor forbidden
+by this requirement. The narrow reading of RFC6-21 is taken.
+`GOVERNING-DEPENDENCIES.md` is regenerated.""",
+        """This act authorizes no implementation: no route is built or served, and the
+briefing member stays unservable until its ceiling is declared and the route
+is separately authorized. It amends no byte of PWB-REQ-004, -011, -014 or
+-016, widens no content class, consent, read, write or egress, and edits no
+registry or policy byte. The second category's record-level fields and its
+relation to the exact-source anchors are left to the later route amendment
+that names the member.""",
+        disposition_record=".syzygy/governance/contracts/candidates/pwb-machine-view-amendment/ROUND-7-DISPOSITIONS.md",
+        disposition_sha256="4249c205558aca0be67efeeeb7360d2f16c0092f8aab66f1dc3df8e61a7af2e4",
+        raw_findings_heading="## Findings",
     ),
     "opening-band": Act(
         "opening-band",
@@ -500,7 +536,7 @@ it.""",
         disposition_sha256="0cc80226fb28bc49e836dff03d9bdb4c73884be2c8d7ae0a123f2c43e4221fea",
         raw_findings_heading="## Findings",
         split_phrase_packet=True,
-        superseded_by=("render-mode",),
+        superseded_by=("render-mode", "machine-view"),
     ),
 }
 
