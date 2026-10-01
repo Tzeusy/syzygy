@@ -572,17 +572,18 @@ def manifest_rows(text: str, act: Act) -> list[tuple[str, str]]:
     return rows
 
 
-def _later_row(root: pathlib.Path, act: Act, path: str) -> str | None:
-    """The digest a later performed act's manifest declares for `path`, when
-    one of `act.superseded_by` has its record in `root`; otherwise None."""
+def _later_rows(root: pathlib.Path, act: Act, path: str) -> set[str]:
+    """Every digest a later performed act's manifest declares for `path`, over
+    the acts in `act.superseded_by` whose record and manifest exist in `root`."""
+    found: set[str] = set()
     for name in act.superseded_by:
         later = ACTS[name]
         if not (root / later.record).is_file() or not (root / later.manifest).is_file():
             continue
         for sha, row_path in ROW_RE.findall((root / later.manifest).read_text()):
             if row_path == path:
-                return sha
-    return None
+                found.add(sha)
+    return found
 
 
 def validate_subject(
@@ -615,7 +616,7 @@ def validate_subject(
         for expected_sha, path in rows:
             target = root / path
             actual = digest(target.read_bytes()) if target.is_file() else "absent"
-            if actual != expected_sha and actual != _later_row(root, act, path):
+            if actual != expected_sha and actual not in _later_rows(root, act, path):
                 raise ValueError(f"manifest row does not hash the tree: {path}")
     else:
         findings = act.module.check()
@@ -1690,17 +1691,17 @@ def selftest_superseded_rows() -> list[tuple[str, bool]]:
         (root / later.manifest).parent.mkdir(parents=True)
         (root / later.record).parent.mkdir(parents=True, exist_ok=True)
         results.append(("superseded rows: no later record leaves the row unsuperseded",
-                        _later_row(root, earlier, path) is None))
+                        not _later_rows(root, earlier, path)))
         (root / later.record).write_text("record\n")
         results.append(("superseded rows: record without its manifest leaves it unsuperseded",
-                        _later_row(root, earlier, path) is None))
+                        not _later_rows(root, earlier, path)))
         (root / later.manifest).write_text(manifest_text)
         results.append(("superseded rows: record and manifest supply the later digest",
-                        _later_row(root, earlier, path) == "ab" * 32))
+                        _later_rows(root, earlier, path) == {"ab" * 32}))
         results.append(("superseded rows: a path the later manifest lacks stays unsuperseded",
-                        _later_row(root, earlier, "no/such/path.md") is None))
+                        not _later_rows(root, earlier, "no/such/path.md")))
         results.append(("superseded rows: an act naming no later act never supersedes",
-                        _later_row(root, later, path) is None))
+                        not _later_rows(root, later, path)))
     return results
 
 

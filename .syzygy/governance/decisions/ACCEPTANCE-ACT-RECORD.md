@@ -932,3 +932,31 @@ This act approves no policy, adopts no registry entry, widens no consent and
 authorizes no implementation of the amended semantics; no write, egress,
 execution, deployment, release, recovery or mission authority follows from
 this act.
+
+## PWB behavior amendment — machine-view — performed 2026-10-02
+
+**Phrase, exactly as written by the owner (in-interaction, 2026-10-02):**
+
+```text
+SIGN OFF PWB MACHINE-VIEW AMENDMENT: acabc7915e4461186b5878ce40cc0c62ed7cf91eadd7eead1cb179c80f672e72
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Argument | SHA-256 of `.syzygy/governance/contracts/candidates/pwb-machine-view-amendment/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt`, recomputed at recording and equal to the phrase |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Frozen subject / packet head | `e58fd1cd1021734a6a617e87424ad3b531c3a61c` / `e58fd1cd1021734a6a617e87424ad3b531c3a61c` |
+| Review outcome | `docs/reviews/R-PWB-MACHINE-VIEW-DELTA-CONFIRMATION-6-RAW.md`: `CONFIRM WITH EXCEPTIONS`, bound to this manifest digest; disposition: `.syzygy/governance/contracts/candidates/pwb-machine-view-amendment/ROUND-7-DISPOSITIONS.md` |
+| Ceremony verification | 11 of 11 manifest rows verified against the tree after the package's patches were applied; manifest digest equals the phrase `[Observed, this act]` |
+| Supersession | the latest link over the eleven-artifact PWB behavior population; every earlier act's rows remain immutable history |
+| Recording | `.syzygy/governance/decisions/PWB-MACHINE-VIEW-AMENDMENT-ACT.md`; annotated tag `pwb-machine-view-amendment-signed-2026-10-02` on the commit carrying these records |
+
+Effective status: the eleven-artifact PWB package is **signed behavioral
+authority — owner-adopted (bootstrap, uncorrelated)** at these bytes.
+
+This act approves no policy, adopts no registry entry, widens no consent and
+authorizes no implementation of the amended semantics; no write, egress,
+execution, deployment, release, recovery or mission authority follows from
+this act.
