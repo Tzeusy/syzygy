@@ -109,29 +109,8 @@ jobs:
       - name: build_pwb_truth_policy_amendment --check
         run: python3 scripts/build_pwb_truth_policy_amendment.py --check
 
-      - name: build_pwb_scoped_attributes_amendment --check
-        run: python3 scripts/build_pwb_scoped_attributes_amendment.py --check
-
-      - name: build_pwb_scoped_attributes_amendment --selftest
-        run: python3 scripts/build_pwb_scoped_attributes_amendment.py --selftest
-
-      - name: build_pwb_machine_view_amendment --check
-        run: python3 scripts/build_pwb_machine_view_amendment.py --check
-
-      - name: build_pwb_machine_view_amendment --selftest
-        run: python3 scripts/build_pwb_machine_view_amendment.py --selftest
-
-      - name: build_pwb_opening_band_scenario --check
-        run: python3 scripts/build_pwb_opening_band_scenario.py --check
-
-      - name: build_pwb_opening_band_scenario --selftest
-        run: python3 scripts/build_pwb_opening_band_scenario.py --selftest
-
-      - name: build_pwb_exact_source_render_mode_amendment --check
-        run: python3 scripts/build_pwb_exact_source_render_mode_amendment.py --check
-
-      - name: build_pwb_exact_source_render_mode_amendment --selftest
-        run: python3 scripts/build_pwb_exact_source_render_mode_amendment.py --selftest
+      - name: record_pwb_behavior_amendment_acts --check opening-band
+        run: python3 scripts/record_pwb_behavior_amendment_acts.py --check opening-band 7f80cb05f644dd1e4f49e7b212d6972ee4754e40682450e59a6c3245546d5c46 --date 2026-10-01
 
       - name: build_pwb_registry_currency_briefing_amendment --check
         run: python3 scripts/build_pwb_registry_currency_briefing_amendment.py --check

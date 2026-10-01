@@ -74,6 +74,24 @@ SUPERSEDED_ROWS = {
         ),
         "0765f4d534afad9003463790113fd433d250550091df783c1ff372d227643e4f",
     ),
+    pathlib.Path(
+        "openspec/changes/polaris-project-wide-butlers-model/"
+        "GOVERNING-DEPENDENCIES.md"
+    ): (
+        pathlib.Path(
+            ".syzygy/governance/decisions/PWB-OPENING-BAND-SCENARIO-ACT.md"
+        ),
+        "2b5a453baf53ec03278b5950abe3689267b085275fb21f1a2ef54010b02532f0",
+    ),
+    pathlib.Path(
+        "openspec/changes/polaris-project-wide-butlers-model/specs/"
+        "polaris-project-wide-butlers-model/spec.md"
+    ): (
+        pathlib.Path(
+            ".syzygy/governance/decisions/PWB-OPENING-BAND-SCENARIO-ACT.md"
+        ),
+        "42d073cdeaf7fa7940c5e822b05213267ec1d0064faaaad092f21d264b76a2b1",
+    ),
 }
 
 
