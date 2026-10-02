@@ -187,6 +187,55 @@ describe('RT3 — credential reuse inspection', () => {
     expect(detail).toContain('state directory mode 0775 is group- or other-writable');
   });
 
+  it('refuses a state directory owned by another uid (injected stat)', () => {
+    const stateDir = provisioned(0o700, 0o600);
+    const uid = 4242;
+    const lstat = (target: string) => {
+      const real = lstatSync(target);
+      return {
+        mode: real.mode,
+        uid: target === stateDir ? uid + 1 : uid,
+        isFile: () => real.isFile(),
+        isDirectory: () => real.isDirectory(),
+        isSymbolicLink: () => real.isSymbolicLink(),
+      };
+    };
+
+    const detail = refusal(ensureCredential(stateDir, { lstat, uid }));
+    expect(detail).toContain("state directory is owned by uid 4243, not the daemon's uid 4242");
+  });
+
+  it('refuses a symlinked state directory', () => {
+    const realDir = provisioned(0o700, 0o600);
+    const linkedDir = join(tempDir(), 'linked-state');
+    symlinkSync(realDir, linkedDir);
+
+    const detail = refusal(ensureCredential(linkedDir));
+    expect(detail).toContain('state directory is a symbolic link or not a directory');
+  });
+
+  it('refuses a state directory that is not a directory (injected stat)', () => {
+    const stateDir = provisioned(0o700, 0o600);
+    const lstat = (target: string) => {
+      const real = lstatSync(target);
+      return {
+        mode: real.mode,
+        uid: real.uid,
+        isFile: () => real.isFile(),
+        isDirectory: () => (target === stateDir ? false : real.isDirectory()),
+        isSymbolicLink: () => real.isSymbolicLink(),
+      };
+    };
+
+    const detail = refusal(ensureCredential(stateDir, { lstat }));
+    expect(detail).toContain('state directory is a symbolic link or not a directory');
+  });
+
+  it('refuses every reuse when the platform reports no process uid', () => {
+    const detail = refusal(ensureCredential(provisioned(0o700, 0o600), { uid: undefined }));
+    expect(detail).toContain('this platform reports no process uid');
+  });
+
   it('the six refusals carry six distinct details', () => {
     const base = tempDir();
     const linked = join(base, 'linked');
