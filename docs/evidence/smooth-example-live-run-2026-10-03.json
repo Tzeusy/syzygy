@@ -1,0 +1,201 @@
+{
+  "kind": "smooth-example live run, 2026-10-03 roadmap research",
+  "scope": "Three-Surface POC (Polaris, Trajectory, Orrery) against the one configured Butlers repository, plus the Capability 1 daemon; research only, no code changed",
+  "syzygyHead": "b5c2bcdbd8a5dcfb53df0284cac290b8c6e60b59",
+  "butlersRevision": "32f38feb51d86e33bfec00b78777cce5ec280198",
+  "evaluation": {
+    "inputsDigest": "dbfdccf9ae0f25d4da02ca60209a763fdece09a3f4f8ddddbff9575ba99e37e6",
+    "asOf": "2026-10-02T18:58:46.917Z"
+  },
+  "build": [
+    "ci exit 0 at 2s",
+    "build:poc exit 0 at 14s",
+    "build exit 0 at 17s"
+  ],
+  "privateDaemonRoutes": [
+    {
+      "capture": "home.html",
+      "status": 200,
+      "bytes": 43463,
+      "seconds": 0.001666
+    },
+    {
+      "capture": "polaris.html",
+      "status": 200,
+      "bytes": 1467147,
+      "seconds": 0.073138
+    },
+    {
+      "capture": "polaris-tailnet.html",
+      "status": 200,
+      "bytes": 1473252,
+      "seconds": 0.074375
+    },
+    {
+      "capture": "trajectory.html",
+      "status": 200,
+      "bytes": 316266,
+      "seconds": 0.006025
+    },
+    {
+      "capture": "orrery.html",
+      "status": 200,
+      "bytes": 43006,
+      "seconds": 0.001906
+    },
+    {
+      "capture": "api-poc-noauth.json",
+      "status": 401,
+      "bytes": 37,
+      "seconds": 0.001108
+    },
+    {
+      "capture": "api-poc.json",
+      "status": 200,
+      "bytes": 5719916,
+      "seconds": 0.130902
+    },
+    {
+      "capture": "api-poc-polaris.json",
+      "status": 200,
+      "bytes": 633283,
+      "seconds": 0.062451
+    },
+    {
+      "capture": "source-none.html",
+      "status": 200,
+      "bytes": 11948,
+      "seconds": 0.00161
+    },
+    {
+      "capture": "notfound.html",
+      "status": 404,
+      "bytes": 75,
+      "seconds": 0.000625
+    }
+  ],
+  "ceilings": {
+    "polarisDirectBytes": 1467147,
+    "polarisTailnetBytes": 1473252,
+    "workingPageTarget": 1650000,
+    "maxHumanResponseBytes": 2097152,
+    "apiPocBytes": 5719916,
+    "maxMachineResponseBytes": 8388608
+  },
+  "projectShape": {
+    "counts": {
+      "sources": 285,
+      "sourcesWithKnownItemDenominator": 276,
+      "sourcesWithUnknownDenominator": 9,
+      "items": 392,
+      "facts": 416,
+      "contradicted": 0,
+      "exclusions": 9,
+      "rulesDeclared": 7,
+      "rulesApplied": 0
+    },
+    "wholeShapeClaimLabel": "Unknown",
+    "wholeShapeClaimPrimaryReason": "excluded-content",
+    "maxPassesOnOneSource": 14,
+    "maxParsePassesPerSource": 16,
+    "exclusionReasons": {
+      "active-content": 8,
+      "excluded-artifact": 1
+    }
+  },
+  "otherRegions": {
+    "workerChange": "unknown",
+    "testArtifactVerification": "unknown"
+  },
+  "walkthroughReadiness": "no-run-record",
+  "materializeButtonOffered": true,
+  "freshCheckoutDemo": {
+    "record": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-10-03-roadmap.json",
+    "failedInvariants": [
+      "test",
+      "daemon-exit-clean"
+    ],
+    "tests": {
+      "name": "vitest tests",
+      "tests": "2000",
+      "failures": "3",
+      "errors": "0",
+      "time": "312.761522154"
+    },
+    "failingTests": [
+      "apps/three-surface-poc/src/polaris-copy.test.ts :: Polaris copy roles (PWB-REQ-012) &gt; keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+      "apps/three-surface-poc/src/production-reobserve.test.ts :: production-owned capture-to-model re-observation seam &gt; keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+      "apps/three-surface-poc/src/production-reobserve.test.ts :: production-owned capture-to-model re-observation seam &gt; uses the production builder for an atomic successful swap with identity advancement and one in-flight observation"
+    ],
+    "daemonStderrLines": 3,
+    "preflightReady": true,
+    "parity": {
+      "humanClaimTuples": 699,
+      "humanDistinctClaimIds": 687,
+      "humanTuplesMismatchingMachine": 0,
+      "machinePresentedClaimIds": 687,
+      "machineDistinctClaimIds": 687,
+      "machineOmittedByDesign": {
+        "reconciledFacts": 416,
+        "projectAccountSectionItems": 6
+      },
+      "machineIdsAbsentFromHuman": 0,
+      "humanIdsAbsentFromMachine": 0
+    },
+    "browserCheck": {
+      "variants": 6,
+      "violations": 0
+    }
+  },
+  "keyboardSweep": {
+    "method": "checkPolarisAccessibility (apps/three-surface-poc/dist/polaris-accessibility.js) over live HTTP /polaris on the private daemon, the same call the 2026-09-13 sweep made over a file capture",
+    "population": 1187,
+    "reached": 1187,
+    "activations": 709,
+    "violations": 218,
+    "violationKinds": {
+      "activation-did-not-reach-target": 109,
+      "focus-did-not-continue-from-target": 109
+    },
+    "stuckHashAfterFailure": "#polaris-source-openspec-specs-healing-model-tier-spec-md",
+    "activationIndicesOfStuckTarget": {
+      "firstMismatchedActivation": 600,
+      "lastMismatchedActivation": 708,
+      "mismatched": 109,
+      "activationsWhoseHrefIsTheStuckTarget": [
+        404,
+        599
+      ]
+    }
+  },
+  "reobserve": [
+    "reobserve status=200 time=2.783228",
+    "materialize-foreign status=403"
+  ],
+  "capability1Daemon": {
+    "observedRoot": "this Syzygy worktree",
+    "homeSaysMissingDeclaration": true,
+    "stderrLines": 5
+  },
+  "generatorSyntheticDemo": {
+    "files": [
+      "archive.html",
+      "archive.json",
+      "garden-changed.html",
+      "garden-changed.json",
+      "garden.html",
+      "garden.json",
+      "report.json"
+    ]
+  },
+  "captureDigests": {
+    "home.html": "9f66787a209d271325145462b41970321c95ba27d0ca23c49e8016966db098f8",
+    "polaris.html": "08e62d0bd1d3eb3b322c5eeca0082fad337425bcda888d8fabd6be6893ed2c93",
+    "polaris-tailnet.html": "ac1b856f3ba29505cc8b381a29541bab8b92bc03b835dba5ce7b80eb4e8e8864",
+    "trajectory.html": "32c170f153ccc590c5889a166f9feb51a5ea1552eb6cf59ff60e0e1a4d93da23",
+    "orrery.html": "dabf6dffa17a13dd54b852e77af80062f2ce6cb953752fcd1542aa06a004aa34",
+    "api-poc.json": "1db0f27c927b80058569bd5b97dc77dd13d2bf2c316ba22a329ae45b36a0ea88",
+    "api-poc-polaris.json": "9bde9e5942f1ba3b80727a5ef4ca43e6b780ead2e1fdc5652a529a3a6afebc89"
+  },
+  "retention": "exact capture bytes retained outside the repository (session scratchpad); Butlers text is not copied into this record"
+}
