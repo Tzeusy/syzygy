@@ -344,7 +344,8 @@ python3 scripts/build_general_trusted_bootstrap_transaction.py --check
 python3 scripts/build_polaris_project_wide_contract_coverage.py --check
 python3 scripts/build_polaris_project_wide_spec_dependencies.py --check
 python3 scripts/build_pwb_truth_policy_amendment.py --check
-# The lane B builder fails by design over the machine-view base; it returns with its regeneration.
+python3 scripts/build_pwb_scoped_attributes_amendment.py --check   # lane B candidate package (narrowed to the evaluation stamp): manifest = exact regeneration, patches apply
+python3 scripts/build_pwb_scoped_attributes_amendment.py --selftest
 python3 scripts/record_pwb_behavior_amendment_acts.py --check render-mode 527be5ac3732619608355ae9658c92cee45341e831521bc526398481dd915785 --date 2026-10-02   # render-mode act, performed 2026-10-02: record, aggregate block and applied tree
 python3 scripts/record_pwb_behavior_amendment_acts.py --check machine-view acabc7915e4461186b5878ce40cc0c62ed7cf91eadd7eead1cb179c80f672e72 --date 2026-10-02   # machine-view act, performed 2026-10-02: record, aggregate block and applied tree
 python3 scripts/build_rfc7_scoped_values_successor.py --check   # lane B step 1 candidate package: manifest = patched RFC-0007 module, mirrors identical
@@ -382,7 +383,7 @@ python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
 ```
 
-The fifty-six checks above are the same fifty-six the hosted workflow runs
+The fifty-eight checks above are the same fifty-eight the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.

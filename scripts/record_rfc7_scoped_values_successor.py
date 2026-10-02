@@ -441,8 +441,8 @@ def selftest():
         first = package.population(root)[0]
         patch = root / package.patch_for(first)
         saved_patch = patch.read_bytes()
-        patch.write_bytes(saved_patch.replace(
-            b"+<!-- scoped-values successor fixture -->", b"+<!-- tampered -->"))
+        patch.write_bytes(saved_patch.replace(b"Fixture text.", b"Tampered text."))
+        assert patch.read_bytes() != saved_patch
         refuses("real package: tampered patch refused by the builder's findings",
                 lambda: record(root, phrase, instant, True, pins),
                 "package does not verify: manifest differs from exact regeneration")

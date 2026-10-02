@@ -19,15 +19,19 @@ Required baseline: `VIS-1`, `VIS-2`, `VIS-4`, `VIS-7`; `CC-REV-2`, `CC-REV-4`,
 
 Criteria:
 
-1. **Interactive surface only.** No reading lets a scope replace a unit's own
-   attribute on the machine-queryable endpoints, on any plain-text or
-   exported rendering, or on a copy taken out of the surface.
-2. **Non-citability stands.** `non-citable` / `presentation-artifact` cannot
-   be carried by a scope; the sub-clause below the new paragraph is intact.
-3. **Bounded scope.** A scope carries only a value every unit under it has,
-   never a unit's identity, states its content as text on its own element,
-   and is expanded before parity comparison. Try to construct a reading that
-   hides a distinction from a reader or an agent.
+1. **Interactive surface only.** The interactive surface is defined by
+   delivery. No reading lets a scope replace a unit's own attribute on the
+   machine-queryable endpoints, on any plain-text or exported rendering, or
+   in any copy, share or export function the surface offers.
+2. **Non-citability stands, and the builder knows it.** `non-citable` /
+   `presentation-artifact` cannot be carried by a scope; the sub-clause below
+   the new paragraph is intact; the builder's exclusion predicate fails when
+   either is removed.
+3. **One value only.** A scope carries the evaluation identity and nothing
+   else, is valid only when every claim under it would carry that identity,
+   never overrides a claim's own, states its content as text on its own
+   element, and is expanded before parity comparison. Try to construct a
+   reading that hides a distinction from a reader or an agent.
 4. **Nothing else moves.** The diff changes exactly the one parenthetical and
    the one paragraph; clause leads, front matter and headings are unchanged;
    both mirrors take identical bytes; the manifest row hashes the patched bytes.

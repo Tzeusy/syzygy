@@ -185,6 +185,36 @@ def lane_b_findings(root: pathlib.Path, proposed: dict[str, bytes]) -> list[str]
     return []
 
 
+STAMP_HEAD = "**Page-level evaluation stamp on the interactive surface.**"
+SUBCLAUSE_HEAD = "**Non-citability travels, on every rendering.**"
+EXCLUSION = "`non-citable` / `presentation-artifact`"
+
+
+def exclusion_findings(proposed: dict[str, bytes]) -> list[str]:
+    """The added paragraph must keep non-citability off every scope, and the
+    sub-clause that follows it must stand: the structure checks compare only
+    clause leads, front matter and headings, so removing the exclusion
+    sentence would otherwise pass."""
+    body = proposed.get(MODULE)
+    if body is None:
+        return []
+    text = body.decode("utf-8")
+    start = text.find(STAMP_HEAD)
+    end = text.find(SUBCLAUSE_HEAD)
+    if start < 0 or end < start:
+        return [f"`{MODULE}`: the page-level evaluation stamp paragraph is absent "
+                "or does not sit directly above the non-citability sub-clause"]
+    paragraph = text[start:end]
+    findings = []
+    if EXCLUSION not in paragraph or "never carries" not in paragraph:
+        findings.append(f"`{MODULE}`: the stamp paragraph does not exclude "
+                        "non-citability from every scope")
+    if "stands in full" not in paragraph:
+        findings.append(f"`{MODULE}`: the stamp paragraph does not state that the "
+                        "non-citability sub-clause stands in full")
+    return findings
+
+
 def check(root: pathlib.Path = ROOT, scratch: bool = True) -> list[str]:
     findings: list[str] = []
     paths = population(root)
@@ -203,6 +233,7 @@ def check(root: pathlib.Path = ROOT, scratch: bool = True) -> list[str]:
     for path, body in proposed.items():
         old = (root / CONTRACTS / path).read_bytes()
         findings.extend(shared.structure_findings(path, old, body, clause_def))
+    findings.extend(exclusion_findings(proposed))
     findings.extend(lane_b_findings(root, proposed))
     if findings:
         return findings
@@ -289,7 +320,15 @@ def _fixture_root(scratch: pathlib.Path) -> pathlib.Path:
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(ROOT / rel, root / rel)
     old = (root / CONTRACTS / MODULE).read_bytes()
-    new = old + b"\n<!-- scoped-values successor fixture -->\n"
+    if STAMP_HEAD.encode() in old:
+        new = old + b"\n<!-- scoped-values successor fixture -->\n"
+    else:
+        fixture_paragraph = (
+            f"{STAMP_HEAD} Fixture text. A scope never carries {EXCLUSION}; the "
+            "non-citability sub-clause below stands in full.\n\n").encode()
+        new = old.replace(SUBCLAUSE_HEAD.encode(),
+                          fixture_paragraph + SUBCLAUSE_HEAD.encode(), 1)
+        assert new != old
     target = root / patch_for(MODULE)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(shared.make_patch(MODULE, old, new), encoding="utf-8")
@@ -360,8 +399,10 @@ def selftest() -> int:
         both = []
         for base in (CONTRACTS, CANDIDATES):
             both.append((base / MODULE, (root / base / MODULE).read_bytes()))
-            (root / base / MODULE).write_bytes(
-                (root / base / MODULE).read_bytes()[:-1] + b" drifted\n")
+            drifted = (root / base / MODULE).read_bytes().replace(
+                SUBCLAUSE_HEAD.encode(), SUBCLAUSE_HEAD.encode() + b" drifted", 1)
+            assert drifted != both[-1][1]
+            (root / base / MODULE).write_bytes(drifted)
         expect("patch over drifted mirrors rejected",
                check(root, scratch=False), "does not apply")
         for rel, body in both:
@@ -391,11 +432,35 @@ def selftest() -> int:
 
         mutate_file(patch_for(MODULE), rewrite(drop_clause),
                     "clause-lead change rejected", "clause leads changed")
+
+        def stamp_mutation(transform):
+            def writer(t):
+                old = (root / CONTRACTS / MODULE).read_bytes()
+                full = proposed_bytes(root)[0][MODULE].decode("utf-8")
+                cut = full.index(STAMP_HEAD)
+                new = full[:cut] + transform(full[cut:])
+                t.write_text(shared.make_patch(MODULE, old, new.encode("utf-8")))
+            return writer
+
+        mutate_file(patch_for(MODULE), stamp_mutation(
+            lambda s: s.replace(EXCLUSION, "the two flags", 1)),
+            "non-citability exclusion removed from the stamp paragraph rejected",
+            "does not exclude")
+        mutate_file(patch_for(MODULE), stamp_mutation(
+            lambda s: s.replace("never carries", "may carry", 1)),
+            "exclusion verb weakened rejected", "does not exclude")
+        mutate_file(patch_for(MODULE), stamp_mutation(
+            lambda s: s.replace("stands in full", "stands", 1)),
+            "sub-clause standing sentence removed rejected", "stands in full")
+        mutate_file(patch_for(MODULE), stamp_mutation(
+            lambda s: s.replace(STAMP_HEAD, "**Another heading.**", 1)),
+            "stamp paragraph heading removed rejected", "absent")
         saved_manifest = manifest.read_bytes()
 
         def oversize(t):
             old = (root / CONTRACTS / MODULE).read_bytes()
-            t.write_text(shared.make_patch(MODULE, old, old + b"\nword" * 7200 + b"\n"))
+            good_new = proposed_bytes(root)[0][MODULE]
+            t.write_text(shared.make_patch(MODULE, old, good_new + b"\nword" * 7200 + b"\n"))
             write_quiet(root)
 
         mutate_file(patch_for(MODULE), oversize,
