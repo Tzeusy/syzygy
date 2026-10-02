@@ -1,4 +1,14 @@
-import { mkdtempSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync, mkdirSync } from 'node:fs';
+import {
+  chmodSync,
+  lstatSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -60,7 +70,7 @@ describe('RT3 — credential provisioning', () => {
 
   it('an existing empty credential file is a named failure, never a silent re-mint', () => {
     const stateDir = tempDir();
-    writeFileSync(join(stateDir, CREDENTIAL_FILE_NAME), '', 'utf8');
+    writeFileSync(join(stateDir, CREDENTIAL_FILE_NAME), '', { encoding: 'utf8', mode: 0o600 });
 
     const provision = ensureCredential(stateDir);
     expect(provision.kind).toBe('unprovisionable');
@@ -75,6 +85,135 @@ describe('RT3 — credential provisioning', () => {
       throw new Error('expected both provisions to succeed');
     }
     expect(a.token).not.toBe(b.token);
+  });
+});
+
+// A reused token is trusted only when no other user can have read or
+// planted it. Each refusal carries its own detail and returns no token.
+describe('RT3 — credential reuse inspection', () => {
+  const TOKEN = 'c'.repeat(64);
+
+  // A state dir holding a pre-existing token file, both modes explicit
+  // (chmod after creation, so the umask cannot interfere).
+  function provisioned(dirMode: number, fileMode: number): string {
+    const stateDir = join(tempDir(), 'state');
+    mkdirSync(stateDir);
+    const file = join(stateDir, CREDENTIAL_FILE_NAME);
+    writeFileSync(file, TOKEN, 'utf8');
+    chmodSync(file, fileMode);
+    chmodSync(stateDir, dirMode);
+    return stateDir;
+  }
+
+  function refusal(provision: ReturnType<typeof ensureCredential>): string {
+    expect(provision.kind).toBe('unprovisionable');
+    expect(provision).not.toHaveProperty('token');
+    return provision.kind === 'unprovisionable' ? provision.detail : '';
+  }
+
+  it('accepts an 0600 file in an 0700 directory', () => {
+    const provision = ensureCredential(provisioned(0o700, 0o600));
+    expect(provision.kind).toBe('reused');
+    if (provision.kind === 'reused') expect(provision.token).toBe(TOKEN);
+  });
+
+  it('accepts an 0600 file in an 0755 directory: others may list it, not read the token', () => {
+    const provision = ensureCredential(provisioned(0o755, 0o600));
+    expect(provision.kind).toBe('reused');
+    if (provision.kind === 'reused') expect(provision.token).toBe(TOKEN);
+  });
+
+  it('refuses an other-readable 0644 file', () => {
+    const detail = refusal(ensureCredential(provisioned(0o700, 0o644)));
+    expect(detail).toContain('existing credential file mode 0644 grants group or other access');
+  });
+
+  it('refuses a group-readable 0640 file', () => {
+    const detail = refusal(ensureCredential(provisioned(0o700, 0o640)));
+    expect(detail).toContain('existing credential file mode 0640 grants group or other access');
+  });
+
+  // The target stays inside the state dir: one outside it is already
+  // refused by the state-write boundary, which would mask this predicate.
+  it('refuses a symlinked credential file without following it', () => {
+    const stateDir = join(tempDir(), 'state');
+    mkdirSync(stateDir, { mode: 0o700 });
+    const target = join(stateDir, 'elsewhere.token');
+    writeFileSync(target, TOKEN, { encoding: 'utf8', mode: 0o600 });
+    symlinkSync(target, join(stateDir, CREDENTIAL_FILE_NAME));
+
+    const detail = refusal(ensureCredential(stateDir));
+    expect(detail).toContain('existing credential file is a symbolic link');
+  });
+
+  it('refuses a dangling symlink rather than minting through it', () => {
+    const base = tempDir();
+    const stateDir = join(base, 'state');
+    mkdirSync(stateDir, { mode: 0o700 });
+    const target = join(base, 'planted.token');
+    symlinkSync(target, join(stateDir, CREDENTIAL_FILE_NAME));
+
+    const detail = refusal(ensureCredential(stateDir));
+    expect(detail).toContain('existing credential file is a symbolic link');
+    expect(() => statSync(target)).toThrow();
+  });
+
+  it('refuses a file owned by another uid (injected stat)', () => {
+    const stateDir = provisioned(0o700, 0o600);
+    const file = join(stateDir, CREDENTIAL_FILE_NAME);
+    const uid = 4242;
+    const lstat = (target: string) => {
+      const real = lstatSync(target);
+      return {
+        mode: real.mode,
+        uid: target === file ? uid + 1 : uid,
+        isFile: () => real.isFile(),
+        isDirectory: () => real.isDirectory(),
+        isSymbolicLink: () => real.isSymbolicLink(),
+      };
+    };
+
+    const detail = refusal(ensureCredential(stateDir, { lstat, uid }));
+    expect(detail).toContain("existing credential file is owned by uid 4243, not the daemon's uid 4242");
+  });
+
+  it('refuses a world-writable 0777 directory', () => {
+    const detail = refusal(ensureCredential(provisioned(0o777, 0o600)));
+    expect(detail).toContain('state directory mode 0777 is group- or other-writable');
+  });
+
+  it('refuses a group-writable 0775 directory', () => {
+    const detail = refusal(ensureCredential(provisioned(0o775, 0o600)));
+    expect(detail).toContain('state directory mode 0775 is group- or other-writable');
+  });
+
+  it('the six refusals carry six distinct details', () => {
+    const base = tempDir();
+    const linked = join(base, 'linked');
+    mkdirSync(linked, { mode: 0o700 });
+    writeFileSync(join(linked, 't'), TOKEN, { encoding: 'utf8', mode: 0o600 });
+    symlinkSync(join(linked, 't'), join(linked, CREDENTIAL_FILE_NAME));
+    const foreign = provisioned(0o700, 0o600);
+    const foreignLstat = (target: string) => {
+      const real = lstatSync(target);
+      return {
+        mode: real.mode,
+        uid: target.endsWith(CREDENTIAL_FILE_NAME) ? 1 : 0,
+        isFile: () => real.isFile(),
+        isDirectory: () => real.isDirectory(),
+        isSymbolicLink: () => real.isSymbolicLink(),
+      };
+    };
+
+    const details = [
+      refusal(ensureCredential(provisioned(0o700, 0o644))),
+      refusal(ensureCredential(provisioned(0o700, 0o640))),
+      refusal(ensureCredential(linked)),
+      refusal(ensureCredential(foreign, { lstat: foreignLstat, uid: 0 })),
+      refusal(ensureCredential(provisioned(0o777, 0o600))),
+      refusal(ensureCredential(provisioned(0o775, 0o600))),
+    ];
+    expect(new Set(details).size).toBe(6);
   });
 });
 
