@@ -18,8 +18,10 @@ owner decision or act.
       package — branch `polaris/public-repo-admission`, with its
       instance builder script
 - [~] Fresh-context review of the admission package (CONFIRM, or notes only).
-      Rounds 1 and 2: REVISE (4 and 2 blocking), each repaired; round 3
-      running
+      Rounds 1–3: REVISE (4, 2, 1 blocking), each repaired. Stopping rule
+      reached: no round 4 until the owner has seen it. Draft PR #215
+- [ ] **(owner)** Say whether to run a confirming round 4 on the round-3
+      repair, or answer the questions first and review once
 - [ ] **(owner)** Answer the packet's Q1–Q7: provider, content classes,
       retention, observation model, sign-off form, where drafts are served,
       and the missing content class for general documentation (Q7)
