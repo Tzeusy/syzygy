@@ -20,8 +20,8 @@ Give the fresh reviewer only:
 - the semantic-delta template and normative-change workflow;
 - the P-69 ruling row and cross-cutting registry reading;
 - the M2 funnel's Q7 and S7/S8 sections;
-- the current sibling packages for lane B, machine view, opening band `.21`
-  and exact-source render mode;
+- the performed opening-band, exact-source render-mode and machine-view
+  acts, whose text is in the base; lane B is declined;
 - `origin/agent/syzygy-dov.18` at `4d78776` as an inert, unperformed candidate
   checkpoint only;
 - the criteria below.
@@ -62,11 +62,12 @@ patch, builder, manifest, registration or owner-packet edit retires the review.
 10. **Impact sweep.** Re-run the 1,376-file full/continuation methods if
     practical. Check the four decode skips, three continuation files, two
     behavior pins, consumers, recorder/registration and docs/status effects.
-11. **Sibling composition.** Exercise both spec-patch orders for all four
-    siblings. Confirm lane B first succeeds, reverse raw order fails and is
-    routed to later-package regeneration; confirm `.21` and the exact-source
-    capability patch compose. Confirm generated dependency patches collide
-    and therefore regenerate.
+11. **Composition with the performed acts.** The opening-band, render-mode
+    and machine-view amendments are in the base; confirm the spec patch applies
+    over them without displacing their text, that the scenario's outside-slot
+    disclosure is consistent with the opening aggregate's own freshness
+    disclosure, and that the generated dependency patch regenerates from the
+    proposed spec.
 12. **Parked `.18` checkpoint.** Ensure no sentence treats it as effective,
     merges it, selects its values, or claims its presence unblocks a class.
 13. **Builder fail-closed behavior.** Run `--check`, `--selftest` and `--diff`.

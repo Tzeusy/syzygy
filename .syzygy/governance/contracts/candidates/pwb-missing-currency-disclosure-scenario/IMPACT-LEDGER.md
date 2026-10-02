@@ -93,34 +93,18 @@ covered/Unknown, with the 622-row denominator fixed.
 lawfully out of scope. Row 16's wording changes; its disposition and totals do
 not.
 
-## Sibling composition
+## Composition with performed acts
 
-### Lane B (`syzygy-dov.17`)
-
-[Observed] Lane B rewrites PWB-REQ-007's requirement, oracle, falsifier and
-adds a scoped-field scenario. Applying lane B first and this minimal-context
-scenario patch second succeeds. Applying this patch first makes lane B's wide
-raw hunk stale. That is the declared order-sensitive case: if the owner
-performs this package first, lane B must regenerate against the actual
-predecessor before review/sign-off. No patch is force-applied.
-
-### Opening band (`syzygy-dov.21`)
-
-[Observed] The `.21` scenario lives under PWB-REQ-010 but cites
-PWB-REQ-007's aggregate tuple. Its spec patch composes with this one in both
-orders to identical bytes. Its own packet says its aggregate must expose
-freshness counts; after this candidate, a member with no effective bound has
-no freshness value to count. That is not silently resolved here: `.21` must
-regenerate its impact reading against whichever predecessor is actually
-performed, and implementation remains blocked.
-
-### Other PWB candidates
-
-[Observed] Machine-view and exact-source spec patches compose in both orders.
-The exact-source capability-coverage patch also composes in both orders. All
-four sibling generated-dependency patches collide with this package's patch,
-as expected: each carries the digest of its own proposed `spec.md`. The later
-package regenerates the file and its manifest against the actual predecessor.
+[Observed] The opening-band, render-mode and machine-view amendments are applied
+to the specification; this package's spec patch applies over them. The opening
+band's scenario (PWB-REQ-010) has the aggregate disclose its own label, tier,
+freshness and separate primary and secondary reason counts. A member with no
+effective bound has no freshness value of its own; the aggregate's own
+freshness disclosure is unaffected, and this scenario forbids an aggregate to
+absorb such a claim into a current or favourable value. How an aggregate's own
+freshness reads when members lack one is not decided here. Lane B is declined.
+The generated dependency patch carries the digest of the proposed `spec.md` and
+regenerates against the actual predecessor.
 
 ## Parked registry checkpoint (`syzygy-dov.18`)
 
@@ -144,7 +128,7 @@ digest in `governingBehaviorContract.version`:
 - the Polaris Butlers project-shape observer registry candidate;
 - the Polaris Butlers secret-classification policy candidate.
 
-Any PWB successor stales both pins, including lane B, `.21` and this package.
+Any PWB successor stales both pins, including this package.
 Neither pin is edited here. The owner has already routed the registry
 amendment through `.18`; no authority read this session authorizes changing
 the policy candidate in this package. At adoption this remains an explicit

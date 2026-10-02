@@ -19,7 +19,7 @@ closed PWB behavior subject. Six rows hash proposed bytes and five current
 bytes.
 
 Manifest SHA-256:
-`42dd4f91314f7aed074f21095743ba7ed175ba9518a0d8766cf38d18568209d7`
+`cb73f2294ee2773391371d09f1ce916afe2c56ba270e4557af8e69284bdbea83`
 
 The builder writes this digest. Any patch, manifest or subject change retires
 the argument and requires regeneration plus exact-byte review.
@@ -49,7 +49,7 @@ finding explaining how the compliance population does not change.
 
 The behavior act phrase for this manifest would be:
 
-`SIGN OFF PWB MISSING-CURRENCY DISCLOSURE SCENARIO: 42dd4f91314f7aed074f21095743ba7ed175ba9518a0d8766cf38d18568209d7`
+`SIGN OFF PWB MISSING-CURRENCY DISCLOSURE SCENARIO: cb73f2294ee2773391371d09f1ce916afe2c56ba270e4557af8e69284bdbea83`
 
 It is registered so governance checks see it go stale, but it is **not
 offered**: Review 1 returned `REVISE`, and the repaired exact bytes have not
@@ -67,8 +67,8 @@ post-apply tree.
 - It would not continue implementation across the registry escalation trigger.
 - It would not authorize M2 slice 5, wire `assessCurrency`, render the route,
   alter a tuple, or change an aggregate.
-- It would not decide the performance order of lane B, `.21`, or another PWB
-  successor; the adoption change records that order in the successor chain.
+- It would not decide the order of another PWB successor; the adoption change
+  records the chain position.
 
 ## Owner-visible consequences
 
@@ -78,33 +78,35 @@ post-apply tree.
 2. The observer-registry and secret-policy candidates both pin the predecessor
    `spec.md` digest. An adopted PWB successor stales both pins. This package
    does not repair them without authority.
-3. `.21`'s opening aggregate expects freshness counts. A member in this
-   scenario has no freshness value. `.21` must be regenerated/reviewed against
-   actual predecessor bytes before any act or implementation claims the two
-   compose semantically.
-4. Every sibling dependency patch collides on the generated source-digest
-   line. The later package regenerates; no stale patch is selected.
+3. The performed opening aggregate discloses its own freshness. A member in
+   this scenario has no freshness value of its own; how the aggregate's
+   freshness reads then is not decided here, and implementation must not claim
+   the two compose semantically until it is.
+4. The generated dependency declaration carries the digest of the proposed
+   `spec.md`; a later PWB amendment regenerates it against the actual
+   predecessor, and no stale patch is selected.
 
 ## Required sequence if signed
 
 1. Independent fresh-context review over the exact package head, with raw
    output retained and every finding dispositioned.
 2. Reconfirmation if any reviewed byte changes.
-3. Choose the actual predecessor and regenerate this later package if needed;
-   run `--check`, `--selftest` and `--diff` on final bytes.
-4. Run a dedicated recorder that validates the exact phrase, applies the six
-   patches in the same change, regenerates both derived files, writes the
-   dedicated act record and appends one aggregate record section.
-5. Add this link to `PWB_SUCCESSOR_CHAIN` in the performed order and verify all
-   eleven post-apply rows plus packet-copy registration.
+3. Regenerate this package over the actual predecessor if needed; run
+   `--check`, `--selftest` and `--diff` on final bytes.
+4. Sign off by version under `OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`:
+   the owner selects an option naming the package and version, and
+   `scripts/record_versioned_signoff.py` applies the six patches, writes the
+   sign-off record and appends one aggregate block. No typed phrase or digest
+   argument is required.
+5. Create the printed `<package>-v<major>.<minor>` tag on the commit carrying
+   the applied result and verify all eleven post-apply rows.
 6. Run the canonical governance battery in a clone and retain the transcript.
 
 ## Remaining separate gates for M2 slice 5
 
-Even after this specification act, slice 5 remains blocked on:
+Even after this specification act, slice 5 remains blocked on the following; the first is already done:
 
-- lane B / P-68 disposition (`syzygy-dov.17`);
-- the registry-entry amendment act prepared at `.18`;
+- the registry-entry amendment act at `.18`, performed 2026-09-30;
 - the plain implementation-continuation direction at `.19`;
 - a fresh implementation authorization that resolves the five disclosed
   contract-coverage gaps and names the exact built behavior.

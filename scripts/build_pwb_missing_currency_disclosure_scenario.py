@@ -78,28 +78,11 @@ OUTSIDE_SLOT = "outside the claim's freshness slot"
 NO_FABRICATION = "no `fresh`, `stale`,\n  `broken`, `superseded` or fifth value is minted, inferred or force-fit"
 NO_ABSORPTION = "no aggregate absorbs the claim into a current\n  or favourable value"
 
-SIBLING_SPEC_PATCHES = {
-    "exact-source": pathlib.Path(
-        ".syzygy/governance/contracts/candidates/"
-        "pwb-exact-source-render-mode-scenario/proposed/spec.md.patch"
-    ),
-    "machine-view": pathlib.Path(
-        ".syzygy/governance/contracts/candidates/"
-        "pwb-machine-view-amendment/proposed/spec.md.patch"
-    ),
-    "opening-band-dov.21": pathlib.Path(
-        ".syzygy/governance/contracts/candidates/"
-        "pwb-opening-band-scenario/proposed/spec.md.patch"
-    ),
-    "lane-b": pathlib.Path(
-        ".syzygy/governance/contracts/candidates/"
-        "pwb-scoped-attributes-amendment/proposed/spec.md.patch"
-    ),
-}
-EXACT_SOURCE_CAPABILITY_PATCH = pathlib.Path(
-    ".syzygy/governance/contracts/candidates/"
-    "pwb-exact-source-render-mode-scenario/proposed/CAPABILITY-COVERAGE.md.patch"
-)
+#: The sibling packages this one once composed with are performed or declined
+#: (opening band, render mode and machine view are in the base; lane B was
+#: declined), so there is nothing left to compose against. A pending sibling
+#: spec patch is registered here with its name.
+SIBLING_SPEC_PATCHES: dict[str, pathlib.Path] = {}
 
 
 def sha256(data: bytes) -> str:
@@ -290,26 +273,6 @@ def composition_findings(
             findings.append(f"this package then {name} does not compose: {second_result}")
         elif first_result != second_result:
             findings.append(f"{name} composition changes final spec bytes by order")
-    capability_sibling = ROOT / EXACT_SOURCE_CAPABILITY_PATCH
-    capability_mine = ROOT / PROPOSED / "CAPABILITY-COVERAGE.md.patch"
-    if not capability_sibling.is_file():
-        findings.append(f"missing sibling capability patch: {EXACT_SOURCE_CAPABILITY_PATCH}")
-    else:
-        first_ok, first_result = _compose_target(
-            CAPABILITY_COVERAGE, [capability_sibling, capability_mine]
-        )
-        second_ok, second_result = _compose_target(
-            CAPABILITY_COVERAGE, [capability_mine, capability_sibling]
-        )
-        if not first_ok or not second_ok:
-            findings.append(
-                "exact-source capability coverage does not compose in both orders: "
-                f"{first_result}; {second_result}"
-            )
-        elif first_result != second_result:
-            findings.append(
-                "exact-source capability coverage changes final bytes by order"
-            )
     return findings
 
 
@@ -473,9 +436,6 @@ def selftest() -> int:
         else:
             print("SELFTEST FAILED: patch drift passed")
             return 1
-        if not composition_findings(mine=broken):
-            print("SELFTEST FAILED: corrupted patch passed sibling composition")
-            return 1
     tampered = dict(proposed)
     tampered[DEPENDENCIES] = proposed[DEPENDENCIES].replace(
         b"17 requirement(s)", b"18 requirement(s)", 1
@@ -490,9 +450,14 @@ def selftest() -> int:
     if coverage_drift[CONTRACT_COVERAGE] == proposed[CONTRACT_COVERAGE] or not companion_findings(coverage_drift):
         print("SELFTEST FAILED: generated contract-coverage drift passed")
         return 1
-    if composition_findings():
-        print("SELFTEST FAILED: sibling composition does not verify")
-        return 1
+    with tempfile.TemporaryDirectory() as scratch:
+        stale = pathlib.Path(scratch) / "spec.md.patch"
+        original = (ROOT / PROPOSED / "spec.md.patch").read_text()
+        context = next(line for line in original.splitlines() if line.startswith(" ") and line.strip())
+        stale.write_text(original.replace(context, context + " drifted", 1))
+        if not composition_findings(siblings={"pending": stale}):
+            print("SELFTEST FAILED: a sibling patch that does not compose passed")
+            return 1
     print(
         "selftest: missing/duplicate scenario, placement, fabricated freshness, "
         "aggregate absorption, stale manifest, path order, patch drift, dependency "
