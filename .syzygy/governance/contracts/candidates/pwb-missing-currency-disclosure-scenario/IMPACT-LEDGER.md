@@ -100,25 +100,25 @@ to the specification; this package's spec patch applies over them. The opening
 band's scenario (PWB-REQ-010) has the aggregate disclose its own label, tier,
 freshness and separate primary and secondary reason counts. A member with no
 effective bound has no freshness value of its own; the aggregate's own
-freshness disclosure is unaffected, and this scenario forbids an aggregate to
-absorb such a claim into a current or favourable value. How an aggregate's own
-freshness reads when members lack one is not decided here. Lane B is declined.
+freshness disclosure is met by an `Unknown` value with the stated reason, not
+excused; per-freshness counts plus the count of members under the condition
+equal the membership, and no value is derived from the other members. Lane B is
+declined.
 The generated dependency patch carries the digest of the proposed `spec.md` and
 regenerates against the actual predecessor.
 
-## Parked registry checkpoint (`syzygy-dov.18`)
+## Registry act (`syzygy-dov.18`)
 
-[Observed] `origin/agent/syzygy-dov.18` at `4d78776` was inspected without
-merge. It is an unperformed candidate checkpoint: it proposes thirteen
-currency-bound rows and a briefing ceiling in the registry entry. It is not
-effective authority and cannot make a class current.
+[Observed] The registry-entry amendment act was performed 2026-09-30
+(`PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md`). The entry now
+carries thirteen `currencyBounds` rows and `currencyBoundSemantics`, whose
+`undeclaredClass` arm returns Unknown with the closed reason
+`no-currency-bound-declared` for a class with no row.
 
-[Observed] This scenario remains reachable after that candidate only for a
-claim class with no row or for a declaration whose owner-act provenance is
-missing/invalid. The `.18` checkpoint and this package touch different signed
-subjects, so no byte merge is required; their authority effects compose only
-after separate owner acts. This package neither selects `.18`'s numeric values
-nor repeats its proposed digest.
+[Observed] This scenario is reachable only for a claim class with no row or
+for a declaration whose owner-act provenance is missing or invalid. The two
+packages touch different signed subjects, so no byte merge is required. This
+package neither selects the registry's numeric values nor repeats them.
 
 ## Behavior-contract pins
 
@@ -129,9 +129,8 @@ digest in `governingBehaviorContract.version`:
 - the Polaris Butlers secret-classification policy candidate.
 
 Any PWB successor stales both pins, including this package.
-Neither pin is edited here. The owner has already routed the registry
-amendment through `.18`; no authority read this session authorizes changing
-the policy candidate in this package. At adoption this remains an explicit
+Neither pin is edited here. The registry pin stays a later registry act;
+no authority read authorizes changing the policy candidate in this package. At adoption this remains an explicit
 contradiction/gate, never an inferred repair.
 
 ## Generated dependencies and recorders
@@ -141,12 +140,11 @@ the new scenario has no warrants block. `CONTRACT-COVERAGE.md` changes only
 the regenerated counts and repair-overlay digest. The builder imports the two
 canonical generators and requires exact byte equality.
 
-[Observed] No existing recorder can perform this act. Adoption needs a new
-dedicated recorder that hard-codes the subject and reviewed packet head,
-validates the exact phrase, writes
-`PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-ACT.md`, and appends one aggregate
-record section. The recorder, record paths and successor-chain order are
-adoption-time bytes; adding them now would assert an act not performed.
+[Observed] The act is performed by version under
+`OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`:
+`scripts/record_versioned_signoff.py` validates the review, applies the six
+patches, writes the sign-off record and appends one aggregate block. No typed
+phrase or digest argument is involved.
 
 [Observed] Candidate-time registration is present in
 `scripts/check_governance.py`: label, package subject, owner-packet digest

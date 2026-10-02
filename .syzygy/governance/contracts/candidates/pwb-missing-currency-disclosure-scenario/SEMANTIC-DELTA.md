@@ -143,9 +143,27 @@ to 132 / 242. This does not amend any RFC. It makes the gap visible.
 6. [Observed] The scenario applies when a bound is absent **or present without
    effective owner-act provenance**. A valid effective bound proceeds through
    RFC2-9's ordinary currency assessment and is outside this scenario.
+   [Inferred] The reason `no-currency-bound-declared` and the route `Declare
+   the bound in quality policy` are assigned to the present-but-ineffective
+   arm by this composition: RFC2-9 assigns that arm no reason and routes the
+   invalid declaration to the owner as a contradiction, and RFC2-24's reason-3
+   gloss reads "has never declared". The RFC2-9 contradiction route is
+   preserved unchanged and is not replaced by the Declare route.
 7. [Observed] Aggregates retain no headline status and still disclose separate
    primary and secondary reason counts. This scenario forbids favorable
    absorption; it does not make an aggregate a claim.
+   [Inferred] For an aggregate with a member under this condition the
+   scenario states the aggregate rule outright: per-freshness-state counts
+   plus the count of members under the condition equal the membership; no
+   freshness value is derived from the other members and the unbounded
+   members are never shown as zero (VIS-2); the aggregate's own freshness
+   reads `Unknown` with the stated reason. The performed opening aggregate's
+   unconditional freshness disclosure is therefore met by an `Unknown`
+   value, not excused. The outside-slot disclosure is a named fact of the
+   render and is recoverable in the machine answer under PWB-REQ-020's
+   parity obligation for disclosed facts; the invariant's falsifier ("a
+   tuple field is absent or out of vocabulary") is read as satisfied by the
+   disclosure for this condition only.
 8. [Observed] No timer, background poller or ambient-clock transition is
    introduced. Currency is judged at the evaluation's identified as-of
    instant.
@@ -174,8 +192,9 @@ All were read at source in this drafting session:
 - CC-REV-2 and the candidate normative-change workflow/template;
 - the M2 funnel's Q7 analysis and slices S7/S8;
 - the PWB amendments already applied to the specification (opening band, render mode, machine view);
-- `origin/agent/syzygy-dov.18` at `4d78776`, inspected as an inert,
-  unperformed checkpoint only.
+- the registry-entry amendment act at `.18`, performed 2026-09-30
+  (`PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md`), read for its
+  `currencyBounds` rows and `currencyBoundSemantics.undeclaredClass`.
 
 ## Terms introduced / retired
 
@@ -192,9 +211,10 @@ In summary:
 - the spec patch applies over the performed opening-band, render-mode and
   machine-view amendments; the generated dependency declaration is always
   regenerated from the proposed spec;
-- the parked `.18` registry checkpoint is neither merged nor treated as
-  authority; if later performed, this scenario remains relevant to an absent
-  class row or an invalid/unperformed declaration;
+- the performed `.18` registry act declares thirteen currency-bound rows with
+  owner-act provenance; this scenario is reachable only for a claim class with
+  no row (the registry's own `undeclaredClass` arm) or a declaration whose
+  owner-act provenance is missing or invalid, and repeats no numeric bound;
 - current implementation consumers do not change on this candidate branch and
   therefore render no new route.
 
@@ -204,17 +224,17 @@ In summary:
    fidelity, impact and builder review using `REVIEW-BRIEF.md`.
 2. Retain raw output verbatim and disposition every finding. Any semantic
    repair retires the reviewed head and requires exact-byte reconfirmation.
-3. The owner alone may perform
-   `SIGN OFF PWB MISSING-CURRENCY DISCLOSURE SCENARIO: <manifest sha256>`.
-   The recorder and aggregate record are adoption-time artifacts, not drafted
-   here.
+3. The owner signs by version under
+   `OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`: an option
+   selection naming the package and version, recorded by
+   `scripts/record_versioned_signoff.py`. No typed phrase or digest argument.
 4. In the same adoption change, apply the six patches, regenerate the package
    against the actual predecessor, regenerate both generated files, record the
    act, add the chosen successor-chain link, and prove all eleven rows against
    the post-apply tree.
 5. A separate implementation continuation is still required. The P-69 M2
-   slice also waits for the registry act at `.18`, continuation at `.19`, and
-   lane-B disposition at `.17`. This spec act grants none of those.
+   slice also waits for continuation at `.19`; the registry act at `.18` was
+   performed 2026-09-30 and lane B (`.17`) was declined 2026-10-02. This spec act grants none of those.
 6. Rollback is a reviewed, signed successor. Performed records and prior
    manifests remain immutable history.
 

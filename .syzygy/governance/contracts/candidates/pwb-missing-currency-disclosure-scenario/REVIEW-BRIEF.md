@@ -22,8 +22,7 @@ Give the fresh reviewer only:
 - the M2 funnel's Q7 and S7/S8 sections;
 - the performed opening-band, exact-source render-mode and machine-view
   acts, whose text is in the base; lane B is declined;
-- `origin/agent/syzygy-dov.18` at `4d78776` as an inert, unperformed candidate
-  checkpoint only;
+- the performed `.18` registry act (2026-09-30);
 - the criteria below.
 
 **Freeze:** review the exact commit named in raw output. Any later package,
@@ -68,11 +67,13 @@ patch, builder, manifest, registration or owner-packet edit retires the review.
     disclosure is consistent with the opening aggregate's own freshness
     disclosure, and that the generated dependency patch regenerates from the
     proposed spec.
-12. **Parked `.18` checkpoint.** Ensure no sentence treats it as effective,
-    merges it, selects its values, or claims its presence unblocks a class.
+12. **Performed `.18` registry act.** Ensure no sentence calls it a
+    candidate or parked, repeats its numeric bounds, or claims this scenario
+    changes them; the scenario is reachable only for a class with no row or a
+    declaration with missing or invalid owner-act provenance.
 13. **Builder fail-closed behavior.** Run `--check`, `--selftest` and `--diff`.
     Independently mutate missing/duplicate scenario, placement, fabricated
-    freshness, aggregate absorption, manifest bytes/order, patch context,
+    freshness, aggregate absorption, aggregate count reconciliation and Unknown freshness, manifest bytes/order, patch context,
     dependency output and contract-coverage output. Each predicate must fail.
 14. **Governance hygiene.** No bound byte is edited in place; no performed-act
     argument is copied; no observed-repository path is backticked; candidate
@@ -99,7 +100,7 @@ Then provide:
 - numbered findings mapped to criteria and verification rules;
 - commands/mutations actually run and their denominators;
 - exact affected files/lines for every finding;
-- explicit confirmation that `.18` was treated as unperformed;
+- explicit confirmation that `.18` was treated as performed;
 - any owner-only decision still preventing exact final bytes.
 
 Raw output is retained verbatim under `docs/reviews/` with a filename ending
