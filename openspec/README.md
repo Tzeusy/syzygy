@@ -16,24 +16,35 @@
 > reservation is discharged and this banner is not edited further to say so
 > again.
 
-## The three changes, and what state each is in
+## The five changes, and what state each is in
 
-Every change lives under `changes/`. None of the directory names says which
-is which, so this table does — one row per directory, the act named, never
-quoted.
+Five changes are in force; each row names the act that adopted it and the
+latest act or sign-off that binds its current bytes. Every change lives
+under `changes/`, and none of the directory names says which is which, so
+this table does — one row per directory, each act named, never quoted.
 
-| Directory | What it specifies | State | The act |
+| Directory | What it specifies | State | First act · latest binding outcome |
 |---|---|---|---|
-| [`project-registration-and-honest-shape-visibility`](changes/project-registration-and-honest-shape-visibility) | Capability 1 — project registration and honest shape visibility | **Adopted 2026-08-20, and implemented.** Amend only through CC-REV-2 | [`CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`](../.syzygy/governance/decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md) |
-| [`three-surface-poc-experience`](changes/three-surface-poc-experience) | The bounded, non-release Three-Surface POC (Polaris, Trajectory, Orrery) | **Signed off 2026-08-30.** A bounded experiment, never a release | [`THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`](../.syzygy/governance/decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md) |
-| [`polaris-project-wide-butlers-model`](changes/polaris-project-wide-butlers-model) | The project-wide Butlers slice of Polaris — one consented content class, behind the authority gate | **Signed off 2026-08-31, amended twice since** (2026-09-02, 2026-09-05). Every byte is bound at an exact digest | [`POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md`](../.syzygy/governance/decisions/POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md), then [`PWB-STATE1-AMENDMENT-ACT.md`](../.syzygy/governance/decisions/PWB-STATE1-AMENDMENT-ACT.md) and [`PWB-TRUTH-READINESS-AMENDMENT-ACT.md`](../.syzygy/governance/decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md) |
+| [`project-registration-and-honest-shape-visibility`](changes/project-registration-and-honest-shape-visibility) | Capability 1 — project registration and honest shape visibility | **Adopted 2026-08-20, and implemented.** Amend only through CC-REV-2 | [`CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`](../.syzygy/governance/decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md) · [`CAPABILITY-1-READABILITY-SUCCESSOR-ACT.md`](../.syzygy/governance/decisions/CAPABILITY-1-READABILITY-SUCCESSOR-ACT.md) (2026-09-29) |
+| [`three-surface-poc-experience`](changes/three-surface-poc-experience) | The bounded, non-release Three-Surface POC (Polaris, Trajectory, Orrery) | **Signed off 2026-08-30.** A bounded experiment, never a release | [`THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`](../.syzygy/governance/decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md) · [`THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md`](../.syzygy/governance/decisions/THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md) (2026-09-29) |
+| [`polaris-project-wide-butlers-model`](changes/polaris-project-wide-butlers-model) | The project-wide Butlers slice of Polaris — one consented content class, behind the authority gate | **Signed off 2026-08-31, amended since by a chain of acts and version-tagged sign-offs.** Every byte is bound at an exact digest | [`POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md`](../.syzygy/governance/decisions/POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md) · [`PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md`](../.syzygy/governance/decisions/PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md) (2026-10-02) |
+| [`polaris-manifesto-generation`](changes/polaris-manifesto-generation) | The generalized Polaris manifesto generator (base requirements) | **Adopted 2026-09-12.** Read only together with the understanding amendment below | [`POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md`](../.syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md) · [`POLARIS-GENERATOR-BASE-READABILITY-SUCCESSOR-ACT.md`](../.syzygy/governance/decisions/POLARIS-GENERATOR-BASE-READABILITY-SUCCESSOR-ACT.md) (2026-09-29) |
+| [`polaris-manifesto-understanding-amendment`](changes/polaris-manifesto-understanding-amendment) | The overlay that modifies seven generator requirements and adds two | **Adopted 2026-09-13; requirement 004 replaced 2026-09-28** by the tree-form amendment ([`POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md`](../.syzygy/governance/decisions/POLARIS-TREE-FORM-AMENDMENT-ADOPTION.md)) | [`POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md`](../.syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md) · [`POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-ACT.md`](../.syzygy/governance/decisions/POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-ACT.md) (2026-09-29) |
 
-Two of the three proposals open with a "Candidate specification… binds
-nothing" banner that stopped being true the moment the act was performed.
-The banner is not a mistake anyone may repair: the act bound the bytes that
-carry it. The third proposal carries no banner at all and cannot be given
-one for the same reason. **Read the act column above, never a proposal's
-head** — that is why this page exists.
+The PWB chain between its first and latest outcome, and every other bound
+digest, is listed in
+[`ACCEPTANCE-ACT-RECORD.md`](../.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md).
+The 2026-10-02 reconciliation of all five is
+[`docs/evidence/spec-readability-reconciliation-2026-10-02/`](../docs/evidence/spec-readability-reconciliation-2026-10-02/README.md),
+and `scripts/check_spec_reconciliation.py --check` re-derives it.
+
+**Read the act column, never a file's head.** Since the readability
+successors no proposal carries a pre-adoption candidate banner (the POC's
+carries no status line at all), but three `spec.md` files still open with
+the candidate banner they were signed with: the POC's, the generator base's
+and the understanding amendment's. The banner is not a
+mistake anyone may repair in place, because the act bound the bytes that
+carry it; only a signed successor can replace it.
 
 ## The two empty directories
 

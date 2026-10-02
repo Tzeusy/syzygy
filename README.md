@@ -148,7 +148,7 @@ and are never themselves authoritative.
 | Engineering and evidence bar | [`.syzygy/governance/policies/craft-and-care/`](.syzygy/governance/policies/craft-and-care/) | **Owner-approved** (D2); CC-SPEC and CC-IMPACT are in force, with CC-SPEC-8 amended by the 2026-09-01 transaction |
 | Load-bearing technical contracts | [`.syzygy/governance/contracts/`](.syzygy/governance/contracts/) | **RFC 0001–0009 accepted** — originally through the 2026-08-17 Wave A/B acts and amended at the current 30-module manifest by the 2026-09-01 transaction ([`PROJECT-STATUS.md`](PROJECT-STATUS.md) owns this state); RFC 0010–0011 remain **candidate** in `contracts/candidates/` |
 | Intended placement | [`.syzygy/map/topology-candidates/`](.syzygy/map/topology-candidates/) | **Candidate** |
-| Required observable behavior | `openspec/` | **Adopted for Capability 1** — the one change `changes/project-registration-and-honest-shape-visibility/`, adopted by the owner on 2026-08-20; only its coverage digest was superseded by the 2026-09-01 transaction, with required behavior unchanged. The POC is explicitly experimental, not a new conformance claim |
+| Required observable behavior | [`openspec/`](openspec/README.md) | **Five changes adopted or signed off** — Capability 1, the Three-Surface POC, the PWB slice of Polaris, and the Polaris generator with its understanding amendment; [`openspec/README.md`](openspec/README.md) names each change's acts and [`PROJECT-STATUS.md`](PROJECT-STATUS.md) owns their state. The POC is explicitly experimental, not a new conformance claim |
 | What currently exists | Code, tests, CI, runtime | Capability 1 domain/runtime implementation and its evidence; Three-Surface POC implementation is in progress |
 
 ## Start here
