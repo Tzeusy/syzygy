@@ -10,11 +10,16 @@
 > **Re-derived 2026-10-02** after the Polaris understanding
 > dependency-union successor act; see §9. Sentences below that the
 > re-derivation changed are marked where they stand.
+>
+> **Re-derived again 2026-10-03** after the PWB tree-framing sign-off
+> v1.0; see §10. Sentences that re-derivation changed are marked the same
+> way.
 
 **All five readability successors ended in a terminal owner outcome, each
 still binds the exact bytes on disk, and the four requirement populations
 re-derive identically by two independent methods: 114 requirements and 297
-scenarios.** [Observed] Two stale generated or pinned digests sit inside
+scenarios.** [Observed] [superseded 2026-10-03: 114 requirements and 304
+scenarios, PWB-REQ-014 having gained seven, §10] Two stale generated or pinned digests sit inside
 bound bytes and need their own owner acts; this pass names them and repairs
 neither.
 
@@ -29,7 +34,7 @@ candidate is counted.
 | `syzygy-73e.5.2` | Three-Surface POC | Digest act, 2026-09-29 | `.syzygy/governance/decisions/THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md` |
 | `syzygy-73e.5.3` | Polaris generator base | Digest act, 2026-09-29 | `.syzygy/governance/decisions/POLARIS-GENERATOR-BASE-READABILITY-SUCCESSOR-ACT.md` |
 | `syzygy-73e.5.4` | Polaris understanding amendment | Digest act, 2026-09-29; for `GOVERNING-DEPENDENCIES.md`, the later successor act of 2026-10-02 (§9) | `.syzygy/governance/decisions/POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-ACT.md`; `.syzygy/governance/decisions/POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-ACT.md` |
-| `syzygy-73e.5.5` | PWB | Version-tagged sign-off v1.0, 2026-10-02 | `.syzygy/governance/decisions/PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md` |
+| `syzygy-73e.5.5` | PWB | Version-tagged sign-off v1.0, 2026-10-02; for five files, the later tree-framing sign-off v1.0 of 2026-10-03 (§10) | `.syzygy/governance/decisions/PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md`; `.syzygy/governance/decisions/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md` |
 
 - **How each binding was checked** [Observed, R1 and R2]:
   - For the four digest acts, the phrase argument in each record equals the
@@ -59,7 +64,7 @@ Each change is read from the act chain, never from a file's head.
 |---|---|---|---|
 | `openspec/changes/project-registration-and-honest-shape-visibility/` | The Capability 1 readability act (all 7 files) | — | `tasks.md` |
 | `openspec/changes/three-surface-poc-experience/` | The POC readability act (all 6 files) | — | `tasks.md` |
-| `openspec/changes/polaris-project-wide-butlers-model/` | The PWB readability sign-off v1.0 (all 11 behavioral files), the last link of the PWB successor chain | — | `tasks.md`, `contract-coverage-parts/` |
+| `openspec/changes/polaris-project-wide-butlers-model/` | The PWB readability sign-off v1.0 (all 11 behavioral files), the last link of the PWB successor chain [superseded 2026-10-03: the tree-framing sign-off v1.0 is now the last link and binds five of the 11, §10] | — | `tasks.md`, `contract-coverage-parts/` |
 | `openspec/changes/polaris-manifesto-generation/` | The base readability act (23 files, two of them under `docs/design/`) | The understanding overlay | none of its tracked files |
 | `openspec/changes/polaris-manifesto-understanding-amendment/` | The understanding readability act (8 files), whose `spec.md` row is the tree-form REQ-004 bytes adopted 2026-09-28 | The base change | none of its tracked files |
 
@@ -69,7 +74,9 @@ Each change is read from the act chain, never from a file's head.
   with 7. The effective composition is 31 requirements and 182 scenarios.
 - **The PWB chain** is the order `PWB_SUCCESSOR_CHAIN` in
   `scripts/check_governance.py` derives from the acts; this pass reads its
-  last link only and changes nothing in it.
+  last link only and changes nothing in it. [superseded 2026-10-03: the
+  checker now follows one later version-tagged link, the tree-framing
+  sign-off, from the readability row, §10]
 
 ## 3. Populations, two methods and a third
 
@@ -77,9 +84,9 @@ Each change is read from the act chain, never from a file's head.
 |---|---|---|---|
 | CAP1-REQ | 42 | 47 | 001–006, 010–016, 020–023, 030–038, 040–046, 050–053, 060–064 |
 | POC-REQ | 24 | 24 | 001–004, 010–013, 020–022, 030–032, 040–043, 050–053, 060–061 |
-| PWB-REQ | 17 | 44 | 001–007, 010–016, 020–022 |
+| PWB-REQ | 17 | 44 [51 since 2026-10-03, §10] | 001–007, 010–016, 020–022 |
 | REQ-polaris-generation (effective) | 31 | 182 | 001–031 |
-| **Total** | **114** | **297** | |
+| **Total** | **114** | **297** [304 since 2026-10-03, §10] | |
 
 - **Method A** parses headings with regular expressions; **method B** is a
   line state machine with no regular expressions. For Polaris, A composes
@@ -176,7 +183,9 @@ Adopted PWB behaviour that **no implementation authority covers yet**
 render modes (2026-10-02; the M14 slices need one), the machine-view
 categories (2026-10-02), and the four v1.0 sign-offs of 2026-10-02 —
 missing-currency disclosure, dismissal with expiry, container-shape
-profiles and item depth. The registry entry's 2026-09-30 currency and
+profiles and item depth [and, since 2026-10-03, the tree-framing v1.0
+sign-off, whose implementation authorization `syzygy-73e.20` tracks, §10].
+The registry entry's 2026-09-30 currency and
 briefing fields stay unread until `syzygy-dov.19`. Nothing here infers code
 or effect permission from adoption.
 
@@ -188,7 +197,7 @@ or effect permission from adoption.
   staleness as Unknown, never green.
 - `--selftest` copies every input into a scratch tree, confirms the copy
   passes, then runs 23 rule-6 mutants [30 since the 2026-10-02
-  re-derivation, §9]. Among them:
+  re-derivation, §9; 39 since 2026-10-03, §10]. Among them:
   - stale act — the record's phrase flipped, the aggregate's flipped, both
     flipped together, and a manifest row changed;
   - stale digest — a POC subject and a PWB subject edited;
@@ -255,3 +264,71 @@ requires, not carried forward.
   in one edit. Its selftest now replays the pre-act state by reversing the
   installed union and requiring it to hash to the package's recorded
   predecessor.
+
+## 10. Re-derivation after the PWB tree-framing sign-off — 2026-10-03
+
+The second later outcome over the 55 subjects, and the first over the PWB
+child, re-derived as §7 requires.
+
+- **The outcome** [Observed]: the owner signed off
+  `pwb-tree-framing-amendment` v1.0 (`syzygy-73e.9`, PWB-REQ-014 tree
+  framing), a version-tagged sign-off under the 2026-10-02 Scope A
+  direction. Record: `.syzygy/governance/decisions/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md`. Its patches moved five of the PWB
+  child's 11 subjects: `spec.md`, `design.md`, `proposal.md`,
+  `CAPABILITY-COVERAGE.md` and `GOVERNING-DEPENDENCIES.md`.
+- **What the checker now does** [Observed]: the PWB child names the
+  sign-off as a later version-tagged successor. R1 checks it like the
+  child's own record (package, version and tag lines; exactly one aggregate
+  block), so seven terminal records are examined for five children. R2
+  composes the chain: a versioned record has no act instant and no
+  predecessor column, so its aggregate block must follow the readability
+  block in the append-only aggregate record (its `Date:` on or after), and
+  the package's own `proposed/` patches stand in for the predecessor
+  column — each moved row has exactly one patch, and reversing it over the
+  bytes at the successor row must yield exactly the readability row. A row
+  with no patch must not move, and no patch may target a path outside the
+  manifest. Still 55 signed subjects. R5 requires the `openspec/README.md`
+  PWB row and `PROJECT-STATUS.md` to name the new record; the README row
+  now does.
+- **Census** [Observed]: re-derived by `--census`, never by hand.
+  PWB-REQ-014 went from 1 to 8 scenarios, so PWB is 17 requirements and 51
+  scenarios and the four families total 114 and 304. The checker's
+  hard-coded literal was updated to match (014: 8; PWB totals 17 / 51), and
+  [`census.json`](census.json) is the regeneration at this commit. Third
+  method, run once here and not in the battery: OpenSpec 1.9.0
+  `openspec show polaris-project-wide-butlers-model --json --deltas-only`
+  reports 17 / 51, and `openspec validate polaris-project-wide-butlers-model
+  --strict` passes. The previous `census.json` bytes are the ones the
+  round-1 reconciliation review confirmed; that confirmation stays history
+  (rule 10), and these bytes carry none of their own.
+- **Results** [Observed, `--check` at the re-derivation commit]: R1–R5 and
+  R7 pass. R6 reports 2: both behaviour-contract pins name the
+  readability-row `spec.md`, which the sign-off moved. That is Unknown,
+  never green, and needs its own re-pin act; this pass repairs neither.
+- **Selftest**: 39 mutants, all killed. Nine new ones cover the versioned
+  link: its record deleted, its tag line and aggregate block changed, its
+  block moved before the readability block, its date moved earlier, a
+  removed line of its `spec.md` patch altered (the patch still reverses,
+  to the wrong bytes), its `design.md` patch deleted, its `proposal.md`
+  patch retargeted outside the manifest, and its route-row name removed.
+  The last four leave every subject hashing to its row, so only the chain
+  sees them. `pins-after-repin-acts` now also replays `spec.md` at the
+  pinned row (the re-pin builder's `spec_at_pin` reverses every later
+  signed `spec.md` patch): R6 must read zero over that tree, and R2, R3 and
+  R4, which then see bytes no act binds, must fail exactly.
+  [`selftest-witnesses.json`](selftest-witnesses.json) was regenerated at
+  the commit it names.
+- **The re-pin builder** (`scripts/build_pwb_behavior_contract_repin.py`):
+  its selftest replayed the pre-act tree from the current `spec.md`, which
+  the sign-off moved past the pin. It now lists later `spec.md` sign-offs
+  (`LATER_SPEC_SIGNOFFS`) and replays the pinned bytes by reversing their
+  patches, refusing a move no later sign-off explains; four fixtures cover
+  the replay (33 in all). Its `--check` was already unaffected.
+- **Builders left as they are**: the candidate builders of the five
+  earlier PWB packages and of tree-framing itself
+  (`scripts/build_pwb_*_amendment.py`, `…_readability_successor.py`,
+  `…_missing_currency_disclosure_scenario.py`) verify a package before its
+  sign-off and fail once a later patch moves their subjects. None is in the
+  battery; after sign-off each package is checked by
+  `scripts/record_versioned_signoff.py --check`, whose `VERSIONED_LATER`
+  history already names the tree-framing manifest.

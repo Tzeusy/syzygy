@@ -416,7 +416,7 @@
     },
     "PWB": {
       "requirements": 17,
-      "scenarios": 44,
+      "scenarios": 51,
       "members": {
         "PWB-REQ-001": {
           "name": "Project-shape observation is revision-bound and explicitly scoped",
@@ -509,7 +509,14 @@
         "PWB-REQ-014": {
           "name": "Every narrative claim is bounded, anchored and non-authoritative",
           "scenarios": [
-            "A project claim is supported without making Polaris authority"
+            "A project claim is supported without making Polaris authority",
+            "A group opens with its answer",
+            "An opening over an Unknown child is never more favourable",
+            "An opening above Butlers text stays outside it",
+            "A supported relationship is drawn inertly",
+            "A partly supported relationship names what it leaves out",
+            "A relationship with no supported edge is disclosed, not drawn",
+            "A failed or unsafe diagram emits nothing active"
           ]
         },
         "PWB-REQ-015": {

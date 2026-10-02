@@ -86,6 +86,16 @@ SIGNED_BY = (f"version-tagged sign-off {SIGNING_TAG}, recorded at "
              f"{SIGNING_RECORD.as_posix()}")
 CONTRACT_KEYS = ("id", "version", "signedBy")
 
+#: Version-tagged sign-offs performed after the re-pin acts that moved
+#: `spec.md` again, in act order: (sign-off record, its `spec.md` patch).
+#: Each opens a pin gap that checker R6 reports and only a later re-pin act
+#: closes; the selftest replays the pre-act tree by reversing their patches.
+LATER_SPEC_SIGNOFFS = (
+    (DECISIONS / "PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md",
+     pathlib.Path(".syzygy/governance/contracts/candidates/"
+                  "pwb-tree-framing-amendment/proposed/spec.md.patch")),
+)
+
 ROW = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
 EXACT_DIGEST_RE = re.compile(
     r"^Exact digest \(SHA-256\): `([0-9a-f]{64})`\s*$", re.MULTILINE)
@@ -159,14 +169,15 @@ def signed_spec_digest(root: pathlib.Path) -> str:
     return rows[0]
 
 
-def _apply(root: pathlib.Path, subject: Subject, body: bytes, reverse: bool) -> bytes:
-    patch = root / patch_path(subject)
+def _git_apply(root: pathlib.Path, patch_rel: pathlib.Path, target: pathlib.Path,
+               body: bytes, reverse: bool) -> bytes:
+    patch = root / patch_rel
     if not patch.is_file():
-        raise ValueError(f"missing patch: {patch_path(subject).as_posix()}")
+        raise ValueError(f"missing patch: {patch_rel.as_posix()}")
     with tempfile.TemporaryDirectory() as scratch:
         base = pathlib.Path(scratch)
-        (base / subject.path).parent.mkdir(parents=True, exist_ok=True)
-        (base / subject.path).write_bytes(body)
+        (base / target).parent.mkdir(parents=True, exist_ok=True)
+        (base / target).write_bytes(body)
         args = ["git", "apply", "--whitespace=nowarn"]
         if reverse:
             args.append("-R")
@@ -175,8 +186,28 @@ def _apply(root: pathlib.Path, subject: Subject, body: bytes, reverse: bool) -> 
         if done.returncode != 0:
             raise ValueError(
                 f"{patch.name} does not {'reverse-' if reverse else ''}apply to "
-                f"{subject.path.as_posix()}: {done.stderr.strip()}")
-        return (base / subject.path).read_bytes()
+                f"{target.as_posix()}: {done.stderr.strip()}")
+        return (base / target).read_bytes()
+
+
+def _apply(root: pathlib.Path, subject: Subject, body: bytes, reverse: bool) -> bytes:
+    return _git_apply(root, patch_path(subject), subject.path, body, reverse)
+
+
+def spec_at_pin(root: pathlib.Path) -> bytes:
+    """The `spec.md` bytes the re-pin pins: the tree with every later signed
+    `spec.md` patch reversed, newest first. The result must hash to the
+    signing manifest's row; a move no later sign-off explains is refused."""
+    body = read(root, PWB_SPEC)
+    for record, patch in reversed(LATER_SPEC_SIGNOFFS):
+        if (root / record).is_file():
+            body = _git_apply(root, patch, PWB_SPEC, body, reverse=True)
+    want = signed_spec_digest(root)
+    if sha256(body) != want:
+        raise ValueError(f"{PWB_SPEC.as_posix()} with the later signed patches "
+                         f"reversed hashes to {sha256(body)}, not the pinned "
+                         f"row {want}")
+    return body
 
 
 def base_bytes(root: pathlib.Path, subject: Subject) -> bytes:
@@ -376,11 +407,14 @@ def _scratch(dest: pathlib.Path) -> None:
     The superseding records are not inputs, so once an act is performed the
     subject is replayed as the bytes the act in force bound (the tree with
     the patch reversed); the fixtures then mean the same before and after
-    the 2026-10-02 acts.
+    the 2026-10-02 acts. `spec.md` is replayed the same way, as the pinned
+    bytes with every later signed patch reversed (`spec_at_pin`), since the
+    later sign-offs are not inputs either.
     """
     for rel in _inputs():
         (dest / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT / rel, dest / rel)
+    (dest / PWB_SPEC).write_bytes(spec_at_pin(ROOT))
     for subject in SUBJECTS:
         if performed(ROOT, subject):
             (dest / subject.path).write_bytes(base_bytes(ROOT, subject))
@@ -541,6 +575,48 @@ def selftest() -> int:
         with contextlib.redirect_stdout(io.StringIO()):
             refused = apply(False, ("registry",), clean)
         results.append(("--apply without --at-adoption refuses", refused == 2))
+
+        # The replay itself: with the later sign-offs present the current
+        # spec.md reverses to exactly the pinned bytes; a move no later
+        # sign-off explains, or a missing sign-off record, is refused.
+        later = pathlib.Path(tmp) / "later"
+        shutil.copytree(clean, later)
+        shutil.copyfile(ROOT / PWB_SPEC, later / PWB_SPEC)
+        for record, patch in LATER_SPEC_SIGNOFFS:
+            for rel in (record, patch):
+                (later / rel).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / rel, later / rel)
+
+        def replay_refused(mutate) -> bool:
+            tree = pathlib.Path(tmp) / f"later-{len(results)}"
+            shutil.copytree(later, tree)
+            mutate(tree)
+            try:
+                spec_at_pin(tree)
+            except ValueError:
+                return True
+            return False
+
+        results.append(("replay: the later signed patches reverse spec.md to "
+                        "the pinned row", sha256(spec_at_pin(later)) == spec_digest))
+        results.append(("replay fails: spec.md moved by no later sign-off",
+                        replay_refused(_edit(PWB_SPEC, "### Requirement: PWB-REQ-001",
+                                             "### Requirement:  PWB-REQ-001"))))
+        results.append(("replay fails: a later sign-off record missing",
+                        replay_refused(lambda root: (
+                            root / LATER_SPEC_SIGNOFFS[-1][0]).unlink())))
+        def corrupt_added_line(root):
+            # The first added content line (never the `+++` header) no
+            # longer matches the tree, so the patch cannot reverse.
+            path = root / LATER_SPEC_SIGNOFFS[-1][1]
+            lines = path.read_text().split("\n")
+            i = next(i for i, l in enumerate(lines)
+                     if l.startswith("+") and not l.startswith("+++"))
+            lines[i] += " x"
+            path.write_text("\n".join(lines))
+
+        results.append(("replay fails: a later patch's added line corrupted",
+                        replay_refused(corrupt_added_line)))
 
     failing = sum(0 if ok else 1 for _n, ok in results)
     for name, ok in results:

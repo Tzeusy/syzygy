@@ -26,7 +26,13 @@ Predicates, each printed with its denominator:
   later successors compose in order: each one's act instant is strictly
   later than the act before it, each one's predecessor column names exactly
   the row the chain has reached for that subject, and its successor row then
-  becomes the row the subject must hash to.
+  becomes the row the subject must hash to. A later version-tagged sign-off
+  carries no instant or predecessor column, so its marker block must follow
+  the act before it in the append-only aggregate record (its `Date:` on or
+  after), and its own `proposed/` patches stand in for the predecessor
+  column: each moved row has exactly one patch, which reversed over the
+  bytes at the successor row yields exactly the row reached; a row with no
+  patch must not move, and no patch may target a path outside the manifest.
 - R3 populations: CAP1-REQ, POC-REQ, PWB-REQ and the effective
   REQ-polaris-generation composition are each parsed by two independent
   methods (a regular-expression parser and a line state machine with no
@@ -61,6 +67,12 @@ proposed bytes in place of both pinned subjects (what that package's
 recorder applies at its acts), R6 must examine both pins and report exactly
 zero findings, with no other predicate failing. Once the acts are performed
 the tree already carries those bytes, and the case requires zero there.
+Since the 2026-10-03 tree-framing sign-off moved `spec.md` past the pinned
+row, the case also replays `spec.md` as the pinned bytes (the re-pin
+builder's `spec_at_pin`, every later signed patch reversed): R6 must read
+zero over that tree, and R2, R3 and R4, which then see bytes no act binds,
+must fail exactly. On the tree itself R6 reports both pins until their own
+re-pin act.
 The R7 case `union-after-successor-act` does the same with the
 `syzygy-c51h` successor package's proposed union. Before that act it
 required R2, and only R2, to fail by design; the reconciliation was
@@ -69,7 +81,9 @@ successor, so the case now requires every predicate to pass.
 
 A later act over any subject fails R2 by design: the reconciliation is then
 re-derived, never carried forward. The first re-derivation (2026-10-02)
-added the dependency-union successor act to the understanding child.
+added the dependency-union successor act to the understanding child; the
+second (2026-10-03) added the tree-framing sign-off v1.0 to the PWB child
+and re-derived the PWB census (PWB-REQ-014 gained seven scenarios).
 
 Usage:
   python3 scripts/check_spec_reconciliation.py --check
@@ -149,7 +163,18 @@ CHILDREN = (
      "version": "1.0",
      "record": f"{DECISIONS}/PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md",
      "manifest": f"{CANDIDATES}/pwb-readability-successor/"
-                 "PWB-READABILITY-SUCCESSOR-MANIFEST.txt"},
+                 "PWB-READABILITY-SUCCESSOR-MANIFEST.txt",
+     # Later version-tagged sign-offs over this child's subjects, in act
+     # order (re-derived 2026-10-03). Each one's patches under `proposed/`
+     # must reverse the successor row to exactly the row the chain reached.
+     "successors": (
+         {"kind": "versioned", "package": "pwb-tree-framing-amendment",
+          "version": "1.0",
+          "record": f"{DECISIONS}/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md",
+          "manifest": f"{CANDIDATES}/pwb-tree-framing-amendment/"
+                      "PWB-TREE-FRAMING-AMENDMENT-MANIFEST.txt",
+          "proposed": f"{CANDIDATES}/pwb-tree-framing-amendment/proposed"},
+     )},
 )
 
 
@@ -168,7 +193,8 @@ POLARIS_ID = "REQ-polaris-generation-"
 
 #: Hard-coded literal census (requirement suffix -> scenario count), taken at
 #: main bd47409 on 2026-10-02 and cross-checked by the OpenSpec 1.9.0 CLI in
-#: the record. Never derived from the parsers below.
+#: the record; PWB re-derived 2026-10-03 after the tree-framing sign-off
+#: (PWB-REQ-014: 1 -> 8 scenarios). Never derived from the parsers below.
 EXPECTED = {
     "CAP1": dict(zip(
         "001 002 003 004 005 006 010 011 012 013 014 015 016 020 021 022 023 "
@@ -182,10 +208,10 @@ EXPECTED = {
     "PWB": dict(zip(
         "001 002 003 004 005 006 007 010 011 012 013 014 015 016 020 021 "
         "022".split(),
-        (1, 6, 1, 3, 5, 3, 5, 2, 5, 1, 1, 1, 1, 1, 1, 2, 5))),
+        (1, 6, 1, 3, 5, 3, 5, 2, 5, 1, 1, 8, 1, 1, 1, 2, 5))),
     "POLARIS": None,  # totals only below; per-requirement counts in census.json
 }
-EXPECTED_TOTALS = {"CAP1": (42, 47), "POC": (24, 24), "PWB": (17, 44),
+EXPECTED_TOTALS = {"CAP1": (42, 47), "POC": (24, 24), "PWB": (17, 51),
                    "POLARIS": (31, 182)}
 
 ROW = re.compile(r"^([0-9a-f]{64})  (\S[^\n]*)$", re.M)
@@ -274,6 +300,102 @@ def check_digest_act(act, tag, aggregate, record, manifest_bytes, r1, r2):
     return table
 
 
+DATE_LINE = re.compile(r"^Date: (\d{4}-\d{2}-\d{2})$", re.M)
+DIFF_TARGET = re.compile(r"^\+\+\+ b/(\S[^\n]*)$", re.M)
+
+
+def versioned_marker(entry):
+    return (f"<!-- versioned-signoff:{entry['package']}:"
+            f"v{entry['version']} -->")
+
+
+def check_versioned(entry, tag, aggregate, record, r1):
+    """R1 checks of one version-tagged sign-off record."""
+    want = (f"Package: {entry['package']}",
+            f"Version: {entry['version']}",
+            f"Tag: {entry['package']}-v{entry['version']}")
+    missing = [w for w in want if w not in record.splitlines()]
+    if missing:
+        r1.append(f"{tag}: sign-off record lacks {missing}")
+    count = aggregate.count(versioned_marker(entry))
+    if count != 1:
+        r1.append(f"{tag}: aggregate act record carries the sign-off "
+                  f"block {count} times, expected 1")
+
+
+def aggregate_position(entry, aggregate, record):
+    """Where an entry's binding sits in the append-only aggregate record."""
+    if entry.get("kind", "digest") == "versioned":
+        pos = aggregate.find(versioned_marker(entry))
+        return pos if pos >= 0 and aggregate.count(
+            versioned_marker(entry)) == 1 else None
+    m = re.search(rf"^{re.escape(entry['label'])}: ([0-9a-f]{{64}})$",
+                  record, re.M)
+    pos = aggregate.find(f"{entry['label']}: {m.group(1)}") if m else -1
+    return pos if pos >= 0 else None
+
+
+def package_patches(root, proposed):
+    """{target path: [patch paths]} for every patch under `proposed`."""
+    out = {}
+    base = root / proposed
+    for patch in sorted(base.glob("*.patch")) if base.is_dir() else ():
+        rel = patch.relative_to(root).as_posix()
+        targets = DIFF_TARGET.findall(patch.read_text(encoding="utf-8"))
+        for target in targets or ["<no target>"]:
+            out.setdefault(target, []).append(rel)
+    return out
+
+
+def reverse_apply(root, patch_rel, target_rel, body):
+    """`body` with the patch reversed, or None when it does not reverse."""
+    with tempfile.TemporaryDirectory() as tmp:
+        dest = Path(tmp) / target_rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(body)
+        done = subprocess.run(
+            ["git", "apply", "-R", "--whitespace=nowarn",
+             str((root / patch_rel).resolve())],
+            cwd=tmp, capture_output=True)
+        return dest.read_bytes() if done.returncode == 0 else None
+
+
+def compose_versioned(root, later, ltag, rows, r2):
+    """Follow one version-tagged successor over the rows reached so far.
+
+    A versioned record carries no predecessor column, so the package's own
+    patches stand in for it: each moved row must have exactly one patch, and
+    reversing it over the bytes that hash to the successor row must yield
+    exactly the row the chain reached. A row with no patch must not move.
+    """
+    lrows = {path: digest for digest, path in
+             ROW.findall(read_text(root, later["manifest"]) or "")}
+    patches = package_patches(root, later["proposed"])
+    for target in sorted(set(patches) - set(lrows)):
+        r2.append(f"{ltag}: patch {patches[target]} targets `{target}`, "
+                  "which the manifest does not carry")
+    for path, succ in sorted(lrows.items()):
+        if path not in rows:
+            r2.append(f"{ltag}: `{path}` is not a subject of this child")
+            continue
+        found = patches.get(path, [])
+        if len(found) > 1:
+            r2.append(f"{ltag}: broken chain — {len(found)} patches target "
+                      f"`{path}`")
+        elif found:
+            current = read_bytes(root, path)
+            prior = (reverse_apply(root, found[0], path, current)
+                     if current is not None and sha(current) == succ else None)
+            if prior is None or sha(prior) != rows[path]:
+                r2.append(f"{ltag}: broken chain — reversing `{found[0]}` "
+                          f"over the successor row of `{path}` does not "
+                          "yield the row the chain reached")
+        elif succ != rows[path]:
+            r2.append(f"{ltag}: broken chain — the row of `{path}` moved "
+                      "with no patch")
+        rows[path] = succ
+
+
 def check_outcomes(root, report):
     aggregate = read_text(root, AGGREGATE) or ""
     r1, r2, subjects_seen, records = [], [], 0, 0
@@ -296,20 +418,11 @@ def check_outcomes(root, report):
                                 r1, r2) is None:
                 continue
         else:
-            want = (f"Package: {child['package']}",
-                    f"Version: {child['version']}",
-                    f"Tag: {child['package']}-v{child['version']}")
-            missing = [w for w in want if w not in record.splitlines()]
-            if missing:
-                r1.append(f"{tag}: sign-off record lacks {missing}")
-            marker = (f"<!-- versioned-signoff:{child['package']}:"
-                      f"v{child['version']} -->")
-            count = aggregate.count(marker)
-            if count != 1:
-                r1.append(f"{tag}: aggregate act record carries the sign-off "
-                          f"block {count} times, expected 1")
+            check_versioned(child, tag, aggregate, record, r1)
         # Later successors compose in act order over the rows reached so far.
         reached = ACT_INSTANT.findall(record)
+        position = aggregate_position(child, aggregate, record)
+        dates = DATE_LINE.findall(record)
         for later in child.get("successors", ()):
             name = Path(later["record"]).name
             ltag = f"{tag} successor {name}"
@@ -323,6 +436,22 @@ def check_outcomes(root, report):
                 r1.append(f"{ltag}: package manifest `{later['manifest']}` "
                           "missing")
                 continue
+            if later.get("kind", "digest") == "versioned":
+                # No act instant: order is the append-only aggregate record
+                # (strictly after the act before it) and a date on or after.
+                check_versioned(later, ltag, aggregate, ltext, r1)
+                lpos = aggregate_position(later, aggregate, ltext)
+                ldates = DATE_LINE.findall(ltext)
+                if lpos is None or position is None or not lpos > position:
+                    r2.append(f"{ltag}: its aggregate block does not follow "
+                              "the act before it")
+                if (len(ldates) != 1 or len(dates) != 1
+                        or not ldates[0] >= dates[0]):
+                    r2.append(f"{ltag}: date {ldates} is not on or after the "
+                              f"act before it {dates}")
+                position, dates = lpos, ldates
+                compose_versioned(root, later, ltag, rows, r2)
+                continue
             table = check_digest_act(later, ltag, aggregate, ltext, lmanifest,
                                      r1, r2)
             if table is None:
@@ -333,6 +462,8 @@ def check_outcomes(root, report):
                 r2.append(f"{ltag}: act instant {instant} is not strictly "
                           f"later than the act before it {reached}")
             reached = instant
+            position = aggregate_position(later, aggregate, ltext)
+            dates = [i[:10] for i in instant]
             for path, (pred, succ) in sorted(table.items()):
                 if path not in rows:
                     r2.append(f"{ltag}: `{path}` is not a subject of this "
@@ -830,6 +961,8 @@ def inputs(root):
         paths |= {child["record"], child["manifest"]}
         for later in child.get("successors", ()):
             paths |= {later["record"], later["manifest"]}
+            if "proposed" in later:
+                paths |= set(tracked(root, later["proposed"]))
         manifest = read_text(root, child["manifest"]) or ""
         paths |= {p for _d, p in ROW.findall(manifest)}
         paths |= set(tracked(root, f"{CHANGES}/{child['change']}"))
@@ -881,6 +1014,10 @@ def _repin_package(root):
     for subject in repin.SUBJECTS:
         current = read_text(root, subject.path.as_posix())
         by_text[current] = repin.proposed_bytes(root, subject).decode("utf-8")
+    # The spec.md bytes the pins name: the tree with every later signed
+    # spec.md patch reversed (identity until a later sign-off moves it).
+    by_text[read_text(root, FAMILY_SPECS["PWB"])] = (
+        repin.spec_at_pin(root).decode("utf-8"))
 
     def apply(text):
         if text not in by_text:
@@ -901,6 +1038,36 @@ def _union_successor(root):
     return apply
 
 
+def _removed_line_altered(text):
+    """Alter the first removed content line of a patch: it still reverses,
+    but to bytes that are not the row the chain reached."""
+    lines = text.split("\n")
+    i = next((i for i, line in enumerate(lines)
+              if line.startswith("-") and not line.startswith("---")), None)
+    if i is None:
+        raise AssertionError("patch carries no removed content line")
+    lines[i] += " x"
+    return "\n".join(lines)
+
+
+def _block_moved_before(marker, before):
+    """Move one aggregate block (marker to its closing marker) to sit before
+    another marker, so append order no longer matches act order."""
+    close = marker.replace("<!-- ", "<!-- /", 1)
+
+    def apply(text):
+        start, end = text.find(marker), text.find(close)
+        at = text.find(before)
+        if min(start, end, at) < 0 or not at < start:
+            raise AssertionError("aggregate blocks not found in act order")
+        end += len(close) + 1
+        block = text[start:end]
+        rest = text[:start] + text[end:]
+        at = rest.find(before)
+        return rest[:at] + block + "\n" + rest[at:]
+    return apply
+
+
 def _chain_predecessor_moved(text):
     """Point every row of a successor record's table at a digest no act signed."""
     out, n = ACT_TABLE_ROW.subn(
@@ -913,6 +1080,7 @@ def _chain_predecessor_moved(text):
 def mutants(root):
     cap1, poc, base, und, pwb = CHILDREN
     union_act = und["successors"][0]
+    tree_act = pwb["successors"][0]
     poc_spec = FAMILY_SPECS["POC"]
     pwb_spec = FAMILY_SPECS["PWB"]
     return (
@@ -977,8 +1145,10 @@ def mutants(root):
         # The syzygy-jloi package's proposed bytes, as its recorder applies
         # them at the act: R6 must then report exactly zero. After the acts
         # the tree already carries those bytes and R6 must read zero there.
-        ("pins-after-repin-acts", (REGISTRY, POLICY), _repin_package(root),
-         "R6=0"),
+        # spec.md is replayed at the pinned row (later signed patches
+        # reversed); once a later sign-off moved it, R2-R4 fail by design.
+        ("pins-after-repin-acts", (REGISTRY, POLICY, FAMILY_SPECS["PWB"]),
+         _repin_package(root), "R6=0|R2,R3,R4"),
         # The syzygy-c51h successor package's proposed union, as
         # readability_successor.py installs it at the act: R7 must then
         # report exactly zero. Before the re-derivation R2 failed by design
@@ -998,6 +1168,32 @@ def mutants(root):
                           "Act instant: 2026-09-01T00:00:00Z", t, 1, re.M), "R2"),
         ("route-successor-record", OPENSPEC_README,
          _replace(Path(union_act["record"]).name, "DEPENDENCY-UNION-ACT.md", -1),
+         "R5"),
+        # The PWB child's later version-tagged successor (re-derived
+        # 2026-10-03): its record, aggregate block, order and patches.
+        ("missing-versioned-successor", tree_act["record"], None, "R1"),
+        ("versioned-successor-tag", tree_act["record"],
+         _replace("Tag: pwb-tree-framing-amendment-v1.0",
+                  "Tag: pwb-tree-framing-amendment-v0.9"), "R1"),
+        ("versioned-successor-aggregate", AGGREGATE,
+         _replace(versioned_marker(tree_act),
+                  versioned_marker(dict(tree_act, version="1.1"))), "R1"),
+        ("versioned-successor-order", AGGREGATE,
+         _block_moved_before(versioned_marker(tree_act),
+                             versioned_marker(pwb)), "R2"),
+        ("versioned-successor-date", tree_act["record"],
+         _replace("Date: 2026-10-03", "Date: 2026-09-01"), "R2"),
+        # The tree still hashes to every row: only the chain sees these.
+        ("versioned-successor-reversal", f"{tree_act['proposed']}/spec.md.patch",
+         _removed_line_altered, "R2"),
+        ("versioned-successor-patch-missing",
+         f"{tree_act['proposed']}/design.md.patch", None, "R2"),
+        ("versioned-successor-foreign-patch",
+         f"{tree_act['proposed']}/proposal.md.patch",
+         _replace(f"+++ b/{CHANGES}/{PWB_CHANGE}/proposal.md",
+                  f"+++ b/{CHANGES}/{PWB_CHANGE}/proposal-x.md"), "R2"),
+        ("route-versioned-successor", OPENSPEC_README,
+         _replace(Path(tree_act["record"]).name, "PWB-TREE-FRAMING-ACT.md", -1),
          "R5"),
         ("union-extra-decision",
          f"{CHANGES}/{UNDERSTANDING_CHANGE}/GOVERNING-DEPENDENCIES.md",
