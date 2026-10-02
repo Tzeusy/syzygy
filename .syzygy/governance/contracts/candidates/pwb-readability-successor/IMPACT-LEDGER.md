@@ -65,7 +65,13 @@ bytes.
 
 - **`check_polaris_response_ceiling_reading.py`** quotes `spec.md`. The
   builder checks every quote against the proposed bytes, and the script's own
-  `--check` passes over an applied scratch copy.
+  `--check` passes over an applied scratch copy. Its `--selftest` reacted to
+  this package: the composed-patch fixture was written over the raw spec, so
+  this package's patch, composing first, left the fixture pair inapplicable
+  and the case found nothing. The fixture now builds over the text the real
+  candidate patches compose to, in the same change as this package; with the
+  composed-finding line disabled the case fails, and without this package it
+  passes.
 - **`build_polaris_project_wide_spec_dependencies.py`**,
   **`build_polaris_project_wide_contract_coverage.py`**,
   **`build_pwb_truth_policy_amendment.py`** and
