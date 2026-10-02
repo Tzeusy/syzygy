@@ -17,7 +17,7 @@ RFC3-16, RFC3-22, RFC3-23, RFC3-24, RFC3-25, RFC3-26, RFC4-5, RFC7-10, RFC7-11, 
 
 ## policies
 
-CC-SPEC-2, CC-SPEC-4
+CC-REV-8, CC-SPEC-2, CC-SPEC-4
 
 ## decisions
 
