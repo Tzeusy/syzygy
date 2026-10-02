@@ -22,7 +22,7 @@ Population: 32 positive obligations and refusals declared by `proposal.md`,
 | 15 | Keep readiness separate while accepting valid state-(1) or state-(2) owner judgment with exact state visible and failing closed for exactly 84 present-invalid and 2 absent cases | covered — PWB-REQ-021, PWB-REQ-022 |
 | 16 | Carry the complete epistemic tuple and closed Unknown reasons on every claim, except disclose a missing effective currency bound outside the freshness slot without fabricating a value | covered — PWB-REQ-007 |
 | 17 | Keep every narrative claim bounded, minimally anchored and non-authoritative | covered — PWB-REQ-014 |
-| 18 | Preserve argument/contract/reality bands, verbatim intent and proposal separation in capability detail | covered — PWB-REQ-015 |
+| 18 | Give every declared catalog item one identity-preserving detail with argument/contract/reality bands, a separate governing-intent relation tuple with verbatim intent or its own honest Unknown, and capability-only proposal futures | covered — PWB-REQ-007, PWB-REQ-013, PWB-REQ-015, PWB-REQ-020 |
 | 19 | Make every distinction and disclosure path nonvisual and keyboard-operable | covered — PWB-REQ-016 |
 | 20 | Refuse arbitrary implementation-file bodies as project intent | lawfully out of scope — proposal `Out of scope`, “reading arbitrary implementation-file contents” |
 | 21 | Refuse to treat every file or active proposal as a current capability | covered — PWB-REQ-001, PWB-REQ-013 |

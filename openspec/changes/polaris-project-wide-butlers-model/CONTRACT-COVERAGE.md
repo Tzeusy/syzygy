@@ -24,7 +24,7 @@ owner-reviewed N/A. Every `unknown-uncovered` row remains a disclosed gap.
 
 ## Repair overlay
 
-`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `c93199ed426c52a843998e2d73f86b900f4c80eece7b0e167c53410f98d873a3`
+`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `1e4c0c80d5d120647fb616c50dbead8bc3047410771691fc19d154018beb22f6`
 supersedes 77 base rows with 92 effective rows.
 
 ## Verification

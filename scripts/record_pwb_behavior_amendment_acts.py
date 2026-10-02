@@ -587,6 +587,12 @@ VERSIONED_LATER = {
                      "pwb-container-shape-profile-amendment/"
                      "PWB-CONTAINER-SHAPE-PROFILE-MANIFEST.txt"),
     ),
+    "pwb-item-depth-amendment": (
+        DECISIONS / "PWB-ITEM-DEPTH-AMENDMENT-SIGNOFF-v1.0.md",
+        pathlib.Path(".syzygy/governance/contracts/candidates/"
+                     "pwb-item-depth-amendment/"
+                     "PWB-ITEM-DEPTH-AMENDMENT-MANIFEST.txt"),
+    ),
 }
 
 
