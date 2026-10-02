@@ -1,0 +1,58 @@
+{
+  "kind": "fresh-checkout-verdict-daemon-stderr-rule-6-mutation-evidence",
+  "task": "syzygy-1z3.31 (roadmap step A1, docs/plans/2026-10-03-smooth-example-roadmap.md)",
+  "capturedAt": "2026-10-02T19:15:27.756688+00:00",
+  "testedCommit": "0e898343024fc81ad235ac78a4fa08b51bbf4a19",
+  "testedFileSha256": "81510c126b3875fe7e95abcc13c5ab81c1480288e411e458cdc1e66ca1a43090",
+  "method": "Each mutant replaced its old fragment (asserted to occur exactly once) in the tested file at testedCommit, ran `npx vitest run apps/three-surface-poc/src/fresh-checkout-verdict.test.ts --reporter=json` from the repository root, and restored the original bytes; the restored file was asserted byte-identical to testedFileSha256 before this record was written. A mutant is killed when at least one test fails. testedCommit may become unreachable after a rebase-merge; testedFileSha256 is the stable anchor.",
+  "mutations": [
+    {
+      "id": "M1-ignore-stderr",
+      "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+      "old": "check('daemon-exit-clean', inputs.daemonExitCode === 0 && daemonStderrIsExactlyProbes(inputs.daemonStderr, inputs.expectedDaemonDiagnostics));",
+      "new": "check('daemon-exit-clean', inputs.daemonExitCode === 0);",
+      "command": "npx vitest run apps/three-surface-poc/src/fresh-checkout-verdict.test.ts",
+      "exitCode": 1,
+      "testsTotal": 51,
+      "testsFailed": 10,
+      "failedTests": [
+        "the daemon logged nothing after the probes → daemon-exit-clean fails, and nothing else",
+        "the daemon dropped one probe line → daemon-exit-clean fails, and nothing else",
+        "the daemon logged an extra 404 → daemon-exit-clean fails, and nothing else",
+        "the daemon logged a handler failure → daemon-exit-clean fails, and nothing else",
+        "an expected probe line carries a failure reason → daemon-exit-clean fails, and nothing else",
+        "the daemon wrote a non-JSON line → daemon-exit-clean fails, and nothing else",
+        "the daemon wrote a blank line between probe lines → daemon-exit-clean fails, and nothing else",
+        "a JSON line of another kind → daemon-exit-clean fails, and nothing else",
+        "an expected probe line with a different status → daemon-exit-clean fails, and nothing else",
+        "an expected probe line duplicated → daemon-exit-clean fails, and nothing else"
+      ],
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "M2-accept-any-daemon-http-outcome-line",
+      "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+      "old": "    if (index === -1) return false;\n    unmatched.splice(index, 1);\n  }\n  return unmatched.length === 0;",
+      "new": "    if (index !== -1) unmatched.splice(index, 1);\n  }\n  return true;",
+      "command": "npx vitest run apps/three-surface-poc/src/fresh-checkout-verdict.test.ts",
+      "exitCode": 1,
+      "testsTotal": 51,
+      "testsFailed": 5,
+      "failedTests": [
+        "the daemon logged nothing after the probes → daemon-exit-clean fails, and nothing else",
+        "the daemon dropped one probe line → daemon-exit-clean fails, and nothing else",
+        "the daemon logged an extra 404 → daemon-exit-clean fails, and nothing else",
+        "an expected probe line with a different status → daemon-exit-clean fails, and nothing else",
+        "an expected probe line duplicated → daemon-exit-clean fails, and nothing else"
+      ],
+      "outcome": "killed",
+      "restored": true
+    }
+  ],
+  "summary": {
+    "mutants": 2,
+    "killed": 2,
+    "survived": 0
+  }
+}
