@@ -64,6 +64,12 @@ function build(repoRoot: string, stateDir: string, nextCapture: PocRuntimeCaptur
   });
 }
 
+// Each test below runs two full production builds (about 1.4 s each alone;
+// the observer root is the real tree), so no cheaper fixture keeps what they
+// test. Measured worst case 18.0 s under the parallel-load protocol
+// (syzygy-4d15, docs/evidence/poc-test-timeouts-2026-10-03.json).
+const PRODUCTION_BUILD_TIMEOUT_MS = 60_000;
+
 describe('production-owned capture-to-model re-observation seam', () => {
   it('keeps the production probe identity bound to the captured observation instant', () => {
     const evidence = buildPocEvaluationEvidence(
@@ -90,7 +96,7 @@ describe('production-owned capture-to-model re-observation seam', () => {
     expect(second).toEqual(first);
     expect(second.evaluation.asOf).toBe('2026-08-30T12:00:00Z');
     expect(renderPolarisPage(second)).toBe(renderPolarisPage(first));
-  });
+  }, PRODUCTION_BUILD_TIMEOUT_MS);
 
   it('uses the production builder for an atomic successful swap with identity advancement and one in-flight observation', async () => {
     const fixture = fixtureRepoWithGit(cleanups);
@@ -123,7 +129,7 @@ describe('production-owned capture-to-model re-observation seam', () => {
     expect(a.model.evaluation.evidence.probe.changedSources).toBe(3);
     expect(state.get()).toBe(a.model);
     expect(state.getCapture()).toBe(nextCapture);
-  });
+  }, PRODUCTION_BUILD_TIMEOUT_MS);
 
   it('retains the prior production model and non-zero drift when the production build fails', async () => {
     const fixture = fixtureRepoWithGit(cleanups);
@@ -145,5 +151,5 @@ describe('production-owned capture-to-model re-observation seam', () => {
     expect(state.get()).toBe(initialModel);
     expect(state.getCapture()).toBe(initialCapture);
     expect(state.get().evaluation.evidence.probe.changedSources).toBe(7);
-  });
+  }, PRODUCTION_BUILD_TIMEOUT_MS);
 });
