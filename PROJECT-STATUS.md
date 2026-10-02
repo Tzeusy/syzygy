@@ -293,6 +293,7 @@ These gates remain open; none of them is on the launch path.
 | Knowledge-hygiene craft policy | Candidate — own craft act (P-12) | `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
 | Decision-record convention (P-43) | Open — not launch-gating; earliest gate is a deferral-bearing administration | `decisions/PENDING-OWNER-DECISIONS.md` row P-43 |
 | PWB behaviour-contract re-pin, registry entry and secret policy (`syzygy-jloi`) | Candidate, drafted 2026-10-02 and not yet reviewed; binds nothing. It offers two separate superseding acts (`approve-policy`, `adopt-registry-entry`) re-pinning `governingBehaviorContract` to the `spec.md` signed as `pwb-readability-successor-v1.0`, plus one plain continuation direction. Either act makes the body-read gate fail closed until that direction re-points it | `contracts/candidates/pwb-behavior-contract-repin/OWNER-DECISION-PACKET.md` |
+| Polaris understanding dependency-union successor (`syzygy-c51h`) | Candidate, drafted 2026-10-02 and not yet reviewed; binds nothing. It offers one digest-bound successor act that regenerates the understanding amendment's `GOVERNING-DEPENDENCIES.md` to add `CC-REV-8`. Recording waits on three items the packet names: chained-successor support in the successor tool, the understanding recorder re-pinned with its own history review, and a re-derived reconciliation | `contracts/candidates/polaris-understanding-dependency-union-successor/OWNER-DECISION-PACKET.md` |
 
 ## Next lawful step
 

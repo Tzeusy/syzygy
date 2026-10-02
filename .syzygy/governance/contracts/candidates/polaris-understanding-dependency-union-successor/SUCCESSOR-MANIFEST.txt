@@ -1,0 +1,3 @@
+# Polaris understanding amendment dependency-union successor sign-off — successor manifest
+# Signing off `SIGN OFF POLARIS UNDERSTANDING DEPENDENCY UNION SUCCESSOR: <sha256 of this file>` installs these rows.
+e6067cf6b9dcb901d06734b5f97667b81e258b4dff3f5667b80d70c5b8a6685d  openspec/changes/polaris-manifesto-understanding-amendment/GOVERNING-DEPENDENCIES.md
