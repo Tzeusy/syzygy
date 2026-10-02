@@ -103,12 +103,27 @@ it already read the status pages and the governance checker, at C1.
   and the NUL split against a newline split. Five more (round 7) pin the
   first form of the successor exception, and seven more (round 8) its second.
   Ten more (round 9) pin its third form, and twelve more (round 10) its
-  fourth. Fourteen more (round 11) pin its current form: the predecessor
+  fourth. Fourteen more (round 11) pin its fifth form: the predecessor
   test, the row test, the drift branch, the tool pin, the performed filter,
   both widths of the per-package exception scope, the frozen view's
   delegation, the missing-tool guard, path normalization, the contested
-  marking, both halves of the stored row and the contested refusal. Three
-  guards have no row:
+  marking, both halves of the stored row and the contested refusal. Fifteen
+  more (round 14) pin the chain. Seven are in the tool: the history branch,
+  the predecessor step, the performed test, the walk, the start digest, the
+  per-package scope and the path key. Eight are in the recorder's
+  composition: the single first digest, the length test, the off-chain
+  test, the no-step case, the step filter, the last digest, the use of the
+  composition and the loop bound. The tool rows run its own selftest,
+  except the path-key row, which runs the recorder's selftest with the tool
+  pin moved to the mutant. Two of the tool's guards are equivalent and have
+  no row:
+  - Normalizing a later package's path: an aliased later claim can only
+    keep its bytes (a changed subject's proposed file has the normal name),
+    and a kept claim adds no digest to the chain.
+  - Skipping a package with no record: without it, reading its rows raises
+    inside the per-package scope, so it still grants nothing.
+
+  Three guards of the earlier forms have no row:
   - The rows cache changes only how often the tool runs.
   - Executing the hashed bytes rather than re-reading the file closes a race
     between the hash and the load, which no deterministic fixture can open.
