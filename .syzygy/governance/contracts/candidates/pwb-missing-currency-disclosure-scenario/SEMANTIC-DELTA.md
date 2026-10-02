@@ -173,7 +173,7 @@ All were read at source in this drafting session:
 - CAP1-REQ-062 and its conformance-tested currency judge;
 - CC-REV-2 and the candidate normative-change workflow/template;
 - the M2 funnel's Q7 analysis and slices S7/S8;
-- every PWB sibling candidate patch currently present on `origin/main`;
+- the PWB amendments already applied to the specification (opening band, render mode, machine view);
 - `origin/agent/syzygy-dov.18` at `4d78776`, inspected as an inert,
   unperformed checkpoint only.
 
@@ -189,10 +189,9 @@ In summary:
 
 - six of the eleven bound PWB subjects receive proposed patches;
 - two behavior-contract digest pins become stale on any adopted PWB successor;
-- the four sibling PWB spec patches are order-tested, including gate
-  `syzygy-dov.21`; later generated dependencies are always regenerated;
-- lane B may precede this patch directly, while lane B would need regeneration
-  if the owner chose the reverse order;
+- the spec patch applies over the performed opening-band, render-mode and
+  machine-view amendments; the generated dependency declaration is always
+  regenerated from the proposed spec;
 - the parked `.18` registry checkpoint is neither merged nor treated as
   authority; if later performed, this scenario remains relevant to an absent
   class row or an invalid/unperformed declaration;
@@ -221,17 +220,12 @@ In summary:
 
 ## Composition
 
-[Observed] The builder applies this spec patch with the exact-source,
-machine-view and `.21` opening-band patches in both orders and requires
-byte-identical final spec bytes. Lane B first then this package applies. The
-reverse raw order deliberately fails because lane B's wide hunk spans the
-same PWB-REQ-007 region; if this package were performed first, lane B is the
-later package and must regenerate against actual predecessor bytes.
-
-[Observed] The exact-source capability-coverage patch composes with this
-package in both orders. Every sibling `GOVERNING-DEPENDENCIES.md` patch
-collides because each replaces one generated source-digest line; that is a
-regeneration obligation, not a conflict resolved by choosing a stale patch.
+[Observed] The builder applies this spec patch over the current specification,
+which carries the performed opening-band, render-mode and machine-view
+amendments, and regenerates the `GOVERNING-DEPENDENCIES.md` source-digest line
+from the proposed spec. Lane B is declined and has no patch to compose with. A
+later PWB amendment stales the digest line and regenerates against the actual
+predecessor; no stale patch is selected.
 
 ## Review
 

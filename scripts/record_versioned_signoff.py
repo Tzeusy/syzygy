@@ -109,28 +109,17 @@ def _rows_hash_tree(root: pathlib.Path, manifest: pathlib.Path) -> bool:
 
 
 def real_packages() -> dict[str, Package]:
-    rfc7 = lambda: _module("build_rfc7_scoped_values_successor")  # noqa: E731
-    lane_b = lambda: _module("build_pwb_scoped_attributes_amendment")  # noqa: E731
+    missing = lambda: _module("build_pwb_missing_currency_disclosure_scenario")  # noqa: E731
     return {
-        "rfc7-scoped-values-successor": Package(
-            "rfc7-scoped-values-successor",
-            "RFC-0007 scoped-values contract successor",
-            "contract successor",
-            CANDIDATES / "rfc7-scoped-values-successor",
-            "RFC7-SCOPED-VALUES-AMENDMENT",
-            lambda root: rfc7().check(root),
-            lambda root: rfc7().install(root),
-            lambda root: rfc7().applied(root),
-        ),
-        "pwb-scoped-attributes-amendment": Package(
-            "pwb-scoped-attributes-amendment",
-            "PWB scoped-attributes behavior amendment (lane B)",
+        "pwb-missing-currency-disclosure-scenario": Package(
+            "pwb-missing-currency-disclosure-scenario",
+            "PWB missing-currency disclosure scenario",
             "behavior amendment",
-            CANDIDATES / "pwb-scoped-attributes-amendment",
-            "PWB-SCOPED-ATTRIBUTES-AMENDMENT",
-            lambda root: lane_b().check(),
-            lambda root: lane_b().apply(True),
-            lambda root: _rows_hash_tree(root, lane_b().BEHAVIOR_OUT),
+            CANDIDATES / "pwb-missing-currency-disclosure-scenario",
+            "PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO",
+            lambda root: missing().check(),
+            lambda root: missing().apply(True),
+            lambda root: _rows_hash_tree(root, missing().MANIFEST_OUT),
         ),
     }
 

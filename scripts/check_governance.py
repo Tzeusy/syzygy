@@ -1673,8 +1673,11 @@ PWB_SUCCESSOR_CHAIN = (
     # Performed 2026-10-02, after the render mode and before lane B.
     (PWB_MACHINE_VIEW_LABEL, PWB_MACHINE_VIEW_SUBJECT,
      PWB_MACHINE_VIEW_ACT, PWB_MACHINE_VIEW_SUBJECTS),
-    (PWB_SCOPED_AMENDMENT_LABEL, PWB_SCOPED_AMENDMENT_SUBJECT,
-     PWB_SCOPED_AMENDMENT_ACT, PWB_SCOPED_AMENDMENT_SUBJECTS),
+    # Lane B was declined 2026-10-02 and never performed, so its link left the
+    # chain; the missing-currency scenario is the next candidate, signed by
+    # version under the Scope A direction.
+    (PWB_MISSING_CURRENCY_LABEL, PWB_MISSING_CURRENCY_SUBJECT,
+     PWB_MISSING_CURRENCY_ACT, PWB_MISSING_CURRENCY_SUBJECTS),
 )
 GENERAL_BOOTSTRAP_PWB_PATHS = tuple(sorted((
     "openspec/changes/polaris-project-wide-butlers-model/"
@@ -2746,9 +2749,8 @@ _activate_scoped_values_copy_registry()
 #: The exemption is existence-gated and per package; every digest-bound act
 #: already performed, and doctrine and accepted contracts, keep their copies.
 VERSIONED_SIGNOFF_PACKAGES = (
-    ("RFC7-SCOPED-VALUES-AMENDMENT", SCOPED_VALUES_PACKET),
-    ("PWB-SCOPED-ATTRIBUTES-AMENDMENT",
-     f"{PWB_SCOPED_AMENDMENT_DIR}/OWNER-DECISION-PACKET.md"),
+    ("PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO",
+     f"{PWB_MISSING_CURRENCY_DIR}/OWNER-DECISION-PACKET.md"),
 )
 
 
@@ -3487,12 +3489,10 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                                truth_dedicated_record=None,
                                truth_manifest_body=None,
                                truth_manifest_digest=None,
-                               scoped_dedicated_record=None,
-                               scoped_manifest_body=None,
-                               scoped_manifest_digest=None,
-                               scoped_versioned_records=None,
-                               scoped_values_versioned_records=None,
-                               scoped_values_manifest_body=None,
+                               missing_currency_dedicated_record=None,
+                               missing_currency_manifest_body=None,
+                               missing_currency_manifest_digest=None,
+                               missing_currency_versioned_records=None,
                                machine_view_dedicated_record=None,
                                machine_view_manifest_body=None,
                                machine_view_manifest_digest=None,
@@ -3645,20 +3645,15 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         truth_manifest_body = read_if_present(PWB_TRUTH_AMENDMENT_SUBJECT)
     if truth_manifest_digest is None:
         truth_manifest_digest = current_digest(PWB_TRUTH_AMENDMENT_SUBJECT)
-    if scoped_dedicated_record is None:
-        scoped_dedicated_record = read_if_present(PWB_SCOPED_AMENDMENT_ACT)
-    if scoped_manifest_body is None:
-        scoped_manifest_body = read_if_present(PWB_SCOPED_AMENDMENT_SUBJECT)
-    if scoped_manifest_digest is None:
-        scoped_manifest_digest = current_digest(PWB_SCOPED_AMENDMENT_SUBJECT)
-    if scoped_versioned_records is None:
-        scoped_versioned_records = _versioned_signoff_records(
-            "PWB-SCOPED-ATTRIBUTES-AMENDMENT")
-    if scoped_values_versioned_records is None:
-        scoped_values_versioned_records = _versioned_signoff_records(
-            "RFC7-SCOPED-VALUES-AMENDMENT")
-    if scoped_values_manifest_body is None:
-        scoped_values_manifest_body = read_if_present(SCOPED_VALUES_SUBJECT)
+    if missing_currency_dedicated_record is None:
+        missing_currency_dedicated_record = read_if_present(PWB_MISSING_CURRENCY_ACT)
+    if missing_currency_manifest_body is None:
+        missing_currency_manifest_body = read_if_present(PWB_MISSING_CURRENCY_SUBJECT)
+    if missing_currency_manifest_digest is None:
+        missing_currency_manifest_digest = current_digest(PWB_MISSING_CURRENCY_SUBJECT)
+    if missing_currency_versioned_records is None:
+        missing_currency_versioned_records = _versioned_signoff_records(
+            "PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO")
     if machine_view_dedicated_record is None:
         machine_view_dedicated_record = read_if_present(PWB_MACHINE_VIEW_ACT)
     if machine_view_manifest_body is None:
@@ -3826,9 +3821,9 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         PWB_TRUTH_AMENDMENT_LABEL: (
             truth_dedicated_record, truth_manifest_body,
             truth_manifest_digest),
-        PWB_SCOPED_AMENDMENT_LABEL: (
-            scoped_dedicated_record, scoped_manifest_body,
-            scoped_manifest_digest),
+        PWB_MISSING_CURRENCY_LABEL: (
+            missing_currency_dedicated_record, missing_currency_manifest_body,
+            missing_currency_manifest_digest),
         PWB_OPENING_BAND_LABEL: (
             opening_band_dedicated_record, opening_band_manifest_body,
             opening_band_manifest_digest),
@@ -3850,8 +3845,8 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
             link_specs, record=dedicated_record_body).get(label, ())
         # A version-tagged sign-off (Scope A) binds the package's current
         # manifest instead of a phrase digest, so a later version may move it.
-        versioned = (label == PWB_SCOPED_AMENDMENT_LABEL
-                     and bool(scoped_versioned_records))
+        versioned = (label == PWB_MISSING_CURRENCY_LABEL
+                     and bool(missing_currency_versioned_records))
         if not (link_recorded or link_dedicated or versioned):
             continue
         findings_before_link = len(findings)
@@ -4043,31 +4038,6 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                 f"[historical] {GENERAL_BOOTSTRAP_CONTRACT_MANIFEST} — "
                 f"{len(link_rows)} act-time module row(s) superseded by "
                 f"{subject}")
-
-    # A version-tagged contract sign-off (Scope A) binds the package's current
-    # manifest row instead of a phrase digest, after every digest-bound link.
-    if scoped_values_versioned_records:
-        before_versioned = len(findings)
-        if not bootstrap_valid or broken:
-            findings.append(
-                f"{scoped_values_versioned_records[-1]} — version-tagged contract "
-                f"sign-off recorded while the contract chain is invalid")
-        sv_rows = manifest_rows(
-            scoped_values_manifest_body, SCOPED_VALUES_SUBJECT, 1)
-        require_exact_paths(sv_rows, SCOPED_VALUES_SUBJECT,
-                            ("rfcs/RFC-0007/rendering-and-surface.md",))
-        for sha, path, line_no in sv_rows:
-            if path not in bootstrap_contract_paths:
-                findings.append(
-                    f"{SCOPED_VALUES_SUBJECT}:{line_no} — no predecessor "
-                    f"contract row for `{path}`")
-            elif len(findings) == before_versioned:
-                if path in contract_bound_by:
-                    details.append(
-                        f"[historical] {contract_bound_by[path]} — act-time "
-                        f"row for `{path}` superseded by {SCOPED_VALUES_SUBJECT}")
-                contract_overrides[path] = sha
-                contract_bound_by[path] = SCOPED_VALUES_SUBJECT
 
     for expected, path, line_no in contract_rows:
         expected = contract_overrides.get(path, expected)
@@ -7307,17 +7277,17 @@ def selftest():
         _registry = {packet: ("LABEL",) for _stem, packet in VERSIONED_SIGNOFF_PACKAGES}
         _registry["other.md"] = ("LABEL",)
         _none = _versioned_exempt_files(_d)
-        with open(os.path.join(_dec, "RFC7-SCOPED-VALUES-AMENDMENT-SIGNOFF-v1.0.md"), "w") as _fh:
+        with open(os.path.join(_dec, "PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-SIGNOFF-v1.0.md"), "w") as _fh:
             _fh.write("record\n")
-        with open(os.path.join(_dec, "RFC7-SCOPED-VALUES-AMENDMENT-SIGNOFF-v1.x.md"), "w") as _fh:
+        with open(os.path.join(_dec, "PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-SIGNOFF-v1.x.md"), "w") as _fh:
             _fh.write("not a version\n")
         _one = _versioned_exempt_files(_d)
         _apply_versioned_signoff_exemptions(_registry, _d)
     cases.append(("CG-7e a package without a version-tagged record keeps its packet copy",
                   _none == set()))
     cases.append(("CG-7e a version-tagged record exempts only its own package's packet",
-                  _one == {SCOPED_VALUES_PACKET}
-                  and SCOPED_VALUES_PACKET not in _registry
+                  _one == {f"{PWB_MISSING_CURRENCY_DIR}/OWNER-DECISION-PACKET.md"}
+                  and f"{PWB_MISSING_CURRENCY_DIR}/OWNER-DECISION-PACKET.md" not in _registry
                   and "other.md" in _registry
                   and len(_registry) == len(VERSIONED_SIGNOFF_PACKAGES)))
 
@@ -7715,20 +7685,13 @@ def selftest():
                   and any("PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt" in d
                           for d in row[4])))
 
-    row = _selftest_cg7h("scoped-versioned-valid")
+    row = _selftest_cg7h("missing-currency-versioned-valid")
     cases.append(("CG-7h version-tagged PWB sign-off binds the current manifest",
                   row[0] == "OK" and row[3] == 0))
-    row = _selftest_cg7h("scoped-versioned-drift")
+    row = _selftest_cg7h("missing-currency-versioned-drift")
     cases.append(("CG-7h version-tagged PWB sign-off rejects a drifted subject",
                   row[0] == "FAIL"
-                  and any(PWB_SCOPED_AMENDMENT_SUBJECTS[0] in d for d in row[4])))
-    row = _selftest_cg7h("scoped-values-versioned-valid")
-    cases.append(("CG-7h version-tagged contract sign-off binds the current row",
-                  row[0] == "OK" and row[3] == 0))
-    row = _selftest_cg7h("scoped-values-versioned-drift")
-    cases.append(("CG-7h version-tagged contract sign-off rejects installed drift",
-                  row[0] == "FAIL"
-                  and any("rendering-and-surface.md" in d for d in row[4])))
+                  and any(PWB_MISSING_CURRENCY_SUBJECTS[0] in d for d in row[4])))
 
     row = _selftest_cg7h("contract-valid")
     cases.append(("CG-7h exact two-module contract successor passes at 81",
@@ -8623,7 +8586,7 @@ def _selftest_cg7h(kind):
         "valid-truth-successor", "truth-one-record", "truth-conflict",
         "truth-current-drift", "truth-without-state1", "truth-10",
         "truth-candidate-no-act",
-        "scoped-versioned-valid", "scoped-versioned-drift",
+        "missing-currency-versioned-valid", "missing-currency-versioned-drift",
     }
     successor_kinds = {
         "successor-one-record", "successor-conflict", "valid-successor",
@@ -8699,35 +8662,24 @@ def _selftest_cg7h(kind):
     # Version-tagged sign-offs (Scope A): the current manifest binds the
     # tree, with no phrase digest. The PWB chain is narrowed to the links this
     # fixture performs so the scoped link has its predecessors.
-    scoped_versioned = {}
-    scoped_chain = None
-    if kind in ("scoped-versioned-valid", "scoped-versioned-drift"):
-        scoped_rows = [(digest(f"scoped-{i}"), path)
-                       for i, path in enumerate(PWB_SCOPED_AMENDMENT_SUBJECTS)]
-        for stated, path in scoped_rows:
+    missing_currency_versioned = {}
+    missing_currency_chain = None
+    if kind in ("missing-currency-versioned-valid", "missing-currency-versioned-drift"):
+        missing_currency_rows = [(digest(f"missing-currency-{i}"), path)
+                       for i, path in enumerate(PWB_MISSING_CURRENCY_SUBJECTS)]
+        for stated, path in missing_currency_rows:
             current[path] = stated
-        if kind == "scoped-versioned-drift":
-            current[PWB_SCOPED_AMENDMENT_SUBJECTS[0]] = digest("post-scoped-drift")
-        scoped_manifest_text = "".join(f"{stated}  {path}\n" for stated, path in scoped_rows)
-        current[PWB_SCOPED_AMENDMENT_SUBJECT] = digest(scoped_manifest_text)
-        scoped_versioned = dict(
-            scoped_versioned_records=["PWB-SCOPED-ATTRIBUTES-AMENDMENT-SIGNOFF-v1.0.md"],
-            scoped_dedicated_record="", scoped_manifest_body=scoped_manifest_text,
-            scoped_manifest_digest=digest(scoped_manifest_text))
-        scoped_chain = tuple(link for link in PWB_SUCCESSOR_CHAIN
+        if kind == "missing-currency-versioned-drift":
+            current[PWB_MISSING_CURRENCY_SUBJECTS[0]] = digest("post-missing-currency-drift")
+        missing_currency_manifest_text = "".join(f"{stated}  {path}\n" for stated, path in missing_currency_rows)
+        current[PWB_MISSING_CURRENCY_SUBJECT] = digest(missing_currency_manifest_text)
+        missing_currency_versioned = dict(
+            missing_currency_versioned_records=["PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-SIGNOFF-v1.0.md"],
+            missing_currency_dedicated_record="", missing_currency_manifest_body=missing_currency_manifest_text,
+            missing_currency_manifest_digest=digest(missing_currency_manifest_text))
+        missing_currency_chain = tuple(link for link in PWB_SUCCESSOR_CHAIN
                              if link[0] in (PWB_STATE1_LABEL, PWB_TRUTH_AMENDMENT_LABEL,
-                                            PWB_SCOPED_AMENDMENT_LABEL))
-    scoped_values = {}
-    if kind in ("scoped-values-versioned-valid", "scoped-values-versioned-drift"):
-        rfc7_path = "rfcs/RFC-0007/rendering-and-surface.md"
-        new_sha = digest("scoped-values-v1")
-        if kind == "scoped-values-versioned-valid":
-            current[f"{CONTRACT_ROOT}/{rfc7_path}"] = new_sha
-            current[f"{CANDIDATES}/{rfc7_path}"] = new_sha
-        scoped_values = dict(
-            scoped_values_versioned_records=["RFC7-SCOPED-VALUES-AMENDMENT-SIGNOFF-v1.0.md"],
-            scoped_values_manifest_body=f"{new_sha}  {rfc7_path}\n")
-
+                                            PWB_MISSING_CURRENCY_LABEL))
     if kind == "top-level-drift":
         current[top_paths[0]] = digest("drifted-top-level")
     elif kind == "nested-contract-drift":
@@ -9056,8 +9008,8 @@ def _selftest_cg7h(kind):
 
     c = Cap()
     kept_chain = PWB_SUCCESSOR_CHAIN
-    if scoped_chain is not None:
-        PWB_SUCCESSOR_CHAIN = scoped_chain
+    if missing_currency_chain is not None:
+        PWB_SUCCESSOR_CHAIN = missing_currency_chain
     cg7h_general_bootstrap_act(
         c, act_record=performed, dedicated_record=dedicated,
         manifest_body=manifest, transaction_digest=transaction,
@@ -9079,11 +9031,9 @@ def _selftest_cg7h(kind):
         render_mode_manifest_digest=None,
         opening_band_dedicated_record="", opening_band_manifest_body="",
         opening_band_manifest_digest=None,
-        **{**dict(scoped_dedicated_record="", scoped_manifest_body="",
-                  scoped_manifest_digest=None, scoped_versioned_records=[],
-                  scoped_values_versioned_records=[],
-                  scoped_values_manifest_body=""),
-           **scoped_versioned, **scoped_values},
+        **{**dict(missing_currency_dedicated_record="", missing_currency_manifest_body="",
+                  missing_currency_manifest_digest=None, missing_currency_versioned_records=[]),
+           **missing_currency_versioned},
         contract_chain_inputs=contract_inputs,
         contract_chain=(CONTRACT_SUCCESSOR_CHAIN + (THIRD_LINK,)
                         if kind == "restyle-three-link-cascade" else None),
