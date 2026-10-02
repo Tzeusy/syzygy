@@ -48,7 +48,12 @@ Predicates, each printed with its denominator:
 `--selftest` copies every input into a scratch tree, confirms it passes,
 then applies each rule-6 mutant and requires its expected predicate to fail
 (or, for R6 and R7, to change what it reports); `--witnesses FILE` stores
-each mutant's path, old and new fragment and the commit it ran at.
+each mutant's path, old and new fragment and the commit it ran at. One R6
+case is strict rather than a change: with the `syzygy-jloi` re-pin package's
+proposed bytes in place of both pinned subjects (what that package's
+recorder applies at its acts), R6 must examine both pins and report exactly
+zero findings, with no other predicate failing. Once the acts are performed
+the tree already carries those bytes, and the case requires zero there.
 
 A later act over any subject fails R2 by design: the reconciliation is then
 re-derived, never carried forward.
@@ -780,6 +785,33 @@ def _first_hex_flip(label):
     return apply
 
 
+def _pin_moved(root):
+    current = sha(read_bytes(root, FAMILY_SPECS["PWB"]) or b"")
+
+    def apply(text):
+        def swap(m):
+            target = current if m.group(2) != current else "0" * 64
+            return m.group(1) + target + '"'
+        return re.sub(r'("version": "sha256:)([0-9a-f]{64})"', swap, text, 1)
+    return apply
+
+
+def _repin_package(root):
+    """Map each pinned subject's current text to the re-pin package's bytes."""
+    sys.path.insert(0, str(root / "scripts"))
+    import build_pwb_behavior_contract_repin as repin
+    by_text = {}
+    for subject in repin.SUBJECTS:
+        current = read_text(root, subject.path.as_posix())
+        by_text[current] = repin.proposed_bytes(root, subject).decode("utf-8")
+
+    def apply(text):
+        if text not in by_text:
+            raise AssertionError("pinned subject differs from the tree it was read from")
+        return by_text[text]
+    return apply
+
+
 def mutants(root):
     cap1, poc, base, und, pwb = CHILDREN
     poc_spec = FAMILY_SPECS["POC"]
@@ -840,11 +872,14 @@ def mutants(root):
          _replace("PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md",
                   "PWB-READABILITY-SUCCESSOR-ACT.md", -1), "R5"),
         # Report-only predicates: the mutant must change what they report.
-        ("pin-made-current", POLICY,
-         lambda t: re.sub(r'("version": "sha256:)[0-9a-f]{64}"',
-                          lambda m: m.group(1) + sha(read_bytes(
-                              root, FAMILY_SPECS["PWB"])) + '"', t, 1),
-         "R6~"),
+        # Once the pin is current (after the syzygy-jloi acts) the mutant
+        # moves it off the current digest instead, so it still changes R6.
+        ("pin-made-current", POLICY, _pin_moved(root), "R6~"),
+        # The syzygy-jloi package's proposed bytes, as its recorder applies
+        # them at the act: R6 must then report exactly zero. After the acts
+        # the tree already carries those bytes and R6 must read zero there.
+        ("pins-after-repin-acts", (REGISTRY, POLICY), _repin_package(root),
+         "R6=0"),
         ("union-extra-decision",
          f"{CHANGES}/{UNDERSTANDING_CHANGE}/GOVERNING-DEPENDENCIES.md",
          _replace("## decisions\n\nSDR-3\n", "## decisions\n\nSDR-3, SDR-99\n"),
@@ -880,6 +915,9 @@ def selftest(witness_path=None):
                     old, new = "<file present>", "<file deleted>"
                     continue
                 after = mutate(before)
+                if after == before and expect.endswith("=0"):
+                    old, new = "<already applied>", "<already applied>"
+                    continue
                 if after == before:
                     unchanged = True
                     break
@@ -893,6 +931,14 @@ def selftest(witness_path=None):
             if expect.endswith("~"):
                 rid = expect[:-1]
                 caught = got.findings.get(rid) != clean.findings.get(rid)
+            elif expect.endswith("=0"):
+                # Strict: the report-only predicate examined its population
+                # and reports exactly zero findings, and nothing else fails.
+                rid = expect[:-2]
+                caught = (got.findings.get(rid) == [] and not got.failed
+                          and any(int(m.group(1)) > 0 for m in (
+                              re.match(rf"OK +{rid}  .* — (\d+) examined", line)
+                              for line in got.lines) if m))
             else:
                 caught = expect in got.failed
             witnesses.append({"mutant": name, "path": rel, "old": old,
