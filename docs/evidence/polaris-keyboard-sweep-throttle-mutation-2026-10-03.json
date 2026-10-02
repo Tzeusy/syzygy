@@ -1,0 +1,144 @@
+{
+  "kind": "polaris-keyboard-sweep-navigation-throttle-diagnosis-and-rule-6-evidence",
+  "task": "syzygy-1z3.30",
+  "capturedAt": "2026-10-02T21:34:18.840533+00:00",
+  "testedCommit": "35fda269afc9199af9dab85d00fc2477264a3704",
+  "testedFileSha256": {
+    "apps/three-surface-poc/src/cdp-browser.ts": "069a07f51bd14e0d54940ce554a07c2b18271bba4b921469765c6da19de69b6d"
+  },
+  "browser": {
+    "executable": "/usr/bin/google-chrome",
+    "version": "Chrome/120.0.6099.224"
+  },
+  "diagnosis": {
+    "verdict": "checker (harness) fault, not page fault",
+    "mechanism": "Chrome's IPC flooding protection allows 200 same-document navigations per ten-second window and silently drops the rest. The scripted sweep sends fragment activations, plus the full re-navigations it makes before an activation whose target is already the current hash, far faster than a reader can. Once the budget is spent, every later Enter leaves location.hash on the previous target until the window passes.",
+    "leadDisproved": "The second link to the same target (activation 599) is not the cause. In the checker, activation 599 is preceded by a different hash, so it navigates normally. Activation 600 is the first one past the budget, and the hash stays on 599's target.",
+    "observations": [
+      {
+        "probe": "synthetic page, 400 fragment links to distinct targets, focus + Enter in a tight loop",
+        "withoutFlag": "first dropped activation at index 200, 200 of 400 dropped, 2.6 s",
+        "withFlag": "0 of 400 dropped, 3.1 s"
+      },
+      {
+        "probe": "checker over the retained /polaris capture, paused at the first failed activation (600) and retried",
+        "result": "retry after 0 ms and after +2 s: still dropped; retry after a further +5 s: reached the target; later activations then passed (2 violations in total instead of 218)"
+      },
+      {
+        "probe": "checker copy with diagnostic evaluations added around activations 590-602",
+        "result": "0 violations: the extra round-trips slowed the sweep under the budget. This timing dependence is consistent with a rate limit and inconsistent with a page defect."
+      },
+      {
+        "probe": "the same activation sequence 598, 599, 600, 601 on a freshly loaded page",
+        "result": "every activation reached its target"
+      }
+    ],
+    "readerImpact": "none observed: a reader cannot press Enter 200 times in ten seconds, and the page answered every activation again once the window passed"
+  },
+  "fix": "launchBrowser passes --disable-ipc-flooding-protection (apps/three-surface-poc/src/cdp-browser.ts)",
+  "mutations": [
+    {
+      "id": "M1-restore-navigation-throttle",
+      "file": "apps/three-surface-poc/src/cdp-browser.ts",
+      "old": "      '--disable-ipc-flooding-protection',\n",
+      "new": "",
+      "restored": true,
+      "outcomes": {
+        "browserTest": {
+          "command": "npx vitest run apps/three-surface-poc/src/polaris-accessibility.browser.test.ts -t \"navigation budget\"",
+          "result": "failed: expected [ Array(131) ] to deeply equal [] (activation-did-not-reach-target and focus-did-not-continue-from-target)",
+          "outcome": "killed"
+        },
+        "keyboardSweepLive": {
+          "command": "npm run poc:keyboard-sweep -- --base-url <private daemon at testedCommit>",
+          "mounts": [
+            {
+              "mount": "direct",
+              "sha256": "f5d996af56001ce7b853af75a5df5b8e640dbd58ef445dbd24421b40eedb294a",
+              "population": 1187,
+              "reached": 1187,
+              "activations": 709,
+              "violations": 218,
+              "violationsByKind": {
+                "activation-did-not-reach-target": 109,
+                "focus-did-not-continue-from-target": 109
+              }
+            },
+            {
+              "mount": "tailnet",
+              "sha256": "05eada1f39433952dc12bbce4eeab5bff3b6a8c341c799e2dce62296ee27681b",
+              "population": 1187,
+              "reached": 1187,
+              "activations": 709,
+              "violations": 218,
+              "violationsByKind": {
+                "activation-did-not-reach-target": 109,
+                "focus-did-not-continue-from-target": 109
+              }
+            }
+          ],
+          "totalViolations": 436
+        },
+        "keyboardSweepCapture": {
+          "command": "npm run poc:keyboard-sweep -- --file <retained /polaris capture from the syzygy-1z3.31 demo>",
+          "exitCode": 1,
+          "mounts": [
+            {
+              "mount": "file:/tmp/claude-1000/-home-tze-GitHub-syzygy/42f1d844-9fb6-4091-8261-544ed369daaf/scratchpad/1z3.31/retain/polaris.html",
+              "sha256": "1edcaae41692ddab381f41e913b90c7edab7b2fe4eecfbf312b7fafa806d582e",
+              "population": 1187,
+              "reached": 1187,
+              "activations": 709,
+              "violations": 218,
+              "violationsByKind": {
+                "activation-did-not-reach-target": 109,
+                "focus-did-not-continue-from-target": 109
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "fixedRuns": {
+    "browserTest": "passed: 266 activations (260 targets plus 6 repeated links to the current hash), 0 violations",
+    "keyboardSweepLive": {
+      "record": "docs/evidence/polaris-keyboard-sweep-2026-10-03-1z3-30.json",
+      "mounts": [
+        {
+          "mount": "direct",
+          "sha256": "f5d996af56001ce7b853af75a5df5b8e640dbd58ef445dbd24421b40eedb294a",
+          "population": 1187,
+          "reached": 1187,
+          "activations": 709,
+          "violations": 0,
+          "violationsByKind": {}
+        },
+        {
+          "mount": "tailnet",
+          "sha256": "05eada1f39433952dc12bbce4eeab5bff3b6a8c341c799e2dce62296ee27681b",
+          "population": 1187,
+          "reached": 1187,
+          "activations": 709,
+          "violations": 0,
+          "violationsByKind": {}
+        }
+      ]
+    },
+    "keyboardSweepCapture": {
+      "exitCode": 0,
+      "mounts": [
+        {
+          "mount": "file:/tmp/claude-1000/-home-tze-GitHub-syzygy/42f1d844-9fb6-4091-8261-544ed369daaf/scratchpad/1z3.31/retain/polaris.html",
+          "sha256": "1edcaae41692ddab381f41e913b90c7edab7b2fe4eecfbf312b7fafa806d582e",
+          "population": 1187,
+          "reached": 1187,
+          "activations": 709,
+          "violations": 0,
+          "violationsByKind": {}
+        }
+      ]
+    }
+  },
+  "note": "The live pre-fix and fixed runs swept byte-identical served pages (same sha256 per mount) from one private daemon at testedCommit. Butlers text is not copied into this record."
+}
