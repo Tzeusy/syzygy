@@ -10,7 +10,7 @@ Owner: Tzeusy
 
 Record ID: `PUBLIC-EGRESS-anthropic`
 
-Record version: `0.1.0-candidate.3`
+Record version: `0.1.0-candidate.4`
 
 Consent class: egress — one record per (project, provider) pair (RFC5-12)
 
@@ -28,7 +28,7 @@ Permitted content classes (RFC5-14 closed vocabulary):
 - `evidence-content`
 - `derived-composites`
 
-Retention: provider replies and run records are retained in `project:syzygy`'s state directory, outside git; source bodies are not retained beyond the run's local clone; the provider's own retention is as its API terms state, disclosed rather than promised.
+Retention: provider requests, provider replies and run records are retained in a run directory under `project:syzygy`'s state directory, outside git. Requests and replies contain the source spans sent, so the run directory holds those spans for as long as the run is retained; nothing is retained in git, logs or machine responses. The provider's own retention is as its API terms state, disclosed rather than promised.
 
 Proposed provenance state: `owner-adopted (bootstrap, uncorrelated)` —
 state (1), RFC3-16; A1 audit-record identity explicitly absent
@@ -42,9 +42,11 @@ Only content read under an in-force observation consent for one of these
 
 - `(project:syzygy, repository:psf-requests)`
 
-Every other source of `project:syzygy` content is outside this consent,
-including the Butlers repository, Syzygy's own repository and any work
-history, and stays unsent.
+together with the generator's own instruction text (its stage prompts and
+response schemas, authored in Syzygy's repository), which every request
+carries. Every other source of `project:syzygy` content is outside this
+consent, including the Butlers repository, the rest of Syzygy's own
+repository and any work history, and stays unsent.
 
 ## Conditions
 

@@ -7,8 +7,9 @@ Each instance directory under the package's ``instances/`` holds a
 replaced by an instance header; every ``{{FIELD}}`` must be filled.
 
   --write     regenerate every instance record
-  --check     fail if any instance record differs from its regeneration
-  --digests   print each instance record's SHA-256 (the act argument)
+  --check     fail if any instance record differs from its regeneration,
+              or an instance directory holds a record nothing produces
+  --digests   print each instance record's SHA-256 (refuses while stale)
   --selftest  build one mutant per predicate; each must be caught
 """
 import hashlib
@@ -90,13 +91,25 @@ def selftest():
         path.write_text(text + "x")
         assert stale(root) == [path], "stale instance not caught"
         caught += 1
-    print(f"selftest: {caught} of 5 mutants caught (banner kept, unfilled "
-          "field, placeholder in value, missing banner, stale instance)")
+        path.write_text(text)
+        orphan = path.parent / "ORPHAN.md"
+        orphan.write_text("x")
+        assert stale(root) == [orphan], "orphan record not caught"
+        caught += 1
+    print(f"selftest: {caught} of 6 mutants caught (banner kept, unfilled "
+          "field, placeholder in value, missing banner, stale instance, "
+          "orphan record)")
 
 
 def stale(root=PKG):
-    return [p for p, text in instances(root)
-            if not p.exists() or p.read_text() != text]
+    """Records that differ from their regeneration, plus orphan records: a
+    ``.md`` file in an instance directory that no ``params.json`` produces."""
+    produced = dict(instances(root))
+    bad = [p for p, text in produced.items()
+           if not p.exists() or p.read_text() != text]
+    for d in {p.parent for p in produced}:
+        bad += sorted(p for p in d.glob("*.md") if p not in produced)
+    return bad
 
 
 def main(argv):
@@ -113,6 +126,9 @@ def main(argv):
             print(f"STALE {path}")
         print("public-repo admission instances:", "STALE" if bad else "current")
         return 1 if bad else 0
+    if mode == "--digests" and stale():
+        print("refusing: instances are stale; run --check", file=sys.stderr)
+        return 1
     for path, text in instances():
         if mode == "--write":
             path.write_text(text)

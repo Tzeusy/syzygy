@@ -13,15 +13,17 @@
 2. **Its own classification-success rule.** The existing rule admits a body
    only when "its extraction class is in the signed PWB closed set"; source
    code and documentation of an arbitrary repository have no PWB extraction
-   class, so the public scope needs its own: strict UTF-8 without NUL, no
-   detector match, within declared size limits, and the active-content rule
-   in item 3.
+   class, so the public scope needs its own: the path is in an admitted
+   snapshot and passes the existing denied-path rules (`deniedPathBasenames`,
+   `deniedPathPrefixes`, `deniedPathSuffixes` — `.env`, `id_rsa`, `.pem` and
+   the rest, unchanged), strict UTF-8 without NUL, no detector match, within
+   declared size limits, and the active-content rule in item 3.
 3. **An active-content rule for source code.** The existing policy excludes a
-   closed list of markup forms (`excludedOutsideInertContexts`: HTML elements,
-   HTML comments and declarations, SVG, script, event-handler attributes,
-   unsafe URL schemes in Markdown destinations and autolinks) wherever they
-   occur outside a Markdown inline code span or fenced code block — its only
-   inert contexts. Applied unchanged to a source repository, that would
+   closed list of eight markup forms (`excludedOutsideInertContexts`: HTML
+   elements, HTML comments and declarations, SVG, script, event-handler
+   attributes, and unsafe URL schemes in Markdown destinations, autolinks and
+   HTML attributes) wherever they occur outside a Markdown inline code span
+   or fenced code block — its only inert contexts. Applied unchanged to a source repository, that would
    withhold every file containing a `<tag`-shaped string: JSX, templates,
    HTML fixtures, many docstrings. The public scope therefore keeps the
    existing rule for Markdown and other prose rendered as markup, and treats
@@ -29,9 +31,16 @@
    markup: it is scanned by every secret detector and context-encoded at every
    sink, as the existing `inertContextRule` already requires of inert bytes.
    This is a change the act approves, not a carry-over.
-4. **Raw-body handling for this scope.** The existing policy's
-   `rawBodyHandling` is `never` for storage, logging, rendering, machine
-   response and external egress. The public scope proposes:
+4. **Access boundary and raw-body handling for this scope.** The existing
+   policy's `accessBoundary` sets `networkEgress: false` (with PostgreSQL,
+   credential API, process environment, working tree, untracked files and
+   observed-code execution all false), and its `rawBodyHandling` is `never`
+   for storage, logging, rendering, machine response and external egress.
+   The public scope keeps every `accessBoundary` field false except
+   `networkEgress`, which it permits for exactly two routes: the shallow
+   by-commit fetch from the target's upstream that the observation consent
+   describes, and the registered provider route through the single egress
+   check. For raw bodies it proposes:
    - external egress — permitted for content it classifies, subject to the
      separate egress consent;
    - storage — permitted only in a run's directory under `project:syzygy`'s
