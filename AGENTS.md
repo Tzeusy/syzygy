@@ -235,7 +235,12 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   edit or commit while it runs.
 - CDP headless: enable `Emulation.setFocusEmulationEnabled` or focus never
   moves; re-navigate before Tab/Enter when the fragment already matches the
-  hash; `<summary>` needs its own `:focus-visible` rule.
+  hash; `<summary>` needs its own `:focus-visible` rule. Chrome's IPC
+  flooding protection silently drops same-document navigations past 200
+  per ten seconds, so a fast keyboard sweep reads as a stuck hash from
+  activation 201 on: `launchBrowser` passes
+  `--disable-ipc-flooding-protection` (`syzygy-1z3.30`, 218 false
+  violations).
 - Never put a fragment target (an `id` some `href="#…"` names) inside a
   `<details>`: after navigating to it Chrome restarts Tab at the details'
   first focusable, stranding keyboard readers. Collapse populations, route
@@ -327,7 +332,8 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   parses (v1.md had five colon forms and four duplicate labels behind "one
   row uses a colon").
 - The fresh-checkout demo exits by `fresh-checkout-verdict.ts` over every
-  invariant it records (daemon stderr must be empty); the walkthrough
+  invariant it records (daemon stderr must be exactly its own three probe
+  refusal lines, two 401s and one 403); the walkthrough
   preflight (`walkthrough-preflight.ts`) is mechanical readiness and
   never an owner verdict — keep readiness, execution record, owner
   judgment and act validity as four states.
