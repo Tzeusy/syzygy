@@ -1,0 +1,2557 @@
+{
+  "bead": "syzygy-4d15",
+  "date": "2026-10-03",
+  "subject": "Default 5 s timeouts in apps/three-surface-poc/src/polaris-copy.test.ts and production-reobserve.test.ts under host load",
+  "fixCommit": "fd8d1a212349f4713b9e033d92f7b1c038eb4881",
+  "beforeCommit": "fd8d1a2^ (origin/main at the bead's rebase, both files unmodified)",
+  "fix": {
+    "polaris-copy.test.ts": "Cheaper fixture: the twelve variant models are built once in beforeAll (hook timeout 60 s) and deep-frozen, instead of being rebuilt per test (up to twenty builds per test). No assertion changed.",
+    "production-reobserve.test.ts": "Explicit per-test timeout PRODUCTION_BUILD_TIMEOUT_MS = 60_000 on the three tests that each run two full production builds over the real tree; no cheaper fixture keeps what they test. Comment names the measured worst case (18.0 s, before) and this bead. Global testTimeout unchanged; nothing skipped or retried."
+  },
+  "protocol": {
+    "aloneRuns": "npx vitest run <file> --reporter=json, 5 times per file",
+    "fullRuns": "npx vitest run --project @syzygy/three-surface-poc-app --reporter=json, measured run concurrent with one companion full app-project run (parallel-load protocol), alongside the other overnight lane's real load; load1m sampled at each run's end",
+    "timeoutClassifier": "an assertion is a timeout when its failure message starts 'Error: STACK_TRACE_ERROR' (vitest replaces the timeout error's message with its stackTraceError) or contains 'timed out in'. Rule-6 check: with the classifier returning only the 'timed out in' arm, the before data reports 0 timeouts instead of 18, so the STACK_TRACE_ERROR arm is load-bearing.",
+    "harness": "scratch scripts measure.sh and build_evidence.py (not committed); raw vitest JSON reports retained in the session scratchpad only"
+  },
+  "result": {
+    "before": {
+      "fullRuns": 3,
+      "inScopeTestExecutions": 33,
+      "inScopeTimeouts": 18,
+      "inScopeFailures": 18,
+      "companionInScopeTimeouts": 18
+    },
+    "after": {
+      "fullRuns": 10,
+      "inScopeTestExecutions": 110,
+      "inScopeTimeouts": 0,
+      "inScopeFailures": 0,
+      "companionInScopeTimeouts": 0
+    },
+    "statement": "After: 10 consecutive full app-project runs under the parallel-load protocol; 110 in-scope test executions (10 runs x 11 tests in the two files), 0 timeouts, 0 failures; companion runs also 0 in-scope timeouts. Before: 3 runs, 33 executions, 18 timeouts (all six heavy tests in every run)."
+  },
+  "worstFullRunDurationMsPerTest": {
+    "before": {
+      "polaris-copy.test.ts > classifies each interpolated source control and preserves exact-source href order and multiplicity": 803,
+      "polaris-copy.test.ts > gives every summary and native anchor a distinct accessible name unless its href is identical": 948,
+      "polaris-copy.test.ts > renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control": 9992,
+      "polaris-copy.test.ts > marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices": 11593,
+      "polaris-copy.test.ts > keeps no group lede and no connective prose between groups: each group header is one heading": 1018,
+      "polaris-copy.test.ts > flags meta-narration: the counterexample fixture fails every rule the sweep enforces": 17,
+      "polaris-copy.test.ts > keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state": 13147,
+      "production-reobserve.test.ts > keeps the production probe identity bound to the captured observation instant": 6,
+      "production-reobserve.test.ts > keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants": 17058,
+      "production-reobserve.test.ts > uses the production builder for an atomic successful swap with identity advancement and one in-flight observation": 15930,
+      "production-reobserve.test.ts > retains the prior production model and non-zero drift when the production build fails": 18033
+    },
+    "after": {
+      "polaris-copy.test.ts > classifies each interpolated source control and preserves exact-source href order and multiplicity": 932,
+      "polaris-copy.test.ts > gives every summary and native anchor a distinct accessible name unless its href is identical": 734,
+      "polaris-copy.test.ts > renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control": 873,
+      "polaris-copy.test.ts > marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices": 555,
+      "polaris-copy.test.ts > keeps no group lede and no connective prose between groups: each group header is one heading": 28,
+      "polaris-copy.test.ts > flags meta-narration: the counterexample fixture fails every rule the sweep enforces": 43,
+      "polaris-copy.test.ts > keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state": 1104,
+      "production-reobserve.test.ts > keeps the production probe identity bound to the captured observation instant": 3,
+      "production-reobserve.test.ts > keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants": 15426,
+      "production-reobserve.test.ts > uses the production builder for an atomic successful swap with identity advancement and one in-flight observation": 16035,
+      "production-reobserve.test.ts > retains the prior production model and non-zero drift when the production build fails": 17166
+    }
+  },
+  "outOfScopeFailures": "Failures in other files are recorded per run under fullRuns[].measured.otherFailures and fullRuns[].companion.otherFailures; not fixed by this bead. After: governance-inputs.test.ts 'evaluates the three real current PWB acts' timed out in all 10 measured runs; build-output.test.ts failed in runs 1 and 5 (one timeout), durable-lifecycle.test.ts timed out in run 1, and draft-preview.browser.test.ts failed in run 1 (not a timeout). project-shape-discovery.live.test.ts is skipped, not failed.",
+  "rule6": {
+    "note": "No assertion predicate was added or changed. The hoist adds two guards; each has a recorded mutant. The production-reobserve timeout is a value, not a predicate: its removal is the before state, measured above.",
+    "mutants": [
+      {
+        "id": "M1",
+        "predicate": "deepFreeze rejects a write to a shared variant model",
+        "file": "apps/three-surface-poc/src/polaris-copy.test.ts",
+        "commit": "fd8d1a212349f4713b9e033d92f7b1c038eb4881",
+        "edits": [
+          {
+            "old": "    const html = renderPolarisPage(modelFor('observed'));\n    const headers",
+            "new": "    (modelFor('observed') as unknown as { asOf: string }).asOf = 'mutated-by-probe';\n    const html = renderPolarisPage(modelFor('observed'));\n    const headers"
+          }
+        ],
+        "expected": "killed",
+        "outcome": "killed",
+        "evidence": [
+          "Tests  1 failed | 6 passed (7)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af",
+          "TypeError: Cannot add property asOf, object is not extensible"
+        ]
+      },
+      {
+        "id": "M2",
+        "predicate": "control for M1: the same write with deepFreeze removed is not caught (the freeze is the only guard)",
+        "file": "apps/three-surface-poc/src/polaris-copy.test.ts",
+        "commit": "fd8d1a212349f4713b9e033d92f7b1c038eb4881",
+        "edits": [
+          {
+            "old": "    const html = renderPolarisPage(modelFor('observed'));\n    const headers",
+            "new": "    (modelFor('observed') as unknown as { asOf: string }).asOf = 'mutated-by-probe';\n    const html = renderPolarisPage(modelFor('observed'));\n    const headers"
+          },
+          {
+            "old": "VARIANT_MODELS.set(variant, deepFreeze(buildVariant(variant, variantCleanups)))",
+            "new": "VARIANT_MODELS.set(variant, buildVariant(variant, variantCleanups))"
+          }
+        ],
+        "expected": "survived",
+        "outcome": "survived",
+        "evidence": [
+          "Tests  7 passed (7)"
+        ]
+      },
+      {
+        "id": "M3",
+        "predicate": "modelFor refuses a variant the beforeAll did not build",
+        "file": "apps/three-surface-poc/src/polaris-copy.test.ts",
+        "commit": "fd8d1a212349f4713b9e033d92f7b1c038eb4881",
+        "edits": [
+          {
+            "old": "for (const variant of VARIANTS) VARIANT_MODELS.set(",
+            "new": "for (const variant of VARIANTS.slice(1)) VARIANT_MODELS.set("
+          }
+        ],
+        "expected": "killed",
+        "outcome": "killed",
+        "evidence": [
+          "\u2192 variant model not built: unevaluated",
+          "\u2192 variant model not built: unevaluated",
+          "\u2192 variant model not built: unevaluated",
+          "Tests  3 failed | 4 passed (7)"
+        ]
+      }
+    ]
+  },
+  "before": {
+    "aloneRuns": [
+      {
+        "file": "polaris-copy",
+        "run": 1,
+        "load1m": 9.86,
+        "tests": {
+          "polaris-copy.test.ts": [
+            {
+              "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+              "durationMs": 269,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+              "durationMs": 104,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+              "durationMs": 1140,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 1217,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+              "durationMs": 70,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+              "durationMs": 1,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+              "durationMs": 1188,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "polaris-copy",
+        "run": 2,
+        "load1m": 8.67,
+        "tests": {
+          "polaris-copy.test.ts": [
+            {
+              "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+              "durationMs": 161,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+              "durationMs": 78,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+              "durationMs": 882,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 3562,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+              "durationMs": 213,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+              "durationMs": 1,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+              "durationMs": 3128,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "polaris-copy",
+        "run": 3,
+        "load1m": 9.75,
+        "tests": {
+          "polaris-copy.test.ts": [
+            {
+              "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+              "durationMs": 208,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+              "durationMs": 148,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+              "durationMs": 1223,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 1572,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+              "durationMs": 96,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+              "durationMs": 1,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+              "durationMs": 1541,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "polaris-copy",
+        "run": 4,
+        "load1m": 11.85,
+        "tests": {
+          "polaris-copy.test.ts": [
+            {
+              "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+              "durationMs": 339,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+              "durationMs": 227,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+              "durationMs": 1639,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 1712,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+              "durationMs": 113,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+              "durationMs": 1,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+              "durationMs": 1427,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "polaris-copy",
+        "run": 5,
+        "load1m": 13.65,
+        "tests": {
+          "polaris-copy.test.ts": [
+            {
+              "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+              "durationMs": 571,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+              "durationMs": 187,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+              "durationMs": 3046,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 4751,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+              "durationMs": 297,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+              "durationMs": 3,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+              "durationMs": 3795,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "production-reobserve",
+        "run": 1,
+        "load1m": 9.71,
+        "tests": {
+          "production-reobserve.test.ts": [
+            {
+              "title": "keeps the production probe identity bound to the captured observation instant",
+              "durationMs": 2,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 2645,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+              "durationMs": 2833,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 2707,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "production-reobserve",
+        "run": 2,
+        "load1m": 9.23,
+        "tests": {
+          "production-reobserve.test.ts": [
+            {
+              "title": "keeps the production probe identity bound to the captured observation instant",
+              "durationMs": 2,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 2096,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+              "durationMs": 2070,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 2160,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "production-reobserve",
+        "run": 3,
+        "load1m": 8.78,
+        "tests": {
+          "production-reobserve.test.ts": [
+            {
+              "title": "keeps the production probe identity bound to the captured observation instant",
+              "durationMs": 2,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 2240,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+              "durationMs": 2639,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 2552,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "production-reobserve",
+        "run": 4,
+        "load1m": 11.92,
+        "tests": {
+          "production-reobserve.test.ts": [
+            {
+              "title": "keeps the production probe identity bound to the captured observation instant",
+              "durationMs": 3,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 2788,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+              "durationMs": 2936,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 3194,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "production-reobserve",
+        "run": 5,
+        "load1m": 12.45,
+        "tests": {
+          "production-reobserve.test.ts": [
+            {
+              "title": "keeps the production probe identity bound to the captured observation instant",
+              "durationMs": 2,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 2908,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+              "durationMs": 3156,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 3472,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      }
+    ],
+    "fullRuns": [
+      {
+        "run": 1,
+        "rc": 1,
+        "wallSeconds": 107,
+        "load1mAtEnd": 35.88,
+        "measured": {
+          "totalTests": 572,
+          "passed": 561,
+          "failed": 10,
+          "inScope": {
+            "polaris-copy.test.ts": [
+              {
+                "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+                "durationMs": 712,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+                "durationMs": 713,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+                "durationMs": 9992,
+                "status": "failed",
+                "timedOut": true
+              },
+              {
+                "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+                "durationMs": 11244,
+                "status": "failed",
+                "timedOut": true
+              },
+              {
+                "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+                "durationMs": 1018,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+                "durationMs": 17,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+                "durationMs": 13147,
+                "status": "failed",
+                "timedOut": true
+              }
+            ],
+            "production-reobserve.test.ts": [
+              {
+                "title": "keeps the production probe identity bound to the captured observation instant",
+                "durationMs": 2,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+                "durationMs": 13773,
+                "status": "failed",
+                "timedOut": true
+              },
+              {
+                "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+                "durationMs": 7580,
+                "status": "failed",
+                "timedOut": true
+              },
+              {
+                "title": "retains the prior production model and non-zero drift when the production build fails",
+                "durationMs": 7742,
+                "status": "failed",
+                "timedOut": true
+              }
+            ]
+          },
+          "inScopeTimeouts": 6,
+          "inScopeFailures": 6,
+          "otherFailures": [
+            {
+              "file": "surface-routes.test.ts",
+              "title": "withholds the post-script Orrery capability href when that exact capability is absent",
+              "durationMs": 7076,
+              "timedOut": false
+            },
+            {
+              "file": "surface-routes.test.ts",
+              "title": "counts the post-JavaScript DOM on all three served surfaces and kills an unmarked Orrery region",
+              "durationMs": 7831,
+              "timedOut": false
+            },
+            {
+              "file": "draft-preview.browser.test.ts",
+              "title": "renders the pipeline draft with working diagram, source and keyboard deep-dive paths at both widths",
+              "durationMs": 7230,
+              "timedOut": false
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 6156,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 572,
+          "failed": 11,
+          "inScopeTimeouts": 6,
+          "inScopeFailures": 6,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 63013,
+              "timedOut": true
+            },
+            {
+              "file": "surface-routes.test.ts",
+              "title": "withholds the post-script Orrery capability href when that exact capability is absent",
+              "durationMs": 7120,
+              "timedOut": false
+            },
+            {
+              "file": "surface-routes.test.ts",
+              "title": "counts the post-JavaScript DOM on all three served surfaces and kills an unmarked Orrery region",
+              "durationMs": 7833,
+              "timedOut": false
+            },
+            {
+              "file": "draft-preview.browser.test.ts",
+              "title": "renders the pipeline draft with working diagram, source and keyboard deep-dive paths at both widths",
+              "durationMs": 7678,
+              "timedOut": false
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 5822,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 2,
+        "rc": 1,
+        "wallSeconds": 85,
+        "load1mAtEnd": 43.46,
+        "measured": {
+          "totalTests": 572,
+          "passed": 563,
+          "failed": 8,
+          "inScope": {
+            "polaris-copy.test.ts": [
+              {
+                "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+                "durationMs": 803,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+                "durationMs": 663,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+                "durationMs": 9884,
+                "status": "failed",
+                "timedOut": true
+              },
+              {
+                "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+                "durationMs": 11593,
+                "status": "failed",
+                "timedOut": true
+              },
+              {
+                "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+                "durationMs": 963,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+                "durationMs": 5,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+                "durationMs": 11170,
+                "status": "failed",
+                "timedOut": true
+              }
+            ],
+            "production-reobserve.test.ts": [
+              {
+                "title": "keeps the production probe identity bound to the captured observation instant",
+                "durationMs": 3,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+                "durationMs": 17058,
+                "status": "failed",
+                "timedOut": true
+              },
+              {
+                "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+                "durationMs": 13618,
+                "status": "failed",
+                "timedOut": true
+              },
+              {
+                "title": "retains the prior production model and non-zero drift when the production build fails",
+                "durationMs": 15481,
+                "status": "failed",
+                "timedOut": true
+              }
+            ]
+          },
+          "inScopeTimeouts": 6,
+          "inScopeFailures": 6,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 67846,
+              "timedOut": true
+            },
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 8471,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 572,
+          "failed": 8,
+          "inScopeTimeouts": 6,
+          "inScopeFailures": 6,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 67947,
+              "timedOut": false
+            },
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 8145,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 3,
+        "rc": 1,
+        "wallSeconds": 82,
+        "load1mAtEnd": 43.49,
+        "measured": {
+          "totalTests": 572,
+          "passed": 563,
+          "failed": 8,
+          "inScope": {
+            "polaris-copy.test.ts": [
+              {
+                "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+                "durationMs": 635,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+                "durationMs": 948,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+                "durationMs": 6678,
+                "status": "failed",
+                "timedOut": true
+              },
+              {
+                "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+                "durationMs": 9261,
+                "status": "failed",
+                "timedOut": true
+              },
+              {
+                "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+                "durationMs": 938,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+                "durationMs": 16,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+                "durationMs": 8345,
+                "status": "failed",
+                "timedOut": true
+              }
+            ],
+            "production-reobserve.test.ts": [
+              {
+                "title": "keeps the production probe identity bound to the captured observation instant",
+                "durationMs": 6,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+                "durationMs": 15412,
+                "status": "failed",
+                "timedOut": true
+              },
+              {
+                "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+                "durationMs": 15930,
+                "status": "failed",
+                "timedOut": true
+              },
+              {
+                "title": "retains the prior production model and non-zero drift when the production build fails",
+                "durationMs": 18033,
+                "status": "failed",
+                "timedOut": true
+              }
+            ]
+          },
+          "inScopeTimeouts": 6,
+          "inScopeFailures": 6,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 61834,
+              "timedOut": false
+            },
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 8145,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 572,
+          "failed": 9,
+          "inScopeTimeouts": 6,
+          "inScopeFailures": 6,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 60346,
+              "timedOut": true
+            },
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 6577,
+              "timedOut": true
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 5296,
+              "timedOut": true
+            }
+          ]
+        }
+      }
+    ],
+    "denominator": {
+      "fullRuns": 3,
+      "inScopeTestExecutions": 33,
+      "inScopeTimeouts": 18,
+      "inScopeFailures": 18,
+      "companionInScopeTimeouts": 18
+    },
+    "worstFullRunDurationMsPerTest": {
+      "polaris-copy.test.ts > classifies each interpolated source control and preserves exact-source href order and multiplicity": 803,
+      "polaris-copy.test.ts > gives every summary and native anchor a distinct accessible name unless its href is identical": 948,
+      "polaris-copy.test.ts > renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control": 9992,
+      "polaris-copy.test.ts > marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices": 11593,
+      "polaris-copy.test.ts > keeps no group lede and no connective prose between groups: each group header is one heading": 1018,
+      "polaris-copy.test.ts > flags meta-narration: the counterexample fixture fails every rule the sweep enforces": 17,
+      "polaris-copy.test.ts > keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state": 13147,
+      "production-reobserve.test.ts > keeps the production probe identity bound to the captured observation instant": 6,
+      "production-reobserve.test.ts > keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants": 17058,
+      "production-reobserve.test.ts > uses the production builder for an atomic successful swap with identity advancement and one in-flight observation": 15930,
+      "production-reobserve.test.ts > retains the prior production model and non-zero drift when the production build fails": 18033
+    }
+  },
+  "after": {
+    "aloneRuns": [
+      {
+        "file": "polaris-copy",
+        "run": 1,
+        "load1m": 8.94,
+        "tests": {
+          "polaris-copy.test.ts": [
+            {
+              "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+              "durationMs": 156,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+              "durationMs": 83,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+              "durationMs": 135,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 72,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+              "durationMs": 6,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+              "durationMs": 1,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+              "durationMs": 168,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "polaris-copy",
+        "run": 2,
+        "load1m": 8.56,
+        "tests": {
+          "polaris-copy.test.ts": [
+            {
+              "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+              "durationMs": 118,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+              "durationMs": 121,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+              "durationMs": 162,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 73,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+              "durationMs": 6,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+              "durationMs": 1,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+              "durationMs": 186,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "polaris-copy",
+        "run": 3,
+        "load1m": 8.16,
+        "tests": {
+          "polaris-copy.test.ts": [
+            {
+              "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+              "durationMs": 138,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+              "durationMs": 92,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+              "durationMs": 140,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 72,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+              "durationMs": 6,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+              "durationMs": 1,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+              "durationMs": 249,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "polaris-copy",
+        "run": 4,
+        "load1m": 9.13,
+        "tests": {
+          "polaris-copy.test.ts": [
+            {
+              "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+              "durationMs": 108,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+              "durationMs": 73,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+              "durationMs": 133,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 74,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+              "durationMs": 6,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+              "durationMs": 1,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+              "durationMs": 179,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "polaris-copy",
+        "run": 5,
+        "load1m": 8.49,
+        "tests": {
+          "polaris-copy.test.ts": [
+            {
+              "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+              "durationMs": 109,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+              "durationMs": 83,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+              "durationMs": 144,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 75,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+              "durationMs": 6,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+              "durationMs": 1,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+              "durationMs": 188,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "production-reobserve",
+        "run": 1,
+        "load1m": 9.02,
+        "tests": {
+          "production-reobserve.test.ts": [
+            {
+              "title": "keeps the production probe identity bound to the captured observation instant",
+              "durationMs": 1,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 2295,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+              "durationMs": 2291,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 2153,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "production-reobserve",
+        "run": 2,
+        "load1m": 8.79,
+        "tests": {
+          "production-reobserve.test.ts": [
+            {
+              "title": "keeps the production probe identity bound to the captured observation instant",
+              "durationMs": 1,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 2068,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+              "durationMs": 2123,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 2170,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "production-reobserve",
+        "run": 3,
+        "load1m": 8.16,
+        "tests": {
+          "production-reobserve.test.ts": [
+            {
+              "title": "keeps the production probe identity bound to the captured observation instant",
+              "durationMs": 1,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 2035,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+              "durationMs": 2067,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 2164,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "production-reobserve",
+        "run": 4,
+        "load1m": 9.14,
+        "tests": {
+          "production-reobserve.test.ts": [
+            {
+              "title": "keeps the production probe identity bound to the captured observation instant",
+              "durationMs": 1,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 2286,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+              "durationMs": 2071,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 2285,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      },
+      {
+        "file": "production-reobserve",
+        "run": 5,
+        "load1m": 8.8,
+        "tests": {
+          "production-reobserve.test.ts": [
+            {
+              "title": "keeps the production probe identity bound to the captured observation instant",
+              "durationMs": 2,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 1982,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+              "durationMs": 2218,
+              "status": "passed",
+              "timedOut": false
+            },
+            {
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 2199,
+              "status": "passed",
+              "timedOut": false
+            }
+          ]
+        },
+        "failed": 0
+      }
+    ],
+    "fullRuns": [
+      {
+        "run": 1,
+        "rc": 1,
+        "wallSeconds": 65,
+        "load1mAtEnd": 32.08,
+        "measured": {
+          "totalTests": 572,
+          "passed": 567,
+          "failed": 4,
+          "inScope": {
+            "polaris-copy.test.ts": [
+              {
+                "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+                "durationMs": 789,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+                "durationMs": 517,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+                "durationMs": 262,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+                "durationMs": 123,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+                "durationMs": 9,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+                "durationMs": 1,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+                "durationMs": 281,
+                "status": "passed",
+                "timedOut": false
+              }
+            ],
+            "production-reobserve.test.ts": [
+              {
+                "title": "keeps the production probe identity bound to the captured observation instant",
+                "durationMs": 3,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+                "durationMs": 8484,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+                "durationMs": 5263,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "retains the prior production model and non-zero drift when the production build fails",
+                "durationMs": 4618,
+                "status": "passed",
+                "timedOut": false
+              }
+            ]
+          },
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 62454,
+              "timedOut": true
+            },
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 5339,
+              "timedOut": true
+            },
+            {
+              "file": "draft-preview.browser.test.ts",
+              "title": "renders the pipeline draft with working diagram, source and keyboard deep-dive paths at both widths",
+              "durationMs": 5843,
+              "timedOut": false
+            },
+            {
+              "file": "durable-lifecycle.test.ts",
+              "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+              "durationMs": 6271,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 572,
+          "failed": 4,
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 62171,
+              "timedOut": false
+            },
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 5297,
+              "timedOut": true
+            },
+            {
+              "file": "draft-preview.browser.test.ts",
+              "title": "renders the pipeline draft with working diagram, source and keyboard deep-dive paths at both widths",
+              "durationMs": 5854,
+              "timedOut": false
+            },
+            {
+              "file": "durable-lifecycle.test.ts",
+              "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+              "durationMs": 5824,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 2,
+        "rc": 1,
+        "wallSeconds": 66,
+        "load1mAtEnd": 31.2,
+        "measured": {
+          "totalTests": 572,
+          "passed": 570,
+          "failed": 1,
+          "inScope": {
+            "polaris-copy.test.ts": [
+              {
+                "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+                "durationMs": 798,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+                "durationMs": 360,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+                "durationMs": 474,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+                "durationMs": 358,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+                "durationMs": 23,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+                "durationMs": 1,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+                "durationMs": 664,
+                "status": "passed",
+                "timedOut": false
+              }
+            ],
+            "production-reobserve.test.ts": [
+              {
+                "title": "keeps the production probe identity bound to the captured observation instant",
+                "durationMs": 2,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+                "durationMs": 14998,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+                "durationMs": 12038,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "retains the prior production model and non-zero drift when the production build fails",
+                "durationMs": 12900,
+                "status": "passed",
+                "timedOut": false
+              }
+            ]
+          },
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 6527,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 572,
+          "failed": 1,
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 7260,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 3,
+        "rc": 1,
+        "wallSeconds": 67,
+        "load1mAtEnd": 31.5,
+        "measured": {
+          "totalTests": 572,
+          "passed": 570,
+          "failed": 1,
+          "inScope": {
+            "polaris-copy.test.ts": [
+              {
+                "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+                "durationMs": 471,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+                "durationMs": 530,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+                "durationMs": 354,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+                "durationMs": 211,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+                "durationMs": 24,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+                "durationMs": 43,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+                "durationMs": 475,
+                "status": "passed",
+                "timedOut": false
+              }
+            ],
+            "production-reobserve.test.ts": [
+              {
+                "title": "keeps the production probe identity bound to the captured observation instant",
+                "durationMs": 2,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+                "durationMs": 12341,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+                "durationMs": 13123,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "retains the prior production model and non-zero drift when the production build fails",
+                "durationMs": 15377,
+                "status": "passed",
+                "timedOut": false
+              }
+            ]
+          },
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 5622,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 572,
+          "failed": 1,
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 5806,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 4,
+        "rc": 1,
+        "wallSeconds": 70,
+        "load1mAtEnd": 35.12,
+        "measured": {
+          "totalTests": 572,
+          "passed": 570,
+          "failed": 1,
+          "inScope": {
+            "polaris-copy.test.ts": [
+              {
+                "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+                "durationMs": 763,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+                "durationMs": 734,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+                "durationMs": 687,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+                "durationMs": 555,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+                "durationMs": 21,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+                "durationMs": 1,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+                "durationMs": 1104,
+                "status": "passed",
+                "timedOut": false
+              }
+            ],
+            "production-reobserve.test.ts": [
+              {
+                "title": "keeps the production probe identity bound to the captured observation instant",
+                "durationMs": 2,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+                "durationMs": 12933,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+                "durationMs": 13356,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "retains the prior production model and non-zero drift when the production build fails",
+                "durationMs": 15223,
+                "status": "passed",
+                "timedOut": false
+              }
+            ]
+          },
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 5393,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 572,
+          "failed": 1,
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 5444,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 5,
+        "rc": 1,
+        "wallSeconds": 74,
+        "load1mAtEnd": 36.15,
+        "measured": {
+          "totalTests": 572,
+          "passed": 569,
+          "failed": 2,
+          "inScope": {
+            "polaris-copy.test.ts": [
+              {
+                "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+                "durationMs": 740,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+                "durationMs": 659,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+                "durationMs": 754,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+                "durationMs": 315,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+                "durationMs": 9,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+                "durationMs": 1,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+                "durationMs": 478,
+                "status": "passed",
+                "timedOut": false
+              }
+            ],
+            "production-reobserve.test.ts": [
+              {
+                "title": "keeps the production probe identity bound to the captured observation instant",
+                "durationMs": 2,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+                "durationMs": 14980,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+                "durationMs": 14895,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "retains the prior production model and non-zero drift when the production build fails",
+                "durationMs": 15666,
+                "status": "passed",
+                "timedOut": false
+              }
+            ]
+          },
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 54991,
+              "timedOut": false
+            },
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 6661,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 572,
+          "failed": 1,
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 6993,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 6,
+        "rc": 1,
+        "wallSeconds": 73,
+        "load1mAtEnd": 34.32,
+        "measured": {
+          "totalTests": 572,
+          "passed": 570,
+          "failed": 1,
+          "inScope": {
+            "polaris-copy.test.ts": [
+              {
+                "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+                "durationMs": 542,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+                "durationMs": 725,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+                "durationMs": 688,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+                "durationMs": 422,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+                "durationMs": 22,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+                "durationMs": 1,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+                "durationMs": 506,
+                "status": "passed",
+                "timedOut": false
+              }
+            ],
+            "production-reobserve.test.ts": [
+              {
+                "title": "keeps the production probe identity bound to the captured observation instant",
+                "durationMs": 2,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+                "durationMs": 15381,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+                "durationMs": 13400,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "retains the prior production model and non-zero drift when the production build fails",
+                "durationMs": 17166,
+                "status": "passed",
+                "timedOut": false
+              }
+            ]
+          },
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 7472,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 572,
+          "failed": 1,
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 8268,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 7,
+        "rc": 1,
+        "wallSeconds": 75,
+        "load1mAtEnd": 32.5,
+        "measured": {
+          "totalTests": 572,
+          "passed": 570,
+          "failed": 1,
+          "inScope": {
+            "polaris-copy.test.ts": [
+              {
+                "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+                "durationMs": 718,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+                "durationMs": 669,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+                "durationMs": 616,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+                "durationMs": 204,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+                "durationMs": 28,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+                "durationMs": 1,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+                "durationMs": 547,
+                "status": "passed",
+                "timedOut": false
+              }
+            ],
+            "production-reobserve.test.ts": [
+              {
+                "title": "keeps the production probe identity bound to the captured observation instant",
+                "durationMs": 3,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+                "durationMs": 15426,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+                "durationMs": 15344,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "retains the prior production model and non-zero drift when the production build fails",
+                "durationMs": 15223,
+                "status": "passed",
+                "timedOut": false
+              }
+            ]
+          },
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 7289,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 572,
+          "failed": 3,
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 28956,
+              "timedOut": false
+            },
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 6928,
+              "timedOut": true
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 5344,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 8,
+        "rc": 1,
+        "wallSeconds": 74,
+        "load1mAtEnd": 30.46,
+        "measured": {
+          "totalTests": 572,
+          "passed": 570,
+          "failed": 1,
+          "inScope": {
+            "polaris-copy.test.ts": [
+              {
+                "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+                "durationMs": 932,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+                "durationMs": 541,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+                "durationMs": 786,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+                "durationMs": 288,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+                "durationMs": 25,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+                "durationMs": 8,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+                "durationMs": 354,
+                "status": "passed",
+                "timedOut": false
+              }
+            ],
+            "production-reobserve.test.ts": [
+              {
+                "title": "keeps the production probe identity bound to the captured observation instant",
+                "durationMs": 2,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+                "durationMs": 14027,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+                "durationMs": 16035,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "retains the prior production model and non-zero drift when the production build fails",
+                "durationMs": 15333,
+                "status": "passed",
+                "timedOut": false
+              }
+            ]
+          },
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 5863,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 572,
+          "failed": 1,
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 6848,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 9,
+        "rc": 1,
+        "wallSeconds": 67,
+        "load1mAtEnd": 31.63,
+        "measured": {
+          "totalTests": 572,
+          "passed": 570,
+          "failed": 1,
+          "inScope": {
+            "polaris-copy.test.ts": [
+              {
+                "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+                "durationMs": 676,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+                "durationMs": 571,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+                "durationMs": 873,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+                "durationMs": 210,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+                "durationMs": 9,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+                "durationMs": 1,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+                "durationMs": 825,
+                "status": "passed",
+                "timedOut": false
+              }
+            ],
+            "production-reobserve.test.ts": [
+              {
+                "title": "keeps the production probe identity bound to the captured observation instant",
+                "durationMs": 2,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+                "durationMs": 15101,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+                "durationMs": 13557,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "retains the prior production model and non-zero drift when the production build fails",
+                "durationMs": 14192,
+                "status": "passed",
+                "timedOut": false
+              }
+            ]
+          },
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 6560,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 572,
+          "failed": 1,
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 7032,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 10,
+        "rc": 1,
+        "wallSeconds": 63,
+        "load1mAtEnd": 31.35,
+        "measured": {
+          "totalTests": 572,
+          "passed": 570,
+          "failed": 1,
+          "inScope": {
+            "polaris-copy.test.ts": [
+              {
+                "title": "classifies each interpolated source control and preserves exact-source href order and multiplicity",
+                "durationMs": 650,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "gives every summary and native anchor a distinct accessible name unless its href is identical",
+                "durationMs": 635,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control",
+                "durationMs": 405,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+                "durationMs": 200,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps no group lede and no connective prose between groups: each group header is one heading",
+                "durationMs": 15,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "flags meta-narration: the counterexample fixture fails every rule the sweep enforces",
+                "durationMs": 1,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+                "durationMs": 725,
+                "status": "passed",
+                "timedOut": false
+              }
+            ],
+            "production-reobserve.test.ts": [
+              {
+                "title": "keeps the production probe identity bound to the captured observation instant",
+                "durationMs": 2,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+                "durationMs": 12704,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "uses the production builder for an atomic successful swap with identity advancement and one in-flight observation",
+                "durationMs": 11693,
+                "status": "passed",
+                "timedOut": false
+              },
+              {
+                "title": "retains the prior production model and non-zero drift when the production build fails",
+                "durationMs": 6862,
+                "status": "passed",
+                "timedOut": false
+              }
+            ]
+          },
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 6114,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 572,
+          "failed": 1,
+          "inScopeTimeouts": 0,
+          "inScopeFailures": 0,
+          "otherFailures": [
+            {
+              "file": "governance-inputs.test.ts",
+              "title": "evaluates the three real current PWB acts without reading any body",
+              "durationMs": 6113,
+              "timedOut": true
+            }
+          ]
+        }
+      }
+    ],
+    "denominator": {
+      "fullRuns": 10,
+      "inScopeTestExecutions": 110,
+      "inScopeTimeouts": 0,
+      "inScopeFailures": 0,
+      "companionInScopeTimeouts": 0
+    },
+    "worstFullRunDurationMsPerTest": {
+      "polaris-copy.test.ts > classifies each interpolated source control and preserves exact-source href order and multiplicity": 932,
+      "polaris-copy.test.ts > gives every summary and native anchor a distinct accessible name unless its href is identical": 734,
+      "polaris-copy.test.ts > renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control": 873,
+      "polaris-copy.test.ts > marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices": 555,
+      "polaris-copy.test.ts > keeps no group lede and no connective prose between groups: each group header is one heading": 28,
+      "polaris-copy.test.ts > flags meta-narration: the counterexample fixture fails every rule the sweep enforces": 43,
+      "polaris-copy.test.ts > keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state": 1104,
+      "production-reobserve.test.ts > keeps the production probe identity bound to the captured observation instant": 3,
+      "production-reobserve.test.ts > keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants": 15426,
+      "production-reobserve.test.ts > uses the production builder for an atomic successful swap with identity advancement and one in-flight observation": 16035,
+      "production-reobserve.test.ts > retains the prior production model and non-zero drift when the production build fails": 17166
+    }
+  }
+}
