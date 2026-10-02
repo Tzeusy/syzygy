@@ -23,7 +23,7 @@ sibling PWB manifest does). Three rows hash proposed bytes and eight hash
 current bytes.
 
 Manifest SHA-256:
-`84d261b23fac519a6ee909f9b0570c2d1cdc03ba07c5dcefda55dd55b00fecd4`
+`afe181c82ed78bf1eeb5ac559f612ad21647b2e526a160092b0112786c512aae`
 
 The builder writes the manifest; this digest was computed from it by script.
 Any change to a patch, the manifest or the subject retires it.
@@ -252,7 +252,7 @@ the tree after the patches are applied, applies the three patches in one
 change, writes the record and tags the merged commit. The retained
 phrase, for governance checks only:
 
-`SIGN OFF PWB CONTAINER-SHAPE PROFILE AMENDMENT: 84d261b23fac519a6ee909f9b0570c2d1cdc03ba07c5dcefda55dd55b00fecd4`
+`SIGN OFF PWB CONTAINER-SHAPE PROFILE AMENDMENT: afe181c82ed78bf1eeb5ac559f612ad21647b2e526a160092b0112786c512aae`
 
 ## What this act would not do
 
@@ -339,7 +339,7 @@ what was done:
 | Finding | Severity | Disposition |
 |---|---|---|
 | R-C — the falsifier "a project with no profile reports a known item denominator" fired on Butlers today, which has no profile and lawfully reports known counts | revise | Fixed at all four sites: the patch, the builder's rule, the semantic delta (item 7) and the review brief (criterion 5). The clause is now "a project other than Butlers with no loaded profile reports a known item denominator". The reviewer's repair-form wording was killed by the old builder; the old unscoped wording is now a selftest mutant and fails closed. |
-| N-a — "until the observer reads a profile" left a declared but unread profile falling back | note | Fixed. The bullet opens "Until a profile is declared for Butlers" and adds that a declared profile the observer does not read, for any reason, is treated as refused, and so is one the observer cannot tell is declared or not. Scenario 4 is now "Refused or unread Butlers profile does not fall back". The ledger's "until a profile is loaded" now says the same. |
+| N-a — "until the observer reads a profile" left a declared but unread profile falling back | note | Fixed. The bullet opens "Until a profile is declared for Butlers" and adds that a declared profile the observer does not read, for any reason, is treated as refused, and so is one the observer cannot tell is declared or not. (Round 7 replaced that last clause: only the loader determines whether a profile is declared, and before a loader exists the built-in default applies.) Scenario 4 is now "Refused or unread Butlers profile does not fall back". The ledger's "until a profile is loaded" now says the same. |
 | N-b — no case or scenario for a project other than Butlers with no profile | note | Fixed. The case list adds it, and a fifth scenario, "Project with no profile has Unknown item denominators", shows each class's and category's item denominator Unknown, never zero. A whole-profile refusal now also makes every class and category Unknown. |
 | N-c — two shared sentences did not match the code (a link title in single quotes; an `[[other]]` header) | note | Fixed by carrying `syzygy-dov.24`'s round-3 text, which repaired both. Identity is proved by digest: the SHA-256 of that builder's `SHAPES` and `ITEM_KEY_SENTENCES` at `1d5966c` is pinned in this builder and checked on every `--check`; a sentence drifted on both sides at once is a selftest mutant. The same digest holds at `0d1ccc5`, where that branch is frozen. |
 | N-d — class-to-category mapping cited to `classesForPillar` | note | Fixed at the three sites: the semantic delta (item 8), the ledger (Table 2) and the round-2 row above now cite `CLASS_ROWS`, `packages/three-surface-poc-core/src/project-shape-coverage.ts` lines 85-95. The review brief cites it too. |
@@ -362,8 +362,9 @@ R-C and N-a–N-g resolved. Every new finding and what was done:
 | N-k — the three matrix parts were said to "regenerate" | note | Fixed in the semantic delta and the ledger. They are files the contract-coverage generator reads, not files it writes. They are unchanged, and the builder checks that: each has a manifest row, and it refuses a change to any file no patch is declared to change. |
 | N-l — the semantic delta called `syzygy-dov.24`'s fields the one registry act P-74 Q2 ruled | note | Fixed. It now says those fields are the drafted home, and that whether `syzygy-dov.24`'s act is the one P-74 Q2 ruled is open (question 7). |
 
-The selftest now kills 196 mutants (was 185), against a total fixed in the
-builder.
+The selftest then killed 196 mutants (was 185), against a total fixed in the
+builder. That figure was not the builder's: round 6 re-ran the selftest and
+counted 181. The present figure is 182, printed by `--selftest`.
 
 Round 5: `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-5-RAW.md`, a
 fresh-context review of commit `51b82b6`. Verdict: CONFIRM WITH EXCEPTIONS,
@@ -374,6 +375,20 @@ regeneration (rebased dependencies patch, coverage totals 32, the retired
 sibling-composition table, this section's sign-off wording) changed them, so
 by rule 10 it confirms history and nothing about these bytes; a fresh review
 is required before any sign-off question.
+
+Round 6: `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-6-RAW.md`, a fresh-context
+review of the regenerated bytes at `2b7f084`. Verdict: REVISE, one revise
+finding and three notes. Repaired in the next revision:
+
+| Finding | Class | Disposition |
+|---|---|---|
+| 1 — the oracle required equality with the written grammar for a Butlers profile the same text requires to be Unknown | revise | Fixed. The oracle applies the written grammar only to a loaded profile that reproduces it; for a class a loaded profile leaves unreadable the expected D is Unknown and the written grammar is not applied. The builder splits the clause into two predicates, so each fails its own mutant. |
+| 2 — mutant counts in the prose were stale | note | Fixed. The packet and brief state what `--selftest` prints (182). |
+| 3 — "cannot tell is or is not declared" pulled against the claim that today's code conforms | note | Fixed. Only the loader determines whether a profile is declared; before a loader exists the built-in default applies. |
+| 4 — the brief's raw-head predicate was not the one the versioned recorder parses | note | Fixed. The brief states the recorder's four-line head and finding format. |
+
+Those bytes changed, so by rule 10 round 6 confirms history; a fresh review
+of this revision is required before any sign-off question.
 
 ## Verification before any answer
 

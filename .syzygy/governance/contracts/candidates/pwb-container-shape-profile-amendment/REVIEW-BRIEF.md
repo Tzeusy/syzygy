@@ -82,10 +82,10 @@ pursuit. They recommend; the sitting decides.
    makes its category Unknown, both in M15's path. Is anything else here in
    that path and undisclosed? Packet question 8.
 7. **Is the oracle still independent and falsifiable?** In particular, can
-   "for Butlers read through its loaded profile, both also apply the grammar
-   written in these reader definitions" fail?
+   "for Butlers read through a loaded profile that reproduces the grammar
+   written in these reader definitions, both also apply that written grammar" fail?
 8. **Does the package verify, and does the verification mean anything?** Run
-   `--check` and `--selftest` (196 mutants). Name any claim the builder makes
+   `--check` and `--selftest` (182 mutants). Name any claim the builder makes
    that no mutant covers.
 9. **Does the package quote any act argument or claim authority it lacks?**
    Nothing labelled accepted or in force; the retained phrase marked not offered (sign-off is by version); no
@@ -103,17 +103,17 @@ fields; any shape for Syzygy's own craft policies.
 Raw output under `docs/reviews/`, file name ending `-RAW.md`, verdict words
 copied exactly. A digest quoted in a raw freezes those bytes.
 
-**The raw's head.** A recorder binds the review by this predicate, so the
-head must satisfy it exactly:
+**The raw's head.** The version-tagged recorder
+(`scripts/record_versioned_signoff.py`) reads the raw by this predicate, so
+the head must satisfy it exactly:
 
 > The first four non-blank lines of the raw are, in order: a title line
-> beginning `# `; `Verdict: ` followed by the verdict words; `Reviewed
-> commit: ` followed by the full 40-hex commit; and `Manifest sha256: `
-> followed by the 64-hex SHA-256 of the file
-> `PWB-CONTAINER-SHAPE-PROFILE-MANIFEST.txt` itself.
+> beginning `# `; `Reviewed commit: ` followed by the full 40-hex commit;
+> `Manifest SHA-256: ` followed by the 64-hex SHA-256 of the file
+> `PWB-CONTAINER-SHAPE-PROFILE-MANIFEST.txt` (informational); and `Verdict: `
+> followed by the verdict words, copied exactly.
 
-That file digest is the act argument: the manifest's header names "the owner
-act that names this file's digest". The reviewer re-derives it by hashing
-the file. It is **not** any one row of the manifest (each row hashes one
-subject file), and not a digest of the subject. Rounds 1 to 4 carried
-the file digest in this position.
+**Findings.** Each finding is a bold heading of the form
+`**Finding N — title** (blocking)`, `(revise)` or `(note)`, with N numbered
+from 1. A CONFIRM WITH EXCEPTIONS clears the bytes only when every finding is
+a note.
