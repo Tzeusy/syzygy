@@ -593,6 +593,12 @@ VERSIONED_LATER = {
                      "pwb-item-depth-amendment/"
                      "PWB-ITEM-DEPTH-AMENDMENT-MANIFEST.txt"),
     ),
+    "pwb-readability-successor": (
+        DECISIONS / "PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md",
+        pathlib.Path(".syzygy/governance/contracts/candidates/"
+                     "pwb-readability-successor/"
+                     "PWB-READABILITY-SUCCESSOR-MANIFEST.txt"),
+    ),
 }
 
 

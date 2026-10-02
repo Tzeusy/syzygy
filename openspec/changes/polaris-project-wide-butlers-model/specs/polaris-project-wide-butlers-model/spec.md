@@ -5,170 +5,247 @@
 Polaris explains the full declared shape of the configured Butlers project in
 plain language, with complete coverage, exact sources and visible gaps.
 
+**Reading guide (non-normative).** This guide is a reading aid. It adds,
+removes and changes no requirement; where it and a requirement differ, the
+requirement governs.
+
+- **What the specification covers.** Polaris shows the owner the whole
+  Butlers project, not one capability.
+  - A bounded observer reads Butlers' declared project-shape sources at one
+    Git revision, and reads no body until three owner acts authorize it.
+  - It accounts for every declared item and keeps every gap visible as
+    Unknown, never as zero or as a missing row.
+  - Polaris and the machine answer render one shared model, so both carry the
+    same facts.
+  - A cold-open walkthrough records what the owner could answer from Polaris
+    alone; a separate owner judgment decides whether the comprehension
+    criterion is met.
+- **How a requirement reads.** Each requirement opens with its group and
+  form, then states its required behavior.
+  - Short requirements keep one paragraph; longer ones use bullets whose bold
+    labels are reading aids, not defined terms.
+  - **Verification** follows: the case, observable, oracle, oracle
+    independence, falsifier and, where present, mutation proof.
+  - Scenarios come next, and a `warrants` block closes each requirement with
+    the authorities it rests on.
+- **Order.** Requirements appear in file order, not numeric order:
+  PWB-REQ-004 follows PWB-REQ-007, and the numbering has gaps (no 008, 009
+  or 017–019).
+
+```mermaid
+flowchart LR
+    A["Three owner acts:<br/>consent, policy, registry<br/>(PWB-REQ-005)"] --> R["Body reads: exact Git objects<br/>at one revision<br/>(PWB-REQ-001, 006)"]
+    R --> C["Every source and declared item<br/>accounted for; conflicts kept<br/>(PWB-REQ-002, 003, 004)"]
+    C --> M["One shared model;<br/>every claim carries its epistemic state<br/>(PWB-REQ-007)"]
+    M --> P["Polaris: project first, then catalogs,<br/>item detail and exact sources<br/>(PWB-REQ-010 to 016)"]
+    M --> J["Machine answer: the same facts<br/>(PWB-REQ-020)"]
+    P --> W["Cold-open walkthrough readiness<br/>(PWB-REQ-021)"]
+    W --> O["Separate owner judgment<br/>(PWB-REQ-022)"]
+```
+
+| Requirement | Group | Title |
+|---|---|---|
+| PWB-REQ-001 | Observation | Project-shape observation is revision-bound and explicitly scoped |
+| PWB-REQ-002 | Coverage | Every declared project-shape item is accounted for |
+| PWB-REQ-003 | Coverage | Missing, unreadable and excluded sources remain visible |
+| PWB-REQ-005 | Admission | Consent and policy authority precede every body read |
+| PWB-REQ-006 | Admission | Project-shape content stays contained, inert and bounded |
+| PWB-REQ-007 | Truth | Every project claim carries its complete epistemic state |
+| PWB-REQ-004 | Coverage | Conflicting declarations are disclosed and precedence is explicit |
+| PWB-REQ-010 | Presentation | Polaris opens with the whole project |
+| PWB-REQ-011 | Presentation | Project summary, catalogs and exact sources are progressively reachable |
+| PWB-REQ-012 | Presentation | Owner-facing copy is direct and concise |
+| PWB-REQ-013 | Presentation | Proposed work stays subordinate to current project truth |
+| PWB-REQ-014 | Presentation | Every narrative claim is bounded, anchored and non-authoritative |
+| PWB-REQ-015 | Presentation | Item detail preserves authority bands and exact intent |
+| PWB-REQ-016 | Evaluation | Project comprehension works without vision or a pointing device |
+| PWB-REQ-020 | Parity | Project-wide facts remain identical across human and machine views |
+| PWB-REQ-021 | Evaluation | POC success includes whole-project cold-open comprehension |
+| PWB-REQ-022 | Evaluation | Absent or unlawful owner judgment never becomes success |
+
 Reader definitions:
 
-- The **source-path population** is closed by four rules: the five pillar roots
-  named in Butlers' root project-shape index; files named by each pillar's own
-  index within that root; baseline `openspec/specs/*/spec.md` Git-tree entries;
-  and top-level roster directories containing `butler.toml`, with their
-  `MANIFESTO.md` when present. Narrative links do not recurse.
+- The **source-path population** is closed by four rules: the five pillar
+  roots named in Butlers' root project-shape index; files named by each
+  pillar's own index within that root; baseline `openspec/specs/*/spec.md`
+  Git-tree entries; and top-level roster directories containing `butler.toml`,
+  with their `MANIFESTO.md` when present.
+  - Narrative links do not recurse.
 - A **declared item** has one class from this closed set, read by that class's
   extraction rule (for a loaded profile, the class's grammar rows):
   `project-account-section` uses the six keys purpose, promises, refusals,
   architecture, V1 scope and V1 success; `principle` uses each numbered
   non-negotiable; `success-criterion` uses each list item in the two success
   sections; `catalog-entry` uses each top-level named entry under the V1 Core
-  Infrastructure, Staffers, Butlers, Modules, Connectors, Dashboard, Identity System,
-  Situational Awareness and Observability headings; `design-contract` uses each
-  RFC index-table identity; `baseline-spec` uses each baseline spec directory;
-  `topology-component` uses each first-column identity in the component tables;
-  `craft-policy` uses each policy-file identity in the craft index; and
-  `roster-identity` uses each top-level roster directory containing
-  butler.toml. No other prose, heading, link or file mints an item. Each class
-  belongs to one category: `project-account-section`, `principle`,
-  `success-criterion` and `catalog-entry` to Heart and Soul; `design-contract`
-  to Legends and Lore; `baseline-spec` to Spec and Spine; `topology-component`
-  to Lay and Land; `craft-policy` to Craft and Care; and `roster-identity` to
-  roster identity.
-- Stable item identity is `(item class, declared key)`. Repository-relative path
-  and content hash are source-anchor state, never identity. A duplicate key in
-  one class is a contradiction rather than a path-based disambiguation.
+  Infrastructure, Staffers, Butlers, Modules, Connectors, Dashboard, Identity
+  System, Situational Awareness and Observability headings; `design-contract`
+  uses each RFC index-table identity; `baseline-spec` uses each baseline spec
+  directory; `topology-component` uses each first-column identity in the
+  component tables; `craft-policy` uses each policy-file identity in the craft
+  index; and `roster-identity` uses each top-level roster directory containing
+  butler.toml.
+  - No other prose, heading, link or file mints an item.
+  - Each class belongs to one category: `project-account-section`,
+    `principle`, `success-criterion` and `catalog-entry` to Heart and Soul;
+    `design-contract` to Legends and Lore; `baseline-spec` to Spec and Spine;
+    `topology-component` to Lay and Land; `craft-policy` to Craft and Care;
+    and `roster-identity` to roster identity.
+- Stable item identity is `(item class, declared key)`.
+  - Repository-relative path and content hash are source-anchor state, never
+    identity.
+  - A duplicate key in one class is a contradiction rather than a path-based
+    disambiguation.
 - A **container shape** is how the items of one grammar row sit inside its
-  source. The vocabulary is closed at nine shapes, and no other shape is read.
-  Each shape's sentence says what the shape reads and how that reading fails.
-  Rules every shape shares are stated once here: a heading is an ATX heading
-  written at column 0 outside fenced code, so an indented line is never a
-  heading; a declared heading with a level matches only at that level, and one
-  without a level at any level, always by exact text; a declared heading that
-  is missing fails the source as missing-heading, and one that occurs more
-  than once fails it as duplicate-key. When a list or table row declares more
-  than one heading, the shape reads the section under each in the order
-  declared, as it reads one section, and the items of all of them are that
-  row's items. A `heading-section` row declares at most two headings. How list
-  markers, table rows, fenced code and TOML lines are recognized is shared by
-  every project and left to the observer:
-  - `heading-section`: the body under the declared heading: the lines after it
-    up to the next heading at the same or a higher level, with outer
-    whitespace trimmed, NFC-normalized; the body may be empty; when a row
-    declares two headings the item's text is the first heading's text, a blank
-    line, its body, a blank line, the second heading's text, a blank line and
-    its body, with outer whitespace trimmed.
-  - `every-level-2-section`: every level-2 heading in the file, in file order;
-    each part is the heading's text, a blank line and its body read as
-    heading-section reads it, with outer whitespace trimmed, and the parts are
-    joined by one blank line; a file with no level-2 heading fails the source
-    as missing-heading.
-  - `top-level-decimal-list`: each list item at column 0 in the section, which
-    must be numbered: a decimal number followed by . or ) and a space or tab;
-    a bulleted item at column 0 fails the source as malformed-list, and so
-    does a section with no list item at column 0.
-  - `top-level-list`: each list item at column 0 in the section, numbered or
-    bulleted; a section with no list item at column 0 fails the source as
-    malformed-list.
-  - `top-level-bulleted-list`: each list item at column 0 in the section,
-    which must be bulleted: a numbered item at column 0 fails the source as
-    malformed-list; a section with no list item yields no items and does not
-    fail.
-  - `first-table-rows`: each body row of the first table in the section; a
-    section with no table fails the source as malformed-row, and so does a
-    body row of that table whose cell count differs from its header's; later
-    tables in the section are not read.
-  - `ordinal-section-table-rows`: each body row of every table in the section
-    of every level-2 heading whose text opens with a decimal number,
-    optionally one lowercase letter, and then the end of the text or a
-    character that is not an ASCII letter, digit or underscore; a file with no
-    such heading fails the source as missing-heading, and a body row whose
-    cell count differs from its table's header fails it as malformed-row.
-  - `tree-path`: the Git tree path itself, matched against the tree
-    population's `pathPattern`; no body is read and nothing fails.
-  - `toml-table-field`: the declared field of the declared TOML table: exactly
-    one header line must name the table, and inside it the field must be
-    written once as `field = "value"` or `field = 'value'` with a non-empty
-    value; no such table, a repeated table, a repeated field or a missing or
-    empty value fails the source as malformed-toml; a line in any other form,
-    and the field inside any other table, is not read; an array-of-tables
-    header such as `[[other]]` is a line in another form, so it neither opens
-    a table nor ends the declared one; the value is trimmed and
-    NFC-normalized, a backslash escape in a double-quoted value is not
-    decoded, and the value becomes the item's context.
+  source.
+  - The vocabulary is closed at nine shapes, and no other shape is read.
+  - Each shape's sentence says what the shape reads and how that reading
+    fails.
+  - Rules every shape shares are stated once here: a heading is an ATX heading
+    written at column 0 outside fenced code, so an indented line is never a
+    heading; a declared heading with a level matches only at that level, and
+    one without a level at any level, always by exact text; a declared heading
+    that is missing fails the source as missing-heading, and one that occurs
+    more than once fails it as duplicate-key.
+  - When a list or table row declares more than one heading, the shape reads
+    the section under each in the order declared, as it reads one section, and
+    the items of all of them are that row's items.
+  - A `heading-section` row declares at most two headings.
+  - How list markers, table rows, fenced code and TOML lines are recognized is
+    shared by every project and left to the observer:
+    - `heading-section`: the body under the declared heading: the lines after
+      it up to the next heading at the same or a higher level, with outer
+      whitespace trimmed, NFC-normalized; the body may be empty; when a row
+      declares two headings the item's text is the first heading's text, a
+      blank line, its body, a blank line, the second heading's text, a blank
+      line and its body, with outer whitespace trimmed.
+    - `every-level-2-section`: every level-2 heading in the file, in file
+      order; each part is the heading's text, a blank line and its body read
+      as heading-section reads it, with outer whitespace trimmed, and the
+      parts are joined by one blank line; a file with no level-2 heading fails
+      the source as missing-heading.
+    - `top-level-decimal-list`: each list item at column 0 in the section,
+      which must be numbered: a decimal number followed by . or ) and a space
+      or tab; a bulleted item at column 0 fails the source as malformed-list,
+      and so does a section with no list item at column 0.
+    - `top-level-list`: each list item at column 0 in the section, numbered or
+      bulleted; a section with no list item at column 0 fails the source as
+      malformed-list.
+    - `top-level-bulleted-list`: each list item at column 0 in the section,
+      which must be bulleted: a numbered item at column 0 fails the source as
+      malformed-list; a section with no list item yields no items and does not
+      fail.
+    - `first-table-rows`: each body row of the first table in the section; a
+      section with no table fails the source as malformed-row, and so does a
+      body row of that table whose cell count differs from its header's; later
+      tables in the section are not read.
+    - `ordinal-section-table-rows`: each body row of every table in the
+      section of every level-2 heading whose text opens with a decimal number,
+      optionally one lowercase letter, and then the end of the text or a
+      character that is not an ASCII letter, digit or underscore; a file with
+      no such heading fails the source as missing-heading, and a body row
+      whose cell count differs from its table's header fails it as
+      malformed-row.
+    - `tree-path`: the Git tree path itself, matched against the tree
+      population's `pathPattern`; no body is read and nothing fails.
+    - `toml-table-field`: the declared field of the declared TOML table:
+      exactly one header line must name the table, and inside it the field
+      must be written once as `field = "value"` or `field = 'value'` with a
+      non-empty value; no such table, a repeated table, a repeated field or a
+      missing or empty value fails the source as malformed-toml; a line in any
+      other form, and the field inside any other table, is not read; an
+      array-of-tables header such as `[[other]]` is a line in another form, so
+      it neither opens a table nor ends the declared one; the value is trimmed
+      and NFC-normalized, a backslash escape in a double-quoted value is not
+      decoded, and the value becomes the item's context.
 - An **item key form** says what becomes an item's key and how a key fails.
-  The forms are closed at eight, and no other key form is read:
-  - `fixed`: the fixed key.
-  - `leading-bold`: the item's leading bold span (`**` or `__`),
-    NFC-normalized with whitespace runs collapsed; an item with no non-empty
-    leading bold span fails the source as ambiguous-leading-label.
-  - `leading-bold-or-code`: the item's leading bold span, or else its leading
-    code span, NFC-normalized with whitespace runs collapsed; the span must be
-    non-empty and followed, after optional whitespace, by a hyphen-minus, en
-    dash or em dash, or the source fails as ambiguous-leading-label; each
-    item's context is the text of the declared heading it was read under.
-  - `prefixed-ordinal`: `<prefix>:<one-based ordinal>`, with the prefix the
-    grammar row declares.
-  - `first-cell-link-text`: the link text of the first cell, trimmed and
-    NFC-normalized; the cell must be one whole link `[text](target)`,
-    optionally with a space or tab and a title in double quotes after the
-    target, with non-empty text, or the source fails as malformed-row.
-  - `tree-key`: the `<key>` segment of the tree population's `pathPattern`.
-  - `ordinal-and-label`: the heading's ordinal, a colon and the first cell's
-    label; the first cell must be exactly one bold span with a non-empty
-    label, or the source fails as malformed-row; each item's context is the
-    heading's ordinal.
-  - `link-target-basename`: the basename of the link target in the declared
-    column, without its fragment; a table with no such column, or a cell in it
-    that is not one whole link whose target has a non-empty last segment,
-    fails the source as malformed-row.
-  A key that occurs twice within one class of one source fails the source as
-  duplicate-key. A grammar row states its key form by carrying that form's
-  sentence above, word for word, or, for `prefixed-ordinal`, by
-  `<prefix>:<one-based ordinal>` with its prefix written in; the form names
-  are this text's labels for those sentences. When a row declares more than
-  one heading, a `prefixed-ordinal` key counts the row's items across its
-  sections in the order declared and does not restart at each heading.
+  - The forms are closed at eight, and no other key form is read:
+    - `fixed`: the fixed key.
+    - `leading-bold`: the item's leading bold span (`**` or `__`),
+      NFC-normalized with whitespace runs collapsed; an item with no non-empty
+      leading bold span fails the source as ambiguous-leading-label.
+    - `leading-bold-or-code`: the item's leading bold span, or else its
+      leading code span, NFC-normalized with whitespace runs collapsed; the
+      span must be non-empty and followed, after optional whitespace, by a
+      hyphen-minus, en dash or em dash, or the source fails as
+      ambiguous-leading-label; each item's context is the text of the declared
+      heading it was read under.
+    - `prefixed-ordinal`: `<prefix>:<one-based ordinal>`, with the prefix the
+      grammar row declares.
+    - `first-cell-link-text`: the link text of the first cell, trimmed and
+      NFC-normalized; the cell must be one whole link `[text](target)`,
+      optionally with a space or tab and a title in double quotes after the
+      target, with non-empty text, or the source fails as malformed-row.
+    - `tree-key`: the `<key>` segment of the tree population's `pathPattern`.
+    - `ordinal-and-label`: the heading's ordinal, a colon and the first cell's
+      label; the first cell must be exactly one bold span with a non-empty
+      label, or the source fails as malformed-row; each item's context is the
+      heading's ordinal.
+    - `link-target-basename`: the basename of the link target in the declared
+      column, without its fragment; a table with no such column, or a cell in
+      it that is not one whole link whose target has a non-empty last segment,
+      fails the source as malformed-row.
+  - A key that occurs twice within one class of one source fails the source as
+    duplicate-key.
+  - A grammar row states its key form by carrying that form's sentence above,
+    word for word, or, for `prefixed-ordinal`, by
+    `<prefix>:<one-based ordinal>` with its prefix written in; the form names
+    are this text's labels for those sentences.
+  - When a row declares more than one heading, a `prefixed-ordinal` key counts
+    the row's items across its sections in the order declared and does not
+    restart at each heading.
 - The **project profile** declares a project's extraction grammar as grammar
   rows, and is carried in the project-shape observer's owner-adopted registry
-  entry. Each class above has one or more rows. Each row names its class and
-  its source; the heading or headings, each with its level when it has one and
-  its exact text, or the tree population that locate it, when its shape reads
-  one; every parameter its shape or key form reads, such as a table column, a
-  TOML table and field or a key prefix; exactly one container shape; and
-  exactly one item key form. A tree population is declared by a path pattern,
-  `pathPattern`, whose one `<key>` segment is a single directory name. A
-  profile cannot add a class, a shape or a key form.
+  entry.
+  - Each class above has one or more rows.
+  - Each row names its class and its source; the heading or headings, each
+    with its level when it has one and its exact text, or the tree population
+    that locate it, when its shape reads one; every parameter its shape or key
+    form reads, such as a table column, a TOML table and field or a key
+    prefix; exactly one container shape; and exactly one item key form.
+  - A tree population is declared by a path pattern, `pathPattern`, whose one
+    `<key>` segment is a single directory name.
+  - A profile cannot add a class, a shape or a key form.
 - Until a profile is declared for Butlers, the observer reads Butlers by the
   grammar written below, as a built-in default; no other project has a
-  built-in default. A Butlers profile that is declared but that the observer
-  does not read, for any reason, is treated as one the loader refuses. Only
-  the loader determines whether a profile is declared; before a loader exists,
-  the built-in default applies. A
-  Butlers profile the loader refuses never returns Butlers to the built-in
-  default. A project other than Butlers with no loaded profile has no
-  extraction rules: its classes' and categories' item denominators are
-  Unknown, never zero, and no item is minted for it. Once a project's profile
-  is loaded, it is the only source of that project's extraction rules. A class
-  that the loaded profile gives no row, or that has a row naming a shape or
-  stating a key form outside these closed sets or lacking a parameter its
-  shape or key form reads, or declaring more headings than its shape allows,
-  is unreadable: its item denominator and its category's item denominator are
-  Unknown, each source any of its rows names fails as a source in which a
-  class fails, and every source stays in the source-path population. The
-  observer never substitutes a built-in rule for a loaded profile's missing or
-  invalid one. A loader that instead refuses the whole profile meets this rule
-  only if every source stays in the source-path population with an Unknown
-  item denominator and every class's and category's item denominator is
-  Unknown.
+  built-in default.
+  - A Butlers profile that is declared but that the observer does not read,
+    for any reason, is treated as one the loader refuses.
+  - Only the loader determines whether a profile is declared; before a loader
+    exists, the built-in default applies.
+  - A Butlers profile the loader refuses never returns Butlers to the built-in
+    default.
+  - A project other than Butlers with no loaded profile has no extraction
+    rules: its classes' and categories' item denominators are Unknown, never
+    zero, and no item is minted for it.
+  - Once a project's profile is loaded, it is the only source of that
+    project's extraction rules.
+  - A class that the loaded profile gives no row, or that has a row naming a
+    shape or stating a key form outside these closed sets or lacking a
+    parameter its shape or key form reads, or declaring more headings than its
+    shape allows, is unreadable: its item denominator and its category's item
+    denominator are Unknown, each source any of its rows names fails as a
+    source in which a class fails, and every source stays in the source-path
+    population.
+  - The observer never substitutes a built-in rule for a loaded profile's
+    missing or invalid one.
+  - A loader that instead refuses the whole profile meets this rule only if
+    every source stays in the source-path population with an Unknown item
+    denominator and every class's and category's item denominator is Unknown.
 - For every grammar, loaded or built-in, heading levels/text, top-level list
   depth, table column counts, one-based ordinals and literal keys are exact.
-  Unicode is NFC-normalized; no case folding, stemming or punctuation
-  rewriting occurs. A missing heading, malformed row/list/TOML, unexpected
-  duplicate key or ambiguous leading label makes the enclosing source's item
-  denominator Unknown; it never produces a partial item set.
+  - Unicode is NFC-normalized; no case folding, stemming or punctuation
+    rewriting occurs.
+  - A missing heading, malformed row/list/TOML, unexpected duplicate key or
+    ambiguous leading label makes the enclosing source's item denominator
+    Unknown; it never produces a partial item set.
 - Butlers' profile declares exactly the following extraction grammar, which is
   literal:
   - `project-account-section` mints exactly six aggregate keys: purpose from
     vision.md H2 “What Butlers Is”; promises from vision.md H2 “What Success
-    Looks Like”; refusals from vision.md H2 “What Butlers Is Not”; architecture
-    from every H2 in architecture.md; V1 scope from v1.md H2 “What v1 Ships”
-    and “What v1 Defers”; V1 success from v1.md H2 “Success Criteria”.
+    Looks Like”; refusals from vision.md H2 “What Butlers Is Not”;
+    architecture from every H2 in architecture.md; V1 scope from v1.md H2
+    “What v1 Ships” and “What v1 Defers”; V1 success from v1.md H2 “Success
+    Criteria”.
   - `principle` is each top-level decimal-list item under vision.md H2
     “Non-Negotiable Rules”; its literal leading bold phrase is the key.
   - `success-criterion` is each top-level list item under vision.md H2 “What
@@ -178,21 +255,23 @@ Reader definitions:
     H3 headings Core Infrastructure, Staffers, Butlers, Modules, Connectors,
     Dashboard, Identity System, Situational Awareness and Observability; the
     leading bold or code span before the first dash is the literal key.
-  - `design-contract` is each body row under the Index table in the Legends and
-    Lore README; the first-column RFC link text is the key.
+  - `design-contract` is each body row under the Index table in the Legends
+    and Lore README; the first-column RFC link text is the key.
   - `baseline-spec` is each Git-tree path matching
     openspec/specs/<one-directory>/spec.md; the one directory is the key.
   - `topology-component` is each first-column bold label in tables under an H2
-    in lay-and-land/components.md whose text begins with a decimal plus optional
-    lowercase suffix. The H2 establishes the literal ordinal context but mints
-    no item itself; key is `<H2 ordinal>:<literal first-column label>`.
+    in lay-and-land/components.md whose text begins with a decimal plus
+    optional lowercase suffix. The H2 establishes the literal ordinal context
+    but mints no item itself; key is
+    `<H2 ordinal>:<literal first-column label>`.
   - `craft-policy` is each body row in the Craft and Care README “Reading
     Order” table; the File-column link target basename is the key.
-  - `roster-identity` is each Git-tree path roster/<one-directory>/butler.toml;
-    the directory is the key and the TOML `[butler].name` must be non-empty.
-- The source-path denominator remains known through body-read failures. An
-  unavailable body's within-source item denominator is Unknown, never copied
-  from a fixture or prior ambient state.
+  - `roster-identity` is each Git-tree path
+    roster/<one-directory>/butler.toml; the directory is the key and the TOML
+    `[butler].name` must be non-empty.
+- The source-path denominator remains known through body-read failures.
+  - An unavailable body's within-source item denominator is Unknown, never
+    copied from a fixture or prior ambient state.
 
 ## ADDED Requirements
 
@@ -207,6 +286,8 @@ observer/parser version as deterministic evaluation inputs. Human and machine
 readers SHALL receive those identities, the capture instant and the same source
 population. Every emitted project-shape fact SHALL carry its source identity,
 scope, capture instant and observer identity/version.
+
+**Verification.**
 
 - **Case**: observe a repository at a known revision whose five-pillar index
   and roster population are known independently, including a source-claimed
@@ -256,6 +337,8 @@ and Soul, Legends and Lore, Spec and Spine, Lay and Land, Craft and Care and ros
 identity. Each admitted item SHALL be in exactly one coverage state: modeled,
 Unknown or contradicted. A source whose item population cannot be read SHALL
 retain its source identity while its item denominator renders Unknown.
+
+**Verification.**
 
 - **Case (sweep)**: enumerate the source population and every declared item in
   each readable category at one revision, then compare it to the model; include
@@ -359,6 +442,8 @@ denominator SHALL render Unknown unless an identified, lawfully admitted
 observation supplies that exact population. Exclusion provenance SHALL contain
 no excluded body content.
 
+**Verification.**
+
 - **Case (counterexample + sweep)**: remove one admitted source, deny one read,
   and supply one source that the content classifier excludes.
 - **Observable**: each case remains in coverage as Unknown; the machine answer
@@ -394,35 +479,41 @@ warrants:
 
 Group: Admission. Form: **prohibition**.
 
-The POC SHALL NOT read any Butlers project-shape body until each of the exact
-per-repository observation-consent record, the observing Syzygy project's
-concrete secret-detection/classification policy and the project-shape
-observer's governance-plane adapter-registry entry carries an effective human
-owner act under RFC3-16(a), bound under RFC3-16(b) to the artifact's exact
-digest, identity, act type, project and scope. Each act SHALL be accepted in
-state (1), `owner-adopted (bootstrap, uncorrelated)`, or state (2),
-`Syzygy-verified`. The three states SHALL be evaluated independently, and an
-all-valid triple SHALL admit reads whether its states are equal or mixed.
-Specification sign-off, tree attribution, a Git commit or tag, a machine
-submission or an agent assertion SHALL NOT substitute for any act.
+- **Read authority.** The POC SHALL NOT read any Butlers project-shape body
+  until each of the exact per-repository observation-consent record, the
+  observing Syzygy project's concrete secret-detection/classification policy
+  and the project-shape observer's governance-plane adapter-registry entry
+  carries an effective human owner act under RFC3-16(a), bound under
+  RFC3-16(b) to the artifact's exact digest, identity, act type, project and
+  scope.
+  - Each act SHALL be accepted in state (1),
+    `owner-adopted (bootstrap, uncorrelated)`, or state (2),
+    `Syzygy-verified`.
+  - The three states SHALL be evaluated independently, and an all-valid triple
+    SHALL admit reads whether its states are equal or mixed.
+  - Specification sign-off, tree attribution, a Git commit or tag, a machine
+    submission or an agent assertion SHALL NOT substitute for any act.
 
-Each authority artifact identity and digest, act-record identity, act type and
-scope, provenance state, and A1 audit-record identity or explicit absence SHALL
-be an evaluation input. Every human and machine rendering of the authorization
-basis and every dependent body-derived result SHALL expose each authority's
-exact state. Only state (2) MAY be called independently verified. State (1)
-SHALL render exactly: `Owner-trusted only; same-tree forgeable from Syzygy's
-perspective. Digest detects drift, not authorship or attendance.`
+- **Inputs and disclosure.** Each authority artifact identity and digest,
+  act-record identity, act type and scope, provenance state, and A1
+  audit-record identity or explicit absence SHALL be an evaluation input.
+  - Every human and machine rendering of the authorization basis and every
+    dependent body-derived result SHALL expose each authority's exact state.
+  - Only state (2) MAY be called independently verified.
+  - State (1) SHALL render exactly:
+    `Owner-trusted only; same-tree forgeable from Syzygy's perspective. Digest detects drift, not authorship or attendance.`
 
-A state-(1) act SHALL be valid only when the human act explicitly selected
-state (1) and records the A1 audit-record identity as absent. A record claiming
-state (2) whose correlation is failed, unavailable or indeterminate SHALL be
-invalid and SHALL NOT downgrade to state (1).
+- **State validity.** A state-(1) act SHALL be valid only when the human act
+  explicitly selected state (1) and records the A1 audit-record identity as
+  absent.
+  - A record claiming state (2) whose correlation is failed, unavailable or
+    indeterminate SHALL be invalid and SHALL NOT downgrade to state (1).
 
-The closed invalid-case population SHALL contain exactly 195 independently
-decided cases. “Malformed” below means type- or shape-invalid; “wrong but
-present” means well-formed but semantically different from the controlled
-evaluation input.
+- **Invalid cases.** The closed invalid-case population SHALL contain exactly
+  195 independently decided cases.
+  - “Malformed” below means type- or shape-invalid; “wrong but present” means
+    well-formed but semantically different from the controlled evaluation
+    input.
 
 | Case group | Required independent cases | Count |
 |---|---|---:|
@@ -438,22 +529,30 @@ evaluation input.
 | Registry-specific fields | For governance home, project, repository, read-only authority and empty write surface: missing, malformed and wrong but present. | 15 |
 | **Total** | **Every case above, no “other invalid” bucket.** | **195** |
 
-The first seven groups form the closed common owner-act population of 55 cases
-per act. The last three groups add 30 authority-specific cases.
+- **Population totals.** The first seven groups form the closed common
+  owner-act population of 55 cases per act.
+  - The last three groups add 30 authority-specific cases.
 
-Any one of those 195 cases in any limb SHALL produce zero body reads, a
-project-model Unknown and the RFC3-16(a) contradiction while retaining the
-authority artifact and invalid act state visibly.
+- **Invalid-case outcome.** Any one of those 195 cases in any limb SHALL
+  produce zero body reads, a project-model Unknown and the RFC3-16(a)
+  contradiction while retaining the authority artifact and invalid act state
+  visibly.
 
-The consent subject SHALL be exactly `(observing Syzygy project, configured
-Butlers repository)` with the observation content class. The policy SHALL be
-the observing project's own exact policy. The registry entry SHALL live in
-Syzygy's governance plane, name that same pair and declare read-only authority
-with an empty write surface. These acts warrant only use of their exact
-consent, policy and registration. They are never evidence that a read occurred,
-screening succeeded, admitted content is secret-free or a derived claim is
-true. Later A1 correlation MAY change a later evaluation to state (2), but
-SHALL NOT rewrite the state under which an earlier read occurred.
+- **Exact subjects.** The consent subject SHALL be exactly
+  `(observing Syzygy project, configured Butlers repository)` with the
+  observation content class.
+  - The policy SHALL be the observing project's own exact policy.
+  - The registry entry SHALL live in Syzygy's governance plane, name that same
+    pair and declare read-only authority with an empty write surface.
+
+- **Scope of the acts.** These acts warrant only use of their exact consent,
+  policy and registration.
+  - They are never evidence that a read occurred, screening succeeded,
+    admitted content is secret-free or a derived claim is true.
+  - Later A1 correlation MAY change a later evaluation to state (2), but SHALL
+    NOT rewrite the state under which an earlier read occurred.
+
+**Verification.**
 
 - **Case (state and invalid-arm sweep)**: exercise all eight valid
   state-(1)/state-(2) consent/policy/registry triples, all 195 invalid cases
@@ -532,47 +631,66 @@ warrants:
 
 Group: Admission. Form: **prohibition**.
 
-The POC SHALL read only exact Git objects addressed by normalized
-repository-relative paths inside the consented repository. It SHALL NOT follow
-absolute paths, traversal, NUL-bearing paths, working-tree symlinks or
-submodules; execute observed content; or emit active HTML, SVG, scripts, event
-handlers or unsafe URL schemes. Inline code spans and fenced code blocks SHALL
-be inert Markdown contexts: markup-like examples inside them SHALL NOT alone
-cause active-content exclusion and SHALL never be interpreted as markup or a
-link. Secret detectors SHALL scan the complete transient source bytes,
-including those contexts, before parsing. Outside inert-code contexts, an HTML
-element, comment or declaration; SVG; script; event-handler attribute; or an
-unsafe `javascript:`, `vbscript:`, `data:` or `file:` scheme in a Markdown
-destination, autolink or HTML attribute SHALL exclude the whole source.
+- **Containment.** The POC SHALL read only exact Git objects addressed by
+  normalized repository-relative paths inside the consented repository.
+  - It SHALL NOT follow absolute paths, traversal, NUL-bearing paths,
+    working-tree symlinks or submodules; execute observed content; or emit
+    active HTML, SVG, scripts, event handlers or unsafe URL schemes.
 
-Code contexts SHALL use this exact UTF-8 line-oriented profile. A fenced opener
-is zero to three spaces followed by at least three identical backticks or
-tildes; a closer is zero to three spaces, the same character repeated at least
-the opener length, then spaces only. A backtick opener's trailing info text
-SHALL contain no backtick. The first qualifying closer ends the fence; an
-unclosed fence or invalid backtick info string is malformed and excludes the
-source. Outside fences, an inline code span starts with a run of one or more
-backticks and closes only at the next run of exactly the same length;
-backslashes do not escape a delimiter and runs of a different length are
-content. An unclosed span is malformed and excludes the source. Indented code,
-HTML `<code>` elements and every other construct are not inert contexts. The
-context mask SHALL affect only active-content detection, never secret scans.
+- **Inert code contexts.** Inline code spans and fenced code blocks SHALL be
+  inert Markdown contexts: markup-like examples inside them SHALL NOT alone
+  cause active-content exclusion and SHALL never be interpreted as markup or a
+  link.
+  - Secret detectors SHALL scan the complete transient source bytes, including
+    those contexts, before parsing.
 
-The registry SHALL declare one evaluation-wide resource envelope. Source count
-SHALL cover the complete manifest; per-source bytes SHALL cover each exact
-blob; total bytes SHALL use one cumulative phase-A-plus-phase-B counter and
-count each `(repository-relative path, object id)` body once; index depth SHALL
-cover discovery; deterministic parse work SHALL count complete source
-traversals from the registry's closed pass list and SHALL NOT depend on elapsed
-wall-clock time. A complete traversal by a helper SHALL be charged to a named
-pass; repeating a named pass counts again; a traversal not in the list is
-forbidden. Final encoded human HTML and machine JSON SHALL each have an
-explicit byte ceiling. A source
-or input breach SHALL keep the complete source population counted and every
-dependent fact Unknown. A final-output breach SHALL return only a bounded typed
-failure envelope carrying evaluation identity, limit identity, declared value,
-observed value and population counts; it SHALL NOT truncate or emit a success-
-shaped model. Every breach SHALL make PWB-REQ-021 readiness false.
+- **Active content.** Outside inert-code contexts, an HTML element, comment or
+  declaration; SVG; script; event-handler attribute; or an unsafe
+  `javascript:`, `vbscript:`, `data:` or `file:` scheme in a Markdown
+  destination, autolink or HTML attribute SHALL exclude the whole source.
+
+- **Code-context profile.** Code contexts SHALL use this exact UTF-8
+  line-oriented profile.
+  - A fenced opener is zero to three spaces followed by at least three
+    identical backticks or tildes; a closer is zero to three spaces, the same
+    character repeated at least the opener length, then spaces only.
+  - A backtick opener's trailing info text SHALL contain no backtick.
+  - The first qualifying closer ends the fence; an unclosed fence or invalid
+    backtick info string is malformed and excludes the source.
+  - Outside fences, an inline code span starts with a run of one or more
+    backticks and closes only at the next run of exactly the same length;
+    backslashes do not escape a delimiter and runs of a different length are
+    content.
+  - An unclosed span is malformed and excludes the source.
+  - Indented code, HTML `<code>` elements and every other construct are not
+    inert contexts.
+  - The context mask SHALL affect only active-content detection, never secret
+    scans.
+
+- **Resource envelope.** The registry SHALL declare one evaluation-wide
+  resource envelope.
+  - Source count SHALL cover the complete manifest; per-source bytes SHALL
+    cover each exact blob; total bytes SHALL use one cumulative
+    phase-A-plus-phase-B counter and count each
+    `(repository-relative path, object id)` body once; index depth SHALL cover
+    discovery; deterministic parse work SHALL count complete source traversals
+    from the registry's closed pass list and SHALL NOT depend on elapsed
+    wall-clock time.
+  - A complete traversal by a helper SHALL be charged to a named pass;
+    repeating a named pass counts again; a traversal not in the list is
+    forbidden.
+
+- **Ceilings and breaches.** Final encoded human HTML and machine JSON SHALL
+  each have an explicit byte ceiling.
+  - A source or input breach SHALL keep the complete source population counted
+    and every dependent fact Unknown.
+  - A final-output breach SHALL return only a bounded typed failure envelope
+    carrying evaluation identity, limit identity, declared value, observed
+    value and population counts; it SHALL NOT truncate or emit a
+    success-shaped model.
+  - Every breach SHALL make PWB-REQ-021 readiness false.
+
+**Verification.**
 
 - **Case (counterexample sweep)**: exercise every prohibited path/content form,
   the same markup-like bytes inside inline/fenced code, a secret sentinel in
@@ -631,79 +749,101 @@ warrants:
 
 Group: Truth. Form: **invariant**.
 
-Every project entity and project-fact claim SHALL have a stable semantic Claim
-identity plus an evaluation instance, be challengeable with resolvable support, and carry the
-closed label, tier, exactly one primary reason, zero or more closed secondary
-reasons, freshness, challenge state and evaluation identity that govern it.
-Unknown reasons SHALL use RFC2-24 values verbatim and expose their resolution
-routes. Aggregates SHALL disclose label, tier, freshness and separate primary/
-secondary reason counts without a headline status, composite maturity or
-inferred success. Default Polaris status presentation SHALL not render trends,
-metric walls or count walls; coverage counts remain available on demand.
+- **Complete tuple.** Every project entity and project-fact claim SHALL have a
+  stable semantic Claim identity plus an evaluation instance, be challengeable
+  with resolvable support, and carry the closed label, tier, exactly one
+  primary reason, zero or more closed secondary reasons, freshness, challenge
+  state and evaluation identity that govern it.
+  - Unknown reasons SHALL use RFC2-24 values verbatim and expose their
+    resolution routes.
 
-A claim MAY carry the `dismissed-by-decision` sibling surface state, and only
-under a dismissal record: an attributed human decision that names the
-dismissed claim's semantic Claim identity and the primary reason it dismisses,
-states a reason and an expiry instant, and is committed to the governed plane.
-Every dismissal record present in the governed plane at an evaluation's
-snapshot is an identified input of that evaluation. When an evaluation cannot
-read that record set, or no governed-plane home for dismissal records is
-designated, it dismisses no claim and SHALL disclose its dismissed count and
-the count of each record class below as Unknown, never as zero. Only a claim
-whose label is Unknown MAY be dismissed, and never one whose primary reason is
-`contradicted-pending-adjudication`, which leaves only by owner adjudication,
-or `challenge-suspended`, which leaves only through its challenge's
-resolution. Nothing else dismisses a claim: not a view preference, a query
-parameter, browser or daemon state, an owner note or a model assertion. A
-dismissal is in effect at an evaluation only while all three hold: the
-evaluation carries the claim identity the record names, the evaluation's as-of
-instant is earlier than the record's expiry instant, and the claim's primary
-reason is the one the record dismissed, which only an Unknown claim can meet,
-since only an Unknown claim carries a primary reason. The evaluation SHALL
-decide this from its own as-of instant and never from the instant a page or
-answer is read, so a dismissal lapses only through a new identified
-evaluation. While a dismissal is in effect, the sibling state replaces the
-claim's status rendering and never its facts: the claim's label, tier, primary
-and secondary reasons, resolution route, freshness, challenge state, claim
-identity and evaluation identity stay visible and unchanged beside the
-dismissal's reason, expiry instant, author and record identity, on the same
-surface as the claim and without further disclosure, identically in the human
-and machine views. When more than one record is in effect for the same claim,
-each is disclosed that way beside the claim and the claim is counted once as
-dismissed. A dismissal SHALL not change any tuple value, render as a positive,
-resolved, aligned or current state, or count as resolved or favourable in any
-aggregate. Dismissed members SHALL remain in every per-label, tier, freshness
-and reason count of an aggregate, and SHALL additionally be counted and
-expandable as a sibling state. A record that dismisses nothing is disclosed in
-exactly one of three classes, each distinct from the others and from a
-dismissal in effect, identically in the human and machine views. The classes
-are tested in order, refused first, then bound to a retired identity, then
-lapsed, and a record is disclosed in the first class whose test it meets. It
-is a refused record when it lacks an author, reason, expiry instant, claim
-identity or dismissed primary reason; when it does not itself state that its
-author is a human, as with every record whose stated author is a model, agent
-or automated process, since the evaluation takes the author's kind from the
-record alone and never infers it; when its expiry instant is not a readable
-instant or its dismissed primary reason is not one of the closed Unknown
-reasons; or when it itself names, as the reason it dismisses, a primary reason
-that may not be dismissed. A record is never refused because of the state of
-the claim it names. A refused record is disclosed among the evaluation's
-refused records with its record identity, the test that refused it and
-whatever author, reason, expiry instant and claim identity it states.
-Otherwise it is bound to a retired identity when the evaluation records the
-claim identity it names as retired by a split or merge; it is never
-transferred to a successor, it is disclosed beside the retirement record, and
-dismissing a successor needs a new record. Otherwise it is a lapsed record
-when the evaluation's as-of instant is not earlier than its expiry instant,
-the evaluation does not carry the claim identity it names, or the claim's
-primary reason is not the one it dismissed, including because the claim is not
-Unknown or its primary reason is one that may not be dismissed. A lapsed
-record is disclosed with its reason, expiry instant, author, record identity
-and the condition that lapsed it, beside the claim when the evaluation carries
-it and otherwise among the evaluation's lapsed records; the condition names
-the test that failed and never states whether the record once took effect, so
-a record whose claim or reason never matched is lapsed under the same
-condition as one whose claim or reason changed.
+- **Aggregates.** Aggregates SHALL disclose label, tier, freshness and
+  separate primary/secondary reason counts without a headline status,
+  composite maturity or inferred success.
+  - Default Polaris status presentation SHALL not render trends, metric walls
+    or count walls; coverage counts remain available on demand.
+
+- **Dismissal records.** A claim MAY carry the `dismissed-by-decision` sibling
+  surface state, and only under a dismissal record: an attributed human
+  decision that names the dismissed claim's semantic Claim identity and the
+  primary reason it dismisses, states a reason and an expiry instant, and is
+  committed to the governed plane.
+  - Every dismissal record present in the governed plane at an evaluation's
+    snapshot is an identified input of that evaluation.
+  - When an evaluation cannot read that record set, or no governed-plane home
+    for dismissal records is designated, it dismisses no claim and SHALL
+    disclose its dismissed count and the count of each record class below as
+    Unknown, never as zero.
+  - Only a claim whose label is Unknown MAY be dismissed, and never one whose
+    primary reason is `contradicted-pending-adjudication`, which leaves only
+    by owner adjudication, or `challenge-suspended`, which leaves only through
+    its challenge's resolution.
+  - Nothing else dismisses a claim: not a view preference, a query parameter,
+    browser or daemon state, an owner note or a model assertion.
+
+- **Effect.** A dismissal is in effect at an evaluation only while all three
+  hold: the evaluation carries the claim identity the record names, the
+  evaluation's as-of instant is earlier than the record's expiry instant, and
+  the claim's primary reason is the one the record dismissed, which only an
+  Unknown claim can meet, since only an Unknown claim carries a primary
+  reason.
+  - The evaluation SHALL decide this from its own as-of instant and never from
+    the instant a page or answer is read, so a dismissal lapses only through a
+    new identified evaluation.
+
+- **Rendering under a dismissal.** While a dismissal is in effect, the sibling
+  state replaces the claim's status rendering and never its facts: the claim's
+  label, tier, primary and secondary reasons, resolution route, freshness,
+  challenge state, claim identity and evaluation identity stay visible and
+  unchanged beside the dismissal's reason, expiry instant, author and record
+  identity, on the same surface as the claim and without further disclosure,
+  identically in the human and machine views.
+  - When more than one record is in effect for the same claim, each is
+    disclosed that way beside the claim and the claim is counted once as
+    dismissed.
+  - A dismissal SHALL not change any tuple value, render as a positive,
+    resolved, aligned or current state, or count as resolved or favourable in
+    any aggregate.
+  - Dismissed members SHALL remain in every per-label, tier, freshness and
+    reason count of an aggregate, and SHALL additionally be counted and
+    expandable as a sibling state.
+
+- **Records that dismiss nothing.** A record that dismisses nothing is
+  disclosed in exactly one of three classes, each distinct from the others and
+  from a dismissal in effect, identically in the human and machine views.
+  - The classes are tested in order, refused first, then bound to a retired
+    identity, then lapsed, and a record is disclosed in the first class whose
+    test it meets.
+  - It is a refused record when it lacks an author, reason, expiry instant,
+    claim identity or dismissed primary reason; when it does not itself state
+    that its author is a human, as with every record whose stated author is a
+    model, agent or automated process, since the evaluation takes the author's
+    kind from the record alone and never infers it; when its expiry instant is
+    not a readable instant or its dismissed primary reason is not one of the
+    closed Unknown reasons; or when it itself names, as the reason it
+    dismisses, a primary reason that may not be dismissed.
+  - A record is never refused because of the state of the claim it names.
+  - A refused record is disclosed among the evaluation's refused records with
+    its record identity, the test that refused it and whatever author, reason,
+    expiry instant and claim identity it states.
+  - Otherwise it is bound to a retired identity when the evaluation records
+    the claim identity it names as retired by a split or merge; it is never
+    transferred to a successor, it is disclosed beside the retirement record,
+    and dismissing a successor needs a new record.
+  - Otherwise it is a lapsed record when the evaluation's as-of instant is not
+    earlier than its expiry instant, the evaluation does not carry the claim
+    identity it names, or the claim's primary reason is not the one it
+    dismissed, including because the claim is not Unknown or its primary
+    reason is one that may not be dismissed.
+  - A lapsed record is disclosed with its reason, expiry instant, author,
+    record identity and the condition that lapsed it, beside the claim when
+    the evaluation carries it and otherwise among the evaluation's lapsed
+    records; the condition names the test that failed and never states whether
+    the record once took effect, so a record whose claim or reason never
+    matched is lapsed under the same condition as one whose claim or reason
+    changed.
+
+**Verification.**
 
 - **Case (sweep)**: enumerate every project entity, claim and aggregate across
   two evaluations of the same semantic subjects, including fixtures for every
@@ -826,59 +966,68 @@ warrants:
 
 Group: Coverage. Form: **invariant**.
 
-The POC SHALL admit project facts only from this closed population:
-`item:<class>:<declared-key>` and `count:<class>` for each of PWB-REQ-002's
-nine extraction classes; `catalog-count:<catalog-key>` for each of the nine
-literal V1 catalog headings; and `project-account:<key>` for `purpose`,
-`promises`, `refusals`, `architecture`, `v1-scope` and `v1-success`. Every
-declaration SHALL be emitted by the extractor assigned to an admitted source;
-an injected or unrecognized fact, class, key, catalog or account key SHALL mint
-nothing.
+- **Closed fact population.** The POC SHALL admit project facts only from this
+  closed population: `item:<class>:<declared-key>` and `count:<class>` for
+  each of PWB-REQ-002's nine extraction classes; `catalog-count:<catalog-key>`
+  for each of the nine literal V1 catalog headings; and
+  `project-account:<key>` for `purpose`, `promises`, `refusals`,
+  `architecture`, `v1-scope` and `v1-success`.
+  - Every declaration SHALL be emitted by the extractor assigned to an
+    admitted source; an injected or unrecognized fact, class, key, catalog or
+    account key SHALL mint nothing.
 
-The root-index extractor SHALL mint only two stated count declarations: under
-the exact H2 `Key Architectural Facts`, one unordered item whose leading bold
-label is `<decimal> daemons` and whose own text contains the exact cardinal
-form `<decimal> staffers ... + <decimal> domain butlers` SHALL emit
-`catalog-count:Staffers` and `catalog-count:Butlers`. Each V1 catalog heading
-SHALL emit the corresponding `catalog-count:<catalog-key>` derived declaration.
-No other root prose, number, heading or table SHALL mint a fact.
+- **Root-index counts.** The root-index extractor SHALL mint only two stated
+  count declarations: under the exact H2 `Key Architectural Facts`, one
+  unordered item whose leading bold label is `<decimal> daemons` and whose own
+  text contains the exact cardinal form
+  `<decimal> staffers ... + <decimal> domain butlers` SHALL emit
+  `catalog-count:Staffers` and `catalog-count:Butlers`.
+  - Each V1 catalog heading SHALL emit the corresponding
+    `catalog-count:<catalog-key>` derived declaration.
+  - No other root prose, number, heading or table SHALL mint a fact.
 
-The POC SHALL admit precedence only from the root index's exact H3
-`Precedence Order When Layers Disagree` and one pipe table with the exact
-columns `#`, `Layer`, `Owns`, `Home`. It SHALL emit the ordered layer rules only
-when rows 1 through 7 each occur once and every layer/home is unique. Rows 1
-through 5 SHALL use their exact normalized repository-relative root literals;
-row 6 SHALL use the exact `roster/{butler}/` template expanded only for a
-declared roster key; row 7 SHALL use the exact inert
-`src/, alembic/, tests/` literal and owns no admitted fact. For a conflicting
-fact, a rule SHALL apply only when each
-row's `Layer` raw cell is exactly one bold span, and its bold content plus the
-`Owns` and `Home` semantic text equal the registry's exact seven-row vocabulary.
-Semantic text SHALL trim outer ASCII whitespace and unwrap only complete inline
-code spans, preserving case, punctuation and internal whitespace; no other
-Markdown or prose normalization is allowed. Exactly one declaration must be
-under the lowest-numbered expanded
-home with at least one admitted source
-assigned to that fact family by the registry's closed twenty-entry family map.
-The map SHALL name `item:<class>` and `count:<class>` separately for all nine
-classes: project-account-section, principle, success-criterion and catalog-
-entry item/count families map to row 1; design-contract item/count to row 2;
-baseline-spec item/count to row 3; craft-policy item/count to row 4; topology-
-component item/count to row 5; roster-identity item/count to row 6; and the
-separate `catalog-count` and `project-account` families to row 1. Row 7 owns no
-admitted fact in this content class.
-Mixed-family prose or an unrecognized `Owns` value SHALL invalidate the table
-rather than extend the map. The root
-summary is non-owning and SHALL defer to that uniquely applicable owning layer;
-an unlisted source SHALL own nothing. Any missing, malformed, duplicated,
-out-of-population, self-referential, inapplicable or equally ranked rule SHALL
-select no effective declaration.
+- **Precedence table.** The POC SHALL admit precedence only from the root
+  index's exact H3 `Precedence Order When Layers Disagree` and one pipe table
+  with the exact columns `#`, `Layer`, `Owns`, `Home`.
+  - It SHALL emit the ordered layer rules only when rows 1 through 7 each
+    occur once and every layer/home is unique.
+  - Rows 1 through 5 SHALL use their exact normalized repository-relative root
+    literals; row 6 SHALL use the exact `roster/{butler}/` template expanded
+    only for a declared roster key; row 7 SHALL use the exact inert
+    `src/, alembic/, tests/` literal and owns no admitted fact.
+  - For a conflicting fact, a rule SHALL apply only when each row's `Layer`
+    raw cell is exactly one bold span, and its bold content plus the `Owns`
+    and `Home` semantic text equal the registry's exact seven-row vocabulary.
+  - Semantic text SHALL trim outer ASCII whitespace and unwrap only complete
+    inline code spans, preserving case, punctuation and internal whitespace;
+    no other Markdown or prose normalization is allowed.
 
-WHEN two admitted Butlers artifacts disagree about one closed project fact,
-Polaris SHALL expose every declaration and source anchor and the disagreement.
-It SHALL identify an effective statement only when exactly one applicable
-admitted precedence outcome selects it; otherwise the fact SHALL remain
-Unknown.
+- **Owning layer.** Exactly one declaration must be under the lowest-numbered
+  expanded home with at least one admitted source assigned to that fact family
+  by the registry's closed twenty-entry family map.
+  - The map SHALL name `item:<class>` and `count:<class>` separately for all
+    nine classes: project-account-section, principle, success-criterion and
+    catalog-entry item/count families map to row 1; design-contract item/count
+    to row 2; baseline-spec item/count to row 3; craft-policy item/count to
+    row 4; topology-component item/count to row 5; roster-identity item/count
+    to row 6; and the separate `catalog-count` and `project-account` families
+    to row 1.
+  - Row 7 owns no admitted fact in this content class.
+  - Mixed-family prose or an unrecognized `Owns` value SHALL invalidate the
+    table rather than extend the map.
+  - The root summary is non-owning and SHALL defer to that uniquely applicable
+    owning layer; an unlisted source SHALL own nothing.
+  - Any missing, malformed, duplicated, out-of-population, self-referential,
+    inapplicable or equally ranked rule SHALL select no effective declaration.
+
+- **Disagreement.** WHEN two admitted Butlers artifacts disagree about one
+  closed project fact, Polaris SHALL expose every declaration and source
+  anchor and the disagreement.
+  - It SHALL identify an effective statement only when exactly one applicable
+    admitted precedence outcome selects it; otherwise the fact SHALL remain
+    Unknown.
+
+**Verification.**
 
 - **Case (population and counterexample sweep)**: exhaust the four fact
   families and their closed keys; observe the exact eight-versus-nine
@@ -939,6 +1088,8 @@ WHEN Polaris is opened, it SHALL first present Butlers' purpose, promises,
 non-goals, architecture, V1 scope and success criteria before presenting any
 single capability's detail.
 
+**Verification.**
+
 - **Case**: load Polaris with a model containing project statements and one or
   more capability deep dives.
 - **Observable**: the first reading level answers the project questions and
@@ -987,27 +1138,37 @@ warrants:
 
 Group: Presentation. Form: **invariant**.
 
-Polaris SHALL provide a project summary, complete project catalogs, capability
-deep dives and exact authoritative artifacts as progressively deeper reading
-levels. A reader who stops at any level SHALL retain a true, coarser account.
+- **Reading levels.** Polaris SHALL provide a project summary, complete
+  project catalogs, capability deep dives and exact authoritative artifacts as
+  progressively deeper reading levels.
+  - A reader who stops at any level SHALL retain a true, coarser account.
 
-The exact-source route SHALL serve every project-shape source the evaluation
-admitted as a classified blob, in exactly one render mode drawn from the closed
-set `requirement-sections`, `whole-body`: `requirement-sections` for a baseline
-`openspec/specs/*/spec.md` source and `whole-body` for every other admitted
-source. A source whose record outcome is excluded SHALL NOT be served in any
-mode; it SHALL stay counted with its revision-bound identity, its content
-digest and its fixed exclusion reason, and no route or sink SHALL carry any of
-its body bytes. Every mode SHALL apply the same authority, exact-object,
-secret-detection and inert-content gates to the complete transient body before
-encoding any part of it; a failed gate SHALL leave that body Unknown with its
-reason and SHALL grant no wider content-class access. Each served mode SHALL
-expose a scroll anchor for each reading unit a citation can name; an anchor is
-presentation only, SHALL NOT remove, narrow or reorder what the route serves
-without it, and SHALL NOT enter, replace or qualify any source, claim or
-narrative anchor identity. Each served route's mode, source identity and each
-refusal's reason SHALL be recoverable, per rendered tuple, from the same
-evaluation in the machine answer.
+- **Render modes.** The exact-source route SHALL serve every project-shape
+  source the evaluation admitted as a classified blob, in exactly one render
+  mode drawn from the closed set `requirement-sections`, `whole-body`:
+  `requirement-sections` for a baseline `openspec/specs/*/spec.md` source and
+  `whole-body` for every other admitted source.
+
+- **Withheld sources.** A source whose record outcome is excluded SHALL NOT be
+  served in any mode; it SHALL stay counted with its revision-bound identity,
+  its content digest and its fixed exclusion reason, and no route or sink
+  SHALL carry any of its body bytes.
+
+- **Gates.** Every mode SHALL apply the same authority, exact-object,
+  secret-detection and inert-content gates to the complete transient body
+  before encoding any part of it; a failed gate SHALL leave that body Unknown
+  with its reason and SHALL grant no wider content-class access.
+
+- **Scroll anchors.** Each served mode SHALL expose a scroll anchor for each
+  reading unit a citation can name; an anchor is presentation only, SHALL NOT
+  remove, narrow or reorder what the route serves without it, and SHALL NOT
+  enter, replace or qualify any source, claim or narrative anchor identity.
+
+- **Machine recovery.** Each served route's mode, source identity and each
+  refusal's reason SHALL be recoverable, per rendered tuple, from the same
+  evaluation in the machine answer.
+
+**Verification.**
 
 - **Case (sweep)**: start from every project-level catalog category and follow
   one declared item through each available depth; separately, request the
@@ -1098,13 +1259,17 @@ warrants:
 
 Group: Presentation. Form: **prohibition**.
 
-Every owner-visible Polaris string SHALL carry exactly one role from the closed
-set `project-fact`, `epistemic-disclosure`, `action-label`,
-`scope-instruction`. Headings SHALL contain at most six words and entry ledes
-at most twenty. Heading, lede and notice strings SHALL NOT contain the
-case-insensitive words `page`, `document`, `reading`, `section`, `movement` or
-`presentation`. At most one entry `scope-instruction` may state the POC bound;
-each interactive control may carry one `action-label`.
+- Every owner-visible Polaris string SHALL carry exactly one role from the
+  closed set `project-fact`, `epistemic-disclosure`, `action-label`,
+  `scope-instruction`.
+- Headings SHALL contain at most six words and entry ledes at most twenty.
+- Heading, lede and notice strings SHALL NOT contain the case-insensitive
+  words `page`, `document`, `reading`, `section`, `movement` or
+  `presentation`.
+- At most one entry `scope-instruction` may state the POC bound; each
+  interactive control may carry one `action-label`.
+
+**Verification.**
 
 - **Case (counterexample + sweep)**: enumerate every owner-facing heading,
   lede, notice and explanatory sentence on Polaris, including a fixture with
@@ -1146,6 +1311,8 @@ Polaris SHALL NOT present active or proposed OpenSpec changes as the current
 project account. Proposed work SHALL appear only in the affected capability's
 detail, with its lifecycle state and current authoritative requirement adjacent.
 
+**Verification.**
+
 - **Case (counterexample + sweep)**: load current and proposed requirements for
   one capability and enumerate every project-level and capability-level claim.
 - **Observable**: the project account uses current authority; proposal content
@@ -1178,20 +1345,23 @@ warrants:
 
 Group: Presentation. Form: **invariant**.
 
-Every owner-visible narrative unit SHALL carry `presentation-artifact` and
-`non-citable` attributes and exactly one claim role: anchored project fact,
-explicitly non-normative framing, or epistemically labeled claim. Every
-anchored claim block SHALL have a typed, revision-bound anchor set that covers
-all its claims, contains no unused anchors and is small enough for a reader to
-identify which anchor supports which claim. No project artifact, evidence,
-snapshot input, work warrant or internal relation SHALL cite Polaris as its
-authority. Each anchor SHALL retain the target's captured label, tier and
-reason and SHALL not rewrite that target state on later reads. Narrative claim
-blocks SHALL use a machine type distinct from kernel Claim. Personal view state
-SHALL remain outside the truth model.
-Anchor targets SHALL use the closed classes doctrine, contract, requirement,
-decision, evidence and work with durable target identity; labels, file paths
-and coordinates SHALL never serve as anchor identity.
+- Every owner-visible narrative unit SHALL carry `presentation-artifact` and
+  `non-citable` attributes and exactly one claim role: anchored project fact,
+  explicitly non-normative framing, or epistemically labeled claim.
+- Every anchored claim block SHALL have a typed, revision-bound anchor set
+  that covers all its claims, contains no unused anchors and is small enough
+  for a reader to identify which anchor supports which claim.
+- No project artifact, evidence, snapshot input, work warrant or internal
+  relation SHALL cite Polaris as its authority.
+- Each anchor SHALL retain the target's captured label, tier and reason and
+  SHALL not rewrite that target state on later reads.
+- Narrative claim blocks SHALL use a machine type distinct from kernel Claim.
+- Personal view state SHALL remain outside the truth model.
+- Anchor targets SHALL use the closed classes doctrine, contract, requirement,
+  decision, evidence and work with durable target identity; labels, file paths
+  and coordinates SHALL never serve as anchor identity.
+
+**Verification.**
 
 - **Case (sweep)**: enumerate every narrative unit, claim and anchor, then
   enumerate every citation/reference emitted by the Syzygy and Butlers source
@@ -1235,91 +1405,115 @@ warrants:
 
 Group: Presentation. Form: **invariant**.
 
-Every item in the complete declared `catalog-entry` population SHALL have one
-item-detail reading keyed by that item's stable semantic claim identity. A
-declared capability matches a catalog item only when the capability's own
-declared key equals that item's declared key, compared exactly and without
-normalization; a catalog row, label, basename or similarity never makes the
-match. A capability matching exactly one item makes that item's detail its
-deep dive, and no second detail or identity SHALL be created for it. A
-capability matching no item, or more than one, receives no item detail and no
-identity from this requirement and renders no proposal material anywhere; it
-is disclosed as Unknown with the RFC2-24 reason `missing-declaration` (no
-match) or `contradicted-pending-adjudication` (several) and that reason's
-resolution route.
+- **One detail per item.** Every item in the complete declared `catalog-entry`
+  population SHALL have one item-detail reading keyed by that item's stable
+  semantic claim identity.
 
-Every item detail SHALL contain, in order, an `argument` band marked
-non-normative, a `contract` band, and a `reality` band sourced only from the
-shared model. The argument band SHALL NOT create intent, authority, status or
-a capability identity. The contract band SHALL contain only captured governing
-identities and, for a matching declared capability's deep dive, the identities
-of that capability's own baseline-spec requirements and scenarios, its
-current-intent leaf; each reaches its current requirement/scenario, governing
-doctrine or non-goal text verbatim through PWB-REQ-011's exact-source route,
-which is the only place that text is encoded; the band embeds no body text of
-its own. A capability's own leaf is not a captured governing relation and
-never creates, changes or stands in for the relation claim; a draft capability
-has no baseline spec and discloses that absence with its own Unknown reason
-and route. A related source that is excluded, missing, unreadable or whose
-PWB-REQ-011 gate fails, in whichever of its two render modes serves it, leaves
-that text Unknown with that source's own reason and route (PWB-REQ-003,
-PWB-REQ-011); this never changes the relation claim below, which asserts the
-captured declaration and not the body.
+- **Capability matching.** A declared capability matches a catalog item only
+  when the capability's own declared key equals that item's declared key,
+  compared exactly and without normalization; a catalog row, label, basename
+  or similarity never makes the match.
+  - A capability matching exactly one item makes that item's detail its deep
+    dive, and no second detail or identity SHALL be created for it.
+  - A capability matching no item, or more than one, receives no item detail
+    and no identity from this requirement and renders no proposal material
+    anywhere; it is disclosed as Unknown with the RFC2-24 reason
+    `missing-declaration` (no match) or `contradicted-pending-adjudication`
+    (several) and that reason's resolution route.
 
-Each contract band SHALL carry an item-to-intent relation claim whose stable
-semantic identity is the tuple of the item's stable claim identity and the
-fixed relation role `governing-intent`, at the same evaluation. This relation
-claim is distinct from the item claim and SHALL NOT change or borrow the
-item's epistemic tuple. It belongs to the derived claim class
-`governing-intent-relation`, whose currency treatment PWB-REQ-007 decides as
-for every class. While the class has no effective currency bound declared,
-every relation claim, whatever its population of captured relations, is
-Unknown with the single primary reason `no-currency-bound-declared`, its exact
-resolution route and the outside-slot disclosure PWB-REQ-007 requires; this
-requirement reports no second primary reason beside it, and
-`missing-declaration` is not reported for a relation claim in that state.
+- **Three bands.** Every item detail SHALL contain, in order, an `argument`
+  band marked non-normative, a `contract` band, and a `reality` band sourced
+  only from the shared model.
+  - The argument band SHALL NOT create intent, authority, status or a
+    capability identity.
 
-A captured governing relation is a declaration, emitted by the extractor
-assigned to an admitted source, that names one catalog item's stable claim
-identity and one owning requirement, scenario, doctrine or non-goal artifact.
-PWB-REQ-002's nine extraction classes and PWB-REQ-004's closed fact population
-admit no such declaration, so this requirement mints none: until a separate
-owner-scoped change admits a declaration source, no relation is captured for
-any item. Two captured governing relations exclude one another only when an
-admitted declaration names them as mutually exclusive for the same item;
-class, label, basename, similarity, generated prose and a PWB-REQ-004
-precedence outcome never create or resolve an exclusion, and a requirement and
-a non-goal never exclude one another by class. A declaration naming an
-identity outside the declared `catalog-entry` population is a relation of no
-item. Declarations naming the same item and the same artifact are one
-relation, and an exclusion naming a relation that is not itself captured
-excludes nothing. Once an effective currency bound applies to the class,
-`no-currency-bound-declared` no longer holds and each item's population of
-captured relations has exactly one result. With none, the relation claim is
-Unknown with the RFC2-24 reason `missing-declaration` and its resolution
-route. With one or more, no two of which exclude one another, it is Observed
-over that whole set; compatible relations never become separate claims or a
-conflict. With any two that exclude one another, it is Unknown over the whole
-population with `contradicted-pending-adjudication` and the owner-adjudication
-route, however many compatible relations the population also holds, and it
-leaves only by owner adjudication. The band SHALL NOT infer a relation from a
-label, basename, similarity or generated prose. The relation claim's complete
-PWB-REQ-007 tuple SHALL be recoverable in both channels under PWB-REQ-020.
+- **Contract band contents.** The contract band SHALL contain only captured
+  governing identities and, for a matching declared capability's deep dive,
+  the identities of that capability's own baseline-spec requirements and
+  scenarios, its current-intent leaf; each reaches its current
+  requirement/scenario, governing doctrine or non-goal text verbatim through
+  PWB-REQ-011's exact-source route, which is the only place that text is
+  encoded; the band embeds no body text of its own.
+  - A capability's own leaf is not a captured governing relation and never
+    creates, changes or stands in for the relation claim; a draft capability
+    has no baseline spec and discloses that absence with its own Unknown
+    reason and route.
+  - A related source that is excluded, missing, unreadable or whose
+    PWB-REQ-011 gate fails, in whichever of its two render modes serves it,
+    leaves that text Unknown with that source's own reason and route
+    (PWB-REQ-003, PWB-REQ-011); this never changes the relation claim below,
+    which asserts the captured declaration and not the body.
 
-Only an item detail for a matching declared capability may render active or
-proposed OpenSpec work. There, draft capabilities SHALL remain unadopted and
-proposed deltas SHALL be adjacent to current text, visibly distinct,
-non-anchorable and unable to grant status; competing proposals SHALL remain
-separate candidate futures. A non-capability item detail SHALL render no
-proposal material.
+- **Relation claim.** Each contract band SHALL carry an item-to-intent
+  relation claim whose stable semantic identity is the tuple of the item's
+  stable claim identity and the fixed relation role `governing-intent`, at the
+  same evaluation.
+  - This relation claim is distinct from the item claim and SHALL NOT change
+    or borrow the item's epistemic tuple.
+  - It belongs to the derived claim class `governing-intent-relation`, whose
+    currency treatment PWB-REQ-007 decides as for every class.
+  - While the class has no effective currency bound declared, every relation
+    claim, whatever its population of captured relations, is Unknown with the
+    single primary reason `no-currency-bound-declared`, its exact resolution
+    route and the outside-slot disclosure PWB-REQ-007 requires; this
+    requirement reports no second primary reason beside it, and
+    `missing-declaration` is not reported for a relation claim in that state.
 
-The catalog-to-detail-to-exact-source path SHALL preserve the item's stable
-identity and complete epistemic state at every altitude, in both channels,
-without making a URL, label, path or coordinate part of that identity.
-The default reading mode SHALL be `Base` and include observed reality. Every
-block SHALL carry exactly one of the three band-class attributes. No
-reorganized or stored normative copy of doctrine, non-goal, requirement or
-scenario text SHALL exist outside its owning artifact.
+- **Captured relations.** A captured governing relation is a declaration,
+  emitted by the extractor assigned to an admitted source, that names one
+  catalog item's stable claim identity and one owning requirement, scenario,
+  doctrine or non-goal artifact.
+  - PWB-REQ-002's nine extraction classes and PWB-REQ-004's closed fact
+    population admit no such declaration, so this requirement mints none:
+    until a separate owner-scoped change admits a declaration source, no
+    relation is captured for any item.
+  - Two captured governing relations exclude one another only when an admitted
+    declaration names them as mutually exclusive for the same item; class,
+    label, basename, similarity, generated prose and a PWB-REQ-004 precedence
+    outcome never create or resolve an exclusion, and a requirement and a
+    non-goal never exclude one another by class.
+  - A declaration naming an identity outside the declared `catalog-entry`
+    population is a relation of no item.
+  - Declarations naming the same item and the same artifact are one relation,
+    and an exclusion naming a relation that is not itself captured excludes
+    nothing.
+
+- **Relation results.** Once an effective currency bound applies to the class,
+  `no-currency-bound-declared` no longer holds and each item's population of
+  captured relations has exactly one result.
+  - With none, the relation claim is Unknown with the RFC2-24 reason
+    `missing-declaration` and its resolution route.
+  - With one or more, no two of which exclude one another, it is Observed over
+    that whole set; compatible relations never become separate claims or a
+    conflict.
+  - With any two that exclude one another, it is Unknown over the whole
+    population with `contradicted-pending-adjudication` and the
+    owner-adjudication route, however many compatible relations the population
+    also holds, and it leaves only by owner adjudication.
+
+- **Inference and recovery.** The band SHALL NOT infer a relation from a
+  label, basename, similarity or generated prose.
+  - The relation claim's complete PWB-REQ-007 tuple SHALL be recoverable in
+    both channels under PWB-REQ-020.
+
+- **Proposals.** Only an item detail for a matching declared capability may
+  render active or proposed OpenSpec work.
+  - There, draft capabilities SHALL remain unadopted and proposed deltas SHALL
+    be adjacent to current text, visibly distinct, non-anchorable and unable
+    to grant status; competing proposals SHALL remain separate candidate
+    futures.
+  - A non-capability item detail SHALL render no proposal material.
+
+- **Identity and storage.** The catalog-to-detail-to-exact-source path SHALL
+  preserve the item's stable identity and complete epistemic state at every
+  altitude, in both channels, without making a URL, label, path or coordinate
+  part of that identity.
+  - The default reading mode SHALL be `Base` and include observed reality.
+  - Every block SHALL carry exactly one of the three band-class attributes.
+  - No reorganized or stored normative copy of doctrine, non-goal, requirement
+    or scenario text SHALL exist outside its owning artifact.
+
+**Verification.**
 
 - **Case (sweep)**: enumerate the complete declared `catalog-entry` population
   twice: at an evaluation whose class declares no currency bound, where every
@@ -1438,6 +1632,8 @@ text and operable by keyboard without relying on color, position or layout. A
 nonvisual or keyboard-only cold-open walkthrough SHALL run for this material
 narrative change, and its record SHALL identify that mode.
 
+**Verification.**
+
 - **Case (sweep)**: traverse every disclosure, catalog, capability, anchor and
   exact-source path by keyboard and through the nonvisual representation, then
   perform the complete cold-open prompt set.
@@ -1471,45 +1667,55 @@ warrants:
 
 Group: Parity. Form: **invariant**.
 
-This requirement compares the human surface against the *machine answer*: the
-authenticated project-wide machine response at one evaluation. Two closed
-categories of derived, read-only machine view are served beside that answer.
-Neither category is the machine answer, the recoverability comparison below
-ranges over neither, and a route this specification does not name is a member
-of neither.
+- **What is compared.** This requirement compares the human surface against
+  the *machine answer*: the authenticated project-wide machine response at one
+  evaluation.
+  - Two closed categories of derived, read-only machine view are served beside
+    that answer.
+  - Neither category is the machine answer, the recoverability comparison
+    below ranges over neither, and a route this specification does not name is
+    a member of neither.
 
-A **derived read-only machine view** composes only values already reachable
-from the machine answer at the same evaluation, mints no project fact, writes
-nothing, is served only to machine-credentialed clients in every mount form,
-and subtracts nothing: the complete fact set stays served by the machine
-answer at that same evaluation. Every value such a view serves SHALL be
-independently verified as derivable from the machine answer's own bytes at
-that evaluation, by a checker that imports no rendering code. The members of
-this category are the Polaris presentation view, `GET /api/poc/polaris`,
-served under the machine-JSON ceiling the adapter-registry entry already
-declares, and the agent briefing view, `GET /api/poc/briefing`, served under a
-byte ceiling of its own.
+- **Derived read-only machine views.** A **derived read-only machine view**
+  composes only values already reachable from the machine answer at the same
+  evaluation, mints no project fact, writes nothing, is served only to
+  machine-credentialed clients in every mount form, and subtracts nothing: the
+  complete fact set stays served by the machine answer at that same
+  evaluation.
+  - Every value such a view serves SHALL be independently verified as
+    derivable from the machine answer's own bytes at that evaluation, by a
+    checker that imports no rendering code.
+  - The members of this category are the Polaris presentation view,
+    `GET /api/poc/polaris`, served under the machine-JSON ceiling the
+    adapter-registry entry already declares, and the agent briefing view,
+    `GET /api/poc/briefing`, served under a byte ceiling of its own.
 
-A **generated editorial draft view** composes only the recorded bytes of one
-identified generation run over sources that run was already admitted to read,
-mints no project fact, writes nothing, sends no source or draft byte outside
-the observing project, and is served only to machine-credentialed clients in
-every mount form. It carries no project-shape identity, statement, source
-anchor, coverage state, denominator or contradiction, and so contributes to
-neither multiset compared below. The member of this category is the
-generation draft view, `GET /polaris/draft/<runId>`.
+- **Generated editorial draft view.** A **generated editorial draft view**
+  composes only the recorded bytes of one identified generation run over
+  sources that run was already admitted to read, mints no project fact, writes
+  nothing, sends no source or draft byte outside the observing project, and is
+  served only to machine-credentialed clients in every mount form.
+  - It carries no project-shape identity, statement, source anchor, coverage
+    state, denominator or contradiction, and so contributes to neither
+    multiset compared below.
+  - The member of this category is the generation draft view,
+    `GET /polaris/draft/<runId>`.
 
-A member served under a byte ceiling of its own SHALL NOT be served before the
-adapter-registry entry's resource envelope declares that ceiling. A route
-enters either category only by a later amendment to this specification naming
-it as a member. A route in neither category is neither admitted nor forbidden
-by this requirement.
+- **Membership.** A member served under a byte ceiling of its own SHALL NOT be
+  served before the adapter-registry entry's resource envelope declares that
+  ceiling.
+  - A route enters either category only by a later amendment to this
+    specification naming it as a member.
+  - A route in neither category is neither admitted nor forbidden by this
+    requirement.
 
-Every project-shape identity, statement, source anchor, coverage state,
-denominator, contradiction, body-read authority state and walkthrough-judgment
-state or disclosure Polaris presents SHALL be recoverable from the same
-evaluation in the machine answer, preserving multiplicity and exact provenance
-state.
+- **Recoverability.** Every project-shape identity, statement, source anchor,
+  coverage state, denominator, contradiction, body-read authority state and
+  walkthrough-judgment state or disclosure Polaris presents SHALL be
+  recoverable from the same evaluation in the machine answer, preserving
+  multiplicity and exact provenance state.
+
+**Verification.**
 
 - **Case (sweep)**: enumerate every project-shape parity marker on Polaris and
   every corresponding machine-answer fact at one evaluation, including every
@@ -1549,35 +1755,45 @@ warrants:
 
 Group: Evaluation. Form: **event-response**.
 
-WHEN the owner performs a cold-open Polaris walkthrough with no repository or
-authoring context, the complete RFC7-30 prompt set SHALL remain mandatory. In
-addition, POC success SHALL require the reader to explain Butlers' major
-architecture and capability groups and its V1 success criteria. The retained
-answer SHALL include why Butlers exists, what it promises and refuses, where
-exact requirements live, one current Unknown or contradiction with its source,
-and for one chosen fact how strongly Polaris claims to know it and what would
-make that claim stronger.
+- **Mandatory prompts.** WHEN the owner performs a cold-open Polaris
+  walkthrough with no repository or authoring context, the complete RFC7-30
+  prompt set SHALL remain mandatory.
+  - In addition, POC success SHALL require the reader to explain Butlers'
+    major architecture and capability groups and its V1 success criteria.
+  - The retained answer SHALL include why Butlers exists, what it promises and
+    refuses, where exact requirements live, one current Unknown or
+    contradiction with its source, and for one chosen fact how strongly
+    Polaris claims to know it and what would make that claim stronger.
 
-The retained PWB-REQ-021 answer population SHALL contain exactly one non-empty
-entry for each of these nine identities: `why`, `promises`,
-`refusals-and-rule`, `capabilities-and-fit`, `exact-requirement`,
-`unknown-or-contradiction`, `claim-strength`, `architecture-and-groups`, and
-`v1-success`. The record SHALL bind those answers to one exact surface version
-and evaluation identity and retain every path used to answer them. Readiness
-SHALL be false for a missing, empty, duplicate or unrecognized answer identity;
-an unresolved source anchor; a surface/evaluation mismatch; any path outside
-Polaris or its same-evaluation exact-source route; any PWB-REQ-006 resource
-breach; or an answer whose cited current Butlers authority cannot be resolved.
-Readiness and the nine answers SHALL be machine-readable and owner-visible but
-SHALL remain execution facts, never a verdict or proof of comprehension. The
-implementation SHALL NOT score or decide the semantic correctness of the
-owner's own-words answers. That comparison informs only the separate human
-owner judgment and rationale.
+- **Nine answers.** The retained PWB-REQ-021 answer population SHALL contain
+  exactly one non-empty entry for each of these nine identities: `why`,
+  `promises`, `refusals-and-rule`, `capabilities-and-fit`,
+  `exact-requirement`, `unknown-or-contradiction`, `claim-strength`,
+  `architecture-and-groups`, and `v1-success`.
+  - The record SHALL bind those answers to one exact surface version and
+    evaluation identity and retain every path used to answer them.
 
-These readiness cases belong only to PWB-REQ-021. They SHALL NOT be added to,
-substituted for or treated as invalid arms in PWB-REQ-022's owner-act and
-record-validity population; a structurally lawful run can be not ready, and a
-valid owner act can lawfully retain a negative judgment about it.
+- **Readiness.** Readiness SHALL be false for a missing, empty, duplicate or
+  unrecognized answer identity; an unresolved source anchor; a
+  surface/evaluation mismatch; any path outside Polaris or its same-evaluation
+  exact-source route; any PWB-REQ-006 resource breach; or an answer whose
+  cited current Butlers authority cannot be resolved.
+  - Readiness and the nine answers SHALL be machine-readable and owner-visible
+    but SHALL remain execution facts, never a verdict or proof of
+    comprehension.
+  - The implementation SHALL NOT score or decide the semantic correctness of
+    the owner's own-words answers.
+  - That comparison informs only the separate human owner judgment and
+    rationale.
+
+- **Relation to PWB-REQ-022.** These readiness cases belong only to
+  PWB-REQ-021.
+  - They SHALL NOT be added to, substituted for or treated as invalid arms in
+    PWB-REQ-022's owner-act and record-validity population; a structurally
+    lawful run can be not ready, and a valid owner act can lawfully retain a
+    negative judgment about it.
+
+**Verification.**
 
 - **Case (closed answer/readiness sweep)**: an owner reads only Polaris at a
   named evaluation and answers the nine identities in their own words; then
@@ -1631,38 +1847,47 @@ warrants:
 
 Group: Evaluation. Form: **prohibition**.
 
-The POC SHALL NOT render the project-wide Polaris evaluation successful unless
-a retained walkthrough execution record in `.syzygy/governance/records/` and a
-separate owner judgment in `.syzygy/governance/decisions/` both bind the exact
-walkthrough-record identity, surface version and evaluation identity. The run
-record SHALL name the surface version, evaluation identity,
-nonvisual/keyboard-only mode and traversed paths. The judgment SHALL name the
-verdict, rationale, judging party and exact run record, and SHALL carry an
-effective human owner act under RFC3-16(a) satisfying RFC3-16(b). The act SHALL
-be accepted in state (1), `owner-adopted (bootstrap, uncorrelated)`, or state
-(2), `Syzygy-verified`.
+- **Success criterion.** The POC SHALL NOT render the project-wide Polaris
+  evaluation successful unless a retained walkthrough execution record in
+  `.syzygy/governance/records/` and a separate owner judgment in
+  `.syzygy/governance/decisions/` both bind the exact walkthrough-record
+  identity, surface version and evaluation identity.
+  - The run record SHALL name the surface version, evaluation identity,
+    nonvisual/keyboard-only mode and traversed paths.
+  - The judgment SHALL name the verdict, rationale, judging party and exact
+    run record, and SHALL carry an effective human owner act under RFC3-16(a)
+    satisfying RFC3-16(b).
+  - The act SHALL be accepted in state (1),
+    `owner-adopted (bootstrap, uncorrelated)`, or state (2),
+    `Syzygy-verified`.
 
-Every human and machine rendering of the criterion SHALL expose the exact act
-state. Only state (2) MAY be called independently verified. State (1) SHALL
-render exactly: `Owner-trusted only; same-tree forgeable from Syzygy's
-perspective. Digest detects drift, not authorship or attendance.` State (1)
-SHALL require explicit human selection and explicit A1 audit-record absence.
-Failed, unavailable or indeterminate state-(2) correlation SHALL be invalid
-and SHALL NOT downgrade to state (1).
+- **Act state.** Every human and machine rendering of the criterion SHALL
+  expose the exact act state.
+  - Only state (2) MAY be called independently verified.
+  - State (1) SHALL render exactly:
+    `Owner-trusted only; same-tree forgeable from Syzygy's perspective. Digest detects drift, not authorship or attendance.`
+  - State (1) SHALL require explicit human selection and explicit A1
+    audit-record absence.
+  - Failed, unavailable or indeterminate state-(2) correlation SHALL be
+    invalid and SHALL NOT downgrade to state (1).
 
-The execution-record identity, judgment artifact identity and digest,
-act-record identity, act type and scope, provenance state, and A1 audit-record
-identity or explicit absence SHALL be evaluation inputs.
+- **Evaluation inputs.** The execution-record identity, judgment artifact
+  identity and digest, act-record identity, act type and scope, provenance
+  state, and A1 audit-record identity or explicit absence SHALL be evaluation
+  inputs.
 
-The closed judgment-case population SHALL contain exactly 84 present-invalid
-cases plus 2 absent cases. “Malformed” and “wrong but present” have the same
-meanings as in PWB-REQ-005.
+- **Closed case population.** The closed judgment-case population SHALL
+  contain exactly 84 present-invalid cases plus 2 absent cases.
+  - “Malformed” and “wrong but present” have the same meanings as in
+    PWB-REQ-005.
 
-PWB-REQ-021's nine answer identities, answer completeness, source resolution,
-Polaris-only traversal and semantic-readiness result SHALL NOT be act-validity
-fields here and SHALL NOT change this closed population. They may support the
-owner's verdict and rationale, but a not-ready answer set does not by itself
-make an otherwise lawful run record, judgment artifact or owner act unlawful.
+- **Readiness fields.** PWB-REQ-021's nine answer identities, answer
+  completeness, source resolution, Polaris-only traversal and
+  semantic-readiness result SHALL NOT be act-validity fields here and SHALL
+  NOT change this closed population.
+  - They may support the owner's verdict and rationale, but a not-ready answer
+    set does not by itself make an otherwise lawful run record, judgment
+    artifact or owner act unlawful.
 
 | Case group | Required independent cases | Count |
 |---|---|---:|
@@ -1673,15 +1898,20 @@ make an otherwise lawful run record, judgment artifact or owner act unlawful.
 | **Present-invalid total** | **Every present invalid case above.** | **84** |
 | Absent cases | No run record; no judgment. | 2 |
 
-Either absent case SHALL render Unknown, never met, without inventing a
-verdict. Any of the 84 present-invalid cases SHALL record
-`verdict-unlawful`, render Unknown-never-met and mint or retain the
-RFC3-16(a) contradiction. The owner act warrants honoring the judgment;
-neither the act, its digest, its correlation nor the run record is evidence
-that comprehension succeeded. The verdict remains recorded human judgment,
-never Observed and never a score. Tests, code, an agent report or page
-availability SHALL NOT substitute. Later correlation SHALL NOT rewrite the
-provenance under which an earlier judgment took effect.
+- **Outcomes.** Either absent case SHALL render Unknown, never met, without
+  inventing a verdict.
+  - Any of the 84 present-invalid cases SHALL record `verdict-unlawful`,
+    render Unknown-never-met and mint or retain the RFC3-16(a) contradiction.
+  - The owner act warrants honoring the judgment; neither the act, its digest,
+    its correlation nor the run record is evidence that comprehension
+    succeeded.
+  - The verdict remains recorded human judgment, never Observed and never a
+    score.
+  - Tests, code, an agent report or page availability SHALL NOT substitute.
+  - Later correlation SHALL NOT rewrite the provenance under which an earlier
+    judgment took effect.
+
+**Verification.**
 
 - **Case (state and invalid-arm sweep)**: exercise valid state (1), valid state
   (2), all 84 present-invalid cases, both absent cases and later correlation of
