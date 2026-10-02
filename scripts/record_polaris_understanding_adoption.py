@@ -32,7 +32,7 @@ MARKER = "POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION"
 # change needs a new pin here, and so a new history review.
 SUCCESSOR_TOOL = "scripts/readability_successor.py"
 CONTESTED = ('contested', 'contested')
-SUCCESSOR_TOOL_SHA = "88358478e495b77177a8d38c03623a4d9819652fe0682b181b48d7a6e6a78256"
+SUCCESSOR_TOOL_SHA = "fdb4e483978dbe005249f60744bcdeec16ec5c4a8c71ca6bf37f018dd8afbdad"
 
 
 def digest(data):
@@ -276,6 +276,32 @@ def git_blob(root, commit, path):
     return git_output(root, 'show', commit + ':' + path)
 
 
+def chain(pairs):
+    """Compose one path's (predecessor, successor) pairs into one pair, or CONTESTED.
+
+    A pair that changes the bytes is a step. The steps must form a single
+    unbranched chain: exactly one first digest that no step reaches, and
+    every step visited from it once, so a repeated step, two steps from one
+    digest, a cycle or a second chain is contested. A pair that keeps the bytes says
+    the path was unchanged; its digest must lie on the chain, or be the only
+    such digest when there is no step.
+    """
+    steps = [(a, b) for a, b in pairs if a != b]
+    kept = {a for a, b in pairs if a == b}
+    if not steps:
+        return (min(kept), min(kept)) if len(kept) == 1 else CONTESTED
+    following = dict(steps)
+    first = set(following) - set(following.values())
+    if len(first) != 1:
+        return CONTESTED
+    nodes = list(first)
+    while nodes[-1] in following and len(nodes) <= len(steps):
+        nodes.append(following[nodes[-1]])
+    if len(nodes) != len(steps) + 1 or not kept <= set(nodes):
+        return CONTESTED
+    return (nodes[0], nodes[-1])
+
+
 class Evidence:
     """Read-only evidence seams; selftests replace these reads in memory."""
     def __init__(self, root):
@@ -295,14 +321,16 @@ class Evidence:
 
         Only a package that checks as performed-exact contributes; a package
         that fails to load or check contributes nothing and blocks no other.
-        Paths are normalized. A path two performed-exact packages claim maps
-        to CONTESTED, whatever their order or spelling, and is refused when
-        checked. The tool must be the reviewed bytes, and runs from the
-        bytes that were hashed.
+        Paths are normalized. The pairs every package records for one path,
+        whatever their order or spelling, compose into one pair (`chain`):
+        a later successor whose predecessor is an earlier one's row extends
+        that chain. A path whose pairs do not form one chain maps to
+        CONTESTED and is refused when checked. The tool must be the reviewed
+        bytes, and runs from the bytes that were hashed.
         """
         if getattr(self, '_successors', None) is not None:
             return self._successors
-        rows = {}
+        claims = {}
         if (self.root / SUCCESSOR_TOOL).is_file():
             module = successor_tool(self.root)
             for config in sorted((self.root / module.CANDIDATES).glob('*/' + module.CONFIG)):
@@ -315,9 +343,9 @@ class Evidence:
                 except Exception:  # noqa: BLE001 - any failing package grants nothing
                     continue
                 for path, predecessor, successor in pairs:
-                    # Keyed by normalized path, so './x' and 'x' contest each other.
-                    key = posixpath.normpath(path)
-                    rows[key] = CONTESTED if key in rows else (predecessor, successor)
+                    # Keyed by normalized path, so './x' and 'x' are one path.
+                    claims.setdefault(posixpath.normpath(path), []).append((predecessor, successor))
+        rows = {key: chain(pairs) for key, pairs in claims.items()}
         self._successors = rows
         return rows
 
@@ -1114,7 +1142,7 @@ def successor_rows_selftest():
         else:
             raise AssertionError('unreviewed successor tool accepted')
         tool.write_bytes(reviewed)
-        # A second performed package over the same path is refused, not ranked.
+        # A second performed package over the same path chains or is refused, never ranked.
         second = module.CANDIDATES + '/example-second-readability-successor'
         shutil.copytree(root / package.dir, root / second)
         config = json.loads((root / second / module.CONFIG).read_text())
@@ -1146,13 +1174,52 @@ def successor_rows_selftest():
         module.Package(root, second).record(phrase, '2026-09-29T00:00:01Z')
         require([p.check() for p in module.packages(root)] == ['performed-exact'] * 2,
                 'both successors perform exactly')
+        restyled = digest(read(root, proposal))
+        composed = Evidence(root).successor_rows()
+        require(composed.get(proposal) == (package.predecessor[proposal], restyled),
+                'an unchanged later claim did not compose onto the chain')
+        require(composed.get(other) == (config['predecessor'][other], digest(read(root, other))),
+                'a later package lost its own row')
+        # A later successor whose predecessor is the restyle extends the chain.
+        third = module.later(package, 'example-third', proposal, b'# Why\n\nShortest.\n')
+        require([p.check() for p in module.packages(root)] == ['performed-exact'] * 3,
+                'every chained successor performs exactly')
+        require(Evidence(root).successor_rows().get(proposal)
+                == (package.predecessor[proposal], digest(read(root, proposal))),
+                'a chain of successors did not compose from the first predecessor')
+        # A fork from the first predecessor makes the path contested, not ranked.
+        adopted_bytes = b'# Why\n\nlong prose\n'
+        require(digest(adopted_bytes) == package.predecessor[proposal], 'fixture predecessor bytes')
+        module.later(package, 'example-fork', proposal, read(root, proposal), start=adopted_bytes)
+        require([p.check() for p in module.packages(root)] == ['performed-exact'] * 4,
+                'the fork and the chain both perform exactly')
         contested = Evidence(root).successor_rows()
-        require(contested.get(proposal) == CONTESTED, 'two performed successors of one path accepted')
+        require(contested.get(proposal) == CONTESTED, 'a forked successor chain accepted')
         require(contested.get(other) == (config['predecessor'][other], digest(read(root, other))),
                 'a contested path blocked an uncontested one')
+        shutil.rmtree(root / module.CANDIDATES / 'example-fork')
+        require(Evidence(root).successor_rows().get(proposal)
+                == (package.predecessor[proposal], digest(read(root, third.dir + '/proposed/' + proposal + module.SUFFIX))),
+                'removing the fork did not restore the chain')
         (root / proposal).write_bytes(b'drifted\n')
         require(Evidence(root).successor_rows() == {}, 'drifted successor granted rows')
-    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed, deeply nested and wrongly typed siblings, edited tool, two claimants and drifted packages')
+    a, b, c, d = ('a' * 64, 'b' * 64, 'c' * 64, 'd' * 64)
+    for pairs, expected, label in (
+            ([(a, b)], (a, b), 'one step'),
+            ([(b, c), (a, b)], (a, c), 'two steps in any order'),
+            ([(a, b), (b, b)], (a, b), 'an unchanged claim on the chain'),
+            ([(a, a), (a, b)], (a, b), 'an unchanged claim of the first digest'),
+            ([(a, a), (a, a)], (a, a), 'two unchanged claims of one digest'),
+            ([(a, a), (b, b)], CONTESTED, 'two unchanged claims of different digests'),
+            ([(a, b), (c, c)], CONTESTED, 'an unchanged claim off the chain'),
+            ([(a, b), (a, b)], CONTESTED, 'one step claimed twice'),
+            ([(a, b), (a, c)], CONTESTED, 'two steps from one digest'),
+            ([(a, b), (c, d)], CONTESTED, 'two separate chains'),
+            ([(a, b), (b, a)], CONTESTED, 'a cycle with no first digest'),
+            ([(a, b), (b, c), (c, b)], (a, b), 'a step back to an earlier digest'),
+            ([(a, b), (c, d), (d, c)], CONTESTED, 'a chain beside a cycle')):
+        require(chain(pairs) == expected, 'chain composition: ' + label)
+    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed, deeply nested and wrongly typed siblings, edited tool, chained, forked and drifted packages; 13 composition cases')
 
 
 def main():

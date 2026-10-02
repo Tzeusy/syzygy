@@ -22,8 +22,10 @@ Modes, each over one `--package DIR` or, with `--all`, every package:
 
 - `--check` reports `candidate-unperformed` (no record; every subject at its
   predecessor; manifest and preservation verified) or `performed-exact`
-  (both records exact; every subject at its manifest row). Anything in
-  between fails.
+  (both records exact; every subject at its manifest row, or at a row a
+  chain of later performed successors installed over it: each one's
+  recorded predecessor for that path is the digest the chain has reached).
+  Anything in between fails.
 - `--write` regenerates the manifest; `--diff` prints predecessor→proposed.
 - `--record --phrase "<owner phrase>"` refuses unless the phrase is exact over
   the pinned manifest digest, the pinned review raw carries exactly one
@@ -39,6 +41,7 @@ import difflib
 import hashlib
 import json
 from pathlib import Path
+import posixpath
 import re
 import sys
 import tempfile
@@ -231,14 +234,62 @@ runtime evidence or product readiness.
         return f"<!-- {self.marker}:BEGIN -->\n{content}<!-- {self.marker}:END -->\n"
 
     def check(self):
-        """Return the state name; raise on any partial or drifted state."""
-        aggregate = read(self.root, AGGREGATE).decode()
-        act_exists = (self.root / self.act).exists()
-        if not act_exists and self.marker not in aggregate and self.label not in aggregate:
+        """Return the state name; raise on any partial or drifted state.
+
+        A performed package's subject may sit at a later successor's row
+        instead of its own: see `later_rows`. Any other difference fails.
+        """
+        rows = self.performed_rows()
+        if rows is None:
             findings = self.candidate_findings()
             if findings:
                 raise ValueError("; ".join(findings))
             return "candidate-unperformed"
+        current = self.current()
+        drifted = [rel for rel in self.subjects if current[rel] != rows[rel]
+                   and current[rel] not in self.later_rows(rel, rows[rel])]
+        if drifted:
+            raise ValueError("subject differs from its successor row: " + ", ".join(drifted))
+        return "performed-exact"
+
+    def later_rows(self, rel, row):
+        """Every digest a chain of later performed successors installs over `row`.
+
+        A later successor follows this one for `rel` only when its recorded
+        predecessor for that path (normalized, so `./x` is `x`) equals the
+        digest the chain has reached; each step must verify as performed (`performed_rows`), and a
+        package that is unperformed, partial or malformed grants nothing. The
+        chain starts at `row`, so a subject at any other digest stays drift.
+        """
+        key, performed = posixpath.normpath(rel), []
+        for config in sorted((self.root / CANDIDATES).glob(f"*/{CONFIG}")):
+            try:
+                other = Package(self.root, config.parent.relative_to(self.root).as_posix())
+                rows = other.performed_rows()
+                if rows is None:
+                    continue
+                performed.extend((other.predecessor[path], rows[path]) for path in other.subjects
+                                 if posixpath.normpath(path) == key)
+            except Exception:  # noqa: BLE001 - a failing package grants nothing
+                continue
+        found, frontier = set(), [row]
+        while frontier:
+            reached = frontier.pop()
+            for predecessor, successor in performed:
+                if predecessor == reached and successor not in found:
+                    found.add(successor)
+                    frontier.append(successor)
+        return found
+
+    def performed_rows(self):
+        """None when unperformed; else the manifest rows, both records exact.
+
+        Raises on any partial record. Subjects are not compared here.
+        """
+        aggregate = read(self.root, AGGREGATE).decode()
+        act_exists = (self.root / self.act).exists()
+        if not act_exists and self.marker not in aggregate and self.label not in aggregate:
+            return None
         if not act_exists:
             raise ValueError("the aggregate carries the act but the dedicated record is absent")
         sha = self.validate_pins()
@@ -254,11 +305,7 @@ runtime evidence or product readiness.
         if (any(aggregate.count(f"<!-- {self.marker}:{s} -->") != 1 for s in ("BEGIN", "END"))
                 or aggregate.count(self.block(actual)) != 1):
             raise ValueError(f"{AGGREGATE}: act section missing, changed or duplicated")
-        current = self.current()
-        drifted = [rel for rel in self.subjects if current[rel] != rows[rel]]
-        if drifted:
-            raise ValueError("subject differs from its successor row: " + ", ".join(drifted))
-        return "performed-exact"
+        return rows
 
     def record(self, phrase, instant):
         m = self.phrase.fullmatch(phrase or "")
@@ -344,15 +391,45 @@ def synthetic(base, **overrides):
     return Package(base, pkg)
 
 
-def pin(package, verdict="Verdict: CONFIRM", binding=None, extra=""):
+def pin(package, verdict="Verdict: CONFIRM", binding=None, extra="",
+        rel="docs/reviews/R-EXAMPLE-RAW.md"):
     sha = digest(read(package.root, package.manifest))
-    rel = "docs/reviews/R-EXAMPLE-RAW.md"
     (package.root / rel).parent.mkdir(parents=True, exist_ok=True)
     (package.root / rel).write_text(
         f"# review\n{verdict}\nManifest-file SHA-256: {binding or sha}\n{extra}")
     package.pins = {"manifest_sha": sha, "review": rel,
                     "review_sha": digest(read(package.root, rel))}
     return f"{package.label}: {sha}"
+
+
+def later(first, name, rel, data, start=None, perform=True):
+    """A successor over `rel` alone, after `first`, with its own review raw.
+
+    `start` first resets the subject, so the package can name a predecessor
+    `first` never installed; `perform=False` leaves it a pinned candidate.
+    """
+    root, upper = first.root, name.upper()
+    if start is not None:
+        (root / rel).write_bytes(start)
+    pkg = f"{CANDIDATES}/{name}"
+    (root / pkg / "proposed" / rel).parent.mkdir(parents=True)
+    (root / pkg / "proposed" / (rel + SUFFIX)).write_bytes(data)
+    config = {"label": "SIGN OFF " + upper.replace("-", " "), "marker": upper,
+              "act": f".syzygy/governance/decisions/{upper}-ACT.md",
+              "title": f"{name} sign-off", "artifact": f"specification:syzygy:{name}",
+              "supersedes": first.act, "scope": "second restyle.",
+              "predecessor": {rel: digest(read(root, rel))},
+              "pins": {"manifest_sha": None, "review": None, "review_sha": None}}
+    (root / pkg / CONFIG).write_text(json.dumps(config))
+    package = Package(root, pkg)
+    (root / package.manifest).write_text(package.render_manifest())
+    phrase = pin(package, rel=f"docs/reviews/R-{upper}-RAW.md")
+    config["pins"] = package.pins
+    (root / pkg / CONFIG).write_text(json.dumps(config))
+    package = Package(root, pkg)
+    if perform:
+        package.record(phrase, "2026-09-30T00:00:00Z")
+    return package
 
 
 def selftest():
@@ -369,6 +446,16 @@ def selftest():
     def fresh(**overrides):
         directory = tempfile.mkdtemp()
         return synthetic(Path(directory), **overrides)
+
+    def states(*chosen):
+        """Each package's state, or its refusal, so a failing fixture names itself."""
+        found = []
+        for package in chosen:
+            try:
+                found.append(package.check())
+            except ValueError as error:
+                found.append(str(error))
+        return found
 
     instant = "2026-09-29T00:00:00Z"
     p = fresh()
@@ -456,6 +543,41 @@ def selftest():
     q = fresh()
     (q.root / "openspec/changes/example/proposal.md").write_bytes(b"# Why\n\nShort prose.\n")
     expect("installed without an act", q.check, "differs from its predecessor")
+    # Chained successors: a later performed package whose predecessor for a
+    # subject is this package's row supersedes that row; nothing else does.
+    proposal = "openspec/changes/example/proposal.md"
+    q = fresh()
+    q.record(pin(q), instant)
+    two = later(q, "example-chain-two", proposal, b"# Why\n\nShorter.\n")
+    broken = q.root / CANDIDATES / "example-broken" / CONFIG
+    broken.parent.mkdir(parents=True)
+    broken.write_text("{")
+    found = states(q, two)
+    results.append(("superseded by a later successor, performed-exact",
+                    found == ["performed-exact"] * 2, "; ".join(found)))
+    three = later(q, "example-chain-three", proposal, b"# Why\n\nShortest.\n")
+    found = states(q, two, three)
+    results.append(("superseded through a chain of two, performed-exact",
+                    found == ["performed-exact"] * 3, "; ".join(found)))
+    (q.root / proposal).write_bytes(b"# Why\n\nOther.\n")
+    expect("superseded subject at no successor's row refused", q.check, "successor row")
+    q = fresh()
+    q.record(pin(q), instant)
+    foreign = later(q, "example-foreign", proposal, b"# Why\n\nShorter.\n",
+                    start=b"# Why\n\nforeign\n")
+    found = states(foreign)
+    results.append(("foreign-predecessor successor performs", found == ["performed-exact"], found[0]))
+    expect("successor from a foreign predecessor supersedes nothing", q.check, "successor row")
+    q = fresh()
+    q.record(pin(q), instant)
+    pending = later(q, "example-pending", proposal, b"# Why\n\nShorter.\n", perform=False)
+    (q.root / proposal).write_bytes(read(q.root, f"{pending.dir}/proposed/{proposal}{SUFFIX}"))
+    expect("unperformed successor supersedes nothing", q.check, "successor row")
+    q = fresh()
+    q.record(pin(q), instant)
+    partial = later(q, "example-partial", proposal, b"# Why\n\nShorter.\n")
+    (q.root / partial.act).unlink()
+    expect("partially recorded successor supersedes nothing", q.check, "successor row")
     expect("config with an unknown key refused",
            lambda: fresh(extra="x"), "keys must be exactly")
     failed = [(label, detail) for label, ok, detail in results if not ok]

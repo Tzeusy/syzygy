@@ -25,7 +25,8 @@ it already read the status pages and the governance checker, at C1.
     - The successor must check as `performed-exact` under
       `scripts/readability_successor.py`; its recorded predecessor for that
       file must equal the adopted digest, and its row must equal today's
-      bytes.
+      bytes. Where several performed successors replaced the file in turn,
+      their pairs compose into one: see the chain below.
     - The recorder runs the tool only when its sha256 equals the digest pinned
       in the recorder (`SUCCESSOR_TOOL_SHA`), and executes the very bytes it
       hashed. A tool change needs a recorder change and a new history review.
@@ -33,11 +34,21 @@ it already read the status pages and the governance checker, at C1.
       wrongly typed config included) or fails to check grants nothing and
       blocks no other package.
     - Paths are normalized before they are compared, so `./x` and `x` are
-      one path. Two performed-exact packages claiming one path are refused
-      for that path, whatever their order or spelling; other paths are
-      unaffected.
-    - A second restyle of these subjects names the first restyle's bytes as
-      its predecessor, so the recorder refuses it until it learns that chain.
+      one path.
+    - **The chain** (since round 14). A later successor of a file names the
+      earlier successor's row as its predecessor.
+      - The tool keeps the earlier package `performed-exact` for that file
+        only when today's digest is one a chain of later performed packages
+        installed over the earlier row: each step's recorded predecessor is
+        the digest the chain has reached, and each step's own act record and
+        acceptance-record block verify. Any other digest is still drift, and
+        a package that is unperformed, partial or malformed extends no chain.
+      - The recorder composes every performed-exact package's pair for the
+        file into one pair, from the first predecessor to the last row. A
+        pair that keeps the bytes composes only when its digest lies on the
+        chain. A repeated step, two steps from one digest, a cycle or a
+        second chain makes the file contested and refused, whatever the
+        packages' order or spelling; other files are unaffected.
     - What stays trusted: the act record, the acceptance-record block and the
       review raw the tool reads are read from the working tree, as the
       recorder reads its own act. A forged owner act is not detected here or
