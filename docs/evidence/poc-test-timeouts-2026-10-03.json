@@ -2,7 +2,8 @@
   "bead": "syzygy-4d15",
   "date": "2026-10-03",
   "subject": "Default 5 s timeouts in apps/three-surface-poc/src/polaris-copy.test.ts and production-reobserve.test.ts under host load",
-  "fixCommit": "fd8d1a212349f4713b9e033d92f7b1c038eb4881",
+  "fixCommit": "9d41ea7 (rebased; see provenance)",
+  "provenance": "Measured and mutated at fd8d1a2, which a rebase onto origin/main re-hashed to 9d41ea7 (fd8d1a2 is reachable from no ref). The stable anchor is the two test-file blobs, identical at both commits: polaris-copy.test.ts 661213ce423cb1e0762fc8af7ee8e7acdfde8846, production-reobserve.test.ts ac126992fa8ee6b8297a7c214d69172bfcc27699. The rebase brought in syzygy-u05.6's effect-authority change, which neither test file imports; the app suite passed 575/576 (1 skipped) once after the rebase.",
   "beforeCommit": "fd8d1a2^ (origin/main at the bead's rebase, both files unmodified)",
   "fix": {
     "polaris-copy.test.ts": "Cheaper fixture: the twelve variant models are built once in beforeAll (hook timeout 60 s) and deep-frozen, instead of being rebuilt per test (up to twenty builds per test). No assertion changed.",
