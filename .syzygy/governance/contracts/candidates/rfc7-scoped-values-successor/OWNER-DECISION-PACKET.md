@@ -6,9 +6,10 @@
 # Owner decision packet — RFC-0007 scoped-values amendment
 
 Status: candidate, **not yet offered**. A fresh-context review has not
-confirmed these bytes, and the recorder is unpinned until one does
-(`scripts/record_rfc7_scoped_values_successor.py`). If you reply with the
-phrase below now, nothing is performed.
+confirmed these bytes. Sign-off is version-tagged
+(`scripts/record_versioned_signoff.py`, under the owner's 2026-10-02 Scope A
+direction); the phrase below is registered only so the governance checks see
+it go stale. If you reply with the phrase now, nothing is performed.
 
 ## What this decides
 
@@ -22,17 +23,19 @@ what it permits, so this contract change comes first.
 
 One accepted module, `rfcs/RFC-0007/rendering-and-surface.md`, gains:
 
-- a parenthetical in RFC7-33's attribute sentence ("except as the
-  interactive-surface paragraph below permits");
-- one paragraph, "Scope-carried values on the interactive surface": on the
-  interactive human surface only, a distinction whose value is the same for
-  every unit under one enclosing element MAY be carried once on that element,
-  marked machine-readably as a scope, under an inheritance rule the governing
-  specification states once. A scope never carries a value that is not every
-  unit's value, never carries a unit's identity, states what it carries as
-  text on its own element (RFC7-34), and is expanded before any parity
-  comparison. The machine-queryable endpoints and every plain-text or
-  exported rendering carry every distinction on the unit itself.
+- a parenthetical in RFC7-33's attribute sentence ("save the page-level
+  evaluation stamp the paragraph below permits on the interactive surface");
+- one paragraph, "Page-level evaluation stamp on the interactive surface": on
+  the interactive surface only (the HTML document served for a browser), the
+  evaluation identity RFC7-16 requires on every claim tuple MAY be stated once,
+  as text on its own element and marked machine-readably as a scope. A scope
+  is valid only if every claim under it would carry that same evaluation
+  identity, never overrides a claim's own, and carries nothing else: no label,
+  tier, reason, freshness, challenge, review, draft or adoption state, no
+  Unknown, no claim identity and no `non-citable` / `presentation-artifact`.
+  The machine-queryable endpoints, every plain-text or exported rendering and
+  any copy, share or export function carry the evaluation identity on every
+  claim.
 
 ## What it does not change
 
@@ -66,7 +69,7 @@ Silence, a partial answer, a commit or a merge performs nothing.
 The contract act phrase for this manifest would be:
 
 ```
-SIGN OFF RFC-0007 SCOPED-VALUES AMENDMENT: 01e76e0b357d847684c7f460a9ff0e708c5cfba3d9d246d5aa2ed318eb1cd8ad
+SIGN OFF RFC-0007 SCOPED-VALUES AMENDMENT: 338ce1dba36347fa8351e161b705c8d85b13825a385b28abaf422e35bcefeacd
 ```
 
 It is registered so that the governance checks see it go stale; it is **not

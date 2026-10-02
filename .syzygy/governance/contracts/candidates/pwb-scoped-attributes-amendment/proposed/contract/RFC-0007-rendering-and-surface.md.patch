@@ -1,44 +1,39 @@
 diff --git a/.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md b/.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md
-index d2eab9b..d15bf9c 100644
+index d2eab9b..94a8378 100644
 --- a/.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md
 +++ b/.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md
-@@ -209,13 +209,39 @@ claim-block **type name** (below), band membership and its authority class,
+@@ -209,13 +209,34 @@ claim-block **type name** (below), band membership and its authority class,
  curated-versus-computed provenance, adopted versus unadopted, editorial-draft
  state, proposal-context membership, review state, RFC7-11(a)'s
  **target-changed** state, label + tier + reason + freshness — is carried as a
 -**machine-readable attribute on the rendered unit**, served identically
-+**machine-readable attribute on the rendered unit** (except, on the interactive
-+surface alone, as the scope paragraph below permits), served identically
++**machine-readable attribute on the rendered unit** (save the page-level
++evaluation stamp the paragraph below permits on the interactive surface),
++served identically
  through the machine-queryable endpoints (RFC6-13/14) and preserved in
  plain-text or exported renderings [Observed: agents are a first-class consumer
  from day one (vision.md); endpoints are V0-mandatory (v1.md)]. A distinction
  available only to pixels does not survive an endpoint response, a copy-paste
  into an agent prompt, or a reader who cannot see it.
  
-+**Scope-carried values on the interactive surface.** The interactive surface
-+is the HTML document served for a browser to render. It is not the
++**Page-level evaluation stamp on the interactive surface.** The interactive
++surface is the HTML document served for a browser to render; it is not the
 +machine-queryable endpoints (RFC6-13/14) and not any plain-text or exported
-+rendering, which are every output that is not that document. On it only, a
-+distinction other than `non-citable` / `presentation-artifact` whose value is
-+the same for every unit under one enclosing element MAY be carried once on
-+that element, marked machine-readably as a scope, in place of on each unit;
-+this includes the evaluation identity RFC7-16 requires, and a scope-carried
-+freshness stays visible on the page itself (RFC7-16). A unit under a scope
-+then carries the value by expansion, under an inheritance rule the governing
-+specification states once and every oracle restates independently. A scope is
-+valid only if every unit under it would carry that same value on itself: it
-+never overrides, replaces or fills in for a unit's own attribute, a unit that
-+carries a different value of its own invalidates the scope, and an invalid
-+scope is not emitted. A scope never carries a unit's identity, states what it
-+carries as text on its own element (RFC7-34), and is expanded before any
-+parity comparison. The machine-queryable endpoints and every plain-text or
-+exported rendering carry every distinction on the unit itself, unchanged by
-+this paragraph, and so does any copy, share or export function the surface
-+offers: it is produced from the expanded model, never from the scoped markup.
-+Only a reader's own manual selection of part of the page can separate a unit
-+from its scope's text, which the scope states visibly on its own element.
-+Non-citability is excluded because it must travel with a unit wherever it
-+goes: the sub-clause below stands in full.
++rendering. On it only, the evaluation identity that RFC7-16 requires every
++claim tuple to name MAY be stated once, as text on its own element and marked
++machine-readably as a scope, in place of on each claim tuple. A scope is
++valid only if every claim tuple under it would carry that same evaluation
++identity on itself. It never overrides a claim tuple's own evaluation
++identity: a claim that names a different evaluation invalidates the scope, an
++invalid scope is not emitted, and each claim then names its own. A scope
++carries the evaluation identity and nothing else. It never carries a label,
++tier, reason, freshness, challenge, review, draft or adoption state, an
++Unknown, a claim's own identity, or `non-citable` / `presentation-artifact`,
++each of which stays on the unit as this clause requires. A scope is expanded
++to one evaluation identity per claim before any parity comparison. The
++machine-queryable endpoints, every plain-text or exported rendering and any
++copy, share or export function the surface offers carry the evaluation
++identity on every claim. The non-citability sub-clause below stands in full.
 +
  **Non-citability travels, on every rendering.** Every narrative-model unit
  (RFC7-5) carries the **`non-citable` / `presentation-artifact`** attribute,

@@ -1,6 +1,11 @@
-# Impact ledger — PWB scoped epistemic attributes
+# Impact ledger — PWB page-level evaluation stamp
 
 > **Candidate — binds nothing.** Companion to `SEMANTIC-DELTA.md`.
+>
+> The package is narrowed to the evaluation identity alone. The citing-file
+> inventory below is the sweep for PWB-REQ-007, -014, -020 and RFC7-33, whose
+> citers do not depend on how many tuple fields a scope may carry, so it is
+> unchanged; only the implementation rows narrow.
 
 Baseline: commit `a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d`; none of the
 eleven behavior subjects or the RFC-0007 module changes between it and the
@@ -54,7 +59,7 @@ table:
 | unbound spec companion | 3 | not in the manifest; `tasks.md` takes implementation rows after adoption, the two coverage parts restate parity findings that remain true |
 | other openspec change | 1 | cites PWB-REQ-014/020 as the parity floor the generator inherits; the floor is unchanged in the machine form |
 | renderer / model | 8 | implementation sites after adoption: the claim element, the narrative unit and the shared model's tuple emission; no change while candidate |
-| oracle / test | 9 | implementation sites after adoption: each oracle gains its own scope expansion and the sweep gains the scope-hidden and over-asserting-scope mutant classes |
+| oracle / test | 9 | implementation sites after adoption: each oracle gains its own expansion of the evaluation-stamp rule and the sweep gains the stamp-hidden mutant class |
 | script | 1 | the state-(1) recorder names PWB-REQ-020 in its docstring; historical, untouched |
 | docs / plans | 5 | plans and the funnel/pursuit records that led here; the funnel's draft delta is superseded by this package and says so by date |
 | retained review | 23 | raw reviewer output; never edited (CC-REV-6) |
@@ -164,12 +169,11 @@ Counts are occurrences of the full identifier per file.
 Read at the baseline; line numbers are for that commit only.
 
 - `apps/three-surface-poc/src/polaris.ts` — emits the per-claim tuple span;
-  gains the scope element and the shared-value hoist per item table, under
-  the strict rule (a field is hoisted only when every claim in the table
-  has that value in the machine answer). The per-unit non-authority
+  gains one page-level scope element for the evaluation identity, emitted
+  only when every claim on the page has that value in the machine answer. The per-unit non-authority
   attributes it emits are unchanged.
 - `apps/three-surface-poc/src/polaris-copy.ts` — the claim-states lede
-  (`label.claim-states`) restates the inheritance rule for the reader.
+  (`label.claim-states`) restates the evaluation-stamp rule for the reader.
 - `apps/three-surface-poc/src/polaris-parity-sweep.test.ts` — `leafMarkers`
   (line 110) reads every claim's attributes from the leaf; the claim-tuple
   extraction (lines 415–423) joins eight fields per claim. It gains its own
@@ -180,9 +184,8 @@ Read at the baseline; line numbers are for that commit only.
   assume every field on the span; the evaluation-id checks at lines 231–233
   assume it on every claim. Both gain expansion.
 - `apps/three-surface-poc/src/pwb-mutation-sweep.ts` — gains the
-  `scope-hidden` mutant per marker class (a scope value that hides one
-  member's differing value) and the `over-asserting-scope` mutant (a scope
-  value one member does not have, the member carrying its own) beside
+  `stamp-hidden` mutant per marker class (a page-level stamp that hides
+  one claim's differing evaluation) beside
   missing/duplicated/changed/collapsed/wrong-evaluation.
 - `apps/three-surface-poc/src/polaris-accessibility.ts` — the PWB-REQ-016
   checker; gains its own expansion of the rule, or the assertion that every
@@ -405,8 +408,8 @@ after applying; nothing is assumed clean.
 
 Merging this package to main changes no authority: the manifest rows hash
 bytes that are not in the tree, the builder refuses `--apply` without
-`--at-adoption`, the contract patch is applied by no script at all (its
-act's recorder does not yet exist), and CG-7h keeps binding the 2026-09-05
+`--at-adoption`, the contract patch is applied by no script at all (the
+contract successor package applies it at its own sign-off), and CG-7h keeps binding the 2026-09-05
 package while the accepted RFC-0007 stays as accepted. The owner
 phrase in `OWNER-DECISION-PACKET.md` is registered in
 `scripts/check_governance.py` so that a stale copy of its argument fails
