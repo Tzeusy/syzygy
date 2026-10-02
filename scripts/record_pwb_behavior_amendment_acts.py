@@ -581,6 +581,12 @@ VERSIONED_LATER = {
                      "pwb-dismissal-expiry-amendment/"
                      "PWB-DISMISSAL-EXPIRY-MANIFEST.txt"),
     ),
+    "pwb-container-shape-profile-amendment": (
+        DECISIONS / "PWB-CONTAINER-SHAPE-PROFILE-AMENDMENT-SIGNOFF-v1.0.md",
+        pathlib.Path(".syzygy/governance/contracts/candidates/"
+                     "pwb-container-shape-profile-amendment/"
+                     "PWB-CONTAINER-SHAPE-PROFILE-MANIFEST.txt"),
+    ),
 }
 
 
