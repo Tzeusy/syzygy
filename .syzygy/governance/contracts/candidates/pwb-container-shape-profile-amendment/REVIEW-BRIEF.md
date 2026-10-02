@@ -1,0 +1,119 @@
+# Review brief — each project's profile declares its container shapes
+
+> **Candidate — binds nothing.** This brief says what an independent
+> reviewer is given and what they decide. It is not a review and carries
+> no verdict. Rounds 1 to 4 returned REVISE
+> (`docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-RAW.md`,
+> `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-2-RAW.md`,
+> `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-3-RAW.md`,
+> `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-4-RAW.md`). Round 5 is a
+> confirmation round over the repaired bytes.
+
+## What the reviewer is given, and nothing else
+
+**The artifact** — the five files of
+`.syzygy/governance/contracts/candidates/pwb-container-shape-profile-amendment/`
+(`SEMANTIC-DELTA.md`, `IMPACT-LEDGER.md`, `OWNER-DECISION-PACKET.md`, this
+brief, `PWB-CONTAINER-SHAPE-PROFILE-MANIFEST.txt`), the three patches under
+`proposed/`, `scripts/build_pwb_container_shape_profile_amendment.py`, and
+the round-1 to round-4 raws with the packet's review record.
+
+**The subject** — `openspec/changes/polaris-project-wide-butlers-model/` at
+its current bytes.
+
+**Governing references** —
+
+- §6 of `.syzygy/governance/decisions/POLARIS-GATE-SITTING-2026-09-26-DECISION.md`.
+- P-74 (line 64) and P-82 (line 70) of
+  `POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`, and §6 of
+  `POLARIS-GATE-PACKAGE-OWNER-VALUES-2026-09-23-DECISION.md` (landing order),
+  all under `.syzygy/governance/decisions/`.
+- `VIS-2`, `VIS-4`, `VIS-7`.
+- `PWB-REQ-002` and the reader definitions in the subject's `spec.md`.
+- `packages/three-surface-poc-core/src/project-shape-extraction.ts`, for
+  the shape sentences, and `CLASS_ROWS` in
+  `packages/three-surface-poc-core/src/project-shape-coverage.ts` (lines
+  85-95), for the class-to-category mapping.
+- `NORMATIVE-CHANGE-WORKFLOW.md`, `SEMANTIC-DELTA-TEMPLATE.md` and CC-REV-2.
+
+**Shared text** — `SHAPES` and `ITEM_KEY_SENTENCES` in
+the loaded-profile amendment's builder under `scripts/` at commit `1d5966c`
+of branch `agent/tier4-dov24` (PR #123; not yet on `main`), which this
+package copies word for word and pins by digest. Read those two constants
+only, to check the copy; the rest of that package is withheld. The shared
+sentences' own open notes (N-B, N-C, N-D of that package's round 4, and this
+package's round-3 notes on label trimming and which failure wins) are routed
+to `syzygy-dov.32`, to be repaired in both packages together; they are not
+findings against this round.
+
+**Withheld** — the M8 funnel under `docs/design/` and the 2026-09-22
+pursuit. They recommend; the sitting decides.
+
+## Acceptance criteria
+
+1. **Is every earlier finding closed as the review record says?** Round 1's
+   R1–R5 and N1–N9, round 2's R-A, R-B and N-1–N-8, and round 3's R-C and
+   N-a–N-g, and round 4's R-D and N-h–N-l, each against the bytes, not the
+   disposition's words.
+2. **Does it do what §6 asks, and no more?** §6: "let a project's profile
+   declare its own container shapes, instead of the shapes written into
+   PWB-REQ-002's reader definitions", with Butlers' profile declaring
+   "today's shapes as they are". The draft also lets the profile declare
+   the file, heading and key form. Is that inside §6, or a widening?
+   (Packet question 1.)
+3. **Are the shape and key-form sentences exact?** Check each against the
+   extraction code and against the shared constants; a sentence looser or
+   stricter than the code, or a copy that differs, is a finding. Can the
+   grammar rows express every one of Butlers' nine class bullets?
+4. **Is Butlers' grammar unchanged?** Only its opening line may differ; the
+   exactness paragraph moves word for word into its own bullet.
+5. **Do the loaded-profile and interim-default sentences keep `VIS-2` and
+   agree with P-74 Q2?** A class with no row, or an invalid row, must make
+   the class and its category Unknown with every source counted; no
+   built-in rule may stand in once a profile is loaded; today's code must
+   conform while no Butlers profile is declared, and the window after one is
+   declared and before limb 5 reads it, when it does not, must be disclosed
+   and put to the owner (packet question 7). A refused Butlers profile, or one
+   declared but not read, must not return Butlers to the written grammar,
+   and a project other than Butlers with no loaded profile must not report a
+   known count.
+6. **Is the overlap with M15 (P-82) disclosed accurately?** The packet now
+   says the exactness sentence binds every grammar and a class's Unknown
+   makes its category Unknown, both in M15's path. Is anything else here in
+   that path and undisclosed? Packet question 8.
+7. **Is the oracle still independent and falsifiable?** In particular, can
+   "for Butlers read through its loaded profile, both also apply the grammar
+   written in these reader definitions" fail?
+8. **Does the package verify, and does the verification mean anything?** Run
+   `--check` and `--selftest` (196 mutants). Name any claim the builder makes
+   that no mutant covers.
+9. **Does the package quote any act argument or claim authority it lacks?**
+   Nothing labelled accepted or in force; the retained phrase marked not offered (sign-off is by version); no
+   landing order attributed to the owner beyond the ruled four.
+10. **Are the open questions honest, and not already ruled?** Especially 4,
+    6, 7 and 8.
+
+## Out of scope
+
+Whether to perform the act; which project comes second; the registry
+fields; any shape for Syzygy's own craft policies.
+
+## Recording
+
+Raw output under `docs/reviews/`, file name ending `-RAW.md`, verdict words
+copied exactly. A digest quoted in a raw freezes those bytes.
+
+**The raw's head.** A recorder binds the review by this predicate, so the
+head must satisfy it exactly:
+
+> The first four non-blank lines of the raw are, in order: a title line
+> beginning `# `; `Verdict: ` followed by the verdict words; `Reviewed
+> commit: ` followed by the full 40-hex commit; and `Manifest sha256: `
+> followed by the 64-hex SHA-256 of the file
+> `PWB-CONTAINER-SHAPE-PROFILE-MANIFEST.txt` itself.
+
+That file digest is the act argument: the manifest's header names "the owner
+act that names this file's digest". The reviewer re-derives it by hashing
+the file. It is **not** any one row of the manifest (each row hashes one
+subject file), and not a digest of the subject. Rounds 1 to 4 carried
+the file digest in this position.

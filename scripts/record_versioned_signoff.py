@@ -117,6 +117,7 @@ def _rows_hash_tree(root: pathlib.Path, manifest: pathlib.Path) -> bool:
 def real_packages() -> dict[str, Package]:
     missing = lambda: _module("build_pwb_missing_currency_disclosure_scenario")  # noqa: E731
     dismissal = lambda: _module("build_pwb_dismissal_expiry_amendment")  # noqa: E731
+    container = lambda: _module("build_pwb_container_shape_profile_amendment")  # noqa: E731
     return {
         "pwb-missing-currency-disclosure-scenario": Package(
             "pwb-missing-currency-disclosure-scenario",
@@ -137,6 +138,16 @@ def real_packages() -> dict[str, Package]:
             lambda root: dismissal().check(),
             lambda root: dismissal().apply(True),
             lambda root: _rows_hash_tree(root, dismissal().MANIFEST_OUT),
+        ),
+        "pwb-container-shape-profile-amendment": Package(
+            "pwb-container-shape-profile-amendment",
+            "PWB container-shape profile amendment",
+            "behavior amendment",
+            CANDIDATES / "pwb-container-shape-profile-amendment",
+            "PWB-CONTAINER-SHAPE-PROFILE-AMENDMENT",
+            lambda root: container().check(),
+            lambda root: container().apply(True),
+            lambda root: _rows_hash_tree(root, container().MANIFEST_OUT),
         ),
     }
 

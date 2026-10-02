@@ -1,0 +1,13 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md b/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+index 4a01f83..185312f 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+@@ -8,7 +8,7 @@ Population: 31 positive obligations and refusals declared by `proposal.md`,
+ | 1 | Bind every source to one exact Butlers revision | covered — PWB-REQ-001 |
+ | 2 | Bind consent, policy, registry, owner-act, audit, discovery and parser identities, digests and states as evaluation inputs | covered — PWB-REQ-001, PWB-REQ-005 |
+ | 3 | Discover a closed, complete source-path population | covered — PWB-REQ-001 |
+-| 4 | Account for every admitted declared item exactly once | covered — PWB-REQ-002 |
++| 4 | Account for every admitted declared item exactly once, reading each class only through the grammar rows its loaded project profile declares from the closed nine-shape and eight-key-form vocabularies, with no built-in fallback once a profile is loaded | covered — PWB-REQ-002 |
+ | 5 | Keep unavailable sources counted while their item denominator is Unknown | covered — PWB-REQ-002, PWB-REQ-003 |
+ | 6 | Admit only the closed project-fact and actual root-layer precedence grammar; preserve every declaration and apply only one explicit applicable outcome | covered — PWB-REQ-004 |
+ | 7 | Accept valid state-(1), state-(2) or mixed consent/policy/registry acts with exact states visible, and reject the closed 195-case invalid population before body reads | covered — PWB-REQ-005 |
