@@ -54,6 +54,9 @@ repository and any work history, and stays unsent.
   be determined is refused and the refusal shown (RFC5-14).
 - Every transmission passes the single egress check and emits an audit record
   (RFC5-15).
+- The route invokes no tools on the provider's or its runtime's side: no file
+  access, command execution, web access or other tool is enabled, so the
+  model sees only what each request carries.
 - This record's own condition: provider output is generated editorial draft.
   It is never recorded as an Observed claim, as adopted intent, or as the
   target project's own statement.

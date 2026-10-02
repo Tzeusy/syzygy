@@ -10,7 +10,7 @@ Owner: Tzeusy
 
 Record ID: `PUBLIC-OBS-REQUESTS-2026-10-03`
 
-Record version: `0.1.0-candidate.4`
+Record version: `0.1.0-candidate.5`
 
 Consent class: observation (RFC5-12)
 

@@ -13,10 +13,10 @@
   "EGRESS-CONSENT-ANTHROPIC.md": {
     "template": "EGRESS-CONSENT-TEMPLATE.md",
     "fields": {
-      "PROVIDER": "Anthropic (Claude API)",
+      "PROVIDER": "Anthropic, through the Claude Agent SDK (Claude Code runtime)",
       "PROVIDER_ID": "anthropic",
       "CONTENT_CLASSES": "- `governance-text`\n- `code-structure`\n- `code-content`\n- `evidence-content`\n- `derived-composites`",
-      "RETENTION": "provider requests, provider replies and run records are retained in a run directory under `project:syzygy`'s state directory, outside git. Requests and replies contain the source spans sent, so the run directory holds those spans for as long as the run is retained; nothing is retained in git, logs or machine responses. The provider's own retention is as its API terms state, disclosed rather than promised.",
+      "RETENTION": "provider requests, provider replies, run records and any session transcript the Agent SDK runtime persists locally are retained in a run directory under `project:syzygy`'s state directory, outside git. They contain the source spans sent, so the run directory holds those spans for as long as the run is retained; nothing is retained in git, logs or machine responses. Whether the runtime can be configured not to persist a transcript is Unknown until the adapter is built; until then any transcript it writes elsewhere is moved into the run directory before the run completes. The provider's own retention is as its terms state, disclosed rather than promised.",
       "SUPERSEDES": "supersedes no earlier consent",
       "ADMITTED_REPOSITORIES": "- `(project:syzygy, repository:psf-requests)`"
     }
@@ -24,6 +24,6 @@
   "common": {
     "DRAFT_DATE": "2026-10-03",
     "OWNER": "Tzeusy",
-    "VERSION": "0.1.0-candidate.4"
+    "VERSION": "0.1.0-candidate.5"
   }
 }

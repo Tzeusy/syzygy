@@ -1,4 +1,4 @@
-# Public-target egress consent — Anthropic (Claude API)
+# Public-target egress consent — Anthropic, through the Claude Agent SDK (Claude Code runtime)
 
 > Instance filled from `../../templates/EGRESS-CONSENT-TEMPLATE.md` by
 > `scripts/build_public_repo_admission.py`. Candidate — binds nothing
@@ -10,13 +10,13 @@ Owner: Tzeusy
 
 Record ID: `PUBLIC-EGRESS-anthropic`
 
-Record version: `0.1.0-candidate.4`
+Record version: `0.1.0-candidate.5`
 
 Consent class: egress — one record per (project, provider) pair (RFC5-12)
 
 Subject: `(project:syzygy, provider:anthropic)`
 
-Provider and route: Anthropic (Claude API), reached only through the registered provider
+Provider and route: Anthropic, through the Claude Agent SDK (Claude Code runtime), reached only through the registered provider
 execution route (REQ-polaris-generation-017) and the single egress check
 (RFC5-15). The model is recorded per run, not fixed here.
 
@@ -28,7 +28,7 @@ Permitted content classes (RFC5-14 closed vocabulary):
 - `evidence-content`
 - `derived-composites`
 
-Retention: provider requests, provider replies and run records are retained in a run directory under `project:syzygy`'s state directory, outside git. Requests and replies contain the source spans sent, so the run directory holds those spans for as long as the run is retained; nothing is retained in git, logs or machine responses. The provider's own retention is as its API terms state, disclosed rather than promised.
+Retention: provider requests, provider replies, run records and any session transcript the Agent SDK runtime persists locally are retained in a run directory under `project:syzygy`'s state directory, outside git. They contain the source spans sent, so the run directory holds those spans for as long as the run is retained; nothing is retained in git, logs or machine responses. Whether the runtime can be configured not to persist a transcript is Unknown until the adapter is built; until then any transcript it writes elsewhere is moved into the run directory before the run completes. The provider's own retention is as its terms state, disclosed rather than promised.
 
 Proposed provenance state: `owner-adopted (bootstrap, uncorrelated)` —
 state (1), RFC3-16; A1 audit-record identity explicitly absent
@@ -57,6 +57,9 @@ repository and any work history, and stays unsent.
   be determined is refused and the refusal shown (RFC5-14).
 - Every transmission passes the single egress check and emits an audit record
   (RFC5-15).
+- The route invokes no tools on the provider's or its runtime's side: no file
+  access, command execution, web access or other tool is enabled, so the
+  model sees only what each request carries.
 - This record's own condition: provider output is generated editorial draft.
   It is never recorded as an Observed claim, as adopted intent, or as the
   target project's own statement.
