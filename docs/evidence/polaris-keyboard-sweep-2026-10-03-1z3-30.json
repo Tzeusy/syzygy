@@ -3,9 +3,9 @@
   "requirement": [
     "PWB-REQ-016"
   ],
-  "capturedAt": "2026-10-02T21:28:14.339Z",
-  "syzygyHead": "35fda269afc9199af9dab85d00fc2477264a3704",
-  "surfaceVersion": "polaris@50228f564542",
+  "capturedAt": "2026-10-02T21:42:53.843Z",
+  "syzygyHead": "d516de40bc4a11b8b9c109684efd3d9fadc39174",
+  "surfaceVersion": "polaris@c46b88247bef",
   "browser": {
     "executable": "/usr/bin/google-chrome",
     "version": "Chrome/120.0.6099.224"
@@ -14,13 +14,13 @@
   "mounts": [
     {
       "mount": "direct",
-      "source": {
+      "measuredOn": {
         "path": "/polaris",
-        "host": "127.0.0.1:46199",
+        "host": "127.0.0.1:33239",
         "status": 200
       },
       "bytes": 1467147,
-      "sha256": "f5d996af56001ce7b853af75a5df5b8e640dbd58ef445dbd24421b40eedb294a",
+      "sha256": "00312ac7b9f35f0ce544d97e0c0b5ee700978de2dc2a9f7bc1cd4ae9b7ed4caf",
       "population": 1187,
       "reached": 1187,
       "activations": 709,
@@ -35,13 +35,13 @@
     },
     {
       "mount": "tailnet",
-      "source": {
+      "measuredOn": {
         "path": "/polaris",
         "host": "tzeusy.parrot-hen.ts.net",
         "status": 200
       },
       "bytes": 1473252,
-      "sha256": "05eada1f39433952dc12bbce4eeab5bff3b6a8c341c799e2dce62296ee27681b",
+      "sha256": "70abfebeea9810c5bc2888565ceeae2f6fe13bc3bb01f5118c397f58879a3a32",
       "population": 1187,
       "reached": 1187,
       "activations": 709,

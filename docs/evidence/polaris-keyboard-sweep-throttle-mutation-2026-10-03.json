@@ -107,7 +107,7 @@
       "mounts": [
         {
           "mount": "direct",
-          "sha256": "f5d996af56001ce7b853af75a5df5b8e640dbd58ef445dbd24421b40eedb294a",
+          "sha256": "00312ac7b9f35f0ce544d97e0c0b5ee700978de2dc2a9f7bc1cd4ae9b7ed4caf",
           "population": 1187,
           "reached": 1187,
           "activations": 709,
@@ -116,14 +116,15 @@
         },
         {
           "mount": "tailnet",
-          "sha256": "05eada1f39433952dc12bbce4eeab5bff3b6a8c341c799e2dce62296ee27681b",
+          "sha256": "70abfebeea9810c5bc2888565ceeae2f6fe13bc3bb01f5118c397f58879a3a32",
           "population": 1187,
           "reached": 1187,
           "activations": 709,
           "violations": 0,
           "violationsByKind": {}
         }
-      ]
+      ],
+      "note": "The committed record was regenerated at d516de40bc4a11b8b9c109684efd3d9fadc39174 (polaris@c46b88247bef) after the rebase onto origin/main and a key rename in the tool (source to measuredOn). The served bytes differ from the testedCommit runs (surface polaris@50228f564542), because the rebase moved the surface. The pre-fix (M1) and first fixed live runs were byte-identical to each other at testedCommit. Denominators and the 0-violation outcome are unchanged."
     },
     "keyboardSweepCapture": {
       "exitCode": 0,
