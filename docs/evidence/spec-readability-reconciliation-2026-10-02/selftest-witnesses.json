@@ -1,5 +1,5 @@
 {
-  "commit": "82bf76eb01fe6cd2a2f00b0dcaee0e01327ef9b0",
+  "commit": "9ede8daf1c4138a213d67ed849e68a4210be5876",
   "script": "scripts/check_spec_reconciliation.py",
   "mutants": [
     {
@@ -109,7 +109,8 @@
       "new": ":pwb-readability-successor:v1.1",
       "expected": "R1",
       "failed": [
-        "R1"
+        "R1",
+        "R2"
       ],
       "outcome": "killed"
     },
@@ -237,19 +238,23 @@
     {
       "mutant": "pin-made-current",
       "path": ".syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json",
-      "old": "del\",\n    \"version\": \"sha256:0d50f8f496aada5e89a0ab2d7de29e487fc2d4f4ce66435f7a2abdab7a7a5bc1",
-      "new": "del\",\n    \"version\": \"sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "old": "odel\",\n    \"version\": \"sha256:0d50f8f496aada5e89a0ab2d7de29e487fc2d4f4ce66435f7a2abdab7a7a5bc1",
+      "new": "odel\",\n    \"version\": \"sha256:d0ac6ba20501798e715aae42e16fbc7555fc8d4d60f9f16e01f376fb75349c4a",
       "expected": "R6~",
       "failed": [],
       "outcome": "killed"
     },
     {
       "mutant": "pins-after-repin-acts",
-      "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json + .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json",
-      "old": "<already applied>",
-      "new": "<already applied>",
-      "expected": "R6=0",
-      "failed": [],
+      "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json + .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json + openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "old": "er serve as anchor identity.\n\n- **Tree form.** Syzygy-authored framing SHALL read as an abstraction tree\n  under CC-REV-8.\n  - A group is one of four classes: a",
+      "new": "er serve as anchor identity.\n\n**Verification.**\n\n- **Case (sweep)**: enumerate every narrative unit, claim and anchor, then\n  enumerate every citation/reference",
+      "expected": "R6=0|R2,R3,R4",
+      "failed": [
+        "R2",
+        "R3",
+        "R4"
+      ],
       "outcome": "killed"
     },
     {
@@ -311,6 +316,107 @@
       "path": "openspec/README.md",
       "old": "SSOR-ACT.md) (2026-09-29) · [`POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-ACT.md`](../.syzygy/governance/decisions/POLARIS-UNDERSTANDING-DEPENDENCY-UNION-S",
       "new": "SSOR-ACT.md) (2026-09-29) · [`DEPENDENCY-UNION-ACT.md`](../.syzygy/governance/decisions/DEPENDENCY-UNION",
+      "expected": "R5",
+      "failed": [
+        "R5"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "missing-versioned-successor",
+      "path": ".syzygy/governance/decisions/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md",
+      "old": "<file present>",
+      "new": "<file deleted>",
+      "expected": "R1",
+      "failed": [
+        "R1",
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "versioned-successor-tag",
+      "path": ".syzygy/governance/decisions/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md",
+      "old": ": pwb-tree-framing-amendment-v1.0",
+      "new": ": pwb-tree-framing-amendment-v0.9",
+      "expected": "R1",
+      "failed": [
+        "R1"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "versioned-successor-aggregate",
+      "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "old": "pwb-tree-framing-amendment:v1.0",
+      "new": "pwb-tree-framing-amendment:v1.1",
+      "expected": "R1",
+      "failed": [
+        "R1",
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "versioned-successor-order",
+      "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "old": ">\n\n<!-- versioned-signoff:pwb-readability-successor:v1.0 -->\n## Versioned sign-off — pwb-readability-successor — v1.0 — recorded 2026-10-02\n\nThe owner signed of",
+      "new": ">\n\n<!-- versioned-signoff:pwb-tree-framing-amendment:v1.0 -->\n## Versioned sign-off — pwb-tree-framing-amendment — v1.0 — recorded 2026-10-03\n\nThe owner signed ",
+      "expected": "R2",
+      "failed": [
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "versioned-successor-date",
+      "path": ".syzygy/governance/decisions/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md",
+      "old": "ged sign-off v1.0\n\nDate: 2026-10-03",
+      "new": "ged sign-off v1.0\n\nDate: 2026-09-01",
+      "expected": "R2",
+      "failed": [
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "versioned-successor-reversal",
+      "path": ".syzygy/governance/contracts/candidates/pwb-tree-framing-amendment/proposed/spec.md.patch",
+      "old": "later-read target\n-  mutation.",
+      "new": "later-read target\n-  mutation. x",
+      "expected": "R2",
+      "failed": [
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "versioned-successor-patch-missing",
+      "path": ".syzygy/governance/contracts/candidates/pwb-tree-framing-amendment/proposed/design.md.patch",
+      "old": "<file present>",
+      "new": "<file deleted>",
+      "expected": "R2",
+      "failed": [
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "versioned-successor-foreign-patch",
+      "path": ".syzygy/governance/contracts/candidates/pwb-tree-framing-amendment/proposed/proposal.md.patch",
+      "old": "ct-wide-butlers-model/proposal",
+      "new": "ct-wide-butlers-model/proposal-x",
+      "expected": "R2",
+      "failed": [
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "route-versioned-successor",
+      "path": "openspec/README.md",
+      "old": "-10-02) · [`PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md`](../.syzygy/governance/decisions/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0",
+      "new": "-10-02) · [`PWB-TREE-FRAMING-ACT.md`](../.syzygy/governance/decisions/PWB-TREE-FRAMING-ACT",
       "expected": "R5",
       "failed": [
         "R5"
