@@ -37,6 +37,11 @@ MANIFEST_OUT = MANIFEST
 TITLE = "PWB ITEM-DEPTH BEHAVIOR AMENDMENT MANIFEST"
 SPEC = CHANGE / "specs/polaris-project-wide-butlers-model/spec.md"
 GOVERNING = CHANGE / "GOVERNING-DEPENDENCIES.md"
+CONTRACT_COVERAGE = CHANGE / "CONTRACT-COVERAGE.md"
+COVERAGE_SCRIPT = pathlib.Path("scripts/build_polaris_project_wide_contract_coverage.py")
+CONTRACT_INDEX = pathlib.Path(
+    ".syzygy/governance/contracts/candidates/05-CONTRACT-INDEX.yaml"
+)
 
 BEHAVIOR_SUBJECTS = tuple(
     sorted(
@@ -59,10 +64,13 @@ BEHAVIOR_SUBJECTS = tuple(
 PATCHED = {
     CHANGE / "CAPABILITY-COVERAGE.md",
     CHANGE / "CONTRACT-COVERAGE-REPAIR-DELTA.md",
+    CONTRACT_COVERAGE,
     GOVERNING,
     CHANGE / "design.md",
     SPEC,
 }
+#: Subjects whose proposed bytes are generated from the others, never authored.
+DERIVED = frozenset({GOVERNING, CONTRACT_COVERAGE})
 #: Sibling packages the owner declined and never applied; their patches no
 #: longer apply and compose with nothing (POLARIS-LANE-B-DECLINED-AND-TARGET-
 #: REVISED-DIRECTION.md). Closed list: any other sibling must classify.
@@ -153,12 +161,73 @@ def unified_patch(rel: pathlib.Path, before: bytes, after: bytes) -> str:
 
 
 def regenerate_governing_patch() -> str:
-    semantic = [p for p in patch_files() if patch_target(p) != GOVERNING]
+    semantic = [p for p in patch_files() if patch_target(p) not in DERIVED]
     proposed = proposed_bytes(patches=semantic)
     generated, errors = dependencies.generate(proposed[SPEC].decode("utf-8"))
     if errors or generated is None:
         raise ValueError("proposed spec warrants do not validate: " + " | ".join(errors))
     return unified_patch(GOVERNING, read_subjects()[GOVERNING], generated.encode())
+
+
+def coverage_mirror(proposed: dict[pathlib.Path, bytes], temp: pathlib.Path) -> pathlib.Path:
+    """A scratch tree holding the contract-coverage generator and proposed bytes."""
+    for rel in (
+        COVERAGE_SCRIPT,
+        pathlib.Path("scripts/build_polaris_project_wide_spec_dependencies.py"),
+        pathlib.Path("scripts/build_capability_1_spec_dependencies.py"),
+        CONTRACT_INDEX,
+    ):
+        target = temp / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / rel, target)
+    for rel, body in proposed.items():
+        target = temp / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(body)
+    parent = pathlib.Path("openspec/changes/three-surface-poc-experience")
+    shutil.copytree(ROOT / parent, temp / parent)
+    return temp
+
+
+def run_coverage(temp: pathlib.Path, *args: str) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [sys.executable, str(temp / COVERAGE_SCRIPT), *args],
+        cwd=temp, capture_output=True, text=True,
+    )
+
+
+def generated_coverage(proposed: dict[pathlib.Path, bytes]) -> bytes:
+    """CONTRACT-COVERAGE.md as the repository generator writes it over `proposed`."""
+    with tempfile.TemporaryDirectory() as temp:
+        mirror = coverage_mirror(proposed, pathlib.Path(temp))
+        result = run_coverage(mirror)
+        if result.returncode != 0:
+            raise ValueError(
+                "contract-coverage generator failed: "
+                + (result.stdout + result.stderr).strip()
+            )
+        return (mirror / CONTRACT_COVERAGE).read_bytes()
+
+
+def coverage_findings(proposed: dict[pathlib.Path, bytes]) -> list[str]:
+    """Run the neighbouring generator's own --check over the proposed bytes."""
+    with tempfile.TemporaryDirectory() as temp:
+        mirror = coverage_mirror(proposed, pathlib.Path(temp))
+        result = run_coverage(mirror, "--check")
+        if result.returncode != 0:
+            return [
+                "contract-coverage --check fails over the proposed bytes: "
+                + (result.stdout + result.stderr).strip().splitlines()[-1]
+            ]
+    return []
+
+
+def regenerate_coverage_patch() -> str:
+    semantic = [p for p in patch_files() if patch_target(p) not in DERIVED]
+    proposed = proposed_bytes(patches=semantic)
+    return unified_patch(
+        CONTRACT_COVERAGE, read_subjects()[CONTRACT_COVERAGE], generated_coverage(proposed)
+    )
 
 
 def render_manifest(proposed: dict[pathlib.Path, bytes]) -> str:
@@ -188,21 +257,33 @@ def semantic_findings(
         "Each contract band SHALL carry an item-to-intent relation claim",
         "fixed relation role `governing-intent`",
         "SHALL NOT change or borrow the item's",
-        "One or more captured declared governing relations, none of\nwhich excludes another, make the relation claim Observed over that whole\nset",
-        "compatible\nrelations never become separate claims or a conflict",
-        "RFC2-24 reason `missing-declaration`",
+        "`governing-intent-relation`",
+        "admit no such declaration, so this requirement mints none",
+        "Two captured governing relations exclude one another only when an admitted declaration names them as mutually exclusive",
+        "class, label, basename, similarity, generated prose and a PWB-REQ-004 precedence outcome never create or resolve an exclusion",
+        "a requirement and a non-goal never exclude one another by class",
+        "each item's population of captured relations has exactly one result",
+        "With one or more, no two of which exclude one another, it is Observed over that whole set",
+        "compatible relations never become separate claims or a conflict",
+        "With any two that exclude one another, it is Unknown over the whole population with `contradicted-pending-adjudication`",
+        "however many compatible relations the population also holds",
+        "RFC2-24 reason `missing-declaration` and its resolution route",
         "`contradicted-pending-adjudication` and the owner-adjudication route",
-        "SHALL NOT infer a relation from a label, basename, similarity or generated",
-        "relation claim's complete PWB-REQ-007 tuple",
+        "SHALL NOT infer a relation from a label,",
+        "tuple SHALL be recoverable in both channels under PWB-REQ-020",
+        "A declared capability matches a catalog item only when the capability's own declared key equals that item's declared key",
+        "A capability matching no item, or more than one, receives no item detail",
+        "through PWB-REQ-011's exact-source route, which is the only place that text is encoded",
+        "this never changes the relation claim below",
         "Only an item detail for a matching declared capability may render",
         "A non-capability item detail SHALL render no",
-        "and a `reality` band sourced only from the\n"
-        "shared model",
+        "and a `reality` band sourced only from the shared model",
         "catalog-to-detail-to-exact-source path SHALL preserve the item's stable",
         "#### Scenario: Catalog item reaches exact current intent or honest absence",
     )
+    flat = " ".join(spec.split())
     for fragment in required_once:
-        count = spec.count(fragment)
+        count = flat.count(" ".join(fragment.split()))
         if count != 1:
             findings.append(f"proposed spec expected one {fragment!r}, found {count}")
     forbidden = (
@@ -362,7 +443,7 @@ def check(patches: list[pathlib.Path] | None = None) -> tuple[list[str], dict[pa
         return [str(error)], None
     if set(targets) != PATCHED or len(targets) != len(PATCHED):
         findings.append(
-            "patch targets differ from the closed five-subject population: "
+            "patch targets differ from the closed six-subject population: "
             + ", ".join(path.as_posix() for path in targets)
         )
     try:
@@ -371,6 +452,7 @@ def check(patches: list[pathlib.Path] | None = None) -> tuple[list[str], dict[pa
         return findings + [str(error)], None
     findings.extend(semantic_findings(proposed))
     findings.extend(generated_findings(proposed))
+    findings.extend(coverage_findings(proposed))
     if not (ROOT / MANIFEST).is_file():
         findings.append(f"missing manifest: {MANIFEST}")
     else:
@@ -394,17 +476,34 @@ def selftest() -> int:
         "guessed relation": ("SHALL NOT infer a relation", "MAY infer a relation"),
         "unstable relation identity": ("fixed relation role `governing-intent`", "route-selected relation role"),
         "borrowed item tuple": ("SHALL NOT change or borrow the item's", "MAY borrow the item's"),
-        "single-relation collapse": ("One or more captured declared governing relations, none of\nwhich excludes another, make", "Exactly one captured declared governing relation makes"),
-        "compatible set split": ("compatible\nrelations never become separate claims or a conflict", "compatible\nrelations become separate claims"),
-        "invalid relation reason": ("RFC2-24 reason `missing-declaration`", "reason `mapping-ambiguous`"),
+        "single-relation collapse": ("With one or more, no two of which exclude one another, it is Observed over that whole set", "With exactly one, it is Observed over that relation"),
+        "compatible set split": ("compatible relations never become separate claims or a conflict", "compatible relations become separate claims"),
+        "invalid relation reason": ("RFC2-24 reason `missing-declaration` and its resolution route", "reason `mapping-ambiguous` and its resolution route"),
         "non-capability proposal": ("A non-capability item detail SHALL render no", "A non-capability item detail MAY render"),
         "reordered bands": ("in order, an `argument` band marked", "in order, a `reality` band marked"),
-        "second reality model": ("and a `reality` band sourced only from the\nshared model", "and a `reality` band sourced from a surface model"),
+        "second reality model": ("and a `reality` band sourced only from the shared model", "and a `reality` band sourced from a surface model"),
+        "mixed population observed": ("With any two that exclude one another, it is Unknown over the whole population with `contradicted-pending-adjudication`", "With any two that exclude one another, it is Observed over the compatible subset with `contradicted-pending-adjudication`"),
+        "mixed population loses its compatible members": ("however many compatible relations the population also holds", "when no compatible relation is also held"),
+        "exclusion inferred from class": ("a requirement and a non-goal never exclude one another by class", "a requirement and a non-goal exclude one another by class"),
+        "precedence resolves exclusion": ("a PWB-REQ-004 precedence outcome never create or resolve an exclusion", "a PWB-REQ-004 precedence outcome resolves an exclusion"),
+        "exclusion undeclared": ("exclude one another only when an admitted declaration names them as mutually exclusive", "exclude one another when a label or similarity suggests it"),
+        "relation source assumed admitted": ("admit no such declaration, so this requirement mints none", "admit such a declaration, so this requirement mints it"),
+        "relation currency class unnamed": ("`governing-intent-relation`", "`item-fact`"),
+        "population without a single result": ("each item's population of captured relations has exactly one result", "each item's population of captured relations has a result"),
+        "capability matched by label": ("equals that item's declared key, compared exactly and without normalization", "resembles that item's label"),
+        "capability with several matches keeps a detail": ("A capability matching no item, or more than one, receives no item detail", "A capability matching more than one item receives each item detail"),
+        "body encoded outside the exact-source route": ("which is the only place that text is encoded", "which is one place that text is encoded"),
+        "withheld source changes the relation": ("this never changes the relation claim below", "this makes the relation claim Unknown"),
     }
+    def fuzzy(body: bytes, old: str, new: str) -> bytes:
+        pattern = r"\s+".join(re.escape(word) for word in old.split())
+        replaced, count = re.subn(pattern, lambda _m: new, body.decode("utf-8"), count=1)
+        assert count == 1, f"selftest mutant target absent: {old!r}"
+        return replaced.encode()
+
     for name, (old, new) in semantic_mutants.items():
         mutated = dict(proposed)
-        body = mutated[SPEC].replace(old.encode(), new.encode(), 1)
-        mutated[SPEC] = body
+        mutated[SPEC] = fuzzy(mutated[SPEC], old, new)
         cases.append((name, bool(semantic_findings(mutated))))
 
     stale = render_manifest(proposed).replace(sha256(proposed[SPEC]), "0" * 64, 1)
@@ -415,6 +514,26 @@ def selftest() -> int:
         sha256(proposed[SPEC]).encode(), b"0" * 64, 1
     )
     cases.append(("wrong generated digest", bool(generated_findings(wrong_generated))))
+
+    stale_coverage = dict(proposed)
+    stale_coverage[CONTRACT_COVERAGE] = read_subjects()[CONTRACT_COVERAGE]
+    cases.append(("stale derived contract-coverage summary", bool(coverage_findings(stale_coverage))))
+
+    semicolon = dict(proposed)
+    repair = CHANGE / "CONTRACT-COVERAGE-REPAIR-DELTA.md"
+    assert b"covered:PWB-REQ-013,PWB-REQ-015" in semicolon[repair]
+    semicolon[repair] = semicolon[repair].replace(
+        b"covered:PWB-REQ-013,PWB-REQ-015", b"covered:PWB-REQ-013;PWB-REQ-015", 1)
+    cases.append(("semicolon coverage separator", bool(coverage_findings(semicolon))))
+
+    unknown_requirement = dict(proposed)
+    unknown_requirement[repair] = unknown_requirement[repair].replace(
+        b"covered:PWB-REQ-013,PWB-REQ-015", b"covered:PWB-REQ-013,PWB-REQ-999", 1)
+    cases.append(("coverage row citing a missing requirement", bool(coverage_findings(unknown_requirement))))
+
+    cases.append(("generated coverage equals the proposed row",
+                  generated_coverage({**proposed, CONTRACT_COVERAGE: read_subjects()[CONTRACT_COVERAGE]})
+                  == proposed[CONTRACT_COVERAGE]))
 
     duplicate = dict(proposed)
     duplicate[SPEC] = proposed[SPEC] + (
@@ -443,7 +562,7 @@ def selftest() -> int:
                 pathlib.Path("scripts/build_polaris_project_wide_spec_dependencies.py"),
                 pathlib.Path("scripts/build_capability_1_spec_dependencies.py"),
             )
-            for rel in (script_rel, *dependency_rels):
+            for rel in (script_rel, COVERAGE_SCRIPT, CONTRACT_INDEX, *dependency_rels):
                 target = mirror / rel
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(ROOT / rel, target)
@@ -506,7 +625,7 @@ def selftest() -> int:
         applied = run_cli(mirror, "--apply", "--at-adoption")
         after = targets(mirror)
         cases.append((
-            "apply at adoption writes exactly the five proposed subjects",
+            "apply at adoption writes exactly the six proposed subjects",
             applied.returncode == 0
             and all(after[rel] == proposed[rel] for rel in BEHAVIOR_SUBJECTS)
             and {rel for rel in BEHAVIOR_SUBJECTS if after[rel] != before[rel]} == PATCHED,
@@ -598,6 +717,8 @@ def selftest() -> int:
     cases.append(("deterministic regeneration", first == second and render_manifest(first) == render_manifest(second)))
     partial_findings, _ = check([p for p in patch_files() if patch_target(p) != GOVERNING])
     cases.append(("partial landing", bool(partial_findings)))
+    coverage_partial, _ = check([p for p in patch_files() if patch_target(p) != CONTRACT_COVERAGE])
+    cases.append(("a landing without the contract-coverage subject", bool(coverage_partial)))
 
     failed = [name for name, caught in cases if not caught]
     for name, caught in cases:
@@ -613,6 +734,8 @@ def write() -> int:
     governing_patch = regenerate_governing_patch()
     target = ROOT / PROPOSED / "GOVERNING-DEPENDENCIES.md.patch"
     target.write_text(governing_patch, encoding="utf-8")
+    coverage_patch = regenerate_coverage_patch()
+    (ROOT / PROPOSED / "CONTRACT-COVERAGE.md.patch").write_text(coverage_patch, encoding="utf-8")
     proposed = proposed_bytes()
     (ROOT / MANIFEST).write_text(render_manifest(proposed), encoding="utf-8")
     print(f"wrote {target.relative_to(ROOT)} and {MANIFEST}")
