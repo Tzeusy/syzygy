@@ -164,8 +164,8 @@ def committed_blob(root: pathlib.Path, commit: str, rel: pathlib.Path) -> bytes:
 
 def manifest_row(manifest_bytes: bytes, act: Act) -> str:
     rows = packet.ROW.findall(manifest_bytes.decode())
-    if sorted(path for _sha, path in rows) != sorted(
-            s.path.as_posix() for s in packet.SUBJECTS) or len(rows) != 2:
+    paths = [path for _sha, path in rows]
+    if paths != sorted(s.path.as_posix() for s in packet.SUBJECTS):
         raise ValueError("effect manifest row population differs from the two subjects")
     return next(sha for sha, path in rows if path == _subject(act.key).path.as_posix())
 
@@ -188,7 +188,7 @@ def validate_artifact(
                       else manifest_path.read_bytes())
     row = manifest_row(manifest_bytes, act)
     if row != argument:
-        raise ValueError(f"owner argument {argument} does not match the {act.key} "
+        raise ValueError(f"owner argument {argument} is not the {act.key} "
                          f"manifest row {row}")
     if committed_blob(root, FROZEN_SUBJECT, packet.OUT) != manifest_bytes:
         raise ValueError("frozen subject does not carry the presented effect manifest bytes")
@@ -554,13 +554,13 @@ def selftest() -> int:
         pre_subject = committed_blob(ROOT, FROZEN_SUBJECT, subject.path)
         k = act.key
         results.append((f"{k}: wrong owner argument rejected",
-                        rejects(validate_artifact, "does not match the", ROOT, act, "0" * 64, False,
+                        rejects(validate_artifact, "manifest row", ROOT, act, "0" * 64, False,
                                 subject_override=pre_subject)))
         results.append((f"{k}: the other subject's row offered as this act's argument rejected",
-                        rejects(validate_artifact, "does not match the", ROOT, act, other, False,
+                        rejects(validate_artifact, "manifest row", ROOT, act, other, False,
                                 subject_override=pre_subject)))
         results.append((f"{k}: the superseded digest offered as the argument rejected",
-                        rejects(validate_artifact, "does not match the", ROOT, act,
+                        rejects(validate_artifact, "manifest row", ROOT, act,
                                 digest(pre_subject), False, subject_override=pre_subject)))
         pre = False
         try:
@@ -582,6 +582,25 @@ def selftest() -> int:
                                 subject_override=pre_subject)))
         dropped = b"\n".join(line for line in manifest_bytes.split(b"\n")
                              if not line.endswith(subject.path.as_posix().encode()))
+        swapped_lines = manifest_bytes.split(b"\n")
+        row_lines = [i for i, l in enumerate(swapped_lines) if packet.ROW.match(l.decode())]
+        swapped_lines[row_lines[0]], swapped_lines[row_lines[1]] = (
+            swapped_lines[row_lines[1]], swapped_lines[row_lines[0]])
+        results.append((f"{k}: manifest rows out of codepoint order rejected",
+                        rejects(validate_artifact, "row population differs",
+                                ROOT, act, exact, False,
+                                manifest_override=b"\n".join(swapped_lines),
+                                subject_override=pre_subject)))
+        # A builder that produced other bytes than the manifest row hashes.
+        real_apply = packet._apply
+        packet._apply = lambda root, subj, body, reverse: real_apply(
+            root, subj, body, reverse) + b"\n"
+        try:
+            results.append((f"{k}: proposed bytes other than the manifest row rejected",
+                            rejects(validate_artifact, "digest of the proposed bytes",
+                                    ROOT, act, exact, False, subject_override=pre_subject)))
+        finally:
+            packet._apply = real_apply
         results.append((f"{k}: manifest missing this subject's row rejected",
                         rejects(validate_artifact, "row population differs",
                                 ROOT, act, exact, False, manifest_override=dropped,

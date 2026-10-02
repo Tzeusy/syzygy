@@ -425,6 +425,19 @@ def selftest() -> int:
                   f'+        "signedBy": "{SIGNED_BY}",\n+        "note": "x"')(root)
             _edit(reg_patch, "@@ -17,8 +17,8 @@", "@@ -17,8 +17,9 @@")(root)
 
+        def version_only(root):
+            # The registry patch moves `version` and leaves `signedBy` as
+            # context: one changed line, which only the count predicate sees.
+            path = root / reg_patch
+            lines = path.read_text().split("\n")
+            minus_s = next(i for i, l in enumerate(lines) if l.startswith('-        "signedBy"'))
+            plus_v = next(i for i, l in enumerate(lines) if l.startswith('+        "version"'))
+            plus_s = next(i for i, l in enumerate(lines) if l.startswith('+        "signedBy"'))
+            assert (minus_s, plus_v, plus_s) == (minus_s, minus_s + 1, minus_s + 2)
+            kept = " " + lines[minus_s][1:]
+            lines[minus_s:plus_s + 1] = [lines[plus_v], kept]
+            path.write_text("\n".join(lines))
+
         mutants = (
             # name, mutation, expected finding fragment
             ("registry subject drift", _edit(
@@ -463,6 +476,8 @@ def selftest() -> int:
                 pol_patch, '\n     "id": "polaris-project-wide-butlers-model",',
                 '\n-    "id": "polaris-project-wide-butlers-model",'
                 '\n+    "id":  "polaris-project-wide-butlers-model",'),
+             "exactly the two"),
+            ("a patch that moves only the version line", version_only,
              "exactly the two"),
             ("signing record missing", lambda root: (root / SIGNING_RECORD).unlink(),
              "is missing or does not name"),
