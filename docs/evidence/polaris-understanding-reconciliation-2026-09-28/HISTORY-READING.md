@@ -40,15 +40,19 @@ it already read the status pages and the governance checker, at C1.
       - The tool keeps the earlier package `performed-exact` for that file
         only when today's digest is one a chain of later performed packages
         installed over the earlier row: each step's recorded predecessor is
-        the digest the chain has reached, and each step's own act record and
+        the digest the chain has reached, each step's act instant is strictly
+        later than the step before (so neither the package itself nor an
+        earlier one counts), and each step's own act record and
         acceptance-record block verify. Any other digest is still drift, and
         a package that is unperformed, partial or malformed extends no chain.
       - The recorder composes every performed-exact package's pair for the
         file into one pair, from the first predecessor to the last row. A
         pair that keeps the bytes composes only when its digest lies on the
-        chain. A repeated step, two steps from one digest, a cycle or a
-        second chain makes the file contested and refused, whatever the
-        packages' order or spelling; other files are unaffected.
+        chain. Each step is walked at most once, so a repeated step, two
+        steps from one digest, a cycle with no first digest, or a second
+        chain or cycle beside the first makes the file contested and
+        refused, whatever the packages' order or spelling; other files are
+        unaffected. A chain may return to a digest it passed (a step back).
     - What stays trusted: the act record, the acceptance-record block and the
       review raw the tool reads are read from the working tree, as the
       recorder reads its own act. A forged owner act is not detected here or
@@ -108,12 +112,14 @@ it already read the status pages and the governance checker, at C1.
   both widths of the per-package exception scope, the frozen view's
   delegation, the missing-tool guard, path normalization, the contested
   marking, both halves of the stored row and the contested refusal. Fifteen
-  more (round 14) pin the chain. Seven are in the tool: the history branch,
-  the predecessor step, the performed test, the walk, the start digest, the
-  per-package scope and the path key. Eight are in the recorder's
-  composition: the single first digest, the length test, the off-chain
-  test, the no-step case, the step filter, the last digest, the use of the
-  composition and the loop bound. The tool rows run its own selftest,
+  more (round 14, at `ab2a58b`) pinned the chain's first form. Seventeen
+  more (round 15) pin its current form. Nine are in the tool: the history
+  branch, the predecessor step, the later-instant test, its strictness, the
+  performed test, the walk, the per-package scope, the start digest and the
+  path key. Eight are in the recorder's composition: the single first
+  digest, the walked-step count, the off-chain test, the no-step case, the
+  step filter, the last digest, the use of the composition and the
+  walk's stop. The tool rows run its own selftest,
   except the path-key row, which runs the recorder's selftest with the tool
   pin moved to the mutant. Two of the tool's guards are equivalent and have
   no row:
@@ -226,6 +232,16 @@ it already read the status pages and the governance checker, at C1.
     - N2: after adoption, rows 66, 73, 77 and 79 are still killed, with
       different refusal text. Each row's refusal describes the tree at its
       recorded commit.
+  - Round 14 (`HISTORY-REVIEW-14-RAW.md`, REVISE) reviewed the chain's
+    first form. M1, a repeated step padding the recorder's walk to the step
+    count, is answered by walking each step at most once (which also refuses
+    a step back beside a separate cycle). M2, the tool following earlier
+    packages' steps, and M3, the tool following the package's own step from
+    a second spelling of one file, are answered by requiring each step's act
+    instant to be strictly later than the step before. N1, the recorder
+    ignoring a later package that fails its tool check, predates the chain:
+    the tool's own `--all --check` refuses that tree. N2 is answered by the
+    docstring; N3 by the act-instant ordering; N4 needed no change.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws
