@@ -4,7 +4,13 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
-import { buildPocModel, readMaterializationRecordFile, type DispatchDisclosure, type PocModel } from '@syzygy/three-surface-poc-core';
+import {
+  buildPocModel,
+  readMaterializationRecordFile,
+  type DispatchDisclosure,
+  type EffectAuthorityVerdict,
+  type PocModel,
+} from '@syzygy/three-surface-poc-core';
 
 import { TAILNET_HOST } from './browser-origin.js';
 import {
@@ -36,6 +42,10 @@ function tempDir(prefix: string): string {
   cleanups.push(directory);
   return directory;
 }
+
+// Test-only: the wired create path stays covered by injecting the verdict
+// a future owner act would have to produce. Production never passes it.
+const AUTHORIZED: EffectAuthorityVerdict = { authorized: true, effect: 'butlers-tracker-write' };
 
 function decodeHtmlText(value: string): string {
   return value
@@ -184,10 +194,30 @@ describe('renderMaterializePanel', () => {
     expect(() => assertDispatchParity(html, divergentState)).toThrow('dispatch state parity mismatch');
   });
 
-  it('is embedded on the Trajectory page', () => {
+  it('is embedded on the Trajectory page with the write foreclosed and the trigger disabled', () => {
     const model = buildFixtureModel(cleanups);
     const html = renderTrajectoryPage(model);
     expect(html).toContain('data-materialize-panel');
+    expect(html).toContain('disabled aria-disabled="true" aria-describedby="materialize-refusal">Materialize this work item</button>');
+    expect(html).not.toMatch(/<button type="submit" data-parity-field="materialize-trigger">/);
+  });
+
+  it('renders the foreclosed write with its citation and reason, and disables the trigger (P-71-Q5)', () => {
+    const model = buildFixtureModel(cleanups);
+    const html = renderMaterializePanel(model);
+    expect(html).toContain('id="materialize-refusal" data-effect-refusal="foreclosed" data-effect-citation="P-71-Q5"');
+    expect(html).toContain('Foreclosed by owner ruling P-71-Q5');
+    expect(html).toContain('POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md');
+    expect(html).toContain('The write is not available, so nothing can be written from this page.');
+    expect(html).not.toContain('Nothing is written until the button below is explicitly clicked');
+    expect(html).toContain('<button type="submit" data-parity-field="materialize-trigger" disabled aria-disabled="true" aria-describedby="materialize-refusal">');
+  });
+
+  it('enables the trigger only for an authorized verdict', () => {
+    const model = buildFixtureModel(cleanups);
+    const html = renderMaterializePanel(model, '', AUTHORIZED);
+    expect(html).toContain('<button type="submit" data-parity-field="materialize-trigger">Materialize this work item</button>');
+    expect(html).not.toContain('data-effect-refusal');
   });
 
   it('posts to the tailnet-mounted action when rendered under the tailnet mount', () => {
@@ -217,6 +247,7 @@ describe('materializeRoutes', () => {
     readonly stateDir: string;
     readonly model?: PocModel;
     readonly onMaterialized?: () => void;
+    readonly authorize?: () => EffectAuthorityVerdict;
     readonly runQuery?: (repoRoot: string, sql: string) => string;
     readonly runCreate?: (repoRoot: string, packet: unknown, attribution: string) => string;
   }) {
@@ -234,6 +265,7 @@ describe('materializeRoutes', () => {
           onMaterialized: () => {
             options.onMaterialized?.();
           },
+          ...(options.authorize === undefined ? {} : { authorize: options.authorize }),
           ...(options.runQuery === undefined ? {} : { runQuery: options.runQuery }),
           ...(options.runCreate === undefined ? {} : { runCreate: options.runCreate }),
         }),
@@ -255,6 +287,61 @@ describe('materializeRoutes', () => {
     expect(response.status).toBe(403);
   });
 
+  it('refuses the foreclosed write with a bounded typed refusal and never runs Beads (P-71-Q5)', async () => {
+    const dir = tempDir('syzygy-poc-materialize-state-');
+    let queryCalls = 0;
+    let createCalls = 0;
+    let refreshed = 0;
+    const baseUrl = await startDaemon({
+      stateDir: dir,
+      onMaterialized: () => {
+        refreshed += 1;
+      },
+      runQuery: () => {
+        queryCalls += 1;
+        return JSON.stringify([]);
+      },
+      runCreate: () => {
+        createCalls += 1;
+        return JSON.stringify({ id: 'bu-should-not-exist' });
+      },
+    });
+
+    const response = await fetch(`${baseUrl}${MATERIALIZE_HUMAN_PATH}`, { method: 'POST' });
+    expect(response.status).toBe(403);
+    const html = await response.text();
+    expect(html).toContain('data-effect-refusal="foreclosed" data-effect-citation="P-71-Q5"');
+    expect(html).toContain('Nothing was written.');
+    expect(queryCalls).toBe(0);
+    expect(createCalls).toBe(0);
+    expect(refreshed).toBe(0);
+    expect(readMaterializationRecordFile(dir)).toBeNull();
+  });
+
+  it('refuses an effect the registry does not name before any runner is called', async () => {
+    let createCalls = 0;
+    const baseUrl = await startDaemon({
+      stateDir: tempDir('syzygy-poc-materialize-state-'),
+      authorize: () => ({
+        authorized: false,
+        effect: 'butlers-tracker-write',
+        refusedBy: 'not-in-write-surface',
+        detail: 'the registry write surface does not name butlers:.beads',
+      }),
+      runCreate: () => {
+        createCalls += 1;
+        return JSON.stringify({ id: 'bu-should-not-exist' });
+      },
+    });
+
+    const response = await fetch(`${baseUrl}${MATERIALIZE_HUMAN_PATH}`, { method: 'POST' });
+    expect(response.status).toBe(403);
+    const html = await response.text();
+    expect(html).toContain('data-effect-refusal="not-in-write-surface"');
+    expect(html).not.toContain('data-effect-citation');
+    expect(createCalls).toBe(0);
+  });
+
   it('creates exactly one Bead on trigger, persists the record, and calls onMaterialized (AC2)', async () => {
     const dir = tempDir('syzygy-poc-materialize-state-');
     const fixtureModel = buildFixtureModel(cleanups);
@@ -262,6 +349,7 @@ describe('materializeRoutes', () => {
     let createCalls = 0;
     let createdPacket: unknown;
     const baseUrl = await startDaemon({
+      authorize: () => AUTHORIZED,
       stateDir: dir,
       model: fixtureModel,
       onMaterialized: () => {
@@ -293,6 +381,7 @@ describe('materializeRoutes', () => {
     // tailnet hostname — never at a `/butlers-syzygy`-prefixed path.
     const dir = tempDir('syzygy-poc-materialize-state-');
     const baseUrl = await startDaemon({
+      authorize: () => AUTHORIZED,
       stateDir: dir,
       runQuery: (_repoRoot, sql) =>
         sql.includes('external_ref') ? JSON.stringify([]) : JSON.stringify([{ revision: 'dolt-rev-http' }]),
@@ -312,6 +401,7 @@ describe('materializeRoutes', () => {
     const dir = tempDir('syzygy-poc-materialize-state-');
     let createCalls = 0;
     const baseUrl = await startDaemon({
+      authorize: () => AUTHORIZED,
       stateDir: dir,
       runQuery: (_repoRoot, sql) =>
         sql.includes('external_ref') ? JSON.stringify([]) : JSON.stringify([{ revision: 'dolt-rev-http' }]),
@@ -334,6 +424,7 @@ describe('materializeRoutes', () => {
   it('renders a named failure over HTTP and leaves no partial record when bd is missing (AC5)', async () => {
     const dir = tempDir('syzygy-poc-materialize-state-');
     const baseUrl = await startDaemon({
+      authorize: () => AUTHORIZED,
       stateDir: dir,
       runQuery: () => {
         const error = new Error('spawn bd ENOENT') as NodeJS.ErrnoException;
@@ -360,6 +451,7 @@ describe('materializeRoutes', () => {
     let queryCalls = 0;
     let createCalls = 0;
     const baseUrl = await startDaemon({
+      authorize: () => AUTHORIZED,
       model,
       stateDir: tempDir('syzygy-poc-materialize-empty-state-'),
       runQuery: () => {
@@ -388,6 +480,7 @@ describe('materializeRoutes', () => {
     writeFileSync(dir, 'occupied');
 
     const baseUrl = await startDaemon({
+      authorize: () => AUTHORIZED,
       stateDir: dir,
       runQuery: (_repoRoot, sql) =>
         sql.includes('external_ref') ? JSON.stringify([]) : JSON.stringify([{ revision: 'dolt-rev-http' }]),

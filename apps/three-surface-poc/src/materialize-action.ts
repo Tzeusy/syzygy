@@ -1,9 +1,11 @@
 import { escapeHtml, type Route } from '@syzygy/cap1-daemon';
 import {
   clearMaterializationRecordFile,
+  dispatchAuthorization,
   materializeWorkItem,
   readMaterializationRecordFile,
   writeMaterializationRecordFile,
+  type EffectAuthorityVerdict,
   type MaterializationPacket,
   type MaterializeResult,
   type PocModel,
@@ -44,10 +46,26 @@ export const MATERIALIZE_PANEL_STYLE = `
   .materialize-status { font-size: .85rem; }
   .materialize-panel button { font: inherit; background: var(--cyan); color: #06171a; border: none; padding: .55rem 1rem; cursor: pointer; }
   .materialize-panel button:hover, .materialize-panel button:focus-visible { filter: brightness(1.1); }
+  .materialize-panel button:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; filter: none; }
 `;
 
-/** Preview panel — read-only, embedded on the Trajectory page (AC1). */
-export function renderMaterializePanel(model: PocModel, mountPrefix = ''): string {
+/** The reason a refused verdict gives, in words, with the ruling cited. */
+function refusalReason(verdict: Exclude<EffectAuthorityVerdict, { authorized: true }>): string {
+  if (verdict.refusedBy === 'foreclosed') {
+    return `Foreclosed by owner ruling ${verdict.foreclosure.citation} (${verdict.foreclosure.decisionPath}): ${verdict.foreclosure.ruling}. Lifting it needs a dated owner act naming this write, then a registry-entry amendment, then a fresh implementation authorization.`;
+  }
+  return `Refused (${verdict.refusedBy}): ${verdict.detail}.`;
+}
+
+/** Preview panel — read-only, embedded on the Trajectory page (AC1). The
+ * packet preview always renders; the trigger is enabled only when the
+ * effect authority authorizes the write, and otherwise is disabled beside
+ * its refusal and citation. */
+export function renderMaterializePanel(
+  model: PocModel,
+  mountPrefix = '',
+  verdict: EffectAuthorityVerdict = dispatchAuthorization(),
+): string {
   const packet = buildTrajectoryMaterializationPacket(model);
   if (packet === null) {
     return `
@@ -63,10 +81,19 @@ export function renderMaterializePanel(model: PocModel, mountPrefix = ''): strin
       ? `<p class="materialize-status" data-parity-field="materialize-status">Not yet materialized.</p>`
       : `<p class="materialize-status" data-parity-field="materialize-status">Already materialized as <code>${escapeHtml(beadId)}</code>. Triggering again is idempotent — it will reuse this same Bead.</p>`;
 
+  const notice = verdict.authorized
+    ? `<p class="notice">Preview of the exact Bead this human-triggered action would create. Nothing is written until the button below is explicitly clicked; Syzygy never triggers this on its own.</p>`
+    : `<p class="notice">Preview of the exact Bead this action would create. The write is not available, so nothing can be written from this page.</p>
+      <p class="materialize-status" id="materialize-refusal" data-effect-refusal="${escapeHtml(verdict.refusedBy)}"${verdict.refusedBy === 'foreclosed' ? ` data-effect-citation="${escapeHtml(verdict.foreclosure.citation)}"` : ''}>${escapeHtml(refusalReason(verdict))}</p>`;
+  const label = beadId === null ? 'Materialize this work item' : 'Re-run materialize (idempotent)';
+  const trigger = verdict.authorized
+    ? `<button type="submit" data-parity-field="materialize-trigger">${label}</button>`
+    : `<button type="submit" data-parity-field="materialize-trigger" disabled aria-disabled="true" aria-describedby="materialize-refusal">${label}</button>`;
+
   return `
     <section class="materialize-panel" aria-label="Materialize planned work" data-materialize-panel>
       <h2>Materialize this work item</h2>
-      <p class="notice">Preview of the exact Bead this human-triggered action would create. Nothing is written until the button below is explicitly clicked; Syzygy never triggers this on its own.</p>
+      ${notice}
       <dl>
         <dt>Target repository</dt><dd data-parity-field="materialize-target-repo">${escapeHtml(packet.targetRepoRoot)}</dd>
         <dt>Governing intent</dt><dd data-parity-field="materialize-governing-intent">${escapeHtml(packet.governingIntent.requirementId)} (${escapeHtml(packet.governingIntent.proposalPath)})</dd>
@@ -79,7 +106,7 @@ export function renderMaterializePanel(model: PocModel, mountPrefix = ''): strin
       <p>${crossSurfaceLink({ model, className: 'governing-intent', sourceId: packet.governingIntent.requirementId, target: 'polaris', targetId: model.capabilityId, mountPrefix, label: 'Read the governing capability in Polaris' })}</p>
       ${status}
       <form method="POST" action="${escapeHtml(withMountPrefix(mountPrefix, MATERIALIZE_HUMAN_PATH))}">
-        <button type="submit" data-parity-field="materialize-trigger">${beadId === null ? 'Materialize this work item' : 'Re-run materialize (idempotent)'}</button>
+        ${trigger}
       </form>
     </section>`;
 }
@@ -107,6 +134,9 @@ export interface MaterializeRoutesOptions {
   readonly targetRepoRoot: string;
   readonly stateDir: () => string;
   readonly onMaterialized: () => void;
+  /** Test-only seam; production always asks `dispatchAuthorization()`,
+   * which forecloses the write (P-71-Q5). */
+  readonly authorize?: () => EffectAuthorityVerdict;
   /** Test-only seams; production always uses `materializeWorkItem`'s real
    * `bd` runners. */
   readonly runQuery?: (repoRoot: string, sql: string) => string;
@@ -151,6 +181,20 @@ export function materializeRoutes(options: MaterializeRoutesOptions): readonly R
     }
 
     const mountPrefix = mountPrefixForRequest(request.headers);
+    // The effect authority answers before anything else runs: a refused
+    // write never reaches a runner, a record read or a `bd` process.
+    const verdict = (options.authorize ?? dispatchAuthorization)();
+    if (!verdict.authorized) {
+      return {
+        status: 403,
+        contentType: 'text/html; charset=utf-8',
+        body: resultPage({
+          heading: 'Materialization is not available',
+          body: `<p data-effect-refusal="${escapeHtml(verdict.refusedBy)}"${verdict.refusedBy === 'foreclosed' ? ` data-effect-citation="${escapeHtml(verdict.foreclosure.citation)}"` : ''}>${escapeHtml(refusalReason(verdict))} Nothing was written.</p>`,
+          mountPrefix,
+        }),
+      };
+    }
     const result = runMaterialize(options);
     if (result.kind === 'unknown') {
       const suffix =
