@@ -19,8 +19,8 @@ silently downgrades.
 Each effective consequence has exactly one disposition. Rows that split a
 broader audited consequence use distinct repair IDs and jointly supersede it.
 
-Declared totals: **80 rows; 71 superseded base rows; 56 covered; 21 Unknown
-uncovered; 3 believed not applicable.**
+Declared totals: **92 rows; 77 superseded base rows; 60 covered; 27 Unknown
+uncovered; 5 believed not applicable.**
 
 | Repair consequence ID | Supersedes | Clause | Effective consequence | Disposition |
 |---|---|---|---|---|
@@ -55,7 +55,7 @@ uncovered; 3 believed not applicable.**
 | RFC6-17.r2 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains the used `unadopted-draft` sibling state | unknown-uncovered |
 | RFC6-17.r5 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains challenge state carried by project claims | unknown-uncovered |
 | RFC6-17.r6 | RFC6-17.c2 | RFC6-17 | Aggregate composition of reconciliation-chain and work states | believed-not-applicable |
-| RFC6-17.r7 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains `dismissed-by-decision` sibling state | unknown-uncovered |
+| RFC6-17.r7 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains `dismissed-by-decision` sibling state | covered:PWB-REQ-007 |
 | RFC6-17.r8 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains `editorial-draft` sibling state | unknown-uncovered |
 | RFC6-17.r3 | RFC6-17.c3 | RFC6-17 | Primary and secondary Unknown-reason counts remain distinct | covered:PWB-REQ-007 |
 | RFC7-16.r1 | RFC7-16.c1 | RFC7-16 | Status is evaluation-bound and carries label, tier, reason and freshness with visible staleness | unknown-uncovered |
@@ -104,6 +104,18 @@ uncovered; 3 believed not applicable.**
 | RFC7-32.r3 | RFC7-32.c2 | RFC7-32 | At least one release-milestone walkthrough is nonvisual or keyboard-only | believed-not-applicable |
 | RFC7-34.r1 | RFC7-34.c1 | RFC7-34 | Every distinction is recoverable without color, position or layout | covered:PWB-REQ-016 |
 | RFC7-34.r2 | RFC7-34.c2 | RFC7-34 | Every disclosure and anchor path is operable without a pointing device | covered:PWB-REQ-016 |
+| RFC1-12.r1 | RFC1-12.c1 | RFC1-12 | A dismissal bound to a claim identity the evaluation records as retired by a split or merge is never transferred to a successor and renders as bound to a retired identity | covered:PWB-REQ-007 |
+| RFC1-12.r3 | RFC1-12.c1 | RFC1-12 | Re-dismissal of a successor is an owner act; PWB-REQ-007 requires a new attributed human record, and whether that record must be the owner's is not yet decided | unknown-uncovered |
+| RFC1-12.r2 | RFC1-12.c1 | RFC1-12 | Challenges and claims bound to a retired identity do not transfer silently across split or merge | believed-not-applicable |
+| RFC1-20.r1 | RFC1-20.c1 | RFC1-20 | A gap leaves only by evidence-backed factual resolution or a reasoned, expiring, never-green dismissal decided at the evaluation's as-of instant; PWB-REQ-007 states this for claims, and which gap a claim-level dismissal binds is not yet decided | unknown-uncovered |
+| RFC1-25.r1 | RFC1-25.c14 | RFC1-25 | `dismisses` (Decision to Gap) keeps its exact authority semantics: a decision with mandatory reason and expiry, rendered dismissed by decision, never green; PWB-REQ-007 binds the record to a claim, and which gap that is is not yet decided | unknown-uncovered |
+| RFC1-25.r2 | RFC1-25.c14 | RFC1-25 | `challenges` and `adjudicates` keep their exact authority semantics | believed-not-applicable |
+| RFC2-1.r2 | RFC2-1.c12 | RFC2-1 | Decisions affecting precedence are identified inputs | unknown-uncovered |
+| RFC2-1.r3 | RFC2-1.c12 | RFC2-1 | Recorded dismissal decisions, with reason and expiry, are identified evaluation inputs | covered:PWB-REQ-007 |
+| RFC2-15.r1 | RFC2-15.c2 | RFC2-15 | A gap leaves only by evidence or an attributed, reasoned, expiring governed-plane dismissal, and its dismissed facts stay visible beside it on the primary surface; PWB-REQ-007 states this for claims, and which gap a claim-level dismissal binds is not yet decided | unknown-uncovered |
+| RFC6-14.r4 | RFC6-14.c5 | RFC6-14 | The `dismissed-by-decision` sibling state travels beside the unchanged epistemic tuple | covered:PWB-REQ-007 |
+| RFC6-14.r5 | RFC6-14.c5 | RFC6-14 | `challenge-pending` and `editorial-draft` travel beside the epistemic tuple | unknown-uncovered |
+| RFC6-14.r6 | RFC6-14.c5 | RFC6-14 | The used `unadopted-draft` sibling state travels beside the epistemic tuple | unknown-uncovered |
 
 ## Verification rule
 

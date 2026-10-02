@@ -450,22 +450,100 @@ secondary reason counts without a headline status, composite maturity or
 inferred success. Default Polaris status presentation SHALL not render trends,
 metric walls or count walls; coverage counts remain available on demand.
 
+A claim MAY carry the `dismissed-by-decision` sibling surface state, and only
+under a dismissal record: an attributed human decision that names the
+dismissed claim's semantic Claim identity and the primary reason it dismisses,
+states a reason and an expiry instant, and is committed to the governed plane.
+Every dismissal record present in the governed plane at an evaluation's
+snapshot is an identified input of that evaluation. When an evaluation cannot
+read that record set, or no governed-plane home for dismissal records is
+designated, it dismisses no claim and SHALL disclose its dismissed count and
+the count of each record class below as Unknown, never as zero. Only a claim
+whose label is Unknown MAY be dismissed, and never one whose primary reason is
+`contradicted-pending-adjudication`, which leaves only by owner adjudication,
+or `challenge-suspended`, which leaves only through its challenge's
+resolution. Nothing else dismisses a claim: not a view preference, a query
+parameter, browser or daemon state, an owner note or a model assertion. A
+dismissal is in effect at an evaluation only while all three hold: the
+evaluation carries the claim identity the record names, the evaluation's as-of
+instant is earlier than the record's expiry instant, and the claim's primary
+reason is the one the record dismissed, which only an Unknown claim can meet,
+since only an Unknown claim carries a primary reason. The evaluation SHALL
+decide this from its own as-of instant and never from the instant a page or
+answer is read, so a dismissal lapses only through a new identified
+evaluation. While a dismissal is in effect, the sibling state replaces the
+claim's status rendering and never its facts: the claim's label, tier, primary
+and secondary reasons, resolution route, freshness, challenge state, claim
+identity and evaluation identity stay visible and unchanged beside the
+dismissal's reason, expiry instant, author and record identity, on the same
+surface as the claim and without further disclosure, identically in the human
+and machine views. When more than one record is in effect for the same claim,
+each is disclosed that way beside the claim and the claim is counted once as
+dismissed. A dismissal SHALL not change any tuple value, render as a positive,
+resolved, aligned or current state, or count as resolved or favourable in any
+aggregate. Dismissed members SHALL remain in every per-label, tier, freshness
+and reason count of an aggregate, and SHALL additionally be counted and
+expandable as a sibling state. A record that dismisses nothing is disclosed in
+exactly one of three classes, each distinct from the others and from a
+dismissal in effect, identically in the human and machine views. The classes
+are tested in order, refused first, then bound to a retired identity, then
+lapsed, and a record is disclosed in the first class whose test it meets. It
+is a refused record when it lacks an author, reason, expiry instant, claim
+identity or dismissed primary reason; when it does not itself state that its
+author is a human, as with every record whose stated author is a model, agent
+or automated process, since the evaluation takes the author's kind from the
+record alone and never infers it; when its expiry instant is not a readable
+instant or its dismissed primary reason is not one of the closed Unknown
+reasons; or when it itself names, as the reason it dismisses, a primary reason
+that may not be dismissed. A record is never refused because of the state of
+the claim it names. A refused record is disclosed among the evaluation's
+refused records with its record identity, the test that refused it and
+whatever author, reason, expiry instant and claim identity it states.
+Otherwise it is bound to a retired identity when the evaluation records the
+claim identity it names as retired by a split or merge; it is never
+transferred to a successor, it is disclosed beside the retirement record, and
+dismissing a successor needs a new record. Otherwise it is a lapsed record
+when the evaluation's as-of instant is not earlier than its expiry instant,
+the evaluation does not carry the claim identity it names, or the claim's
+primary reason is not the one it dismissed, including because the claim is not
+Unknown or its primary reason is one that may not be dismissed. A lapsed
+record is disclosed with its reason, expiry instant, author, record identity
+and the condition that lapsed it, beside the claim when the evaluation carries
+it and otherwise among the evaluation's lapsed records; the condition names
+the test that failed and never states whether the record once took effect, so
+a record whose claim or reason never matched is lapsed under the same
+condition as one whose claim or reason changed.
+
 - **Case (sweep)**: enumerate every project entity, claim and aggregate across
   two evaluations of the same semantic subjects, including fixtures for every
   admitted label, tier, reason, freshness, challenge and sibling state plus
-  out-of-vocabulary and missing-currency cases.
+  out-of-vocabulary and missing-currency cases, and dismissal records that
+  are in effect, lapse at or after their expiry instant, outlive a change of
+  the dismissed primary reason, name a claim identity the evaluation does not
+  carry, share one claim, are bound to a retired identity, or are refused,
+  including for an author not stated to be human or an unreadable expiry
+  instant, and a record set that cannot be read.
 - **Observable**: human and machine views expose identical complete tuples;
   invalid/missing currency stays Unknown and aggregates expand to members.
 - **Oracle**: compare each tuple and tier meaning to independent literal
   vocabularies and provenance-verified currency inputs; verify stable semantic
   identity across the two evaluation instances; exhaust challenge/sibling
   separation, aggregate label/tier/freshness/reason counts and supports links;
-  zero invalid, missing or folded values decides.
+  decide each dismissal record against each evaluation's own as-of instant
+  with the checker's own statement of the rule; zero invalid, missing or
+  folded values decides.
 - **Oracle independence**: the checker hard-codes the accepted vocabularies and
   reads captured authority/evidence, importing no production vocabulary.
 - **Falsifier**: a positive claim lacks current support, a tuple field is
   absent/out of vocabulary, a reason has no route, Unknown is folded into a
-  total, or an aggregate claims its own headline status.
+  total, an aggregate claims its own headline status, or a dismissal changes
+  a tuple value, takes effect without a governed-plane record, lapses or
+  persists by reading time rather than by evaluation, hides the dismissed
+  claim's facts, leaves an aggregate's label, tier, freshness or reason
+  counts, counts as resolved or favourable in an aggregate, or discloses a
+  record that dismisses nothing in any class but the first, in the stated
+  order, whose test it meets, or an unreadable record set yields a dismissed
+  or record-class count of zero.
 
 #### Scenario: No effective currency bound is disclosed outside freshness
 
@@ -500,11 +578,53 @@ metric walls or count walls; coverage counts remain available on demand.
 - **THEN** its claim renders Unknown with the exact primary reason and route
 - **AND** its tier, freshness and evaluation identity remain visible
 
+#### Scenario: A dismissal lapses only through a new evaluation
+
+- **WHEN** a dismissal record for an Unknown claim states an expiry instant,
+  one evaluation's as-of instant falls before that instant and a second
+  evaluation's as-of instant equals it exactly
+- **THEN** the first evaluation renders the claim `dismissed-by-decision`
+  beside its unchanged tuple and the dismissal's reason, expiry instant,
+  author and record identity, and reading the first evaluation again after
+  the expiry instant has passed renders the same claim state
+- **AND** the second evaluation renders the claim without the sibling state
+  and discloses the record as lapsed, and each evaluation carries the tuple
+  values it derives from its own snapshot and as-of instant, none of them
+  changed by the dismissal
+
+#### Scenario: A dismissal replaces the rendering, never the facts
+
+- **WHEN** a dismissal is in effect for a claim
+- **THEN** the human and machine views carry the same sibling state and the
+  same complete tuple on the claim's own surface, and every aggregate keeps
+  the claim in its per-label, tier, freshness and reason counts, counts it
+  additionally as dismissed and never counts it as resolved or favourable
+- **AND** a record without an author, reason or expiry instant, a record
+  whose stated author is a model, a record whose expiry instant is not a
+  readable instant, and a record whose own dismissed primary reason is
+  `contradicted-pending-adjudication` or `challenge-suspended`, each dismiss
+  nothing and are disclosed among the evaluation's refused records
+
+#### Scenario: A record that no longer applies is lapsed or retired, never refused
+
+- **WHEN** a complete dismissal record names a primary reason that is no
+  longer the claim's primary reason at an evaluation, a second complete
+  record names a claim identity that the evaluation records as retired by a
+  split or merge, and a third complete record names a claim identity the
+  evaluation neither carries nor records as retired
+- **THEN** the first record dismisses nothing and is disclosed beside the
+  claim as lapsed, with the condition that lapsed it, even when the claim's
+  new primary reason is one that may not be dismissed
+- **AND** the second record is never transferred to a successor and is
+  disclosed as bound to a retired identity beside the retirement record, the
+  third is disclosed as lapsed with the condition that the evaluation does
+  not carry its claim identity, and no record is disclosed as refused
+
 ```yaml
 warrants:
   primary: VIS-2
-  doctrine: [VIS-1, VIS-2, VIS-7]
-  contracts: [RFC1-18, RFC1-19, RFC1-24, RFC2-9, RFC2-10, RFC2-23, RFC2-24, RFC2-25, RFC6-14, RFC6-17, RFC7-16, RFC7-33]
+  doctrine: [VIS-1, VIS-2, VIS-4, VIS-6, VIS-7]
+  contracts: [RFC1-12, RFC1-18, RFC1-19, RFC1-20, RFC1-24, RFC1-25, RFC2-1, RFC2-9, RFC2-10, RFC2-15, RFC2-23, RFC2-24, RFC2-25, RFC6-14, RFC6-17, RFC7-16, RFC7-33]
   policies: [CC-BAR-3, CC-BAR-4, CC-TEST-5, CC-TEST-6]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []

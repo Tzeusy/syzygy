@@ -1663,6 +1663,24 @@ PWB_MACHINE_VIEW_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_OPENING_BAND_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_MISSING_CURRENCY_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_DISMISSAL_EXPIRY_SUBJECTS = PWB_STATE1_SUBJECTS
+#: Packages signed by version tag under
+#: `decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`, in
+#: performance order: `(key, record stem, label, subject manifest, act path,
+#: subjects, owner packet)`. A version-tagged sign-off carries no phrase and no
+#: digest argument. Everything below derives from this table: the
+#: `PWB_SUCCESSOR_CHAIN` links, the CG-7h inputs, the packet exemption and the
+#: synthetic-tree fixtures. Adding the next package is one row here (plus its
+#: constants above and its row in `record_versioned_signoff.py`).
+VERSIONED_PWB_PACKAGES = (
+    ("missing-currency", "PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO",
+     PWB_MISSING_CURRENCY_LABEL, PWB_MISSING_CURRENCY_SUBJECT,
+     PWB_MISSING_CURRENCY_ACT, PWB_MISSING_CURRENCY_SUBJECTS,
+     f"{PWB_MISSING_CURRENCY_DIR}/OWNER-DECISION-PACKET.md"),
+    ("dismissal-expiry", "PWB-DISMISSAL-EXPIRY-AMENDMENT",
+     PWB_DISMISSAL_EXPIRY_LABEL, PWB_DISMISSAL_EXPIRY_SUBJECT,
+     PWB_DISMISSAL_EXPIRY_ACT, PWB_DISMISSAL_EXPIRY_SUBJECTS,
+     f"{PWB_DISMISSAL_EXPIRY_DIR}/OWNER-DECISION-PACKET.md"),
+)
 #: Successor chain over the PWB behavioral package, in performance order.
 #: The latest validly performed link binds current bytes; every earlier
 #: link's rows are immutable act-time history.
@@ -1684,11 +1702,10 @@ PWB_SUCCESSOR_CHAIN = (
     (PWB_MACHINE_VIEW_LABEL, PWB_MACHINE_VIEW_SUBJECT,
      PWB_MACHINE_VIEW_ACT, PWB_MACHINE_VIEW_SUBJECTS),
     # Lane B was declined 2026-10-02 and never performed, so its link left the
-    # chain; the missing-currency scenario is the next candidate, signed by
-    # version under the Scope A direction.
-    (PWB_MISSING_CURRENCY_LABEL, PWB_MISSING_CURRENCY_SUBJECT,
-     PWB_MISSING_CURRENCY_ACT, PWB_MISSING_CURRENCY_SUBJECTS),
-)
+    # chain. The version-tagged packages follow in their table order.
+) + tuple((label, subject, act, subjects)
+          for _key, _stem, label, subject, act, subjects, _packet
+          in VERSIONED_PWB_PACKAGES)
 GENERAL_BOOTSTRAP_PWB_PATHS = tuple(sorted((
     "openspec/changes/polaris-project-wide-butlers-model/"
     "CONTRACT-COVERAGE-REPAIR-DELTA.md",
@@ -2768,10 +2785,9 @@ _activate_scoped_values_copy_registry()
 #: act-argument copy: it is dropped from the copy registry and CG-7e skips it.
 #: The exemption is existence-gated and per package; every digest-bound act
 #: already performed, and doctrine and accepted contracts, keep their copies.
-VERSIONED_SIGNOFF_PACKAGES = (
-    ("PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO",
-     f"{PWB_MISSING_CURRENCY_DIR}/OWNER-DECISION-PACKET.md"),
-)
+VERSIONED_SIGNOFF_PACKAGES = tuple(
+    (stem, packet) for _key, stem, _label, _subject, _act, _subjects, packet
+    in VERSIONED_PWB_PACKAGES)
 
 
 def _versioned_signoff_records(stem, root=None):
@@ -3509,10 +3525,7 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                                truth_dedicated_record=None,
                                truth_manifest_body=None,
                                truth_manifest_digest=None,
-                               missing_currency_dedicated_record=None,
-                               missing_currency_manifest_body=None,
-                               missing_currency_manifest_digest=None,
-                               missing_currency_versioned_records=None,
+                               versioned_inputs=None,
                                machine_view_dedicated_record=None,
                                machine_view_manifest_body=None,
                                machine_view_manifest_digest=None,
@@ -3665,15 +3678,14 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         truth_manifest_body = read_if_present(PWB_TRUTH_AMENDMENT_SUBJECT)
     if truth_manifest_digest is None:
         truth_manifest_digest = current_digest(PWB_TRUTH_AMENDMENT_SUBJECT)
-    if missing_currency_dedicated_record is None:
-        missing_currency_dedicated_record = read_if_present(PWB_MISSING_CURRENCY_ACT)
-    if missing_currency_manifest_body is None:
-        missing_currency_manifest_body = read_if_present(PWB_MISSING_CURRENCY_SUBJECT)
-    if missing_currency_manifest_digest is None:
-        missing_currency_manifest_digest = current_digest(PWB_MISSING_CURRENCY_SUBJECT)
-    if missing_currency_versioned_records is None:
-        missing_currency_versioned_records = _versioned_signoff_records(
-            "PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO")
+    # Version-tagged packages: label -> (dedicated record, manifest body,
+    # manifest digest, version-tagged records). A fixture passes explicit
+    # empties for the packages its synthetic tree does not perform.
+    versioned_inputs = dict(versioned_inputs or {})
+    for _key, _stem, _label, _subject, _act, _subjects, _packet in VERSIONED_PWB_PACKAGES:
+        versioned_inputs.setdefault(_label, (
+            read_if_present(_act), read_if_present(_subject),
+            current_digest(_subject), _versioned_signoff_records(_stem)))
     if machine_view_dedicated_record is None:
         machine_view_dedicated_record = read_if_present(PWB_MACHINE_VIEW_ACT)
     if machine_view_manifest_body is None:
@@ -3841,9 +3853,6 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         PWB_TRUTH_AMENDMENT_LABEL: (
             truth_dedicated_record, truth_manifest_body,
             truth_manifest_digest),
-        PWB_MISSING_CURRENCY_LABEL: (
-            missing_currency_dedicated_record, missing_currency_manifest_body,
-            missing_currency_manifest_digest),
         PWB_OPENING_BAND_LABEL: (
             opening_band_dedicated_record, opening_band_manifest_body,
             opening_band_manifest_digest),
@@ -3854,6 +3863,8 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
             machine_view_dedicated_record, machine_view_manifest_body,
             machine_view_manifest_digest),
     }
+    for _label, _inputs in versioned_inputs.items():
+        chain_inputs[_label] = _inputs[:3]
     attempted_links = []
     for label, subject, act_rel, subjects in PWB_SUCCESSOR_CHAIN:
         dedicated_record_body, body, manifest_digest = chain_inputs[label]
@@ -3865,8 +3876,7 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
             link_specs, record=dedicated_record_body).get(label, ())
         # A version-tagged sign-off (Scope A) binds the package's current
         # manifest instead of a phrase digest, so a later version may move it.
-        versioned = (label == PWB_MISSING_CURRENCY_LABEL
-                     and bool(missing_currency_versioned_records))
+        versioned = bool(versioned_inputs.get(label, ("", "", None, ()))[3])
         if not (link_recorded or link_dedicated or versioned):
             continue
         findings_before_link = len(findings)
@@ -7309,7 +7319,8 @@ def selftest():
                   _one == {f"{PWB_MISSING_CURRENCY_DIR}/OWNER-DECISION-PACKET.md"}
                   and f"{PWB_MISSING_CURRENCY_DIR}/OWNER-DECISION-PACKET.md" not in _registry
                   and "other.md" in _registry
-                  and len(_registry) == len(VERSIONED_SIGNOFF_PACKAGES)))
+                  and len(_registry) == len(VERSIONED_SIGNOFF_PACKAGES)
+                  and f"{PWB_DISMISSAL_EXPIRY_DIR}/OWNER-DECISION-PACKET.md" in _registry))
 
     absent = _selftest_polaris_edit_repair_candidate_registration(False)
     cases.append(("CG-7d/7e absent edit-repair manifest registers no candidate phrase or packet",
@@ -7413,13 +7424,6 @@ def selftest():
         cases.append((f"CG-7e performed PWB {name} act requires aggregate record copy",
                       row[0] == "FAIL"
                       and any(PERFORMED_ACT_RECORD in d for d in row[4])))
-
-    registered, activated = _selftest_pwb_candidate_act_absent(
-        PWB_DISMISSAL_EXPIRY_LABEL, PWB_DISMISSAL_EXPIRY_DIR,
-        _activate_pwb_dismissal_expiry_act_copy_registry)
-    cases.append(("CG-7e unperformed PWB dismissal-expiry act watches the "
-                  "packet copy and registers no act-record copy",
-                  registered and activated == {}))
 
     for act in POLARIS_GENERATOR_APPROVAL_ACTS:
         link = (POLARIS_GENERATOR_APPROVAL_LABEL, POLARIS_GENERATOR_APPROVAL_SUBJECT,
@@ -7716,13 +7720,19 @@ def selftest():
                   and any("PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt" in d
                           for d in row[4])))
 
-    row = _selftest_cg7h("missing-currency-versioned-valid")
-    cases.append(("CG-7h version-tagged PWB sign-off binds the current manifest",
-                  row[0] == "OK" and row[3] == 0))
-    row = _selftest_cg7h("missing-currency-versioned-drift")
-    cases.append(("CG-7h version-tagged PWB sign-off rejects a drifted subject",
+    for _key, *_rest in VERSIONED_PWB_PACKAGES:
+        row = _selftest_cg7h(f"versioned-{_key}-valid")
+        cases.append((f"CG-7h version-tagged {_key} sign-off binds the current manifest",
+                      row[0] == "OK" and row[3] == 0))
+        row = _selftest_cg7h(f"versioned-{_key}-drift")
+        cases.append((f"CG-7h version-tagged {_key} sign-off rejects a drifted subject",
+                      row[0] == "FAIL"
+                      and any(PWB_STATE1_SUBJECTS[0] in d for d in row[4])))
+    row = _selftest_cg7h("versioned-latest-stale")
+    cases.append(("CG-7h a later version-tagged sign-off retires the earlier package's "
+                  "rows as the current binding",
                   row[0] == "FAIL"
-                  and any(PWB_MISSING_CURRENCY_SUBJECTS[0] in d for d in row[4])))
+                  and any(PWB_STATE1_SUBJECTS[0] in d for d in row[4])))
 
     row = _selftest_cg7h("contract-valid")
     cases.append(("CG-7h exact two-module contract successor passes at 81",
@@ -8575,6 +8585,19 @@ THIRD_LINK = ("SYNTHETIC THIRD CONTRACT LINK", "selftest/THIRD-MANIFEST.txt",
               (POLARIS_NO_SIGNAL_PATHS[0],))
 
 
+#: Synthetic-tree kinds for the version-tagged packages, from the table:
+#: `kind -> (packages performed, index of the package whose rows the tree
+#: holds, drift the first subject)`. The tree holding an earlier package's
+#: rows while a later one is performed must fail: only the latest binds.
+_VERSIONED_FIXTURE_KINDS = {
+    **{f"versioned-{row[0]}-valid": (i + 1, i, False)
+       for i, row in enumerate(VERSIONED_PWB_PACKAGES)},
+    **{f"versioned-{row[0]}-drift": (i + 1, i, True)
+       for i, row in enumerate(VERSIONED_PWB_PACKAGES)},
+    "versioned-latest-stale": (len(VERSIONED_PWB_PACKAGES), 0, False),
+}
+
+
 def _selftest_cg7h(kind):
     global PWB_SUCCESSOR_CHAIN
     class Cap:
@@ -8643,8 +8666,7 @@ def _selftest_cg7h(kind):
         "valid-truth-successor", "truth-one-record", "truth-conflict",
         "truth-current-drift", "truth-without-state1", "truth-10",
         "truth-candidate-no-act",
-        "missing-currency-versioned-valid", "missing-currency-versioned-drift",
-    }
+    } | set(_VERSIONED_FIXTURE_KINDS)
     successor_kinds = {
         "successor-one-record", "successor-conflict", "valid-successor",
         "successor-current-drift", "successor-10", "successor-12",
@@ -8716,27 +8738,34 @@ def _selftest_cg7h(kind):
             # successor act exists: candidate bytes alone bind nothing
             pass
 
-    # Version-tagged sign-offs (Scope A): the current manifest binds the
-    # tree, with no phrase digest. The PWB chain is narrowed to the links this
-    # fixture performs so the scoped link has its predecessors.
-    missing_currency_versioned = {}
-    missing_currency_chain = None
-    if kind in ("missing-currency-versioned-valid", "missing-currency-versioned-drift"):
-        missing_currency_rows = [(digest(f"missing-currency-{i}"), path)
-                       for i, path in enumerate(PWB_MISSING_CURRENCY_SUBJECTS)]
-        for stated, path in missing_currency_rows:
+    # Version-tagged sign-offs (Scope A): the latest performed package's
+    # current manifest binds the tree, with no phrase digest. The PWB chain is
+    # narrowed to the links this fixture performs so each versioned link has
+    # its predecessors; every other table package gets explicit empties.
+    versioned_inputs = {
+        row[2]: ("", "", None, [])
+        for row in VERSIONED_PWB_PACKAGES}
+    versioned_chain = None
+    if kind in _VERSIONED_FIXTURE_KINDS:
+        performed_count, tree_index, drifted = _VERSIONED_FIXTURE_KINDS[kind]
+        performed_rows = VERSIONED_PWB_PACKAGES[:performed_count]
+        manifest_texts = {}
+        for index, (key, stem, label, subject, _act, subjects, _packet) in enumerate(
+                performed_rows):
+            rows = [(digest(f"{key}-{i}"), path) for i, path in enumerate(subjects)]
+            text = "".join(f"{stated}  {path}\n" for stated, path in rows)
+            manifest_texts[index] = rows
+            current[subject] = digest(text)
+            versioned_inputs[label] = (
+                "", text, digest(text), [f"{stem}-SIGNOFF-v1.0.md"])
+        for stated, path in manifest_texts[tree_index]:
             current[path] = stated
-        if kind == "missing-currency-versioned-drift":
-            current[PWB_MISSING_CURRENCY_SUBJECTS[0]] = digest("post-missing-currency-drift")
-        missing_currency_manifest_text = "".join(f"{stated}  {path}\n" for stated, path in missing_currency_rows)
-        current[PWB_MISSING_CURRENCY_SUBJECT] = digest(missing_currency_manifest_text)
-        missing_currency_versioned = dict(
-            missing_currency_versioned_records=["PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-SIGNOFF-v1.0.md"],
-            missing_currency_dedicated_record="", missing_currency_manifest_body=missing_currency_manifest_text,
-            missing_currency_manifest_digest=digest(missing_currency_manifest_text))
-        missing_currency_chain = tuple(link for link in PWB_SUCCESSOR_CHAIN
-                             if link[0] in (PWB_STATE1_LABEL, PWB_TRUTH_AMENDMENT_LABEL,
-                                            PWB_MISSING_CURRENCY_LABEL))
+        if drifted:
+            current[performed_rows[tree_index][5][0]] = digest("post-versioned-drift")
+        versioned_chain = tuple(
+            link for link in PWB_SUCCESSOR_CHAIN
+            if link[0] in (PWB_STATE1_LABEL, PWB_TRUTH_AMENDMENT_LABEL)
+            or link[0] in {row[2] for row in performed_rows})
     if kind == "top-level-drift":
         current[top_paths[0]] = digest("drifted-top-level")
     elif kind == "nested-contract-drift":
@@ -9065,8 +9094,8 @@ def _selftest_cg7h(kind):
 
     c = Cap()
     kept_chain = PWB_SUCCESSOR_CHAIN
-    if missing_currency_chain is not None:
-        PWB_SUCCESSOR_CHAIN = missing_currency_chain
+    if versioned_chain is not None:
+        PWB_SUCCESSOR_CHAIN = versioned_chain
     cg7h_general_bootstrap_act(
         c, act_record=performed, dedicated_record=dedicated,
         manifest_body=manifest, transaction_digest=transaction,
@@ -9088,9 +9117,7 @@ def _selftest_cg7h(kind):
         render_mode_manifest_digest=None,
         opening_band_dedicated_record="", opening_band_manifest_body="",
         opening_band_manifest_digest=None,
-        **{**dict(missing_currency_dedicated_record="", missing_currency_manifest_body="",
-                  missing_currency_manifest_digest=None, missing_currency_versioned_records=[]),
-           **missing_currency_versioned},
+        versioned_inputs=versioned_inputs,
         contract_chain_inputs=contract_inputs,
         contract_chain=(CONTRACT_SUCCESSOR_CHAIN + (THIRD_LINK,)
                         if kind == "restyle-three-link-cascade" else None),

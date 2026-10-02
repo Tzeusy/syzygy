@@ -136,11 +136,40 @@ SUPERSEDED_ROWS = {
 }
 
 
+def _later_signed_rows(rel: pathlib.Path) -> set[str]:
+    """Digests a performed version-tagged package's manifest declares for
+    `rel`: a package counts as performed once `<STEM>-SIGNOFF-v*.md` exists in
+    decisions, its candidate directory being the lowercased stem."""
+    found: set[str] = set()
+    decisions = ROOT / ".syzygy/governance/decisions"
+    candidates = ROOT / ".syzygy/governance/contracts/candidates"
+    for record in decisions.glob("*-SIGNOFF-v*.md"):
+        stem = record.name.rsplit("-SIGNOFF-v", 1)[0].lower()
+        for manifest in (candidates / stem).glob("*MANIFEST.txt"):
+            for sha, path in ROW.findall(manifest.read_text()):
+                if path == rel.as_posix():
+                    found.add(sha)
+    return found
+
+
 def superseded_digest(rel: pathlib.Path) -> str | None:
     entry = SUPERSEDED_ROWS.get(rel)
-    if entry is None or not (ROOT / entry[0]).is_file():
-        return None
-    return entry[1]
+    if entry is not None and (ROOT / entry[0]).is_file():
+        return entry[1]
+    # General rule: a row a later performed sign-off re-patched stays at the
+    # digest this package already offered, when the tree hashes to that
+    # sign-off's own manifest row.
+    target = ROOT / rel
+    if entry is None and target.is_file():
+        actual = sha256(target.read_bytes())
+        if actual in _later_signed_rows(rel):
+            for out in (BEHAVIOR_OUT, EFFECT_OUT):
+                if (ROOT / out).is_file():
+                    for sha, path in ROW.findall((ROOT / out).read_text()):
+                        # Only a row the tree has genuinely moved past.
+                        if path == rel.as_posix() and sha != actual:
+                            return sha
+    return None
 
 
 def sha256(data: bytes) -> str:
