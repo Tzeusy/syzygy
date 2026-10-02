@@ -371,9 +371,19 @@ def _inputs() -> list[pathlib.Path]:
 
 
 def _scratch(dest: pathlib.Path) -> None:
+    """Copy every input into `dest` in the pre-act state.
+
+    The superseding records are not inputs, so once an act is performed the
+    subject is replayed as the bytes the act in force bound (the tree with
+    the patch reversed); the fixtures then mean the same before and after
+    the 2026-10-02 acts.
+    """
     for rel in _inputs():
         (dest / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT / rel, dest / rel)
+    for subject in SUBJECTS:
+        if performed(ROOT, subject):
+            (dest / subject.path).write_bytes(base_bytes(ROOT, subject))
 
 
 def _edit(rel: pathlib.Path, old: str, new: str):
@@ -448,6 +458,12 @@ def selftest() -> int:
                 pol_patch, '\n   "accessBoundary": {\n',
                 '\n-  "accessBoundary": {\n+  "accessBoundaries": {\n'),
              "more than governingBehaviorContract"),
+            # Round-1 finding 1: JSON-equal, so only the two-line predicate sees it.
+            ("a whitespace-only line change", _edit(
+                pol_patch, '\n     "id": "polaris-project-wide-butlers-model",',
+                '\n-    "id": "polaris-project-wide-butlers-model",'
+                '\n+    "id":  "polaris-project-wide-butlers-model",'),
+             "exactly the two"),
             ("signing record missing", lambda root: (root / SIGNING_RECORD).unlink(),
              "is missing or does not name"),
             ("signing manifest drops the spec row", _edit(

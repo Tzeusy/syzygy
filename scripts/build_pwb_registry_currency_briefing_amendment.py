@@ -126,6 +126,30 @@ def live_bytes() -> bytes:
     return target.read_bytes()
 
 
+#: The act that superseded this one for the registry role on 2026-10-02 (the
+#: behaviour-contract re-pin). Once its record exists the tree carries the
+#: re-pinned bytes, and the bytes this act bound are the tree with that
+#: package's patch reversed, which its builder checks against this act's
+#: exact digest.
+LATER_ACT_RECORD = pathlib.Path(
+    ".syzygy/governance/decisions/"
+    "PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md"
+)
+
+
+def superseded_later() -> bool:
+    return (ROOT / LATER_ACT_RECORD).is_file()
+
+
+def act_bytes() -> bytes:
+    """The bytes this act bound: the tree, or the tree before the later re-pin."""
+    if not superseded_later():
+        return live_bytes()
+    import build_pwb_behavior_contract_repin as repin
+    registry = next(s for s in repin.SUBJECTS if s.key == "registry")
+    return repin.base_bytes(ROOT, registry)
+
+
 def current_bytes(override: bytes | None = None) -> bytes:
     """The bytes the patch applies to: the tree before the act, the frozen package commit after it."""
     if override is not None:
@@ -310,8 +334,13 @@ def check() -> list[str]:
     target = ROOT / OUT
     findings.extend(manifest_findings(
         target.read_text() if target.is_file() else None, render(proposed)))
-    if performed() and live_bytes() != proposed:
-        findings.append(f"the act is performed but {SUBJECT.as_posix()} is not the proposed bytes")
+    try:
+        bound = act_bytes() if performed() else None
+    except ValueError as error:
+        return findings + [str(error)]
+    if bound is not None and bound != proposed:
+        findings.append(f"the act is performed but {SUBJECT.as_posix()} is not the proposed bytes"
+                        + (" once the later re-pin is reversed" if superseded_later() else ""))
     return findings
 
 
@@ -579,7 +608,9 @@ def main(argv: list[str]) -> int:
             for finding in findings:
                 print(f"  {finding}")
             return 1
-        state = ("performed: the subject carries the proposed bytes" if performed()
+        state = ("performed and superseded 2026-10-02: the re-pinned subject reverses "
+                 "to the proposed bytes" if performed() and superseded_later()
+                 else "performed: the subject carries the proposed bytes" if performed()
                  else "the patch applies to the bound bytes")
         print(f"PWB registry currency-and-briefing amendment manifest matches the "
               f"1 proposed subject ({len(CURRENCY_CLASSES)} currency bounds, "

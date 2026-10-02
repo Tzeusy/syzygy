@@ -1,7 +1,7 @@
 // Governance-inputs loader: hermetic classification of what the tree
 // holds, and the real-tree evaluation of the three current PWB acts (the
-// 2026-09-02 consent act, the 2026-09-05 policy amendment and the
-// 2026-09-30 registry amendment).
+// 2026-09-02 consent act and the 2026-10-02 policy and registry
+// behaviour-contract re-pin acts).
 //
 // The real-tree test reads only Syzygy's own governance tree. It never
 // touches a Butlers repository, and the reader it hands the observer is a
@@ -32,7 +32,7 @@ import {
 } from './governance-inputs.js';
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
-const EVALUATION_INSTANT = '2026-10-01T00:00:00Z';
+const EVALUATION_INSTANT = '2026-10-03T00:00:00Z';
 const CURRENT_COMMIT = 'f'.repeat(40);
 const cleanups: string[] = [];
 
@@ -164,7 +164,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     const tree = fakeTree();
     tree.files.delete(PWB_ACT_RECORDS.policy);
     const inputs = loaderFor(tree);
-    expect(inputs.policy.actRecord).toEqual({ kind: 'git-ref-only', ref: 'pwb-approve-policy-signed-2026-09-05' });
+    expect(inputs.policy.actRecord).toEqual({ kind: 'git-ref-only', ref: 'pwb-approve-policy-signed-2026-10-02' });
     const evaluation = evaluateBodyReadAuthority(inputs);
     expect(evaluation.policy.kind === 'invalid' && evaluation.policy.caseId).toBe('policy:git-ref-only');
   });
@@ -183,7 +183,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     const tree = fakeTree();
     tree.files.delete(PWB_ACT_RECORDS.registry);
     tree.files.delete(PWB_AUTHORITY_ARTIFACTS.registry);
-    tree.tags.delete('pwb-adopt-registry-entry-signed-2026-09-30');
+    tree.tags.delete('pwb-adopt-registry-entry-signed-2026-10-02');
     const inputs = loaderFor(tree);
     expect(inputs.registry.artifact).toEqual({ kind: 'missing' });
     expect(inputs.registry.actRecord).toEqual({ kind: 'absent' });
@@ -257,7 +257,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     );
     tree.files.set(
       '.syzygy/governance/decisions/PWB-LATER-SUPERSESSION-ACT.md',
-      '# Later act\n\nAct identity: `PWB-LATER-2026-09-11`\n\nSupersession / revocation: supersedes `PWB-OBSERVER-REGISTRY-ENTRY-CURRENCY-BRIEFING-AMENDMENT-2026-09-30`\n',
+      '# Later act\n\nAct identity: `PWB-LATER-2026-09-11`\n\nSupersession / revocation: supersedes `PWB-OBSERVER-REGISTRY-ENTRY-BEHAVIOR-CONTRACT-REPIN-2026-10-02`\n',
     );
     const inputs = loaderFor(tree);
     expect(inputs.consent.lifecycle).toEqual({ revokedBy: '.syzygy/governance/decisions/PWB-LATER-REVOCATION-ACT.md' });
@@ -272,7 +272,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     const tree = fakeTree();
     tree.files.set(
       '.syzygy/governance/decisions/PWB-LATER-POLICY-AMENDMENT-ACT.md',
-      `# Later act\n\nAct identity: \`PWB-LATER-2026-09-12\`\n\nSupersession / revocation: this act supersedes, for the \`approve-policy\` role\nonly, the 2026-09-05 act recorded at \`${PWB_ACT_RECORDS.policy}\`. That\nrecord remains immutable history.\n`,
+      `# Later act\n\nAct identity: \`PWB-LATER-2026-09-12\`\n\nSupersession / revocation: this act supersedes, for the \`approve-policy\` role\nonly, the 2026-10-02 act recorded at \`${PWB_ACT_RECORDS.policy}\`. That\nrecord remains immutable history.\n`,
     );
     const inputs = loaderFor(tree);
     expect(inputs.policy.lifecycle).toEqual({ supersededBy: '.syzygy/governance/decisions/PWB-LATER-POLICY-AMENDMENT-ACT.md' });
@@ -298,6 +298,54 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     const evaluation = evaluateBodyReadAuthority(loaderFor(tree));
     expect(evaluation.policy.kind === 'invalid' && evaluation.policy.caseId).toBe('policy:supersession-target-wrong');
     expect(evaluation.registry.kind).toBe('valid');
+  });
+
+  it('direction C: the gate admits under the 2026-10-02 re-pin acts and refuses when either act names another digest', () => {
+    const tree = fakeTree();
+    const expected = pwbAuthorityExpectations(EVALUATION_INSTANT).authorities;
+    expect(expected.policy.actIdentity).toBe('PWB-SECRET-CLASSIFICATION-POLICY-APPROVAL-BEHAVIOR-CONTRACT-REPIN-2026-10-02');
+    expect(expected.registry.actIdentity).toBe('PWB-OBSERVER-REGISTRY-ENTRY-BEHAVIOR-CONTRACT-REPIN-2026-10-02');
+    expect(expected.policy.recordingTag).toBe('pwb-approve-policy-signed-2026-10-02');
+    expect(expected.registry.recordingTag).toBe('pwb-adopt-registry-entry-signed-2026-10-02');
+    // The version anchors are unchanged by direction C.
+    expect(expected.policy.scopeAnchors).toContain('1.1.0-candidate.1');
+    expect(expected.registry.scopeAnchors).toContain('1.2.0-candidate.1');
+    const admitted = evaluateBodyReadAuthority(loaderFor(tree));
+    expect(admitted.admits).toBe(true);
+    for (const kind of ['policy', 'registry'] as const) {
+      const record = tree.files.get(PWB_ACT_RECORDS[kind]) ?? '';
+      const artifactDigest = sha256(new TextEncoder().encode(tree.files.get(PWB_AUTHORITY_ARTIFACTS[kind]) ?? ''));
+      expect(record).toContain(`Exact digest (SHA-256): \`${artifactDigest}\``);
+      // Mutate every copy of the digest in the record (and its tagged blob),
+      // so phrase and digest still agree with each other but not the artifact.
+      const flipped = (artifactDigest[0] === '0' ? '1' : '0') + artifactDigest.slice(1);
+      const mutated = fakeTree();
+      const mutatedRecord = record.split(artifactDigest).join(flipped);
+      expect(mutatedRecord).not.toContain(artifactDigest);
+      mutated.files.set(PWB_ACT_RECORDS[kind], mutatedRecord);
+      for (const key of mutated.taggedRecords.keys()) {
+        if (key.endsWith(`:${PWB_ACT_RECORDS[kind]}`)) mutated.taggedRecords.set(key, mutatedRecord);
+      }
+      const refused = evaluateBodyReadAuthority(loaderFor(mutated));
+      expect(refused.admits).toBe(false);
+      expect(refused[kind].kind === 'invalid' && refused[kind].caseId).toBe(`${kind}:exact-digest-wrong`);
+      const other = kind === 'policy' ? 'registry' : 'policy';
+      expect(refused[other].kind).toBe('valid');
+    }
+  });
+
+  it('the superseded predecessor records no longer satisfy the gate', () => {
+    for (const kind of ['policy', 'registry'] as const) {
+      const tree = fakeTree();
+      const predecessor = readFileSync(join(REPO_ROOT, PWB_SUPERSEDED_ACT_RECORDS[kind]), 'utf8');
+      tree.files.set(PWB_ACT_RECORDS[kind], predecessor);
+      for (const key of tree.taggedRecords.keys()) {
+        if (key.endsWith(`:${PWB_ACT_RECORDS[kind]}`)) tree.taggedRecords.set(key, predecessor);
+      }
+      const evaluation = evaluateBodyReadAuthority(loaderFor(tree));
+      expect(evaluation.admits).toBe(false);
+      expect(evaluation[kind].kind).toBe('invalid');
+    }
   });
 
   it('an edited artifact breaks its act’s digest binding', () => {
@@ -369,11 +417,17 @@ describe('loadBodyReadAuthorityInputs (real Syzygy governance tree)', () => {
         );
       }
     } else {
-      // Shallow/untagged checkout (hosted CI): the recording tags cannot be
-      // resolved, so every act fails closed on exactly that case.
+      // Shallow, untagged or partly tagged checkout (hosted CI, or a branch
+      // whose act tags are created at merge): each act whose recording tag
+      // does not resolve fails closed on exactly that case, each act whose
+      // tag does resolve stays valid, and the gate admits nothing.
       expect(evaluation.admits).toBe(false);
       for (const kind of ['consent', 'policy', 'registry'] as const) {
-        expect(evaluation[kind].kind === 'invalid' && evaluation[kind].caseId).toBe(`${kind}:recording-tag-mismatched`);
+        if (inputs[kind].recordingTag.kind === 'resolved') {
+          expect(evaluation[kind].kind).toBe('valid');
+        } else {
+          expect(evaluation[kind].kind === 'invalid' && evaluation[kind].caseId).toBe(`${kind}:recording-tag-mismatched`);
+        }
       }
       expect(observed.kind).toBe('unknown');
       expect(reads).toBe(0);

@@ -17,8 +17,8 @@
       "contractVersionSource": "accepted RFC-0004/general-contract.md as amended by the 2026-09-01 general trusted-bootstrap transaction (CONTRACT-AMENDMENT-MANIFEST.txt row)",
       "governingBehaviorContract": {
         "id": "polaris-project-wide-butlers-model",
-        "version": "sha256:42d073cdeaf7fa7940c5e822b05213267ec1d0064faaaad092f21d264b76a2b1",
-        "signedBy": "pending exact owner act over the PWB truth-and-readiness amendment manifest"
+        "version": "sha256:0d50f8f496aada5e89a0ab2d7de29e487fc2d4f4ce66435f7a2abdab7a7a5bc1",
+        "signedBy": "version-tagged sign-off pwb-readability-successor-v1.0, recorded at .syzygy/governance/decisions/PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md"
       },
       "subject": {
         "observingProject": "project:syzygy",

@@ -1526,6 +1526,10 @@ PWB_TRUTH_AMENDMENT_ACT = (
     f"{DECISIONS}/PWB-TRUTH-READINESS-AMENDMENT-ACT.md")
 PWB_REGISTRY_CURRENCY_DIR = (
     f"{CANDIDATES}/pwb-registry-currency-briefing-amendment")
+#: The 2026-10-02 behaviour-contract re-pin (`syzygy-jloi`): two separate
+#: superseding effect acts, one per row of its two-row manifest.
+PWB_BEHAVIOR_REPIN_DIR = f"{CANDIDATES}/pwb-behavior-contract-repin"
+PWB_BEHAVIOR_REPIN_MANIFEST = f"{PWB_BEHAVIOR_REPIN_DIR}/PWB-EFFECT-REPIN-MANIFEST.txt"
 #: Lane B of the 2026-09-13 Polaris page-size funnel (P-67 question 2):
 #: registered before its packet exists so a stale argument copy fails CG-7d
 #: and CG-7e. Its manifest hashes proposed bytes (candidate patches applied),
@@ -1648,6 +1652,16 @@ PWB_EFFECT_AMENDMENT_ACTS = (
      f"{DECISIONS}/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md",
      f"{DECISIONS}/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md",
      "0765f4d534afad9003463790113fd433d250550091df783c1ff372d227643e4f"),
+    # The 2026-10-02 behaviour-contract re-pin: two separate acts, each
+    # superseding the act then in force over its subject.
+    (PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[1][1],
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md",
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+     "d148f0360841cfc30cdc9ecedbffe722e31044e4bb048cd33f83cc193ee88e75"),
+    (PWB_EFFECT_ACTS[2][0], PWB_EFFECT_ACTS[2][1],
+     f"{DECISIONS}/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md",
+     f"{DECISIONS}/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+     "2356b9ed3235b3dff79caeb352803a30c446b7365a2a7ea74df302b9fa51386a"),
 )
 #: For a chained amendment row, the package that offered the predecessor
 #: amendment: its files hold the predecessor's argument as history once the
@@ -1656,6 +1670,16 @@ PWB_EFFECT_AMENDMENT_OFFERINGS = {
     f"{DECISIONS}/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md": {
         f"{CANDIDATES}/pwb-truth-policy-amendment/PWB-EFFECT-AMENDMENT-MANIFEST.txt": "row",
         f"{CANDIDATES}/pwb-truth-policy-amendment/OWNER-DECISION-PACKET.md": "phrase",
+    },
+    # The 2026-09-05 policy amendment was offered by the same package.
+    f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md": {
+        f"{CANDIDATES}/pwb-truth-policy-amendment/PWB-EFFECT-AMENDMENT-MANIFEST.txt": "row",
+        f"{CANDIDATES}/pwb-truth-policy-amendment/OWNER-DECISION-PACKET.md": "phrase",
+    },
+    # The 2026-09-30 registry act was offered as its manifest's single row;
+    # its packet by design carries no digest.
+    f"{DECISIONS}/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md": {
+        f"{CANDIDATES}/pwb-registry-currency-briefing-amendment/PWB-EFFECT-AMENDMENT-MANIFEST.txt": "row",
     },
 }
 PWB_STATE1_SUBJECTS = tuple(sorted((
@@ -2544,8 +2568,10 @@ ACT_DIGEST_COPY_FILES = {
     # registry subject's current argument as its manifest's single row.
     f"{PWB_REGISTRY_CURRENCY_DIR}/PWB-EFFECT-AMENDMENT-MANIFEST.txt":
         (PWB_EFFECT_ACTS[2][0],),
-    # The battery's recorder line passes the registry act's argument.
-    "PROJECT-STATUS.md": (PWB_EFFECT_ACTS[2][0], PWB_OPENING_BAND_LABEL,
+    # The battery's recorder lines pass the registry and policy acts'
+    # arguments.
+    "PROJECT-STATUS.md": (PWB_EFFECT_ACTS[2][0], PWB_EFFECT_ACTS[1][0],
+                          PWB_OPENING_BAND_LABEL,
                           PWB_RENDER_MODE_LABEL, PWB_MACHINE_VIEW_LABEL),
     f"{PWB_SCOPED_AMENDMENT_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_SCOPED_AMENDMENT_LABEL,),
@@ -3037,6 +3063,20 @@ def _activate_pwb_effect_amendment_act_copy_registries():
 _activate_pwb_effect_amendment_act_copy_registries()
 
 
+def _activate_pwb_behavior_repin_manifest_copy_registry():
+    """The re-pin manifest carries both current arguments as its rows.
+
+    Existence-gated: the manifest is a candidate file, registered as a
+    current copy of the policy and registry arguments while it exists.
+    """
+    if os.path.isfile(os.path.join(ROOT, PWB_BEHAVIOR_REPIN_MANIFEST)):
+        ACT_DIGEST_COPY_FILES[PWB_BEHAVIOR_REPIN_MANIFEST] = (
+            PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[2][0])
+
+
+_activate_pwb_behavior_repin_manifest_copy_registry()
+
+
 #: The act-time digests the specification-policy restyle supersedes as the
 #: current policy state: act 7's CC-IMPACT argument and the bootstrap
 #: transaction's CC-SPEC row (row 5 of its act, line 11 of its manifest).
@@ -3202,6 +3242,10 @@ BARE_DIGEST_HEADING_MANIFEST_EXEMPTIONS = {
     (f"{DECISIONS}/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md",
      "effect manifest"):
         f"{PWB_REGISTRY_CURRENCY_DIR}/PWB-EFFECT-AMENDMENT-MANIFEST.txt",
+    (f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+     "effect manifest"): PWB_BEHAVIOR_REPIN_MANIFEST,
+    (f"{DECISIONS}/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+     "effect manifest"): PWB_BEHAVIOR_REPIN_MANIFEST,
 }
 
 
