@@ -10,7 +10,7 @@ Owner: Tzeusy
 
 Record ID: `PUBLIC-EGRESS-anthropic`
 
-Record version: `0.1.0-candidate.2`
+Record version: `0.1.0-candidate.3`
 
 Consent class: egress — one record per (project, provider) pair (RFC5-12)
 

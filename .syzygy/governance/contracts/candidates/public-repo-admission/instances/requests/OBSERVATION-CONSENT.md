@@ -10,7 +10,7 @@ Owner: Tzeusy
 
 Record ID: `PUBLIC-OBS-REQUESTS-2026-10-03`
 
-Record version: `0.1.0-candidate.2`
+Record version: `0.1.0-candidate.3`
 
 Consent class: observation (RFC5-12)
 
@@ -37,11 +37,13 @@ commit's root tree. It does not cover any other commit, including ancestors
 of an admitted revision, or the trees of other commits except where an
 object is shared with an admitted snapshot.
 
-The operator fetches those objects into a local clone used only for the run;
-reads go through Git object access, never a checked-out working tree. Reads
-are selected by the registered source-acquisition observer for this pair and
-screened under `project:syzygy`'s public-source screening scope before any
-ingest (RFC5-16, RFC3-30).
+The operator fetches each admitted commit alone into a local repository used
+only for the run (`git fetch --depth=1 <upstream> <commit>`), so no ancestor
+commit is transferred; reads go through Git object access, never a
+checked-out working tree. Reads are selected by the registered
+source-acquisition observer for this pair and screened under
+`project:syzygy`'s effective public-source screening scope before any ingest
+(RFC5-16, RFC3-30).
 
 The scope excludes:
 

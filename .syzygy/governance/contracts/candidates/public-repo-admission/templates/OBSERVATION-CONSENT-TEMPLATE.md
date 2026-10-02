@@ -24,7 +24,7 @@ Admitted revisions (each a full commit object id; a tag name is a label only):
 Proposed provenance state: `owner-adopted (bootstrap, uncorrelated)` —
 state (1), RFC3-16; A1 audit-record identity explicitly absent
 
-Proposed revocation state: active; supersedes no earlier consent
+Proposed revocation state: active; {{SUPERSEDES}}
 
 ## Scope
 
@@ -34,11 +34,13 @@ commit's root tree. It does not cover any other commit, including ancestors
 of an admitted revision, or the trees of other commits except where an
 object is shared with an admitted snapshot.
 
-The operator fetches those objects into a local clone used only for the run;
-reads go through Git object access, never a checked-out working tree. Reads
-are selected by the registered source-acquisition observer for this pair and
-screened under `project:syzygy`'s public-source screening scope before any
-ingest (RFC5-16, RFC3-30).
+The operator fetches each admitted commit alone into a local repository used
+only for the run (`git fetch --depth=1 <upstream> <commit>`), so no ancestor
+commit is transferred; reads go through Git object access, never a
+checked-out working tree. Reads are selected by the registered
+source-acquisition observer for this pair and screened under
+`project:syzygy`'s effective public-source screening scope before any ingest
+(RFC5-16, RFC3-30).
 
 The scope excludes:
 
