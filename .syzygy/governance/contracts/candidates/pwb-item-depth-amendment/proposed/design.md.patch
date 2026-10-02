@@ -1,4 +1,3 @@
-diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/openspec/changes/polaris-project-wide-butlers-model/design.md
 --- a/openspec/changes/polaris-project-wide-butlers-model/design.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
 @@ -136,5 +136,5 @@
@@ -8,7 +7,7 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/ope
 +### 3. Separate the project account from item detail
 
  The Polaris entry follows the accepted RFC7 progression:
-@@ -145,9 +145,49 @@
+@@ -145,9 +145,59 @@
  4. V1 scope and success
  5. Project catalog
 -6. Capability detail
@@ -20,7 +19,9 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/ope
 +Every declared catalog entry reaches one item detail keyed by the item's stable
 +semantic claim identity. The existing WhatsApp capability deep dive is the
 +detail for its matching declared catalog item, not a second identity or a
-+special route. A route or fragment locates the detail but never becomes item
++special route. A capability matches an item only by exact equality of their
++declared keys; a capability matching no item or several gets no detail and
++renders no proposal, and is disclosed Unknown. A route or fragment locates the detail but never becomes item
 +identity.
 +
 +The three authority bands keep their existing order and meaning. Argument is
@@ -28,12 +29,19 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/ope
 +item-to-intent relation claim whose semantic identity combines the item's
 +stable claim identity with the fixed role `governing-intent` at the same
 +evaluation. It never borrows or changes the item's epistemic tuple. One or
-+more captured declared relations that do not exclude one another are one
-+Observed relation over the whole set and reach verbatim current authority. No relation is Unknown with RFC2-24 `missing-declaration`; mutually
-+exclusive relations are Unknown with `contradicted-pending-adjudication`.
-+Each reason retains its RFC2-24 resolution route, and matching a label,
-+basename or similar prose is never a substitute. Both channels recover the
-+same relation tuple under PWB-REQ-020.
++more captured declared relations, no two of which a declaration names as
++exclusive, are one Observed relation over the whole set. No relation is
++Unknown with RFC2-24 `missing-declaration`; any two relations a declaration
++names as exclusive make the whole population Unknown with
++`contradicted-pending-adjudication`, however many compatible relations it also
++holds. Exclusion is declared, never inferred from class, label, basename,
++similarity or a precedence outcome. Each reason retains its RFC2-24 resolution
++route. The relation claim belongs to the derived class
++`governing-intent-relation`, whose currency treatment PWB-REQ-007 decides, so
++a class with no effective bound renders Unknown `no-currency-bound-declared`.
++No extraction class admits a governing-relation declaration today, so no
++relation is captured until a separate owner-scoped change admits a source.
++Both channels recover the same relation tuple under PWB-REQ-020.
 +
 +Reality is projected only from the item's facts in the one shared model and
 +evaluation. Active and proposed OpenSpec work appears only when item detail is
@@ -46,9 +54,9 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/ope
 +flowchart LR
 +    I["Catalog item claim<br/>tuple unchanged"] --> D["Item detail"]
 +    I --> R["governing-intent relation claim<br/>separate tuple"]
-+    ONE["One or more compatible declared relations"] --> O["Observed<br/>verbatim current intents"] --> R
++    ONE["One or more relations, none declared exclusive"] --> O["Observed<br/>verbatim current intents"] --> R
 +    NONE["No declared relation"] --> U1["Unknown<br/>missing-declaration"] --> R
-+    MANY["Mutually exclusive relations"] --> U2["Unknown<br/>contradicted-pending-adjudication"] --> R
++    MANY["Any two declared-exclusive relations"] --> U2["Unknown<br/>contradicted-pending-adjudication"] --> R
 +    R --> C["Contract band"]
 +    CAP["Matching capability"] --> P["Proposal material"]
 +    NONCAP["Non-capability item"] --> N["No proposal material"]
@@ -58,10 +66,11 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/ope
 +continues to come only from a declared capability artifact. It also adds no
 +body read: exact intent remains reachable through the separately governed
 +exact-source path and its existing authority, identity, secret and inert-content
-+gates.
++gates. That path is the only place band text is encoded, and a failed gate
++leaves that text Unknown without changing the relation claim.
 
  ### 4. Use direct copy with a finite rubric
-@@ -299,7 +339,9 @@
+@@ -299,7 +349,9 @@
  5. Extract declared entities, statements, catalogs and source anchors.
  6. Reconcile coverage and contradictions.
 -7. Add the existing capability deep-dive facts.
