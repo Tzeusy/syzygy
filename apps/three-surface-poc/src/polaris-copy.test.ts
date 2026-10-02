@@ -1,6 +1,6 @@
 import { rmSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
@@ -164,44 +164,77 @@ const BARE_ROOT_TEXTS: Readonly<Record<string, string>> = {
   'about/README.md': (PROJECT_SHAPE_FIXTURE_TEXTS['about/README.md'] as string).split('\n### Precedence Order')[0] as string,
 };
 
-function modelFor(variant: Variant): PocModel {
+function buildVariant(variant: Variant, owned: string[]): PocModel {
   switch (variant) {
     case 'unevaluated':
-      return buildFixtureModel(cleanups);
+      return buildFixtureModel(owned);
     case 'rejected':
-      return buildFixtureModel(cleanups, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
+      return buildFixtureModel(owned, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
     case 'observed':
-      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
+      return buildFixtureModel(owned, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
     case 'observed-without-precedence':
-      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE) } });
+      return buildFixtureModel(owned, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE) } });
     case 'observed-bare-root':
-      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(BARE_ROOT_TEXTS) } });
+      return buildFixtureModel(owned, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(BARE_ROOT_TEXTS) } });
     case 'observed-with-secret':
-      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET) } });
+      return buildFixtureModel(owned, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET) } });
     case 'observed-with-baseline-spec':
-      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC) } });
+      return buildFixtureModel(owned, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC) } });
     case 'observation-failed': {
       const inner = projectShapeFixtureGit();
       const failing = (args: readonly string[]): Uint8Array => {
         if (args[0] === 'ls-tree') throw new Error('fixture: tree listing refused');
         return inner(args);
       };
-      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: failing } });
+      return buildFixtureModel(owned, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: failing } });
     }
     case 'judgment-absent':
-      return buildFixtureModel(cleanups, { walkthroughJudgment: walkthroughJudgmentFixture('absent-run-record') });
+      return buildFixtureModel(owned, { walkthroughJudgment: walkthroughJudgmentFixture('absent-run-record') });
     case 'judgment-unlawful':
-      return buildFixtureModel(cleanups, { walkthroughJudgment: walkthroughJudgmentFixture('unlawful') });
+      return buildFixtureModel(owned, { walkthroughJudgment: walkthroughJudgmentFixture('unlawful') });
     case 'judgment-lawful':
-      return buildFixtureModel(cleanups, { walkthroughJudgment: walkthroughJudgmentFixture('lawful-state-1') });
+      return buildFixtureModel(owned, { walkthroughJudgment: walkthroughJudgmentFixture('lawful-state-1') });
     case 'judgment-ready':
       // Observed shape plus a Polaris-only record anchored into it: the one
       // variant whose PWB-REQ-021 readiness is `ready`.
-      return buildFixtureModel(cleanups, {
+      return buildFixtureModel(owned, {
         projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() },
         walkthroughJudgment: walkthroughJudgmentFixture('lawful-state-1', 'judgment-eval-0001', { traversed: ['/polaris'] }),
       });
   }
+}
+
+// Each variant's model is built once for the suite (syzygy-4d15): three
+// tests rebuilt the same twelve models up to twenty times each and timed
+// out at the default 5 s under parallel load. Models are deep-frozen, so a
+// test that mutated a shared model would fail rather than leak into another.
+const variantCleanups: string[] = [];
+const VARIANT_MODELS = new Map<Variant, PocModel>();
+
+function deepFreeze<T>(value: T): T {
+  if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const child of Object.values(value)) deepFreeze(child);
+  }
+  return value;
+}
+
+// Measured worst case for the twelve builds under the parallel-load
+// protocol is recorded in docs/evidence/poc-test-timeouts-2026-10-03.json.
+beforeAll(() => {
+  for (const variant of VARIANTS) VARIANT_MODELS.set(variant, deepFreeze(buildVariant(variant, variantCleanups)));
+}, 60_000);
+
+afterAll(() => {
+  for (const directory of variantCleanups.splice(0)) {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+function modelFor(variant: Variant): PocModel {
+  const model = VARIANT_MODELS.get(variant);
+  if (model === undefined) throw new Error(`variant model not built: ${variant}`);
+  return model;
 }
 
 function multiSourceModel(): PocModel {
