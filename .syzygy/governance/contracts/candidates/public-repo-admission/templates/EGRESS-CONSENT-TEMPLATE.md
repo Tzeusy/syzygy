@@ -39,9 +39,10 @@ Only content read under an in-force observation consent for one of these
 
 {{ADMITTED_REPOSITORIES}}
 
-together with the generator's own instruction text (its stage prompts and
-response schemas, authored in Syzygy's repository), which every request
-carries. Every other source of `project:syzygy` content is outside this
+together with the generator's own instruction text — its stage prompts
+and response schemas, authored in Syzygy's repository at
+`packages/polaris-generation-core/src/prompts.ts` and classified
+`code-content` of `project:syzygy` — which every request carries. Every other source of `project:syzygy` content is outside this
 consent, including the Butlers repository, the rest of Syzygy's own
 repository and any work history, and stays unsent.
 
@@ -54,9 +55,12 @@ repository and any work history, and stays unsent.
   be determined is refused and the refusal shown (RFC5-14).
 - Every transmission passes the single egress check and emits an audit record
   (RFC5-15).
-- The route invokes no tools on the provider's or its runtime's side: no file
-  access, command execution, web access or other tool is enabled, so the
-  model sees only what each request carries.
+- The model sees only what each request carries. The route invokes no tools
+  on the provider's or its runtime's side (no file access, command execution,
+  web access or other tool), and adds no context of its own:
+  {{ROUTE_CONTEXT}}
+- The route sends nothing to any destination other than the provider:
+  {{ROUTE_TELEMETRY}}
 - This record's own condition: provider output is generated editorial draft.
   It is never recorded as an Observed claim, as adopted intent, or as the
   target project's own statement.
