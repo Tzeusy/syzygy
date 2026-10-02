@@ -1,0 +1,337 @@
+{
+  "bead": "syzygy-dov.31",
+  "source": "docs/reviews/R-DOV27-RESPONSE-CEILING-PACKET-2-RAW.md N2, N3",
+  "subject": "scripts/check_polaris_response_ceiling_reading.py",
+  "ranAtCommit": "a71424d4a4466d8f6026b0b89d86105004df4346",
+  "command": "python3 scripts/check_polaris_response_ceiling_reading.py --selftest",
+  "method": "each mutant replaces exactly one occurrence of old with new in the subject at ranAtCommit (an empty new deletes the line), runs the command, and restores the original bytes",
+  "baseline": "selftest: 38/38 passed",
+  "itemPins": {
+    "M1": {
+      "pinnedBy": [
+        "R1"
+      ],
+      "killed": true
+    },
+    "M2": {
+      "pinnedBy": [
+        "R1"
+      ],
+      "killed": true
+    },
+    "M3": {
+      "pinnedBy": [
+        "R3"
+      ],
+      "killed": true
+    },
+    "M4": {
+      "pinnedBy": [
+        "R4",
+        "R8"
+      ],
+      "killed": true
+    },
+    "M5": {
+      "pinnedBy": [
+        "R5"
+      ],
+      "killed": true
+    },
+    "M6": {
+      "pinnedBy": [
+        "R6",
+        "R7"
+      ],
+      "killed": true
+    },
+    "M7": {
+      "pinnedBy": [
+        "R10"
+      ],
+      "killed": true
+    },
+    "M8": {
+      "pinnedBy": [
+        "R11"
+      ],
+      "killed": true
+    },
+    "M9": {
+      "pinnedBy": [
+        "R12"
+      ],
+      "killed": true
+    },
+    "K6": {
+      "pinnedBy": [
+        "R18"
+      ],
+      "killed": true
+    },
+    "K10": {
+      "pinnedBy": [
+        "R9"
+      ],
+      "killed": true
+    },
+    "K11": {
+      "pinnedBy": [
+        "R16",
+        "R17"
+      ],
+      "killed": true
+    },
+    "K12": {
+      "pinnedBy": [
+        "R16",
+        "R18"
+      ],
+      "killed": true
+    },
+    "K13": {
+      "pinnedBy": [
+        "R17"
+      ],
+      "killed": true
+    }
+  },
+  "itemNotes": {
+    "M6": "was fail-closed and live: at the base commit two decisions files (POLARIS-LANE-B-DECLINED-AND-TARGET-REVISED-DIRECTION.md, OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md) closed the gate on the issued 2026-09-30 direction, so C3 swept gzip as forbidden. Now paragraph- and list-item-scoped; both files leave the gate open.",
+    "K11": "the reviewer's K11 mutant drops brotli and deflate together; each term is now pinned alone (R16, R17), so the pair is killed by either line",
+    "K12": "drops brotli and CompressionStream together; pinned alone by R16 and R18"
+  },
+  "realCorpus": "at ranAtCommit the issued direction opens C3 for gzip only (zlib, gzip, content-encoding leave the sweep); 140 non-test source files swept for the other five terms, 0 findings",
+  "mutants": [
+    {
+      "id": "R1",
+      "description": "M1/M2: paragraph-2 marker replaced by a substring test for the coding word",
+      "old": "permitted = frozenset(coding for marker, coding in PERMIT_MARKERS if may_ship.startswith(marker))",
+      "new": "permitted = frozenset(coding for marker, coding in PERMIT_MARKERS if coding in may_ship)",
+      "exit": 1,
+      "summary": "selftest: 35/38 passed",
+      "failing": [
+        "C3 M1 a paragraph 2 that mentions gzip without the marker does not gate",
+        "C3 M2 a decline quoting the reading does not gate",
+        "C3 K10 the marker outside paragraph 2 does not gate"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R2",
+      "description": "reading answer searched over the whole direction instead of paragraph 1",
+      "old": "if not any(a in reading for a in READING_ANSWERS):",
+      "new": "if not any(a in words for a in READING_ANSWERS):",
+      "exit": 1,
+      "summary": "selftest: 37/38 passed",
+      "failing": [
+        "C3 the reading answered outside paragraph 1 does not gate"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R3",
+      "description": "M3: withdrawal scan made non-recursive",
+      "old": "        dirnames.sort()\n",
+      "new": "        dirnames[:] = []\n",
+      "exit": 1,
+      "summary": "selftest: 37/38 passed",
+      "failing": [
+        "C3 M3 a withdrawal in a subdirectory reopens the sweep"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R4",
+      "description": "M4: narrow form dropped",
+      "old": "WITHDRAW = re.compile(r\"withdr[ae]w|narrow\", re.I)",
+      "new": "WITHDRAW = re.compile(r\"withdr[ae]w\", re.I)",
+      "exit": 1,
+      "summary": "selftest: 37/38 passed",
+      "failing": [
+        "C3 M4 a narrowing record reopens the sweep"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R5",
+      "description": "M5: any permission lifts every term (coding scope not enforced)",
+      "old": "if coding is None or coding not in permitted]",
+      "new": "if not permitted]",
+      "exit": 1,
+      "summary": "selftest: 37/38 passed",
+      "failing": [
+        "C3 M5 a gzip direction does not permit Brotli"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R6",
+      "description": "M6: withdrawal judged over the whole file, not per paragraph",
+      "old": "for para in PARAGRAPH.split(read(root, rel) or \"\"):",
+      "new": "for para in [read(root, rel) or \"\"]:",
+      "exit": 1,
+      "summary": "selftest: 36/38 passed",
+      "failing": [
+        "C3 M6 the name and a withdrawal word in different paragraphs do not close the gate",
+        "C3 M6 the name and a withdrawal word in sibling list items do not close the gate"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R7",
+      "description": "M6: list items no longer split paragraphs",
+      "old": "PARAGRAPH = re.compile(r\"\\n[ \\t>]*\\n|\\n(?=[ \\t>]*(?:\\d+\\.|[-*+])[ \\t])\")",
+      "new": "PARAGRAPH = re.compile(r\"\\n[ \\t>]*\\n\")",
+      "exit": 1,
+      "summary": "selftest: 37/38 passed",
+      "failing": [
+        "C3 M6 the name and a withdrawal word in sibling list items do not close the gate"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R8",
+      "description": "withdrawal by Decision ID not recognized",
+      "old": "names = [os.path.basename(DIRECTION)] + DECISION_ID.findall(direction)",
+      "new": "names = [os.path.basename(DIRECTION)]",
+      "exit": 1,
+      "summary": "selftest: 37/38 passed",
+      "failing": [
+        "C3 M4 a narrowing record reopens the sweep"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R9",
+      "description": "K10: marker searched over the whole direction instead of opening paragraph 2",
+      "old": "if may_ship.startswith(marker))",
+      "new": "if marker in words)",
+      "exit": 1,
+      "summary": "selftest: 37/38 passed",
+      "failing": [
+        "C3 K10 the marker outside paragraph 2 does not gate"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R10",
+      "description": "M7: compression-package term dropped",
+      "old": "    (\"compression package\", r\"\"\"['\"`]compression['\"`]\"\"\", None),\n",
+      "new": "",
+      "exit": 1,
+      "summary": "selftest: 37/38 passed",
+      "failing": [
+        "C3 M7 the compression package is caught"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R11",
+      "description": "M8: 'br' literal term dropped",
+      "old": "    (\"br literal\", r\"\"\"['\"`]br['\"`]\"\"\", None),\n",
+      "new": "",
+      "exit": 1,
+      "summary": "selftest: 37/38 passed",
+      "failing": [
+        "C3 M8 a 'br' literal is caught"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R12",
+      "description": "M9: .js/.mjs/.cjs dropped from the population",
+      "old": "SOURCE_FILE = re.compile(r\"\\.(?:[mc]?ts|[mc]?js)$\")",
+      "new": "SOURCE_FILE = re.compile(r\"\\.(?:[mc]?ts)$\")",
+      "exit": 1,
+      "summary": "selftest: 36/38 passed",
+      "failing": [
+        "C3 M9 a .js source under src is swept",
+        "C3 M9 a .mjs source under src is swept"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R13",
+      "description": "term zlib dropped",
+      "old": "    (\"zlib\", r\"zlib\", \"gzip\"),\n",
+      "new": "",
+      "exit": 1,
+      "summary": "selftest: 29/38 passed",
+      "failing": [
+        "C3 compression code lands before a direction",
+        "C3 an empty direction file does not gate",
+        "C3 a direction without a Q1 reading does not gate",
+        "C3 a direction without WHAT MAY SHIP does not gate",
+        "C3 a direction that ships no coding does not gate",
+        "C3 a withdrawal record reopens the sweep",
+        "C3 term zlib is caught",
+        "C3 M9 a .js source under src is swept",
+        "C3 M9 a .mjs source under src is swept"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R14",
+      "description": "term gzip dropped",
+      "old": "    (\"gzip\", r\"gzip\", \"gzip\"),\n",
+      "new": "",
+      "exit": 1,
+      "summary": "selftest: 37/38 passed",
+      "failing": [
+        "C3 term gzip is caught"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R15",
+      "description": "term content-encoding dropped",
+      "old": "    (\"content-encoding\", r\"content-encoding\", \"gzip\"),\n",
+      "new": "",
+      "exit": 1,
+      "summary": "selftest: 37/38 passed",
+      "failing": [
+        "C3 term content-encoding is caught"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R16",
+      "description": "K11/K12: term brotli dropped",
+      "old": "    (\"brotli\", r\"brotli\", None),\n",
+      "new": "",
+      "exit": 1,
+      "summary": "selftest: 36/38 passed",
+      "failing": [
+        "C3 M5 a gzip direction does not permit Brotli",
+        "C3 term brotli is caught"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R17",
+      "description": "K13: term deflate dropped",
+      "old": "    (\"deflate\", r\"deflate\", None),\n",
+      "new": "",
+      "exit": 1,
+      "summary": "selftest: 37/38 passed",
+      "failing": [
+        "C3 term deflate is caught"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "R18",
+      "description": "K6: term CompressionStream dropped",
+      "old": "    (\"CompressionStream\", r\"CompressionStream\", None),\n",
+      "new": "",
+      "exit": 1,
+      "summary": "selftest: 37/38 passed",
+      "failing": [
+        "C3 term CompressionStream is caught"
+      ],
+      "outcome": "killed"
+    }
+  ],
+  "result": "18 of 18 killed"
+}
