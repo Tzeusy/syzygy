@@ -1,5 +1,14 @@
 # Owner decision packet — PWB behaviour-contract re-pin
 
+> **PERFORMED 2026-10-02.** The owner gave A, B and C by one option
+> selection; the act records are
+> [`PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md`](../../../decisions/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md)
+> and
+> [`PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md`](../../../decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md),
+> and direction C is recorded in
+> [`OWNER-INSTRUCTIONS-2026-10-02-PWB-BEHAVIOR-CONTRACT-REPIN.md`](../../../decisions/OWNER-INSTRUCTIONS-2026-10-02-PWB-BEHAVIOR-CONTRACT-REPIN.md).
+> The banner below is the one the packet was offered with.
+
 > **Candidate — binds nothing.** Drafted 2026-10-02 for bead `syzygy-jloi`.
 > Effect would come from two separate superseding owner acts and one plain
 > continuation direction, and from nothing else. Silence, a commit, a

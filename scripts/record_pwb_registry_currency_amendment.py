@@ -149,7 +149,15 @@ def validate_artifact(
     subject_path = root / packet.SUBJECT
     if subject_override is None and not subject_path.is_file():
         raise ValueError(f"artifact missing: {packet.SUBJECT.as_posix()}")
-    subject_bytes = subject_override if subject_override is not None else subject_path.read_bytes()
+    if subject_override is not None:
+        subject_bytes = subject_override
+    elif applied and packet.superseded_later():
+        # Superseded for the registry role by the 2026-10-02 behaviour-contract
+        # re-pin: the bytes this act bound are the tree with that package's
+        # patch reversed (checked there against this act's exact digest).
+        subject_bytes = packet.act_bytes()
+    else:
+        subject_bytes = subject_path.read_bytes()
     current_sha = digest(subject_bytes)
     if applied:
         if current_sha != argument:
@@ -418,7 +426,9 @@ def record(root: pathlib.Path, argument: str, date: str, check: bool) -> int:
         if drift:
             return 1
         print("recorded superseding adopt-registry-entry act matches exact owner "
-              "argument; the subject hashes to it")
+              "argument; the subject hashes to it"
+              + (" once the 2026-10-02 re-pin that superseded it is reversed"
+                 if packet.superseded_later() else ""))
         return 0
     if (root / RECORD_REL).exists():
         print(f"FAILED: dedicated act already exists: {RECORD_REL.as_posix()}")

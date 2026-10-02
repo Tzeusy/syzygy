@@ -1050,3 +1050,59 @@ Claude Code CLI (quoted in the dedicated record).
 This sign-off authorizes no implementation, widens no consent, read, write or
 egress, and a later version of the package is signed separately.
 <!-- /versioned-signoff:pwb-readability-successor:v1.0 -->
+
+## PWB effect-act amendment — approve-policy — behaviour-contract re-pin — performed 2026-10-02
+
+**Phrase the act takes (given 2026-10-02 by option selection, not typed; see the
+dedicated record):**
+
+```text
+APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: 66cd41ee626efb11d666d19c0cd42c6d001ec4482837b71475c42f661f1d936c
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `approve-policy` / `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json` |
+| Argument | SHA-256 of the artifact itself: the policy row of the effect manifest, recomputed at recording and equal to the artifact on disk after the package's patch was applied |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Supersession | the 2026-09-05 `approve-policy` act recorded at `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md`; that act, its digest and its tag remain immutable history |
+| Frozen subject / packet head | `140874b7364266475dd8980be480e2783e0d8e72` / `140874b7364266475dd8980be480e2783e0d8e72` |
+| Effect manifest | `.syzygy/governance/contracts/candidates/pwb-behavior-contract-repin/PWB-EFFECT-REPIN-MANIFEST.txt`, SHA-256 `036e49ee804126fbf56f77d593bc0d62c155e283f3535f6ef3952f60aec04fb8` |
+| Review outcome | `docs/reviews/R-PWB-BEHAVIOR-CONTRACT-REPIN-RAW.md`: `CONFIRM WITH EXCEPTIONS`, notes only, its head bound to the effect manifest file |
+| Recording | `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md`; annotated tag `pwb-approve-policy-signed-2026-10-02` on the commit carrying these records |
+
+Effective status: this one re-pinned artifact is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own PWB-REQ-005 role only.
+The other effect authorities and the plain continuation direction remain
+separate; no body read, write, egress, execution, deployment, release,
+recovery or mission authority follows from this act.
+
+## PWB effect-act amendment — adopt-registry-entry — behaviour-contract re-pin — performed 2026-10-02
+
+**Phrase the act takes (given 2026-10-02 by option selection, not typed; see the
+dedicated record):**
+
+```text
+ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: ad9cd6769bffbb1a3ef94625c73226dec133fb7c9f1e0bc40186b09b15e165fa
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `adopt-registry-entry` / `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` |
+| Argument | SHA-256 of the artifact itself: the registry row of the effect manifest, recomputed at recording and equal to the artifact on disk after the package's patch was applied |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Supersession | the 2026-09-30 `adopt-registry-entry` act recorded at `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-CURRENCY-BRIEFING-AMENDMENT-ACT.md`; that act, its digest and its tag remain immutable history |
+| Frozen subject / packet head | `140874b7364266475dd8980be480e2783e0d8e72` / `140874b7364266475dd8980be480e2783e0d8e72` |
+| Effect manifest | `.syzygy/governance/contracts/candidates/pwb-behavior-contract-repin/PWB-EFFECT-REPIN-MANIFEST.txt`, SHA-256 `036e49ee804126fbf56f77d593bc0d62c155e283f3535f6ef3952f60aec04fb8` |
+| Review outcome | `docs/reviews/R-PWB-BEHAVIOR-CONTRACT-REPIN-RAW.md`: `CONFIRM WITH EXCEPTIONS`, notes only, its head bound to the effect manifest file |
+| Recording | `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md`; annotated tag `pwb-adopt-registry-entry-signed-2026-10-02` on the commit carrying these records |
+
+Effective status: this one re-pinned artifact is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own PWB-REQ-005 role only.
+The other effect authorities and the plain continuation direction remain
+separate; no body read, write, egress, execution, deployment, release,
+recovery or mission authority follows from this act.

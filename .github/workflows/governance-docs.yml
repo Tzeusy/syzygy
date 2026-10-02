@@ -148,6 +148,21 @@ jobs:
       - name: record_pwb_registry_currency_amendment --selftest
         run: python3 scripts/record_pwb_registry_currency_amendment.py --selftest
 
+      - name: build_pwb_behavior_contract_repin --check
+        run: python3 scripts/build_pwb_behavior_contract_repin.py --check
+
+      - name: build_pwb_behavior_contract_repin --selftest
+        run: python3 scripts/build_pwb_behavior_contract_repin.py --selftest
+
+      - name: record_pwb_behavior_contract_repin_acts --check policy
+        run: python3 scripts/record_pwb_behavior_contract_repin_acts.py --check policy 66cd41ee626efb11d666d19c0cd42c6d001ec4482837b71475c42f661f1d936c --date 2026-10-02
+
+      - name: record_pwb_behavior_contract_repin_acts --check registry
+        run: python3 scripts/record_pwb_behavior_contract_repin_acts.py --check registry ad9cd6769bffbb1a3ef94625c73226dec133fb7c9f1e0bc40186b09b15e165fa --date 2026-10-02
+
+      - name: record_pwb_behavior_contract_repin_acts --selftest
+        run: python3 scripts/record_pwb_behavior_contract_repin_acts.py --selftest
+
       - name: check_polaris_response_ceiling_reading --check
         run: python3 scripts/check_polaris_response_ceiling_reading.py --check
 
