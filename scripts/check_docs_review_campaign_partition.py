@@ -238,6 +238,11 @@ CAMPAIGNS = (
         "N8 container-shape profile gate",
         r"R-N8-.*\.md",
     ),
+    campaign(
+        "tree-framing",
+        "PWB tree-framing gate",
+        r"R-PWB-TREE-FRAMING-.*\.md",
+    ),
 )
 
 
