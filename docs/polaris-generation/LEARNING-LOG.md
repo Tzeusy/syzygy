@@ -164,3 +164,17 @@ extraction class.
   classification-success rules. Generalizing a pipeline means re-reading
   every guard for the assumption it makes about what the input *is*.
 - **Status:** applied → the admission packet's screening outline.
+
+### L12. Admission is where generality first costs something
+
+Three independent review rounds each found a real defect in four short
+admission records — a self-contradictory scope, the wrong project's policy, a
+retention promise the policy outline contradicted [Observed, rounds 1–3].
+None was about generation quality. Everything Syzygy knows about safely
+reading a repository was written for one repository, so the first
+non-Butlers target surfaces every hidden assumption at once (L9–L11).
+
+- **Changes:** pay this once. The template exists so the second and third
+  targets cost a filled `params.json`, not another three rounds. Measure
+  that claim when T2 is admitted.
+- **Status:** open — check at T2.
