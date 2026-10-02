@@ -23,7 +23,10 @@ regeneration. A performed package makes the strict comparison apply again.
 each predicate in a scratch tree and requires the check to fail. It also
 confirms that the renderer reproduces the base union byte for byte, and
 reproduces the signed understanding union once the one warrant this
-regeneration adds is removed.
+regeneration adds is removed. The successor act was performed on
+2026-10-02, so the scratch copy first replays the pre-act state: the
+installed union is reversed to the predecessor and must hash to the digest
+the package records.
 
 The parser here is a line state machine. It is independent of the
 regular-expression parser in `check_spec_reconciliation.py` R7, which
@@ -213,6 +216,17 @@ def selftest() -> int:
     with tempfile.TemporaryDirectory() as tmp:
         clean = pathlib.Path(tmp) / "clean"
         _copy(ROOT, clean)
+        # The scratch copy replays the pre-act state: the act record is never
+        # copied, and once the act is performed (2026-10-02) the installed
+        # union is reversed to its signed predecessor, whose digest the
+        # package records.
+        _performed, predecessor, _proposed = successor_state(clean)
+        if sha256((clean / und_file).read_bytes()) != predecessor:
+            reversed_ = (clean / und_file).read_text(encoding="utf-8").replace(
+                "\n\nCC-REV-8, CC-SPEC-2, CC-SPEC-4\n", "\n\nCC-SPEC-2, CC-SPEC-4\n", 1)
+            results.append(("the installed union reverses to its signed predecessor",
+                            sha256(reversed_.encode("utf-8")) == predecessor))
+            (clean / und_file).write_text(reversed_, encoding="utf-8")
         results.append(("the unmutated scratch copy verifies", check(clean) == []))
 
         # Renderer fidelity against signed bytes.

@@ -216,6 +216,12 @@ jobs:
       - name: readability_successor --selftest
         run: python3 scripts/readability_successor.py --selftest
 
+      - name: build_polaris_dependency_unions --check
+        run: python3 scripts/build_polaris_dependency_unions.py --check
+
+      - name: build_polaris_dependency_unions --selftest
+        run: python3 scripts/build_polaris_dependency_unions.py --selftest
+
       # Reconciled specification composition (syzygy-73e.5.6): the five
       # readability outcomes are terminal and still bind the bytes on disk;
       # requirement/scenario populations agree by two methods.

@@ -17,10 +17,16 @@ Predicates, each printed with its denominator:
   sha256 of its package manifest and appears in the aggregate act record; a
   version-tagged sign-off names its package, version and tag, and its marker
   block appears once in the aggregate record. A missing record is a FAIL,
-  never a skipped row.
+  never a skipped row. A child may name later digest acts (`successors`)
+  that superseded some of its subjects; each one is checked the same way and
+  is equally a terminal record.
 - R2 exact subject bytes: a digest act's successor column equals its
   manifest rows, and every signed subject on disk hashes to its row. A
-  versioned sign-off's manifest rows equal the subjects on disk.
+  versioned sign-off's manifest rows equal the subjects on disk. A child's
+  later successors compose in order: each one's act instant is strictly
+  later than the act before it, each one's predecessor column names exactly
+  the row the chain has reached for that subject, and its successor row then
+  becomes the row the subject must hash to.
 - R3 populations: CAP1-REQ, POC-REQ, PWB-REQ and the effective
   REQ-polaris-generation composition are each parsed by two independent
   methods (a regular-expression parser and a line state machine with no
@@ -56,11 +62,14 @@ recorder applies at its acts), R6 must examine both pins and report exactly
 zero findings, with no other predicate failing. Once the acts are performed
 the tree already carries those bytes, and the case requires zero there.
 The R7 case `union-after-successor-act` does the same with the
-`syzygy-c51h` successor package's proposed union, and requires R2, and only
-R2, to fail by design while the readability act's row is superseded.
+`syzygy-c51h` successor package's proposed union. Before that act it
+required R2, and only R2, to fail by design; the reconciliation was
+re-derived on 2026-10-02 to name the act as the understanding child's
+successor, so the case now requires every predicate to pass.
 
 A later act over any subject fails R2 by design: the reconciliation is then
-re-derived, never carried forward.
+re-derived, never carried forward. The first re-derivation (2026-10-02)
+added the dependency-union successor act to the understanding child.
 
 Usage:
   python3 scripts/check_spec_reconciliation.py --check
@@ -127,7 +136,14 @@ CHILDREN = (
      "label": "SIGN OFF POLARIS UNDERSTANDING READABILITY SUCCESSOR",
      "record": f"{DECISIONS}/POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-ACT.md",
      "manifest": f"{CANDIDATES}/polaris-understanding-readability-successor/"
-                 "SUCCESSOR-MANIFEST.txt"},
+                 "SUCCESSOR-MANIFEST.txt",
+     # Later digest acts over some of this child's subjects, in act order.
+     "successors": (
+         {"label": "SIGN OFF POLARIS UNDERSTANDING DEPENDENCY UNION SUCCESSOR",
+          "record": f"{DECISIONS}/"
+                    "POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-ACT.md",
+          "manifest": f"{UNION_SUCCESSOR}/SUCCESSOR-MANIFEST.txt"},
+     )},
     {"key": "pwb", "bead": "syzygy-73e.5.5", "kind": "versioned",
      "change": PWB_CHANGE, "package": "pwb-readability-successor",
      "version": "1.0",
@@ -229,11 +245,41 @@ def read_text(root, rel):
 # R1 and R2: terminal outcomes and exact subject bytes.
 # --------------------------------------------------------------------------
 
+ACT_INSTANT = re.compile(r"^Act instant: (\S+)$", re.M)
+
+
+def check_digest_act(act, tag, aggregate, record, manifest_bytes, r1, r2):
+    """R1 and R2 checks of one digest act; its signed table, or None."""
+    rows = {path: digest for digest, path in
+            ROW.findall(manifest_bytes.decode("utf-8"))}
+    phrase = re.compile(
+        rf"^{re.escape(act['label'])}: ([0-9a-f]{{64}})$", re.M)
+    args = phrase.findall(record)
+    if len(args) != 1:
+        r1.append(f"{tag}: record carries {len(args)} phrase lines, "
+                  "expected exactly 1")
+        return None
+    if args[0] != sha(manifest_bytes):
+        r1.append(f"{tag}: stale act — the phrase argument is not the "
+                  f"sha256 of `{act['manifest']}`")
+    agg = phrase.findall(aggregate)
+    if args[0] not in agg:
+        r1.append(f"{tag}: stale act — the aggregate act record does "
+                  "not carry this record's phrase")
+    table = {p: (pred, succ) for p, pred, succ in
+             ACT_TABLE_ROW.findall(record)}
+    if {p: s for p, (_pr, s) in table.items()} != rows:
+        r2.append(f"{tag}: the record's successor column differs from "
+                  "the manifest rows")
+    return table
+
+
 def check_outcomes(root, report):
     aggregate = read_text(root, AGGREGATE) or ""
-    r1, r2, subjects_seen = [], [], 0
+    r1, r2, subjects_seen, records = [], [], 0, 0
     for child in CHILDREN:
         tag = f"{child['key']} ({child['bead']})"
+        records += 1 + len(child.get("successors", ()))
         record = read_text(root, child["record"])
         manifest_bytes = read_bytes(root, child["manifest"])
         if record is None:
@@ -246,25 +292,9 @@ def check_outcomes(root, report):
         rows = {path: digest for digest, path in
                 ROW.findall(manifest_bytes.decode("utf-8"))}
         if child["kind"] == "digest":
-            phrase = re.compile(
-                rf"^{re.escape(child['label'])}: ([0-9a-f]{{64}})$", re.M)
-            args = phrase.findall(record)
-            if len(args) != 1:
-                r1.append(f"{tag}: record carries {len(args)} phrase lines, "
-                          "expected exactly 1")
+            if check_digest_act(child, tag, aggregate, record, manifest_bytes,
+                                r1, r2) is None:
                 continue
-            if args[0] != sha(manifest_bytes):
-                r1.append(f"{tag}: stale act — the phrase argument is not the "
-                          f"sha256 of `{child['manifest']}`")
-            agg = phrase.findall(aggregate)
-            if args[0] not in agg:
-                r1.append(f"{tag}: stale act — the aggregate act record does "
-                          "not carry this record's phrase")
-            table = {p: (pred, succ) for p, pred, succ in
-                     ACT_TABLE_ROW.findall(record)}
-            if {p: s for p, (_pr, s) in table.items()} != rows:
-                r2.append(f"{tag}: the record's successor column differs from "
-                          "the manifest rows")
         else:
             want = (f"Package: {child['package']}",
                     f"Version: {child['version']}",
@@ -278,6 +308,40 @@ def check_outcomes(root, report):
             if count != 1:
                 r1.append(f"{tag}: aggregate act record carries the sign-off "
                           f"block {count} times, expected 1")
+        # Later successors compose in act order over the rows reached so far.
+        reached = ACT_INSTANT.findall(record)
+        for later in child.get("successors", ()):
+            name = Path(later["record"]).name
+            ltag = f"{tag} successor {name}"
+            ltext = read_text(root, later["record"])
+            lmanifest = read_bytes(root, later["manifest"])
+            if ltext is None:
+                r1.append(f"{ltag}: missing successor — no terminal record "
+                          f"`{later['record']}`; the outcome is Unknown")
+                continue
+            if lmanifest is None:
+                r1.append(f"{ltag}: package manifest `{later['manifest']}` "
+                          "missing")
+                continue
+            table = check_digest_act(later, ltag, aggregate, ltext, lmanifest,
+                                     r1, r2)
+            if table is None:
+                continue
+            instant = ACT_INSTANT.findall(ltext)
+            if (len(instant) != 1 or len(reached) != 1
+                    or not instant[0] > reached[0]):
+                r2.append(f"{ltag}: act instant {instant} is not strictly "
+                          f"later than the act before it {reached}")
+            reached = instant
+            for path, (pred, succ) in sorted(table.items()):
+                if path not in rows:
+                    r2.append(f"{ltag}: `{path}` is not a subject of this "
+                              "child")
+                elif pred != rows[path]:
+                    r2.append(f"{ltag}: broken chain — the predecessor of "
+                              f"`{path}` is not the row the chain reached")
+                else:
+                    rows[path] = succ
         for path, digest in sorted(rows.items()):
             subjects_seen += 1
             current = read_bytes(root, path)
@@ -286,9 +350,10 @@ def check_outcomes(root, report):
             elif sha(current) != digest:
                 r2.append(f"{tag}: stale digest — `{path}` no longer hashes "
                           "to its signed row")
-    report.add("R1", "terminal outcome for every child", len(CHILDREN), r1,
-               "digest acts: phrase = manifest sha256 and in the aggregate; "
-               "versioned: package/version/tag and one aggregate block")
+    report.add("R1", "terminal outcome for every child", records, r1,
+               f"{len(CHILDREN)} children; digest acts: phrase = manifest "
+               "sha256 and in the aggregate; versioned: package/version/tag "
+               "and one aggregate block")
     report.add("R2", "signed subjects hash to their rows", subjects_seen, r2)
 
 
@@ -611,13 +676,16 @@ def check_routes(root, pop, report):
     for extra in sorted(set(rows) - set(changes)):
         findings.append(f"`{OPENSPEC_README}`: row for untracked `{extra}`")
     for child in CHILDREN:
-        examined += 2
-        name = Path(child["record"]).name
-        if not any(name in line for line in rows.get(child["change"], [])):
-            findings.append(f"`{OPENSPEC_README}`: the `{child['change']}` row "
-                            f"does not name its terminal record `{name}`")
-        if child["record"] not in status and name not in status:
-            findings.append(f"`{STATUS}` cites no terminal record `{name}`")
+        for record in (child["record"], *(later["record"] for later in
+                                          child.get("successors", ()))):
+            examined += 2
+            name = Path(record).name
+            if not any(name in line for line in rows.get(child["change"], [])):
+                findings.append(f"`{OPENSPEC_README}`: the `{child['change']}` "
+                                f"row does not name its terminal record "
+                                f"`{name}`")
+            if record not in status and name not in status:
+                findings.append(f"`{STATUS}` cites no terminal record `{name}`")
     figures = STATUS_FIGURE.findall(status)
     examined += 1
     reqs = pop.get("POLARIS", {})
@@ -760,6 +828,8 @@ def inputs(root):
     paths = {AGGREGATE, CENSUS, STATUS, REGISTRY, POLICY, *ROUTE_PAGES}
     for child in CHILDREN:
         paths |= {child["record"], child["manifest"]}
+        for later in child.get("successors", ()):
+            paths |= {later["record"], later["manifest"]}
         manifest = read_text(root, child["manifest"]) or ""
         paths |= {p for _d, p in ROW.findall(manifest)}
         paths |= set(tracked(root, f"{CHANGES}/{child['change']}"))
@@ -831,8 +901,18 @@ def _union_successor(root):
     return apply
 
 
+def _chain_predecessor_moved(text):
+    """Point every row of a successor record's table at a digest no act signed."""
+    out, n = ACT_TABLE_ROW.subn(
+        lambda m: f"| `{m.group(1)}` | `{'0' * 64}` | `{m.group(3)}` |", text)
+    if not n:
+        raise AssertionError("successor record carries no signed-subject row")
+    return out
+
+
 def mutants(root):
     cap1, poc, base, und, pwb = CHILDREN
+    union_act = und["successors"][0]
     poc_spec = FAMILY_SPECS["POC"]
     pwb_spec = FAMILY_SPECS["PWB"]
     return (
@@ -901,11 +981,24 @@ def mutants(root):
          "R6=0"),
         # The syzygy-c51h successor package's proposed union, as
         # readability_successor.py installs it at the act: R7 must then
-        # report exactly zero, and R2 fails by design over the readability
-        # act's superseded row until the reconciliation is re-derived.
+        # report exactly zero. Before the re-derivation R2 failed by design
+        # over the readability act's superseded row ("R7=0|R2"); with the act
+        # named as the understanding child's successor nothing else fails.
         ("union-after-successor-act",
          f"{CHANGES}/{UNDERSTANDING_CHANGE}/GOVERNING-DEPENDENCIES.md",
-         _union_successor(root), "R7=0|R2"),
+         _union_successor(root), "R7=0"),
+        # The understanding child's later successor (re-derived 2026-10-02).
+        ("missing-successor-record", union_act["record"], None, "R1"),
+        ("stale-successor-aggregate", AGGREGATE,
+         _first_hex_flip(union_act["label"]), "R1"),
+        ("successor-broken-chain", union_act["record"],
+         _chain_predecessor_moved, "R2"),
+        ("successor-instant-order", union_act["record"],
+         lambda t: re.sub(r"^Act instant: \S+$",
+                          "Act instant: 2026-09-01T00:00:00Z", t, 1, re.M), "R2"),
+        ("route-successor-record", OPENSPEC_README,
+         _replace(Path(union_act["record"]).name, "DEPENDENCY-UNION-ACT.md", -1),
+         "R5"),
         ("union-extra-decision",
          f"{CHANGES}/{UNDERSTANDING_CHANGE}/GOVERNING-DEPENDENCIES.md",
          _replace("## decisions\n\nSDR-3\n", "## decisions\n\nSDR-3, SDR-99\n"),

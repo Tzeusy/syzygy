@@ -1,5 +1,13 @@
 # Polaris understanding dependency-union successor — owner decision packet
 
+> **PERFORMED 2026-10-02.** The owner signed off this package by one option
+> selection ("Sign off"), made late on 2026-10-02 local time and recorded
+> 2026-10-03; the act record is
+> [`POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-ACT.md`](../../../decisions/POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-ACT.md).
+> The recording prerequisites below landed first; the reconciliation was
+> re-derived and the builder joined the battery with the act. The banner
+> below is the one the packet was drafted with.
+
 > **Status:** Proposal, drafted 2026-10-02 for bead `syzygy-c51h`. It binds
 > nothing until the owner performs the act below (VIS-4). It is not offered
 > yet: no review has been run, and the recording prerequisites below have
