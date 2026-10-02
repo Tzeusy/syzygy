@@ -24,7 +24,8 @@ Modes, each over one `--package DIR` or, with `--all`, every package:
   predecessor; manifest and preservation verified) or `performed-exact`
   (both records exact; every subject at its manifest row, or at a row a
   chain of later performed successors installed over it: each one's
-  recorded predecessor for that path is the digest the chain has reached).
+  recorded predecessor for that path is the digest the chain has reached,
+  and each one's act instant is strictly later than the step before).
   Anything in between fails.
 - `--write` regenerates the manifest; `--diff` prints predecessor→proposed.
 - `--record --phrase "<owner phrase>"` refuses unless the phrase is exact over
@@ -239,50 +240,56 @@ runtime evidence or product readiness.
         A performed package's subject may sit at a later successor's row
         instead of its own: see `later_rows`. Any other difference fails.
         """
-        rows = self.performed_rows()
-        if rows is None:
+        performed = self.performed_rows()
+        if performed is None:
             findings = self.candidate_findings()
             if findings:
                 raise ValueError("; ".join(findings))
             return "candidate-unperformed"
+        instant, rows = performed
         current = self.current()
         drifted = [rel for rel in self.subjects if current[rel] != rows[rel]
-                   and current[rel] not in self.later_rows(rel, rows[rel])]
+                   and current[rel] not in self.later_rows(rel, rows[rel], instant)]
         if drifted:
             raise ValueError("subject differs from its successor row: " + ", ".join(drifted))
         return "performed-exact"
 
-    def later_rows(self, rel, row):
+    def later_rows(self, rel, row, instant):
         """Every digest a chain of later performed successors installs over `row`.
 
-        A later successor follows this one for `rel` only when its recorded
+        A successor extends the chain for `rel` only when its recorded
         predecessor for that path (normalized, so `./x` is `x`) equals the
-        digest the chain has reached; each step must verify as performed (`performed_rows`), and a
-        package that is unperformed, partial or malformed grants nothing. The
-        chain starts at `row`, so a subject at any other digest stays drift.
+        digest the chain has reached and its act instant is strictly later
+        than the step before (this act's `instant` for the first step), so
+        neither this package nor an earlier one ever counts. Each step must
+        verify as performed (`performed_rows`); a package that is
+        unperformed, partial or malformed grants nothing. The chain starts at
+        `row`, so a subject at any other digest stays drift.
         """
         key, performed = posixpath.normpath(rel), []
         for config in sorted((self.root / CANDIDATES).glob(f"*/{CONFIG}")):
             try:
                 other = Package(self.root, config.parent.relative_to(self.root).as_posix())
-                rows = other.performed_rows()
-                if rows is None:
+                found = other.performed_rows()
+                if found is None:
                     continue
-                performed.extend((other.predecessor[path], rows[path]) for path in other.subjects
+                at, rows = found
+                performed.extend((at, other.predecessor[path], rows[path]) for path in other.subjects
                                  if posixpath.normpath(path) == key)
             except Exception:  # noqa: BLE001 - a failing package grants nothing
                 continue
-        found, frontier = set(), [row]
+        found, seen, frontier = set(), set(), [(row, instant)]
         while frontier:
-            reached = frontier.pop()
-            for predecessor, successor in performed:
-                if predecessor == reached and successor not in found:
+            reached, after = frontier.pop()
+            for at, predecessor, successor in performed:
+                if predecessor == reached and at > after and (successor, at) not in seen:
+                    seen.add((successor, at))
                     found.add(successor)
-                    frontier.append(successor)
+                    frontier.append((successor, at))
         return found
 
     def performed_rows(self):
-        """None when unperformed; else the manifest rows, both records exact.
+        """None when unperformed; else (act instant, manifest rows), both records exact.
 
         Raises on any partial record. Subjects are not compared here.
         """
@@ -305,7 +312,7 @@ runtime evidence or product readiness.
         if (any(aggregate.count(f"<!-- {self.marker}:{s} -->") != 1 for s in ("BEGIN", "END"))
                 or aggregate.count(self.block(actual)) != 1):
             raise ValueError(f"{AGGREGATE}: act section missing, changed or duplicated")
-        return rows
+        return instant.group(1), rows
 
     def record(self, phrase, instant):
         m = self.phrase.fullmatch(phrase or "")
@@ -402,7 +409,7 @@ def pin(package, verdict="Verdict: CONFIRM", binding=None, extra="",
     return f"{package.label}: {sha}"
 
 
-def later(first, name, rel, data, start=None, perform=True):
+def later(first, name, rel, data, start=None, perform=True, instant="2026-09-30T00:00:00Z"):
     """A successor over `rel` alone, after `first`, with its own review raw.
 
     `start` first resets the subject, so the package can name a predecessor
@@ -428,7 +435,7 @@ def later(first, name, rel, data, start=None, perform=True):
     (root / pkg / CONFIG).write_text(json.dumps(config))
     package = Package(root, pkg)
     if perform:
-        package.record(phrase, "2026-09-30T00:00:00Z")
+        package.record(phrase, instant)
     return package
 
 
@@ -555,12 +562,38 @@ def selftest():
     found = states(q, two)
     results.append(("superseded by a later successor, performed-exact",
                     found == ["performed-exact"] * 2, "; ".join(found)))
-    three = later(q, "example-chain-three", proposal, b"# Why\n\nShortest.\n")
+    three = later(q, "example-chain-three", proposal, b"# Why\n\nShortest.\n",
+                  instant="2026-10-01T00:00:00Z")
     found = states(q, two, three)
     results.append(("superseded through a chain of two, performed-exact",
                     found == ["performed-exact"] * 3, "; ".join(found)))
     (q.root / proposal).write_bytes(b"# Why\n\nOther.\n")
     expect("superseded subject at no successor's row refused", q.check, "successor row")
+    # A step back to earlier bytes: only later acts extend a chain, so the
+    # intermediate digest, restored by hand, is drift for the latest act.
+    q = fresh()
+    q.record(pin(q), instant)
+    restyled = read(q.root, proposal)
+    two = later(q, "example-forward", proposal, b"# Why\n\nShorter.\n")
+    back = later(q, "example-back", proposal, restyled, instant="2026-10-01T00:00:00Z")
+    found = states(q, two, back)
+    results.append(("a step back keeps every act performed-exact",
+                    found == ["performed-exact"] * 3, "; ".join(found)))
+    (q.root / proposal).write_bytes(b"# Why\n\nShorter.\n")
+    expect("an earlier act's bytes restored by hand refused", back.check, "successor row")
+    # One act naming a file twice cannot supersede its own row.
+    q = fresh()
+    config = json.loads(read(q.root, f"{q.dir}/{CONFIG}"))
+    config["predecessor"]["openspec/changes/example/./proposal.md"] = config["predecessor"][proposal]
+    (q.root / q.dir / CONFIG).write_text(json.dumps(config))
+    q = Package(q.root, q.dir)
+    (q.root / q.manifest).write_text(q.render_manifest())
+    ph = pin(q)
+    config["pins"] = q.pins  # on disk, so the package reloads as performed
+    (q.root / q.dir / CONFIG).write_text(json.dumps(config))
+    q = Package(q.root, q.dir)
+    expect("an act's own row never supersedes its other row", lambda: q.record(ph, instant),
+           "successor row")
     q = fresh()
     q.record(pin(q), instant)
     foreign = later(q, "example-foreign", proposal, b"# Why\n\nShorter.\n",

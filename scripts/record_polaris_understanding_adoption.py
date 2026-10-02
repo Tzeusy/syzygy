@@ -32,7 +32,7 @@ MARKER = "POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION"
 # change needs a new pin here, and so a new history review.
 SUCCESSOR_TOOL = "scripts/readability_successor.py"
 CONTESTED = ('contested', 'contested')
-SUCCESSOR_TOOL_SHA = "fdb4e483978dbe005249f60744bcdeec16ec5c4a8c71ca6bf37f018dd8afbdad"
+SUCCESSOR_TOOL_SHA = "f9e24b6563eca5bfc274dc19170ed7488e5f4ab4caa33558fe86cfa480e57df7"
 
 
 def digest(data):
@@ -280,24 +280,27 @@ def chain(pairs):
     """Compose one path's (predecessor, successor) pairs into one pair, or CONTESTED.
 
     A pair that changes the bytes is a step. The steps must form a single
-    unbranched chain: exactly one first digest that no step reaches, and
-    every step visited from it once, so a repeated step, two steps from one
-    digest, a cycle or a second chain is contested. A pair that keeps the bytes says
-    the path was unchanged; its digest must lie on the chain, or be the only
-    such digest when there is no step.
+    unbranched chain: no step repeated and no two steps from one digest,
+    exactly one first digest that no step reaches, and every step walked
+    from it exactly once. So a repeated step, a fork, a cycle with no first
+    digest, or a second chain or cycle beside the first is contested; a
+    chain may still return to a digest it passed (a step back). A pair that
+    keeps the bytes says the path was unchanged; its digest must lie on the
+    chain, or be the only such digest when there is no step.
     """
     steps = [(a, b) for a, b in pairs if a != b]
     kept = {a for a, b in pairs if a == b}
     if not steps:
         return (min(kept), min(kept)) if len(kept) == 1 else CONTESTED
-    following = dict(steps)
+    following = dict(steps)  # a repeated step or a fork collapses here, so fewer are walked
     first = set(following) - set(following.values())
     if len(first) != 1:
         return CONTESTED
-    nodes = list(first)
-    while nodes[-1] in following and len(nodes) <= len(steps):
+    nodes, walked = list(first), set()
+    while nodes[-1] in following and nodes[-1] not in walked:
+        walked.add(nodes[-1])
         nodes.append(following[nodes[-1]])
-    if len(nodes) != len(steps) + 1 or not kept <= set(nodes):
+    if len(walked) != len(steps) or not kept <= set(nodes):
         return CONTESTED
     return (nodes[0], nodes[-1])
 
@@ -1203,7 +1206,7 @@ def successor_rows_selftest():
                 'removing the fork did not restore the chain')
         (root / proposal).write_bytes(b'drifted\n')
         require(Evidence(root).successor_rows() == {}, 'drifted successor granted rows')
-    a, b, c, d = ('a' * 64, 'b' * 64, 'c' * 64, 'd' * 64)
+    a, b, c, d, e = ('a' * 64, 'b' * 64, 'c' * 64, 'd' * 64, 'e' * 64)
     for pairs, expected, label in (
             ([(a, b)], (a, b), 'one step'),
             ([(b, c), (a, b)], (a, c), 'two steps in any order'),
@@ -1217,9 +1220,11 @@ def successor_rows_selftest():
             ([(a, b), (c, d)], CONTESTED, 'two separate chains'),
             ([(a, b), (b, a)], CONTESTED, 'a cycle with no first digest'),
             ([(a, b), (b, c), (c, b)], (a, b), 'a step back to an earlier digest'),
+            ([(a, b), (a, b), (b, c), (c, b)], CONTESTED, 'a repeated step before a step back'),
+            ([(a, b), (b, c), (c, b), (d, e), (e, d)], CONTESTED, 'a step back beside a cycle'),
             ([(a, b), (c, d), (d, c)], CONTESTED, 'a chain beside a cycle')):
         require(chain(pairs) == expected, 'chain composition: ' + label)
-    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed, deeply nested and wrongly typed siblings, edited tool, chained, forked and drifted packages; 13 composition cases')
+    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed, deeply nested and wrongly typed siblings, edited tool, chained, forked and drifted packages; 15 composition cases')
 
 
 def main():
