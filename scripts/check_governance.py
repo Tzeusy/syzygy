@@ -3220,12 +3220,13 @@ _activate_readability_successor_copies()
 #: SHA-256:". Not headings, so deliberately unmatched: a digest cited inline
 #: mid-sentence ("… (SHA-256 `<digest>`)", "verdict `CONFIRM`, sha256
 #: `<digest>`"), which names a review raw or container file, not an act
-#: argument (3 such in `pwb-effect-acts/OWNER-SIGNOFF-PACKET.md`). Known
-#: live remainder: a third review (R-CG7E-BARE-DIGEST-CONFIRMATION-2) found
-#: 12 copies of act arguments with no sha256 label at all — `Act identity:`
-#: lines, table cells, a checksum row, one owner phrase — still masked by a
-#: correct copy elsewhere in the file. Shape-matching cannot reach them;
-#: bd `syzygy-wh1` tracks a structural check. The label text is captured
+#: argument (3 such in `pwb-effect-acts/OWNER-SIGNOFF-PACKET.md`). A third
+#: review (R-CG7E-BARE-DIGEST-CONFIRMATION-2) found 12 copies of act
+#: arguments with no sha256 label at all — `Act identity:` lines, table
+#: cells, a checksum row, one owner phrase — masked by a correct copy
+#: elsewhere in the file. Shape-matching cannot reach them; the
+#: shape-independent near-miss pass (`STANDALONE_DIGEST`, bd `syzygy-wh1`)
+#: does, for one-character corruption. The label text is captured
 #: (group 1) so each match is validated against *that file's own* declared
 #: digests (`allowed_bare`), never the whole corpus's recognized set — a
 #: different file's correct digest must not excuse this one, and this
@@ -3261,6 +3262,20 @@ BARE_DIGEST_HEADING_MANIFEST_EXEMPTIONS = {
      "effect manifest"): PWB_BEHAVIOR_REPIN_MANIFEST,
 }
 
+
+#: bd `syzygy-wh1`: every standalone 64-hex token in a registered act-copy
+#: file, whatever surrounds it — an `Act identity:` URN, a table cell, a
+#: `sha256sum` row, an owner phrase. Bounded by non-hex on both sides, so a
+#: 63- or 65-character run is not a token. Lowercase only, the corpus's one
+#: digest spelling.
+STANDALONE_DIGEST = re.compile(r"(?<![0-9A-Fa-f])[0-9a-f]{64}(?![0-9A-Fa-f])")
+
+
+def _one_character_apart(token, digest):
+    """True when two 64-hex strings differ in exactly one position."""
+    if len(token) != 64 or len(digest) != 64:
+        return False
+    return sum(a != b for a, b in zip(token, digest)) == 1
 
 def cg7e_act_digest_copies(paths, res):
     """Every copy of an act argument is examined, wherever it sits.
@@ -3382,6 +3397,37 @@ def cg7e_act_digest_copies(paths, res):
                     f"A correct copy of the phrase line elsewhere in the "
                     f"file does not make this bare copy current — it is "
                     f"stale or corrupted")
+
+            # bd `syzygy-wh1`: the unlabeled remainder. A standalone token
+            # that is not one of this file's allowed arguments, but sits
+            # exactly one character from one, is a corrupted copy in any
+            # shape, however many correct copies the file also carries.
+            # Bare headings were judged above and are not judged twice.
+            # Residual, by design: a token two or more characters off, or
+            # swapped whole for another allowed digest, is not caught here.
+            allowed_labels = {}
+            for lab in current_declared:
+                if by_label.get(lab):
+                    allowed_labels.setdefault(by_label[lab], set()).add(lab)
+            for lab, bindings in historical_declared.items():
+                for digest, _pattern in bindings:
+                    allowed_labels.setdefault(digest, set()).add(lab)
+            judged = {m.start(2) for m in BARE_DIGEST_HEADING.finditer(body)}
+            for m in STANDALONE_DIGEST.finditer(body):
+                token = m.group(0)
+                if token in allowed_labels or m.start() in judged:
+                    continue
+                near = sorted({lab for digest, labels in allowed_labels.items()
+                               if _one_character_apart(token, digest)
+                               for lab in labels})
+                if not near:
+                    continue
+                line_no = body[:m.start()].count("\n") + 1
+                findings.append(
+                    f"{rel}:{line_no} — unlabeled digest `{token[:12]}…` is "
+                    f"one character from this file's declared argument for "
+                    f"{near}. A correct copy elsewhere in the file does not "
+                    f"make this one current — it is stale or corrupted")
 
             missing_historical = []
             for lab, bindings in historical_declared.items():
@@ -7431,6 +7477,41 @@ def selftest():
                   row[0] == "FAIL"
                   and any("checked exemption" in x for x in row[4])))
 
+    # bd syzygy-wh1: the shape-independent near-miss pass over unlabeled
+    # copies (R-CG7E-BARE-DIGEST-CONFIRMATION-2 finding 4).
+    def near_findings(row):
+        return [x for x in row[4] if "unlabeled digest" in x]
+
+    row = _selftest_cg7e_unlabeled_near_miss("exact")
+    cases.append(("CG-7e unlabeled exact current and historical copies pass",
+                  row[0] == "OK" and row[3] == 0))
+    for kind in ("urn", "table", "checksum", "phrase"):
+        row = _selftest_cg7e_unlabeled_near_miss(kind)
+        cases.append((f"CG-7e unlabeled one-character {kind} copy fails "
+                      f"despite a correct phrase line",
+                      row[0] == "FAIL" and row[3] == 1
+                      and len(near_findings(row)) == 1
+                      and near_findings(row)[0].startswith(
+                          "OWNER-DECISION-PACKET.md:3 — ")))
+    row = _selftest_cg7e_unlabeled_near_miss("cross-file")
+    cases.append(("CG-7e another file's exact historical digest cannot "
+                  "excuse this file's near miss",
+                  row[0] == "FAIL" and row[3] == 1
+                  and near_findings(row)[0].startswith(
+                      "OWNER-DECISION-PACKET.md:3 — ")))
+    row = _selftest_cg7e_unlabeled_near_miss("distance-two")
+    cases.append(("CG-7e unrelated token two characters off passes",
+                  row[0] == "OK" and row[3] == 0))
+    row = _selftest_cg7e_unlabeled_near_miss("two-character")
+    cases.append(("CG-7e two-character corruption is the disclosed residual "
+                  "(not caught by the near-miss pass)",
+                  row[0] == "OK" and not near_findings(row)))
+    first, rest = _selftest_cg7e_unlabeled_near_miss("concurrent")
+    cases.append(("CG-7e near-miss findings identical sequentially and "
+                  "across eight concurrent calls",
+                  first[0] == "FAIL" and len(near_findings(first)) == 1
+                  and all(r == first for r in rest)))
+
     # Version-tagged sign-off exemptions (Scope A): existence-gated per package.
     import tempfile as _tempfile
     with _tempfile.TemporaryDirectory() as _d:
@@ -8521,7 +8602,9 @@ def _selftest_cg7e_bare_manifest_copy(kind):
         over a container file's digest, registered as a checked exemption;
         the drift case mutates the container after the heading was written.
       - "prose" — `the SHA-256 of that file is <digest>` in running prose:
-        not a heading, never matched.
+        not a heading, never matched. The digest is unrelated to any
+        argument: a one-character corruption in prose is the near-miss
+        pass's case (`_selftest_cg7e_unlabeled_near_miss`), not this one.
     """
     class Cap:
         def __init__(self): self.rows = []
@@ -8571,7 +8654,7 @@ def _selftest_cg7e_bare_manifest_copy(kind):
             "historical-correct": f"Manifest SHA-256: `{older}`\n",
             "exempt-correct": f"Effect manifest SHA-256: `{container}`\n",
             "exempt-drift": f"Effect manifest SHA-256: `{container}`\n",
-            "prose": f"the SHA-256 of that file is `{mutate(argument)}`.\n",
+            "prose": f"the SHA-256 of that file is `{'b' * 64}`.\n",
             "lower-item-stale":
                 f"- Transaction-manifest sha256:\n  `{mutate(argument)}`.\n",
             "backtick-label-stale":
@@ -8621,6 +8704,128 @@ def _selftest_cg7e_bare_manifest_copy(kind):
         _ActSubjects._cache.update(cache)
         shutil.rmtree(d, ignore_errors=True)
 
+
+def _selftest_cg7e_unlabeled_near_miss(kind):
+    """bd `syzygy-wh1`: an unlabeled corrupted copy fails beside a correct one.
+
+    R-CG7E-BARE-DIGEST-CONFIRMATION-2 finding 4 found act-argument copies
+    with no sha256 label — an `Act identity:` URN, a table cell, a checksum
+    row, an owner phrase — masked by a correct copy elsewhere in the file.
+    Each fixture file carries the correct phrase line, so predicate 1 holds
+    and only the near-miss pass can speak. Returns the CG-7e row, or for
+    "concurrent" a tuple of the sequential and eight concurrent rows.
+
+    ``kind`` names the extra line(s):
+      - "exact" — URN with the current argument and a table cell with the
+        historical one: both pass.
+      - "urn" / "table" / "checksum" / "phrase" — that shape, one
+        character off the current argument: FAIL, one finding.
+      - "cross-file" — this file carries a token one character off its own
+        argument that a *second* file registers exactly as its historical
+        argument: still FAIL here, in this file only.
+      - "distance-two" — an unrelated token two characters off: passes.
+      - "two-character" — the argument itself corrupted in two places, the
+        disclosed residual: passes (documents the limit, never a claim).
+      - "concurrent" — the "urn" fixture evaluated once, then by eight
+        threads at once.
+    """
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, status, name, examined, n, unit, note=None, details=None):
+            self.rows.append((status, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows if r[1].startswith(prefix)), None)
+
+    import shutil
+    import tempfile
+    from concurrent.futures import ThreadPoolExecutor
+    d = tempfile.mkdtemp(prefix="cg7e-near-miss-selftest-")
+    global ROOT
+    keep = ROOT
+    cache = dict(_ActSubjects._cache)
+    current_files = dict(ACT_DIGEST_COPY_FILES)
+    history_files = dict(ACT_HISTORICAL_DIGEST_COPY_FILES)
+    try:
+        subject_path = os.path.join(d, "synthetic-subject.txt")
+        with open(subject_path, "w", encoding="utf-8") as fh:
+            fh.write("synthetic near-miss subject\n")
+        argument = sha256_file(subject_path)
+
+        def flip(digest, *positions):
+            chars = list(digest)
+            for i in positions:
+                chars[i] = "e" if chars[i] != "e" else "f"
+            return "".join(chars)
+
+        label = "SIGN OFF SYNTHETIC NEAR-MISS TEST"
+        older = "a" * 64
+        one_off = flip(argument, 40)
+        extra = {
+            "exact": (f"Act identity: act:syzygy:synthetic:{argument}\n\n"
+                      f"| 1 | `{older}` | historical |\n"),
+            "urn": f"Act identity: act:syzygy:synthetic:{one_off}\n",
+            "table": f"| 1 | `{one_off}` | current |\n",
+            "checksum": f"{one_off}  synthetic-subject.txt\n",
+            "phrase": f"CONFIRM SYNTHETIC: TEST@{one_off}\n",
+            "cross-file": f"| 1 | `{one_off}` | current |\n",
+            "distance-two": f"| 1 | `{flip(argument, 3, 40)}` | other |\n",
+            "two-character": f"Act identity: act:syzygy:synthetic:{flip(argument, 3, 40)}\n",
+            "concurrent": f"Act identity: act:syzygy:synthetic:{one_off}\n",
+        }[kind]
+        packet = "OWNER-DECISION-PACKET.md"
+        with open(os.path.join(d, packet), "w", encoding="utf-8") as fh:
+            fh.write(f"# Synthetic packet\n\n{extra}\n{label}: {argument}\n")
+        paths = [packet]
+
+        ROOT = d
+        _ActSubjects._cache[d] = (
+            (label, "synthetic-subject.txt",
+             re.compile(re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")),
+        )
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES[packet] = (label,)
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        # Historical registrations must name performed digests, so the
+        # fixture root carries its own owner-act record performing both.
+        record = os.path.join(d, PERFORMED_ACT_RECORD)
+        os.makedirs(os.path.dirname(record))
+        with open(record, "w", encoding="utf-8") as fh:
+            fh.write(f"{label}: {older}\n"
+                     + (f"{label}: {one_off}\n" if kind == "cross-file" else ""))
+        if kind == "exact":
+            ACT_HISTORICAL_DIGEST_COPY_FILES[packet] = {
+                label: ((older, re.compile(re.escape(older))),),
+            }
+        if kind == "cross-file":
+            other = "OTHER-RECORD.md"
+            with open(os.path.join(d, other), "w", encoding="utf-8") as fh:
+                fh.write(f"# Other record\n\n{label}: {one_off}\n")
+            ACT_HISTORICAL_DIGEST_COPY_FILES[other] = {
+                label: ((one_off, re.compile(re.escape(one_off))),),
+            }
+            paths.append(other)
+
+        def evaluate():
+            c = Cap()
+            cg7e_act_digest_copies(paths, c)
+            return c.row("CG-7e")
+
+        if kind == "concurrent":
+            first = evaluate()
+            with ThreadPoolExecutor(max_workers=8) as pool:
+                rest = list(pool.map(lambda _i: evaluate(), range(8)))
+            return first, rest
+        return evaluate()
+    finally:
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES.update(current_files)
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        ACT_HISTORICAL_DIGEST_COPY_FILES.update(history_files)
+        ROOT = keep
+        _ActSubjects._cache.clear()
+        _ActSubjects._cache.update(cache)
+        shutil.rmtree(d, ignore_errors=True)
 
 def _selftest_pwb_effect_act_copy_registry(kind):
     class Cap:

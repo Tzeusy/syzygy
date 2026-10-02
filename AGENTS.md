@@ -630,12 +630,16 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   12 spellings, only 4 the literal one; two review rounds each found the
   sweep narrower than claimed) — against that file's own declared digests;
   the two container-manifest headings are checked exemptions, hashed live.
-  A digest cited inline mid-sentence is not a heading and stays unchecked
-  (3 in `pwb-effect-acts/OWNER-SIGNOFF-PACKET.md`), and so do **12 unlabeled
-  copies of act arguments that are live today** (act-identity lines, table
-  cells, a checksum row, one owner phrase) — a corrupted one still passes
-  beside a correct copy. Shape-matching kept leaking over three reviews;
-  the structural fix is `syzygy-wh1`. A rule-6 mutation
+  Unlabeled copies (act-identity URNs, table cells, checksum rows, owner
+  phrases — 12 found live by a third review) are reached by a
+  shape-independent near-miss pass (`STANDALONE_DIGEST`, `syzygy-wh1`): any
+  standalone 64-hex token in a registered file that is not one of *that
+  file's* allowed arguments but is exactly one character from one fails,
+  whatever correct copies sit beside it. **Residual:** a copy corrupted in
+  two or more characters, or swapped whole for another digest, still passes
+  beside a correct copy; a digest cited inline that names a review raw or
+  container (3 in `pwb-effect-acts/OWNER-SIGNOFF-PACKET.md`) is unchecked
+  unless it lands one character from an argument. A rule-6 mutation
   must still rewrite *every* copy (`sed s///g`), not the first match — a
   `str.replace(..., 1)` hit an unregistered copy and reported a false pass.
 - **CG-26 is one coupled triple: register it once, at merge.** Several
