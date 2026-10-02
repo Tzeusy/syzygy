@@ -10,6 +10,11 @@ import { proveSelfCorpus, readSelfCorpus } from './self-corpus.js';
 // checkout must retain it; substituting HEAD would change the denominator.
 const PINNED_MAIN = '133106eb0f2564f1cefddd19d11985f1b2619397';
 const cleanups: string[] = [];
+// readSelfCorpus spawns one `git cat-file` per selected blob, over a hundred
+// at the pinned commit (about 1-2 s alone). Measured worst case 7.8 s under
+// the parallel-load protocol (syzygy-gb4l,
+// docs/evidence/load-timeouts-gb4l-2026-10-03.json).
+const PINNED_READ_TIMEOUT_MS = 60_000;
 afterEach(() => { for (const path of cleanups.splice(0)) rmSync(path, { recursive: true, force: true }); });
 
 describe('zero-egress Syzygy self-corpus proof', () => {
@@ -24,7 +29,7 @@ describe('zero-egress Syzygy self-corpus proof', () => {
     expect(corpus.sources.map(source => source.path).sort()).toEqual(selected.sort());
     expect(corpus.sources.every(source => source.body !== undefined && source.spans.length === 1)).toBe(true);
     expect(corpus.over100000Characters).toBe(0);
-  });
+  }, PINNED_READ_TIMEOUT_MS);
 
   it('refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation', async () => {
     const report = await proveSelfCorpus(process.cwd(), PINNED_MAIN);

@@ -32,6 +32,12 @@ function fixture(stateDir: string, sends: string[], options: { readonly failFide
   });
 }
 
+// Each test runs scripted pipelines over a journal that fsyncs every write
+// (2-20 fsyncs, about 0.3 s alone); a loaded host stalled one to 6.3 s under
+// the parallel-load protocol (syzygy-gb4l,
+// docs/evidence/load-timeouts-gb4l-2026-10-03.json).
+const JOURNAL_TIMEOUT_MS = 30_000;
+
 describe('durable scripted lifecycle port', () => {
   it('reuses four verified checkpoints and sends only the missing fidelity stage after restart', async () => {
     const stateDir = scratch();
@@ -46,7 +52,7 @@ describe('durable scripted lifecycle port', () => {
     expect(resumed.receipts.map(receipt => receipt.reused)).toEqual([true, true, true, true, false]);
     expect(resumed.receipts.map(receipt => receipt.providerRoute)).toEqual(['route-inventory', 'route-plan', 'route-author', 'route-edit', 'route-fidelity']);
     expect(resumed.receipts.map(receipt => receipt.model)).toEqual(Array(5).fill('scripted-v1'));
-  });
+  }, JOURNAL_TIMEOUT_MS);
 
   it('refuses changed request, route or current permission and a forged completed artifact', async () => {
     const stateDir = scratch();
@@ -70,7 +76,7 @@ describe('durable scripted lifecycle port', () => {
     expect(await runGenerationPipeline(original, fixture(stateDir, sends), new AbortController().signal))
       .toMatchObject({ status: 'stopped', reason: 'admission-refused' });
     expect(sends).toHaveLength(5);
-  });
+  }, JOURNAL_TIMEOUT_MS);
 
   it('keeps uncertain maximum reserved despite missing receipts and an expired lease field', async () => {
     const stateDir = scratch();
@@ -87,7 +93,7 @@ describe('durable scripted lifecycle port', () => {
     expect(await runGenerationPipeline(original, fixture(stateDir, sends), new AbortController().signal))
       .toMatchObject({ status: 'stopped', reason: 'effect-uncertain' });
     expect(sends).toHaveLength(1);
-  });
+  }, JOURNAL_TIMEOUT_MS);
 
   it('admits at most one concurrent dispatch and keeps distinct run artifacts separate', async () => {
     const stateDir = scratch();
@@ -107,5 +113,5 @@ describe('durable scripted lifecycle port', () => {
     const another = { ...original, requestId: 'run-two' };
     expect((await runGenerationPipeline(another, fixture(stateDir, sends), new AbortController().signal)).status).toBe('awaiting-rendered-review');
     expect(readdirSync(stateDir).filter(name => name.endsWith('.json'))).toHaveLength(10);
-  });
+  }, JOURNAL_TIMEOUT_MS);
 });
