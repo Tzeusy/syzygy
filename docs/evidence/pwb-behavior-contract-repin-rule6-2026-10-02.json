@@ -1,0 +1,165 @@
+{
+  "subject": "PWB behaviour-contract re-pin recorder and builder selftests (rule 6)",
+  "bead": "syzygy-jloi",
+  "ranAtCommit": "e0afb57e28d44bd7e243cad7b53c984af78aa124",
+  "sourceSha256": {
+    "scripts/record_pwb_behavior_contract_repin_acts.py": "b4dffb16bb3d21552eef1c1789839e79bb035c5d934fc665926eb0bddecb52c5",
+    "scripts/build_pwb_behavior_contract_repin.py": "8a448d63131a6c299d37f2198e03d482d1008d28f7b4ebd807ae359a77e4a919"
+  },
+  "method": "each mutant replaces exactly one source fragment in place, runs the script's --selftest, and restores the file; a non-zero exit is a kill",
+  "mutants": 13,
+  "killed": 13,
+  "records": [
+    {
+      "file": "scripts/record_pwb_behavior_contract_repin_acts.py",
+      "old": "    if row != argument:\n",
+      "new": "    if False:\n",
+      "outcome": "killed",
+      "selftestExit": 1,
+      "failingFixtures": [
+        "policy: wrong owner argument rejected",
+        "policy: the other subject's row offered as this act's argument rejected",
+        "policy: the superseded digest offered as the argument rejected",
+        "registry: wrong owner argument rejected",
+        "registry: the other subject's row offered as this act's argument rejected",
+        "registry: the superseded digest offered as the argument rejected"
+      ],
+      "crash": null
+    },
+    {
+      "file": "scripts/record_pwb_behavior_contract_repin_acts.py",
+      "old": "    if committed_blob(root, FROZEN_SUBJECT, packet.OUT) != manifest_bytes:\n",
+      "new": "    if False:\n",
+      "outcome": "killed",
+      "selftestExit": 1,
+      "failingFixtures": [
+        "policy: manifest bytes the frozen subject lacks rejected",
+        "registry: manifest bytes the frozen subject lacks rejected"
+      ],
+      "crash": null
+    },
+    {
+      "file": "scripts/record_pwb_behavior_contract_repin_acts.py",
+      "old": "        if current != argument:\n",
+      "new": "        if False:\n",
+      "outcome": "killed",
+      "selftestExit": 1,
+      "failingFixtures": [
+        "policy: unapplied subject rejected in applied mode",
+        "registry: unapplied subject rejected in applied mode"
+      ],
+      "crash": null
+    },
+    {
+      "file": "scripts/record_pwb_behavior_contract_repin_acts.py",
+      "old": "    if current != superseded:\n",
+      "new": "    if False:\n",
+      "outcome": "killed",
+      "selftestExit": 1,
+      "failingFixtures": [
+        "policy: subject bytes other than the superseded act's argument rejected",
+        "registry: subject bytes other than the superseded act's argument rejected"
+      ],
+      "crash": null
+    },
+    {
+      "file": "scripts/record_pwb_behavior_contract_repin_acts.py",
+      "old": "    if digest(proposed) != argument:\n",
+      "new": "    if False:\n",
+      "outcome": "killed",
+      "selftestExit": 1,
+      "failingFixtures": [
+        "policy: proposed bytes other than the manifest row rejected",
+        "registry: proposed bytes other than the manifest row rejected"
+      ],
+      "crash": null
+    },
+    {
+      "file": "scripts/record_pwb_behavior_contract_repin_acts.py",
+      "old": "    if HEX64_RE.search(packet_bytes.decode()):\n",
+      "new": "    if False:\n",
+      "outcome": "killed",
+      "selftestExit": 1,
+      "failingFixtures": [
+        "packet carrying a transcribed digest rejected"
+      ],
+      "crash": null
+    },
+    {
+      "file": "scripts/record_pwb_behavior_contract_repin_acts.py",
+      "old": "    if committed_blob(root, PACKET_HEAD, OWNER_PACKET) != strip_performed_head(packet_bytes):\n",
+      "new": "    if False:\n",
+      "outcome": "killed",
+      "selftestExit": 1,
+      "failingFixtures": [
+        "edit beneath a PERFORMED head rejected",
+        "packet bytes the packet head lacks rejected"
+      ],
+      "crash": null
+    },
+    {
+      "file": "scripts/record_pwb_behavior_contract_repin_acts.py",
+      "old": "    if f\"Manifest SHA-256: {manifest_sha}\" not in head:\n",
+      "new": "    if False:\n",
+      "outcome": "killed",
+      "selftestExit": 1,
+      "failingFixtures": [
+        "review head binding another manifest digest rejected",
+        "review head carrying a manifest row instead of the file digest rejected"
+      ],
+      "crash": null
+    },
+    {
+      "file": "scripts/record_pwb_behavior_contract_repin_acts.py",
+      "old": "    if len(verdicts) != 1 or verdicts[0] not in VERDICTS:\n",
+      "new": "    if False:\n",
+      "outcome": "killed",
+      "selftestExit": 1,
+      "failingFixtures": [],
+      "crash": "IndexError: list index out of range"
+    },
+    {
+      "file": "scripts/record_pwb_behavior_contract_repin_acts.py",
+      "old": "        if bad:\n",
+      "new": "        if False:\n",
+      "outcome": "killed",
+      "selftestExit": 1,
+      "failingFixtures": [
+        "a revise finding under CONFIRM WITH EXCEPTIONS rejected"
+      ],
+      "crash": null
+    },
+    {
+      "file": "scripts/record_pwb_behavior_contract_repin_acts.py",
+      "old": "        vs.validate_disposition(disposition_root or root,\n",
+      "new": "        (lambda *a: None)(disposition_root or root,\n",
+      "outcome": "killed",
+      "selftestExit": 1,
+      "failingFixtures": [
+        "a finding the disposition record does not cover rejected",
+        "a disposition record not naming the raw rejected"
+      ],
+      "crash": null
+    },
+    {
+      "file": "scripts/record_pwb_behavior_contract_repin_acts.py",
+      "old": "    if paths != sorted(s.path.as_posix() for s in packet.SUBJECTS):\n",
+      "new": "    if False:\n",
+      "outcome": "killed",
+      "selftestExit": 1,
+      "failingFixtures": [],
+      "crash": "StopIteration"
+    },
+    {
+      "file": "scripts/build_pwb_behavior_contract_repin.py",
+      "old": "    if len(changed) != 2 or not all(\n",
+      "new": "    if not all(\n",
+      "outcome": "killed",
+      "selftestExit": 1,
+      "failingFixtures": [
+        "fails: a patch that moves only the version line"
+      ],
+      "crash": null
+    }
+  ]
+}
