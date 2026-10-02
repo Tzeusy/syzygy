@@ -109,6 +109,30 @@ SUPERSEDED_ROWS = {
         ),
         "b89fae42697810692507b5a049aa66949a04afd95d1df1783e95d910e7bfb53e",
     ),
+    pathlib.Path(
+        "openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md"
+    ): (
+        pathlib.Path(
+            ".syzygy/governance/decisions/PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-SIGNOFF-v1.0.md"
+        ),
+        "77f6b685f7a92eff39d874b92ed36b99e832ded16d1970f1242b6750641b5349",
+    ),
+    pathlib.Path(
+        "openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md"
+    ): (
+        pathlib.Path(
+            ".syzygy/governance/decisions/PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-SIGNOFF-v1.0.md"
+        ),
+        "ada47e4b993951873855a3055e0958bd5e0947ab51060404b0ef11eaff84c578",
+    ),
+    pathlib.Path(
+        "openspec/changes/polaris-project-wide-butlers-model/proposal.md"
+    ): (
+        pathlib.Path(
+            ".syzygy/governance/decisions/PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-SIGNOFF-v1.0.md"
+        ),
+        "2054c425e02f4eaffb1a2eeec07238fe4975a8f6eb41d1bc429a4a891fb93a38",
+    ),
 }
 
 
