@@ -121,9 +121,9 @@ observer reads Butlers by the grammar written below, as a built-in default;
 no other project has a built-in default." The trigger is that a profile is
 *declared*, not that one is read. So the next sentence closes the gap round 3
 found between the two: "A Butlers profile that is declared but that the
-observer does not read, for any reason, is treated as one the loader refuses,
-and so is a profile the observer cannot tell is or is not declared for
-Butlers." Two sentences close the paths round 2 found open: "A Butlers
+observer does not read, for any reason, is treated as one the loader refuses.
+Only the loader determines whether a profile is declared; before a loader
+exists, the built-in default applies." Two sentences close the paths round 2 found open: "A Butlers
 profile the loader refuses never returns Butlers to the built-in default",
 and "A project other than Butlers with no loaded profile has no extraction
 rules: its classes' and categories' item denominators are Unknown, never

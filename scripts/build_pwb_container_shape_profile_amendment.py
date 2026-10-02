@@ -305,11 +305,11 @@ LOADED_RULES = {
     ),
     "declared but unread is refused": (
         "A Butlers profile that is declared but that the observer does not read, "
-        "for any reason, is treated as one the loader refuses,"
+        "for any reason, is treated as one the loader refuses."
     ),
-    "undeterminable declaration is refused": (
-        "and so is a profile the observer cannot tell is or is not declared for "
-        "Butlers."
+    "declaration decided by the loader": (
+        "Only the loader determines whether a profile is declared; before a "
+        "loader exists, the built-in default applies."
     ),
     "refused profile does not fall back": (
         "A Butlers profile the loader refuses never returns Butlers to the built-in "
@@ -393,9 +393,13 @@ REQUIREMENT_RULES = {
         "project"
     ),
     "oracle: written Butlers grammar": (
-        "for Butlers read through its loaded profile, both also apply the grammar "
-        "written in these reader definitions and must produce the same "
-        "identities and D;"
+        "for Butlers read through a loaded profile that reproduces the grammar "
+        "written in these reader definitions, both also apply that written "
+        "grammar and must produce the same identities and D,"
+    ),
+    "oracle: written grammar not applied to unreadable class": (
+        "while for a class a loaded profile leaves unreadable the expected D is "
+        "Unknown and the written grammar is not applied to it;"
     ),
     "oracle: unreadable class": (
         "and every class a loaded profile leaves unreadable, carry an Unknown "
@@ -514,10 +518,10 @@ SCENARIO_RULES = {
 # breaks; they are not the guard on the bytes (SPEC_EDITS below is). Their
 # digest is pinned so that a rule weakened, dropped or added in one place
 # fails the selftest instead of passing with its own derived mutant.
-RULE_TABLES_SHA256 = "b655c861078327f168ef337127e01f46962fd3404ff062419c4f22be91ae3031"
+RULE_TABLES_SHA256 = "14463b5d080d5f749bef5b231b983e0bb1b6e8bae87ec69a9dc83ea259f561cf"
 # The selftest's total, fixed so that a rule removed from any table above
 # fails the selftest instead of lowering its count.
-EXPECTED_KILLED = 181
+EXPECTED_KILLED = 182
 # The whole proposed spec.md, pinned by construction: it must equal the
 # current spec.md with each (anchor, replacement) pair applied once, and every
 # other byte of the file unchanged. Each anchor must occur exactly once in the
@@ -666,8 +670,9 @@ SPEC_EDITS = (
             '- Until a profile is declared for Butlers, the observer reads Butlers by the\n'
             '  grammar written below, as a built-in default; no other project has a\n'
             '  built-in default. A Butlers profile that is declared but that the observer\n'
-            '  does not read, for any reason, is treated as one the loader refuses, and so\n'
-            '  is a profile the observer cannot tell is or is not declared for Butlers. A\n'
+            '  does not read, for any reason, is treated as one the loader refuses. Only\n'
+            '  the loader determines whether a profile is declared; before a loader exists,\n'
+            '  the built-in default applies. A\n'
             '  Butlers profile the loader refuses never returns Butlers to the built-in\n'
             '  default. A project other than Butlers with no loaded profile has no\n'
             "  extraction rules: its classes' and categories' item denominators are\n"
@@ -751,11 +756,14 @@ SPEC_EDITS = (
             '  the machine answer and reachable from Polaris.\n'
             '- **Oracle**: two independent extractors apply the literal grammar that\n'
             '  governs the project to the revision-bound source population and must produce\n'
-            '  the same identities and D; for Butlers read through its loaded profile, both\n'
-            '  also apply the grammar written in these reader definitions and must produce\n'
-            '  the same identities and D; modeled + Unknown + contradicted equals D, with\n'
-            '  each identity appearing once; malformed/unreadable sources, and every class\n'
-            '  a loaded profile leaves unreadable, carry an Unknown item denominator.\n'
+            '  the same identities and D; for Butlers read through a loaded profile that\n'
+            '  reproduces the grammar written in these reader definitions, both also apply\n'
+            '  that written grammar and must produce the same identities and D, while for a\n'
+            '  class a loaded profile leaves unreadable the expected D is Unknown and the\n'
+            '  written grammar is not applied to it; modeled + Unknown + contradicted\n'
+            '  equals D, with each identity appearing once; malformed/unreadable sources,\n'
+            '  and every class a loaded profile leaves unreadable, carry an Unknown item\n'
+            '  denominator.\n'
             '- **Oracle independence**: the expected denominator is extracted from the\n'
         ),
     ),
@@ -1663,7 +1671,7 @@ def selftest() -> int:
     unamended = {
         "oracle 'malformed/unreadable'": ("malformed/unreadable sources,", "malformed sources,"),
         "oracle 'modeled + Unknown + contradicted'": (
-            "modeled + Unknown + contradicted equals D", "modeled + Unknown equals D"),
+            "modeled + Unknown + contradicted\n  equals D", "modeled + Unknown\n  equals D"),
         "oracle 'revision-bound'": (
             "governs the project to the revision-bound source population",
             "governs the project to the source population"),
