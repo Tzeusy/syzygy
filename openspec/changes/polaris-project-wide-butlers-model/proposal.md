@@ -89,6 +89,12 @@ gap visible, and reads Butlers only under owner authority.
 - **Copy is short and direct.** Polaris uses short headings and direct project
   language. It does not narrate the page's own structure or use prose to
   restate evidence mechanics.
+  - Polaris's own framing is an abstraction tree: each group opens with its
+    answer, derived from the model under its children's weakest label, and
+    Butlers' text stays verbatim beneath.
+  - Relationships a diagram explains better are drawn as inert static SVG
+    from model claims only, each with a text equivalent that names anything
+    left undrawn; an unsupported relationship is disclosed, never drawn.
 - **Human and machine views match.** The machine answer carries every fact
   Polaris presents. Two closed categories of derived, read-only machine view
   are served beside it, and neither replaces it.

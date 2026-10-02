@@ -1361,13 +1361,103 @@ Group: Presentation. Form: **invariant**.
   decision, evidence and work with durable target identity; labels, file paths
   and coordinates SHALL never serve as anchor identity.
 
+- **Tree form.** Syzygy-authored framing SHALL read as an abstraction tree
+  under CC-REV-8.
+  - A group is one of four classes: a project-level category of
+    PWB-REQ-010's first reading level, which is a top-level group; a project
+    catalog of PWB-REQ-011; an item detail of PWB-REQ-015; or an evidence
+    group, which renders the source records and Unknown disclosures of one
+    category, catalog or item under PWB-REQ-003 and PWB-REQ-011.
+  - Every group SHALL open with one Syzygy-authored opening: one sentence
+    that states that group's answer. An item detail's opening precedes its
+    `argument` band and belongs to no band.
+  - An opening is a lede under PWB-REQ-012 whose one copy role is
+    `project-fact`, and a narrative unit of this requirement whose one claim
+    role is epistemically labeled claim. Its label marker and its routes to
+    its children are separate strings carrying `epistemic-disclosure` and
+    `action-label`.
+  - An opening SHALL state only what that group's own rendered children
+    state, derived from the same evaluation's shared model, and never a claim
+    found nowhere beneath it.
+  - An opening SHALL carry the weakest label among that group's children, in
+    the order Observed, Inferred, Unknown, where a withheld or excluded child
+    counts as Unknown. An opening that states fewer than all its children
+    SHALL name the children it states as its scope. An Unknown opening mints
+    no reason of its own; its routes reach each Unknown child, where that
+    child's own reason and resolution route are disclosed.
+  - A reader who stops at any opening therefore holds a coarser true account,
+    never one more favourable than the group beneath it.
+  - The machine narrative SHALL carry each opening with its group, its label
+    and the stable identities of the children it summarizes; those
+    identities stand in place of an anchor set.
+  - Butlers-declared text SHALL stay verbatim in its own leaf. An opening
+    above it SHALL NOT paraphrase, condense or stand in for that text; it
+    names only which declared text follows. A source identity holding a word
+    PWB-REQ-012 bars from a lede is named in the route string, never in the
+    opening.
+  - An opening SHALL NOT count claims, sources or rows, so PWB-REQ-010's
+    opening aggregate stays the only aggregate before the first capability
+    catalog, and counts stay available on demand under PWB-REQ-007.
+  - Headings, identifiers, the RFC7-13 altitude order, the RFC7-17 authority
+    bands and the exact-source route keep their structure.
+
+- **Diagrams.** A relationship among claims the shared model holds SHALL be
+  drawn where the independent rendered-design review judges that a diagram
+  explains it better than prose.
+  - The review record SHALL list every flow, dependency, ordering, boundary
+    or placement it judged, with the nodes and edges it expects, whether a
+    diagram explains it better and whether it is drawable; a relationship
+    judged prose-sufficient needs no diagram.
+  - The machine narrative SHALL name the review record a page follows by path
+    and SHA-256. A relationship that record does not list owes no diagram.
+  - An element is supported when a claim the shared model holds establishes
+    it with an Observed or Inferred label. A relationship is drawable only
+    when at least one of its edges is supported; a relationship whose only
+    claimed edges are Unknown is not drawable.
+  - A listed relationship that is not drawable SHALL be disclosed in place at
+    the group it affects and SHALL NOT be drawn from prose, labels or
+    inference.
+  - Every listed element a disclosure or text equivalent names as not drawn
+    carries its reason: an Unknown claim's own RFC2-24 reason and resolution
+    route, or `missing-declaration` and its resolution route where no claim
+    establishes the element.
+  - Every drawn node, edge and label SHALL draw exactly one claim that the
+    shared model or an anchored narrative block holds, by that claim's stable
+    identity, and SHALL carry its Observed, Inferred or Unknown label into the
+    render and the text equivalent. An element is drawn Unknown only where a
+    claim establishes the element and its state is Unknown; no other element
+    is drawn.
+  - A drawn diagram SHALL account for its whole listed relationship: every
+    node or edge the review record lists and the diagram does not draw SHALL
+    be named in the text equivalent as not drawn, and the figure SHALL be
+    marked partial.
+  - Each diagram SHALL have an adjacent text equivalent naming every node,
+    edge, label and marking it draws, reachable without vision or a pointing
+    device under PWB-REQ-016. Each drawn tuple SHALL equal its machine claim's
+    tuple under PWB-REQ-020, and the diagram's declarative node-and-edge
+    source SHALL be recoverable from the machine narrative.
+  - A diagram SHALL render as inline static SVG reduced to an allow-list of
+    shapes, paths, text and styling, with no script, event-handler attribute,
+    animation, `foreignObject`, link, or external or unsafe-scheme reference,
+    and SHALL be validated against that allow-list before it reaches a sink.
+    Label text SHALL be encoded as SVG text content at both sinks, so
+    markup-like text in a label stays inert text.
+  - A diagram that fails rendering or validation SHALL NOT be emitted; its
+    text equivalent remains and the failure is disclosed in place.
+  - Openings and diagrams are narrative units: they carry
+    `presentation-artifact` and `non-citable`, count toward PWB-REQ-006's
+    final human-output ceiling, and are never authority.
+
 **Verification.**
 
 - **Case (sweep)**: enumerate every narrative unit, claim and anchor, then
   enumerate every citation/reference emitted by the Syzygy and Butlers source
   populations at the evaluated revisions. Repeat after deleting Polaris
   presentation and after injecting personal view state and a later-read target
-  mutation.
+  mutation. Enumerate every group with its class, opening, label, scope and
+  children, and every listed relationship with its drawn and undrawn
+  elements; mutate a child's state, a drawn element's support, a listed
+  element's presence and each excluded SVG construct in turn.
 - **Observable**: claim roles and non-authority attributes are machine-readable;
   every claim has exact/minimal anchors and no downstream authority reference
   targets Polaris.
@@ -1377,12 +1467,26 @@ Group: Presentation. Form: **invariant**.
   claim and adding an unused anchor fails surplus; a later-read mutation cannot
   rewrite the captured state; a complete downstream-reference scan has zero
   Polaris authority targets; deletion leaves truth unchanged and injected
-  personal state never enters the truth model.
+  personal state never enters the truth model. Every opening states nothing
+  its children do not, carries its weakest child's label and names its scope
+  when partial; every drawn element maps to one machine claim with an equal
+  tuple; every listed element not drawn is named with its reason; every
+  emitted SVG passes the allow-list, and each excluded construct, injected
+  alone, keeps that diagram out of both sinks. PWB-REQ-006's sink scan admits
+  an emitted SVG only when the independent allow-list scan passes it.
 - **Oracle independence**: expected source spans and reference targets come
-  from captured artifacts, not the rendered claim blocks.
+  from captured artifacts, not the rendered claim blocks. Expected groups,
+  child sets, opening labels and drawn and undrawn elements come from the
+  machine model and the named review record; an independent claim-to-child
+  mapping judges each opening's statements; SVG verdicts come from an
+  independent allow-list scan, not the renderer.
 - **Falsifier**: an unclassified narrative unit, uncovered claim, surplus or
   ambiguous anchor, missing non-citable attribute, or downstream citation to
-  Polaris.
+  Polaris; an opening that states what no child states, is labeled stronger
+  than its weakest child, counts, or stands in for Butlers text; a drawn
+  element with no claim; a listed element neither drawn nor disclosed; a
+  diagram without its text equivalent; or an emitted SVG outside the
+  allow-list.
 
 #### Scenario: A project claim is supported without making Polaris authority
 
@@ -1390,12 +1494,68 @@ Group: Presentation. Form: **invariant**.
 - **THEN** the fact's bounded claim block identifies its exact source anchor
 - **AND** both human and machine forms mark the block non-citable presentation
 
+#### Scenario: A group opens with its answer
+
+- **WHEN** Polaris renders a project category, catalog, item detail or
+  evidence group
+- **THEN** the group opens with one Syzygy-authored sentence stating its
+  answer, derived from that evaluation's model and stating nothing its
+  children do not
+- **AND** removing everything below any opening leaves a coarser true account
+
+#### Scenario: An opening over an Unknown child is never more favourable
+
+- **WHEN** a group has one Observed child and one Unknown child
+- **THEN** its opening carries the Unknown label and, if it states only the
+  Observed child, names that child as its scope
+- **AND** its route reaches the Unknown child, whose own reason and resolution
+  route are disclosed there
+
+#### Scenario: An opening above Butlers text stays outside it
+
+- **WHEN** a group's leaf is Butlers-declared text rendered verbatim
+- **THEN** the opening names which declared text follows, and does not
+  paraphrase, condense or replace it
+- **AND** the leaf's state and route render as their own strings, and the
+  verbatim text is byte-identical with and without the opening
+
+#### Scenario: A supported relationship is drawn inertly
+
+- **WHEN** the rendered-design review lists a drawable relationship that a
+  diagram explains better than prose
+- **THEN** Polaris renders one allow-listed static SVG whose every node, edge
+  and label draws one model claim by identity with its epistemic label
+- **AND** an adjacent text equivalent and the machine narrative carry the same
+  elements and tuples
+
+#### Scenario: A partly supported relationship names what it leaves out
+
+- **WHEN** a drawable listed relationship has an edge no model claim
+  establishes
+- **THEN** the diagram draws only claimed elements and is marked partial
+- **AND** its text equivalent names that edge as not drawn, with
+  `missing-declaration` and its resolution route
+
+#### Scenario: A relationship with no supported edge is disclosed, not drawn
+
+- **WHEN** a listed relationship has no edge that an Observed or Inferred
+  model claim establishes, including one whose only claimed edges are Unknown
+- **THEN** no diagram is drawn for it and its gap is disclosed in place,
+  naming each listed edge with its reason
+- **AND** no node or edge is invented from prose, labels or inference
+
+#### Scenario: A failed or unsafe diagram emits nothing active
+
+- **WHEN** a diagram fails to render or its SVG falls outside the allow-list
+- **THEN** no SVG for that diagram reaches either sink
+- **AND** its text equivalent remains and the failure is disclosed in place
+
 ```yaml
 warrants:
   primary: RFC7-2
-  doctrine: [VIS-1, VIS-2, VIS-7]
+  doctrine: [VIS-1, VIS-2, VIS-7, SEC-3]
   contracts: [RFC7-1, RFC7-2, RFC7-3, RFC7-5, RFC7-9, RFC7-10, RFC7-12, RFC7-29, RFC7-33]
-  policies: [CC-BAR-3, CC-REV-3, CC-TEST-5]
+  policies: [CC-BAR-3, CC-REV-3, CC-REV-8, CC-TEST-5]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []
   parent_requirements: [three-surface-poc-experience/POC-REQ-031]
