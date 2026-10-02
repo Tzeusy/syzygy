@@ -1,0 +1,1370 @@
+{
+  "package": "pwb-readability-successor",
+  "baseline_commit": "1ecb99854c4859786cfa8626cfc1698b73271809",
+  "baseline_digests": {
+    "openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml": "bd2504cb580ca73eeb2510481ca4665ee11e2127360fc0be12c104f347fb515f",
+    "openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md": "a3753f0d6e2ef65bff16532cfe7d26dd39decca46dd2b34b381c9e122fc83da9",
+    "openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md": "1e4c0c80d5d120647fb616c50dbead8bc3047410771691fc19d154018beb22f6",
+    "openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md": "d54acd212916fb83047874484c9e47acd1fade453384403ba600a7b2a0244d9c",
+    "openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md": "1397920a9b5a1446519517771bc09fc3f95829827b84fce6c732f27d9c1dd013",
+    "openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0001-0003.md": "f28404be66a4241503f2214757d640361751934b2ab308dafeada5c6d2152e50",
+    "openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md": "ec091e743cb95070b30980021f2b5bdf054128161a86f6f8a8bbdf7678ffbc29",
+    "openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md": "6e480d6b94734abd41b15fbdcab1e6d7df9d60f68f0f3f5b0d66f98462728cd0",
+    "openspec/changes/polaris-project-wide-butlers-model/design.md": "3cff39a87cb13f780e0758d2b35eb2a3a3d22292dddb08b2777d27cb37463f92",
+    "openspec/changes/polaris-project-wide-butlers-model/proposal.md": "3ce6c5ba4db2af6590b63672251db5f2bb177a3941dfb8381e45be87e2c69a9f",
+    "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md": "ae5004a54f46028f8378a46622b41acc512413b1d000b7d4ad350362ca87c78d"
+  },
+  "taxonomy": {
+    "preserved": "same meaning; words equal, or the same claim moved, split or lightly reworded",
+    "clarified": "same meaning in plainer or dated words, or a reading aid that restates signed text and adds no rule",
+    "changed": "the text now says something the predecessor did not: a stale status sentence removed or corrected, or a summary of an already-signed requirement added to non-normative prose"
+  },
+  "requirements": [
+    {
+      "id": "PWB-REQ-001",
+      "title": "Project-shape observation is revision-bound and explicitly scoped",
+      "classification": "preserved",
+      "layout": "paragraph kept; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-002",
+      "title": "Every declared project-shape item is accounted for",
+      "classification": "preserved",
+      "layout": "paragraph kept; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-003",
+      "title": "Missing, unreadable and excluded sources remain visible",
+      "classification": "preserved",
+      "layout": "paragraph kept; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-005",
+      "title": "Consent and policy authority precede every body read",
+      "classification": "preserved",
+      "layout": "labeled bullets: Read authority., Inputs and disclosure., State validity., Invalid cases., Population totals., Invalid-case outcome., Exact subjects., Scope of the acts.; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-006",
+      "title": "Project-shape content stays contained, inert and bounded",
+      "classification": "preserved",
+      "layout": "labeled bullets: Containment., Inert code contexts., Active content., Code-context profile., Resource envelope., Ceilings and breaches.; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-007",
+      "title": "Every project claim carries its complete epistemic state",
+      "classification": "preserved",
+      "layout": "labeled bullets: Complete tuple., Aggregates., Dismissal records., Effect., Rendering under a dismissal., Records that dismiss nothing.; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-004",
+      "title": "Conflicting declarations are disclosed and precedence is explicit",
+      "classification": "preserved",
+      "layout": "labeled bullets: Closed fact population., Root-index counts., Precedence table., Owning layer., Disagreement.; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-010",
+      "title": "Polaris opens with the whole project",
+      "classification": "preserved",
+      "layout": "paragraph kept; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-011",
+      "title": "Project summary, catalogs and exact sources are progressively reachable",
+      "classification": "preserved",
+      "layout": "labeled bullets: Reading levels., Render modes., Withheld sources., Gates., Scroll anchors., Machine recovery.; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-012",
+      "title": "Owner-facing copy is direct and concise",
+      "classification": "preserved",
+      "layout": "one bullet per sentence; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-013",
+      "title": "Proposed work stays subordinate to current project truth",
+      "classification": "preserved",
+      "layout": "paragraph kept; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-014",
+      "title": "Every narrative claim is bounded, anchored and non-authoritative",
+      "classification": "preserved",
+      "layout": "one bullet per sentence; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-015",
+      "title": "Item detail preserves authority bands and exact intent",
+      "classification": "preserved",
+      "layout": "labeled bullets: One detail per item., Capability matching., Three bands., Contract band contents., Relation claim., Captured relations., Relation results., Inference and recovery., Proposals., Identity and storage.; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-016",
+      "title": "Project comprehension works without vision or a pointing device",
+      "classification": "preserved",
+      "layout": "paragraph kept; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-020",
+      "title": "Project-wide facts remain identical across human and machine views",
+      "classification": "preserved",
+      "layout": "labeled bullets: What is compared., Derived read-only machine views., Generated editorial draft view., Membership., Recoverability.; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-021",
+      "title": "POC success includes whole-project cold-open comprehension",
+      "classification": "preserved",
+      "layout": "labeled bullets: Mandatory prompts., Nine answers., Readiness., Relation to PWB-REQ-022.; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "id": "PWB-REQ-022",
+      "title": "Absent or unlawful owner judgment never becomes success",
+      "classification": "preserved",
+      "layout": "labeled bullets: Success criterion., Act state., Evaluation inputs., Closed case population., Readiness fields., Outcomes.; verification separator added",
+      "verification": [
+        "normative words equal after removing layout and the closed label set",
+        "modal sequence equal",
+        "verification, scenario and warrant bytes equal",
+        "group/form line equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    }
+  ],
+  "scenarios": [
+    {
+      "requirement": "PWB-REQ-001",
+      "heading": "Source population is complete at one revision",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-002",
+      "heading": "Declared shape reconciles",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-002",
+      "heading": "Butlers' profile reproduces the written grammar",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-002",
+      "heading": "Loaded profile gives one class no row",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-002",
+      "heading": "Loaded profile names a shape outside the vocabulary",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-002",
+      "heading": "Refused or unread Butlers profile does not fall back",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-002",
+      "heading": "Project with no profile has Unknown item denominators",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-003",
+      "heading": "Excluded source fails closed",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-005",
+      "heading": "Missing observation consent blocks content reads",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-005",
+      "heading": "State-(1) authorities permit reads with the trust gap visible",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-005",
+      "heading": "Mixed valid authority states permit reads",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-005",
+      "heading": "Failed state-(2) correlation blocks without fallback",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-005",
+      "heading": "Later correlation preserves prior authorization history",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-006",
+      "heading": "Active repository content remains inert",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-006",
+      "heading": "Markup examples in code remain inert",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-006",
+      "heading": "Resource breach is bounded and explicit",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-007",
+      "heading": "No effective currency bound is disclosed outside freshness",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-007",
+      "heading": "Missing current evidence remains explicit Unknown",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-007",
+      "heading": "A dismissal lapses only through a new evaluation",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-007",
+      "heading": "A dismissal replaces the rendering, never the facts",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-007",
+      "heading": "A record that no longer applies is lapsed or retired, never refused",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-004",
+      "heading": "Stale summary does not silently replace V1 scope",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-004",
+      "heading": "Eight versus nine follows the declared layer rule",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-004",
+      "heading": "Conflict remains Unknown without one applicable outcome",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-010",
+      "heading": "WhatsApp is a drill-down, not the project account",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-010",
+      "heading": "One opening Unknown aggregate, reconciled with members",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-011",
+      "heading": "Capability reaches exact requirements",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-011",
+      "heading": "Consented baseline requirement renders verbatim",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-011",
+      "heading": "Consented non-baseline source renders whole-body",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-011",
+      "heading": "Withheld source stays digest-only",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-011",
+      "heading": "A citation lands on the unit it names",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-012",
+      "heading": "Section headings name project concepts",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-013",
+      "heading": "Proposal is shown only in affected capability detail",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-014",
+      "heading": "A project claim is supported without making Polaris authority",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-015",
+      "heading": "Catalog item reaches exact current intent or honest absence",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-016",
+      "heading": "Keyboard-only owner reaches exact intent",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-020",
+      "heading": "Complete model has wire parity",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-021",
+      "heading": "Whole-project walkthrough passes",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-021",
+      "heading": "Lawful run can remain not ready",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-022",
+      "heading": "Missing judgment remains Unknown",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-022",
+      "heading": "Lawful state-(1) judgment is honored with the trust gap visible",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-022",
+      "heading": "Lawful state-(2) judgment is independently verified",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-022",
+      "heading": "Invalid claimed state-(2) judgment stays unlawful",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    },
+    {
+      "requirement": "PWB-REQ-022",
+      "heading": "Later correlation preserves prior judgment history",
+      "classification": "preserved",
+      "verification": [
+        "scenario heading and body bytes equal"
+      ],
+      "observable": "none — the normative words, verification block, scenarios and warrants are unchanged",
+      "coverage": "none — CAPABILITY-COVERAGE.md and the contract-coverage files are unchanged rows",
+      "contract": "none — the warrants block is byte-equal; GOVERNING-DEPENDENCIES.md moves only its source digest",
+      "implementation": "none — no code, test or route cites a byte that moves; requirement identities are unchanged"
+    }
+  ],
+  "purpose": [
+    {
+      "unit": "Purpose opening sentence",
+      "classification": "preserved",
+      "note": "byte-equal",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Reader definitions",
+      "classification": "preserved",
+      "note": "words equal after removing layout; long definitions split into a lead sentence and child bullets; container shapes and key forms nested under the sentence that introduces them",
+      "observable": "none",
+      "coverage": "none",
+      "contract": "none",
+      "implementation": "none — the shape and key-form sentences keep their words, so a profile row that carries one word for word still does"
+    },
+    {
+      "unit": "Reading guide",
+      "classification": "clarified",
+      "note": "added before the reader definitions: what the specification covers, how a requirement reads, file order, one flow diagram and a table of the 17 requirements with their groups and verbatim titles; states that it adds, removes and changes no requirement",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    }
+  ],
+  "proposal": [
+    {
+      "unit": "Status banner (new)",
+      "classification": "changed",
+      "note": "a present-tense banner names the 2026-08-31 sign-off and routes every later amendment to ACCEPTANCE-ACT-RECORD.md; replaces the predecessor's 'signed on 2026-08-31 and amended on 2026-09-02' sentence, which omitted every later act",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Why — walkthrough finding",
+      "classification": "clarified",
+      "note": "past tense; answer-first lead added",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Why — evaluation criteria",
+      "classification": "preserved",
+      "note": "same claim",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — project account first",
+      "classification": "preserved",
+      "note": "same claim; now the lead of 'The project comes first'",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — capability material is drill-down; WhatsApp is an example",
+      "classification": "preserved",
+      "note": "moved under 'The project comes first'",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — opening Unknown aggregate (new)",
+      "classification": "changed",
+      "note": "summarizes the signed PWB-REQ-010 scenario 'One opening Unknown aggregate, reconciled with members', which the predecessor proposal did not mention",
+      "observable": "none — non-normative prose",
+      "coverage": "none — within CAPABILITY-COVERAGE row 9",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — every declared staffer, butler, module, connector and interface",
+      "classification": "preserved",
+      "note": "same claim",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — complete denominator; missing stays Unknown",
+      "classification": "preserved",
+      "note": "same claim",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — project profiles (new)",
+      "classification": "changed",
+      "note": "summarizes the signed container-shape profile amendment of PWB-REQ-002, which the predecessor proposal did not mention",
+      "observable": "none — non-normative prose",
+      "coverage": "none — within CAPABILITY-COVERAGE row 4",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — closed fact grammar; eight versus nine; no invented winner",
+      "classification": "preserved",
+      "note": "split into children",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — three owner acts before any body read",
+      "classification": "preserved",
+      "note": "the three artifacts named after the rule rather than before it",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — state (1) trust gap; only state (2) verified; fail closed",
+      "classification": "preserved",
+      "note": "split into children",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — bounded, contained, inert reads; inert code contexts; secret screening",
+      "classification": "preserved",
+      "note": "split into children",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — complete epistemic tuple, anchors, non-citable; missing currency bound",
+      "classification": "preserved",
+      "note": "split into children",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — dismissal with expiry",
+      "classification": "preserved",
+      "note": "moved under 'Every claim carries its epistemic state'",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — capability detail bands → every catalog item opens in depth",
+      "classification": "changed",
+      "note": "the predecessor bullet named capability detail only; it now summarizes the signed item-depth PWB-REQ-015: one detail per declared catalog item, the separate governing-intent relation claim and capability-only proposals",
+      "observable": "none — non-normative prose",
+      "coverage": "none — within CAPABILITY-COVERAGE row 18",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — exact-source render modes (new)",
+      "classification": "changed",
+      "note": "summarizes the signed PWB-REQ-011 render modes and the withheld-source refusal",
+      "observable": "none — non-normative prose",
+      "coverage": "none — within CAPABILITY-COVERAGE row 10",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — proposed work stays in drill-down",
+      "classification": "preserved",
+      "note": "same claim",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — short direct copy",
+      "classification": "preserved",
+      "note": "same claim",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — human and machine views match; machine-view categories (new)",
+      "classification": "changed",
+      "note": "adds a summary of PWB-REQ-020's parity rule and its two closed machine-view categories, which the predecessor proposal did not mention",
+      "observable": "none — non-normative prose",
+      "coverage": "none — within CAPABILITY-COVERAGE row 13",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — text-recoverable and keyboard-operable",
+      "classification": "preserved",
+      "note": "same claim",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — owner cold-open walkthrough",
+      "classification": "preserved",
+      "note": "same claim",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — nine-answer readiness separate from PWB-REQ-022",
+      "classification": "preserved",
+      "note": "same claim",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "What Changes — owner judgment in either valid state; verdict is human judgment",
+      "classification": "preserved",
+      "note": "same claim",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Additive; POC-REQ-030…032 not weakened",
+      "classification": "clarified",
+      "note": "'This is an additive behavioral change' becomes 'The change is additive'",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Capabilities",
+      "classification": "preserved",
+      "note": "byte-equal section",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Impact — four affected areas",
+      "classification": "preserved",
+      "note": "lead sentence added; 'retains' becomes 'keeps'",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Scope — in scope",
+      "classification": "preserved",
+      "note": "same words under a bold lead",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Scope — out of scope",
+      "classification": "preserved",
+      "note": "same words; every CAPABILITY-COVERAGE quotation still found",
+      "observable": "none — non-normative prose",
+      "coverage": "none — the builder checks every quotation rows 20 and 22–26 cite",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Authority — truth-and-policy repair 'is a candidate and binds nothing'; 2026-09-02 bytes 'remain the behavioral authority'",
+      "classification": "changed",
+      "note": "removed: false since the 2026-09-05 truth-and-readiness act; the banner routes the reader to the act record",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Authority — what the 2026-09-05 amendment changed and did not change",
+      "classification": "changed",
+      "note": "removed: amendment-specific history now read from that act's record, not repeated here",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Authority — no widening and no implementation, write, egress or release authority",
+      "classification": "changed",
+      "note": "restated for the specification as a whole rather than for one amendment, beside the separate implementation authorization; the predecessor said it of 'this amendment' only",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — implementation authority still comes only from the separate authorization acts"
+    },
+    {
+      "unit": "Authority — policy, registry and consent separately act-bound",
+      "classification": "preserved",
+      "note": "same claim",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Authority — Three-Surface POC artifacts unchanged",
+      "classification": "preserved",
+      "note": "same claim",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Authoring evidence",
+      "classification": "clarified",
+      "note": "five items kept; the last now names the 2026-09-05 truth-and-readiness amendment it required instead of 'this amendment'",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    }
+  ],
+  "design": [
+    {
+      "unit": "Context — the single-capability model",
+      "classification": "changed",
+      "note": "'The current shared model contains one manually selected WhatsApp capability' becomes past tense: the project-wide model has since been implemented",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Context — five-pillar declaration; eight versus nine",
+      "classification": "preserved",
+      "note": "same claims as bullets",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Context — the specification governs (new)",
+      "classification": "clarified",
+      "note": "states that the design adds no requirement",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Goals / Non-Goals",
+      "classification": "preserved",
+      "note": "byte-equal lists; the Non-Goals quotation CAPABILITY-COVERAGE row 22 cites is kept",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Data Flow",
+      "classification": "clarified",
+      "note": "moved before Decisions; the ten steps are byte-equal; a diagram of the same ten steps is added",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Decision 1 — closed source population, item identity, rejected alternatives",
+      "classification": "preserved",
+      "note": "restructured as labeled bullets",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Decision 1 — project profiles (new)",
+      "classification": "changed",
+      "note": "summarizes the signed container-shape profile amendment",
+      "observable": "none — non-normative prose",
+      "coverage": "none — within CAPABILITY-COVERAGE row 4",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Decision 2 — coverage as data, closed facts, root grammars, precedence",
+      "classification": "preserved",
+      "note": "restructured; 'retains' becomes 'keeps'",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Decision 3 — progression, item detail, bands, relation claim, proposals",
+      "classification": "preserved",
+      "note": "restructured; the relation diagram is byte-equal",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Decision 3 — opening Unknown aggregate (new)",
+      "classification": "changed",
+      "note": "summarizes the signed PWB-REQ-010 aggregate scenario",
+      "observable": "none — non-normative prose",
+      "coverage": "none — within CAPABILITY-COVERAGE row 9",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Decision 4 — copy rubric",
+      "classification": "preserved",
+      "note": "one rule per bullet",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Decision 5 — body-read authority",
+      "classification": "preserved",
+      "note": "restructured as labeled bullets",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Decision 6 — containment, inert profile, envelope, breaches",
+      "classification": "preserved",
+      "note": "restructured as labeled bullets",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Decision 6 — recommended registry values",
+      "classification": "clarified",
+      "note": "now dated as the values recommended at drafting, with the registry entry named as what declares the values in force",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Decision 7 — execution and judgment",
+      "classification": "preserved",
+      "note": "restructured as labeled bullets",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Decision 8 — verbatim intent and render modes",
+      "classification": "preserved",
+      "note": "restructured as labeled bullets",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Decision 9 — missing currency bound and dismissal (new)",
+      "classification": "changed",
+      "note": "summarizes the signed PWB-REQ-007 missing-currency scenario and dismissal-with-expiry rule, which the predecessor design did not mention; names PWB-REQ-007 as exact",
+      "observable": "none — non-normative prose",
+      "coverage": "none — within CAPABILITY-COVERAGE rows 16 and 32",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Decision 10 — machine views beside the machine answer (new)",
+      "classification": "changed",
+      "note": "summarizes the signed PWB-REQ-020 machine-view categories",
+      "observable": "none — non-normative prose",
+      "coverage": "none — within CAPABILITY-COVERAGE row 13",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Risks / Trade-offs",
+      "classification": "preserved",
+      "note": "lead sentence added; 'retained/remains' become 'kept/stays'",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Migration Plan — 'remains inert until a later owner act'; prior state-(2)-only behavior authoritative",
+      "classification": "changed",
+      "note": "removed: false since the 2026-09-05 act",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    },
+    {
+      "unit": "Migration Plan — additive fields; separate authorities; single-capability page; rollback",
+      "classification": "preserved",
+      "note": "'current single-capability page' becomes 'earlier single-capability page'",
+      "observable": "none — non-normative prose",
+      "coverage": "none — non-normative prose",
+      "contract": "none — non-normative prose",
+      "implementation": "none — non-normative prose"
+    }
+  ],
+  "changed_count": 15,
+  "summary": {
+    "requirements": "17 preserved, 0 clarified, 0 changed",
+    "scenarios": "44 preserved, 0 clarified, 0 changed",
+    "normative_changes": 0,
+    "changed_units_all_non_normative": 15
+  }
+}
