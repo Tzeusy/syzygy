@@ -1,5 +1,5 @@
 {
-  "commit": "5a0df902edd8fb715e323063b66a0797b719fae0",
+  "commit": "82bf76eb01fe6cd2a2f00b0dcaee0e01327ef9b0",
   "script": "scripts/check_spec_reconciliation.py",
   "mutants": [
     {
@@ -237,10 +237,84 @@
     {
       "mutant": "pin-made-current",
       "path": ".syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json",
-      "old": "odel\",\n    \"version\": \"sha256:42d073cdeaf7fa7940c5e822b05213267ec1d0064faaaad092f21d264b76a2b",
-      "new": "odel\",\n    \"version\": \"sha256:0d50f8f496aada5e89a0ab2d7de29e487fc2d4f4ce66435f7a2abdab7a7a5bc",
+      "old": "del\",\n    \"version\": \"sha256:0d50f8f496aada5e89a0ab2d7de29e487fc2d4f4ce66435f7a2abdab7a7a5bc1",
+      "new": "del\",\n    \"version\": \"sha256:0000000000000000000000000000000000000000000000000000000000000000",
       "expected": "R6~",
       "failed": [],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "pins-after-repin-acts",
+      "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json + .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json",
+      "old": "<already applied>",
+      "new": "<already applied>",
+      "expected": "R6=0",
+      "failed": [],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "union-after-successor-act",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/GOVERNING-DEPENDENCIES.md",
+      "old": "<already applied>",
+      "new": "<already applied>",
+      "expected": "R7=0",
+      "failed": [],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "missing-successor-record",
+      "path": ".syzygy/governance/decisions/POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-ACT.md",
+      "old": "<file present>",
+      "new": "<file deleted>",
+      "expected": "R1",
+      "failed": [
+        "R1",
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "stale-successor-aggregate",
+      "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "old": "G DEPENDENCY UNION SUCCESSOR: 9",
+      "new": "G DEPENDENCY UNION SUCCESSOR: 1",
+      "expected": "R1",
+      "failed": [
+        "R1"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "successor-broken-chain",
+      "path": ".syzygy/governance/decisions/POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-ACT.md",
+      "old": "GOVERNING-DEPENDENCIES.md` | `315207c0be81915f2461c1d94a8468a39171b98f1a11deeddd78e8ee676ba32e",
+      "new": "GOVERNING-DEPENDENCIES.md` | `0000000000000000000000000000000000000000000000000000000000000000",
+      "expected": "R2",
+      "failed": [
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "successor-instant-order",
+      "path": ".syzygy/governance/decisions/POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-ACT.md",
+      "old": "er: Tzeusy\n\nAct instant: 2026-10-02T17:17:57",
+      "new": "er: Tzeusy\n\nAct instant: 2026-09-01T00:00:00",
+      "expected": "R2",
+      "failed": [
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "route-successor-record",
+      "path": "openspec/README.md",
+      "old": "SSOR-ACT.md) (2026-09-29) · [`POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-ACT.md`](../.syzygy/governance/decisions/POLARIS-UNDERSTANDING-DEPENDENCY-UNION-S",
+      "new": "SSOR-ACT.md) (2026-09-29) · [`DEPENDENCY-UNION-ACT.md`](../.syzygy/governance/decisions/DEPENDENCY-UNION",
+      "expected": "R5",
+      "failed": [
+        "R5"
+      ],
       "outcome": "killed"
     },
     {
