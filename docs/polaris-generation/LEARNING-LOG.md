@@ -117,3 +117,50 @@ that passed its own census still failed on Syzygy's own document shapes
 
 - **Changes:** this is why the [open-source targets](TARGETS.md) exist.
 - **Status:** applied → TARGETS.md.
+
+## 2026-10-03 — Drafting the admission records
+
+### L9. The best evidence of purpose has no content class
+
+RFC5-14's closed egress vocabulary defines `governance-text` as "Doctrine,
+spec, decision, policy text" and `code-content` as "Source and test bodies"
+[Observed]. A README, user guide or tutorial is neither, so it is
+indeterminate and its egress is refused — yet for an open-source project
+those files are the clearest statement of what it is for (L1–L3 came
+entirely from them). The vocabulary was written for governed projects that
+carry doctrine and specs; arbitrary repositories carry their intent in
+ordinary prose.
+
+- **Changes:** admission packet Q7 (amend RFC5-14, or run without prose docs
+  and record what could not be sent). Until resolved, a first run is
+  expected to understand projects from code and specs alone — itself a
+  useful measurement.
+- **Status:** open → owner question Q7.
+
+### L10. Who observes decides whose rules apply
+
+Making each target its own project looked cleaner, but RFC3-30 puts the
+governing policy in the *observing* project's plane, so it would have meant
+a governance root and an approved policy per target [Observed, round-1
+review]. Syzygy observing public repositories, as it observes Butlers,
+keeps one policy and one egress record.
+
+- **Changes:** admission template uses `project:syzygy` as observer.
+- **Status:** applied → the admission packet (branch
+  `polaris/public-repo-admission`).
+
+### L11. Safety rules written for one corpus misfire on another
+
+The secret-classification policy built for Butlers excludes a closed list of
+markup forms (HTML elements, scripts, unsafe URL schemes) anywhere outside a
+Markdown code span or fence [Observed, round-2 review]. That is right for a
+repository of Markdown specs rendered as HTML, and wrong for source code:
+every JSX file, HTML template and many docstrings would be withheld, so the
+generator would be blind to exactly the files that show how a web project
+works. The same holds for its rule that every body must have a PWB
+extraction class.
+
+- **Changes:** the public-source scope proposes its own active-content and
+  classification-success rules. Generalizing a pipeline means re-reading
+  every guard for the assumption it makes about what the input *is*.
+- **Status:** applied → the admission packet's screening outline.

@@ -14,12 +14,15 @@ owner decision or act.
       licence trio for regeneration (2026-10-03, TARGETS.md)
 - [x] Study the three reference sites; first lessons L1–L5 (2026-10-03)
 - [x] Start the learning log, seeded with Butlers lessons L6–L8
-- [~] Draft the reusable public-repository admission template as a candidate
-      package — branch `polaris/public-repo-admission`
-- [ ] Fresh-context review of the admission package (CONFIRM, or notes only)
-- [ ] **(owner)** Decide the open questions in the admission packet: provider
-      and model, retention of sent content and replies, and whether
-      version-tag sign-off (Scope A) extends to admission records
+- [x] Draft the reusable public-repository admission template as a candidate
+      package — branch `polaris/public-repo-admission`, with its
+      instance builder script
+- [~] Fresh-context review of the admission package (CONFIRM, or notes only).
+      Rounds 1 and 2: REVISE (4 and 2 blocking), each repaired; round 3
+      running
+- [ ] **(owner)** Answer the packet's Q1–Q7: provider, content classes,
+      retention, observation model, sign-off form, where drafts are served,
+      and the missing content class for general documentation (Q7)
 - [ ] **(owner)** Sign off the template, then admit T1 (requests)
 
 ## Phase 1 — Make the engine able to run on an unfamiliar repo
@@ -27,8 +30,30 @@ owner decision or act.
 Authorized implementation work (generator implementation authorization,
 2026-09-12); needs no new act until a provider call.
 
-- [ ] Inventory what the generator core already does end to end on the
-      synthetic corpus; write the gap list here
+- [x] Inventory what the generator core already does end to end (2026-10-03).
+      Working today: the six stage prompts are real and project-neutral
+      (`packages/polaris-generation-core/src/prompts.ts`); the pipeline and a
+      single-page static preview with a strict CSP run on synthetic input and on
+      Syzygy's own governance Markdown. Never run: a real model. Gaps, smallest
+      first:
+  - [ ] **G1 Any-repo CLI.** Make the self-corpus reader
+        (`apps/three-surface-poc/src/polaris-generation/self-corpus.ts`, fixed to
+        `project:syzygy`, `.syzygy/` roots and `.md`) take `--repo`,
+        `--revision`, include globs and a repository id; reader questions,
+        assets and budget from a config file.
+  - [ ] **G2 Real `generate` port.** An Anthropic Messages adapter behind
+        `PipelinePorts.generate` (`pipeline.ts`): structured output for
+        `responseSchema`, usage accounting, abort. Only `scriptedGenerate`
+        exists.
+  - [ ] **G3 Consent-backed ports.** `permissionIdentity` / `admit` /
+        `permitted` read the admission records instead of returning `true`
+        (blocked on Phase 0 sign-off for the first real call, not for the code).
+  - [ ] **G4 Discovery under budget (REQ-030).** The pipeline refuses more than
+        200 quotable sources, and requests has more; needs ranked selection
+        with `deferred-by-budget` exclusions.
+  - [ ] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
+        words per depth), page budget, REQ-031 clarification questions. A
+        first run can happen without it; it cannot be judged without it.
 - [ ] REQ-030 accounted discovery: walk an unfamiliar tree within a budget
       and say what was and was not read
 - [ ] REQ-031 owner clarification: the consequential-questions step
