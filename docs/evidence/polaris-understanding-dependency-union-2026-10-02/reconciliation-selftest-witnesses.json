@@ -1,0 +1,289 @@
+{
+  "commit": "9a25c400e9b207e105fb7f1b8a67b997c111c6f8",
+  "script": "scripts/check_spec_reconciliation.py",
+  "mutants": [
+    {
+      "mutant": "stale-act-phrase",
+      "path": ".syzygy/governance/decisions/CAPABILITY-1-READABILITY-SUCCESSOR-ACT.md",
+      "old": "LITY 1 READABILITY SUCCESSOR: 1",
+      "new": "LITY 1 READABILITY SUCCESSOR: 2",
+      "expected": "R1",
+      "failed": [
+        "R1"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "stale-act-aggregate",
+      "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "old": "ANDING READABILITY SUCCESSOR: 2",
+      "new": "ANDING READABILITY SUCCESSOR: 1",
+      "expected": "R1",
+      "failed": [
+        "R1"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "stale-act-consistent",
+      "path": ".syzygy/governance/decisions/THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md + .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "old": "CE POC READABILITY SUCCESSOR: 2",
+      "new": "CE POC READABILITY SUCCESSOR: 1",
+      "expected": "R1",
+      "failed": [
+        "R1"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "stale-manifest-row",
+      "path": ".syzygy/governance/contracts/candidates/polaris-generator-base-readability-successor/SUCCESSOR-MANIFEST.txt",
+      "old": "s file>` installs these rows.\n51f878fe4cb0dc90ca033ecef399a61d3fa2b825794bf69fdcb256dfc1e407bb",
+      "new": "s file>` installs these rows.\n0000000000000000000000000000000000000000000000000000000000000000",
+      "expected": "R1",
+      "failed": [
+        "R1",
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "stale-subject-digest",
+      "path": "openspec/changes/three-surface-poc-experience/proposal.md",
+      "old": "ting views do not replace it.\n",
+      "new": "ting views do not replace it.\n\n",
+      "expected": "R2",
+      "failed": [
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "stale-versioned-subject",
+      "path": "openspec/changes/polaris-project-wide-butlers-model/design.md",
+      "old": "## ",
+      "new": "##  ",
+      "expected": "R2",
+      "failed": [
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "missing-child-pwb",
+      "path": ".syzygy/governance/decisions/PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md",
+      "old": "<file present>",
+      "new": "<file deleted>",
+      "expected": "R1",
+      "failed": [
+        "R1"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "missing-child-understanding",
+      "path": ".syzygy/governance/decisions/POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-ACT.md",
+      "old": "<file present>",
+      "new": "<file deleted>",
+      "expected": "R1",
+      "failed": [
+        "R1"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "versioned-tag-line",
+      "path": ".syzygy/governance/decisions/PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md",
+      "old": "g: pwb-readability-successor-v1.0",
+      "new": "g: pwb-readability-successor-v0.9",
+      "expected": "R1",
+      "failed": [
+        "R1"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "versioned-aggregate-block",
+      "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "old": ":pwb-readability-successor:v1.0",
+      "new": ":pwb-readability-successor:v1.1",
+      "expected": "R1",
+      "failed": [
+        "R1"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "scenario-removed",
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "old": "without a revision.\n\n#### Scenario",
+      "new": "without a revision.\n\n#### Scenery",
+      "expected": "R3",
+      "failed": [
+        "R2",
+        "R3",
+        "R4"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "duplicate-id",
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "old": "`\n\n### Requirement: PWB-REQ-002",
+      "new": "`\n\n### Requirement: PWB-REQ-001",
+      "expected": "R3",
+      "failed": [
+        "R2",
+        "R3",
+        "R4"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "method-split-heading",
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "old": "\n### Requirement: POC-REQ-010 —",
+      "new": "\n### Requirement: POC-REQ-010 -",
+      "expected": "R3",
+      "failed": [
+        "R2",
+        "R3",
+        "R4"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "polaris-renamed-modified",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "old": ": Understandable reading depths",
+      "new": ": Understandable reading depth",
+      "expected": "R3",
+      "failed": [
+        "R2",
+        "R3"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "polaris-dangling-modified",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "old": "\n\nID: REQ-polaris-generation-002",
+      "new": "\n\nID: REQ-polaris-generation-099",
+      "expected": "R3",
+      "failed": [
+        "R2",
+        "R3",
+        "R5"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "census-drift",
+      "path": "docs/evidence/spec-readability-reconciliation-2026-10-02/census.json",
+      "old": "       \"scenarios\": [\n        ",
+      "new": "       \"scenarios\": [\n        \"x\",\n        ",
+      "expected": "R3",
+      "failed": [
+        "R3"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "deps-source-digest",
+      "path": "openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md",
+      "old": ">\n> Source: `spec.md` sha256 `b",
+      "new": ">\n> Source: `spec.md` sha256 `f",
+      "expected": "R4",
+      "failed": [
+        "R2",
+        "R4"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "dangling-coverage-id",
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/CAPABILITY-COVERAGE.md",
+      "old": "nd this file's citation set).\n",
+      "new": "nd this file's citation set).\n\nCAP1-REQ-099\n",
+      "expected": "R4",
+      "failed": [
+        "R2",
+        "R4"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "dangling-continuation-id",
+      "path": "AGENTS.md",
+      "old": "!-- END BEADS INTEGRATION -->\n",
+      "new": "!-- END BEADS INTEGRATION -->\n\nPWB-REQ-005/009\n",
+      "expected": "R4",
+      "failed": [
+        "R4"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "route-row-record",
+      "path": "openspec/README.md",
+      "old": "· [`PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md`](../.syzygy/governance/decisions/PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0",
+      "new": "· [`PWB-READABILITY-SUCCESSOR-ACT.md`](../.syzygy/governance/decisions/PWB-READABILITY-SUCCESSOR-ACT",
+      "expected": "R5",
+      "failed": [
+        "R5"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "pin-made-current",
+      "path": ".syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json",
+      "old": "odel\",\n    \"version\": \"sha256:42d073cdeaf7fa7940c5e822b05213267ec1d0064faaaad092f21d264b76a2b",
+      "new": "odel\",\n    \"version\": \"sha256:0d50f8f496aada5e89a0ab2d7de29e487fc2d4f4ce66435f7a2abdab7a7a5bc",
+      "expected": "R6~",
+      "failed": [],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "pins-after-repin-acts",
+      "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json + .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json",
+      "old": "odel\",\n    \"version\": \"sha256:42d073cdeaf7fa7940c5e822b05213267ec1d0064faaaad092f21d264b76a2b1\",\n    \"signedBy\": \"pending exact owner act over the PWB truth-and",
+      "new": "odel\",\n    \"version\": \"sha256:0d50f8f496aada5e89a0ab2d7de29e487fc2d4f4ce66435f7a2abdab7a7a5bc1\",\n    \"signedBy\": \"version-tagged sign-off pwb-readability-succes",
+      "expected": "R6=0",
+      "failed": [],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "union-after-successor-act",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/GOVERNING-DEPENDENCIES.md",
+      "old": "C7-5, RFC7-9\n\n## policies\n\nCC-",
+      "new": "C7-5, RFC7-9\n\n## policies\n\nCC-REV-8, CC-",
+      "expected": "R7=0|R2",
+      "failed": [
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "union-extra-decision",
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/GOVERNING-DEPENDENCIES.md",
+      "old": "CC-SPEC-4\n\n## decisions\n\nSDR-3",
+      "new": "CC-SPEC-4\n\n## decisions\n\nSDR-3, SDR-99",
+      "expected": "R7~",
+      "failed": [
+        "R2"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mutant": "status-figure",
+      "path": "PROJECT-STATUS.md",
+      "old": "md):\n    31 requirements and 182",
+      "new": "md):\n    31 requirements and 177",
+      "expected": "R5",
+      "failed": [
+        "R5"
+      ],
+      "outcome": "killed"
+    }
+  ]
+}
