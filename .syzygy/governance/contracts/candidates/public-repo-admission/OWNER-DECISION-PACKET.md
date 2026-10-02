@@ -116,14 +116,14 @@ an egress."
 
 **Q3. Retention of sent content and provider replies.** SEC-2 does not state
 these fields; the generation kit proposes them (`docs/polaris-generation/README.md`,
-"Start here" step 4). *Recommended:* provider replies and run records are
-provider requests, provider replies and run records are retained in a run
+"Start here" step 4). *Recommended:* provider requests, provider replies and run records are
+retained in a run
 directory under `project:syzygy`'s state directory, outside git. Requests and
 replies contain the source spans sent, so the run directory holds those spans
 for as long as the run is retained (screening outline item 4); nothing is
 retained in git, logs or machine responses. The provider's own retention is
-whatever its API terms say, recorded as a disclosed fact rather than a Syzygy
-promise.
+whatever the terms of the account used say, recorded as a disclosed fact
+rather than a Syzygy promise.
 
 **Q4. Observation model.** *Recommended:* keep `project:syzygy` as the observing
 project (above). The alternative — each target its own project — would need
@@ -243,3 +243,17 @@ a confirming round precedes any offering.
 | 8 Draft route does not exist | Q6 names the prospective route and a local-file fallback |
 | 9 `--digests` and orphans | `--digests` refuses while stale; `--check` reports orphan records |
 | 10 "allows"; REQ-025 overcredited | "fixes"; separate policy and registry acts credited to RFC3-16(a) |
+
+Round 4 (`reviews/R-PUBLIC-ADMISSION-4-RAW.md`), run over the owner's
+answers at the owner's choice, returned REVISE with one blocking finding.
+Repaired below; per the owner's choice the drafter reports rather than
+dispatching a fifth round unasked.
+
+| R4 finding | Disposition |
+|---|---|
+| 1 Transcript written elsewhere then moved (blocking) | The runtime's state and transcript are written inside the run directory from the start; a run whose runtime cannot be so configured does not start |
+| 2 Garbled Q3 sentence | Repaired |
+| 3 Prompt text has no class | Named as `code-content` of `project:syzygy`, with its source path |
+| 4 Runtime may add its own context or telemetry | The record requires the runtime's own instruction, memory, settings, MCP and environment context off, an empty working directory, telemetry and error reporting off, and an adapter acceptance check on the captured request |
+| 5 Which provider terms | The record names the owner's signed-in Claude account and its terms |
+| 6 Direction says the packet "remains the question" | No change; the packet edits only point to the answers |
