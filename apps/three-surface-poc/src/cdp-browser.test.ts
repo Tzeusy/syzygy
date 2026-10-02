@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { closeDisposableBrowser, removeBrowserProfile, withBrowserPage, type BrowserPage } from './cdp-browser.js';
+import { closeDisposableBrowser, killPrivateBrowserMembers, removeBrowserProfile, withBrowserPage, type BrowserPage } from './cdp-browser.js';
 
 const privateGroup = { id: 123, uid: process.getuid?.() ?? 0, leaderStart: '1' };
 
@@ -132,6 +132,45 @@ describe('disposable browser shutdown', () => {
         now: () => scans * 400,
       });
     expect(events).toEqual(['socket-closed', 'profile-removed']);
+  });
+
+  it('stops helpers orphaned by a killed leader with their group, then drains before removal', async () => {
+    // syzygy-za9v: under load the leader misses its grace and is killed
+    // alone; its helpers outlived the three-second drain. Here they exit
+    // only when stopped, so the drain passes only if teardown stops them.
+    const events: string[] = [];
+    const killed: Parameters<typeof closeDisposableBrowser>[1] = {
+      exitCode: null, signalCode: 'SIGKILL',
+      once: () => { throw new Error('exit already observed'); },
+      kill: () => { throw new Error('leader already exited'); },
+    };
+    let alive: readonly number[] = [456, 457, 458];
+    let scans = 0;
+    await closeDisposableBrowser({ close: () => events.push('socket-closed'), send: async () => ({}) }, killed,
+      '/tmp/private-browser-profile', privateGroup, {
+        profileDrainMs: 1000,
+        now: () => scans * 300,
+        groupProcesses: () => { scans += 1; return alive; },
+        stopMembers: (group, live) => {
+          expect(group).toBe(privateGroup);
+          events.push(`stopped ${live.join(',')}`);
+          alive = [];
+        },
+        removeProfile: () => { events.push('profile-removed'); },
+      });
+    expect(events).toEqual(['socket-closed', 'stopped 456,457,458', 'profile-removed']);
+    expect(scans).toBe(3);
+  });
+
+  it('kills the whole private group first, then each live member, tolerating members already gone', () => {
+    const signals: string[] = [];
+    killPrivateBrowserMembers(privateGroup, [456, 457], (pid, signal) => {
+      signals.push(`${pid} ${signal}`);
+      if (pid === 457) throw Object.assign(new Error('gone'), { code: 'ESRCH' });
+    });
+    expect(signals).toEqual(['-123 SIGKILL', '456 SIGKILL', '457 SIGKILL']);
+    expect(() => killPrivateBrowserMembers(privateGroup, [456], () => { throw Object.assign(new Error('not ours'), { code: 'EPERM' }); }))
+      .toThrow('not ours');
   });
 });
 
