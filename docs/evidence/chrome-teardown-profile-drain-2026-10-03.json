@@ -1,0 +1,659 @@
+{
+  "bead": "syzygy-za9v",
+  "date": "2026-10-03",
+  "subject": "'private browser profile still held by N process(es)' at Chrome teardown under load (surface-routes.test.ts; draft-preview.browser.test.ts, syzygy-gb4l), and the /proc ENOENT seen in #228's review run",
+  "fixCommits": {
+    "groupStop": "6fb5e17",
+    "procScan": "f418106",
+    "browserTest": "1424e88",
+    "note": "pre-rebase commits; anchor on fileSha256"
+  },
+  "beforeCommit": "f5e3166",
+  "fileSha256": {
+    "apps/three-surface-poc/src/cdp-browser.ts": {
+      "testedPreRebase": "348ad502737e8c9b972d7fb251da00ab8786a1b2b980584fa54f0244ba881798",
+      "afterRebaseOntoDb6a657": "f34872205eb47e8f46259ed96f68a05304c8ea226efc92ad1adcf7ac3fadb764",
+      "note": "The rebase only added #228's --disable-ipc-flooding-protection launch argument; the teardown and scan code is unchanged."
+    }
+  },
+  "diagnosis": {
+    "root": "[Observed] Under load, Chrome's leader acknowledges Browser.close but does not exit within the one-second grace, so teardown SIGKILLs the leader alone (12 of 30 loaded teardowns). Its helpers are then orphaned and exit on their own schedule. [Observed] At the one drain timeout, the live members were the network-service utility and two cat processes, which the /usr/bin/google-chrome wrapper forks for stdout and stderr. That matches the reported count of 3. Drains after a graceful leader exit took about 300 ms or less.",
+    "procScanRaces": "[Observed] readdirSync('/proc', { withFileTypes: true }) lstat'ed an entry whose process had just exited, and the raw ENOENT escaped the drain. In a churn stress this happened 10 times in 2,020 scans, which matches the reviewer's ENOENT on a /proc path in #228's full run. [Observed] Once in about 5,160 scans of the variant without the Z/X skip, a dying entry read as in-group but outside our session and threw 'private browser group membership changed'. [Inferred] The kernel can report a reaped task's session as 0 while its group still reads as ours.",
+    "sharedRootCause": "Yes for the profile-drain failures. surface-routes and draft-preview both launch through launchBrowser and both fail at closeDisposableBrowser's drain; the draft-preview failure in diagnostic run 3 had the same message as the surface-routes one."
+  },
+  "fix": [
+    "closeDisposableBrowser: once the leader has exited, SIGKILL the private process group, then each live session member a scan found, before the unchanged two-empty-scan check. killPrivateBrowserMembers signals only after a scan has seen live members, so the group id is still held and cannot have been reused.",
+    "livePrivateBrowserMembers: read plain /proc names (no lstat), and skip Z/X entries before the membership checks."
+  ],
+  "protocol": {
+    "loaded": "Per run, one companion full app-project vitest run (npx vitest run --project @syzygy/three-surface-poc-app --reporter=json) concurrent with the measured run of surface-routes.test.ts + polaris-generation/draft-preview.browser.test.ts. The before and final batches of 10 ran concurrently with each other, so both saw the same load (load1m 23-38 at run ends), alongside other overnight lanes. Failures are classified by message: 'STACK_TRACE_ERROR' or 'timed out in' is a timeout; 'still held' or 'profile drain' is profile-drain; an lstat /proc ENOENT or a membership/identity throw is proc-scan.",
+    "drainInstrumentation": "Temporary, uncommitted logging in closeDisposableBrowser (leader killed?, live members at first scan, drain duration, outcome), run for 3 loaded runs (30 real teardowns) at the pre-fix code and again at the final code",
+    "harness": "scratch scripts load.sh, frozen.mjs, churn2.mjs (not committed); raw vitest JSON retained in the session scratchpad only"
+  },
+  "results": {
+    "drainInstrumentedPreFix": {
+      "teardowns": 30,
+      "outcomes": {
+        "drained": 29,
+        "timeout": 1
+      },
+      "leaderKilledAfterGrace": 12,
+      "drainMs": {
+        "p50": 154,
+        "p90": 958,
+        "max": 3172
+      },
+      "drainMsWhenLeaderKilled": {
+        "p50": 177,
+        "max": 3172
+      },
+      "teardownsWithLiveHelpersAfterLeaderExit": 3
+    },
+    "drainInstrumentedFinal": {
+      "teardowns": 30,
+      "outcomes": {
+        "drained": 30
+      },
+      "leaderKilledAfterGrace": 9,
+      "drainMs": {
+        "p50": 128,
+        "p90": 188,
+        "max": 198
+      },
+      "drainMsWhenLeaderKilled": {
+        "p50": 148,
+        "max": 198
+      },
+      "teardownsWithLiveHelpersAfterLeaderExit": 0
+    },
+    "drainNote": "Pre-fix: 1 of 30 teardowns timed out (draft-preview, held by 3), and every slow drain followed a killed leader. Final: 30 of 30 drained, max 198 ms. No final teardown had helpers still alive, so these runs did not exercise the new stop path; the frozen-helper probe does.",
+    "frozenHelperProbe": {
+      "method": "launch, open a page, SIGSTOP this launch's network-service helper (it cannot exit on its own), then browser.close(). Committed as cdp-browser.browser.test.ts.",
+      "preFix": "3/3 threw \"private browser profile still held by 3 process(es)\" after about 4.0 s, helper left alive",
+      "final": "3/3 closed in about 1.1-1.2 s, 0 helpers left alive"
+    },
+    "procScanStress": {
+      "method": "a detached bash group forking 9 short-lived children per loop; livePrivateBrowserMembers called back to back for 6x10 s",
+      "original": "10 raw ENOENT (lstat /proc/N) in 2,020 scans",
+      "final": "0 errors in 3,013 scans"
+    },
+    "groupStopOnlyLoaded10": {
+      "commit": "6fb5e17",
+      "runs": [
+        {
+          "run": 1,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 2,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 3,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 4,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 5,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 6,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 7,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 8,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 9,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 10,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        }
+      ],
+      "failuresByClass": {}
+    },
+    "beforeLoaded10": {
+      "commit": "f5e3166",
+      "runs": [
+        {
+          "run": 1,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 586,
+            "failed": 1,
+            "failures": [
+              {
+                "file": "governance-inputs.test.ts",
+                "title": "evaluates the three real current PWB acts without reading any body",
+                "class": "timeout"
+              }
+            ]
+          }
+        },
+        {
+          "run": 2,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 586,
+            "failed": 2,
+            "failures": [
+              {
+                "file": "governance-inputs.test.ts",
+                "title": "evaluates the three real current PWB acts without reading any body",
+                "class": "timeout"
+              },
+              {
+                "file": "self-corpus.test.ts",
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "class": "timeout"
+              }
+            ]
+          }
+        },
+        {
+          "run": 3,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 586,
+            "failed": 2,
+            "failures": [
+              {
+                "file": "governance-inputs.test.ts",
+                "title": "evaluates the three real current PWB acts without reading any body",
+                "class": "timeout"
+              },
+              {
+                "file": "self-corpus.test.ts",
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "class": "timeout"
+              }
+            ]
+          }
+        },
+        {
+          "run": 4,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 586,
+            "failed": 2,
+            "failures": [
+              {
+                "file": "governance-inputs.test.ts",
+                "title": "evaluates the three real current PWB acts without reading any body",
+                "class": "timeout"
+              },
+              {
+                "file": "self-corpus.test.ts",
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "class": "timeout"
+              }
+            ]
+          }
+        },
+        {
+          "run": 5,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 586,
+            "failed": 2,
+            "failures": [
+              {
+                "file": "governance-inputs.test.ts",
+                "title": "evaluates the three real current PWB acts without reading any body",
+                "class": "timeout"
+              },
+              {
+                "file": "self-corpus.test.ts",
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "class": "timeout"
+              }
+            ]
+          }
+        },
+        {
+          "run": 6,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 586,
+            "failed": 2,
+            "failures": [
+              {
+                "file": "governance-inputs.test.ts",
+                "title": "evaluates the three real current PWB acts without reading any body",
+                "class": "timeout"
+              },
+              {
+                "file": "self-corpus.test.ts",
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "class": "timeout"
+              }
+            ]
+          }
+        },
+        {
+          "run": 7,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 586,
+            "failed": 2,
+            "failures": [
+              {
+                "file": "governance-inputs.test.ts",
+                "title": "evaluates the three real current PWB acts without reading any body",
+                "class": "timeout"
+              },
+              {
+                "file": "self-corpus.test.ts",
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "class": "timeout"
+              }
+            ]
+          }
+        },
+        {
+          "run": 8,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 586,
+            "failed": 1,
+            "failures": [
+              {
+                "file": "governance-inputs.test.ts",
+                "title": "evaluates the three real current PWB acts without reading any body",
+                "class": "timeout"
+              }
+            ]
+          }
+        },
+        {
+          "run": 9,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 586,
+            "failed": 2,
+            "failures": [
+              {
+                "file": "governance-inputs.test.ts",
+                "title": "evaluates the three real current PWB acts without reading any body",
+                "class": "timeout"
+              },
+              {
+                "file": "self-corpus.test.ts",
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "class": "timeout"
+              }
+            ]
+          }
+        },
+        {
+          "run": 10,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 586,
+            "failed": 0,
+            "failures": []
+          }
+        }
+      ],
+      "failuresByClass": {
+        "timeout": 16
+      }
+    },
+    "finalLoaded10": {
+      "commit": "f418106",
+      "runs": [
+        {
+          "run": 1,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 2,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 1,
+            "failures": [
+              {
+                "file": "governance-inputs.test.ts",
+                "title": "evaluates the three real current PWB acts without reading any body",
+                "class": "timeout"
+              }
+            ]
+          }
+        },
+        {
+          "run": 3,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 4,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 5,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 6,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 1,
+            "failures": [
+              {
+                "file": "governance-inputs.test.ts",
+                "title": "evaluates the three real current PWB acts without reading any body",
+                "class": "timeout"
+              }
+            ]
+          }
+        },
+        {
+          "run": 7,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 8,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 9,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        },
+        {
+          "run": 10,
+          "measured": {
+            "tests": 19,
+            "failed": 0,
+            "failures": []
+          },
+          "companion": {
+            "tests": 588,
+            "failed": 0,
+            "failures": []
+          }
+        }
+      ],
+      "failuresByClass": {
+        "timeout": 2
+      }
+    },
+    "loadedNote": "In these 30 loaded runs (60 vitest invocations) no profile-drain or proc-scan failure occurred before or after. The pre-fix bug did not reproduce in this batch; its rate is low (1 in 30 instrumented teardowns, 2 in one clean-clone full run). The remaining failures are timeouts in governance-inputs.test.ts (lane G) and self-corpus.test.ts, outside this bead."
+  },
+  "rule6": {
+    "testedCommit": "1424e88c3c04e411562a183a10fd9b1d72c9125d",
+    "mutants": [
+      {
+        "id": "M1-no-group-stop",
+        "file": "apps/three-surface-poc/src/cdp-browser.ts",
+        "old": "    if (live.length > 0) stopMembers(group, live);\n",
+        "new": "",
+        "command": "npx vitest run apps/three-surface-poc/src/cdp-browser.test.ts apps/three-surface-poc/src/cdp-browser.browser.test.ts",
+        "testsTotal": 14,
+        "testsFailed": 2,
+        "failedTests": [
+          "cdp-browser.browser.test.ts :: closes and drains even when a helper cannot exit on its own",
+          "cdp-browser.test.ts :: stops helpers orphaned by a killed leader with their group, then drains before removal"
+        ],
+        "outcome": "killed",
+        "restored": true
+      },
+      {
+        "id": "M2-members-only-not-group",
+        "file": "apps/three-surface-poc/src/cdp-browser.ts",
+        "old": "  for (const pid of [-group.id, ...live]) {",
+        "new": "  for (const pid of [...live]) {",
+        "command": "npx vitest run apps/three-surface-poc/src/cdp-browser.test.ts apps/three-surface-poc/src/cdp-browser.browser.test.ts",
+        "testsTotal": 14,
+        "testsFailed": 1,
+        "failedTests": [
+          "cdp-browser.test.ts :: kills the whole private group first, then each live member, tolerating members already gone"
+        ],
+        "outcome": "killed",
+        "restored": true
+      },
+      {
+        "id": "M3-escaping-kill-errors",
+        "file": "apps/three-surface-poc/src/cdp-browser.ts",
+        "old": "    catch (cause) { if (!vanished(cause)) throw cause; }\n  }\n}",
+        "new": "    catch (cause) { throw cause; }\n  }\n}",
+        "command": "npx vitest run apps/three-surface-poc/src/cdp-browser.test.ts apps/three-surface-poc/src/cdp-browser.browser.test.ts",
+        "testsTotal": 14,
+        "testsFailed": 1,
+        "failedTests": [
+          "cdp-browser.test.ts :: kills the whole private group first, then each live member, tolerating members already gone"
+        ],
+        "outcome": "killed",
+        "restored": true
+      },
+      {
+        "id": "M4-dirent-scan",
+        "file": "apps/three-surface-poc/src/cdp-browser.ts",
+        "old": "  for (const name of readdirSync('/proc')) {\n    if (!/^\\d+$/.test(name)) continue;",
+        "new": "  for (const entry of readdirSync('/proc', { withFileTypes: true })) {\n    if (!entry.isDirectory() || !/^\\d+$/.test(entry.name)) continue;",
+        "check": "churn stress harness (scratch), no committed test: a deterministic test would need a process exiting between readdir and lstat",
+        "outcome": "killed by the harness: 10 ENOENT in 2,020 scans, against 0 in 3,013 at the fix"
+      },
+      {
+        "id": "M5-no-dead-entry-skip",
+        "file": "apps/three-surface-poc/src/cdp-browser.ts",
+        "old": "    if (identity.state === 'Z' || identity.state === 'X') continue;\n",
+        "new": "",
+        "check": "churn stress harness",
+        "outcome": "weak: 1 \"membership changed\" throw in about 5,160 scans; this predicate rests on that one observation and the inferred kernel mechanism"
+      }
+    ]
+  }
+}
