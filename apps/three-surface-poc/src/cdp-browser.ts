@@ -299,9 +299,12 @@ function vanished(cause: unknown): boolean {
  * is the observable boundary of this one detached Chrome launch. */
 function livePrivateBrowserMembers(group: PrivateBrowserGroup): number[] {
   const live: number[] = [];
-  for (const entry of readdirSync('/proc', { withFileTypes: true })) {
-    if (!entry.isDirectory() || !/^\d+$/.test(entry.name)) continue;
-    const proc = `/proc/${entry.name}`;
+  // Plain names, not Dirents: withFileTypes may lstat each entry, and a
+  // process exiting mid-scan then surfaced as a raw ENOENT (syzygy-za9v).
+  // A numeric /proc entry is always a process directory.
+  for (const name of readdirSync('/proc')) {
+    if (!/^\d+$/.test(name)) continue;
+    const proc = `/proc/${name}`;
     let identity: ReturnType<typeof processStat>;
     try { identity = processStat(readFileSync(`${proc}/stat`, 'utf8')); }
     catch (cause) {
@@ -310,15 +313,18 @@ function livePrivateBrowserMembers(group: PrivateBrowserGroup): number[] {
       catch (statCause) { if (vanished(statCause)) continue; }
       throw new Error('cannot verify private browser process identity');
     }
+    // A dead entry holds no files, and while it is reaped the kernel may
+    // already report its session as 0 beside its old group: gone, not moved.
+    if (identity.state === 'Z' || identity.state === 'X') continue;
     if (identity.group !== group.id && identity.session !== group.id) continue;
     let owner: number;
     try { owner = statSync(proc).uid; }
     catch (cause) { if (vanished(cause)) continue; throw new Error('cannot verify private browser process owner'); }
     if (owner !== group.uid || identity.session !== group.id) throw new Error('private browser group membership changed');
-    if (Number(entry.name) === group.id && identity.started !== group.leaderStart) {
+    if (Number(name) === group.id && identity.started !== group.leaderStart) {
       throw new Error('private browser group leader identity changed');
     }
-    if (identity.state !== 'Z' && identity.state !== 'X') live.push(Number(entry.name));
+    live.push(Number(name));
   }
   return live;
 }
