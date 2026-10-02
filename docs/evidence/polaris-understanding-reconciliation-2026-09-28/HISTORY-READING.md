@@ -45,6 +45,7 @@ it already read the status pages and the governance checker, at C1.
         earlier one counts), and each step's own act record and
         acceptance-record block verify. Any other digest is still drift, and
         a package that is unperformed, partial or malformed extends no chain.
+        A tie in act instants extends nothing, so it fails closed.
       - The recorder composes every performed-exact package's pair for the
         file into one pair, from the first predecessor to the last row. A
         pair that keeps the bytes composes only when its digest lies on the
@@ -239,9 +240,27 @@ it already read the status pages and the governance checker, at C1.
     packages' steps, and M3, the tool following the package's own step from
     a second spelling of one file, are answered by requiring each step's act
     instant to be strictly later than the step before. N1, the recorder
-    ignoring a later package that fails its tool check, predates the chain:
-    the tool's own `--all --check` refuses that tree. N2 is answered by the
-    docstring; N3 by the act-instant ordering; N4 needed no change.
+    ignoring a later package that fails its tool check, predates the chain
+    for an undone honest chain, but not for every case: see round 15's N1.
+    N2 is answered by the docstring; N3 by the act-instant ordering; N4
+    needed no change.
+  - Round 15 (`HISTORY-REVIEW-15-RAW.md`, CONFIRM WITH EXCEPTIONS, notes
+    only) binds the current recorder. Under the 2026-09-26 stopping rule its
+    notes are answered here, not in the reviewed bytes:
+    - N1: after A→B, B→C, C→B at increasing instants and a no-act edit
+      back to C, the tool refuses the C→B package, and the recorder, which
+      skips any package the tool fails, composes (A, C) from the other two
+      and passes. Both earlier recorders refused that tree. It is a
+      recorder-only false green: the canonical battery stays red because it
+      also runs `readability_successor.py --all --check`, so the battery,
+      never the recorder alone, is the claim. The repair (a package whose
+      act verifies but whose check fails contests its paths) is tracked as
+      `syzygy-t69g`, for the tool's next change.
+    - N2: two acts recorded within one second leave the earlier package
+      refused, since a tie extends no chain. That fails closed; the remedy
+      is a successor recorded at a later instant.
+    - N3: a two-package tie fixture joins N1's follow-up.
+    - N4 and N5 describe the review's own probes and need no change.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws
