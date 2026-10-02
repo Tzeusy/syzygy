@@ -6,6 +6,11 @@ accepted behavior.
 
 This kit grants no source access, provider egress, authorship adoption or release.
 
+**The proving ground** is a set of open-source repositories, each scored
+against its own human-made site: [targets](TARGETS.md), the working
+[tracker](TRACKER.md), and the [learning log](LEARNING-LOG.md) of what we learn
+about building a great manifesto page.
+
 ## The product we are building
 
 The POC exists to make Polaris generation generalizable across projects; a
