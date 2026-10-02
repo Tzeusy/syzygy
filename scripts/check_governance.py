@@ -1601,6 +1601,13 @@ PWB_ITEM_DEPTH_DIR = f"{CANDIDATES}/pwb-item-depth-amendment"
 PWB_ITEM_DEPTH_SUBJECT = (
     f"{PWB_ITEM_DEPTH_DIR}/PWB-ITEM-DEPTH-AMENDMENT-MANIFEST.txt")
 PWB_ITEM_DEPTH_ACT = f"{DECISIONS}/PWB-ITEM-DEPTH-AMENDMENT-ACT.md"
+#: The PWB readability successor: a restyle of the same eleven artifacts,
+#: signed by version tag after item depth.
+PWB_READABILITY_LABEL = "SIGN OFF PWB READABILITY SUCCESSOR"
+PWB_READABILITY_DIR = f"{CANDIDATES}/pwb-readability-successor"
+PWB_READABILITY_SUBJECT = (
+    f"{PWB_READABILITY_DIR}/PWB-READABILITY-SUCCESSOR-MANIFEST.txt")
+PWB_READABILITY_ACT = f"{DECISIONS}/PWB-READABILITY-SUCCESSOR-ACT.md"
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -1682,6 +1689,7 @@ PWB_MISSING_CURRENCY_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_DISMISSAL_EXPIRY_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_CONTAINER_SHAPE_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_ITEM_DEPTH_SUBJECTS = PWB_STATE1_SUBJECTS
+PWB_READABILITY_SUBJECTS = PWB_STATE1_SUBJECTS
 #: Packages signed by version tag under
 #: `decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`, in
 #: performance order: `(key, record stem, label, subject manifest, act path,
@@ -1707,6 +1715,10 @@ VERSIONED_PWB_PACKAGES = (
      PWB_ITEM_DEPTH_LABEL, PWB_ITEM_DEPTH_SUBJECT,
      PWB_ITEM_DEPTH_ACT, PWB_ITEM_DEPTH_SUBJECTS,
      f"{PWB_ITEM_DEPTH_DIR}/OWNER-DECISION-PACKET.md"),
+    ("readability", "PWB-READABILITY-SUCCESSOR",
+     PWB_READABILITY_LABEL, PWB_READABILITY_SUBJECT,
+     PWB_READABILITY_ACT, PWB_READABILITY_SUBJECTS,
+     f"{PWB_READABILITY_DIR}/OWNER-DECISION-PACKET.md"),
 )
 #: Successor chain over the PWB behavioral package, in performance order.
 #: The latest validly performed link binds current bytes; every earlier
