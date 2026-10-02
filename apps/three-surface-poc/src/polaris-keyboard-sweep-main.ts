@@ -56,7 +56,7 @@ function get(baseUrl: string, path: string, host?: string): Promise<{ readonly s
 
 interface Sweep {
   readonly mount: string;
-  readonly source: Readonly<Record<string, unknown>>;
+  readonly measuredOn: Readonly<Record<string, unknown>>;
   readonly bytes: number;
   readonly sha256: string;
   readonly report: AccessibilityReport;
@@ -86,7 +86,7 @@ async function main(): Promise<number> {
   const head = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 
   const pages = mkdtempSync(join(tmpdir(), 'syzygy-poc-keyboard-sweep-'));
-  const targets: { readonly mount: string; readonly source: Readonly<Record<string, unknown>>; readonly body: Buffer }[] = [];
+  const targets: { readonly mount: string; readonly measuredOn: Readonly<Record<string, unknown>>; readonly body: Buffer }[] = [];
   try {
     if (baseUrl !== undefined) {
       for (const [mount, host] of [['direct', undefined], ['tailnet', TAILNET_HOST]] as const) {
@@ -95,10 +95,10 @@ async function main(): Promise<number> {
           process.stderr.write(`${mount} ${POLARIS_HUMAN_PATH} answered ${response.status}; nothing swept.\n`);
           return 1;
         }
-        targets.push({ mount, source: { path: POLARIS_HUMAN_PATH, host: host ?? new URL(baseUrl).host, status: response.status }, body: response.body });
+        targets.push({ mount, measuredOn: { path: POLARIS_HUMAN_PATH, host: host ?? new URL(baseUrl).host, status: response.status }, body: response.body });
       }
     } else {
-      for (const file of files) targets.push({ mount: `file:${file}`, source: { file }, body: readFileSync(file) });
+      for (const file of files) targets.push({ mount: `file:${file}`, measuredOn: { file }, body: readFileSync(file) });
     }
 
     const browser = await launchBrowser(executable);
@@ -110,7 +110,7 @@ async function main(): Promise<number> {
         const page = await browser.newPage();
         try {
           const report = await checkPolarisAccessibility(page, pathToFileURL(file).href, target.mount);
-          sweeps.push({ mount: target.mount, source: target.source, bytes: target.body.byteLength, sha256: createHash('sha256').update(target.body).digest('hex'), report });
+          sweeps.push({ mount: target.mount, measuredOn: target.measuredOn, bytes: target.body.byteLength, sha256: createHash('sha256').update(target.body).digest('hex'), report });
           process.stdout.write(`${target.mount}: focusables ${report.focusTrace.reached}/${report.focusTrace.population}, activations ${report.activations.length}, violations ${report.violations.length} ${JSON.stringify(violationsByKind(report))}\n`);
         } finally {
           await page.close();
@@ -131,7 +131,7 @@ async function main(): Promise<number> {
       method: 'checkPolarisAccessibility over each served body, retained in a private temporary directory and opened as a file URL; fragment activations stay in-document, so the served bytes are the whole input',
       mounts: sweeps.map((sweep) => ({
         mount: sweep.mount,
-        source: sweep.source,
+        measuredOn: sweep.measuredOn,
         bytes: sweep.bytes,
         sha256: sweep.sha256,
         population: sweep.report.focusTrace.population,
