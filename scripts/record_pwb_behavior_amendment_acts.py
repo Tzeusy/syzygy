@@ -461,7 +461,7 @@ assumed here.""",
         disposition_record=".syzygy/governance/contracts/candidates/pwb-exact-source-render-mode-scenario/ROUND-3-DISPOSITIONS.md",
         disposition_sha256="1cf483ba217e342a8f7634255ee610d4c0aea226b881130aaf5fda8a12533724",
         raw_findings_heading="## Findings",
-        superseded_by=("machine-view",),
+        superseded_by=("machine-view", "pwb-missing-currency-disclosure-scenario"),
     ),
     "machine-view": Act(
         "machine-view",
@@ -497,6 +497,7 @@ that names the member.""",
         disposition_record=".syzygy/governance/contracts/candidates/pwb-machine-view-amendment/ROUND-7-DISPOSITIONS.md",
         disposition_sha256="4249c205558aca0be67efeeeb7360d2f16c0092f8aab66f1dc3df8e61a7af2e4",
         raw_findings_heading="## Findings",
+        superseded_by=("pwb-missing-currency-disclosure-scenario",),
     ),
     "opening-band": Act(
         "opening-band",
@@ -536,7 +537,7 @@ it.""",
         disposition_sha256="0cc80226fb28bc49e836dff03d9bdb4c73884be2c8d7ae0a123f2c43e4221fea",
         raw_findings_heading="## Findings",
         split_phrase_packet=True,
-        superseded_by=("render-mode", "machine-view"),
+        superseded_by=("render-mode", "machine-view", "pwb-missing-currency-disclosure-scenario"),
     ),
 }
 
@@ -572,15 +573,30 @@ def manifest_rows(text: str, act: Act) -> list[tuple[str, str]]:
     return rows
 
 
+#: Packages signed off through the version-tagged recorder after the acts in
+#: ACTS; each supersedes the rows it re-patched once its sign-off record exists.
+VERSIONED_LATER = {
+    "pwb-missing-currency-disclosure-scenario": (
+        DECISIONS / "PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-SIGNOFF-v1.0.md",
+        pathlib.Path(".syzygy/governance/contracts/candidates/"
+                     "pwb-missing-currency-disclosure-scenario/"
+                     "PWB-MISSING-CURRENCY-DISCLOSURE-MANIFEST.txt"),
+    ),
+}
+
+
 def _later_rows(root: pathlib.Path, act: Act, path: str) -> set[str]:
     """Every digest a later performed act's manifest declares for `path`, over
     the acts in `act.superseded_by` whose record and manifest exist in `root`."""
     found: set[str] = set()
     for name in act.superseded_by:
-        later = ACTS[name]
-        if not (root / later.record).is_file() or not (root / later.manifest).is_file():
+        if name in VERSIONED_LATER:
+            record, manifest = VERSIONED_LATER[name]
+        else:
+            record, manifest = ACTS[name].record, ACTS[name].manifest
+        if not (root / record).is_file() or not (root / manifest).is_file():
             continue
-        for sha, row_path in ROW_RE.findall((root / later.manifest).read_text()):
+        for sha, row_path in ROW_RE.findall((root / manifest).read_text()):
             if row_path == path:
                 found.add(sha)
     return found
