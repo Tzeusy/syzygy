@@ -485,6 +485,50 @@ beside it are closed and add no fact.
   needs its own byte ceiling is not served before the registry entry declares
   it.
 
+### 11. Frame Syzygy's own words as an abstraction tree
+
+Polaris's own framing opens each group with its answer and draws supported
+relationships, while Butlers' words stay verbatim beneath it.
+
+- **Openings.** Every group opens with one sentence derived from the shared
+  model: each project-level category, project catalog, item detail and
+  evidence group.
+  - It states only what the group's children state and carries their weakest
+    label, so stopping at it leaves a coarser true account that is never more
+    favourable than the group.
+  - Its one copy role is `project-fact`; its label marker and routes are
+    separate strings. An item detail's opening sits before its bands.
+  - Above Butlers text it names which declared text follows; it never
+    paraphrases or replaces that text.
+  - It counts nothing, so the opening aggregate stays the only aggregate
+    before the first capability catalog.
+- **Diagrams.** The independent rendered-design review lists the
+  relationships a diagram explains better than prose, with the nodes and
+  edges each expects and whether it is drawable.
+  - An edge is supported when an Observed or Inferred model claim establishes
+    it; a relationship with no supported edge is disclosed in place, never
+    drawn.
+  - Every drawn element is one model claim with its epistemic label, and the
+    text equivalent and machine narrative carry the same elements.
+  - A drawn diagram names every listed element it leaves undrawn, with its
+    reason, and is marked partial.
+- **Render.** The server lays out the node-and-edge source and emits static
+  SVG only after an allow-list check; a failure emits no SVG and keeps the
+  text equivalent. This follows the owner's 2026-09-28 ruling that sanitized
+  static SVG is inert under PWB-REQ-006.
+
+```mermaid
+flowchart TD
+    L["Relationship listed by the<br/>rendered-design review"] --> Q{"Does a diagram explain it<br/>better than prose?"}
+    Q -- "no" --> N["Prose only;<br/>no diagram owed"]
+    Q -- "yes" --> D{"Does an Observed or Inferred<br/>claim support at least one edge?"}
+    D -- "no" --> G["Gap disclosed in place<br/>with its reason; nothing drawn"]
+    D -- "yes" --> R["Render node-and-edge source<br/>to static SVG"]
+    R --> V{"SVG passes<br/>the allow-list?"}
+    V -- "yes" --> S["Inline SVG beside its text equivalent,<br/>which names each listed element not drawn"]
+    V -- "no" --> F["No SVG emitted; text equivalent<br/>kept; failure disclosed"]
+```
+
 ## Risks / Trade-offs
 
 Each known risk has a fail-closed answer; the one residual risk the owner
@@ -503,6 +547,11 @@ accepts is state-(1) forgeability, and only for this bounded POC.
   inert parsing and context-aware encoding reject it before model admission.
 - **A corpus exceeds local budgets** → the affected source stays counted and
   renders Unknown with the breached limit.
+- **Framing or a diagram outruns its support** → an opening may state only
+  what its children state, under their weakest label, and an element is drawn
+  only from a model claim; anything else is a disclosed gap.
+- **A diagram carries active content** → the server-side allow-list check
+  emits no SVG that fails it, and the text equivalent remains.
 - **A stale summary conflicts with a higher authority** → both are kept;
   explicit Butlers precedence selects the effective statement and Polaris
   discloses the disagreement.

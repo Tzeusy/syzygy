@@ -1153,3 +1153,21 @@ and grants no source, provider, write, deployment or release permission.
 This is bootstrap owner provenance, not independent authorship verification,
 runtime evidence or product readiness.
 <!-- POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR:END -->
+
+<!-- versioned-signoff:pwb-tree-framing-amendment:v1.0 -->
+## Versioned sign-off — pwb-tree-framing-amendment — v1.0 — recorded 2026-10-03
+
+The owner signed off version 1.0 by selecting an option in the
+Claude Code CLI (quoted in the dedicated record).
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Kind | behavior amendment |
+| Review outcome | `docs/reviews/R-PWB-TREE-FRAMING-AMENDMENT-2-RAW.md`: `CONFIRM WITH EXCEPTIONS`; disposition: `.syzygy/governance/contracts/candidates/pwb-tree-framing-amendment/ROUND-2-DISPOSITIONS.md` |
+| Recording | `.syzygy/governance/decisions/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md`; annotated tag `pwb-tree-framing-amendment-v1.0` on the commit carrying these records and the applied result |
+| Direction | `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md` |
+
+This sign-off authorizes no implementation, widens no consent, read, write or
+egress, and a later version of the package is signed separately.
+<!-- /versioned-signoff:pwb-tree-framing-amendment:v1.0 -->

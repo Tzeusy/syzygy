@@ -8,14 +8,14 @@
 > here is overwritten and `--check` fails first. Identifiers only —
 > nothing here quotes or paraphrases any clause.
 >
-> Source: `spec.md` sha256 `0d50f8f496aada5e89a0ab2d7de29e487fc2d4f4ce66435f7a2abdab7a7a5bc1` — 17 requirement(s), 100 distinct authorities.
+> Source: `spec.md` sha256 `d0ac6ba20501798e715aae42e16fbc7555fc8d4d60f9f16e01f376fb75349c4a` — 17 requirement(s), 101 distinct authorities.
 
 ## doctrine (9)
 
 | Authority | Cited by |
 |---|---|
 | `SEC-2` | PWB-REQ-005 |
-| `SEC-3` | PWB-REQ-001, PWB-REQ-006 |
+| `SEC-3` | PWB-REQ-001, PWB-REQ-006, PWB-REQ-014 |
 | `SEC-5` | PWB-REQ-003, PWB-REQ-005, PWB-REQ-006 |
 | `VIS-1` | PWB-REQ-001, PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-006, PWB-REQ-007, PWB-REQ-010, PWB-REQ-011, PWB-REQ-012, PWB-REQ-013, PWB-REQ-014, PWB-REQ-015, PWB-REQ-016, PWB-REQ-020, PWB-REQ-021 |
 | `VIS-2` | PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-005, PWB-REQ-006, PWB-REQ-007, PWB-REQ-013, PWB-REQ-014, PWB-REQ-015, PWB-REQ-021, PWB-REQ-022 |
@@ -100,7 +100,7 @@
 | `RFC7-33` | PWB-REQ-007, PWB-REQ-014, PWB-REQ-015, PWB-REQ-020 |
 | `RFC7-34` | PWB-REQ-016 |
 
-## policies (13)
+## policies (14)
 
 | Authority | Cited by |
 |---|---|
@@ -109,6 +109,7 @@
 | `CC-BAR-5` | PWB-REQ-003, PWB-REQ-005, PWB-REQ-006, PWB-REQ-013, PWB-REQ-015 |
 | `CC-REV-3` | PWB-REQ-014 |
 | `CC-REV-4` | PWB-REQ-012, PWB-REQ-016, PWB-REQ-021 |
+| `CC-REV-8` | PWB-REQ-014 |
 | `CC-SEC-5` | PWB-REQ-005, PWB-REQ-006 |
 | `CC-SEC-6` | PWB-REQ-005, PWB-REQ-006 |
 | `CC-SPEC-4` | PWB-REQ-001, PWB-REQ-002 |
