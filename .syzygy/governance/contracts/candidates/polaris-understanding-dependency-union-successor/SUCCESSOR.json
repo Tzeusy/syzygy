@@ -1,0 +1,17 @@
+{
+  "label": "SIGN OFF POLARIS UNDERSTANDING DEPENDENCY UNION SUCCESSOR",
+  "marker": "POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR",
+  "act": ".syzygy/governance/decisions/POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-ACT.md",
+  "title": "Polaris understanding amendment dependency-union successor sign-off",
+  "artifact": "specification:syzygy:polaris-generation:understanding-dependency-union-successor",
+  "supersedes": "the specification role of POLARIS-UNDERSTANDING-READABILITY-SUCCESSOR-ACT.md for the amendment's generated GOVERNING-DEPENDENCIES.md only; every other amendment file keeps its bytes",
+  "scope": "regeneration of the Polaris understanding amendment's generated dependency union from its specification's warrants blocks, adding CC-REV-8 to the policies class as REQ-polaris-generation-004 already declares. The specification, proposal, design, coverage, synthesis map, tasks and the base generator change are unchanged.",
+  "predecessor": {
+    "openspec/changes/polaris-manifesto-understanding-amendment/GOVERNING-DEPENDENCIES.md": "315207c0be81915f2461c1d94a8468a39171b98f1a11deeddd78e8ee676ba32e"
+  },
+  "pins": {
+    "manifest_sha": null,
+    "review": null,
+    "review_sha": null
+  }
+}
