@@ -323,17 +323,40 @@ function livePrivateBrowserMembers(group: PrivateBrowserGroup): number[] {
   return live;
 }
 
+/** Stops every live member of the private group at once. A leader killed
+ * alone orphans its helpers (the network service, renderers, and the `cat`
+ * pipes the google-chrome wrapper forks), which then exit on their own
+ * schedule: seconds under load, past the profile drain (syzygy-za9v). The
+ * caller signals only after a scan found live members, so the group id is
+ * still held by them and cannot have been reused. */
+export function killPrivateBrowserMembers(
+  group: PrivateBrowserGroup,
+  live: readonly number[],
+  kill: (pid: number, signal: NodeJS.Signals) => void = (pid, signal) => { process.kill(pid, signal); },
+): void {
+  // The group first (atomic, covers members forked after the scan), then any
+  // session member that left the group.
+  for (const pid of [-group.id, ...live]) {
+    try { kill(pid, 'SIGKILL'); }
+    catch (cause) { if (!vanished(cause)) throw cause; }
+  }
+}
+
 interface BrowserCleanupOptions {
   readonly removeProfile?: (path: string) => void;
   readonly closeGraceMs?: number;
   readonly profileDrainMs?: number;
   readonly groupProcesses?: (group: PrivateBrowserGroup) => readonly number[];
+  /** Signals live members; defaults to a real kill only with the real scan. */
+  readonly stopMembers?: (group: PrivateBrowserGroup, live: readonly number[]) => void;
   readonly now?: () => number;
 }
 
 /** Browser.close may never acknowledge a protocol request. The browser is a
  * disposable local fixture, so a bounded graceful request is followed by a
- * hard stop when needed. Remove its profile only after confirmed child exit. */
+ * hard stop when needed. Once the leader has exited, any member still alive
+ * is stopped with the whole group. Remove the profile only after two empty
+ * scans confirm that no member is left. */
 export async function closeDisposableBrowser(
   connection: { close(): void; send(method: string, params?: unknown, sessionId?: string, timeoutMs?: number): Promise<unknown> },
   child: DisposableBrowserProcess,
@@ -364,10 +387,12 @@ export async function closeDisposableBrowser(
   const now = options.now ?? Date.now;
   const drainDeadline = now() + (options.profileDrainMs ?? BROWSER_PROFILE_DRAIN_MS);
   const groupProcesses = options.groupProcesses ?? livePrivateBrowserMembers;
+  const stopMembers = options.stopMembers ?? (options.groupProcesses === undefined ? killPrivateBrowserMembers : () => undefined);
   let emptyScans = 0;
   while (true) {
     const live = groupProcesses(group);
     emptyScans = live.length === 0 ? emptyScans + 1 : 0;
+    if (live.length > 0) stopMembers(group, live);
     // A second scan closes the /proc enumeration race with a child that is
     // being forked while the first scan walks entries.
     if (now() > drainDeadline) {
