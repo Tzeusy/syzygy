@@ -996,3 +996,21 @@ Claude Code CLI (quoted in the dedicated record).
 This sign-off authorizes no implementation, widens no consent, read, write or
 egress, and a later version of the package is signed separately.
 <!-- /versioned-signoff:pwb-dismissal-expiry-amendment:v1.0 -->
+
+<!-- versioned-signoff:pwb-container-shape-profile-amendment:v1.0 -->
+## Versioned sign-off — pwb-container-shape-profile-amendment — v1.0 — recorded 2026-10-02
+
+The owner signed off version 1.0 by selecting an option in the
+Claude Code CLI (quoted in the dedicated record).
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Kind | behavior amendment |
+| Review outcome | `docs/reviews/R-N8-CONTAINER-SHAPE-PROFILE-7-RAW.md`: `CONFIRM WITH EXCEPTIONS`; disposition: `.syzygy/governance/contracts/candidates/pwb-container-shape-profile-amendment/ROUND-7-DISPOSITIONS.md` |
+| Recording | `.syzygy/governance/decisions/PWB-CONTAINER-SHAPE-PROFILE-AMENDMENT-SIGNOFF-v1.0.md`; annotated tag `pwb-container-shape-profile-amendment-v1.0` on the commit carrying these records and the applied result |
+| Direction | `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md` |
+
+This sign-off authorizes no implementation, widens no consent, read, write or
+egress, and a later version of the package is signed separately.
+<!-- /versioned-signoff:pwb-container-shape-profile-amendment:v1.0 -->

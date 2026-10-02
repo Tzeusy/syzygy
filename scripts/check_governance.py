@@ -690,7 +690,9 @@ def cg1_links(paths, res):
 
     for rel in md_files(paths):
         txt = read(rel)
-        for m in MD_LINK.finditer(txt):
+        # A link written inside an inline code span is an example, not a link.
+        link_txt = re.sub(r"`[^`\n]*`", lambda c: " " * len(c.group(0)), txt)
+        for m in MD_LINK.finditer(link_txt):
             t = m.group("t").split("#")[0].strip()
             if not t or t.startswith(EXTERNAL):
                 continue
@@ -1670,6 +1672,7 @@ PWB_MACHINE_VIEW_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_OPENING_BAND_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_MISSING_CURRENCY_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_DISMISSAL_EXPIRY_SUBJECTS = PWB_STATE1_SUBJECTS
+PWB_CONTAINER_SHAPE_SUBJECTS = PWB_STATE1_SUBJECTS
 #: Packages signed by version tag under
 #: `decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`, in
 #: performance order: `(key, record stem, label, subject manifest, act path,
@@ -1687,6 +1690,10 @@ VERSIONED_PWB_PACKAGES = (
      PWB_DISMISSAL_EXPIRY_LABEL, PWB_DISMISSAL_EXPIRY_SUBJECT,
      PWB_DISMISSAL_EXPIRY_ACT, PWB_DISMISSAL_EXPIRY_SUBJECTS,
      f"{PWB_DISMISSAL_EXPIRY_DIR}/OWNER-DECISION-PACKET.md"),
+    ("container-shape", "PWB-CONTAINER-SHAPE-PROFILE-AMENDMENT",
+     PWB_CONTAINER_SHAPE_LABEL, PWB_CONTAINER_SHAPE_SUBJECT,
+     PWB_CONTAINER_SHAPE_ACT, PWB_CONTAINER_SHAPE_SUBJECTS,
+     f"{PWB_CONTAINER_SHAPE_DIR}/OWNER-DECISION-PACKET.md"),
 )
 #: Successor chain over the PWB behavioral package, in performance order.
 #: The latest validly performed link binds current bytes; every earlier
