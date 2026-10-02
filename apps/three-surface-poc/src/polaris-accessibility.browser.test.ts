@@ -271,6 +271,31 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
     } finally { await page.close(); }
   });
 
+  it('activates more fragment links than Chrome\'s navigation budget, including a second link to the current hash', async () => {
+    // syzygy-1z3.30: the live /polaris sweep failed every activation after
+    // the 600th, stuck on the hash of a target linked twice. The cause was
+    // Chrome's limit of 200 same-document navigations per ten seconds, not
+    // the repeated link; this page crosses that budget and repeats links to
+    // the hash already current, so both shapes stay pinned.
+    const targets = 260;
+    const links = Array.from({ length: targets }, (_, index) => {
+      const link = `<a href="#t${index}">Target ${index}</a>`;
+      return index % 50 === 7 ? `${link} <a href="#t${index}">Target ${index} again</a>` : link;
+    }).join(' ');
+    const rows = Array.from({ length: targets }, (_, index) => `<p id="t${index}">Row ${index}</p>`).join('');
+    const directory = mkdtempSync(join(tmpdir(), 'syzygy-poc-a11y-budget-'));
+    cleanups.push(directory);
+    const file = join(directory, 'budget.html');
+    writeFileSync(file, `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Fragment budget</title><style>body{color:#000;background:#fff}a:focus{outline:2px solid #000}</style></head><body><main><h1>Fragment budget</h1><nav aria-label="Targets"><p>${links}</p></nav>${rows}</main></body></html>`);
+    const page = await browser.newPage();
+    try {
+      const report = await checkPolarisAccessibility(page, pathToFileURL(file).href, 'fragment-budget');
+      expect(report.activations).toHaveLength(targets + 6);
+      expect(report.activations.filter((activation, index) => index > 0 && activation.href === report.activations[index - 1]?.href)).toHaveLength(6);
+      expect(report.violations).toEqual([]);
+    } finally { await page.close(); }
+  }, 240_000);
+
   for (const variant of ACCESSIBILITY_VARIANTS) {
     it(`${variant.id}: every distinction is keyboard-operable, named for assistive technology, and AA-contrasting`, async () => {
       const { url, expectedTargets } = pageUrl(variant);

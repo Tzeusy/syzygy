@@ -393,6 +393,12 @@ export async function launchBrowser(executable: string): Promise<Browser> {
       '--no-default-browser-check',
       '--disable-extensions',
       '--disable-background-networking',
+      // Chrome drops every same-document navigation past 200 in a ten-second
+      // window ("Throttling navigation to prevent the browser from hanging").
+      // A scripted sweep presses Enter on hundreds of fragment links far
+      // faster than a reader can, so without this flag every activation after
+      // the 200th silently stays on the previous hash (syzygy-1z3.30).
+      '--disable-ipc-flooding-protection',
       `--user-data-dir=${profile}`,
       '--remote-debugging-port=0',
       '--window-size=1280,2000',
