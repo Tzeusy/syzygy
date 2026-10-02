@@ -179,6 +179,11 @@ as history.
 | `superpowers/specs/2026-08-23-cap1-runtime-hardening-followups-design.md` | `syzygy-ydr`, `syzygy-e84`, `syzygy-h84` | Spent. The design the plan above was written from |
 | `superpowers/plans/2026-08-27-syzygy-vky-validator-hardening.md` | `syzygy-vky` (closed) | Spent |
 | `plans/2026-08-26-syzygy-vky-validator-hardening-design.md` | `syzygy-vky` (closed) | Spent. The design for the same work as the row above — two files, one bead, split only by which harness wrote them. Neither is cited by anything |
+| `plans/2026-10-03-smooth-example-roadmap.md` | the beads labelled `self-drivable` | **Live.** The 2026-10-03 roadmap for a smooth functional example: live-run status, ranked steps, the owner decisions batched for one sitting |
+
+[Added 2026-10-03: the last row is a fifth file. "One of the four is not
+spent" above counts the four files present when it was written; with this
+row, two of five are live.]
 
 [Observed — swept 2026-09-06: four files across the three directories; each
 searched for `syzygy-*` identifiers in its own text, and each filename searched
