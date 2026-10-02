@@ -1,0 +1,62 @@
+{
+  "task": "syzygy-1z3.30 (PWB task 4.6 prerequisite: the keyboard sweep of the served Polaris page)",
+  "requirement": [
+    "PWB-REQ-016"
+  ],
+  "capturedAt": "2026-10-02T21:28:14.339Z",
+  "syzygyHead": "35fda269afc9199af9dab85d00fc2477264a3704",
+  "surfaceVersion": "polaris@50228f564542",
+  "browser": {
+    "executable": "/usr/bin/google-chrome",
+    "version": "Chrome/120.0.6099.224"
+  },
+  "method": "checkPolarisAccessibility over each served body, retained in a private temporary directory and opened as a file URL; fragment activations stay in-document, so the served bytes are the whole input",
+  "mounts": [
+    {
+      "mount": "direct",
+      "source": {
+        "path": "/polaris",
+        "host": "127.0.0.1:46199",
+        "status": 200
+      },
+      "bytes": 1467147,
+      "sha256": "f5d996af56001ce7b853af75a5df5b8e640dbd58ef445dbd24421b40eedb294a",
+      "population": 1187,
+      "reached": 1187,
+      "activations": 709,
+      "disclosures": {
+        "population": 66,
+        "opened": 65
+      },
+      "contrastMeasured": 14551,
+      "violations": 0,
+      "violationsByKind": {},
+      "firstViolations": []
+    },
+    {
+      "mount": "tailnet",
+      "source": {
+        "path": "/polaris",
+        "host": "tzeusy.parrot-hen.ts.net",
+        "status": 200
+      },
+      "bytes": 1473252,
+      "sha256": "05eada1f39433952dc12bbce4eeab5bff3b6a8c341c799e2dce62296ee27681b",
+      "population": 1187,
+      "reached": 1187,
+      "activations": 709,
+      "disclosures": {
+        "population": 66,
+        "opened": 65
+      },
+      "contrastMeasured": 14551,
+      "violations": 0,
+      "violationsByKind": {},
+      "firstViolations": []
+    }
+  ],
+  "totals": {
+    "mounts": 2,
+    "violations": 0
+  }
+}
