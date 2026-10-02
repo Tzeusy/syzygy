@@ -58,14 +58,16 @@ patch, builder, manifest, registration or owner-packet edit retires the review.
 9. **Contract gaps.** Independently test the five rows changed to
    `unknown-uncovered`. Report an omitted consequence or a row that remains
    covered. Confirm totals regenerate to 132 covered / 242 Unknown over 622.
-10. **Impact sweep.** Re-run the 1,376-file full/continuation methods if
-    practical. Check the four decode skips, three continuation files, two
+10. **Impact sweep.** Re-run the ledger's published predicates at its named baseline
+    (1,772 tracked files) if practical. Check the four decode skips, the seven
+    continuation files, two
     behavior pins, consumers, recorder/registration and docs/status effects.
 11. **Composition with the performed acts.** The opening-band, render-mode
     and machine-view amendments are in the base; confirm the spec patch applies
     over them without displacing their text, that the scenario's outside-slot
-    disclosure is consistent with the opening aggregate's own freshness
-    disclosure, and that the generated dependency patch regenerates from the
+    disclosure is consistent with the opening aggregate's freshness
+    disclosure (the aggregate may carry no value for the unbounded members and
+    must not mint a fifth freshness value, RFC2-10), and that the generated dependency patch regenerates from the
     proposed spec.
 12. **Performed `.18` registry act.** Ensure no sentence calls it a
     candidate or parked, repeats its numeric bounds, or claims this scenario
@@ -73,7 +75,7 @@ patch, builder, manifest, registration or owner-packet edit retires the review.
     declaration with missing or invalid owner-act provenance.
 13. **Builder fail-closed behavior.** Run `--check`, `--selftest` and `--diff`.
     Independently mutate missing/duplicate scenario, placement, fabricated
-    freshness, aggregate absorption, aggregate count reconciliation and Unknown freshness, manifest bytes/order, patch context,
+    freshness, aggregate absorption, aggregate count reconciliation, a freshness value of the aggregate's own, the RFC2-9 route clause, the freshness exception, manifest bytes/order, patch context,
     dependency output and contract-coverage output. Each predicate must fail.
 14. **Governance hygiene.** No bound byte is edited in place; no performed-act
     argument is copied; no observed-repository path is backticked; candidate

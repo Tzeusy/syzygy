@@ -147,8 +147,9 @@ to 132 / 242. This does not amend any RFC. It makes the gap visible.
    the bound in quality policy` are assigned to the present-but-ineffective
    arm by this composition: RFC2-9 assigns that arm no reason and routes the
    invalid declaration to the owner as a contradiction, and RFC2-24's reason-3
-   gloss reads "has never declared". The RFC2-9 contradiction route is
-   preserved unchanged and is not replaced by the Declare route.
+   gloss reads "has never declared". The scenario states that
+   the RFC2-9 contradiction route is kept beside the Declare route and that
+   neither replaces the other.
 7. [Observed] Aggregates retain no headline status and still disclose separate
    primary and secondary reason counts. This scenario forbids favorable
    absorption; it does not make an aggregate a claim.
@@ -156,10 +157,14 @@ to 132 / 242. This does not amend any RFC. It makes the gap visible.
    scenario states the aggregate rule outright: per-freshness-state counts
    plus the count of members under the condition equal the membership; no
    freshness value is derived from the other members and the unbounded
-   members are never shown as zero (VIS-2); the aggregate's own freshness
-   reads `Unknown` with the stated reason. The performed opening aggregate's
-   unconditional freshness disclosure is therefore met by an `Unknown`
-   value, not excused. The outside-slot disclosure is a named fact of the
+   members are never shown as zero (VIS-2); the unbounded members are
+   presented only through the same outside-slot named disclosure, carrying
+   their count and the stated reason, and never as a freshness value of the
+   aggregate (RFC2-10 closes the list at four values; `Unknown` is a label,
+   not a fifth value). The performed opening aggregate's freshness
+   disclosure is therefore not met by a value for those members: the
+   scenario's "for this condition only" clause makes the outside-slot
+   disclosure the complete presentation there. The outside-slot disclosure is a named fact of the
    render and is recoverable in the machine answer under PWB-REQ-020's
    parity obligation for disclosed facts; the invariant's falsifier ("a
    tuple field is absent or out of vocabulary") is read as satisfied by the

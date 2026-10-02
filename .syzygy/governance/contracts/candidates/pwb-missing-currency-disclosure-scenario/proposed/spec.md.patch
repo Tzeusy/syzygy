@@ -2,7 +2,7 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 index 543469d..0000000 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -469,3 +469,27 @@
+@@ -469,3 +469,30 @@
  
 +#### Scenario: No effective currency bound is disclosed outside freshness
 +
@@ -16,6 +16,9 @@ index 543469d..0000000 100644
 +  of the render outside the claim's freshness slot; no `fresh`, `stale`,
 +  `broken`, `superseded` or fifth value is minted, inferred or force-fit for
 +  that condition
++- **AND** a present declaration that lacks effective owner-act provenance keeps
++  its RFC2-9 route to the owner as a contradiction beside the exact route
++  above, and neither route replaces the other
 +- **AND** for this condition only, that outside-slot disclosure is the complete
 +  presentation where this requirement otherwise names freshness; every other
 +  tuple obligation remains, and no aggregate absorbs the claim into a current
@@ -24,9 +27,9 @@ index 543469d..0000000 100644
 +  from its per-freshness-state counts, the count of members under this
 +  condition, so that those counts and that count together equal its
 +  membership; it never derives a freshness value from its other members, never
-+  shows the unbounded members as zero, and while any member is under this
-+  condition its own freshness reads `Unknown` with the stated reason
-+  `no-currency-bound-declared`
++  shows the unbounded members as zero, and presents them only through the same
++  outside-slot named disclosure, carrying that count and the stated reason
++  `no-currency-bound-declared`, never as a freshness value of its own
 +
  #### Scenario: Missing current evidence remains explicit Unknown
  
