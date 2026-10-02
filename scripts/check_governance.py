@@ -1612,6 +1612,14 @@ PWB_READABILITY_DIR = f"{CANDIDATES}/pwb-readability-successor"
 PWB_READABILITY_SUBJECT = (
     f"{PWB_READABILITY_DIR}/PWB-READABILITY-SUCCESSOR-MANIFEST.txt")
 PWB_READABILITY_ACT = f"{DECISIONS}/PWB-READABILITY-SUCCESSOR-ACT.md"
+#: The PWB tree-framing amendment to PWB-REQ-014 (`syzygy-73e.9`): openings
+#: and supported inert diagrams on Polaris. A candidate signed by version tag;
+#: its row below is existence-gated on a sign-off record.
+PWB_TREE_FRAMING_LABEL = "SIGN OFF PWB TREE-FRAMING AMENDMENT"
+PWB_TREE_FRAMING_DIR = f"{CANDIDATES}/pwb-tree-framing-amendment"
+PWB_TREE_FRAMING_SUBJECT = (
+    f"{PWB_TREE_FRAMING_DIR}/PWB-TREE-FRAMING-AMENDMENT-MANIFEST.txt")
+PWB_TREE_FRAMING_ACT = f"{DECISIONS}/PWB-TREE-FRAMING-AMENDMENT-ACT.md"
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -1714,6 +1722,7 @@ PWB_DISMISSAL_EXPIRY_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_CONTAINER_SHAPE_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_ITEM_DEPTH_SUBJECTS = PWB_STATE1_SUBJECTS
 PWB_READABILITY_SUBJECTS = PWB_STATE1_SUBJECTS
+PWB_TREE_FRAMING_SUBJECTS = PWB_STATE1_SUBJECTS
 #: Packages signed by version tag under
 #: `decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`, in
 #: performance order: `(key, record stem, label, subject manifest, act path,
@@ -1743,6 +1752,10 @@ VERSIONED_PWB_PACKAGES = (
      PWB_READABILITY_LABEL, PWB_READABILITY_SUBJECT,
      PWB_READABILITY_ACT, PWB_READABILITY_SUBJECTS,
      f"{PWB_READABILITY_DIR}/OWNER-DECISION-PACKET.md"),
+    ("tree-framing", "PWB-TREE-FRAMING-AMENDMENT",
+     PWB_TREE_FRAMING_LABEL, PWB_TREE_FRAMING_SUBJECT,
+     PWB_TREE_FRAMING_ACT, PWB_TREE_FRAMING_SUBJECTS,
+     f"{PWB_TREE_FRAMING_DIR}/OWNER-DECISION-PACKET.md"),
 )
 #: Successor chain over the PWB behavioral package, in performance order.
 #: The latest validly performed link binds current bytes; every earlier
