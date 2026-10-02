@@ -179,8 +179,11 @@ export type CredentialStat = Pick<
 export interface CredentialInspection {
   /** Defaults to `fs.lstatSync`; never follows a symlink. */
   readonly lstat?: (target: string) => CredentialStat;
-  /** Defaults to `process.getuid()`; undefined refuses every reuse. */
-  readonly uid?: number;
+  /**
+   * Defaults to `process.getuid()` when the key is absent. Present and
+   * undefined stands for a platform without uids: every reuse refuses.
+   */
+  readonly uid?: number | undefined;
 }
 
 function isNotFound(cause: unknown): boolean {
@@ -297,7 +300,7 @@ export function ensureCredential(
       path.resolve(stateDir),
       fileStat,
       lstat,
-      inspection.uid ?? process.getuid?.(),
+      'uid' in inspection ? inspection.uid : process.getuid?.(),
     );
     if (refusal !== undefined) {
       return { kind: 'unprovisionable', path: credentialPath, detail: refusal };
