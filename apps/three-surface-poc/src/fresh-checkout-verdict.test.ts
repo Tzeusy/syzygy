@@ -10,6 +10,13 @@ import { FRESH_CHECKOUT_INVARIANTS, freshCheckoutVerdict, type FreshCheckoutInva
 
 const REVISION = 'a'.repeat(40);
 
+// The daemon's stderr after the demo's three deliberate refusals, as a
+// 2026-10-03 run recorded it (docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-10-03-roadmap.json).
+const LINE_API_POC = '{"kind":"daemon-http-outcome","at":"2026-10-02T18:50:02.188Z","method":"GET","route":"/api/poc","status":401,"reason":"credential-refused","contentType":"application/json"}';
+const LINE_PRESENTATION = '{"kind":"daemon-http-outcome","at":"2026-10-02T18:50:02.506Z","method":"GET","route":"/api/poc/polaris","status":401,"reason":"credential-refused","contentType":"application/json"}';
+const LINE_FOREIGN_ORIGIN = '{"kind":"daemon-http-outcome","at":"2026-10-02T18:50:02.584Z","method":"GET","route":"/polaris","status":403,"reason":"route-non-success","contentType":"application/json"}';
+const PROBE_STDERR = `${LINE_API_POC}\n${LINE_PRESENTATION}\n${LINE_FOREIGN_ORIGIN}\n`;
+
 function healthy(): FreshCheckoutInvariants {
   return {
     cloneHeadMatchesSource: true,
@@ -38,7 +45,12 @@ function healthy(): FreshCheckoutInvariants {
     limitBreaches: 0,
     preflightReady: true,
     daemonExitCode: 0,
-    daemonStderr: '',
+    daemonStderr: PROBE_STDERR,
+    expectedDaemonDiagnostics: [
+      { method: 'GET', route: '/api/poc', status: 401 },
+      { method: 'GET', route: '/api/poc/polaris', status: 401 },
+      { method: 'GET', route: '/polaris', status: 403 },
+    ],
     evidenceWritten: true,
   };
 }
@@ -80,7 +92,16 @@ const COUNTEREXAMPLES: readonly { readonly name: string; readonly invariant: Fre
   { name: 'the preflight is not ready', invariant: 'preflight-ready', mutate: (b) => ({ ...b, preflightReady: false }) },
   { name: 'the daemon exited nonzero', invariant: 'daemon-exit-clean', mutate: (b) => ({ ...b, daemonExitCode: 1 }) },
   { name: 'the daemon was killed (no exit code)', invariant: 'daemon-exit-clean', mutate: (b) => ({ ...b, daemonExitCode: null }) },
-  { name: 'the daemon wrote to stderr', invariant: 'daemon-exit-clean', mutate: (b) => ({ ...b, daemonStderr: 'syzygy POC: observation failed\n' }) },
+  { name: 'the daemon logged nothing after the probes', invariant: 'daemon-exit-clean', mutate: (b) => ({ ...b, daemonStderr: '' }) },
+  { name: 'the daemon dropped one probe line', invariant: 'daemon-exit-clean', mutate: (b) => ({ ...b, daemonStderr: `${LINE_API_POC}\n${LINE_FOREIGN_ORIGIN}\n` }) },
+  { name: 'the daemon logged an extra 404', invariant: 'daemon-exit-clean', mutate: (b) => ({ ...b, daemonStderr: `${b.daemonStderr}{"kind":"daemon-http-outcome","at":"2026-10-02T18:50:03.000Z","method":"UNKNOWN","pathLength":12,"status":404,"reason":"unknown-route","contentType":"application/json"}\n` }) },
+  { name: 'the daemon logged a handler failure', invariant: 'daemon-exit-clean', mutate: (b) => ({ ...b, daemonStderr: `${b.daemonStderr}{"kind":"daemon-http-outcome","at":"2026-10-02T18:50:03.000Z","method":"GET","route":"/polaris","status":500,"reason":"handler-failure","contentType":"application/json"}\n` }) },
+  { name: 'an expected probe line carries a failure reason', invariant: 'daemon-exit-clean', mutate: (b) => ({ ...b, daemonStderr: b.daemonStderr.replace('"reason":"route-non-success"', '"reason":"response-limit-breached"') }) },
+  { name: 'the daemon wrote a non-JSON line', invariant: 'daemon-exit-clean', mutate: (b) => ({ ...b, daemonStderr: `${b.daemonStderr}syzygy POC: observation failed\n` }) },
+  { name: 'the daemon wrote a blank line between probe lines', invariant: 'daemon-exit-clean', mutate: (b) => ({ ...b, daemonStderr: `${LINE_API_POC}\n\n${LINE_PRESENTATION}\n${LINE_FOREIGN_ORIGIN}\n` }) },
+  { name: 'a JSON line of another kind', invariant: 'daemon-exit-clean', mutate: (b) => ({ ...b, daemonStderr: b.daemonStderr.replace('"kind":"daemon-http-outcome","at":"2026-10-02T18:50:02.584Z"', '"kind":"daemon-note","at":"2026-10-02T18:50:02.584Z"') }) },
+  { name: 'an expected probe line with a different status', invariant: 'daemon-exit-clean', mutate: (b) => ({ ...b, daemonStderr: b.daemonStderr.replace('"status":403', '"status":401') }) },
+  { name: 'an expected probe line duplicated', invariant: 'daemon-exit-clean', mutate: (b) => ({ ...b, daemonStderr: `${b.daemonStderr}${LINE_API_POC}\n` }) },
   { name: 'the evidence record was not written', invariant: 'evidence-written', mutate: (b) => ({ ...b, evidenceWritten: false }) },
 ];
 
@@ -96,6 +117,11 @@ describe('freshCheckoutVerdict', () => {
       expect(verdict.failed).toEqual([example.invariant]);
     });
   }
+
+  it('accepts exactly the probe lines in any order, and an empty stderr only when no probe was sent', () => {
+    expect(freshCheckoutVerdict({ ...healthy(), daemonStderr: `${LINE_FOREIGN_ORIGIN}\n${LINE_API_POC}\n${LINE_PRESENTATION}` }).failed).toEqual([]);
+    expect(freshCheckoutVerdict({ ...healthy(), daemonStderr: '', expectedDaemonDiagnostics: [] }).failed).toEqual([]);
+  });
 
   it('reports every failed invariant at once, in the exported order', () => {
     const verdict = freshCheckoutVerdict({ ...healthy(), cloneHeadMatchesSource: false, limitBreaches: 2, evidenceWritten: false });
