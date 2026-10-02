@@ -193,9 +193,10 @@ or effect permission from adoption.
     and `census.json` drift;
   - route and figure breaks, dangling coverage and continuation IDs;
   - for R6 and R7, a mutant that must change what they report.
-- The selftest's witnesses file, added beside this README in the commit
-  after this one, stores each mutant's path, old and new fragment, the
-  predicates that failed, and the commit it ran at.
+- [`selftest-witnesses.json`](selftest-witnesses.json) stores each mutant's
+  path, old and new fragment, the predicates that failed, and the commit it
+  ran at (`5a0df90`, the commit that added the checker; no checker input
+  changed after it).
 - **Battery:** `--check` and `--selftest` joined the canonical battery in one
   CG-26 edit — the `PROJECT-STATUS.md` block, the hosted workflow
   `.github/workflows/governance-docs.yml` and the count sentence
