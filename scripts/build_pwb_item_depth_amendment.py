@@ -280,6 +280,14 @@ def semantic_findings(
         "and a `reality` band sourced only from the shared model",
         "catalog-to-detail-to-exact-source path SHALL preserve the item's stable",
         "#### Scenario: Catalog item reaches exact current intent or honest absence",
+        "is Unknown with the single primary reason `no-currency-bound-declared`",
+        "`missing-declaration` is not reported for a relation claim in that state",
+        "Once an effective currency bound applies to the class",
+        "the identities of that capability's own baseline-spec requirements and scenarios",
+        "A capability's own leaf is not a captured governing relation",
+        "is a relation of no item",
+        "an exclusion naming a relation that is not itself captured excludes nothing",
+        "in whichever of its two render modes serves it",
     )
     flat = " ".join(spec.split())
     for fragment in required_once:
@@ -297,6 +305,29 @@ def semantic_findings(
     current = (read_subjects()[SPEC] if current_spec is None else current_spec).decode("utf-8")
     if "### Requirement: PWB-REQ-015 — Capability detail preserves authority bands and exact intent" not in current:
         findings.append("signed PWB-REQ-015 bytes moved in place")
+    return findings
+
+
+DIAGRAM_REASONS = (
+    "no-currency-bound-declared",
+    "missing-declaration",
+    "contradicted-pending-adjudication",
+    "Observed",
+)
+MERMAID_RE = re.compile(r"```mermaid\n(.*?)```", re.DOTALL)
+
+
+def diagram_findings(design: str, delta: str) -> list[str]:
+    """Both relation diagrams draw every result arm the proposed text names."""
+    findings: list[str] = []
+    for label, text in (("proposed design.md", design), ("SEMANTIC-DELTA.md", delta)):
+        blocks = [m for m in MERMAID_RE.findall(text) if "governing-intent" in m]
+        if len(blocks) != 1:
+            findings.append(f"{label}: expected one relation diagram, found {len(blocks)}")
+            continue
+        for reason in DIAGRAM_REASONS:
+            if reason not in blocks[0]:
+                findings.append(f"{label}: relation diagram lacks the {reason!r} arm")
     return findings
 
 
@@ -453,6 +484,10 @@ def check(patches: list[pathlib.Path] | None = None) -> tuple[list[str], dict[pa
     findings.extend(semantic_findings(proposed))
     findings.extend(generated_findings(proposed))
     findings.extend(coverage_findings(proposed))
+    findings.extend(diagram_findings(
+        proposed[CHANGE / "design.md"].decode("utf-8"),
+        (ROOT / CANDIDATE / "SEMANTIC-DELTA.md").read_text(encoding="utf-8"),
+    ))
     if not (ROOT / MANIFEST).is_file():
         findings.append(f"missing manifest: {MANIFEST}")
     else:
@@ -494,6 +529,14 @@ def selftest() -> int:
         "capability with several matches keeps a detail": ("A capability matching no item, or more than one, receives no item detail", "A capability matching more than one item receives each item detail"),
         "body encoded outside the exact-source route": ("which is the only place that text is encoded", "which is one place that text is encoded"),
         "withheld source changes the relation": ("this never changes the relation claim below", "this makes the relation claim Unknown"),
+        "bound-less relation names the declaration reason": ("is Unknown with the single primary reason `no-currency-bound-declared`", "is Unknown with the primary reason `missing-declaration`"),
+        "second primary reason reported before the bound": ("`missing-declaration` is not reported for a relation claim in that state", "`missing-declaration` is also reported for a relation claim in that state"),
+        "currency bound never ends the bound-less state": ("Once an effective currency bound applies to the class", "Once the class is evaluated"),
+        "capability leaf dropped from the band": ("the identities of that capability's own baseline-spec requirements and scenarios", "no identity of that capability"),
+        "capability leaf stands in for a relation": ("A capability's own leaf is not a captured governing relation", "A capability's own leaf is a captured governing relation"),
+        "declaration outside the catalog population": ("is a relation of no item", "is a relation of the nearest item"),
+        "exclusion naming an uncaptured relation": ("an exclusion naming a relation that is not itself captured excludes nothing", "an exclusion naming a relation that is not itself captured excludes the population"),
+        "render mode left implicit": ("in whichever of its two render modes serves it", "in whichever mode"),
     }
     def fuzzy(body: bytes, old: str, new: str) -> bytes:
         pattern = r"\s+".join(re.escape(word) for word in old.split())
@@ -505,6 +548,18 @@ def selftest() -> int:
         mutated = dict(proposed)
         mutated[SPEC] = fuzzy(mutated[SPEC], old, new)
         cases.append((name, bool(semantic_findings(mutated))))
+
+    design_rel = CHANGE / "design.md"
+    delta_text = (ROOT / CANDIDATE / "SEMANTIC-DELTA.md").read_text(encoding="utf-8")
+    design_text = proposed[design_rel].decode("utf-8")
+    nobound_line = re.compile(r"^    NOBOUND[^\n]*\n", re.MULTILINE)
+    cases.append(("design diagram drops the currency arm",
+                  bool(diagram_findings(nobound_line.sub("", design_text, count=1), delta_text))))
+    cases.append(("delta diagram drops the currency arm",
+                  bool(diagram_findings(design_text, re.sub(
+                      r"^    NOBOUND[^\n]*\n", "", delta_text, count=1, flags=re.MULTILINE)))))
+    cases.append(("design diagram drops the contradiction arm",
+                  bool(diagram_findings(design_text.replace("contradicted-pending-adjudication\"] --> R", "x\"] --> R", 1), delta_text))))
 
     stale = render_manifest(proposed).replace(sha256(proposed[SPEC]), "0" * 64, 1)
     cases.append(("stale manifest", bool(manifest_findings(proposed, stale))))

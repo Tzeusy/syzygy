@@ -56,19 +56,26 @@ bytes.
 - **PWB-REQ-002 and PWB-REQ-004 — reached, unchanged.** Their nine extraction
   classes and closed fact population admit no governing-relation declaration.
   The amended text mints none, so until a separate owner-scoped change admits a
-  source the relation claim is the absent arm for every item; the delta's open
+  source every relation claim is Unknown: `no-currency-bound-declared` until a
+  bound is declared for its class, then `missing-declaration`; the delta's open
   points disclose this.
 - **PWB-REQ-003 — reached, unchanged.** An excluded, missing or unreadable
   related source keeps its own reason; it never changes the relation claim.
 - **PWB-REQ-007 — reached, unchanged.** The item-to-intent relation is a
   separate claim with its own stable semantic identity, evaluation instance,
-  complete tuple, RFC2-24 reason and route. It never changes or borrows the
+  complete tuple, RFC2-24 reason and route. Its one primary reason is
+  `no-currency-bound-declared` while its class has no effective bound and the
+  RFC2-24 result of its population after. It never changes or borrows the
   catalog item's tuple.
-- **PWB-REQ-011 — reached, unchanged.** Its progressive path already starts
-  from every catalog category and follows a declared item through each
-  available depth. The proposed detail adds an available depth without changing
-  its exact-source authority or gates. The separate `.30` package explicitly
-  leaves PWB-REQ-015 downstream.
+- **PWB-REQ-011 — reached; its bytes are unchanged and its "Capability reaches
+  exact requirements" scenario is kept true for a matching capability.** Its
+  progressive path already starts from every catalog category and follows a
+  declared item through each available depth. The proposed detail adds an
+  available depth without changing its exact-source authority or gates, and a
+  matching capability's contract band carries its own baseline-spec
+  requirement identities, so that scenario holds for it. The scenario reads
+  false only for a declared capability matching no item or several (open point
+  3). The separate `.30` package explicitly leaves PWB-REQ-015 downstream.
 - **PWB-REQ-014 — reached, unchanged.** Item claim identity remains semantic;
   URL, label, path and coordinate remain non-identities. Narrative stays
   non-citable presentation.
@@ -82,7 +89,7 @@ bytes.
   governing-intent relation identities, their separate epistemic tuples and
   band/proposal distinctions in both channels.
 - **RFC2-24, RFC6-14 and RFC6-22 — reached, unchanged.** An absent relation
-  uses `missing-declaration`; mutually exclusive relations use
+  uses `missing-declaration` once a currency bound applies; mutually exclusive relations use
   `contradicted-pending-adjudication`; each keeps the existing route and both
   channels carry the exact tuple. No reason or parity exception is minted.
 - **RFC7-12…19/26/27/29/33/34 — reached, unchanged.** The amendment applies
