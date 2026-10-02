@@ -2,7 +2,8 @@
   "bead": "syzygy-pln3",
   "date": "2026-10-03",
   "subject": "apps/three-surface-poc/src/governance-inputs.test.ts > 'evaluates the three real current PWB acts without reading any body' timing out at the default 5 s under parallel load",
-  "fixCommit": "bb6b893c30c334bbbbdff602e3cbdd4dcbb95b6e",
+  "fixCommit": "a076a2c (rebased; see provenance)",
+  "provenance": "Measured and mutated at bb6b893, which the rebase onto main re-hashed to a076a2c. The test file blob e1c2e15b77550319b08e3cc3c224657047f159ba is identical at both commits. After the rebase (which brings in syzygy-4d15) the app suite passed 586/587 (1 skipped) once.",
   "diagnosis": {
     "componentTimingAloneLoad9": {
       "revParseMs": 7,
