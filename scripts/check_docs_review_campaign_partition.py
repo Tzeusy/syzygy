@@ -186,7 +186,7 @@ CAMPAIGNS = (
     campaign(
         "registry-currency",
         "P-69/P-72 registry gate",
-        r"R-PWB-REGISTRY-CURRENCY-.*\.md",
+        r"R-PWB-(?:REGISTRY-CURRENCY|BEHAVIOR-CONTRACT-REPIN)-.*\.md",
     ),
     campaign(
         "missing-currency",
