@@ -72,7 +72,7 @@ MANIFEST_LINE_RE = re.compile(r"^Manifest SHA-256: [0-9a-f]{64}$")
 VERDICT_LINE_RE = re.compile(r"^Verdict:\s*(.*?)\s*$")
 VERDICTS = ("CONFIRM", "CONFIRM WITH EXCEPTIONS")
 SEVERITY_RE = re.compile(
-    r"^\*\*Finding (\d+) — [^\n]*?\*\*\s*\((blocking|revise|note)\)", re.MULTILINE)
+    r"^\*\*Finding (\d+) [—–-] [^\n]*?\*\*\s*\((blocking|revise|note)\)", re.MULTILINE)
 SIBLING_RECORD_RE = re.compile(r"(^|/)ROUND-\d+-DISPOSITIONS\.md$")
 FINDINGS_HEADING = "## Findings"
 
@@ -599,6 +599,11 @@ def selftest() -> int:
     refused("a blocking finding under CONFIRM WITH EXCEPTIONS",
             review=lambda c: stub_review(c, "CONFIRM WITH EXCEPTIONS",
                                          "**Finding 1 — first** (blocking) evidence\n"),
+            disposition=stub_disposition(numbers=(1,)), disposition_rel=STUB_DISPOSITION,
+            expect="non-note")
+    refused("an ASCII-hyphen revise finding under CONFIRM WITH EXCEPTIONS",
+            review=lambda c: stub_review(c, "CONFIRM WITH EXCEPTIONS",
+                                         "**Finding 1 - first** (revise) evidence\n"),
             disposition=stub_disposition(numbers=(1,)), disposition_rel=STUB_DISPOSITION,
             expect="non-note")
     refused("a finding with no severity",
