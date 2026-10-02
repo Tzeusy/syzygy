@@ -149,7 +149,7 @@ CAMPAIGNS = (
     campaign(
         "readability-successors",
         "Readability successors",
-        r"R-(?:CAP1|POLARIS-BASE|POLARIS-UNDERSTANDING|PWB)-READABILITY-SUCCESSOR-\d+-RAW\.md",
+        r"R-(?:(?:CAP1|POLARIS-BASE|POLARIS-UNDERSTANDING|PWB)-READABILITY-SUCCESSOR|SPEC-READABILITY-RECONCILIATION)-\d+-RAW\.md",
     ),
     campaign(
         "pwb-scoped-attributes",
