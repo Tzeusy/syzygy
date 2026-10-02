@@ -1,0 +1,139 @@
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -1362,4 +1362,55 @@
+   and coordinates SHALL never serve as anchor identity.
+
++- **Tree form.** Syzygy-authored framing SHALL read as an abstraction tree
++  under CC-REV-8.
++  - Each top-level project category, catalog, item detail and evidence group
++    SHALL open with one Syzygy-authored opening that states that group's
++    answer in one sentence. An opening is a lede under PWB-REQ-012 and a
++    narrative unit of this requirement.
++  - An opening SHALL state only what that group's own rendered children
++    state, derived from the same evaluation's shared model, so that a reader
++    who stops at any opening holds a coarser true account and never a claim
++    found nowhere beneath it.
++  - Butlers-declared text SHALL stay verbatim in its own leaf. An opening
++    above it SHALL NOT paraphrase, condense or stand in for that text; it
++    names only the leaf's source, its epistemic state and its route.
++  - An opening that counts claims SHALL carry PWB-REQ-007's aggregate
++    disclosure. Before the first capability catalog no opening counts Unknown
++    claims, so PWB-REQ-010's opening aggregate stays the only one there.
++  - Headings, identifiers, the RFC7-13 altitude order, the RFC7-17 authority
++    bands and the exact-source route keep their structure.
++
++- **Diagrams.** A relationship among claims the shared model holds SHALL be
++  drawn where the independent rendered-design review judges that a diagram
++  explains it better than prose.
++  - The review record SHALL list every flow, dependency, ordering, boundary
++    or placement it judged, with whether a diagram explains it better and
++    whether it is drawable; a relationship judged prose-sufficient needs no
++    diagram.
++  - A relationship is drawable only when at least one of its edges is a claim
++    the shared model holds. A listed relationship that is not drawable SHALL
++    be disclosed in place at the group it affects, with its reason, and SHALL
++    NOT be drawn from prose, labels or inference.
++  - Every drawn node, edge and label SHALL draw exactly one claim that the
++    shared model or an anchored narrative block holds, by that claim's stable
++    identity, and SHALL carry its Observed, Inferred or Unknown label into the
++    render and the text equivalent. An element is drawn Unknown only where a
++    claim establishes the element and its state is Unknown; no other element
++    is drawn.
++  - Each diagram SHALL have an adjacent text equivalent naming every node,
++    edge, label and marking it draws, reachable without vision or a pointing
++    device under PWB-REQ-016. Each drawn tuple SHALL equal its machine claim's
++    tuple under PWB-REQ-020, and the diagram's declarative node-and-edge
++    source SHALL be recoverable from the machine narrative.
++  - A diagram SHALL render as inline static SVG reduced to an allow-list of
++    shapes, paths, text and styling, with no script, event-handler attribute,
++    animation, `foreignObject`, link, or external or unsafe-scheme reference,
++    and SHALL be validated against that allow-list before it reaches a sink.
++    A diagram that fails rendering or validation SHALL NOT be emitted; its
++    text equivalent remains and the failure is disclosed in place.
++  - Openings and diagrams are narrative units: they carry
++    `presentation-artifact` and `non-citable`, count toward PWB-REQ-006's
++    final human-output ceiling, and are never authority.
++
+ **Verification.**
+
+@@ -1368,5 +1419,7 @@
+   populations at the evaluated revisions. Repeat after deleting Polaris
+   presentation and after injecting personal view state and a later-read target
+-  mutation.
++  mutation. Enumerate every opening and diagram with its children and drawn
++  claims, and mutate a child's state, a drawn element's support and each
++  excluded SVG construct in turn.
+ - **Observable**: claim roles and non-authority attributes are machine-readable;
+   every claim has exact/minimal anchors and no downstream authority reference
+@@ -1378,10 +1431,17 @@
+   rewrite the captured state; a complete downstream-reference scan has zero
+   Polaris authority targets; deletion leaves truth unchanged and injected
+-  personal state never enters the truth model.
++  personal state never enters the truth model. Every opening states nothing
++  its children do not; every drawn element maps to one machine claim with an
++  equal tuple; every emitted SVG passes the allow-list, and each excluded
++  construct, injected alone, keeps that diagram out of both sinks.
+ - **Oracle independence**: expected source spans and reference targets come
+-  from captured artifacts, not the rendered claim blocks.
++  from captured artifacts, not the rendered claim blocks. Expected openings,
++  drawn elements and SVG verdicts come from the machine model and an
++  independent allow-list scan, not the renderer.
+ - **Falsifier**: an unclassified narrative unit, uncovered claim, surplus or
+   ambiguous anchor, missing non-citable attribute, or downstream citation to
+-  Polaris.
++  Polaris; an opening that states what no child states or stands in for
++  Butlers text; a drawn element with no claim; a diagram without its text
++  equivalent; or an emitted SVG outside the allow-list.
+
+ #### Scenario: A project claim is supported without making Polaris authority
+@@ -1391,10 +1451,48 @@
+ - **AND** both human and machine forms mark the block non-citable presentation
+
++#### Scenario: A group opens with its answer
++
++- **WHEN** Polaris renders a project category, catalog, item detail or
++  evidence group
++- **THEN** the group opens with one Syzygy-authored sentence stating its
++  answer, derived from that evaluation's model and stating nothing its
++  children do not
++- **AND** removing everything below any opening leaves a coarser true account
++
++#### Scenario: An opening above Butlers text stays outside it
++
++- **WHEN** a group's leaf is Butlers-declared text rendered verbatim
++- **THEN** the opening names that text's source, state and route, and does not
++  paraphrase, condense or replace it
++- **AND** the verbatim text is byte-identical with and without the opening
++
++#### Scenario: A supported relationship is drawn inertly
++
++- **WHEN** the rendered-design review lists a drawable relationship that a
++  diagram explains better than prose
++- **THEN** Polaris renders one allow-listed static SVG whose every node, edge
++  and label draws one model claim by identity with its epistemic label
++- **AND** an adjacent text equivalent and the machine narrative carry the same
++  elements and tuples
++
++#### Scenario: A relationship with no supported edge is disclosed, not drawn
++
++- **WHEN** a listed relationship has no edge that a model claim supports
++- **THEN** no diagram is drawn for it and its gap is disclosed in place with
++  its reason
++- **AND** no node or edge is invented from prose, labels or inference
++
++#### Scenario: A failed or unsafe diagram emits nothing active
++
++- **WHEN** a diagram fails to render or its SVG falls outside the allow-list
++- **THEN** no SVG for that diagram reaches either sink
++- **AND** its text equivalent remains and the failure is disclosed in place
++
+ ```yaml
+ warrants:
+   primary: RFC7-2
+-  doctrine: [VIS-1, VIS-2, VIS-7]
++  doctrine: [VIS-1, VIS-2, VIS-7, SEC-3]
+   contracts: [RFC7-1, RFC7-2, RFC7-3, RFC7-5, RFC7-9, RFC7-10, RFC7-12, RFC7-29, RFC7-33]
+-  policies: [CC-BAR-3, CC-REV-3, CC-TEST-5]
++  policies: [CC-BAR-3, CC-REV-3, CC-REV-8, CC-TEST-5]
+   decisions: [POLARIS-DIR-2026-08-31]
+   topology: []

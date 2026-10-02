@@ -1,0 +1,54 @@
+--- a/openspec/changes/polaris-project-wide-butlers-model/design.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
+@@ -486,4 +486,41 @@
+   it.
+
++### 11. Frame Syzygy's own words as an abstraction tree
++
++Polaris's own framing opens each group with its answer and draws supported
++relationships, while Butlers' words stay verbatim beneath it.
++
++- **Openings.** Each project category, catalog, item detail and evidence
++  group opens with one sentence derived from the shared model.
++  - It states only what the group's children state, so stopping at it leaves
++    a coarser true account.
++  - Above Butlers text it names the source, state and route; it never
++    paraphrases or replaces that text.
++  - Before the first capability catalog it counts no Unknown claims; the
++    opening aggregate stays the only one there.
++- **Diagrams.** The independent rendered-design review lists the
++  relationships a diagram explains better than prose and whether each is
++  drawable.
++  - Every drawn element is one model claim with its epistemic label, and the
++    text equivalent and machine narrative carry the same elements.
++  - A listed relationship with no supported edge is disclosed in place,
++    never drawn.
++- **Render.** The server lays out the node-and-edge source and emits static
++  SVG only after an allow-list check; a failure emits no SVG and keeps the
++  text equivalent. This follows the owner's 2026-09-28 ruling that sanitized
++  static SVG is inert under PWB-REQ-006.
++
++```mermaid
++flowchart TD
++    L["Relationship listed by the<br/>rendered-design review"] --> Q{"Does a diagram explain it<br/>better than prose?"}
++    Q -- "no" --> N["Prose only;<br/>no diagram owed"]
++    Q -- "yes" --> D{"Does a model claim support<br/>at least one edge?"}
++    D -- "no" --> G["Gap disclosed in place<br/>with its reason; nothing drawn"]
++    D -- "yes" --> R["Render node-and-edge source<br/>to static SVG"]
++    R --> V{"SVG passes<br/>the allow-list?"}
++    V -- "yes" --> S["Inline SVG beside its<br/>text equivalent"]
++    V -- "no" --> F["No SVG emitted; text equivalent<br/>kept; failure disclosed"]
++```
++
+ ## Risks / Trade-offs
+
+@@ -504,4 +541,9 @@
+ - **A corpus exceeds local budgets** → the affected source stays counted and
+   renders Unknown with the breached limit.
++- **Framing or a diagram outruns its support** → an opening may state only
++  what its children state, and an element is drawn only from a model claim;
++  anything else is a disclosed gap.
++- **A diagram carries active content** → the server-side allow-list check
++  emits no SVG that fails it, and the text equivalent remains.
+ - **A stale summary conflicts with a higher authority** → both are kept;
+   explicit Butlers precedence selects the effective statement and Polaris

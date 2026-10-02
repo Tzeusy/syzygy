@@ -599,6 +599,12 @@ VERSIONED_LATER = {
                      "pwb-readability-successor/"
                      "PWB-READABILITY-SUCCESSOR-MANIFEST.txt"),
     ),
+    "pwb-tree-framing-amendment": (
+        DECISIONS / "PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md",
+        pathlib.Path(".syzygy/governance/contracts/candidates/"
+                     "pwb-tree-framing-amendment/"
+                     "PWB-TREE-FRAMING-AMENDMENT-MANIFEST.txt"),
+    ),
 }
 
 

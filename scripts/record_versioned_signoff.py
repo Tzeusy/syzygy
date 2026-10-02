@@ -120,6 +120,7 @@ def real_packages() -> dict[str, Package]:
     container = lambda: _module("build_pwb_container_shape_profile_amendment")  # noqa: E731
     item_depth = lambda: _module("build_pwb_item_depth_amendment")  # noqa: E731
     readability = lambda: _module("build_pwb_readability_successor")  # noqa: E731
+    tree_framing = lambda: _module("build_pwb_tree_framing_amendment")  # noqa: E731
     return {
         "pwb-missing-currency-disclosure-scenario": Package(
             "pwb-missing-currency-disclosure-scenario",
@@ -170,6 +171,16 @@ def real_packages() -> dict[str, Package]:
             lambda root: readability().check()[0],
             lambda root: readability().apply(True),
             lambda root: _rows_hash_tree(root, readability().MANIFEST_OUT),
+        ),
+        "pwb-tree-framing-amendment": Package(
+            "pwb-tree-framing-amendment",
+            "PWB tree-framing amendment",
+            "behavior amendment",
+            CANDIDATES / "pwb-tree-framing-amendment",
+            "PWB-TREE-FRAMING-AMENDMENT",
+            lambda root: tree_framing().check()[0],
+            lambda root: tree_framing().apply(True),
+            lambda root: _rows_hash_tree(root, tree_framing().MANIFEST_OUT),
         ),
     }
 
