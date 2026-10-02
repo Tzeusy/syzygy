@@ -1,0 +1,13 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md b/openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
+index 72cedb7..7aff3f3 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
+@@ -8,7 +8,7 @@
+ > here is overwritten and `--check` fails first. Identifiers only —
+ > nothing here quotes or paraphrases any clause.
+ >
+-> Source: `spec.md` sha256 `aa47415d676670dbc261edc24ded83e07794bc7df8d5c9b005efb111ee965952` — 17 requirement(s), 100 distinct authorities.
++> Source: `spec.md` sha256 `a12d96969addb8b0ce05b622c646aaba9120f4bb56276aa9115a938739e96456` — 17 requirement(s), 100 distinct authorities.
+ 
+ ## doctrine (9)
+ 

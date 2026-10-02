@@ -232,6 +232,11 @@ CAMPAIGNS = (
         "P-79 Q5 dismissal-expiry gate",
         r"R-DOV29-.*\.md",
     ),
+    campaign(
+        "n8-container-shape",
+        "N8 container-shape profile gate",
+        r"R-N8-.*\.md",
+    ),
 )
 
 
