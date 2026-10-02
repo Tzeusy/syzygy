@@ -14,16 +14,35 @@
    only when "its extraction class is in the signed PWB closed set"; source
    code and documentation of an arbitrary repository have no PWB extraction
    class, so the public scope needs its own: strict UTF-8 without NUL, no
-   detector match, no active-content form outside an inert context, within
-   declared size limits.
-3. **Active content withheld, as today.** The existing policy withholds
-   active content (executable configuration such as TOML, CI workflows and
-   build files outside an inert context). The public scope keeps that rule;
-   such files are counted as withheld, never read into a prompt.
-4. **Egress for this scope only.** The existing policy states
-   `"externalEgress": "never"`. The public scope permits egress of content it
-   classifies, subject to the separate egress consent; every other scope
-   stays `never`. This is the substantive change the act approves.
+   detector match, within declared size limits, and the active-content rule
+   in item 3.
+3. **An active-content rule for source code.** The existing policy excludes a
+   closed list of markup forms (`excludedOutsideInertContexts`: HTML elements,
+   HTML comments and declarations, SVG, script, event-handler attributes,
+   unsafe URL schemes in Markdown destinations and autolinks) wherever they
+   occur outside a Markdown inline code span or fenced code block — its only
+   inert contexts. Applied unchanged to a source repository, that would
+   withhold every file containing a `<tag`-shaped string: JSX, templates,
+   HTML fixtures, many docstrings. The public scope therefore keeps the
+   existing rule for Markdown and other prose rendered as markup, and treats
+   every other admitted file as untrusted text that is never interpreted as
+   markup: it is scanned by every secret detector and context-encoded at every
+   sink, as the existing `inertContextRule` already requires of inert bytes.
+   This is a change the act approves, not a carry-over.
+4. **Raw-body handling for this scope.** The existing policy's
+   `rawBodyHandling` is `never` for storage, logging, rendering, machine
+   response and external egress. The public scope proposes:
+   - external egress — permitted for content it classifies, subject to the
+     separate egress consent;
+   - storage — permitted only in a run's directory under `project:syzygy`'s
+     state directory, outside git (provider requests, replies and run
+     records quote source; packet Q3);
+   - rendering — permitted as quoted, context-encoded spans in a generated
+     editorial draft and its source routes;
+   - logging and machine response — `never`, unchanged.
+
+   Every other scope stays as it is. These are the substantive changes the
+   act approves.
 5. **Content-classification rules** into RFC5-14's closed classes:
    - specification and design-decision documents → `governance-text`
      ("Doctrine, spec, decision, policy text");
@@ -31,8 +50,8 @@
      `code-structure`;
    - source and test bodies → `code-content`;
    - committed test reports and benchmark outputs → `evidence-content`;
-   - all other prose (README, guides, tutorials) → indeterminate, refused
-     egress, until the packet's Q7 is resolved;
+   - all other prose (README, guides, tutorials, LICENSE files) →
+     indeterminate, refused egress, until the packet's Q7 is resolved;
    - anything else the rules do not determine → indeterminate, refused
      egress visibly.
 
@@ -42,3 +61,9 @@ The Butlers scope and its detectors' behaviour on Butlers content, and every
 act already performed on the policy. A target repository's own policy text is
 data to screen, never authority (RFC3-30; REQ-polaris-generation-025,
 "Observed source supplies a permissive policy").
+
+## Collision with the self-observation package
+
+PR #120's self-observation package also patches this policy file. Whichever
+policy act lands second is re-drafted against the other's performed bytes and
+re-reviewed before it is offered.

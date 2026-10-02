@@ -9,7 +9,7 @@ replaced by an instance header; every ``{{FIELD}}`` must be filled.
   --write     regenerate every instance record
   --check     fail if any instance record differs from its regeneration
   --digests   print each instance record's SHA-256 (the act argument)
-  --selftest  mutate a field and an unfilled placeholder; both must be caught
+  --selftest  build one mutant per predicate; each must be caught
 """
 import hashlib
 import json
@@ -50,41 +50,74 @@ def instances(root=PKG):
 
 
 def selftest():
+    """Each predicate is shown to fire on a mutant built for it."""
+    import tempfile
     tpl = "# T {{A}}\n\n> Template. x\n> y\n\nv {{B}}\n"
-    assert render(tpl, {"A": "1", "B": "2"}, "t").endswith("v 2\n")
-    for bad in ({"A": "1"},):
-        try:
-            render(tpl, bad, "t")
-        except KeyError:
-            continue
+    good = render(tpl, {"A": "1", "B": "2"}, "t")
+    caught = 0
+    # banner replaced: the template's own banner must not survive
+    assert "> Template." not in good and "> Instance filled" in good
+    caught += 1
+    # unfilled field
+    try:
+        render(tpl, {"A": "1"}, "t")
         raise AssertionError("unfilled field not caught")
+    except KeyError:
+        caught += 1
+    # placeholder smuggled in through a field value
+    try:
+        render(tpl, {"A": "1", "B": "{{C}}"}, "t")
+        raise AssertionError("placeholder left after fill not caught")
+    except ValueError:
+        caught += 1
+    # missing banner
     try:
         render("# T\n\nno header\n", {}, "t")
-    except ValueError:
-        pass
-    else:
         raise AssertionError("missing header not caught")
-    print("selftest: fill case passes; 2 of 2 mutants caught (unfilled field, missing header)")
+    except ValueError:
+        caught += 1
+    # staleness: a one-byte edit to a regenerated instance must be reported
+    with tempfile.TemporaryDirectory() as d:
+        root = pathlib.Path(d)
+        (root / "templates").mkdir()
+        (root / "instances" / "x").mkdir(parents=True)
+        (root / "templates" / "T.md").write_text(tpl)
+        (root / "instances" / "x" / "params.json").write_text(json.dumps(
+            {"R.md": {"template": "T.md", "fields": {"A": "1", "B": "2"}}}))
+        [(path, text)] = list(instances(root))
+        path.write_text(text)
+        assert stale(root) == []
+        path.write_text(text + "x")
+        assert stale(root) == [path], "stale instance not caught"
+        caught += 1
+    print(f"selftest: {caught} of 5 mutants caught (banner kept, unfilled "
+          "field, placeholder in value, missing banner, stale instance)")
+
+
+def stale(root=PKG):
+    return [p for p, text in instances(root)
+            if not p.exists() or p.read_text() != text]
 
 
 def main(argv):
     mode = argv[1] if len(argv) > 1 else "--check"
+    if mode not in ("--write", "--check", "--digests", "--selftest"):
+        print(f"unknown mode {mode}", file=sys.stderr)
+        return 2
     if mode == "--selftest":
         selftest()
         return 0
-    bad = 0
+    if mode == "--check":
+        bad = stale()
+        for path in bad:
+            print(f"STALE {path}")
+        print("public-repo admission instances:", "STALE" if bad else "current")
+        return 1 if bad else 0
     for path, text in instances():
         if mode == "--write":
             path.write_text(text)
-        elif mode == "--check":
-            if not path.exists() or path.read_text() != text:
-                print(f"STALE {path}")
-                bad += 1
-        if mode in ("--write", "--digests"):
-            print(f"{hashlib.sha256(text.encode()).hexdigest()}  {path}")
-    if mode == "--check":
-        print("public-repo admission instances:", "STALE" if bad else "current")
-    return 1 if bad else 0
+        print(f"{hashlib.sha256(text.encode()).hexdigest()}  {path}")
+    return 0
 
 
 if __name__ == "__main__":
