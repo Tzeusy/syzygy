@@ -79,22 +79,37 @@ DERIVED = frozenset({GOVERNING})
 #: longer apply and compose with nothing (POLARIS-LANE-B-DECLINED-AND-TARGET-
 #: REVISED-DIRECTION.md). Closed list: any other sibling must classify.
 DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
-#: Sibling packages already performed, each with the record that performed it.
-#: The 2026-10-02 readability successor restyled the spec after them, so their
-#: hunks no longer match the current text in either direction; a sibling here
-#: is history, never composed, and only while its record exists. Without the
-#: record it falls back to textual classification and an unmatched patch fails.
+#: Sibling packages already performed: (performing record, SHA-256 of the
+#: sibling's `proposed/spec.md.patch` as performed). The 2026-10-02 readability
+#: successor restyled the spec after them, so their hunks no longer match the
+#: current text in either direction; a sibling here is history, never composed,
+#: and only while its record verifies (`performed_record`). Otherwise it falls
+#: back to textual classification and an unmatched patch fails.
 PERFORMED_SIBLINGS = {
-    "pwb-container-shape-profile-amendment":
+    "pwb-container-shape-profile-amendment": (
         "PWB-CONTAINER-SHAPE-PROFILE-AMENDMENT-SIGNOFF-v1.0.md",
-    "pwb-dismissal-expiry-amendment": "PWB-DISMISSAL-EXPIRY-AMENDMENT-SIGNOFF-v1.0.md",
-    "pwb-exact-source-render-mode-scenario": "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md",
-    "pwb-item-depth-amendment": "PWB-ITEM-DEPTH-AMENDMENT-SIGNOFF-v1.0.md",
-    "pwb-machine-view-amendment": "PWB-MACHINE-VIEW-AMENDMENT-ACT.md",
-    "pwb-missing-currency-disclosure-scenario":
+        "545b235f0905e27904491c5eeea34f4cdec0098cb5da7154fb9315bc2d3f4283"),
+    "pwb-dismissal-expiry-amendment": (
+        "PWB-DISMISSAL-EXPIRY-AMENDMENT-SIGNOFF-v1.0.md",
+        "1abab9f29014f85cba3d4c494ee9d7c47f570c9187f8848ad4ccb7b33ee7dc92"),
+    "pwb-exact-source-render-mode-scenario": (
+        "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md",
+        "04f90b43ecf0560d03d17fd657e5f7743a94a5fc2039f8693d5b982d165f4a75"),
+    "pwb-item-depth-amendment": (
+        "PWB-ITEM-DEPTH-AMENDMENT-SIGNOFF-v1.0.md",
+        "5f0e44c2773778a627c2ee50d86d521fb10b58fe8f8ae0bc443739644748bca8"),
+    "pwb-machine-view-amendment": (
+        "PWB-MACHINE-VIEW-AMENDMENT-ACT.md",
+        "844139bf18fe37a26afd691094067636af1f618accbd565d823e84cd75b054a3"),
+    "pwb-missing-currency-disclosure-scenario": (
         "PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-SIGNOFF-v1.0.md",
-    "pwb-opening-band-scenario": "PWB-OPENING-BAND-SCENARIO-ACT.md",
-    "pwb-readability-successor": "PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md",
+        "ef3f355f94d25c8e2b1edd60a4e1ccd768c6323209f781f5586df103ff01e610"),
+    "pwb-opening-band-scenario": (
+        "PWB-OPENING-BAND-SCENARIO-ACT.md",
+        "c5950c85179edebfbb4f37df0fd3d6edd18fc41420d40fbe417a638ee9549c94"),
+    "pwb-readability-successor": (
+        "PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md",
+        "613648580d07013f52fbc80d0070fb4a1ee185bbcd2f9ae8da65497c6198606c"),
 }
 DECISIONS = pathlib.Path(".syzygy/governance/decisions")
 ROW_RE = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
@@ -264,36 +279,61 @@ def render_manifest(proposed: dict[pathlib.Path, bytes]) -> str:
 REQUIRED_ONCE = (
     "### Requirement: PWB-REQ-014 — Every narrative claim is bounded, anchored and non-authoritative",
     "**Tree form.** Syzygy-authored framing SHALL read as an abstraction tree under CC-REV-8.",
-    "Each top-level project category, catalog, item detail and evidence group SHALL open with one Syzygy-authored opening",
-    "An opening is a lede under PWB-REQ-012 and a narrative unit of this requirement.",
+    "A group is one of four classes: a project-level category of PWB-REQ-010's first reading level, which is a top-level group;",
+    "a project catalog of PWB-REQ-011; an item detail of PWB-REQ-015; or an evidence group",
+    "Every group SHALL open with one Syzygy-authored opening",
+    "An item detail's opening precedes its `argument` band and belongs to no band.",
+    "An opening is a lede under PWB-REQ-012 whose one copy role is `project-fact`",
+    "whose one claim role is epistemically labeled claim",
+    "Its label marker and its routes to its children are separate strings carrying `epistemic-disclosure` and `action-label`.",
     "An opening SHALL state only what that group's own rendered children state, derived from the same evaluation's shared model",
     "never a claim found nowhere beneath it",
+    "An opening SHALL carry the weakest label among that group's children",
+    "where a withheld or excluded child counts as Unknown",
+    "An opening that states fewer than all its children SHALL name the children it states as its scope.",
+    "An Unknown opening mints no reason of its own",
+    "never one more favourable than the group beneath it",
+    "The machine narrative SHALL carry each opening with its group, its label and the stable identities of the children it summarizes",
     "Butlers-declared text SHALL stay verbatim in its own leaf.",
     "SHALL NOT paraphrase, condense or stand in for that text",
-    "An opening that counts claims SHALL carry PWB-REQ-007's aggregate disclosure.",
-    "Before the first capability catalog no opening counts Unknown claims, so PWB-REQ-010's opening aggregate stays the only one there.",
+    "names only which declared text follows",
+    "is named in the route string, never in the opening",
+    "An opening SHALL NOT count claims, sources or rows",
     "the RFC7-17 authority bands and the exact-source route keep their structure",
     "**Diagrams.** A relationship among claims the shared model holds SHALL be drawn where the independent rendered-design review judges",
     "The review record SHALL list every flow, dependency, ordering, boundary or placement it judged",
+    "with the nodes and edges it expects",
     "a relationship judged prose-sufficient needs no diagram",
-    "A relationship is drawable only when at least one of its edges is a claim the shared model holds.",
+    "The machine narrative SHALL name the review record a page follows by path and SHA-256.",
+    "An element is supported when a claim the shared model holds establishes it with an Observed or Inferred label.",
+    "A relationship is drawable only when at least one of its edges is supported; a relationship whose only claimed edges are Unknown is not drawable.",
     "SHALL NOT be drawn from prose, labels or inference",
+    "or `missing-declaration` and its resolution route where no claim establishes the element",
     "Every drawn node, edge and label SHALL draw exactly one claim",
     "by that claim's stable identity",
     "An element is drawn Unknown only where a claim establishes the element and its state is Unknown; no other element is drawn.",
+    "A drawn diagram SHALL account for its whole listed relationship",
+    "SHALL be named in the text equivalent as not drawn, and the figure SHALL be marked partial",
     "Each diagram SHALL have an adjacent text equivalent naming every node, edge, label and marking it draws",
     "Each drawn tuple SHALL equal its machine claim's tuple under PWB-REQ-020",
     "the diagram's declarative node-and-edge source SHALL be recoverable from the machine narrative",
     "A diagram SHALL render as inline static SVG reduced to an allow-list of shapes, paths, text and styling",
     "with no script, event-handler attribute, animation, `foreignObject`, link, or external or unsafe-scheme reference",
     "SHALL be validated against that allow-list before it reaches a sink",
+    "Label text SHALL be encoded as SVG text content at both sinks",
     "A diagram that fails rendering or validation SHALL NOT be emitted; its text equivalent remains and the failure is disclosed in place.",
     "count toward PWB-REQ-006's final human-output ceiling, and are never authority",
+    "PWB-REQ-006's sink scan admits an emitted SVG only when the independent allow-list scan passes it.",
     "#### Scenario: A group opens with its answer",
+    "#### Scenario: An opening over an Unknown child is never more favourable",
+    "its opening carries the Unknown label",
     "#### Scenario: An opening above Butlers text stays outside it",
     "the verbatim text is byte-identical with and without the opening",
     "#### Scenario: A supported relationship is drawn inertly",
+    "#### Scenario: A partly supported relationship names what it leaves out",
+    "the diagram draws only claimed elements and is marked partial",
     "#### Scenario: A relationship with no supported edge is disclosed, not drawn",
+    "including one whose only claimed edges are Unknown",
     "#### Scenario: A failed or unsafe diagram emits nothing active",
     "no SVG for that diagram reaches either sink",
     "doctrine: [VIS-1, VIS-2, VIS-7, SEC-3]",
@@ -302,19 +342,43 @@ REQUIRED_ONCE = (
 #: The selftest's one mutant per required fragment: (old, new).
 SEMANTIC_MUTANTS = {
     "tree form loses its policy": ("abstraction tree under CC-REV-8", "abstraction tree"),
-    "groups need no opening": ("evidence group SHALL open with one Syzygy-authored opening", "evidence group MAY open with one Syzygy-authored opening"),
-    "opening escapes the lede rules": ("An opening is a lede under PWB-REQ-012", "An opening is free text outside PWB-REQ-012"),
+    "top-level restricts the group population": ("A group is one of four classes: a project-level category", "A group is a top-level project-level category"),
+    "item details and evidence groups need no opening": ("an item detail of PWB-REQ-015; or an evidence group", "and nothing deeper"),
+    "groups need no opening": ("Every group SHALL open with one Syzygy-authored opening", "A group MAY open with one Syzygy-authored opening"),
+    "item-detail opening sits inside a band": ("precedes its `argument` band and belongs to no band", "sits inside its `contract` band"),
+    "opening escapes the lede rules": ("An opening is a lede under PWB-REQ-012 whose one copy role", "An opening is free text outside PWB-REQ-012 whose copy role"),
+    "opening takes no claim role": ("whose one claim role is epistemically labeled claim", "which takes whichever claim role fits"),
+    "opening carries state and route in its own string": ("are separate strings carrying `epistemic-disclosure` and `action-label`", "are part of the opening string"),
     "opening states beyond its children": ("An opening SHALL state only what that group's own rendered children state", "An opening SHALL state what the author judges useful"),
     "truncation may hide a claim": ("never a claim found nowhere beneath it", "sometimes a claim found nowhere beneath it"),
+    "opening takes its strongest child's label": ("An opening SHALL carry the weakest label among", "An opening SHALL carry the strongest label among"),
+    "withheld children escape the label": ("where a withheld or excluded child counts as Unknown", "where a withheld or excluded child is skipped"),
+    "partial opening hides its scope": ("SHALL name the children it states as its scope", "MAY omit which children it states"),
+    "Unknown opening mints its own reason": ("An Unknown opening mints no reason of its own", "An Unknown opening mints one summary reason"),
+    "opening more favourable than its group": ("never one more favourable than the group beneath it", "sometimes more favourable than the group beneath it"),
+    "opening leaves the machine narrative": ("The machine narrative SHALL carry each opening with its group", "The machine narrative MAY omit each opening with its group"),
     "Butlers text not kept verbatim": ("Butlers-declared text SHALL stay verbatim in its own leaf.", "Butlers-declared text MAY be summarized in its own leaf."),
     "opening may paraphrase Butlers": ("SHALL NOT paraphrase, condense or stand in for that text", "MAY paraphrase, condense or stand in for that text"),
-    "counting opening drops the aggregate tuple": ("An opening that counts claims SHALL carry PWB-REQ-007's aggregate disclosure.", "An opening that counts claims carries no disclosure."),
-    "second Unknown aggregate before the catalog": ("Before the first capability catalog no opening counts Unknown claims", "Before the first capability catalog each opening counts Unknown claims"),
+    "opening above Butlers says more": ("names only which declared text follows", "summarizes what the declared text says"),
+    "prohibited source word enters the opening": ("is named in the route string, never in the opening", "is named in the opening"),
+    "opening counts": ("An opening SHALL NOT count claims, sources or rows", "An opening MAY count claims, sources or rows"),
     "bands lose their structure": ("the RFC7-17 authority bands and the exact-source route keep their structure", "the RFC7-17 authority bands may be merged"),
     "author decides the diagrams": ("where the independent rendered-design review judges", "where the author judges"),
     "review record keeps no list": ("The review record SHALL list every flow", "The review record MAY list a flow"),
+    "review record lists no expected elements": ("with the nodes and edges it expects", "with the relationships it names"),
+    "followed review record unnamed": ("SHALL name the review record a page follows by path and SHA-256", "MAY name the review record a page follows"),
+    "Unknown claim counts as support": ("establishes it with an Observed or Inferred label", "establishes it with any label"),
+    "Unknown-only relationship drawable": ("a relationship whose only claimed edges are Unknown is not drawable", "a relationship whose only claimed edges are Unknown is drawable"),
+    "undrawn element carries no reason": ("or `missing-declaration` and its resolution route where no claim establishes the element", "or nothing where no claim establishes the element"),
+    "partial diagram drops its unsupported edges": ("A drawn diagram SHALL account for its whole listed relationship", "A drawn diagram MAY omit part of its listed relationship"),
+    "partial figure unmarked": ("and the figure SHALL be marked partial", "and the figure needs no marking"),
+    "label text not encoded": ("Label text SHALL be encoded as SVG text content at both sinks", "Label text MAY be emitted as markup at both sinks"),
+    "sink scan admits any SVG": ("admits an emitted SVG only when the independent allow-list scan passes it", "admits every emitted SVG"),
+    "Unknown-child scenario weakened": ("its opening carries the Unknown label", "its opening carries the Observed label"),
+    "partial scenario weakened": ("the diagram draws only claimed elements and is marked partial", "the diagram draws only claimed elements"),
+    "Unknown-only scenario dropped": ("including one whose only claimed edges are Unknown", "excluding any whose claimed edges are Unknown"),
     "figure quota returns": ("a relationship judged prose-sufficient needs no diagram", "every relationship needs a diagram"),
-    "edgeless boxes count as drawable": ("drawable only when at least one of its edges is a claim the shared model holds", "drawable whenever its nodes are claims the shared model holds"),
+    "edgeless boxes count as drawable": ("drawable only when at least one of its edges is supported", "drawable whenever its nodes are claims the shared model holds"),
     "relationship drawn from prose": ("SHALL NOT be drawn from prose, labels or inference", "MAY be drawn from prose, labels or inference"),
     "drawn element without a claim": ("Every drawn node, edge and label SHALL draw exactly one claim", "Every drawn node and edge SHOULD draw a claim"),
     "element identity by label": ("by that claim's stable identity", "by that claim's label"),
@@ -390,6 +454,8 @@ DIAGRAM_ARMS = (
     "allow-list",
     "text equivalent",
     "No SVG emitted",
+    "Observed or Inferred<br/>claim support",
+    "each listed element not drawn",
 )
 MERMAID_RE = re.compile(r"```mermaid\n(.*?)```", re.DOTALL)
 
@@ -499,10 +565,38 @@ def patch_state(patch: pathlib.Path, current: bytes | None = None) -> str:
     return states.pop() if len(states) == 1 else "unclassified"
 
 
-def performed_record(name: str, root: pathlib.Path | None = None) -> bool:
-    """True when `name` is a listed performed sibling whose record exists."""
-    record = PERFORMED_SIBLINGS.get(name)
-    return record is not None and ((root or ROOT) / DECISIONS / record).is_file()
+def performed_record(sibling: pathlib.Path, root: pathlib.Path | None = None) -> bool:
+    """True only when `sibling` is a listed performed patch whose record verifies.
+
+    Three conditions, all required: the patch bytes hash to the digest pinned
+    in `PERFORMED_SIBLINGS` (a later hunk makes the patch pending again); the
+    performing record exists and names the package directory; and the record
+    carries its act's binding — either the live SHA-256 of the sibling's one
+    manifest file (a digest-bound act) or the `Package:` and `Tag:` lines of a
+    version-tagged sign-off for that package. File existence alone never
+    classifies a sibling.
+    """
+    name = sibling.parent.parent.name
+    listed = PERFORMED_SIBLINGS.get(name)
+    if listed is None or not sibling.is_file():
+        return False
+    record_name, patch_digest = listed
+    if sha256(sibling.read_bytes()) != patch_digest:
+        return False
+    record_path = (root or ROOT) / DECISIONS / record_name
+    if not record_path.is_file():
+        return False
+    record = record_path.read_text(encoding="utf-8")
+    if f"candidates/{name}" not in record:
+        return False
+    manifests = sorted(sibling.parent.parent.glob("*MANIFEST*.txt"))
+    digest_bound = len(manifests) == 1 and re.search(
+        r": " + sha256(manifests[0].read_bytes()) + r"\b", record) is not None
+    version_tagged = (
+        re.search(rf"^Package: {re.escape(name)}$", record, re.MULTILINE) is not None
+        and re.search(rf"^Tag: {re.escape(name)}-v\d+\.\d+$", record, re.MULTILINE)
+        is not None)
+    return digest_bound or version_tagged
 
 
 def sibling_population(
@@ -516,7 +610,7 @@ def sibling_population(
         name = sibling.parent.parent.name
         if name in DECLINED_SIBLINGS:
             out["declined"].append(sibling)
-        elif performed_record(name, root):
+        elif performed_record(sibling, root):
             out["performed"].append(sibling)
         else:
             out[patch_state(sibling, current)].append(sibling)
@@ -644,7 +738,8 @@ def selftest() -> int:
     design_rel = CHANGE / "design.md"
     design_text = proposed[design_rel].decode("utf-8")
     delta = delta_text()
-    for arm in ("Gap disclosed in place", "No SVG emitted", "Prose only"):
+    for arm in ("Gap disclosed in place", "No SVG emitted", "Prose only",
+                "Observed or Inferred<br/>claim support", "each listed element not drawn"):
         cases.append((f"design diagram drops the {arm!r} arm",
                       bool(diagram_findings(design_text.replace(arm, "x", 1), delta))))
         cases.append((f"delta diagram drops the {arm!r} arm",
@@ -702,17 +797,17 @@ def selftest() -> int:
             shutil.copytree(ROOT / CANDIDATE, mirror / CANDIDATE)
             parent = pathlib.Path("openspec/changes/three-surface-poc-experience")
             shutil.copytree(ROOT / parent, mirror / parent)
-            for record in PERFORMED_SIBLINGS.values():
+            for record, _digest in PERFORMED_SIBLINGS.values():
                 source = ROOT / DECISIONS / record
                 if source.is_file():
                     target = mirror / DECISIONS / record
                     target.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(source, target)
             for sibling in sibling_spec_patches():
-                rel = sibling.relative_to(ROOT)
-                target = mirror / rel
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(sibling.read_bytes())
+                # The whole sibling package: a digest-bound record verifies
+                # against the sibling's own manifest file.
+                package = sibling.parent.parent.relative_to(ROOT)
+                shutil.copytree(ROOT / package, mirror / package)
             return mirror
 
         def run_cli(mirror: pathlib.Path, *args: str) -> subprocess.CompletedProcess:
@@ -843,13 +938,57 @@ def selftest() -> int:
                       composition_findings(siblings=[applied_far]) == []))
         cases.append(("a declined sibling is skipped by its closed name",
                       composition_findings(siblings=[declined]) == []))
-        performed = temp_root / "pwb-item-depth-amendment" / "proposed" / "spec.md.patch"
-        performed.parent.mkdir(parents=True)
-        performed.write_bytes(stray_patch.read_bytes())
-        cases.append(("a listed performed sibling with its record is history",
-                      composition_findings(siblings=[performed]) == []))
+        candidates = ROOT / ".syzygy/governance/contracts/candidates"
+
+        def copy_sibling(name: str, dest: str) -> pathlib.Path:
+            """A scratch copy of a real performed sibling's directory."""
+            target = temp_root / dest / name
+            shutil.copytree(candidates / name, target)
+            return target / "proposed" / "spec.md.patch"
+
+        def record_root(name: str, body: bytes | None) -> pathlib.Path:
+            """A scratch root whose record for `name` holds `body` (None: absent)."""
+            scratch = temp_root / f"records-{name}-{len(list(temp_root.iterdir()))}"
+            (scratch / DECISIONS).mkdir(parents=True)
+            if body is not None:
+                (scratch / DECISIONS / PERFORMED_SIBLINGS[name][0]).write_bytes(body)
+            return scratch
+
+        tagged_name, bound_name = "pwb-item-depth-amendment", "pwb-machine-view-amendment"
+        tagged = copy_sibling(tagged_name, "tagged")
+        bound = copy_sibling(bound_name, "bound")
+        tagged_record = (ROOT / DECISIONS / PERFORMED_SIBLINGS[tagged_name][0]).read_bytes()
+        cases.append(("a version-tagged performed sibling whose record verifies is history",
+                      performed_record(tagged)
+                      and composition_findings(siblings=[tagged]) == []))
+        cases.append(("a digest-bound performed sibling whose record verifies is history",
+                      performed_record(bound)
+                      and composition_findings(siblings=[bound]) == []))
         cases.append(("a listed performed sibling without its record must classify",
-                      bool(composition_findings(siblings=[performed], root=temp_root))))
+                      bool(composition_findings(siblings=[tagged],
+                                                root=record_root(tagged_name, None)))))
+        cases.append(("a performed sibling whose record is empty must classify",
+                      bool(composition_findings(siblings=[tagged],
+                                                root=record_root(tagged_name, b"")))))
+        cases.append(("a performed sibling whose record lacks its Tag line must classify",
+                      bool(composition_findings(siblings=[tagged], root=record_root(
+                          tagged_name, re.sub(rb"(?m)^Tag: .*$", b"Tag: none",
+                                              tagged_record))))))
+        cases.append(("a performed sibling whose record names another package must classify",
+                      bool(composition_findings(siblings=[tagged], root=record_root(
+                          tagged_name, tagged_record.replace(
+                              tagged_name.encode(), b"pwb-other-amendment"))))))
+        grown = copy_sibling(tagged_name, "grown")
+        grown.write_bytes(grown.read_bytes() + b"@@ -1 +1 @@\n-a\n+b\n")
+        cases.append(("a performed sibling patch given a new hunk is no longer history",
+                      not performed_record(grown)
+                      and bool(composition_findings(siblings=[grown]))))
+        moved = copy_sibling(bound_name, "moved")
+        (manifest_file,) = moved.parent.parent.glob("*MANIFEST*.txt")
+        manifest_file.write_bytes(manifest_file.read_bytes() + b"# edited\n")
+        cases.append(("a digest-bound sibling whose manifest no longer matches its act must classify",
+                      not performed_record(moved)
+                      and bool(composition_findings(siblings=[moved]))))
         unlisted = temp_root / "pwb-unlisted-amendment" / "proposed" / "spec.md.patch"
         unlisted.parent.mkdir(parents=True)
         unlisted.write_bytes(stray_patch.read_bytes())

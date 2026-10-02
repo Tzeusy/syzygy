@@ -16,7 +16,7 @@ PWB amendment through `pwb-readability-successor-v1.0`.
 
 | Subject | Proposed disposition |
 |---|---|
-| `specs/polaris-project-wide-butlers-model/spec.md` | PWB-REQ-014 amended in place: tree-form and diagram clauses, three verification sentences, five scenarios, `SEC-3` and `CC-REV-8` warrants |
+| `specs/polaris-project-wide-butlers-model/spec.md` | PWB-REQ-014 amended in place: tree-form and diagram clauses, additions to four verification bullets, seven scenarios, `SEC-3` and `CC-REV-8` warrants |
 | `design.md` | decision 11 with its resolution diagram; two risk lines |
 | `proposal.md` | two sub-bullets under "Copy is short and direct" |
 | `CAPABILITY-COVERAGE.md` | row 33 added, covered by PWB-REQ-014; totals 33, 27 covered, 6 lawfully out of scope |
@@ -59,18 +59,31 @@ nothing a citer relies on. The 8 `apps` citers are the future consumers below.
   is inert, and that the ruling carries over to this package. The proposed
   allow-list repeats that ruling's excluded classes. Openings and diagrams
   count toward the final human-output ceiling, and a breach still returns the
-  bounded failure envelope.
-- **PWB-REQ-007 — reached, unchanged.** A counting opening carries the
-  aggregate disclosure it already defines; a drawn element carries an existing
-  claim's tuple. No reason, tier or freshness value is minted.
+  bounded failure envelope. PWB-REQ-006's sink-byte scan will meet
+  legitimate `<svg>` bytes: the proposed oracle admits an emitted SVG only
+  when the independent allow-list scan passes it, and label text is encoded
+  as SVG text content, so a markup-like code span in a label stays text.
+- **PWB-REQ-007 — reached, unchanged.** No opening counts, so no opening is
+  an aggregate and none adds to a count wall. An opening carries its
+  children's weakest label and mints no reason; its routes reach each Unknown
+  child's own reason and route. A drawn element carries an existing claim's
+  tuple, and an undrawn listed element carries its Unknown claim's own RFC2-24
+  reason or the existing value `missing-declaration`. No reason, tier or
+  freshness value is minted.
 - **PWB-REQ-010 — reached, unchanged.** The opening order stands, and the
-  proposed text forbids any opening before the first capability catalog from
-  counting Unknown claims, so the single-aggregate scenario stays true.
+  proposed text forbids every opening from counting claims, sources or rows,
+  so the single-aggregate scenario stays true.
 - **PWB-REQ-011 and PWB-REQ-015 — reached, unchanged.** The progressive path,
   render modes, exact-source gates and the three item-detail bands keep their
-  structure; an opening above verbatim text routes to it and never replaces it.
-- **PWB-REQ-012 — reached, unchanged.** An opening is a lede: one role, at
-  most twenty words, none of the six prohibited words.
+  structure; an opening above verbatim text routes to it and never replaces
+  it. An item detail's opening precedes its `argument` band and belongs to no
+  band, so the argument band's "no status" rule and the contract band's
+  "only identities" rule never govern it.
+- **PWB-REQ-012 — reached, unchanged.** An opening is a lede with one copy
+  role, `project-fact`, at most twenty words and none of the six prohibited
+  words; its label marker and routes are separate `epistemic-disclosure` and
+  `action-label` strings, and a source identity holding a prohibited word is
+  named in the route string.
 - **PWB-REQ-016 — reached, unchanged.** Each diagram's text equivalent is the
   nonvisual, keyboard-reachable form of the figure.
 - **PWB-REQ-020 — reached, unchanged.** Parity stays per tuple: every drawn
@@ -89,8 +102,13 @@ targeting the PWB spec. The builder classifies each:
 - **8 performed by record** — container-shape, dismissal-expiry, exact-source
   render mode, item depth, machine view, missing currency, opening band and
   the readability successor. Each is named with its performing record in the
-  builder's closed `PERFORMED_SIBLINGS` list and counts as history only while
-  that record exists. The readability successor restyled the spec after the
+  builder's closed `PERFORMED_SIBLINGS` list, with the SHA-256 of its spec
+  patch as performed. It counts as history only while that record verifies:
+  the patch still hashes to the pinned digest, and the record exists, names
+  the package directory and carries its act's binding (the live SHA-256 of the
+  sibling's manifest file for a digest-bound act, or the `Package:` and
+  `Tag:` lines of a version-tagged sign-off). A record's existence alone
+  classifies nothing. The readability successor restyled the spec after the
   first seven: by text alone, five of them (container-shape,
   dismissal-expiry, render mode, item depth, machine view) now match the
   current spec in neither direction, while missing currency, opening band and
@@ -127,12 +145,22 @@ renderer's own output on today's data:
   the capability's claim relationships (11 nodes, 9 edges) at 6,227 bytes and
   a seven-layer precedence ladder at 4,031 bytes;
 - their text equivalents reuse lists the page already renders;
-- about 32 openings at roughly 600 bytes each with their attributes and
-  anchors, about 19 KB.
+- about 32 openings at roughly 600 bytes each with their label markers,
+  routes and attributes, about 19 KB. The figure 32 is the drafting session's
+  count of groups on the served page; that enumeration was not retained, so
+  the count is Inferred and the implementation re-derives it;
+- text equivalents reuse lists the page already renders, plus one line per
+  listed element left undrawn.
 
-Together that is roughly 30 KB per form, leaving about 150 KB under the
+Together that is roughly 30 KB per human form, leaving about 150 KB under the
 working target. The figure is an estimate until the implementation is
 measured the same way on both forms.
+
+[Unknown] The machine JSON sink has its own PWB-REQ-006 ceiling and gains
+each opening's group, label and child identities, each diagram's node-and-edge
+source, and the followed review record's path and digest. Nothing here
+measures or projects that sink; the implementation measures it before merge,
+beside both human forms.
 
 ## Future implementation consumers — unchanged here
 
@@ -143,7 +171,7 @@ measured the same way on both forms.
 | `apps/three-surface-poc/src/polaris-generation/diagram-layout.ts`, `svg-inert.ts` | reuse the layout and allow-list validator for `/polaris`, moved to a shared module if both surfaces import them |
 | `apps/three-surface-poc/src/design-tokens.ts` | epistemic classes for drawn nodes and edges in both themes |
 | authority, parity, copy, reachability and accessibility tests | enumerate openings and drawn elements; mutate each excluded SVG class |
-| response-ceiling measurement | measure both host forms against 1,650,000 before merge |
+| response-ceiling measurement | measure both human host forms against 1,650,000, and the machine JSON against its own ceiling, before merge |
 
 There is no runtime state, retry, cache or concurrency effect in this
 candidate, and no new body read.
@@ -156,7 +184,10 @@ the manifest differs, generated dependencies drift, a required fragment is
 missing or doubled, any byte outside the PWB-REQ-014 block moves, the signed
 falsifier was edited in place, the contract-coverage generator's `--check`
 fails over the proposed bytes, a resolution diagram drops an arm, or a sibling
-spec patch is neither pending, applied, performed by record nor declined.
+spec patch is neither pending, applied, performed by a verifying record nor
+declined. A performed sibling whose patch gains a hunk, whose record is empty
+or names another package, or whose digest-bound manifest moves is no longer
+history and must classify textually.
 `--write` regenerates only the dependency patch and the manifest; `--check` is
 read-only; `--apply --at-adoption` writes the five signed subjects only when
 the whole package verifies, and `scripts/record_versioned_signoff.py` is its

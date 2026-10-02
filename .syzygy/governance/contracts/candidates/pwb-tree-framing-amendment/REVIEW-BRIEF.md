@@ -49,17 +49,20 @@ current bytes; they must remain unchanged by the review.
    and ledes.
 3. **Openings are true summaries.** Is "states only what that group's own
    rendered children state" testable, and does it rule out an opening that
-   introduces a conclusion found nowhere beneath it? Is the set of groups that
-   must open (project category, catalog, item detail, evidence group) clear
-   enough to enumerate on a rendered page?
-4. **One opening aggregate.** Show whether any opening can become a second
-   Unknown aggregate before the first capability catalog, contrary to
-   PWB-REQ-010's scenario, or a counting statement without PWB-REQ-007's
-   aggregate disclosure.
+   introduces a conclusion found nowhere beneath it, or one more favourable
+   than its group because it omits an Unknown or withheld child? Is the set
+   of groups that must open (project-level category, project catalog, item
+   detail, evidence group) clear enough to enumerate on a rendered page, and
+   does each opening carry exactly one copy role and one claim role?
+4. **One opening aggregate.** Show whether any opening can count, become a
+   second Unknown aggregate before the first capability catalog, contrary to
+   PWB-REQ-010's scenario, or carry a label stronger than its weakest child.
 5. **Diagram support.** Test an edgeless relationship, a relationship whose
-   only edges are Unknown, a node drawn from a label, an element drawn Unknown
-   without a claim establishing it, and a prose-sufficient relationship. Is
-   each result stated, and is no element ever drawn without a model claim?
+   only edges are Unknown, a partly supported relationship, a node drawn
+   from a label, an element drawn Unknown without a claim establishing it,
+   and a prose-sufficient relationship. Is each result stated, with the
+   reason each undrawn element carries, and is no element ever drawn without
+   a model claim?
 6. **Inert render.** Do the excluded classes match the owner's 2026-09-28 SVG
    ruling, does validation precede every sink, and does a failed render emit
    nothing active while keeping the text equivalent? Does anything in the
@@ -67,7 +70,7 @@ current bytes; they must remain unchanged by the review.
 7. **Neighbouring authority.** Attempt to show that PWB-REQ-006, 007, 010,
    011, 012, 015, 016, 020 or 021, or RFC7-2/13/17, becomes false under the
    applied text. A counterexample the delta does not already disclose as an
-   open point is a finding. Judge the four open points only for accuracy and
+   open point is a finding. Judge the six open points only for accuracy and
    completeness.
 8. **Package mechanics.** Run the builder with `--check`, `--selftest` and
    `--diff`. Re-derive all eleven manifest rows and the manifest-file SHA-256;
@@ -76,8 +79,9 @@ current bytes; they must remain unchanged by the review.
    `scripts/build_polaris_project_wide_contract_coverage.py --check` and
    `scripts/build_polaris_project_wide_spec_dependencies.py --check` over it.
    Check the sibling classification: every tracked PWB spec patch is pending,
-   applied, performed by an existing record or in the closed declined list, and
-   the counts in `IMPACT-LEDGER.md` match. Confirm `--apply` without
+   applied, performed by a record that verifies (pinned patch digest, record
+   naming the package and carrying its act's binding) or in the closed
+   declined list, and the counts in `IMPACT-LEDGER.md` match. Confirm `--apply` without
    `--at-adoption` is refused and a failed check leaves every signed-subject
    byte unchanged, in a scratch mirror. Re-derive the ledger's citer counts
    with the predicates it publishes.
