@@ -367,6 +367,12 @@ function localTagsPresent(): boolean {
   }
 }
 
+// The production reader spawns one `git cat-file` per blob: 123 over the real
+// tree (about 1 s alone), the cost this test exists to exercise. Measured
+// worst case 8.5 s under the parallel-load protocol (syzygy-pln3,
+// docs/evidence/governance-inputs-timeout-2026-10-03.json).
+const REAL_TREE_TIMEOUT_MS = 60_000;
+
 describe('loadBodyReadAuthorityInputs (real Syzygy governance tree)', () => {
   it('evaluates the three real current PWB acts without reading any body', () => {
     const governanceRevision = execFileSync('git', ['-C', REPO_ROOT, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
@@ -433,7 +439,7 @@ describe('loadBodyReadAuthorityInputs (real Syzygy governance tree)', () => {
       expect(reads).toBe(0);
     }
     expect(disclosure.authorities.every((entry) => entry.independentlyVerified === false)).toBe(true);
-  });
+  }, REAL_TREE_TIMEOUT_MS);
 });
 
 // N8 slice 4: the authority set is a lookup keyed by observed project, with
