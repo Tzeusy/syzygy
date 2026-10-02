@@ -87,7 +87,55 @@ export interface FreshCheckoutInvariants {
   readonly preflightReady: boolean;
   readonly daemonExitCode: number | null;
   readonly daemonStderr: string;
+  /** One entry per refusal probe the demo sent: since #106 the daemon logs
+   * one `daemon-http-outcome` line per non-2xx response, so its stderr must
+   * carry exactly these and nothing else. */
+  readonly expectedDaemonDiagnostics: readonly ExpectedDaemonDiagnostic[];
   readonly evidenceWritten: boolean;
+}
+
+/** A refusal the demo provoked on purpose, as the daemon must log it. */
+export interface ExpectedDaemonDiagnostic {
+  readonly method: string;
+  readonly route: string;
+  readonly status: number;
+}
+
+/** One stderr line as the verdict read it: the parsed object, or `null`
+ * when the line is not a JSON object. */
+export type DaemonStderrLine = Readonly<Record<string, unknown>> | null;
+
+/** Every stderr line, parsed one per line. Only the final newline is
+ * dropped, so a blank line inside the stream is a non-JSON line. */
+export function parseDaemonStderr(stderr: string): DaemonStderrLine[] {
+  if (stderr === '') return [];
+  const lines = stderr.endsWith('\n') ? stderr.slice(0, -1).split('\n') : stderr.split('\n');
+  return lines.map((line) => {
+    try {
+      const value: unknown = JSON.parse(line);
+      return typeof value === 'object' && value !== null && !Array.isArray(value) ? (value as Record<string, unknown>) : null;
+    } catch {
+      return null;
+    }
+  });
+}
+
+/** Reasons the daemon gives only when it failed, never for a refusal. */
+const FAILURE_REASONS: ReadonlySet<unknown> = new Set(['handler-failure', 'response-limit-breached']);
+
+/** True when the stderr lines are exactly the expected multiset: each line
+ * a `daemon-http-outcome` for one expected (method, route, status), none a
+ * failure reason, none left over, none missing. A missing line fails too:
+ * the probe's diagnostic is itself the evidence that refusals are logged. */
+export function daemonStderrIsExactlyProbes(stderr: string, expected: readonly ExpectedDaemonDiagnostic[]): boolean {
+  const unmatched = [...expected];
+  for (const line of parseDaemonStderr(stderr)) {
+    if (line === null || line['kind'] !== 'daemon-http-outcome' || FAILURE_REASONS.has(line['reason'])) return false;
+    const index = unmatched.findIndex((probe) => probe.method === line['method'] && probe.route === line['route'] && probe.status === line['status']);
+    if (index === -1) return false;
+    unmatched.splice(index, 1);
+  }
+  return unmatched.length === 0;
 }
 
 export interface FreshCheckoutVerdict {
@@ -129,7 +177,7 @@ export function freshCheckoutVerdict(inputs: FreshCheckoutInvariants): FreshChec
   );
   check('limit-breaches', inputs.limitBreaches === 0);
   check('preflight-ready', inputs.preflightReady);
-  check('daemon-exit-clean', inputs.daemonExitCode === 0 && inputs.daemonStderr.trim() === '');
+  check('daemon-exit-clean', inputs.daemonExitCode === 0 && daemonStderrIsExactlyProbes(inputs.daemonStderr, inputs.expectedDaemonDiagnostics));
   check('evidence-written', inputs.evidenceWritten);
   return { healthy: failed.length === 0, failed };
 }

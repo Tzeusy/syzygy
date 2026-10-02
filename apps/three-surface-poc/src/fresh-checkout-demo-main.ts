@@ -37,7 +37,7 @@ import { join, resolve } from 'node:path';
 import type { PocModel, ProjectShape } from '@syzygy/three-surface-poc-core';
 
 import { TAILNET_HOST } from './browser-origin.js';
-import { FRESH_CHECKOUT_INVARIANTS, freshCheckoutVerdict, type FreshCheckoutParity } from './fresh-checkout-verdict.js';
+import { FRESH_CHECKOUT_INVARIANTS, freshCheckoutVerdict, parseDaemonStderr, type ExpectedDaemonDiagnostic, type FreshCheckoutParity } from './fresh-checkout-verdict.js';
 import { POLARIS_HUMAN_PATH } from './polaris.js';
 import { POLARIS_PRESENTATION_PATH } from './routes.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
@@ -392,6 +392,9 @@ async function main(): Promise<number> {
     const routes: Record<string, unknown>[] = [];
     const humanPaths = ['/', '/polaris', '/trajectory', '/orrery'] as const;
     const humanRouteStatuses: number[] = [];
+    // Each refusal this demo provokes on purpose, as the daemon must log it
+    // (one stderr line per non-2xx response since #106).
+    const expectedDaemonDiagnostics: ExpectedDaemonDiagnostic[] = [];
     let polarisBytes: Uint8Array = new Uint8Array();
     for (const path of humanPaths) {
       const response = await fetchRoute(daemon.baseUrl, path);
@@ -401,6 +404,7 @@ async function main(): Promise<number> {
       routes.push({ path, status: response.status, contentType: response.contentType, bytes: response.body.byteLength, sha256: retain(name, response.body), retainedAs: name });
     }
     const refused = await fetchRoute(daemon.baseUrl, '/api/poc');
+    expectedDaemonDiagnostics.push({ method: 'GET', route: '/api/poc', status: 401 });
     routes.push({ path: '/api/poc', authenticated: false, status: refused.status, bytes: refused.body.byteLength });
     const machine = await fetchRoute(daemon.baseUrl, '/api/poc', token);
     routes.push({ path: '/api/poc', authenticated: true, status: machine.status, contentType: machine.contentType, bytes: machine.body.byteLength, sha256: retain('api-poc.json', machine.body), retainedAs: 'api-poc.json' });
@@ -413,6 +417,7 @@ async function main(): Promise<number> {
     const tailnetHtml = new TextDecoder().decode(tailnet.body);
     routes.push({ path: POLARIS_HUMAN_PATH, host: TAILNET_HOST, status: tailnet.status, contentType: tailnet.contentType, bytes: tailnet.body.byteLength, sha256: retain('polaris-tailnet.html', tailnet.body), retainedAs: 'polaris-tailnet.html', prefixedLinks: internalLinksPrefixed(tailnetHtml), disclosureMarkers: countDisclosureMarkers(tailnetHtml) });
     const presentationRefused = await fetchRoute(daemon.baseUrl, POLARIS_PRESENTATION_PATH);
+    expectedDaemonDiagnostics.push({ method: 'GET', route: POLARIS_PRESENTATION_PATH, status: 401 });
     routes.push({ path: POLARIS_PRESENTATION_PATH, authenticated: false, status: presentationRefused.status, bytes: presentationRefused.body.byteLength });
     const presentation = await fetchRoute(daemon.baseUrl, POLARIS_PRESENTATION_PATH, token);
     let presentationEnvelope: { kind?: unknown; citable?: unknown } = {};
@@ -423,6 +428,7 @@ async function main(): Promise<number> {
     }
     routes.push({ path: POLARIS_PRESENTATION_PATH, authenticated: true, status: presentation.status, contentType: presentation.contentType, bytes: presentation.body.byteLength, sha256: retain('api-poc-polaris.json', presentation.body), retainedAs: 'api-poc-polaris.json', kind: presentationEnvelope.kind ?? null, citable: presentationEnvelope.citable ?? null });
     const foreignOrigin = await requestWithHeaders(daemon.baseUrl, POLARIS_HUMAN_PATH, { Host: new URL(daemon.baseUrl).host, Origin: 'https://example.invalid' });
+    expectedDaemonDiagnostics.push({ method: 'GET', route: POLARIS_HUMAN_PATH, status: 403 });
     let foreignOriginReason = '';
     try {
       foreignOriginReason = String((JSON.parse(new TextDecoder().decode(foreignOrigin.body)) as { reason?: unknown }).reason ?? '');
@@ -486,6 +492,7 @@ async function main(): Promise<number> {
       preflightReady: preflight.ready,
       daemonExitCode: daemonExit,
       daemonStderr: daemon.stderr(),
+      expectedDaemonDiagnostics,
       evidenceWritten: false,
     };
 
@@ -502,7 +509,7 @@ async function main(): Promise<number> {
       butlers: { configuredRepository: butlersRepo, observedRevision: daemon.observedRevision, modelRevision: model.project.revision, observerRevision: model.observerRevision },
       walkthroughBinding: daemon.walkthroughBinding,
       evaluation: { snapshot: model.evaluation.snapshot, asOf: model.evaluation.asOf, inputsDigest: model.evaluation.inputsDigest },
-      daemon: { exitCode: daemonExit, stderr: daemon.stderr().slice(-2000) },
+      daemon: { exitCode: daemonExit, stderr: daemon.stderr().slice(-2000), stderrLines: parseDaemonStderr(daemon.stderr()), expectedDiagnostics: expectedDaemonDiagnostics },
       routes,
       parity,
       browserCheck: browser,
