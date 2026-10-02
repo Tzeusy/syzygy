@@ -4,7 +4,7 @@
 > authorizes no implementation and changes no signed byte. A commit, review,
 > merged pull request, passing check, silence or general approval performs no
 > act. The phrase and digest below are retained only so governance checks can
-> detect drift; they are not offered until repaired exact bytes pass a fresh
+> detect drift; they are not offered until the exact bytes pass a fresh
 > independent review.
 
 Date: 2026-09-22. Gate bead: `syzygy-dov.20`.
@@ -19,7 +19,7 @@ closed PWB behavior subject. Six rows hash proposed bytes and five current
 bytes.
 
 Manifest SHA-256:
-`cb73f2294ee2773391371d09f1ce916afe2c56ba270e4557af8e69284bdbea83`
+`1a64e1ea5e67528528ff1b026cf0dde5f280f6139a0c95cd373a1c9509596c42`
 
 The builder writes this digest. Any patch, manifest or subject change retires
 the argument and requires regeneration plus exact-byte review.
@@ -45,25 +45,22 @@ The independent reviewer is asked explicitly to confirm or contradict the
 Normative classification. A classification of Clarifying would require a
 finding explaining how the compliance population does not change.
 
-## Not yet offered: the sign-off phrase
+## How it is signed
 
-The behavior act phrase for this manifest would be:
+Sign-off is by version under
+`OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`: you select an
+option naming this package and version once a fresh review has confirmed the
+exact bytes. No phrase is typed. The manifest digest below is informational
+and lets governance checks detect drift:
 
-`SIGN OFF PWB MISSING-CURRENCY DISCLOSURE SCENARIO: cb73f2294ee2773391371d09f1ce916afe2c56ba270e4557af8e69284bdbea83`
-
-It is registered so governance checks see it go stale, but it is **not
-offered**: Review 1 returned `REVISE`, and the repaired exact bytes have not
-received fresh-context confirmation. If you reply with this phrase now,
-nothing is performed. A future recorder must reject a digest that differs from
-the manifest then present and must prove each manifest row against the
-post-apply tree.
+`1a64e1ea5e67528528ff1b026cf0dde5f280f6139a0c95cd373a1c9509596c42`
 
 ## What this act would not do
 
 - It would not amend RFC2-9, RFC2-10, RFC6-14, RFC6-17, RFC7-16, RFC7-33,
   CAP1-REQ-062, doctrine, policy, topology, consent or registry values.
-- It would not accept the `.18` registry checkpoint or any of its thirteen
-  proposed bounds.
+- It would not select, repeat or change the thirteen currency bounds the
+  performed `.18` registry act declares.
 - It would not continue implementation across the registry escalation trigger.
 - It would not authorize M2 slice 5, wire `assessCurrency`, render the route,
   alter a tuple, or change an aggregate.
@@ -79,9 +76,11 @@ post-apply tree.
    `spec.md` digest. An adopted PWB successor stales both pins. This package
    does not repair them without authority.
 3. The performed opening aggregate discloses its own freshness. A member in
-   this scenario has no freshness value of its own; how the aggregate's
-   freshness reads then is not decided here, and implementation must not claim
-   the two compose semantically until it is.
+   this scenario has no freshness value of its own, so the scenario states
+   the rule: the aggregate's freshness reads `Unknown` with the stated
+   reason, its per-freshness counts plus the count of members under the
+   condition equal its membership, and no value is derived from the other
+   members or shown as zero (VIS-2).
 4. The generated dependency declaration carries the digest of the proposed
    `spec.md`; a later PWB amendment regenerates it against the actual
    predecessor, and no stale patch is selected.

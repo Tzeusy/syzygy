@@ -2,7 +2,7 @@ diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-p
 index 543469d..0000000 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -469,3 +469,20 @@
+@@ -469,3 +469,27 @@
  
 +#### Scenario: No effective currency bound is disclosed outside freshness
 +
@@ -20,6 +20,13 @@ index 543469d..0000000 100644
 +  presentation where this requirement otherwise names freshness; every other
 +  tuple obligation remains, and no aggregate absorbs the claim into a current
 +  or favourable value, omits its primary reason count or hides its route
++- **AND** an aggregate that has a member under this condition discloses, apart
++  from its per-freshness-state counts, the count of members under this
++  condition, so that those counts and that count together equal its
++  membership; it never derives a freshness value from its other members, never
++  shows the unbounded members as zero, and while any member is under this
++  condition its own freshness reads `Unknown` with the stated reason
++  `no-currency-bound-declared`
 +
  #### Scenario: Missing current evidence remains explicit Unknown
  

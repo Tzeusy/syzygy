@@ -77,6 +77,16 @@ EXACT_ROUTE = "`Declare\n  the bound in quality policy`"
 OUTSIDE_SLOT = "outside the claim's freshness slot"
 NO_FABRICATION = "no `fresh`, `stale`,\n  `broken`, `superseded` or fifth value is minted, inferred or force-fit"
 NO_ABSORPTION = "no aggregate absorbs the claim into a current\n  or favourable value"
+OMITS_REASON_COUNT = "omits its primary reason count or hides its route"
+AGGREGATE_RECONCILES = (
+    "those counts and that count together equal its\n  membership"
+)
+AGGREGATE_NEVER_DERIVES = (
+    "never derives a freshness value from its other members, never\n  shows the unbounded members as zero"
+)
+AGGREGATE_UNKNOWN = (
+    "its own freshness reads `Unknown` with the stated reason\n  `no-currency-bound-declared`"
+)
 
 #: The sibling packages this one once composed with are performed or declined
 #: (opening band, render mode and machine view are in the base; lane B was
@@ -161,6 +171,11 @@ def scenario_findings(spec: bytes) -> list[str]:
         ("outside-slot disclosure", OUTSIDE_SLOT),
         ("no fabricated freshness", NO_FABRICATION),
         ("no favourable aggregate absorption", NO_ABSORPTION),
+        ("primary reason count and route preserved", OMITS_REASON_COUNT),
+        ("aggregate count reconciles to membership", AGGREGATE_RECONCILES),
+        ("aggregate never derives or zeroes", AGGREGATE_NEVER_DERIVES),
+        ("aggregate freshness Unknown with reason", AGGREGATE_UNKNOWN),
+        ("tier, challenge state and claim identity retained", "retains its tier, challenge state,\n  semantic claim identity and evaluation identity"),
         ("owner-act provenance", "effective owner-act provenance"),
         ("evaluation identity", "evaluation identity"),
     ):
@@ -411,6 +426,22 @@ def selftest() -> int:
         ),
         "aggregate absorption": spec.replace(
             NO_ABSORPTION.encode(), b"an aggregate may absorb the claim", 1
+        ),
+        "hidden route or dropped reason count": spec.replace(
+            OMITS_REASON_COUNT.encode(), b"omits its primary reason count", 1
+        ),
+        "aggregate count not reconciled": spec.replace(
+            AGGREGATE_RECONCILES.encode(), b"those counts stand alone", 1
+        ),
+        "aggregate derives or zeroes": spec.replace(
+            AGGREGATE_NEVER_DERIVES.encode(), b"derives a freshness value", 1
+        ),
+        "aggregate freshness not Unknown": spec.replace(
+            AGGREGATE_UNKNOWN.encode(), b"its own freshness reads `fresh`", 1
+        ),
+        "tuple retention dropped": spec.replace(
+            b"retains its tier, challenge state,\n  semantic claim identity and evaluation identity",
+            b"retains its tier", 1,
         ),
     }
     for name, mutated in mutations.items():

@@ -28,7 +28,7 @@ SVG_GRAPH_REVIEW_PATTERN = (
 )
 MISSING_CURRENCY_REVIEW_PATTERN = (
     r"^R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA"
-    r"(?:-CONFIRMATION)?-RAW\.md$"
+    r"(?:-CONFIRMATION(?:-[2-9])?)?-RAW\.md$"
 )
 
 
@@ -690,6 +690,7 @@ def selftest() -> None:
     missing_currency_paths = [
         "docs/reviews/R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA-RAW.md",
         "docs/reviews/R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA-CONFIRMATION-RAW.md",
+        "docs/reviews/R-PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-DELTA-CONFIRMATION-2-RAW.md",
     ]
     assert all(matches(path) == ["missing-currency"] for path in missing_currency_paths)
     assert not matches(
