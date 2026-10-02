@@ -167,6 +167,80 @@ export type CredentialProvision =
       readonly detail: string;
     };
 
+// --- Reuse inspection -----------------------------------------------------
+
+// The stat fields reuse inspection reads. Injectable so a foreign owner
+// can be exercised without a second user account.
+export type CredentialStat = Pick<
+  fs.Stats,
+  'mode' | 'uid' | 'isFile' | 'isDirectory' | 'isSymbolicLink'
+>;
+
+export interface CredentialInspection {
+  /** Defaults to `fs.lstatSync`; never follows a symlink. */
+  readonly lstat?: (target: string) => CredentialStat;
+  /** Defaults to `process.getuid()`; undefined refuses every reuse. */
+  readonly uid?: number;
+}
+
+function isNotFound(cause: unknown): boolean {
+  return (cause as NodeJS.ErrnoException | undefined)?.code === 'ENOENT';
+}
+
+function octal(mode: number): string {
+  return `0${(mode & 0o777).toString(8)}`;
+}
+
+/**
+ * Decide whether an existing credential may be trusted for reuse. Returns
+ * the refusal detail, or undefined when the token is private to this uid:
+ * an owner-only regular file in a directory this uid owns and nobody else
+ * can write. A 0755 directory is accepted — others may list it, but a
+ * 0600 file inside it is still unreadable to them. Reads no token bytes.
+ */
+function inspectReuse(
+  stateDir: string,
+  fileStat: CredentialStat,
+  lstat: (target: string) => CredentialStat,
+  uid: number | undefined,
+): string | undefined {
+  if (uid === undefined) {
+    return 'existing credential cannot be verified: this platform reports no process uid';
+  }
+
+  let dirStat: CredentialStat;
+  try {
+    dirStat = lstat(stateDir);
+  } catch (cause) {
+    return `state directory cannot be inspected: ${
+      cause instanceof Error ? cause.message : String(cause)
+    }`;
+  }
+  if (dirStat.isSymbolicLink() || !dirStat.isDirectory()) {
+    return 'state directory is a symbolic link or not a directory; refusing to reuse the credential inside it';
+  }
+  if (dirStat.uid !== uid) {
+    return `state directory is owned by uid ${dirStat.uid}, not the daemon's uid ${uid}; refusing to reuse the credential inside it`;
+  }
+  if ((dirStat.mode & 0o022) !== 0) {
+    return `state directory mode ${octal(dirStat.mode)} is group- or other-writable; another user could replace the credential (chmod 700 to repair)`;
+  }
+
+  if (fileStat.isSymbolicLink()) {
+    return 'existing credential file is a symbolic link; refusing to read a token through it';
+  }
+  if (!fileStat.isFile()) {
+    return 'existing credential file is not a regular file';
+  }
+  if (fileStat.uid !== uid) {
+    return `existing credential file is owned by uid ${fileStat.uid}, not the daemon's uid ${uid}`;
+  }
+  if ((fileStat.mode & 0o077) !== 0) {
+    return `existing credential file mode ${octal(fileStat.mode)} grants group or other access; another user may hold the token (chmod 600 to repair, or delete it to mint afresh)`;
+  }
+  return undefined;
+}
+
 /**
  * Ensure the daemon's machine credential exists under `stateDir`.
  *
@@ -178,11 +252,18 @@ export type CredentialProvision =
  * silently invalidate a credential some client may hold; the operator
  * deletes the file to rotate deliberately).
  *
+ * Reuse is trusted only when no other user can have read or planted
+ * the token (`inspectReuse`): every other existing file is a named
+ * failure, refused before a byte of it is read.
+ *
  * Writes: at most the state directory itself and the credential file,
  * the latter routed through `authorizeStateWrite`. Nothing else is
  * touched.
  */
-export function ensureCredential(stateDir: string): CredentialProvision {
+export function ensureCredential(
+  stateDir: string,
+  inspection: CredentialInspection = {},
+): CredentialProvision {
   const write = authorizeStateWrite(stateDir, CREDENTIAL_FILE_NAME);
   if (!write.authorized) {
     return {
@@ -192,8 +273,35 @@ export function ensureCredential(stateDir: string): CredentialProvision {
     };
   }
   const credentialPath = write.absolutePath;
+  const lstat = inspection.lstat ?? fs.lstatSync;
 
-  if (fs.existsSync(credentialPath)) {
+  // lstat, not existsSync: a dangling symlink at the credential path is
+  // an existing entry to refuse, never an absence to mint through.
+  let fileStat: CredentialStat | undefined;
+  try {
+    fileStat = lstat(credentialPath);
+  } catch (cause) {
+    if (!isNotFound(cause)) {
+      return {
+        kind: 'unprovisionable',
+        path: credentialPath,
+        detail: `existing credential file cannot be inspected: ${
+          cause instanceof Error ? cause.message : String(cause)
+        }`,
+      };
+    }
+  }
+
+  if (fileStat !== undefined) {
+    const refusal = inspectReuse(
+      path.resolve(stateDir),
+      fileStat,
+      lstat,
+      inspection.uid ?? process.getuid?.(),
+    );
+    if (refusal !== undefined) {
+      return { kind: 'unprovisionable', path: credentialPath, detail: refusal };
+    }
     let raw: string;
     try {
       raw = fs.readFileSync(credentialPath, 'utf8');
