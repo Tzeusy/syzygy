@@ -1,0 +1,1472 @@
+{
+  "bead": "syzygy-pln3",
+  "date": "2026-10-03",
+  "subject": "apps/three-surface-poc/src/governance-inputs.test.ts > 'evaluates the three real current PWB acts without reading any body' timing out at the default 5 s under parallel load",
+  "fixCommit": "bb6b893c30c334bbbbdff602e3cbdd4dcbb95b6e",
+  "diagnosis": {
+    "componentTimingAloneLoad9": {
+      "revParseMs": 7,
+      "loadBodyReadAuthorityInputsMs": 965,
+      "runGitCalls": 5,
+      "runGitMs": 44,
+      "readGitBlobCalls": 123,
+      "readGitBlobMs": 861,
+      "evaluateMs": 3
+    },
+    "cause": "The production loader's default reader spawns one 'git cat-file blob' subprocess per governance blob; over the real tree that is 123 subprocesses (118 decision records scanned for lifecycle supersession, plus artifacts, act records and tagged records). About 1 s alone; process spawning degrades sharply under load.",
+    "whyNotHoist": "The cost is in the one test that uses it, so a beforeAll would only move it into a hook with its own default timeout. A cheaper fixture (an injected batched reader) would replace the production reader this test exists to exercise over the real tree. The hermetic test 'preserves production Git blob bytes' covers the default reader on a small repository only.",
+    "fix": "Explicit per-test timeout REAL_TREE_TIMEOUT_MS = 60_000 with a comment naming the measured worst case (8.5 s) and this bead. No assertion changed, global testTimeout unchanged, nothing skipped or retried."
+  },
+  "protocol": "As syzygy-4d15 (docs/evidence/poc-test-timeouts-2026-10-03.json): each measured full app-project run (npx vitest run --project @syzygy/three-surface-poc-app --reporter=json) ran concurrently with one companion full run, alongside the other overnight lane's load; load1m sampled at each run's end. Timeout classifier: failure message starting 'Error: STACK_TRACE_ERROR' or containing 'timed out in'.",
+  "before": {
+    "source": "syzygy-4d15's raw run reports (3 before-phase and 10 after-phase full runs, each with a companion). governance-inputs.test.ts and governance-inputs.ts had the same blobs at 0170bfc, fd8d1a2 and this branch's base (f9fecad8e47308d1588aae9f1bb17b316f6432f7 and 5f124ffda76c5cabfec4f7eb1fc91858373009ff), and the decisions directory held 118 .md records at both ends.",
+    "denominator": {
+      "executions": 26,
+      "timeouts": 24,
+      "passed": 2,
+      "worstMs": 8471
+    },
+    "executions": [
+      {
+        "source": "syzygy-4d15 before run 1 (measured)",
+        "load1mAtEnd": 35.88,
+        "durationMs": 4750,
+        "status": "passed",
+        "timedOut": false
+      },
+      {
+        "source": "syzygy-4d15 before run 1 (companion)",
+        "load1mAtEnd": 35.88,
+        "durationMs": 4458,
+        "status": "passed",
+        "timedOut": false
+      },
+      {
+        "source": "syzygy-4d15 before run 2 (measured)",
+        "load1mAtEnd": 43.46,
+        "durationMs": 8471,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 before run 2 (companion)",
+        "load1mAtEnd": 43.46,
+        "durationMs": 8145,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 before run 3 (measured)",
+        "load1mAtEnd": 43.49,
+        "durationMs": 8145,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 before run 3 (companion)",
+        "load1mAtEnd": 43.49,
+        "durationMs": 6577,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 1 (measured)",
+        "load1mAtEnd": 32.08,
+        "durationMs": 5339,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 1 (companion)",
+        "load1mAtEnd": 32.08,
+        "durationMs": 5297,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 2 (measured)",
+        "load1mAtEnd": 31.2,
+        "durationMs": 6527,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 2 (companion)",
+        "load1mAtEnd": 31.2,
+        "durationMs": 7260,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 3 (measured)",
+        "load1mAtEnd": 31.5,
+        "durationMs": 5622,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 3 (companion)",
+        "load1mAtEnd": 31.5,
+        "durationMs": 5806,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 4 (measured)",
+        "load1mAtEnd": 35.12,
+        "durationMs": 5393,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 4 (companion)",
+        "load1mAtEnd": 35.12,
+        "durationMs": 5444,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 5 (measured)",
+        "load1mAtEnd": 36.15,
+        "durationMs": 6661,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 5 (companion)",
+        "load1mAtEnd": 36.15,
+        "durationMs": 6993,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 6 (measured)",
+        "load1mAtEnd": 34.32,
+        "durationMs": 7472,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 6 (companion)",
+        "load1mAtEnd": 34.32,
+        "durationMs": 8268,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 7 (measured)",
+        "load1mAtEnd": 32.5,
+        "durationMs": 7289,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 7 (companion)",
+        "load1mAtEnd": 32.5,
+        "durationMs": 6928,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 8 (measured)",
+        "load1mAtEnd": 30.46,
+        "durationMs": 5863,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 8 (companion)",
+        "load1mAtEnd": 30.46,
+        "durationMs": 6848,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 9 (measured)",
+        "load1mAtEnd": 31.63,
+        "durationMs": 6560,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 9 (companion)",
+        "load1mAtEnd": 31.63,
+        "durationMs": 7032,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 10 (measured)",
+        "load1mAtEnd": 31.35,
+        "durationMs": 6114,
+        "status": "failed",
+        "timedOut": true
+      },
+      {
+        "source": "syzygy-4d15 after run 10 (companion)",
+        "load1mAtEnd": 31.35,
+        "durationMs": 6113,
+        "status": "failed",
+        "timedOut": true
+      }
+    ]
+  },
+  "after": {
+    "denominator": {
+      "fullRuns": 10,
+      "targetExecutions": 20,
+      "targetTimeouts": 0,
+      "targetFailures": 0,
+      "targetWorstMs": 8194,
+      "governanceInputsFileExecutions": 230,
+      "governanceInputsFileFailures": 0
+    },
+    "statement": "10 consecutive full app-project runs under the parallel-load protocol: the target test ran 20 times (10 measured, 10 companion), 0 timeouts, 0 failures, worst 8.2 s. governance-inputs.test.ts as a whole: 230 measured executions (23 x 10), 0 failures in measured or companion runs.",
+    "aloneRuns": [
+      {
+        "run": 1,
+        "load1m": 9.19,
+        "durationMs": 1021,
+        "status": "passed",
+        "timedOut": false
+      },
+      {
+        "run": 2,
+        "load1m": 9.34,
+        "durationMs": 1028,
+        "status": "passed",
+        "timedOut": false
+      },
+      {
+        "run": 3,
+        "load1m": 8.91,
+        "durationMs": 970,
+        "status": "passed",
+        "timedOut": false
+      },
+      {
+        "run": 4,
+        "load1m": 8.91,
+        "durationMs": 1039,
+        "status": "passed",
+        "timedOut": false
+      },
+      {
+        "run": 5,
+        "load1m": 8.92,
+        "durationMs": 1080,
+        "status": "passed",
+        "timedOut": false
+      }
+    ],
+    "fullRuns": [
+      {
+        "run": 1,
+        "rc": 1,
+        "wallSeconds": 111,
+        "load1mAtEnd": 39.16,
+        "measured": {
+          "totalTests": 586,
+          "failed": 7,
+          "target": {
+            "durationMs": 4648,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 69926,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 8162,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 8857,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 15847,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 15267,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 16812,
+              "timedOut": true
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 7607,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 586,
+          "failed": 7,
+          "target": {
+            "durationMs": 4687,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 68735,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 7575,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 9182,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 19787,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 15158,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 15743,
+              "timedOut": true
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 7797,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 2,
+        "rc": 1,
+        "wallSeconds": 91,
+        "load1mAtEnd": 38.44,
+        "measured": {
+          "totalTests": 586,
+          "failed": 8,
+          "target": {
+            "durationMs": 8132,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 69114,
+              "timedOut": false
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 9026,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 10797,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 9634,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 17665,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 15137,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 18385,
+              "timedOut": true
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 6678,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 586,
+          "failed": 8,
+          "target": {
+            "durationMs": 7231,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 67396,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 7558,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 10212,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 7973,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 17420,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 15563,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 19020,
+              "timedOut": true
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 7037,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 3,
+        "rc": 1,
+        "wallSeconds": 83,
+        "load1mAtEnd": 37.43,
+        "measured": {
+          "totalTests": 586,
+          "failed": 8,
+          "target": {
+            "durationMs": 7853,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 64282,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 8232,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 10147,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 9976,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 15873,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 18416,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 19677,
+              "timedOut": true
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 5266,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 586,
+          "failed": 8,
+          "target": {
+            "durationMs": 8030,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 63314,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 7323,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 10019,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 9642,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 15046,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 18359,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 18527,
+              "timedOut": true
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 5577,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 4,
+        "rc": 1,
+        "wallSeconds": 83,
+        "load1mAtEnd": 35.41,
+        "measured": {
+          "totalTests": 586,
+          "failed": 8,
+          "target": {
+            "durationMs": 7445,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "cdp-browser.test.ts",
+              "title": "waits for private Chrome group members before removal and retains the profile on drain timeout",
+              "durationMs": 129,
+              "timedOut": false
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 7673,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 10141,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 8612,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 13924,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 15456,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 17044,
+              "timedOut": true
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 5237,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 586,
+          "failed": 6,
+          "target": {
+            "durationMs": 7222,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 7432,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 10408,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 8269,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 15829,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 15567,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 18881,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 5,
+        "rc": 1,
+        "wallSeconds": 85,
+        "load1mAtEnd": 35.14,
+        "measured": {
+          "totalTests": 586,
+          "failed": 7,
+          "target": {
+            "durationMs": 8194,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 60508,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 7270,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 9488,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 9819,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 15114,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 16691,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 17806,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 586,
+          "failed": 7,
+          "target": {
+            "durationMs": 7787,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 62517,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 7797,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 9638,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 9925,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 15661,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 16647,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 17308,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 6,
+        "rc": 1,
+        "wallSeconds": 80,
+        "load1mAtEnd": 35.44,
+        "measured": {
+          "totalTests": 586,
+          "failed": 7,
+          "target": {
+            "durationMs": 6583,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 7011,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 9094,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 8044,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 15166,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 14532,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 16241,
+              "timedOut": true
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 5160,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 586,
+          "failed": 8,
+          "target": {
+            "durationMs": 7138,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 60230,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 7561,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 8872,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 7917,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 14910,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 15303,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 15131,
+              "timedOut": true
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 5099,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 7,
+        "rc": 1,
+        "wallSeconds": 74,
+        "load1mAtEnd": 32.15,
+        "measured": {
+          "totalTests": 586,
+          "failed": 6,
+          "target": {
+            "durationMs": 6557,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 6768,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 7601,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 7719,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 14327,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 14142,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 14461,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 586,
+          "failed": 6,
+          "target": {
+            "durationMs": 6428,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 6457,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 7974,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 7721,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 15218,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 14563,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 15940,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 8,
+        "rc": 1,
+        "wallSeconds": 72,
+        "load1mAtEnd": 30.0,
+        "measured": {
+          "totalTests": 586,
+          "failed": 6,
+          "target": {
+            "durationMs": 6420,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 6241,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 7299,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 6937,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 13750,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 14359,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 16534,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 586,
+          "failed": 6,
+          "target": {
+            "durationMs": 6248,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 6588,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 7618,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 6823,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 12939,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 13465,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 14990,
+              "timedOut": true
+            }
+          ]
+        }
+      },
+      {
+        "run": 9,
+        "rc": 1,
+        "wallSeconds": 71,
+        "load1mAtEnd": 42.43,
+        "measured": {
+          "totalTests": 586,
+          "failed": 8,
+          "target": {
+            "durationMs": 6577,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 61783,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 6501,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 8188,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 10529,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 14247,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 10712,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 6202,
+              "timedOut": true
+            },
+            {
+              "file": "draft-preview.browser.test.ts",
+              "title": "renders the pipeline draft with working diagram, source and keyboard deep-dive paths at both widths",
+              "durationMs": 5680,
+              "timedOut": false
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 586,
+          "failed": 8,
+          "target": {
+            "durationMs": 6876,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "build-output.test.ts",
+              "title": "re-emits ignored JavaScript before the launcher executes it",
+              "durationMs": 61940,
+              "timedOut": false
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 6167,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 8315,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 10042,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 13548,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 10758,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 6148,
+              "timedOut": true
+            },
+            {
+              "file": "draft-preview.browser.test.ts",
+              "title": "renders the pipeline draft with working diagram, source and keyboard deep-dive paths at both widths",
+              "durationMs": 6315,
+              "timedOut": false
+            }
+          ]
+        }
+      },
+      {
+        "run": 10,
+        "rc": 1,
+        "wallSeconds": 70,
+        "load1mAtEnd": 36.26,
+        "measured": {
+          "totalTests": 586,
+          "failed": 6,
+          "target": {
+            "durationMs": 6235,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 5943,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 7322,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 6408,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 13694,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 13174,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 14090,
+              "timedOut": true
+            }
+          ]
+        },
+        "companion": {
+          "totalTests": 586,
+          "failed": 7,
+          "target": {
+            "durationMs": 5874,
+            "status": "passed",
+            "timedOut": false
+          },
+          "fileTests": 23,
+          "fileFailures": 0,
+          "otherFailures": [
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "renders the seven shape states and three judgment states with every string classified once, within t",
+              "durationMs": 6682,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices",
+              "durationMs": 7074,
+              "timedOut": true
+            },
+            {
+              "file": "polaris-copy.test.ts",
+              "title": "keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and ever",
+              "durationMs": 6570,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "keeps served bytes and asOf stable when the same capture is rebuilt across wall-clock instants",
+              "durationMs": 13714,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "uses the production builder for an atomic successful swap with identity advancement and one in-fligh",
+              "durationMs": 12911,
+              "timedOut": true
+            },
+            {
+              "file": "production-reobserve.test.ts",
+              "title": "retains the prior production model and non-zero drift when the production build fails",
+              "durationMs": 14532,
+              "timedOut": true
+            },
+            {
+              "file": "self-corpus.test.ts",
+              "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+              "durationMs": 5328,
+              "timedOut": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "outOfScopeFailures": {
+    "note": "Recorded per run under after.fullRuns[].measured.otherFailures. polaris-copy and production-reobserve still time out on this branch because its base does not yet carry the syzygy-4d15 fix (PR #227, merged to main after this branch was based; the rebase onto main brings it in). self-corpus.test.ts timed out in several runs (not previously reported); build-output, cdp-browser and draft-preview.browser failed intermittently.",
+    "measuredRunCountsByFile": {
+      "build-output.test.ts": 5,
+      "polaris-copy.test.ts": 29,
+      "production-reobserve.test.ts": 30,
+      "self-corpus.test.ts": 5,
+      "cdp-browser.test.ts": 1,
+      "draft-preview.browser.test.ts": 1
+    }
+  },
+  "rule6": {
+    "note": "No assertion predicate was added or changed; the only new code is the timeout value. Its absence is the before state measured above. One wiring mutant confirms the constant governs this test.",
+    "mutants": [
+      {
+        "id": "M1",
+        "predicate": "REAL_TREE_TIMEOUT_MS is the timeout the real-tree test runs under (wiring check: shrink it below the measured alone time)",
+        "file": "apps/three-surface-poc/src/governance-inputs.test.ts",
+        "commit": "bb6b893c30c334bbbbdff602e3cbdd4dcbb95b6e",
+        "edits": [
+          {
+            "old": "const REAL_TREE_TIMEOUT_MS = 60_000;",
+            "new": "const REAL_TREE_TIMEOUT_MS = 100;"
+          }
+        ],
+        "expected": "killed",
+        "outcome": "killed",
+        "evidence": [
+          "\u2192 Test timed out in 100ms.",
+          "Tests  1 failed | 22 passed (23)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      }
+    ]
+  }
+}
