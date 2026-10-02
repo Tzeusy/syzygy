@@ -1,0 +1,143 @@
+{
+  "bead": "syzygy-u05.6",
+  "scope": "N6 slices 1-2 (effect authority; materialize path foreclosed)",
+  "ranAtCommit": "d7e16088e9e222628eb09ba2ce0af710a123270c",
+  "method": "each mutant replaces exactly one occurrence of old with new in its subject at ranAtCommit, runs its command, and restores the original bytes",
+  "baseline": {
+    "packages/three-surface-poc-core/src/effect-authority.test.ts": "Tests  6 passed (6)",
+    "apps/three-surface-poc/src/materialize-action.test.ts": "Tests  16 passed (16)"
+  },
+  "mutants": [
+    {
+      "id": "E1",
+      "description": "core: foreclosure predicate disabled",
+      "subject": "packages/three-surface-poc-core/src/effect-authority.ts",
+      "command": "npx vitest run packages/three-surface-poc-core/src/effect-authority.test.ts",
+      "old": "if (foreclosure !== undefined) {",
+      "new": "if (false) {",
+      "exit": 1,
+      "summary": "Tests  2 failed | 4 passed (6)",
+      "failing": [
+        "effectAuthority > forecloses the Butlers tracker write with citation P-71-Q5",
+        "effectAuthority > keeps the foreclosure even when a registry entry names the write surface"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "E2",
+      "description": "core: missing-registry predicate disabled",
+      "subject": "packages/three-surface-poc-core/src/effect-authority.ts",
+      "command": "npx vitest run packages/three-surface-poc-core/src/effect-authority.test.ts",
+      "old": "if (registryEntry === null) {",
+      "new": "if (false) {",
+      "exit": 1,
+      "summary": "Tests  1 failed | 5 passed (6)",
+      "failing": [
+        "effectAuthority > refuses when no registry entry is supplied"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "E3",
+      "description": "core: malformed write-surface predicate disabled",
+      "subject": "packages/three-surface-poc-core/src/effect-authority.ts",
+      "command": "npx vitest run packages/three-surface-poc-core/src/effect-authority.test.ts",
+      "old": "if (!Array.isArray(surface) || !surface.every((entry) => typeof entry === 'string')) {",
+      "new": "if (false) {",
+      "exit": 1,
+      "summary": "Tests  1 failed | 5 passed (6)",
+      "failing": [
+        "effectAuthority > refuses a malformed write surface"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "E4",
+      "description": "core: not-in-write-surface predicate disabled",
+      "subject": "packages/three-surface-poc-core/src/effect-authority.ts",
+      "command": "npx vitest run packages/three-surface-poc-core/src/effect-authority.test.ts",
+      "old": "if (!surface.includes(effect.surface)) {",
+      "new": "if (false) {",
+      "exit": 1,
+      "summary": "Tests  1 failed | 5 passed (6)",
+      "failing": [
+        "effectAuthority > refuses an effect the registry entry does not name"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "A1",
+      "description": "app: route refusal predicate disabled",
+      "subject": "apps/three-surface-poc/src/materialize-action.ts",
+      "command": "npx vitest run apps/three-surface-poc/src/materialize-action.test.ts",
+      "old": "    if (!verdict.authorized) {\n      return {\n        status: 403,",
+      "new": "    if (false) {\n      return {\n        status: 403,",
+      "exit": 1,
+      "summary": "Tests  2 failed | 14 passed (16)",
+      "failing": [
+        "materializeRoutes > refuses an effect the registry does not name before any runner is called",
+        "materializeRoutes > refuses the foreclosed write with a bounded typed refusal and never runs Beads (P-71-Q5)"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "A2",
+      "description": "app: route production default authorizes",
+      "subject": "apps/three-surface-poc/src/materialize-action.ts",
+      "command": "npx vitest run apps/three-surface-poc/src/materialize-action.test.ts",
+      "old": "const verdict = (options.authorize ?? dispatchAuthorization)();",
+      "new": "const verdict = (options.authorize ?? ((): EffectAuthorityVerdict => ({ authorized: true, effect: 'butlers-tracker-write' })))();",
+      "exit": 1,
+      "summary": "Tests  1 failed | 15 passed (16)",
+      "failing": [
+        "materializeRoutes > refuses the foreclosed write with a bounded typed refusal and never runs Beads (P-71-Q5)"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "A3",
+      "description": "app: panel trigger enabled regardless of verdict",
+      "subject": "apps/three-surface-poc/src/materialize-action.ts",
+      "command": "npx vitest run apps/three-surface-poc/src/materialize-action.test.ts",
+      "old": "  const trigger = verdict.authorized\n",
+      "new": "  const trigger = true\n",
+      "exit": 1,
+      "summary": "Tests  2 failed | 14 passed (16)",
+      "failing": [
+        "renderMaterializePanel > is embedded on the Trajectory page with the write foreclosed and the trigger disabled",
+        "renderMaterializePanel > renders the foreclosed write with its citation and reason, and disables the trigger (P-71-Q5)"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "A4",
+      "description": "app: panel refusal reason omitted regardless of verdict",
+      "subject": "apps/three-surface-poc/src/materialize-action.ts",
+      "command": "npx vitest run apps/three-surface-poc/src/materialize-action.test.ts",
+      "old": "  const notice = verdict.authorized\n",
+      "new": "  const notice = true\n",
+      "exit": 1,
+      "summary": "Tests  1 failed | 15 passed (16)",
+      "failing": [
+        "renderMaterializePanel > renders the foreclosed write with its citation and reason, and disables the trigger (P-71-Q5)"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "A5",
+      "description": "app: panel production default authorizes",
+      "subject": "apps/three-surface-poc/src/materialize-action.ts",
+      "command": "npx vitest run apps/three-surface-poc/src/materialize-action.test.ts",
+      "old": "  verdict: EffectAuthorityVerdict = dispatchAuthorization(),",
+      "new": "  verdict: EffectAuthorityVerdict = { authorized: true, effect: 'butlers-tracker-write' },",
+      "exit": 1,
+      "summary": "Tests  2 failed | 14 passed (16)",
+      "failing": [
+        "renderMaterializePanel > is embedded on the Trajectory page with the write foreclosed and the trigger disabled",
+        "renderMaterializePanel > renders the foreclosed write with its citation and reason, and disables the trigger (P-71-Q5)"
+      ],
+      "outcome": "killed"
+    }
+  ],
+  "result": "9 of 9 killed"
+}
