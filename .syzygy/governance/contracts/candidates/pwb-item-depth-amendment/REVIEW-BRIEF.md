@@ -47,7 +47,8 @@ current bytes; they must remain unchanged by the review.
    one another, given exactly one result, is "excludes" defined without
    inferring from prose, and is that result deterministic in both channels?
    Does the relation claim have an admitted source and a named currency class,
-   or is its absence stated?
+   or is its absence stated, and does it carry one primary reason before and
+   after a currency bound applies, as PWB-REQ-007 allows?
 4. **Exact intent.** Requirement, scenario, doctrine and non-goal material is
    reachable verbatim from its owner only through PWB-REQ-011's exact-source
    route, never stored, embedded in the band or paraphrased in normative
@@ -60,7 +61,9 @@ current bytes; they must remain unchanged by the review.
 6. **Proposals and reality.** Current intent remains operative; proposal
    material appears only for matching declared capability detail under
    PWB-REQ-013, where it is adjacent, separate, non-anchorable and
-   non-status-bearing. Non-capability detail carries none. A capability that
+   non-status-bearing. Non-capability detail carries none. A matching
+   capability's contract band keeps its own baseline-spec requirement
+   identities, so PWB-REQ-011's capability scenario holds for it. A capability that
    matches no item or several has a stated result and a stated matching
    declaration. Reality uses only the one shared model and evaluation.
 7. **Neighboring authority.** Attempt to show that PWB-REQ-002, 003, 004, 007, 010,

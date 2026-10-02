@@ -18,7 +18,7 @@ PWB behavior subject. Six rows hash proposed bytes and five hash current
 bytes.
 
 Manifest SHA-256:
-`4aff2dfa1fc4c8964dafebf9acec8adbd5baa01b4b58c1c7509e4cff995462f6`
+`6ea880ab78b7a93666784e582bcd585caa12ca9d5bdb2ebf23510406e7a6f85b`
 
 The builder writes the manifest; this digest was computed from it by script.
 Any change to a patch, the manifest or the subject retires it.
@@ -36,12 +36,16 @@ Under the drafted text:
   matching item, not a second identity;
 - every item detail keeps the existing three bands in the existing order:
   `argument` (non-normative framing that cannot create intent, authority or a
-  capability), `contract` (captured governing identities and verbatim-reachable
+  capability), `contract` (captured governing identities, plus a matching
+  capability's own baseline-spec requirement identities, with verbatim-reachable
   current text), and `reality` (only the one shared model);
 - the contract band carries a separate **governing-intent relation claim**,
   identified by the item's identity and a fixed role, with its own complete
   tuple. It never changes or borrows the item's tuple;
-- one or more captured declared relations, no two of which an admitted
+- while the relation class has no effective currency bound, that claim is
+  Unknown with the single primary reason `no-currency-bound-declared`, whatever
+  its population; once a bound applies, one or more captured declared
+  relations, no two of which an admitted
   declaration names as mutually exclusive, make that claim Observed over the
   whole set, and each related governing identity reaches its verbatim current
   text through the exact-source route; no declared relation makes it Unknown
@@ -50,8 +54,10 @@ Under the drafted text:
   compatible relations it also holds; each keeps its resolution route. A
   label, basename, similarity, generated prose or precedence outcome never
   makes or resolves a relation;
-- no extraction class admits a relation declaration today, so until a separate
-  owner-scoped change admits a source every relation claim is the absent arm;
+- no extraction class admits a relation declaration and no bound is declared
+  today, so every relation claim is Unknown `no-currency-bound-declared`, and
+  `missing-declaration` once a bound applies, until a separate owner-scoped
+  change admits a source;
 - a declared capability matches an item only by exact equality of declared
   keys; one matching no item or several gets no detail and no proposal
   rendering, and is disclosed Unknown;
@@ -71,8 +77,9 @@ route and its gates.
 | Population | every declared `catalog-entry`, without freezing today's count | name a narrower closed population and return the delta to review |
 | Unmapped item relation | separate Unknown relation claim with its reason and route; item tuple unchanged | keep such an item at catalog altitude only, with no detail |
 | Compatible plural relations | one Observed relation over the whole set unless a declaration names two members exclusive, when the whole population is contradicted | classify every plural population as a contradiction, which needs a governing invariant making the relation functional |
-| Relation source | none admitted: inert until a separate owner-scoped change admits a class and key and a currency bound | amend PWB-REQ-002 and PWB-REQ-004 in this delta, widening it beyond PWB-REQ-015 |
+| Relation source | none admitted: inert until a separate owner-scoped change admits a class and key and a currency bound; `no-currency-bound-declared` is the only primary reason until then | amend PWB-REQ-002 and PWB-REQ-004 in this delta, widening it beyond PWB-REQ-015 |
 | Capability matching | exact declared-key equality; no or several matches get no detail and no proposal rendering | require a separate capability-to-item declaration, returning the delta to review |
+| Matching capability's own leaf | the contract band also carries the capability's own baseline-spec requirement identities, so PWB-REQ-011's capability scenario stays true | only captured relations in the band, which empties today's capability contract band and makes that scenario false; needs its own open point |
 | Failed gate behind a related intent | only that text is Unknown; the relation claim, asserting the declaration, is unchanged | make the relation claim Unknown too |
 | Proposal scope | matching declared capabilities only, as PWB-REQ-013 requires | amend PWB-REQ-013 in a separately owner-scoped change before widening |
 | Location | specify semantic item selection and leave the incidental URL to implementation | require a particular observable route shape |
@@ -81,9 +88,10 @@ route and its gates.
 Four consequences of the drafted text, stated so a reviewer does not have to
 find them (`SEMANTIC-DELTA.md`, "Open points for the owner"): the relation
 claim is inert until a source is admitted and a bound is declared for its
-class, so every item shows the absent arm meanwhile; the exclusion and
+class, so every item shows `no-currency-bound-declared` meanwhile; the exclusion and
 compatible-set arms above; a capability with no or several matching items loses
-its deep dive and proposal rendering; and a failed gate leaves the relation
+its deep dive and proposal rendering, and exact unnormalized key equality may
+match no real capability at all; and a failed gate leaves the relation
 claim unchanged. None changes the drafted bytes unless you rule on it, and a
 ruling that changes them goes back to review.
 
@@ -120,7 +128,7 @@ the tree after the patches are applied, applies the six patches in one
 change, writes the record and tags the merged commit. The retained phrase, for
 governance checks only:
 
-`SIGN OFF PWB ITEM-DEPTH AMENDMENT: 4aff2dfa1fc4c8964dafebf9acec8adbd5baa01b4b58c1c7509e4cff995462f6`
+`SIGN OFF PWB ITEM-DEPTH AMENDMENT: 6ea880ab78b7a93666784e582bcd585caa12ca9d5bdb2ebf23510406e7a6f85b`
 
 ## Read-only checks
 
