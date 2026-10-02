@@ -56,7 +56,7 @@ to keep this model.
 
 **Once, then revised per target:**
 
-3. **Egress consent** (`templates/EGRESS-CONSENT-TEMPLATE.md`). RFC5-12 allows
+3. **Egress consent** (`templates/EGRESS-CONSENT-TEMPLATE.md`). RFC5-12 fixes
    "one record per *(Project, provider)* pair", so there is one record for
    `(project:syzygy, provider)`. Its scope lists the admitted public
    repositories and excludes every other source of `project:syzygy`
@@ -78,9 +78,11 @@ to keep this model.
    hosting service, which RFC4-1 lists as an external authority [Inferred].
    Drafted with the first implementation that reads it.
 
-Each numbered item is its own record with its own act, as REQ-025 requires
-("These permissions SHALL remain separately revocable/renderable and SHALL
-NOT imply one another"). Several acts may be given in one sitting.
+Each numbered item is its own record with its own act. For the two
+consents REQ-025 requires it ("These permissions SHALL remain separately
+revocable/renderable and SHALL NOT imply one another"); the policy and the
+registry entries are each honored only under their own RFC3-16(a) act (Q5).
+Several acts may be given in one sitting.
 
 `instances/requests/` fills items 3 and 4 for the first target, T1, using the
 recommendations below. They are drafts for review: after the owner answers
@@ -110,10 +112,13 @@ an egress."
 **Q3. Retention of sent content and provider replies.** SEC-2 does not state
 these fields; the generation kit proposes them (`docs/polaris-generation/README.md`,
 "Start here" step 4). *Recommended:* provider replies and run records are
-retained under the generator's run directory in `project:syzygy`'s state
-directory, not in git; source bodies are not retained beyond the run's local
-clone; the provider's own retention is whatever its API terms say, recorded
-as a disclosed fact rather than a Syzygy promise.
+provider requests, provider replies and run records are retained in a run
+directory under `project:syzygy`'s state directory, outside git. Requests and
+replies contain the source spans sent, so the run directory holds those spans
+for as long as the run is retained (screening outline item 4); nothing is
+retained in git, logs or machine responses. The provider's own retention is
+whatever its API terms say, recorded as a disclosed fact rather than a Syzygy
+promise.
 
 **Q4. Observation model.** *Recommended:* keep `project:syzygy` as the observing
 project (above). The alternative — each target its own project — would need
@@ -121,36 +126,42 @@ a governance root and a separately approved policy per target (RFC3-30,
 RFC5-16), which is the per-target cost this package exists to remove.
 REQ-polaris-generation-001's "Two project identities" scenario shows the
 generator must *support* distinct identities; it does not require each
-proving target to be one. The cost of this model: RFC5-12 allows one egress
+proving target to be one. The cost of this model: RFC5-12 fixes one egress
 record per (project, provider) pair, so this record becomes the only
 `(project:syzygy, anthropic)` egress record. Any later egress of Butlers or
 Syzygy content to the same provider would be a new version of it widening its
 scope, not a separate record.
 
 **Q5. Sign-off form.** Every record here needs an effective owner act under
-RFC3-16(a) bound to its exact digest: the policy (RFC5-16, RFC3-30), the
+RFC3-16(a) bound to its exact bytes: the policy (RFC5-16, RFC3-30), the
 egress consent (RFC5-15), the observation consent (the Butlers observation
-consent act, `decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`, was likewise
-bound to its record's exact digest), and each registry entry (RFC-0004's
-general contract: "a registry entry is honored **only under RFC3-16(a)**"). That act need not be a typed
-phrase: the 2026-10-02 policy re-pin act was given by option selection over
-an exact SHA-256 digest
-(`decisions/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md`).
-*Recommended:* the same form here — one structured question per record,
-offered in one sitting per target, each option naming the record and its
-digest. `scripts/build_public_repo_admission.py` regenerates the instances
-from the templates (`--write`, `--check`) and prints each record's digest
-(`--digests`), which is what an option would name. As in that precedent,
-each option states the provenance state it selects — state (1),
-`owner-adopted (bootstrap, uncorrelated)`, with the A1 audit-record identity
-explicitly absent — and a recorder writes the act record; the recorder is
-written with the first offering, following the repository's recorder
-convention. Registry entries are signed the same way when they are drafted. The 2026-10-02
-Scope A direction (version tags, no digest) does not cover consent or policy
-records, and this packet does not ask to extend it.
+consent act, `decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`, was bound to
+its record's exact digest), and each registry entry (RFC-0004's general
+contract: "a registry entry is honored **only under RFC3-16(a)**"). That act
+need not be typed: the 2026-10-02 policy re-pin act
+(`decisions/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md`)
+was given by an option selection naming the acts "at the manifest rows"; the
+packet shown carried no digest, and the recorder bound each act to its
+subject's row of the package manifest, refusing any other argument. Its
+provenance state was recorded as state (1).
+
+*Recommended:* the same form — one structured question per target sitting,
+its option naming each record at its manifest row — and one step further:
+the option states the provenance state it selects, state (1),
+`owner-adopted (bootstrap, uncorrelated)`, A1 audit-record identity
+explicitly absent. `scripts/build_public_repo_admission.py` regenerates the
+instances (`--write`, `--check`) and prints each record's digest (`--digests`,
+which refuses while any instance is stale). Before the first offering: a
+package manifest whose rows are those digests, a recorder that binds each act
+to its row, and the act phrases and packet copies registered in
+`scripts/check_governance.py`, following the repository's recorder
+convention. Registry entries are signed the same way when they are drafted.
 
 **Q6. Where generated pages may be served.** *Recommended:* only on the local
-daemon's draft route, labelled editorial draft and non-release; never
+daemon's generated editorial draft view, `GET /polaris/draft/<runId>` — named
+by the PWB machine-view amendment but not yet implemented — or, until it
+exists, as a static file in the run directory opened locally; labelled
+editorial draft and non-release; never
 published, and never presented as the target project's own site or as
 endorsed by its maintainers.
 
@@ -179,9 +190,12 @@ offered.
 ## Review
 
 Fresh-context review before any offering, per the repository's review
-discipline. Rounds 1 and 2 (`reviews/R-PUBLIC-ADMISSION-1-RAW.md`,
-`reviews/R-PUBLIC-ADMISSION-2-RAW.md`) each returned REVISE; the
-dispositions follow.
+discipline. Rounds 1, 2 and 3 (`reviews/R-PUBLIC-ADMISSION-1-RAW.md`,
+`reviews/R-PUBLIC-ADMISSION-2-RAW.md`, `reviews/R-PUBLIC-ADMISSION-3-RAW.md`)
+each returned REVISE; the dispositions follow. Stopping rule, set before
+round 3: after a third REVISE the drafter repairs, dispatches no further
+round, and asks the owner. The round-3 repair below is therefore unreviewed;
+a confirming round precedes any offering.
 
 | R1 finding | Disposition |
 |---|---|
@@ -193,7 +207,7 @@ dispositions follow.
 | 6 REQ-001 overread | Q4 says the scenario requires support, not one project per target |
 | 7 Review credited to Scope A | Credited to the repository's review discipline |
 | 8 Summary omits registry entry | Added |
-| 9 Active content and egress conflict with existing policy | Outline: active content withheld as in the existing policy; egress named as the change |
+| 9 Active content and egress conflict with existing policy | Outline: egress named as the change; active content superseded by R2 row 1 |
 | 10 General docs mapped to `governance-text` | Q7 added; outline maps only spec and design text |
 | 11 No egress Scope field; no provenance state | Both added to the templates |
 | 12 REQ-010 overcited | Citation removed; stated as the record's own condition |
@@ -211,3 +225,16 @@ dispositions follow.
 | 7 Observation template gaps | Supersession is a field; fetch is shallow by commit; "effective" added |
 | 8 LICENSE under Q7(b) | Q7 states it blocks T2's proof |
 | 9 Collision with PR #120 | Stated in "What it does not do" and the outline |
+
+| R3 finding | Disposition |
+|---|---|
+| 1 Retention contradiction (blocking) | Egress retention and Q3 now say the run directory holds the source spans sent, matching outline item 4 |
+| 2 `accessBoundary` and path rules | Outline item 4 covers every `accessBoundary` field; item 2 keeps path admission and the denied-path rules |
+| 3 Active-content list incomplete | All eight entries listed |
+| 4 Q5 misdescribes precedent | Rewritten from the act's Ceremony section; manifest, recorder and check registration listed |
+| 5 Syzygy's own prompts blocked | Egress scope permits the generator's own instruction text |
+| 6 Stale R1 row 9 | Marked superseded by R2 row 1 |
+| 7 Observer "for this pair" | Observation template defers to packet item 5 |
+| 8 Draft route does not exist | Q6 names the prospective route and a local-file fallback |
+| 9 `--digests` and orphans | `--digests` refuses while stale; `--check` reports orphan records |
+| 10 "allows"; REQ-025 overcredited | "fixes"; separate policy and registry acts credited to RFC3-16(a) |

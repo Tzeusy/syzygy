@@ -39,9 +39,11 @@ Only content read under an in-force observation consent for one of these
 
 {{ADMITTED_REPOSITORIES}}
 
-Every other source of `project:syzygy` content is outside this consent,
-including the Butlers repository, Syzygy's own repository and any work
-history, and stays unsent.
+together with the generator's own instruction text (its stage prompts and
+response schemas, authored in Syzygy's repository), which every request
+carries. Every other source of `project:syzygy` content is outside this
+consent, including the Butlers repository, the rest of Syzygy's own
+repository and any work history, and stays unsent.
 
 ## Conditions
 
