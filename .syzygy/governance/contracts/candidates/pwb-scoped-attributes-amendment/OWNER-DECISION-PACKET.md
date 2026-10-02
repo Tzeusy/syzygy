@@ -1,5 +1,8 @@
 # Owner decision packet — PWB page-level evaluation stamp (lane B, narrowed)
 
+> **DECLINED 2026-10-02.** The owner declined lane B (`decisions/POLARIS-LANE-B-DECLINED-AND-TARGET-REVISED-DIRECTION.md`). This package is not offered for sign-off, was never applied, and is kept as the record. The text below is the offering as drafted.
+
+
 > **Inert offering.** This packet performs nothing. It presents one decision,
 > records nothing, and authorizes no implementation. A commit, a merged pull
 > request, a review, a manifest, silence or a general "approved" performs no

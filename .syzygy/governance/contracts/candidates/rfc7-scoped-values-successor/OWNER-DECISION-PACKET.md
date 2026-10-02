@@ -1,3 +1,5 @@
+> **DECLINED 2026-10-02.** The owner declined lane B (`decisions/POLARIS-LANE-B-DECLINED-AND-TARGET-REVISED-DIRECTION.md`). This package is not offered for sign-off, was never applied, and is kept as the record. The text below is the offering as drafted.
+
 > **Candidate — binds nothing.** This packet offers a contract amendment for
 > the owner's decision. It performs no act, adopts nothing and authorizes no
 > implementation. The change takes effect only through an owner act that
