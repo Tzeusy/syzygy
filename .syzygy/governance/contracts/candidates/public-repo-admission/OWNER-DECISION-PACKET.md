@@ -13,103 +13,164 @@ The generalized Polaris generator is to be proven on open-source repositories
 (`docs/polaris-generation/TARGETS.md`: requests, Redis, Sentry). Before the
 generator may read any of them or send any of their content to a model
 provider, doctrine and the adopted generator specification require separate,
-separately revocable records (SEC-2; RFC5-12, RFC5-14, RFC5-15;
+separately revocable records (SEC-2; RFC5-12, RFC5-14, RFC5-15, RFC5-16;
 REQ-polaris-generation-001 and 025). Drafting those as a bespoke package per
 repository, the way the Butlers and self-observation acts were drafted, costs
 several review rounds each. This package instead fixes **one shape** for
-public repositories, so admitting a new target means filling the same two
-templates and signing them, plus a one-time policy act shared by every target.
+public repositories: a one-time screening-policy extension, one egress
+consent revised as targets are added, and per target an observation consent
+and a registry entry.
+
+## Who observes
+
+**Syzygy observes; each target is an observed repository.** The observing
+project is `project:syzygy`, exactly as for Butlers (subject
+`(project:syzygy, repository:butlers-configured-poc)`). Under RFC3-30 the
+governing policy is the observing project's: "Project A screens, bounds, and
+classifies everything it ingests under **A's** policies in A's own plane".
+So every target is screened under `project:syzygy`'s policy, extended once,
+and nothing a target's repository contains can act as policy. Q4 asks whether
+to keep this model.
 
 ## The shape
 
-**Once, for every public target:**
+**Once:**
 
 1. **Public-source screening scope** (`templates/PUBLIC-SOURCE-POLICY-SCOPE-TEMPLATE.md`).
-   An extension of the observing project's secret-classification policy
-   (currently `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json`,
-   which carries its own acts) adding a scope for public repositories, and the
-   content-classification rules RFC5-14 needs to put concrete content into its
-   closed classes. Screening still applies to public code: a public repository
-   can contain committed secrets, and screening them out is the point.
+   A versioned extension of `project:syzygy`'s secret-classification policy
+   (`.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json`,
+   which carries performed acts) adding a public-repository scope with its
+   own classification-success rule and the content-classification rules
+   RFC5-14 needs. That policy's current scope forbids external egress
+   (`"externalEgress": "never"`); the public scope is where egress of
+   classified content would first be permitted, so this is a real policy
+   change, not a formality.
 
-**Per target, two records and one registry entry:**
+**Once, then revised per target:**
 
-2. **Observation consent** (`templates/OBSERVATION-CONSENT-TEMPLATE.md`) — per
-   repository (RFC5-12): read-only reads of exact Git objects at the pinned
-   revisions listed in the record, from a scratch clone the operator makes.
-   No working tree outside that clone, no execution of the target's code
-   (SEC-3), no writes anywhere in the target.
-3. **Egress consent** (`templates/EGRESS-CONSENT-TEMPLATE.md`) — one record
-   per (project, provider) pair naming the permitted content classes
-   (RFC5-12, RFC5-14).
+2. **Egress consent** (`templates/EGRESS-CONSENT-TEMPLATE.md`). RFC5-12 allows
+   "one record per *(Project, provider)* pair", so there is one record for
+   `(project:syzygy, provider)`. Its scope lists the admitted public
+   repositories and excludes every other source of `project:syzygy`
+   content, Butlers included. Admitting a target is a new version of this
+   record that adds it; withdrawing one target is a new version that removes
+   it (RFC5-13: prospective).
+
+**Per target:**
+
+3. **Observation consent** (`templates/OBSERVATION-CONSENT-TEMPLATE.md`) — per
+   `(project:syzygy, repository)` pair (RFC5-12, RFC3-30): read-only reads of
+   the Git snapshot objects of the listed revisions. No execution of the
+   target's code (SEC-3), no writes anywhere in the target.
 4. **Registry entry** for the target's source-acquisition observer and the
-   provider execution route (REQ-polaris-generation-017; RFC4-1 permits one
-   registered adapter per project per external authority). Its fields follow
-   `openspec/changes/polaris-manifesto-generation/ADAPTER-DECLARATIONS.md`
+   provider execution route (REQ-polaris-generation-017). RFC4-1 requires
+   exactly one registered adapter per project per external authority. Fields
+   follow `openspec/changes/polaris-manifesto-generation/ADAPTER-DECLARATIONS.md`
    "Required registration fields"; it is drafted with the first
-   implementation that reads it, not here, because a registry entry naming no
-   implementation registers nothing.
+   implementation that reads it, not here, because a registry entry naming
+   no implementation registers nothing.
 
 Each numbered item is its own record with its own act, as REQ-025 requires
 ("These permissions SHALL remain separately revocable/renderable and SHALL
 NOT imply one another"). Several acts may be given in one sitting.
 
-`instances/requests/` fills items 2 and 3 for the first target, T1.
+`instances/requests/` fills items 2 and 3 for the first target, T1, using the
+recommendations below. They are drafts for review: after the owner answers
+Q1–Q7 they are regenerated from the templates with the answers, and only
+those regenerated bytes are offered for an act. Fields that depend on an
+answer: the provider and subject (Q1), the content classes (Q2 and Q7), the
+retention line (Q3), the subject and scope (Q4).
 
 ## Questions for the owner
 
 Each has a recommendation. None is decided by this packet.
 
-**Q1. Which provider and model?** Egress consent must name the provider
-(SEC-2). *Recommended:* Anthropic, via the Claude API, with the model
-recorded per run rather than fixed in the consent (the consent names the
-provider; RFC5-14 does not ask for a model). A second provider later is a
-fresh egress consent.
+**Q1. Which provider?** Egress consent must name the provider (SEC-2).
+*Recommended:* Anthropic, via the Claude API, with the model recorded per run
+rather than fixed in the consent; RFC5-14 asks for the provider, not a model.
+A second provider later is a fresh egress consent.
 
 **Q2. Which content classes may be sent?** RFC5-14's closed vocabulary:
 `governance-text`, `code-structure`, `code-content`, `work-history`,
 `evidence-content`, `derived-composites`. *Recommended for public targets:*
 all but `work-history` — understanding a codebase needs its bodies, and the
-repositories are public; issue trackers and CI history stay out until a run
-needs them. `derived-composites` is included because every prompt is one;
-it never launders an unconsented class (RFC5-14).
+repositories are public; issue trackers and CI history stay out.
+`derived-composites` is included because every prompt is one; RFC5-14:
+"`derived-composites` consent alone never launders an unconsented class into
+an egress."
 
 **Q3. Retention of sent content and provider replies.** SEC-2 does not state
 these fields; the generation kit proposes them (`docs/polaris-generation/README.md`,
 "Start here" step 4). *Recommended:* provider replies and run records are
-retained under the generator's run directory in the observing project's state
-directory, not in git; source bodies are never retained beyond the run's
-scratch clone; the provider's own retention is whatever its API terms say,
-recorded in the consent as a disclosed fact rather than a Syzygy promise.
+retained under the generator's run directory in `project:syzygy`'s state
+directory, not in git; source bodies are not retained beyond the run's local
+clone; the provider's own retention is whatever its API terms say, recorded
+as a disclosed fact rather than a Syzygy promise.
 
-**Q4. Project identity.** Is each target its own project (`project:oss-requests`
-observing `repository:psf-requests`) or a repository observed by
-`project:syzygy`? *Recommended:* its own project. REQ-polaris-generation-001's
-first scenario ("Two project identities") asks for distinct identities, and
-egress consent is per project, so one project per target keeps each target's
-consent revocable alone.
+**Q4. Observation model.** *Recommended:* keep `project:syzygy` as the observing
+project (above). The alternative — each target its own project — would need
+a governance root and a separately approved policy per target (RFC3-30,
+RFC5-16), which is the per-target cost this package exists to remove.
+REQ-polaris-generation-001's "Two project identities" scenario shows the
+generator must *support* distinct identities; it does not require each
+proving target to be one.
 
-**Q5. Sign-off form.** The 2026-10-02 Scope A direction
-(`decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`) allows
-version-tag option-selection sign-off for PWB deltas, the observer registry
-entry and queued contract successors — not consent or policy records.
-*Recommended:* extend Scope A to the records of this package by a plain owner
-direction, so each target's admission is one structured question. Without
-it, each record needs the digest-and-phrase act form.
+**Q5. Sign-off form.** The secret policy and egress consent are honored only
+under an effective owner act under RFC3-16(a) (RFC5-15, RFC5-16, RFC3-30), so
+each is bound to its record's exact digest. That act need not be a typed
+phrase: the 2026-10-02 policy re-pin act was given by option selection over
+an exact SHA-256 digest
+(`decisions/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md`).
+*Recommended:* the same form here — one structured question per record,
+offered in one sitting per target, each option naming the record and its
+digest. `scripts/build_public_repo_admission.py` regenerates the instances
+from the templates (`--write`, `--check`) and prints each record's digest
+(`--digests`), which is what an option would name. The 2026-10-02
+Scope A direction (version tags, no digest) does not cover consent or policy
+records, and this packet does not ask to extend it.
 
 **Q6. Where generated pages may be served.** *Recommended:* only on the local
 daemon's draft route, labelled editorial draft and non-release; never
 published, and never presented as the target project's own site or as
 endorsed by its maintainers.
 
+**Q7. General prose documentation has no content class.** RFC5-14 defines
+`governance-text` as "Doctrine, spec, decision, policy text" and
+`code-content` as "Source and test bodies". A README, user guide or tutorial
+is neither, so under the closed vocabulary it is indeterminate and RFC5-14
+refuses its egress — and those files are the best evidence of what a project
+is for. *Options:* (a) amend RFC5-14 to add a class such as
+`project-documentation` (an accepted-contract amendment, its own act);
+(b) classify only design and specification documents as `governance-text`
+and leave other prose unsent, accepting weaker pages. *Recommended:* (a);
+until it is in force, the first run uses (b) and records what it could not
+send.
+
 ## What it does not do
 
 It grants no read, egress, write, execution or release. It changes no adopted
 specification or policy. It admits no target. It does not touch the Butlers
-consent, policy or registry records, or the self-observation package on PR
-#120.
+consent or registry records, or the self-observation package on PR #120.
 
 ## Review
 
-Not yet reviewed. Per Scope A item 3, a fresh-context round returning CONFIRM,
-or CONFIRM WITH EXCEPTIONS with notes only, precedes offering it.
+Fresh-context review before any offering, per the repository's review
+discipline. Round 1 (`reviews/R-PUBLIC-ADMISSION-1-RAW.md`) returned REVISE;
+the dispositions follow.
+
+| R1 finding | Disposition |
+|---|---|
+| 1 Observation scope contradicts itself | Grant restated as the snapshot objects of the listed revisions only; ancestor history excluded; the local clone is the means, not the grant |
+| 2 Policy is the wrong project's under Q4 | Observing project fixed as `project:syzygy` ("Who observes"); Q4 restated with the RFC3-30 consequence |
+| 3 Q4 answer filled unmarked | Instances declared drafts regenerated after the answers; dependent fields listed above |
+| 4 Q5 false premise | Q5 rewritten on the 2026-10-02 option-selection-over-digest precedent; builder and digest named as offering prerequisites |
+| 5 RFC4-1 "permits" | "requires exactly one" |
+| 6 REQ-001 overread | Q4 says the scenario requires support, not one project per target |
+| 7 Review credited to Scope A | Credited to the repository's review discipline |
+| 8 Summary omits registry entry | Added |
+| 9 Active content and egress conflict with existing policy | Outline: active content withheld as in the existing policy; egress named as the change |
+| 10 General docs mapped to `governance-text` | Q7 added; outline maps only spec and design text |
+| 11 No egress Scope field; no provenance state | Both added to the templates |
+| 12 REQ-010 overcited | Citation removed; stated as the record's own condition |
+| 13 "pending" markers in signed bytes | Removed; instances regenerated before offering |
+| 14 Revocation omits Unknown | Added to the observation template |
