@@ -633,6 +633,133 @@
       "new": "pairs = [(path, package.predecessor[path], package.predecessor[path])",
       "old": "pairs = [(path, package.predecessor[path], installed[path])",
       "refusal": "FAIL exact digest reconciliation unresolved: performed successor row"
+    },
+    {
+      "command": "python3 scripts/readability_successor.py --selftest",
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/readability_successor.py",
+      "killed": true,
+      "new": "]",
+      "old": "                   and current[rel] not in self.later_rows(rel, rows[rel])]",
+      "refusal": "FAIL superseded by a later successor, performed-exact: subject differs from its successor row: openspec/changes/example/proposal.md; performed-exact"
+    },
+    {
+      "command": "python3 scripts/readability_successor.py --selftest",
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/readability_successor.py",
+      "killed": true,
+      "new": "if successor not in found:",
+      "old": "if predecessor == reached and successor not in found:",
+      "refusal": "FAIL successor from a foreign predecessor supersedes nothing: accepted"
+    },
+    {
+      "command": "python3 scripts/readability_successor.py --selftest",
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/readability_successor.py",
+      "killed": true,
+      "new": "rows = other.manifest_rows()",
+      "old": "rows = other.performed_rows()",
+      "refusal": "FAIL unperformed successor supersedes nothing: accepted"
+    },
+    {
+      "command": "python3 scripts/readability_successor.py --selftest",
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/readability_successor.py",
+      "killed": true,
+      "new": "",
+      "old": "                    frontier.append(successor)\n",
+      "refusal": "FAIL superseded through a chain of two, performed-exact: subject differs from its successor row: openspec/changes/example/proposal.md; performed-exact; performed-exact"
+    },
+    {
+      "command": "python3 scripts/readability_successor.py --selftest",
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/readability_successor.py",
+      "killed": true,
+      "new": "a failing package grants nothing\n                raise",
+      "old": "a failing package grants nothing\n                continue",
+      "refusal": "FAIL subject drift after act: unpinned: the package's pins must name the reviewed manifest digest and its confirming raw before any act"
+    },
+    {
+      "command": "python3 scripts/readability_successor.py --selftest",
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/readability_successor.py",
+      "killed": true,
+      "new": "found, frontier = set(), []",
+      "old": "found, frontier = set(), [row]",
+      "refusal": "FAIL superseded by a later successor, performed-exact: subject differs from its successor row: openspec/changes/example/proposal.md; performed-exact"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest (SUCCESSOR_TOOL_SHA re-pinned to the mutated tool)",
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/readability_successor.py",
+      "killed": true,
+      "new": "key, performed = rel, []",
+      "old": "key, performed = posixpath.normpath(rel), []",
+      "refusal": "FAIL exact digest reconciliation unresolved: subject differs from its successor row: openspec/changes/example/./proposal.md"
+    },
+    {
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "",
+      "old": "    if len(first) != 1:\n        return CONTESTED\n",
+      "refusal": "FAIL exact digest reconciliation unresolved: chain composition: two separate chains"
+    },
+    {
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "if not kept <= set(nodes):",
+      "old": "if len(nodes) != len(steps) + 1 or not kept <= set(nodes):",
+      "refusal": "FAIL exact digest reconciliation unresolved: a forked successor chain accepted"
+    },
+    {
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "if len(nodes) != len(steps) + 1:",
+      "old": "if len(nodes) != len(steps) + 1 or not kept <= set(nodes):",
+      "refusal": "FAIL exact digest reconciliation unresolved: chain composition: an unchanged claim off the chain"
+    },
+    {
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "return (min(kept), min(kept))",
+      "old": "return (min(kept), min(kept)) if len(kept) == 1 else CONTESTED",
+      "refusal": "FAIL exact digest reconciliation unresolved: chain composition: two unchanged claims of different digests"
+    },
+    {
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "steps = list(pairs)",
+      "old": "steps = [(a, b) for a, b in pairs if a != b]",
+      "refusal": "FAIL exact digest reconciliation unresolved: wrong refusal: two performed successors claim openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md; wanted current subject drift"
+    },
+    {
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "return (nodes[0], nodes[1])",
+      "old": "return (nodes[0], nodes[-1])",
+      "refusal": "FAIL exact digest reconciliation unresolved: a chain of successors did not compose from the first predecessor"
+    },
+    {
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "rows = {key: pairs[-1] for key, pairs in claims.items()}",
+      "old": "rows = {key: chain(pairs) for key, pairs in claims.items()}",
+      "refusal": "FAIL exact digest reconciliation unresolved: an unchanged later claim did not compose onto the chain"
+    },
+    {
+      "commit": "ab2a58b87e8ab2a42e59e08f2b4a9caeb97caaa8",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "while nodes[-1] in following:",
+      "old": "while nodes[-1] in following and len(nodes) <= len(steps):",
+      "refusal": "timeout after 120 s (the selftest never finishes)"
     }
   ],
   "version": 1
