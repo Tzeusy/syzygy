@@ -10,8 +10,8 @@
     "openspec/changes/polaris-manifesto-understanding-amendment/GOVERNING-DEPENDENCIES.md": "315207c0be81915f2461c1d94a8468a39171b98f1a11deeddd78e8ee676ba32e"
   },
   "pins": {
-    "manifest_sha": null,
-    "review": null,
-    "review_sha": null
+    "manifest_sha": "9c01c82d482aa79a5342ec650e7c284e4c90a900e38ea8166c8f7708599b34c8",
+    "review": "docs/reviews/R-POLARIS-UNDERSTANDING-DEPENDENCY-UNION-SUCCESSOR-1-RAW.md",
+    "review_sha": "335f0068b349535bc71a1e53a5d85d1d1fd94557ab8bcf73df255d9e1b316683"
   }
 }
