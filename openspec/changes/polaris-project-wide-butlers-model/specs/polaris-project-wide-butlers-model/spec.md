@@ -467,6 +467,33 @@ metric walls or count walls; coverage counts remain available on demand.
   absent/out of vocabulary, a reason has no route, Unknown is folded into a
   total, or an aggregate claims its own headline status.
 
+#### Scenario: No effective currency bound is disclosed outside freshness
+
+- **WHEN** a project claim's class has no currency-bound declaration with
+  effective owner-act provenance at the evaluation's as-of instant
+- **THEN** the claim renders `Unknown` with primary reason
+  `no-currency-bound-declared`, exposes the exact resolution route `Declare
+  the bound in quality policy`, and retains its tier, challenge state,
+  semantic claim identity and evaluation identity
+- **AND** the missing effective bound is disclosed as a named, expandable fact
+  of the render outside the claim's freshness slot; no `fresh`, `stale`,
+  `broken`, `superseded` or fifth value is minted, inferred or force-fit for
+  that condition
+- **AND** a present declaration that lacks effective owner-act provenance keeps
+  its RFC2-9 route to the owner as a contradiction beside the exact route
+  above, and neither route replaces the other
+- **AND** for this condition only, that outside-slot disclosure is the complete
+  presentation where this requirement otherwise names freshness; every other
+  tuple obligation remains, and no aggregate absorbs the claim into a current
+  or favourable value, omits its primary reason count or hides its route
+- **AND** an aggregate that has a member under this condition discloses, apart
+  from its per-freshness-state counts, the count of members under this
+  condition, so that those counts and that count together equal its
+  membership; it never derives a freshness value from its other members, never
+  shows the unbounded members as zero, and presents them only through the same
+  outside-slot named disclosure, carrying that count and the stated reason
+  `no-currency-bound-declared`, never as a freshness value of its own
+
 #### Scenario: Missing current evidence remains explicit Unknown
 
 - **WHEN** a declared project fact lacks evidence under its current currency bound

@@ -43,7 +43,11 @@ coverage explicit POC evaluation criteria.
 - Polaris copy uses short headings and direct project language. It does not
   narrate the page's own structure or use prose to restate evidence mechanics.
 - Every project claim carries its complete epistemic tuple and a minimal,
-  typed source-anchor set; Polaris remains explicitly non-citable.
+  typed source-anchor set, except that a claim class with no effective
+  currency-bound declaration carries no fabricated freshness value: the
+  missing-bound condition is disclosed outside that slot while the claim
+  remains Unknown with its exact reason and route. Polaris remains explicitly
+  non-citable.
 - Capability detail preserves argument, exact contract and observed-reality
   bands, with proposals visibly separate and unable to grant status.
 - Every distinction and source path remains text-recoverable and keyboard-
