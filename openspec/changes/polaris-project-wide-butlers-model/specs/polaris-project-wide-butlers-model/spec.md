@@ -1231,49 +1231,199 @@ warrants:
   parent_requirements: [three-surface-poc-experience/POC-REQ-031]
 ```
 
-### Requirement: PWB-REQ-015 — Capability detail preserves authority bands and exact intent
+### Requirement: PWB-REQ-015 — Item detail preserves authority bands and exact intent
 
 Group: Presentation. Form: **invariant**.
 
-Every capability deep dive SHALL contain, in order, an `argument` band marked
-non-normative, a `contract` band with verbatim current requirement/scenario,
-governing doctrine and non-goal text, and a `reality` band sourced only from
-the shared model. Draft capabilities SHALL remain unadopted. Proposed deltas SHALL be adjacent to current text,
-visibly distinct, non-anchorable and unable to grant status; competing
-proposals SHALL remain separate candidate futures.
+Every item in the complete declared `catalog-entry` population SHALL have one
+item-detail reading keyed by that item's stable semantic claim identity. A
+declared capability matches a catalog item only when the capability's own
+declared key equals that item's declared key, compared exactly and without
+normalization; a catalog row, label, basename or similarity never makes the
+match. A capability matching exactly one item makes that item's detail its
+deep dive, and no second detail or identity SHALL be created for it. A
+capability matching no item, or more than one, receives no item detail and no
+identity from this requirement and renders no proposal material anywhere; it
+is disclosed as Unknown with the RFC2-24 reason `missing-declaration` (no
+match) or `contradicted-pending-adjudication` (several) and that reason's
+resolution route.
+
+Every item detail SHALL contain, in order, an `argument` band marked
+non-normative, a `contract` band, and a `reality` band sourced only from the
+shared model. The argument band SHALL NOT create intent, authority, status or
+a capability identity. The contract band SHALL contain only captured governing
+identities and, for a matching declared capability's deep dive, the identities
+of that capability's own baseline-spec requirements and scenarios, its
+current-intent leaf; each reaches its current requirement/scenario, governing
+doctrine or non-goal text verbatim through PWB-REQ-011's exact-source route,
+which is the only place that text is encoded; the band embeds no body text of
+its own. A capability's own leaf is not a captured governing relation and
+never creates, changes or stands in for the relation claim; a draft capability
+has no baseline spec and discloses that absence with its own Unknown reason
+and route. A related source that is excluded, missing, unreadable or whose
+PWB-REQ-011 gate fails, in whichever of its two render modes serves it, leaves
+that text Unknown with that source's own reason and route (PWB-REQ-003,
+PWB-REQ-011); this never changes the relation claim below, which asserts the
+captured declaration and not the body.
+
+Each contract band SHALL carry an item-to-intent relation claim whose stable
+semantic identity is the tuple of the item's stable claim identity and the
+fixed relation role `governing-intent`, at the same evaluation. This relation
+claim is distinct from the item claim and SHALL NOT change or borrow the
+item's epistemic tuple. It belongs to the derived claim class
+`governing-intent-relation`, whose currency treatment PWB-REQ-007 decides as
+for every class. While the class has no effective currency bound declared,
+every relation claim, whatever its population of captured relations, is
+Unknown with the single primary reason `no-currency-bound-declared`, its exact
+resolution route and the outside-slot disclosure PWB-REQ-007 requires; this
+requirement reports no second primary reason beside it, and
+`missing-declaration` is not reported for a relation claim in that state.
+
+A captured governing relation is a declaration, emitted by the extractor
+assigned to an admitted source, that names one catalog item's stable claim
+identity and one owning requirement, scenario, doctrine or non-goal artifact.
+PWB-REQ-002's nine extraction classes and PWB-REQ-004's closed fact population
+admit no such declaration, so this requirement mints none: until a separate
+owner-scoped change admits a declaration source, no relation is captured for
+any item. Two captured governing relations exclude one another only when an
+admitted declaration names them as mutually exclusive for the same item;
+class, label, basename, similarity, generated prose and a PWB-REQ-004
+precedence outcome never create or resolve an exclusion, and a requirement and
+a non-goal never exclude one another by class. A declaration naming an
+identity outside the declared `catalog-entry` population is a relation of no
+item. Declarations naming the same item and the same artifact are one
+relation, and an exclusion naming a relation that is not itself captured
+excludes nothing. Once an effective currency bound applies to the class,
+`no-currency-bound-declared` no longer holds and each item's population of
+captured relations has exactly one result. With none, the relation claim is
+Unknown with the RFC2-24 reason `missing-declaration` and its resolution
+route. With one or more, no two of which exclude one another, it is Observed
+over that whole set; compatible relations never become separate claims or a
+conflict. With any two that exclude one another, it is Unknown over the whole
+population with `contradicted-pending-adjudication` and the owner-adjudication
+route, however many compatible relations the population also holds, and it
+leaves only by owner adjudication. The band SHALL NOT infer a relation from a
+label, basename, similarity or generated prose. The relation claim's complete
+PWB-REQ-007 tuple SHALL be recoverable in both channels under PWB-REQ-020.
+
+Only an item detail for a matching declared capability may render active or
+proposed OpenSpec work. There, draft capabilities SHALL remain unadopted and
+proposed deltas SHALL be adjacent to current text, visibly distinct,
+non-anchorable and unable to grant status; competing proposals SHALL remain
+separate candidate futures. A non-capability item detail SHALL render no
+proposal material.
+
+The catalog-to-detail-to-exact-source path SHALL preserve the item's stable
+identity and complete epistemic state at every altitude, in both channels,
+without making a URL, label, path or coordinate part of that identity.
 The default reading mode SHALL be `Base` and include observed reality. Every
 block SHALL carry exactly one of the three band-class attributes. No
 reorganized or stored normative copy of doctrine, non-goal, requirement or
 scenario text SHALL exist outside its owning artifact.
 
-- **Case (sweep)**: enumerate every capability deep dive at an evaluation that
-  includes current intent, a draft capability and two incompatible proposals.
-- **Observable**: Base mode, band class/order, verbatim current text, proposal lifecycle,
-  non-anchorability and separate futures are recoverable in both channels.
-- **Oracle**: compare current requirement/scenario, doctrine and non-goal bytes
-  to their owning artifacts, compare
-  proposal identities/exclusivity to captured changes, exhaust band and anchor
-  populations and perform a static-source sweep for normative copies; exact
-  bytes/order, exactly one class per block, zero stored copies and zero proposal
-  authority decide.
-- **Oracle independence**: current/proposed artifacts and exclusivity inputs
-  come from captured OpenSpec state, not Polaris.
-- **Falsifier**: a missing/misordered band, summarized normative text, draft
-  rendered adopted, proposal substituted/interleaved/anchored/green, or
-  competing proposals collapsed.
+- **Case (sweep)**: enumerate the complete declared `catalog-entry` population
+  twice: at an evaluation whose class declares no currency bound, where every
+  item's relation claim is Unknown with `no-currency-bound-declared`, and at
+  an evaluation that declares the bound with no admitted relation source,
+  where every item's relation claim is the absent-relation arm with
+  `missing-declaration`; then decide the relation rules over the oracle's
+  hard-coded populations (a fixture that never feeds the production model): a
+  uniquely mapped current intent, two compatible mappings (a requirement and a
+  non-goal), three relations of which two exclude one another and one is
+  compatible with both, a requirement-plus-non-goal pair with no declared
+  exclusion, and a mapping whose source is excluded or fails its PWB-REQ-011
+  gate. Include a draft capability, a non-capability item with a proposal in
+  the source population, two incompatible capability proposals, capabilities
+  matching zero, one and two items, and a matching capability with and without
+  a baseline spec.
+- **Observable**: every declared item reaches exactly one item detail; Base
+  mode, item and relation identities, their distinct complete epistemic
+  states, the relation claim's single primary reason before and after the
+  bound applies, band class/order, exact-source reachability of each governing
+  identity and of a matching capability's own leaf identities, or the honest
+  text absence, and the capability-only proposal lifecycle, non-anchorability
+  and separate futures are recoverable in both channels.
+- **Oracle**: derive the expected item population and identity/state tuples
+  from the shared model; independently derive the fixed-role relation
+  identity, declared relation cardinality and declared exclusions, RFC2-24
+  reason and route from captured authority and hard-coded populations; derive
+  each capability's match by exact key equality; compare current requirement/
+  scenario, doctrine and non-goal bytes, as served by the exact-source route,
+  to their owning artifacts; compare proposal identities and exclusivity to
+  captured capability changes; exhaust detail, band and anchor populations;
+  and perform a static-source sweep for normative copies. Exact population,
+  separate item/relation tuple equality, exact bytes/order, exactly one class
+  per block, one primary reason per relation claim before and after the bound
+  and honest relation absence for every unmapped or contradicted item, a
+  matching capability's own leaf identities in its contract band, zero body
+  text outside the exact-source route, zero non-capability proposal blocks,
+  zero stored copies and zero proposal authority decide.
+- **Oracle independence**: expected items and tuples come from the shared model,
+  while relation cardinality and exclusions, capability keys, RFC2-24 values,
+  current/proposed artifacts, declared mappings and exclusivity inputs come from
+  captured authority and hard-coded accepted vocabularies, never from Polaris
+  or route output.
+- **Mutation proof**: independently drop and duplicate an item detail, map an
+  item by label alone, drop one member of a compatible relation set, report a
+  compatible set as contradicted or as separate claims, report a mixed
+  population as Observed over its compatible subset, infer an exclusion from
+  class or let a precedence outcome resolve one, assign the item's tuple to
+  its absent relation, report `missing-declaration` as the primary reason
+  before a bound is declared or report two primary reasons, drop a matching
+  capability's own leaf identity or present it as a captured relation, change
+  the relation claim when its source is withheld, embed body text in the band
+  outside the exact-source route, match a capability by label, create a second
+  detail for a capability matching two items or render its proposal, remove or
+  alter the relation reason/route, render a proposal in a non-capability
+  detail, reorder two bands, assign two classes to one block, substitute
+  proposal text for current text, and source a reality fact outside the shared
+  model; confirm the oracle fails before restoration and reports the complete
+  item and relation denominators each time.
+- **Falsifier**: a missing/duplicate item detail, changed item identity or
+  epistemic state, relation identity/state collapsed into the item, inferred
+  intent mapping, a compatible relation set collapsed to one relation, split
+  into claims or reported as contradicted, a mixed population not reported as
+  contradicted, an inferred or precedence-resolved exclusion, a relation claim
+  changed by a withheld source, band body text outside the exact-source route,
+  a capability matched other than by exact key or given a second detail,
+  absent or invalid relation reason/route, `missing-declaration` or a second
+  primary reason while no bound is declared, a matching capability's contract
+  band without its own leaf identities or with that leaf standing in for a
+  relation, hidden empty contract band, proposal material in a non-capability
+  detail, missing/misordered/multiply-classed band, summarized normative text,
+  second reality computation, draft rendered adopted, proposal substituted,
+  interleaved, anchored or green, or competing proposals collapsed.
 
-#### Scenario: Proposed work stays beside exact current intent
+#### Scenario: Catalog item reaches exact current intent or honest absence
 
-- **WHEN** a declared capability has an active proposal
-- **THEN** the contract band renders current requirement text verbatim
-- **AND** the proposal remains adjacent, distinct, non-anchorable and non-status-bearing
+- **WHEN** a reader opens a declared catalog item from the catalog
+- **THEN** its detail preserves the item's identity and epistemic state and
+  separately renders the fixed-role item-to-intent relation claim
+- **AND** while the relation claim's class has no effective currency bound, the
+  relation claim is Unknown with its single primary reason
+  `no-currency-bound-declared` and that reason's route, whatever its population
+- **AND** once the bound applies, one or more captured, mutually compatible
+  declared relations render one Observed relation claim, each related
+  governing identity reaching its verbatim current text through the
+  exact-source route
+- **AND** once the bound applies, an absent relation, or any two exclusive
+  relations, renders the relation claim's own RFC2-24 Unknown reason and route
+  without changing the item's tuple or guessing intent
+- **AND** an excluded, missing, unreadable or gate-failed related source leaves
+  only that text Unknown with its own reason and route
+- **AND** a matching declared capability's contract band also reaches its own
+  baseline-spec requirement identities and their verbatim text through the same
+  route, which stands in for no relation
+- **AND** proposal material appears only for a declared capability matching
+  exactly one item, where it remains adjacent, distinct, non-anchorable,
+  non-status-bearing and separate from competing candidate futures
 
 ```yaml
 warrants:
   primary: RFC7-17
-  doctrine: [VIS-1, VIS-2, VIS-4]
-  contracts: [RFC1-14, RFC1-27, RFC7-12, RFC7-13, RFC7-14, RFC7-15, RFC7-17, RFC7-18, RFC7-26, RFC7-27, RFC7-29, RFC7-33]
-  policies: [CC-BAR-3, CC-BAR-5, CC-TEST-5]
+  doctrine: [VIS-1, VIS-2, VIS-4, VIS-7]
+  contracts: [RFC1-14, RFC1-27, RFC2-24, RFC6-14, RFC6-22, RFC7-12, RFC7-13, RFC7-14, RFC7-15, RFC7-17, RFC7-18, RFC7-26, RFC7-27, RFC7-29, RFC7-33]
+  policies: [CC-BAR-3, CC-BAR-5, CC-TEST-5, CC-TEST-6]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []
   parent_requirements: []

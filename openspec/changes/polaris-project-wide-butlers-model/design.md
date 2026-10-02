@@ -135,7 +135,7 @@ visible. Without that applicable rule the result is Unknown.
 The machine answer and Polaris consume the same coverage object. A page cannot
 claim whole-project coverage from a smaller hidden model.
 
-### 3. Separate the project account from capability detail
+### 3. Separate the project account from item detail
 
 The Polaris entry follows the accepted RFC7 progression:
 
@@ -144,11 +144,65 @@ The Polaris entry follows the accepted RFC7 progression:
 3. Architecture
 4. V1 scope and success
 5. Project catalog
-6. Capability detail
+6. Item detail
 7. Evidence and gaps
 
-The existing WhatsApp material moves under capability detail. Active and
-proposed OpenSpec work appears only there, marked with its lifecycle state.
+Every declared catalog entry reaches one item detail keyed by the item's
+stable semantic claim identity. The existing WhatsApp capability deep dive is
+the detail for its matching declared catalog item, not a second identity or a
+special route. A capability matches an item only by exact equality of their
+declared keys; a capability matching no item or several gets no detail and
+renders no proposal, and is disclosed Unknown. A route or fragment locates the
+detail but never becomes item identity.
+
+The three authority bands keep their existing order and meaning. Argument is
+non-normative framing and cannot mint intent. Contract carries a separate
+item-to-intent relation claim whose semantic identity combines the item's
+stable claim identity with the fixed role `governing-intent` at the same
+evaluation. It never borrows or changes the item's epistemic tuple. While its
+derived class has no effective currency bound, every relation claim is Unknown
+with the single primary reason `no-currency-bound-declared` and no second
+primary reason; once the bound applies, one or more captured declared
+relations, no two of which a declaration names as exclusive, are one Observed
+relation over the whole set. No relation is Unknown with RFC2-24
+`missing-declaration`; any two relations a declaration names as exclusive make
+the whole population Unknown with `contradicted-pending-adjudication`, however
+many compatible relations it also holds. Exclusion is declared, never inferred
+from class, label, basename, similarity or a precedence outcome. Each reason
+retains its RFC2-24 resolution route. The relation claim belongs to the
+derived class `governing-intent-relation`, whose currency treatment
+PWB-REQ-007 decides. A matching capability's contract band also carries its
+own baseline-spec requirement identities, which stand in for no relation. No
+extraction class admits a governing-relation declaration today, so no relation
+is captured until a separate owner-scoped change admits a source. Both
+channels recover the same relation tuple under PWB-REQ-020.
+
+Reality is projected only from the item's facts in the one shared model and
+evaluation. Active and proposed OpenSpec work appears only when item detail is
+the matching declared capability detail, as PWB-REQ-013 requires; a
+non-capability detail renders no proposal material. Capability proposals stay
+beside current intent, marked with lifecycle state and separate by candidate
+future.
+
+```mermaid
+flowchart LR
+    I["Catalog item claim<br/>tuple unchanged"] --> D["Item detail"]
+    I --> R["governing-intent relation claim<br/>separate tuple"]
+    NOBOUND["No effective currency bound for the class"] --> U0["Unknown<br/>no-currency-bound-declared"] --> R
+    ONE["Bound applies: one or more relations, none declared exclusive"] --> O["Observed<br/>verbatim current intents"] --> R
+    NONE["Bound applies: no declared relation"] --> U1["Unknown<br/>missing-declaration"] --> R
+    MANY["Bound applies: any two declared-exclusive relations"] --> U2["Unknown<br/>contradicted-pending-adjudication"] --> R
+    R --> C["Contract band"]
+    CAP["Matching capability"] --> P["Proposal material"]
+    NONCAP["Non-capability item"] --> N["No proposal material"]
+```
+
+This generalization does not make every item a capability. Capability identity
+continues to come only from a declared capability artifact. It also adds no
+body read: exact intent remains reachable through the separately governed
+exact-source path and its existing authority, identity, secret and inert-content
+gates. That path is the only place band text is encoded, and a failed gate
+leaves that text Unknown without changing the relation claim.
 
 ### 4. Use direct copy with a finite rubric
 
@@ -298,9 +352,11 @@ route serves or stand in for any anchor identity.
 4. Read exact Git objects and classify content; record exclusions.
 5. Extract declared entities, statements, catalogs and source anchors.
 6. Reconcile coverage and contradictions.
-7. Add the existing capability deep-dive facts.
+7. Associate declared catalog items with separate fixed-role governing-intent
+   relation claims, preserving item tuples and leaving absent or contradicted
+   relations Unknown with their own reason and route.
 8. Freeze one shared model for the human and machine surfaces.
-9. Render project-level Polaris and capability drill-down from that model.
+9. Render project-level Polaris and item detail from that model.
 10. Evaluate nine-answer readiness under PWB-REQ-021, then evaluate the
     separate walkthrough record and owner judgment under PWB-REQ-022 with the
     exact judgment-act state retained.

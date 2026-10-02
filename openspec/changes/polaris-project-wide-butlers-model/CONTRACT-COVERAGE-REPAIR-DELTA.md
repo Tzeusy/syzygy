@@ -79,14 +79,14 @@ uncovered; 5 believed not applicable.**
 | RFC7-10.r2 | RFC7-10.c3 | RFC7-10 | Anchors carry evaluation label/tier/reason and are not rewritten on later reads | covered:PWB-REQ-014 |
 | RFC7-12.r1 | RFC7-12.c1 | RFC7-12 | Every claim's owning source is one step away through its anchor | covered:PWB-REQ-014 |
 | RFC7-12.r2 | RFC7-12.c2 | RFC7-12 | Operative doctrine, non-goal and requirement text is verbatim | covered:PWB-REQ-015 |
-| RFC7-13.r1 | RFC7-13.c2 | RFC7-13 | Every capability narrative reaches a verbatim specification leaf | covered:PWB-REQ-015 |
+| RFC7-13.r1 | RFC7-13.c2 | RFC7-13 | Every declared catalog-item narrative reaches verbatim declared intent or an honest unmapped absence | covered:PWB-REQ-015 |
 | RFC7-14.r1 | RFC7-14.c1 | RFC7-14 | Requirement, scenario and doctrine text is byte-verbatim, unreordered and unstored as a normative copy | covered:PWB-REQ-015 |
-| RFC7-14.r2 | RFC7-14.c3 | RFC7-14 | Proposal deltas never substitute, ambiguously interleave or become anchorable | covered:PWB-REQ-015 |
+| RFC7-14.r2 | RFC7-14.c3 | RFC7-14 | Proposal deltas in matching capability detail never substitute, ambiguously interleave or become anchorable | covered:PWB-REQ-013,PWB-REQ-015 |
 | RFC7-15.r1 | RFC7-15.c2 | RFC7-15 | Drafted capabilities remain visibly unadopted | covered:PWB-REQ-015 |
 | RFC7-17.r1 | RFC7-17.c1 | RFC7-17 | Every deep-dive block declares exactly one authority band | covered:PWB-REQ-015 |
-| RFC7-17.r2 | RFC7-17.c2 | RFC7-17 | Every capability deep dive contains argument, contract and reality bands in order | covered:PWB-REQ-015 |
-| RFC7-26.r1 | RFC7-26.c1 | RFC7-26 | Current Base intent remains operative beside proposal material | covered:PWB-REQ-015 |
-| RFC7-26.r2 | RFC7-26.c3 | RFC7-26 | Proposal content grants no status or anchor authority | covered:PWB-REQ-015 |
+| RFC7-17.r2 | RFC7-17.c2 | RFC7-17 | Every catalog-item detail contains argument, contract and reality bands in order | covered:PWB-REQ-015 |
+| RFC7-26.r1 | RFC7-26.c1 | RFC7-26 | Current Base intent remains operative beside capability-only proposal material | covered:PWB-REQ-013,PWB-REQ-015 |
+| RFC7-26.r2 | RFC7-26.c3 | RFC7-26 | Capability-only proposal content grants no status or anchor authority | covered:PWB-REQ-013,PWB-REQ-015 |
 | RFC7-26.r3 | RFC7-26.c3 | RFC7-26 | Proposal scenario context travels with URL, query and selection | unknown-uncovered |
 | RFC7-27.r1 | RFC7-27.c1 | RFC7-27 | Competing proposals remain separate candidate futures | covered:PWB-REQ-015 |
 | RFC7-29.r1 | RFC7-29.c1 | RFC7-29 | Doctrine, contracts, requirements, capabilities and decisions retain every typed-authority-table consequence | unknown-uncovered |
