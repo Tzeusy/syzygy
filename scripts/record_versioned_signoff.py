@@ -103,7 +103,13 @@ def _rows_hash_tree(root: pathlib.Path, manifest: pathlib.Path) -> bool:
         return False
     for sha, path in rows:
         file = root / path
-        if not file.is_file() or beh.digest(file.read_bytes()) != sha:
+        if not file.is_file():
+            return False
+        actual = beh.digest(file.read_bytes())
+        # A later performed act or sign-off may have re-patched this row; it
+        # is history when the tree hashes to that source's own manifest row.
+        if actual != sha and actual not in beh._later_rows(
+                root, None, path, skip_manifest=manifest):
             return False
     return True
 
@@ -571,6 +577,28 @@ def selftest() -> int:
         (tmp / "applied.txt").unlink()
         results.append(("check fails when the latest version is not applied",
                         run_check(tmp, "1.0") == 1))
+
+    with tempfile.TemporaryDirectory() as t:
+        # A row a later performed sign-off re-patched is history; any other
+        # drift still fails.
+        root = pathlib.Path(t)
+        later_record, later_manifest = next(iter(beh.VERSIONED_LATER.values()))
+        own = pathlib.Path("own-manifest.txt")
+        target = "subject.md"
+        (root / target).write_text("v2\n")
+        sha_old, sha_new = beh.digest(b"v1\n"), beh.digest(b"v2\n")
+        (root / own).write_text(f"{sha_old}  {target}\n")
+        results.append(("applied: a row the tree no longer hashes to fails with no later source",
+                        not _rows_hash_tree(root, own)))
+        (root / later_record).parent.mkdir(parents=True, exist_ok=True)
+        (root / later_record).write_text("record\n")
+        (root / later_manifest).parent.mkdir(parents=True, exist_ok=True)
+        (root / later_manifest).write_text(f"{sha_new}  {target}\n")
+        results.append(("applied: a row a later performed sign-off re-patched is history",
+                        _rows_hash_tree(root, own)))
+        (root / later_manifest).write_text(f"{beh.digest(b'other')}  {target}\n")
+        results.append(("applied: a later manifest digest the tree does not hash to still fails",
+                        not _rows_hash_tree(root, own)))
 
     with tempfile.TemporaryDirectory() as t:
         tmp, commit = make_fixture(pathlib.Path(t), lambda c: stub_review(

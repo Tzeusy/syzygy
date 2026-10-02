@@ -60,6 +60,11 @@ coverage explicit POC evaluation criteria.
 - The cold-open criterion accepts an exact-scope owner judgment in either valid
   provenance state, renders the exact state and treats the verdict as human
   judgment rather than Observed evidence.
+- A claim that renders Unknown may carry a recorded, attributed human
+  dismissal with a reason and an expiry, committed to the governed plane.
+  Each evaluation decides the dismissal at its own as-of instant, so it lapses
+  only through a new evaluation; it replaces the claim's status rendering,
+  never its facts, and never counts as resolved or favourable.
 
 This is an additive behavioral change. It does not edit or weaken
 POC-REQ-030…032: the existing narrative, provenance and Unknown obligations

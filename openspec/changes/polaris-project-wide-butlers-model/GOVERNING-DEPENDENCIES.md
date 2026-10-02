@@ -8,9 +8,9 @@
 > here is overwritten and `--check` fails first. Identifiers only —
 > nothing here quotes or paraphrases any clause.
 >
-> Source: `spec.md` sha256 `89c458cd19bfaaa84c04bd496d7631c3bee0957c0d6db78cab3d6587b6eb10b8` — 17 requirement(s), 96 distinct authorities.
+> Source: `spec.md` sha256 `aa47415d676670dbc261edc24ded83e07794bc7df8d5c9b005efb111ee965952` — 17 requirement(s), 100 distinct authorities.
 
-## doctrine (8)
+## doctrine (9)
 
 | Authority | Cited by |
 |---|---|
@@ -20,26 +20,30 @@
 | `VIS-1` | PWB-REQ-001, PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-006, PWB-REQ-007, PWB-REQ-010, PWB-REQ-011, PWB-REQ-012, PWB-REQ-013, PWB-REQ-014, PWB-REQ-015, PWB-REQ-016, PWB-REQ-020, PWB-REQ-021 |
 | `VIS-2` | PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-005, PWB-REQ-006, PWB-REQ-007, PWB-REQ-013, PWB-REQ-014, PWB-REQ-015, PWB-REQ-021, PWB-REQ-022 |
 | `VIS-3` | PWB-REQ-010, PWB-REQ-011, PWB-REQ-012, PWB-REQ-016, PWB-REQ-021 |
-| `VIS-4` | PWB-REQ-005, PWB-REQ-013, PWB-REQ-015, PWB-REQ-022 |
+| `VIS-4` | PWB-REQ-005, PWB-REQ-007, PWB-REQ-013, PWB-REQ-015, PWB-REQ-022 |
+| `VIS-6` | PWB-REQ-007 |
 | `VIS-7` | PWB-REQ-001, PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-006, PWB-REQ-007, PWB-REQ-011, PWB-REQ-014, PWB-REQ-016, PWB-REQ-020 |
 
-## contracts (68)
+## contracts (71)
 
 | Authority | Cited by |
 |---|---|
+| `RFC1-12` | PWB-REQ-007 |
 | `RFC1-14` | PWB-REQ-002, PWB-REQ-013, PWB-REQ-015 |
 | `RFC1-18` | PWB-REQ-007 |
 | `RFC1-19` | PWB-REQ-007 |
+| `RFC1-20` | PWB-REQ-007 |
 | `RFC1-22` | PWB-REQ-013 |
 | `RFC1-24` | PWB-REQ-007 |
-| `RFC1-25` | PWB-REQ-013 |
+| `RFC1-25` | PWB-REQ-007, PWB-REQ-013 |
 | `RFC1-26` | PWB-REQ-011 |
 | `RFC1-27` | PWB-REQ-015 |
 | `RFC1-31` | PWB-REQ-013 |
-| `RFC2-1` | PWB-REQ-001, PWB-REQ-005, PWB-REQ-006, PWB-REQ-022 |
+| `RFC2-1` | PWB-REQ-001, PWB-REQ-005, PWB-REQ-006, PWB-REQ-007, PWB-REQ-022 |
 | `RFC2-2` | PWB-REQ-003 |
 | `RFC2-9` | PWB-REQ-007 |
 | `RFC2-10` | PWB-REQ-007 |
+| `RFC2-15` | PWB-REQ-007 |
 | `RFC2-23` | PWB-REQ-002, PWB-REQ-003, PWB-REQ-006, PWB-REQ-007 |
 | `RFC2-24` | PWB-REQ-007 |
 | `RFC2-25` | PWB-REQ-007 |

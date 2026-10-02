@@ -8,7 +8,7 @@
 ## Effective population
 
 Accepted RFC 0001–0009 clauses: **324**.
-Effective consequence rows: **622** — 132 covered, 242 Unknown uncovered, 248 believed not applicable.
+Effective consequence rows: **628** — 136 covered, 247 Unknown uncovered, 245 believed not applicable.
 
 Every accepted clause has at least one effective consequence row. A
 `believed-not-applicable` row is an author/reviewer judgment, never an
@@ -24,8 +24,8 @@ owner-reviewed N/A. Every `unknown-uncovered` row remains a disclosed gap.
 
 ## Repair overlay
 
-`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `4e749483f97e1ac8a35234c06244b0ce132150fd80dda235e5a0bab8ab93a1c7`
-supersedes 71 base rows with 80 effective rows.
+`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `c93199ed426c52a843998e2d73f86b900f4c80eece7b0e167c53410f98d873a3`
+supersedes 77 base rows with 92 effective rows.
 
 ## Verification
 
