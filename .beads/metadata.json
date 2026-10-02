@@ -1,7 +1,10 @@
 {
   "database": "dolt",
   "backend": "dolt",
-  "dolt_mode": "embedded",
+  "dolt_mode": "server",
+  "dolt_server_host": "dolt.parrot-hen.ts.net",
+  "dolt_server_port": 3307,
+  "dolt_server_user": "root",
   "dolt_database": "syzygy",
   "project_id": "79eed21e-19ea-40c4-bcb2-9bd42a9a0bc2"
 }
