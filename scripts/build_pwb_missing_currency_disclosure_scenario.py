@@ -84,9 +84,16 @@ AGGREGATE_RECONCILES = (
 AGGREGATE_NEVER_DERIVES = (
     "never derives a freshness value from its other members, never\n  shows the unbounded members as zero"
 )
-AGGREGATE_UNKNOWN = (
-    "its own freshness reads `Unknown` with the stated reason\n  `no-currency-bound-declared`"
+AGGREGATE_OUTSIDE_SLOT = (
+    "presents them only through the same\n  outside-slot named disclosure, carrying that count and the stated reason\n  `no-currency-bound-declared`, never as a freshness value of its own"
 )
+CONTRADICTION_ROUTE = (
+    "keeps\n  its RFC2-9 route to the owner as a contradiction beside the exact route\n  above, and neither route replaces the other"
+)
+FRESHNESS_EXCEPTION = (
+    "for this condition only, that outside-slot disclosure is the complete\n  presentation where this requirement otherwise names freshness"
+)
+CLOSED_FRESHNESS_VALUES = ("`fresh`", "`stale`", "`broken`", "`superseded`")
 
 #: The sibling packages this one once composed with are performed or declined
 #: (opening band, render mode and machine view are in the base; lane B was
@@ -174,13 +181,18 @@ def scenario_findings(spec: bytes) -> list[str]:
         ("primary reason count and route preserved", OMITS_REASON_COUNT),
         ("aggregate count reconciles to membership", AGGREGATE_RECONCILES),
         ("aggregate never derives or zeroes", AGGREGATE_NEVER_DERIVES),
-        ("aggregate freshness Unknown with reason", AGGREGATE_UNKNOWN),
+        ("aggregate presented only through the outside-slot disclosure", AGGREGATE_OUTSIDE_SLOT),
+        ("RFC2-9 contradiction route retained", CONTRADICTION_ROUTE),
+        ("freshness exception for this condition only", FRESHNESS_EXCEPTION),
         ("tier, challenge state and claim identity retained", "retains its tier, challenge state,\n  semantic claim identity and evaluation identity"),
         ("owner-act provenance", "effective owner-act provenance"),
         ("evaluation identity", "evaluation identity"),
     ):
         if token not in section:
             findings.append(f"scenario lacks {label}")
+    aggregate = section[section.find("an aggregate that has a member"):]
+    if "its own freshness reads" in aggregate:
+        findings.append("aggregate bullet names a freshness value of its own")
     return findings
 
 
@@ -436,17 +448,39 @@ def selftest() -> int:
         "aggregate derives or zeroes": spec.replace(
             AGGREGATE_NEVER_DERIVES.encode(), b"derives a freshness value", 1
         ),
-        "aggregate freshness not Unknown": spec.replace(
-            AGGREGATE_UNKNOWN.encode(), b"its own freshness reads `fresh`", 1
+        "aggregate gets a freshness value of its own": spec.replace(
+            AGGREGATE_OUTSIDE_SLOT.encode(),
+            b"presents them with its own freshness reads `fresh`", 1,
+        ),
+        "contradiction route dropped": spec.replace(
+            CONTRADICTION_ROUTE.encode(), b"keeps nothing further", 1
+        ),
+        "freshness exception dropped": spec.replace(
+            FRESHNESS_EXCEPTION.encode(), b"that disclosure is optional", 1
         ),
         "tuple retention dropped": spec.replace(
             b"retains its tier, challenge state,\n  semantic claim identity and evaluation identity",
             b"retains its tier", 1,
         ),
     }
+    expected = {
+        "fabricated freshness": "scenario lacks no fabricated freshness",
+        "aggregate absorption": "scenario lacks no favourable aggregate absorption",
+        "hidden route or dropped reason count": "scenario lacks primary reason count and route preserved",
+        "aggregate count not reconciled": "scenario lacks aggregate count reconciles to membership",
+        "aggregate derives or zeroes": "scenario lacks aggregate never derives or zeroes",
+        "aggregate gets a freshness value of its own": "aggregate bullet names a freshness value of its own",
+        "contradiction route dropped": "scenario lacks RFC2-9 contradiction route retained",
+        "freshness exception dropped": "scenario lacks freshness exception for this condition only",
+        "tuple retention dropped": "scenario lacks tier, challenge state and claim identity retained",
+    }
     for name, mutated in mutations.items():
-        if mutated == spec or not scenario_findings(mutated):
+        found = scenario_findings(mutated)
+        if mutated == spec or not found:
             print(f"SELFTEST FAILED: {name} mutation passed")
+            return 1
+        if name in expected and expected[name] not in found:
+            print(f"SELFTEST FAILED: {name} mutation failed on another predicate: {found}")
             return 1
     with tempfile.TemporaryDirectory() as scratch:
         broken = pathlib.Path(scratch) / "spec.md.patch"

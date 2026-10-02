@@ -19,7 +19,7 @@ closed PWB behavior subject. Six rows hash proposed bytes and five current
 bytes.
 
 Manifest SHA-256:
-`1a64e1ea5e67528528ff1b026cf0dde5f280f6139a0c95cd373a1c9509596c42`
+`c6ce6b4145c934ca6717f661ab8c0f542c60deeb089924996630993a30f48227`
 
 The builder writes this digest. Any patch, manifest or subject change retires
 the argument and requires regeneration plus exact-byte review.
@@ -53,7 +53,7 @@ option naming this package and version once a fresh review has confirmed the
 exact bytes. No phrase is typed. The manifest digest below is informational
 and lets governance checks detect drift:
 
-`1a64e1ea5e67528528ff1b026cf0dde5f280f6139a0c95cd373a1c9509596c42`
+`c6ce6b4145c934ca6717f661ab8c0f542c60deeb089924996630993a30f48227`
 
 ## What this act would not do
 
@@ -77,10 +77,11 @@ and lets governance checks detect drift:
    does not repair them without authority.
 3. The performed opening aggregate discloses its own freshness. A member in
    this scenario has no freshness value of its own, so the scenario states
-   the rule: the aggregate's freshness reads `Unknown` with the stated
-   reason, its per-freshness counts plus the count of members under the
-   condition equal its membership, and no value is derived from the other
-   members or shown as zero (VIS-2).
+   the rule: the aggregate presents those members only through the same
+   outside-slot named disclosure, with their count and the stated reason,
+   never as a freshness value of its own (RFC2-10 closes the list at four).
+   Its per-freshness counts plus that count equal its membership, and no
+   value is derived from the other members or shown as zero (VIS-2).
 4. The generated dependency declaration carries the digest of the proposed
    `spec.md`; a later PWB amendment regenerates it against the actual
    predecessor, and no stale patch is selected.

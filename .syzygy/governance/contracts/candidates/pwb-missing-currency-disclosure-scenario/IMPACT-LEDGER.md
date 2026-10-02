@@ -4,7 +4,7 @@
 > PWB amendment under P-69 Q7a. It performs no act, edits no signed byte and
 > authorizes no implementation.
 
-**Baseline:** `9d741859dcee` (`origin/main` when drafting began).
+**Baseline:** `49ef8fd` (`origin/main` when this repair began; the first draft's figures were taken at `9d741859dcee` and are superseded).
 
 **Subject:** the closed eleven-artifact PWB behavioral package. Proposed bytes
 are six patches under `proposed/`; the manifest hashes their post-apply result.
@@ -12,37 +12,31 @@ are six patches under `proposed/`; the manifest hashes their post-apply result.
 ## Discovery method and denominator
 
 [Observed] Method 1 enumerated every NUL-separated path from `git ls-files -z`
-at the baseline and scanned decoded bytes with Python `re`, counting files and
-occurrences. Denominator: **1,376 tracked files**.
-
-[Observed] Four files failed UTF-8 decoding and were skipped, all PNG evidence
-captures:
+at `49ef8fd` and scanned each file's bytes decoded as UTF-8 with Python `re`
+(`re.findall` over the whole file), counting files and occurrences.
+Denominator: **1,772 tracked files**, of which four failed UTF-8 decoding and
+were skipped, all PNG evidence captures:
 
 - `docs/evidence/orrery-height-repaired-narrow-2026-09-09.png`
 - `docs/evidence/orrery-height-repaired-wide-2026-09-09.png`
 - `docs/evidence/polaris-existing-orrery-narrow-2026-09-09.png`
 - `docs/evidence/polaris-existing-orrery-wide-2026-09-09.png`
 
-[Observed] A separate NUL-byte method found six binaries: those four plus
-`packages/three-surface-poc-core/src/owner-act-record.ts` and
-`packages/three-surface-poc-core/src/project-shape-coverage.test.ts`. The latter
-two decode and were swept. The skipped predicate is decode failure, not
-"binary".
+The skipped predicate is decode failure, not "binary". [Observed] Method 2,
+`git ls-files | wc -l` and `git grep -F -l PWB-REQ-007`, gives 1,772 and 119
+files, agreeing with method 1 on both. The figures count the whole tree at
+that commit, including this package, other candidate packages and retained
+raw reviews; they describe a population, not a consumer list, and are not
+re-derived after the commit that retains this repair's own review raw.
 
-[Observed] Method 2 used fixed-string `git grep -F` against `HEAD` for the
-literal forms and reproduced each literal file/occurrence pair. Continuation
-forms were searched separately for `, 007`, `/007`, `..007` and `and 007`,
-then restricted to lines containing `PWB-REQ-`, because this corpus writes both
-full and abbreviated identifier runs.
-
-| Pattern | Files | Occurrences |
+| Pattern (Python `re`, exact) | Files | Occurrences |
 |---|---:|---:|
-| `PWB-REQ-007` | 90 | 443 |
-| continuation forms ending in bare `007` after comma, slash, ASCII range or `and` | 7 | 8 |
-| signed specification path | 65 | 142 |
-| generated-dependencies path | 18 | 32 |
-| `no-currency-bound-declared` | 54 | 78 |
-| `RFC2-10` | 77 | 352 |
+| `PWB-REQ-007` | 119 | 530 |
+| `PWB-REQ-[^\n]*(?:, \|/\|\.\.\| and )007\b` (continuation forms ending in bare `007`) | 7 | 8 |
+| `specs/polaris-project-wide-butlers-model/spec\.md` | 97 | 199 |
+| `polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES\.md` | 24 | 41 |
+| `no-currency-bound-declared` | 65 | 98 |
+| `RFC2-10` | 96 | 391 |
 
 [Observed] The seven continuation-form files and eight occurrences are:
 
@@ -54,8 +48,9 @@ full and abbreviated identifier runs.
 - `docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md:415-416`,
   which carries two occurrences.
 
-They were inspected rather than silently excluded. The retained raw reviews
-are counted and classified as review evidence; they are never edited.
+They were inspected rather than silently excluded (re-listed from the first
+draft; the count 7 / 8 reproduces at `49ef8fd`). The retained raw reviews are
+counted and classified as review evidence; they are never edited.
 
 ## The eleven subject rows
 
@@ -99,10 +94,11 @@ not.
 to the specification; this package's spec patch applies over them. The opening
 band's scenario (PWB-REQ-010) has the aggregate disclose its own label, tier,
 freshness and separate primary and secondary reason counts. A member with no
-effective bound has no freshness value of its own; the aggregate's own
-freshness disclosure is met by an `Unknown` value with the stated reason, not
-excused; per-freshness counts plus the count of members under the condition
-equal the membership, and no value is derived from the other members. Lane B is
+effective bound has no freshness value of its own; those members are
+presented only through the same outside-slot named disclosure, with their count
+and the stated reason, never as a freshness value of the aggregate; per-freshness
+counts plus the count of members under the condition equal the membership, and
+no value is derived from the other members. Lane B is
 declined.
 The generated dependency patch carries the digest of the proposed `spec.md` and
 regenerates against the actual predecessor.
