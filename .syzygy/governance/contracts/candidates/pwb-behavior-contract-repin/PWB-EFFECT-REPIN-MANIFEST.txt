@@ -1,0 +1,8 @@
+# PWB BEHAVIOUR-CONTRACT RE-PIN EFFECT AMENDMENT MANIFEST
+# Candidate; this file and its rows bind nothing by themselves.
+# 2 artifacts; rows sorted by codepoint path; each row hashes the PROPOSED
+# bytes (the act-in-force bytes with proposed/<name>.patch applied) and is
+# the argument of one superseding act over that subject.
+# Each row requires its own separate owner act; neither row binds the other.
+ad9cd6769bffbb1a3ef94625c73226dec133fb7c9f1e0bc40186b09b15e165fa  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+66cd41ee626efb11d666d19c0cd42c6d001ec4482837b71475c42f661f1d936c  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json
