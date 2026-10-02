@@ -10,10 +10,17 @@ covers. This script checks, read-only:
   C2 the packet names every response ceiling whose registry sentence opens
      "the final encoded HTTP body", in the registry as it stands and as the
      candidate .18 patch would leave it;
-  C3 unless an issued direction answers Q1 (a) or (b) and permits a
-     coding, with no withdrawal record, no non-test TypeScript source under
-     apps/*/src or packages/*/src carries compression code (a sweep over
-     zero files fails);
+  C3 no non-test TypeScript or JavaScript source under apps/*/src or
+     packages/*/src carries compression code outside what an issued,
+     unwithdrawn direction permits (a sweep over zero files fails). The
+     direction permits a coding only through fixed markers: paragraph 1
+     ("THE READING.") carries a Q1 (a) or (b) answer, and paragraph 2
+     ("WHAT MAY SHIP.") opens with a clause in PERMIT_MARKERS. Today the
+     one marker is the issued Q5 (a) clause, which permits gzip: the terms
+     zlib, gzip and content-encoding leave the sweep and every other term
+     stays in it. A decisions file anywhere under decisions/ closes the
+     gate when one of its paragraphs names the direction (file name or
+     Decision ID) beside a form of "withdraw" or "narrow".
   C4 the packet keeps its candidate banner, an open-questions section in
      which every question states a default, and no 64-hex digest;
   C5 every candidate patch under contracts/candidates/*/proposed/ that
@@ -23,6 +30,23 @@ covers. This script checks, read-only:
      reported, not failed).
 
 --selftest breaks each predicate in a scratch fixture and confirms failure.
+
+Known limits of C3 (R-DOV27-2 N2/N3, bd syzygy-dov.31), none fail-open on
+the issued direction's own text:
+  - the sweep is a line-level term match, not a parse: compression reached
+    through an alias, a computed import specifier, a dependency other than
+    the `compression` package, or a coding name split across lines is not
+    seen;
+  - a withdrawal or narrowing whose naming words and withdrawing words sit
+    in different paragraphs (a blank line or a new list item apart) does
+    not close the gate, and one that names
+    neither the file nor the Decision ID is not seen at all;
+  - any withdrawal or narrowing word closes the gate, whatever it narrows
+    (fail-closed);
+  - a direction permitting a coding other than gzip opens nothing until
+    PERMIT_MARKERS names its clause (fail-closed);
+  - the sweep reads apps/*/src and packages/*/src only, minus node_modules,
+    dist and test-fixtures, and skips *.test.* files.
 """
 from __future__ import annotations
 
@@ -72,18 +96,39 @@ QUOTES: tuple[tuple[str, str, str], ...] = (
     ("PWB-REQ-006 primary warrant", SPEC, "primary: SEC-3"),
 )
 
-COMPRESSION = re.compile(r"zlib|gzip|content-encoding|brotli|deflate|CompressionStream", re.I)
+# Each sweep term, with the coding whose permission takes it out of the
+# sweep (None: no direction permits it). One selftest line pins each term.
+COMPRESSION_TERMS: tuple[tuple[str, str, str | None], ...] = (
+    ("zlib", r"zlib", "gzip"),
+    ("gzip", r"gzip", "gzip"),
+    ("content-encoding", r"content-encoding", "gzip"),
+    ("brotli", r"brotli", None),
+    ("br literal", r"""['"`]br['"`]""", None),
+    ("deflate", r"deflate", None),
+    ("CompressionStream", r"CompressionStream", None),
+    ("compression package", r"""['"`]compression['"`]""", None),
+)
+SOURCE_FILE = re.compile(r"\.(?:[mc]?ts|[mc]?js)$")
+TEST_FILE = re.compile(r"\.test\.(?:[mc]?ts|[mc]?js)$")
 
-# An issued direction opens C3 only if its words answer Q1 (a) or (b) and its
-# "WHAT MAY SHIP." paragraph names a coding. Any other decisions file that names
-# the direction beside a form of "withdraw" closes it again.
+# An issued direction opens C3 only through fixed markers: paragraph 1 ("THE
+# READING.", up to "WHAT MAY SHIP.") answers Q1 (a) or (b), and paragraph 2
+# ("WHAT MAY SHIP.", up to paragraph 3) opens with a clause named here. A
+# decline that quotes the reading, or a paragraph 2 that merely mentions a
+# coding, opens nothing (R-DOV27-2 M1, M2).
+READING = "THE READING."
 READING_ANSWERS = (
     "before any HTTP content coding is applied",
     "as sent, after any HTTP content coding",
 )
 MAY_SHIP = "WHAT MAY SHIP."
-CODING = re.compile(r"gzip|brotli|any coding", re.I)
-WITHDRAW = re.compile(r"withdr[ae]w", re.I)
+PERMIT_MARKERS: tuple[tuple[str, str], ...] = (
+    ("gzip response compression, applied only when the client accepts gzip", "gzip"),
+)
+WITHDRAW = re.compile(r"withdr[ae]w|narrow", re.I)
+# A blank line, or the start of a list item, opens a new paragraph.
+PARAGRAPH = re.compile(r"\n[ \t>]*\n|\n(?=[ \t>]*(?:\d+\.|[-*+])[ \t])")
+DECISION_ID = re.compile(r"Decision ID:\s*`([^`]+)`")
 HEX64 = re.compile(r"(?<![0-9a-f])[0-9a-f]{64}(?![0-9a-f])")
 
 
@@ -170,31 +215,40 @@ def check_ceilings(root: str) -> tuple[list[str], set[str]]:
     return findings, keys
 
 
-def direction_permits(root: str) -> bool:
+def direction_permits(root: str) -> frozenset[str]:
+    """Return the codings an issued, unwithdrawn direction permits."""
     direction = read(root, DIRECTION)
     if direction is None:
-        return False
+        return frozenset()
     words = normalize(direction)
-    if MAY_SHIP not in words or not any(a in words for a in READING_ANSWERS):
-        return False
+    if READING not in words or MAY_SHIP not in words:
+        return frozenset()
+    reading = words.split(READING, 1)[1].split(MAY_SHIP, 1)[0]
+    if not any(a in reading for a in READING_ANSWERS):
+        return frozenset()
     may_ship = re.split(r"\s3\.\s", words.split(MAY_SHIP, 1)[1], maxsplit=1)[0]
-    if not CODING.search(may_ship):
-        return False
-    name = os.path.basename(DIRECTION)
+    may_ship = re.sub(r"^\s*\[Q5\]\s*", "", may_ship)
+    permitted = frozenset(coding for marker, coding in PERMIT_MARKERS if may_ship.startswith(marker))
+    if not permitted:
+        return frozenset()
+    names = [os.path.basename(DIRECTION)] + DECISION_ID.findall(direction)
     base = os.path.join(root, DECISIONS)
-    for entry in sorted(os.listdir(base)):
-        rel = f"{DECISIONS}/{entry}"
-        if rel in (DIRECTION, PACKET) or not entry.endswith(".md"):
-            continue
-        text = read(root, rel) or ""
-        if name in text and WITHDRAW.search(text):
-            return False
-    return True
+    for dirpath, dirnames, filenames in os.walk(base):
+        dirnames.sort()
+        for entry in sorted(filenames):
+            rel = os.path.relpath(os.path.join(dirpath, entry), root).replace(os.sep, "/")
+            if rel in (DIRECTION, PACKET) or not entry.endswith(".md"):
+                continue
+            for para in PARAGRAPH.split(read(root, rel) or ""):
+                if any(n in para for n in names) and WITHDRAW.search(para):
+                    return frozenset()
+    return permitted
 
 
-def check_no_compression(root: str) -> tuple[list[str], int, bool]:
-    if direction_permits(root):
-        return [], 0, True
+def check_no_compression(root: str) -> tuple[list[str], int, frozenset[str]]:
+    permitted = direction_permits(root)
+    terms = [(label, re.compile(rx, re.I)) for label, rx, coding in COMPRESSION_TERMS
+             if coding is None or coding not in permitted]
     findings, scanned = [], 0
     for top in ("apps", "packages"):
         base = os.path.join(root, top)
@@ -205,17 +259,20 @@ def check_no_compression(root: str) -> tuple[list[str], int, bool]:
             for dirpath, dirnames, filenames in os.walk(src):
                 dirnames[:] = sorted(d for d in dirnames if d not in ("node_modules", "dist", "test-fixtures"))
                 for name in sorted(filenames):
-                    if not re.search(r"\.m?ts$", name) or re.search(r"\.test\.m?ts$", name):
+                    if not SOURCE_FILE.search(name) or TEST_FILE.search(name):
                         continue
                     scanned += 1
                     path = os.path.join(dirpath, name)
                     with open(path, encoding="utf-8") as fh:
                         for n, line in enumerate(fh, 1):
-                            if COMPRESSION.search(line):
-                                findings.append(f"C3 compression code before any direction: {os.path.relpath(path, root)}:{n}")
+                            hits = [label for label, rx in terms if rx.search(line)]
+                            if hits:
+                                findings.append(
+                                    f"C3 compression code ({', '.join(hits)}) outside what a direction permits: "
+                                    f"{os.path.relpath(path, root)}:{n}")
     if scanned == 0:
         findings.append("C3 compression sweep scanned zero source files")
-    return findings, scanned, False
+    return findings, scanned, permitted
 
 
 def check_packet_shape(root: str) -> tuple[list[str], int]:
@@ -304,14 +361,16 @@ def check_composition(root: str) -> tuple[list[str], int, list[str], int, list[s
 def check(root: str = ROOT, verbose: bool = True) -> list[str]:
     findings = check_quotes(root)
     f2, keys = check_ceilings(root)
-    f3, scanned, gated = check_no_compression(root)
+    f3, scanned, permitted = check_no_compression(root)
     f4, nq = check_packet_shape(root)
     f5, applied, skipped, composed, not_composed = check_composition(root)
     findings += f2 + f3 + f4 + f5
     if verbose:
         print(f"C1 quoted clauses: {len(QUOTES)} checked in source and packet")
         print(f"C2 response ceilings named: {len(keys)} ({', '.join(sorted(keys))})")
-        print("C3 compression sweep: gated off (an issued direction permits compression)" if gated else f"C3 compression sweep: {scanned} non-test source files scanned")
+        print(f"C3 compression sweep: {scanned} non-test source files scanned; "
+              + (f"an issued direction permits {', '.join(sorted(permitted))}, so its terms leave the sweep"
+                 if permitted else "no issued direction permits a coding, so every term is swept"))
         print(f"C4 open questions with a default: {nq}")
         print(f"C5 candidate patches touching quoted files applied alone: {applied}; not applicable alone: {len(skipped)}")
         for s in skipped:
@@ -380,9 +439,27 @@ def _sibling_patch(root: str) -> None:
 
 
 VALID_DIRECTION = (
-    "# Direction\n\n1. THE READING. Each response ceiling is measured on the body "
-    "before any HTTP content coding is applied.\n\n2. WHAT MAY SHIP. gzip only.\n"
+    "# Direction\n\nDecision ID: `SELFTEST-DIR-1`\n\n1. THE READING. Each response ceiling is measured on the body "
+    "before any HTTP content coding is applied.\n\n2. WHAT MAY SHIP. [Q5] gzip response compression, applied only "
+    "when the client accepts gzip and only when the result is smaller.\n\n3. WHAT DOES NOT CHANGE. The ceilings.\n"
 )
+# R-DOV27-2 M2: a Q1 (c) decline that quotes the reading and names codings.
+DECLINE_DIRECTION = (
+    "# Direction\n\n1. THE READING. Declined: the packet's reading, \"before any HTTP content coding is "
+    "applied\", is not adopted.\n\n2. WHAT MAY SHIP. No gzip, no brotli.\n"
+)
+
+
+def _write(root: str, rel: str, text: str) -> None:
+    path = os.path.join(root, rel)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(text)
+
+
+def _gzip_code(root: str) -> None:
+    """Code the issued gzip direction permits: zlib, gzip and content-encoding."""
+    _land_compression(root, "const body = zlib.gzipSync(raw); res.setHeader('Content-Encoding', 'gzip');")
 
 
 def _issue_direction(root: str, text: str = VALID_DIRECTION) -> None:
@@ -436,13 +513,32 @@ def selftest() -> int:
         ("C2 registry gains an unnamed response ceiling", "C2", lambda r: _edit(r, REGISTRY, '"maxHumanResponseBytes": "the final', '"maxOtherResponseBytes": "the final encoded HTTP body for x",\n        "maxHumanResponseBytes": "the final'), False),
         ("C2 packet drops the briefing ceiling", "C2", lambda r: _edit(r, PACKET, "`maxBriefingResponseBytes`", "`the briefing ceiling`"), False),
         ("C3 compression code lands before a direction", "C3", lambda r: _edit(r, ROUTES, "const observed = Buffer", "const gz = require('node:zlib');\n  const observed = Buffer"), False),
-        ("C3 an issued direction gates the sweep off", None, lambda r: (_land_compression(r), _issue_direction(r)), True),
+        ("C3 an issued gzip direction permits zlib, gzip and content-encoding", None, lambda r: (_gzip_code(r), _issue_direction(r)), True),
+        ("C3 M1 a paragraph 2 that mentions gzip without the marker does not gate", "C3", lambda r: (_gzip_code(r), _issue_direction(r, VALID_DIRECTION.replace("[Q5] gzip response compression, applied only when the client accepts gzip and only when the result is smaller.", "Nothing. gzip is not permitted."))), False),
+        ("C3 M2 a decline quoting the reading does not gate", "C3", lambda r: (_gzip_code(r), _issue_direction(r, DECLINE_DIRECTION)), False),
+        ("C3 the reading answered outside paragraph 1 does not gate", "C3", lambda r: (_gzip_code(r), _issue_direction(r, VALID_DIRECTION.replace("measured on the body before any HTTP content coding is applied.", "left open.").replace("3. WHAT DOES NOT CHANGE.", "3. WHAT DOES NOT CHANGE. Measured before any HTTP content coding is applied."))), False),
+        ("C3 K10 the marker outside paragraph 2 does not gate", "C3", lambda r: (_gzip_code(r), _issue_direction(r, VALID_DIRECTION.replace("2. WHAT MAY SHIP. [Q5] gzip", "2. WHAT MAY SHIP. Nothing.\n\n4. NOTE. gzip"))), False),
+        ("C3 M3 a withdrawal in a subdirectory reopens the sweep", "C3", lambda r: (_gzip_code(r), _issue_direction(r), _write(r, f"{DECISIONS}/sub/W.md", "The owner withdrew POLARIS-RESPONSE-CEILING-READING-DIRECTION.md.\n")), False),
+        ("C3 M4 a narrowing record reopens the sweep", "C3", lambda r: (_gzip_code(r), _issue_direction(r), _write(r, f"{DECISIONS}/SELFTEST-NARROWING.md", "Direction SELFTEST-DIR-1 is narrowed: no coding may ship.\n")), False),
+        ("C3 M5 a gzip direction does not permit Brotli", "C3", lambda r: (_issue_direction(r), _land_compression(r, "const b = zlib.createBrotliCompress();")), False),
+        ("C3 M6 the name and a withdrawal word in different paragraphs do not close the gate", None, lambda r: (_gzip_code(r), _issue_direction(r), _write(r, f"{DECISIONS}/SELFTEST-SHAPE.md", "Recorded in the shape of `POLARIS-RESPONSE-CEILING-READING-DIRECTION.md`.\n\n6. **Withdrawal.** A later direction may narrow or withdraw this one; withdrawal defeats grant.\n")), True),
+        ("C3 M6 the name and a withdrawal word in sibling list items do not close the gate", None, lambda r: (_gzip_code(r), _issue_direction(r), _write(r, f"{DECISIONS}/SELFTEST-ITEMS.md", "1. A slope target is withdrawn.\n2. Compression (see `POLARIS-RESPONSE-CEILING-READING-DIRECTION.md`) changes bytes sent.\n")), True),
+        ("C3 a list item naming the direction beside a withdrawal closes the gate", "C3", lambda r: (_gzip_code(r), _issue_direction(r), _write(r, f"{DECISIONS}/SELFTEST-LIST.md", "1. Unrelated.\n2. `POLARIS-RESPONSE-CEILING-READING-DIRECTION.md` is withdrawn.\n")), False),
         ("C3 an empty direction file does not gate", "C3", lambda r: (_land_compression(r), _issue_direction(r, "")), False),
         ("C3 a direction without a Q1 reading does not gate", "C3", lambda r: (_land_compression(r), _issue_direction(r, VALID_DIRECTION.replace("before any HTTP content coding is applied", "somehow"))), False),
         ("C3 a direction without WHAT MAY SHIP does not gate", "C3", lambda r: (_land_compression(r), _issue_direction(r, VALID_DIRECTION.replace("WHAT MAY SHIP.", "SHIPPING."))), False),
-        ("C3 a direction that ships no coding does not gate", "C3", lambda r: (_land_compression(r), _issue_direction(r, VALID_DIRECTION.replace("gzip only.", "Nothing."))), False),
+        ("C3 a direction that ships no coding does not gate", "C3", lambda r: (_land_compression(r), _issue_direction(r, VALID_DIRECTION.replace("[Q5] gzip response compression, applied only when the client accepts gzip and only when the result is smaller.", "Nothing."))), False),
         ("C3 a withdrawal record reopens the sweep", "C3", lambda r: (_land_compression(r), _issue_direction(r), open(os.path.join(r, DECISIONS, "SELFTEST-WITHDRAWAL.md"), "w").write("The owner withdrew POLARIS-RESPONSE-CEILING-READING-DIRECTION.md.\n")), False),
-        ("C3 CompressionStream('deflate') is caught", "C3", lambda r: _land_compression(r, "const cs = new CompressionStream('deflate');"), False),
+        ("C3 term zlib is caught", "C3", lambda r: _land_compression(r, "import * as z from 'node:zlib';"), False),
+        ("C3 term gzip is caught", "C3", lambda r: _land_compression(r, "const body = gzipSync(raw);"), False),
+        ("C3 term content-encoding is caught", "C3", lambda r: _land_compression(r, "res.setHeader('Content-Encoding', enc);"), False),
+        ("C3 term brotli is caught", "C3", lambda r: _land_compression(r, "const b = brotliCompressSync(raw);"), False),
+        ("C3 term deflate is caught", "C3", lambda r: _land_compression(r, "const d = deflateRawSync(raw);"), False),
+        ("C3 term CompressionStream is caught", "C3", lambda r: _land_compression(r, "const cs = new CompressionStream(mode);"), False),
+        ("C3 M8 a 'br' literal is caught", "C3", lambda r: _land_compression(r, "const enc = 'br';"), False),
+        ("C3 M7 the compression package is caught", "C3", lambda r: _land_compression(r, "import compression from 'compression';"), False),
+        ("C3 M9 a .js source under src is swept", "C3", lambda r: _write(r, "apps/three-surface-poc/src/extra.js", "const z = require('zlib');\n"), False),
+        ("C3 M9 a .mjs source under src is swept", "C3", lambda r: _write(r, "apps/three-surface-poc/src/extra.mjs", "import z from 'zlib';\n"), False),
         ("C3 sweep over zero files", ("C3", "C1"), lambda r: shutil.rmtree(os.path.join(r, "apps")), False),
         ("C4 banner removed", "C4", lambda r: _edit(r, PACKET, "**Candidate — binds nothing.**", "**Draft.**"), False),
         ("C4 a question loses its default", "C4", lambda r: _edit(r, PACKET, "**Default if unanswered:** (a). No new dependency", "No new dependency"), False),
