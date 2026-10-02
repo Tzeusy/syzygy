@@ -1,0 +1,618 @@
+{
+  "bead": "syzygy-wh1",
+  "ranAtCommit": "2025b35c4de8abc152e5901978bcf167635af259",
+  "baselineCheckerCommit": "95764e743f7bc400be838b47ac8eb18d4616c262",
+  "command": "python3 scripts/check_governance.py (full default-scope run per mutant, in this worktree and in a detached origin/main worktree)",
+  "method": "for each selector, the one token on the line equal to that file's CG-7e allowed argument has character 40 flipped (e<->f) in both worktrees; both checkers run; original bytes restored and sha256-compared before the next mutant",
+  "baseline": {
+    "newChecker": {
+      "exit": 0,
+      "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+      "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+      "cg7eFindings": []
+    },
+    "oldChecker": {
+      "exit": 0,
+      "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+      "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings"
+    }
+  },
+  "populationDrift": "R-CG7E-BARE-DIGEST-CONFIRMATION-2 (reviewed dd9a9e2) named ACCEPTANCE-ACT-RECORD.md:95 (CC-SPEC@6093dbbe…) and INSTALL-RECORD.md:105 (CC-TEST-2 checksum row 7a716090…). The 2026-09-29 spec-policy readability restyle superseded both arguments; those lines still carry the old, performed digests, which are no longer either file's registered current or historical argument, so they are outside this file-local pass (adding them would change act-copy membership, a gate this bead may not cross). Their current-argument analogs in the same shapes, ACCEPTANCE-ACT-RECORD.md:603 (CC-SPEC owner phrase) and INSTALL-RECORD.md:234 (CC-TEST-2 checksum row), are the twelfth-population members; the drifted lines are run below as informational.",
+  "mutants": [
+    {
+      "group": "acceptance-record",
+      "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "line": 343,
+      "selector": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:343",
+      "tokensOnLine": 1,
+      "inScope": true,
+      "label": "ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION",
+      "old": "Act identity: act:syzygy:polaris-generator:specification-adoption:<argument>",
+      "new": "Act identity: act:syzygy:polaris-generator:specification-adoption:<argument, edit applied>",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "newChecker": {
+        "exit": 1,
+        "summary": "30 OK, 21 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 1 finding",
+        "cg7eFindings": [
+          ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:343 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+        ]
+      },
+      "restoreSha256": "a1c1c93be7259172c85984ab28fdf0cd0fefc5afed5f7cceb3d57766405e2c71",
+      "restored": true,
+      "newFindingCount": 1,
+      "newFindings": [
+        ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:343 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+      ],
+      "killed": true,
+      "baselineMasked": true,
+      "outcome": "killed: masked (0 FAIL) under the baseline checker; FAIL CG-7e with exactly one new finding at this path:line under the new checker",
+      "edit": {
+        "tokenStartColumn": 66,
+        "characterIndexInToken": 40,
+        "fromChar": "0",
+        "toChar": "e"
+      }
+    },
+    {
+      "group": "acceptance-record",
+      "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "line": 391,
+      "selector": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:391",
+      "tokensOnLine": 1,
+      "inScope": true,
+      "label": "ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION",
+      "old": "Act identity: act:syzygy:polaris-generator:applicability:<argument>",
+      "new": "Act identity: act:syzygy:polaris-generator:applicability:<argument, edit applied>",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "newChecker": {
+        "exit": 1,
+        "summary": "30 OK, 21 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 1 finding",
+        "cg7eFindings": [
+          ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:391 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+        ]
+      },
+      "restoreSha256": "a1c1c93be7259172c85984ab28fdf0cd0fefc5afed5f7cceb3d57766405e2c71",
+      "restored": true,
+      "newFindingCount": 1,
+      "newFindings": [
+        ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:391 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+      ],
+      "killed": true,
+      "baselineMasked": true,
+      "outcome": "killed: masked (0 FAIL) under the baseline checker; FAIL CG-7e with exactly one new finding at this path:line under the new checker",
+      "edit": {
+        "tokenStartColumn": 57,
+        "characterIndexInToken": 40,
+        "fromChar": "0",
+        "toChar": "e"
+      }
+    },
+    {
+      "group": "acceptance-record",
+      "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "line": 439,
+      "selector": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:439",
+      "tokensOnLine": 1,
+      "inScope": true,
+      "label": "ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION",
+      "old": "Act identity: act:syzygy:polaris-generator:implementation-authorization:<argument>",
+      "new": "Act identity: act:syzygy:polaris-generator:implementation-authorization:<argument, edit applied>",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "newChecker": {
+        "exit": 1,
+        "summary": "30 OK, 21 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 1 finding",
+        "cg7eFindings": [
+          ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:439 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+        ]
+      },
+      "restoreSha256": "a1c1c93be7259172c85984ab28fdf0cd0fefc5afed5f7cceb3d57766405e2c71",
+      "restored": true,
+      "newFindingCount": 1,
+      "newFindings": [
+        ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:439 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+      ],
+      "killed": true,
+      "baselineMasked": true,
+      "outcome": "killed: masked (0 FAIL) under the baseline checker; FAIL CG-7e with exactly one new finding at this path:line under the new checker",
+      "edit": {
+        "tokenStartColumn": 72,
+        "characterIndexInToken": 40,
+        "fromChar": "0",
+        "toChar": "e"
+      }
+    },
+    {
+      "group": "acceptance-record",
+      "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "line": 603,
+      "selector": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:603",
+      "tokensOnLine": 1,
+      "inScope": true,
+      "label": "CONFIRM CRAFT AMENDMENT: CC-SPEC",
+      "old": "CONFIRM CRAFT AMENDMENT: CC-SPEC@<argument>",
+      "new": "CONFIRM CRAFT AMENDMENT: CC-SPEC@<argument, edit applied>",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 1,
+        "summary": "28 OK, 21 WARN, 3 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 1 finding",
+        "cg7eFindings": [
+          ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md — declared to carry act `CONFIRM CRAFT AMENDMENT: CC-SPEC` and does not contain its current argument `<digest>…`. The copy in this file is stale, and this file is one the owner is sent to"
+        ]
+      },
+      "newChecker": {
+        "exit": 1,
+        "summary": "28 OK, 21 WARN, 3 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 2 findings",
+        "cg7eFindings": [
+          ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md — declared to carry act `CONFIRM CRAFT AMENDMENT: CC-SPEC` and does not contain its current argument `<digest>…`. The copy in this file is stale, and this file is one the owner is sent to",
+          ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:603 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['CONFIRM CRAFT AMENDMENT: CC-SPEC']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+        ]
+      },
+      "restoreSha256": "a1c1c93be7259172c85984ab28fdf0cd0fefc5afed5f7cceb3d57766405e2c71",
+      "restored": true,
+      "newFindingCount": 2,
+      "newFindings": [
+        ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md — declared to carry act `CONFIRM CRAFT AMENDMENT: CC-SPEC` and does not contain its current argument `<digest>…`. The copy in this file is stale, and this file is one the owner is sent to",
+        ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:603 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['CONFIRM CRAFT AMENDMENT: CC-SPEC']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+      ],
+      "killed": false,
+      "baselineMasked": false,
+      "outcome": "covered, not masked: this is the file's only copy of the current CC-SPEC argument, so predicate 1 already fails under the baseline checker; the near-miss pass adds a second finding at :603. Not a masked member, so it does not meet the 'exactly one new finding' criterion; recorded as the acceptance-record owner-phrase shape's current analog only",
+      "edit": {
+        "tokenStartColumn": 33,
+        "characterIndexInToken": 40,
+        "fromChar": "2",
+        "toChar": "e"
+      }
+    },
+    {
+      "group": "generator-act-identity",
+      "path": ".syzygy/governance/decisions/POLARIS-GENERATOR-APPLICABILITY-ACT.md",
+      "line": 13,
+      "selector": ".syzygy/governance/decisions/POLARIS-GENERATOR-APPLICABILITY-ACT.md:13",
+      "tokensOnLine": 1,
+      "inScope": true,
+      "label": "ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION",
+      "old": "Act identity: act:syzygy:polaris-generator:applicability:<argument>",
+      "new": "Act identity: act:syzygy:polaris-generator:applicability:<argument, edit applied>",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "newChecker": {
+        "exit": 1,
+        "summary": "30 OK, 21 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 1 finding",
+        "cg7eFindings": [
+          ".syzygy/governance/decisions/POLARIS-GENERATOR-APPLICABILITY-ACT.md:13 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+        ]
+      },
+      "restoreSha256": "51644e4e96ef0f80a6264e2c7362a58f856abc7559fae1913059cfbd808af127",
+      "restored": true,
+      "newFindingCount": 1,
+      "newFindings": [
+        ".syzygy/governance/decisions/POLARIS-GENERATOR-APPLICABILITY-ACT.md:13 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+      ],
+      "killed": true,
+      "baselineMasked": true,
+      "outcome": "killed: masked (0 FAIL) under the baseline checker; FAIL CG-7e with exactly one new finding at this path:line under the new checker",
+      "edit": {
+        "tokenStartColumn": 57,
+        "characterIndexInToken": 40,
+        "fromChar": "0",
+        "toChar": "e"
+      }
+    },
+    {
+      "group": "generator-act-identity",
+      "path": ".syzygy/governance/decisions/POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md",
+      "line": 13,
+      "selector": ".syzygy/governance/decisions/POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md:13",
+      "tokensOnLine": 1,
+      "inScope": true,
+      "label": "ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION",
+      "old": "Act identity: act:syzygy:polaris-generator:implementation-authorization:<argument>",
+      "new": "Act identity: act:syzygy:polaris-generator:implementation-authorization:<argument, edit applied>",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "newChecker": {
+        "exit": 1,
+        "summary": "30 OK, 21 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 1 finding",
+        "cg7eFindings": [
+          ".syzygy/governance/decisions/POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md:13 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+        ]
+      },
+      "restoreSha256": "04518a6444fc7255d391b42f512ec998683fb2a529a9aebc3b8f0b3ddd6bb05e",
+      "restored": true,
+      "newFindingCount": 1,
+      "newFindings": [
+        ".syzygy/governance/decisions/POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md:13 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+      ],
+      "killed": true,
+      "baselineMasked": true,
+      "outcome": "killed: masked (0 FAIL) under the baseline checker; FAIL CG-7e with exactly one new finding at this path:line under the new checker",
+      "edit": {
+        "tokenStartColumn": 72,
+        "characterIndexInToken": 40,
+        "fromChar": "0",
+        "toChar": "e"
+      }
+    },
+    {
+      "group": "generator-act-identity",
+      "path": ".syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md",
+      "line": 13,
+      "selector": ".syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md:13",
+      "tokensOnLine": 1,
+      "inScope": true,
+      "label": "ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION",
+      "old": "Act identity: act:syzygy:polaris-generator:specification-adoption:<argument>",
+      "new": "Act identity: act:syzygy:polaris-generator:specification-adoption:<argument, edit applied>",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "newChecker": {
+        "exit": 1,
+        "summary": "30 OK, 21 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 1 finding",
+        "cg7eFindings": [
+          ".syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md:13 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+        ]
+      },
+      "restoreSha256": "91f6397a71dd58a2c9674e796b9c113a014b35667621acad721e2c4936246a87",
+      "restored": true,
+      "newFindingCount": 1,
+      "newFindings": [
+        ".syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md:13 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+      ],
+      "killed": true,
+      "baselineMasked": true,
+      "outcome": "killed: masked (0 FAIL) under the baseline checker; FAIL CG-7e with exactly one new finding at this path:line under the new checker",
+      "edit": {
+        "tokenStartColumn": 66,
+        "characterIndexInToken": 40,
+        "fromChar": "0",
+        "toChar": "e"
+      }
+    },
+    {
+      "group": "pwb-effect-table-row",
+      "path": ".syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md",
+      "line": 42,
+      "selector": ".syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md:42",
+      "tokensOnLine": 1,
+      "inScope": true,
+      "label": "CONSENT TO BUTLERS PROJECT-SHAPE OBSERVATION",
+      "old": "| 1 | `consent-observation` | consent record `PWB-CONSENT-2026-08-31` at `.syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md` | `<argument>` | Observation consent for the pair (`project:syzygy`, `repository:butlers-configured-poc`), content class `declared-project-shape-text`, read-only Git objects in the signed PWB source population; every exclusion the record lists stands |",
+      "new": "| 1 | `consent-observation` | consent record `PWB-CONSENT-2026-08-31` at `.syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md` | `<argument, edit applied>` | Observation consent for the pair (`project:syzygy`, `repository:butlers-configured-poc`), content class `declared-project-shape-text`, read-only Git objects in the signed PWB source population; every exclusion the record lists stands |",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "newChecker": {
+        "exit": 1,
+        "summary": "30 OK, 21 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 1 finding",
+        "cg7eFindings": [
+          ".syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md:42 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['CONSENT TO BUTLERS PROJECT-SHAPE OBSERVATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+        ]
+      },
+      "restoreSha256": "e45be8999697547b7aac0cecc9e14a1f088fcbf7993891cbbeb24f0e679589be",
+      "restored": true,
+      "newFindingCount": 1,
+      "newFindings": [
+        ".syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md:42 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['CONSENT TO BUTLERS PROJECT-SHAPE OBSERVATION']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+      ],
+      "killed": true,
+      "baselineMasked": true,
+      "outcome": "killed: masked (0 FAIL) under the baseline checker; FAIL CG-7e with exactly one new finding at this path:line under the new checker",
+      "edit": {
+        "tokenStartColumn": 152,
+        "characterIndexInToken": 40,
+        "fromChar": "2",
+        "toChar": "e"
+      }
+    },
+    {
+      "group": "pwb-effect-table-row",
+      "path": ".syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md",
+      "line": 43,
+      "selector": ".syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md:43",
+      "tokensOnLine": 1,
+      "inScope": true,
+      "label": "APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY",
+      "old": "| 2 | `approve-policy` | policy `polaris-butlers-project-shape-secrets` version `1.0.0-candidate.4` at `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json` | `<argument>` | Approve this exact secret-classification policy as the observing project's policy for that pair and content class, across every ingest boundary the policy names |",
+      "new": "| 2 | `approve-policy` | policy `polaris-butlers-project-shape-secrets` version `1.0.0-candidate.4` at `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json` | `<argument, edit applied>` | Approve this exact secret-classification policy as the observing project's policy for that pair and content class, across every ingest boundary the policy names |",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "newChecker": {
+        "exit": 1,
+        "summary": "30 OK, 21 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 1 finding",
+        "cg7eFindings": [
+          ".syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md:43 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+        ]
+      },
+      "restoreSha256": "e45be8999697547b7aac0cecc9e14a1f088fcbf7993891cbbeb24f0e679589be",
+      "restored": true,
+      "newFindingCount": 1,
+      "newFindings": [
+        ".syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md:43 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+      ],
+      "killed": true,
+      "baselineMasked": true,
+      "outcome": "killed: masked (0 FAIL) under the baseline checker; FAIL CG-7e with exactly one new finding at this path:line under the new checker",
+      "edit": {
+        "tokenStartColumn": 196,
+        "characterIndexInToken": 40,
+        "fromChar": "e",
+        "toChar": "f"
+      }
+    },
+    {
+      "group": "pwb-effect-table-row",
+      "path": ".syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md",
+      "line": 44,
+      "selector": ".syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md:44",
+      "tokensOnLine": 1,
+      "inScope": true,
+      "label": "ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY",
+      "old": "| 3 | `adopt-registry-entry` | adapter-registry entry `polaris-butlers-project-shape` version `1.0.0-candidate.3` at `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` | `<argument>` | Adopt this exact entry in Syzygy's governance plane for that pair with read-only authority and an empty write surface; it admits the observer's declared output classes as deterministic facts only when an authorized implementation exists |",
+      "new": "| 3 | `adopt-registry-entry` | adapter-registry entry `polaris-butlers-project-shape` version `1.0.0-candidate.3` at `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` | `<argument, edit applied>` | Adopt this exact entry in Syzygy's governance plane for that pair with read-only authority and an empty write surface; it admits the observer's declared output classes as deterministic facts only when an authorized implementation exists |",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "newChecker": {
+        "exit": 1,
+        "summary": "30 OK, 21 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 1 finding",
+        "cg7eFindings": [
+          ".syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md:44 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+        ]
+      },
+      "restoreSha256": "e45be8999697547b7aac0cecc9e14a1f088fcbf7993891cbbeb24f0e679589be",
+      "restored": true,
+      "newFindingCount": 1,
+      "newFindings": [
+        ".syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md:44 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+      ],
+      "killed": true,
+      "baselineMasked": true,
+      "outcome": "killed: masked (0 FAIL) under the baseline checker; FAIL CG-7e with exactly one new finding at this path:line under the new checker",
+      "edit": {
+        "tokenStartColumn": 225,
+        "characterIndexInToken": 40,
+        "fromChar": "5",
+        "toChar": "e"
+      }
+    },
+    {
+      "group": "wave-b-closure",
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-B-CLOSURE-REPORT.md",
+      "line": 20,
+      "selector": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-B-CLOSURE-REPORT.md:20",
+      "tokensOnLine": 1,
+      "inScope": true,
+      "label": "ACCEPT FOUNDATIONAL WAVE B",
+      "old": "  `<argument>`",
+      "new": "  `<argument, edit applied>`",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "newChecker": {
+        "exit": 1,
+        "summary": "30 OK, 21 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 1 finding",
+        "cg7eFindings": [
+          ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-B-CLOSURE-REPORT.md:20 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ACCEPT FOUNDATIONAL WAVE B']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+        ]
+      },
+      "restoreSha256": "73ac5b29da0797fedc7760b56b8f20f65e805ef8dd2db2859c7664864453882b",
+      "restored": true,
+      "newFindingCount": 1,
+      "newFindings": [
+        ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-B-CLOSURE-REPORT.md:20 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['ACCEPT FOUNDATIONAL WAVE B']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+      ],
+      "killed": true,
+      "baselineMasked": true,
+      "outcome": "killed: masked (0 FAIL) under the baseline checker; FAIL CG-7e with exactly one new finding at this path:line under the new checker",
+      "edit": {
+        "tokenStartColumn": 3,
+        "characterIndexInToken": 40,
+        "fromChar": "e",
+        "toChar": "f"
+      }
+    },
+    {
+      "group": "craft-install-row",
+      "path": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md",
+      "line": 234,
+      "selector": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md:234",
+      "tokensOnLine": 1,
+      "inScope": true,
+      "label": "CONFIRM CRAFT AMENDMENT: CC-TEST-2",
+      "old": "<argument>  testing-and-verification.md",
+      "new": "<argument, edit applied>  testing-and-verification.md",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "newChecker": {
+        "exit": 1,
+        "summary": "30 OK, 21 WARN, 1 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "FAIL  CG-7e  act-argument copies enumerated and current — 67 files examined, 1 finding",
+        "cg7eFindings": [
+          ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md:234 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['CONFIRM CRAFT AMENDMENT: CC-TEST-2']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+        ]
+      },
+      "restoreSha256": "40bb86ffa321afddfb8a962b6d7fccb0bae8c70b0e48ae02bd6f1ac72c1503b1",
+      "restored": true,
+      "newFindingCount": 1,
+      "newFindings": [
+        ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md:234 — unlabeled digest `<digest>…` is one character from this file's declared argument for ['CONFIRM CRAFT AMENDMENT: CC-TEST-2']. A correct copy elsewhere in the file does not make this one current — it is stale or corrupted"
+      ],
+      "killed": true,
+      "baselineMasked": true,
+      "outcome": "killed: masked (0 FAIL) under the baseline checker; FAIL CG-7e with exactly one new finding at this path:line under the new checker",
+      "edit": {
+        "tokenStartColumn": 0,
+        "characterIndexInToken": 40,
+        "fromChar": "f",
+        "toChar": "e"
+      }
+    }
+  ],
+  "drifted": [
+    {
+      "group": "drifted-from-finding-4",
+      "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "line": 95,
+      "selector": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:95",
+      "tokensOnLine": 1,
+      "inScope": false,
+      "reason": "0 token(s) on the line equal one of this file's allowed arguments; tokens present: ['<digest>…']",
+      "old": "CONFIRM CRAFT AMENDMENT: CC-SPEC@<argument>",
+      "new": "CONFIRM CRAFT AMENDMENT: CC-SPEC@<argument, edit applied>",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "newChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "restoreSha256": "a1c1c93be7259172c85984ab28fdf0cd0fefc5afed5f7cceb3d57766405e2c71",
+      "restored": true,
+      "newFindingCount": 0,
+      "newFindings": [],
+      "killed": false,
+      "baselineMasked": true,
+      "outcome": "residual: not caught by either checker. The digest is a superseded, performed argument that is not registered for this file, so the file-local pass has nothing to compare it with",
+      "edit": {
+        "tokenStartColumn": 33,
+        "characterIndexInToken": 40,
+        "fromChar": "c",
+        "toChar": "e"
+      }
+    },
+    {
+      "group": "drifted-from-finding-4",
+      "path": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md",
+      "line": 105,
+      "selector": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md:105",
+      "tokensOnLine": 1,
+      "inScope": false,
+      "reason": "0 token(s) on the line equal one of this file's allowed arguments; tokens present: ['<digest>…']",
+      "old": "<argument>  testing-and-verification.md",
+      "new": "<argument, edit applied>  testing-and-verification.md",
+      "mutatedPosition": 40,
+      "oldChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "newChecker": {
+        "exit": 0,
+        "summary": "31 OK, 21 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+        "cg7e": "OK    CG-7e  act-argument copies enumerated and current — 67 files examined, 0 findings",
+        "cg7eFindings": []
+      },
+      "restoreSha256": "40bb86ffa321afddfb8a962b6d7fccb0bae8c70b0e48ae02bd6f1ac72c1503b1",
+      "restored": true,
+      "newFindingCount": 0,
+      "newFindings": [],
+      "killed": false,
+      "baselineMasked": true,
+      "outcome": "residual: not caught by either checker. The digest is a superseded, performed argument that is not registered for this file, so the file-local pass has nothing to compare it with",
+      "edit": {
+        "tokenStartColumn": 0,
+        "characterIndexInToken": 40,
+        "fromChar": "6",
+        "toChar": "e"
+      }
+    }
+  ],
+  "totals": {
+    "selectors": 12,
+    "killedExactlyOneNewFinding": 11,
+    "coveredButNotMasked": 1,
+    "driftedResidual": 2,
+    "restoredByteIdentical": 14,
+    "runs": 14
+  },
+  "realCorpusPopulation": {
+    "at": "2025b35c4de8abc152e5901978bcf167635af259",
+    "registeredFilesExamined": 67,
+    "standaloneTokens": 545,
+    "tokensEqualToFileAllowedArgument": 161,
+    "ofWhichOutsideABareHeading": 130,
+    "distanceOneNearMisses": 0,
+    "derivation": "standalone 64-hex tokens in every file of ACT_DIGEST_COPY_FILES | ACT_HISTORICAL_DIGEST_COPY_FILES that CG-7e examines; allowed = that file's current-label subject digests plus its historical bindings"
+  },
+  "residual": {
+    "statement": "Not guaranteed by this pass: corruption of two or more characters; a whole swap for another digest; and any token whose digest is not one of the file's own registered arguments.",
+    "supersededPerformedCopiesNotFileRegistered": 16,
+    "note": "16 standalone tokens in registered files equal a current or performed act digest that is not registered for that file (superseded CC-SPEC/CC-IMPACT/behaviour-contract arguments in ACCEPTANCE-ACT-RECORD.md, INSTALL-RECORD.md, three PWB act records and PROJECT-STATUS.md). Covering them would need historical registrations, which changes act-copy membership and is outside this bead."
+  },
+  "digestPolicy": "No act argument or truncated digest is quoted (AGENTS.md: CG-7e/CG-15 copy rule). Each mutant is re-runnable from its selector, tokenStartColumn, characterIndexInToken and fromChar/toChar; checker output has every 12-64 character hex run replaced by <digest>. restoreSha256 is the restored file's own hash, not an act argument."
+}
