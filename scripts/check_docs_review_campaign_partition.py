@@ -227,6 +227,11 @@ CAMPAIGNS = (
         "P-77 Q2 response-ceiling reading gate",
         r"R-DOV27-.*\.md",
     ),
+    campaign(
+        "dov29-dismissal-expiry-delta",
+        "P-79 Q5 dismissal-expiry gate",
+        r"R-DOV29-.*\.md",
+    ),
 )
 
 
