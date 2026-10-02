@@ -405,9 +405,22 @@ def _write_patch(root: str, name: str, before: list[str], after: list[str]) -> N
 
 def _composed_patches(root: str) -> None:
     """a inserts a line after the quoted sentence; b, written on top of a,
-    rewrites the quote. b alone does not apply; a then b does."""
-    with open(os.path.join(root, SPEC), encoding="utf-8") as fh:
-        lines = fh.read().splitlines(keepends=True)
+    rewrites the quote. b alone does not apply; a then b does.
+
+    Both are written over the text the real candidate patches already compose
+    to (they sort after every real package), so a real candidate that rewrites
+    the spec around the quote cannot leave the pair inapplicable and hide the
+    composition this case exists to catch."""
+    base = os.path.join(root, CANDIDATES)
+    real = sorted(
+        f"{CANDIDATES}/{pkg}/proposed/{n}"
+        for pkg in os.listdir(base)
+        if os.path.isdir(os.path.join(base, pkg, "proposed"))
+        for n in os.listdir(os.path.join(base, pkg, "proposed"))
+        if n.endswith(".patch")
+        and f"+++ b/{SPEC}\n" in (read(root, f"{CANDIDATES}/{pkg}/proposed/{n}") or ""))
+    composed, _ = _apply_sequence(root, real, SPEC)
+    lines = (composed or "").splitlines(keepends=True)
     idx = next(i for i, line in enumerate(lines) if "explicit byte ceiling." in line)
     with_a = lines[:idx + 1] + ["Selftest inserted line.\n"] + lines[idx + 1:]
     with_b = with_a[:idx] + [with_a[idx].replace("explicit byte ceiling.", "explicit byte allowance.")] + with_a[idx + 1:]
