@@ -17,14 +17,15 @@ owner decision or act.
 - [x] Draft the reusable public-repository admission template as a candidate
       package — branch `polaris/public-repo-admission`, with its
       instance builder script
+- [x] **(owner)** Answer the packet's Q1–Q7 (2026-10-03): all recommendations
+      taken except Q1 — Anthropic through the Claude Agent SDK runtime
 - [~] Fresh-context review of the admission package (CONFIRM, or notes only).
-      Rounds 1–3: REVISE (4, 2, 1 blocking), each repaired. Stopping rule
-      reached: no round 4 until the owner has seen it. Draft PR #215
-- [ ] **(owner)** Say whether to run a confirming round 4 on the round-3
-      repair, or answer the questions first and review once
-- [ ] **(owner)** Answer the packet's Q1–Q7: provider, content classes,
-      retention, observation model, sign-off form, where drafts are served,
-      and the missing content class for general documentation (Q7)
+      Rounds 1–4: REVISE (4, 2, 1, 1 blocking), each repaired. Round 4 ran over
+      the owner's answers; its repair is unreviewed. Draft PR #215
+- [ ] Draft the RFC-0005 amendment adding a project-documentation content
+      class (Q7); T1 runs without it and records what it could not send
+- [ ] Package manifest, recorder and `check_governance.py` registration for
+      the sign-off (Q5)
 - [ ] **(owner)** Sign off the template, then admit T1 (requests)
 
 ## Phase 1 — Make the engine able to run on an unfamiliar repo
@@ -43,9 +44,13 @@ Authorized implementation work (generator implementation authorization,
         `project:syzygy`, `.syzygy/` roots and `.md`) take `--repo`,
         `--revision`, include globs and a repository id; reader questions,
         assets and budget from a config file.
-  - [ ] **G2 Real `generate` port.** An Anthropic Messages adapter behind
+  - [ ] **G2 Real `generate` port.** A Claude Agent SDK adapter behind
         `PipelinePorts.generate` (`pipeline.ts`): structured output for
-        `responseSchema`, usage accounting, abort. Only `scriptedGenerate`
+        `responseSchema`, usage accounting, abort. Per the egress record:
+        every tool off; no instruction, memory, settings, MCP or environment
+        context; empty working directory and all runtime state inside the
+        run directory; telemetry off; accepted only when a captured request
+        shows nothing but what the generator built. Only `scriptedGenerate`
         exists.
   - [ ] **G3 Consent-backed ports.** `permissionIdentity` / `admit` /
         `permitted` read the admission records instead of returning `true`

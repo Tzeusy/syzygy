@@ -178,3 +178,18 @@ non-Butlers target surfaces every hidden assumption at once (L9–L11).
   targets cost a filled `params.json`, not another three rounds. Measure
   that claim when T2 is admitted.
 - **Status:** open — check at T2.
+
+### L13. An agent runtime is not a neutral pipe
+
+Choosing the Claude Agent SDK over direct API calls (owner, Q1) turned the
+provider route from "send these bytes" into "start a runtime that may add its
+own context, keep its own transcript and phone home" [Inferred, round-4
+review]. Each of those is a place source content could go that the egress
+record did not name.
+
+- **Changes:** the egress record now says what the runtime must not load or
+  send, keeps all its state inside the run directory from the start, and
+  accepts the adapter only when a captured request shows nothing but what
+  the generator built. The general lesson: every layer between the prompt
+  and the model needs the same scrutiny as the prompt.
+- **Status:** applied → egress record; verify at G2.
