@@ -43,8 +43,8 @@ promotion path has no destination for an observed-only project"
 [Observed: quoted from `docs/pursuits/2026-09-22-vision-pursuit-data.json`,
 move N15's `why` and finding L2-F5's title; the figures are the pursuit's,
 not re-measured here]. It asked for one doctrine packet with six clauses
-(a)–(f). Since the pursuit, the owner's P-75 Q4 ruling added "`Inferred` as
-a typed landing zone with no production constructor"
+(a)–(f). Since the pursuit, the owner's P-75 Q4 ruling reads "`Inferred`
+added as a typed landing zone with no production constructor"
 (`decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`, P-75 row):
 the state is representable in the shared model today and nothing constructs
 it. This packet adds no constructor.
