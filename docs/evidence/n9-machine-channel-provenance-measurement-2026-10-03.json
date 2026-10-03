@@ -1,0 +1,106 @@
+{
+  "kind": "n9-machine-channel-provenance-measurement",
+  "bead": "syzygy-u05.9",
+  "date": "2026-10-03",
+  "measuredOn": {
+    "syzygyCommit": "71b4f52537eee2b485d77ffb4938095d9cbabd8f",
+    "butlersCommit": "32f38feb51d86e33bfec00b78777cce5ec280198",
+    "surfaceVersion": "polaris@7f471ddca476",
+    "evaluationIdentity": "pwb-eval-a47bdef56a371f21ea5e3535",
+    "daemon": "private daemon built and served from the u05.9 worktree at the Syzygy commit, --port 0 --state-dir <scratch>, registered Butlers locator; never the loopback daemon on 7478",
+    "routes": [
+      "GET /api/poc",
+      "GET /api/poc/polaris"
+    ],
+    "capturesRetained": false,
+    "capturesRetainedNote": "the two response bodies are not committed; their byte counts and sha256 are recorded under capture, so a later capture can be compared byte for byte"
+  },
+  "method": "python3 scripts/measure_machine_channel_provenance.py <api-poc.json> <api-poc-polaris.json>, run on the two captures; its whole output is copied verbatim under figures, and nothing else in this record is a measured figure",
+  "figures": {
+    "capture": {
+      "apiPoc": {
+        "bytes": 5751883,
+        "sha256": "45f73a8634baacca9eed22ed37794d64b6b64a935fb6ba489046e6fe25ab5df2"
+      },
+      "apiPocPolaris": {
+        "bytes": 633283,
+        "sha256": "56b7de0056efd69e59f7efdb60e409517193e5de2a28fd46ea8f5b64727844bd"
+      }
+    },
+    "rowRepetition": {
+      "workItems.doltRevision": {
+        "rows": 7952,
+        "rowsCarryingHeaderValue": 7952,
+        "bytesPerRow": 50,
+        "bytes": 397600
+      },
+      "codeStructure.revision": {
+        "rows": 6950,
+        "rowsCarryingHeaderValue": 6950,
+        "bytesPerRow": 54,
+        "bytes": 375300
+      },
+      "totalBytes": 772900,
+      "fractionOfApiPoc": 0.13437
+    },
+    "narrative": {
+      "blocks": 697,
+      "blocksCitableFalse": 697,
+      "blocksWithAnchors": 697,
+      "anchorCount": 902,
+      "distinctAnchorIds": 902,
+      "anchorKeySets": {
+        "anchorId,captured,locator,revision,supports,targetClass,targetId": 902
+      },
+      "anchorIdNamesItsBlock": 902,
+      "anchorSupportsWithinBlockClaims": 902,
+      "distinctTargetIds": 285
+    },
+    "headerRepeats": {
+      "$.codeStructure.files[].revision": {
+        "rows": 6950,
+        "repeating": 6950
+      },
+      "$.projectShape.facts[].fact.declarations[].fact": {
+        "rows": 416,
+        "repeating": 416
+      },
+      "$.projectShape.facts[].fact.declarations[].value": {
+        "rows": 415,
+        "repeating": 415
+      },
+      "$.workItems.items[].doltRevision": {
+        "rows": 7952,
+        "repeating": 7952
+      }
+    },
+    "resolution": {
+      "predicate": "exactly one object in the /api/poc body with a string `identity` field whose whole value equals the anchor's targetId",
+      "servedIdentities": 285,
+      "servedIdentitiesInProjectShapeSources": 285,
+      "resolved": 883,
+      "total": 902,
+      "unresolvedByClassSchemeAndHits": {
+        "evidence:git-revision:0": 1,
+        "evidence:git-tree:0": 1,
+        "evidence:manual-mapping:0": 5,
+        "evidence:repository-file:0": 11,
+        "work:beads-dolt:0": 1
+      },
+      "secondMethod": {
+        "predicate": "the unresolved anchor's targetId occurs as a whole string value anywhere in the /api/poc body",
+        "unresolved": 19,
+        "occurring": 0
+      }
+    },
+    "deepDiveLeaves": {
+      "count": 1,
+      "equalToAnAnchorTargetId": 1
+    }
+  },
+  "supersedes": {
+    "pursuitFigures": "docs/pursuits/2026-09-22-vision-pursuit-data.json findings L11-F4, L11-M3, S6-F4 and S4-F6 (730 narrative blocks, 934 anchors, 740,796 bytes = 13.2% over 7,527 work items and 6,749 files), measured at an earlier Butlers revision",
+    "note": "the pursuit's '934 of 934 resolved anchors' names no resolution predicate; under the amendment's predicate the figure at this capture is 883 of 902"
+  },
+  "scriptCommitNote": "the script was extended after review round 1 (header-repeat sweep, second method, deep-dive leaves, identity population widened to every object with a string identity field); every figure here is from the extended script, re-run on the same two captures"
+}

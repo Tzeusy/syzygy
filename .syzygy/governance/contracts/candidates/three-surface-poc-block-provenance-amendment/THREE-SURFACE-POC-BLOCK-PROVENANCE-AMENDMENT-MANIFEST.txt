@@ -1,0 +1,12 @@
+# THREE-SURFACE POC BLOCK-PROVENANCE AMENDMENT MANIFEST
+# Candidate: binds nothing until the owner signs off a version of this
+# package (OWNER-DECISION-PACKET.md beside this file names the route).
+# 6 artifacts; rows sorted by codepoint path.
+# All rows take effect together or none do.
+# Rows hash PROPOSED bytes; signed openspec bytes remain unchanged.
+9187547d8cc17017ebd44132527d2d5e096d1ef9705de80cc4f1cf34531f6976  openspec/changes/three-surface-poc-experience/.openspec.yaml
+f29a01f6a5725f4ac7085fa04a62de757fd16153d507ae5e415ae0b501fdc0a4  openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
+5536f9d174a663778b04383c67bda301684430ecff04a6e1f3ba3dd769fb37bd  openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md
+6d39ea6f6111abaea32c74ce96c975ae53e077485f0ed8f7c97545e64d7ba295  openspec/changes/three-surface-poc-experience/design.md
+0650a6a3bc50158dc793802b9dcd40057b3199b3f7e9f8341a5bdc79cbea941a  openspec/changes/three-surface-poc-experience/proposal.md
+15d634bd60261fe8415d502762e744fd6360ad5967caa181239a351f96d9f9bb  openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md

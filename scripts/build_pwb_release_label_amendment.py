@@ -111,8 +111,13 @@ DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
 #: amendment (M15, ``syzygy-dov.15.1``) touches PWB-REQ-002 and the reader
 #: definitions, not PWB-REQ-001, but it also adds design decision 12 and
 #: capability row 34, so whichever is signed second is regenerated over the
-#: first's applied bytes and re-reviewed.
-PENDING_SIBLINGS = frozenset({"pwb-class-granular-extraction-amendment"})
+#: first's applied bytes and re-reviewed. The anchor-resolution amendment
+#: (N9, ``syzygy-u05.9``) touches only PWB-REQ-014 and the generated
+#: dependency declaration.
+PENDING_SIBLINGS = frozenset({
+    "pwb-anchor-resolution-amendment",
+    "pwb-class-granular-extraction-amendment",
+})
 
 REQ_001 = "PWB-REQ-001"
 #: Load-bearing fragments of the proposed PWB-REQ-001 text. Each must occur

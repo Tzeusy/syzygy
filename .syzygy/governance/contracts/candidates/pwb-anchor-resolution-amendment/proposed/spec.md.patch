@@ -1,0 +1,110 @@
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -1362,4 +1362,39 @@
+   and coordinates SHALL never serve as anchor identity.
+
++- **Anchor shape.** Every anchor the machine narrative serves SHALL take one
++  shape: its own identity, which begins with the identity of the one block it
++  belongs to followed by `#`; its target class and target identity; its
++  revision; the claims of that block it supports; the target's captured
++  label, tier and reason; and its locator.
++
++- **Anchor resolution count.** The machine narrative SHALL carry an
++  `anchorsResolved` pair on each anchored claim block, and one for the whole
++  narrative: the number of anchors that resolve, over the number of anchors.
++  - An anchor resolves when the machine answer at the same evaluation serves
++    exactly one record with an `identity` field of its own whose whole value
++    equals the anchor's target identity. A field that refers to another
++    record's identity, such as a stamp's or a support's source identity, is a
++    reference and not a record's own identity, and an identity composed from
++    other fields counts for nothing. An anchor whose target the machine answer
++    does not serve, or serves without an identity of its own, does not
++    resolve.
++  - This resolution runs from an anchor to a record of the machine answer. It
++    is not the relation RFC7-3 forbids, under which something resolves to
++    Polaris as its authority.
++  - Both numbers are counted, never estimated, and the narrative's pair is
++    the sum of its blocks' pairs. A count below its total SHALL be served as
++    counted, never rounded up, omitted or rendered as a pass. When the machine
++    answer at that evaluation serves no record with an identity of its own,
++    every pair is Unknown with its reason, never a count.
++  - The pair counts resolution and never confers authority. A block whose
++    every anchor resolves stays `presentation-artifact` and `non-citable`;
++    no field derived from the pair SHALL make a narrative unit citable or
++    stand in for an epistemic label. The pair is itself presentation: no
++    evidence, snapshot input or status claim SHALL take it as input.
++  - An opening carries no anchor set, so it carries no pair and the
++    narrative's pair counts nothing for it.
++  - The pair is a machine-narrative field, not a project-shape claim, and
++    Polaris need not render it.
++
+ - **Tree form.** Syzygy-authored framing SHALL read as an abstraction tree
+   under CC-REV-8.
+@@ -1458,8 +1493,13 @@
+   children, and every listed relationship with its drawn and undrawn
+   elements; mutate a child's state, a drawn element's support, a listed
+-  element's presence and each excluded SVG construct in turn.
++  element's presence and each excluded SVG construct in turn. Resolve every
++  anchor of the machine narrative against the machine answer at the same
++  evaluation, then withhold one resolved target's identity from the machine
++  answer and resolve again, and withhold every identity and resolve once
++  more.
+ - **Observable**: claim roles and non-authority attributes are machine-readable;
+   every claim has exact/minimal anchors and no downstream authority reference
+-  targets Polaris.
++  targets Polaris. Every anchor's shape and each anchored block's and the
++  narrative's `anchorsResolved` pair are machine-readable.
+ - **Oracle**: independent claim-to-source mapping establishes covering,
+   minimality, closed target class, durable identity, exact narrative-vs-kernel
+@@ -1474,5 +1514,14 @@
+   emitted SVG passes the allow-list, and each excluded construct, injected
+   alone, keeps that diagram out of both sinks. PWB-REQ-006's sink scan admits
+-  an emitted SVG only when the independent allow-list scan passes it.
++  an emitted SVG only when the independent allow-list scan passes it. Every
++  anchor carries every field of the one shape, and its identity begins with
++  the identity of the block that serves it followed by `#`. An independent
++  resolver that reads only the machine narrative's anchors and the machine
++  answer's bytes at the same evaluation, and imports no rendering code,
++  reproduces each block's `anchorsResolved` pair and the narrative's pair
++  exactly; withholding one resolved target's identity lowers the resolved
++  count of exactly the blocks anchored to it, by the number of their anchors
++  that name it, and every such block stays non-citable; withholding every
++  identity turns every pair Unknown.
+ - **Oracle independence**: expected source spans and reference targets come
+   from captured artifacts, not the rendered claim blocks. Expected groups,
+@@ -1480,5 +1529,6 @@
+   machine model and the named review record; an independent claim-to-child
+   mapping judges each opening's statements; SVG verdicts come from an
+-  independent allow-list scan, not the renderer.
++  independent allow-list scan, not the renderer. Expected resolution counts
++  come from that independent resolver, never from the narrative builder.
+ - **Falsifier**: an unclassified narrative unit, uncovered claim, surplus or
+   ambiguous anchor, missing non-citable attribute, or downstream citation to
+@@ -1486,6 +1536,10 @@
+   than its weakest child, counts, or stands in for Butlers text; a drawn
+   element with no claim; a listed element neither drawn nor disclosed; a
+-  diagram without its text equivalent; or an emitted SVG outside the
+-  allow-list.
++  diagram without its text equivalent; an emitted SVG outside the
++  allow-list; an anchor missing a field of the one shape or naming no block
++  or another block; an anchored block without an `anchorsResolved` pair, or a
++  pair that differs from the independent count, is rounded up, or is a count
++  where it should be Unknown; or a narrative unit made citable, or a status
++  claim fed, by its pair.
+
+ #### Scenario: A project claim is supported without making Polaris authority
+@@ -1550,4 +1604,14 @@
+ - **THEN** no SVG for that diagram reaches either sink
+ - **AND** its text equivalent remains and the failure is disclosed in place
++
++#### Scenario: Anchor resolution is counted, never made authority
++
++- **WHEN** the machine narrative serves an anchored block with three anchors,
++  two whose target identities the machine answer serves once and one whose
++  target it serves without an identity of its own
++- **THEN** the block's `anchorsResolved` pair is 2 of 3, and the narrative's
++  pair counts those three anchors
++- **AND** the block stays `non-citable` presentation, exactly as it would at
++  3 of 3
+
+ ```yaml

@@ -1,0 +1,129 @@
+--- a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
++++ b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
+@@ -68,17 +68,40 @@
+ entry carries that revision as provenance.
+
++- **One statement of provenance.** The observation so produced SHALL state
++  its provenance once, as one record in the shape each element of the machine
++  answer's entity and relationship provenance lists takes, and that record
++  names the revision. No other field of the observation, its own or an
++  entry's, SHALL hold the revision as its whole value.
++  - The capture instant stays on the observation beside that record, as the
++    second half of the observation's identity. It is not a second statement
++    of provenance.
++  - Every inventory entry carries that revision as provenance by belonging to
++    the observation. No inventory entry SHALL carry a field whose whole value
++    is the observation's revision or its capture instant.
++
+ - **Case**: a checker runs the POC against the configured repository at
+-  a known commit.
+-- **Observable**: the observation's revision and inventory appear in
+-  the machine answer; Orrery renders from it (POC-REQ-050).
+-- **Oracle**: compare the served revision against `git rev-parse HEAD`
+-  of the observed checkout, and a sampled file's served size and digest
+-  against `stat` and an independent digest of the same path at that
+-  commit; equality decides. Bounded: one revision, sampled entries.
++  a known commit, then sweeps every field of the served observation, its
++  own and every entry's; the denominator is the observation's own fields
++  and the complete served inventory.
++- **Observable**: the observation's provenance record and inventory
++  appear in the machine answer; Orrery renders from it (POC-REQ-050).
++- **Oracle**: compare the revision the provenance record names against
++  `git rev-parse HEAD` of the observed checkout, and a sampled file's
++  served size and digest against `stat` and an independent digest of the
++  same path at that commit; equality decides. Over every field of the
++  served observation, compare each whole value against the revision and
++  the capture instant: exactly one field holds the revision, the
++  provenance record's, and exactly one holds the capture instant, the
++  observation's own; an exhausted sweep decides. Bounded: one revision,
++  sampled entries for size and digest, every field for the sweep.
+ - **Oracle independence**: expected values come from git and the
+-  filesystem directly, never from the POC's own output.
+-- **Falsifier**: a served inventory entry whose revision, size, or
+-  digest differs from the repository's own state at the named commit,
+-  or an observation served without a revision.
++  filesystem directly, never from the POC's own output; the provenance
++  shape compared against is the one the machine answer's entities carry.
++- **Falsifier**: a provenance revision, or a sampled entry's size or
++  digest, that differs from the repository's own state at the named
++  commit; an observation served without a provenance record, with it in
++  another shape, or with any other field holding the revision; or an
++  inventory entry that carries the observation's revision or capture
++  instant.
+
+ #### Scenario: Structure observed at a commit
+@@ -87,6 +110,8 @@
+   commit R
+ - **THEN** the machine answer serves one code-structure observation
+-  identified by R, and every inventory entry cites R as its provenance
+-  revision
++  identified by R, whose one provenance record names R, and every
++  inventory entry takes R as its provenance revision from that record
++- **AND** no inventory entry carries R, or the observation's capture
++  instant, in a field of its own
+
+ ```yaml
+@@ -231,16 +256,43 @@
+ with every served work-item fact carrying that revision as provenance.
+
++- **One statement of provenance.** The observation so served SHALL state its
++  provenance once, as one record in the shape each element of the machine
++  answer's entity and relationship provenance lists takes, and that record
++  names the Dolt revision. No other field of the observation, its own or a
++  work-item fact's, SHALL hold the Dolt revision as its whole value.
++  - The capture instant stays on the observation beside that record, as the
++    second half of the observation's identity. It is not a second statement
++    of provenance.
++  - Every served work-item fact carries that revision as provenance by
++    belonging to the observation. No work-item fact SHALL carry a field whose
++    whole value is the observation's Dolt revision, or carry the capture
++    instant in any field other than a time the database itself records for
++    that item.
++
+ - **Case**: a checker runs work-item observation against the configured
+-  Beads Dolt database at a known Dolt head.
+-- **Observable**: the machine answer names the Dolt revision; a sampled
+-  item's served status and timestamps match the database.
+-- **Oracle**: compare the served Dolt revision against the database's
+-  own head revision queried directly, and a sampled item's fields
+-  against a direct SQL read at that revision; equality decides.
++  Beads Dolt database at a known Dolt head, then sweeps every field of the
++  served observation, its own and every item's; the denominator is the
++  observation's own fields and the complete served item set.
++- **Observable**: the machine answer names the Dolt revision in the
++  observation's provenance record; a sampled item's served status and
++  timestamps match the database.
++- **Oracle**: compare the Dolt revision the provenance record names
++  against the database's own head revision queried directly, and a
++  sampled item's fields against a direct SQL read at that revision;
++  equality decides. Over every field of the served observation, compare
++  each whole value against the Dolt revision and the capture instant:
++  exactly one field holds the Dolt revision, the provenance record's, and
++  exactly one holds the capture instant, the observation's own, leaving
++  out each item's created, updated and closed times, which the database
++  records; an exhausted sweep decides.
+ - **Oracle independence**: expected values come from querying Dolt
+-  directly, never from the POC's output.
++  directly, never from the POC's output; the provenance shape compared
++  against is the one the machine answer's entities carry.
+ - **Falsifier**: a served work-item observation with no Dolt revision,
+-  or a sampled field differing from the database's value at the named
+-  revision.
++  without a provenance record, with it in another shape, or with any other
++  field holding the Dolt revision; a sampled field differing from the
++  database's value at the named revision; or a work-item fact that carries
++  the observation's Dolt revision, or its capture instant outside a time
++  the database records for that item.
+
+ #### Scenario: Items read at a Dolt head
+@@ -248,6 +300,8 @@
+ - **WHEN** work-item observation runs while the Beads Dolt database is
+   at revision D
+-- **THEN** the served observation is identified by D and sampled item
+-  facts equal direct reads at D
++- **THEN** the served observation is identified by D, its one provenance
++  record names D, and sampled item facts equal direct reads at D
++- **AND** no work-item fact carries D, or the observation's capture
++  instant, in a field of its own
+
+ ```yaml
