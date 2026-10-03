@@ -75,7 +75,7 @@ describe('captured request (text mode)', () => {
       expect(captured.body).not.toContain(runDir);       // no cwd, home or config path in the request
       expect(captured.body).not.toContain('# Environment');
       expect(captured.body).not.toContain('CLAUDE.md');
-      expect(reply).toEqual({ body: '{"stage":"inventory"}', model: 'capture-model', usageUnits: 49 });
+      expect(reply).toEqual({ body: '{"stage":"inventory"}', model: 'capture-model', usageUnits: 1 });   // 49 tokens round up to one unit
       expect(readdirSync(handle.cwd)).toEqual([]);          // working directory stays empty
       expect(readdirSync(runDir).sort()).toEqual(['config', 'cwd', 'home', 'tmp', 'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state']);
       expect(proxy.hits).toEqual([]);                      // no proxy-honouring client tried another host
@@ -130,6 +130,27 @@ describe('captured request (text mode)', () => {
   });
 });
 
+describe('usage ceiling (dossier-units-v1)', () => {
+  it('refuses before arming or sending when the permit leaves no room for one output token', async () => {
+    const e = envelope();
+    const room = Buffer.byteLength(e.system) + Buffer.byteLength(e.input);
+    const h = make(config());
+    await expect(h.generate({ permit: { ...permit, maxUsageUnits: Math.floor(room / 1000) }, stage: 'inventory', system: e.system, input: e.input, responseSchema: schema, signal: new AbortController().signal }))
+      .rejects.toMatchObject({ code: 'budget-too-small', attempts: 0 });
+    expect(endpoint.requests).toHaveLength(0);
+    expect(h.attempts()).toHaveLength(0);
+  });
+  it('sends max_tokens so that input bytes plus output tokens fit the unit ceiling', async () => {
+    const e = envelope();
+    const bytes = Buffer.byteLength(e.system) + Buffer.byteLength(e.input);
+    const units = Math.ceil((bytes + 700) / 1000);
+    await make(config()).generate({ permit: { ...permit, maxUsageUnits: units, maxOutputBytes: 1_000_000 }, stage: 'inventory', system: e.system, input: e.input, responseSchema: schema, signal: new AbortController().signal });
+    const sent = (JSON.parse(endpoint.messages()[0]!.body) as { max_tokens: number }).max_tokens;
+    expect(sent).toBe(units * 1000 - bytes);
+    expect(bytes + sent).toBeLessThanOrEqual(units * 1000);
+  });
+});
+
 describe('version pin', () => {
   it('refuses an unpinned SDK at construction and fails a call whose CLI reports another version', async () => {
     expect(() => createAgentSdkGenerate(config({ pin: { sdk: '0.0.1', cli: '2.1.288' } }))).toThrow(AgentSdkProviderError);
@@ -161,9 +182,9 @@ describe('retry and receipts', () => {
     const reply = await call(handle, envelope());
     expect(endpoint.messages()).toHaveLength(3);
     expect(seen).toEqual(handle.attempts());
-    expect(seen.map(r => [r.try, r.outcome, r.httpStatus, r.usageUnits])).toEqual([[1, 'rate-limited', 429, 0], [2, 'overloaded', 529, 0], [3, 'completed', null, 8]]);
+    expect(seen.map(r => [r.try, r.outcome, r.httpStatus, r.usageUnits])).toEqual([[1, 'rate-limited', 429, 0], [2, 'overloaded', 529, 0], [3, 'completed', null, 1]]);
     expect(seen.map(r => r.backoffMs)).toEqual([1, 2, 0]);
-    expect(reply.usageUnits).toBe(8);
+    expect(reply.usageUnits).toBe(1);
     for (const r of endpoint.messages()) expect(acceptCapturedRequest(r, expectation(envelope())).accepted).toBe(true);
   });
 
@@ -231,7 +252,7 @@ describe('through the pipeline', () => {
     const request: PipelineRequest = {
       requestId: 'r1', projectId: 'project-a', snapshotId: 's1', startedAt: Date.now(),
       routes: { inventory: 'agent-sdk', plan: 'agent-sdk', author: 'agent-sdk', edit: 'agent-sdk', fidelity: 'agent-sdk', repair: 'agent-sdk' },
-      budget: { maxCalls: 10, maxInputBytes: 200_000, maxOutputBytes: 20_000, maxUsageUnits: 100_000, maxElapsedMs: 120_000, maxRepairCycles: 0, accountingPolicy: 'agent-sdk-tokens-v1' },
+      budget: { maxCalls: 10, maxInputBytes: 200_000, maxOutputBytes: 20_000, maxUsageUnits: 100_000, maxElapsedMs: 120_000, maxRepairCycles: 0, accountingPolicy: 'dossier-units-v1' },
       sources: [source()], readerQuestions: [{ id: 'why', topics: [], text: 'Why does this project exist?' }], requestedAssets: [],
     };
     const handle = make(config());
@@ -258,7 +279,7 @@ describe('through the pipeline', () => {
       expect(acceptCapturedRequest(captured, expectation({ system: sent.system[1]!.text, input: sent.messages[0]!.content[0]!.text }, { maxTokens: 5_000 }))).toEqual({ accepted: true, violations: [] });
       expect(sent.system[1]!.text).toBe(promptForStage(stage).system);
     });
-    expect(outcomes.map(o => o.kind === 'validated' ? o.usageUnits : -1)).toEqual([110, 110, 110, 110, 110]);
+    expect(outcomes.map(o => o.kind === 'validated' ? o.usageUnits : -1)).toEqual([1, 1, 1, 1, 1]);   // 110 tokens per stage round up to one unit
     expect(digestCanonicalJson({ ok: true }, { maxBytes: 100, maxNodes: 10, maxDepth: 4 }).digest).toMatch(/^[0-9a-f]{64}$/);
   });
 });
@@ -326,20 +347,25 @@ describe('diagnostic environment', () => {
 });
 
 describe('accounting and budget', () => {
-  it('reports null usage when a try reports none, and when a failed try before it reported none', async () => {
+  it('counts a reply that reports no usage at the full ceiling its permit allowed, never at zero', async () => {
     const noUsage = resultMessage({ usage: undefined });
-    expect((await call(make(config({ query: fakeQuery([[noUsage]]) })), envelope())).usageUnits).toBeNull();
+    const h = make(config({ query: fakeQuery([[noUsage]]) }));
+    expect((await call(h, envelope())).usageUnits).toBe(permit.maxUsageUnits);
+    expect(h.attempts()[0]!.usageUnits).toBeNull();   // the attempt record keeps the Unknown
+  });
+  it('makes no further try after a rejected try whose billing is unknown', async () => {
     const rateLimited = (usage: unknown) => resultMessage({ is_error: true, api_error_status: 429, usage });
     const h = make(config({ query: fakeQuery([[rateLimited(undefined)], [resultMessage()]]) }));
-    expect((await call(h, envelope())).usageUnits).toBeNull();
+    await expect(call(h, envelope())).rejects.toMatchObject({ code: 'rate-limited', attempts: 1, spentUnits: null });
+    expect(h.attempts()).toHaveLength(1);
   });
   it('counts a rejected try as unbilled only on the provider\'s documented error body', async () => {
     endpoint.script({ kind: 'status', status: 429, body: '{"oops":1}' }, { kind: 'text', text: '{}' });
     const h = make(config());
-    expect((await call(h, envelope())).usageUnits).toBeNull();
+    await expect(call(h, envelope())).rejects.toMatchObject({ code: 'rate-limited', attempts: 1, spentUnits: null });
     expect(h.attempts()[0]!.usageUnits).toBeNull();
     endpoint.script({ kind: 'status', status: 429 }, { kind: 'text', text: '{}' });
-    expect((await call(make(config()), envelope())).usageUnits).toBe(18);
+    expect((await call(make(config()), envelope())).usageUnits).toBe(1);
   });
   it('strips the OS, architecture and runtime-version headers only when the profile says so', async () => {
     await call(make(config({ stripFingerprint: true })), envelope());
@@ -353,7 +379,7 @@ describe('accounting and budget', () => {
   });
   it('carries the tokens spent on the final error', async () => {
     const limited = resultMessage({ is_error: true, api_error_status: 429, usage: { input_tokens: 3, output_tokens: 2 } });
-    await expect(call(make(config({ query: fakeQuery([[limited]]) })), envelope())).rejects.toMatchObject({ code: 'rate-limited', attempts: 3, spentUnits: null });   // the CLI's own usage is not evidence a rejected request was unbilled
+    await expect(call(make(config({ query: fakeQuery([[limited]]) })), envelope())).rejects.toMatchObject({ code: 'rate-limited', attempts: 1, spentUnits: null });   // the CLI's own usage is not evidence a rejected request was unbilled, and an unknown try ends the call
   });
   it('honours retry-after over the computed backoff, and stops when it cannot fit the budget', async () => {
     const slept: number[] = [];

@@ -33,3 +33,4 @@ export {
   type MessagesApiProviderConfig,
   type MessagesApiProviderHandle,
 } from './messages-api-provider.js';
+export { DOSSIER_UNITS_POLICY, MAX_OUTPUT_TOKENS, TOKENS_PER_UNIT, countedUnits, minimumUsageUnits, outputTokenCap, tokenUnits, unitsForTokens } from './usage-units.js';

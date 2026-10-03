@@ -28,12 +28,30 @@ describe('Messages API route', () => {
     const captured = endpoint.requests[0]!;
     expect(acceptMessagesApiRequest(captured, expectation)).toEqual({ accepted: true, violations: [] });
     expect(JSON.parse(captured.body)).toEqual({ model: 'claude-opus-5-5', max_tokens: 4000, system: e.system, messages: [{ role: 'user', content: e.input }], output_config: { effort: 'high' }, stream: true });
-    expect(reply).toEqual({ body: '{"stage":"inventory"}', model: 'capture-model', usageUnits: 49 });
+    expect(reply).toEqual({ body: '{"stage":"inventory"}', model: 'capture-model', usageUnits: 1 });   // 49 tokens round up to one unit
   });
 
   it('lets permit allowances lower max_tokens but never raise it', async () => {
     await make(config()).generate({ permit: { ...permit, maxOutputBytes: 321 }, stage: 'inventory', system: e.system, input: e.input, responseSchema: {}, signal: new AbortController().signal });
     expect(JSON.parse(endpoint.requests[0]!.body).max_tokens).toBe(321);
+  });
+
+  it('refuses before arming or sending when the permit leaves no room for one output token', async () => {
+    const bytes = Buffer.byteLength(e.system) + Buffer.byteLength(e.input);
+    const h = make(config());
+    await expect(h.generate({ permit: { ...permit, maxUsageUnits: Math.floor(bytes / 1000) }, stage: 'inventory', system: e.system, input: e.input, responseSchema: {}, signal: new AbortController().signal }))
+      .rejects.toMatchObject({ code: 'budget-too-small', attempts: 0 });
+    expect(endpoint.requests).toHaveLength(0);
+    expect(h.attempts()).toHaveLength(0);
+  });
+
+  it('sends max_tokens so that input bytes plus output tokens fit the unit ceiling', async () => {
+    const bytes = Buffer.byteLength(e.system) + Buffer.byteLength(e.input);
+    const units = Math.ceil((bytes + 700) / 1000);
+    await make(config({ maxOutputTokens: 64_000 })).generate({ permit: { ...permit, maxUsageUnits: units, maxOutputBytes: 1_000_000 }, stage: 'inventory', system: e.system, input: e.input, responseSchema: {}, signal: new AbortController().signal });
+    const sent = JSON.parse(endpoint.requests[0]!.body).max_tokens as number;
+    expect(sent).toBe(units * 1000 - bytes);
+    expect(bytes + sent).toBeLessThanOrEqual(units * 1000);
   });
 
   it('rule 6: the acceptance predicate rejects each added or altered field', async () => {
@@ -75,8 +93,8 @@ describe('Messages API route', () => {
   it('retries 429 then 529, reports every try, and stops on exhaustion or other statuses', async () => {
     endpoint.script({ kind: 'status', status: 429 }, { kind: 'status', status: 529 }, { kind: 'text', text: '{}', inputTokens: 5, outputTokens: 3 });
     const h = make(config());
-    expect((await call(h)).usageUnits).toBe(8);
-    expect(h.attempts().map(r => [r.try, r.outcome, r.httpStatus, r.usageUnits, r.backoffMs])).toEqual([[1, 'rate-limited', 429, 0, 1], [2, 'overloaded', 529, 0, 2], [3, 'completed', null, 8, 0]]);
+    expect((await call(h)).usageUnits).toBe(1);
+    expect(h.attempts().map(r => [r.try, r.outcome, r.httpStatus, r.usageUnits, r.backoffMs])).toEqual([[1, 'rate-limited', 429, 0, 1], [2, 'overloaded', 529, 0, 2], [3, 'completed', null, 1, 0]]);
     expect(endpoint.requests).toHaveLength(3);
     endpoint.requests.length = 0;
     endpoint.script({ kind: 'status', status: 429 }, { kind: 'status', status: 429 }, { kind: 'status', status: 429 });
@@ -219,10 +237,12 @@ describe('completion and billing evidence', () => {
     endpoint.script({ kind: 'text', text: '{"partial":', stopReason: 'max_tokens' });
     await expect(call(make(config()))).rejects.toMatchObject({ code: 'incomplete' });
   });
-  it('reports unknown usage when the reply carries none', async () => {
+  it('counts a reply that carries no usage at the full ceiling its permit allowed, never at zero', async () => {
     endpoint.script({ kind: 'text', text: '{}', noUsage: true });
-    const reply = await call(make(config()));
-    expect(reply.usageUnits).toBeNull();
+    const h = make(config());
+    const reply = await call(h);
+    expect(reply.usageUnits).toBe(permit.maxUsageUnits);
+    expect(h.attempts()[0]!.usageUnits).toBeNull();   // the attempt record keeps the Unknown
   });
   it('refuses a reply that mixes text with a tool call', async () => {
     endpoint.script({ kind: 'mixed', text: '{}' });
@@ -231,7 +251,8 @@ describe('completion and billing evidence', () => {
   it('counts a rejected try as unbilled only on the provider\'s documented error body', async () => {
     endpoint.script({ kind: 'status', status: 429, body: '{"oops":1}' }, { kind: 'text', text: '{}' });
     const h = make(config());
-    expect((await call(h)).usageUnits).toBeNull();
+    await expect(call(h)).rejects.toMatchObject({ code: 'rate-limited', attempts: 1, spentUnits: null });   // an unknown try ends the call: no further try
+    expect(h.attempts()).toHaveLength(1);
     expect(h.attempts()[0]!.usageUnits).toBeNull();
   });
   it('strips the OS, architecture and runtime-version headers only when the profile says so', async () => {

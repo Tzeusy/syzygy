@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { VERSION as INSTALLED_MESSAGES_SDK_VERSION } from '@anthropic-ai/sdk/version';
 import type { DispatchPermit, PipelinePorts, ProviderReply } from '@syzygy/polaris-generation-core';
 import { ambientNetworkEnvironment, assertAllowedUpstream, parseRetryAfterMs, startEgressGate, type EgressGate, type EgressGateOptions, type GateDecision } from './egress-gate.js';
+import { MAX_OUTPUT_TOKENS, countedUnits, outputTokenCap, tokenUnits } from './usage-units.js';
 import type { CapturedRequest, RequestAcceptance } from './request-acceptance.js';
 
 type GenerateInput = Parameters<PipelinePorts['generate']>[0];
@@ -9,7 +10,7 @@ type GenerateInput = Parameters<PipelinePorts['generate']>[0];
 /** Version the capture test ran against; a bump re-runs it and re-derives the header literals below. */
 export const PINNED_MESSAGES_SDK_VERSION = '0.131.0';
 
-export type MessagesApiFailure = 'unpinned-version' | 'ambient-environment' | 'incomplete' | 'invalid-config' | 'concurrent-call' | 'aborted' | 'deadline' | 'egress-refused' | 'rate-limited' | 'provider-error' | 'no-output';
+export type MessagesApiFailure = 'unpinned-version' | 'ambient-environment' | 'incomplete' | 'invalid-config' | 'concurrent-call' | 'aborted' | 'deadline' | 'egress-refused' | 'rate-limited' | 'provider-error' | 'no-output' | 'budget-too-small';
 export class MessagesApiProviderError extends Error {
   /** Tokens billed across the tries made so far; null when any try reported none. */
   spentUnits: number | null = 0;
@@ -119,7 +120,8 @@ export function createMessagesApiGenerate(config: MessagesApiProviderConfig): Me
 
   const generate: PipelinePorts['generate'] = async input => {
     const { gate, client } = await start().catch(error => { started = undefined; throw error; });
-    const maxTokens = Math.max(1, Math.min(input.permit.maxOutputBytes, input.permit.maxUsageUnits, config.maxOutputTokens));
+    const maxTokens = outputTokenCap(input.permit, input.system, input.input, Math.min(config.maxOutputTokens, MAX_OUTPUT_TOKENS));
+    if (maxTokens === null) throw new MessagesApiProviderError('budget-too-small', 0);   // nothing was armed or sent
     const expected = { model: config.model, system: input.system, input: input.input, effort: config.effort, maxTokens, apiKey: config.apiKey, ...(config.thinking === undefined ? {} : { thinking: config.thinking }) };
     const begun = now();
     const id = input.permit.attemptId;
@@ -146,8 +148,7 @@ export function createMessagesApiGenerate(config: MessagesApiProviderConfig): Me
       try {
         const message = await client.messages.stream(messagesApiBody(config, input.system, input.input, maxTokens) as unknown as Anthropic.MessageStreamParams, { signal: controller.signal }).finalMessage();
         const u = message.usage;
-        const parts = [u.input_tokens, u.output_tokens, u.cache_creation_input_tokens ?? 0, u.cache_read_input_tokens ?? 0];
-        units = parts.every(p => Number.isSafeInteger(p) && p >= 0) ? parts.reduce((a, b) => a + b, 0) : null;
+        units = tokenUnits([u.input_tokens, u.output_tokens, u.cache_creation_input_tokens ?? 0, u.cache_read_input_tokens ?? 0]);
         total = total === null || units === null ? null : total + units;
         if (message.stop_reason !== 'end_turn') {
           record({ attemptId: id, try: n, outcome: 'failed', httpStatus: null, usageUnits: units, backoffMs: 0 });
@@ -160,7 +161,7 @@ export function createMessagesApiGenerate(config: MessagesApiProviderConfig): Me
           throw fail('no-output', n);
         }
         record({ attemptId: id, try: n, outcome: 'completed', httpStatus: null, usageUnits: units, backoffMs: 0 });
-        return { body: text, model: message.model, usageUnits: total } satisfies ProviderReply;
+        return { body: text, model: message.model, usageUnits: countedUnits(total, input.permit) } satisfies ProviderReply;
       } catch (error) {
         if (error instanceof MessagesApiProviderError) throw error;
         total = null;   // the try's billing is unknown unless a 429/529 below says otherwise
@@ -176,7 +177,8 @@ export function createMessagesApiGenerate(config: MessagesApiProviderConfig): Me
           const header = error instanceof Anthropic.APIError ? error.headers?.get('retry-after') : undefined;
           const hinted = Math.max(parseRetryAfterMs(header, Date.now()) ?? 0, gate.takeRetryAfterMs() ?? 0);
           const delay = Math.max(Math.min(retry.maxDelayMs, retry.baseDelayMs * 2 ** (n - 1)), hinted);
-          const more = n < retry.maxAttempts && now() - begun + delay <= retry.budgetMs;
+          // A try whose billing is unknown has used the call's whole ceiling: no further try is made.
+          const more = total !== null && n < retry.maxAttempts && now() - begun + delay <= retry.budgetMs;
           record({ attemptId: id, try: n, outcome: status === 429 ? 'rate-limited' : 'overloaded', httpStatus: status, usageUnits: unbilledTry ? 0 : null, backoffMs: more ? delay : 0 });
           if (!more) throw fail('rate-limited', n, status);
           await sleep(delay, input.signal);

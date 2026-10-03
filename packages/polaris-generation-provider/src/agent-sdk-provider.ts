@@ -4,6 +4,7 @@ import { dirname, isAbsolute, join } from 'node:path';
 import { query as sdkQuery, type Options } from '@anthropic-ai/claude-agent-sdk';
 import type { DispatchPermit, PipelinePorts, ProviderReply } from '@syzygy/polaris-generation-core';
 import { assertAllowedUpstream, startEgressGate, type EgressGate, type EgressGateOptions } from './egress-gate.js';
+import { MAX_OUTPUT_TOKENS, countedUnits, outputTokenCap, tokenUnits } from './usage-units.js';
 import { PINNED_AGENT_SDK_VERSION, PINNED_CLAUDE_CODE_VERSION, acceptCapturedRequest, type ExpectedRequest } from './request-acceptance.js';
 
 export { PINNED_AGENT_SDK_VERSION, PINNED_CLAUDE_CODE_VERSION };
@@ -20,7 +21,7 @@ export const AGENT_SDK_BUILTIN_TOOLS: readonly string[] = [
 ];
 
 export type AgentSdkProviderFailure = 'unpinned-version' | 'invalid-config' | 'cwd-not-empty' | 'concurrent-call' | 'aborted' | 'deadline'
-  | 'egress-refused' | 'rate-limited' | 'provider-error' | 'no-output' | 'transport-failed';
+  | 'egress-refused' | 'rate-limited' | 'provider-error' | 'no-output' | 'transport-failed' | 'budget-too-small';
 
 /** Messages are code-only: they never carry the request, the reply or a credential. */
 export class AgentSdkProviderError extends Error {
@@ -124,12 +125,9 @@ interface ResultLike {
   readonly usage?: { readonly input_tokens?: unknown; readonly output_tokens?: unknown; readonly cache_creation_input_tokens?: unknown; readonly cache_read_input_tokens?: unknown };
 }
 
-/** Accounting policy 'agent-sdk-tokens-v1': usage units are input, cache-creation, cache-read and output tokens summed. */
-const tokenUnits = (usage: ResultLike['usage']): number | null => {
-  if (usage === undefined || usage === null) return null;
-  const parts = [usage.input_tokens, usage.output_tokens, usage.cache_creation_input_tokens ?? 0, usage.cache_read_input_tokens ?? 0];
-  return parts.every(p => typeof p === 'number' && Number.isSafeInteger(p) && p >= 0) ? (parts as number[]).reduce((a, b) => a + b, 0) : null;
-};
+/** Accounting policy `dossier-units-v1` (usage-units.ts): input, cache-creation, cache-read and output tokens summed, in 1,000-token units rounded up. */
+const usageUnitsOf = (usage: ResultLike['usage']): number | null => (usage === undefined || usage === null ? null
+  : tokenUnits([usage.input_tokens, usage.output_tokens, usage.cache_creation_input_tokens ?? 0, usage.cache_read_input_tokens ?? 0]));
 
 export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdkProviderHandle {
   if (!isAbsolute(config.runDir) || config.model.length === 0 || config.auth.apiKey.length === 0) throw new AgentSdkProviderError('invalid-config', 0);
@@ -168,7 +166,8 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
     // A non-empty working directory means something other than this adapter wrote there.
     if (readdirSync(cwd).length !== 0) throw new AgentSdkProviderError('cwd-not-empty', 0);
     const { gate, permit: slot } = await gateFor();
-    const maxTokens = Math.max(1, Math.min(input.permit.maxOutputBytes, input.permit.maxUsageUnits, config.maxOutputTokens ?? Infinity));
+    const maxTokens = outputTokenCap(input.permit, input.system, input.input, config.maxOutputTokens ?? MAX_OUTPUT_TOKENS);
+    if (maxTokens === null) throw new AgentSdkProviderError('budget-too-small', 0);   // nothing was armed or sent
     const expected: ExpectedRequest = { model: config.model, system: input.system, input: input.input, effort, maxTokens, thinking, apiKey: config.auth.apiKey,
       ...(mode === 'schema-tool' ? { responseSchema: input.responseSchema } : {}) };
     const started = now();
@@ -214,7 +213,7 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
       const refusedHere = gate.decisions.slice(decisionsBefore).filter(d => d.decision === 'refused');
       const rejectedStatus = result?.is_error === true && (result.api_error_status === 429 || result.api_error_status === 529);
       // A rejected request counts as unbilled only on the provider's own error body, seen by the gate; the CLI's synthetic zero usage is not evidence.
-      const units = result === undefined ? null : rejectedStatus ? (gate.takeRejectedUnbilled() ? 0 : null) : tokenUnits(result.usage);
+      const units = result === undefined ? null : rejectedStatus ? (gate.takeRejectedUnbilled() ? 0 : null) : usageUnitsOf(result.usage);
       totalUnits = totalUnits === null || units === null ? null : totalUnits + units;
       if (input.signal.aborted) { record({ attemptId: input.permit.attemptId, try: n, outcome: 'aborted', httpStatus: null, usageUnits: units, backoffMs: 0 }); throw fail('aborted', n); }
       if (timedOut) { record({ attemptId: input.permit.attemptId, try: n, outcome: 'aborted', httpStatus: null, usageUnits: units, backoffMs: 0 }); throw fail('deadline', n); }
@@ -224,7 +223,8 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
       const status = typeof result.api_error_status === 'number' ? result.api_error_status : null;
       if (result.is_error === true && (status === 429 || status === 529)) {
         const delay = Math.max(Math.min(retry.maxDelayMs, retry.baseDelayMs * 2 ** (n - 1)), gate.takeRetryAfterMs() ?? 0);
-        const more = n < retry.maxAttempts && now() - started + delay <= retry.budgetMs;
+        // A try whose billing is unknown has used the call's whole ceiling: no further try is made.
+        const more = totalUnits !== null && n < retry.maxAttempts && now() - started + delay <= retry.budgetMs;
         record({ attemptId: input.permit.attemptId, try: n, outcome: status === 429 ? 'rate-limited' : 'overloaded', httpStatus: status, usageUnits: units, backoffMs: more ? delay : 0 });
         if (!more) throw fail('rate-limited', n, status);
         await sleep(delay, input.signal);
@@ -240,7 +240,7 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
         throw fail('no-output', n);
       }
       record({ attemptId: input.permit.attemptId, try: n, outcome: 'completed', httpStatus: status, usageUnits: units, backoffMs: 0 });
-      return { body, model, usageUnits: totalUnits };
+      return { body, model, usageUnits: countedUnits(totalUnits, input.permit) };
     }
   };
   return {
