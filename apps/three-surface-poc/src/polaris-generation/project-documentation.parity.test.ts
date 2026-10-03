@@ -1,7 +1,8 @@
-import { spawnSync } from 'node:child_process';
+import { execFile } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 
 import { describe, expect, it } from 'vitest';
 
@@ -40,11 +41,11 @@ describe('project-documentation rule: parity with the builder reference reader',
   it('agrees on every generated path in every variant', () => { expect(disagreements(SET.generated)).toEqual([]); });
 
   // Live while #326's builder is on the tree: the snapshot must be what the builder exports now.
-  it.skipIf(!existsSync(BUILDER))('the snapshot is the builder export (needs the #326 builder)', () => {
-    const run = spawnSync('python3', [join(REPO_ROOT, 'scripts/export_screening_scope_v2_parity.py')], { cwd: REPO_ROOT, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
-    expect(run.status, run.stderr).toBe(0);
+  // Asynchronous: the suite guard keeps long tools off the synchronous child-process calls.
+  it.skipIf(!existsSync(BUILDER))('the snapshot is the builder export (needs the #326 builder)', async () => {
+    const run = await promisify(execFile)('python3', [join(REPO_ROOT, 'scripts/export_screening_scope_v2_parity.py')], { cwd: REPO_ROOT, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
     expect(run.stdout).toBe(readFileSync(SNAPSHOT, 'utf8'));
-  });
+  }, 60_000);
 });
 
 describe('project-documentation rule: reading the rule object', () => {
