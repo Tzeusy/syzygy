@@ -4,12 +4,14 @@
 > decision, and no act is performed by reading it. It is offered only after a
 > confirming review.
 
-> **Unreviewed repair.** Repaired after the final (4th) review round. This
-> delta, 70 insertions and 28 deletions in 8 files (commit 33b15a65 over the reviewed
-> commit 72ddd762: this packet, the semantic delta, the manifest, four patches
-> and the builder; it excludes the retained round-4 raw, the round-4
-> dispositions and this statement), is unreviewed. The owner may sign the
-> reviewed state at 72ddd762 plus this delta, or ask for one more review.
+> **Review state.** Round 4 returned REVISE and was repaired (commit 33b15a65);
+> round 5, which read that repair at commit fd4e2509, also returned REVISE. The
+> round-5 repairs, 77 insertions and 37 deletions in 9 files (commit 39d83718
+> over fd4e2509: this packet, the semantic delta, the review brief, the
+> manifest, four patches and the builder; it excludes the retained round-5 raw,
+> the round-5 dispositions and this statement), are unreviewed until round 6
+> reads them. If round 6 does not confirm them, the recorder stays unfrozen and
+> the owner chooses what to do next; nothing here is signed on unreviewed bytes.
 
 ## What this is, in plain words
 
