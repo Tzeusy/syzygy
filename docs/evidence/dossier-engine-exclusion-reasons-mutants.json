@@ -1,15 +1,15 @@
 {
   "subject": {
-    "commit": "c75cfb992e5c23297338dc9fd5d8b47599adae38",
+    "commit": "05b453134d3d08fc141af28c170230ed389b78b8",
     "branch": "agent/dossier-engine-7",
     "fileSha256": {
-      "apps/three-surface-poc/src/polaris-generation/source-adapter.ts": "2dc6d23eaa2fa6dd36348d9a3cd89cb4c04f867fec2bc404a3d8f427cf722ef6",
-      "packages/polaris-generation-core/src/generation-source.ts": "0948d9d745a6b414c35a1eb20567ea9756d65401b3ae4eb033219a7485361c22"
+      "apps/three-surface-poc/src/polaris-generation/source-adapter.ts": "bf065f884422bc63a0867d9986eb3fcad9be01e4ae690a4a380382d0cf70e6cc",
+      "packages/polaris-generation-core/src/generation-source.ts": "9d44c20519bf8b08cc725e27f988efb4d465b69a13a66cf323485529cb1f55f3"
     }
   },
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/polaris-generation-core",
-  "ranAt": "2026-10-03T09:39:24+00:00",
+  "ranAt": "2026-10-03T10:32:56+00:00",
   "mutants": [
     {
       "id": "validator-reason",
@@ -82,20 +82,20 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 5,
+      "totalTests": 9,
       "note": "type error in the adapter also surfaces; killed by the adapter membership test"
     },
     {
-      "id": "drop-policy-excluded",
+      "id": "drop-secret-detector-match",
       "file": "packages/polaris-generation-core/src/generation-source.ts",
-      "old": "  'policy-excluded',\n",
+      "old": "  'secret-detector-match',\n",
       "new": "",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts"
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 5
+      "totalTests": 9
     },
     {
       "id": "duplicate-reason",
@@ -119,19 +119,19 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 5
+      "totalTests": 9
     },
     {
       "id": "adapter-secret-default",
       "file": "apps/three-surface-poc/src/polaris-generation/source-adapter.ts",
-      "old": "(record.exclusion.exclusionReason ?? 'policy-excluded')",
+      "old": "(record.exclusion.exclusionReason ?? 'secret-detector-match')",
       "new": "(record.exclusion.exclusionReason ?? 'denied-path')",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts"
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 5
+      "totalTests": 9
     },
     {
       "id": "adapter-unavailable-reason",
@@ -143,7 +143,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 5
+      "totalTests": 9
     },
     {
       "id": "adapter-passes-sentence",
@@ -155,7 +155,19 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 5
+      "totalTests": 9
+    },
+    {
+      "id": "excluded-id-plain-sha256",
+      "file": "apps/three-surface-poc/src/polaris-generation/source-adapter.ts",
+      "old": "createHmac('sha256', runKey).update(source.identity)",
+      "new": "createHash('sha256').update(source.identity)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 9
     }
   ]
 }
