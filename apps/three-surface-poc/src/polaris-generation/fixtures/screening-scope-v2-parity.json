@@ -1,6 +1,6 @@
 {
  "builder": "scripts/build_public_source_screening_scope_v2.py",
- "builderSha256": "bbe776a6f1bff494e45d770e8a302a46851da99c3aeda5e1d7972ff6c1172bf3",
+ "builderSha256": "4e49e277886fe4a319154543bda5ce89129d29addab63c7fc0a7b6fac3808452",
  "variantOrder": [
   "none",
   "manifesto",
@@ -22,7 +22,7 @@
     },
     {
      "id": "licenses-tree",
-     "rule": "a path of exactly two segments whose first segment is one of licenseTreeRoots and whose name ends with one of licenseTreeSuffixes and is longer than it"
+     "rule": "a path of exactly two segments whose first segment is one of licenseTreeRoots and whose name ends with one of licenseTreeSuffixes and is longer than it, and in which no word of the file name without its extension is in docExcludedTokens (split as for docs-tree)"
     }
    ],
    "rootStemNumericPrefix": {
@@ -124,7 +124,7 @@
     },
     {
      "id": "licenses-tree",
-     "rule": "a path of exactly two segments whose first segment is one of licenseTreeRoots and whose name ends with one of licenseTreeSuffixes and is longer than it"
+     "rule": "a path of exactly two segments whose first segment is one of licenseTreeRoots and whose name ends with one of licenseTreeSuffixes and is longer than it, and in which no word of the file name without its extension is in docExcludedTokens (split as for docs-tree)"
     }
    ],
    "rootStemNumericPrefix": {
@@ -225,7 +225,7 @@
     },
     {
      "id": "licenses-tree",
-     "rule": "a path of exactly two segments whose first segment is one of licenseTreeRoots and whose name ends with one of licenseTreeSuffixes and is longer than it"
+     "rule": "a path of exactly two segments whose first segment is one of licenseTreeRoots and whose name ends with one of licenseTreeSuffixes and is longer than it, and in which no word of the file name without its extension is in docExcludedTokens (split as for docs-tree)"
     }
    ],
    "rootStemNumericPrefix": {
@@ -326,7 +326,7 @@
     },
     {
      "id": "licenses-tree",
-     "rule": "a path of exactly two segments whose first segment is one of licenseTreeRoots and whose name ends with one of licenseTreeSuffixes and is longer than it"
+     "rule": "a path of exactly two segments whose first segment is one of licenseTreeRoots and whose name ends with one of licenseTreeSuffixes and is longer than it, and in which no word of the file name without its extension is in docExcludedTokens (split as for docs-tree)"
     }
    ],
    "rootStemNumericPrefix": {
@@ -447,6 +447,12 @@
   ["docs/notes.txt", [true, true, true, true]],
   ["licenses/agpl-3.0.txt", [true, true, true, true]],
   ["LICENSES/rsal.TXT", [true, true, true, true]],
+  ["licenses/SECURITY.md", [false, false, false, false]],
+  ["licenses/governance-policy.md", [false, false, false, false]],
+  ["licenses/CODE_OF_CONDUCT.md", [false, false, false, false]],
+  ["licenses/doctrine.txt", [false, false, false, false]],
+  ["licenses/SecurityPolicy.md", [true, true, true, true]],
+  ["licenses/README.md", [true, true, true, true]],
   ["SECURITY.md", [false, false, false, false]],
   ["SECURITY", [false, false, false, false]],
   ["DESIGN.md", [false, false, false, false]],
@@ -542,6 +548,8 @@
   ["docs/manifestos/x.md", [false, true, false, true]],
   ["docs/architectures.md", [false, false, true, true]],
   ["doc/manifesto/why.txt", [false, true, false, true]],
+  ["licenses/MANIFESTO.md", [false, true, false, true]],
+  ["LICENSES/Architecture.txt", [false, false, true, true]],
   ["MANIFESTO", [false, true, false, true]],
   ["MANIFESTO.rst", [false, true, false, true]],
   ["00-MANIFESTO.txt", [false, true, false, true]]
@@ -1751,32 +1759,29 @@
   ["licenses/HISTORY.md", [true, true, true, true]],
   ["licenses/AUTHORS", [false, false, false, false]],
   ["licenses/FAQ.md", [true, true, true, true]],
-  ["licenses/ARCHITECTURE.md", [true, true, true, true]],
+  ["licenses/ARCHITECTURE.md", [false, false, true, true]],
   ["licenses/Manifesto", [false, false, false, false]],
-  ["licenses/00-MANIFESTO.txt", [true, true, true, true]],
-  ["licenses/SECURITY.md", [true, true, true, true]],
-  ["licenses/DESIGN.md", [true, true, true, true]],
+  ["licenses/00-MANIFESTO.txt", [false, true, false, true]],
+  ["licenses/DESIGN.md", [false, false, false, false]],
   ["licenses/GOVERNANCE", [false, false, false, false]],
-  ["licenses/CODE_OF_CONDUCT.md", [true, true, true, true]],
-  ["licenses/Code-Of-Conduct.md", [true, true, true, true]],
+  ["licenses/Code-Of-Conduct.md", [false, false, false, false]],
   ["licenses/guide.md", [true, true, true, true]],
   ["licenses/intro.rst", [false, false, false, false]],
   ["licenses/usage.txt", [true, true, true, true]],
   ["licenses/notes.TXT", [true, true, true, true]],
   ["licenses/.md", [false, false, false, false]],
   ["licenses/x.md.md", [true, true, true, true]],
-  ["licenses/spec.md", [true, true, true, true]],
-  ["licenses/x-spec.md", [true, true, true, true]],
-  ["licenses/x_spec.md", [true, true, true, true]],
-  ["licenses/x.spec.md", [true, true, true, true]],
-  ["licenses/x spec.md", [true, true, true, true]],
+  ["licenses/spec.md", [false, false, false, false]],
+  ["licenses/x-spec.md", [false, false, false, false]],
+  ["licenses/x_spec.md", [false, false, false, false]],
+  ["licenses/x.spec.md", [false, false, false, false]],
+  ["licenses/x spec.md", [false, false, false, false]],
   ["licenses/specimen.md", [true, true, true, true]],
-  ["licenses/SecurityPolicy.md", [true, true, true, true]],
   ["licenses/spec(v2).md", [true, true, true, true]],
   ["licenses/designer.md", [true, true, true, true]],
-  ["licenses/the-design-of-x.md", [true, true, true, true]],
-  ["licenses/architectures.md", [true, true, true, true]],
-  ["licenses/manifesto-why.md", [true, true, true, true]],
+  ["licenses/the-design-of-x.md", [false, false, false, false]],
+  ["licenses/architectures.md", [false, false, true, true]],
+  ["licenses/manifesto-why.md", [false, true, false, true]],
   ["licenses/CMakeLists.txt", [true, true, true, true]],
   ["licenses/CMAKELISTS.txt", [true, true, true, true]],
   ["licenses/CMAKE\u212aLISTS.txt", [true, true, true, true]],
@@ -1821,32 +1826,32 @@
   ["LICENSES/HISTORY.md", [true, true, true, true]],
   ["LICENSES/AUTHORS", [false, false, false, false]],
   ["LICENSES/FAQ.md", [true, true, true, true]],
-  ["LICENSES/ARCHITECTURE.md", [true, true, true, true]],
+  ["LICENSES/ARCHITECTURE.md", [false, false, true, true]],
   ["LICENSES/Manifesto", [false, false, false, false]],
-  ["LICENSES/00-MANIFESTO.txt", [true, true, true, true]],
-  ["LICENSES/SECURITY.md", [true, true, true, true]],
-  ["LICENSES/DESIGN.md", [true, true, true, true]],
+  ["LICENSES/00-MANIFESTO.txt", [false, true, false, true]],
+  ["LICENSES/SECURITY.md", [false, false, false, false]],
+  ["LICENSES/DESIGN.md", [false, false, false, false]],
   ["LICENSES/GOVERNANCE", [false, false, false, false]],
-  ["LICENSES/CODE_OF_CONDUCT.md", [true, true, true, true]],
-  ["LICENSES/Code-Of-Conduct.md", [true, true, true, true]],
+  ["LICENSES/CODE_OF_CONDUCT.md", [false, false, false, false]],
+  ["LICENSES/Code-Of-Conduct.md", [false, false, false, false]],
   ["LICENSES/guide.md", [true, true, true, true]],
   ["LICENSES/intro.rst", [false, false, false, false]],
   ["LICENSES/usage.txt", [true, true, true, true]],
   ["LICENSES/notes.TXT", [true, true, true, true]],
   ["LICENSES/.md", [false, false, false, false]],
   ["LICENSES/x.md.md", [true, true, true, true]],
-  ["LICENSES/spec.md", [true, true, true, true]],
-  ["LICENSES/x-spec.md", [true, true, true, true]],
-  ["LICENSES/x_spec.md", [true, true, true, true]],
-  ["LICENSES/x.spec.md", [true, true, true, true]],
-  ["LICENSES/x spec.md", [true, true, true, true]],
+  ["LICENSES/spec.md", [false, false, false, false]],
+  ["LICENSES/x-spec.md", [false, false, false, false]],
+  ["LICENSES/x_spec.md", [false, false, false, false]],
+  ["LICENSES/x.spec.md", [false, false, false, false]],
+  ["LICENSES/x spec.md", [false, false, false, false]],
   ["LICENSES/specimen.md", [true, true, true, true]],
   ["LICENSES/SecurityPolicy.md", [true, true, true, true]],
   ["LICENSES/spec(v2).md", [true, true, true, true]],
   ["LICENSES/designer.md", [true, true, true, true]],
-  ["LICENSES/the-design-of-x.md", [true, true, true, true]],
-  ["LICENSES/architectures.md", [true, true, true, true]],
-  ["LICENSES/manifesto-why.md", [true, true, true, true]],
+  ["LICENSES/the-design-of-x.md", [false, false, false, false]],
+  ["LICENSES/architectures.md", [false, false, true, true]],
+  ["LICENSES/manifesto-why.md", [false, true, false, true]],
   ["LICENSES/CMakeLists.txt", [true, true, true, true]],
   ["LICENSES/CMAKELISTS.txt", [true, true, true, true]],
   ["LICENSES/CMAKE\u212aLISTS.txt", [true, true, true, true]],

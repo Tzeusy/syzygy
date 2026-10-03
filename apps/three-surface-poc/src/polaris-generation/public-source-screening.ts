@@ -48,7 +48,7 @@ import { CorpusRefusal, readRepoCorpus, type CorpusScreen, type ReaderConfig, ty
 const REPO_ROOT = fileURLToPath(new URL('../../../../', import.meta.url));
 export const PUBLIC_SOURCE_POLICY_PATH = '.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json';
 export const PUBLIC_SOURCE_ACT_RECORD_PATH = '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md';
-// The version-2 recorder is not written yet; this path and identity are the assumed form of its record.
+// The version-2 record (`scripts/record_public_source_screening_scope_v2_act.py`, lane-d2) supersedes version 1.
 export const PUBLIC_SOURCE_V2_ACT_RECORD_PATH = '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md';
 export const RFC5_CLASS_ACT_RECORD_PATH = '.syzygy/governance/decisions/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md';
 export const RFC5_MODULE_PATH = '.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md';
@@ -130,6 +130,9 @@ export async function loadPublicSourceScreen(port: PublicSourcePolicyActPort = c
   if (argument === 'digest-count') refuse('act record does not name exactly one exact digest');
   const policySha256 = sha256(policy!);
   if (policySha256 !== (argument as { digest: string }).digest) refuse('policy bytes do not hash to the act argument');
+  // The v2 record names the v1 record it supersedes; the line is required, not parsed.
+  if (v2 && !v2ActRecord.split('\n').some(line => line.startsWith('Supersession / revocation: ') && line.includes(`\`${PUBLIC_SOURCE_ACT_RECORD_PATH}\``)))
+    refuse('v2 act record names no superseded v1 record');
   let doc: Record<string, unknown>;
   try { doc = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(policy!)) as Record<string, unknown>; } catch { return refuse('policy is not UTF-8 JSON'); }
   const scope = doc.publicSourceScope, admission = doc.sourceAdmission as Record<string, unknown> | undefined;

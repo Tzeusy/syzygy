@@ -24,6 +24,8 @@ const FILES: Record<string, string> = {
   'docs/guide.md': '# Guide\n',
   'LICENSE': 'Fixture licence text.\n',
   'licenses/extra.txt': 'Fixture licence text two.\n',
+  // The licenses file name is held to the docs denylist (#326 round 4).
+  'licenses/SECURITY.md': `${SENTINEL} security policy\n`,
   'MANIFESTO.md': '# Opt-in manifesto\n',
   // Not mapped: a denylist word, nested below the root, a build file under docs.
   'docs/adr/0001-choice.md': `${SENTINEL} decision record\n`,
@@ -51,9 +53,10 @@ const policy = (variant = 'none', publicSourceScope: unknown = scope(variant), v
   sourceAdmission: { deniedPathBasenames: PWB_DENIED_PATH_RULES.basenames, deniedPathPrefixes: PWB_DENIED_PATH_RULES.prefixes, deniedPathSuffixes: PWB_DENIED_PATH_RULES.suffixes },
   detectors: PWB_SECRET_POLICY.detectors, publicSourceScope,
 }, null, 2)}\n`);
-const record = (identity: string, type: string, artifact: string, digests: readonly string[]): string => [
+const SUPERSESSION = `Supersession / revocation: this act supersedes, for the \`approve-policy\` role only, the 2026-10-04 act recorded at \`${PUBLIC_SOURCE_ACT_RECORD_PATH}\`.`;
+const record = (identity: string, type: string, artifact: string, digests: readonly string[], supersession = SUPERSESSION): string => [
   '# Owner act — synthetic fixture', '', `Act identity: \`${identity}\``, '', `Act type: \`${type}\``, '', 'Project identity: `project:syzygy`', '',
-  `Artifact identity: \`${artifact}\``, '', ...digests.map(digest => `Exact digest (SHA-256): \`${digest}\``), '',
+  `Artifact identity: \`${artifact}\``, '', ...digests.map(digest => `Exact digest (SHA-256): \`${digest}\``), '', supersession, '',
 ].join('\n');
 const V1_ID = 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04';
 const V2_ID = 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-2026-10-04';
@@ -94,7 +97,7 @@ describe('screening scope v2: project-documentation', () => {
     expect(screen.policyVersion).toBe('1.3.0-public-source-candidate.1.none');
     const { corpus, paths } = await admitted(v2Port());
     expect(paths).toEqual([...MAPPED, 'src/clean.c']);
-    expect(corpus.count).toMatchObject({ listed: 13, deniedPath: 1, secretDetectorMatches: 2, activeContent: 1, indeterminate: 4 });
+    expect(corpus.count).toMatchObject({ listed: 14, deniedPath: 1, secretDetectorMatches: 2, activeContent: 1, indeterminate: 5 });
     expect(JSON.stringify(corpus)).not.toContain(SENTINEL);
     expect(['README.md', 'src/clean.c', 'docs/adr/0001-choice.md', 'MANIFESTO.md'].map(screen.classifyPath)).toEqual(['project-documentation', 'code-content', undefined, undefined]);
     // Path screens run before the class: a mapped path that is denied or carries a token is withheld for that reason.
@@ -157,6 +160,13 @@ describe('screening scope v2: the policy act gate', () => {
     for (const v2ActRecord of [policyAct(bytes, V1_ID), record(V2_ID, 'contract-amendment', PUBLIC_SOURCE_POLICY_PATH, [sha(bytes)]),
       record(V2_ID, 'approve-policy', 'other.json', [sha(bytes)]), record(V2_ID, 'approve-policy', PUBLIC_SOURCE_POLICY_PATH, [sha(bytes), sha(bytes)]), policyAct(v1Policy)])
       await refused(v2Port({ v2ActRecord }, bytes));
+  });
+
+  it('refuses a v2 act that names no superseded v1 record', async () => {
+    const bytes = policy();
+    for (const supersession of ['', 'Supersession / revocation: none recorded by this act.', SUPERSESSION.replace('Supersession / revocation: ', 'Supersession: '),
+      SUPERSESSION.replace(PUBLIC_SOURCE_ACT_RECORD_PATH, PUBLIC_SOURCE_V2_ACT_RECORD_PATH)])
+      await expect(loadPublicSourceScreen(v2Port({ v2ActRecord: record(V2_ID, 'approve-policy', PUBLIC_SOURCE_POLICY_PATH, [sha(bytes)], supersession) }, bytes), KEY)).rejects.toThrow(/v2 act record names no superseded v1 record/u);
   });
 
   it('refuses a v2 act over a policy without the rule, and a rule without the v2 act', async () => {

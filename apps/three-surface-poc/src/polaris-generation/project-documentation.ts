@@ -81,6 +81,8 @@ function tokens(segment: string, separators: string): string[] {
   return [...out, current];
 }
 
+const deniedWord = (segment: string, rule: DocumentationRule): boolean => tokens(segment, rule.docTokenSeparators).some(word => rule.docExcludedTokens.includes(word));
+
 const endsLonger = (name: string, suffix: string): boolean => name.endsWith(suffix) && name.length > suffix.length;
 
 /** True when the path is `project-documentation` under the rule. */
@@ -98,9 +100,12 @@ export function classifyDocumentation(path: string, rule: DocumentationRule): bo
   const extension = rule.docTreeExtensions.find(suffix => endsLonger(name, suffix));
   if (rule.docTreeRoots.includes(parts[0]!) && extension !== undefined) {
     const named = [...parts.slice(1, -1), name.slice(0, name.length - extension.length)];
-    if (named.some(segment => tokens(segment, rule.docTokenSeparators).some(word => rule.docExcludedTokens.includes(word)))) return false;
+    if (named.some(segment => deniedWord(segment, rule))) return false;
     if (name.endsWith('.txt') && (rule.docTxtExcludedNames.includes(name) || rule.docTxtExcludedPrefixes.some(prefix => name.startsWith(prefix)))) return false;
     return true;
   }
-  return parts.length === 2 && rule.licenseTreeRoots.includes(parts[0]!) && rule.licenseTreeSuffixes.some(suffix => endsLonger(name, suffix));
+  const suffix = rule.licenseTreeSuffixes.find(candidate => endsLonger(name, candidate));
+  if (parts.length !== 2 || !rule.licenseTreeRoots.includes(parts[0]!) || suffix === undefined) return false;
+  // The licenses file name, without its suffix, is held to the same whole-word denylist.
+  return !deniedWord(name.slice(0, name.length - suffix.length), rule);
 }

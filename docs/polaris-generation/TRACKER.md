@@ -135,13 +135,15 @@ Authorized implementation work (generator implementation authorization,
         (#333). Policy residuals, pinned by tests: an encoded or line-split
         secret passes the detectors. Screening scope v2 (package #326, draft
         PR, `project-documentation.ts`): the policy's root, docs/doc and
-        licenses rules map `project-documentation` under the v2 act, only
-        while the RFC5-14 class act is in force (otherwise those paths stay
-        indeterminate); every screen still runs first; parity with the
-        builder's reference reader over 126 fixtures and 4,592 generated
-        paths per variant. Not yet: the trigger wiring (#268), the
-        run-profile and instruction-text rules, and consent filtering by
-        class. Nothing passes the gate until the owner performs the acts.
+        licenses rules map `project-documentation` under the v2 act record
+        (which must name the v1 record it supersedes), only while the
+        RFC5-14 class act is in force; otherwise those paths stay
+        indeterminate. Every screen still runs first. Parity with the
+        builder's reference reader (#326 at `fd4e2509`): 134 fixtures and
+        4,589 generated paths per variant. Not yet: the trigger wiring
+        (#268), the run-profile and instruction-text rules, and consent
+        filtering by class. Nothing passes the gate until the owner performs
+        the acts.
   - [ ] **G2 Real `generate` port.** A Claude Agent SDK adapter behind
         `PipelinePorts.generate` (`pipeline.ts`): structured output for
         `responseSchema`, usage accounting, abort. Per the egress record:
