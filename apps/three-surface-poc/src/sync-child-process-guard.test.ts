@@ -59,8 +59,10 @@ function syncCalls(source: string): SyncCall[] {
   const direct = new Set<string>();
   const namespaces = new Set<string>();
   const recognized = new Set<number>();
+  const bindingSpans: [number, number][] = [];
   for (const pattern of CHILD_PROCESS_BINDINGS) {
     for (const match of source.matchAll(pattern)) {
+      bindingSpans.push([match.index ?? 0, (match.index ?? 0) + match[0].length]);
       recognized.add((match.index ?? 0) + match[0].search(/['"](?:node:)?child_process['"]/));
       const clause = match[1]!.trim();
       const braces = /\{([^}]*)\}/.exec(clause);
@@ -76,6 +78,26 @@ function syncCalls(source: string): SyncCall[] {
     for (const match of source.matchAll(pattern)) recognized.add((match.index ?? 0) + match[0].search(/['"](?:node:)?child_process['"]/));
   }
   const calls: SyncCall[] = [];
+  // Fail closed on re-binding (syzygy-ty1x): outside its own binding, a sync
+  // name may only be called, and a namespace only reached through
+  // `.<name>`, a sync one only called. `const run = execFileSync`,
+  // `const { execSync } = cp`, `cp['execSync']` and `const run =
+  // cp.execFileSync` would otherwise call it under a name nothing follows.
+  const insideBinding = (index: number): boolean => bindingSpans.some(([start, end]) => index >= start && index < end);
+  for (const name of direct) {
+    for (const match of source.matchAll(new RegExp(`(?<![\\w.$])${escape(name)}(?![\\w$])(?!\\s*\\()`, 'g'))) {
+      if (!insideBinding(match.index ?? 0)) calls.push({ line: lineOf(source, match.index ?? 0), command: `<${name} re-bound>` });
+    }
+  }
+  for (const name of namespaces) {
+    for (const match of source.matchAll(new RegExp(`(?<![\\w.$])${escape(name)}(?![\\w$])(?:\\s*\\.\\s*(\\w+)(\\s*\\()?)?`, 'g'))) {
+      if (insideBinding(match.index ?? 0)) continue;
+      const member = match[1];
+      if (member === undefined || (SYNC_FUNCTIONS.includes(member) && match[2] === undefined)) {
+        calls.push({ line: lineOf(source, match.index ?? 0), command: `<${name}${member === undefined ? '' : `.${member}`} re-bound>` });
+      }
+    }
+  }
   for (const literal of source.matchAll(CHILD_PROCESS_LITERAL)) {
     if (!recognized.has(literal.index ?? 0)) calls.push({ line: lineOf(source, literal.index ?? 0), command: '<unrecognized child_process binding>' });
   }
@@ -171,6 +193,21 @@ describe('suite child processes and the vitest worker RPC', () => {
     expect(commands("const loader = () => import('node:child_process');")).toEqual(['<unrecognized child_process binding>']);
     expect(commands("import { type ExecFileSyncOptions, execFile } from 'node:child_process';\nexecFile('npm', []);")).toEqual([]);
     expect(commands("import { execFileSync as run } from 'node:child_process';\nrun('git', ['status']);\nother.run('npm');")).toEqual([]);
+  });
+
+  it('fails closed when a sync function is re-bound to a name the scan does not follow (syzygy-ty1x)', () => {
+    const commands = (source: string): string[] => longSyncCalls(source).map(({ command }) => command);
+    const namespace = "import * as cp from 'node:child_process';\n";
+    const named = "import { execFileSync } from 'node:child_process';\n";
+    expect(commands(`${namespace}const { execSync } = cp;\nexecSync('npm ci');`)).toEqual(['<cp re-bound>']);
+    expect(commands(`${namespace}const run = cp.execFileSync;\nrun('npm', []);`)).toEqual(['<cp.execFileSync re-bound>']);
+    expect(commands(`${named}const run = execFileSync;\nrun('npm', []);`)).toEqual(['<execFileSync re-bound>']);
+    expect(commands(`${namespace}cp['execSync']('npm ci');`)).toEqual(['<cp re-bound>']);
+    expect(commands("const cp = require('child_process');\nconst sh = cp.spawnSync;")).toEqual(['<cp.spawnSync re-bound>']);
+    expect(commands("import { execFileSync as run } from 'node:child_process';\nexport { run };")).toEqual(['<run re-bound>']);
+    // Calls, async members and other objects' same-named members stay clean.
+    expect(commands(`${namespace}cp.execFileSync('git', []);\ncp.spawn('npm', []);\nconst spawn = cp.spawn;\nother.cp = 1;`)).toEqual([]);
+    expect(commands(`${named}execFileSync('git', ['status']);\nactual.execFileSync(file, args);\nconst o = { execFileSyncLike: 1 };`)).toEqual([]);
   });
 
   it('scans a helper module a test imports, through relative and workspace imports', () => {
