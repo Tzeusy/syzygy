@@ -13,30 +13,35 @@ Steps, in the order of the sitting packet (PR 260):
              are resolved mechanically where that is safe (register rows by
              union, Python by an ast-validated candidate search) and
              reported where it is not
-  1 baseline check_governance, the review-campaign partition, the
-             effective-scenario recount
-  2 row 1    install the screening-scope policy bytes (PR 266 `propose`)
-  3 rows 2-3 provider route A and the Git source adapter (PR 255 recorder)
-  4 rows 4-6 the three admission consents (PR 215 recorder)
-  5 row 7    the RFC5-14 amendment act (PR 257 recorder)
-  6 install  register the performed records, apply the RFC-0005 patch to both
-             mirrors, refresh the active-manifest row, regenerate the
-             directive register
-  7 narrative-profile spec install (PR 256) and the recount
+  1 overlay  the install tooling under test (`install_redis_sitting.py` and the
+             two recorders that live outside the merged branches) is copied
+             from this checkout into the scratch
+  2 baseline check_governance, the review-campaign partition
+  3 acts     every recorder runs on a synthetic argument computed from the
+             current manifest row: the screening-scope policy (PR 266), the
+             provider route (`--route b`: PR 273 recorder, a synthetic freeze;
+             `--route a`: PR 255 recorder) and the Git source adapter, the three
+             admission consents (PR 215), the RFC5-14 amendment (PR 257) and the
+             narrative-profile adoption (PR 256)
+  4 install  `scripts/install_redis_sitting.py`, then again (idempotent) and
+             with `--check`
+  5 end      check_governance, the partition and (with `--vitest`) the full
+             test suite must all be green; the report says so in `green`
 
-Each recorder is fed a synthetic owner argument computed from the current
-manifest row, so a "performed" record here proves only that the recorder
-accepts the bytes, never that anyone consented. After every step the script
-runs `check_governance.py` and records each FAIL line; `--vitest` also runs
-the full test suite at the start and the end.
+Each recorder is fed a synthetic owner argument, so a "performed" record here
+proves only that the recorder accepts the bytes, never that anyone consented.
+The route-B recorder refuses until its package has a confirming review, so the
+scratch gets a synthetic confirming raw and a synthetic freeze (said so in the
+report); nothing of that reaches the real tree.
 
 Usage:
   python3 scripts/simulate_redis_sitting.py [--scratch DIR] [--report FILE]
-                                            [--base REF] [--vitest] [--keep]
+                                            [--base REF] [--route a|b] [--vitest] [--keep]
   python3 scripts/simulate_redis_sitting.py --selftest
 
-Exit status 0 when the simulation ran to the end (findings are the output,
-not a failure); 2 when the scratch could not be built or the real tree moved.
+Exit status 0 when the simulation ran to the end and the end state is green;
+1 when it ran but the end state is not green; 2 when the scratch could not be
+built or the real tree moved.
 """
 from __future__ import annotations
 
@@ -58,33 +63,32 @@ DATE = "2026-10-04"
 CAND = ".syzygy/governance/contracts/candidates"
 DECISIONS = ".syzygy/governance/decisions"
 
-#: (pull request, branch) in the order the scratch merges them.
+#: (pull request, branch) in the order the scratch merges them. Merged pull
+#: requests (215, 255, 256, 257, 266, 284) are already in the base.
 BRANCHES = (
-    (266, "governance/public-source-screening-scope"),
-    (255, "governance/public-admission-registry-entries"),
+    (278, "agent/dossier-engine-7"),
     (273, "governance/provider-route-messages-api-entry"),
-    (215, "polaris/public-repo-admission"),
-    (257, "governance/rfc5-project-documentation"),
-    (256, "governance/non-governed-narrative-profile"),
+    (288, "fix/recount-added-overlays"),
+    (290, "fix/rfc5-recorder-act-instant"),
     (260, "governance/admission-sitting-packet"),
 )
 ORDERING_CASE = (120, "agent/tier4-dov25")
+#: A case that times out at 5000 ms on main itself (bead syzygy-8wux); reported, not counted.
+KNOWN_FLAKE = "tuple-encoding.test.ts > tuple field encoding tables"
+#: Tools copied from this checkout into the scratch (they may be in no merged branch yet).
+OVERLAY = (
+    "scripts/install_redis_sitting.py",
+    "scripts/record_messages_api_route_registry_act.py",
+    "scripts/record_narrative_profile_adoption.py",
+)
 
 PKG_ADMISSION = f"{CAND}/public-repo-admission"
 PKG_REGISTRY = f"{CAND}/public-admission-registry-entries"
+PKG_MESSAGES = f"{CAND}/provider-route-messages-api-entry"
 PKG_SCOPE = f"{CAND}/public-source-screening-scope"
 PKG_RFC5 = f"{CAND}/rfc5-project-documentation-class"
 PKG_PROFILE_SPEC = "openspec/changes/polaris-non-governed-narrative-profile"
 POLICY = ".syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json"
-
-#: Performed record per act label, as the recorders write them.
-PERFORMED = (
-    ("CONSENT TO PUBLIC OBSERVATION OF PSF-REQUESTS", "PUBLIC-REPO-ADMISSION-REQUESTS-OBSERVATION-ACT.md", "PUBLIC_ADMISSION_MANIFEST", "ADMISSION"),
-    ("CONSENT TO PUBLIC OBSERVATION OF REDIS-REDIS", "PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md", "PUBLIC_ADMISSION_MANIFEST", "ADMISSION"),
-    ("CONSENT TO PUBLIC TARGET EGRESS TO ANTHROPIC", "PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md", "PUBLIC_ADMISSION_MANIFEST", "ADMISSION"),
-    ("ADOPT POLARIS PROVIDER EXECUTION ROUTE REGISTRY ENTRY", "PUBLIC-ADMISSION-REGISTRY-PROVIDER-ROUTE-ACT.md", "PUBLIC_REGISTRY_MANIFEST", "REGISTRY"),
-    ("ADOPT POLARIS PUBLIC GIT SOURCE-ACQUISITION REGISTRY ENTRY", "PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-ACT.md", "PUBLIC_REGISTRY_MANIFEST", "REGISTRY"),
-)
 
 #: Remedy text per finding code. Codes are what the steps emit; the text is the
 #: exact install-change edit, so the runbook and the report cannot drift.
@@ -92,15 +96,9 @@ REMEDIES = {
     "merge-register": "PENDING-OWNER-DECISIONS.md conflicts pairwise (every branch appends a row): merge with `git merge-file --union` on real temp files, then assert the row set is the distinct union of the inputs.",
     "merge-check-governance": "scripts/check_governance.py conflicts when two packages each register a phrase or a copy: keep both registrations. `git merge-file --union` is unsafe for Python (it interleaved a parenthesis); use the ast-validated candidate search in this script, then run `check_governance.py --selftest`.",
     "merge-stale-base": "The branch is based on a stale main and conflicts in docs/README.md, the partition checker and check_governance.py: ask its owner to rebase onto main before the sitting; do not resolve by hand.",
-    "recorder-215-paths": "scripts/record_public_repo_admission_acts.py `live_inputs` passes `root / PKG` to `build.instances` and `build.stale`, which expect the cwd-relative PKG; every `--record` and `--check` refuses until the two calls take `PKG`. Latent bug in PR 215's recorder, not a frozen package byte: fix it in that PR's next round.",
-    "policy-cg7e": "Installing the PR 266 policy bytes changes the argument of 'APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY': CG-7e reports six stale copies (re-pin manifest, aggregate record, re-pin act record x2, PROJECT-STATUS.md, screening-scope manifest unregistered) and the re-pin builder and recorder `--check` fail. PR 266's impact ledger lists them; the install change adds the superseded-argument entries, the chain link and the status-battery edits that ledger names.",
-    "performed-unregistered": "Each performed record (five in this simulation) is an unregistered act-copy file. Install change: add the five records to ACT_DIGEST_COPY_FILES (and each label to the aggregate record's labels) with an existence-gated activation function.",
-    "performed-manifest-heading": "Each performed record quotes `manifest SHA-256:` (the container manifest file digest); CG-7e's bare-heading check reads it as a stale act argument. Install change: add the five (record, 'manifest') pairs to BARE_DIGEST_HEADING_MANIFEST_EXEMPTIONS, as the re-pin act records already are.",
-    "rfc5-cg7a-cg7h": "Applying the RFC-0005 patch to both mirrors fails CG-7a (ACTIVE-CONTRACT-MANIFEST row for RFC-0005) and CG-7h (the general-trusted-bootstrap contract manifest row). Install change: refresh the active-manifest row from the installed bytes and add a PWB_SUCCESSOR_CHAIN contract link superseding the RFC-0005 row, as the contract restyle act did; register the #257 phrase in the same change (registering earlier fails CG-7e).",
-    "no-recorder": "No recorder exists for this row; its install is a byte copy and an acceptance-record entry written by hand at the sitting.",
-    "policy-vitest": "Tests that pin the policy by byte equality (the content-classification and git-object-reader constants, the governance-inputs loader tests) fail once the PR 266 policy bytes are installed. The install change moves the code constants and the act-record fixtures with the policy, in the same commit; PR 266's impact ledger is the list to check against.",
-    "profile-dead-refs": "Moving the narrative-profile spec from proposed/ to specs/ leaves package prose that names the proposed/ path dead (CG-1b). Those are package files, not manifest rows [Unknown: confirm against the package manifest before editing]; update the references in the install commit.",
-    "recount-third-spec": "After the narrative-profile spec moves to specs/, scripts/count_polaris_effective_scenarios.py stops with 'expected exactly one base spec.md ... found 2'. The package's tasks.md names the generalization; it must land in the same change as the install.",
+    "merge-semantic-278": "PR 278 closes GenerationSource exclusion reasons to GENERATION_EXCLUSION_REASONS, but main's repo-corpus.ts (PR 252) builds an excluded row from `reason: string`; the merge is textually clean and `npm run build:poc` then fails (TS2322 at repo-corpus.ts:167), which fails build-output.test.ts and pipeline-demo.test.ts. Fix on PR 278 (type the helper parameter GenerationExclusionReason); the simulation applies the same one-line change in the scratch so the rest of the run is meaningful.",
+    "installer-refused": "scripts/install_redis_sitting.py refused: read its message; it names the record or anchor it needs and restores the tree.",
+    "not-green": "The simulated end state is not green: the named check still fails after the install. The failing lines are in the report.",
 }
 
 
@@ -241,6 +239,8 @@ class Sim:
         self.vitest = vitest
         self.steps = []
         self.findings = []
+        self.baseline_failing = set()
+        self.green = False
 
     # -- plumbing
     def run(self, argv, timeout=900, check=False, cwd=None):
@@ -276,6 +276,7 @@ class Sim:
             rec["failures"] = fail_blocks(out)
         p = self.run([sys.executable, "scripts/check_docs_review_campaign_partition.py"])
         rec["partition"] = (p.stdout.strip().splitlines() or [p.stderr.strip()])[-1][:160]
+        rec["partition_exit"] = p.returncode
         self.step(name + ":checks", governance=rec.get("governance"),
                   failing=rec.get("failing"), partition=rec["partition"])
         self.steps[-1]["detail"] = rec
@@ -297,8 +298,7 @@ class Sim:
         tail = [ln.strip() for ln in out.splitlines() if ln.strip().startswith("Tests ")]
         failing = failing_tests(out)
         self.step(name + ":vitest", exit=p.returncode, summary=tail[-1:], failing=failing)
-        if any("byte-equal" in f or "governance-inputs" in f for f in failing) and name != "start":
-            self.finding(name, "policy-vitest", f"{len(failing)} failing: {failing[:3]}")
+        return failing
 
     # -- step 0
     def merge_all(self):
@@ -356,143 +356,147 @@ class Sim:
         for fd in stages.values():
             fd.unlink()
 
-    # -- steps 2..5
-    def install_policy(self):
-        sys.path.insert(0, str(self.scratch / "scripts"))
-        try:
-            import importlib
-            build = importlib.import_module("build_public_source_screening_scope")
-            base_text = (self.scratch / build.POLICY).read_text()
-            (self.scratch / build.POLICY).write_text(build.propose(base_text))
-        finally:
-            sys.path.pop(0)
-        self.commit("sim row 1: screening-scope policy bytes installed")
-        rc = {}
-        for script, args in (
-                ("build_pwb_behavior_contract_repin.py", ["--check"]),
-                ("build_public_source_screening_scope.py", ["--check"])):
-            p = self.run([sys.executable, f"scripts/{script}", *args])
-            rc[script] = p.returncode
-        self.step("row1", repin_check_exit=rc["build_pwb_behavior_contract_repin.py"],
-                  scope_check_exit=rc["build_public_source_screening_scope.py"])
-        rec = self.checks("row1")
-        if rec["failing"].get("CG-7e"):
-            self.finding("row1", "policy-cg7e", f"CG-7e findings: {rec['failing']['CG-7e']}")
+    def merge_fixup(self):
+        rel = "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts"
+        path = self.scratch / rel
+        if not path.is_file():
+            return
+        text = path.read_text()
+        old = "(reason: string): GenerationSource"
+        if old not in text or "GenerationExclusionReason" not in (self.scratch / "packages/polaris-generation-core/src/generation-source.ts").read_text():
+            return
+        text = text.replace(old, "(reason: GenerationExclusionReason): GenerationSource")
+        text = text.replace("import { isolatedGit }", "import type { GenerationExclusionReason } from '@syzygy/polaris-generation-core';\nimport { isolatedGit }", 1)
+        path.write_text(text)
+        self.commit("sim: type the excluded-row helper (PR 278 with main)")
+        self.finding("merge", "merge-semantic-278", f"{rel}: reason typed as GenerationExclusionReason in the scratch")
 
-    def record(self, script, key, argument, label):
-        argv = [sys.executable, f"scripts/{script}", "--record"] + ([key] if key else []) + [argument]
-        tail = ["--date", DATE, "--question-opening", "SIM opening",
-                "--selection-label", "SIM at the manifest rows",
-                "--selection-description", "SIM synthetic selection; scratch clone only"]
+    # -- step 1
+    def overlay(self):
+        copied = []
+        for rel in OVERLAY:
+            src = ROOT / rel
+            if src.is_file():
+                dst = self.scratch / rel
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(src, dst)
+                copied.append(rel)
+        self.commit("sim: overlay the install tooling under test")
+        self.step("overlay", copied=copied)
+
+    # -- step 3
+    SELECTION = ["--question-opening", "SIM opening", "--selection-label", "SIM at the manifest rows",
+                 "--selection-description", "SIM synthetic selection; scratch clone only"]
+
+    def instant(self):
+        """Strictly increasing UTC instants on the act date, so chain order is defined."""
+        self.clock = getattr(self, "clock", 0) + 1
+        return f"{DATE}T{9 + self.clock // 60:02d}:{self.clock % 60:02d}:00Z"
+
+    def record(self, script, key, argument, label, extra=()):
+        argv = [sys.executable, f"scripts/{script}", "--record"] + ([key] if key else []) + ([argument] if argument else [])
+        inst = self.instant()
+        tail = ["--date", DATE, "--instant", inst, *extra]
         p = self.run(argv + tail)
         if p.returncode:
+            self.step(label, record_exit=p.returncode, stderr=(p.stderr + p.stdout).strip()[-240:])
             return p
-        c = self.run([sys.executable, f"scripts/{script}", "--check"] + ([key] if key else []) + [argument] + tail)
-        self.step(label, record_exit=p.returncode, check_exit=c.returncode)
+        c = self.run([sys.executable, f"scripts/{script}", "--check"] + ([key] if key else []) + ([argument] if argument else [])
+                     + ["--date", DATE, *extra])
+        self.step(label, record_exit=p.returncode, check_exit=c.returncode, instant=inst)
         return p
 
-    def acts(self):
+    def freeze_messages_recorder(self):
+        """The route-B package has no confirming review yet; give the scratch a synthetic one."""
+        rec = self.scratch / "scripts/record_messages_api_route_registry_act.py"
+        pkg = self.scratch / PKG_MESSAGES
+        manifest = pkg / "MESSAGES-API-ROUTE-REGISTRY-MANIFEST.txt"
+        review = pkg / "reviews/R-PROVIDER-ROUTE-MESSAGES-API-ENTRY-3-RAW.md"
+        review.write_text(f"# R3 (synthetic, scratch only)\nReviewed commit: {'a' * 40}\n"
+                          f"Manifest SHA-256: {sha256(manifest)}\nVerdict: CONFIRM\n\n## Findings\n\nnone\n")
+        files = [manifest, pkg / "OWNER-DECISION-PACKET.md", pkg / "REVIEW-BRIEF.md", pkg / "SEMANTIC-DELTA.md",
+                 pkg / "IMPACT-LEDGER.md", *sorted((pkg / "proposed").glob("*.json"))]
+        table = "".join(f'    pathlib.Path("{f.relative_to(self.scratch).as_posix()}"): "{sha256(f)}",\n' for f in files)
+        text = rec.read_text()
+        text = text.replace("FROZEN_SUBJECT: str | None = None", f'FROZEN_SUBJECT: str | None = "{"f" * 40}"')
+        text = text.replace("FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {}",
+                            "FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {\n" + table + "}")
+        rec.write_text(text)
+        self.step("freeze-route-B", note="synthetic confirming raw and synthetic freeze, scratch only")
+
+    def acts(self, route):
+        scope = (self.scratch / PKG_SCOPE / "PUBLIC-SOURCE-SCREENING-SCOPE-MANIFEST.txt").read_text()
         reg = (self.scratch / PKG_REGISTRY / "PUBLIC-ADMISSION-REGISTRY-MANIFEST.txt").read_text()
         adm = (self.scratch / PKG_ADMISSION / "PUBLIC-REPO-ADMISSION-MANIFEST.txt").read_text()
-        self.step("row2-route-B", note="no recorder; byte install only")
-        self.finding("row2-route-B", "no-recorder", "PR 273: route B has no recorder")
-        for key, suffix, text, script, label in (
-                ("provider-route", "AGENT-SDK-CANDIDATE.json", reg, "record_public_admission_registry_entries_acts.py", "row2-route-A"),
-                ("git-source-acquisition", "GIT-SOURCE-ACQUISITION-CANDIDATE.json", reg, "record_public_admission_registry_entries_acts.py", "row3")):
-            self.record(script, key, row_digest(text, suffix), label)
-        self.commit("sim rows 2-3")
-        patched = False
-        for key, suffix, label in (
-                ("requests-observation", "requests/OBSERVATION-CONSENT.md", "row4"),
-                ("redis-observation", "redis/OBSERVATION-CONSENT.md", "row5"),
-                ("egress-anthropic", "EGRESS-CONSENT-ANTHROPIC.md", "row6")):
-            arg = row_digest(adm, suffix)
-            p = self.record("record_public_repo_admission_acts.py", key, arg, label)
-            if p.returncode and not patched:
-                rec = self.scratch / "scripts/record_public_repo_admission_acts.py"
-                text = rec.read_text()
-                fixed = text.replace("build.instances(root / PKG)", "build.instances(PKG)") \
-                            .replace("build.stale(root / PKG)", "build.stale(PKG)")
-                if fixed != text:
-                    rec.write_text(fixed)
-                    patched = True
-                    self.finding(label, "recorder-215-paths", p.stderr.strip().splitlines()[-1][:200] if p.stderr.strip() else "refused")
-                    p = self.record("record_public_repo_admission_acts.py", key, arg, label)
-            if p.returncode:
-                self.step(label, record_exit=p.returncode, stderr=p.stderr.strip()[-200:])
-        self.commit("sim rows 4-6")
-        self.checks("rows2-6")
         rfc = (self.scratch / PKG_RFC5 / "CONTRACT-AMENDMENT-MANIFEST.txt").read_text()
-        self.record("record_rfc5_project_documentation_act.py", None, row_digest(rfc, "consent-egress-secrets.md"), "row7")
-        self.commit("sim row 7")
-        self.checks("row7")
-        self.vitest_run("after-acts")
+        sel = self.SELECTION
+        self.record("record_public_source_screening_scope_act.py", None, row_digest(scope, "POLICY-CANDIDATE.json"), "row1-policy", sel)
+        if route == "b":
+            self.freeze_messages_recorder()
+            msg = (self.scratch / PKG_MESSAGES / "MESSAGES-API-ROUTE-REGISTRY-MANIFEST.txt").read_text()
+            self.record("record_messages_api_route_registry_act.py", None, row_digest(msg, "MESSAGES-API-CANDIDATE.json"), "row2-route-B", sel)
+        else:
+            self.record("record_public_admission_registry_entries_acts.py", "provider-route",
+                        row_digest(reg, "AGENT-SDK-CANDIDATE.json"), "row2-route-A", sel)
+        self.record("record_public_admission_registry_entries_acts.py", "git-source-acquisition",
+                    row_digest(reg, "GIT-SOURCE-ACQUISITION-CANDIDATE.json"), "row3", sel)
+        for key, suffix, label in (("requests-observation", "requests/OBSERVATION-CONSENT.md", "row4"),
+                                   ("redis-observation", "redis/OBSERVATION-CONSENT.md", "row5"),
+                                   ("egress-anthropic", "EGRESS-CONSENT-ANTHROPIC.md", "row6")):
+            self.record("record_public_repo_admission_acts.py", key, row_digest(adm, suffix), label, sel)
+        self.record("record_rfc5_project_documentation_act.py", None, row_digest(rfc, "consent-egress-secrets.md"), "row7", sel)
+        self.record("record_narrative_profile_adoption.py", None, None, "row8-profile", sel)
+        self.commit("sim: every recorder run")
+        self.checks("after-acts")
 
-    # -- step 6
-    def install_change(self):
-        cg = self.scratch / "scripts/check_governance.py"
-        s = cg.read_text()
-        add = ["\n\ndef _activate_sim_performed_registries():",
-               '    """Simulated install-change registration of the performed records."""',
-               '    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"',
-               "    for label, rel in ("]
-        for label, rec, _m, _p in PERFORMED:
-            add.append(f'            ({label!r}, f"{{DECISIONS}}/{rec}"),')
-        add += ["    ):",
-                "        if not os.path.isfile(os.path.join(ROOT, rel)):",
-                "            continue",
-                "        labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())",
-                "        if label not in labels:",
-                "            ACT_DIGEST_COPY_FILES[aggregate] = labels + (label,)",
-                "        ACT_DIGEST_COPY_FILES[rel] = (label,)",
-                "", "", "_activate_sim_performed_registries()", ""]
-        anchor = "_activate_public_admission_manifest_copy_registry()\n"
-        i = s.rindex(anchor) + len(anchor)
-        cg.write_text(s[:i] + "\n".join(add) + s[i:])
-        self.commit("sim install: register performed records")
-        rec = self.checks("install-registered")
-        unreg = [f for f in rec["failures"].get("CG-7e", []) if "not in either act-copy registry" in f]
-        self.finding("install", "performed-unregistered", f"{len(unreg)} unregistered before this edit (see rows2-6 checks)")
-        s = cg.read_text()
-        pairs = "".join(
-            f'    (f"{{DECISIONS}}/{rec_}", "manifest"): {man},\n'
-            for _l, rec_, man, _p in PERFORMED)
-        key = '     "effect manifest"): PWB_BEHAVIOR_REPIN_MANIFEST,\n}\n'
-        if s.count(key) == 1:
-            cg.write_text(s.replace(key, key[:-2] + pairs + "}\n"))
-        self.commit("sim install: manifest-heading exemptions")
-        rec = self.checks("install-exemptions")
-        self.finding("install", "performed-manifest-heading",
-                     f"CG-7e findings after registration: {rec['failing'].get('CG-7e')}")
-        # RFC-0005 amendment bytes on both mirrors.
-        patch = self.scratch / PKG_RFC5 / "proposed/RFC-0005/consent-egress-secrets.md.patch"
-        for mirror in ("rfcs", "candidates/rfcs"):
-            target = f".syzygy/governance/contracts/{mirror}/RFC-0005/consent-egress-secrets.md"
-            self.run(["patch", "-p0", target, "-i", str(patch)], check=True)
-        self.run([sys.executable, "scripts/build_directive_register.py"])
-        self.commit("sim install: RFC-0005 amendment applied to both mirrors")
-        rec = self.checks("install-rfc5")
-        if rec["failing"].get("CG-7a") or rec["failing"].get("CG-7h"):
-            self.finding("install", "rfc5-cg7a-cg7h", f"failing: {rec['failing']}")
+    # -- step 4
+    def install(self):
+        results = []
+        for label, flags in (("install", []), ("install-again", []), ("install-check", ["--check"])):
+            p = self.run([sys.executable, "scripts/install_redis_sitting.py", *flags])
+            out = (p.stdout + p.stderr).strip()
+            results.append((label, p.returncode, out.splitlines()[-1][:200] if out else ""))
+            self.step(label, exit=p.returncode, tail=results[-1][2])
+            if label == "install":
+                if p.returncode:
+                    self.finding(label, "installer-refused", out[-300:])
+                    return False
+                self.commit("sim: install_redis_sitting.py")
+        again, check = results[1], results[2]
+        if again[1] != 0 or "nothing to do" not in again[2]:
+            self.finding("install-again", "not-green", f"the second run is not a no-op: {again}")
+            return False
+        if check[1] != 0:
+            self.finding("install-check", "not-green", f"--check still reports work: {check}")
+            return False
+        return True
 
-    def narrative_profile(self):
-        src = self.scratch / PKG_PROFILE_SPEC / "proposed/polaris-generation/spec.md"
-        if not src.is_file():
-            self.step("profile", note="spec not present in this merge")
-            return
-        dst = self.scratch / PKG_PROFILE_SPEC / "specs/polaris-generation/spec.md"
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(src), str(dst))
-        self.commit("sim install: narrative-profile spec moved to specs/")
-        p = self.run([sys.executable, "scripts/count_polaris_effective_scenarios.py", "--check"])
-        out = (p.stdout + p.stderr).strip().splitlines()
-        self.step("profile:recount", exit=p.returncode, tail=out[-1][:200] if out else "")
-        if p.returncode:
-            self.finding("profile", "recount-third-spec", out[-1][:200] if out else "")
-        rec = self.checks("profile")
-        if rec["failing"].get("CG-1b"):
-            self.finding("profile", "profile-dead-refs", "; ".join(rec["failures"]["CG-1b"])[:300])
-        self.vitest_run("end")
+    # -- step 5
+    def end(self, installed):
+        rec = self.checks("end")
+        green = installed
+        if rec["failing"]:
+            green = False
+            self.finding("end", "not-green", f"failing checks: {rec['failing']}: " + "; ".join(
+                f"{k}: {v[:2]}" for k, v in rec["failures"].items())[:600])
+        m = re.search(r"(\d+) FAIL", rec.get("governance") or "")
+        if m is None or int(m.group(1)) != 0:
+            green = False
+            self.finding("end", "not-green", f"check_governance summary: {rec.get('governance')}")
+        if rec["partition_exit"] != 0:
+            green = False
+            self.finding("end", "not-green", f"partition: {rec['partition']}")
+        if self.vitest:
+            failing = self.vitest_run("end")
+            flaky = {f for f in failing or [] if KNOWN_FLAKE in f}
+            if flaky:
+                self.step("end:known-flake", tests=sorted(flaky), bead="syzygy-8wux")
+            beyond = sorted(set(failing or []) - self.baseline_failing - flaky)
+            if beyond:
+                green = False
+                self.finding("end", "not-green", f"vitest: {len(beyond)} failing beyond the start-of-run baseline: {beyond[:3]}")
+        self.green = green
+        self.step("green", value=green)
 
     def ordering_case(self):
         pr, branch = ORDERING_CASE
@@ -510,7 +514,7 @@ class Sim:
 
     def write_report(self):
         pathlib.Path(self.report_path).write_text(json.dumps(
-            {"candidate": True, "bindsNothing": True, "date": DATE,
+            {"candidate": True, "bindsNothing": True, "date": DATE, "green": self.green,
              "steps": self.steps, "findings": self.findings}, indent=2) + "\n")
         print(f"report: {self.report_path}  ({len(self.findings)} findings)")
 
@@ -552,6 +556,7 @@ def main(argv):
     ap.add_argument("--scratch")
     ap.add_argument("--report", default="redis-sitting-simulation.json")
     ap.add_argument("--base", default="refs/remotes/origin/main")
+    ap.add_argument("--route", choices=("a", "b"), default="b")
     ap.add_argument("--vitest", action="store_true")
     ap.add_argument("--keep", action="store_true")
     ap.add_argument("--selftest", action="store_true")
@@ -567,13 +572,14 @@ def main(argv):
     sim = Sim(scratch, a.report, a.base, a.vitest)
     try:
         sim.merge_all()
+        sim.merge_fixup()
+        sim.overlay()
         sim.npm_ci()
         sim.checks("baseline")
-        sim.vitest_run("start")
-        sim.install_policy()
-        sim.acts()
-        sim.install_change()
-        sim.narrative_profile()
+        sim.baseline_failing = set(sim.vitest_run("start") or [])
+        sim.acts(a.route)
+        installed = sim.install()
+        sim.end(installed)
         sim.ordering_case()
     finally:
         sim.write_report()
@@ -587,7 +593,7 @@ def main(argv):
         return 2
     if tmp and not a.keep:
         shutil.rmtree(tmp, ignore_errors=True)
-    return 0
+    return 0 if sim.green else 1
 
 
 # --------------------------------------------------------------- selftest ---
