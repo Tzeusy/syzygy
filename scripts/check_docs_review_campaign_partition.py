@@ -263,6 +263,11 @@ CAMPAIGNS = (
         "N9 machine-channel amendments gate",
         r"R-N9-MACHINE-CHANNEL-.*\.md",
     ),
+    campaign(
+        "n10-poc-governing-intent",
+        "N10 POC governing-intent gate",
+        r"R-N10-POC-GOVERNING-INTENT-.*\.md",
+    ),
 )
 
 
