@@ -1,0 +1,315 @@
+{
+  "bead": "syzygy-u05.2",
+  "rule": "AGENTS.md verification rule 6: mutate the input and confirm the check fails, per predicate",
+  "commit": "e737ed047256a4f5f9a36ac142cfb8f9cf66d0fc",
+  "subjects": [
+    {
+      "path": "packages/three-surface-poc-core/src/reevaluation.ts",
+      "sha256": "aa0b13ab077d3e912dc33de042cf70a101721c5ec1d66c1341f221a3256d51e0"
+    },
+    {
+      "path": "apps/three-surface-poc/src/reevaluation-copy.ts",
+      "sha256": "6cfe32d50e18d5cb3bdd74501e2933230214560b7b3a84488a711ffcee74d6fa"
+    },
+    {
+      "path": "apps/three-surface-poc/src/watch-mode.ts",
+      "sha256": "d0992c7969c653487d0eb9c985138a867ac4036665c5a0344a02d3c47615aa75"
+    },
+    {
+      "path": "apps/three-surface-poc/src/cli.ts",
+      "sha256": "d1b2d62e81fa729f359070faff617f036eabb9dc496f698b88e06a0d857bf5ed"
+    },
+    {
+      "path": "apps/three-surface-poc/src/git-observation.ts",
+      "sha256": "5d8198e96afd13cb76cb46d23a6c7383ecc699d99d028ff3cfbc169bd5c831c9"
+    },
+    {
+      "path": "apps/three-surface-poc/src/main.ts",
+      "sha256": "c7b01fc8eeb4b325cf5705494cdc4cbe53de2b8bf5cce91707d929c8e09c2d98"
+    },
+    {
+      "path": "apps/three-surface-poc/src/page-shell.ts",
+      "sha256": "b0b6b04cd44a956a3fee298610a2c867aab31ee64d38efdd8bcbb1c852633aca"
+    },
+    {
+      "path": "apps/three-surface-poc/src/routes.ts",
+      "sha256": "4121bf1013a7a0ccab17384d4bdd9f385a422cbdb1f439037a0fa92185bc0fc2"
+    },
+    {
+      "path": "apps/three-surface-poc/src/reobserve-action.ts",
+      "sha256": "9c47ead7e691998feaec5da3352af53a632542f6ea2655c3c68d5a016918d0cd"
+    }
+  ],
+  "mutants": [
+    {
+      "id": "R1-supersedes-dropped",
+      "predicate": "core: the result no longer names the identity it supersedes",
+      "file": "packages/three-surface-poc-core/src/reevaluation.ts",
+      "old": "supersedes: prior?.evaluation ?? null,",
+      "new": "supersedes: null,",
+      "check": "npx vitest run packages/three-surface-poc-core/src/reevaluation.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 2 passed (3)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "R2-movement-always-moved",
+      "predicate": "core: an unchanged clock reads moved",
+      "file": "packages/three-surface-poc-core/src/reevaluation.ts",
+      "old": "return before === after ? 'unchanged' : 'moved';",
+      "new": "return 'moved';",
+      "check": "npx vitest run packages/three-surface-poc-core/src/reevaluation.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  2 failed | 1 passed (3)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "R3-identity-reuse-admitted",
+      "predicate": "core: a re-evaluation may reuse the prior identity",
+      "file": "packages/three-surface-poc-core/src/reevaluation.ts",
+      "old": "if (prior !== null && prior.evaluation === next.evaluation) {",
+      "new": "if (false) {",
+      "check": "npx vitest run packages/three-surface-poc-core/src/reevaluation.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 2 passed (3)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "R4-result-not-frozen",
+      "predicate": "core: the first result can be rewritten",
+      "file": "packages/three-surface-poc-core/src/reevaluation.ts",
+      "old": "  return Object.freeze({\n    evaluation: next.evaluation,",
+      "new": "  return ({\n    evaluation: next.evaluation,",
+      "check": "npx vitest run packages/three-surface-poc-core/src/reevaluation.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 2 passed (3)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "R5-identity-is-snapshot",
+      "predicate": "production: an unchanged repository re-observed reuses one identity",
+      "file": "packages/three-surface-poc-core/src/reevaluation.ts",
+      "old": "return `${model.evaluation.snapshot}|observed:${model.evaluation.asOf}`;",
+      "new": "return model.evaluation.snapshot;",
+      "check": "npx vitest run apps/three-surface-poc/src/production-reobserve.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 4 passed (5)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "R6-dolt-clock-dropped",
+      "predicate": "production: the Dolt clock is never read from the work-item observation",
+      "file": "packages/three-surface-poc-core/src/reevaluation.ts",
+      "old": "doltRevision: model.workItems.kind === 'observed' ? model.workItems.doltRevision : null,",
+      "new": "doltRevision: null,",
+      "check": "npx vitest run apps/three-surface-poc/src/production-reobserve.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 4 passed (5)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "W1-reobserve-without-enter",
+      "predicate": "watch: a re-observation runs on attach, without an Enter",
+      "file": "apps/three-surface-poc/src/watch-mode.ts",
+      "old": "  output.write(`${WATCH_PROMPT}\\n`);\n  lines.on('line'",
+      "new": "  output.write(`${WATCH_PROMPT}\\n`);\n  void options.reobserve();\n  lines.on('line'",
+      "check": "npx vitest run apps/three-surface-poc/src/watch-mode.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  2 failed | 11 passed (13)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "W2-timer-added",
+      "predicate": "P-69 scan: a timer in the watch console",
+      "file": "apps/three-surface-poc/src/watch-mode.ts",
+      "old": "  let pending: Promise<void> = Promise.resolve();\n",
+      "new": "  let pending: Promise<void> = Promise.resolve();\n  setInterval(() => undefined, 60_000).unref();\n",
+      "check": "npx vitest run apps/three-surface-poc/src/watch-mode.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 12 passed (13)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "W3-fs-watcher-added",
+      "predicate": "P-69 scan: a file watcher in main",
+      "file": "apps/three-surface-poc/src/main.ts",
+      "old": "import { realpathSync } from 'node:fs';",
+      "new": "import { realpathSync, watch } from 'node:fs';\nvoid watch;",
+      "check": "npx vitest run apps/three-surface-poc/src/watch-mode.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 12 passed (13)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "W4-cli-watch-ignored",
+      "predicate": "cli: --watch parses as off",
+      "file": "apps/three-surface-poc/src/cli.ts",
+      "old": "      watch = true;\n",
+      "new": "      watch = false;\n",
+      "check": "npx vitest run apps/three-surface-poc/src/cli.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 1 passed (2)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "G1-project-limb-zero-on-failure",
+      "predicate": "git: an unreadable comparison reads as zero change",
+      "file": "apps/three-surface-poc/src/git-observation.ts",
+      "old": "  } catch {\n    return null;\n  }",
+      "new": "  } catch {\n    return { changedSources: 0, addedSources: 0 };\n  }",
+      "check": "npx vitest run apps/three-surface-poc/src/git-observation.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 9 passed (10)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "G2-observatory-zero-on-failure",
+      "predicate": "git: an unreadable commit count reads as zero",
+      "file": "apps/three-surface-poc/src/git-observation.ts",
+      "old": "    return { buildRevision, currentRevision, commitsSinceBuild: null };",
+      "new": "    return { buildRevision, currentRevision, commitsSinceBuild: 0 };",
+      "check": "npx vitest run apps/three-surface-poc/src/git-observation.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 9 passed (10)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "S1-dolt-shows-observatory",
+      "predicate": "status: the Dolt clock slot renders the observatory limb",
+      "file": "apps/three-surface-poc/src/page-shell.ts",
+      "old": "Dolt clock: ${escapeHtml(doltClockText(",
+      "new": "Dolt clock: ${escapeHtml(observatoryLimbText(",
+      "check": "npx vitest run apps/three-surface-poc/src/response-limits.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 16 passed (17)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "S2-status-not-supplied",
+      "predicate": "status: the latest re-evaluation is never handed to the page",
+      "file": "apps/three-surface-poc/src/routes.ts",
+      "old": "reevaluation: reevaluation?.() ?? null,",
+      "new": "reevaluation: null,",
+      "check": "npx vitest run apps/three-surface-poc/src/response-limits.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 16 passed (17)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "S3-unknown-reads-unchanged",
+      "predicate": "copy: an unknown movement renders as unchanged",
+      "file": "apps/three-surface-poc/src/reevaluation-copy.ts",
+      "old": "return movement === 'unknown' ? 'movement Unknown' : movement;",
+      "new": "return movement === 'unknown' ? 'unchanged' : movement;",
+      "check": "npx vitest run apps/three-surface-poc/src/reobserve-action.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 3 passed (4)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "P1-browser-guard-dropped",
+      "predicate": "route: POST /polaris/reobserve outside browserRequestAllowed is served",
+      "file": "apps/three-surface-poc/src/reobserve-action.ts",
+      "old": "    if (!browserRequestAllowed(request.headers)) {",
+      "new": "    if (false) {",
+      "check": "npx vitest run apps/three-surface-poc/src/reobserve-action.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  2 failed | 2 passed (4)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "P2-route-machine-class",
+      "predicate": "parity: the re-observe action joins the machine channel",
+      "file": "apps/three-surface-poc/src/reobserve-action.ts",
+      "old": "    { method: 'POST', path: REOBSERVE_HUMAN_PATH, credentialClass: 'human-open', handle },",
+      "new": "    { method: 'POST', path: REOBSERVE_HUMAN_PATH, credentialClass: 'machine-credentialed', handle },",
+      "check": "npx vitest run apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 48 passed (49)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "P3-result-page-no-supersedes",
+      "predicate": "route: the result page drops the superseded identity",
+      "file": "apps/three-surface-poc/src/reobserve-action.ts",
+      "old": "data-reobserve-supersedes=\"${escapeHtml(result.reevaluation.supersedes ?? '')}\"",
+      "new": "data-reobserve-supersedes=\"\"",
+      "check": "npx vitest run apps/three-surface-poc/src/reobserve-action.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 3 passed (4)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    }
+  ],
+  "summary": {
+    "mutants": 18,
+    "killed": 18
+  },
+  "uncovered": "main.ts wiring (reevaluate, single-flight reobserveNow, --watch attach) has no unit test; it is exercised by the live private-daemon run below, not by a mutant.",
+  "liveRun": {
+    "commit": "9f3c25c32dbdb87ba01fae597c1ea3cb2bf9dba2",
+    "measuredOn": "private daemon (--port 0, scratch --state-dir) from a clean clone of this commit, observing the registered Butlers locator at 32f38feb51d86e33bfec00b78777cce5ec280198",
+    "polarisBytes": {
+      "direct": 1485727,
+      "tailnetMounted": 1491847,
+      "ceiling": 2097152
+    },
+    "reobservePosts": "two same-origin POST /polaris/reobserve: both 200, each named a new identity superseding the previous one; Butlers HEAD, working-tree digest and Dolt revision all unchanged; observed-project limb 0 changed, 0 added; observatory limb 0 commits since build",
+    "crossOriginPost": "403 {\"served\":\"nothing\",\"reason\":\"browser-origin-refused\"}",
+    "watch": "--watch with one newline piped on stdin: exactly one Re-observing line and one named result; stdin then closed and nothing further re-observed",
+    "note": "run at 9f3c25c3; e737ed04 changes only watch-mode.test.ts, so every subject above hashes the same at both commits"
+  }
+}
