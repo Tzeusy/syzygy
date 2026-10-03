@@ -1,11 +1,11 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
-  buildPocModel,
+  buildPocModel as buildPocModelWithDefaultRunners,
   PocObservationError,
   type PocEntity,
   type PocRelationship,
@@ -45,6 +45,23 @@ function butlersFixture(): string {
   return root;
 }
 
+/** What `bd` answers from a directory with no Beads project; the model
+ * reads every failure of the work-item query the same way. */
+function noBeadsProject(): string {
+  throw new Error('fixture: no beads project found');
+}
+
+/**
+ * The model under test with the work-item query answered in-process unless
+ * a test supplies its own (syzygy-jsyi). The default runner spawns `bd`,
+ * 0.3-0.6 s a call under load, once or twice per build in a file of thirty
+ * builds; one test below keeps the spawned default and checks it yields the
+ * same model.
+ */
+function buildPocModel(input: Parameters<typeof buildPocModelWithDefaultRunners>[0]): ReturnType<typeof buildPocModelWithDefaultRunners> {
+  return buildPocModelWithDefaultRunners({ runWorkItemQuery: noBeadsProject, ...input });
+}
+
 function byId<T extends PocEntity | PocRelationship>(items: readonly T[]): Map<string, T> {
   return new Map(items.map((item) => [item.id, item]));
 }
@@ -59,17 +76,31 @@ function git(root: string, args: readonly string[]): string {
 const WORKER_CHANGE_SOURCE_PATH = 'src/butlers/connectors/whatsapp_user_client.py';
 const WORKER_CHANGE_TEST_PATH = 'tests/connectors/test_whatsapp_user_client.py';
 
-/** The same five required artifacts as {@link butlersFixture}, but as a
- * real committed git repository with a simulated fetched `origin/main`,
- * plus the bounded worker-change seam files — everything the test-artifact
- * verification wiring needs to observe a real changed-or-merged commit. */
-function butlersGitFixture(): {
+interface ButlersGitFixture {
   readonly repoRoot: string;
   readonly changedCommit: string;
   readonly changedCommitAuthoredAt: string;
-} {
+}
+
+let butlersGitTemplate: ButlersGitFixture | undefined;
+
+/** The same five required artifacts as {@link butlersFixture}, but as a
+ * real committed git repository with a simulated fetched `origin/main`,
+ * plus the bounded worker-change seam files — everything the test-artifact
+ * verification wiring needs to observe a real changed-or-merged commit.
+ * Each call copies one repository committed once per file (syzygy-jsyi):
+ * committing it took twelve git processes. */
+function butlersGitFixture(): ButlersGitFixture {
+  butlersGitTemplate ??= committedButlersGitFixture();
   const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-butlers-git-'));
   cleanups.push(root);
+  cpSync(butlersGitTemplate.repoRoot, root, { recursive: true });
+  return { ...butlersGitTemplate, repoRoot: root };
+}
+
+function committedButlersGitFixture(): ButlersGitFixture {
+  const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-butlers-git-template-'));
+  process.once('exit', () => rmSync(root, { recursive: true, force: true }));
   const files: Readonly<Record<string, string>> = {
     'docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md':
       '# WhatsApp identity design\nStatus: Approved for implementation\n',
@@ -149,6 +180,19 @@ function passingTestArtifactRecord(
 }
 
 describe('three-surface Butlers POC model', () => {
+  it('reads a directory with no Beads project through the spawned default runner exactly as through the in-process one', () => {
+    const input = {
+      seeds: BUTLERS_POC_SEEDS,
+      repoRoot: butlersFixture(),
+      repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
+      observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
+      evaluation: { snapshot: 'butlers@c1389423', asOf: '2026-08-29T12:00:00Z' },
+    } as const;
+    const spawned = buildPocModelWithDefaultRunners(input);
+    expect(JSON.stringify(spawned)).toContain('the Beads Dolt database was unreachable or unreadable during work-item observation');
+    expect(buildPocModel(input)).toEqual(spawned);
+  });
+
   it('builds one deterministic provenance-backed graph with honest Unknowns', () => {
     const repoRoot = butlersFixture();
     const input = {
