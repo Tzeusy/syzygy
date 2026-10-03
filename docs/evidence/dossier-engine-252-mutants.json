@@ -1,0 +1,395 @@
+{
+  "subject": {
+    "commit": "c260dc17b300f8593bdaa40a272ad8577c1b7c95",
+    "branch": "agent/dossier-engine-2",
+    "fileSha256": {
+      "apps/three-surface-poc/src/git-blob-batch.ts": "5e6e63ef2d56667113f921a7775658ead100e8e1f3f580b1e40fc34c2eaf9714",
+      "apps/three-surface-poc/src/polaris-generation/isolated-git.ts": "57b1b7207bb8753e2cd188dbb8aa9ee600bbd938a27941d62c6cb4eb4c172b33",
+      "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts": "6785203c6fe5848d372c30c9bbb676b47adcddb604a7ca651ec85aa224f0bf72"
+    }
+  },
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/three-surface-poc-app",
+  "ranAt": "2026-10-03T09:56:21+00:00",
+  "mutants": [
+    {
+      "id": "gate-strict-true",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "if (decision.allowed !== true)",
+      "new": "if (decision.allowed === false)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "include-filter",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "if (!include.some(re => re.test(record.path))) { outsideInclude++; return false; }",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "exclude-filter",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "if (exclude.some(re => re.test(record.path)))",
+      "new": "if (false)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 26
+    },
+    {
+      "id": "symlink-skip",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "|| record.mode === '120000'",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 26
+    },
+    {
+      "id": "gitlink-type-check",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "record.type !== 'blob' || ",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 26
+    },
+    {
+      "id": "nul-check",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "bytes.includes(0) ? undefined :",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "ignoreBOM",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "{ fatal: true, ignoreBOM: true }",
+      "new": "{ fatal: true }",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 26
+    },
+    {
+      "id": "empty-file",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "if (body.length === 0) {",
+      "new": "if (false) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 26
+    },
+    {
+      "id": "unquotable-path",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "if (!representablePath(record.path)) {",
+      "new": "if (false) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 26
+    },
+    {
+      "id": "hash-check",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "!== record.objectId) throw new Error('corpus-object-mismatch')",
+      "new": "!== record.objectId && false) throw new Error('corpus-object-mismatch')",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "commit-guard",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "if (git(repoRoot, ['cat-file', '-t', config.revision]).toString('utf8').trim() !== 'commit') throw",
+      "new": "if (false) throw",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 26
+    },
+    {
+      "id": "permission-identity",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "if (typeof decision.permissionIdentity !== 'string' || decision.permissionIdentity.length === 0) throw",
+      "new": "if (false) throw",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "git-isolation-fsmonitor",
+      "file": "apps/three-surface-poc/src/polaris-generation/isolated-git.ts",
+      "old": "'core.fsmonitor=false'",
+      "new": "'core.fsmonitor=true'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "git-isolation-hooks",
+      "file": "apps/three-surface-poc/src/polaris-generation/isolated-git.ts",
+      "old": "'core.hooksPath=/dev/null'",
+      "new": "'core.hooksPath=/tmp'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "sum-invariant-count",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "unquotablePath++;",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 26
+    },
+    {
+      "id": "bypass-repo-corpus",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "import { isolatedGit } from './isolated-git.js';",
+      "new": "import { execFileSync } from 'node:child_process';\nconst isolatedGit = (r: string, a: readonly string[]): Buffer => execFileSync('git', ['-C', r, ...a], { maxBuffer: 512_000_000 }) as Buffer;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 26
+    },
+    {
+      "id": "bypass-git-blob-batch",
+      "file": "apps/three-surface-poc/src/git-blob-batch.ts",
+      "old": "import { isolatedGit } from './polaris-generation/isolated-git.js';",
+      "new": "import { execFileSync } from 'node:child_process';\nconst isolatedGit = (r: string, a: readonly string[], input?: string): Buffer => execFileSync('git', ['-C', r, ...a], { maxBuffer: 512_000_000, ...(input === undefined ? {} : { input }) }) as Buffer;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 26
+    },
+    {
+      "id": "env-inherits-process",
+      "file": "apps/three-surface-poc/src/polaris-generation/isolated-git.ts",
+      "old": "PATH: process.env.PATH ?? '/usr/bin:/bin', LANG: process.env.LANG ?? 'C',",
+      "new": "...process.env, PATH: process.env.PATH ?? '/usr/bin:/bin', LANG: process.env.LANG ?? 'C',",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 26
+    },
+    {
+      "id": "no-replace-env",
+      "file": "apps/three-surface-poc/src/polaris-generation/isolated-git.ts",
+      "old": "GIT_NO_REPLACE_OBJECTS: '1',",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 26
+    },
+    {
+      "id": "no-replace-flag",
+      "file": "apps/three-surface-poc/src/polaris-generation/isolated-git.ts",
+      "old": ", '--no-replace-objects']",
+      "new": "]",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "ufffd-path-check",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "&& !path.includes('\\uFFFD')",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "sha256-choice",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "objectId.length === 40 ? 'sha1' : 'sha256'",
+      "new": "'sha1'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "raw-bytes",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "rawBytes += bytes.length;",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "blob-batch-one",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "const BLOB_BATCH = 200;",
+      "new": "const BLOB_BATCH = 1;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 26
+    },
+    {
+      "id": "identity-path-term",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "`${source.path}\\0${source.objectId}\\0${source.sourceId}`",
+      "new": "`${source.objectId}\\0${source.sourceId}`",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "identity-object-term",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "`${source.path}\\0${source.objectId}\\0${source.sourceId}`",
+      "new": "`${source.path}\\0${source.sourceId}`",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "dotdot-path-check",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "part === '' || part === '.' || part === '..'",
+      "new": "part === '' || part === '.'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26,
+      "note": "killed by the mktree fixture with `.` and `..` entries"
+    },
+    {
+      "id": "sort-comparator",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": ".sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0)",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 26,
+      "note": "survives; recorded as equivalent for the tested population: git ls-tree already lists entries in byte order and the comparator orders by UTF-16 code unit. The two orders differ only for paths mixing astral characters with U+E000-U+FFFF characters, which no fixture here exercises (not proven equivalent in general)."
+    },
+    {
+      "id": "dot-path-check",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "part === '' || part === '.' ||",
+      "new": "part === '' ||",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    }
+  ]
+}
