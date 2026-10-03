@@ -90,7 +90,7 @@ NESTED_KEY = re.compile(r"^\s+([A-Za-z_][\w-]*):\s*(.*)$")
 PLAIN_FIRST = re.compile(r"[^-?:,\[\]{}#&*!|>'\"%@`\s]")
 PLAIN_FORBIDDEN = re.compile(r"[,\[\]{}\"']|: |:$| #|\n|\t")
 YAML_RESERVED = re.compile(
-    r"(?i:y|n|yes|no|on|off|true|false|null|~)$"
+    r"(?i:y|n|no|on|off|true|false|null|~)$"
     r"|[-+]?(\d[\d_]*(\.\d*)?|\.\d+)([eE][-+]?\d+)?$"
     r"|[-+]?\.(inf|nan)$|0[xob][0-9a-fA-F_]+$|\d+(:[0-5]?\d)+$", re.I)
 
