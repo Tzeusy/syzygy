@@ -149,7 +149,9 @@ Authorized implementation work (generator implementation authorization,
         to a claim ledger, reduce to a ranking, select under the 200 cap;
         every unselected file stays counted as `deferred-by-budget`. Model
         ports are injected and egress-gated; the report names the ranking
-        basis. Wiring to a real model is still G2/G3.
+        basis. Every call is permitted per call and leaves a durable receipt;
+        a report replays from receipts alone, bound to each call's request
+        digest. Wiring to a real model is still G2/G3.
   - [~] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.
