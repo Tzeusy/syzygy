@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { runGenerationPipeline, stageSchema, validateGenerationSources, validateStage, reviewVerdict, type GenerationSource, type PipelinePorts, type PipelineResult } from '@syzygy/polaris-generation-core';
+import { excludedSourceId, runGenerationPipeline, stageSchema, validateGenerationSources, validateStage, reviewVerdict, type GenerationSource, type PipelinePorts, type PipelineResult } from '@syzygy/polaris-generation-core';
 import { compileDetectors, detectSecrets, PWB_DENIED_PATH_RULES, PWB_SECRET_POLICY } from '@syzygy/three-surface-poc-core';
 
 import { renderDossier } from './dossier-render.js';
@@ -120,6 +120,15 @@ describe('synthetic secrets of each detector class', () => {
     const deniedIds = ['.env', 'certs/denied-server.pem'].map(path => execFileSync('git', ['-C', root, 'rev-parse', `${commit}:${path}`], { encoding: 'utf8' }).trim());
     expect(read.flat().filter(id => deniedIds.includes(id))).toEqual([]);
     expect(read.flat()).toHaveLength(9);
+  });
+
+  it('one run key keys the withheld rows and an ordinary excluded row alike (syzygy-75ds)', async () => {
+    const key = Buffer.alloc(32, 9);
+    const { readGitBlobsBatch } = await import('../git-blob-batch.js');
+    const cleanId = execFileSync('git', ['-C', root, 'rev-parse', `${commit}:src/clean.c`], { encoding: 'utf8' }).trim();
+    const corpus = await readScreenedRepoCorpus(root, cfg(), { admission: allow, policyAct: goodPort, runKey: key,
+      readBlobs: (repo, objects) => new Map([...readGitBlobsBatch(repo, objects)].map(([id, bytes]) => [id, id === cleanId ? new Uint8Array([0]) : bytes])) });
+    expect(corpus.sources.find(source => source.path === 'src/clean.c')).toMatchObject({ sourceId: excludedSourceId(key, 'src/clean.c'), exclusion: { excluded: true, reason: 'binary-or-non-utf8' } });
   });
 });
 
