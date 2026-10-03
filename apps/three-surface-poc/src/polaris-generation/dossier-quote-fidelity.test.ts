@@ -107,7 +107,7 @@ describe('quotation marks inside a cited block (deterministic fidelity)', () => 
     const { files } = renderDossier({ sources: run.sources, result: { ...run.result, draft } });
     const pieces = cut.map((piece, index) => ({ ...original, sourceId: `${id}-p${index + 1}`, body: piece.text,
       segment: { index, count: cut.length, start: piece.start, end: piece.end, blobBytes: Buffer.byteLength(body) },
-      spans: [{ anchorId: generationAnchorId(original, piece.start, piece.end), start: 0, end: piece.end - piece.start, text: piece.text }] }));
+      spans: [{ anchorId: generationAnchorId({ ...original, objectId: original.objectId! }, piece.start, piece.end), start: 0, end: piece.end - piece.start, text: piece.text }] }));
     const sources = [...run.sources.filter(source => source.sourceId !== id), ...pieces];
     const manifest = parseDossierManifest(files.get('dossier.json')!);
     const pages = new Map(manifest.pages.map(page => [page.path, new TextEncoder().encode(files.get(page.path)!.replaceAll(`Read source ${id}"`, `Read source ${id}-p1"`))]));
