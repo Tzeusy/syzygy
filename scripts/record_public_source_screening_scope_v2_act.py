@@ -146,12 +146,14 @@ def identity_for(act: Act, date: str) -> str:
     return f"{act.identity_stem}-{date}"
 
 
-def frozen_table() -> str:
-    """The table `FROZEN_FILE_DIGESTS` would hold for the files as they are, by script."""
+def frozen_table(read: Callable[[pathlib.Path], bytes] | None = None) -> str:
+    """The table `FROZEN_FILE_DIGESTS` would hold for the files as they are (or as `read` returns
+    them), by script."""
+    read = read or (lambda rel: (ROOT / rel).read_bytes())
     rels = [MANIFEST_REL, *PATCH_RELS.values(), PACKET_REL, DELTA_REL, BRIEF_REL, LEDGER_REL]
     lines = []
     for rel in rels:
-        data = (ROOT / rel).read_bytes()
+        data = read(rel)
         data = PERFORMED_HEAD_RE.sub(rb"\1", data, count=1) if rel == PACKET_REL else data
         lines.append(f'    pathlib.Path("{rel.as_posix()}"): "{digest(data)}",')
     return "FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {\n" + "\n".join(lines) + "\n}"
@@ -642,6 +644,15 @@ def selftest() -> int:
         except SyntaxError:
             real_ok = False
         results.append(("--freeze on this very file yields a compilable, repointed recorder", real_ok))
+    mf = b"manifest bytes\n"
+    ok_raw = f"# R\nReviewed commit: {'c' * 40}\nManifest SHA-256: {digest(mf)}\nVerdict: CONFIRM\n"
+    results.append(("a confirming raw bound to the commit's manifest is accepted", raw_head_binds(ok_raw, mf) is None))
+    results.append(("a raw bound to another manifest is refused", raw_head_binds(ok_raw, mf + b"x") is not None))
+    results.append(("a REVISE raw is refused", raw_head_binds(ok_raw.replace("CONFIRM", "REVISE"), mf) is not None))
+    results.append(("a displaced verdict is refused", raw_head_binds(ok_raw.replace("Verdict:", "Note: x\nVerdict:"), mf) is not None))
+    results.append(("a table read through a reader uses the reader's bytes, not the worktree's",
+                    frozen_table(lambda rel: b"x") != frozen_table()
+                    and f'"{digest(b"x")}"' in frozen_table(lambda rel: b"x")))
     results.append(("--freeze refuses a recorder that is already frozen",
                     _raises(lambda: freeze_text(frozen, 7, "b" * 40, "T2"))))
     results.append(("--freeze refuses a short commit", _raises(lambda: freeze_text(snippet, 7, "abc", "T"))))
@@ -836,27 +847,50 @@ def freeze_text(text: str, round_n: int, commit: str, table: str) -> str:
     return text
 
 
+def raw_head_binds(raw: str, manifest_file: bytes) -> str | None:
+    """None when the raw's head (first four non-blank lines) carries a confirming verdict and the
+    manifest FILE digest of `manifest_file`; otherwise the reason."""
+    head = [line for line in raw.splitlines() if line.strip()][:4]
+    if f"Manifest SHA-256: {digest(manifest_file)}" not in head:
+        return "the raw's head does not bind the manifest file digest at that commit"
+    verdicts = [m.group(1) for line in head if (m := VERDICT_RE.match(line))]
+    if len(verdicts) != 1 or verdicts[0] not in VERDICTS:
+        return "the raw's head does not carry CONFIRM or CONFIRM WITH EXCEPTIONS"
+    return None
+
+
 def do_freeze(round_n: int, commit: str) -> int:
-    """`--freeze ROUND COMMIT`: one command at the sitting, run on the confirmed bytes."""
+    """`--freeze ROUND COMMIT`: one command at the sitting. Every digest is of the bytes AT THE
+    COMMIT (git show), never the worktree; refuses unless the commit's round-N raw carries a
+    confirming verdict and the manifest FILE digest of that commit's manifest."""
     import subprocess
-    full = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--verify", f"{commit}^{{commit}}"],
-                          capture_output=True, text=True)
+
+    def git(*a: str) -> subprocess.CompletedProcess:
+        return subprocess.run(["git", "-C", str(ROOT), *a], capture_output=True)
+    full = git("rev-parse", "--verify", f"{commit}^{{commit}}")
     if full.returncode:
         print(f"FAILED: {commit} is not a commit here", file=sys.stderr)
         return 1
-    review = ROOT / PKG / f"reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-{round_n}-RAW.md"
-    if not review.is_file():
-        print(f"FAILED: missing the round-{round_n} raw {review.relative_to(ROOT)}", file=sys.stderr)
-        return 1
+    sha = full.stdout.decode().strip()
+
+    def at_commit(rel: pathlib.Path) -> bytes:
+        r = git("show", f"{sha}:{rel.as_posix()}")
+        if r.returncode:
+            raise ValueError(f"{rel.as_posix()} is not in commit {sha}")
+        return r.stdout
+    raw_rel = PKG / f"reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-{round_n}-RAW.md"
     me = pathlib.Path(__file__).resolve()
     try:
-        new = freeze_text(me.read_text(), round_n, full.stdout.strip(), frozen_table())
+        why = raw_head_binds(at_commit(raw_rel).decode(), at_commit(MANIFEST_REL))
+        if why:
+            raise ValueError(why)
+        new = freeze_text(me.read_text(), round_n, sha, frozen_table(at_commit))
     except ValueError as exc:
         print(f"FAILED: {exc}", file=sys.stderr)
         return 1
     me.write_text(new)
-    print(f"froze on round {round_n} at {full.stdout.strip()}; run --selftest and --freeze-table "
-          "(it must now print the same table), then commit")
+    print(f"froze on round {round_n} at {sha}; run --selftest and --freeze-table (it must now print "
+          "the same table on a clean checkout of that commit), then commit")
     return 0
 
 
