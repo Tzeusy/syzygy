@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { generationAnchorId, gitBlobObjectId, runGenerationPipeline, stageSchema, validateGenerationSources,
+import { generationAnchorId, generationSourcesForBody, gitBlobObjectId, runGenerationPipeline, stageSchema, validateGenerationSources,
   validateStage, reviewVerdict, type GenerationSource, type PipelineRequest, type PipelineResult, type ProviderDraft } from '@syzygy/polaris-generation-core';
 
 import { readGitBlobsBatch, type ReadGitBlobs } from '../git-blob-batch.js';
@@ -52,7 +52,7 @@ export function readSelfCorpus(repoRoot: string, revision: string, readBlobs: Re
   // One batched read of exactly the selected blobs (syzygy-svoj); a missing
   // or non-blob answer fails the read of that record, as a single read did.
   const blobs = readBlobs(repoRoot, selected.filter(record => record.type === 'blob').map(record => record.objectId));
-  const sources = selected.map(record => {
+  const sources = selected.flatMap(record => {
     if (record.type !== 'blob') throw new Error('self-corpus-nonblob');
     const bytes = blobs.get(record.objectId);
     if (!(bytes instanceof Uint8Array)) throw bytes ?? new Error('self-corpus-blob-unread');
@@ -62,10 +62,8 @@ export function readSelfCorpus(repoRoot: string, revision: string, readBlobs: Re
     characters += [...body].length;
     largestCharacters = Math.max(largestCharacters, [...body].length);
     if ([...body].length > 100_000) over100000Characters++;
-    const base = { repositoryId: 'project:syzygy', revision, path: record.path, objectId: record.objectId };
-    return { ...base, sourceId: `s-${sha256(record.path).slice(0, 24)}`, evaluationId: `self:${revision}`,
-      classificationBasis: 'body' as const, exclusion: { excluded: false as const }, body,
-      spans: [{ anchorId: generationAnchorId(base, 0, bytes.length), start: 0, end: bytes.length, text: body }] };
+    return generationSourcesForBody({ repositoryId: 'project:syzygy', revision, path: record.path, objectId: record.objectId,
+      sourceId: `s-${sha256(record.path).slice(0, 24)}`, evaluationId: `self:${revision}`, body });
   });
   validateGenerationSources(sources);
   return { profile, revision, sources, count: { trackedUnderRoots: records.length, markdownUnderRoots: markdown.length,

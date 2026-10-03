@@ -13,6 +13,10 @@ export interface GenerationSource {
   readonly objectId: string | null;
   readonly evaluationId: string;
   readonly classificationBasis: 'body' | 'path-only';
+  /** Present only on one contiguous piece of a blob too long to quote whole.
+   * `start`/`end` are UTF-8 byte offsets into the full blob; `body` and span
+   * offsets are relative to the piece, anchors use the blob offsets. */
+  readonly segment?: { readonly index: number; readonly count: number; readonly start: number; readonly end: number };
   readonly exclusion: { readonly excluded: false } | { readonly excluded: true; readonly reason: string };
   /** Present only for an admitted body. Never sent to a provider except in
    * the inventory envelope or a later explicitly cited span. */
@@ -22,7 +26,7 @@ export interface GenerationSource {
 
 export type GenerationSourceFailure =
   | 'invalid-source' | 'duplicate-source' | 'duplicate-anchor' | 'invalid-anchor'
-  | 'unquotable-source' | 'body-mismatch' | 'object-mismatch' | 'source-too-long';
+  | 'unquotable-source' | 'body-mismatch' | 'object-mismatch' | 'source-too-long' | 'invalid-segments';
 
 export class GenerationSourceError extends Error {
   constructor(readonly code: GenerationSourceFailure) {
@@ -51,11 +55,12 @@ export function gitBlobObjectId(body: string, algorithm: 'sha1' | 'sha256' = 'sh
 /** Validates one closed source population before any stage can dispatch. */
 export function validateGenerationSources(value: readonly GenerationSource[]): readonly GenerationSource[] {
   if (value.length === 0) fail('invalid-source');
-  const sourceKeys = new Set(['sourceId', 'repositoryId', 'revision', 'path', 'objectId', 'evaluationId', 'classificationBasis', 'exclusion', 'body', 'spans']);
+  const sourceKeys = new Set(['sourceId', 'repositoryId', 'revision', 'path', 'objectId', 'evaluationId', 'classificationBasis', 'segment', 'exclusion', 'body', 'spans']);
   const spanKeys = new Set(['anchorId', 'start', 'end', 'text']);
   const sourceIds = new Set<string>();
   const identities = new Set<string>();
   const anchorIds = new Set<string>();
+  const blobs = new Map<string, { whole: boolean; pieces: { index: number; count: number; start: number; end: number }[] }>();
   for (const source of value) {
     if (source === null || typeof source !== 'object' || Object.keys(source).some(key => !sourceKeys.has(key))
       || (Object.hasOwn(source, 'body') && source.body === undefined)
@@ -68,9 +73,18 @@ export function validateGenerationSources(value: readonly GenerationSource[]): r
       || source.path.split('/').some(part => part === '' || part === '.' || part === '..') || source.path.includes('\0')
       || source.path.includes('\\') || !['body', 'path-only'].includes(source.classificationBasis)
       || typeof source.exclusion?.excluded !== 'boolean' || !Array.isArray(source.spans)) fail('invalid-source');
-    const identity = source.objectId === null
+    const segment = source.segment;
+    if (segment !== undefined && (segment === null || typeof segment !== 'object'
+      || Object.keys(segment).length !== 4 || ['index', 'count', 'start', 'end'].some(key => !Number.isSafeInteger((segment as Record<string, unknown>)[key]))
+      || segment.count < 2 || segment.index < 0 || segment.index >= segment.count || segment.start < 0 || segment.end <= segment.start
+      || source.objectId === null || source.exclusion.excluded || source.classificationBasis !== 'body')) fail('invalid-source');
+    const blobIdentity = source.objectId === null
       ? `${source.repositoryId}@${source.revision}:${source.path}#unavailable`
       : generationSourceIdentity({ ...source, objectId: source.objectId });
+    const identity = segment === undefined ? blobIdentity : `${blobIdentity}[${segment.start}-${segment.end}]`;
+    const blob = blobs.get(blobIdentity) ?? { whole: false, pieces: [] };
+    if (segment === undefined) blob.whole = true; else blob.pieces.push(segment);
+    blobs.set(blobIdentity, blob);
     if (sourceIds.has(source.sourceId) || identities.has(identity)) fail('duplicate-source');
     sourceIds.add(source.sourceId);
     identities.add(identity);
@@ -87,7 +101,11 @@ export function validateGenerationSources(value: readonly GenerationSource[]): r
     if (body === undefined) throw new GenerationSourceError('unquotable-source');
     const bytes = Buffer.from(body, 'utf8');
     if ([...body].length > SOURCE_TEXT_MAX_LENGTH) fail('source-too-long');
-    if (gitBlobObjectId(body, objectId.length === 40 ? 'sha1' : 'sha256') !== objectId) fail('object-mismatch');
+    // A piece cannot hash to its blob; its contiguity is checked below and the
+    // reader (and verifySources) bind the whole blob.
+    if (segment !== undefined) { if (bytes.length !== segment.end - segment.start) fail('body-mismatch'); }
+    else if (gitBlobObjectId(body, objectId.length === 40 ? 'sha1' : 'sha256') !== objectId) fail('object-mismatch');
+    const anchorBase = segment?.start ?? 0;
     for (const span of source.spans) {
       if (span === null || typeof span !== 'object' || Object.keys(span).some(key => !spanKeys.has(key))
         || typeof span.anchorId !== 'string' || typeof span.text !== 'string') fail('invalid-anchor');
@@ -98,12 +116,73 @@ export function validateGenerationSources(value: readonly GenerationSource[]): r
       try { decoded = new TextDecoder('utf-8', { fatal: true }).decode(slice); }
       catch { throw new GenerationSourceError('invalid-anchor'); }
       if (decoded !== span.text) fail('body-mismatch');
-      if (span.anchorId !== generationAnchorId({ ...source, objectId }, span.start, span.end)) fail('invalid-anchor');
+      if (span.anchorId !== generationAnchorId({ ...source, objectId }, anchorBase + span.start, anchorBase + span.end)) fail('invalid-anchor');
       if (anchorIds.has(span.anchorId)) fail('duplicate-anchor');
       anchorIds.add(span.anchorId);
     }
   }
+  for (const blob of blobs.values()) {
+    if (blob.pieces.length === 0) continue;
+    const pieces = [...blob.pieces].sort((a, b) => a.index - b.index);
+    if (blob.whole || pieces.some((piece, i) => piece.index !== i || piece.count !== pieces.length
+      || piece.start !== (i === 0 ? 0 : pieces[i - 1]!.end))) fail('invalid-segments');
+  }
   return value;
+}
+
+export interface BodyPiece { readonly start: number; readonly end: number; readonly text: string }
+
+/** Splits an over-long body into pieces of at most `maxChars` characters,
+ * preferring the last line break in the final fifth of a piece and never
+ * cutting inside a code point. Offsets are UTF-8 bytes into `body`. */
+export function segmentBody(body: string, maxChars: number = SOURCE_TEXT_MAX_LENGTH): readonly BodyPiece[] {
+  if (!Number.isSafeInteger(maxChars) || maxChars < 1) throw new GenerationSourceError('invalid-source');
+  const chars = [...body];
+  const pieces: BodyPiece[] = [];
+  let at = 0, byte = 0;
+  while (at < chars.length) {
+    let stop = Math.min(chars.length, at + maxChars);
+    if (stop < chars.length) {
+      for (let i = stop; i > at + Math.floor(maxChars * 0.8); i--) if (chars[i - 1] === '\n') { stop = i; break; }
+    }
+    const text = chars.slice(at, stop).join('');
+    const length = Buffer.byteLength(text, 'utf8');
+    pieces.push({ start: byte, end: byte + length, text });
+    byte += length;
+    at = stop;
+  }
+  return pieces;
+}
+
+export interface BodySourceInput {
+  readonly sourceId: string;
+  readonly repositoryId: string;
+  readonly revision: string;
+  readonly path: string;
+  readonly objectId: string;
+  readonly evaluationId: string;
+  readonly body: string;
+  /** What to do with a body over the quotable limit; default `split`. */
+  readonly oversize?: 'split' | 'exclude';
+}
+
+/** One verified blob body as sources: whole when it fits, otherwise
+ * contiguous pieces (`<sourceId>-p1`...) or one excluded row with a reason.
+ * The caller has already checked the body against `objectId`. */
+export function generationSourcesForBody(input: BodySourceInput): readonly GenerationSource[] {
+  const { body, sourceId, oversize = 'split', ...base } = input;
+  const bytes = Buffer.byteLength(body, 'utf8');
+  if ([...body].length <= SOURCE_TEXT_MAX_LENGTH) {
+    return [{ ...base, sourceId, classificationBasis: 'body', exclusion: { excluded: false }, body,
+      spans: [{ anchorId: generationAnchorId(base, 0, bytes), start: 0, end: bytes, text: body }] }];
+  }
+  if (oversize === 'exclude') {
+    return [{ ...base, sourceId, classificationBasis: 'body', exclusion: { excluded: true, reason: 'oversize-source-excluded' }, spans: [] }];
+  }
+  const pieces = segmentBody(body);
+  return pieces.map((piece, index) => ({ ...base, sourceId: `${sourceId}-p${index + 1}`, classificationBasis: 'body' as const,
+    segment: { index, count: pieces.length, start: piece.start, end: piece.end }, exclusion: { excluded: false as const }, body: piece.text,
+    spans: [{ anchorId: generationAnchorId(base, piece.start, piece.end), start: 0, end: piece.end - piece.start, text: piece.text }] }));
 }
 
 /** Only quotable source text crosses the provider boundary. The population
