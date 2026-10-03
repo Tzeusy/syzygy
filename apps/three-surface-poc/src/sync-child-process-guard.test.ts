@@ -207,7 +207,7 @@ describe('suite child processes and the vitest worker RPC', () => {
     expect(commands("import { execFileSync as run } from 'node:child_process';\nexport { run };")).toEqual(['<run re-bound>']);
     // Calls, async members and other objects' same-named members stay clean.
     expect(commands(`${namespace}cp.execFileSync('git', []);\ncp.spawn('npm', []);\nconst spawn = cp.spawn;\nother.cp = 1;`)).toEqual([]);
-    expect(commands(`${named}execFileSync('git', ['status']);\nactual.execFileSync(file, args);\nconst o = { execFileSyncLike: 1 };`)).toEqual([]);
+    expect(commands(`${named}execFileSync('git', ['status']);\nactual.execFileSync(file, args);\nconst passed = actual.execFileSync;\nconst o = { execFileSyncLike: 1 };`)).toEqual([]);
   });
 
   it('scans a helper module a test imports, through relative and workspace imports', () => {
