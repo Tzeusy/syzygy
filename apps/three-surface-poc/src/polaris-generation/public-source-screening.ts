@@ -92,7 +92,7 @@ export async function loadPublicSourceScreen(port: PublicSourcePolicyActPort = c
   const classification = (scope as Record<string, unknown>).contentClassification as Record<string, unknown> | undefined;
   const codeContent = Array.isArray(classification?.rules) ? classification.rules.filter((rule: unknown) => (rule as Record<string, unknown> | null)?.class === 'code-content') : [];
   const extensions = (codeContent[0] as Record<string, unknown> | undefined)?.sourceExtensions;
-  if (codeContent.length !== 1 || !stringList(extensions) || extensions.length === 0 || extensions.some(extension => !/^\.[^/]+$/u.test(extension))) refuse('policy sourceExtensions unreadable');
+  if (codeContent.length !== 1 || !stringList(extensions) || extensions.length === 0 || extensions.some(extension => !/^\.[^/\s]+$/u.test(extension) || extension.includes('..'))) refuse('policy sourceExtensions unreadable');
   const sourceExtensions = extensions as readonly string[];
   const rules: DeniedPathRules = { basenames: admission!.deniedPathBasenames as string[], prefixes: admission!.deniedPathPrefixes as string[], suffixes: admission!.deniedPathSuffixes as string[] };
   let detectors: ReturnType<typeof compileDetectors>;

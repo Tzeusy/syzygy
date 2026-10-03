@@ -88,7 +88,8 @@ function assertIdentity(repositoryId: string, revision: string): void {
 
 /** The path rules the source validator enforces, so one odd name is accounted for rather than fatal. */
 function representablePath(path: string): boolean {
-  return path.length > 0 && !path.startsWith('/') && !path.includes('\0') && !path.includes('\\') && !path.includes('\uFFFD')
+  // A control character (a newline included) is legal in a Git path but no row may carry one.
+  return path.length > 0 && !path.startsWith('/') && !/[\u0000-\u001f\u007f]/u.test(path) && !path.includes('\\') && !path.includes('\uFFFD')
     && !path.split('/').some(part => part === '' || part === '.' || part === '..');
 }
 
@@ -103,7 +104,8 @@ export function globToRegExp(glob: string): RegExp {
     else if (c === '?') out += '[^/]';
     else out += c.replace(/[\\^$.|+()[\]{}]/gu, '\\$&');
   }
-  return new RegExp(`^${out}$`, 'u');
+  // `s`: `**` spans a newline inside a path too, so such a path is counted unquotable, not outside the include.
+  return new RegExp(`^${out}$`, 'su');
 }
 
 export interface RepoCorpusCount {
@@ -166,7 +168,8 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
   if (git(repoRoot, ['cat-file', '-t', config.revision]).toString('utf8').trim() !== 'commit') throw new Error('invalid-pinned-commit');
   const include = config.include.map(globToRegExp), exclude = config.exclude.map(globToRegExp);
   const records = git(repoRoot, ['ls-tree', '-r', '-z', '--full-tree', config.revision]).toString('utf8').split('\0').filter(Boolean).map(row => {
-    const match = /^(\d{6}) (blob|tree|commit) ([0-9a-f]{40}|[0-9a-f]{64})\t(.+)$/u.exec(row);
+    // `s`: a newline inside a path is part of the path (counted unquotable below), never a malformed record.
+    const match = /^(\d{6}) (blob|tree|commit) ([0-9a-f]{40}|[0-9a-f]{64})\t(.+)$/su.exec(row);
     if (!match) throw new Error('invalid-git-tree-record');
     return { mode: match[1]!, type: match[2]!, objectId: match[3]!, path: match[4]! };
   });
@@ -178,7 +181,13 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
     if (!include.some(re => re.test(record.path))) { outsideInclude++; return false; }
     if (exclude.some(re => re.test(record.path))) { excludedByGlob++; return false; }
     // A name no source row can carry is counted and listed by digest, never a failed run.
-    if (!representablePath(record.path)) { unquotablePath++; unrepresentable.push({ pathHmac: keyedDigest(runKey, record.path), objectId: record.objectId, reason: 'unquotable-path' }); return false; }
+    // Under a screen it is counted only (no digest, no object id), and a detector match in it is counted too.
+    if (!representablePath(record.path)) {
+      unquotablePath++;
+      if (ports.screen === undefined) unrepresentable.push({ pathHmac: keyedDigest(runKey, record.path), objectId: record.objectId, reason: 'unquotable-path' });
+      else if (ports.screen.screenPath(record.path) === 'secret-detector-match') screened['secret-detector-match']++;
+      return false;
+    }
     return true;
   }).sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
   const evaluationId = `corpus:${config.repositoryId}@${config.revision}`;
