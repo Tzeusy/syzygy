@@ -44,6 +44,8 @@ describe('quotationsMatch', () => {
     ['an unterminated quotation', 'The project states: "Brindle is fast.'],
     ['a second quotation that does not match', `${quote('Brindle is fast.')} Also, ${quote('It writes the tree.')}`],
     ['a quotation spliced from two places', quote('Brindle is fast. It calls it "the tree".')],
+    ['a matching opening with an unverified tail after an inner quote', quote('It reads the content directory and calls it "the tree" and "the root".')],
+    ['a quotation followed by prose that contains a double quote', `${quote('Brindle is fast.')} Its "speed" is not quantified.`],
   ])('refuses %s', (_name, text) => {
     expect(quotationsMatch(text, [source])).toBe(false);
   });
