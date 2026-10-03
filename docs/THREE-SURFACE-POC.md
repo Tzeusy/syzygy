@@ -108,6 +108,15 @@ diagnostic to local stderr.
 - Human pages expose a compact evaluation and breach line below the header.
   It is an execution disclosure, not a health verdict or a new machine status
   route.
+- Below it, one resource entry (`syzygy-u05.3`) gives the resource ledger's
+  headroom against all seven declared limits (observed, declared, left) and
+  its cost record (bodies read, bytes, parse passes, worst-source passes).
+  The machine body carries the same tuples as `resourceHeadroom`, one id per
+  tuple; the two channels are compared tuple by tuple. A value the ledger
+  did not observe reads Unknown with its reason, never zero: the two response
+  ceilings are enforced per response outside the ledger, and an evaluation
+  whose project shape was not observed ran no ledger at all. The block holds
+  no capture instant, so the response identity's content key covers it.
 
 ## Evidence and re-observation
 

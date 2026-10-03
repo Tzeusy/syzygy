@@ -627,6 +627,53 @@ describe('PWB-REQ-020 exhaustive Polaris parity sweep', () => {
     expect(evidence.currencyBounds).toEqual([]);
   });
 
+  // Pursuit N3 slice 3 (syzygy-u05.3): the resource-ledger headroom is one
+  // machine block and one status-slot entry, compared per tuple by id. The
+  // human extractor and the machine projection are hand-written here.
+  it.each(SHAPE_STATES)('%s shape: every resource tuple on the served /polaris status entry matches the machine block by id', (shapeState) => {
+    const model = modelFor(shapeState, 'lawful-state-2');
+    const routes = pocRoutes(() => model);
+    const serve = (path: string, headers: Record<string, string>): string => {
+      const route = routes.find((candidate) => candidate.path === path);
+      if (route === undefined) throw new Error(`missing route ${path}`);
+      const answer = route.handle({ request: { method: 'GET', path, query: new URLSearchParams(), headers } });
+      if (answer instanceof Promise || answer.status !== 200) throw new Error(`route ${path} did not serve a body`);
+      return answer.body;
+    };
+    const html = serve('/polaris', { host: '127.0.0.1:1' });
+    const machine = JSON.parse(serve(POC_MACHINE_PATH, {})) as { resourceHeadroom: { entries: { id: string; declared: number; observed: { state: string; value?: number }; remaining: { state: string; value?: number } }[]; cost: { id: string; state: string; bodiesRead?: number; bytes?: number; parsePasses?: number; worstSourcePasses?: number } } };
+    const value = (o: { state: string; value?: number }): string => (o.state === 'observed' ? String(o.value) : 'unknown');
+    const block = machine.resourceHeadroom;
+    const machineTuples = new Map<string, string>([
+      ...block.entries.map((entry) => [entry.id, `${entry.declared}|${value(entry.observed)}|${value(entry.remaining)}`] as const),
+      [block.cost.id, block.cost.state === 'observed' ? `${block.cost.bodiesRead}|${block.cost.bytes}|${block.cost.parsePasses}|${block.cost.worstSourcePasses}` : 'unknown|unknown|unknown|unknown'],
+    ]);
+    const lines = [...html.matchAll(/<p class="operability-resources"[^>]*>([\s\S]*?)<\/p>/g)];
+    expect(lines).toHaveLength(1);
+    const humanTuples = [...(lines[0]?.[1] ?? '').matchAll(/<span data-resource-tuple="([^"]*)"([^>]*)>([^<]*)<\/span>/g)].map((match) => {
+      const attrs = new Map([...(match[2] ?? '').matchAll(/\s(data-[a-z-]+)="([^"]*)"/g)].map((a) => [a[1] as string, a[2] as string]));
+      const tuple = match[1] === 'resource-cost'
+        ? ['data-bodies-read', 'data-bytes', 'data-parse-passes', 'data-worst-source-passes'].map((name) => attrs.get(name)).join('|')
+        : ['data-declared', 'data-observed', 'data-remaining'].map((name) => attrs.get(name)).join('|');
+      return { id: match[1] as string, tuple, text: match[3] as string };
+    });
+    expect(humanTuples.map((t) => t.id).sort()).toEqual([...machineTuples.keys()].sort());
+    expect(new Set(humanTuples.map((t) => t.id)).size).toBe(8);
+    for (const human of humanTuples) {
+      expect(human.tuple, human.id).toBe(machineTuples.get(human.id));
+      // The visible words carry the same numbers, or Unknown — never a 0 for an unread value.
+      for (const part of human.tuple.split('|')) {
+        if (part === 'unknown') expect(human.text, human.id).toContain('Unknown');
+        else expect(human.text, human.id).toContain(part);
+      }
+    }
+    const observed = shapeState.startsWith('observed');
+    expect(block.cost.state).toBe(observed ? 'observed' : 'unknown');
+    expect(block.entries.filter((entry) => entry.observed.state === 'unknown').map((entry) => entry.id)).toEqual(observed
+      ? ['resource-headroom:maxHumanResponseBytes', 'resource-headroom:maxMachineResponseBytes']
+      : ['resource-headroom:maxSources', 'resource-headroom:maxBytesPerSource', 'resource-headroom:maxTotalBytes', 'resource-headroom:maxIndexDepth', 'resource-headroom:maxParsePassesPerSource', 'resource-headroom:maxHumanResponseBytes', 'resource-headroom:maxMachineResponseBytes']);
+  });
+
   it('declares the human-triggered re-observe action as a parity family with an empty machine denominator (syzygy-u05.2)', () => {
     const model = modelFor('observed', 'lawful-state-2');
     const machineBody = JSON.stringify(model);

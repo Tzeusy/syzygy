@@ -15,6 +15,7 @@ import { TAILNET_HOST } from './browser-origin.js';
 import { ORRERY_HUMAN_PATH } from './orrery.js';
 import { POLARIS_HUMAN_PATH } from './polaris.js';
 import { boundedResponse, POC_HUMAN_PATH, POC_MACHINE_PATH, pocRoutes, type ResponseLimitFailure } from './routes.js';
+import { resourceHeadroomLine } from './resource-headroom-line.js';
 import { ServedResponseRecorder } from './served-response-recorder.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { buildFixtureModel } from './test-model-fixture.js';
@@ -184,6 +185,27 @@ describe('pocRoutes — every human HTML sink is bounded by maxHumanResponseByte
     const statusLine = /<p class="operability-status"[^>]*>[^<]*<\/p>/.exec(served.body)?.[0];
     expect(statusLine).toContain('breaches input Unknown (no shape), served 1; human #1 6/5 B');
     expect(bytes(statusLine as string)).toBeLessThan(400);
+  });
+
+  it('places one resource-ledger entry in the status slot of every direct and tailnet page, Unknown when no block is supplied (syzygy-u05.3)', () => {
+    for (const path of [...pages, ...pages.map(page => `${TAILNET_MOUNT_PREFIX}${page === '/' ? '' : page}`)]) {
+      const headers = path.startsWith(TAILNET_MOUNT_PREFIX) ? { host: TAILNET_HOST } : { host: '127.0.0.1:1' };
+      const body = route(path).handle(context(path, headers)).body;
+      const entries = [...body.matchAll(/<p class="operability-resources"[^>]*>[\s\S]*?<\/p>/g)].map(match => match[0]);
+      expect(entries, path).toHaveLength(1);
+      const entry = entries[0] as string;
+      expect(body.indexOf(entry), path).toBeGreaterThan(body.indexOf('<p class="operability-status"'));
+      expect(body.indexOf(entry), path).toBeLessThan(body.indexOf('<main'));
+      expect([...entry.matchAll(/data-resource-tuple="/g)], path).toHaveLength(8);
+      expect(entry).toContain('data-non-citable');
+      expect(entry).not.toMatch(/href=| id=|healthy/i);
+    }
+    expect(resourceHeadroomLine(undefined, value => value)).toBe('<p class="operability-resources" data-human-resources data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable>Resources: Unknown (not supplied)</p>');
+    const unread = resourceHeadroomLine(model.resourceHeadroom, value => value);
+    expect(unread).toContain('<span data-resource-tuple="resource-headroom:maxSources" data-declared="512" data-observed="unknown" data-remaining="unknown">sources Unknown (1) of 512</span>');
+    expect(unread).toContain('<span data-resource-tuple="resource-cost" data-bodies-read="unknown" data-bytes="unknown" data-parse-passes="unknown" data-worst-source-passes="unknown">cost Unknown (1)</span>');
+    expect(unread).toContain(' Unknown because: (1) no resource ledger ran: the project shape is not-evaluated.</p>');
+    expect(unread).not.toMatch(/\b0 of\b|, 0 left/);
   });
 
   it('names the observed-project limb, the observatory limb and the Dolt clock separately, Unknown when not supplied (syzygy-u05.2)', () => {

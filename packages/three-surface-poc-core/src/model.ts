@@ -37,6 +37,7 @@ import {
   type TestArtifactRecord,
   type TestArtifactVerificationResult,
 } from './test-artifact-verification.js';
+import { resourceHeadroom as deriveResourceHeadroom, type ResourceHeadroom } from './resource-headroom.js';
 import type { PocSeedEntity, PocSeedInput, PocSeedRelationship } from './poc-seeds.js';
 import {
   buildResponseIdentity,
@@ -205,6 +206,10 @@ export interface PocModel {
    * `not-evaluated` when the builder was given no authority evaluation —
    * nothing is read then. */
   readonly projectShape: ProjectShape;
+  /** The resource ledger's headroom against all seven declared limits and
+   * its cost record (pursuit N3, syzygy-u05.3): one tuple per id, Unknown
+   * with its reason when no ledger ran. */
+  readonly resourceHeadroom: ResourceHeadroom;
   /** PWB-REQ-013: the one followed OpenSpec change as a distinct type, with its lifecycle and the current authority it would amend. */
   readonly proposedWork: ProposedWork;
   /** The exact materialization packet and its observed dispatch state, or
@@ -1238,6 +1243,7 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
     })),
     materializedBeadId: materialization.beadId,
     projectShape,
+    resourceHeadroom: deepFreeze(deriveResourceHeadroom(projectShape, input.projectShape?.resourceLimits)),
     proposedWork,
     dispatch: dispatch === null ? null : deepFreeze(dispatch),
     walkthroughJudgment,
