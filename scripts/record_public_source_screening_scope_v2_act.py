@@ -19,24 +19,6 @@ ORDER. The act depends on sitting rows 1 and 7: the version-1 act must be
 recorded and the policy on disk must be exactly its argument, and the RFC5-14
 act (row 7) must be recorded. It refuses otherwise.
 
-RFC5-14 READINESS. The row-7 act is what puts the project-documentation class
-in force. The text of the amendment is installed by the `rfc5` step of
-`scripts/install_redis_sitting.py`, which runs once after every recorder, so at
-recording time the installed RFC-0005 text does not list the class yet. This
-recorder therefore relies on the row-7 record (checked separately) and drops
-the builder's "not defined in the installed RFC-0005 text" finding. The
-installer refuses, after installing, if the installed RFC-0005 bytes do not
-hash to the row-7 act's argument.
-
-REVIEW STATE. Two forms are accepted. (1) A confirming raw (`CONFIRM`, or a
-notes-only `CONFIRM WITH EXCEPTIONS`) that binds the manifest FILE. (2) Round 4,
-the stopping round, returned `REVISE` over the reviewed commit
-`REVIEWED_COMMIT`; the repairs landed afterwards and no round read them. The
-packet and the round-4 dispositions both carry the statement `REPAIR_STATEMENT`
-and the act record repeats it. The raw's head must bind the manifest FILE the
-review read (`REVIEWED_MANIFEST_SHA`), not the current one. The owner signs the
-reviewed state plus the disclosed delta, knowingly; the record says so.
-
 ONE VARIANT ONLY. The four rows are alternatives. The recorder refuses when the
 policy on disk is already any row of this manifest (this act, or another
 variant's, is in force), and when this act's record exists. Changing variant
@@ -105,34 +87,18 @@ LEDGER_REL = PKG / "IMPACT-LEDGER.md"
 V1_ACT_REL = DECISIONS / "PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md"
 #: Row 7's performed record: until it exists the class is outside RFC5-14's vocabulary.
 CLASS_ACT_REL = DECISIONS / "RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md"
-#: The round-4 raw (REVISE, the stopping round) and its dispositions record.
-CONFIRMATION_REVIEW_REL = PKG / "reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-4-RAW.md"
-DISPOSITION_REL = PKG / "ROUND-4-DISPOSITIONS.md"
+#: Provisional until a round returns: the confirming raw and its notes record.
+CONFIRMATION_REVIEW_REL = PKG / "reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-6-RAW.md"
+DISPOSITION_REL = PKG / "ROUND-6-DISPOSITIONS.md"
 #: The commit the confirming review read. None until a round returns CONFIRM or
 #: notes-only CONFIRM WITH EXCEPTIONS; then set (with the table below, by
 #: `--freeze-table`) and never hand-edited again. While None every `--record` is
 #: refused: an unreviewed package cannot be recorded.
-FROZEN_SUBJECT: str | None = "fd4e2509dacaa4e0839ab50be9273244a9d7ce93"
-#: The round-4 REVISE: the commit and the manifest FILE digest the raw's head carries, and the
-#: sentence the packet and the dispositions must both carry for the repaired-unreviewed form.
-REVIEWED_COMMIT = "72ddd76272f538801de8a100240f17ef202ff540"
-REVIEWED_MANIFEST_SHA = "770a020afd02ee33fefb29b4879aa81e604d8aac45576286f5dc64084a4f5570"
-REPAIR_STATEMENT = "Repaired after the final (4th) review round."
+FROZEN_SUBJECT: str | None = None
 #: SHA-256 of each file the confirming review read, taken by script. Keys: the
 #: manifest, the four patches, the packet, the delta, the brief and the ledger.
-FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {
-    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt"): "26690d2bfc7eee2f9ee3ae1615824b46a562c33bb0335569936cff1ea451816e",
-    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json.none.patch"): "1c703a27e273a7f35a0b0e8b4857b4950f2b7f7dc4166e100acdfcefed1f7b47",
-    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json.manifesto.patch"): "88df66d05b69eddb1eead143788e58c444761f16c3c33618e0a9bce16fa42dc2",
-    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json.architecture.patch"): "f65a72180cd726fe4ce4f60b1811524233e040c57a105da9f9419095fe1c5eae",
-    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/proposed/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json.both.patch"): "6f086a4c172e598cf555857b9b4407d06425a3060ef3b04a208afa80ba738f6b",
-    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/OWNER-DECISION-PACKET.md"): "e7e0d5f41772b535c6ca8fac20c2bfc3c16fedbf5e3ad4f2df23af7503cdb596",
-    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/SEMANTIC-DELTA.md"): "0962438e5b9e4eb5292bb99a6951b678dc8b0c3b6b0fef362364f2ab3b8aa900",
-    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/REVIEW-BRIEF.md"): "1bdf237c6e39037bcc8c6bca8709fc4dd57f76f04967e2f8365c0a9a7bae0ce2",
-    pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2/IMPACT-LEDGER.md"): "436bea1f75893094b63a1ec3cacce399161fe98365b3d3ddad6d005efcf7c3bc",
-}
+FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {}
 VERDICTS = ("CONFIRM", "CONFIRM WITH EXCEPTIONS")
-REPAIRED_VERDICT = "REVISE"
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 INSTANT_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 RECORDED_RE = re.compile(r"^Recorded at \(UTC\): (\S+)$", re.MULTILINE)
@@ -209,7 +175,6 @@ class Inputs:
     frozen_digest: Callable[[pathlib.Path], str]
     frozen_files: dict[pathlib.Path, bytes]
     disposition_check: Callable[[dict[int, str]], None]
-    dispositions: str = ""
 
 
 CLASS_NOT_INSTALLED = "not defined in the installed RFC-0005 text"
@@ -256,8 +221,6 @@ def live_inputs(root: pathlib.Path) -> Inputs:
         class_act=(root / CLASS_ACT_REL).is_file(), applied=applied,
         frozen=FROZEN_SUBJECT, frozen_digest=lambda rel: FROZEN_FILE_DIGESTS.get(rel, ""),
         frozen_files=files,
-        dispositions=((root / DISPOSITION_REL).read_text()
-                      if (root / DISPOSITION_REL).is_file() else ""),
         disposition_check=lambda findings: vs.validate_disposition(
             root, CONFIRMATION_REVIEW_REL.as_posix(), DISPOSITION_REL.as_posix(), findings),
     )
@@ -310,26 +273,13 @@ def validate(act: Act, argument: str, inp: Inputs) -> tuple[str, str, str, str]:
                          "from the manifest row")
     manifest_sha = digest(inp.manifest)
     head = [line for line in inp.review.splitlines() if line.strip()][:4]
-    verdicts = [m.group(1) for line in head if (m := VERDICT_RE.match(line))]
-    reviewed = REVIEWED_COMMIT_RE.search("\n".join(head))
-    if len(verdicts) == 1 and verdicts[0] == REPAIRED_VERDICT:
-        # round 4 returned REVISE; the repairs were made after it and are unreviewed
-        if f"Manifest SHA-256: {REVIEWED_MANIFEST_SHA}" not in head:
-            raise ValueError("the REVISE raw's head does not bind the manifest file the review read")
-        if not reviewed or reviewed.group(1) != REVIEWED_COMMIT:
-            raise ValueError("the REVISE raw does not name the reviewed commit")
-        if REPAIR_STATEMENT not in inp.packet.decode():
-            raise ValueError("the packet does not carry the unreviewed-repair statement")
-        if REPAIR_STATEMENT not in inp.dispositions or \
-                f"Reviewed record: {CONFIRMATION_REVIEW_REL.as_posix()}" not in inp.dispositions.splitlines():
-            raise ValueError("the round-4 dispositions do not name the raw and carry the "
-                             "unreviewed-repair statement")
-        return variant, manifest_sha, reviewed.group(1), REPAIRED_VERDICT
     if f"Manifest SHA-256: {manifest_sha}" not in head:
         raise ValueError("confirmation review head does not bind the manifest file's SHA-256")
+    verdicts = [m.group(1) for line in head if (m := VERDICT_RE.match(line))]
     if len(verdicts) != 1 or verdicts[0] not in VERDICTS:
         raise ValueError("confirmation review head does not carry the verdict CONFIRM "
                          "or CONFIRM WITH EXCEPTIONS")
+    reviewed = REVIEWED_COMMIT_RE.search("\n".join(head))
     if not reviewed:
         raise ValueError("confirmation review head does not name its reviewed commit")
     if verdicts[0] == "CONFIRM WITH EXCEPTIONS":
@@ -369,19 +319,6 @@ def render_act(act: Act, argument: str, variant: str, date: str, manifest_sha: s
                superseded: str, superseded_date: str, version: str) -> str:
     notes = (f" notes are dispositioned in `{DISPOSITION_REL.as_posix()}`;"
              if verdict == "CONFIRM WITH EXCEPTIONS" else " it carries no notes;")
-    if verdict == REPAIRED_VERDICT:
-        review_line = (f"- review of record: `{CONFIRMATION_REVIEW_REL.as_posix()}`, verdict `REVISE` "
-                       f"(round 4, the stopping round), its head bound to the manifest file the review "
-                       f"read (`{REVIEWED_MANIFEST_SHA}`), reviewed commit `{reviewed}` [Observed — the "
-                       f"raw's own line]. {REPAIR_STATEMENT} The repairs are dispositioned in "
-                       f"`{DISPOSITION_REL.as_posix()}` and disclosed in the packet; no review read the "
-                       f"bytes signed here. The owner signed the reviewed state plus that disclosed "
-                       f"delta, knowingly, with the current manifest file digest `{manifest_sha}`; and")
-    else:
-        review_line = (f"- confirmation review: `{CONFIRMATION_REVIEW_REL.as_posix()}`, verdict\n"
-                       f"  `{verdict}`, its head bound to the manifest file's SHA-256 above;{notes} the raw names\n"
-                       f"  reviewed commit `{reviewed}` [Observed — the raw's own line; binding is by\n"
-                       f"  digest]; and")
     adds = ", ".join(w.upper() for w in build.VARIANTS[variant]) or "neither MANIFESTO nor ARCHITECTURE"
     return f"""# Owner act — {act.title}
 
@@ -414,8 +351,7 @@ A1 audit-record identity (RFC3-16(b) item 9): **explicitly absent**
 
 ## Ceremony
 
-The owner was presented the packet (its review state is under Frozen
-provenance) at `{PACKET_REL.as_posix()}`, which
+The owner was presented the confirmed packet at `{PACKET_REL.as_posix()}`, which
 by design carries no digest. The package manifest has four rows, one per
 variant; the owner picked exactly one. The act takes this phrase, whose
 argument is the chosen row:
@@ -445,7 +381,10 @@ Frozen provenance:
 
 - frozen subject (package bytes): `{frozen}`;
 - manifest SHA-256: `{manifest_sha}`;
-{review_line}
+- confirmation review: `{CONFIRMATION_REVIEW_REL.as_posix()}`, verdict
+  `{verdict}`, its head bound to the manifest file's SHA-256 above;{notes} the raw names
+  reviewed commit `{reviewed}` [Observed — the raw's own line; binding is by
+  digest]; and
 - recording tag: `{tag_for(act, date)}`, on the commit carrying this act record.
 
 ## Effect
@@ -513,7 +452,7 @@ dedicated record):**
 | A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
 | Frozen subject | `{frozen}` |
 | Manifest | `{MANIFEST_REL.as_posix()}`, SHA-256 `{manifest_sha}` |
-| Review outcome | `{CONFIRMATION_REVIEW_REL.as_posix()}`: `{verdict}`{" (round 4, final; repairs after it are unreviewed and disclosed)" if verdict == REPAIRED_VERDICT else ", its head bound to the manifest file"} |
+| Review outcome | `{CONFIRMATION_REVIEW_REL.as_posix()}`: `{verdict}`, its head bound to the manifest file |
 | Recorded at (UTC) | `{instant}` |
 | Recording | `{act.record.as_posix()}`; annotated tag `{tag_for(act, date)}` on the commit carrying these records |
 
@@ -688,36 +627,6 @@ def selftest() -> int:
                 ok = ok and digest(cur) == want
             results.append(("frozen files verify from a copy with no git object", ok and not (bare / ".git").exists()))
     results.append(("unset FROZEN_SUBJECT refused", refused("FROZEN_SUBJECT is unset", arg, make(frozen=None))))
-    rev = (f"# R4\nReviewed commit: {REVIEWED_COMMIT}\nManifest SHA-256: {REVIEWED_MANIFEST_SHA}\n"
-           "Verdict: REVISE\n\n## Findings\n\n**B-1 (blocking): x**\n")
-    rpkt = pkt + f"\n> {REPAIR_STATEMENT} text\n".encode()
-    rblobs = {**blobs, PACKET_REL: rpkt}
-    rdisp = (f"# R4 dispositions\n\n{REPAIR_STATEMENT} text\n\n"
-             f"Reviewed record: {CONFIRMATION_REVIEW_REL.as_posix()}\n")
-
-    def rmake(**over):
-        values = dict(review=rev, packet=rpkt, dispositions=rdisp, frozen_digest=lambda rel: digest(rblobs[rel]),
-                      frozen_files=dict(rblobs))
-        values.update(over)
-        return make(**values)
-    results.append(("a REVISE raw with the repair statement in packet and dispositions validates",
-                    _accepts(act, arg, rmake()) and validate(act, arg, rmake())[3] == REPAIRED_VERDICT))
-    results.append(("a REVISE raw without the statement in the packet refused",
-                    refused("unreviewed-repair statement", arg, rmake(packet=pkt, frozen_files=dict(blobs),
-                                                                       frozen_digest=lambda rel: digest(blobs[rel])))))
-    results.append(("a REVISE raw without the statement in the dispositions refused",
-                    refused("round-4 dispositions", arg, rmake(dispositions=rdisp.replace(REPAIR_STATEMENT, "x")))))
-    results.append(("dispositions naming another raw refused",
-                    refused("round-4 dispositions", arg, rmake(dispositions=rdisp.replace("R-PUBLIC", "R-OTHER")))))
-    results.append(("a REVISE raw bound to another manifest file refused",
-                    refused("manifest file the review read", arg, rmake(review=rev.replace(REVIEWED_MANIFEST_SHA, msha)))))
-    results.append(("a REVISE raw over another commit refused",
-                    refused("reviewed commit", arg, rmake(review=rev.replace(REVIEWED_COMMIT, "b" * 40)))))
-    results.append(("any other verdict still refused",
-                    refused("verdict", arg, make(review=review.replace("CONFIRM", "REJECT")))))
-    rrec = expected(act, arg, "2026-10-04", Selection("o", "l", "d"), rmake(), INSTANT_OK)[0]
-    results.append(("the REVISE record repeats the statement and names the delta as unreviewed",
-                    REPAIR_STATEMENT in rrec and "no review read the" in rrec and "verdict `REVISE`" in rrec))
     results.append(("non-hex argument refused", refused("not a 64-hex", "xyz", make())))
     results.append(("an argument that is no row refused", refused("not a row", "0" * 64, make())))
     results.append(("manifest row for another subject refused",
@@ -753,7 +662,7 @@ def selftest() -> int:
                     refused("manifest file's SHA-256", arg, make(review=review.replace(msha, "0" * 64)))))
     results.append(("review binding a row instead of the file digest refused",
                     refused("manifest file's SHA-256", arg, make(review=review.replace(msha, arg)))))
-    results.append(("a REVISE raw that is not the round-4 raw (wrong manifest binding) refused", refused("manifest file the review read", arg, make(review=review.replace("CONFIRM", "REVISE")))))
+    results.append(("verdict REVISE refused", refused("verdict", arg, make(review=review.replace("CONFIRM", "REVISE")))))
     results.append(("verdict displaced past the fourth head line refused",
                     refused("verdict", arg, make(review=review.replace("Verdict: CONFIRM", "Note: x\nVerdict: CONFIRM")))))
     exc_review = review.replace("Verdict: CONFIRM", "Verdict: CONFIRM WITH EXCEPTIONS").replace(

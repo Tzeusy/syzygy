@@ -120,6 +120,8 @@ DOC_TXT_EXCLUDED_NAMES = ["cmakelists.txt", "robots.txt"]
 DOC_TXT_EXCLUDED_PREFIXES = ["requirements"]
 LICENSE_TREE_ROOTS = ["licenses"]
 LICENSE_TREE_SUFFIXES = [".md", ".txt"]
+#: Names the scope sentence offers as sendable examples; the sentence and the selftest both read this.
+SENTENCE_EXAMPLES = ["SecurityPolicy", "ADR0001"]
 
 
 def enabled_stems(variant: str = DEFAULT_VARIANT) -> list[str]:
@@ -203,6 +205,8 @@ FIXTURES = [
     ("licenses/agpl-3.0.txt", True), ("LICENSES/rsal.TXT", True),
     ("licenses/SECURITY.md", False), ("licenses/governance-policy.md", False), ("licenses/CODE_OF_CONDUCT.md", False),
     ("licenses/doctrine.txt", False), ("licenses/SecurityPolicy.md", True), ("licenses/README.md", True),
+    ("licenses/LICENSE.txt", True), ("licenses/CHANGELOG.md", True), ("licenses/NEWS.md", True), ("src/NEWS.md", False),
+    ("licenses/ADR0001.md", True),
     # policy and governance text by ordinary content: withheld at the root (and as directories under docs)
     ("SECURITY.md", False), ("SECURITY", False), ("DESIGN.md", False), ("GOVERNANCE.txt", False),
     ("CODE_OF_CONDUCT.md", False), ("Code-Of-Conduct.md", False),
@@ -290,9 +294,9 @@ def documentation_rule(variant: str = DEFAULT_VARIANT) -> dict:
         "licenseTreeRoots": LICENSE_TREE_ROOTS,
         "licenseTreeSuffixes": LICENSE_TREE_SUFFIXES,
         "disjointFromSourceExtensions": "none of documentSuffixes, docTreeExtensions or licenseTreeSuffixes is in sourceExtensions, so no blob has two classes by extension; a blob matched here is never code-content",
-        "notMapped": ("nested and vendored documentation (a README below the root outside docs-tree); "
-                      "root files named design, governance, security or code of conduct; docs-tree paths "
-                      "whose directory or file name has a word in docExcludedTokens (decision, specification, "
+        "notMapped": ("nested and vendored documentation (a README below the root outside docs-tree and licenses-tree); "
+                      "root files named design, governance, security or code of conduct; docs-tree and licenses-tree "
+                      "paths whose directory or file name has a word in docExcludedTokens (decision, specification, "
                       "design, governance, policy, security and conduct records, and the opt-in words unless "
                       "the variant adds them); build and tooling .txt files named in docTxtExcludedNames "
                       "or docTxtExcludedPrefixes; committed reports; and any other prose. The class is decided "
@@ -303,7 +307,7 @@ def documentation_rule(variant: str = DEFAULT_VARIANT) -> dict:
 
 INDETERMINATE = (
     "every other admitted blob, including documentation outside the project-documentation rule's paths "
-    "(for example a README below the root), documents whose path carries a word of the rule's docExcludedTokens (decision, specification, "
+    "(for example src/README.md), documents whose path carries a word of the rule's docExcludedTokens (decision, specification, "
     "design, governance, policy, security and conduct records), committed reports, "
     "and configuration or data in an extension outside sourceExtensions, is indeterminate and is treated "
     "as unclassifiable under unclassifiableExclusion: excluded from reading and from egress (fail "
@@ -541,9 +545,15 @@ def scope_sentence() -> str:
             f"{', '.join(DOC_EXCLUDED_TOKENS)} (and, unless the variant adds them, "
             f"{', '.join(w for ws in OPT_IN_DOC_WORDS.values() for w in ws)}) as a whole word in a directory "
             "or file name, and the root files named "
-            f"{', '.join(n.upper() for n in WITHHELD_ROOT_NAMES)}; such text under any other name is "
-            "sendable, including names written without a separator (SecurityPolicy, ADR0001) or split by a "
-            "character outside the separator list.")
+            f"{', '.join(n.upper() for n in WITHHELD_ROOT_NAMES)}; such text under any other name inside the "
+            "mapped paths is sendable, including names written without a separator "
+            f"({', '.join(SENTENCE_EXAMPLES)}) or split by a character outside the separator list.")
+
+
+def examples_hold(examples: list[str], rule: dict) -> bool:
+    """Every example the sentence offers as sendable is mapped, in both trees that take the word list."""
+    return bool(examples) and all(classify_documentation(f"{root}/{n}.md", rule)
+                                  for n in examples for root in (DOC_TREE_ROOTS[0], LICENSE_TREE_ROOTS[0]))
 
 
 def packet_block() -> str:
@@ -569,7 +579,7 @@ def packet_block() -> str:
         f"unless the file name is withheld below.",
         "- Only in the variant you pick: " + "; ".join(
             f"variant {v} adds the root name{'s' if len(VARIANTS[v]) > 1 else ''} {up(VARIANTS[v])}, and lifts the same "
-            f"word{'s' if len(VARIANTS[v]) > 1 else ''} from the docs withholding" if VARIANTS[v]
+            f"word{'s' if len(VARIANTS[v]) > 1 else ''} from the {' and '.join(DOC_TREE_ROOTS[:1] + LICENSE_TREE_ROOTS)} withholding" if VARIANTS[v]
             else f"variant {v} adds nothing" for v in VARIANTS) + ".",
         "",
         "**Stays withheld** (excluded from reading and from egress, hash-not-body):",
@@ -582,8 +592,10 @@ def packet_block() -> str:
         f"whose path carries none of these words is NOT withheld (the rule decides by name alone).",
         f"- Under a docs or doc folder, .txt files named {words(r['docTxtExcludedNames'])} or starting "
         f"{words(r['docTxtExcludedPrefixes'])}.",
-        "- READMEs and the other root names when they sit below the root outside docs or doc "
-        "(vendored libraries carry their own).",
+        f"- READMEs and the other root names when they sit below the root outside {', '.join(DOC_TREE_ROOTS)} "
+        f"and {' or '.join(LICENSE_TREE_ROOTS)} (vendored libraries carry their own); a file directly "
+        f"inside a top-level {' or '.join(LICENSE_TREE_ROOTS)} folder is mapped whatever its stem unless a "
+        "word above withholds it.",
         "- Any other path: it is not named by the rule, so it is indeterminate and withheld.",
         "- Any file that fails a secret detector or the active-content rule: those screens are unchanged "
         "and apply to this prose in full.",
@@ -782,8 +794,23 @@ def selftest() -> int:
                         and all(n.upper() in sentence for n in WITHHELD_ROOT_NAMES)
                         and all(r_ in sentence for r_ in DOC_TREE_ROOTS + LICENSE_TREE_ROOTS)))
         results.append(("the scope sentence is in the generated block", sentence in packet_block()))
-        results.append(("every example the sentence gives is mapped by the rule",
-                        all(classify_documentation(f"docs/{n}.md", rule) for n in ("SecurityPolicy", "ADR0001"))))
+        results.append(("every example the sentence gives is mapped by the rule, in docs and licenses",
+                        examples_hold(SENTENCE_EXAMPLES, rule)
+                        and all(f"{n}" in sentence for n in SENTENCE_EXAMPLES)))
+        results.append(("a falsified sentence example (Security) is caught", not examples_hold(["Security", "ADR0001"], rule)))
+        results.append(("an example that is mapped in docs but withheld in licenses is caught",
+                        not examples_hold(["Guide", "licenses-policy"], rule)))
+        wl = [l for l in packet_block().splitlines() if l.startswith("- READMEs and the other root names")]
+        results.append(("the below-the-root withheld line names every tree that maps what it excludes",
+                        len(wl) == 1 and all(r_ in wl[0] for r_ in DOC_TREE_ROOTS + LICENSE_TREE_ROOTS)
+                        and all(classify_documentation(f, rule) == w for f, w in (
+                            ("licenses/README.md", True), ("licenses/LICENSE.txt", True),
+                            ("licenses/CHANGELOG.md", True), ("licenses/NEWS.md", True),
+                            ("docs/README.md", True), ("src/README.md", False), ("src/NEWS.md", False)))))
+        mn = documentation_rule()["notMapped"]
+        results.append(("notMapped and indeterminate name the licenses tree and the vendored example",
+                        "licenses-tree" in mn and "src/README.md" in INDETERMINATE
+                        and "a README below the root)" not in INDETERMINATE))
         saved_tokens = list(DOC_EXCLUDED_TOKENS)
         try:
             DOC_EXCLUDED_TOKENS.remove("doctrine")

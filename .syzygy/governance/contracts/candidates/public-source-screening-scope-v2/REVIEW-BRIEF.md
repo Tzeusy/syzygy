@@ -1,10 +1,11 @@
-# Review brief — public-source screening scope, version 2 (round 4, narrow delta)
+# Review brief — public-source screening scope, version 2 (round 6, narrow delta)
 
 > **Candidate — binds nothing.** Not a review; carries no verdict. Rounds 1
-> to 3 returned REVISE (`reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-1-RAW.md`,
-> `reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-2-RAW.md`,
-> `reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-3-RAW.md`); the repairs are in
-> `ROUND-1-DISPOSITIONS.md`, `ROUND-2-DISPOSITIONS.md` and `ROUND-3-DISPOSITIONS.md`.
+> to 5 returned REVISE (`reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-1-RAW.md`
+> to `reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-5-RAW.md`); the repairs are in
+> `ROUND-1-DISPOSITIONS.md` to `ROUND-5-DISPOSITIONS.md`. Round 5 was asked for
+> by the lead after the round-4 record said there would be none (see
+> `ROUND-5-DISPOSITIONS.md`). Round 6 is scoped strictly to the round-5 diff.
 
 ## What the reviewer is given
 
@@ -30,7 +31,8 @@ own `activeContentClassification`, `rawBodyHandling` and
    `policyVersion` and changes only `classesClassified`, `rules`,
    `indeterminate` and the new `prerequisite`, and that each manifest row equals
    the SHA-256 of that variant's patched file, and the variants differ only in
-   `rootStems`.
+   `rootStems`, the opt-in words in `docExcludedTokens`, and the variant
+   suffix of `policyVersion`.
 2. **Is the base right?** The patch must be the same whether the policy on disk
    is the pre-version-1 bytes or the version-1 bytes (selftest). Confirm the
    version-1 manifest row is what the builder checks against.
@@ -80,6 +82,17 @@ own `activeContentClassification`, `rawBodyHandling` and
     states the recorder requirement as intent (F4); Q3 names the mapped side
     (F5).
 
+12. **Do the round-5 repairs hold (narrow delta)?** Review only the diff from
+    the round-5 reviewed commit named in `ROUND-5-DISPOSITIONS.md`. Finding R5-1
+    revise, R5-2 to R5-4 notes. The generated line for READMEs and other root
+    names below the root names the licenses folder as the exception and the
+    policy's `notMapped` and `indeterminate` text agree with it (R5-1); the
+    variant line and `notMapped` say the word list applies to docs trees and
+    licenses (R5-2); the sentence's examples are one constant used by the
+    sentence and by a predicate that a falsified example fails, and the
+    sentence no longer says text under any name is sendable (R5-3); this brief
+    and the criterion 1 wording (R5-4). All four manifest rows moved.
+
 ## Out of scope
 
 Whether to perform the act; the read-gate re-pin (see the packet's order section); the
@@ -88,7 +101,7 @@ RFC-0005 amendment itself.
 ## Recording
 
 Store the raw verbatim in this package's `reviews/` directory as
-`R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-4-RAW.md` (a re-issue is a further
+`R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-6-RAW.md` (a re-issue is a further
 `-RAW.md`). **The raw's head is a predicate a recorder will enforce:** the first
 four non-blank lines are the title and exactly
 
