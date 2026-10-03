@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { clarify, DEFAULT_DISCOVERY_BUDGET, DiscoveryRefusal, discoverAndSelect, DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS,
+import { clarify, DOSSIER_DISCOVERY_BUDGET, DiscoveryRefusal, discoverAndSelect, DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS,
   type ClarificationRecord, type DiscoveryPorts, type DiscoveryReceipt, type DiscoveryReport, type GenerationBudget, type GenerationSource, type PipelineRequest, type PipelineResult } from '@syzygy/polaris-generation-core';
 
 import { buildPipelineRequest, readRepoCorpus, type CorpusAdmissionPort, type ReaderConfig, type RepoCorpus } from './repo-corpus.js';
@@ -154,7 +154,7 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
     const permitted = async (): Promise<boolean> => soundAnswer(await records.check(egress)).satisfied === true;
     let discovery: Awaited<ReturnType<typeof discoverAndSelect>>;
     try {
-      discovery = await discoverAndSelect(corpus.sources, config.readerQuestions.map(question => question.text), DEFAULT_DISCOVERY_BUDGET,
+      discovery = await discoverAndSelect(corpus.sources, config.readerQuestions.map(question => question.text), DOSSIER_DISCOVERY_BUDGET,
         { permitted, ...(ports.discovery?.map === undefined ? {} : { map: ports.discovery.map }), ...(ports.discovery?.reduce === undefined ? {} : { reduce: ports.discovery.reduce }),
           ...(ports.discoveryReceipt === undefined ? {} : { receipt: ports.discoveryReceipt }) });
     } catch (error) {

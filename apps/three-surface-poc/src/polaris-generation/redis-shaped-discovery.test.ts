@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, discoverAndSelect, quotableGenerationSources } from '@syzygy/polaris-generation-core';
+import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, DOSSIER_DISCOVERY_BUDGET, discoverAndSelect, quotableGenerationSources } from '@syzygy/polaris-generation-core';
 
 import { CORE_FILES, redisShapedFiles } from './redis-shaped-fixture.js';
 import { main } from './redis-shaped-measure-main.js';
@@ -120,6 +120,49 @@ describe('discovery on a synthetic tree shaped like a large C key-value server',
     const size = Buffer.byteLength(redisShapedFiles().get(sample.path)!, 'utf8');
     expect(sample.afterRanges.length).toBeGreaterThan(0);
     expect(sample.afterRanges.every(([a, b]) => a >= 0 && b > a && b <= size)).toBe(true);
+  });
+
+  describe('under the dossier byte cap (400,000 bytes of quotable text)', () => {
+    const CORE = Object.values(CORE_FILES).flat() as string[];
+    const keptPaths = (result: Awaited<ReturnType<typeof discoverAndSelect>>): Set<string> =>
+      new Set(result.sources.filter(source => !source.exclusion.excluded && source.spans.length > 0).map(source => source.path));
+    const coreMap = async (input: { items: readonly { blobId: string; path: string }[] }) =>
+      ({ claims: input.items.map(item => ({ blobId: item.blobId, claim: `claim ${item.path}`, relevance: CORE.includes(item.path) ? 10 : 1 })), usageUnits: 1 });
+
+    it('keeps the selection inside the cap, with no vendored file, and closes the denominator and the byte totals', async () => {
+      const capped = await discoverAndSelect(run.corpus.sources, ['q'], DOSSIER_DISCOVERY_BUDGET, { permitted: async () => true });
+      const { bytes, selected, deferred, population } = capped.report;
+      expect(bytes.cap).toBe(400_000);
+      expect(bytes.selected).toBeLessThanOrEqual(400_000);
+      expect(bytes.selected).toBeGreaterThan(390_000);
+      expect([...keptPaths(capped)].filter(path => VENDORED.test(path))).toEqual([]);
+      expect(selected.blobs + deferred.length).toBe(population.candidateBlobs);
+      expect(bytes.selected + bytes.deferred).toBe(run.result.report.bytes.selected + run.result.report.bytes.deferred);
+      expect(deferred.some(entry => entry.detail.includes('byte selection cap'))).toBe(true);
+    });
+
+    it('[Observed] with the path-and-size prior alone, the cap leaves most core mechanism files deferred: 5 of 18 are kept', async () => {
+      const capped = await discoverAndSelect(run.corpus.sources, ['q'], DOSSIER_DISCOVERY_BUDGET, { permitted: async () => true });
+      const kept = keptPaths(capped);
+      expect(CORE.filter(path => kept.has(path))).toEqual(['src/ae.c', 'src/ae_epoll.c', 'src/ae_kqueue.c', 'src/aof.c', 'src/cluster_legacy.c']);
+      expect(capped.report.selected.blobs).toBe(15);
+    });
+
+    it('[Observed] once a model ranking names the 18 core mechanism files, 15 fit: the two 130,000-byte files take a third of the cap and three data-type files are deferred', async () => {
+      const capped = await discoverAndSelect(run.corpus.sources, ['q'], { ...DOSSIER_DISCOVERY_BUDGET, maxMapCalls: 100 },
+        { permitted: async () => true, map: coreMap, receipt: async () => undefined });
+      const kept = keptPaths(capped);
+      expect(CORE).toHaveLength(18);
+      expect(capped.report.rankingBasis).toBe('model-map');
+      expect(CORE.filter(path => kept.has(path))).toHaveLength(15);
+      expect(CORE.filter(path => !kept.has(path))).toEqual(['src/t_string.c', 'src/t_zset.c', 'src/t_stream.c']);
+      for (const path of ['src/server.c', 'src/cluster_legacy.c']) expect(kept.has(path), path).toBe(true);
+      const missed = capped.report.deferred.filter(entry => !kept.has(entry.path) && CORE.includes(entry.path));
+      expect(missed.map(entry => entry.path).sort()).toEqual(['src/t_stream.c', 'src/t_string.c', 'src/t_zset.c']);
+      expect(missed.every(entry => entry.detail.includes('did not fit the remaining') && entry.detail.includes('400000-byte selection cap'))).toBe(true);
+      expect(capped.report.bytes.selected).toBeLessThanOrEqual(400_000);
+      expect(capped.report.selected.blobs).toBe(18);
+    });
   });
 
   it('writes the measurement through the command and refuses to overwrite it', async () => {

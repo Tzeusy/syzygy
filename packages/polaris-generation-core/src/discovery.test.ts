@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 
-import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, MAP_CLAIMS_PER_ITEM, discoverAndSelect, DiscoveryRefusal, heuristicScore, partitionSubsystems, reportFromReceipts, type DiscoveryPorts, type DiscoveryReceipt } from './discovery.js';
+import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, DOSSIER_DISCOVERY_BUDGET, DOSSIER_MAX_SELECTED_BYTES, MAP_CLAIMS_PER_ITEM, discoverAndSelect, DiscoveryRefusal, heuristicScore, partitionSubsystems, reportFromReceipts, type DiscoveryPorts, type DiscoveryReceipt } from './discovery.js';
 import { digestCanonicalJson } from './canonical-json.js';
 import { generationSourcesForBody, gitBlobObjectId, quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
 
@@ -373,7 +373,7 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
     const { sources: out, report } = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 3 }, { permitted: allow });
     expect(out[0]).toBe(excluded);
     expect(report.population).toEqual({ sources: 11, alreadyExcluded: 1, candidateBlobs: 10 });
-    const groups = (n: number) => partitionSubsystems(population(n, 3).map(s => ({ blobId: s.sourceId, path: s.path, pieces: [s], heuristic: 0 })), 4).map(g => [g.name, g.blobs.length]);
+    const groups = (n: number) => partitionSubsystems(population(n, 3).map(s => ({ blobId: s.sourceId, path: s.path, pieces: [s], bytes: 0, heuristic: 0 })), 4).map(g => [g.name, g.blobs.length]);
     expect(groups(30)).toEqual(groups(30));
     expect(groups(30).every(([, n]) => (n as number) <= 4)).toBe(true);
     expect(groups(30).reduce((n, [, c]) => n + (c as number), 0)).toBe(30);
@@ -471,5 +471,93 @@ describe('map excerpts are file bytes only; kind and ranges stay in the local re
   it('is identical across two runs over the same population', async () => {
     const sources = [...make('src/ae.c', code), ...make('README.md', 'readme text'), ...population(6, 2)];
     expect((await run(sources)).seen).toEqual((await run(sources)).seen);
+  });
+});
+
+describe('selection under a byte cap', () => {
+  const doc = (name: string, bytes: number): GenerationSource[] => [...make(`docs/${name}.md`, `${'word '.repeat(Math.ceil(bytes / 5))}`.slice(0, bytes - 1) + '\n')];
+  const files = [...doc('a', 5000), ...doc('b', 2000), ...doc('c', 300)];
+  const capped = (cap: number, extra: Partial<typeof budget> = {}) => discoverAndSelect(files, Q, { ...budget, maxSelectedBytes: cap, ...extra }, { permitted: allow, runKey: RUN_KEY });
+  const paths = (sources: readonly GenerationSource[]): string[] => [...new Set(sources.filter(source => !source.exclusion.excluded && source.spans.length > 0).map(source => source.path))];
+
+  it('exports the dossier cap as 400,000 bytes, applied by the dossier budget only', () => {
+    expect(DOSSIER_MAX_SELECTED_BYTES).toBe(400_000);
+    expect(DOSSIER_DISCOVERY_BUDGET).toEqual({ ...DEFAULT_DISCOVERY_BUDGET, maxSelectedBytes: 400_000 });
+    expect(DEFAULT_DISCOVERY_BUDGET.maxSelectedBytes).toBeUndefined();
+  });
+
+  it('skips a file that does not fit and still tries the smaller ones below it, naming every skip', async () => {
+    const { sources, report } = await capped(2500);
+    expect(paths(sources)).toEqual(['docs/b.md', 'docs/c.md']);
+    expect(report.bytes).toEqual({ selected: 2300, deferred: 5000, cap: 2500 });
+    expect(report.deferred).toEqual([expect.objectContaining({ path: 'docs/a.md', detail: '5000 bytes of quotable text did not fit the remaining 2500 of the 2500-byte selection cap' })]);
+    const second = await capped(2100);
+    expect(paths(second.sources)).toEqual(['docs/b.md']);
+    expect(second.report.bytes).toEqual({ selected: 2000, deferred: 5300, cap: 2100 });
+    expect(second.report.deferred.map(entry => [entry.path, entry.detail])).toEqual([
+      ['docs/a.md', '5000 bytes of quotable text did not fit the remaining 2100 of the 2100-byte selection cap'],
+      ['docs/c.md', '300 bytes of quotable text did not fit the remaining 100 of the 2100-byte selection cap']]);
+  });
+
+  it('fits exactly at the cap and defers one byte over it', async () => {
+    expect(paths((await capped(7300)).sources)).toEqual(['docs/a.md', 'docs/b.md', 'docs/c.md']);
+    expect(paths((await capped(7299)).sources)).toEqual(['docs/a.md', 'docs/b.md']);
+    expect((await capped(7300)).report.bytes).toEqual({ selected: 7300, deferred: 0, cap: 7300 });
+  });
+
+  it('keeps the denominator: selected plus deferred rows are every candidate, and the byte totals close', async () => {
+    const { sources, report } = await capped(2500);
+    expect(sources).toHaveLength(files.length);
+    expect(report.selected.blobs + report.deferred.length).toBe(report.population.candidateBlobs);
+    expect(report.bytes.selected + report.bytes.deferred).toBe(7300);
+    expect(sources.filter(source => source.exclusion.excluded && source.exclusion.reason === DEFERRED_BY_BUDGET)).toHaveLength(1);
+  });
+
+  it('reports no cap and the bytes kept when none is set', async () => {
+    const { report } = await discoverAndSelect(files, Q, budget, { permitted: allow });
+    expect(report.bytes).toEqual({ selected: 7300, deferred: 0, cap: null });
+  });
+
+  it('counts UTF-8 bytes, not characters', async () => {
+    const wide = make('docs/wide.md', `${'\u00e9'.repeat(99)}\n`), narrow = make('docs/narrow.md', `${'e'.repeat(99)}\n`);
+    const { sources, report } = await discoverAndSelect([...wide, ...narrow], Q, { ...budget, maxSelectedBytes: 150 }, { permitted: allow, runKey: RUN_KEY });
+    expect(paths(sources)).toEqual(['docs/narrow.md']);
+    expect(report.bytes).toEqual({ selected: 100, deferred: 199, cap: 150 });
+  });
+
+  it('selects the pieces of a split file as a unit: all of them, or one deferred row for the file', async () => {
+    const line = 'x'.repeat(79) + '\n';
+    const big = make('docs/big.md', line.repeat(2000));
+    expect(big.length).toBeGreaterThan(1);
+    const total = big.reduce((n, piece) => n + piece.spans.reduce((m, span) => m + Buffer.byteLength(span.text, 'utf8'), 0), 0);
+    const small = make('docs/small.md', 'tiny\n');
+    const tight = await discoverAndSelect([...big, ...small], Q, { ...budget, maxSelectedBytes: total - 1 }, { permitted: allow, runKey: RUN_KEY });
+    expect(paths(tight.sources)).toEqual(['docs/small.md']);
+    expect(tight.sources.filter(source => source.exclusion.excluded)).toHaveLength(1);
+    expect(tight.report.deferred).toEqual([expect.objectContaining({ path: 'docs/big.md', detail: expect.stringContaining(`in ${big.length} pieces`) })]);
+    expect(tight.report.bytes.deferred).toBe(total);
+    const roomy = await discoverAndSelect([...big, ...small], Q, { ...budget, maxSelectedBytes: total + 5 }, { permitted: allow, runKey: RUN_KEY });
+    expect(quotableGenerationSources(roomy.sources)).toHaveLength(big.length + 1);
+    expect(roomy.report.selected).toEqual({ blobs: 2, sources: big.length + 1 });
+  });
+
+  it('applies both caps: a count cap still holds when the bytes would allow more', async () => {
+    const { sources, report } = await capped(1_000_000, { maxSelected: 2 });
+    expect(paths(sources)).toHaveLength(2);
+    expect(report.bytes.cap).toBe(1_000_000);
+  });
+
+  it('refuses a byte cap that is not a positive safe integer', async () => {
+    for (const bad of [0, -1, 1.5, Number.NaN, Number.MAX_SAFE_INTEGER + 1]) {
+      await expect(capped(bad), String(bad)).rejects.toThrow(DiscoveryRefusal);
+    }
+  });
+
+  it('replays to the same report from receipts', async () => {
+    const ports = model({ map: mapOf(() => 1) });
+    const live = await discoverAndSelect(files, Q, { ...budget, maxSelectedBytes: 2500 }, ports);
+    const replay = await reportFromReceipts(files, Q, { ...budget, maxSelectedBytes: 2500 }, ports.receipts, RUN_KEY);
+    expect(replay.report).toEqual(live.report);
+    expect(replay.report.bytes).toEqual({ selected: 2300, deferred: 5000, cap: 2500 });
   });
 });
