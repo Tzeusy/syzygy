@@ -151,7 +151,7 @@ describe('with every record satisfied', () => {
   });
 
   it('permits a discovery call only while the egress record still holds, and drops the calls otherwise', async () => {
-    const map = vi.fn(async (input: { readonly items: readonly { readonly blobId: string }[] }) => ({ usageUnits: 1, claims: input.items.map(i => ({ blobId: i.blobId, claim: 'c', relevance: 5 })) }));
+    const map = vi.fn(async (input: { readonly readerQuestions: readonly string[]; readonly items: readonly { readonly blobId: string }[] }) => ({ usageUnits: 1, claims: input.items.map(i => ({ blobId: i.blobId, claim: 'c', relevance: 5 })) }));
     let checks = 0;
     const flipping: AdmissionRecordsPort = { source: 'flipping store', check: async r => (r.kind === 'egress-consent' && ++checks > 1 ? { satisfied: false, why: 'withdrawn' } : { satisfied: true, record: `fixture/${r.kind}` }) };
     const out = join(scratch(), 'run');
@@ -161,7 +161,7 @@ describe('with every record satisfied', () => {
     const allowed = vi.fn(map);
     await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), discovery: { map: allowed } }));
     expect(allowed).toHaveBeenCalled();
-    expect((allowed.mock.calls[0]![0] as { readerQuestions: string[] }).readerQuestions).toEqual(expect.arrayContaining([expect.stringContaining('core ideas')]));
+    expect(allowed.mock.calls[0]![0].readerQuestions).toEqual(expect.arrayContaining([expect.stringContaining('core ideas')]));
   });
 
   it('writes nothing outside the run directory and rejects unsafe output paths', () => {
