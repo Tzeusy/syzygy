@@ -15,7 +15,12 @@ export interface EgressGateOptions {
   readonly upstream?: { readonly url: string };
   /** Consent switch, asked for every request including retries. Only `true` permits. */
   readonly permitted: () => Promise<boolean>;
+  /** Drop the machine-identifying `x-stainless-os`, `-arch` and `-runtime-version` headers before forwarding. Default false: bytes are forwarded as accepted. */
+  readonly stripFingerprint?: boolean;
 }
+
+const FINGERPRINT_HEADERS = ['x-stainless-os', 'x-stainless-arch', 'x-stainless-runtime-version'] as const;
+const RATE_ERRORS: ReadonlySet<string> = new Set(['rate_limit_error', 'overloaded_error']);
 
 export interface GateDecision {
   readonly method: string;
@@ -24,6 +29,8 @@ export interface GateDecision {
   /** Content-free: predicate violation texts name fields, never values. */
   readonly reasons: readonly string[];
   readonly upstreamStatus: number | null;
+  /** For a 429/529: the provider's documented error type (`rate_limit_error`, `overloaded_error`) read from the response body, else null. Evidence that the request was rejected unbilled. */
+  readonly rejectedUnbilled?: boolean;
 }
 
 export interface EgressGate {
@@ -34,6 +41,8 @@ export interface EgressGate {
   readonly disarm: () => void;
   /** Retry-After from the last 429/529 the upstream returned, in ms, consumed once. */
   readonly takeRetryAfterMs: () => number | null;
+  /** True if the last 429/529 response body was the provider's documented rate-limit or overloaded error; consumed once. */
+  readonly takeRejectedUnbilled: () => boolean;
   readonly close: () => Promise<void>;
 }
 
@@ -50,6 +59,7 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
   const decisions: GateDecision[] = [];
   let armed: ((captured: CapturedRequest) => RequestAcceptance) | null = null;
   let retryAfter: number | null = null;
+  let unbilled = false;
   const refuse = (res: http.ServerResponse, record: Omit<GateDecision, 'decision' | 'upstreamStatus'>): void => {
     decisions.push({ ...record, decision: 'refused', upstreamStatus: null });
     res.writeHead(403, { 'content-type': 'application/json' });
@@ -78,12 +88,24 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
         const target = new URL(options.upstream.url);
         const headers = { ...req.headers };
         delete headers.host; delete headers.connection;
+        if (options.stripFingerprint === true) for (const name of FINGERPRINT_HEADERS) delete headers[name];
         const transport = target.protocol === 'https:' ? https : http;
         const out = transport.request({ protocol: target.protocol, hostname: target.hostname, port: target.port, method: captured.method, path: captured.url, headers }, upstreamRes => {
           const status = upstreamRes.statusCode ?? 502;
-          if (status === 429 || status === 529) retryAfter = parseRetryAfterMs(upstreamRes.headers['retry-after'], Date.now());
-          decisions.push({ ...base, decision: 'forwarded', reasons: [], upstreamStatus: status });
+          const rejected = status === 429 || status === 529;
+          if (rejected) { retryAfter = parseRetryAfterMs(upstreamRes.headers['retry-after'], Date.now()); unbilled = false; }
+          const entry: { -readonly [K in keyof GateDecision]: GateDecision[K] } = { ...base, decision: 'forwarded', reasons: [], upstreamStatus: status };
+          decisions.push(entry);
           res.writeHead(status, upstreamRes.headers);
+          if (rejected) {
+            const seen: Buffer[] = [];
+            let size = 0;
+            upstreamRes.on('data', (c: Buffer) => { if (size < 4096) { seen.push(c); size += c.length; } });
+            upstreamRes.on('end', () => {
+              try { const j = JSON.parse(Buffer.concat(seen).toString('utf8')) as { type?: unknown; error?: { type?: unknown } }; unbilled = j.type === 'error' && typeof j.error?.type === 'string' && RATE_ERRORS.has(j.error.type); } catch { unbilled = false; }
+              entry.rejectedUnbilled = unbilled;
+            });
+          }
           upstreamRes.pipe(res);
         });
         out.on('error', () => { if (!res.headersSent) { decisions.push({ ...base, decision: 'forwarded', reasons: ['upstream unreachable'], upstreamStatus: null }); res.writeHead(502); } res.end(); });
@@ -99,6 +121,7 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
     arm: accept => { if (armed !== null) return false; armed = accept; return true; },
     disarm: () => { armed = null; },
     takeRetryAfterMs: () => { const v = retryAfter; retryAfter = null; return v; },
+    takeRejectedUnbilled: () => { const v = unbilled; unbilled = false; return v; },
     close: () => new Promise<void>(resolve => { server.closeAllConnections(); server.close(() => resolve()); }),
   };
 }

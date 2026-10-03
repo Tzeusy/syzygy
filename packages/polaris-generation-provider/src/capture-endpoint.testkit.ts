@@ -5,9 +5,10 @@ import type { AddressInfo } from 'node:net';
 import type { CapturedRequest } from './request-acceptance.js';
 
 export type Script =
-  | { readonly kind: 'text'; readonly text: string; readonly inputTokens?: number; readonly outputTokens?: number }
+  | { readonly kind: 'text'; readonly text: string; readonly inputTokens?: number; readonly outputTokens?: number; readonly noUsage?: boolean; readonly stopReason?: string }
   | { readonly kind: 'tool'; readonly name: string; readonly input: unknown; readonly inputTokens?: number; readonly outputTokens?: number }
-  | { readonly kind: 'status'; readonly status: number; readonly retryAfter?: string }
+  | { readonly kind: 'status'; readonly status: number; readonly retryAfter?: string; readonly body?: string }
+  | { readonly kind: 'mixed'; readonly text: string }
   | { readonly kind: 'hang' };
 
 export interface CaptureEndpoint {
@@ -35,21 +36,29 @@ export async function startCaptureEndpoint(defaultScript: Script = { kind: 'text
       if (step.kind === 'hang') { res.writeHead(200, { 'content-type': 'text/event-stream' }); res.write(': hold\n\n'); res.on('close', () => { closed++; }); return; }
       if (step.kind === 'status') {
         res.writeHead(step.status, { 'content-type': 'application/json', 'request-id': 'req_capture', ...(step.retryAfter === undefined ? {} : { 'retry-after': step.retryAfter }) });
-        res.end(JSON.stringify({ type: 'error', error: { type: step.status === 429 ? 'rate_limit_error' : 'overloaded_error', message: 'capture' } }));
+        res.end(step.body ?? JSON.stringify({ type: 'error', error: { type: step.status === 429 ? 'rate_limit_error' : 'overloaded_error', message: 'capture' } }));
         return;
       }
       const ev = (name: string, data: object): void => { res.write(`event: ${name}\ndata: ${JSON.stringify({ type: name, ...data })}\n\n`); };
       res.writeHead(200, { 'content-type': 'text/event-stream' });
-      ev('message_start', { message: { id: 'msg_capture', type: 'message', role: 'assistant', model: 'capture-model', content: [], stop_reason: null, usage: { input_tokens: step.inputTokens ?? 11, output_tokens: 1 } } });
-      if (step.kind === 'text') {
-        ev('content_block_start', { index: 0, content_block: { type: 'text', text: '' } });
-        ev('content_block_delta', { index: 0, delta: { type: 'text_delta', text: step.text } });
-      } else {
-        ev('content_block_start', { index: 0, content_block: { type: 'tool_use', id: 'toolu_capture', name: step.name, input: {} } });
-        ev('content_block_delta', { index: 0, delta: { type: 'input_json_delta', partial_json: JSON.stringify(step.input) } });
-      }
-      ev('content_block_stop', { index: 0 });
-      ev('message_delta', { delta: { stop_reason: step.kind === 'text' ? 'end_turn' : 'tool_use' }, usage: { output_tokens: step.outputTokens ?? 7 } });
+      const noUsage = step.kind === 'text' && step.noUsage === true;
+      ev('message_start', { message: { id: 'msg_capture', type: 'message', role: 'assistant', model: 'capture-model', content: [], stop_reason: null, usage: noUsage ? {} : { input_tokens: step.kind === 'mixed' ? 11 : step.inputTokens ?? 11, output_tokens: 1 } } });
+      let index = 0;
+      const text = (value: string): void => {
+        ev('content_block_start', { index, content_block: { type: 'text', text: '' } });
+        ev('content_block_delta', { index, delta: { type: 'text_delta', text: value } });
+        ev('content_block_stop', { index }); index++;
+      };
+      const tool = (name: string, input: unknown): void => {
+        ev('content_block_start', { index, content_block: { type: 'tool_use', id: 'toolu_capture', name, input: {} } });
+        ev('content_block_delta', { index, delta: { type: 'input_json_delta', partial_json: JSON.stringify(input) } });
+        ev('content_block_stop', { index }); index++;
+      };
+      if (step.kind === 'text') text(step.text);
+      else if (step.kind === 'mixed') { text(step.text); tool('Bash', { command: 'ls' }); }
+      else tool(step.name, step.input);
+      const stop = step.kind === 'text' ? step.stopReason ?? 'end_turn' : step.kind === 'mixed' ? 'end_turn' : 'tool_use';
+      ev('message_delta', { delta: { stop_reason: stop }, usage: noUsage ? {} : { output_tokens: step.kind === 'mixed' ? 7 : step.outputTokens ?? 7 } });
       ev('message_stop', {});
       res.end();
     });

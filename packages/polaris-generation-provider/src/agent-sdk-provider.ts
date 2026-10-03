@@ -59,6 +59,8 @@ export interface AgentSdkProviderConfig {
   readonly upstream?: { readonly url: string };
   /** Consent switch, asked by the gate for every request. Only `true` permits. */
   readonly permitted: (permit: DispatchPermit, stage: GenerateInput['stage']) => Promise<boolean>;
+  /** Gate option: drop the OS, architecture and runtime-version headers before forwarding (default false). */
+  readonly stripFingerprint?: boolean;
   /** 'text' sends no tool; 'schema-tool' lets the SDK add its StructuredOutput tool. */
   readonly outputMode?: 'text' | 'schema-tool';
   readonly retry?: { readonly maxAttempts: number; readonly baseDelayMs: number; readonly maxDelayMs: number; readonly budgetMs: number };
@@ -155,6 +157,7 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
     const gate = await startEgressGate({
       ...(config.upstream === undefined ? {} : { upstream: config.upstream }),
       permitted: async () => (permit.current === null ? false : config.permitted(permit.current.permit, permit.current.stage)),
+      ...(config.stripFingerprint === undefined ? {} : { stripFingerprint: config.stripFingerprint }),
     });
     gateRef = gate;
     return { gate, permit };
@@ -208,7 +211,9 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
       } catch { /* the result message, if any, was already read; absence is handled below */ }
       finally { clearTimeout(timer); input.signal.removeEventListener('abort', forward); q?.close(); gate.disarm(); slot.current = null; }
       const refusedHere = gate.decisions.slice(decisionsBefore).filter(d => d.decision === 'refused');
-      const units = result === undefined ? null : tokenUnits(result.usage);
+      const rejectedStatus = result?.is_error === true && (result.api_error_status === 429 || result.api_error_status === 529);
+      // A rejected request counts as unbilled only on the provider's own error body, seen by the gate; the CLI's synthetic zero usage is not evidence.
+      const units = result === undefined ? null : rejectedStatus ? (gate.takeRejectedUnbilled() ? 0 : null) : tokenUnits(result.usage);
       totalUnits = totalUnits === null || units === null ? null : totalUnits + units;
       if (input.signal.aborted) { record({ attemptId: input.permit.attemptId, try: n, outcome: 'aborted', httpStatus: null, usageUnits: units, backoffMs: 0 }); throw fail('aborted', n); }
       if (timedOut) { record({ attemptId: input.permit.attemptId, try: n, outcome: 'aborted', httpStatus: null, usageUnits: units, backoffMs: 0 }); throw fail('deadline', n); }

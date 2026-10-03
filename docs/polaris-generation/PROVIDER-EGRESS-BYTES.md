@@ -99,3 +99,24 @@ does outside that port (other sockets, files) is bounded by the environment, the
 run directory and the isolation test, not by the gate. Values that identify the
 machine (OS, architecture, Node runtime version) are checked by shape only, and
 they are sent.
+
+## Machine fingerprint and the strip option
+
+Both routes send `x-stainless-os`, `x-stainless-arch` and `x-stainless-runtime-version`
+(for example the OS name, CPU architecture and Node version of this machine), and the
+Agent SDK route's `user-agent` names the CLI and SDK versions. The provider does not
+need the three platform headers to answer. The gate has a `stripFingerprint` option
+(adapter config, default **false**) that deletes exactly those three after the
+request passed the allowlist and before forwarding. Default off keeps the forwarded
+bytes identical to the accepted bytes; whether the egress record should require
+stripping is an owner choice, recorded here as open. With strip on, an upstream
+capture no longer satisfies the Agent SDK predicate (it requires the headers); the
+gate's own check is the one that applies.
+
+## Rejected requests and billing
+
+A 429 or 529 try counts as unbilled (usage 0) only when the gate read the
+provider's documented error body (`type: error` with `rate_limit_error` or
+`overloaded_error`) from the upstream response. The Agent SDK CLI's own synthetic
+zero usage is not evidence. Without that evidence the try's usage is unknown
+(null), and so is the call's total.
