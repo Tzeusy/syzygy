@@ -86,6 +86,8 @@ describe('checkBlockQuotes', () => {
 describe('folding forms of a true quotation', () => {
   const FOLD = sourceTextById(files([
     ['src-fold', 'Use `maxmemory` to bound it; it’s “every key” &amp; more. The &lt;b&gt; tag, &#65; and &#x42; and\\_snake\\_case\\*.\n/* one-line comment */\nint SET = 1; // the SET command\n'],
+    ['src-close', 'first line\n */ second after the close\n'],
+    ['src-digits', 'The default port is 6379 for Redis.'],
     ['src-ellipsis', 'Redis evicts keys when memory is full, using an approximate LRU that samples a few keys, and then removes the best candidate.'],
   ]));
   const run = (text: string, ...ids: string[]) => checkBlockQuotes(block(text, ...ids), FOLD).map(f => f.kind);
@@ -96,6 +98,17 @@ describe('folding forms of a true quotation', () => {
     expect(run('It says "& more. The <b> tag"', 'src-fold')).toEqual([]);
     expect(run('It says "The <b> tag, A and B"', 'src-fold')).toEqual([]);
     expect(run('It says "and_snake_case*"', 'src-fold')).toEqual([]);
+  });
+  it('folds a straight-quoted reading of a curly-quoted source, a comment close at a line start, and a code span inside a quote', () => {
+    expect(run('It says "it\'s "every key" & more"', 'src-fold')).toEqual([]);
+    expect(run('It says "Use maxmemory to bound it"', 'src-fold')).toEqual([]);
+    expect(run('It says "second after the close"', 'src-close')).toEqual([]);
+    expect(normaliseForQuote(' */ second after the close')).toBe('second after the close');
+  });
+  it('treats digits as word characters at a boundary', () => {
+    expect(run('The port "6379" is used', 'src-digits')).toEqual([]);
+    expect(run('The port "637" is used', 'src-digits')).toEqual(['quote-not-in-cited-sources']);
+    expect(run('The port "379" is used', 'src-digits')).toEqual(['quote-not-in-cited-sources']);
   });
   it('leaves no stray slash from a same-line block-comment close', () => {
     expect(normaliseForQuote('/* one-line comment */')).toBe('one-line comment');
@@ -114,6 +127,7 @@ describe('folding forms of a true quotation', () => {
     expect(run('The term "Redis" appears', 'src-ellipsis')).toEqual([]);
     expect(run('The term "LRU" appears', 'src-ellipsis')).toEqual([]);
     expect(run('The term "RU" appears', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
+    expect(run('The term "Redi" appears', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
   });
 });
 
@@ -121,6 +135,15 @@ describe('a file split into pieces', () => {
   const lines = Array.from({ length: 6000 }, (_, i) => `line ${i} of the long file`).join('\n');
   const body = `${lines}\nThe boundary quote crosses`;
   const pieces = files([['long', `${body} the piece edge and continues.\n${'padding line\n'.repeat(5000)}`]]);
+  it('groups pieces per file: two files with identical bodies at different paths each keep their own pieces', () => {
+    const twin = files([['long-a', body + ' the piece edge and continues.\n' + 'padding line\n'.repeat(5000)], ['long-b', body + ' the piece edge and continues.\n' + 'padding line\n'.repeat(5000)]]);
+    const texts = sourceTextById(twin);
+    const first = twin.find(piece => piece.sourceId.startsWith('long-a'))!;
+    const edge = first.spans[0]!.text.length;
+    const whole = twin.filter(piece => piece.sourceId.startsWith('long-a')).map(piece => piece.spans[0]!.text).join('');
+    const crossing = whole.slice(edge - 20, edge + 20).replace(/\s+/gu, ' ').trim().split(' ').slice(1, -1).join(' ');
+    expect(checkBlockQuotes({ id: 'b', text: `"${crossing}"`, sourceIds: [first.sourceId] }, texts)).toEqual([]);
+  });
   it('checks a block against the whole file, so a quote may cross a piece boundary', () => {
     expect(pieces.length).toBeGreaterThan(1);
     const texts = sourceTextById(pieces);

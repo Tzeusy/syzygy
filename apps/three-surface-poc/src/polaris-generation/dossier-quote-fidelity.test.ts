@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { evaluateDossier, parseDossierManifest, type GenerationSource, type PipelineResult } from '@syzygy/polaris-generation-core';
+import { evaluateDossier, generationAnchorId, parseDossierManifest, segmentBody, type GenerationSource, type PipelineResult } from '@syzygy/polaris-generation-core';
 
 import { renderDossier } from './dossier-render.js';
 import { runSyntheticProject, syntheticProjects } from './pipeline-demo.js';
@@ -86,5 +86,32 @@ describe('quotation marks inside a cited block (deterministic fidelity)', () => 
     const html = renderDossier({ sources: run.sources, result: run.result }).files.get('index.html')!;
     expect(html.match(/<p data-claim-id="opening"[^>]*>/u)![0]).toContain('data-epistemic="inferred"');
     expect(html).not.toContain('Quotation not verified');
+  });
+
+  it('honours a recorded finding on a block the fresh check would not flag', () => {
+    const html = renderDossier({ sources: run.sources, result: { ...run.result, quoteFindings: [{ blockId: 'opening', kind: 'quote-not-in-cited-sources', quote: 'recorded by the pipeline' }] } }).files.get('index.html')!;
+    expect(html.match(/<p data-claim-id="opening"[^>]*>/u)![0]).toContain('data-epistemic="unknown"');
+    expect(html).toContain('Quotation not verified against the cited sources');
+  });
+
+  it('evaluates a quotation that crosses a piece boundary of a split source against the whole file', async () => {
+    const draft = structuredClone(run.result.draft) as { introduction: Intro };
+    const id = draft.introduction.sourceIds[0]!;
+    const original = run.sources.find(source => source.sourceId === id)!;
+    const body = original.spans[0]!.text;
+    const cut = segmentBody(body, Math.floor(body.length / 2));
+    expect(cut.length).toBeGreaterThan(1);
+    const crossing = body.slice(cut[0]!.text.length - 12, cut[0]!.text.length + 12).replace(/\s+/gu, ' ').trim().split(' ').slice(1, -1).join(' ');
+    expect(crossing.length).toBeGreaterThan(3);
+    draft.introduction.text = `The project's sources state: "${crossing.replace(/"/gu, '')}"`;
+    const { files } = renderDossier({ sources: run.sources, result: { ...run.result, draft } });
+    const pieces = cut.map((piece, index) => ({ ...original, sourceId: `${id}-p${index + 1}`, body: piece.text,
+      segment: { index, count: cut.length, start: piece.start, end: piece.end, blobBytes: Buffer.byteLength(body) },
+      spans: [{ anchorId: generationAnchorId(original, piece.start, piece.end), start: 0, end: piece.end - piece.start, text: piece.text }] }));
+    const sources = [...run.sources.filter(source => source.sourceId !== id), ...pieces];
+    const manifest = parseDossierManifest(files.get('dossier.json')!);
+    const pages = new Map(manifest.pages.map(page => [page.path, new TextEncoder().encode(files.get(page.path)!.replaceAll(`Read source ${id}"`, `Read source ${id}-p1"`))]));
+    const report = await evaluateDossier({ manifestText: files.get('dossier.json')!, pages, sources, questionsText: QUESTIONS }, signal);
+    expect(report.fidelity.inBlockQuotes).toMatchObject({ failures: [], outcome: 'all-verbatim' });
   });
 });

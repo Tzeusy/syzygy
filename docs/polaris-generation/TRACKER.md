@@ -172,13 +172,19 @@ Authorized implementation work (generator implementation authorization,
         `npm run poc:redis-shaped-discovery`.
   - [x] **Deterministic quote fidelity.** `quote-fidelity.ts`: every
         double-quoted span in a block (straight, or curly with nesting) must
-        occur, after one normalisation applied to both sides (comment
-        leaders, link syntax and emphasis dropped, whitespace collapsed), in
-        a source the block cites; an unterminated, empty, uncited or
-        lead-in-without-quote case fails too. The pipeline joins it to the
-        reviewer's verdict, so a failure blocks the draft (repair, then
-        `repair-exhausted`) whatever the model said; `evaluateDossier`
-        reports `fidelity.inBlockQuotes` per cited claim.
+        occur in a source the block cites, after one normalisation applied to
+        both sides (comment leaders and closes, link syntax, entities,
+        backslash escapes, backticks and emphasis dropped; curly quotes
+        folded; whitespace collapsed). An elided quote matches its pieces in
+        order in one source; a piece matches on word boundaries; a block
+        citing a piece of a split file is checked against the whole file.
+        An unterminated, empty, uncited or lead-in-without-quote case fails
+        too. A failure earns a repair; one that survives the last repair does
+        not stop the run: the pipeline returns `quoteFindings` per block and
+        `renderDossier` shows each such block as Unknown with the reason,
+        whatever the reviewer said. `evaluateDossier` reports
+        `fidelity.inBlockQuotes` (checked blocks, quotes checked, failures,
+        outcome `all-verbatim` / `no-quotes` / `failures` / `unknown`).
   - [x] **Closed exclusion reasons.** `GENERATION_EXCLUSION_REASONS`
         (`generation-source.ts`, a plain literal array) lists every reason an
         excluded source may carry; `validateGenerationSources` refuses any
