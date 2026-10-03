@@ -1,0 +1,52 @@
+{
+  "subject": "scripts/check_quotations.py",
+  "subjectSha256": "ac2eec5f1927a34a24bdc4dea06329aabac9196d462b48799bc0722144f3d302",
+  "commit": "21ed4bab8bd864dbfbae4a874c0258a996fa3fd5",
+  "bead": "syzygy-02ez",
+  "rule": "AGENTS.md verification rule 6",
+  "baselineSelftestExit": 0,
+  "note": "The commit is provenance only; a rebase-merge leaves it reachable from no ref, so subjectSha256 is the anchor.",
+  "mutants": [
+    {
+      "id": "Q1-raw-name-exempts",
+      "mutates": "a -RAW.md name outside the raw-review homes is exempt again (the clause the PR 279 review found surviving)",
+      "old": "    if _is_raw_review(rel):\n",
+      "new": "    if _is_raw_review(rel) or rel.endswith(\"-RAW.md\"):\n",
+      "occurrences": 1,
+      "run": "python3 scripts/check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  a -RAW.md name outside the raw-review homes is not exempt: (0, {'raw review': 1})"
+      ]
+    },
+    {
+      "id": "Q2-scanned-uncounted",
+      "mutates": "files in the failing population are not counted",
+      "old": "            res.scanned += 1\n",
+      "new": "            pass\n",
+      "occurrences": 1,
+      "run": "python3 scripts/check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  every .md file is scanned or counted in one excluded class: (0, {'raw review': 1, 'round directory': 1})"
+      ]
+    },
+    {
+      "id": "Q3-excluded-uncounted",
+      "mutates": "files in an excluded class are not counted",
+      "old": "            res.excluded_files[cls] += 1\n",
+      "new": "            pass\n",
+      "occurrences": 1,
+      "run": "python3 scripts/check_quotations.py --selftest",
+      "exit": 1,
+      "outcome": "killed",
+      "killedBy": [
+        "FAIL  every .md file is scanned or counted in one excluded class: (3, {})"
+      ]
+    }
+  ],
+  "killed": 3,
+  "total": 3
+}
