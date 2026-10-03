@@ -34,13 +34,19 @@ template and parameters (compare the two files):
    route-neutral the same way; the admitted repositories and content-class
    list are the first version's.
 
+5. the record states, per route, the fixed bytes that route adds, by citing
+   each entry's `requestBytes` (the Agent SDK runtime's additions for route A;
+   the SDK library's headers, including the three machine-identifying ones, for
+   route B) and permits a route's bytes only while that route's entry is in
+   force. Stripping the three headers is marked as the owner's option in each
+   route's packet; the record neither requires nor forbids it.
+
 **Route choice and this record are independent.** Signing this version does not
 choose a route, and choosing a route does not require signing it. The route is
 the registry entry the owner puts in force (row 2a); this record only says the
-requests may carry that entry's listed bytes. [Inferred] Both route packets say
-the first version's wording would need a version like this one if the owner
-reads it restrictively; if the owner reads it descriptively, this version is
-still needed for the class and the discovery stages.
+requests may carry that entry's listed bytes. Both route packets said the first version's wording might need a version
+like this one; this version settles that reading by stating each route's bytes,
+and it is also needed for the class and the discovery stages.
 
 ## Why it exists
 

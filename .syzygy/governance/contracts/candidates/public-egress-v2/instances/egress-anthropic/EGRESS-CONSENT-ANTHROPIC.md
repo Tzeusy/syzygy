@@ -129,6 +129,29 @@ in force, and approving a route entry is a separate act (RFC4-1). A request
 carrying any other byte, header or field, or a field outside the table, is
 refused at the single egress check.
 
+### Bytes each registered route entry lists
+
+A route's bytes are permitted only while that route's registry entry is in
+force; with no entry in force, no route byte is permitted. The lists are the
+entries' own `requestBytes`; this record cites them and does not restate them.
+
+- **Agent SDK route** (implementation `polaris-generation/provider-agent-sdk`):
+  the runtime's additions to the generator's request: a fixed system prefix, an
+  empty system message, a per-run device and session id, a closed set of
+  headers that includes `x-stainless-os`, `x-stainless-arch` and
+  `x-stainless-runtime-version` (which identify the machine), and sometimes a
+  body-less probe that the entry's gate answers locally and never forwards. The
+  entry also pins the model, the effort, the tool list, the thinking setting and
+  a maximum output ceiling.
+- **Messages API route** (implementation `polaris-generation/provider-messages-api`):
+  the SDK library's fixed headers (the same three machine-identifying headers
+  among them), the headers the Node runtime fixes, and the same pinned
+  parameters. It adds no system prefix, no metadata, no environment message, no
+  device id and no probe.
+- Stripping the three machine-identifying headers is an option of the gate, off
+  by default. This record neither requires nor forbids it; whether a later
+  version should require it is the owner's option in each route's packet.
+
 ## Conditions
 
 - Only content screened under `project:syzygy`'s effective public-source
