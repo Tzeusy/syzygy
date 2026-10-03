@@ -167,6 +167,7 @@ describe('openGeneration against a loopback provider', () => {
     const budget = discoveryBudgetFor(DOSSIER_RUN_PROFILE);
     expect((budget.maxMapCalls + 1) * DOSSIER_RUN_PROFILE.owner.discoveryCallUnits).toBeLessThanOrEqual(DOSSIER_RUN_PROFILE.owner.discoveryUnits);
     expect(budget.maxMapCalls).toBe(24);
+    expect(budget.maxSelectedBytes).toBe(400_000);
     const { runDir } = await open(EGRESS_V2_DIGEST);
     expect(statSync(`${runDir}.state`).mode & 0o077).toBe(0);
   });

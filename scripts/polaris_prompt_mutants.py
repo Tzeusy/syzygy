@@ -1,5 +1,4 @@
-"""Rule-6 mutant runner for the Polaris prompt, discovery and dossier-quotation
-modules (AGENTS.md verification rule 6). Usage, from a clean checkout of the
+"""Rule-6 mutant runner for the Polaris prompt and discovery modules (AGENTS.md verification rule 6). Usage, from a clean checkout of the
 commit under test: python3 scripts/polaris_prompt_mutants.py OUT.json
 
 Before every mutant: restore every subject from its committed bytes, check

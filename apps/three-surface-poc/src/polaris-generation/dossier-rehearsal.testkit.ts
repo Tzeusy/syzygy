@@ -101,7 +101,8 @@ export function scriptedReply(request: StubRequest): string {
     const ids: string[] = inputs.subsystems.flatMap((s: Json) => s.claims.map((c: Json) => c.blobId));
     return JSON.stringify({ ranked: ids.filter((id, i) => ids.indexOf(id) === i).slice(0, inputs.maxSelected) });
   }
-  const sources: string[] = inputs.sources.map((s: Json) => s.sourceId);
+  // The plan stage lists the whole counted population, excluded rows included; only the quotable ones can be cited.
+  const sources: string[] = inputs.sources.filter((s: Json) => s.excluded !== true).map((s: Json) => s.sourceId);
   const cited = sources;   // the draft cites every source it was given, as the pipeline requires
   const sections: Json[] = DOSSIER_REQUESTED_ASSETS.filter(a => a.kind === 'section') as unknown as Json[];
   const produced = (id: string) => ({ kind: 'produced', assetIds: [id] });
@@ -290,14 +291,17 @@ export const completeChecks = async (r: Ran): Promise<RehearsalCheck[]> => [
   ...recordChecks(r),
 ];
 
+/** The stages whose request carries the selected sources' text. */
+const SOURCE_STAGES = ['inventory', 'author', 'edit', 'fidelity'] as const;
+
 export const SCENARIOS: readonly ScenarioDef[] = [
   { name: 'complete-small', fixture: 'small', expectExit: 0, intent: 'A normal run on a four-file repository: discovery, the five narrative stages, a rendered dossier that opens, evaluates cleanly and is accounted for in the run record.', checks: completeChecks },
   {
     name: 'complete-redis-shaped', fixture: 'redis-shaped', expectExit: 0,
     intent: 'The same run on the Redis-shaped corpus (510 files, five over 100,000 characters): discovery selects up to 200 sources and the narrative must be able to afford them.',
     checks: async r => [
-      check('selection-fits-inventory-ceiling', r.sources !== null && minimumUsageUnits(quotableBytes(r.sources)) <= (CEILING.inventory ?? 0),
-        r.sources === null ? 'no sources' : `${r.sources.filter(x => x.spans.length > 0).length} quotable sources, ${quotableBytes(r.sources)} bytes of text: the inventory request needs at least ${minimumUsageUnits(quotableBytes(r.sources))} units (1 token per byte bound) against its ceiling of ${CEILING.inventory}`),
+      check('selection-fits-every-source-carrying-stage', r.sources !== null && SOURCE_STAGES.every(stage => minimumUsageUnits(quotableBytes(r.sources!)) <= (CEILING[stage] ?? 0)),
+        r.sources === null ? 'no sources' : `${r.sources.filter(x => x.spans.length > 0).length} quotable sources, ${quotableBytes(r.sources)} bytes of text, at least ${minimumUsageUnits(quotableBytes(r.sources))} units (1 token per byte bound) per request; ceilings ${SOURCE_STAGES.map(stage => `${stage} ${CEILING[stage]}`).join(', ')}`),
       ...await completeChecks(r),
     ],
   },

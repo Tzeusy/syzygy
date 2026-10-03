@@ -1,4 +1,4 @@
-import { DEFAULT_DISCOVERY_BUDGET, PIPELINE_QUOTABLE_CAP, type DiscoveryBudget, type GenerationBudget, type GenerationStage } from '@syzygy/polaris-generation-core';
+import { DEFAULT_DISCOVERY_BUDGET, DOSSIER_MAX_SELECTED_BYTES, PIPELINE_QUOTABLE_CAP, type DiscoveryBudget, type GenerationBudget, type GenerationStage } from '@syzygy/polaris-generation-core';
 import { DOSSIER_UNITS_POLICY, MAX_OUTPUT_TOKENS, TOKENS_PER_UNIT } from '@syzygy/polaris-generation-provider';
 
 /**
@@ -99,6 +99,7 @@ export function discoveryBudgetFor(profile: DossierRunProfile = DOSSIER_RUN_PROF
   const calls = Math.floor(profile.owner.discoveryUnits / profile.owner.discoveryCallUnits);
   return {
     maxSelected: PIPELINE_QUOTABLE_CAP,
+    maxSelectedBytes: DOSSIER_MAX_SELECTED_BYTES,
     maxMapCalls: Math.min(DEFAULT_DISCOVERY_BUDGET.maxMapCalls, calls - 1),
     maxExcerptChars: DISCOVERY_EXCERPT_CHARS,
     maxGroupBlobs: Math.min(DEFAULT_DISCOVERY_BUDGET.maxGroupBlobs, groupBlobs),

@@ -200,9 +200,29 @@ Authorized implementation work (generator implementation authorization,
         documents, no script, no external reference, every link and anchor
         lands), that every page passes `evaluateDossier`, and that the run
         record names the profile, the sha256 of the prompt each call sent and
-        the budget spent. [Observed] the Redis-shaped scenario fails today:
-        discovery's 200-source selection (1,893,524 bytes) cannot fit the
-        inventory stage's 600-unit ceiling under the 1-token-per-byte bound.
+        the budget spent. [Observed] the Redis-shaped scenario
+        still fails with the 400,000-byte selection cap: inventory, author
+        and edit (about 470 KB each) fit their 600-unit ceilings, but the
+        fidelity request carries the same sources against a 300-unit ceiling
+        and is refused as budget-exhausted, so the run stops partial (exit 7).
+        The earlier failure (200 sources, 1,893,524 bytes, against the
+        inventory ceiling) is fixed by the cap.
+  - [x] **Byte-capped selection (`maxSelectedBytes`).** Discovery also stops
+        at a cap on the UTF-8 bytes of quotable text; the dossier budget
+        (`DOSSIER_DISCOVERY_BUDGET`) sets `DOSSIER_MAX_SELECTED_BYTES` =
+        400,000, so the first narrative call fits the inventory ceiling.
+        Rank order until a cap is hit; a file that does not fit is skipped
+        and smaller ones below it are tried, each skip a `deferred-by-budget`
+        row whose detail gives its bytes, the room left and the cap. A split
+        file is selected or deferred whole (one deferred row, pieces counted).
+        The report adds `bytes: {selected, deferred, cap}`. [Observed] on the
+        synthetic fixture the prior alone keeps 5 of the 18 core files in
+        400 KB (it ranks by path and size, not by role), and with a model
+        ranking that names them 15 of 18 fit: `server.c` and
+        `cluster_legacy.c` are 130,000 bytes each and `t_string.c`, `t_zset.c`
+        and `t_stream.c` are deferred. A real `server.c` is larger than the
+        whole cap. 24 mutants, all killed:
+        `docs/evidence/discovery-byte-cap-mutants-2026-10-04.json`.
   - [x] **Map excerpts that show the mechanism (syzygy-qyez).** The map call
         saw only a file's first 1,500 characters, which for a C file is its
         licence header. `buildExcerpt` (`excerpt.ts`) now skips a leading
@@ -226,6 +246,27 @@ Authorized implementation work (generator implementation authorization,
         the heuristic selection is unchanged. Evidence
         `docs/evidence/discovery-excerpt-measurement-2026-10-04.json` and
         `docs/evidence/discovery-excerpt-mutants-2026-10-04.json`.
+  - [x] **Deterministic quote fidelity.** `quote-fidelity.ts`: every
+        double-quoted span in a block (straight, or curly with nesting) must
+        occur in a source the block cites, after one normalisation applied to
+        both sides (comment leaders and closes, link syntax, entities,
+        backslash escapes, backticks and emphasis dropped; curly quotes
+        folded; the ellipsis character folded to three periods; whitespace collapsed). The lead-in is `The project states:`;
+        a quotation runs from it to the last straight quote before the next
+        lead-in, so it may contain quotes, an unverified tail or a stray
+        quote in the prose after it fails, and elision is not allowed. A
+        quote is one contiguous run of one source on word boundaries; a
+        block citing a piece of a split file is checked against the whole
+        file.
+        An unterminated, empty, uncited or lead-in-without-quote case fails
+        too. A failure earns a repair; one that survives the last repair does
+        not stop the run: the pipeline returns `quoteFindings` per block and
+        `renderDossier` shows each such block as Unknown with the reason,
+        whatever the reviewer said. The pipeline also takes a `promptProfile`
+        (default `manifesto`; the dossier trigger sets `dossier`) and records
+        the profile, prompt version and system-text digest on every receipt. `evaluateDossier` reports
+        `fidelity.inBlockQuotes` (checked blocks, quotes checked, failures,
+        outcome `all-verbatim` / `no-quotes` / `failures` / `unknown`).
   - [x] **Closed exclusion reasons.** `GENERATION_EXCLUSION_REASONS`
         (`generation-source.ts`, a plain literal array) lists every reason an
         excluded source may carry; `validateGenerationSources` refuses any

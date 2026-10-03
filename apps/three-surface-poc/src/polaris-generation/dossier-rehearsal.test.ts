@@ -26,12 +26,17 @@ describe('the rehearsal over every scenario', () => {
     expect(report.fixtures.map(f => f.name).sort()).toEqual(['redis-shaped', 'small']);
   }, 120_000);
 
-  it('passes every scenario but the Redis-shaped one, whose selection the narrative cannot yet afford', () => {
-    // [Observed] 2026-10-04: 200 quotable sources, 1,893,524 bytes, against an inventory ceiling of 600 units under the 1-token-per-byte bound.
-    // When discovery caps its selection by bytes, or the ceilings change, this scenario passes and this test must be updated with it.
+  it('passes every scenario but the Redis-shaped one, whose fidelity stage cannot carry the selection', () => {
+    // [Observed] 2026-10-04, with the 400,000-byte selection cap: the inventory, author and edit requests (about 470 KB) fit their 600-unit ceilings,
+    // but the fidelity request carries the same sources against a 300-unit ceiling and is refused as budget-exhausted, so the run stops partial (exit 7).
+    // When the fidelity ceiling or what fidelity carries changes, this scenario passes and this test must be updated with it.
     expect(report.scenarios.filter(s => !s.passed).map(s => s.scenario)).toEqual(['complete-redis-shaped']);
     const failed = report.scenarios.find(s => s.scenario === 'complete-redis-shaped')!.checks.filter(c => !c.passed).map(c => c.id);
-    expect(failed).toContain('selection-fits-inventory-ceiling');
+    expect(failed).toContain('selection-fits-every-source-carrying-stage');
+    const redis = report.scenarios.find(s => s.scenario === 'complete-redis-shaped')!;
+    expect(redis.exit).toBe(7);
+    expect(redis.stagesRequested).toEqual([...Array(10).fill('discovery-map'), 'discovery-reduce', 'inventory', 'plan', 'author', 'edit']);
+    expect(redis.checks.find(c => c.id === 'selection-fits-every-source-carrying-stage')!.detail).toContain('fidelity 300');
     expect(report.passed).toBe(false);
   });
 
@@ -61,7 +66,7 @@ describe('the rehearsal over every scenario', () => {
     const text = formatRehearsal(report);
     expect(text).toContain('Dossier rehearsal (polaris-dossier-rehearsal-v1): FAIL');
     for (const name of SCENARIO_NAMES) expect(text).toContain(name);
-    expect(text).toContain('selection-fits-inventory-ceiling');
+    expect(text).toContain('selection-fits-every-source-carrying-stage');
     expect(text).toContain('PASS  complete-small');
   });
 });

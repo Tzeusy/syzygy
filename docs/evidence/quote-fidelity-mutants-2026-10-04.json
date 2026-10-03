@@ -1,18 +1,27 @@
 {
   "subject": {
-    "commit": "ade91260af0a210436c4fd5944794d3d23720cf9",
+    "commit": "6f8f0e40731cacff0175f5d4dbe8927d9602fab9",
     "branch": "agent/quote-fidelity",
     "fileSha256": {
       "apps/three-surface-poc/src/polaris-generation/dossier-render.ts": "9b6dd601b83eb11ab1baac93565f07f6ef603f9e7ab596d6f0f0cccb49fbf046",
       "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "79368002ba98f3cdd31983293c28cf9bd92c0167444c1997cb160a196068cd51",
       "packages/polaris-generation-core/src/dossier-evaluation.ts": "04ab4fe712ac3bc579d558fe32d6997107a510597d99558930defa6a041b30e5",
       "packages/polaris-generation-core/src/pipeline.ts": "c9feaa161c83bfb590855a37210d95fee8b6b8a4fe5ab46206557a34084b6b06",
-      "packages/polaris-generation-core/src/quote-fidelity.ts": "cd818fc4470f17727376936779eb2446a5c8e51842922270a60348fd62bb53a3"
+      "packages/polaris-generation-core/src/quote-fidelity.ts": "32c686b07aec91975382ffc5ac30e88041cfd9d297b6a24640c2c885c313350c"
+    },
+    "testFileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts": "1211ff8a46bb86402862d96b4f477608b678cd2caf3d8b73989ea61b39a3a179",
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts": "f3a2d3dfd7ee972352f94a8f11a0714ac58661abe2c8841387e0cc8509a82459",
+      "packages/polaris-generation-core/src/dossier-evaluation.test.ts": "7221f3ac696ba586f9200109def1cd9c03f1dee242e56870c3a101760a39f2d4",
+      "packages/polaris-generation-core/src/pipeline.test.ts": "d821a9533c6f884ba28967853092a123fe848017c1e25fdaa88babae21a7759f",
+      "packages/polaris-generation-core/src/quote-fidelity.test.ts": "88d073ebbf0c4ce51c5c1f0ab078c0c9b0381252e10fa5da58096400b9b03f3e"
     }
   },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/polaris-generation-core",
-  "ranAt": "2026-10-03T22:09:35+00:00",
+  "ranAt": "2026-10-03T23:05:10+00:00",
   "mutants": [
     {
       "id": "norm-leader-dropped",
@@ -24,7 +33,7 @@
       ],
       "outcome": "killed",
       "failedTests": 5,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "norm-leader-slashes",
@@ -36,7 +45,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "norm-leader-hash",
@@ -48,7 +57,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "norm-leader-star",
@@ -60,7 +69,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "norm-leader-open",
@@ -72,7 +81,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "norm-leader-close",
@@ -84,7 +93,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "norm-link-inline-dropped",
@@ -96,7 +105,7 @@
       ],
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "norm-link-ref-dropped",
@@ -108,7 +117,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "norm-link-image-bang",
@@ -120,7 +129,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "norm-emphasis-dropped",
@@ -132,7 +141,7 @@
       ],
       "outcome": "killed",
       "failedTests": 5,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "norm-emphasis-no-underscore",
@@ -144,7 +153,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "norm-emphasis-no-star",
@@ -156,7 +165,7 @@
       ],
       "outcome": "killed",
       "failedTests": 5,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "norm-whitespace-newlines",
@@ -168,7 +177,7 @@
       ],
       "outcome": "killed",
       "failedTests": 6,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "norm-trim-dropped",
@@ -180,7 +189,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "verifies-empty-allowed",
@@ -192,7 +201,7 @@
       ],
       "outcome": "survived",
       "failedTests": 0,
-      "totalTests": 44,
+      "totalTests": 45,
       "note": "Equivalent: an empty-normalising candidate is always the shortest candidate, so it is only chosen when no longer reading verifies, and the empty-quote finding is emitted from the normalised inner text before the verification flag is read; dropping the wanted.length guard cannot change a finding."
     },
     {
@@ -205,7 +214,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "verifies-reversed",
@@ -216,8 +225,8 @@
         "packages/polaris-generation-core/src/quote-fidelity.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 23,
-      "totalTests": 44
+      "failedTests": 24,
+      "totalTests": 45
     },
     {
       "id": "candidates-shortest-first",
@@ -229,7 +238,7 @@
       ],
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "candidates-any-quote",
@@ -241,7 +250,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "curly-depth-flat",
@@ -253,7 +262,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "unverified-picks-longest",
@@ -265,7 +274,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "empty-quote-dropped",
@@ -277,7 +286,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "unterminated-dropped",
@@ -289,7 +298,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "uncited-dropped",
@@ -301,7 +310,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "not-in-source-dropped",
@@ -313,7 +322,7 @@
       ],
       "outcome": "killed",
       "failedTests": 23,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "lead-in-curly",
@@ -325,7 +334,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "lead-in-dropped",
@@ -337,7 +346,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "lead-in-first-only",
@@ -349,7 +358,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "clip-wider",
@@ -361,7 +370,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "cited-dedupe-unknown",
@@ -373,7 +382,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "pipeline-always-blocks",
@@ -385,7 +394,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 32
+      "totalTests": 33
     },
     {
       "id": "pipeline-blocking-follows-reviewer",
@@ -397,7 +406,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 32
+      "totalTests": 33
     },
     {
       "id": "pipeline-drops-reviewer-findings",
@@ -409,7 +418,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 32
+      "totalTests": 33
     },
     {
       "id": "pipeline-initial-unchecked",
@@ -421,7 +430,7 @@
       ],
       "outcome": "killed",
       "failedTests": 5,
-      "totalTests": 32
+      "totalTests": 33
     },
     {
       "id": "pipeline-repair-unchecked",
@@ -433,7 +442,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 32
+      "totalTests": 33
     },
     {
       "id": "pipeline-scalar-finding-lost",
@@ -445,7 +454,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 32
+      "totalTests": 33
     },
     {
       "id": "eval-claim-text-dropped",
@@ -529,7 +538,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "fold-entities-dropped",
@@ -541,7 +550,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "fold-entity-numeric-hex",
@@ -553,7 +562,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "fold-escape-kept",
@@ -565,7 +574,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "fold-apostrophe-kept",
@@ -577,7 +586,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "fold-curly-double-kept",
@@ -589,7 +598,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "fold-trailing-close-kept",
@@ -601,7 +610,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "boundary-start-dropped",
@@ -613,7 +622,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "boundary-end-dropped",
@@ -625,7 +634,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "boundary-letters-only",
@@ -637,7 +646,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "whole-blob-dropped",
@@ -649,7 +658,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "whole-blob-unordered",
@@ -661,7 +670,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "whole-blob-key-path",
@@ -673,7 +682,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "inspect-count-zero",
@@ -685,19 +694,19 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "repair-text-reworded",
       "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
-      "old": "Quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred.",
+      "old": "quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred.",
       "new": "Quote only text the cited sources contain, or state the point in your own words without quotation marks.",
       "tests": [
         "packages/polaris-generation-core/src/quote-fidelity.test.ts"
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "pipeline-quote-stops-run",
@@ -709,7 +718,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 32
+      "totalTests": 33
     },
     {
       "id": "pipeline-reviewer-exhaust-lost",
@@ -721,7 +730,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 32
+      "totalTests": 33
     },
     {
       "id": "pipeline-quote-findings-dropped",
@@ -733,7 +742,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 32
+      "totalTests": 33
     },
     {
       "id": "eval-count-lost",
@@ -817,7 +826,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "lead-span-ignores-next-lead-in",
@@ -829,7 +838,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "lead-span-unterminated-ok",
@@ -841,7 +850,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "lead-span-unverified-ok",
@@ -853,7 +862,7 @@
       ],
       "outcome": "killed",
       "failedTests": 12,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "lead-in-skip-dropped",
@@ -865,7 +874,7 @@
       ],
       "outcome": "survived",
       "failedTests": 0,
-      "totalTests": 44,
+      "totalTests": 45,
       "note": "Equivalent: the skipped text is the lead-in itself, which contains no quotation mark, so scanning it character by character in the generic loop finds nothing to open a span."
     },
     {
@@ -878,7 +887,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "profile-ignored",
@@ -889,8 +898,8 @@
         "packages/polaris-generation-core/src/pipeline.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 32
+      "failedTests": 2,
+      "totalTests": 33
     },
     {
       "id": "profile-default-dossier",
@@ -902,7 +911,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 32
+      "totalTests": 33
     },
     {
       "id": "profile-unknown-accepted",
@@ -914,7 +923,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 32
+      "totalTests": 33
     },
     {
       "id": "receipt-profile-dropped",
@@ -925,8 +934,8 @@
         "packages/polaris-generation-core/src/pipeline.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 32
+      "failedTests": 2,
+      "totalTests": 33
     },
     {
       "id": "receipt-digest-wrong",
@@ -937,8 +946,8 @@
         "packages/polaris-generation-core/src/pipeline.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 32
+      "failedTests": 3,
+      "totalTests": 33
     },
     {
       "id": "trigger-profile-dropped",
@@ -962,7 +971,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "emphasis-trailing-edge-dropped",
@@ -974,7 +983,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "emphasis-single-pass",
@@ -986,7 +995,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "emphasis-multiline",
@@ -998,7 +1007,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "elided-kind-lost",
@@ -1010,7 +1019,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "elided-always",
@@ -1022,7 +1031,7 @@
       ],
       "outcome": "killed",
       "failedTests": 14,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "elided-unicode-lost",
@@ -1034,7 +1043,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "elided-dots-lost",
@@ -1046,7 +1055,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
     },
     {
       "id": "elided-message-dropped",
@@ -1058,7 +1067,47 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 44
+      "totalTests": 45
+    },
+    {
+      "id": "pipeline-repair-profile-manifesto",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "promptForStage(name, promptProfile)",
+      "new": "promptForStage(name, name === 'repair' ? 'manifesto' : promptProfile)",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 33
+    },
+    {
+      "id": "ellipsis-char-not-folded",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "    .replace(/\\u2026/gu, '...')\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "repair-finding-one-quotation-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "Give one quotation per lead-in, and quote it",
+      "new": "Quote it",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
     }
+  ],
+  "notes": [
+    "scripts/polaris_prompt_mutants.py lost the mutants for the deleted quotations.ts and dossier-validation.ts and had its docstring corrected in this change, so its sha256 no longer equals the runner digest recorded in docs/evidence/polaris-prompt-mutants-2026-10-04-rev2.json; that record is left unedited and still describes the bytes it ran against.",
+    "This record supersedes the 87-mutant record taken at ade91260 (85 killed, 2 equivalent), which is removed; it adds pipeline-repair-profile-manifesto, ellipsis-char-not-folded and repair-finding-one-quotation-dropped (all killed)."
   ]
 }

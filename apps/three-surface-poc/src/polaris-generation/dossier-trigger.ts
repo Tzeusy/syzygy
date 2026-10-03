@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { clarify, DEFAULT_DISCOVERY_BUDGET, DiscoveryRefusal, discoverAndSelect, DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS,
+import { clarify, DOSSIER_DISCOVERY_BUDGET, DiscoveryRefusal, discoverAndSelect, DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS,
   type ClarificationRecord, type DiscoveryBudget, type DiscoveryCall, type DiscoveryPorts, type DiscoveryReceipt, type DiscoveryReport, type GenerationBudget, type GenerationSource, type GenerationStage,
   type PipelineRequest, type PipelineResult } from '@syzygy/polaris-generation-core';
 
@@ -209,7 +209,7 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
     const wallTimer = session === undefined ? undefined : setTimeout(() => wall.abort(), session.wallClockMs);
     let discovery: Awaited<ReturnType<typeof discoverAndSelect>>;
     try {
-      discovery = await discoverAndSelect(corpus.sources, config.readerQuestions.map(question => question.text), session?.discoveryBudget ?? DEFAULT_DISCOVERY_BUDGET,
+      discovery = await discoverAndSelect(corpus.sources, config.readerQuestions.map(question => question.text), session?.discoveryBudget ?? DOSSIER_DISCOVERY_BUDGET,
         { permitted, ...(discoveryPorts?.map === undefined ? {} : { map: discoveryPorts.map }), ...(discoveryPorts?.reduce === undefined ? {} : { reduce: discoveryPorts.reduce }),
           ...(receiptSink === undefined ? {} : { receipt: receiptSink }) }, wall.signal);
     } catch (error) {

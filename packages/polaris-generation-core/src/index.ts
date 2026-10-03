@@ -42,7 +42,7 @@ export {
 } from './dossier-evaluation.js';
 export { buildExcerpt, EXCERPT_KINDS, LICENCE_MARKERS } from './excerpt.js';
 export type { Excerpt, ExcerptKind, ExcerptRange } from './excerpt.js';
-export { discoverAndSelect, reportFromReceipts, partitionSubsystems, heuristicScore, DiscoveryRefusal, DEFERRED_BY_BUDGET, PIPELINE_QUOTABLE_CAP, DEFAULT_DISCOVERY_BUDGET } from './discovery.js';
+export { discoverAndSelect, reportFromReceipts, partitionSubsystems, heuristicScore, DiscoveryRefusal, DEFERRED_BY_BUDGET, PIPELINE_QUOTABLE_CAP, DEFAULT_DISCOVERY_BUDGET, DOSSIER_DISCOVERY_BUDGET, DOSSIER_MAX_SELECTED_BYTES } from './discovery.js';
 export type { DiscoveryBudget, DiscoveryCall, DiscoveryReceipt, MapReply, ReduceReply, DiscoveryClaim, DiscoveryPorts, ExcerptAudit, DiscoveryReport, DiscoveryResult, MapInput, ReduceInput } from './discovery.js';
 export { DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, clarify, dossierQuestionsFile, openQuestions } from './dossier-profile.js';
 export type { ClarificationInput, ClarificationQuestion, ClarificationRecord, OwnerAnswer } from './dossier-profile.js';
