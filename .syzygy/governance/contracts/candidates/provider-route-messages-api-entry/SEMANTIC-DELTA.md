@@ -27,16 +27,28 @@ fact.
 
 ## Proposed meaning
 
-One entry, `polaris-provider-route-anthropic-messages-api`, for the same
-authority as PR #255's entry: project `project:syzygy`, provider
+One entry for the same authority as PR #255's entry, with that entry's role
+identity and a new implementation identity, `polaris-generation/provider-messages-api`: project `project:syzygy`, provider
 `provider:anthropic`, type `model-provider`.
 
-- **Substitute, never an addition.** RFC4-1 allows one adapter per external
-  authority per project. This entry and PR #255's entry are alternatives;
-  the entry's `routeSubstitution` block names the other, and exactly one may
-  be adopted. Adopting this one means PR #255's provider entry is not.
+- **Substitute, never an addition (RFC4-9).** RFC4-1 allows one adapter per
+  external authority per project. RFC4-9, quoted whole in the entry's
+  `routeSubstitution` block and here: "**RFC4-9 — Substitution.** Replacing an
+  implementation (a different VCS host, a different scheduler) is a registry
+  event: the role identity persists, a new implementation identity is
+  registered, and prior records keep resolving under the old one.
+  Substitution never rewrites history and never migrates substrate-native
+  aliases into the new substrate's namespace." The entry therefore keeps PR
+  #255's role identity (`observerId`) and registers a new implementation
+  identity, so the two cannot both sit in the registry. If PR #255's entry is
+  adopted first, adopting this one is the RFC4-9 replacement and its act names
+  the implementation it retires; otherwise PR #255's entry is not adopted.
+  [Inferred] The shared role name still spells the Agent SDK for historical
+  reasons; renaming it is a change to PR #255's entry, not made here.
 - **Request bytes.** The entry lists them: endpoint `POST /v1/messages`;
-  generator-built parts; the SDK-fixed headers and `stream`; and a profile it
+  generator-built parts; the SDK-fixed headers (every value a literal or a
+  shape, `x-stainless-timeout` the literal 600) and `stream`; three headers
+  that Node's built-in fetch sets, not the SDK, with Node unpinned; and a profile it
   pins itself (model `claude-opus-5-5`, tools absent, effort `high`, thinking
   off or adaptive only, a max_tokens ceiling of 64000). The route has no
   runtime process, so no system prefix, metadata, environment message or probe.
@@ -45,6 +57,17 @@ authority as PR #255's entry: project `project:syzygy`, provider
   to a log. The name cannot start with `ANTHROPIC_`: [Observed] the adapter
   refuses to start when any such variable is set in the process.
   No owner sign-in credential class exists on this route.
+- **Destination.** Exactly `https://api.anthropic.com/v1/messages`, POST. The
+  gate rule that its configured upstream equals that origin, refusing any
+  other scheme, host or port, is the entry's statement of what the
+  implementation will enforce; the gate at the cited commit accepts any
+  upstream URL, and the rule is on PR #258's fix list [Inferred].
+- **SDK environment.** The client library reads `ANTHROPIC_`-prefixed
+  variables of its own (an auth token, custom headers, a log level that can
+  write the request body to the console, a base URL). The entry declares each
+  as an input that must be unset, fail-closed; the adapter's refusal of any
+  such variable is present at the cited commit and was absent at the commit
+  round 1 read.
 - **Runtime egress gate.** A loopback forwarder passes a request only when the
   acceptance predicate holds, `permitted()` is true and an explicit upstream
   is set; otherwise it answers 403. Provenance is pinned by commit and blob
