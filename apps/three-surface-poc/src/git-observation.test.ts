@@ -190,5 +190,10 @@ describe('read-only Git observation', () => {
     expect(observeObservatoryDrift(root, build)).toEqual({ buildRevision: build, currentRevision: head, commitsSinceBuild: 2 });
     expect(observeObservatoryDrift(root, 'f'.repeat(40))).toEqual({ buildRevision: 'f'.repeat(40), currentRevision: head, commitsSinceBuild: null });
     expect(observeObservatoryDrift(root, build, { runGit: () => { throw new Error('unreadable'); } })).toEqual({ buildRevision: build, currentRevision: null, commitsSinceBuild: null });
+    // A count git did not give as a non-negative integer is Unknown, never zero (syzygy-5oi3, M4).
+    for (const reply of ['', 'not-a-count', '1.5', '-1']) {
+      const runGit = (_root: string, args: readonly string[]): string => (args[0] === 'rev-parse' ? `${head}\n` : `${reply}\n`);
+      expect(observeObservatoryDrift(root, build, { runGit }), JSON.stringify(reply)).toEqual({ buildRevision: build, currentRevision: head, commitsSinceBuild: null });
+    }
   });
 });
