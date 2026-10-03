@@ -12,6 +12,9 @@ read; [Unknown] was not run or has no evidence. The `poc:dossier` wiring is PR
 it has been run against a real provider; every command that depends on it is
 marked [Unknown] until PR 334 merges, and this page must be re-checked then.
 
+**You need an Anthropic API key, whichever route you choose.** Neither route
+uses a Claude login or subscription; the run is billed to the API account.
+
 ## 1. What must be in force first
 
 `poc:dossier` refuses to start unless these exist as performed owner acts
@@ -84,7 +87,7 @@ the adapter and written to no file or log [Observed in `dossier-main.ts`].
 
 ```
 export SYZYGY_POLARIS_PROVIDER_API_KEY=...
-npm run poc:dossier -- https://github.com/redis/redis --route agent-sdk --out ~/dossiers/redis-1
+npm run poc:dossier -- https://github.com/redis/redis/tree/8.10.2 --route agent-sdk --out ~/dossiers/redis-1
 ```
 
 [Unknown] until PR 334 merges. The real flags at its head are:
@@ -92,7 +95,13 @@ npm run poc:dossier -- https://github.com/redis/redis --route agent-sdk --out ~/
 - the URL, positional: `https://github.com/<owner>/<repo>` or
   `.../tree/<ref>` (a tag or branch; a bare commit id is refused because
   `ls-remote` cannot confirm it). Without a ref the default branch tip is
-  pinned. [Inferred] Use `/tree/8.10.2` to get the revision the consent names.
+  pinned, which no consent names, so the run would stop with exit 3. Use
+  `/tree/8.10.2`: [Observed] the Redis observation consent instance
+  (`public-repo-admission/instances/redis/OBSERVATION-CONSENT.md`) admits tag
+  `8.10.2` as one named full commit id, and `docs/polaris-generation/TARGETS.md`
+  pins the same tag. The command pins the tag with `ls-remote` and checks the
+  consent against the commit it resolves to; if the tag has moved, the consent
+  no longer matches and the run stops with exit 3 before reading anything.
 - `--route agent-sdk` or `--route messages-api`. There is no default and no
   `a`/`b` shorthand.
 - `--out <dir>`: must not exist and must be outside any Git work tree
@@ -122,20 +131,26 @@ npm run poc:dossier -- https://github.com/redis/redis --route agent-sdk --out ~/
    calls.
 5. Render the pages and write the run directory.
 
-Budget [Observed, `dossier-run-profile.ts`; [Inferred] that every figure is a
-proposal from code caps, unmeasured]: 4,000 units in all, where 1 unit is 1,000
-tokens (input, cache and output, rounded up per call; unknown usage counts at
-the call's full ceiling). Discovery may use 1,000 (at most 40 per call, so at
-most 24 map calls and one reduce); the narrative gets 3,000. Per attempt, at
-most 64k output tokens and 600 units on the stages that carry all sources or a
-whole draft, 300 on the others. Wall clock: 2 hours for the whole run, discovery
-included. Model `claude-opus-5-5`, effort `high`, thinking off. When a limit is
-reached the run stops and renders what is complete.
+Budget [Observed in `dossier-run-profile.ts` at `d6601785`; [Inferred] every
+figure is a proposal from code caps, unmeasured]: one run profile
+(`DOSSIER_RUN_PROFILE`) holds the run total, the discovery share, the cost cap
+of one discovery call and the wall clock (2 hours, discovery included). Units
+are `dossier-units-v1`: 1 unit is 1,000 tokens (input, cache and output,
+rounded up per call; unknown usage counts at the call's full ceiling). The
+narrative gets the run total minus the discovery share; each stage has a
+per-attempt unit ceiling and an output-token cap; the discovery budget
+(excerpt size, items per call, number of map calls) is derived from the profile
+by `discoveryBudgetFor`. The model, effort and thinking pins are in the same
+profile (effort `high`, thinking off at that head). When a limit is reached the
+run stops and renders what is complete. [Unknown] The figures are being
+redesigned (a total derived from the selection cap) and must be read from the
+profile on the merged code, not from this page.
 
 [Unknown] How long a run takes and what it costs: no provider call has ever
-been made. Two hours is the ceiling, not an estimate. The discovery excerpt
-in the run profile is 800 characters, not the 1,500 of the default budget
-[Observed `DISCOVERY_EXCERPT_CHARS`].
+been made. The wall clock is the ceiling, not an estimate. At `d6601785` the
+profile's discovery excerpt is 800 characters; the lead reports it is being
+raised to the 1,500-character bound with fewer items per call [Unknown until
+merged].
 
 Exit codes [Observed in `dossier-main.ts`]:
 
@@ -186,11 +201,11 @@ it deferred and what was never read.
 - README and docs are sendable only if row 12 is signed, after rows 1 and 7;
   without it "advantages as maintainers state them" rests on licence texts and
   code comments.
-- Discovery excerpts are short (800 characters in the run profile) and heuristic
-  for code; a file whose mechanism lies past its declarations is under-described.
+- Discovery excerpts are short (a few hundred to 1,500 characters, per the
+  profile) and heuristic for code; a file whose mechanism lies past its declarations is under-described.
   Redis is mostly C: the declaration-line rules were measured only on a
   synthetic fixture.
-- The budget figures are proposals, not measurements.
+- The budget figures are proposals, not measurements, and are being redesigned.
 - [Observed] There is no resume. A stopped run keeps its record and state
   directory; it does not continue.
 
