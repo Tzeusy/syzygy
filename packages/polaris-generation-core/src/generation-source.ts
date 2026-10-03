@@ -113,7 +113,7 @@ export function validateGenerationSources(value: readonly GenerationSource[]): r
         || span.start < 0 || span.end <= span.start || span.end > bytes.length) fail('invalid-anchor');
       const slice = bytes.subarray(span.start, span.end);
       let decoded: string;
-      try { decoded = new TextDecoder('utf-8', { fatal: true }).decode(slice); }
+      try { decoded = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(slice); }
       catch { throw new GenerationSourceError('invalid-anchor'); }
       if (decoded !== span.text) fail('body-mismatch');
       if (span.anchorId !== generationAnchorId({ ...source, objectId }, anchorBase + span.start, anchorBase + span.end)) fail('invalid-anchor');
