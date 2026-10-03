@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""Build and verify the inert PWB release-label amendment candidate.
+"""Build and verify the inert PWB class-granular extraction amendment candidate.
 
-The amendment adds a release label to PWB-REQ-001 (bead ``syzygy-l362``):
-Polaris names the observed revision by its nearest release tag, such as
-"Butlers v1.0.23", and keeps the full Git object id beneath it as the identity
-every claim binds to. It follows the tree-framing builder's form: the current
-eleven-artifact PWB behavior package is bound by the tree-framing v1.0
-sign-off. ``--check`` and ``--write`` therefore apply the candidate's
+The amendment narrows PWB-REQ-002's "never a partial item set" contract from
+the whole source to each class of a source (bead ``syzygy-dov.15.1``, move
+M15, ruling P-82): one class's grammar failure no longer withholds the items
+of the classes that read beside it, a heading a list or table row does not
+enumerate is surfaced instead of skipped, and every population rule declares
+whether it needs the root index read. It follows the release-label builder's
+form: the current eleven-artifact PWB behavior package is bound by the
+signed PWB sign-offs, so ``--check`` and ``--write`` apply the candidate's
 ``proposed/*.patch`` files only in a scratch tree and hash those proposed
 bytes. ``--apply --at-adoption`` is the one mode that writes signed subjects;
 it exists for ``scripts/record_versioned_signoff.py`` after an owner's
@@ -18,17 +20,18 @@ candidate commit, review, manifest or merge performs no owner act.
     --selftest   rule-6 mutants: one per structure predicate (a sample of the
                  required phrases, not each one), plus patch drift and an
                  unclassified sibling
-    --write      regenerate the two derived patches (GOVERNING-DEPENDENCIES and
-                 CONTRACT-COVERAGE) and the manifest over the proposed bytes
+    --write      regenerate the derived GOVERNING-DEPENDENCIES patch and the
+                 manifest over the proposed bytes, refusing if CONTRACT-COVERAGE
+                 would change
     --diff       print the proposed patches
     --apply --at-adoption   write the proposed bytes (sign-off change only)
 
-Outside PWB-REQ-001, every requirement block and the text before the
-requirements must survive byte for byte, and no signed line of the proposal,
-the design, the capability table or the contract-coverage repair delta may be
+Outside PWB-REQ-002 and the reader definitions, every requirement block and
+the text before the reader definitions must survive byte for byte. Inside
+them, every signed line must survive except the declared replaced lines, and
+no signed line of the proposal, the design or the capability table may be
 lost, except the two capability count lines that ``capability_findings``
-recomputes and the repair delta's two declared-totals lines, which the
-contract-coverage generator's own ``--check`` recomputes.
+recomputes.
 """
 
 from __future__ import annotations
@@ -51,11 +54,10 @@ import build_polaris_project_wide_spec_dependencies as dependencies  # noqa: E40
 
 CHANGE = pathlib.Path("openspec/changes/polaris-project-wide-butlers-model")
 CANDIDATES = pathlib.Path(".syzygy/governance/contracts/candidates")
-CANDIDATE = CANDIDATES / "pwb-release-label-amendment"
+CANDIDATE = CANDIDATES / "pwb-class-granular-extraction-amendment"
 PROPOSED = CANDIDATE / "proposed"
-MANIFEST = CANDIDATE / "PWB-RELEASE-LABEL-AMENDMENT-MANIFEST.txt"
-MANIFEST_OUT = MANIFEST
-TITLE = "PWB RELEASE-LABEL BEHAVIOR AMENDMENT MANIFEST"
+MANIFEST = CANDIDATE / "PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-MANIFEST.txt"
+TITLE = "PWB CLASS-GRANULAR EXTRACTION AMENDMENT MANIFEST"
 SPEC = CHANGE / "specs/polaris-project-wide-butlers-model/spec.md"
 GOVERNING = CHANGE / "GOVERNING-DEPENDENCIES.md"
 CAPABILITY = CHANGE / "CAPABILITY-COVERAGE.md"
@@ -84,17 +86,18 @@ BEHAVIOR_SUBJECTS = tuple(
         key=lambda path: path.as_posix(),
     )
 )
-REPAIR_DELTA = CHANGE / "CONTRACT-COVERAGE-REPAIR-DELTA.md"
-PATCHED = frozenset({CAPABILITY, REPAIR_DELTA, CONTRACT_COVERAGE, GOVERNING, DESIGN, PROPOSAL, SPEC})
+PATCHED = frozenset({CAPABILITY, GOVERNING, DESIGN, PROPOSAL, SPEC})
 #: Subjects whose proposed bytes are generated from the others, never authored.
-DERIVED = frozenset({GOVERNING, CONTRACT_COVERAGE})
+#: CONTRACT-COVERAGE.md is not among them: no warrant or coverage row moves, so
+#: its regeneration over the proposed bytes is byte-identical, and `--write`
+#: refuses if it ever is not.
+DERIVED = frozenset({GOVERNING})
 
 #: Every other candidate package whose spec patch targets the PWB spec, closed:
-#: a sibling is either performed (its record exists in decisions/) or declined
-#: (POLARIS-LANE-B-DECLINED-AND-TARGET-REVISED-DIRECTION.md). An unlisted
-#: sibling fails the check; it may be a pending package this one must compose
-#: with. Performed status is read from the record's existence only, which is
-#: weaker than the tree-framing builder's patch-digest pin.
+#: a sibling is performed (its record exists in decisions/), declined
+#: (POLARIS-LANE-B-DECLINED-AND-TARGET-REVISED-DIRECTION.md) or pending. An
+#: unlisted sibling fails the check; it may be a pending package this one must
+#: compose with. Performed status is read from the record's existence only.
 PERFORMED_SIBLINGS = {
     "pwb-container-shape-profile-amendment": "PWB-CONTAINER-SHAPE-PROFILE-AMENDMENT-SIGNOFF-v1.0.md",
     "pwb-dismissal-expiry-amendment": "PWB-DISMISSAL-EXPIRY-AMENDMENT-SIGNOFF-v1.0.md",
@@ -107,69 +110,100 @@ PERFORMED_SIBLINGS = {
     "pwb-tree-framing-amendment": "PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md",
 }
 DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
-#: Unsigned packages over the same subject. The class-granular extraction
-#: amendment (M15, ``syzygy-dov.15.1``) touches PWB-REQ-002 and the reader
-#: definitions, not PWB-REQ-001, but it also adds design decision 12 and
-#: capability row 34, so whichever is signed second is regenerated over the
-#: first's applied bytes and re-reviewed.
-PENDING_SIBLINGS = frozenset({"pwb-class-granular-extraction-amendment"})
+#: Unsigned packages over the same subject. Each touches other requirements,
+#: but both add design decision 12 and capability row 34, so whichever is
+#: signed second is regenerated over the first's applied bytes and re-reviewed.
+PENDING_SIBLINGS = frozenset({"pwb-release-label-amendment"})
 
-REQ_001 = "PWB-REQ-001"
-#: Load-bearing fragments of the proposed PWB-REQ-001 text. Each must occur
+REQ_002 = "PWB-REQ-002"
+READER_MARK = "\nReader definitions:\n"
+#: Load-bearing fragments of the proposed reader definitions. Each must occur
 #: exactly once, whitespace-normalized.
-REQUIRED_ONCE = (
-    "Wherever Polaris names the observed revision, it SHALL lead with that revision's release label",
-    "SHALL show the revision's full Git object id beneath the label, on the same surface and without expanding anything",
-    "They are not a project-shape claim or fact, and they carry no epistemic tuple of their own.",
-    "every claim, evaluation identity, link and comparison binds to it",
-    "nothing binds to a tag name",
-    "The captured tag set is every ref under `refs/tags/`",
-    "Two deterministic evaluation inputs, each with an identity of its own, feed the label.",
-    "no tag message or signature is read into the model or rendered",
-    "A tag that peels to anything but a commit reaches no revision.",
-    "It is complete only when every commit in that history was read",
-    "The label takes exactly one of four forms.",
-    "**Not read**, when the captured ancestry is incomplete.",
-    "They are named in its inputs by evaluation identity",
-    "It never states that the revision is untagged.",
-    "the name of the reaching tag with the least distance",
-    "every tied name is carried in the machine answer",
-    "SHALL be disclosed as moved wherever a label names that tag",
-    "Nothing presents a tag as unmoved.",
-    "so every label value Polaris presents is recoverable from it",
-    "Expected labels come from the checker's own Git listing of each fixture",
-    "an uncaptured tag set or incomplete ancestry stated as untagged",
-    "The count of those sites is the denominator.",
-    "zero occurrences of the tag message",
+READER_REQUIRED_ONCE = (
+    "Each rule declares whether it needs the root index read",
+    "The pillar-root and pillar-index rules need the root index; the baseline-spec and roster rules, whose path patterns these definitions write, do not.",
+    "When the root index was not read, a rule that needs it mints no item",
+    "states that it was derived without a read root index",
+    "it fails the class whose row it reads, in that source",
+    "a heading at that level that no row of the source's grammar declares is an unenumerated heading",
+    "An unenumerated heading mints no item and fails nothing",
+    "It is surfaced, never skipped",
+    "with the reason unenumerated-heading and the count of such headings",
+    "a tree population that does not declare it needs the root index",
+    "Each class a source is assigned is read on its own.",
+    "the class yields none of its items from that source. A class that fails never produces a partial item set;",
+    "an unenumerated heading is not a failure, and the items it leaves in place are complete for the headings the row declares.",
+    "A source in which a class fails keeps every other class it is assigned",
+    "is partially extracted: its own item denominator is Unknown",
+    "is Unknown whenever the class is Unknown in any of those sources",
+    "has no class that reads: every class it is assigned has an Unknown item denominator in it.",
 )
-#: Signed PWB-REQ-001 text the amendment keeps.
-KEPT_IN_001 = (
-    "WHEN the POC observes Butlers, it SHALL bind the complete source-path\n"
-    "population to the configured repository's exact Git revision",
-    "#### Scenario: Source population is complete at one revision",
+#: Each of Butlers' two tree populations declares it does not need the root index.
+READER_TREE_PHRASE = "its tree population does not need the root index"
+#: Signed reader-definition lines the amendment replaces, and nothing else.
+READER_REPLACED = (
+    "    `<key>` segment is a single directory name.",
+    "  - A missing heading, malformed row/list/TOML, unexpected duplicate key or",
+    "    ambiguous leading label makes the enclosing source's item denominator",
+    "    Unknown; it never produces a partial item set.",
+    "    openspec/specs/<one-directory>/spec.md; the one directory is the key.",
+    "    `[butler].name` must be non-empty.",
+)
+#: Load-bearing fragments of the proposed PWB-REQ-002 text.
+REQ_REQUIRED_ONCE = (
+    "Each class of a source SHALL be accounted for on its own",
+    "SHALL leave its own item denominator there Unknown without withholding the items of any other class the source reads",
+    "SHALL be surfaced, never skipped",
+    "a count derived without a read root index SHALL say so wherever it is shown",
+    "a source assigned three classes in which one class fails and two read",
+    "holds a tenth level-3 heading",
+    "an observation whose root index was not read",
+    "The comparison is made per source and class",
+    "a failed class's D is Unknown while each sibling's D is known",
+    "an independent scan of each enclosing section finds every unenumerated heading",
+    "a failed class emits a partial population",
+    "a failed class withholds the items of a sibling class that reads",
+    "an unenumerated heading is skipped or mints an item",
+    "a rule that needs the root index mints an item when it was not read",
+)
+#: Signed PWB-REQ-002 lines the amendment replaces, and nothing else.
+REQ_REPLACED = (
+    "- **Falsifier**: the independent extractors disagree, a malformed source emits",
+    "  a partial population, a known source disappears, an admitted item appears twice or",
+    "  loaded profile.",
+    "- **Observable**: per-category identities and reconciling counts are visible in",
+    "  the machine answer and reachable from Polaris.",
+    "  denominator.",
+)
+KEPT_SCENARIOS = (
+    "#### Scenario: Declared shape reconciles",
+    "#### Scenario: Butlers' profile reproduces the written grammar",
+    "#### Scenario: Loaded profile gives one class no row",
+    "#### Scenario: Loaded profile names a shape outside the vocabulary",
+    "#### Scenario: Refused or unread Butlers profile does not fall back",
+    "#### Scenario: Project with no profile has Unknown item denominators",
 )
 NEW_SCENARIOS = (
-    "#### Scenario: A tagged revision leads with its release label",
-    "#### Scenario: A revision no tag reaches is labelled honestly",
-    "#### Scenario: Unread tags are never shown as untagged",
-    "#### Scenario: A moved tag is disclosed, not trusted",
+    "#### Scenario: A failing class keeps its siblings",
+    "#### Scenario: An unenumerated heading is surfaced, not skipped",
+    "#### Scenario: Counts derived without a read root index say so",
 )
-#: Contracts PWB-REQ-001 must newly warrant; read from its warrants block.
-WARRANT_CONTRACTS = frozenset({"RFC2-2", "RFC2-24"})
-WARRANT_RE = re.compile(r"^  contracts: \[([^\]\n]*)\]$", re.MULTILINE)
-REPAIR_ROWS = (
-    "| RFC4-11.r1 | RFC4-11.c4 | RFC4-11 | A count over commit history is computed only from completely captured ancestry and is never reconstructed from history the adapter cannot reach | covered:PWB-REQ-001 |",
-    "| RFC4-11.r2 | RFC4-11.c4 | RFC4-11 | Squash/deletion loss becomes reduced-fidelity PR facts | believed-not-applicable |",
+WARRANTS_002 = (
+    "```yaml\nwarrants:\n  primary: VIS-2\n  doctrine: [VIS-1, VIS-2, VIS-7]\n"
+    "  contracts: [RFC1-14, RFC2-23, RFC6-16, RFC6-17, RFC7-15]\n"
+    "  policies: [CC-SPEC-4, CC-SPEC-11, CC-TEST-5, CC-TEST-6]\n"
 )
-REPAIR_TOTALS_LINES = (
-    "Declared totals: **92 rows; 77 superseded base rows; 60 covered; 27 Unknown",
-    "uncovered; 5 believed not applicable.**",
+CAPABILITY_ROW_33 = (
+    "| 33 | Open each group of Syzygy-authored framing with its model-derived "
+    "answer, keep Butlers text verbatim beneath it, and draw supported "
+    "relationships as allow-listed static SVG with a text equivalent, "
+    "disclosing unsupported ones | covered — PWB-REQ-014 |"
 )
 CAPABILITY_ROW = (
-    "| 34 | Lead every human naming of the observed revision with its release "
-    "label, keep the full object id beneath it as the identity claims bind to, "
-    "disclose moved tags, and never state unread tags or incomplete history as untagged | "
-    "covered — PWB-REQ-001 |"
+    "| 34 | Account for each class of a source on its own: a failing class "
+    "leaves only itself Unknown, a heading the grammar does not enumerate is "
+    "surfaced rather than skipped, and a count made without a read root index "
+    "says so | covered — PWB-REQ-002 |"
 )
 CAPABILITY_COUNT_LINES = re.compile(r"^(?:Population: \d+ positive|Totals: )")
 CAPABILITY_ROW_RE = re.compile(r"^\| (\d+) \| [^\n]* \| ([^|\n]+) \|$", re.MULTILINE)
@@ -178,13 +212,15 @@ TOTALS_RE = re.compile(
     re.MULTILINE,
 )
 POPULATION_RE = re.compile(r"^Population: (\d+) positive", re.MULTILINE)
-PROPOSAL_PHRASE = "- **The revision reads as a release.**"
+PROPOSAL_PHRASE = "  - Each class of a source is read on its own:"
 DESIGN_PHRASES = (
-    "### 12. Name the revision by its release label",
-    "until a registry amendment does, every label takes the not-read form.",
+    "### 12. Read each class of a source on its own",
+    "- **Root independence.** Rules 1 and 2 need the root index read;",
+    "*partially extracted*",
+    "No `catalog-count` declaration is minted for it; that family stays closed at nine.",
+    "Butlers' baseline-spec and roster rules declare that they do not need it, so its manifest admits the same sources as before.",
 )
 
-ROW_RE = re.compile(r"^([0-9a-f]{64})  ([^\n]+)$", re.MULTILINE)
 DIFF_TARGET_RE = re.compile(r"^\+\+\+ b/(.+)$", re.MULTILINE)
 SOURCE_RE = re.compile(r"^> Source: `spec\.md` sha256 `([0-9a-f]{64})` — ", re.MULTILINE)
 
@@ -282,38 +318,6 @@ def requirement_blocks(spec: str) -> tuple[str, list[tuple[str, str]]]:
     return head + marker + parts[0], blocks
 
 
-def spec_findings(proposed: bytes, current: bytes) -> list[str]:
-    try:
-        new_head, new_blocks = requirement_blocks(proposed.decode("utf-8"))
-        old_head, old_blocks = requirement_blocks(current.decode("utf-8"))
-    except ValueError as error:
-        return [str(error)]
-    findings = []
-    if new_head != old_head:
-        findings.append("the specification text before the requirements changed")
-    if [rid for rid, _ in new_blocks] != [rid for rid, _ in old_blocks]:
-        return findings + ["requirement population or order differs"]
-    old = dict(old_blocks)
-    for rid, block in new_blocks:
-        if rid != REQ_001 and block != old[rid]:
-            findings.append(f"{rid} changed; the amendment touches only PWB-REQ-001")
-    block = dict(new_blocks)[REQ_001]
-    text = flat(block)
-    for phrase in REQUIRED_ONCE:
-        count = text.count(flat(phrase))
-        if count != 1:
-            findings.append(f"PWB-REQ-001 carries {count} copies of required phrase: {phrase[:60]!r}")
-    for phrase in KEPT_IN_001 + NEW_SCENARIOS:
-        if block.count(phrase) != 1:
-            findings.append(f"PWB-REQ-001 lacks exactly one: {phrase.splitlines()[0][:60]!r}")
-    warrants = WARRANT_RE.search(block)
-    cited = {item.strip() for item in warrants.group(1).split(",")} if warrants else set()
-    missing = sorted(WARRANT_CONTRACTS - cited)
-    if missing:
-        findings.append(f"PWB-REQ-001 warrants omit {', '.join(missing)}")
-    return findings
-
-
 def lost_lines(old: str, new: str, skip=lambda line: False) -> list[str]:
     remaining = collections.Counter(new.split("\n"))
     lost = []
@@ -327,6 +331,51 @@ def lost_lines(old: str, new: str, skip=lambda line: False) -> list[str]:
     return lost
 
 
+def once_findings(where: str, text: str, phrases: tuple[str, ...]) -> list[str]:
+    flattened = flat(text)
+    return [
+        f"{where} carries {flattened.count(flat(phrase))} copies of required phrase: {phrase[:60]!r}"
+        for phrase in phrases
+        if flattened.count(flat(phrase)) != 1
+    ]
+
+
+def spec_findings(proposed: bytes, current: bytes) -> list[str]:
+    try:
+        new_head, new_blocks = requirement_blocks(proposed.decode("utf-8"))
+        old_head, old_blocks = requirement_blocks(current.decode("utf-8"))
+    except ValueError as error:
+        return [str(error)]
+    findings = []
+    new_pre, mark, new_reader = new_head.partition(READER_MARK)
+    old_pre, _, old_reader = old_head.partition(READER_MARK)
+    if not mark or new_pre != old_pre:
+        findings.append("the specification text before the reader definitions changed")
+    lost = [line for line in lost_lines(old_reader, new_reader) if line not in READER_REPLACED]
+    if lost:
+        findings.append(f"signed reader-definition line edited or removed: {lost[0]!r}")
+    findings.extend(once_findings("the reader definitions", new_reader, READER_REQUIRED_ONCE))
+    if flat(new_reader).count(READER_TREE_PHRASE) != 2:
+        findings.append("the reader definitions do not exempt exactly Butlers' two tree populations")
+    if [rid for rid, _ in new_blocks] != [rid for rid, _ in old_blocks]:
+        return findings + ["requirement population or order differs"]
+    old = dict(old_blocks)
+    for rid, block in new_blocks:
+        if rid != REQ_002 and block != old[rid]:
+            findings.append(f"{rid} changed; the amendment touches only PWB-REQ-002")
+    block = dict(new_blocks)[REQ_002]
+    lost = [line for line in lost_lines(old[REQ_002], block) if line not in REQ_REPLACED]
+    if lost:
+        findings.append(f"signed PWB-REQ-002 line edited or removed: {lost[0]!r}")
+    findings.extend(once_findings("PWB-REQ-002", block, REQ_REQUIRED_ONCE))
+    for phrase in KEPT_SCENARIOS + NEW_SCENARIOS:
+        if block.count(phrase) != 1:
+            findings.append(f"PWB-REQ-002 lacks exactly one: {phrase[:60]!r}")
+    if block.count(WARRANTS_002) != 1:
+        findings.append("PWB-REQ-002 warrants changed")
+    return findings
+
+
 def capability_findings(proposed: bytes, current: bytes) -> list[str]:
     new, old = proposed.decode("utf-8"), current.decode("utf-8")
     findings = []
@@ -334,7 +383,7 @@ def capability_findings(proposed: bytes, current: bytes) -> list[str]:
     if lost:
         findings.append(f"signed capability line edited or removed: {lost[0]!r}")
     if new.count(CAPABILITY_ROW) != 1:
-        findings.append("capability row 34 for the release label is missing")
+        findings.append("capability row 34 for class-granular extraction is missing")
     rows = CAPABILITY_ROW_RE.findall(new)
     covered = sum(1 for _, d in rows if d.strip().startswith("covered"))
     scoped = sum(1 for _, d in rows if d.strip().startswith("lawfully out of scope"))
@@ -351,18 +400,6 @@ def capability_findings(proposed: bytes, current: bytes) -> list[str]:
     return findings
 
 
-def repair_findings(proposed: bytes, current: bytes) -> list[str]:
-    new, old = proposed.decode("utf-8"), current.decode("utf-8")
-    findings = []
-    lost = lost_lines(old, new, lambda line: line in REPAIR_TOTALS_LINES)
-    if lost:
-        findings.append(f"signed repair-delta line edited or removed: {lost[0]!r}")
-    for row in REPAIR_ROWS:
-        if new.count(row) != 1:
-            findings.append(f"repair row missing: {row.split(' | ')[0][2:]}")
-    return findings
-
-
 def companion_findings(proposed: dict[pathlib.Path, bytes], current: dict[pathlib.Path, bytes]) -> list[str]:
     findings = []
     for rel in (PROPOSAL, DESIGN):
@@ -370,7 +407,7 @@ def companion_findings(proposed: dict[pathlib.Path, bytes], current: dict[pathli
         if lost:
             findings.append(f"signed {rel.name} line edited or removed: {lost[0]!r}")
     if PROPOSAL_PHRASE not in proposed[PROPOSAL].decode("utf-8"):
-        findings.append("proposal does not carry the release-label bullet")
+        findings.append("proposal does not carry the class-granular bullet")
     design = flat(proposed[DESIGN].decode("utf-8"))
     for phrase in DESIGN_PHRASES:
         if flat(phrase) not in design:
@@ -429,8 +466,7 @@ def coverage_findings(proposed: dict[pathlib.Path, bytes]) -> list[str]:
 
 
 def regenerate_coverage_patch() -> str:
-    semantic = [p for p in patch_files() if patch_target(p) not in DERIVED]
-    proposed = proposed_bytes(patches=semantic)
+    proposed = proposed_bytes(patches=[p for p in patch_files() if patch_target(p) not in DERIVED])
     proposed = {**proposed, GOVERNING: dependencies.generate(proposed[SPEC].decode("utf-8"))[0].encode()}
     result, generated = run_coverage(proposed)
     if result.returncode != 0:
@@ -444,7 +480,6 @@ def structure_findings(
     return (
         spec_findings(proposed[SPEC], current[SPEC])
         + capability_findings(proposed[CAPABILITY], current[CAPABILITY])
-        + repair_findings(proposed[REPAIR_DELTA], current[REPAIR_DELTA])
         + companion_findings(proposed, current)
         + generated_findings(proposed)
     )
@@ -495,7 +530,7 @@ def check(patches: list[pathlib.Path] | None = None) -> tuple[list[str], dict[pa
     except ValueError as error:
         return [str(error)], None
     if set(targets) != PATCHED or len(targets) != len(PATCHED):
-        findings.append("patch targets differ from the closed seven-subject population")
+        findings.append("patch targets differ from the closed five-subject population")
     try:
         proposed = proposed_bytes(patches=patches)
     except ValueError as error:
@@ -529,54 +564,67 @@ def selftest() -> int:
     if baseline:
         print(f"SELFTEST FAILED: the package does not verify before mutation: {baseline}")
         return 1
+    spec = proposed[SPEC]
     mutants = {
         "other requirement drift": (
-            SPEC, _replace(proposed[SPEC], "### Requirement: PWB-REQ-002 — Every declared project-shape item is accounted for\n", "### Requirement: PWB-REQ-002 — Every declared project-shape item is counted\n"),
-            "PWB-REQ-002 changed",
+            SPEC, _replace(spec, "### Requirement: PWB-REQ-003 — Missing, unreadable and excluded sources remain visible\n", "### Requirement: PWB-REQ-003 — Missing sources remain visible\n"),
+            "PWB-REQ-003 changed",
         ),
         "preamble drift": (
-            SPEC, _replace(proposed[SPEC], "## Purpose\n", "## Purpose (amended)\n"),
-            "the specification text before the requirements changed",
+            SPEC, _replace(spec, "## Purpose\n", "## Purpose (amended)\n"),
+            "the specification text before the reader definitions changed",
         ),
-        "object id no longer beneath": (
-            SPEC, _replace(proposed[SPEC], "and SHALL show the revision's full\n  Git object id beneath the label", "and MAY show the revision's full\n  Git object id near the label"),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+        "signed reader line edited": (
+            SPEC, _replace(spec, "  - Narrative links do not recurse.\n", "  - Narrative links recurse once.\n"),
+            "signed reader-definition line edited or removed",
         ),
-        "unread shown as untagged": (
-            SPEC, _replace(proposed[SPEC], "It never\n  states that the revision is untagged.", "It may\n  state that the revision is untagged."),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+        "whole-source discard restored": (
+            SPEC, _replace(spec, "keeps every other class it is assigned", "keeps no other class it is assigned"),
+            "the reader definitions carries 0 copies of required phrase",
         ),
-        "tag message read": (
-            SPEC, _replace(proposed[SPEC], "no tag\n    message or signature is read into the model or rendered", "the tag\n    message is rendered"),
-            "PWB-REQ-001 carries 0 copies of required phrase",
+        "partial class set allowed": (
+            SPEC, _replace(spec, "A\n    class that fails never produces a partial item set;", "A\n    class that fails may produce a partial item set;"),
+            "the reader definitions carries 0 copies of required phrase",
+        ),
+        "unenumerated heading skipped": (
+            SPEC, _replace(spec, "It is surfaced, never skipped:", "It is skipped:"),
+            "the reader definitions carries 0 copies of required phrase",
+        ),
+        "tree flag default flipped": (
+            SPEC, _replace(spec, "a tree population that does not declare it needs the root\n    index.", "a tree population that does not declare it does not need\n    the root index."),
+            "the reader definitions carries 0 copies of required phrase",
+        ),
+        "roster exemption dropped": (
+            SPEC, _replace(spec, "must be non-empty; its tree population does not need the\n    root index.", "must be non-empty."),
+            "the reader definitions do not exempt exactly Butlers' two tree populations",
+        ),
+        "falsifier limb dropped": (
+            SPEC, _replace(spec, "a failed class withholds the items of a sibling class\n  that reads, ", ""),
+            "PWB-REQ-002 carries 0 copies of required phrase",
+        ),
+        "per-class oracle dropped": (
+            SPEC, _replace(spec, "The comparison is made per source and class:", "The comparison is made per source:"),
+            "PWB-REQ-002 carries 0 copies of required phrase",
+        ),
+        "signed PWB-REQ-002 line edited": (
+            SPEC, _replace(spec, "Group: Coverage. Form: **invariant**.\n", "Group: Coverage. Form: **sweep**.\n"),
+            "signed PWB-REQ-002 line edited or removed",
         ),
         "signed scenario dropped": (
-            SPEC, _replace(proposed[SPEC], "#### Scenario: Source population is complete at one revision", "#### Scenario: Source population is complete"),
-            "PWB-REQ-001 lacks exactly one",
+            SPEC, _replace(spec, "#### Scenario: Loaded profile gives one class no row", "#### Scenario: Loaded profile gives a class no row"),
+            "PWB-REQ-002 lacks exactly one",
         ),
         "new scenario dropped": (
-            SPEC, _replace(proposed[SPEC], "#### Scenario: A moved tag is disclosed, not trusted", "#### Scenario: A moved tag"),
-            "PWB-REQ-001 lacks exactly one",
+            SPEC, _replace(spec, "#### Scenario: A failing class keeps its siblings", "#### Scenario: A failing class"),
+            "PWB-REQ-002 lacks exactly one",
         ),
         "warrant dropped": (
-            SPEC, _replace(proposed[SPEC], "RFC2-1, RFC2-2, RFC2-24, RFC4-1", "RFC2-1, RFC2-2, RFC4-1"),
-            "PWB-REQ-001 warrants omit RFC2-24",
-        ),
-        "ancestry limb dropped": (
-            SPEC, _replace(proposed[SPEC], "  3. **Not read**, when the captured ancestry is incomplete.\n", ""),
-            "PWB-REQ-001 carries 0 copies of required phrase",
-        ),
-        "repair row dropped": (
-            REPAIR_DELTA, _replace(proposed[REPAIR_DELTA], REPAIR_ROWS[0] + "\n", ""),
-            "repair row missing: RFC4-11.r1",
-        ),
-        "signed repair row edited": (
-            REPAIR_DELTA, _replace(proposed[REPAIR_DELTA], "| RFC2-1.r2 | RFC2-1.c12 |", "| RFC2-1.r2 | RFC2-1.c13 |"),
-            "signed repair-delta line edited or removed",
+            SPEC, _replace(spec, "  contracts: [RFC1-14, RFC2-23, RFC6-16, RFC6-17, RFC7-15]\n  policies: [CC-SPEC-4, CC-SPEC-11, CC-TEST-5, CC-TEST-6]\n", "  contracts: [RFC1-14, RFC6-16, RFC6-17, RFC7-15]\n  policies: [CC-SPEC-4, CC-SPEC-11, CC-TEST-5, CC-TEST-6]\n"),
+            "PWB-REQ-002 warrants changed",
         ),
         "capability row dropped": (
             CAPABILITY, _replace(proposed[CAPABILITY], CAPABILITY_ROW + "\n", ""),
-            "capability row 34 for the release label is missing",
+            "capability row 34 for class-granular extraction is missing",
         ),
         "capability totals drift": (
             CAPABILITY, _replace(proposed[CAPABILITY], "Totals: 28 covered", "Totals: 29 covered"),
@@ -591,11 +639,11 @@ def selftest() -> int:
             "signed proposal.md line edited or removed",
         ),
         "proposal bullet dropped": (
-            PROPOSAL, _replace(proposed[PROPOSAL], PROPOSAL_PHRASE, "- **The revision.**"),
-            "proposal does not carry the release-label bullet",
+            PROPOSAL, _replace(proposed[PROPOSAL], PROPOSAL_PHRASE, "  - Classes are read:"),
+            "proposal does not carry the class-granular bullet",
         ),
-        "design read-authority sentence dropped": (
-            DESIGN, _replace(proposed[DESIGN], "every label takes\n  the not-read form.", "labels are read."),
+        "design catalog-count sentence dropped": (
+            DESIGN, _replace(proposed[DESIGN], "No `catalog-count` declaration is minted for it;", "A `catalog-count` declaration is minted for it;"),
             "design lacks",
         ),
         "signed design line edited": (
@@ -603,7 +651,7 @@ def selftest() -> int:
             "signed design.md line edited or removed",
         ),
         "dependency drift": (
-            GOVERNING, _replace(proposed[GOVERNING], "PWB-REQ-001", "PWB-REQ-000"),
+            GOVERNING, _replace(proposed[GOVERNING], "PWB-REQ-002", "PWB-REQ-000"),
             "proposed GOVERNING-DEPENDENCIES differs from regeneration",
         ),
     }
@@ -622,7 +670,11 @@ def selftest() -> int:
     with tempfile.TemporaryDirectory() as temp:
         drifted = pathlib.Path(temp) / "spec.md.patch"
         text = spec_patch.read_text(encoding="utf-8")
-        drifted.write_text(text.replace("\n scope, capture instant and observer identity/version.", "\n scope and observer identity/version.", 1), encoding="utf-8")
+        mutated_text = text.replace("\n   - Narrative links do not recurse.", "\n   - Narrative links recurse.", 1)
+        if mutated_text == text:
+            print("SELFTEST FAILED: patch-drift fixture matched nothing")
+            failed += 1
+        drifted.write_text(mutated_text, encoding="utf-8")
         others = [p for p in patch_files() if p.name != "spec.md.patch"]
         findings, _ = check(others + [drifted])
         if not any("does not apply" in finding for finding in findings):
@@ -651,10 +703,11 @@ def selftest() -> int:
 def write() -> int:
     governing = ROOT / PROPOSED / "GOVERNING-DEPENDENCIES.md.patch"
     governing.write_text(regenerate_governing_patch(), encoding="utf-8")
-    coverage = ROOT / PROPOSED / "CONTRACT-COVERAGE.md.patch"
-    coverage.write_text(regenerate_coverage_patch(), encoding="utf-8")
+    if regenerate_coverage_patch():
+        print("refusing: CONTRACT-COVERAGE.md would change; declare it a patched subject first")
+        return 1
     (ROOT / MANIFEST).write_text(render_manifest(proposed_bytes()), encoding="utf-8")
-    print(f"wrote the two derived patches and {MANIFEST}")
+    print(f"wrote the derived GOVERNING-DEPENDENCIES patch and {MANIFEST}")
     return 0
 
 
@@ -701,7 +754,7 @@ def main(argv: list[str]) -> int:
         return 2
     findings, proposed = check()
     if findings:
-        print("RELEASE-LABEL CANDIDATE FINDINGS:")
+        print("CLASS-GRANULAR CANDIDATE FINDINGS:")
         for finding in findings:
             print(f"  {finding}")
         return 1
@@ -709,7 +762,7 @@ def main(argv: list[str]) -> int:
     _, blocks = requirement_blocks(proposed[SPEC].decode("utf-8"))
     scenarios = proposed[SPEC].decode("utf-8").count("\n#### Scenario: ")
     print(
-        f"release-label candidate matches {len(BEHAVIOR_SUBJECTS)} proposed subjects "
+        f"class-granular candidate matches {len(BEHAVIOR_SUBJECTS)} proposed subjects "
         f"({len(PATCHED)} patched); {len(blocks)} requirements, {scenarios} scenarios; "
         "structure, regeneration, contract coverage and sibling classification verify"
     )
