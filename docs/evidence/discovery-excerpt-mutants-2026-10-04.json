@@ -1,0 +1,254 @@
+{
+  "measuredOn": "synthetic fixture and unit fixtures only",
+  "commit": "3e6c7c19b3f897dd1c79145773e975b42dbe09ef",
+  "testFiles": [
+    "packages/polaris-generation-core/src/excerpt",
+    "packages/polaris-generation-core/src/discovery",
+    "apps/three-surface-poc/src/polaris-generation/redis-shaped"
+  ],
+  "mutants": [
+    {
+      "id": "licence-marker-copyright",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "'Copyright', 'SPDX",
+      "new": "'SPDX",
+      "outcome": "killed",
+      "failingTests": 13,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/discovery.test.ts > map excerpts are file bytes only; kind and ranges stay in the local receipt (syzygy-qyez) > sends exact"
+    },
+    {
+      "id": "licence-marker-spdx",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "'SPDX-License-Identifier', ",
+      "new": "",
+      "outcome": "killed",
+      "failingTests": 3,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: a leading licence comment is skipped, by literal markers > lists exactly the four literal marker"
+    },
+    {
+      "id": "licence-marker-permission",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "'Permission is hereby granted', ",
+      "new": "",
+      "outcome": "killed",
+      "failingTests": 2,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: a leading licence comment is skipped, by literal markers > lists exactly the four literal marker"
+    },
+    {
+      "id": "licence-marker-licensed-under",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": ", 'Licensed under'",
+      "new": "",
+      "outcome": "killed",
+      "failingTests": 2,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: a leading licence comment is skipped, by literal markers > lists exactly the four literal marker"
+    },
+    {
+      "id": "marker-case-insensitive",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "line.text.includes(marker)",
+      "new": "line.text.toLowerCase().includes(marker.toLowerCase())",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: a leading licence comment is skipped, by literal markers > matches markers case-sensitively: a l"
+    },
+    {
+      "id": "doc-share-whole-budget",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "DOC_COMMENT_SHARE_PERCENT = 40",
+      "new": "DOC_COMMENT_SHARE_PERCENT = 100",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: declarations by literal line patterns > cuts the doc comment at its share of the budget and a lo"
+    },
+    {
+      "id": "doc-share-not-applied",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "Math.min(maxChars, Math.floor(maxChars * DOC_COMMENT_SHARE_PERCENT / 100))",
+      "new": "maxChars",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: declarations by literal line patterns > cuts the doc comment at its share of the budget and a lo"
+    },
+    {
+      "id": "declaration-line-not-cut",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "const text = cut(line.text, DECLARATION_LINE_MAX);",
+      "new": "const text = line.text;",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: declarations by literal line patterns > cuts the doc comment at its share of the budget and a lo"
+    },
+    {
+      "id": "prototype-kept-in-source-files",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "(isHeaderFile || !t.trimEnd().endsWith(';'))",
+      "new": "true",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: declarations by literal line patterns > keeps a prototype in a header and drops it in a source f"
+    },
+    {
+      "id": "prototype-dropped-in-headers",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "(isHeaderFile || !t.trimEnd().endsWith(';'))",
+      "new": "!t.trimEnd().endsWith(';')",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: declarations by literal line patterns > keeps a prototype in a header and drops it in a source f"
+    },
+    {
+      "id": "single-token-call-taken-as-function",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "&& /\\s/u.test(before.trim())",
+      "new": "",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: declarations by literal line patterns > ignores indented lines, closing braces, includes, calls,"
+    },
+    {
+      "id": "range-merge-across-crlf",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "start - last[1] <= 1",
+      "new": "start - last[1] <= 2",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: ranges are exact UTF-8 byte ranges of the text it was handed > count bytes, not characters, with"
+    },
+    {
+      "id": "range-never-merges",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "start - last[1] <= 1",
+      "new": "start - last[1] <= 0",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: ranges are exact UTF-8 byte ranges of the text it was handed > merge neighbouring lines into one"
+    },
+    {
+      "id": "range-base-offset-dropped",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "base + segment.start, base + segment.end",
+      "new": "segment.start, segment.end",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: ranges are exact UTF-8 byte ranges of the text it was handed > are blob-absolute: a piece that s"
+    },
+    {
+      "id": "range-counts-characters-not-bytes",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "end: line.start + Buffer.byteLength(text, 'utf8') });\n    used += cost;",
+      "new": "end: line.start + text.length });\n    used += cost;",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: ranges are exact UTF-8 byte ranges of the text it was handed > count bytes, not characters, with"
+    },
+    {
+      "id": "separator-cost-not-counted",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "text.length + (segments.length > 0 ? 1 : 0)",
+      "new": "text.length",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: declarations by literal line patterns > cuts the doc comment at its share of the budget and a lo"
+    },
+    {
+      "id": "segments-joined-with-blank-line",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "segments.map(segment => segment.text).join('\\n')",
+      "new": "segments.map(segment => segment.text).join('\\n\\n')",
+      "outcome": "killed",
+      "failingTests": 9,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/discovery.test.ts > map excerpts are file bytes only; kind and ranges stay in the local receipt (syzygy-qyez) > sends exact"
+    },
+    {
+      "id": "fallback-on-no-segments-not-no-declarations",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "if (declarations === 0) {",
+      "new": "if (segments.length === 0) {",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: declarations by literal line patterns > falls back: opening text after the licence when no decla"
+    },
+    {
+      "id": "byte-order-mark-not-ignored",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": ".replace(/^\\uFEFF/u, '')",
+      "new": "",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: a leading licence comment is skipped, by literal markers > is not fooled by a byte-order mark be"
+    },
+    {
+      "id": "doc-comment-allowed-after-first-function",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "!docTaken && structural === 0 &&",
+      "new": "!docTaken &&",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: declarations by literal line patterns > takes the doc comment only before the first function or "
+    },
+    {
+      "id": "licence-range-not-recorded",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "licenceSkipped: skipped === null ? null : [base + skipped[0], base + skipped[1]],",
+      "new": "licenceSkipped: null,",
+      "outcome": "killed",
+      "failingTests": 10,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/discovery.test.ts > map excerpts are file bytes only; kind and ranges stay in the local receipt (syzygy-qyez) > records the"
+    },
+    {
+      "id": "licence-range-without-base",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": "[base + skipped[0], base + skipped[1]]",
+      "new": "[skipped[0], skipped[1]]",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: ranges are exact UTF-8 byte ranges of the text it was handed > state the skipped licence comment"
+    },
+    {
+      "id": "range-count-unbounded",
+      "file": "packages/polaris-generation-core/src/excerpt.ts",
+      "old": ".slice(0, MAX_EXCERPT_RANGES)",
+      "new": "",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/excerpt.test.ts > excerpt: ranges are exact UTF-8 byte ranges of the text it was handed > are capped at the range limit whe"
+    },
+    {
+      "id": "first-piece-by-list-order",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "[...blob.pieces].sort((a, b) => (a.segment?.index ?? 0) - (b.segment?.index ?? 0))[0]!",
+      "new": "blob.pieces[0]!",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/discovery.test.ts > map excerpts are file bytes only; kind and ranges stay in the local receipt (syzygy-qyez) > reads an ov"
+    },
+    {
+      "id": "discovery-reports-head-always",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "kind: excerpt.kind, ranges",
+      "new": "kind: 'head' as const, ranges",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/discovery.test.ts > map excerpts are file bytes only; kind and ranges stay in the local receipt (syzygy-qyez) > records the"
+    },
+    {
+      "id": "discovery-audit-ranges-dropped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "ranges: excerpt.ranges, licenceSkipped",
+      "new": "ranges: [], licenceSkipped",
+      "outcome": "killed",
+      "failingTests": 1,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/discovery.test.ts > map excerpts are file bytes only; kind and ranges stay in the local receipt (syzygy-qyez) > records the"
+    },
+    {
+      "id": "discovery-sends-whole-body",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "excerpt: excerpt.text })",
+      "new": "excerpt: first.body ?? '' })",
+      "outcome": "killed",
+      "failingTests": 26,
+      "firstFailure": "FAIL  |@syzygy/polaris-generation-core| packages/polaris-generation-core/src/discovery.test.ts > REQ-030 hierarchical budgeted discovery > maps subsystems, reduces across them and selects by the model"
+    }
+  ]
+}

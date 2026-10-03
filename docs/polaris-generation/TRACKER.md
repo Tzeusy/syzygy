@@ -170,6 +170,24 @@ Authorized implementation work (generator implementation authorization,
         selected, selected plus deferred equals the candidates. Evidence
         `docs/evidence/redis-shaped-discovery-2026-10-04.json`;
         `npm run poc:redis-shaped-discovery`.
+  - [x] **Map excerpts that show the mechanism (syzygy-qyez).** The map call
+        saw only a file's first 1,500 characters, which for a C file is its
+        licence header. `buildExcerpt` (`excerpt.ts`) now skips a leading
+        comment that carries a literal licence marker, then takes the first
+        top-level doc comment and the column-zero declaration lines (defines,
+        struct/enum/union tags, function signatures) by fixed line patterns,
+        within the same 1,500-character budget for every kind. The excerpt is
+        file bytes only, non-contiguous ranges joined by one newline. The map
+        item stays `{blobId, path, excerpt}`, so the request digest and the
+        provider envelope are unchanged and egress version 2 needs no repair;
+        the excerpt kind, the UTF-8 byte ranges it quotes and the skipped
+        licence range live in the receipt (`excerpts`), never in the request.
+        Measured on the synthetic fixture (header text written from general
+        knowledge): all 190 C files had no code line in the old excerpt; none
+        do now (mean 17 code lines), none repeats the licence comment, and
+        the heuristic selection is unchanged. Evidence
+        `docs/evidence/discovery-excerpt-measurement-2026-10-04.json` and
+        `docs/evidence/discovery-excerpt-mutants-2026-10-04.json`.
   - [x] **Closed exclusion reasons.** `GENERATION_EXCLUSION_REASONS`
         (`generation-source.ts`, a plain literal array) lists every reason an
         excluded source may carry; `validateGenerationSources` refuses any

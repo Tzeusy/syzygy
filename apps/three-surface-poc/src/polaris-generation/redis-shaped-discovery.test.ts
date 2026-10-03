@@ -86,6 +86,42 @@ describe('discovery on a synthetic tree shaped like a large C key-value server',
     expect(wide.report.selected.sources).toBeLessThanOrEqual(200);
   });
 
+  it('gives the map call a declaration-bearing excerpt for every C file: before, the licence header was all it saw (syzygy-qyez)', () => {
+    const { excerpts } = run.measurement;
+    expect(excerpts.codeFiles).toBeGreaterThan(150);
+    // Before: the first 1,500 characters of every C file are the licence block alone.
+    expect(excerpts.before.codeFilesLicenceOnly).toBe(excerpts.codeFiles);
+    expect(excerpts.before.codeFilesWithNoCodeLine).toBe(excerpts.codeFiles);
+    // After: no code file's excerpt lacks a declaration line, and none repeats the licence comment.
+    expect(excerpts.after.codeFilesWithNoCodeLine).toBe(0);
+    expect(excerpts.after.licenceCommentInExcerpt).toBe(0);
+    expect(excerpts.after.meanCodeLines).toBeGreaterThanOrEqual(8);
+    expect(excerpts.after.licenceRangeRecorded).toBe(excerpts.codeFiles);
+    expect(excerpts.byKind['code-declarations']).toBe(excerpts.codeFiles);
+    for (const [role, row] of Object.entries(excerpts.coreMechanisms)) {
+      expect(row.beforeWithCodeLine, role).toBe(0);
+      expect(row.afterWithCodeLine, role).toBe(row.files);
+      expect(row.files, role).toBe(CORE_FILES[role as keyof typeof CORE_FILES].length);
+    }
+  });
+
+  it('leaves the heuristic selection exactly as it was: the excerpt changes what the map call sees, not the ranking without a model', () => {
+    expect(run.measurement.selection.selectedBlobs).toBe(196);
+    for (const [role, paths] of Object.entries(CORE_FILES)) expect(run.measurement.coreMechanisms[role]!.selected, role).toEqual([...paths]);
+  });
+
+  it('shows the sample excerpt: overview comment, then declaration lines, all file bytes, with ranges inside the file', () => {
+    const { sample } = run.measurement.excerpts;
+    expect(sample.before).toContain('Copyright');
+    expect(sample.after.startsWith('/* src/ae.c: synthetic overview.')).toBe(true);
+    expect(sample.licenceSkipped![0]).toBe(0);
+    expect(sample.after).not.toContain('[code excerpt');
+    expect(sample.afterKind).toBe('code-declarations');
+    const size = Buffer.byteLength(redisShapedFiles().get(sample.path)!, 'utf8');
+    expect(sample.afterRanges.length).toBeGreaterThan(0);
+    expect(sample.afterRanges.every(([a, b]) => a >= 0 && b > a && b <= size)).toBe(true);
+  });
+
   it('writes the measurement through the command and refuses to overwrite it', async () => {
     const out = join(scratch, 'measurement.json');
     expect(await main(['--out', out])).toBe(0);

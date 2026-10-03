@@ -2,6 +2,7 @@ import { randomBytes } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 
 import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, MAP_CLAIMS_PER_ITEM, discoverAndSelect, DiscoveryRefusal, heuristicScore, partitionSubsystems, reportFromReceipts, type DiscoveryPorts, type DiscoveryReceipt } from './discovery.js';
+import { digestCanonicalJson } from './canonical-json.js';
 import { generationSourcesForBody, gitBlobObjectId, quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
 
 const make = (path: string, body: string, sourceId?: string): readonly GenerationSource[] =>
@@ -391,5 +392,84 @@ describe('deferred-by-budget ids (syzygy-75ds)', () => {
     for (const id of a) expect(id).toMatch(/^s-[0-9a-f]{24}$/u);
     expect(await deferredIds(key)).toEqual(a);
     expect(await deferredIds(randomBytes(32))).not.toEqual(a);
+  });
+});
+
+describe('map excerpts are file bytes only; kind and ranges stay in the local receipt (syzygy-qyez)', () => {
+  const licence = '/*\n * Copyright (c) 2024, Example\n * Redistribution and use in source and binary forms are permitted.\n */\n';
+  const code = `${licence}/* Core loop. */\nint ae_run(int fd) {\n    return fd;\n}\n`;
+  type Seen = { blobId: string; path: string; excerpt: string };
+  const run = async (sources: readonly GenerationSource[], b = budget): Promise<{ seen: Seen[]; receipts: DiscoveryReceipt[] }> => {
+    const seen: Seen[] = [];
+    const ports = model({ map: async input => { seen.push(...input.items as Seen[]); return mapOf(() => 5)(input); } });
+    await discoverAndSelect(sources, Q, { ...b, maxMapCalls: 5 }, ports);
+    return { seen, receipts: ports.receipts };
+  };
+
+  it('sends exactly blobId, path and excerpt per item, and the excerpt is the file lines without the licence block', async () => {
+    const { seen } = await run(make('src/ae.c', code));
+    expect(Object.keys(seen[0]!).sort()).toEqual(['blobId', 'excerpt', 'path']);
+    expect(seen[0]!.excerpt).toBe('/* Core loop. */\nint ae_run(int fd) {');
+  });
+
+  it('every line of an excerpt is a line of the admitted file: nothing the generator wrote', async () => {
+    const { seen } = await run([...make('src/ae.c', code), ...make('README.md', 'readme\n'.repeat(10))]);
+    const fileLines = new Set([...code.split('\n'), 'readme']);
+    for (const item of seen) for (const line of item.excerpt.split('\n')) expect(fileLines.has(line), line).toBe(true);
+  });
+
+  it('bounds every kind at maxExcerptChars, README included', async () => {
+    const { seen } = await run([...make('README.md', 'r'.repeat(9000)), ...make('Makefile', 'm'.repeat(9000)), ...make('src/a.c', `${licence}${'int f(int x) {\n    return x;\n}\n'.repeat(500)}`)], { ...budget, maxExcerptChars: 120 });
+    expect(seen).toHaveLength(3);
+    for (const item of seen) expect(item.excerpt.length, item.path).toBeLessThanOrEqual(120);
+    expect(seen.find(i => i.path === 'README.md')!.excerpt).toHaveLength(120);
+  });
+
+  it('records the kind, the quoted byte ranges and the skipped licence range in the receipts of the call, as offsets only', async () => {
+    const { receipts } = await run(make('src/ae.c', code));
+    const mapReceipts = receipts.filter(r => r.kind === 'map');
+    expect(mapReceipts.length).toBeGreaterThan(0);
+    for (const receipt of mapReceipts) {
+      expect(receipt.excerpts).toHaveLength(1);
+      const [audit] = receipt.excerpts!;
+      expect(audit).toMatchObject({ kind: 'code-declarations' });
+      expect(audit!.licenceSkipped).toEqual([0, Buffer.byteLength(licence.trimEnd(), 'utf8')]);
+      const bytes = Buffer.from(code, 'utf8');
+      expect(audit!.ranges.map(([a, b]) => bytes.subarray(a, b).toString('utf8')).join('\n')).toBe('/* Core loop. */\nint ae_run(int fd) {');
+      expect(JSON.stringify(audit)).not.toContain('Core loop');
+    }
+  });
+
+  it('keeps the request digest a function of what is sent (subsystem, questions and three-field items): the audit does not move it', async () => {
+    const inputs: unknown[] = [];
+    const ports = model({ map: async input => { inputs.push(input); return mapOf(() => 5)(input); } });
+    await discoverAndSelect(make('src/ae.c', code), Q, budget, ports);
+    const receipt = ports.receipts.find(r => r.kind === 'map')!;
+    expect(receipt.excerpts).toBeDefined();
+    expect(receipt.requestDigest).toBe(digestCanonicalJson(inputs[0], { maxBytes: 50_000_000, maxNodes: 2_000_000, maxDepth: 16 }).digest);
+  });
+
+  it('never offers a screened-out source: its text is in no item and no receipt', async () => {
+    const secret = make('src/secret.c', `${licence}int hidden_symbol(int x) {\n    return x;\n}\n`).map(source => ({
+      ...source, body: undefined, spans: [], exclusion: { excluded: true as const, reason: 'secret-detector' as never } })) as unknown as GenerationSource[];
+    const { seen, receipts } = await run([...make('src/ae.c', code), ...secret]);
+    expect(seen.map(i => i.path)).toEqual(['src/ae.c']);
+    expect(JSON.stringify(seen) + JSON.stringify(receipts)).not.toContain('hidden_symbol');
+  });
+
+  it('reads an oversize file from its first piece whatever order the pieces arrive in', async () => {
+    const big = `${licence}int first_symbol(int x) {\n    return x;\n}\n${'/* filler */\n'.repeat(12_000)}int last_symbol(int x) {\n    return x;\n}\n`;
+    const pieces = make('src/big.c', big);
+    expect(pieces.length).toBeGreaterThan(1);
+    for (const order of [pieces, [...pieces].reverse()]) {
+      const { seen } = await run(order);
+      expect(seen[0]!.excerpt).toContain('int first_symbol(int x) {');
+      expect(seen[0]!.excerpt).not.toContain('last_symbol');
+    }
+  });
+
+  it('is identical across two runs over the same population', async () => {
+    const sources = [...make('src/ae.c', code), ...make('README.md', 'readme text'), ...population(6, 2)];
+    expect((await run(sources)).seen).toEqual((await run(sources)).seen);
   });
 });
