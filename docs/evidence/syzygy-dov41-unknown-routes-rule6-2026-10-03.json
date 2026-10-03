@@ -1,0 +1,342 @@
+{
+  "kind": "rule-6 mutation record and response measurement",
+  "bead": "syzygy-dov.4.1",
+  "authority": "P-71 ruling A (.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md) under PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md; M4 slices 1, 2 and 7 (arm b). Slice 6 not run.",
+  "subject": {
+    "commit": "05c1989e7c33c9c5a1aa928e023a040ede6bbaea",
+    "base": "3311f0a3",
+    "note": "sha256 of each changed file at the commit; the stable anchor if a rebase-merge makes the commit unreachable",
+    "files": {
+      "apps/three-surface-poc/src/exact-tables.ts": "bb6c5044a447bf892b42e60e70fe3d15752726f73f49539f03b01eec3fa104ff",
+      "apps/three-surface-poc/src/materialize-action.ts": "baab89bd86f2b5fe05931659995124bfa34ddc4cac2f15d2892b076f5c2ca47e",
+      "apps/three-surface-poc/src/orrery.ts": "868df1a1ea21483864e0237321f7fda16246e4df456b6476f22627499ca1d77e",
+      "apps/three-surface-poc/src/polaris-copy.test.ts": "c7d7e674ed215591677f89c49c9cc7e22a44e744aadffa7627df96403ac65b5d",
+      "apps/three-surface-poc/src/polaris-copy.ts": "fb9cc2b0d82839a00a04a2efd0dd6fb1c13487111b0327a4ce605151729c2347",
+      "apps/three-surface-poc/src/polaris.test.ts": "7f3779045de95f72a76001331842e88debd359dcd1592f5d6cce3950b03bd57d",
+      "apps/three-surface-poc/src/polaris.ts": "9d6d3ac1153e9b7b57759c0e421f0358def8b5522cf623690dfd486fd08f5ffb",
+      "apps/three-surface-poc/src/pwb-mutation-sweep.ts": "c3a1284b01aa6dfcceea15caebfc1eaca3af112ef257186c8946213cc627a1fa",
+      "apps/three-surface-poc/src/routes.test.ts": "e220deef9ad1ead0a95a5e104f38f46fd19db7dcc648269c095e70fb05bd20d6",
+      "apps/three-surface-poc/src/routes.ts": "3bd4e3d3fa0cbbb595c3272a9778d6cbc9fe79d02f7989386ec218fcfeaa4232",
+      "apps/three-surface-poc/src/surface-links.ts": "80349bfbf7a6ebca78177b0ee0c14161e91454d728297a665997605c6782d645",
+      "apps/three-surface-poc/src/surface-routes.test.ts": "f3c9ac32c76dd8084b9b4c18280e303570818cd977936e8057d8cfb5e0860ad1",
+      "apps/three-surface-poc/src/trajectory.test.ts": "d70b404b2acd9565aa79886fae89d69250497762dc970dd4e83824b69df883a7",
+      "apps/three-surface-poc/src/trajectory.ts": "4402f062e61e33fe903da054b8d63dc82fdd77cd22ac1372f78b36b5ab9c10f5",
+      "apps/three-surface-poc/src/tuple-encoding.test.ts": "811ae5490bf7d0a5870a17755ef2fc0f269fd40a6493d346128ec0749617518c",
+      "apps/three-surface-poc/src/unknown-marker.ts": "9df47fc548b3e5718d98b81e44b0d481cfd0d16915a4629d8ae698588bfcdebe",
+      "apps/three-surface-poc/src/unknown-route-sweep.test.ts": "028088f0ee3776f2f02fcea29abd76fe01aa1c36a5536dcf4cabfdccab77cba2",
+      "packages/three-surface-poc-core/src/index.ts": "086e3313f9a40bc67b990e35387da004424ba99458d890e81cca8d6b54716521",
+      "packages/three-surface-poc-core/src/model.test.ts": "ede7c22c90a7e141c51240e68e6a4b049b9edced3563711e0158f1385923bc9c",
+      "packages/three-surface-poc-core/src/model.ts": "af483428b85ddf9e7feea9414eb4a3c369b145d76ba02593466d20838c88f161",
+      "packages/three-surface-poc-core/src/owner-act-drafter.test.ts": "6eae7d46ac425331a00fc7d52017d0f6fd7b236a77d83d9f75108aef13897afd",
+      "packages/three-surface-poc-core/src/owner-act-drafter.ts": "1dfea09c97b4b342df776a0978ec494d834cfae7d7533e4a6419e5b92cc162e3",
+      "packages/three-surface-poc-core/src/project-shape-model.test.ts": "d87145f4f0f7efb09284df0d1e05b65ced7364bc0fa709e88bc258cbf47c746f",
+      "packages/three-surface-poc-core/src/project-shape-model.ts": "0f8ddad804af0ef25513c522b6df507a23cacaad95c9bdfcef7ca0a3a0cdf206",
+      "packages/three-surface-poc-core/src/proposed-work.test.ts": "20f2faa5a9b03158fe84070d18159241d61374c9a2ffae8fcf9e32cf084edf8d",
+      "packages/three-surface-poc-core/src/proposed-work.ts": "8a8150b7aef2bfada8174f7444f86da73a31b1a1cb892bbfd2a2b849b856156c"
+    }
+  },
+  "mutants": {
+    "commit": "05c1989e7c33c9c5a1aa928e023a040ede6bbaea",
+    "denominator": 17,
+    "killed": 17,
+    "records": [
+      {
+        "id": "S1-polaris-blank-reason",
+        "predicate": "sweep: a Polaris disclosure without its closed reason",
+        "file": "apps/three-surface-poc/src/polaris.ts",
+        "old": "${unknownReasonRef(epistemic.closedReason)}",
+        "new": "${unknownReasonRef('')}",
+        "check": "npx vitest run apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  11 failed | 3 passed (14)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 11 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S1-trajectory-blank-reason",
+        "predicate": "sweep: a Trajectory disclosure without its closed reason",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "data-parity-field=\"work-item-verification\"${unknownMarker(id, unknown)}",
+        "new": "data-parity-field=\"work-item-verification\" data-unknown-disclosure=\"${escapeHtml(id)}\"",
+        "check": "npx vitest run apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  7 failed | 7 passed (14)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 7 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S1-orrery-blank-reason",
+        "predicate": "sweep: an Orrery row disclosure without its closed reason",
+        "file": "apps/three-surface-poc/src/exact-tables.ts",
+        "old": "<span class=\"provenance-none\"${unknownMarker(item.id, item.epistemic)}>",
+        "new": "<span class=\"provenance-none\" data-unknown-disclosure=\"${escapeHtml(item.id)}\">",
+        "check": "npx vitest run apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  10 failed | 4 passed (14)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 10 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S1-thirteenth-reason",
+        "predicate": "sweep: a reason outside the closed twelve",
+        "file": "apps/three-surface-poc/src/unknown-marker.ts",
+        "old": "data-unknown-reason=\"${escapeHtml(epistemic.closedReason)}\"",
+        "new": "data-unknown-reason=\"${escapeHtml(epistemic.closedReason === 'mapping-coverage-absent' ? 'none-modelled' : epistemic.closedReason)}\"",
+        "check": "npx vitest run apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  10 failed | 4 passed (14)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 10 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S1-drop-one-route",
+        "predicate": "sweep: a Trajectory disclosure drops its route",
+        "file": "apps/three-surface-poc/src/trajectory.ts",
+        "old": "Verification: Unknown. ${unknownRoute(unknown)}</span>",
+        "new": "Verification: Unknown.</span>",
+        "check": "npx vitest run apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  7 failed | 7 passed (14)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 7 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S1-bare-provenance-none",
+        "predicate": "sweep: an Orrery row re-emits a bare provenance-none span in place of the marker",
+        "file": "apps/three-surface-poc/src/exact-tables.ts",
+        "old": "<span class=\"provenance-none\"${unknownMarker(item.id, item.epistemic)}>",
+        "new": "<span class=\"provenance-none\">",
+        "check": "npx vitest run apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  6 failed | 8 passed (14)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 6 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S1-model-actionroute-deleted",
+        "predicate": "model: intent-to-work loses its action route",
+        "file": "packages/three-surface-poc-core/src/model.ts",
+        "old": "'missing-evidence', { surface: 'trajectory', anchor: 'materialize-panel' })",
+        "new": "'missing-evidence')",
+        "check": "npx vitest run packages/three-surface-poc-core/src/model.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  1 failed | 15 passed (16)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S1-render-actionroute-deleted",
+        "predicate": "parity: the action route is not rendered",
+        "file": "apps/three-surface-poc/src/unknown-marker.ts",
+        "old": "  if (action === undefined) return '';",
+        "new": "  if (action !== null) return '';",
+        "check": "npx vitest run apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  4 failed | 10 passed (14)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 4 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S1-script-reason-dropped",
+        "predicate": "browser census: the script-built unmapped block drops its reason",
+        "file": "apps/three-surface-poc/src/orrery.ts",
+        "old": "      unmapped.dataset.unknownReason = known.reason;\n",
+        "new": "",
+        "check": "npx vitest run apps/three-surface-poc/src/surface-routes.test.ts apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  2 failed | 30 passed (32)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 2 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S2-route-prose-changed",
+        "predicate": "parity: the rendered route sentence is not the machine sentence",
+        "file": "apps/three-surface-poc/src/unknown-marker.ts",
+        "old": "${escapeHtml(route.route)}</span>",
+        "new": "${escapeHtml(route.route.toLowerCase())}</span>",
+        "check": "npx vitest run apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  6 failed | 8 passed (14)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 6 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S2-route-actor-changed",
+        "predicate": "parity: the rendered actor is not the machine actor",
+        "file": "apps/three-surface-poc/src/unknown-marker.ts",
+        "old": "data-route-actor=\"${route.actor}\"",
+        "new": "data-route-actor=\"owner\"",
+        "check": "npx vitest run apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  6 failed | 8 passed (14)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 6 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S2-phantom-machine-id",
+        "predicate": "parity: a machine Unknown no surface renders (both id sets)",
+        "file": "packages/three-surface-poc-core/src/model.ts",
+        "old": "  return subjects;\n}",
+        "new": "  return [...subjects, { id: 'phantom', epistemic: unknown('x', 'missing-evidence') }];\n}",
+        "check": "npx vitest run apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  5 failed | 9 passed (14)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 5 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S2-empty-routes",
+        "predicate": "type: an Unknown carrying a reason with an empty route array",
+        "file": "packages/three-surface-poc-core/src/model.ts",
+        "old": "resolutionRoutes: [resolutionRoute(closedReason)],",
+        "new": "resolutionRoutes: [],",
+        "check": "npx tsc -b packages/three-surface-poc-core",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "packages/three-surface-poc-core/src/model.ts(511,5): error TS2322: Type '[]' is not assignable to type 'ResolutionRoutes'."
+        ]
+      },
+      {
+        "id": "S7-impure-import",
+        "predicate": "drafter purity: a filesystem import",
+        "file": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+        "old": "import { createHash } from 'node:crypto';\n",
+        "new": "import { createHash } from 'node:crypto';\nimport { writeFileSync } from 'node:fs';\nvoid writeFileSync;\n",
+        "check": "npx vitest run packages/three-surface-poc-core/src/owner-act-drafter.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  1 failed | 2 passed (3)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S7-digest-of-path",
+        "predicate": "drafter literal: the digest is not of the artifact bytes",
+        "file": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+        "old": ".update(input.artifact.bytes, 'utf8')",
+        "new": ".update(input.artifact.path, 'utf8')",
+        "check": "npx vitest run packages/three-surface-poc-core/src/owner-act-drafter.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  1 failed | 2 passed (3)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S7-stray-claim-admitted",
+        "predicate": "drafter refusal: a claim without the reason is drafted",
+        "file": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+        "old": "  if (stray !== undefined) return",
+        "new": "  if (stray === null) return",
+        "check": "npx vitest run packages/three-surface-poc-core/src/owner-act-drafter.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  1 failed | 2 passed (3)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "S7-dotdot-admitted",
+        "predicate": "drafter refusal: a `..` segment passes the path check",
+        "file": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+        "old": " && segment !== '..')",
+        "new": ")",
+        "check": "npx vitest run packages/three-surface-poc-core/src/owner-act-drafter.test.ts",
+        "exit": 1,
+        "outcome": "killed",
+        "evidence": [
+          "      Tests  1 failed | 2 passed (3)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      }
+    ]
+  },
+  "responseMeasurement": {
+    "method": "private daemon (--port 0 --state-dir <scratch>) served from a clean clone at each commit; one curl direct, one with Host: tzeusy.parrot-hen.ts.net",
+    "butlersRevision": "32f38feb51d86e33bfec00b78777cce5ec280198",
+    "workingPageTarget": 1650000,
+    "maxHumanResponseBytes": 2097152,
+    "measuredOn": {
+      "base 3311f0a3": {
+        "polarisDirect": 1482831,
+        "polarisTailnet": 1488936,
+        "trajectory": 383786,
+        "orrery": 43120
+      },
+      "head 05c1989e": {
+        "polarisDirect": 1485395,
+        "polarisTailnet": 1491515,
+        "trajectory": 510168,
+        "orrery": 46484,
+        "apiPoc": 5947628
+      }
+    },
+    "captureDigests": {
+      "polaris.html": "6165809fddeb7167e92d4d02676f93b6ba539a7ad63d662a5ec79d6d9b2fb8a1",
+      "polaris-tailnet.html": "dd5da270f34c2f5addfcab01a70f8fc884cb39a5b31ac4dad0af8192df8b55c8",
+      "trajectory.html": "c8e3a089ecd1043e722feb44fcea0bd5564010e1db3f7c5c8b0c1e28cc145d10",
+      "orrery.html": "4dee1af50687407f0fbed1e824271445246009cf85bac09ce34899d2637eaf29",
+      "api-poc.json": "c5c7f387f0242c05597d27b50629291821cc94317c195e204860e284dbd08f8f"
+    }
+  },
+  "liveSweep": {
+    "predicate": "each server-HTML element carrying data-unknown-disclosure (styles and scripts removed) has a data-unknown-reason (its own, else the first inside it) among the twelve RFC2-24 reasons, and the text \"Route: <words>.\" inside it",
+    "base 3311f0a3": {
+      "polaris": {
+        "disclosures": 24,
+        "failing": 9
+      },
+      "trajectory": {
+        "disclosures": 0,
+        "failing": 0
+      },
+      "orrery": {
+        "disclosures": 0,
+        "failing": 0
+      }
+    },
+    "head 05c1989e": {
+      "polaris": {
+        "disclosures": 24,
+        "failing": 0
+      },
+      "trajectory": {
+        "disclosures": 464,
+        "failing": 0
+      },
+      "orrery": {
+        "disclosures": 9,
+        "failing": 0
+      }
+    },
+    "note": "the Orrery unmapped block is built by script and is not in server HTML; the browser census in surface-routes.test.ts checks it"
+  }
+}
