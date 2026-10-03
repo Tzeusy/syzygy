@@ -10334,6 +10334,8 @@ STATUS_SHAPES = (
 #: forms a writer does not use ("Claim epistemic label") and the last three
 #: entries are synonyms it never states. CG-22c holds the copy to the
 #: registry: every dimension the table names must end in one of these.
+#: CG-22c's and CG-17's rule-6 mutants, with old/new fragments:
+#: `docs/evidence/syzygy-eexf-check-owners-rule6-2026-10-03.json`.
 STATUS_QUALIFIERS = (
     "state plane", "epistemic label", "evidence tier", "rendering tier",
     "work lifecycle", "governance lifecycle", "chain state", "lifecycle state",
