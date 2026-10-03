@@ -133,14 +133,14 @@ Authorized implementation work (generator implementation authorization,
         a backslash or non-UTF-8 bytes is unquotable: under a screen it is
         counted only, and a path-detector match on it is counted separately
         (#333). Policy residuals, pinned by tests: an encoded or line-split
-        secret passes the detectors. Screening scope v2 (package #326, draft
-        PR, `project-documentation.ts`): the policy's root, docs/doc and
+        secret passes the detectors. Screening scope v2 (package #326, merged
+        as a candidate; `project-documentation.ts`): the policy's root, docs/doc and
         licenses rules map `project-documentation` under the v2 act record
         (which must name the v1 record it supersedes), only while the
         RFC5-14 class act is in force; otherwise those paths stay
         indeterminate. Every screen still runs first. Parity with the
-        builder's reference reader (#326 at `fd4e2509`): 134 fixtures and
-        4,589 generated paths per variant. Not yet: the trigger wiring
+        builder's reference reader on main: 143 fixtures and 4,585
+        generated paths per variant, re-exported live by the test. Not yet: the trigger wiring
         (#268), the run-profile and instruction-text rules, and consent
         filtering by class. Nothing passes the gate until the owner performs
         the acts.

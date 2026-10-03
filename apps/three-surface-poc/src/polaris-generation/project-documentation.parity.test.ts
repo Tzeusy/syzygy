@@ -31,8 +31,8 @@ const disagreements = (rows: readonly Row[]) => SET.variantOrder.flatMap((varian
 describe('project-documentation rule: parity with the builder reference reader', () => {
   it('carries all four variants and both populations', () => {
     expect(SET.variantOrder).toEqual(['none', 'manifesto', 'architecture', 'both']);
-    expect(SET.fixtures.length).toBe(134);
-    expect(SET.generated.length).toBe(4589);
+    expect(SET.fixtures.length).toBe(143);
+    expect(SET.generated.length).toBe(4585);
     // Both verdicts occur in every variant, so neither a constant true nor a constant false passes.
     for (const index of [0, 1, 2, 3]) for (const rows of [SET.fixtures, SET.generated]) expect(new Set(rows.map(row => row[1][index]))).toEqual(new Set([true, false]));
   });

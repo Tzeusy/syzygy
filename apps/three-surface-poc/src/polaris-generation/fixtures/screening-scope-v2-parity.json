@@ -1,6 +1,6 @@
 {
  "builder": "scripts/build_public_source_screening_scope_v2.py",
- "builderSha256": "4e49e277886fe4a319154543bda5ce89129d29addab63c7fc0a7b6fac3808452",
+ "builderSha256": "69f97a5151879c442ae294211528b2cd541e9fd7933346e788483d88343e1d05",
  "variantOrder": [
   "none",
   "manifesto",
@@ -108,7 +108,7 @@
     ".txt"
    ],
    "disjointFromSourceExtensions": "none of documentSuffixes, docTreeExtensions or licenseTreeSuffixes is in sourceExtensions, so no blob has two classes by extension; a blob matched here is never code-content",
-   "notMapped": "nested and vendored documentation (a README below the root outside docs-tree); root files named design, governance, security or code of conduct; docs-tree paths whose directory or file name has a word in docExcludedTokens (decision, specification, design, governance, policy, security and conduct records, and the opt-in words unless the variant adds them); build and tooling .txt files named in docTxtExcludedNames or docTxtExcludedPrefixes; committed reports; and any other prose. The class is decided by these names alone: a governance document under docs whose path carries none of those words is mapped"
+   "notMapped": "nested and vendored documentation (a README below the root outside docs-tree and licenses-tree); root files named design, governance, security or code of conduct; docs-tree and licenses-tree paths whose directory or file name has a word in docExcludedTokens (decision, specification, design, governance, policy, security and conduct records, and the opt-in words unless the variant adds them); build and tooling .txt files named in docTxtExcludedNames or docTxtExcludedPrefixes; committed reports; and any other prose. The class is decided by these names alone: a governance document under docs whose path carries none of those words is mapped"
   },
   "manifesto": {
    "class": "project-documentation",
@@ -209,7 +209,7 @@
     ".txt"
    ],
    "disjointFromSourceExtensions": "none of documentSuffixes, docTreeExtensions or licenseTreeSuffixes is in sourceExtensions, so no blob has two classes by extension; a blob matched here is never code-content",
-   "notMapped": "nested and vendored documentation (a README below the root outside docs-tree); root files named design, governance, security or code of conduct; docs-tree paths whose directory or file name has a word in docExcludedTokens (decision, specification, design, governance, policy, security and conduct records, and the opt-in words unless the variant adds them); build and tooling .txt files named in docTxtExcludedNames or docTxtExcludedPrefixes; committed reports; and any other prose. The class is decided by these names alone: a governance document under docs whose path carries none of those words is mapped"
+   "notMapped": "nested and vendored documentation (a README below the root outside docs-tree and licenses-tree); root files named design, governance, security or code of conduct; docs-tree and licenses-tree paths whose directory or file name has a word in docExcludedTokens (decision, specification, design, governance, policy, security and conduct records, and the opt-in words unless the variant adds them); build and tooling .txt files named in docTxtExcludedNames or docTxtExcludedPrefixes; committed reports; and any other prose. The class is decided by these names alone: a governance document under docs whose path carries none of those words is mapped"
   },
   "architecture": {
    "class": "project-documentation",
@@ -310,7 +310,7 @@
     ".txt"
    ],
    "disjointFromSourceExtensions": "none of documentSuffixes, docTreeExtensions or licenseTreeSuffixes is in sourceExtensions, so no blob has two classes by extension; a blob matched here is never code-content",
-   "notMapped": "nested and vendored documentation (a README below the root outside docs-tree); root files named design, governance, security or code of conduct; docs-tree paths whose directory or file name has a word in docExcludedTokens (decision, specification, design, governance, policy, security and conduct records, and the opt-in words unless the variant adds them); build and tooling .txt files named in docTxtExcludedNames or docTxtExcludedPrefixes; committed reports; and any other prose. The class is decided by these names alone: a governance document under docs whose path carries none of those words is mapped"
+   "notMapped": "nested and vendored documentation (a README below the root outside docs-tree and licenses-tree); root files named design, governance, security or code of conduct; docs-tree and licenses-tree paths whose directory or file name has a word in docExcludedTokens (decision, specification, design, governance, policy, security and conduct records, and the opt-in words unless the variant adds them); build and tooling .txt files named in docTxtExcludedNames or docTxtExcludedPrefixes; committed reports; and any other prose. The class is decided by these names alone: a governance document under docs whose path carries none of those words is mapped"
   },
   "both": {
    "class": "project-documentation",
@@ -410,7 +410,7 @@
     ".txt"
    ],
    "disjointFromSourceExtensions": "none of documentSuffixes, docTreeExtensions or licenseTreeSuffixes is in sourceExtensions, so no blob has two classes by extension; a blob matched here is never code-content",
-   "notMapped": "nested and vendored documentation (a README below the root outside docs-tree); root files named design, governance, security or code of conduct; docs-tree paths whose directory or file name has a word in docExcludedTokens (decision, specification, design, governance, policy, security and conduct records, and the opt-in words unless the variant adds them); build and tooling .txt files named in docTxtExcludedNames or docTxtExcludedPrefixes; committed reports; and any other prose. The class is decided by these names alone: a governance document under docs whose path carries none of those words is mapped"
+   "notMapped": "nested and vendored documentation (a README below the root outside docs-tree and licenses-tree); root files named design, governance, security or code of conduct; docs-tree and licenses-tree paths whose directory or file name has a word in docExcludedTokens (decision, specification, design, governance, policy, security and conduct records, and the opt-in words unless the variant adds them); build and tooling .txt files named in docTxtExcludedNames or docTxtExcludedPrefixes; committed reports; and any other prose. The class is decided by these names alone: a governance document under docs whose path carries none of those words is mapped"
   }
  },
  "prerequisite": {
@@ -453,6 +453,15 @@
   ["licenses/doctrine.txt", [false, false, false, false]],
   ["licenses/SecurityPolicy.md", [true, true, true, true]],
   ["licenses/README.md", [true, true, true, true]],
+  ["licenses/LICENSE.txt", [true, true, true, true]],
+  ["licenses/CHANGELOG.md", [true, true, true, true]],
+  ["licenses/NEWS.md", [true, true, true, true]],
+  ["src/NEWS.md", [false, false, false, false]],
+  ["licenses/ADR0001.md", [true, true, true, true]],
+  ["licenses/LICENSE", [false, false, false, false]],
+  ["licenses/COPYING", [false, false, false, false]],
+  ["licenses/README", [false, false, false, false]],
+  ["licenses/README.rst", [false, false, false, false]],
   ["SECURITY.md", [false, false, false, false]],
   ["SECURITY", [false, false, false, false]],
   ["DESIGN.md", [false, false, false, false]],
@@ -1728,10 +1737,8 @@
   ["docs//README\u0130.md", [false, false, false, false]],
   ["docs//README\\x.md", [false, false, false, false]],
   ["docs//", [false, false, false, false]],
-  ["licenses/README", [false, false, false, false]],
   ["licenses/readme.md", [true, true, true, true]],
   ["licenses/ReadMe.Md", [true, true, true, true]],
-  ["licenses/README.rst", [false, false, false, false]],
   ["licenses/README.txt", [true, true, true, true]],
   ["licenses/README.html", [false, false, false, false]],
   ["licenses/README.md.bak", [false, false, false, false]],
@@ -1749,10 +1756,8 @@
   ["licenses/RELEASE_NOTES", [false, false, false, false]],
   ["licenses/RELEASENOTES", [false, false, false, false]],
   ["licenses/CONTRIBUTING.md", [true, true, true, true]],
-  ["licenses/LICENSE", [false, false, false, false]],
   ["licenses/LICENCE.md", [true, true, true, true]],
   ["licenses/LICEN\u017fE", [false, false, false, false]],
-  ["licenses/COPYING", [false, false, false, false]],
   ["licenses/NOTICE", [false, false, false, false]],
   ["licenses/NOTICES.txt", [true, true, true, true]],
   ["licenses/NEWS", [false, false, false, false]],
