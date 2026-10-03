@@ -278,6 +278,11 @@ CAMPAIGNS = (
         "D7 doctrine amendment gate",
         r"R-DOCTRINE-AMENDMENT-D7-.*\.md",
     ),
+    campaign(
+        "doctrine-amendment-d8",
+        "D8 doctrine amendment gate",
+        r"R-DOCTRINE-AMENDMENT-D8-.*\.md",
+    ),
 )
 
 

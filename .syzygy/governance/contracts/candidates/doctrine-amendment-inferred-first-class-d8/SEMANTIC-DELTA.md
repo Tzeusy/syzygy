@@ -5,7 +5,8 @@
 > amendment is an owner act (VIS-4); this delta is the proposal, never the
 > act. The owner's questions and arms live in `OWNER-DECISION-PACKET.md`
 > (this directory); where the two differ, the packet's section 1 text is
-> the proposed text.
+> the proposed text. Round 1 returned `REVISE`; the repairs are recorded in
+> `ROUND-1-DISPOSITIONS.md` and are unconfirmed.
 
 **Artifact(s):** `.syzygy/governance/doctrine/trust-and-evidence.md`
 (sha256 `6bf79befec771447b9f70206ee85a406eaffb16b98c8ae1c05f465cd7e486b58`),
@@ -28,10 +29,10 @@ drafter's claim]:
 |---|---|---|
 | (a) synthesis | Normative, narrowing | Synthesis is lawful today (lines 95–96, RFC7-2(c)); the clause adds obligations (name inputs, regenerate on change, never fill an Unknown). A design compliant before may not be after; none that was non-compliant becomes compliant |
 | (b) attributed answer | Normative | Names a record class doctrine does not name and fixes its rendering and its non-authority |
-| (c) correspondence | Clarifying | RFC1-16 and RFC4-26 already define class (ii) with challenge authority only; the clause extends the word to any cross-surface subject, which an accepted contract already bounds for capability↔code |
-| (d) observed-only project | Normative, widened | VIS-6's commit-out has no destination for this class today; after (d) one exists. A design that kept such content nowhere is still compliant; a design that commits it to the running governance root's `.syzygy/**` becomes describable, though still unwritten without its own act |
+| (c) correspondence | Normative, narrowing over a wider domain | RFC1-16 and RFC4-26 define class (ii) for capability↔code only; the clause names the relation for any cross-surface subject and requires it be counted apart from declared edges. Its authority limit is already doctrine for every subject (`trust-and-evidence.md` lines 118–119) |
+| (d) observed-only project | Normative, widened | VIS-6's commit-out names only a project's own plane; after (d) a second destination exists, the observing project's `.syzygy/**`. A design that kept such content nowhere, or that writes into the observed project under P-71-Q5's two acts, is still compliant; a design that commits it to the observing project becomes describable, though still unwritten without its own act |
 | (e) self-observation | Normative, narrowing | Removes authority from a record class that does not yet exist |
-| (f) figures | Clarifying | VIS-4, RFC2-25's `unadopted-draft` / `editorial-draft` states and RFC7-3/RFC7-4 already say it |
+| (f) figures | Clarifying | VIS-4, RFC2-25's `editorial-draft` state ("stays non-citable even after that act completes") and RFC7-3/RFC7-4 already say it |
 
 **Author:** agent drafting session (lane-b worker) for `syzygy-u05.15`.
 
@@ -67,11 +68,13 @@ the trust floor; nothing in doctrine names Syzygy observing itself.
 >   repository**, read-only to Syzygy unless separately onboarded as a governed
 >   project.
 
-Meaning today: inference may appear in narrative if marked; a
-correspondence is an accepted-contract class (ii) relation with no
-defined entry profile; an owner answer about intent has no doctrinal class;
-content about a project with no writable governance root has no VIS-6
-destination; and self-observation is unaddressed.
+Meaning today: inference may appear in narrative if marked, and has no
+authority to establish a status for any subject (lines 118–119); a
+capability↔code correspondence is an accepted-contract class (ii) relation
+with no defined entry profile; an owner answer about intent has no
+doctrinal class; content about a project Syzygy may not write has one VIS-6
+destination, that project's own plane, reachable only by acts (P-71-Q5);
+and self-observation is unaddressed.
 
 ## Proposed meaning
 
@@ -79,21 +82,26 @@ The exact inserted bytes are `OWNER-DECISION-PACKET.md` §1 (a)–(f). In
 meaning:
 
 - (a) A surface-composed synthesis is an Inferred claim with named inputs,
-  no new facts, no anchoring, regeneration on input change, and never an
+  no new facts, never itself an anchored claim, no fresher than its stalest
+  input, withdrawn on a broken or superseded input, and never an
   Unknown-filler.
 - (b) An owner's answer about intent is a third non-evidence, non-warrant
   class: attributed, dated, withdrawable, committed out, rendered as
-  Observed about the record only, and adopted intent only by an act.
+  Observed about the record only, beside an Unknown never in its place, and
+  adopted intent only by an act. An adjudication of a contradiction is not
+  this class.
 - (c) An inferred cross-surface link is Inferred, counted apart from
   declared edges, challenge authority only.
-- (d) An observed-only project is named; content Syzygy authors about it is
-  committed to the running governance root's `.syzygy/**`, as Syzygy's
+- (d) An observed-only project is named (a project with a designated
+  governance root and an empty write surface); content Syzygy authors about
+  it may be committed to the observing project's `.syzygy/**`, as Syzygy's
   attributed record, never as the project's declaration or text.
-- (e) Syzygy's observation records of itself never satisfy the trust floor,
-  VIS-7's release gate, or an aligned/converged/genome-complete claim about
-  Syzygy.
-- (f) A machine-drafted presentation draft is an unadopted draft until
-  adopted, and presentation only after.
+- (e) Observation records whose subject is Syzygy's own governance root
+  are never the evidence for a claim about Syzygy's own alignment,
+  convergence, genome-completeness or release verdict; pipeline-property
+  evidence over that subject still counts.
+- (f) A machine-drafted presentation draft is an `editorial-draft`: never a
+  claim source, before or after a human authors it into presentation.
 
 ## What explicitly does NOT change
 
@@ -108,8 +116,10 @@ meaning:
 - The trust floor's four bullets and its closing sentence.
 - Every accepted contract, PWB-REQ-012, the POC specification and
   REQ-polaris-generation-031 (packet §6).
-- P-71 Q3's ruling (a pure drafter that writes no file) and P-74 Q3's three
-  acts.
+- P-71 Q3's ruling (a pure drafter that writes no file), P-71-Q5's act
+  route into an observed project, and P-74 Q3's three acts.
+- RFC1's deferred portfolio profile (SDR-30); whether (d) needs it is an
+  owner question (packet §7 Q-C2).
 
 ## Warrant
 
@@ -122,7 +132,7 @@ or adopts anything here.
 - N15's `why`, quoted in packet §0 [Observed as a quote; its figures are the
   pursuit's, not re-measured].
 - The premise check in packet §0, each row citing its clause.
-- Owner rulings P-71 Q3, P-74 Q3, P-75 Q4 and P-76 Q2
+- Owner rulings P-71 Q3, P-71-Q5, P-74 Q3, P-75 Q4 and P-76 Q2
   (`decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`) and A6's
   proving-project order (`decisions/A6-RESOURCE-ENVELOPE-DECISION.md`
   line 25).
@@ -144,8 +154,10 @@ the same commit (packet §9 step 3).
 accepted contract is made false; REQ-polaris-generation-031 is consistent
 with (b); P-74 Q3's self-observation acts are consistent with (e) and
 should follow it; PWB-REQ-012, the POC specification's class (ii)
-exclusion and RFC1's inference-profile deferral are untouched and named as
-owner questions (packet §7).
+exclusion and RFC1's inference-profile and portfolio-profile deferrals are
+untouched and named as owner questions (packet §7). Application drifts
+generated artifacts the battery checks, which the recipe regenerates
+(ledger §4).
 
 ## Migration / supersession plan
 
