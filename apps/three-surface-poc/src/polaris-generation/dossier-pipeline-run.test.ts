@@ -60,7 +60,7 @@ type Json = Record<string, any>;   // eslint-disable-line @typescript-eslint/no-
 
 /** A well-formed reply for each stage, computed from the request's own inputs: every source cited, every requested asset produced. */
 function replyFor(system: string, input: string, blocking = false): string {
-  const stage = (['inventory', 'plan', 'author', 'edit', 'repair', 'fidelity', 'discovery-map', 'discovery-reduce'] as const).find(s => promptForStage(s).system === system) as PromptStage;
+  const stage = stageOf(system) as PromptStage;
   const inputs: Json = (JSON.parse(input) as Json).inputs;
   if (stage === 'discovery-map') return JSON.stringify({ claims: inputs.items.map((item: Json) => ({ blobId: item.blobId, claim: 'Relevant to the reader questions.', relevance: 5 })) });
   if (stage === 'discovery-reduce') return JSON.stringify({ ranked: inputs.subsystems.flatMap((s: Json) => s.claims.map((c: Json) => c.blobId)).filter((id: string, i: number, all: string[]) => all.indexOf(id) === i).slice(0, inputs.maxSelected) });
@@ -97,7 +97,9 @@ function replyFor(system: string, input: string, blocking = false): string {
 
 const KEY = 'sk-test-pipeline-0123456789';
 const walk = (dir: string): string[] => readdirSync(dir).flatMap(e => { const f = path.join(dir, e); return statSync(f).isDirectory() ? walk(f) : [f]; });
-const stageOf = (system: string): string => (['inventory', 'plan', 'author', 'edit', 'repair', 'fidelity', 'discovery-map', 'discovery-reduce'] as const).find(s => promptForStage(s).system === system) ?? 'unknown';
+function stageOf(system: string): string {   // the dossier run sends the dossier-profile prompts; a manifesto prompt would be a wiring fault, so only the dossier text is recognised
+  return (['inventory', 'plan', 'author', 'edit', 'repair', 'fidelity', 'discovery-map', 'discovery-reduce'] as const).find(s => promptForStage(s, 'dossier').system === system) ?? 'unknown';
+}
 
 describe('a whole run through the wiring against the loopback stub', () => {
   const run = async (respond: (system: string, input: string) => string, env: Record<string, string | undefined> = { SYZYGY_POLARIS_PROVIDER_API_KEY: KEY }) => {
