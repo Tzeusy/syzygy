@@ -7,10 +7,15 @@
 // below; a field with none fails the run (exit 2).
 // Prints a JSON report; digests appear here at run time, never in the
 // public-repo admission package (CG-15). Observed over the checked-out tree.
+// With --discovery it also derives the two discovery calls (discovery-map,
+// discovery-reduce), which run before the pipeline: their envelopes are built
+// by discovery-provider.ts from promptForStage and stageSchema, and every
+// `inputs` leaf gets a class from DISCOVERY_INPUT_CLASS. Without the flag the
+// output is unchanged, so the embedded egress table moves only when asked.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import ts from 'typescript';
-import { runGenerationPipeline, promptForStage, stageSchema, generationAnchorId, gitBlobObjectId } from '../packages/polaris-generation-core/dist/index.js';
+import { runGenerationPipeline, promptForStage, stageSchema, generationAnchorId, gitBlobObjectId, discoveryMapEnvelope, discoveryReduceEnvelope } from '../packages/polaris-generation-core/dist/index.js';
 
 const STAGES = ['inventory', 'plan', 'author', 'edit', 'fidelity', 'repair'];
 const sha = text => createHash('sha256').update(text).digest('hex');
@@ -131,6 +136,52 @@ const portRows = Object.keys(captured[0]).sort().map(key => {
   return { where: 'generate port', field: key, cls: PORT_FIELD[key][0], note: PORT_FIELD[key][1] };
 }).filter(Boolean);
 for (const key of Object.keys(envelope.inputs)) if (!(key in INPUT_CLASS) && key !== 'sources') failures.push(`captured inputs field ${key} unmapped`);
+// 5. Discovery (--discovery only). Fixture requests with every field present;
+//    leaves are classed by path, array indices collapsed to [].
+const DISCOVERY = process.argv.includes('--discovery');
+const DISCOVERY_STAGES = ['discovery-map', 'discovery-reduce'];
+const DISCOVERY_INPUT_CLASS = {
+  'subsystem': 'target-metadata', 'readerQuestions[]': 'run-profile',
+  'items[].blobId': 'target-metadata', 'items[].path': 'target-metadata', 'items[].excerpt': 'target-content',
+  'maxSelected': 'envelope-control', 'subsystems[].subsystem': 'target-metadata', 'subsystems[].blobs': 'target-metadata',
+  'subsystems[].claims[].blobId': 'target-metadata', 'subsystems[].claims[].path': 'target-metadata',
+  'subsystems[].claims[].claim': 'composite', 'subsystems[].claims[].relevance': 'composite',
+};
+const discoveryRows = [];
+const discoveryAuthored = [];
+if (DISCOVERY) {
+  const leaves = (value, path = '') => Array.isArray(value) ? value.flatMap(item => leaves(item, `${path}[]`))
+    : value !== null && typeof value === 'object' ? Object.entries(value).flatMap(([key, child]) => leaves(child, path ? `${path}.${key}` : key)) : [path];
+  const built = {
+    'discovery-map': discoveryMapEnvelope({ subsystem: 'derive', readerQuestions: ['q'], items: [{ blobId: 'b1', path: 'derive/a.md', excerpt: 'fixture excerpt' }] }).envelope,
+    'discovery-reduce': discoveryReduceEnvelope({ readerQuestions: ['q'], maxSelected: 1,
+      subsystems: [{ subsystem: 'derive', blobs: 1, claims: [{ blobId: 'b1', path: 'derive/a.md', claim: 'fixture claim', relevance: 5 }] }] }).envelope,
+  };
+  for (const stage of DISCOVERY_STAGES) {
+    const envelope = built[stage];
+    const prompt = promptForStage(stage);
+    const schema = stageSchema(stage);
+    // The instruction text must be exactly the two symbols' output.
+    if (envelope.system !== prompt.system || envelope.promptVersion !== prompt.version
+      || JSON.stringify(envelope.responseSchema) !== JSON.stringify(schema.schema) || envelope.responseSchemaVersion !== schema.version) {
+      failures.push(`${stage}: envelope instruction text is not promptForStage/stageSchema output`);
+    }
+    discoveryAuthored.push({ stage, promptVersion: prompt.version, systemBytes: Buffer.byteLength(prompt.system), systemSha256: sha(prompt.system),
+      schemaVersion: schema.version, schemaBytes: Buffer.byteLength(JSON.stringify(schema.schema)), schemaSha256: sha(JSON.stringify(schema.schema)) });
+    for (const key of Object.keys(envelope)) {
+      if (key === 'inputs') continue;
+      const cls = ENVELOPE_CLASS[key];
+      if (!cls) failures.push(`${stage}: envelope field ${key} has no class`);
+      discoveryRows.push({ where: 'envelope', field: key, stages: [stage], cls: cls ?? 'UNCLASSIFIED' });
+    }
+    for (const path of [...new Set(leaves(envelope.inputs))].sort()) {
+      const cls = DISCOVERY_INPUT_CLASS[path];
+      if (!cls) failures.push(`${stage}: inputs field ${path} has no class`);
+      discoveryRows.push({ where: 'inputs', field: path, stages: [stage], cls: cls ?? 'UNCLASSIFIED' });
+    }
+  }
+}
+
 if (failures.length) { console.error('UNCLASSIFIED:\n' + failures.join('\n')); process.exit(2); }
 
 if (process.argv.includes('--table')) {
@@ -138,6 +189,7 @@ if (process.argv.includes('--table')) {
   const lines = ['| Where | Field | Stages | Class |', '|---|---|---|---|'];
   for (const r of rows) lines.push(`| ${r.where} | \`${r.field}\` | ${r.stages.length === STAGES.length ? 'all' : r.stages.join(', ')} | ${esc(r.cls)} |`);
   for (const r of portRows) lines.push(`| ${r.where} | \`${r.field}\` | all | ${esc(r.cls)}; ${esc(r.note)} |`);
+  for (const r of discoveryRows) lines.push(`| discovery ${r.where} | \`${r.field}\` | ${r.stages.join(', ')} | ${esc(r.cls)} |`);
   console.log(lines.join('\n'));
   process.exit(0);
 }
@@ -147,4 +199,5 @@ console.log(JSON.stringify({
   inputKeysAcrossFirstStage: Object.keys(envelope.inputs),
   authored, inputKeys, classified: rows, portRows,
   authoredBySource: { 'packages/polaris-generation-core/src/prompts.ts': 'promptForStage', 'packages/polaris-generation-core/src/provider-draft.ts': 'stageSchema' },
+  ...(DISCOVERY ? { discovery: { authored: discoveryAuthored, classified: discoveryRows } } : {}),
 }, null, 2));

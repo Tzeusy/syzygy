@@ -1,7 +1,6 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { DOSSIER_ILLUSTRATION_SOURCES, DOSSIER_STAGE_ILLUSTRATIONS, dossierPromptForStage } from './dossier-prompts.js';
-import { promptForStage, type GenerationStage } from './prompts.js';
+import { DOSSIER_ILLUSTRATION_SOURCES, DOSSIER_STAGE_ILLUSTRATIONS, promptForStage, type GenerationStage, type PromptProfile } from './prompts.js';
 import { validateStage, type ProviderDraft, type ProviderInventory } from './provider-draft.js';
 
 const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
@@ -36,7 +35,7 @@ const sourceText = (id: string): string => sources.find(source => source.sourceI
 
 describe('dossier stage prompts', () => {
   it.each(recipes)('pins the %s dossier prompt bytes', (stage, version, digest) => {
-    const prompt = dossierPromptForStage(stage);
+    const prompt = promptForStage(stage, 'dossier');
     expect(prompt.version).toBe(version);
     expect(sha256(prompt.system)).toBe(digest);
     // Base prompt (< 4 KiB) plus rules, guidance and one illustration; a draft
@@ -46,32 +45,40 @@ describe('dossier stage prompts', () => {
 
   it.each(recipes)('extends the reviewed %s manifesto prompt without changing it', (stage) => {
     const base = promptForStage(stage).system;
-    const prompt = dossierPromptForStage(stage).system;
+    const prompt = promptForStage(stage, 'dossier').system;
     expect(prompt.startsWith(`${base}\n\n`)).toBe(true);
     expect(prompt.length).toBeGreaterThan(base.length + 2);
   });
 
   it.each(recipes)('ends the %s prompt with the illustration it was tested with', (stage) => {
-    const lines = dossierPromptForStage(stage).system.split('\n');
+    const lines = promptForStage(stage, 'dossier').system.split('\n');
     expect(lines.at(-2)).toMatch(/^Shape illustration for a fictional project\. Copy its structure, never its content/u);
     expect(JSON.parse(lines.at(-1)!)).toEqual(illustration(stage));
   });
 
   it.each(recipes)('states the five dossier rules in the %s prompt', (stage) => {
-    const prompt = dossierPromptForStage(stage).system;
+    const prompt = promptForStage(stage, 'dossier').system;
     for (const rule of ['1. Claim ledger.', '2. Workflow traces.', '3. Mechanisms.', '4. Attribution.', '5. Thin evidence stays Unknown.']) {
       expect(prompt).toContain(`\n${rule} `);
     }
   });
 
   it('gives every stage its own dossier guidance', () => {
-    const heads = recipes.map(([stage]) => dossierPromptForStage(stage).system.split('\n').at(-4)!);
+    const heads = recipes.map(([stage]) => promptForStage(stage, 'dossier').system.split('\n').at(-4)!);
     expect(new Set(heads).size).toBe(recipes.length);
     for (const head of heads) expect(head).toMatch(/^Dossier (inventory|plan|draft|edit|review|repair): /u);
   });
 
+  it.each(['unknown', 'Dossier', 'constructor', '__proto__'])('refuses unsupported profile %s', (profile) => {
+    expect(() => promptForStage('author', profile as PromptProfile)).toThrow('unknown-prompt-profile');
+  });
+
+  it('keeps the manifesto profile the default', () => {
+    expect(promptForStage('author', 'manifesto')).toEqual(promptForStage('author'));
+  });
+
   it.each(['unknown', 'constructor', '__proto__'])('refuses unsupported stage %s', (stage) => {
-    expect(() => dossierPromptForStage(stage as GenerationStage)).toThrow('unknown-generation-stage');
+    expect(() => promptForStage(stage as GenerationStage, 'dossier')).toThrow('unknown-generation-stage');
   });
 });
 
