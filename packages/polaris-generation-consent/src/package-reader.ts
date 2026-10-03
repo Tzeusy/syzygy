@@ -149,6 +149,10 @@ export function createPackageAdmissionReader(options: { readonly root: string; r
         try { artifact = await fs.readFile(path.join(options.root, act.artifact)); } catch { return refuse(); }
         records.push(parseInstance(artifact, act, sha256(artifact) === act.digest ? act.inForce : null));
       }
+      // Version 2 replaces version 1 only when it took effect strictly later: two acts taking effect at the same instant, or version 2 first, are ambiguous.
+      const v1 = records.find(r => r.class === 'egress' && r.recordId === 'PUBLIC-EGRESS-anthropic' && r.supersedes === null);
+      const v2 = records.find(r => r.supersedes === V2_SUPERSEDES);
+      if (v1 !== undefined && v2 !== undefined && v1.inForceAt !== null && v2.inForceAt !== null && v2.inForceAt <= v1.inForceAt) return refuse();
       return Object.freeze(records);
     },
   };
