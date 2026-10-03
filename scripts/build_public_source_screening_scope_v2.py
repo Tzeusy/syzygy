@@ -75,7 +75,9 @@ V2_CLASSES = ("code-structure", "code-content", "project-documentation", "derive
 #: them is indeterminate, never guessed. Matching folds ASCII letters to lower
 #: case in a copy of the path and nothing else; the path is carried as admitted.
 ROOT_STEMS = ["readme", "changelog", "changes", "release-notes", "release_notes", "releasenotes",
-              "contributing", "license", "licence", "copying", "notice", "notices"]
+              "contributing", "license", "licence", "copying", "notice", "notices",
+              "news", "history", "security", "authors", "manifesto", "architecture", "design", "faq",
+              "governance", "code_of_conduct", "code-of-conduct"]
 STEM_PREFIX = r"(?:\d\d-)?"
 DOCUMENT_SUFFIXES = ["", ".md", ".rst", ".txt"]
 DOC_TREE_ROOTS = ["docs", "doc"]
@@ -125,7 +127,9 @@ FIXTURES = [
     ("docs/guide.md", True), ("docs/a/b/intro.rst", True), ("Docs/Guide.MD", True), ("doc/usage.txt", True),
     ("licenses/agpl-3.0.txt", True), ("LICENSES/rsal.TXT", True),
     ("src/README.md", False), ("deps/lua/README", False), (".github/README.md", False),
-    ("SECURITY.md", False), ("MANIFESTO", False), ("TLS.md", False), ("CODE_OF_CONDUCT.md", False),
+    ("SECURITY.md", True), ("MANIFESTO", True), ("NEWS", True), ("HISTORY.md", True), ("AUTHORS", True), ("ARCHITECTURE.md", True),
+    ("DESIGN.md", True), ("FAQ.md", True), ("GOVERNANCE.md", True), ("CODE_OF_CONDUCT.md", True), ("Code-Of-Conduct.md", True),
+    ("TLS.md", False), ("TODO.md", False), ("CODEOWNERS", False),
     ("README.md.bak", False), ("readme.html", False), ("README.md ", False), ("12-README.md", True),
     ("0-README.md", False), ("123-README.md", False), ("README.md/x", False),
     ("docs", False), ("docs/", False), ("docs/conf.py", False), ("docs/diagram.png", False), ("docs/.md", False),
@@ -481,7 +485,7 @@ def selftest() -> int:
             return r
         for label, bad_rule in (
                 ("a rule without ASCII folding is caught by the mixed-case fixtures", None),
-                ("a widened root stem list is caught", broken(rootStems=ROOT_STEMS + ["security"])),
+                ("a widened root stem list is caught", broken(rootStems=ROOT_STEMS + ["todo"])),
                 ("a widened document suffix list is caught", broken(documentSuffixes=DOCUMENT_SUFFIXES + [".html"])),
                 ("a widened docs tree is caught", broken(docTreeRoots=DOC_TREE_ROOTS + ["design"])),
                 ("a widened docs extension list is caught", broken(docTreeExtensions=DOC_TREE_EXTENSIONS + [".png"])),

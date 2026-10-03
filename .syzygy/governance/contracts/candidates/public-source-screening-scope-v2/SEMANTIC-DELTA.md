@@ -44,7 +44,14 @@ admitted as whole-blob spans, no extractor runs.
    suffix from "none, .md, .rst, .txt" (the longest that fits); the rest must be
    an optional two-digit-and-hyphen prefix followed by one of: readme,
    changelog, changes, release-notes, release_notes, releasenotes,
-   contributing, license, licence, copying, notice, notices.
+   contributing, license, licence, copying, notice, notices, news, history,
+   security, authors, manifesto, architecture, design, faq, governance,
+   code_of_conduct, code-of-conduct. The list is wide on purpose: a project's
+   top level carries its stated ideas and trade-offs in files such as
+   00-RELEASENOTES and MANIFESTO [Inferred, from general knowledge; no body
+   was read], and a narrow list would withhold exactly the sources a dossier
+   needs. The names design, governance and security are root *files*; see
+   Q3.
 2. **docs-tree.** Two or more segments, the first being docs or doc, a file
    name ending in .md, .rst or .txt with a non-empty stem, at any depth.
 3. **licenses-tree.** Exactly two segments, the first being licenses, a file
@@ -53,8 +60,8 @@ admitted as whole-blob spans, no extractor runs.
 None of these extensions is in the `code-content` list, so no blob has two
 classes. Everything else stays indeterminate: a README below the root outside
 docs or doc (vendored libraries carry their own), security and conduct
-policies, specification, design and decision documents, reports, and prose in
-any other directory.
+policies below the root, specification, design and decision documents, reports,
+and prose in any other directory.
 
 ## Why these paths [Inferred]
 
