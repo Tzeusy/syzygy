@@ -1,0 +1,212 @@
+{
+  "record": "Rule-6 mutants for the contract-index projection repair (syzygy-82ci; review RD-6 E-3/C-1, F-3 rows 2, 9, 10). Not authority.",
+  "measuredOn": {
+    "commit": "35aa9f082e3d212cba16d95a2d1abaecba901617",
+    "subjects": [
+      {
+        "path": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+        "sha256": "75af15283e8a92ae31b7b81ad82ed331c31e15816955eb3f7f1a2f1f940092a0"
+      },
+      {
+        "path": ".syzygy/governance/contracts/candidates/scripts/verify_final_prespec.py",
+        "sha256": "4615108bccd552ff8389f1190834e5095a5a5e0dc707397f36ec6f358286cc49"
+      },
+      {
+        "path": ".syzygy/governance/contracts/candidates/05-CONTRACT-INDEX.yaml",
+        "sha256": "39844dae251725b02f55ea0d6cdd8ea5e1202b6cdaf714783875f42445f6204e"
+      }
+    ]
+  },
+  "method": "Each mutant replaces every occurrence of `old` with `new` in one file of a fresh `git archive <commit> .syzygy` extraction, then runs `command` from that extraction's root. A mutant is killed only when it replaced at least one occurrence, the command exits nonzero, and its output contains `expected`. Generator mutants (M*) break the repaired code and must fail --selftest on the named case; input mutants (I*) change the corpus, the index or the shared phase-rule list and must fail --check.",
+  "result": {
+    "killed": 11,
+    "total": 11
+  },
+  "mutants": [
+    {
+      "id": "M1",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "lines.append(f\"    {STATUS_KEY}: {status_projection(e['status'])}\")",
+      "new": "lines.append(\"    status_source: owner-act-record\")",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: a divergent status_source renders [Unknown]",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST OK: the five round-2026-08d phase rules are indexed phase-rule",
+        "SELFTEST OK: the header carries the non-authority banner",
+        "SELFTEST OK: the header states every section-kind and phase rule it applies"
+      ]
+    },
+    {
+      "id": "M2",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "PHASE_RULES = frozenset(PHASE_RULE_CLAUSES)",
+      "new": "PHASE_RULES = {\"RFC6-28\", \"RFC7-38\", \"RFC8-32\", \"RFC9-52\", \"RFC10-16\", \"RFC11-12\"}",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: the indexed phase-rule set is exactly the shared list",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST FAIL: the five round-2026-08d phase rules are indexed phase-rule",
+        "SELFTEST OK: the header carries the non-authority banner",
+        "SELFTEST FAIL: the header states every section-kind and phase rule it applies"
+      ]
+    },
+    {
+      "id": "M3",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "\"# NOT AUTHORITY. This candidate-lane projection binds nothing and states no\",",
+      "new": "\"# This candidate-lane projection states no\",",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: the header carries the non-authority banner",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST OK: the five round-2026-08d phase rules are indexed phase-rule",
+        "SELFTEST FAIL: the header carries the non-authority banner",
+        "SELFTEST OK: the header states every section-kind and phase rule it applies"
+      ]
+    },
+    {
+      "id": "M4",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "+ \"; \".join(f\"{', '.join(secs)} {kind}\" for kind, secs in by_kind.items())",
+      "new": "+ \"see the code\"",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: the header states every section-kind and phase rule",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST OK: the five round-2026-08d phase rules are indexed phase-rule",
+        "SELFTEST OK: the header carries the non-authority banner",
+        "SELFTEST FAIL: the header states every section-kind and phase rule it applies"
+      ]
+    },
+    {
+      "id": "M5",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "findings += [f\"STATUS MISMATCH: {line}\" for line in status_mismatches(generated)]",
+      "new": "findings += []",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: --check fails on a mismatch even when the committed index agrees",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST OK: the five round-2026-08d phase rules are indexed phase-rule",
+        "SELFTEST OK: the header carries the non-authority banner",
+        "SELFTEST OK: the header states every section-kind and phase rule it applies"
+      ]
+    },
+    {
+      "id": "M6",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "    if len(values) == 1 and None not in values:\n        return values.pop()",
+      "new": "    if values - {None}:\n        return sorted(values - {None})[0]",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: a divergent status_source renders [Unknown]",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST OK: the five round-2026-08d phase rules are indexed phase-rule",
+        "SELFTEST OK: the header carries the non-authority banner",
+        "SELFTEST OK: the header states every section-kind and phase rule it applies"
+      ]
+    },
+    {
+      "id": "M7",
+      "kind": "generator",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "        return after != copied(rel, lambda t: t)",
+      "new": "        return after != base",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest",
+      "expected": "SELFTEST FAIL: a no-op edit does not register as a change",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "SELFTEST OK: the five round-2026-08d phase rules are indexed phase-rule",
+        "SELFTEST OK: the header carries the non-authority banner",
+        "SELFTEST OK: the header states every section-kind and phase rule it applies"
+      ]
+    },
+    {
+      "id": "I1",
+      "kind": "input",
+      "file": ".syzygy/governance/contracts/candidates/rfcs/RFC-0002/README.md",
+      "old": "\nstatus_source: owner-act-record",
+      "new": "\nstatus_source: self-declared",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --check",
+      "expected": "STATUS MISMATCH: status_source: [Unknown] — modules disagree: owner-act-record, self-declared",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration",
+        "STATUS MISMATCH: status_source: [Unknown] — modules disagree: owner-act-record, self-declared",
+        "population: 11 contract(s), 39 of 39 module(s) carry a front-matter id, 367 clause(s), 11 implementation-boundary declaration(s), 11 phase-rule clause(s) over 11 shared rule(s), status_source projected for 10 of 11"
+      ]
+    },
+    {
+      "id": "I2",
+      "kind": "input",
+      "file": ".syzygy/governance/contracts/candidates/05-CONTRACT-INDEX.yaml",
+      "old": "{id: RFC1-33, module: RFC-0001-project-graph-identity-state-planes.md, kind: phase-rule}",
+      "new": "{id: RFC1-33, module: RFC-0001-project-graph-identity-state-planes.md, kind: normative}",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --check",
+      "expected": "DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration",
+        "population: 11 contract(s), 39 of 39 module(s) carry a front-matter id, 367 clause(s), 11 implementation-boundary declaration(s), 11 phase-rule clause(s) over 11 shared rule(s), status_source projected for 11 of 11"
+      ]
+    },
+    {
+      "id": "I3",
+      "kind": "input",
+      "file": ".syzygy/governance/contracts/candidates/scripts/verify_final_prespec.py",
+      "old": "PHASE_RULE_CLAUSES = [\"RFC1-33\", ",
+      "new": "PHASE_RULE_CLAUSES = [",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --check",
+      "expected": "DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration",
+        "population: 11 contract(s), 39 of 39 module(s) carry a front-matter id, 367 clause(s), 11 implementation-boundary declaration(s), 10 phase-rule clause(s) over 10 shared rule(s), status_source projected for 11 of 11"
+      ]
+    },
+    {
+      "id": "I4",
+      "kind": "input",
+      "file": ".syzygy/governance/contracts/candidates/05-CONTRACT-INDEX.yaml",
+      "old": "# NOT AUTHORITY. This candidate-lane projection binds nothing and states no\n",
+      "new": "",
+      "occurrencesReplaced": 1,
+      "command": "python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --check",
+      "expected": "DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration",
+      "exitCode": 1,
+      "killed": true,
+      "outputTail": [
+        "DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration",
+        "population: 11 contract(s), 39 of 39 module(s) carry a front-matter id, 367 clause(s), 11 implementation-boundary declaration(s), 11 phase-rule clause(s) over 11 shared rule(s), status_source projected for 11 of 11"
+      ]
+    }
+  ],
+  "runner": "\"\"\"Rule-6 mutants for syzygy-82ci: each is applied to a fresh copy of .syzygy/\nat the given commit; the expected check must fail on its own predicate.\"\"\"\nimport json, pathlib, shutil, subprocess, sys, tempfile\n\nREPO = pathlib.Path(sys.argv[1])\nCOMMIT = subprocess.run([\"git\", \"rev-parse\", \"HEAD\"], cwd=REPO, capture_output=True, text=True, check=True).stdout.strip()\nC = \".syzygy/governance/contracts/candidates\"\nGEN = f\"{C}/scripts/build_contract_index.py\"\nVER = f\"{C}/scripts/verify_final_prespec.py\"\nREADME = f\"{C}/rfcs/RFC-0002/README.md\"\nINDEX = f\"{C}/05-CONTRACT-INDEX.yaml\"\n\nMUTANTS = [\n    # (id, kind, file, old, new, command, expected substring in output)\n    (\"M1\", \"generator\", GEN,\n     \"lines.append(f\\\"    {STATUS_KEY}: {status_projection(e['status'])}\\\")\",\n     \"lines.append(\\\"    status_source: owner-act-record\\\")\",\n     \"--selftest\", \"SELFTEST FAIL: a divergent status_source renders [Unknown]\"),\n    (\"M2\", \"generator\", GEN,\n     \"PHASE_RULES = frozenset(PHASE_RULE_CLAUSES)\",\n     \"PHASE_RULES = {\\\"RFC6-28\\\", \\\"RFC7-38\\\", \\\"RFC8-32\\\", \\\"RFC9-52\\\", \\\"RFC10-16\\\", \\\"RFC11-12\\\"}\",\n     \"--selftest\", \"SELFTEST FAIL: the indexed phase-rule set is exactly the shared list\"),\n    (\"M3\", \"generator\", GEN,\n     \"\\\"# NOT AUTHORITY. This candidate-lane projection binds nothing and states no\\\",\",\n     \"\\\"# This candidate-lane projection states no\\\",\",\n     \"--selftest\", \"SELFTEST FAIL: the header carries the non-authority banner\"),\n    (\"M4\", \"generator\", GEN,\n     \"+ \\\"; \\\".join(f\\\"{', '.join(secs)} {kind}\\\" for kind, secs in by_kind.items())\",\n     \"+ \\\"see the code\\\"\",\n     \"--selftest\", \"SELFTEST FAIL: the header states every section-kind and phase rule\"),\n    (\"M5\", \"generator\", GEN,\n     \"findings += [f\\\"STATUS MISMATCH: {line}\\\" for line in status_mismatches(generated)]\",\n     \"findings += []\",\n     \"--selftest\", \"SELFTEST FAIL: --check fails on a mismatch even when the committed index agrees\"),\n    (\"M6\", \"generator\", GEN,\n     \"    if len(values) == 1 and None not in values:\\n        return values.pop()\",\n     \"    if values - {None}:\\n        return sorted(values - {None})[0]\",\n     \"--selftest\", \"SELFTEST FAIL: a divergent status_source renders [Unknown]\"),\n    (\"M7\", \"generator\", GEN,\n     \"        return after != copied(rel, lambda t: t)\",\n     \"        return after != base\",\n     \"--selftest\", \"SELFTEST FAIL: a no-op edit does not register as a change\"),\n    (\"I1\", \"input\", README,\n     \"\\nstatus_source: owner-act-record\",\n     \"\\nstatus_source: self-declared\",\n     \"--check\", \"STATUS MISMATCH: status_source: [Unknown] — modules disagree: owner-act-record, self-declared\"),\n    (\"I2\", \"input\", INDEX,\n     \"{id: RFC1-33, module: RFC-0001-project-graph-identity-state-planes.md, kind: phase-rule}\",\n     \"{id: RFC1-33, module: RFC-0001-project-graph-identity-state-planes.md, kind: normative}\",\n     \"--check\", \"DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration\"),\n    (\"I3\", \"input\", VER,\n     \"PHASE_RULE_CLAUSES = [\\\"RFC1-33\\\", \",\n     \"PHASE_RULE_CLAUSES = [\",\n     \"--check\", \"DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration\"),\n    (\"I4\", \"input\", INDEX,\n     \"# NOT AUTHORITY. This candidate-lane projection binds nothing and states no\\n\",\n     \"\",\n     \"--check\", \"DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration\"),\n]\n\nresults = []\nfor mid, kind, rel, old, new, flag, expect in MUTANTS:\n    tmp = pathlib.Path(tempfile.mkdtemp(prefix=f\"82ci-{mid}-\"))\n    try:\n        archive = subprocess.run([\"git\", \"archive\", COMMIT, \".syzygy\"], cwd=REPO, capture_output=True, check=True).stdout\n        subprocess.run([\"tar\", \"-x\", \"-C\", str(tmp)], input=archive, check=True)\n        target = tmp / rel\n        text = target.read_text(encoding=\"utf-8\")\n        occurrences = text.count(old)\n        target.write_text(text.replace(old, new), encoding=\"utf-8\")\n        run = subprocess.run([sys.executable, str(tmp / GEN), flag], cwd=tmp, capture_output=True, text=True)\n        out = run.stdout + run.stderr\n        killed = occurrences >= 1 and run.returncode != 0 and expect in out\n        results.append({\"id\": mid, \"kind\": kind, \"file\": rel, \"old\": old, \"new\": new,\n                        \"occurrencesReplaced\": occurrences, \"command\": f\"python3 {GEN} {flag}\",\n                        \"expected\": expect, \"exitCode\": run.returncode, \"killed\": killed,\n                        \"outputTail\": out.strip().splitlines()[-3:]})\n    finally:\n        shutil.rmtree(tmp, ignore_errors=True)\n\nprint(json.dumps({\"commit\": COMMIT, \"mutants\": results,\n                  \"killed\": sum(r[\"killed\"] for r in results), \"total\": len(results)}, indent=2, ensure_ascii=False))\n"
+}
