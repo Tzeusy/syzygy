@@ -120,10 +120,13 @@ READER_MARK = "\nReader definitions:\n"
 #: Load-bearing fragments of the proposed reader definitions. Each must occur
 #: exactly once, whitespace-normalized.
 READER_REQUIRED_ONCE = (
-    "Each rule declares whether it needs the root index read",
+    "Each rule declares whether it needs the root index read, and every source carries the name of the rule that admitted it.",
+    "The flag belongs to the rule; a loaded profile sets it for each tree population it declares.",
     "The pillar-root and pillar-index rules need the root index; the baseline-spec and roster rules, whose path patterns these definitions write, do not.",
     "When the root index was not read, a rule that needs it mints no item",
-    "states that it was derived without a read root index",
+    "the pillar rules name no source without the root index, so they admit none",
+    "When the root index was not read, a rule that does not need it still admits its sources",
+    "every class and category item denominator, and every source-path population total, that counts one of them states that it was derived without a read root index",
     "it fails the class whose row it reads, in that source",
     "a heading at that level that no row of the source's grammar declares is an unenumerated heading",
     "An unenumerated heading mints no item and fails nothing",
@@ -134,8 +137,10 @@ READER_REQUIRED_ONCE = (
     "the class yields none of its items from that source. A class that fails never produces a partial item set;",
     "an unenumerated heading is not a failure, and the items it leaves in place are complete for the headings the row declares.",
     "A source in which a class fails keeps every other class it is assigned",
-    "is partially extracted: its own item denominator is Unknown",
-    "is Unknown whenever the class is Unknown in any of those sources",
+    "partially extracted, and states for each class either its items and denominator or its failure and reason",
+    "A source's own item denominator is Unknown whenever any class it is assigned has an Unknown item denominator in it, for any reason",
+    "is extracted, not partially extracted, and its own item denominator is still Unknown",
+    "A class's item denominator across its sources, and its category's, is Unknown whenever the class is Unknown in any of those sources",
     "has no class that reads: every class it is assigned has an Unknown item denominator in it.",
 )
 #: Each of Butlers' two tree populations declares it does not need the root index.
@@ -153,17 +158,29 @@ READER_REPLACED = (
 REQ_REQUIRED_ONCE = (
     "Each class of a source SHALL be accounted for on its own",
     "SHALL leave its own item denominator there Unknown without withholding the items of any other class the source reads",
-    "SHALL be surfaced, never skipped",
+    "a source with a class whose item denominator is Unknown SHALL leave its own item denominator Unknown",
+    "an unenumerated heading SHALL be surfaced, never skipped",
     "a count derived without a read root index SHALL say so wherever it is shown",
     "a source assigned three classes in which one class fails and two read",
     "holds a tenth level-3 heading",
     "an observation whose root index was not read",
+    "each partially extracted source's per-class outcome, each unenumerated heading with its anchor and route, and each root-index qualification",
     "The comparison is made per source and class",
     "a failed class's D is Unknown while each sibling's D is known",
-    "an independent scan of each enclosing section finds every unenumerated heading",
+    "each source with a class whose D is Unknown has its own D Unknown",
+    "an independent scan of each enclosing section finds every unenumerated heading, the count per source and class equals the count the answer gives",
+    "every source names the rule that an independent derivation of the source-path population admits it under",
     "a failed class emits a partial population",
     "a failed class withholds the items of a sibling class that reads",
-    "an unenumerated heading is skipped or mints an item",
+    "a class or category item denominator that counts a failed class or an unenumerated heading is presented as known",
+    "a source with a class whose item denominator is Unknown presents its own item denominator as known",
+    "an unenumerated heading is skipped or mints an item or is miscounted",
+    "a source names no rule or a rule other than the one that admitted it",
+    "a count derived without a read root index is shown without that qualification",
+    "the failed class's item denominator in that source, its class's and its category's item denominators render Unknown with the failure's reason",
+    "and the V1 index's own item denominator, render Unknown with the reason unenumerated-heading",
+    "nor does any source of a loaded profile's tree population that does not declare `rootIndexRequired`",
+    "every admitted source names the rule that admitted it",
     "a rule that needs the root index mints an item when it was not read",
 )
 #: Signed PWB-REQ-002 lines the amendment replaces, and nothing else.
@@ -605,6 +622,54 @@ def selftest() -> int:
         "per-class oracle dropped": (
             SPEC, _replace(spec, "The comparison is made per source and class:", "The comparison is made per source:"),
             "PWB-REQ-002 carries 0 copies of required phrase",
+        ),
+        "category clause dropped": (
+            SPEC, _replace(spec, "across its sources, and its category's, is", "across its sources is"),
+            "the reader definitions carries 0 copies of required phrase: \"A class's item denominator across",
+        ),
+        "root admission inverted": (
+            SPEC, _replace(spec, "a rule that does not need it still\n    admits its sources", "a rule that does not need it mints\n    no item"),
+            "the reader definitions carries 0 copies of required phrase: 'When the root index was not read, a rule that does not need",
+        ),
+        "population total unqualified": (
+            SPEC, _replace(spec, "and\n    every source-path population total, that", "that"),
+            "the reader definitions carries 0 copies of required phrase: 'every class and category item denominator, and every",
+        ),
+        "rule provenance dropped": (
+            SPEC, _replace(spec, ", and every\n    source carries the name of the rule that admitted it.", "."),
+            "the reader definitions carries 0 copies of required phrase: 'Each rule declares whether",
+        ),
+        "source denominator rule dropped": (
+            SPEC, _replace(spec, "A source's own item denominator is Unknown whenever", "A source's own item denominator is known whenever"),
+            "the reader definitions carries 0 copies of required phrase: \"A source's own item denominator is Unknown",
+        ),
+        "source denominator SHALL dropped": (
+            SPEC, _replace(spec, "a source with a\nclass whose item denominator is Unknown SHALL leave its own item denominator\nUnknown; ", ""),
+            "PWB-REQ-002 carries 0 copies of required phrase: 'a source with a class whose item denominator is Unknown",
+        ),
+        "SHALL broadened": (
+            SPEC, _replace(spec, "an unenumerated heading SHALL be surfaced", "a heading no grammar enumerates SHALL be surfaced"),
+            "PWB-REQ-002 carries 0 copies of required phrase: 'an unenumerated heading SHALL",
+        ),
+        "denominator falsifier dropped": (
+            SPEC, _replace(spec, "a class or category item denominator that counts a failed class\n  or an unenumerated heading is presented as known, ", ""),
+            "PWB-REQ-002 carries 0 copies of required phrase: 'a class or category item denominator that counts",
+        ),
+        "qualification falsifier dropped": (
+            SPEC, _replace(spec, "a count derived without a read root index is shown without\n  that qualification, ", ""),
+            "PWB-REQ-002 carries 0 copies of required phrase: 'a count derived without a read root index is shown",
+        ),
+        "observable additions dropped": (
+            SPEC, _replace(spec, ", together with each partially\n  extracted source's per-class outcome, each unenumerated heading with its\n  anchor and route, and each root-index qualification.", "."),
+            "PWB-REQ-002 carries 0 copies of required phrase: \"each partially extracted source",
+        ),
+        "heading count oracle dropped": (
+            SPEC, _replace(spec, "the count per source and class\n  equals the count the answer gives", "the count per source is shown"),
+            "PWB-REQ-002 carries 0 copies of required phrase: 'an independent scan of each enclosing",
+        ),
+        "scenario category weakened": (
+            SPEC, _replace(spec, "its class's\n  and its category's item denominators", "and its class's\n  item denominator"),
+            "PWB-REQ-002 carries 0 copies of required phrase: \"the failed class's item denominator in that source",
         ),
         "signed PWB-REQ-002 line edited": (
             SPEC, _replace(spec, "Group: Coverage. Form: **invariant**.\n", "Group: Coverage. Form: **sweep**.\n"),

@@ -78,10 +78,17 @@ the consented class."
 Each class a source is assigned is read on its own. A grammar failure fails
 the one class whose row it reads, in that source. The source's other classes
 keep their items and their own denominators. A source with some failed and
-some read classes is **partially extracted**: its own item denominator is
-Unknown, and it states each class's outcome. A class that fails still yields
-none of its items: the "no partial item set" rule now holds per class, not
-per source.
+some read classes is **partially extracted**, and states each class's
+outcome. A class that fails still yields none of its items: the "no partial
+item set" rule now holds per class, not per source.
+
+- **The source's own denominator.** A source's own item denominator is
+  Unknown whenever any class it is assigned is Unknown in it, for any
+  reason: a failed class, or a class with an unenumerated heading. So a
+  source whose every class reads but one carries an unenumerated heading is
+  extracted, not partially extracted, and its own denominator is still
+  Unknown. [Inferred] Without this, the V1 index could show a known item
+  total while the items under an extra heading go unread (VIS-1).
 
 - **Aggregates.** A class's denominator across its sources, and its
   category's, is Unknown whenever the class is Unknown in any source. This
@@ -121,21 +128,27 @@ modeled, so nothing true is withdrawn.
 headings at one level: that is the shape of the V1 catalog (nine level-3
 headings, one bulleted-list row), the case the funnel measured. A
 `heading-section` row is excluded on purpose: Butlers' V1-scope row names two
-level-2 headings in the V1 index, and enclosing that level would flag every
-undeclared level-2 heading in that file, where a level-2 heading need not name
-a category at all. Separately, the "no row of the source's grammar declares"
-clause keeps a heading that another class reads from being flagged.
+level-2 headings in `v1.md`, and enclosing that level would flag every other
+level-2 heading in the file, including those other classes declare. The
+"declared by any row of the source's grammar" clause stops a heading another
+class reads from being flagged.
 
-[Unknown] Whether Butlers' V1 index has a level-3 heading outside the nine
+[Unknown] Whether Butlers' `v1.md` has a level-3 heading outside the nine
 inside the level-2 sections that hold the catalog. No Butlers body was read
 for this package. If it has, building this amendment makes Butlers'
 catalog-entry and Heart and Soul denominators Unknown until the heading is
 declared or removed. That is the honest outcome, and it is stated here
 before signing so it is not a surprise.
 
-Out of scope: the funnel also named root-summary and precedence headings.
-Those grammars belong to PWB-REQ-004, not PWB-REQ-002, so this delta leaves
-them alone (see "What explicitly does not change").
+**Not carried: root-summary and precedence headings.** The funnel's Q3,
+which you ruled on without narrowing it, also named "an unenumerated
+root-summary or precedence heading". Those grammars belong to PWB-REQ-004,
+not PWB-REQ-002, so this delta leaves them alone (see "What explicitly does
+not change"). That leaves half of the Q3 ruling undesigned. The drafter took
+this reading from the record's gloss ("One CC-REV-2 semantic delta to
+PWB-REQ-002"), which is not the owner's words, so the packet puts it to you
+as question 6: defer the root grammars to a separate PWB-REQ-004 delta, or
+widen this package. It is also residual 5 below.
 
 ### 3. Root independence (P-82 Q4)
 
@@ -145,12 +158,22 @@ every source carries the name of the rule that admitted it.
 - **Values.** The pillar-root and pillar-index rules need it. The
   baseline-spec and roster rules do not, because these definitions write
   their path patterns rather than the root index naming them.
-- **Unread root index, rule that needs it:** it mints no item. Each source
-  its tree pattern matches stays counted with an Unknown item denominator
-  and the reason that the root index was not read.
+- **The flag belongs to the rule.** A loaded profile sets it for each tree
+  population it declares.
+- **Unread root index, rule that needs it:** it mints no item. Where the rule
+  is a tree population, each source its path pattern matches stays counted
+  with an Unknown item denominator and the reason that the root index was
+  not read. The pillar rules name no source without the root index, so they
+  admit none. For Butlers' built-in grammar, then, only "mints no item" has
+  effect.
 - **Unread root index, rule that does not need it:** it still admits its
-  sources, and every class and category count that includes one of them
-  says it was derived without a read root index.
+  sources, and every class and category count, and every source-path
+  population total, that includes one of them says it was derived without a
+  read root index.
+- **Rule provenance is checked.** [Observed at `ef5d5f03`]
+  `ManifestSource` in `project-shape-manifest.ts` already carries the rule
+  that admitted a source. The oracle compares it with an independent
+  derivation of the source-path population, and a scenario asserts it.
 - **Loaded profiles.** A profile's tree population declares
   `rootIndexRequired`, true or false. One that does not declare it needs
   the root index: the fail-closed default.
@@ -187,16 +210,20 @@ Proposed:
 
 ```text
   - Each rule declares whether it needs the root index read, and every
-    source carries the name of the rule that admitted it. The pillar-root and
-    pillar-index rules need the root index; the baseline-spec and roster
-    rules, whose path patterns these definitions write, do not.
-  - When the root index was not read, a rule that needs it mints no item:
-    each source its tree path pattern matches stays counted in the
-    source-path population with an Unknown item denominator, giving the
-    reason that the root index was not read.
+    source carries the name of the rule that admitted it. The flag belongs to
+    the rule; a loaded profile sets it for each tree population it declares.
+    The pillar-root and pillar-index rules need the root index; the
+    baseline-spec and roster rules, whose path patterns these definitions
+    write, do not.
+  - When the root index was not read, a rule that needs it mints no item.
+    Where that rule is a tree population, each source its path pattern
+    matches stays counted in the source-path population with an Unknown item
+    denominator, giving the reason that the root index was not read; the
+    pillar rules name no source without the root index, so they admit none.
   - When the root index was not read, a rule that does not need it still
-    admits its sources, and every class and category item denominator that
-    counts one of them states that it was derived without a read root index.
+    admits its sources, and every class and category item denominator, and
+    every source-path population total, that counts one of them states that
+    it was derived without a read root index.
 ```
 
 ### Hunk 2 — Reader definitions — shared heading rules
@@ -266,9 +293,13 @@ Proposed:
   - A source in which a class fails keeps every other class it is assigned:
     each class that reads without failure keeps its items and its own item
     denominator. A source in which some classes fail and others read is
-    partially extracted: its own item denominator is Unknown, and it states
-    for each class either its items and denominator or its failure and
-    reason.
+    partially extracted, and states for each class either its items and
+    denominator or its failure and reason.
+  - A source's own item denominator is Unknown whenever any class it is
+    assigned has an Unknown item denominator in it, for any reason: a failed
+    class, or a class with an unenumerated heading. A source whose every
+    class reads but one carries an unenumerated heading is extracted, not
+    partially extracted, and its own item denominator is still Unknown.
   - A class's item denominator across its sources, and its category's, is
     Unknown whenever the class is Unknown in any of those sources; the items
     of the sources where it read stay modeled and counted.
@@ -320,8 +351,9 @@ Proposed:
 ```text
 Each class of a source SHALL be accounted for on its own: a class that fails
 in a source SHALL leave its own item denominator there Unknown without
-withholding the items of any other class the source reads; a heading that a
-class's grammar does not enumerate SHALL be surfaced, never skipped; and a
+withholding the items of any other class the source reads; a source with a
+class whose item denominator is Unknown SHALL leave its own item denominator
+Unknown; an unenumerated heading SHALL be surfaced, never skipped; and a
 count derived without a read root index SHALL say so wherever it is shown.
 ```
 
@@ -331,6 +363,7 @@ Current:
 
 ```text
   loaded profile.
+[… signed lines between are unchanged …]
   the machine answer and reachable from Polaris.
 ```
 
@@ -341,6 +374,7 @@ Proposed:
   fails and two read, a section enclosing the V1 catalog headings that holds
   a tenth level-3 heading, and an observation whose root index was not read
   while baseline specs and roster directories exist in the tree.
+[… signed lines between are unchanged …]
   the machine answer and reachable from Polaris, together with each partially
   extracted source's per-class outcome, each unenumerated heading with its
   anchor and route, and each root-index qualification.
@@ -352,6 +386,7 @@ Current:
 
 ```text
   denominator.
+[… signed lines between are unchanged …]
 - **Falsifier**: the independent extractors disagree, a malformed source emits
   a partial population, a known source disappears, an admitted item appears twice or
 ```
@@ -362,18 +397,25 @@ Proposed:
   denominator. The comparison is made per source and class: both extractors
   must name the same failed classes with the same reasons, and the same
   identities and D for every class that reads, so a failed class's D is
-  Unknown while each sibling's D is known; an independent scan of each
-  enclosing section finds every unenumerated heading, and each one is
-  surfaced; and with the root index unread, every source a rule that does not
-  need it admitted carries the qualification, while no source of a rule that
-  needs it mints an item.
+  Unknown while each sibling's D is known, and each source with a class whose
+  D is Unknown has its own D Unknown; an independent scan of each enclosing
+  section finds every unenumerated heading, the count per source and class
+  equals the count the answer gives, and each one is surfaced; every source
+  names the rule that an independent derivation of the source-path
+  population admits it under; and with the root index unread, every source a
+  rule that does not need it admitted carries the qualification, while no
+  source of a rule that needs it mints an item.
+[… signed lines between are unchanged …]
 - **Falsifier**: the independent extractors disagree, a failed class emits a
   partial population, a failed class withholds the items of a sibling class
   that reads, a class or category item denominator that counts a failed class
-  or an unenumerated heading is presented as known, an unenumerated heading is
-  skipped or mints an item, a count derived without a read root index is shown
-  without that qualification, a rule that needs the root index mints an item
-  when it was not read, a known source disappears, an admitted item appears twice or
+  or an unenumerated heading is presented as known, a source with a class
+  whose item denominator is Unknown presents its own item denominator as
+  known, an unenumerated heading is skipped or mints an item or is
+  miscounted, a source names no rule or a rule other than the one that
+  admitted it, a count derived without a read root index is shown without
+  that qualification, a rule that needs the root index mints an item when it
+  was not read, a known source disappears, an admitted item appears twice or
 ```
 
 ### Hunk 10 — PWB-REQ-002 — scenarios
@@ -405,8 +447,8 @@ Proposed:
 - **THEN** that heading is surfaced with its text and exact source anchor,
   routes to its source and mints no item
 - **AND** the items under the nine headings stay modeled while the
-  catalog-entry and Heart and Soul item denominators render Unknown with the
-  reason unenumerated-heading
+  catalog-entry and Heart and Soul item denominators, and the V1 index's own
+  item denominator, render Unknown with the reason unenumerated-heading
 
 #### Scenario: Counts derived without a read root index say so
 
@@ -415,7 +457,10 @@ Proposed:
 - **THEN** the baseline-spec and roster sources are admitted and every class
   and category count that includes them states that it was derived without a
   read root index
-- **AND** no source of a rule that needs the root index mints an item
+- **AND** no source of a rule that needs the root index mints an item, nor
+  does any source of a loaded profile's tree population that does not
+  declare `rootIndexRequired`
+- **AND** every admitted source names the rule that admitted it
 ```
 
 ## What explicitly does NOT change
@@ -493,6 +538,9 @@ short:
   4. The observer registry entry and the secret-classification policy pin a
      PWB spec digest; both are already stale and Unknown until their own
      act (`syzygy-jloi`). Signing this moves the digest again.
+  5. Half of the Q3 ruling, unenumerated root-summary and precedence
+     headings, is not designed here. Packet question 6 asks whether a
+     separate PWB-REQ-004 delta carries it or this package widens.
 - **Implementation** needs its own authorization, after sign-off.
 
 ## Review
@@ -500,5 +548,8 @@ short:
 **Required class:** full review (Normative, CC-REV-1), one fresh-context
 round, raw retained verbatim.
 **Reviewer:** a fresh-context agent that did not draft this package.
-**Verdict:** recorded in `ROUND-1-DISPOSITIONS.md` beside this file, copied
-from the raw.
+**Verdict:** round 1 `REVISE`, copied from
+`docs/reviews/R-PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-1-RAW.md` line 4 and
+dispositioned in `ROUND-1-DISPOSITIONS.md` beside this file. Under the
+stopping rule set before the round, the findings were repaired and no round 2
+was dispatched: the repaired bytes are unreviewed.

@@ -1,13 +1,15 @@
 # Owner decision packet — PWB class-granular extraction amendment (M15)
 
 > **Candidate — binds nothing.** Nothing here is signed, adopted or labelled
-> accepted. This packet puts five questions to the owner, and only the
+> accepted. This packet puts six questions to the owner, and only the
 > owner's answer binds anything (VIS-4).
 
 **Status:** drafted 2026-10-03 under your ruling P-82 (A) of 2026-09-21, on
-bead `syzygy-dov.15.1`. The review round's verdict and its dispositions are
-in `ROUND-1-DISPOSITIONS.md` beside this file, which also says whether this
-version is ready to offer.
+bead `syzygy-dov.15.1`. Its one review round returned `REVISE`; the findings
+were repaired and, under the stopping rule set before the round, no second
+round was dispatched. **These bytes are unreviewed and not ready to sign as
+v1.0.** `ROUND-1-DISPOSITIONS.md` beside this file says what each finding
+changed.
 
 ## What you would be signing
 
@@ -41,18 +43,23 @@ dependency file. No other requirement, no contract-coverage row, no warrant.
 - **It reads nothing new.** No Butlers body is read beyond the consented
   class.
 - **It changes nothing visible on Butlers today, as far as is known.**
-  Butlers' root index reads, and the latest recorded run had no grammar
-  failure. One exception is [Unknown]: whether the V1 index has another level-3
-  heading beside the catalog's nine. If it does, the catalog count would read
-  Unknown once this is built. No Butlers body was read to find out.
+  [Observed] The latest recorded run, at Butlers `32f38feb`
+  (`docs/evidence/smooth-example-live-run-2026-10-03.json`), has 9 sources
+  with an Unknown item denominator, and they are the 9 withheld ones, equal
+  per source (that record's `unknownDenominatorWithheldComparison`, added in
+  `b044a756`); none is Unknown for a grammar failure. One exception is [Unknown]: whether the
+  V1 index has another level-3 heading beside the catalog's nine. If it
+  does, the catalog count, and the V1 index's own count, would read Unknown
+  once this is built. No Butlers body was read to find out.
 
 ## Question 1 — sign this version?
 
 | Option | Meaning |
 |---|---|
-| **Sign v1.0** (recommended once the review clears) | The patches are applied in the sign-off change by version tag (Scope A covers PWB specification deltas). PWB-REQ-002 gains three scenarios. |
+| **Sign v1.0** (not recommended yet: the repaired bytes are unreviewed; recommended after a clearing round) | The patches are applied in the sign-off change by version tag (Scope A covers PWB specification deltas). PWB-REQ-002 gains three scenarios. |
 | Decline | PWB-REQ-002 stays as signed: one failing class keeps making its whole source Unknown. |
 | Revise | Name what to change, and a new version gets a new review round. |
+| **Order a confirmation round on these bytes** (recommended) | One fresh-context round over the repaired bytes; a notes-only verdict clears them for signing. |
 
 ## Question 2 — how an unenumerated heading is counted
 
@@ -90,5 +97,19 @@ specification changes do not overlap.
 |---|---|
 | **Whichever is ready first lands first** (recommended) | The second is regenerated over the first's applied bytes, renumbered and reviewed again before it is offered. |
 | This one waits for P-85 | It is regenerated after P-85 is signed or declined. |
+
+## Question 6 — the root-summary and precedence half of Q3
+
+The funnel's Q3, which you ruled on, named "a level-3 catalog heading
+outside the closed vocabulary, or an unenumerated root-summary or precedence
+heading". This package designs only the first. Those root grammars belong
+to PWB-REQ-004, and the drafter read the record's gloss ("One CC-REV-2
+semantic delta to PWB-REQ-002") as narrowing the package. That gloss is not
+your words.
+
+| Option | Meaning |
+|---|---|
+| **Defer to a separate PWB-REQ-004 delta** (recommended) | This package stays on PWB-REQ-002. A second package, drafted after this one is signed, carries the root grammars. Until then an extra root-summary or precedence heading is still skipped silently. |
+| Widen this package | It also amends PWB-REQ-004, and needs a new review round over the wider bytes. |
 
 **If unanswered,** nothing is signed and the package stays a candidate.

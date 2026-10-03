@@ -8,10 +8,10 @@ bd2504cb580ca73eeb2510481ca4665ee11e2127360fc0be12c104f347fb515f  openspec/chang
 d34840d46356696609b21ef3997e86c9944c8cbe8e7447608390e494f80db869  openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
 1e4c0c80d5d120647fb616c50dbead8bc3047410771691fc19d154018beb22f6  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
 d54acd212916fb83047874484c9e47acd1fade453384403ba600a7b2a0244d9c  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
-b14013a886bee78052b8dbe2759f0db016616ac8a4f006fa5f9eb19605a631ed  openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
+a8a7792a06642413835d7cd39f7508354c2a1f5be6eb45f0ae8e83af13951ee9  openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
 f28404be66a4241503f2214757d640361751934b2ab308dafeada5c6d2152e50  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0001-0003.md
 ec091e743cb95070b30980021f2b5bdf054128161a86f6f8a8bbdf7678ffbc29  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md
 6e480d6b94734abd41b15fbdcab1e6d7df9d60f68f0f3f5b0d66f98462728cd0  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md
 eff7f6d0d66647e3b9e5b4c40eccf112a14c9d0c6bc1835b51da1e09d96d1181  openspec/changes/polaris-project-wide-butlers-model/design.md
 3a7c7de19e59cd8a589a280607f47cf1192281a3332b02c0ecde8fb832d545bc  openspec/changes/polaris-project-wide-butlers-model/proposal.md
-02604a8b142d92f136ccb12871b2db2a41badafb657eae5121fef5d42c38e710  openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+ad7c234d1f88d02524340e2e4ac0ba892b1df043679511920151a29c1915aa76  openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
