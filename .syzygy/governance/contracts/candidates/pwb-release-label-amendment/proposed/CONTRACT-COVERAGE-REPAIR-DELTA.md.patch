@@ -1,0 +1,37 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md b/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
+index 54ef8bb..62d7d27 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
+@@ -7,6 +7,12 @@ invalidated by the owner-directed PWB state-(1) amendment, while preserving
+ their base bytes and consequence identities. Unlisted matrix rows remain
+ effective.
+ 
++The release-label amendment to PWB-REQ-001 supersedes `RFC4-11.c4`, whose
++not-applicable basis was that no commit history is rendered: a described
++release label renders a count of later commits. Its two repair rows split the
++consequence into the commit count, which is covered, and the PR facts, which
++are still not rendered.
++
+ Across every effective row, the amended contract treats a valid state-(1) or
+ state-(2) human owner act as effective and requires the exact state to remain
+ visible; missing or invalid acts retain the existing fail-closed consequence.
+@@ -19,8 +25,8 @@ silently downgrades.
+ Each effective consequence has exactly one disposition. Rows that split a
+ broader audited consequence use distinct repair IDs and jointly supersede it.
+ 
+-Declared totals: **92 rows; 77 superseded base rows; 60 covered; 27 Unknown
+-uncovered; 5 believed not applicable.**
++Declared totals: **94 rows; 78 superseded base rows; 61 covered; 27 Unknown
++uncovered; 6 believed not applicable.**
+ 
+ | Repair consequence ID | Supersedes | Clause | Effective consequence | Disposition |
+ |---|---|---|---|---|
+@@ -116,6 +122,8 @@ uncovered; 5 believed not applicable.**
+ | RFC6-14.r4 | RFC6-14.c5 | RFC6-14 | The `dismissed-by-decision` sibling state travels beside the unchanged epistemic tuple | covered:PWB-REQ-007 |
+ | RFC6-14.r5 | RFC6-14.c5 | RFC6-14 | `challenge-pending` and `editorial-draft` travel beside the epistemic tuple | unknown-uncovered |
+ | RFC6-14.r6 | RFC6-14.c5 | RFC6-14 | The used `unadopted-draft` sibling state travels beside the epistemic tuple | unknown-uncovered |
++| RFC4-11.r1 | RFC4-11.c4 | RFC4-11 | A count over commit history is computed only from completely captured ancestry and is never reconstructed from history the adapter cannot reach | covered:PWB-REQ-001 |
++| RFC4-11.r2 | RFC4-11.c4 | RFC4-11 | Squash/deletion loss becomes reduced-fidelity PR facts | believed-not-applicable |
+ 
+ ## Verification rule
+ 

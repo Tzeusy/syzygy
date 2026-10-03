@@ -1,0 +1,29 @@
+--- a/openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
+@@ -9,5 +9,5 @@
+ > nothing here quotes or paraphrases any clause.
+ >
+-> Source: `spec.md` sha256 `d0ac6ba20501798e715aae42e16fbc7555fc8d4d60f9f16e01f376fb75349c4a` — 17 requirement(s), 101 distinct authorities.
++> Source: `spec.md` sha256 `d6b728571a9b7f7ca3c426e2fc7d70ad64afdc3dec5e4e47ff9dc29b0d801f77` — 17 requirement(s), 101 distinct authorities.
+
+ ## doctrine (9)
+@@ -19,5 +19,5 @@
+ | `SEC-5` | PWB-REQ-003, PWB-REQ-005, PWB-REQ-006 |
+ | `VIS-1` | PWB-REQ-001, PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-006, PWB-REQ-007, PWB-REQ-010, PWB-REQ-011, PWB-REQ-012, PWB-REQ-013, PWB-REQ-014, PWB-REQ-015, PWB-REQ-016, PWB-REQ-020, PWB-REQ-021 |
+-| `VIS-2` | PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-005, PWB-REQ-006, PWB-REQ-007, PWB-REQ-013, PWB-REQ-014, PWB-REQ-015, PWB-REQ-021, PWB-REQ-022 |
++| `VIS-2` | PWB-REQ-001, PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-005, PWB-REQ-006, PWB-REQ-007, PWB-REQ-013, PWB-REQ-014, PWB-REQ-015, PWB-REQ-021, PWB-REQ-022 |
+ | `VIS-3` | PWB-REQ-010, PWB-REQ-011, PWB-REQ-012, PWB-REQ-016, PWB-REQ-021 |
+ | `VIS-4` | PWB-REQ-005, PWB-REQ-007, PWB-REQ-013, PWB-REQ-015, PWB-REQ-022 |
+@@ -41,10 +41,10 @@
+ | `RFC1-31` | PWB-REQ-013 |
+ | `RFC2-1` | PWB-REQ-001, PWB-REQ-005, PWB-REQ-006, PWB-REQ-007, PWB-REQ-022 |
+-| `RFC2-2` | PWB-REQ-003 |
++| `RFC2-2` | PWB-REQ-001, PWB-REQ-003 |
+ | `RFC2-9` | PWB-REQ-007 |
+ | `RFC2-10` | PWB-REQ-007 |
+ | `RFC2-15` | PWB-REQ-007 |
+ | `RFC2-23` | PWB-REQ-002, PWB-REQ-003, PWB-REQ-006, PWB-REQ-007 |
+-| `RFC2-24` | PWB-REQ-007, PWB-REQ-015 |
++| `RFC2-24` | PWB-REQ-001, PWB-REQ-007, PWB-REQ-015 |
+ | `RFC2-25` | PWB-REQ-007 |
+ | `RFC3-7` | PWB-REQ-005 |

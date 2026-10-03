@@ -1,0 +1,56 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/openspec/changes/polaris-project-wide-butlers-model/design.md
+index 3c6873b..07bc3a7 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/design.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
+@@ -529,6 +529,51 @@ flowchart TD
+     V -- "no" --> F["No SVG emitted; text equivalent<br/>kept; failure disclosed"]
+ ```
+ 
++### 12. Name the revision by its release label
++
++An owner reads "Butlers v1.0.23" faster than a 40-digit object id. Polaris
++leads with the label and keeps the object id beneath it, because a tag can be
++moved and the object id cannot.
++
++- **Inputs.** Two deterministic evaluation inputs, each with its own
++  identity, are taken at the capture instant:
++  - the captured tag set: every ref under `refs/tags/`, each with the object
++    it peels to;
++  - the captured ancestry: the parent ids of the commits in the revision's
++    history, complete only when every one was read.
++
++  Ref names and object ids are all that is taken. Tag messages, signatures
++  and commit messages are never read into the model.
++- **Form.** The first applicable test names the revision:
++  - not read, when the tag set was not captured;
++  - tagged, when a tag peels to the revision;
++  - not read, when the ancestry is incomplete;
++  - described, when the nearest reaching tag is some commits behind;
++  - untagged, when no tag reaches the revision.
++
++  "Not read" is never shown as "untagged": an absence nobody looked for is
++  Unknown (VIS-2).
++- **Binding.** Claims, evaluation identities, links and comparisons bind to
++  the object id. An evaluation names the earlier evaluations it is compared
++  with as inputs; a tag one of them bound to another commit is disclosed as
++  moved, naming both commits.
++- **Read authority.** Reading the tag set and counting commits back to a tag
++  read Git refs and commit ancestry. The observer's registry entry does not
++  admit either today, so until a registry amendment does, every label takes
++  the not-read form.
++
++```mermaid
++flowchart TD
++    T{"Tag set captured?"} -- "no" --> NR["Not read: short id,<br/>reason and route; never 'untagged'"]
++    T -- "yes" --> Z{"A tag peels to<br/>the revision?"}
++    Z -- "yes" --> TG["Tagged: Butlers v1.0.23"]
++    Z -- "no" --> H{"Ancestry<br/>complete?"}
++    H -- "no" --> NR
++    H -- "yes" --> A{"A tag reaches it<br/>from an ancestor?"}
++    A -- "yes" --> DS["Described: nearest tag<br/>plus N later commits"]
++    A -- "no" --> UT["Untagged: short id,<br/>no release tag reaches it"]
++```
++
+ ## Risks / Trade-offs
+ 
+ Each known risk has a fail-closed answer; the one residual risk the owner
