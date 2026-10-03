@@ -1,17 +1,17 @@
 {
   "subject": {
-    "commit": "8ea9133ca41c7759212d8ca0dae93473ae436927",
+    "commit": "f357328561eeef049b35e80926cc9350fae6dcb6",
     "branch": "agent/dossier-engine-6",
     "fileSha256": {
       "apps/three-surface-poc/src/polaris-generation/dossier-main.ts": "724861f7b17be0f70ad4bded975869eda3854b6675b73280fdc5e1092fc3501d",
       "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts": "97603e5cce386536dbc1d614c86431172cbf2a1f58ee0429759911abf852941c",
-      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "f9998351a3e14ec1254efb69ad45fb3bb96d243236fe4cae4d26769e5b49e5b2",
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "948fe20f47f8a601d007b8ec3a5963cd56c99c60b4abea12255e6733d0561348",
       "apps/three-surface-poc/src/polaris-generation/isolated-git.ts": "1a8867e9038746d4515c09877c5b768bac964dc4b8e409647fcfaa3ed1d713b7"
     }
   },
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/three-surface-poc-app",
-  "ranAt": "2026-10-03T19:41:54+00:00",
+  "ranAt": "2026-10-03T20:02:52+00:00",
   "mutants": [
     {
       "id": "materialize-env-inherits",
@@ -523,9 +523,9 @@
       "totalTests": 25
     },
     {
-      "id": "identity-derived",
+      "id": "sole-derived",
       "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
-      "old": "  target = { ...target, repositoryId: ids[0]! };\n",
+      "old": "  target = { ...target, repositoryId: sole };\n",
       "new": "",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
@@ -535,10 +535,10 @@
       "totalTests": 25
     },
     {
-      "id": "identity-ambiguous-accepted",
+      "id": "sole-length",
       "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
-      "old": "if (ids.length !== 1) {",
-      "new": "if (ids.length === 0) {",
+      "old": "answer.length === 1 && typeof",
+      "new": "answer.length >= 1 && typeof",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
       ],
@@ -547,10 +547,10 @@
       "totalTests": 25
     },
     {
-      "id": "identity-zero-accepted",
+      "id": "sole-string-type",
       "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
-      "old": "if (ids.length !== 1) {",
-      "new": "if (ids.length > 1) {",
+      "old": "typeof answer[0] === 'string' && idPattern",
+      "new": "idPattern",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
       ],
@@ -559,10 +559,10 @@
       "totalTests": 25
     },
     {
-      "id": "identity-no-dedupe",
+      "id": "sole-pattern",
       "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
-      "old": "[...new Set((await records.repositoryIdsFor(target.url)).filter(",
-      "new": "[...((await records.repositoryIdsFor(target.url)).filter(",
+      "old": " && idPattern.test(answer[0]) ? answer[0]",
+      "new": " ? answer[0]",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
       ],
@@ -571,10 +571,34 @@
       "totalTests": 25
     },
     {
-      "id": "identity-pattern-dropped",
+      "id": "sole-array-check",
       "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
-      "old": "typeof id === 'string' && idPattern.test(id)",
-      "new": "typeof id === 'string'",
+      "old": "Array.isArray(answer) && answer.length === 1",
+      "new": "answer.length === 1",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "sole-throw-swallowed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "catch { answer = undefined; }",
+      "new": "catch (error) { throw error; }",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "sole-ambiguous-silent",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "answer.length > 1 ? `${answer.length}",
+      "new": "answer.length > 5 ? `${answer.length}",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
       ],
