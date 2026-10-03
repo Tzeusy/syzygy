@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "registryVersion": "1.0.0-candidate.1",
+  "status": "candidate-entry-no-effect-until-owner-act",
+  "governanceHome": ".syzygy/governance/declarations/adapter-registry",
+  "project": "project:syzygy",
+  "entries": [
+    {
+      "observerId": "polaris-provider-route-anthropic-agent-sdk",
+      "observerVersion": "1.0.0-candidate.1",
+      "role": "adapter",
+      "implementationId": "polaris-generation/provider-agent-sdk",
+      "implementationVersion": null,
+      "implementationStatus": "not-yet-implemented: the adapter is gap G2 of docs/polaris-generation/TRACKER.md; no provider SDK is imported anywhere in apps, packages or scripts. Until an implementation exists and its version is recorded in the snapshot, RFC4-3 admits no output from this entry. implementationVersion stays null (Unknown), never a placeholder",
+      "contractId": "RFC-0004/general-contract",
+      "contractVersion": "sha256:b21fc950103964c34e2f9b2d78c97ac8e03720f311738e0e6323afb29b8d6f0e",
+      "contractVersionSource": "the value the adopted Butlers observer entry declares for the same contract; re-derive by script before the offering",
+      "governingBehaviorContract": {
+        "id": "polaris-manifesto-generation",
+        "version": "Unknown: pinned by the offering step to the generation specification bytes in force, base REQ-polaris-generation-017 plus the understanding and tree-form amendments",
+        "signedBy": "pending exact owner act over this entry"
+      },
+      "subject": {
+        "observingProject": "project:syzygy",
+        "provider": "provider:anthropic"
+      },
+      "authorizationModes": [
+        "owner-trusted-bootstrap"
+      ],
+      "authorizationModeDerivation": "the entry needs an effective exact owner act (RFC3-16(a)) and the effective egress consent for the (project:syzygy, provider:anthropic) pair; owner-trusted-bootstrap while those acts are state (1); every other combination dispatches nothing",
+      "provenanceDisclosure": "The route is admitted on owner-trusted records; independent audit is not configured.",
+      "inputClasses": [
+        {
+          "class": "admitted-source-bundle",
+          "identityScheme": "canonical-json-sha256-of-admitted-input"
+        },
+        {
+          "class": "stage-prompt",
+          "identityScheme": "stage-plus-prompt-version"
+        },
+        {
+          "class": "response-schema",
+          "identityScheme": "stage-plus-schema-version"
+        },
+        {
+          "class": "egress-consent",
+          "identityScheme": "record-id-plus-version-plus-provenance-state"
+        },
+        {
+          "class": "content-classification-policy",
+          "identityScheme": "policy-id-plus-version-plus-content-digest-plus-provenance-state"
+        },
+        {
+          "class": "provider-route-registry-entry",
+          "identityScheme": "observer-id-plus-version-plus-content-digest-plus-provenance-state"
+        },
+        {
+          "class": "run-and-attempt-identity",
+          "identityScheme": "run-id-plus-stage-plus-attempt-ordinal"
+        },
+        {
+          "class": "run-budget",
+          "identityScheme": "canonical-json-sha256"
+        }
+      ],
+      "outputFactClasses": [
+        {
+          "class": "provider-reply-capture",
+          "identityScheme": "attempt-id-plus-sha256-of-reply-bytes"
+        },
+        {
+          "class": "usage-record",
+          "identityScheme": "attempt-id-plus-reported-or-unknown"
+        },
+        {
+          "class": "dispatch-evidence",
+          "identityScheme": "attempt-id-plus-captured-request-sha256"
+        },
+        {
+          "class": "unknown",
+          "identityScheme": "claim-identity-plus-closed-reason"
+        }
+      ],
+      "determinismClass": "capture",
+      "determinism": "every output is a recording of what the provider returned at a capture instant; a re-dispatch may legitimately differ. The generated prose is editorial inference, never an Observed claim and never repeatable by contract",
+      "typedAuthority": {
+        "authorityType": "model-provider",
+        "authorityTypeLabel": "[Inferred] a provider is an external authority of project:syzygy under RFC4-1; the typed-authority list in the RFC names version control, hosting, the scheduler and the OpenSpec CLI as examples, so this type name is the drafter's",
+        "questions": ["What did the provider return for this exact request?"],
+        "readAuthority": "none: the route reads no source. It transmits only the request the generator built, after the single egress check (RFC5-15), and receives one reply",
+        "writeSurface": [],
+        "runDirectoryWrites": "provider requests, replies, run records and the runtime's own state, including any session transcript, are written only inside the run directory under project:syzygy's state directory, outside git, from the start of the run; this is the egress record's retention line and the only local write",
+        "databaseAccess": [],
+        "networkAccess": ["the Anthropic API, through the Claude Agent SDK runtime, signed in with the owner's account; no other destination"],
+        "executeObservedCode": false,
+        "workingTreeRead": false,
+        "toolInvocation": []
+      },
+      "routeConditions": {
+        "source": "instances/egress-anthropic of the public-repo admission package; the egress record is the authority, this block only declares that the implementation will enforce it",
+        "tools": "every tool the runtime offers is disabled; the model sees only the request carries",
+        "ambientContext": "no instruction or memory files, user or project settings, MCP servers, hooks or environment summary; the working directory is an empty directory inside the run directory",
+        "telemetry": "telemetry, error reporting and update checks are disabled; a run whose runtime cannot disable them does not start",
+        "stateLocation": "a run whose runtime cannot keep its state and transcript inside the run directory does not start",
+        "acceptanceCheck": "the adapter is accepted only when a captured request shows the system prompt and messages the generator built and nothing else; the acceptance test runs against a local capture endpoint before any real call",
+        "fallback": "none: a failure never routes to another provider, to the direct API or to a tool; a different route is a new registry event"
+      },
+      "portMapping": {
+        "implements": "PipelinePorts.generate in packages/polaris-generation-core/src/pipeline.ts",
+        "consumes": ["permissionIdentity", "admit", "permitted", "releaseUnsent", "record", "lateReceipt"],
+        "note": "[Observed] the ports exist; [Unknown] how the runtime reports usage, a model identifier and late receipts, so usage fields are Unknown rather than zero when unreported"
+      },
+      "unknowns": [
+        "whether the Agent SDK on a subscription login can disable tools, ambient context and telemetry and can keep its transcript in the run directory (gap #21); the entry cannot be offered for the first real call until this is checked",
+        "the runtime's context window and rate limits",
+        "the provider's own retention under the signed-in account's terms, which the egress record discloses and does not promise"
+      ],
+      "failureStates": {
+        "consentMissingOrWithdrawn": {
+          "degradationState": "Consent withdrawn",
+          "unknownReason": "unconsented-source-or-provider"
+        },
+        "routeUnreachableOrRuntimeRefusesConfiguration": {
+          "degradationState": "Observer failed",
+          "unknownReason": "source-uncaptured-or-unreachable"
+        },
+        "classificationIndeterminate": {
+          "degradationState": "Excluded content",
+          "unknownReason": "excluded-content"
+        },
+        "usageOrDispatchUncertain": {
+          "degradationState": "Partial snapshot",
+          "unknownReason": "source-uncaptured-or-unreachable",
+          "note": "the pipeline stops with effect-uncertain or usage-uncertain; a lease expiry never replays the request"
+        },
+        "budgetExhaustedOrRejectedOutput": "not a degradation state: distinct execution facts (ADAPTER-DECLARATIONS.md, failure behaviour), mapped to the existing claim-reason predicate"
+      },
+      "admissionFailureMapping": {
+        "missingConsent": "unconsented-source-or-provider",
+        "mismatchedStaleRevokedOrUnattributedConsent": "unconsented-source-or-provider",
+        "missingRegistryEntry": "source-uncaptured-or-unreachable",
+        "mismatchedStaleRevokedOrUnattributedRegistryEntry": "source-uncaptured-or-unreachable"
+      },
+      "adoptionStatus": "candidate-entry-unadopted"
+    }
+  ]
+}
