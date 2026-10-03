@@ -188,7 +188,7 @@ describe('stage authority through the real reader and the recorders\' acts', () 
     readdir: async dir => { if (dir !== `/r/${DECISIONS_DIR}`) throw new Error('enoent'); return Object.keys(files).filter(f => f.startsWith(`${DECISIONS_DIR}/`)).map(f => f.slice(DECISIONS_DIR.length + 1)); },
     readFile: async file => { const key = file.slice(3); if (!(key in files)) throw new Error('enoent'); return files[key]!; },
   });
-  const v1Act = (): string => renderRecorderAct('egress-anthropic', hex(bytes(V1_INSTANCE)), '2026-09-01', '2026-09-01T09:30:00Z');
+  const v1Act = (): string => renderRecorderAct('egress-anthropic', hex(bytes(V1_INSTANCE)), '2026-08-31', '2026-08-31T09:30:00Z');   // a day before version 2: version 2 must be strictly later
   const v2Act = (record: string): string => renderRecorderAct('egress-anthropic-v2', hex(record), '2026-09-01', '2026-09-01T09:30:00Z');
   const world = (opts: { v1?: boolean; v2?: string | null }): Record<string, string> => ({
     ...(opts.v1 === false ? {} : { [V1_INSTANCE]: bytes(V1_INSTANCE), [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`]: v1Act() }),
