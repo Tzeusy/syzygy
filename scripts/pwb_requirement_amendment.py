@@ -21,10 +21,13 @@ one requirement every byte of the specification must survive; inside it,
 every signed line must survive except the declared replaced lines.
 
     --check      verify patches, structure, regeneration, coverage, sibling
-                 classification, pending-sibling composition and the manifest
+                 classification, pending-sibling composition (each pair in
+                 both orders, and one result across every order of all
+                 pending patches) and the manifest
     --selftest   rule-6 mutants: one per structure predicate (a sample of the
-                 required phrases, not each one), plus patch drift and an
-                 unclassified sibling
+                 required phrases, not each one), plus patch drift, divergent
+                 application orders, the order-search cap and an unclassified
+                 sibling
     --write      regenerate the derived GOVERNING-DEPENDENCIES patch and the
                  manifest over the proposed bytes
     --diff       print the proposed patches
@@ -416,6 +419,95 @@ def composition_findings(amendment: Amendment, mine: pathlib.Path | None = None)
     return findings
 
 
+#: Distinct (spec bytes, patches still to apply) states the all-orders search
+#: may visit before it stops and reports instead of answering. Patches that
+#: commute reach one state per subset of those applied, 2**n states and
+#: n * 2**(n - 1) applications: 32 and 80 for today's five pending patches.
+#: The cap admits twelve commuting patches; a larger state space, whether
+#: from divergence or a thirteenth patch, stops the search with a finding
+#: rather than a long or silent run.
+ORDER_STATE_CAP = 4096
+
+
+def all_orders_findings(
+    base: bytes, patches: list[tuple[str, pathlib.Path]], rel: pathlib.Path = SPEC,
+    cap: int = ORDER_STATE_CAP,
+) -> list[str]:
+    """Every application order of ``patches`` over ``base`` gives one result.
+
+    Pairwise composition shows each pair applies both ways; it does not show
+    the orders agree, because ``git apply`` relocates a hunk whose context
+    moved, so two orders can both succeed and differ. This search covers all
+    n! orders exactly: ``git apply`` is a function of its input bytes, so two
+    orders that reach the same bytes with the same patches left share every
+    outcome from there, and memoizing on that pair visits each distinct state
+    once. Any order that fails to apply, or more than one final result, is a
+    finding; exceeding ``cap`` states is a finding, never a silent pass.
+    """
+    findings: list[str] = []
+    memo: dict[tuple[bytes, frozenset[str]], frozenset[bytes]] = {}
+    paths = dict(patches)
+    failures: set[str] = set()
+    visited = [0]
+
+    def apply_one(body: bytes, name: str) -> bytes | None:
+        with tempfile.TemporaryDirectory() as temp:
+            scratch = pathlib.Path(temp)
+            (scratch / rel).parent.mkdir(parents=True, exist_ok=True)
+            (scratch / rel).write_bytes(body)
+            result = subprocess.run(
+                ["git", "apply", "--whitespace=nowarn", "--include", rel.as_posix(), str(paths[name])],
+                cwd=scratch, capture_output=True, text=True,
+            )
+            return (scratch / rel).read_bytes() if result.returncode == 0 else None
+
+    def outcomes(body: bytes, left: frozenset[str], applied: tuple[str, ...]) -> frozenset[bytes]:
+        key = (body, left)
+        if key in memo:
+            return memo[key]
+        # A key is never re-entered before it is memoized: each step removes
+        # a patch, so the count of first visits is the count of states.
+        visited[0] += 1
+        if visited[0] > cap:
+            raise OverflowError
+        if not left:
+            memo[key] = frozenset({body})
+            return memo[key]
+        results: set[bytes] = set()
+        for name in sorted(left):
+            after = apply_one(body, name)
+            if after is None:
+                failures.add(f"{name} after [{', '.join(applied) or 'nothing'}]")
+                continue
+            results |= outcomes(after, left - {name}, applied + (name,))
+        memo[key] = frozenset(results)
+        return memo[key]
+
+    try:
+        results = outcomes(base, frozenset(paths), ())
+    except OverflowError:
+        return [f"composition search exceeded {cap} states over {len(paths)} pending patches; "
+                "order-independence is unverified"]
+    for failure in sorted(failures):
+        findings.append(f"pending spec patches do not apply in every order: {failure}")
+    if len(results) > 1:
+        findings.append(
+            f"pending spec patches give {len(results)} different results across the "
+            f"{len(paths)}! application orders"
+        )
+    return findings
+
+
+def pending_order_findings(amendment: Amendment, mine: pathlib.Path | None = None) -> list[str]:
+    """This patch and every pending sibling's give one result in every order."""
+    patches = [(amendment.candidate, mine or ROOT / amendment.proposed_dir / "spec.md.patch")]
+    for name in sorted(PENDING_SIBLINGS - {amendment.candidate}):
+        theirs = ROOT / CANDIDATES / name / "proposed/spec.md.patch"
+        if theirs.is_file():
+            patches.append((name, theirs))
+    return all_orders_findings((ROOT / SPEC).read_bytes(), patches)
+
+
 def render_manifest(amendment: Amendment, proposed: dict[pathlib.Path, bytes]) -> str:
     header = (
         f"# {amendment.title}\n"
@@ -452,6 +544,7 @@ def check(
     findings.extend(coverage_findings(proposed))
     findings.extend(sibling_findings(amendment))
     findings.extend(composition_findings(amendment))
+    findings.extend(pending_order_findings(amendment))
     manifest = ROOT / amendment.manifest_path
     if not manifest.is_file():
         findings.append(f"missing manifest: {amendment.manifest_path}")
@@ -466,6 +559,39 @@ def _replace(data: bytes, old: str, new: str) -> bytes:
     if old.encode("utf-8") not in data:
         raise AssertionError(f"selftest fixture matched nothing: {old[:60]!r}")
     return data.replace(old.encode("utf-8"), new.encode("utf-8"), 1)
+
+
+#: Two hunks whose context recurs: each applies before or after the other,
+#: but ``git apply`` relocates whichever comes second, so the orders differ.
+ORDER_FIXTURE_BASE = b"h\nk\nm\nw\nk\nm\nw\nt\n"
+ORDER_FIXTURE_PATCHES = (
+    ("fixture-edit", "@@ -2,3 +2,3 @@\n k\n-m\n+n\n w\n"),
+    ("fixture-insert", "@@ -2,3 +2,4 @@\n k\n m\n+Z\n w\n"),
+)
+
+
+def order_selftest(temp: pathlib.Path) -> int:
+    """Divergent orders fail the all-orders check while pairwise passes."""
+    rel = pathlib.Path("fixture.txt")
+    patches = []
+    for name, hunk in ORDER_FIXTURE_PATCHES:
+        path = temp / f"{name}.patch"
+        path.write_text(f"--- a/{rel}\n+++ b/{rel}\n{hunk}", encoding="utf-8")
+        patches.append((name, path))
+    failed = 0
+    commuting = all_orders_findings(ORDER_FIXTURE_BASE, patches[:1], rel)
+    if commuting:
+        print(f"SELFTEST FAILED: a single patch gave order findings {commuting}")
+        failed += 1
+    found = all_orders_findings(ORDER_FIXTURE_BASE, patches, rel)
+    if found != ["pending spec patches give 2 different results across the 2! application orders"]:
+        print(f"SELFTEST FAILED: divergent orders gave {found}")
+        failed += 1
+    capped = all_orders_findings(ORDER_FIXTURE_BASE, patches, rel, cap=2)
+    if not (len(capped) == 1 and capped[0].startswith("composition search exceeded 2 states")):
+        print(f"SELFTEST FAILED: the state cap gave {capped}")
+        failed += 1
+    return failed
 
 
 def selftest(amendment: Amendment) -> int:
@@ -530,9 +656,23 @@ def selftest(amendment: Amendment) -> int:
         if not any("does not apply" in finding for finding in findings):
             print(f"SELFTEST FAILED: patch drift gave {findings}")
             failed += 1
+        # --check must consult the all-orders predicate: a stand-in for it
+        # returns a sentinel that has to reach an otherwise clean run's findings.
+        sentinel = "order sentinel: --check consulted the all-orders predicate"
+        global pending_order_findings
+        real_order_findings = pending_order_findings
+        pending_order_findings = lambda *args, **kwargs: [sentinel]  # noqa: E731
+        try:
+            findings, _ = check(amendment)
+        finally:
+            pending_order_findings = real_order_findings
+        if findings != [sentinel]:
+            print(f"SELFTEST FAILED: --check with a sentinel order predicate gave {findings}")
+            failed += 1
         if not composition_findings(amendment, mine=drifted):
             print("SELFTEST FAILED: a drifted spec patch composed with the pending siblings")
             failed += 1
+        failed += order_selftest(pathlib.Path(temp))
         fake = pathlib.Path(temp) / "candidates"
         (fake / "pwb-unlisted-sibling/proposed").mkdir(parents=True)
         (fake / "pwb-unlisted-sibling/proposed/spec.md.patch").write_text(
@@ -546,7 +686,9 @@ def selftest(amendment: Amendment) -> int:
     total = len(common) + len(amendment.mutants)
     print(
         f"selftest: {total} structure mutants, declaration tampering, patch drift, "
-        "drifted composition and an unclassified sibling all fail closed on their "
+        "drifted composition, divergent application orders, the order-search cap, "
+        "--check's use of the all-orders predicate and "
+        "an unclassified sibling all fail closed on their "
         "own predicates"
     )
     return 0
@@ -625,6 +767,6 @@ def main(amendment: Amendment, argv: list[str]) -> int:
         f"{amendment.label} candidate matches {len(BEHAVIOR_SUBJECTS)} proposed subjects "
         f"({len(PATCHED)} patched); {len(blocks)} requirements, {scenarios} scenarios; "
         "structure, regeneration, contract coverage, sibling classification and "
-        "pending-sibling composition verify"
+        "pending-sibling composition (pairwise, and one result in every order) verify"
     )
     return 0
