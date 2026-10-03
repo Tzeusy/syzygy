@@ -196,7 +196,7 @@ describe('escaping every rendered draft field', () => {
   // One payload per field: raw, it would open an element and an attribute.
   const PAYLOAD = '<img src=x onerror=alert(1)>"\'&';
   const ESCAPED = '&lt;img src=x onerror=alert(1)&gt;&quot;&#39;&amp;';
-  type Draft = { title: string; introduction: { text: string }; sections: { id: string; title: string; paragraphs: { text: string }[] }[];
+  type Draft = { unresolved: { question: string; reason: string }[]; title: string; introduction: { text: string }; sections: { id: string; title: string; paragraphs: { text: string }[] }[];
     deepDives: { title: string; paragraphs: { text: string }[] }[]; diagrams: { title: string; relationship: string; nodes: { label: string }[]; edges: { label: string }[] }[] };
   const fields: [string, (draft: Draft) => void][] = [
     ['title', d => { d.title = `Title ${PAYLOAD}`; }],
@@ -207,8 +207,11 @@ describe('escaping every rendered draft field', () => {
     ['deep-dive paragraph', d => { d.deepDives[0]!.paragraphs[0]!.text = `Dive text ${PAYLOAD}`; }],
     ['diagram title', d => { d.diagrams[0]!.title = `Diagram ${PAYLOAD}`; }],
     ['diagram relationship', d => { d.diagrams[0]!.relationship = `Relationship ${PAYLOAD}`; }],
-    ['node label', d => { d.diagrams[0]!.nodes[0]!.label = `Node ${PAYLOAD}`; }],
+    // Every node, so both ends of each edge carry the payload into the edge list.
+    ['node label', d => { d.diagrams[0]!.nodes.forEach((node, i) => { node.label = `Node ${i} ${PAYLOAD}`; }); }],
     ['edge label', d => { d.diagrams[0]!.edges[0]!.label = `Edge ${PAYLOAD}`; }],
+    ['open question', d => { d.unresolved.push({ question: `Question ${PAYLOAD}`, reason: 'No source says.', references: ['purpose'] } as never); }],
+    ['open-question reason', d => { d.unresolved.push({ question: 'Who decides?', reason: `Reason ${PAYLOAD}`, references: ['purpose'] } as never); }],
   ];
   // Every HTML page; dossier.json carries the title as JSON data, never markup.
   const all = (files: ReadonlyMap<string, string>): string => [...files].filter(([path]) => path.endsWith('.html')).map(([, html]) => html).join('\n');
@@ -221,6 +224,16 @@ describe('escaping every rendered draft field', () => {
     expect(all(files)).not.toContain('"\'&');
     expect(all(files)).toContain(ESCAPED);
     expect((await evaluate(files, run.sources)).scanFindings).toEqual([]);
+  });
+
+  it('escapes the declarative Mermaid source as text, like every other field', () => {
+    // Mermaid's own encoding already neutralises markup in labels, but its
+    // quotes and arrows still pass through the page escape.
+    const { files } = renderDossier(run);
+    const pre = /<pre>([^<]*)<\/pre>/u.exec(files.get('index.html')!)![1]!;
+    expect(pre).toContain('[&quot;');
+    expect(pre).toContain('--&gt;');
+    expect(pre).not.toMatch(/["']|-->/u);
   });
 
   it.each([['glossary id', 'id'], ['glossary statement', 'statement']] as const)('escapes the %s', async (_name, key) => {
