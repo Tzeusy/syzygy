@@ -7,7 +7,7 @@
 // failed single read, and any malformed, short or trailing output fails the
 // whole batch.
 
-import { execFileSync } from 'node:child_process';
+import { isolatedGit } from './polaris-generation/isolated-git.js';
 
 export type GitBlobBatch = ReadonlyMap<string, Uint8Array | Error>;
 export type ReadGitBlobs = (repoRoot: string, objects: readonly string[]) => GitBlobBatch;
@@ -22,11 +22,7 @@ export function readGitBlobsBatch(repoRoot: string, objects: readonly string[]):
   for (const object of unique) {
     if (object === '' || /[\n\r\0]/.test(object)) throw new Error('git blob batch: an object name must be one non-empty line');
   }
-  const output = execFileSync('git', ['--no-optional-locks', '-C', repoRoot, 'cat-file', '--batch'], {
-    input: unique.map((object) => `${object}\n`).join(''),
-    stdio: ['pipe', 'pipe', 'ignore'],
-    maxBuffer: 256 * 1024 * 1024,
-  });
+  const output = isolatedGit(repoRoot, ['cat-file', '--batch'], unique.map((object) => `${object}\n`).join(''));
   return parseGitCatFileBatch(unique, new Uint8Array(output.buffer, output.byteOffset, output.byteLength));
 }
 
