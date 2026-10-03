@@ -816,16 +816,15 @@ ORDER_POPULATION = [
     "pwb-release-label-amendment",
 ]
 
-#: The shared engine's order fixtures. Every pair applies in both orders, so
-#: only an all-orders search fails them.
+#: The shared engine's shift fixtures. Every pair gives one result in both
+#: orders, so only an all-orders search fails them.
 ORDER_FIXTURES = (
-    ("divergent", orders.ORDER_FIXTURE_BASE, orders.ORDER_FIXTURE_PATCHES, [
-        "pending spec patches give 2 different results across the 2! application orders",
-    ]),
-    ("failing", orders.ORDER_FIXTURE_TRIPLE_BASE, orders.ORDER_FIXTURE_TRIPLE, [
-        "pending spec patches do not apply in every order: "
-        "triple-relocating after [triple-first-copy, triple-second-copy]",
+    ("divergent", orders.ORDER_FIXTURE_SHIFT_BASE, orders.ORDER_FIXTURE_SHIFT[:3], [
         "pending spec patches give 2 different results across the 3! application orders",
+    ]),
+    ("failing", orders.ORDER_FIXTURE_SHIFT_BASE, orders.ORDER_FIXTURE_SHIFT, [
+        "pending spec patches do not apply in every order: "
+        "shift-first-copy after [shift-a, shift-b, shift-relocating]",
     ]),
 )
 
