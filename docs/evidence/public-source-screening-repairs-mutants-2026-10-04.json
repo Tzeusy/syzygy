@@ -1,0 +1,315 @@
+{
+ "subject": "Public-source screening review repairs (syzygy-vjqd; reviewer-6 B1-B4 on #292): extension rule, path detectors, every excluded row withheld under a screen, whole-body screening before splitting",
+ "date": "2026-10-04",
+ "ranAt": "d2a0ce6f9984f3abcd0cf5e7fd70bff56a81732e",
+ "predecessor": "docs/evidence/public-source-screening-mutants-2026-10-03.json (21 of 21 at the #292 bytes; retained unchanged)",
+ "subjectFiles": [
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "fileSha256": "e1c53f870cea119ef7657150fa2615e032a89fa6089eb78bf51501f11c95b151"
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+   "fileSha256": "57346518e60f30d8b7770d5f9c313eec06b0a88120653d654b2e009b15db959f"
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+   "fileSha256": "9b8c4558072ff26f1d6bb02f8e94b746820255d0eb28470b4f4c1240341d5386"
+  }
+ ],
+ "method": "Each mutant replaced exactly one fragment (asserted to occur once) in the named file, ran npx vitest run apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts (21 tests), and restored the file; the worktree was clean afterwards (asserted). A mutant is killed when at least one test fails.",
+ "tests": "public-source-screening.test.ts (21); all fixtures synthetic git repositories built in the test, every secret assembled at runtime, no external repository read, no provider call",
+ "result": {
+  "mutants": 31,
+  "killed": 31,
+  "survived": []
+ },
+ "notes": [
+  "body-screen-first-piece is the reviewer's B4 mutant (screenBody over body.slice(0, 100_000)); it is killed by the late-secret fixture.",
+  "Not mutated: comparing the extension against the whole path rather than the final segment is equivalent under endsWith, so no test can distinguish it."
+ ],
+ "mutants": [
+  {
+   "id": "body-screen-skipped",
+   "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+   "description": "a decoded body is never screened",
+   "old": "const screenedOut = screen?.screenBody(body);",
+   "new": "const screenedOut = undefined as 'secret-detector-match' | 'active-content' | undefined;",
+   "killed": true,
+   "tests": "4 failed | 17 passed (21)"
+  },
+  {
+   "id": "body-screen-first-piece",
+   "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+   "description": "only the first 100,000 characters of a body are screened",
+   "old": "const screenedOut = screen?.screenBody(body);",
+   "new": "const screenedOut = screen?.screenBody(body.slice(0, 100_000));",
+   "killed": true,
+   "tests": "3 failed | 18 passed (21)"
+  },
+  {
+   "id": "path-screen-skipped",
+   "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+   "description": "no path is screened before the read",
+   "old": "const reason = screen.screenPath(record.path);",
+   "new": "const reason = undefined as CorpusScreenReason | undefined;",
+   "killed": true,
+   "tests": "3 failed | 18 passed (21)"
+  },
+  {
+   "id": "path-screened-blob-read",
+   "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+   "description": "a path-screened blob is still read before it is withheld",
+   "old": "batch.filter(record => !byPath.has(record)).map(record => record.objectId)",
+   "new": "batch.map(record => record.objectId)",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "withheld-keeps-path",
+   "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+   "description": "a withheld row carries the repository path",
+   "old": "path: `withheld/${sourceId}`, objectId: null,",
+   "new": "path: record.path, objectId: null,",
+   "killed": true,
+   "tests": "3 failed | 18 passed (21)"
+  },
+  {
+   "id": "withheld-keeps-object-id",
+   "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+   "description": "a withheld row carries the blob object id",
+   "old": "path: `withheld/${sourceId}`, objectId: null,",
+   "new": "path: `withheld/${sourceId}`, objectId: record.objectId,",
+   "killed": true,
+   "tests": "2 failed | 19 passed (21)"
+  },
+  {
+   "id": "excluded-row-unscreened",
+   "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+   "description": "binary and empty rows keep path, object id and unkeyed id under a screen",
+   "old": "screen !== undefined ? withheld(record, reason) :",
+   "new": "false ? withheld(record, reason) :",
+   "killed": true,
+   "tests": "2 failed | 19 passed (21)"
+  },
+  {
+   "id": "oversize-row-unscreened",
+   "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+   "description": "an oversize-excluded row keeps its path under a screen",
+   "old": "screen !== undefined && row.exclusion.excluded ? withheld(",
+   "new": "false && row.exclusion.excluded ? withheld(",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "secret-count-dropped",
+   "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+   "description": "detector matches are not counted",
+   "old": "secretDetectorMatches: screened['secret-detector-match']",
+   "new": "secretDetectorMatches: 0",
+   "killed": true,
+   "tests": "3 failed | 18 passed (21)"
+  },
+  {
+   "id": "indeterminate-count-dropped",
+   "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+   "description": "indeterminate blobs are not counted",
+   "old": "indeterminate: screened['unknown-extraction-class']",
+   "new": "indeterminate: 0",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "opaque-id-unkeyed",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "the withheld id is an unkeyed hash of the identity",
+   "old": "createHmac('sha256', key).update(identity)",
+   "new": "createHash('sha256').update(identity)",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "detectors-skipped",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "the detectors never run over a body",
+   "old": "detectSecrets(detectors, body) !== undefined ? 'secret-detector-match'",
+   "new": "false ? 'secret-detector-match'",
+   "killed": true,
+   "tests": "4 failed | 17 passed (21)"
+  },
+  {
+   "id": "active-content-skipped",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "the active-content scan never runs",
+   "old": "scanActiveContent(body).length > 0 ? 'active-content'",
+   "new": "false ? 'active-content'",
+   "killed": true,
+   "tests": "3 failed | 18 passed (21)"
+  },
+  {
+   "id": "denied-rules-ignored",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "the policy's denied-path rules are ignored",
+   "old": "screenPath: path => deniedPathReason(path, rules) !== undefined ? 'denied-path'",
+   "new": "screenPath: path => false ? 'denied-path'",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "path-detectors-skipped",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "the detectors never run over a path",
+   "old": ": detectSecrets(detectors, path) !== undefined ? 'secret-detector-match'",
+   "new": ": false ? 'secret-detector-match'",
+   "killed": true,
+   "tests": "4 failed | 17 passed (21)"
+  },
+  {
+   "id": "path-detectors-basename-only",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "the detectors see only the final path segment",
+   "old": "detectSecrets(detectors, path)",
+   "new": "detectSecrets(detectors, path.split('/').at(-1) ?? '')",
+   "killed": true,
+   "tests": "4 failed | 17 passed (21)"
+  },
+  {
+   "id": "extension-rule-off",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "every extension is code-content",
+   "old": "? undefined : 'unknown-extraction-class',",
+   "new": "? undefined : undefined,",
+   "killed": true,
+   "tests": "3 failed | 18 passed (21)"
+  },
+  {
+   "id": "extension-case-folded",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "the extension comparison ignores case",
+   "old": ".endsWith(extension))",
+   "new": ".toLowerCase().endsWith(extension.toLowerCase()))",
+   "killed": true,
+   "tests": "3 failed | 18 passed (21)"
+  },
+  {
+   "id": "extensions-unvalidated",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "an extension without a leading dot is accepted",
+   "old": " || extensions.some(extension => !/^\\.[^/]+$/u.test(extension))",
+   "new": "",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "two-code-content-rules",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "two code-content rules are accepted (the first wins)",
+   "old": "codeContent.length !== 1 ||",
+   "new": "codeContent.length === 0 ||",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "act-absent-allowed",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "a missing act record is not refused",
+   "old": "if (actRecord === undefined) refuse(",
+   "new": "if (false) refuse(",
+   "killed": true,
+   "tests": "2 failed | 19 passed (21)"
+  },
+  {
+   "id": "policy-absent-allowed",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "a missing policy is not refused",
+   "old": "if (policy === undefined) refuse(",
+   "new": "if (false) refuse(",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "act-identity-unchecked",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "any act identity is accepted",
+   "old": "if (!ACT_IDENTITY.test(act) || ",
+   "new": "if (",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "act-type-unchecked",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "any act type is accepted",
+   "old": " || !act.includes('\\nAct type: `approve-policy`\\n')",
+   "new": "",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "artifact-unchecked",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "any artifact identity is accepted",
+   "old": " || !act.includes(`\\nArtifact identity: \\`${PUBLIC_SOURCE_POLICY_PATH}\\`\\n`)",
+   "new": "",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "second-digest-allowed",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "a record naming two digests is accepted",
+   "old": "if (digests.length !== 1)",
+   "new": "if (digests.length === 0)",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "digest-not-compared",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "the policy bytes are not compared with the act argument",
+   "old": "if (policySha256 !== digests[0]) refuse(",
+   "new": "if (false) refuse(",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "scope-not-required",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "approved bytes without publicSourceScope are used",
+   "old": "if (scope === null || typeof scope !== 'object' || Array.isArray(scope)) refuse(",
+   "new": "if (false) refuse(",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "denied-rules-unvalidated",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "unreadable denied-path lists are accepted",
+   "old": "|| !stringList(admission.deniedPathSuffixes)) refuse(",
+   "new": ") refuse(",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "short-key-allowed",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "a run key under 32 bytes is accepted",
+   "old": "if (runKey.byteLength < 32)",
+   "new": "if (runKey.byteLength < 0)",
+   "killed": true,
+   "tests": "1 failed | 20 passed (21)"
+  },
+  {
+   "id": "screen-after-admission",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "the policy is loaded only after the admission port",
+   "old": "const screen = await loadPublicSourceScreen(ports.policyAct, ports.runKey);\n  return readRepoCorpus(",
+   "new": "const asked = await (ports.admission ?? { decide: async () => ({ allowed: false as const, reason: 'none' }) }).decide({ repositoryId: config.repositoryId, revision: config.revision, include: config.include, exclude: config.exclude });\n  void asked;\n  const screen = await loadPublicSourceScreen(ports.policyAct, ports.runKey);\n  return readRepoCorpus(",
+   "killed": true,
+   "tests": "8 failed | 13 passed (21)"
+  }
+ ],
+ "history": [
+  "At 89740a04 (before a rebase onto main, whose 7fa33d32 changed two reader-question fixtures in the test file) 31 of 31 were killed. The rebase changed the test file's bytes, so the run was repeated at the rebased commit named in ranAt; 31 of 31 killed."
+ ]
+}
