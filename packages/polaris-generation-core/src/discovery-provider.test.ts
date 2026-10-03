@@ -37,7 +37,7 @@ const REDUCE_SYSTEM = promptForStage('discovery-reduce').system;
 describe('discovery instruction text comes from promptForStage and stageSchema', () => {
   // Recipe replay: an intentional edit needs a version decision and a new digest.
   it.each([
-    ['discovery-map', 'polaris-discovery-map-v2', '1485dd779fff5fd45ed34bde2725e17481cae823c9b6366349a3f311a62b59e6'],
+    ['discovery-map', 'polaris-discovery-map-v3', 'b09adeefd06e7a0fedcc30d668c463d482a6af67d7d7b4c575715ac52e9ac103'],
     ['discovery-reduce', 'polaris-discovery-reduce-v2', '487a8d380c3e023ecda98f15fa99fd4620f0dd95588f8336af2868412b6b5e23'],
   ] as const)('pins the %s prompt bytes', (stage, version, digest) => {
     const prompt = promptForStage(stage);
@@ -108,7 +108,7 @@ describe('discovery envelopes', () => {
     const request = { ...mapRequest(), extra: 'never sent', items: mapRequest().items.map(item => ({ ...item, mode: '100644' })) };
     const { envelope, input } = discoveryMapEnvelope(request);
     expect(Object.keys(envelope).sort()).toEqual(['inputs', 'promptVersion', 'responseSchema', 'responseSchemaVersion', 'system']);
-    expect(envelope.promptVersion).toBe('polaris-discovery-map-v2');
+    expect(envelope.promptVersion).toBe('polaris-discovery-map-v3');
     expect(envelope.responseSchemaVersion).toBe('polaris-provider-discovery-map-v1');
     expect(envelope.system).toBe(MAP_SYSTEM);
     expect(envelope.inputs).toEqual(mapRequest());
@@ -133,7 +133,7 @@ describe('discovery envelopes', () => {
 
   // The whole user message, schema included, for the fixtures above.
   it.each([
-    ['map', () => discoveryMapEnvelope(mapRequest()).input, '191c12071085dd577f3b96af7d7b8cf91b43e3116122778df1aade1b940a28ea'],
+    ['map', () => discoveryMapEnvelope(mapRequest()).input, '540fad6a04d6ce2218288c5f1839fc86b4393ea410aca1f27c431cba6dfaaceb'],
     ['reduce', () => discoveryReduceEnvelope(reduceRequest()).input, 'f938ed16e4e893636b85fcde7242fe37d454263b86a56b0a551d7ce1b8426493'],
   ])('pins the %s envelope encoding', (_step, encode, digest) => {
     expect(sha256(encode())).toBe(digest);
