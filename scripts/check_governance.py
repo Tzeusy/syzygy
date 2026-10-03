@@ -1530,6 +1530,22 @@ PWB_REGISTRY_CURRENCY_DIR = (
 #: superseding effect acts, one per row of its two-row manifest.
 PWB_BEHAVIOR_REPIN_DIR = f"{CANDIDATES}/pwb-behavior-contract-repin"
 PWB_BEHAVIOR_REPIN_MANIFEST = f"{PWB_BEHAVIOR_REPIN_DIR}/PWB-EFFECT-REPIN-MANIFEST.txt"
+#: The public-repository admission package (`syzygy-mea`): three separate
+#: state-(1) acts, each over one record and each given by an option selection
+#: at that record's manifest row (packet Q5). Candidate registration only
+#: (labels, subjects, manifest copy); the performed-act records and any chain
+#: link arrive with the acts. The manifest's rows are the live digests of the
+#: subjects.
+PUBLIC_ADMISSION_DIR = f"{CANDIDATES}/public-repo-admission"
+PUBLIC_ADMISSION_MANIFEST = f"{PUBLIC_ADMISSION_DIR}/PUBLIC-REPO-ADMISSION-MANIFEST.txt"
+PUBLIC_ADMISSION_ACTS = (
+    ("CONSENT TO PUBLIC OBSERVATION OF PSF-REQUESTS",
+     f"{PUBLIC_ADMISSION_DIR}/instances/requests/OBSERVATION-CONSENT.md"),
+    ("CONSENT TO PUBLIC OBSERVATION OF REDIS-REDIS",
+     f"{PUBLIC_ADMISSION_DIR}/instances/redis/OBSERVATION-CONSENT.md"),
+    ("CONSENT TO PUBLIC TARGET EGRESS TO ANTHROPIC",
+     f"{PUBLIC_ADMISSION_DIR}/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md"),
+)
 #: Lane B of the 2026-09-13 Polaris page-size funnel (P-67 question 2):
 #: registered before its packet exists so a stale argument copy fails CG-7d
 #: and CG-7e. Its manifest hashes proposed bytes (candidate patches applied),
@@ -2386,6 +2402,11 @@ def _act_subjects():
         if not any(l == label for l, _rel, _pat in out):
             out.append((label, subject, re.compile(
                 re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
+    if os.path.isfile(os.path.join(ROOT, PUBLIC_ADMISSION_MANIFEST)):
+        for label, subject in PUBLIC_ADMISSION_ACTS:
+            if not any(l == label for l, _rel, _pat in out):
+                out.append((label, subject, re.compile(
+                    re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
     return tuple(out)
 
 
@@ -3088,6 +3109,21 @@ def _activate_pwb_behavior_repin_manifest_copy_registry():
 
 
 _activate_pwb_behavior_repin_manifest_copy_registry()
+
+
+def _activate_public_admission_manifest_copy_registry():
+    """The admission manifest carries all three current arguments as rows.
+
+    Existence-gated: a candidate file, registered as a current copy of the
+    three records' digests while it exists. The chain link and the performed
+    records arrive with the acts.
+    """
+    if os.path.isfile(os.path.join(ROOT, PUBLIC_ADMISSION_MANIFEST)):
+        ACT_DIGEST_COPY_FILES[PUBLIC_ADMISSION_MANIFEST] = tuple(
+            label for label, _subject in PUBLIC_ADMISSION_ACTS)
+
+
+_activate_public_admission_manifest_copy_registry()
 
 
 #: The act-time digests the specification-policy restyle supersedes as the
