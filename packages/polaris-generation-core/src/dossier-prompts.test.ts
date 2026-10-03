@@ -117,6 +117,7 @@ describe('dossier stage prompts', () => {
     ['fidelity', 'that a stated advantage is quoted once and never restated unquoted, and that no advantage is written that no source states;'],
     ['fidelity', 'that no trade-off half is presented as stated unless a cited source states it, and that an Inferred: half cites the sources it reasons from and agrees with every one of them;'],
     ['fidelity', 'a block with no failure needs no finding.'],
+    ['repair', 'never by rewording it to sound stated.'],
     ['repair', 'for a quotation that does not match its source, quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred: (an advantage no source states is removed instead).'],
   ];
   it.each(guidanceClauses)('states the %s guidance clause: %s', (stage, clause) => {
@@ -126,7 +127,8 @@ describe('dossier stage prompts', () => {
   it('gives every stage its own dossier guidance', () => {
     const heads = recipes.map(([stage]) => promptForStage(stage, 'dossier').system.split('\n').at(-4)!);
     expect(new Set(heads).size).toBe(recipes.length);
-    for (const head of heads) expect(head).toMatch(/^Dossier (inventory|plan|draft|edit|review|repair): /u);
+    const labels: Record<GenerationStage, string> = { inventory: 'inventory', plan: 'plan', author: 'draft', edit: 'edit', fidelity: 'review', repair: 'repair' };
+    recipes.forEach(([stage], index) => expect(heads[index]!.startsWith(`Dossier ${labels[stage]}: `), stage).toBe(true));
   });
 
   it.each(['unknown', 'Dossier', 'constructor', '__proto__'])('refuses unsupported profile %s', (profile) => {
