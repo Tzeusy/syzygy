@@ -84,6 +84,27 @@ installer is to parse the performed record for its values. Without this step
 the Butlers path stays refused; the Redis path is unaffected [Observed, see the
 section above].
 
+Correction, 2026-10-03: the impact ledger of the row-1 package (PR #266) lists
+`project-shape-model.test.ts` as passing after the policy change because its
+version literals are fixtures. [Observed] That holds for the act alone, but not
+after the re-pin: the test asserts the policy version at two lines (435 and
+592), so it fails until the installer updates them, which it does. The ledger
+stays the reviewed bytes; this note and the runbook (PR #286, finding F10) carry
+the correction.
+
+## After the sitting, in order
+
+1. Perform the recorders for the acts given, each with the argument or option
+   the owner supplied (the runbook, PR #286, lists the command per row).
+2. Run the one-command installer, the Redis sitting installer (PR #286).
+   It refuses, with the tree restored, unless every required record exists, and
+   it makes one commit with every record, the re-pin above included.
+3. Run `poc:dossier` (PR #268) on the Redis URL. It stops with exit 3 if an
+   admission record is missing.
+
+Nothing in this order is an act; each step only records or applies what the
+owner has already given.
+
 ## Row 2 is one choice
 
 Route A (PR #255) runs the Agent SDK 0.3.288 and CLI 2.1.288 pin behind a
