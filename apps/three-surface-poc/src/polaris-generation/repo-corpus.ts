@@ -1,9 +1,10 @@
 import { createHash } from 'node:crypto';
 
 import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, SOURCE_TEXT_MAX_LENGTH, generationSourceIdentity, generationSourcesForBody, gitBlobObjectId, validateGenerationSources, validateReaderQuestions, validateRequestedAssets,
-  type GenerationBudget, type ReaderQuestion, type GenerationSource, type GenerationStage, type PipelineRequest, type RequestedAsset } from '@syzygy/polaris-generation-core';
+  type GenerationBudget, type GenerationExclusionReason, type ReaderQuestion, type GenerationSource, type GenerationStage, type PipelineRequest, type RequestedAsset } from '@syzygy/polaris-generation-core';
 
 import { isolatedGit } from './isolated-git.js';
+import { excludedSourceId, keyedDigest, newGenerationRunKey } from './run-key.js';
 import { readGitBlobsBatch, type ReadGitBlobs } from '../git-blob-batch.js';
 
 const sha256 = (value: string): string => createHash('sha256').update(value).digest('hex');
@@ -87,7 +88,8 @@ function assertIdentity(repositoryId: string, revision: string): void {
 
 /** The path rules the source validator enforces, so one odd name is accounted for rather than fatal. */
 function representablePath(path: string): boolean {
-  return path.length > 0 && !path.startsWith('/') && !path.includes('\0') && !path.includes('\\') && !path.includes('\uFFFD')
+  // A control character (a newline included) is legal in a Git path but no row may carry one.
+  return path.length > 0 && !path.startsWith('/') && !/[\u0000-\u001f\u007f]/u.test(path) && !path.includes('\\') && !path.includes('\uFFFD')
     && !path.split('/').some(part => part === '' || part === '.' || part === '..');
 }
 
@@ -102,7 +104,8 @@ export function globToRegExp(glob: string): RegExp {
     else if (c === '?') out += '[^/]';
     else out += c.replace(/[\\^$.|+()[\]{}]/gu, '\\$&');
   }
-  return new RegExp(`^${out}$`, 'u');
+  // `s`: `**` spans a newline inside a path too, so such a path is counted unquotable, not outside the include.
+  return new RegExp(`^${out}$`, 'su');
 }
 
 export interface RepoCorpusCount {
@@ -119,10 +122,15 @@ export interface RepoCorpusCount {
   readonly binaryOrNonUtf8: number;
   readonly oversizeFiles: number;
   readonly oversizeExcluded: number;
-  /** Withheld by a screen (zero without one): denied path, detector match, active content. */
+  /** Withheld by a screen (zero without one): denied path, detector match on
+   * the path or the body, active content, and a blob no class rule covers. */
   readonly deniedPath: number;
   readonly secretDetectorMatches: number;
   readonly activeContent: number;
+  readonly indeterminate: number;
+  /** Unquotable paths (never selected, never read) whose path a detector matched; counted apart from
+   * `secretDetectorMatches`, which counts selected sources only. Zero without a screen. */
+  readonly unquotablePathSecretMatches: number;
 }
 export interface RepoCorpus {
   readonly repositoryId: string;
@@ -130,22 +138,25 @@ export interface RepoCorpus {
   readonly permissionIdentity: string;
   readonly sources: readonly GenerationSource[];
   readonly count: RepoCorpusCount;
-  readonly unrepresentable: readonly { readonly pathSha256: string; readonly objectId: string; readonly reason: 'unquotable-path' }[];
+  readonly unrepresentable: readonly { readonly pathHmac: string; readonly objectId: string; readonly reason: 'unquotable-path' }[];
   readonly rawBytes: number;
   readonly identityDigest: string;
 }
 
-/** A whole-artifact screen over each selected blob. A denied path is decided
- * before the blob is read; the body screen runs on the decoded text. A
- * withheld row carries `opaqueId(identity)` and a placeholder path naming that
+/** A whole-artifact screen over each selected blob. The path screen decides
+ * before the blob is read; the body screen runs on the whole decoded text,
+ * before any splitting. With a screen in force every excluded row, whatever
+ * its reason, carries `opaqueId(identity)` and a placeholder path naming that
  * id, never the repository path, object id or body. */
-export type CorpusScreenReason = 'denied-path' | 'secret-detector-match' | 'active-content';
+export type CorpusScreenReason = Extract<GenerationExclusionReason, 'denied-path' | 'secret-detector-match' | 'active-content' | 'unknown-extraction-class'>;
 export interface CorpusScreen {
-  readonly deniedPath: (path: string) => boolean;
-  readonly screenBody: (body: string) => Exclude<CorpusScreenReason, 'denied-path'> | undefined;
+  readonly screenPath: (path: string) => Exclude<CorpusScreenReason, 'active-content'> | undefined;
+  readonly screenBody: (body: string) => 'secret-detector-match' | 'active-content' | undefined;
   readonly opaqueId: (identity: string) => string;
 }
-export interface RepoCorpusPorts { readonly admission?: CorpusAdmissionPort; readonly readBlobs?: ReadGitBlobs; readonly screen?: CorpusScreen }
+/** `runKey` keys every excluded row's id and the unrepresentable path digests
+ * (syzygy-75ds); it defaults to a fresh key per read and is never serialised. */
+export interface RepoCorpusPorts { readonly admission?: CorpusAdmissionPort; readonly readBlobs?: ReadGitBlobs; readonly screen?: CorpusScreen; readonly runKey?: Buffer }
 
 /** Reads exactly the named blobs of one pinned commit, after the admission
  * port says yes. Never the working tree, never another revision, never a
@@ -156,47 +167,57 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
   if (decision.allowed !== true) throw new CorpusRefusal(decision.allowed === false ? decision.reason : 'admission-undecided');
   if (typeof decision.permissionIdentity !== 'string' || decision.permissionIdentity.length === 0) throw new CorpusRefusal('admission-without-permission-identity');
   const readBlobs = ports.readBlobs ?? readGitBlobsBatch;
+  const runKey = ports.runKey ?? newGenerationRunKey();
   if (git(repoRoot, ['cat-file', '-t', config.revision]).toString('utf8').trim() !== 'commit') throw new Error('invalid-pinned-commit');
   const include = config.include.map(globToRegExp), exclude = config.exclude.map(globToRegExp);
   const records = git(repoRoot, ['ls-tree', '-r', '-z', '--full-tree', config.revision]).toString('utf8').split('\0').filter(Boolean).map(row => {
-    const match = /^(\d{6}) (blob|tree|commit) ([0-9a-f]{40}|[0-9a-f]{64})\t(.+)$/u.exec(row);
+    // `s`: a newline inside a path is part of the path (counted unquotable below), never a malformed record.
+    const match = /^(\d{6}) (blob|tree|commit) ([0-9a-f]{40}|[0-9a-f]{64})\t(.+)$/su.exec(row);
     if (!match) throw new Error('invalid-git-tree-record');
     return { mode: match[1]!, type: match[2]!, objectId: match[3]!, path: match[4]! };
   });
+  let unquotablePathSecretMatches = 0;
   let notBlob = 0, outsideInclude = 0, excludedByGlob = 0, unquotablePath = 0, binaryOrNonUtf8 = 0, emptyFiles = 0, oversizeFiles = 0, oversizeExcluded = 0, rawBytes = 0;
-  const screened = { 'denied-path': 0, 'secret-detector-match': 0, 'active-content': 0 };
-  const unrepresentable: { readonly pathSha256: string; readonly objectId: string; readonly reason: 'unquotable-path' }[] = [];
+  const screened: Record<CorpusScreenReason, number> = { 'denied-path': 0, 'secret-detector-match': 0, 'active-content': 0, 'unknown-extraction-class': 0 };
+  const unrepresentable: { readonly pathHmac: string; readonly objectId: string; readonly reason: 'unquotable-path' }[] = [];
   const chosen = records.filter(record => {
     if (record.type !== 'blob' || record.mode === '120000') { notBlob++; return false; }
     if (!include.some(re => re.test(record.path))) { outsideInclude++; return false; }
     if (exclude.some(re => re.test(record.path))) { excludedByGlob++; return false; }
     // A name no source row can carry is counted and listed by digest, never a failed run.
-    if (!representablePath(record.path)) { unquotablePath++; unrepresentable.push({ pathSha256: sha256(record.path), objectId: record.objectId, reason: 'unquotable-path' }); return false; }
+    // Under a screen it is counted only (no digest, no object id), and a detector match in it is counted too.
+    if (!representablePath(record.path)) {
+      unquotablePath++;
+      if (ports.screen === undefined) unrepresentable.push({ pathHmac: keyedDigest(runKey, record.path), objectId: record.objectId, reason: 'unquotable-path' });
+      else if (ports.screen.screenPath(record.path) === 'secret-detector-match') unquotablePathSecretMatches++;
+      return false;
+    }
     return true;
   }).sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
   const evaluationId = `corpus:${config.repositoryId}@${config.revision}`;
   const sources: GenerationSource[] = [];
   const algorithm = (objectId: string): 'sha1' | 'sha256' => objectId.length === 40 ? 'sha1' : 'sha256';
   const screen = ports.screen;
-  const withheld = (record: { readonly path: string; readonly objectId: string }, reason: CorpusScreenReason): GenerationSource => {
-    screened[reason]++;
+  const withheld = (record: { readonly path: string; readonly objectId: string }, reason: GenerationExclusionReason): GenerationSource => {
     const sourceId = screen!.opaqueId(generationSourceIdentity({ repositoryId: config.repositoryId, revision: config.revision, path: record.path, objectId: record.objectId }));
     return { repositoryId: config.repositoryId, revision: config.revision, path: `withheld/${sourceId}`, objectId: null, evaluationId, sourceId,
       classificationBasis: 'body', exclusion: { excluded: true, reason }, spans: [] };
   };
   for (let at = 0; at < chosen.length; at += BLOB_BATCH) {
     const batch = chosen.slice(at, at + BLOB_BATCH);
-    // A denied path is withheld unread.
-    const denied = new Set(screen === undefined ? [] : batch.filter(record => screen.deniedPath(record.path)));
-    const blobs = readBlobs(repoRoot, batch.filter(record => !denied.has(record)).map(record => record.objectId));
+    // A path the screen refuses is withheld unread.
+    const byPath = new Map(screen === undefined ? [] : batch.flatMap(record => { const reason = screen.screenPath(record.path); return reason === undefined ? [] : [[record, reason] as const]; }));
+    const blobs = readBlobs(repoRoot, batch.filter(record => !byPath.has(record)).map(record => record.objectId));
     for (const record of batch) {
-      if (denied.has(record)) { sources.push(withheld(record, 'denied-path')); continue; }
+      const pathReason = byPath.get(record);
+      if (pathReason !== undefined) { screened[pathReason]++; sources.push(withheld(record, pathReason)); continue; }
       const bytes = blobs.get(record.objectId);
       if (!(bytes instanceof Uint8Array)) throw bytes ?? new Error('corpus-blob-unread');
       rawBytes += bytes.length;
       const sourceId = `s-${sha256(record.path).slice(0, 24)}`;
       const base = { repositoryId: config.repositoryId, revision: config.revision, path: record.path, objectId: record.objectId, evaluationId, sourceId };
-      const excludedRow = (reason: string): GenerationSource => ({ ...base, classificationBasis: 'body', exclusion: { excluded: true, reason }, spans: [] });
+      const excludedRow = (reason: GenerationExclusionReason): GenerationSource => screen !== undefined ? withheld(record, reason)
+        : ({ ...base, sourceId: excludedSourceId(runKey, record.path), classificationBasis: 'body', exclusion: { excluded: true, reason }, spans: [] });
       let body: string | undefined;
       // ignoreBOM keeps a leading U+FEFF so the text still hashes to its blob.
       try { body = bytes.includes(0) ? undefined : new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes); } catch { body = undefined; }
@@ -204,17 +225,20 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
       if (gitBlobObjectId(body, algorithm(record.objectId)) !== record.objectId) throw new Error('corpus-object-mismatch');
       if (body.length === 0) { emptyFiles++; sources.push(excludedRow('empty-file')); continue; }
       const screenedOut = screen?.screenBody(body);
-      if (screenedOut !== undefined) { sources.push(withheld(record, screenedOut)); continue; }
+      if (screenedOut !== undefined) { screened[screenedOut]++; sources.push(withheld(record, screenedOut)); continue; }
       if ([...body].length > SOURCE_TEXT_MAX_LENGTH) { oversizeFiles++; if (config.oversize === 'exclude') oversizeExcluded++; }
-      sources.push(...generationSourcesForBody({ ...base, body, oversize: config.oversize }));
+      sources.push(...generationSourcesForBody({ ...base, body, oversize: config.oversize }).map(row => !row.exclusion.excluded ? row
+        : screen !== undefined ? withheld(record, row.exclusion.reason) : { ...row, sourceId: excludedSourceId(runKey, record.path) }));
     }
   }
   validateGenerationSources(sources);
   return { repositoryId: config.repositoryId, revision: config.revision, permissionIdentity: decision.permissionIdentity, sources,
     count: { listed: records.length, notBlob, outsideInclude, excludedByGlob, unquotablePath, selected: chosen.length, binaryOrNonUtf8, emptyFiles, oversizeFiles, oversizeExcluded, sourceRows: sources.length,
-      deniedPath: screened['denied-path'], secretDetectorMatches: screened['secret-detector-match'], activeContent: screened['active-content'] },
+      deniedPath: screened['denied-path'], secretDetectorMatches: screened['secret-detector-match'], activeContent: screened['active-content'], indeterminate: screened['unknown-extraction-class'], unquotablePathSecretMatches },
     unrepresentable,
-    rawBytes, identityDigest: sha256(sources.map(source => `${source.path}\0${source.objectId}\0${source.sourceId}`).join('\n')) };
+    rawBytes, // The digest binds the population across runs, so a path-bearing excluded row contributes its unkeyed id, never its keyed one.
+    // A withheld row (objectId null) carries only the screen's own keyed id, as before.
+    identityDigest: sha256(sources.map(source => `${source.path}\0${source.objectId}\0${source.exclusion.excluded && source.objectId !== null ? `s-${sha256(source.path).slice(0, 24)}` : source.sourceId}`).join('\n')) };
 }
 
 /** The request the pipeline would run; startedAt is the caller's clock. */

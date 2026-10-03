@@ -123,9 +123,15 @@ Authorized implementation work (generator implementation authorization,
         hash to its argument, and runs the policy's denied-path rules, every
         detector and the active-content scan over each selected blob. A
         withheld row has a per-run HMAC id and no path, object id or body.
-        Not yet: the scope's extension rule (non-source blobs indeterminate),
-        and the trigger wiring (#268). Nothing passes the gate until the owner
-        performs the act.
+        Review repairs (reviewer-6 B1–B4): a blob whose final segment ends
+        in none of the scope's `sourceExtensions` is withheld unread as
+        indeterminate; the detectors also run over every path; with a screen
+        in force, binary, empty and oversize-excluded rows are withheld rows
+        too; a test pins a match past the first 100,000-character piece.
+        Policy residuals, pinned by tests: an encoded or line-split secret
+        passes the detectors. Not yet: the trigger wiring (#268) and #278's
+        shared run key. Nothing passes the gate until the owner performs the
+        act.
   - [ ] **G2 Real `generate` port.** A Claude Agent SDK adapter behind
         `PipelinePorts.generate` (`pipeline.ts`): structured output for
         `responseSchema`, usage accounting, abort. Per the egress record:
@@ -152,6 +158,44 @@ Authorized implementation work (generator implementation authorization,
         basis. Every call is permitted per call and leaves a durable receipt;
         a report replays from receipts alone, bound to each call's request
         digest. Wiring to a real model is still G2/G3.
+  - [x] **Closed exclusion reasons.** `GENERATION_EXCLUSION_REASONS`
+        (`generation-source.ts`, a plain literal array) lists every reason an
+        excluded source may carry; `validateGenerationSources` refuses any
+        other reason and any excluded row whose id is not `s-` plus 24 hex
+        digits (the validator checks that shape only). The PWB adapter
+        keys an excluded row's id as HMAC-SHA256 of a per-run random key over
+        the source identity, so it is stable within a run and not across runs;
+        non-excluded rows keep the unkeyed identity hash. It maps its closed
+        withholding reasons onto the set (a detector match with no closed
+        reason is `secret-detector-match`) and falls back to
+        `unclassified-exclusion`; it never passes the classifier's sentence
+        through.
+  - [x] **One-line trigger (gap #9).** `npm run poc:dossier -- <github-url>`
+        pins the revision with `git ls-remote` (metadata), prints which
+        admission records (observation consent, public-source policy, egress
+        consent) are missing, and stops (exit 3). It reads and generates only
+        once an injected record store satisfies all three; none is wired yet,
+        and no generate port exists (exit 5 after recording the corpus). Git
+        runs with a minimal environment and a bare, template-free fetch;
+        discovery calls are permitted only while the egress record holds;
+        the repository id admitted and used for the run is the one the single
+        observation record whose `Upstream:` is the canonical URL carries,
+        read through `AdmissionRecordsPort.repositoryIdsFor` (zero or several
+        records: exit 3, nothing read); the URL-derived spelling is only a
+        label. The run directory is pre-flighted before any fetch; one created
+        after that check is refused at write time and the run is not recorded
+        elsewhere. The run is written by `writeDossierRun` (realpath parent, fail-closed
+        git check, atomic staging) and rendered by `renderDossier`
+        (polaris-dossier-v1), which `dossier-main` wires as the default `render`
+        port.
+        A stopped run (usage, wall clock, refused stage) is rendered from its
+        completed stage outputs (`artifacts` on the stopped result) alongside
+        `run-record.json` and exits 7; when the renderer cannot render it
+        (`DossierRenderError`), only the record is written and the exit is 6
+        (syzygy-k4t2). `dossier-main` passes `requestedAssets`, which the
+        renderer requires for a stopped result; a page-level test runs a
+        scripted pipeline out of usage budget after two stages and checks the
+        banner and every requested asset as Unknown `deferred-by-budget`.
   - [~] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.

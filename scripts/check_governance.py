@@ -1719,6 +1719,18 @@ MESSAGES_API_ACTS = (
     ("ADOPT POLARIS MESSAGES API PROVIDER EXECUTION ROUTE REGISTRY ENTRY",
      f"{MESSAGES_API_DIR}/proposed/POLARIS-PROVIDER-ROUTE-ANTHROPIC-MESSAGES-API-CANDIDATE.json"),
 )
+#: The second Anthropic egress version (sitting row 8): one state-(1) consent
+#: act over one record, given at its manifest row. Its phrase label differs from
+#: the first version's so the two subjects register separately; it depends on
+#: sitting row 7 and registers no chain link; the performed record arrives with
+#: the act. The round notes records are registered once they exist.
+PUBLIC_EGRESS_V2_DIR = f"{CANDIDATES}/public-egress-v2"
+PUBLIC_EGRESS_V2_MANIFEST = f"{PUBLIC_EGRESS_V2_DIR}/PUBLIC-EGRESS-V2-MANIFEST.txt"
+PUBLIC_EGRESS_V2_DISPOSITION_NAMES = ("ROUND-3-DISPOSITIONS.md",)
+PUBLIC_EGRESS_V2_ACTS = (
+    ("CONSENT TO PUBLIC TARGET EGRESS TO ANTHROPIC VERSION 2",
+     f"{PUBLIC_EGRESS_V2_DIR}/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md"),
+)
 #: Decisions 2 and 3 of the truth-and-readiness packet re-perform the policy
 #: and registry acts over amended artifact bytes. Each amended act gets its own
 #: new dedicated record (`record_pwb_effect_amendment_acts.py`); the
@@ -2480,6 +2492,11 @@ def _act_subjects():
             if not any(l == label for l, _rel, _pat in out):
                 out.append((label, subject, re.compile(
                     re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
+    if os.path.isfile(os.path.join(ROOT, PUBLIC_EGRESS_V2_MANIFEST)):
+        for label, subject in PUBLIC_EGRESS_V2_ACTS:
+            if not any(l == label for l, _rel, _pat in out):
+                out.append((label, subject, re.compile(
+                    re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
     return tuple(out)
 
 
@@ -3232,6 +3249,26 @@ def _activate_messages_api_manifest_copy_registry():
 
 
 _activate_messages_api_manifest_copy_registry()
+
+
+def _activate_public_egress_v2_manifest_copy_registry():
+    """The egress version 2 manifest carries its one current argument as a row.
+
+    Existence-gated candidate registration; the performed record arrives with
+    the act. The round notes record is registered when it exists, so a digest
+    ever quoted there is checked.
+    """
+    if os.path.isfile(os.path.join(ROOT, PUBLIC_EGRESS_V2_MANIFEST)):
+        ACT_DIGEST_COPY_FILES[PUBLIC_EGRESS_V2_MANIFEST] = tuple(
+            label for label, _subject in PUBLIC_EGRESS_V2_ACTS)
+    for name in PUBLIC_EGRESS_V2_DISPOSITION_NAMES:
+        rel = f"{PUBLIC_EGRESS_V2_DIR}/{name}"
+        if os.path.isfile(os.path.join(ROOT, rel)):
+            ACT_DIGEST_COPY_FILES[rel] = tuple(
+                label for label, _subject in PUBLIC_EGRESS_V2_ACTS)
+
+
+_activate_public_egress_v2_manifest_copy_registry()
 
 
 #: The act-time digests the specification-policy restyle supersedes as the

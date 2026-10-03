@@ -1,0 +1,44 @@
+{
+  "bead": "syzygy-prn1",
+  "rule": "AGENTS.md verification rule 6: mutate the input and confirm the check fails, per predicate",
+  "subjects": [
+    {
+      "path": ".github/workflows/governance-docs.yml",
+      "sha256": "6abf4e4190e0a7367d1bdd3948e8860a2b8a5db2d18f450064ce2121b6929ecc"
+    },
+    {
+      "path": "PROJECT-STATUS.md",
+      "sha256": "6c284447f7222f5f8135763959d24a8b5b87186b6ec59fc328d966e15942693a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "sha256": "10ece2a0f36ebe8c53f81101760587843becad4b42fa8aa91bb60e036a26ff29"
+    }
+  ],
+  "mutants": [
+    {
+      "id": "CI-1-yes-unreserved",
+      "predicate": "hosted CI: build_contract_index --selftest catches an emit that leaves the YAML boolean `yes` unquoted, while --check (no such value in the live index) passes",
+      "file": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "old": "(?i:y|n|yes|no|on|off|true|false|null|~)$",
+      "new": "(?i:y|n|no|on|off|true|false|null|~)$",
+      "baseCommit": "da32e217b0d013ae463f03dbb851e84b998a4791",
+      "mutantCommit": "ea30abad62cb30dc4787cb1e8903c918475dfd12",
+      "mutantCommitNote": "on scratch/syzygy-prn1-rule6, deleted after the run (draft PR #321, closed); the commit is reachable from no ref, so old/new above are the re-runnable form",
+      "check": ".github/workflows/governance-docs.yml job `checks`, GitHub Actions run 37143931608",
+      "outcome": "killed",
+      "stepConclusions": {
+        "check_governance": "success",
+        "build_contract_index --check": "success",
+        "install PyYAML (test-only, for build_contract_index --selftest)": "success",
+        "build_contract_index --selftest": "failure"
+      },
+      "output": [
+        "SELFTEST FAIL: hostile titles load back as the same strings",
+        "SELFTEST FAIL: hostile list items load back as the same strings",
+        "##[error]Process completed with exit code 1."
+      ]
+    }
+  ],
+  "localPreRun": "the same mutant run locally first: --check exit 0 (no drift over 11 contracts), --selftest the same two FAIL lines, check_governance 0 FAIL"
+}

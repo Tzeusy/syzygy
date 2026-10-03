@@ -4,9 +4,9 @@ import { DESIGN_TOKENS_CSS } from '../design-tokens.js';
 
 import {
   DOSSIER_FORMAT, OWNER_TOPICS, diagramToMermaid, parseDossierManifest, readerCost, reviewVerdict, scanDossierPage,
-  validateDraftRecord, validateGenerationSources,
+  validateDraftRecord, validateGenerationSources, validateRequestedAssets,
   type DossierManifest, type EpistemicMarking, type GenerationSource, type OwnerTopic, type PipelineResult,
-  type ProviderBlock, type ProviderDiagram, type ProviderDraft, type ProviderParagraph,
+  type ProviderBlock, type ProviderDiagram, type ProviderDraft, type ProviderParagraph, type RequestedAsset,
 } from '@syzygy/polaris-generation-core';
 import { renderDiagramSvg } from './diagram-layout.js';
 import { DRAFT_PREVIEW_CSP_META, DRAFT_PREVIEW_CSS, MARKING_LABEL, escapeHtml as escape } from './draft-preview.js';
@@ -45,11 +45,24 @@ import { assertInertSvg } from './svg-inert.js';
  * Source routes derive from each source's anchor (blob identity plus byte
  * range), never from `generationSourceIdentity`, which every piece of a
  * segmented blob shares: two pieces of one blob get two pages.
+ *
+ * A stopped run (budget, wall clock, a refused stage) still renders: the page
+ * never fails as a whole because generation ended early. The stopped result's
+ * `artifacts` are its validated stage outputs, in order. The latest draft
+ * (author, edit or repair) renders as above, its blocks Inferred only where a
+ * fidelity review later than that draft judged them supported. With no draft,
+ * each planned section, or failing a plan each requested asset, renders as a
+ * not-generated notice. Every requested asset the page does not carry is such
+ * a notice: an Unknown claim with the stop reason (`deferred-by-budget` for a
+ * budget stop, otherwise the pipeline's reason), declaring no topics. The
+ * entry page names the reason and the last validated stage.
  */
 
 export interface DossierRenderInput {
-  /** The pipeline's final output; only `awaiting-rendered-review` renders. */
+  /** The pipeline's final output, complete or stopped. */
   readonly result: PipelineResult;
+  /** What the run asked for; required for a stopped result, whose missing assets it names. */
+  readonly requestedAssets?: readonly RequestedAsset[];
   readonly sources: readonly GenerationSource[];
   /** Owner topics a section or deep dive answers, by draft id. Absent: each
    * produced item's asset ids that are owner topics. */
@@ -63,7 +76,7 @@ export interface RenderedDossier {
 }
 
 export class DossierRenderError extends Error {
-  constructor(readonly code: 'not-renderable' | 'unknown-source' | 'unquotable-source' | 'ambiguous-source-anchor' | 'unknown-section' | 'unknown-topic' | 'page-path-collision' | 'invalid-inventory') {
+  constructor(readonly code: 'not-renderable' | 'missing-requested-assets' | 'unknown-source' | 'unquotable-source' | 'ambiguous-source-anchor' | 'unknown-section' | 'unknown-topic' | 'page-path-collision' | 'invalid-inventory') {
     super(`Dossier render refused: ${code}`);
     this.name = 'DossierRenderError';
   }
@@ -93,11 +106,64 @@ ${DRAFT_PREVIEW_CSS}${DOSSIER_CSS}
 </style></head><body><a class="skip" href="#content">Skip to content</a><div class="pipeline-notice">Generated dossier draft — not reviewed or adopted</div><div class="layout"><nav class="contents desktop-contents" aria-label="Dossier">${nav}</nav><details class="contents mobile-contents"><summary>In this dossier</summary><nav aria-label="Dossier">${nav}</nav></details><main id="content" data-page="${escape(path)}">${main}</main></div></body></html>`;
 }
 
+/** What a stopped run shows for an asset it never produced. */
+export function stopReasonLabel(reason: string): string {
+  return reason === 'budget-exhausted' ? 'deferred-by-budget' : reason;
+}
+
+interface Stop { readonly reason: string; readonly shown: string; readonly lastStage: string | null }
+interface View {
+  readonly draft: ProviderDraft; readonly drafted: boolean; readonly review: unknown; readonly inventory: unknown; readonly stop: Stop | null;
+  /** Sections a stopped run planned or requested but never drafted; each renders in place as a notice. */
+  readonly deferredSections: ReadonlySet<string>;
+  /** Requested assets the page carries nowhere else; listed under "Not generated". */
+  readonly notGenerated: readonly { id: string; kind: string }[];
+}
+
+const DRAFT_STAGES: readonly string[] = ['author', 'edit', 'repair'];
+const lastIndex = <T>(items: readonly T[], test: (item: T) => boolean): number => {
+  for (let i = items.length - 1; i >= 0; i--) if (test(items[i]!)) return i;
+  return -1;
+};
+
+/** The renderable view of a result: complete, or the latest validated outputs of a stopped run. */
+function viewOf(input: DossierRenderInput): View {
+  const result = input.result;
+  if (result.status === 'awaiting-rendered-review') {
+    return { draft: validateDraftRecord(result.draft), drafted: true, review: result.review, inventory: result.inventory, stop: null, deferredSections: new Set(), notGenerated: [] };
+  }
+  if (result.status !== 'stopped' || !Array.isArray(result.artifacts)) throw new DossierRenderError('not-renderable');
+  if (input.requestedAssets === undefined) throw new DossierRenderError('missing-requested-assets');
+  const requested = validateRequestedAssets(input.requestedAssets);
+  const artifacts = result.artifacts;
+  const stop: Stop = { reason: result.reason, shown: stopReasonLabel(result.reason), lastStage: artifacts.at(-1)?.stage ?? null };
+  const draftAt = lastIndex(artifacts, artifact => DRAFT_STAGES.includes(artifact.stage));
+  const valueAt = (index: number): unknown => index < 0 ? null : artifacts[index]!.value;
+  const inventory = valueAt(lastIndex(artifacts, artifact => artifact.stage === 'inventory'));
+  let draft: ProviderDraft;
+  let review: unknown = null;
+  if (draftAt >= 0) {
+    draft = validateDraftRecord(artifacts[draftAt]!.value);
+    const reviewAt = lastIndex(artifacts, artifact => artifact.stage === 'fidelity');
+    review = reviewAt > draftAt ? valueAt(reviewAt) : null;
+  } else {
+    const planned = (valueAt(lastIndex(artifacts, artifact => artifact.stage === 'plan')) as { sections?: { id: string; title: string }[] } | null)?.sections;
+    const sections = Array.isArray(planned) ? planned.map(section => ({ id: section.id, title: section.title }))
+      : requested.filter(asset => asset.kind === 'section').map(asset => ({ id: asset.id, title: asset.id }));
+    draft = { title: 'Dossier draft (incomplete)', introduction: { id: 'introduction', text: '', sourceIds: [] },
+      sections: sections.map(section => ({ ...section, paragraphs: [], disposition: { kind: 'unresolved', reason: '', references: [] } })), diagrams: [], deepDives: [], unresolved: [] };
+  }
+  const rendered = new Set([...draft.sections, ...draft.diagrams, ...draft.deepDives].map(item => item.id));
+  const deferredSections = new Set(draftAt >= 0 ? [] : draft.sections.map(section => section.id));
+  const notGenerated = requested.filter(asset => !rendered.has(asset.id)).map(asset => ({ id: asset.id, kind: asset.kind }));
+  return { draft, drafted: draftAt >= 0, review, inventory, stop, deferredSections, notGenerated };
+}
+
 export function renderDossier(input: DossierRenderInput): RenderedDossier {
-  if (input.result.status !== 'awaiting-rendered-review') throw new DossierRenderError('not-renderable');
-  const draft: ProviderDraft = validateDraftRecord(input.result.draft);
-  reviewVerdict(input.result.review);
-  const support = new Map((input.result.review as { blockSupport: { blockId: string; verdict: string }[] }).blockSupport.map(row => [row.blockId, row.verdict]));
+  const view = viewOf(input);
+  const { draft, stop } = view;
+  if (view.review !== null) reviewVerdict(view.review);
+  const support = new Map(view.review === null ? [] : (view.review as { blockSupport: { blockId: string; verdict: string }[] }).blockSupport.map(row => [row.blockId, row.verdict]));
   validateGenerationSources(input.sources);
   const sources = new Map(input.sources.map(source => [source.sourceId, source]));
   const owned = (ids: readonly string[]): OwnerTopic[] => ids.filter((id): id is OwnerTopic => (OWNER_TOPICS as readonly string[]).includes(id));
@@ -162,15 +228,24 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   const from = 'index.html';
   const unresolved = draft.unresolved.map((item, index) => claim('aside', `unresolved-${index + 1}`, 'unknown',
     `<strong>${escape(item.question)}</strong>: ${escape(item.reason)} ${marking('unknown')} <span class="asset-references">(${escape(item.references.join(', '))})</span>`)).join('');
+  const notGenerated = (id: string, kind: string): string => claim('aside', `not-generated:${id}`, 'unknown',
+    `<strong>${escape(id)}</strong> (${escape(kind)}): not generated; the run stopped before it was written (${escape(stop!.shown)}). ${marking('unknown')}`)
+    .replace('<aside ', `<aside class="unresolved-asset" data-asset-disposition="not-generated" data-stop-reason="${escape(stop!.shown)}" `);
   const sections = draft.sections.map((section, index) => {
     const head = `<span class="eyebrow">${String(index + 1).padStart(2, '0')}</span><h2>${escape(section.title)}</h2>`;
+    if (view.deferredSections.has(section.id)) return `<section id="section-${escape(section.id)}" data-reading-level="1" data-topics="">${head}${notGenerated(section.id, 'section')}</section>`;
     if (section.disposition.kind !== 'produced') return `<section id="section-${escape(section.id)}" data-reading-level="1"${topicAttr(section.id)}>${head}${notice(section.id, section.disposition)}</section>`;
     const figures = draft.diagrams.map((d, i) => d.sectionId === section.id ? diagram(from, d, i) : '').join('');
     const dives = draft.deepDives.filter(dive => dive.sectionId === section.id).map(dive => dive.disposition.kind === 'produced'
       ? `<li><a href="${escape(deepPaths.get(dive.id)!)}">Explore: ${escape(dive.title)}</a></li>` : `<li>${notice(dive.id, dive.disposition)}</li>`).join('');
     return `<section id="section-${escape(section.id)}" data-reading-level="1"${topicAttr(section.id)}>${head}${section.paragraphs.map(b => block(from, b)).join('')}${figures}${dives ? `<ul class="deep-links">${dives}</ul>` : ''}</section>`;
   }).join('');
-  add(from, 0, 'Overview', `<header data-reading-level="0"><span class="eyebrow">Polaris · Editorial draft</span><h1>${escape(draft.title)}</h1>${paragraph(from, draft.introduction, 'p')}${unresolved}</header>${sections}`);
+  const banner = stop === null ? '' : claim('aside', 'run-stopped', 'unknown',
+    `<strong>Incomplete dossier.</strong> The run stopped (${escape(stop.shown)}) ${stop.lastStage === null ? 'before any stage completed' : `after the ${escape(stop.lastStage)} stage`}${view.drafted && view.review === null ? '; no fidelity review covers this draft, so every generated sentence is Unknown' : ''}. ${marking('unknown')}`)
+    .replace('<aside ', `<aside class="run-stopped" data-stop-reason="${escape(stop.shown)}" `);
+  const introduction = view.drafted ? paragraph(from, draft.introduction, 'p') : '';
+  const missingList = view.notGenerated.length === 0 ? '' : `<section id="not-generated" data-reading-level="1" data-topics=""><h2>Not generated</h2>${view.notGenerated.map(item => notGenerated(item.id, item.kind)).join('')}</section>`;
+  add(from, 0, 'Overview', `<header data-reading-level="0"><span class="eyebrow">Polaris · Editorial draft</span><h1>${escape(draft.title)}</h1>${banner}${introduction}${unresolved}</header>${sections}${missingList}`);
 
   // --- deep dives
   for (const dive of deepDives) {
@@ -185,10 +260,12 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   add('contents.html', 1, 'Contents', `<section id="contents"><h1>Contents</h1>${contents}</section>`);
 
   // --- glossary: inventory terms, each an Inferred claim
-  const entries = (input.result.inventory as { entries?: unknown } | null)?.entries;
-  if (!Array.isArray(entries)) throw new DossierRenderError('invalid-inventory');
-  const terms = (entries as { id: string; kind: string; statement: string; sourceIds: string[] }[]).filter(entry => entry.kind === 'term');
-  const glossary = terms.length === 0
+  const entries = (view.inventory as { entries?: unknown } | null)?.entries;
+  if (!Array.isArray(entries) && !(stop !== null && view.inventory === null)) throw new DossierRenderError('invalid-inventory');
+  const terms = Array.isArray(entries) ? (entries as { id: string; kind: string; statement: string; sourceIds: string[] }[]).filter(entry => entry.kind === 'term') : [];
+  const glossary = !Array.isArray(entries)
+    ? claim('p', 'glossary:not-generated', 'unknown', `No inventory was produced before the run stopped (${escape(stop!.shown)}), so this glossary is empty. ${marking('unknown')}`)
+    : terms.length === 0
     ? '<p>The inventory recorded no terms, so this glossary is empty.</p>'
     : `<dl class="glossary">${terms.map(term => `<dt id="term-${escape(term.id)}">${escape(term.id)}</dt>${claim('dd', `glossary:${term.id}`, 'inferred', `${escape(term.statement)} ${marking('inferred')} ${refs('glossary.html', term.sourceIds)}`)}`).join('')}</dl>`;
   add('glossary.html', 1, 'Glossary', `<section id="glossary"><h1>Glossary</h1>${glossary}</section>`);

@@ -1,0 +1,131 @@
+{
+  "record": "Rule-6 mutants for the keyboard sweep record's walkthrough evaluation identity and its --out directory (syzygy-7dch; reviewer-320 finding on PR 320). Not authority.",
+  "measuredOn": {
+    "commit": "d238dc3a3062a04d30d126b2e17f997d880e25d3",
+    "subjects": [
+      {
+        "path": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+        "sha256": "b7698b1ed28cca6a4a76a792b7c920e90e5c626089c3046067bca2b8ba102c45"
+      },
+      {
+        "path": "apps/three-surface-poc/src/keyboard-sweep-record.test.ts",
+        "sha256": "e327d38a01ea8be2b45e4b6d1ac219255a864d8e0382e534421aa19d9483a90f"
+      }
+    ]
+  },
+  "method": "Each mutant replaces every occurrence of `old` with `new` in one file of a fresh `git archive <commit>` extraction (node_modules symlinked from the worktree), then runs `command` from that extraction's root. Killed only when it replaced at least one occurrence, vitest exits nonzero, and its output names `expected`, the failing test. M0 is the unmutated control and must pass.",
+  "scope": "keyboard-sweep-record.ts is the pure subject. polaris-keyboard-sweep-main.ts only wires keyboardSweepOutput(...).directory into mkdirSync; that glue line is not mutated here, since main() needs a browser and a daemon or capture.",
+  "result": {
+    "killed": 7,
+    "total": 7,
+    "controlPassed": true
+  },
+  "mutants": [
+    {
+      "id": "M0",
+      "description": "control: unmutated",
+      "exitCode": 0,
+      "testsLine": "Tests  8 passed (8)",
+      "passed": true
+    },
+    {
+      "id": "M1",
+      "description": "duplicates accepted",
+      "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+      "old": "  if (walkthrough.length !== 1) return { refused: `expected one walkthrough evaluation identity",
+      "new": "  if (walkthrough.length === 0) return { refused: `expected one walkthrough evaluation identity",
+      "occurrencesReplaced": 1,
+      "command": "npx vitest run apps/three-surface-poc/src/keyboard-sweep-record.test.ts",
+      "expected": "refuses a page whose walkthrough evaluation identity is missing, duplicated or not an identifier",
+      "exitCode": 1,
+      "killed": true,
+      "outputMatch": "FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/keyboard-sweep-record.test.ts > the evaluation a swept page names (rule 11; syzygy-buzg) > refuses a page whose walkthrough evaluation identity is missing, duplicated or not an identifier (syzygy-7dch)",
+      "testsLine": "Tests  1 failed | 7 passed (8)"
+    },
+    {
+      "id": "M2",
+      "description": "a missing identity defaulted instead of refused",
+      "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+      "old": "  if (walkthrough.length !== 1) return { refused: `expected one walkthrough evaluation identity, found ${walkthrough.length}` };\n  const walkthroughEvaluationIdentity = unescapeHtml(walkthrough[0]![1]!);",
+      "new": "  if (walkthrough.length > 1) return { refused: `expected one walkthrough evaluation identity, found ${walkthrough.length}` };\n  const walkthroughEvaluationIdentity = walkthrough.length === 0 ? 'pwb-unrecorded' : unescapeHtml(walkthrough[0]![1]!);",
+      "occurrencesReplaced": 1,
+      "command": "npx vitest run apps/three-surface-poc/src/keyboard-sweep-record.test.ts",
+      "expected": "refuses a page whose walkthrough evaluation identity is missing, duplicated or not an identifier",
+      "exitCode": 1,
+      "killed": true,
+      "outputMatch": "FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/keyboard-sweep-record.test.ts > the evaluation a swept page names (rule 11; syzygy-buzg) > refuses a page whose walkthrough evaluation identity is missing, duplicated or not an identifier (syzygy-7dch)",
+      "testsLine": "Tests  2 failed | 6 passed (8)"
+    },
+    {
+      "id": "M3",
+      "description": "identifier grammar dropped",
+      "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+      "old": "  if (!WALKTHROUGH_IDENTITY.test(walkthroughEvaluationIdentity)) return",
+      "new": "  if (false) return",
+      "occurrencesReplaced": 1,
+      "command": "npx vitest run apps/three-surface-poc/src/keyboard-sweep-record.test.ts",
+      "expected": "refuses a page whose walkthrough evaluation identity is missing, duplicated or not an identifier",
+      "exitCode": 1,
+      "killed": true,
+      "outputMatch": "FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/keyboard-sweep-record.test.ts > the evaluation a swept page names (rule 11; syzygy-buzg) > refuses a page whose walkthrough evaluation identity is missing, duplicated or not an identifier (syzygy-7dch)",
+      "testsLine": "Tests  1 failed | 7 passed (8)"
+    },
+    {
+      "id": "M4",
+      "description": "the run record's identity stands in for the expected binding",
+      "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+      "old": "\\sdata-polaris-readiness-expected-evaluation(",
+      "new": "\\sdata-polaris-readiness-(?:expected-)?evaluation(",
+      "occurrencesReplaced": 1,
+      "command": "npx vitest run apps/three-surface-poc/src/keyboard-sweep-record.test.ts",
+      "expected": "refuses a page whose walkthrough evaluation identity is missing, duplicated or not an identifier",
+      "exitCode": 1,
+      "killed": true,
+      "outputMatch": "FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/keyboard-sweep-record.test.ts > the evaluation a swept page names (rule 11; syzygy-buzg) > refuses a page whose walkthrough evaluation identity is missing, duplicated or not an identifier (syzygy-7dch)",
+      "testsLine": "Tests  1 failed | 7 passed (8)"
+    },
+    {
+      "id": "M5",
+      "description": "mounts disagreeing on the walkthrough identity accepted",
+      "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+      "old": "    } else if (binding.walkthroughEvaluationIdentity !== first.binding.walkthroughEvaluationIdentity) {",
+      "new": "    } else if (false) {",
+      "occurrencesReplaced": 1,
+      "command": "npx vitest run apps/three-surface-poc/src/keyboard-sweep-record.test.ts",
+      "expected": "refuses mounts that agree on the footer but disagree on the walkthrough evaluation identity",
+      "exitCode": 1,
+      "killed": true,
+      "outputMatch": "FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/keyboard-sweep-record.test.ts > the sweep record (syzygy-buzg) > refuses mounts that agree on the footer but disagree on the walkthrough evaluation identity, or where one names none (syzygy-7dch)",
+      "testsLine": "Tests  1 failed | 7 passed (8)"
+    },
+    {
+      "id": "M6",
+      "description": "the record omits the walkthrough identity",
+      "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+      "old": "    walkthroughEvaluationIdentity: input.evaluation.walkthroughEvaluationIdentity,\n",
+      "new": "",
+      "occurrencesReplaced": 1,
+      "command": "npx vitest run apps/three-surface-poc/src/keyboard-sweep-record.test.ts",
+      "expected": "names the task, the Butlers revision and the evaluation identity beside each mount digest",
+      "exitCode": 1,
+      "killed": true,
+      "outputMatch": "FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/keyboard-sweep-record.test.ts > the sweep record (syzygy-buzg) > names the task, the Butlers revision and the evaluation identity beside each mount digest",
+      "testsLine": "Tests  1 failed | 7 passed (8)"
+    },
+    {
+      "id": "M7",
+      "description": "--out still creates docs/evidence",
+      "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+      "old": "  return { file, directory: dirname(file) };",
+      "new": "  return { file, directory: join('docs', 'evidence') };",
+      "occurrencesReplaced": 1,
+      "command": "npx vitest run apps/three-surface-poc/src/keyboard-sweep-record.test.ts",
+      "expected": "writes to --out and creates only its directory",
+      "exitCode": 1,
+      "killed": true,
+      "outputMatch": "FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/keyboard-sweep-record.test.ts > keyboard sweep arguments (syzygy-buzg) > writes to --out and creates only its directory; the dated default goes under docs/evidence (syzygy-7dch)",
+      "testsLine": "Tests  1 failed | 7 passed (8)"
+    }
+  ],
+  "runner": "\"\"\"Rule-6 mutants for syzygy-7dch. Each mutant replaces every occurrence of\n`old` with `new` in one file of a fresh `git archive <commit>` extraction\n(node_modules symlinked from the worktree), then runs the sweep record's\ntest file there. Killed only when it replaced at least one occurrence, vitest\nexits nonzero, and its output names the expected failing test.\"\"\"\nimport hashlib, json, os, pathlib, shutil, subprocess, sys, tempfile\n\nREPO = pathlib.Path(sys.argv[1]).resolve()\nCOMMIT = subprocess.run([\"git\", \"rev-parse\", \"HEAD\"], cwd=REPO, capture_output=True, text=True, check=True).stdout.strip()\nSUBJECT = \"apps/three-surface-poc/src/keyboard-sweep-record.ts\"\nTEST = \"apps/three-surface-poc/src/keyboard-sweep-record.test.ts\"\nMISSING = \"refuses a page whose walkthrough evaluation identity is missing, duplicated or not an identifier\"\nMOUNTS = \"refuses mounts that agree on the footer but disagree on the walkthrough evaluation identity\"\nMUTANTS = [\n    (\"M1\", \"duplicates accepted\",\n     \"  if (walkthrough.length !== 1) return { refused: `expected one walkthrough evaluation identity\",\n     \"  if (walkthrough.length === 0) return { refused: `expected one walkthrough evaluation identity\",\n     MISSING),\n    (\"M2\", \"a missing identity defaulted instead of refused\",\n     \"  if (walkthrough.length !== 1) return { refused: `expected one walkthrough evaluation identity, found ${walkthrough.length}` };\\n\"\n     \"  const walkthroughEvaluationIdentity = unescapeHtml(walkthrough[0]![1]!);\",\n     \"  if (walkthrough.length > 1) return { refused: `expected one walkthrough evaluation identity, found ${walkthrough.length}` };\\n\"\n     \"  const walkthroughEvaluationIdentity = walkthrough.length === 0 ? 'pwb-unrecorded' : unescapeHtml(walkthrough[0]![1]!);\",\n     MISSING),\n    (\"M3\", \"identifier grammar dropped\",\n     \"  if (!WALKTHROUGH_IDENTITY.test(walkthroughEvaluationIdentity)) return\",\n     \"  if (false) return\",\n     MISSING),\n    (\"M4\", \"the run record's identity stands in for the expected binding\",\n     \"\\\\sdata-polaris-readiness-expected-evaluation(\",\n     \"\\\\sdata-polaris-readiness-(?:expected-)?evaluation(\",\n     MISSING),\n    (\"M5\", \"mounts disagreeing on the walkthrough identity accepted\",\n     \"    } else if (binding.walkthroughEvaluationIdentity !== first.binding.walkthroughEvaluationIdentity) {\",\n     \"    } else if (false) {\",\n     MOUNTS),\n    (\"M6\", \"the record omits the walkthrough identity\",\n     \"    walkthroughEvaluationIdentity: input.evaluation.walkthroughEvaluationIdentity,\\n\",\n     \"\",\n     \"names the task, the Butlers revision and the evaluation identity beside each mount digest\"),\n    (\"M7\", \"--out still creates docs/evidence\",\n     \"  return { file, directory: dirname(file) };\",\n     \"  return { file, directory: join('docs', 'evidence') };\",\n     \"writes to --out and creates only its directory\"),\n]\nsubject_sha = hashlib.sha256(subprocess.run([\"git\", \"show\", f\"{COMMIT}:{SUBJECT}\"], cwd=REPO, capture_output=True, check=True).stdout).hexdigest()\ntest_sha = hashlib.sha256(subprocess.run([\"git\", \"show\", f\"{COMMIT}:{TEST}\"], cwd=REPO, capture_output=True, check=True).stdout).hexdigest()\narchive = subprocess.run([\"git\", \"archive\", COMMIT], cwd=REPO, capture_output=True, check=True).stdout\nresults = []\nfor mid, what, old, new, expect in [(\"M0\", \"control: unmutated\", None, None, None)] + MUTANTS:\n    tmp = pathlib.Path(tempfile.mkdtemp(prefix=f\"7dch-{mid}-\"))\n    try:\n        subprocess.run([\"tar\", \"-x\", \"-C\", str(tmp)], input=archive, check=True)\n        os.symlink(REPO / \"node_modules\", tmp / \"node_modules\")\n        n = None\n        if old is not None:\n            target = tmp / SUBJECT\n            text = target.read_text(encoding=\"utf-8\")\n            n = text.count(old)\n            target.write_text(text.replace(old, new), encoding=\"utf-8\")\n        run = subprocess.run([\"npx\", \"vitest\", \"run\", TEST], cwd=tmp, capture_output=True, text=True)\n        out = run.stdout + run.stderr\n        tests_line = next((l.strip() for l in out.splitlines() if l.strip().startswith(\"Tests\")), None)\n        if old is None:\n            results.append({\"id\": mid, \"description\": what, \"exitCode\": run.returncode, \"testsLine\": tests_line, \"passed\": run.returncode == 0})\n            continue\n        results.append({\"id\": mid, \"description\": what, \"file\": SUBJECT, \"old\": old, \"new\": new, \"occurrencesReplaced\": n,\n                        \"command\": f\"npx vitest run {TEST}\", \"expected\": expect, \"exitCode\": run.returncode,\n                        \"killed\": n >= 1 and run.returncode != 0 and expect in out,\n                        \"outputMatch\": next((l.strip() for l in out.splitlines() if expect in l and \"FAIL\" in l), None),\n                        \"testsLine\": tests_line})\n    finally:\n        shutil.rmtree(tmp, ignore_errors=True)\nmut = [r for r in results if r[\"id\"] != \"M0\"]\nprint(json.dumps({\"commit\": COMMIT, \"subjects\": [{\"path\": SUBJECT, \"sha256\": subject_sha}, {\"path\": TEST, \"sha256\": test_sha}],\n                  \"results\": results, \"killed\": sum(r[\"killed\"] for r in mut), \"total\": len(mut)}, indent=2, ensure_ascii=False))\n"
+}

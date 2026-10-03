@@ -1,5 +1,5 @@
-// `npm run poc:keyboard-sweep -- --base-url <private daemon>` — the
-// keyboard sweep of the served Polaris page (syzygy-1z3.30; PWB-REQ-016,
+// `npm run poc:keyboard-sweep -- --task <bead id> --base-url <private daemon>`
+// — the keyboard sweep of the served Polaris page (syzygy-1z3.30; PWB-REQ-016,
 // a prerequisite of the task 4.6 cold-open walkthrough).
 //
 // `poc:accessibility-check` sweeps fixture variants; this sweeps the page
@@ -10,7 +10,10 @@
 // headless browser, and writes a dated evidence record: per mount the
 // served digest, the focusable population and how much of it Tab reached,
 // the fragment activations, and the violations by kind. `--file` sweeps a
-// retained capture instead of a live daemon.
+// retained capture instead of a live daemon. The record names the bead it is
+// evidence for (`--task`, required) and the Butlers revision, evaluation
+// identity and walkthrough evaluation identity every swept page renders
+// (syzygy-buzg, syzygy-7dch); it refuses pages that name none, or disagree.
 //
 // It reads no Butlers repository itself; the daemon (`main.ts`) never
 // imports it. Exits 0 only when every swept page has zero violations.
@@ -25,20 +28,10 @@ import { pathToFileURL } from 'node:url';
 import { TAILNET_HOST } from './browser-origin.js';
 import { findBrowserExecutable, launchBrowser } from './cdp-browser.js';
 import { defaultRunGit } from './governance-inputs.js';
-import { checkPolarisAccessibility, type AccessibilityReport } from './polaris-accessibility.js';
+import { KEYBOARD_SWEEP_USAGE, keyboardSweepEvidence, keyboardSweepOutput, parseKeyboardSweepArguments, sweptEvaluation, violationsByKind, type KeyboardSweep } from './keyboard-sweep-record.js';
+import { checkPolarisAccessibility } from './polaris-accessibility.js';
 import { POLARIS_HUMAN_PATH } from './polaris.js';
 import { pwbSurfaceVersion } from './walkthrough-inputs.js';
-
-const USAGE = 'usage: npm run poc:keyboard-sweep -- (--base-url http://127.0.0.1:<port> | --file <capture.html> [--file …]) [--date YYYY-MM-DD[-suffix]] [--out <record.json>]\n';
-
-function argument(name: string): string | undefined {
-  const index = process.argv.indexOf(name);
-  return index === -1 ? undefined : process.argv[index + 1];
-}
-
-function argumentsNamed(name: string): string[] {
-  return process.argv.flatMap((value, index) => (value === name && process.argv[index + 1] !== undefined ? [process.argv[index + 1] as string] : []));
-}
 
 /** GET with an explicit Host header — the Fetch API drops a set Host. */
 function get(baseUrl: string, path: string, host?: string): Promise<{ readonly status: number; readonly body: Buffer }> {
@@ -54,34 +47,19 @@ function get(baseUrl: string, path: string, host?: string): Promise<{ readonly s
   });
 }
 
-interface Sweep {
-  readonly mount: string;
-  readonly measuredOn: Readonly<Record<string, unknown>>;
-  readonly bytes: number;
-  readonly sha256: string;
-  readonly report: AccessibilityReport;
-}
-
-function violationsByKind(report: AccessibilityReport): Record<string, number> {
-  const kinds: Record<string, number> = {};
-  for (const violation of report.violations) kinds[violation.kind] = (kinds[violation.kind] ?? 0) + 1;
-  return kinds;
-}
-
 async function main(): Promise<number> {
-  const baseUrl = argument('--base-url');
-  const files = argumentsNamed('--file');
-  if ((baseUrl === undefined) === (files.length === 0)) {
-    process.stderr.write(USAGE);
+  const parsed = parseKeyboardSweepArguments(process.argv.slice(2));
+  if ('refused' in parsed) {
+    process.stderr.write(`${parsed.refused}\n${KEYBOARD_SWEEP_USAGE}`);
     return 2;
   }
+  const { task, baseUrl, files } = parsed;
   const executable = findBrowserExecutable();
   if (executable === undefined) {
     process.stderr.write('No Chrome/Chromium found on PATH and SYZYGY_POC_BROWSER is unset; nothing measured.\n');
     return 2;
   }
-  const date = argument('--date') ?? new Date().toISOString().slice(0, 10);
-  const output = argument('--out') ?? join('docs', 'evidence', `polaris-keyboard-sweep-${date}.json`);
+  const output = keyboardSweepOutput(parsed, new Date().toISOString().slice(0, 10));
   const repoRoot = resolve('.');
   const head = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 
@@ -100,9 +78,14 @@ async function main(): Promise<number> {
     } else {
       for (const file of files) targets.push({ mount: `file:${file}`, measuredOn: { file }, body: readFileSync(file) });
     }
+    const evaluation = sweptEvaluation(targets.map((target) => ({ mount: target.mount, html: target.body.toString('utf8') })));
+    if ('refused' in evaluation) {
+      process.stderr.write(`${evaluation.refused}; nothing swept.\n`);
+      return 1;
+    }
 
     const browser = await launchBrowser(executable);
-    const sweeps: Sweep[] = [];
+    const sweeps: KeyboardSweep[] = [];
     try {
       for (const [index, target] of targets.entries()) {
         const file = join(pages, `polaris-${index}.html`);
@@ -120,34 +103,19 @@ async function main(): Promise<number> {
       await browser.close();
     }
 
-    const violations = sweeps.reduce((sum, sweep) => sum + sweep.report.violations.length, 0);
-    const evidence = {
-      task: 'syzygy-1z3.30 (PWB task 4.6 prerequisite: the keyboard sweep of the served Polaris page)',
-      requirement: ['PWB-REQ-016'],
+    const evidence = keyboardSweepEvidence({
+      task,
+      evaluation,
       capturedAt: new Date().toISOString(),
       syzygyHead: head,
       surfaceVersion: pwbSurfaceVersion(defaultRunGit, repoRoot, head),
       browser: { executable: browser.executable, version: browser.version },
-      method: 'checkPolarisAccessibility over each served body, retained in a private temporary directory and opened as a file URL; fragment activations stay in-document, so the served bytes are the whole input',
-      mounts: sweeps.map((sweep) => ({
-        mount: sweep.mount,
-        measuredOn: sweep.measuredOn,
-        bytes: sweep.bytes,
-        sha256: sweep.sha256,
-        population: sweep.report.focusTrace.population,
-        reached: sweep.report.focusTrace.reached,
-        activations: sweep.report.activations.length,
-        disclosures: sweep.report.disclosures,
-        contrastMeasured: sweep.report.contrast.measured,
-        violations: sweep.report.violations.length,
-        violationsByKind: violationsByKind(sweep.report),
-        firstViolations: sweep.report.violations.slice(0, 5),
-      })),
-      totals: { mounts: sweeps.length, violations },
-    };
-    mkdirSync(join('docs', 'evidence'), { recursive: true });
-    writeFileSync(output, `${JSON.stringify(evidence, null, 2)}\n`);
-    process.stdout.write(`wrote ${output}: ${violations} violations across ${sweeps.length} mounts\n`);
+      sweeps,
+    });
+    const violations = (evidence.totals as { readonly violations: number }).violations;
+    mkdirSync(output.directory, { recursive: true });
+    writeFileSync(output.file, `${JSON.stringify(evidence, null, 2)}\n`);
+    process.stdout.write(`wrote ${output.file}: ${violations} violations across ${sweeps.length} mounts\n`);
     return violations === 0 ? 0 : 1;
   } finally {
     rmSync(pages, { recursive: true, force: true });

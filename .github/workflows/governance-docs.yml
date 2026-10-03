@@ -3,9 +3,10 @@
 # The repository now holds application code and an npm toolchain (Capability
 # 1's `packages/cap1-core`/`cap1-daemon`, the Three-Surface POC, and their
 # build/test scripts) alongside the still-pre-specification governance
-# plane. This workflow covers only the governance plane: it installs nothing
-# beyond a Python interpreter and runs the read-only, stdlib-only checkers
-# below. It does not install npm, build, lint, or run the application test
+# plane. This workflow covers only the governance plane: it installs a
+# Python interpreter and one pinned test-only package (PyYAML, for the
+# contract index's YAML-validity selftest) and runs the read-only checkers
+# below, every one of which is otherwise stdlib-only. It does not install npm, build, lint, or run the application test
 # suites — those gates live in the repo's other hosted workflow(s); adding
 # them here would duplicate that coverage rather than add to it.
 #
@@ -51,6 +52,15 @@ jobs:
       # Contract index drift: the generated index must match regeneration.
       - name: build_contract_index --check
         run: python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --check
+
+      # The index's own fixtures, including the YAML round trip that kills an
+      # unquoted emit (syzygy-ejm3, syzygy-prn1). PyYAML is test-only and
+      # pinned; without it the selftest fails rather than skipping.
+      - name: install PyYAML (test-only, for build_contract_index --selftest)
+        run: pip install 'PyYAML==6.0.3'
+
+      - name: build_contract_index --selftest
+        run: python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --selftest
 
       # Dependency index drift: same guard, for the declared edges.
       - name: build_dependency_index --check
@@ -135,6 +145,32 @@ jobs:
 
       - name: record_versioned_signoff --selftest
         run: python3 scripts/record_versioned_signoff.py --selftest
+
+      # The six version-signed PWB builders' fixtures and the helper that
+      # reruns them (syzygy-tmkb, syzygy-6scq). After sign-off each builder's
+      # --selftest runs its current bytes against the pre-adoption tree from
+      # `git archive` of the last candidate commit, which is why this job
+      # checks out with fetch-depth: 0; a shallow clone refuses with exit 1.
+      - name: pwb_signed_selftest --selftest
+        run: python3 scripts/pwb_signed_selftest.py --selftest
+
+      - name: build_pwb_missing_currency_disclosure_scenario --selftest
+        run: python3 scripts/build_pwb_missing_currency_disclosure_scenario.py --selftest
+
+      - name: build_pwb_dismissal_expiry_amendment --selftest
+        run: python3 scripts/build_pwb_dismissal_expiry_amendment.py --selftest
+
+      - name: build_pwb_container_shape_profile_amendment --selftest
+        run: python3 scripts/build_pwb_container_shape_profile_amendment.py --selftest
+
+      - name: build_pwb_item_depth_amendment --selftest
+        run: python3 scripts/build_pwb_item_depth_amendment.py --selftest
+
+      - name: build_pwb_readability_successor --selftest
+        run: python3 scripts/build_pwb_readability_successor.py --selftest
+
+      - name: build_pwb_tree_framing_amendment --selftest
+        run: python3 scripts/build_pwb_tree_framing_amendment.py --selftest
 
       - name: record_pwb_behavior_amendment_acts --check opening-band
         run: python3 scripts/record_pwb_behavior_amendment_acts.py --check opening-band 7f80cb05f644dd1e4f49e7b212d6972ee4754e40682450e59a6c3245546d5c46 --date 2026-10-01

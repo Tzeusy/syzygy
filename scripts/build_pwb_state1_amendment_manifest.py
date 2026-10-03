@@ -1,11 +1,23 @@
 #!/usr/bin/env python3
 """Build and verify the historical PWB state-(1) amendment manifest.
 
-The eleven 2026-09-02 subject digests were superseded by the owner's
-truth-and-readiness amendment on 2026-09-05. That manifest is immutable
-history, so ``--check`` now fails by design and the default write mode must not
-be used to regenerate it. ``--selftest`` remains the safe way to exercise this
-generator's predicates.
+**``--check`` fails by design** (syzygy-fclp, 2026-10-04). The owner's
+2026-09-02 act (``decisions/PWB-STATE1-AMENDMENT-ACT.md``) binds this
+manifest's own digest, so it is immutable history, and the default write mode
+must not be used to regenerate it. The truth-and-readiness amendment act of
+2026-09-05 (``decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md``) superseded the
+manifest's subject digests. Since commit ``305500dc`` (2026-09-05), which
+prepared that amendment, five rows have drifted: the proposal, design,
+specification, capability coverage and governing dependencies. The contract
+coverage and its repair delta followed from commit ``92387584``, the
+missing-currency v1.0 sign-off of 2026-10-02. As of 2026-10-04, seven of the
+eleven rows mismatch. All eleven subjects equal the rows of the tree-framing
+v1.0 manifest, signed off on 2026-10-03. ``--check`` therefore stops at "PWB
+amendment manifest differs from regeneration", before it compares rows. That
+is not a defect. ``--selftest`` does not fail: it renders over the current
+bytes in memory, never reads the committed manifest, and passes. To check the
+bytes in force, run the builder of the latest sign-off in the chain
+(``build_pwb_tree_framing_amendment.py --check`` as of 2026-10-04).
 """
 
 from __future__ import annotations

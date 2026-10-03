@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0-candidate.1",
+  "tableArgs": [
+    "--table",
+    "--discovery"
+  ],
+  "requiredStages": [
+    "discovery-map",
+    "discovery-reduce"
+  ],
+  "fieldOverrides": {
+    "PROVIDER": "Anthropic, through the one registered Anthropic provider execution route (the Agent SDK entry or the Messages API entry, whichever the adapter registry holds; RFC4-1 admits one)",
+    "RETENTION": "provider requests, provider replies, run records and any state the route's runtime or library keeps, including any session transcript, are written only inside a run directory under `project:syzygy`'s state directory, outside git, from the start of the run. A run whose route cannot be configured to keep its state and transcript inside that directory does not start. The run directory holds the source spans sent for as long as the run is retained; nothing is retained in git, logs or machine responses. Anthropic's own retention follows the terms and settings of the account or key used for the run; the owner discloses the terms document and the training-use setting at the offering, and this record promises neither.",
+    "ROUTE_CONTEXT": "the route loads no instruction or memory files, user or project\n  settings, MCP servers, hooks or environment summary (working directory, Git\n  status); a route entry may narrow this and can never override it. Its working\n  directory, if it has one, is an empty directory inside the run directory. The\n  adapter is accepted only when a captured request shows the generator's parts\n  and the entry's listed bytes and nothing else.",
+    "ROUTE_TELEMETRY": "no telemetry, error reporting or update check is sent; a route that cannot\n  disable them does not start."
+  },
+  "templateDelta": {
+    "hunks": 8,
+    "removedLines": 13,
+    "addedLines": 60,
+    "diffSha256": "050340fa73eb7a3919f5703dd0945dcdc13ccae95b7f1988195848302c7a5ac3"
+  }
+}

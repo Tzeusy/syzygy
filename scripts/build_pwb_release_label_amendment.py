@@ -13,11 +13,13 @@ it exists for ``scripts/record_versioned_signoff.py`` after an owner's
 version-tagged sign-off and refuses unless the whole package verifies. A
 candidate commit, review, manifest or merge performs no owner act.
 
-    --check      verify patches, structure, regeneration, coverage, siblings
-                 and the manifest
+    --check      verify patches, structure, regeneration, coverage, siblings,
+                 one result across every order of this and the pending
+                 siblings' spec patches, and the manifest
     --selftest   rule-6 mutants: one per structure predicate (a sample of the
-                 required phrases, not each one), plus patch drift and an
-                 unclassified sibling
+                 required phrases, not each one), plus patch drift, an
+                 unclassified sibling, the pending patch population, and
+                 divergent and failing application orders
     --write      regenerate the two derived patches (GOVERNING-DEPENDENCIES and
                  CONTRACT-COVERAGE) and the manifest over the proposed bytes
     --diff       print the proposed patches
@@ -48,6 +50,7 @@ import tempfile
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import build_polaris_project_wide_spec_dependencies as dependencies  # noqa: E402
+import pwb_requirement_amendment as orders  # noqa: E402
 
 CHANGE = pathlib.Path("openspec/changes/polaris-project-wide-butlers-model")
 CANDIDATES = pathlib.Path(".syzygy/governance/contracts/candidates")
@@ -484,6 +487,34 @@ def sibling_findings(candidates: pathlib.Path | None = None) -> list[str]:
     return findings
 
 
+def pending_order_patches(
+    candidates: pathlib.Path | None = None, mine: pathlib.Path | None = None
+) -> list[tuple[str, pathlib.Path]]:
+    """This spec patch, then each pending sibling's that exists, by name."""
+    candidates = candidates or ROOT / CANDIDATES
+    patches = [(CANDIDATE.name, mine or ROOT / PROPOSED / "spec.md.patch")]
+    for name in sorted(PENDING_SIBLINGS):
+        theirs = candidates / name / "proposed/spec.md.patch"
+        if theirs.is_file():
+            patches.append((name, theirs))
+    return patches
+
+
+def pending_order_findings(
+    patches: list[tuple[str, pathlib.Path]] | None = None, spec_bytes: bytes | None = None,
+    rel: pathlib.Path = SPEC,
+) -> list[str]:
+    """Every application order of the pending spec patches gives one spec.
+
+    Two patches can each apply in either order and still differ, because
+    ``git apply`` relocates a hunk whose context moved, and three can apply
+    pairwise yet fail together; the shared engine's all-orders search sees both.
+    """
+    patches = pending_order_patches() if patches is None else patches
+    spec_bytes = (ROOT / rel).read_bytes() if spec_bytes is None else spec_bytes
+    return orders.all_orders_findings(spec_bytes, patches, rel)
+
+
 def render_manifest(proposed: dict[pathlib.Path, bytes]) -> str:
     header = (
         f"# {TITLE}\n"
@@ -517,6 +548,7 @@ def check(patches: list[pathlib.Path] | None = None) -> tuple[list[str], dict[pa
     findings.extend(structure_findings(proposed, current))
     findings.extend(coverage_findings(proposed))
     findings.extend(sibling_findings())
+    findings.extend(pending_order_findings())
     if not (ROOT / MANIFEST).is_file():
         findings.append(f"missing manifest: {MANIFEST}")
     elif (ROOT / MANIFEST).read_text(encoding="utf-8") != render_manifest(proposed):
@@ -647,13 +679,68 @@ def selftest() -> int:
         if found != ["unclassified sibling package patches the PWB spec: pwb-unlisted-sibling"]:
             print(f"SELFTEST FAILED: unclassified sibling gave {found}")
             failed += 1
+        failed += order_selftest(pathlib.Path(temp) / "orders")
     if failed:
         return 1
     print(
-        f"selftest: {len(mutants)} structure mutants, patch drift and an unclassified "
-        "sibling all fail closed on their own predicates"
+        f"selftest: {len(mutants)} structure mutants, patch drift, an unclassified "
+        "sibling, the pending patch population, and divergent and failing "
+        "application orders all fail closed on their own predicates"
     )
     return 0
+
+
+#: This package's spec patch first, then every pending sibling's, sorted.
+ORDER_POPULATION = [
+    "pwb-release-label-amendment",
+    "pwb-accessible-name-amendment",
+    "pwb-anchor-resolution-amendment",
+    "pwb-class-granular-extraction-amendment",
+    "pwb-opening-index-amendment",
+]
+
+#: The shared engine's shift fixtures. Every pair gives one result in both
+#: orders, so only an all-orders search fails them.
+ORDER_FIXTURES = (
+    ("divergent", orders.ORDER_FIXTURE_SHIFT_BASE, orders.ORDER_FIXTURE_SHIFT[:3], [
+        "pending spec patches give 2 different results across the 3! application orders",
+    ]),
+    ("failing", orders.ORDER_FIXTURE_SHIFT_BASE, orders.ORDER_FIXTURE_SHIFT, [
+        "pending spec patches do not apply in every order: "
+        "shift-first-copy after [shift-a, shift-b, shift-relocating]",
+    ]),
+)
+
+
+def order_selftest(temp: pathlib.Path) -> int:
+    """The order check covers this patch and every pending sibling's, fails
+    divergent and failing orders, and ``check`` reports what it finds."""
+    failed = 0
+    fake = temp / "candidates"
+    for name in sorted(PENDING_SIBLINGS | DECLINED_SIBLINGS | {"pwb-unlisted-sibling"}):
+        (fake / name / "proposed").mkdir(parents=True)
+        (fake / name / "proposed/spec.md.patch").write_text("", encoding="utf-8")
+    population = [name for name, _ in pending_order_patches(fake)]
+    if population != ORDER_POPULATION:
+        print(f"SELFTEST FAILED: the pending patch population is {population}")
+        failed += 1
+    rel = pathlib.Path("fixture.txt")
+    for label, base, hunks, expected in ORDER_FIXTURES:
+        patches = orders._fixture_patches(temp, rel, hunks)
+        found = pending_order_findings(patches, base, rel)
+        if found != expected:
+            print(f"SELFTEST FAILED: {label} application orders gave {found}")
+            failed += 1
+    original = globals()["pending_order_findings"]
+    globals()["pending_order_findings"] = lambda *_args, **_kwargs: ["order-check sentinel"]
+    try:
+        findings, _ = check()
+    finally:
+        globals()["pending_order_findings"] = original
+    if "order-check sentinel" not in findings:
+        print(f"SELFTEST FAILED: check does not report the order check: {findings}")
+        failed += 1
+    return failed
 
 
 # --- modes -------------------------------------------------------------------
@@ -721,7 +808,7 @@ def main(argv: list[str]) -> int:
     print(
         f"release-label candidate matches {len(BEHAVIOR_SUBJECTS)} proposed subjects "
         f"({len(PATCHED)} patched); {len(blocks)} requirements, {scenarios} scenarios; "
-        "structure, regeneration, contract coverage and sibling classification verify"
+        "structure, regeneration, contract coverage, sibling classification and pending-patch order verify"
     )
     return 0
 

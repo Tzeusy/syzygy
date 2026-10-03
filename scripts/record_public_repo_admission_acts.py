@@ -423,8 +423,23 @@ def with_subject(inp: Inputs, root: pathlib.Path, act: Act) -> Inputs:
     return inp
 
 
+#: The second egress version's performed record (package `public-egress-v2`).
+#: Once it exists the first version's egress act is refused: two records for one
+#: (project, provider) pair would be in force, against RFC5-12.
+EGRESS_V2_ACT_REL = DECISIONS / "PUBLIC-EGRESS-V2-ANTHROPIC-ACT.md"
+
+
+def superseded_by_later_version(root: pathlib.Path, act: Act) -> bool:
+    return act.key == "egress-anthropic" and (root / EGRESS_V2_ACT_REL).is_file()
+
+
 def do_record(root: pathlib.Path, act: Act, argument: str, date: str, sel: Selection,
               instant: str | None = None) -> int:
+    if superseded_by_later_version(root, act):
+        print(f"FAILED (nothing written): the second egress version's act "
+              f"{EGRESS_V2_ACT_REL.as_posix()} exists; recording the first version after it "
+              "would leave two egress records in force for one pair (RFC5-12)")
+        return 1
     if instant is None:
         instant = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     if (root / act.record).exists():
@@ -478,6 +493,7 @@ def do_check(root: pathlib.Path, act: Act, argument: str, date: str, sel: Select
 
 def selftest() -> int:
     """One mutant per predicate; each must be refused for the stated reason."""
+    import tempfile
     manifest_files = {a.subject.as_posix(): f"record {a.key}\n".encode() for a in ACTS}
     pkt = b"# Packet\n\n> Candidate - binds nothing.\n\nbody\n"
     rows = sorted((p, digest(b)) for p, b in manifest_files.items())
@@ -617,6 +633,25 @@ def selftest() -> int:
         results.append((f"{name} refused", _raises(lambda bad=bad: expected(
             act, arg, "2026-10-04", ok_sel, make(subject=subj), bad))))
     results.append(("record, check and a repeat --record on a scratch tree with no git", _end_to_end()))
+    with tempfile.TemporaryDirectory() as d:
+        stub = pathlib.Path(d)
+        (stub / DECISIONS).mkdir(parents=True)
+        egress = ACT_BY_KEY["egress-anthropic"]
+        before = superseded_by_later_version(stub, egress)
+        (stub / EGRESS_V2_ACT_REL).write_text("# stand-in\n")
+        results.append(("first-version egress refused once the second version's act exists, other acts unaffected",
+                        not before and superseded_by_later_version(stub, egress)
+                        and not superseded_by_later_version(stub, ACTS[0])))
+        # the call site: do_record itself must refuse, with that reason, and write nothing
+        import contextlib
+        import io
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            rc = do_record(stub, egress, "0" * 64, "2026-10-04",
+                           Selection("q", "l", "d"), "2026-10-04T09:30:00Z")
+        results.append(("do_record refuses the first version's egress act at the call site, writing nothing",
+                        rc == 1 and "second egress version's act" in out.getvalue()
+                        and not (stub / egress.record).exists()))
     failed = [name for name, ok in results if not ok]
     for name, ok in results:
         print(("ok   " if ok else "FAIL ") + name)

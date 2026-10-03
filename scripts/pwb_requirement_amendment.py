@@ -588,6 +588,27 @@ ORDER_FIXTURE_TRIPLE_FINDINGS = [
     "pending spec patches give 2 different results across the 3! application orders",
 ]
 
+#: Two copies of one block, with the relocating hunk's claimed line nearer the
+#: second. Each insertion above shifts both copies down; after one it is still
+#: the second copy that ``git apply`` picks, after both it is the first. Every
+#: pair of these four patches gives one result in both orders, so a pairwise
+#: check passes them all. The first three diverge, but only together; with
+#: the fourth, which edits the first copy, the one order that sends the
+#: relocating hunk there before the fourth applies fails, and every order
+#: that applies agrees.
+ORDER_FIXTURE_SHIFT_BASE = b"h\na1\nb1\nf\nk\nm\nw\ng0\nk\nm\nw\nt\n"
+ORDER_FIXTURE_SHIFT = (
+    ("shift-a", "@@ -2,2 +2,3 @@\n a1\n+A\n b1\n"),
+    ("shift-b", "@@ -3,2 +3,3 @@\n b1\n+B\n f\n"),
+    ("shift-relocating", "@@ -8,3 +8,3 @@\n k\n-m\n+M\n w\n"),
+    ("shift-first-copy", "@@ -4,4 +4,4 @@\n f\n k\n-m\n+D\n w\n"),
+)
+ORDER_FIXTURE_SHIFT_FINDINGS = {
+    3: ["pending spec patches give 2 different results across the 3! application orders"],
+    4: ["pending spec patches do not apply in every order: "
+        "shift-first-copy after [shift-a, shift-b, shift-relocating]"],
+}
+
 
 def _fixture_patches(temp: pathlib.Path, rel: pathlib.Path, hunks) -> list[tuple[str, pathlib.Path]]:
     patches = []
@@ -612,6 +633,18 @@ def order_selftest(temp: pathlib.Path) -> int:
                 if any("do not apply" in finding or "no application order" in finding for finding in pair):
                     print(f"SELFTEST FAILED: fixture pair {first[0]}, {second[0]} does not apply both ways: {pair}")
                     failed += 1
+    shift = _fixture_patches(temp, rel, ORDER_FIXTURE_SHIFT)
+    for i, first in enumerate(shift):
+        for second in shift[i + 1:]:
+            pair = all_orders_findings(ORDER_FIXTURE_SHIFT_BASE, [first, second], rel)
+            if pair:
+                print(f"SELFTEST FAILED: shift fixture pair {first[0]}, {second[0]} gave {pair}")
+                failed += 1
+    for size, expected in ORDER_FIXTURE_SHIFT_FINDINGS.items():
+        found = all_orders_findings(ORDER_FIXTURE_SHIFT_BASE, shift[:size], rel)
+        if found != expected:
+            print(f"SELFTEST FAILED: {size} shift patches gave {found}")
+            failed += 1
     triple_found = all_orders_findings(ORDER_FIXTURE_TRIPLE_BASE, triple, rel)
     if triple_found != ORDER_FIXTURE_TRIPLE_FINDINGS:
         print(f"SELFTEST FAILED: failing orders gave {triple_found}")

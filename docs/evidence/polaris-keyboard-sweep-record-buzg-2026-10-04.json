@@ -1,0 +1,121 @@
+{
+  "subject": "apps/three-surface-poc/src/keyboard-sweep-record.ts and polaris-keyboard-sweep-main.ts",
+  "bead": "syzygy-buzg",
+  "commit": "4c17a510cc7af386342ab26e6eb83c913c831d9f",
+  "refusalWithoutTask": {
+    "command": "node apps/three-surface-poc/dist/polaris-keyboard-sweep-main.js --file <rendered fixture /polaris page>",
+    "exitCode": 2,
+    "stderrFirstLine": "no --task: name the bead this sweep is evidence for"
+  },
+  "fileSweepWithTask": {
+    "command": "node apps/three-surface-poc/dist/polaris-keyboard-sweep-main.js --task syzygy-buzg --file <rendered fixture /polaris page> --out <scratch>",
+    "record": {
+      "task": "syzygy-buzg",
+      "butlersRevision": "1f892687d53c829f9c2a4ee99bccccb23d6158df",
+      "evaluationIdentity": "repository:butlers-configured-poc@fixture|inputs:sha256:62154f67ad674d6ef2d5b6696c862c3917de06ec5687e36635488cb9ad84287a|observed:2026-08-30T12:00:00Z",
+      "totals": {
+        "mounts": 1,
+        "violations": 0
+      }
+    },
+    "mountSha256": "85795218f21032aaaebd6cd357cca411bc0a757690ce6c2a86d065bb502b4a8d",
+    "note": "a fixture page (buildFixtureModel, admitted project shape); the --base-url path against a live private daemon was not exercised here"
+  },
+  "mutants": {
+    "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/keyboard-sweep-record.test.ts",
+    "records": [
+      {
+        "id": "M1-task-not-required",
+        "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+        "old": "  if (task === undefined) return { refused: 'no --task: name the bead this sweep is evidence for' };\n  if (!TASK_ID.test(task))",
+        "new": "  if (task !== undefined && !TASK_ID.test(task))",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 4 passed (5)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M2-any-task-accepted",
+        "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+        "old": "const TASK_ID = /^[a-z][a-z0-9]*-[a-z0-9]+(?:\\.[a-z0-9]+)*$/;",
+        "new": "const TASK_ID = /./;",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 4 passed (5)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M3-duplicate-probe-accepted",
+        "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+        "old": "  if (pinned.length !== 1) return",
+        "new": "  if (pinned.length === 0) return",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 4 passed (5)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M4-abbreviated-revision-accepted",
+        "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+        "old": "  if (!/^[0-9a-f]{40}$/.test(butlersRevision)) return",
+        "new": "  if (butlersRevision === '') return",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 4 passed (5)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M5-identity-form-changed",
+        "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+        "old": "evaluationIdentity: `${snapshot}|observed:${asOf}` };",
+        "new": "evaluationIdentity: `${snapshot}@${asOf}` };",
+        "exitCode": 1,
+        "testsLine": "Tests  3 failed | 2 passed (5)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M6-footer-not-unescaped",
+        "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+        "old": "  const snapshot = unescapeHtml(footers[0]![1]!);",
+        "new": "  const snapshot = footers[0]![1]!;",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 4 passed (5)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M7-mount-disagreement-accepted",
+        "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+        "old": "    else if (binding.butlersRevision !== first.binding.butlersRevision || binding.evaluationIdentity !== first.binding.evaluationIdentity) {",
+        "new": "    else if (false) {",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 4 passed (5)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M8-task-hard-coded",
+        "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+        "old": "    task: input.task,",
+        "new": "    task: 'syzygy-1z3.30 (PWB task 4.6 prerequisite: the keyboard sweep of the served Polaris page)',",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 4 passed (5)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M9-revision-not-recorded",
+        "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+        "old": "    butlersRevision: input.evaluation.butlersRevision,\n",
+        "new": "",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 4 passed (5)",
+        "outcome": "killed"
+      },
+      {
+        "id": "M10-identity-not-recorded",
+        "file": "apps/three-surface-poc/src/keyboard-sweep-record.ts",
+        "old": "    evaluationIdentity: input.evaluation.evaluationIdentity,\n",
+        "new": "",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 4 passed (5)",
+        "outcome": "killed"
+      }
+    ],
+    "killed": 10,
+    "total": 10
+  }
+}

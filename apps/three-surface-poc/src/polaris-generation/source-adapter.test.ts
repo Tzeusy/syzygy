@@ -1,11 +1,13 @@
+import { createHash, randomBytes } from 'node:crypto';
 import { rmSync } from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { generationAnchorId, gitBlobObjectId, type GenerationSource } from '@syzygy/polaris-generation-core';
+import { GENERATION_EXCLUSION_REASONS, generationAnchorId, gitBlobObjectId, type GenerationSource } from '@syzygy/polaris-generation-core';
+import { EXCLUSION_REASONS, UNAVAILABLE_REASONS, type ClassificationRecord } from '@syzygy/three-surface-poc-core';
 
 import { buildFixtureModel } from '../test-model-fixture.js';
 import { ADMITTING_AUTHORITY, projectShapeFixtureGit } from '../test-project-shape-fixture.js';
-import { generationSourceRoute, generationSourcesFromPocModel } from './source-adapter.js';
+import { generationExclusionReason, generationSourceRoute, generationSourcesFromPocModel } from './source-adapter.js';
 
 const cleanups: string[] = [];
 afterEach(() => { for (const path of cleanups.splice(0)) rmSync(path, { recursive: true, force: true }); });
@@ -31,6 +33,72 @@ describe('PWB-to-generator projection', () => {
     expect(generationSourceRoute(source)).toBe(`/polaris/source?identity=repository%3Afixture%40${'a'.repeat(40)}%3Aintent%2Fone.md%23${base.objectId}`);
     expect(generationSourceRoute(source, '/butlers-syzygy')).toBe(`/butlers-syzygy/polaris/source?identity=repository%3Afixture%40${'a'.repeat(40)}%3Aintent%2Fone.md%23${base.objectId}`);
     const { body: _body, ...withoutBody } = source;
-    expect(generationSourceRoute({ ...withoutBody, exclusion: { excluded: true, reason: 'excluded-content' }, spans: [] })).toBeUndefined();
+    expect(generationSourceRoute({ ...withoutBody, exclusion: { excluded: true, reason: 'active-content' }, spans: [] })).toBeUndefined();
+  });
+
+  it('maps every closed PWB withholding reason onto the generation set, never passing a free sentence through', () => {
+    const unknown = { failureState: 'secretMatchedOrUnclassifiable', degradationState: 'd', unknownReason: 'A free sentence the classifier wrote.' } as never;
+    const exclusion = (exclusionReason?: string) => ({ redactionClass: 'secret', repositoryRelativePath: 'a', policyId: 'p', policyVersion: '1', ...(exclusionReason === undefined ? {} : { exclusionReason }) });
+    const excluded = (exclusionReason?: string) => ({ path: 'a', outcome: 'excluded', exclusion: exclusion(exclusionReason), unknown }) as unknown as ClassificationRecord;
+    const unavailable = (reason: string) => ({ path: 'a', outcome: 'unavailable', reason, unknown }) as unknown as ClassificationRecord;
+    for (const reason of EXCLUSION_REASONS) expect(generationExclusionReason(excluded(reason))).toBe(reason);
+    for (const reason of UNAVAILABLE_REASONS) expect(generationExclusionReason(unavailable(reason))).toBe(reason);
+    expect(generationExclusionReason(excluded())).toBe('secret-detector-match');
+    expect(generationExclusionReason(excluded('a-new-reason'))).toBe('unclassified-exclusion');
+    expect(generationExclusionReason(unavailable('a-new-reason'))).toBe('unclassified-exclusion');
+    for (const reason of [...EXCLUSION_REASONS, ...UNAVAILABLE_REASONS, 'body-not-retained-for-generation', 'oversize-source-excluded']) expect(GENERATION_EXCLUSION_REASONS).toContain(reason);
+  });
+
+  it('projects only listed reasons and opaque ids for every excluded source of the observed population', () => {
+    const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
+    const excluded = generationSourcesFromPocModel(model).filter(source => source.exclusion.excluded);
+    expect(excluded.length).toBeGreaterThan(0);
+    for (const source of excluded) {
+      expect(GENERATION_EXCLUSION_REASONS).toContain((source.exclusion as { reason: string }).reason);
+      expect(source.sourceId).toMatch(/^s-[0-9a-f]{24}$/u);
+      expect(source.sourceId).not.toContain(source.path);
+    }
+  });
+
+  it('projects each record outcome with a listed reason through the population projection', () => {
+    const unknown = { failureState: 'secretMatchedOrUnclassifiable', degradationState: 'd', unknownReason: 'A free sentence the classifier wrote.' };
+    const row = (path: string, record: object, anchor: object = { kind: 'blob', objectId: 'a'.repeat(40) }) => ({ identity: `id:${path}`, path, anchor, claim: { evaluationId: 'e' }, record: { path, ...record } });
+    const model = { projectShape: { kind: 'observed', identity: { repositoryId: 'repository:fixture', revision: 'b'.repeat(40) }, sources: [
+      row('a.md', { outcome: 'excluded', exclusion: { exclusionReason: 'active-content' }, unknown }),
+      row('b.md', { outcome: 'excluded', exclusion: {}, unknown }),
+      row('c.md', { outcome: 'unavailable', reason: 'not-in-tree', unknown }, { kind: 'none' }),
+      row('d.md', { outcome: 'classified', basis: 'body' }),
+      row('e.md', { outcome: 'classified', basis: 'path-only' }),
+    ] } } as unknown as Parameters<typeof generationSourcesFromPocModel>[0];
+    const byPath = new Map(generationSourcesFromPocModel(model).map(source => [source.path, source.exclusion]));
+    expect(byPath.get('a.md')).toEqual({ excluded: true, reason: 'active-content' });
+    expect(byPath.get('b.md')).toEqual({ excluded: true, reason: 'secret-detector-match' });
+    expect(byPath.get('c.md')).toEqual({ excluded: true, reason: 'not-in-tree' });
+    expect(byPath.get('d.md')).toEqual({ excluded: true, reason: 'body-not-retained-for-generation' });
+    expect(byPath.get('e.md')).toEqual({ excluded: false });
+  });
+
+  describe('excluded-source ids', () => {
+    const model = { projectShape: { kind: 'observed', identity: { repositoryId: 'repository:fixture', revision: 'b'.repeat(40) }, sources: [
+      { identity: 'README.md', path: 'README.md', anchor: { kind: 'none' }, claim: { evaluationId: 'e' }, record: { path: 'README.md', outcome: 'unavailable', reason: 'not-in-tree' } },
+      { identity: 'ok.md', path: 'ok.md', anchor: { kind: 'blob', objectId: 'a'.repeat(40) }, claim: { evaluationId: 'e' }, record: { path: 'ok.md', outcome: 'classified', basis: 'path-only' } },
+    ] } } as unknown as Parameters<typeof generationSourcesFromPocModel>[0];
+    const ids = (key?: Buffer) => new Map(generationSourcesFromPocModel(model, key).map(source => [source.path, source.sourceId]));
+    const plain = (text: string) => `s-${createHash('sha256').update(text).digest('hex').slice(0, 24)}`;
+
+    it('is not the unkeyed path hash, so a candidate path list confirms nothing', () => {
+      expect(ids().get('README.md')).not.toBe(plain('README.md'));
+      expect(ids().get('README.md')).toMatch(/^s-[0-9a-f]{24}$/u);
+    });
+    it('differs between runs for the same path', () => {
+      expect(ids(randomBytes(32)).get('README.md')).not.toBe(ids(randomBytes(32)).get('README.md'));
+    });
+    it('is stable within one run key', () => {
+      const key = randomBytes(32);
+      expect(ids(key).get('README.md')).toBe(ids(key).get('README.md'));
+    });
+    it('leaves a non-excluded row on the unkeyed identity hash', () => {
+      expect(ids().get('ok.md')).toBe(plain('ok.md'));
+    });
   });
 });

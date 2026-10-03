@@ -132,10 +132,41 @@ export function openQuestions(sources: readonly GenerationSource[], audienceDecl
 
 /** The longest owner answer kept, in characters; a longer one is a malformed reply, not a truncated one. */
 export const OWNER_ANSWER_MAX_CHARS = 4000;
-const present = (value: unknown): value is string => typeof value === 'string' && value.trim().length > 0;
-/** An answer that says something: non-blank after trim and not `unknown` in any case. Null otherwise, never a default. */
+/** The longest attribution or revision kept, in characters; a longer one is a malformed reply. */
+export const OWNER_PROVENANCE_MAX_CHARS = 200;
+/** Characters that show nothing: whitespace, separators, format characters (zero-width space, joiners, bidi marks), default-ignorable code
+ * points (Hangul fillers, combining grapheme joiner) and the blank braille pattern. */
+const INVISIBLE = /^[\p{Cf}\p{Z}\s\p{Default_Ignorable_Code_Point}\u2800]$/u;
+const INVISIBLE_ANYWHERE = /[\p{Cf}\p{Default_Ignorable_Code_Point}]/gu;
+/** Strips invisible characters from both edges in one linear pass (a backtracking regex was quadratic on a long run of spaces). */
+const edge = (value: string): string => {
+  const chars = [...value];
+  let start = 0, end = chars.length;
+  while (start < end && INVISIBLE.test(chars[start]!)) start++;
+  while (end > start && INVISIBLE.test(chars[end - 1]!)) end--;
+  return chars.slice(start, end).join('');
+};
+const present = (value: unknown): value is string => typeof value === 'string' && edge(value).length > 0;
+/** Attribution or revision that names someone or something and stays within bound. */
+const provenance = (value: unknown): value is string => present(value) && [...edge(value)].length <= OWNER_PROVENANCE_MAX_CHARS;
+/** An answer that says something: visibly non-blank and not `unknown` in any case. Null otherwise, never a default. */
 const normalise = (answer: unknown): string | null =>
-  present(answer) && answer.trim().toLowerCase() !== 'unknown' ? answer.trim() : null;
+  present(answer) && edge(answer).replace(INVISIBLE_ANYWHERE, '').toLowerCase() !== 'unknown' ? edge(answer) : null;
+const DISPOSITIONS: readonly unknown[] = ['answered', 'unknown', 'deferred', 'redacted'];
+/** A prior must be a list of well-formed dispositions with distinct ids; anything else is refused, not skipped. */
+const checkPrior = (prior: unknown): readonly PriorDisposition[] => {
+  if (prior === undefined) return [];
+  if (!Array.isArray(prior)) throw new Error('invalid-prior-dispositions');
+  const ids = new Set<string>();
+  for (const entry of prior as unknown[]) {
+    if (entry === null || typeof entry !== 'object') throw new Error('invalid-prior-dispositions');
+    const e = entry as Record<string, unknown>;
+    if (typeof e.id !== 'string' || typeof e.contentDigest !== 'string' || !DISPOSITIONS.includes(e.disposition) || ids.has(e.id)) throw new Error('invalid-prior-dispositions');
+    for (const key of ['attribution', 'revision'] as const) if (e[key] !== undefined && typeof e[key] !== 'string') throw new Error('invalid-prior-dispositions');
+    ids.add(e.id);
+  }
+  return prior as readonly PriorDisposition[];
+};
 const withinBound = (text: string): boolean => [...text].length <= OWNER_ANSWER_MAX_CHARS;
 
 /** Applies the declared question budget and the no-repeat rule, then either
@@ -148,7 +179,7 @@ export async function clarify(input: ClarificationInput): Promise<ClarificationR
   if (!Number.isSafeInteger(max) || max < 0) throw new Error('invalid-question-budget');
   if (input.mode === 'interactive' && input.ask === undefined) throw new Error('interactive-clarification-needs-an-owner-port');
   const open = openQuestions(input.sources, input.audienceDeclared);
-  const prior = new Map((input.prior ?? []).map(entry => [entry.id, entry]));
+  const prior = new Map(checkPrior(input.prior).map(entry => [entry.id, entry]));
   const same = (question: ClarificationQuestion): PriorDisposition | undefined => {
     const earlier = prior.get(question.id);
     return earlier !== undefined && earlier.contentDigest === question.contentDigest ? earlier : undefined;
@@ -161,8 +192,8 @@ export async function clarify(input: ClarificationInput): Promise<ClarificationR
     if (earlier.disposition === 'answered') {
       // A prior is reused as an answer only if it would pass the same checks a live reply does.
       const text = normalise(earlier.answer);
-      if (text !== null && withinBound(text) && present(earlier.attribution) && present(earlier.revision)) {
-        answers.push({ id: question.id, disposition: 'answered', answer: text, attribution: earlier.attribution.trim(), revision: earlier.revision.trim(),
+      if (text !== null && withinBound(text) && provenance(earlier.attribution) && provenance(earlier.revision)) {
+        answers.push({ id: question.id, disposition: 'answered', answer: text, attribution: edge(earlier.attribution), revision: edge(earlier.revision),
           permittedDraftUse: true, contentDigest: question.contentDigest, adopted: false, reused: true });
       } else fresh.push(question);
     } else { repeats.push(question); unresolved.push(question); }
@@ -174,13 +205,13 @@ export async function clarify(input: ClarificationInput): Promise<ClarificationR
     for (const [index, question] of asked.entries()) {
       try {
         const reply = await input.ask!(question);
-        if (reply === null || typeof reply !== 'object' || reply.id !== question.id || !present(reply.attribution) || !present(reply.revision)
+        if (reply === null || typeof reply !== 'object' || reply.id !== question.id || !provenance(reply.attribution) || !provenance(reply.revision)
           || typeof reply.permittedDraftUse !== 'boolean') throw new Error('invalid-owner-answer');
         const text = normalise(reply.answer);
         if (text !== null && !withinBound(text)) throw new Error('invalid-owner-answer');
         const permitted = reply.permittedDraftUse && text !== null;
         answers.push({ id: question.id, disposition: text === null ? 'unknown' : reply.permittedDraftUse ? 'answered' : 'redacted', answer: permitted ? text : null,
-          attribution: reply.attribution.trim(), revision: reply.revision.trim(), permittedDraftUse: reply.permittedDraftUse, contentDigest: question.contentDigest, adopted: false, reused: false });
+          attribution: edge(reply.attribution), revision: edge(reply.revision), permittedDraftUse: reply.permittedDraftUse, contentDigest: question.contentDigest, adopted: false, reused: false });
         if (!permitted) unresolved.push(question);
       } catch (error) {
         aborted = { id: question.id, reason: (error instanceof Error ? error.message : 'owner-port-failed').slice(0, 200) };

@@ -1,0 +1,5 @@
+# PUBLIC EGRESS V2 MANIFEST
+# Candidate; this file and its row bind nothing by themselves.
+# 1 record; the row hashes the record's exact bytes and is the argument of one
+# owner act over that record (sitting row 8). It depends on row 7.
+2a97b98f0e707b39ee06bdc8f9e0d1f8cd351bddd2a09312c9c4a7302b2bbf3e  .syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md

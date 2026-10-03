@@ -145,6 +145,9 @@ the wall clock.
   (Ctrl-D) leaves watch mode; the daemon keeps serving.
 - Concurrent requests single-flight, whether from the browser or the console.
 - A failed re-observation leaves the prior complete model served.
+- A materialize rebuilds the served model as a new named evaluation: the
+  same repository revision, a fresh observation instant and currency probe,
+  superseding the evaluation before it. A failed rebuild swaps nothing.
 
 **Named re-evaluation result** (`syzygy-u05.2`). Each re-observation returns a
 result that names:

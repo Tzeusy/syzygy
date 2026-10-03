@@ -19,3 +19,10 @@ export function isolatedGit(repoRoot: string, args: readonly string[], input?: s
   return execFileSync('git', [...ISOLATED_GIT_FLAGS, '-C', repoRoot, ...args], { maxBuffer: 512_000_000, env: isolatedGitEnv(),
     ...(input === undefined ? {} : { input }), stdio: ['pipe', 'pipe', 'ignore'] });
 }
+
+/** For git calls that reach a remote or create a repository: the isolated allowlist plus a
+ * scratch `HOME` (never the caller's) and the protocols the call may use. This drops the
+ * caller's proxy and CA settings (`https_proxy`, `GIT_SSL_CAINFO`, ...): a fetch that needs
+ * them fails closed rather than inheriting ambient network configuration. */
+export const NETWORK_GIT_ENV_KEYS: readonly string[] = [...ISOLATED_GIT_ENV_KEYS, 'HOME', 'GIT_ALLOW_PROTOCOL'];
+export const minimalGitEnv = (home: string, allowProtocol: string): NodeJS.ProcessEnv => ({ ...isolatedGitEnv(), HOME: home, GIT_ALLOW_PROTOCOL: allowProtocol });

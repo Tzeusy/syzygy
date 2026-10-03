@@ -1,0 +1,109 @@
+{
+  "subject": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+  "bead": "syzygy-3f5c",
+  "commit": "aaaf5c0180b760ff69b2871ba4735cf3eb2f1eb5",
+  "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+  "mutants": [
+    {
+      "id": "M1-relative-imports-not-followed",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "      const target = specifier.startsWith('.')\n        ? normalize(join(dirname(path), specifier)).replace(/\\.js$/, '.ts')\n        : PACKAGE_ENTRIES[specifier];",
+      "new": "      const target = specifier.startsWith('.')\n        ? undefined\n        : PACKAGE_ENTRIES[specifier];",
+      "exitCode": 1,
+      "testsLine": "Tests  2 failed | 2 passed (4)",
+      "failedTests": [
+        "runs only short local tools synchronously in a suite test file or any module it imports 371ms",
+        "scans a helper module a test imports, through relative and workspace imports 4ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M2-workspace-alias-not-followed",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "        : PACKAGE_ENTRIES[specifier];",
+      "new": "        : undefined;",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 3 passed (4)",
+      "failedTests": [
+        "scans a helper module a test imports, through relative and workspace imports 61ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M3-alias-name-ignored",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "direct.add(binding[2] ?? binding[1]!);",
+      "new": "direct.add(binding[1]!);",
+      "exitCode": 1,
+      "testsLine": "Tests  2 failed | 2 passed (4)",
+      "failedTests": [
+        "follows every way of binding the synchronous calls, and fails closed on a binding it does not recognize 46ms",
+        "scans a helper module a test imports, through relative and workspace imports 2ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M4-namespace-ignored",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "      if (namespace !== undefined && namespace !== 'type') namespaces.add(namespace);",
+      "new": "      void namespace;",
+      "exitCode": 1,
+      "testsLine": "Tests  2 failed | 2 passed (4)",
+      "failedTests": [
+        "follows every way of binding the synchronous calls, and fails closed on a binding it does not recognize 36ms",
+        "scans a helper module a test imports, through relative and workspace imports 2ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M5-unrecognized-binding-passes",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "    if (!recognized.has(literal.index ?? 0)) calls.push(",
+      "new": "    if (false) calls.push(",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 3 passed (4)",
+      "failedTests": [
+        "follows every way of binding the synchronous calls, and fails closed on a binding it does not recognize 15ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M6-exemption-removed",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "const EXEMPT = new Set(['packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts:31']);",
+      "new": "const EXEMPT = new Set<string>([]);",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 3 passed (4)",
+      "failedTests": [
+        "runs only short local tools synchronously in a suite test file or any module it imports 253ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M7-sync-npm-in-a-helper-module",
+      "file": "apps/three-surface-poc/src/test-model-fixture.ts",
+      "old": "export function buildFixtureModel(cleanups: string[], options: FixtureModelOptions = {}): PocModel {\n",
+      "new": "export function buildFixtureModel(cleanups: string[], options: FixtureModelOptions = {}): PocModel {\n  if (options.evaluationAsOf === 'never') execFileSync('npm', ['run', 'build:poc']);\n",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 3 passed (4)",
+      "failedTests": [
+        "runs only short local tools synchronously in a suite test file or any module it imports 330ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M8-aliased-sync-npm-in-a-test",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts",
+      "old": "realExecFileSync('git', ['-C', dir, ...args]",
+      "new": "realExecFileSync('npm', ['-C', dir, ...args]",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 3 passed (4)",
+      "failedTests": [
+        "runs only short local tools synchronously in a suite test file or any module it imports 416ms"
+      ],
+      "outcome": "killed"
+    }
+  ],
+  "killed": 8,
+  "total": 8
+}

@@ -34,7 +34,8 @@ export const syntheticProjects: readonly SyntheticProject[] = [
   },
 ];
 
-export async function runSyntheticProject(project: SyntheticProject) {
+/** `budget` overrides parts of the fixture budget, e.g. to stop a run mid-way. */
+export async function runSyntheticProject(project: SyntheticProject, budget: Partial<PipelineRequest['budget']> = {}) {
   // Admitted-input front door (packages/polaris-generation-core/src/admitted-input.ts,
   // N8 slice 3): this synthetic demo selects all three fixture sources and
   // excludes none, so the population's `selected` projection is exactly the
@@ -84,7 +85,7 @@ export async function runSyntheticProject(project: SyntheticProject) {
       { id: 'architecture', kind: 'diagram', required: true },
       { id: 'component-depth', kind: 'deep-dive', required: false },
     ],
-    budget: { maxCalls: 7, maxInputBytes: 500_000, maxOutputBytes: 100_000, maxUsageUnits: 100, maxElapsedMs: 30_000, maxRepairCycles: 1, accountingPolicy: 'synthetic-unit-v1' },
+    budget: { maxCalls: 7, maxInputBytes: 500_000, maxOutputBytes: 100_000, maxUsageUnits: 100, maxElapsedMs: 30_000, maxRepairCycles: 1, accountingPolicy: 'synthetic-unit-v1', ...budget },
   };
   const ports: PipelinePorts = {
     now: () => Date.now(), verifySources: async () => true,
@@ -101,5 +102,5 @@ export async function runSyntheticProject(project: SyntheticProject) {
     lateReceipt: async (permit, receipt) => { records.push({ attemptId: permit.attemptId, lateReceipt: receipt }); },
   };
   const result = await runGenerationPipeline(request, ports, new AbortController().signal);
-  return { sources, result, records };
+  return { sources, result, records, requestedAssets: request.requestedAssets };
 }

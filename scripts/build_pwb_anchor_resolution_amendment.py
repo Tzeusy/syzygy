@@ -15,10 +15,12 @@ it exists for the sign-off change and refuses unless the whole package
 verifies. A candidate commit, review, manifest or merge performs no owner act.
 
     --check      verify patches, structure, regeneration, coverage, siblings,
-                 composition with each pending sibling and the manifest
+                 composition with each pending sibling, one result across
+                 every order of all pending patches, and the manifest
     --selftest   rule-6 mutants, one per structure predicate (a sample of the
                  required phrases, not each one), plus patch drift, an
-                 unclassified sibling and a non-composing sibling
+                 unclassified sibling, a non-composing sibling, and divergent
+                 and failing application orders
     --write      regenerate the derived GOVERNING-DEPENDENCIES patch and the
                  manifest over the proposed bytes
     --diff       print the proposed patches
@@ -41,6 +43,7 @@ import dataclasses
 import difflib
 import hashlib
 import importlib
+import itertools
 import pathlib
 import re
 import shutil
@@ -52,6 +55,7 @@ from typing import Callable
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
+import pwb_requirement_amendment as orders  # noqa: E402
 
 CANDIDATES = pathlib.Path(".syzygy/governance/contracts/candidates")
 DECISIONS = pathlib.Path(".syzygy/governance/decisions")
@@ -96,6 +100,14 @@ class Package:
     declined_siblings: frozenset[str]
     pending_siblings: frozenset[str]
     coverage: Callable[[dict[pathlib.Path, bytes]], list[str]] | None = None
+    #: Pairs of pending siblings declared mutually exclusive as drafted: their
+    #: spec patches rewrite the same lines, so no order applies both, and
+    #: whichever is signed second is regenerated with --write over the first's
+    #: applied bytes (AGENTS.md, sibling packages patching the same tree). The
+    #: order check runs over every set that holds at most one of each pair,
+    #: and reports each declared pair as a warning, never silently. Exactly
+    #: the pairs listed; any other conflict still fails.
+    exclusive_pending: frozenset[frozenset[str]] = frozenset()
 
     @property
     def proposed_dir(self) -> pathlib.Path:
@@ -336,6 +348,75 @@ def composition_findings(
     return findings
 
 
+def pending_order_findings(
+    pkg: Package, spec_bytes: bytes | None = None, siblings: dict[str, pathlib.Path] | None = None,
+    mine: pathlib.Path | None = None,
+) -> list[str]:
+    """This spec patch and every pending sibling's give one spec in every order.
+
+    The pairwise check above cannot see three patches that apply pairwise but
+    fail, or diverge, only together; the shared engine's all-orders search can.
+    A pending sibling with no spec patch is named by ``sibling_findings``.
+    """
+    mine = mine or ROOT / pkg.proposed_dir / "spec.md.patch"
+    spec_bytes = (ROOT / pkg.spec).read_bytes() if spec_bytes is None else spec_bytes
+    siblings = sibling_patches(pkg) if siblings is None else siblings
+    present = sorted(name for name in pkg.pending_siblings if name in siblings)
+    findings = [
+        f"declared exclusive pair is not two pending siblings: {', '.join(sorted(pair))}"
+        for pair in sorted(pkg.exclusive_pending, key=sorted)
+        if len(pair) != 2 or not pair <= pkg.pending_siblings
+    ]
+    groups = exclusive_groups(pkg, present)
+    for group in groups:
+        patches = [(pkg.candidate.name, mine)] + [(name, siblings[name]) for name in group]
+        found = orders.all_orders_findings(spec_bytes, patches, pkg.spec)
+        dropped = sorted(set(present) - set(group))
+        prefix = f"without {', '.join(dropped)}: " if dropped else ""
+        findings += [prefix + finding for finding in found]
+    return findings
+
+
+def exclusive_groups(pkg: Package, present: list[str]) -> list[list[str]]:
+    """Every largest set of present pending siblings holding no declared pair."""
+    pairs = [sorted(pair) for pair in sorted(pkg.exclusive_pending, key=sorted)
+             if len(pair) == 2 and pair <= set(present)]
+    groups = {
+        frozenset(present) - set(drop)
+        for drop in itertools.product(*pairs)
+    }
+    groups = {g for g in groups if not any(frozenset(pair) <= g for pair in pairs)}
+    maximal = [g for g in groups if not any(g < other for other in groups)]
+    return sorted((sorted(g) for g in maximal), key=lambda g: (len(g), g))
+
+
+def exclusive_warnings(
+    pkg: Package, spec_bytes: bytes | None = None, siblings: dict[str, pathlib.Path] | None = None,
+) -> list[str]:
+    """Each declared exclusive pair, named with what it costs at signing."""
+    spec_bytes = (ROOT / pkg.spec).read_bytes() if spec_bytes is None else spec_bytes
+    siblings = sibling_patches(pkg) if siblings is None else siblings
+    warnings = []
+    for pair in sorted(pkg.exclusive_pending, key=sorted):
+        a, b = sorted(pair)
+        if a not in siblings or b not in siblings:
+            continue
+        conflict = orders.all_orders_findings(spec_bytes, [(a, siblings[a]), (b, siblings[b])], pkg.spec)
+        if conflict:
+            warnings.append(
+                f"declared mutually exclusive pending siblings {a} and {b}: their spec "
+                "patches rewrite the same lines, so no order applies both; whichever is "
+                "signed second must be regenerated with --write over the first's applied "
+                "bytes before it is signed"
+            )
+        else:
+            warnings.append(
+                f"declared exclusive pair {a} and {b} now composes in every order; "
+                "the declaration is stale and should be removed"
+            )
+    return warnings
+
+
 # --- manifest and check --------------------------------------------------------
 
 def render_manifest(pkg: Package, proposed: dict[pathlib.Path, bytes]) -> str:
@@ -373,6 +454,7 @@ def check(pkg: Package, patches: list[pathlib.Path] | None = None) -> tuple[list
         findings.extend(pkg.coverage(proposed))
     findings.extend(sibling_findings(pkg))
     findings.extend(composition_findings(pkg))
+    findings.extend(pending_order_findings(pkg))
     if not (ROOT / pkg.manifest).is_file():
         findings.append(f"missing manifest: {pkg.manifest}")
     elif (ROOT / pkg.manifest).read_text(encoding="utf-8") != render_manifest(pkg, proposed):
@@ -447,6 +529,15 @@ def run_selftest(
         if found != expected:
             print(f"SELFTEST FAILED: sibling classification gave {found}")
             failed += 1
+        # Each declared pending sibling, removed from the classification,
+        # is named as unclassified: the entry is what keeps --check green.
+        on_disk = sibling_patches(pkg)
+        for name in sorted(pkg.pending_siblings & set(on_disk)):
+            found = sibling_findings(
+                dataclasses.replace(pkg, pending_siblings=pkg.pending_siblings - {name}))
+            if f"unclassified sibling package patches the spec: {name}" not in found:
+                print(f"SELFTEST FAILED: removing pending sibling {name} gave {found}")
+                failed += 1
         # A pending sibling whose patch rewrites a line this patch also
         # rewrites must fail composition.
         spec_text = (ROOT / pkg.spec).read_text(encoding="utf-8")
@@ -462,14 +553,113 @@ def run_selftest(
         if not any(f.startswith(f"composition with pending sibling {name}") for f in found):
             print(f"SELFTEST FAILED: a clashing sibling composed: {found}")
             failed += 1
+        failed += order_selftest(pkg, pathlib.Path(temp) / "orders")
     if failed:
         return 1
     print(
         f"selftest: {len(mutants)} structure mutants, patch drift, an unclassified "
-        "sibling, a vanished pending sibling and a clashing sibling all fail closed "
-        "on their own predicates"
+        "sibling, a vanished pending sibling, each declared pending sibling "
+        f"removed ({len(pkg.pending_siblings & set(sibling_patches(pkg)))}), a "
+        "clashing sibling, divergent and failing application orders, and an "
+        "undeclared or malformed exclusive pair all fail closed on their own "
+        "predicates"
     )
     return 0
+
+
+#: The shared engine's shift fixtures, run through this builder's own patch
+#: population: the first patch stands in for this package, the rest for its
+#: pending siblings. Every pair gives one result in both orders, so the
+#: pairwise composition check above passes each; only the all-orders search
+#: fails them.
+ORDER_FIXTURES = (
+    ("divergent", orders.ORDER_FIXTURE_SHIFT_BASE, orders.ORDER_FIXTURE_SHIFT[:3], [
+        "pending spec patches give 2 different results across the 3! application orders",
+    ]),
+    ("failing", orders.ORDER_FIXTURE_SHIFT_BASE, orders.ORDER_FIXTURE_SHIFT, [
+        "pending spec patches do not apply in every order: "
+        "shift-first-copy after [shift-a, shift-b, shift-relocating]",
+    ]),
+)
+
+
+def order_selftest(pkg: Package, temp: pathlib.Path) -> int:
+    """Divergent and failing orders fail this builder's order check, and
+    ``check`` reports what that check finds."""
+    failed = 0
+    rel = pathlib.Path("fixture.txt")
+    temp.mkdir(parents=True, exist_ok=True)
+    for label, base, hunks, expected in ORDER_FIXTURES:
+        (first, mine), *rest = orders._fixture_patches(temp, rel, hunks)
+        fixture = dataclasses.replace(
+            pkg, candidate=pathlib.Path(first), spec=rel,
+            pending_siblings=frozenset(name for name, _ in rest), exclusive_pending=frozenset(),
+        )
+        found = pending_order_findings(fixture, spec_bytes=base, siblings=dict(rest), mine=mine)
+        if found != expected:
+            print(f"SELFTEST FAILED: {label} application orders gave {found}")
+            failed += 1
+    failed += exclusive_selftest(pkg, temp / "exclusive")
+    original = globals()["pending_order_findings"]
+    globals()["pending_order_findings"] = lambda *_args, **_kwargs: ["order-check sentinel"]
+    try:
+        findings, _ = check(pkg)
+    finally:
+        globals()["pending_order_findings"] = original
+    if "order-check sentinel" not in findings:
+        print(f"SELFTEST FAILED: check does not report the order check: {findings}")
+        failed += 1
+    return failed
+
+
+#: Three siblings that each rewrite line 4 differently, and this package's
+#: patch, which rewrites line 1. Any two siblings conflict in every order.
+EXCLUSIVE_BASE = b"l1\nl2\nl3\nl4\nl5\nl6\n"
+EXCLUSIVE_HUNKS = (
+    ("mine", "@@ -1,2 +1,2 @@\n-l1\n+L1\n l2\n"),
+    ("sib-x", "@@ -3,3 +3,3 @@\n l3\n-l4\n+X4\n l5\n"),
+    ("sib-y", "@@ -3,3 +3,3 @@\n l3\n-l4\n+Y4\n l5\n"),
+    ("sib-z", "@@ -3,3 +3,3 @@\n l3\n-l4\n+Z4\n l5\n"),
+)
+
+
+def exclusive_selftest(pkg: Package, temp: pathlib.Path) -> int:
+    """A declared exclusive pair passes with a named warning; an undeclared
+    conflicting pair, or a third sibling beside a declared pair, still fails."""
+    failed = 0
+    rel = pathlib.Path("fixture.txt")
+    temp.mkdir(parents=True, exist_ok=True)
+    (_, mine), *rest = orders._fixture_patches(temp, rel, EXCLUSIVE_HUNKS)
+    siblings = dict(rest)
+    xy = frozenset({"sib-x", "sib-y"})
+
+    def run(pending, exclusive):
+        fixture = dataclasses.replace(
+            pkg, candidate=pathlib.Path("mine"), spec=rel,
+            pending_siblings=frozenset(pending), exclusive_pending=frozenset(exclusive))
+        found = pending_order_findings(fixture, spec_bytes=EXCLUSIVE_BASE,
+                                       siblings=siblings, mine=mine)
+        warned = exclusive_warnings(fixture, spec_bytes=EXCLUSIVE_BASE, siblings=siblings)
+        return found, warned
+
+    found, _ = run(xy, ())
+    if not found:
+        print("SELFTEST FAILED: an undeclared conflicting sibling pair passed the order check")
+        failed += 1
+    found, warned = run(xy, {xy})
+    if found or not (len(warned) == 1 and "sib-x and sib-y" in warned[0]
+                     and "regenerated with --write" in warned[0]):
+        print(f"SELFTEST FAILED: a declared exclusive pair gave {found} and warnings {warned}")
+        failed += 1
+    found, _ = run(xy | {"sib-z"}, {xy})
+    if not found:
+        print("SELFTEST FAILED: a third conflicting sibling passed beside a declared pair")
+        failed += 1
+    found, _ = run(xy, {frozenset({"sib-x", "sib-w"})})
+    if not any(f.startswith("declared exclusive pair is not two pending siblings") for f in found):
+        print(f"SELFTEST FAILED: a declared pair naming no pending sibling gave {found}")
+        failed += 1
+    return failed
 
 
 # --- modes -------------------------------------------------------------------
@@ -524,6 +714,8 @@ def main(pkg: Package, selftest: Callable[[], int], argv: list[str]) -> int:
         print("refusing: choose --check, --selftest, --diff or --write")
         return 2
     findings, proposed = check(pkg)
+    for warning in exclusive_warnings(pkg):
+        print(f"WARN: {warning}")
     if findings:
         print(f"{pkg.label.upper()} CANDIDATE FINDINGS:")
         for finding in findings:
@@ -535,7 +727,7 @@ def main(pkg: Package, selftest: Callable[[], int], argv: list[str]) -> int:
     print(
         f"{pkg.label} candidate matches {len(pkg.subjects)} proposed subjects "
         f"({len(pkg.patched)} patched); {len(blocks)} requirements, {scenarios} scenarios; "
-        "structure, regeneration, siblings, composition and the manifest verify"
+        "structure, regeneration, siblings, composition in every order and the manifest verify"
     )
     return 0
 

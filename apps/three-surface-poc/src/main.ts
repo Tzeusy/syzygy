@@ -6,11 +6,7 @@ import { join, resolve } from 'node:path';
 import { createDaemon } from '@syzygy/cap1-daemon';
 import {
   PocObservationError,
-  describeReevaluation,
-  evaluationClocks,
-  evaluationIdentity,
   type PocModel,
-  type Reevaluation,
 } from '@syzygy/three-surface-poc-core';
 
 import { parsePocCli } from './cli.js';
@@ -25,13 +21,12 @@ import {
 import { launchAfterPwbRepositoryBinding } from './launcher.js';
 import { materializeRoutes } from './materialize-action.js';
 import { buildPocEvaluationEvidence, buildProductionPocModel, type PocRuntimeCapture } from './production-reobserve.js';
-import { reobserveRoutes, type ReobserveResult } from './reobserve-action.js';
-import { createReobserveState } from './reobserve-state.js';
+import { reobserveRoutes } from './reobserve-action.js';
+import { createReobserveSession } from './reobserve-session.js';
 import { pocRoutes } from './routes.js';
 import { ServedResponseRecorder } from './served-response-recorder.js';
 import { daemonStartDetail, gitObservationDetail, unexpectedObservationDetail } from './startup-detail.js';
 import { gitBlobReaderFor, verbatimRouteReader } from './verbatim-route.js';
-import { attachWatchMode } from './watch-mode.js';
 
 /** The exact binding a PWB-WALKTHROUGH-001 record must name for this
  * evaluation, printed so the recording session copies it rather than
@@ -105,7 +100,7 @@ if (parsed.kind === 'help') {
 
         if (repositoryRevision !== '' && observerRevision !== '') {
           const horizon = observeGitHorizon(repoRoot, repositoryRevision);
-          let capture: PocRuntimeCapture = {
+          const capture: PocRuntimeCapture = {
             repositoryRevision,
             observerRevision,
             workingTreeDigest,
@@ -118,7 +113,7 @@ if (parsed.kind === 'help') {
           );
           const stateDir = resolve(parsed.config.stateDir ?? defaultStateDir);
 
-          const buildModel = (currentCapture = capture): PocModel => buildProductionPocModel({
+          const buildModel = (currentCapture: PocRuntimeCapture): PocModel => buildProductionPocModel({
             capture: currentCapture,
             repoRoot,
             stateDir,
@@ -126,12 +121,16 @@ if (parsed.kind === 'help') {
           });
 
           try {
-            let model = buildModel(capture);
             const servedResponses = new ServedResponseRecorder();
             let credentialProvision: 'minted' | 'reused' | undefined;
-            const reobserver = createReobserveState({
+            // syzygy-u05.2: every evaluation is a named re-evaluation result
+            // carrying the identity it supersedes, the three clocks and the
+            // two staleness limbs. The observatory limb counts Syzygy commits
+            // since the revision this daemon was started from.
+            const buildRevision = observerRevision;
+            const session = createReobserveSession({
               capture,
-              model,
+              build: buildModel,
               observe: async () => {
                 const nextRepository = observeGitRepository(repoRoot);
                 const nextObserver = observeGitRepository(process.cwd());
@@ -145,34 +144,11 @@ if (parsed.kind === 'help') {
                   evidence: buildPocEvaluationEvidence(asOf, nextRepository.revision, nextRepository.committerInstant, nextHorizon),
                 };
               },
-              build: buildModel,
+              observeHorizon: (pinned) => observeGitHorizon(repoRoot, pinned),
+              observeRevisionChange: (from, to) => observeRevisionChange(repoRoot, from, to),
+              observeObservatory: () => observeObservatoryDrift(process.cwd(), buildRevision),
+              now: () => new Date().toISOString(),
             });
-            // syzygy-u05.2: every evaluation is a named re-evaluation result
-            // carrying the identity it supersedes, the three clocks and the
-            // two staleness limbs. The observatory limb counts Syzygy commits
-            // since the revision this daemon was started from.
-            const buildRevision = observerRevision;
-            const reevaluate = (prior: Reevaluation | null, current: PocModel, currentCapture: PocRuntimeCapture): Reevaluation => describeReevaluation({
-              prior,
-              next: { evaluation: evaluationIdentity(current), clocks: evaluationClocks(current, currentCapture.workingTreeDigest) },
-              projectChange: prior === null ? null : observeRevisionChange(repoRoot, prior.clocks.butlersHead, current.project.revision),
-              observatory: observeObservatoryDrift(process.cwd(), buildRevision),
-            });
-            let latest = reevaluate(null, model, capture);
-            let reobserving: Promise<ReobserveResult> | undefined;
-            // One owner request at a time, from the browser or the console.
-            const reobserveNow = (): Promise<ReobserveResult> => reobserving ?? (reobserving = (async (): Promise<ReobserveResult> => {
-              const result = await reobserver.reobserve();
-              if (result.kind === 'failed') return result;
-              model = result.model;
-              capture = reobserver.getCapture();
-              try {
-                latest = reevaluate(latest, model, capture);
-              } catch (cause) {
-                return { kind: 'failed', reason: cause instanceof Error ? cause.message : 'the re-evaluation could not be named' };
-              }
-              return { kind: 'reobserved', reevaluation: latest };
-            })().finally(() => { reobserving = undefined; }));
             const start = await createDaemon({
               stateDir,
               port: parsed.config.port,
@@ -180,17 +156,14 @@ if (parsed.kind === 'help') {
                 // PWB-REQ-011 (amended): Polaris's transient exact-requirement
                 // route — the observed shape's own admitted baseline-spec object,
                 // read at render and never stored.
-                ...pocRoutes(() => model, undefined, (current) => ({ verbatim: verbatimRouteReader(current, gitBlobReaderFor(repoRoot)) }), servedResponses, () => credentialProvision, () => latest),
+                ...pocRoutes(session.model, undefined, (current) => ({ verbatim: verbatimRouteReader(current, gitBlobReaderFor(repoRoot)) }), servedResponses, () => credentialProvision, session.latest),
                 ...materializeRoutes({
-                  getModel: () => model,
+                  getModel: session.model,
                   targetRepoRoot: repoRoot,
                   stateDir: () => stateDir,
-                  onMaterialized: () => {
-                    model = buildModel(capture);
-                    reobserver.replace(capture, model);
-                  },
+                  onMaterialized: session.afterMaterialized,
                 }),
-                ...reobserveRoutes({ reobserve: reobserveNow }),
+                ...reobserveRoutes({ reobserve: session.reobserve }),
               ],
             });
             if (!start.started) {
@@ -204,16 +177,14 @@ if (parsed.kind === 'help') {
                   `Syzygy Three-Surface POC: http://${daemon.host}:${daemon.port}/`,
                   `Observed repository: ${repoRoot}`,
                   `Observed revision: ${repositoryRevision}`,
-                  ...walkthroughBindingLines(model),
+                  ...walkthroughBindingLines(session.model()),
                   `Machine endpoint: http://${daemon.host}:${daemon.port}/api/poc`,
                   `Machine credential (${daemon.credentialProvision}) at: ${daemon.credentialPath}`,
                   'Credential value is never printed. POC is local, experimental, and non-release.',
                   '',
                 ].join('\n'),
               );
-              if (parsed.config.watch) {
-                void attachWatchMode({ input: process.stdin, output: process.stdout, reobserve: reobserveNow });
-              }
+              void session.startConsole(parsed.config.watch, { input: process.stdin, output: process.stdout });
 
               await new Promise<void>((resolveShutdown) => {
                 let closing = false;

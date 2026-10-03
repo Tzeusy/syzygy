@@ -1,0 +1,2072 @@
+{
+  "bead": "syzygy-jsyi",
+  "date": "2026-10-04",
+  "measuredOn": {
+    "finalCodeCommit": "e1dec7ca807926af0a93a098843b48294891260e",
+    "baseCommit": "a5fc472b",
+    "note": "before* ran at the base; after* at 7ac49140 and hold-* at b67e751f, both with the first-round fixture bytes in earlierSubjects; b8-* at 2f668fec (adds the authority-sweep assertions); r8-* at the final code commit (review repair: per-file template teardown and git-state isolation)."
+  },
+  "subjects": [
+    {
+      "path": "apps/three-surface-poc/src/test-model-fixture.ts",
+      "sha256": "3786b7224ee0d162eb0d6c02a63c719caa57aa1b2845e5e47dd17de7afac5cba"
+    },
+    {
+      "path": "apps/three-surface-poc/src/test-model-fixture.test.ts",
+      "sha256": "d4c49b4f5e9be5e27066ee4a2b4b7f7b84d3e660458498b29b4465289ff75b1b"
+    },
+    {
+      "path": "packages/three-surface-poc-core/src/model.test.ts",
+      "sha256": "f3120e0c81a5001cedd1c58a8699a70b263fe1987e5156d21b6ea6ba4bddbb08"
+    },
+    {
+      "path": "vitest.setup.ts",
+      "sha256": "0a2c2be192c909920c756d5fbb2b8273db8d120fa9184398b31cfff9a350d66e"
+    },
+    {
+      "path": "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+      "sha256": "30ea77200b738226b361e19b05eecb893ef7c5992126e7dea6b42366d2fd8ac5"
+    }
+  ],
+  "rootCause": {
+    "finding": "Per-test process churn, not slow assertions. Each fixture model build committed a fresh git repository (init, two config, add, commit, rev-parse, plus a forked git maintenance); the core model test committed a twelve-process repository three times and spawned the bd CLI for every build without an injected work-item query.",
+    "method": "strace -f -e trace=execve over one file run alone, before the change and at 7ac49140; successful execs counted by argv prefix. Fixture-repository git counts exclude the observer's own git --no-optional-locks reads, counted separately.",
+    "spawns": [
+      {
+        "file": "apps/three-surface-poc/src/polaris-reachability.test.ts",
+        "tests": 9,
+        "fixtureGitBefore": 180,
+        "fixtureGitAfter": 6,
+        "maintenanceBefore": 30,
+        "maintenanceAfter": 1,
+        "observerGitBefore": 30,
+        "observerGitAfter": 30
+      },
+      {
+        "file": "apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+        "tests": 56,
+        "fixtureGitBefore": 354,
+        "fixtureGitAfter": 6,
+        "maintenanceBefore": 59,
+        "maintenanceAfter": 1,
+        "observerGitBefore": 61,
+        "observerGitAfter": 61
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/model.test.ts",
+        "tests": "16 before, 17 after",
+        "bdBefore": 18,
+        "bdAfter": 1,
+        "observerGitBefore": 47,
+        "observerGitAfter": 49,
+        "note": "The added test builds two models, one through the spawned bd default."
+      }
+    ],
+    "spawnCost": {
+      "bdReadonlySqlInEmptyDirectory": "0.34-0.59 s each at load1 83.6 (three timed runs)",
+      "fixtureRepositoryCommitInWorker": "203-661 ms each at load1 62 (three builds)",
+      "fixtureModelBuildGivenRepository": "20-70 ms",
+      "polarisRender": "12-38 ms"
+    }
+  },
+  "change": [
+    "fixtureRepoWithGit commits one repository per test file and copies it per call (cpSync); commit instants were already pinned, so every copy carries the revision a fresh commit mints. A new test pins that revision as a literal derived by hand and checks distinct, clean copies and that a write stays in its own copy.",
+    "model.test.ts copies butlersGitFixture the same way, and answers the work-item query in-process (a throwing runner) unless a test supplies one; work-items.ts maps every query failure to the same Unknown. A new test keeps the spawned bd default and asserts the whole model equals the in-process one.",
+    "No assertion, timeout, retry or vitest setting changed; the global testTimeout stays 5000 ms."
+  ],
+  "protocol": {
+    "command": "npx vitest run --project @syzygy/three-surface-poc-app --project @syzygy/three-surface-poc-core --reporter=default --reporter=json",
+    "host": "12 cores, shared with other lanes; vitest maxWorkers 50% (root config, #303)",
+    "burners": "sh -c 'while :; do :; done' processes; the burners field is the count used. before8a, after8a and b8-*: exactly 8, plus ambient load from other lanes (the amended AC 2). before50a, after50-*: 8, topped up by 2 per 10 s before the run while load1 < 50 (cap 40). hold-*: 8, topped up by 2 per 10 s while load1 < 52 before and during the run (cap 40). The top-up runs predate the amendment and were stopped at the coordinator's request so as not to flood other lanes' gates.",
+    "load": "load1 sampled every 15 s during the vitest run",
+    "defaultBudget": "targetDefaultBudgetMaxMs covers only tests on the 5 s default; the accessibility variant and navigation-budget tests (240 s) and the proposal-disclosure Chrome test (45 s) carry their own budgets."
+  },
+  "runs": [
+    {
+      "label": "before8a",
+      "commit": "a5fc472b",
+      "exitCode": 0,
+      "burners": 8,
+      "load1": {
+        "start": 9.71,
+        "min": 13.88,
+        "median": 20.38,
+        "max": 25.99
+      },
+      "loadSamples": 7,
+      "tests": 1665,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 1575,
+      "targetDefaultBudgetMaxTest": "proposal-disclosure.test.ts > agrees with the served proposal population in zero and populated fixtures, and sits outside the claim-state lists",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 16,
+          "sumMs": 5399,
+          "maxMs": 716,
+          "defaultBudgetTests": 16,
+          "defaultBudgetMaxMs": 716,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 49,
+          "maxMs": 16,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 16,
+          "defaultBudgetMaxTest": "leaves the current authority Unknown with the shape's own reason and route when the shape was not observed"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 86828,
+          "maxMs": 18842,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1195,
+          "defaultBudgetMaxTest": "keeps diagram labels legible and flow order unambiguous across widths"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 675,
+          "maxMs": 325,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 325,
+          "defaultBudgetMaxTest": "no machine reference on the model or its narrative anchors targets the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 2662,
+          "maxMs": 893,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 893,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 2980,
+          "maxMs": 1335,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1335,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 18166,
+          "maxMs": 1290,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 1290,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 2785,
+          "maxMs": 929,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 929,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 7600,
+          "maxMs": 1223,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 1223,
+          "defaultBudgetMaxTest": "lists the four depths as native links in document order, reaching every group, catalog class, capability deep dive and evidence heading the state renders"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 4773,
+          "maxMs": 2521,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1575,
+          "defaultBudgetMaxTest": "agrees with the served proposal population in zero and populated fixtures, and sits outside the claim-state lists"
+        }
+      }
+    },
+    {
+      "label": "after8a",
+      "commit": "7ac49140",
+      "exitCode": 0,
+      "burners": 8,
+      "load1": {
+        "start": 24.9,
+        "min": 26.81,
+        "median": 30.975,
+        "max": 32.53
+      },
+      "loadSamples": 6,
+      "tests": 1667,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 1394,
+      "targetDefaultBudgetMaxTest": "model.test.ts > shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 3017,
+          "maxMs": 1394,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 1394,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 8,
+          "maxMs": 4,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 4,
+          "defaultBudgetMaxTest": "parses the change id and amended spec directory from a delta path, and nothing else"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 97123,
+          "maxMs": 23008,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1104,
+          "defaultBudgetMaxTest": "gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 1127,
+          "maxMs": 600,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 600,
+          "defaultBudgetMaxTest": "no machine reference on the model or its narrative anchors targets the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 1641,
+          "maxMs": 724,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 724,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 1320,
+          "maxMs": 536,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 536,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 9185,
+          "maxMs": 609,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 609,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 1596,
+          "maxMs": 876,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 876,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 4300,
+          "maxMs": 967,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 967,
+          "defaultBudgetMaxTest": "names every coloured state in text: each element of a colour-bearing class carries the words that state means"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 3933,
+          "maxMs": 2746,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 590,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      }
+    },
+    {
+      "label": "before50a",
+      "commit": "a5fc472b",
+      "exitCode": 1,
+      "burners": 40,
+      "load1": {
+        "start": 56.85,
+        "min": 61.58,
+        "median": 77.375,
+        "max": 83.37
+      },
+      "loadSamples": 16,
+      "tests": 1665,
+      "failedTests": [
+        {
+          "file": "polaris-generation/pipeline-demo.test.ts",
+          "test": "concrete source-to-draft pipeline exercise runs the README command after a clean install and requires exactly seven synthetic output files",
+          "durationMs": 181774,
+          "message": "Error: STACK_TRACE_ERROR at task (file:///tmp/claude-1000/-home-tze-GitHub-syzygy/c1354a2e-15e3-47f9-a2b4-b76abc3f00c7/scratchpad/jsyi/base/node_modules/@vitest"
+        }
+      ],
+      "targetDefaultBudgetMaxMs": 4855,
+      "targetDefaultBudgetMaxTest": "polaris-reachability.test.ts > carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 16,
+          "sumMs": 20591,
+          "maxMs": 3267,
+          "defaultBudgetTests": 16,
+          "defaultBudgetMaxMs": 3267,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 38,
+          "maxMs": 19,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 19,
+          "defaultBudgetMaxTest": "parses the change id and amended spec directory from a delta path, and nothing else"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 188142,
+          "maxMs": 43715,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 2300,
+          "defaultBudgetMaxTest": "keeps a separate desktop section rail and an in-flow mobile drawer"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 4795,
+          "maxMs": 3250,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 3250,
+          "defaultBudgetMaxTest": "no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 9502,
+          "maxMs": 2716,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 2716,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 7667,
+          "maxMs": 3283,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 3283,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 47034,
+          "maxMs": 2825,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 2825,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 7721,
+          "maxMs": 3111,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 3111,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 26668,
+          "maxMs": 4855,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 4855,
+          "defaultBudgetMaxTest": "carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 11208,
+          "maxMs": 5478,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 3993,
+          "defaultBudgetMaxTest": "agrees with the served proposal population in zero and populated fixtures, and sits outside the claim-state lists"
+        }
+      }
+    },
+    {
+      "label": "after50-1",
+      "commit": "7ac49140",
+      "exitCode": 0,
+      "burners": 8,
+      "load1": {
+        "start": 71.86,
+        "min": 51.53,
+        "median": 57.63,
+        "max": 66.99
+      },
+      "loadSamples": 9,
+      "tests": 1667,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 1503,
+      "targetDefaultBudgetMaxTest": "model.test.ts > shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 3510,
+          "maxMs": 1503,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 1503,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 31,
+          "maxMs": 18,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 18,
+          "defaultBudgetMaxTest": "reads the lifecycle state from tree paths only: active, archived, contradicted, absent, or Unknown without a tree"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 127956,
+          "maxMs": 28868,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1416,
+          "defaultBudgetMaxTest": "gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 1811,
+          "maxMs": 959,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 959,
+          "defaultBudgetMaxTest": "no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 2927,
+          "maxMs": 1417,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 1417,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 2032,
+          "maxMs": 728,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 728,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 12841,
+          "maxMs": 1281,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 1281,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 1912,
+          "maxMs": 951,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 951,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 5030,
+          "maxMs": 820,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 820,
+          "defaultBudgetMaxTest": "keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 4615,
+          "maxMs": 2965,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 808,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      }
+    },
+    {
+      "label": "after50-2",
+      "commit": "7ac49140",
+      "exitCode": 0,
+      "burners": 8,
+      "load1": {
+        "start": 45.92,
+        "min": 46.31,
+        "median": 47.92,
+        "max": 49.24
+      },
+      "loadSamples": 9,
+      "tests": 1667,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 1650,
+      "targetDefaultBudgetMaxTest": "polaris-authority-sweep.test.ts > no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 3325,
+          "maxMs": 1404,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 1404,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 7,
+          "maxMs": 3,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 3,
+          "defaultBudgetMaxTest": "parses the change id and amended spec directory from a delta path, and nothing else"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 127077,
+          "maxMs": 30945,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1149,
+          "defaultBudgetMaxTest": "keeps complete source columns visible while citation targets remain keyboard-reachable"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 2595,
+          "maxMs": 1650,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1650,
+          "defaultBudgetMaxTest": "no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 2524,
+          "maxMs": 929,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 929,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 1874,
+          "maxMs": 780,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 780,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 10976,
+          "maxMs": 1031,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 1031,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 1947,
+          "maxMs": 955,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 955,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 4393,
+          "maxMs": 983,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 983,
+          "defaultBudgetMaxTest": "keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 4219,
+          "maxMs": 2909,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 636,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      }
+    },
+    {
+      "label": "after50-3",
+      "commit": "7ac49140",
+      "exitCode": 0,
+      "burners": 20,
+      "load1": {
+        "start": 50.82,
+        "min": 52.73,
+        "median": 58.18,
+        "max": 65.69
+      },
+      "loadSamples": 12,
+      "tests": 1667,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 2518,
+      "targetDefaultBudgetMaxTest": "model.test.ts > shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 5646,
+          "maxMs": 2518,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 2518,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 55,
+          "maxMs": 31,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 31,
+          "defaultBudgetMaxTest": "parses the change id and amended spec directory from a delta path, and nothing else"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 172601,
+          "maxMs": 37908,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1973,
+          "defaultBudgetMaxTest": "gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 1806,
+          "maxMs": 830,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 830,
+          "defaultBudgetMaxTest": "no machine reference on the model or its narrative anchors targets the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 3531,
+          "maxMs": 1112,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 1112,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 2801,
+          "maxMs": 1213,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1213,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 16329,
+          "maxMs": 1531,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 1531,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 2534,
+          "maxMs": 1465,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1465,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 5790,
+          "maxMs": 1147,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 1147,
+          "defaultBudgetMaxTest": "keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 4858,
+          "maxMs": 3164,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 895,
+          "defaultBudgetMaxTest": "agrees with the served proposal population in zero and populated fixtures, and sits outside the claim-state lists"
+        }
+      }
+    },
+    {
+      "label": "hold-1",
+      "commit": "b67e751f",
+      "exitCode": 1,
+      "burners": 38,
+      "load1": {
+        "start": 53.24,
+        "min": 55.46,
+        "median": 68.33,
+        "max": 74.68
+      },
+      "loadSamples": 19,
+      "tests": 1692,
+      "failedTests": [
+        {
+          "file": "polaris-generation/pipeline-demo.test.ts",
+          "test": "concrete source-to-draft pipeline exercise runs the README command after a clean install and requires exactly seven synthetic output files",
+          "durationMs": 181204,
+          "message": "Error: STACK_TRACE_ERROR at task (file:///home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-jsyi-a2/node_modules/@vitest/runner/dist/chunk-hooks.js:638:2"
+        }
+      ],
+      "targetDefaultBudgetMaxMs": 2595,
+      "targetDefaultBudgetMaxTest": "polaris-accessibility.browser.test.ts > keeps a separate desktop section rail and an in-flow mobile drawer",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 4648,
+          "maxMs": 1889,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 1889,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 28,
+          "maxMs": 19,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 19,
+          "defaultBudgetMaxTest": "refuses a delta path that is not an OpenSpec change delta"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 200630,
+          "maxMs": 43670,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 2595,
+          "defaultBudgetMaxTest": "keeps a separate desktop section rail and an in-flow mobile drawer"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 3692,
+          "maxMs": 1840,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1840,
+          "defaultBudgetMaxTest": "no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 3987,
+          "maxMs": 1800,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 1800,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 3488,
+          "maxMs": 1250,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1250,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 19340,
+          "maxMs": 1742,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 1742,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 3137,
+          "maxMs": 1916,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1916,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 7509,
+          "maxMs": 1508,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 1508,
+          "defaultBudgetMaxTest": "carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 5263,
+          "maxMs": 3175,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1084,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      }
+    },
+    {
+      "label": "hold-2",
+      "commit": "b67e751f",
+      "exitCode": 0,
+      "burners": 18,
+      "load1": {
+        "start": 67.92,
+        "min": 49.73,
+        "median": 53.27,
+        "max": 61.41
+      },
+      "loadSamples": 9,
+      "tests": 1692,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 1683,
+      "targetDefaultBudgetMaxTest": "model.test.ts > shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 3480,
+          "maxMs": 1683,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 1683,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 20,
+          "maxMs": 8,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 8,
+          "defaultBudgetMaxTest": "parses the change id and amended spec directory from a delta path, and nothing else"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 132693,
+          "maxMs": 30403,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1537,
+          "defaultBudgetMaxTest": "keeps diagram labels legible and flow order unambiguous across widths"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 1761,
+          "maxMs": 864,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 864,
+          "defaultBudgetMaxTest": "no machine reference on the model or its narrative anchors targets the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 2406,
+          "maxMs": 1477,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 1477,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 1983,
+          "maxMs": 874,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 874,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 11998,
+          "maxMs": 748,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 748,
+          "defaultBudgetMaxTest": "observed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 1747,
+          "maxMs": 910,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 910,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 4210,
+          "maxMs": 1199,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 1199,
+          "defaultBudgetMaxTest": "keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 4246,
+          "maxMs": 2815,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 662,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      }
+    },
+    {
+      "label": "hold-3",
+      "commit": "b67e751f",
+      "exitCode": 0,
+      "burners": 22,
+      "load1": {
+        "start": 52.54,
+        "min": 54.97,
+        "median": 61.74,
+        "max": 69.24
+      },
+      "loadSamples": 12,
+      "tests": 1692,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 2758,
+      "targetDefaultBudgetMaxTest": "model.test.ts > shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 5973,
+          "maxMs": 2758,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 2758,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 22,
+          "maxMs": 12,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 12,
+          "defaultBudgetMaxTest": "leaves the current authority Unknown with the shape's own reason and route when the shape was not observed"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 176203,
+          "maxMs": 41163,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1547,
+          "defaultBudgetMaxTest": "keeps complete source columns visible while citation targets remain keyboard-reachable"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 3720,
+          "maxMs": 1669,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1669,
+          "defaultBudgetMaxTest": "no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 3922,
+          "maxMs": 1312,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 1312,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 3707,
+          "maxMs": 2045,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 2045,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 18920,
+          "maxMs": 1831,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 1831,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 3172,
+          "maxMs": 1566,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1566,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 7713,
+          "maxMs": 1504,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 1504,
+          "defaultBudgetMaxTest": "keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 6655,
+          "maxMs": 4375,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1294,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      }
+    },
+    {
+      "label": "hold-4",
+      "commit": "b67e751f",
+      "exitCode": 0,
+      "burners": 32,
+      "load1": {
+        "start": 52.7,
+        "min": 47.34,
+        "median": 49.36,
+        "max": 51.73
+      },
+      "loadSamples": 9,
+      "tests": 1692,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 1642,
+      "targetDefaultBudgetMaxTest": "polaris-authority-sweep.test.ts > no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 3505,
+          "maxMs": 1539,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 1539,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 45,
+          "maxMs": 26,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 26,
+          "defaultBudgetMaxTest": "parses the change id and amended spec directory from a delta path, and nothing else"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 136876,
+          "maxMs": 30921,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 953,
+          "defaultBudgetMaxTest": "keeps a separate desktop section rail and an in-flow mobile drawer"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 2533,
+          "maxMs": 1642,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1642,
+          "defaultBudgetMaxTest": "no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 3174,
+          "maxMs": 1569,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 1569,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 2384,
+          "maxMs": 801,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 801,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 11032,
+          "maxMs": 1077,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 1077,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 2357,
+          "maxMs": 1110,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1110,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 5830,
+          "maxMs": 1059,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 1059,
+          "defaultBudgetMaxTest": "keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 4544,
+          "maxMs": 2854,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 763,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      }
+    },
+    {
+      "label": "hold-5",
+      "commit": "b67e751f",
+      "exitCode": 0,
+      "burners": 30,
+      "load1": {
+        "start": 53.0,
+        "min": 45.23,
+        "median": 46.36,
+        "max": 49.65
+      },
+      "loadSamples": 8,
+      "tests": 1692,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 1680,
+      "targetDefaultBudgetMaxTest": "polaris-authority-sweep.test.ts > no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 3293,
+          "maxMs": 1567,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 1567,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 49,
+          "maxMs": 45,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 45,
+          "defaultBudgetMaxTest": "reads the lifecycle state from tree paths only: active, archived, contradicted, absent, or Unknown without a tree"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 118892,
+          "maxMs": 26986,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1012,
+          "defaultBudgetMaxTest": "keeps a separate desktop section rail and an in-flow mobile drawer"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 2755,
+          "maxMs": 1680,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1680,
+          "defaultBudgetMaxTest": "no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 2404,
+          "maxMs": 855,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 855,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 1816,
+          "maxMs": 784,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 784,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 9645,
+          "maxMs": 918,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 918,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 2012,
+          "maxMs": 1311,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1311,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 4534,
+          "maxMs": 1016,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 1016,
+          "defaultBudgetMaxTest": "keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 4381,
+          "maxMs": 2990,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 680,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      }
+    },
+    {
+      "label": "b8-1",
+      "commit": "2f668fec",
+      "exitCode": 0,
+      "burners": 8,
+      "load1": {
+        "start": 22.65,
+        "min": 31.36,
+        "median": 45.465,
+        "max": 47.92
+      },
+      "loadSamples": 10,
+      "tests": 1695,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 1871,
+      "targetDefaultBudgetMaxTest": "polaris-accessibility.browser.test.ts > keeps diagram labels legible and flow order unambiguous across widths",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 3738,
+          "maxMs": 1522,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 1522,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 28,
+          "maxMs": 16,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 16,
+          "defaultBudgetMaxTest": "parses the change id and amended spec directory from a delta path, and nothing else"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 139125,
+          "maxMs": 33085,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1871,
+          "defaultBudgetMaxTest": "keeps diagram labels legible and flow order unambiguous across widths"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 2270,
+          "maxMs": 1230,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1230,
+          "defaultBudgetMaxTest": "no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 2110,
+          "maxMs": 782,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 782,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 1899,
+          "maxMs": 830,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 830,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 13113,
+          "maxMs": 1061,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 1061,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 3039,
+          "maxMs": 1190,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1190,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 4938,
+          "maxMs": 1056,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 1056,
+          "defaultBudgetMaxTest": "keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 4758,
+          "maxMs": 3277,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 663,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      }
+    },
+    {
+      "label": "b8-2",
+      "commit": "2f668fec",
+      "exitCode": 0,
+      "burners": 8,
+      "load1": {
+        "start": 45.63,
+        "min": 46.74,
+        "median": 47.96,
+        "max": 48.91
+      },
+      "loadSamples": 7,
+      "tests": 1695,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 2431,
+      "targetDefaultBudgetMaxTest": "polaris-reachability.test.ts > keeps seven group shortcuts among the first ten tabs and a complete native outline without script",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 2686,
+          "maxMs": 1203,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 1203,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 9,
+          "maxMs": 3,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 3,
+          "defaultBudgetMaxTest": "reads the lifecycle state from tree paths only: active, archived, contradicted, absent, or Unknown without a tree"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 109916,
+          "maxMs": 24370,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1248,
+          "defaultBudgetMaxTest": "keeps diagram labels legible and flow order unambiguous across widths"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 1427,
+          "maxMs": 827,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 827,
+          "defaultBudgetMaxTest": "no machine reference on the model or its narrative anchors targets the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 1708,
+          "maxMs": 888,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 888,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 1349,
+          "maxMs": 610,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 610,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 12045,
+          "maxMs": 1167,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 1167,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 1437,
+          "maxMs": 705,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 705,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 6300,
+          "maxMs": 2431,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 2431,
+          "defaultBudgetMaxTest": "keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 4227,
+          "maxMs": 2907,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 818,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      }
+    },
+    {
+      "label": "b8-3",
+      "commit": "2f668fec",
+      "exitCode": 0,
+      "burners": 8,
+      "load1": {
+        "start": 47.35,
+        "min": 47.1,
+        "median": 50.26,
+        "max": 52.09
+      },
+      "loadSamples": 9,
+      "tests": 1695,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 1644,
+      "targetDefaultBudgetMaxTest": "model.test.ts > shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 3677,
+          "maxMs": 1644,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 1644,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 31,
+          "maxMs": 20,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 20,
+          "defaultBudgetMaxTest": "reads the lifecycle state from tree paths only: active, archived, contradicted, absent, or Unknown without a tree"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 128025,
+          "maxMs": 33740,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1149,
+          "defaultBudgetMaxTest": "keeps diagram labels legible and flow order unambiguous across widths"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 2102,
+          "maxMs": 1384,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 1384,
+          "defaultBudgetMaxTest": "no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 2704,
+          "maxMs": 942,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 942,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 1758,
+          "maxMs": 761,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 761,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 14520,
+          "maxMs": 1310,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 1310,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 2005,
+          "maxMs": 983,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 983,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 5170,
+          "maxMs": 1325,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 1325,
+          "defaultBudgetMaxTest": "keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 4714,
+          "maxMs": 3168,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 691,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      }
+    },
+    {
+      "label": "r8-1",
+      "commit": "e1dec7ca",
+      "exitCode": 0,
+      "burners": 8,
+      "load1": {
+        "start": 18.03,
+        "min": 20.44,
+        "median": 26.56,
+        "max": 30.7
+      },
+      "loadSamples": 5,
+      "tests": 1701,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 986,
+      "targetDefaultBudgetMaxTest": "model.test.ts > shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 2300,
+          "maxMs": 986,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 986,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 10,
+          "maxMs": 6,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 6,
+          "defaultBudgetMaxTest": "parses the change id and amended spec directory from a delta path, and nothing else"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 82663,
+          "maxMs": 18145,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 682,
+          "defaultBudgetMaxTest": "keeps diagram labels legible and flow order unambiguous across widths"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 1186,
+          "maxMs": 606,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 606,
+          "defaultBudgetMaxTest": "no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 1896,
+          "maxMs": 690,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 690,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 1510,
+          "maxMs": 662,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 662,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 8254,
+          "maxMs": 690,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 690,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 1147,
+          "maxMs": 471,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 471,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 3247,
+          "maxMs": 857,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 857,
+          "defaultBudgetMaxTest": "keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 3391,
+          "maxMs": 2549,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 431,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      },
+      "templatesLeftInTmp": 0
+    },
+    {
+      "label": "r8-2",
+      "commit": "e1dec7ca",
+      "exitCode": 0,
+      "burners": 8,
+      "load1": {
+        "start": 27.03,
+        "min": 28.3,
+        "median": 32.08,
+        "max": 33.26
+      },
+      "loadSamples": 6,
+      "tests": 1701,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 1116,
+      "targetDefaultBudgetMaxTest": "model.test.ts > shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 2337,
+          "maxMs": 1116,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 1116,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 9,
+          "maxMs": 4,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 4,
+          "defaultBudgetMaxTest": "parses the change id and amended spec directory from a delta path, and nothing else"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 92645,
+          "maxMs": 20934,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 1079,
+          "defaultBudgetMaxTest": "keeps a separate desktop section rail and an in-flow mobile drawer"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 1475,
+          "maxMs": 803,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 803,
+          "defaultBudgetMaxTest": "no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 1875,
+          "maxMs": 841,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 841,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 1292,
+          "maxMs": 473,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 473,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 8628,
+          "maxMs": 540,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 540,
+          "defaultBudgetMaxTest": "not-evaluated shape / not-evaluated judgment: every marker family matches the machine answer as a multiset"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 1316,
+          "maxMs": 733,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 733,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 4133,
+          "maxMs": 1071,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 1071,
+          "defaultBudgetMaxTest": "keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 4103,
+          "maxMs": 2823,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 648,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      },
+      "templatesLeftInTmp": 0
+    },
+    {
+      "label": "r8-3",
+      "commit": "e1dec7ca",
+      "exitCode": 0,
+      "burners": 8,
+      "load1": {
+        "start": 27.85,
+        "min": 29.93,
+        "median": 32.76,
+        "max": 40.11
+      },
+      "loadSamples": 6,
+      "tests": 1701,
+      "failedTests": [],
+      "targetDefaultBudgetMaxMs": 1323,
+      "targetDefaultBudgetMaxTest": "model.test.ts > shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)",
+      "targetFiles": {
+        "model.test.ts": {
+          "tests": 17,
+          "sumMs": 2627,
+          "maxMs": 1323,
+          "defaultBudgetTests": 17,
+          "defaultBudgetMaxMs": 1323,
+          "defaultBudgetMaxTest": "shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+        },
+        "proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 27,
+          "maxMs": 13,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 13,
+          "defaultBudgetMaxTest": "parses the change id and amended spec directory from a delta path, and nothing else"
+        },
+        "polaris-accessibility.browser.test.ts": {
+          "tests": 15,
+          "sumMs": 90608,
+          "maxMs": 20681,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 973,
+          "defaultBudgetMaxTest": "keeps a separate desktop section rail and an in-flow mobile drawer"
+        },
+        "polaris-authority-sweep.test.ts": {
+          "tests": 4,
+          "sumMs": 1431,
+          "maxMs": 671,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 671,
+          "defaultBudgetMaxTest": "no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        },
+        "polaris-capability-detail.test.ts": {
+          "tests": 7,
+          "sumMs": 1957,
+          "maxMs": 901,
+          "defaultBudgetTests": 7,
+          "defaultBudgetMaxMs": 901,
+          "defaultBudgetMaxTest": "renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state"
+        },
+        "polaris-epistemic-tuples.test.ts": {
+          "tests": 8,
+          "sumMs": 1460,
+          "maxMs": 637,
+          "defaultBudgetTests": 8,
+          "defaultBudgetMaxMs": 637,
+          "defaultBudgetMaxTest": "renders every tuple with every field present, in vocabulary, and equal to the machine answer, over every shape state"
+        },
+        "polaris-parity-sweep.test.ts": {
+          "tests": 56,
+          "sumMs": 8273,
+          "maxMs": 1077,
+          "defaultBudgetTests": 56,
+          "defaultBudgetMaxMs": 1077,
+          "defaultBudgetMaxTest": "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+        },
+        "polaris-proposed-work.test.ts": {
+          "tests": 4,
+          "sumMs": 1816,
+          "maxMs": 980,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 980,
+          "defaultBudgetMaxTest": "keeps every proposed identity out of the project-level groups and the evidence group, in every shape state"
+        },
+        "polaris-reachability.test.ts": {
+          "tests": 9,
+          "sumMs": 3244,
+          "maxMs": 719,
+          "defaultBudgetTests": 9,
+          "defaultBudgetMaxMs": 719,
+          "defaultBudgetMaxTest": "keeps seven group shortcuts among the first ten tabs and a complete native outline without script"
+        },
+        "proposal-disclosure.test.ts": {
+          "tests": 5,
+          "sumMs": 3581,
+          "maxMs": 2651,
+          "defaultBudgetTests": 4,
+          "defaultBudgetMaxMs": 518,
+          "defaultBudgetMaxTest": "generates the proposal treatment from the declaration and spends --proposed nowhere else"
+        }
+      },
+      "templatesLeftInTmp": 0
+    }
+  ],
+  "acceptance": {
+    "ac2EightBurners": "Coordinator ruling 2026-10-04: AC 2 amended to 8 burners plus ambient load, recorded per run; hold-2..hold-5 (four consecutive exit-0 runs, no 5 s timeout) accepted. Load caveat: only hold-2 and hold-3 held load1 near or above 50 throughout; hold-4 and hold-5 ran at 45-52. b8-1..3 (2f668fec) exited 0 at exactly 8 burners, load1 medians 45.47, 47.96, 50.26. Final code commit, exactly 8 burners: r8-1 exit 0, load1 20.44-30.7 (median 26.56), largest default-budget target test 986 ms, templates left 0; r8-2 exit 0, load1 28.3-33.26 (median 32.08), largest default-budget target test 1116 ms, templates left 0; r8-3 exit 0, load1 29.93-40.11 (median 32.76), largest default-budget target test 1323 ms, templates left 0.",
+    "fiveSecondDefaultFailures": "None in any of the 17 runs: the log signature \"Test timed out in 5000ms\" occurs 0 times in each. At the base the largest default-budget target test reached 4855 ms (before50a, load1 62-83); after the change the largest over every run was 2758 ms.",
+    "rpcOnTaskUpdate": "No \"onTaskUpdate\" line in any of the 17 run logs (the #303 fix holds).",
+    "outOfScopeFailure": "polaris-generation/pipeline-demo.test.ts (npm ci and builds under its own 180 s budget) timed out at about 181 s in before50a (base, load1 62-83) and hold-1 (b67e751f, load1 55-75), both top-up runs. Out of scope (AC 4), filed by its owner as syzygy-128g, not changed."
+  },
+  "authoritySweep": {
+    "file": "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+    "sha256Base": "f2ae7de4940fb936172b260c771107f8828026e76a45556a00c92e8c54b3e090",
+    "sha256CodeCommit": "30ea77200b738226b361e19b05eecb893ef7c5992126e7dea6b42366d2fd8ac5",
+    "population": "Recomputed with the test's own walk predicate (roots .syzygy/governance, openspec, packages, apps, docs; skip node_modules, dist, .git; .md/.json/.yaml/.yml/.ts) over the base worktree and 7ac49140: 1901 swept files and 61 OpenSpec Markdown files in both, sorted path lists sha256 ce72ef7140b23be5cd1c850a7dc1562683445f7c402146207925ddaaa7eea6ee and 1a3a4e34499ab321d675b3e2c7648fd530e7ed7897a7ab742712992ff0a90707. The branch adds no file under the openspec root; this record is one added swept docs file.",
+    "populationAfterRebase": "Over git ls-tree with the same predicate: 1923 files at origin/main d28ad5ac and 1924 at the branch with this record; the only difference is this record, and no file is removed.",
+    "assertions": "At the final code commit both walks assert that every tracked file under the same roots and predicate (git ls-files, minus files deleted in the working tree) is in the walked population, reporting both denominators on a miss; the >3, >300 and >500 floors are kept. The walk itself is unchanged.",
+    "mutantsCommit": "2f668fecdf23997b68b1fd3f216fc611ead89d4d",
+    "mutants": [
+      {
+        "id": "A1-walk-skips-a-subdirectory",
+        "file": "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+        "old": "    if (entry === 'node_modules' || entry === 'dist' || entry === '.git') continue;",
+        "new": "    if (entry === 'node_modules' || entry === 'dist' || entry === '.git' || entry === 'evidence') continue;",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 3 passed (4)",
+        "failedTests": [
+          "Zero downstream citations of Polaris as authority (PWB-REQ-014) > no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        ],
+        "outcome": "killed"
+      },
+      {
+        "id": "A2-walk-drops-yaml-files",
+        "file": "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+        "old": "    else if (accept(path)) out.push(path);",
+        "new": "    else if (accept(path) && !path.endsWith('.yaml')) out.push(path);",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 3 passed (4)",
+        "failedTests": [
+          "Zero downstream citations of Polaris as authority (PWB-REQ-014) > no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        ],
+        "outcome": "killed"
+      },
+      {
+        "id": "A3-walk-skips-openspec-specs-directories",
+        "file": "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+        "old": "    if (entry === 'node_modules' || entry === 'dist' || entry === '.git') continue;",
+        "new": "    if (entry === 'node_modules' || entry === 'dist' || entry === '.git' || entry === 'specs') continue;",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+        "exitCode": 1,
+        "testsLine": "Tests  2 failed | 2 passed (4)",
+        "failedTests": [
+          "Zero downstream citations of Polaris as authority (PWB-REQ-014) > every OpenSpec warrant entry belongs to a known id family and none targets Polaris (POLARIS-DIR-* ids are owner decisions)",
+          "Zero downstream citations of Polaris as authority (PWB-REQ-014) > no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        ],
+        "outcome": "killed"
+      },
+      {
+        "id": "A4-walk-stops-after-first-level",
+        "file": "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+        "old": "    if (statSync(path).isDirectory()) walk(path, accept, out);",
+        "new": "    if (statSync(path).isDirectory()) { if (path.split('/').length < 0) walk(path, accept, out); }",
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+        "exitCode": 1,
+        "testsLine": "Tests  2 failed | 2 passed (4)",
+        "failedTests": [
+          "Zero downstream citations of Polaris as authority (PWB-REQ-014) > every OpenSpec warrant entry belongs to a known id family and none targets Polaris (POLARIS-DIR-* ids are owner decisions)",
+          "Zero downstream citations of Polaris as authority (PWB-REQ-014) > no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface"
+        ],
+        "outcome": "killed"
+      }
+    ],
+    "sameMutantsOnBaseSweep": {
+      "commit": "a5fc472b",
+      "note": "The same old/new fragments applied to the sweep test as it stood at the base, before the population assertions.",
+      "results": [
+        {
+          "id": "A1-walk-skips-a-subdirectory",
+          "exitCode": 0,
+          "testsLine": "Tests  4 passed (4)",
+          "outcome": "survived"
+        },
+        {
+          "id": "A2-walk-drops-yaml-files",
+          "exitCode": 0,
+          "testsLine": "Tests  4 passed (4)",
+          "outcome": "survived"
+        },
+        {
+          "id": "A3-walk-skips-openspec-specs-directories",
+          "exitCode": 1,
+          "testsLine": "Tests  1 failed | 3 passed (4)",
+          "outcome": "killed"
+        },
+        {
+          "id": "A4-walk-stops-after-first-level",
+          "exitCode": 1,
+          "testsLine": "Tests  2 failed | 2 passed (4)",
+          "outcome": "killed"
+        }
+      ]
+    }
+  },
+  "mutantsCommit": "3c1a6bb1e260a76e0de41aede18f538993900517",
+  "mutants": [
+    {
+      "id": "F1-copies-share-the-template",
+      "file": "apps/three-surface-poc/src/test-model-fixture.ts",
+      "old": "  return { repoRoot: root, revision: template.revision };",
+      "new": "  return { repoRoot: template.repoRoot, revision: template.revision };",
+      "command": "npx vitest run apps/three-surface-poc/src/test-model-fixture.test.ts apps/three-surface-poc/src/polaris-reachability.test.ts",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 11 passed (12)",
+      "failedTests": [
+        "fixture repositories (syzygy-jsyi) > gives each call its own clean copy at the revision a fresh pinned commit mints, and keeps a write in its own copy"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "F2-copy-omits-git-directory",
+      "file": "apps/three-surface-poc/src/test-model-fixture.ts",
+      "old": "  cpSync(template.repoRoot, root, { recursive: true });",
+      "new": "  cpSync(template.repoRoot, root, { recursive: true, filter: (source) => !source.endsWith('.git') });",
+      "command": "npx vitest run apps/three-surface-poc/src/test-model-fixture.test.ts apps/three-surface-poc/src/polaris-reachability.test.ts",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 11 passed (12)",
+      "failedTests": [
+        "fixture repositories (syzygy-jsyi) > gives each call its own clean copy at the revision a fresh pinned commit mints, and keeps a write in its own copy"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "F3-commit-instant-unpinned",
+      "file": "apps/three-surface-poc/src/test-model-fixture.ts",
+      "old": "GIT_COMMITTER_DATE: '2026-08-24T00:00:00Z', GIT_CONFIG_GLOBAL",
+      "new": "GIT_COMMITTER_DATE: '2026-08-25T00:00:00Z', GIT_CONFIG_GLOBAL",
+      "command": "npx vitest run apps/three-surface-poc/src/test-model-fixture.test.ts apps/three-surface-poc/src/polaris-reachability.test.ts",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 11 passed (12)",
+      "failedTests": [
+        "fixture repositories (syzygy-jsyi) > gives each call its own clean copy at the revision a fresh pinned commit mints, and keeps a write in its own copy"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "F4-revision-not-from-template",
+      "file": "apps/three-surface-poc/src/test-model-fixture.ts",
+      "old": "  return { repoRoot: root, revision: template.revision };",
+      "new": "  return { repoRoot: root, revision: git(template.repoRoot, ['rev-parse', 'HEAD~0^{tree}']) };",
+      "command": "npx vitest run apps/three-surface-poc/src/test-model-fixture.test.ts apps/three-surface-poc/src/polaris-reachability.test.ts",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 11 passed (12)",
+      "failedTests": [
+        "fixture repositories (syzygy-jsyi) > gives each call its own clean copy at the revision a fresh pinned commit mints, and keeps a write in its own copy"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "F5-copies-link-the-template-git-directory",
+      "file": "apps/three-surface-poc/src/test-model-fixture.ts",
+      "old": "  cpSync(template.repoRoot, root, { recursive: true });",
+      "new": "  cpSync(template.repoRoot, root, { recursive: true, filter: (source) => !source.endsWith('/.git') });\n  process.getBuiltinModule('node:fs').symlinkSync(join(template.repoRoot, '.git'), join(root, '.git'));",
+      "command": "npx vitest run apps/three-surface-poc/src/test-model-fixture.test.ts apps/three-surface-poc/src/polaris-reachability.test.ts",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 11 passed (12)",
+      "failedTests": [
+        "fixture repositories (syzygy-jsyi) > gives each call its own clean copy at the revision a fresh pinned commit mints, and keeps a write in its own copy"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M1-in-process-query-answers-empty",
+      "file": "packages/three-surface-poc-core/src/model.test.ts",
+      "old": "  throw new Error('fixture: no beads project found');",
+      "new": "  return '[]';",
+      "command": "npx vitest run packages/three-surface-poc-core/src/model.test.ts",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 16 passed (17)",
+      "failedTests": [
+        "three-surface Butlers POC model > reads a directory with no Beads project through the spawned default runner exactly as through the in-process one"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M2-in-process-query-overrides-test-runner",
+      "file": "packages/three-surface-poc-core/src/model.test.ts",
+      "old": "  return buildPocModelWithDefaultRunners({ runWorkItemQuery: noBeadsProject, ...input });",
+      "new": "  return buildPocModelWithDefaultRunners({ ...input, runWorkItemQuery: noBeadsProject });",
+      "command": "npx vitest run packages/three-surface-poc-core/src/model.test.ts",
+      "exitCode": 1,
+      "testsLine": "Tests  3 failed | 14 passed (17)",
+      "failedTests": [
+        "three-surface Butlers POC model > shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)",
+        "three-surface Butlers POC model > shows the materialized work item Observed only once the recorded Bead is confirmed present (AC4)",
+        "three-surface Butlers POC model > words the intent-to-work basis by the record origin: created, reused, or the honest legacy both (PRF-4)"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M3-git-fixture-copy-omits-git-directory",
+      "file": "packages/three-surface-poc-core/src/model.test.ts",
+      "old": "  cpSync(butlersGitTemplate.repoRoot, root, { recursive: true });",
+      "new": "  cpSync(butlersGitTemplate.repoRoot, root, { recursive: true, filter: (source) => !source.endsWith('.git') });",
+      "command": "npx vitest run packages/three-surface-poc-core/src/model.test.ts",
+      "exitCode": 1,
+      "testsLine": "Tests  2 failed | 15 passed (17)",
+      "failedTests": [
+        "three-surface Butlers POC model > rejects a seeded Orrery mapping that is absent from the observed inventory",
+        "three-surface Butlers POC model > shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M4-git-fixture-commit-changed",
+      "file": "packages/three-surface-poc-core/src/model.test.ts",
+      "old": "  return { ...butlersGitTemplate, repoRoot: root };",
+      "new": "  return { ...butlersGitTemplate, changedCommit: '0'.repeat(40), repoRoot: root };",
+      "command": "npx vitest run packages/three-surface-poc-core/src/model.test.ts",
+      "exitCode": 1,
+      "testsLine": "Tests  2 failed | 15 passed (17)",
+      "failedTests": [
+        "three-surface Butlers POC model > rejects a seeded Orrery mapping that is absent from the observed inventory",
+        "three-surface Butlers POC model > shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)"
+      ],
+      "outcome": "killed"
+    }
+  ],
+  "killed": 15,
+  "total": 15,
+  "killedNote": "9/9 fixture and model mutants and 2/2 teardown mutants at 3c1a6bb1 (subjects byte-identical at the final code commit); 4/4 authority-sweep walk mutants at 2f668fec, whose sweep bytes the final commit keeps.",
+  "earlierSubjects": [
+    {
+      "path": "apps/three-surface-poc/src/test-model-fixture.ts",
+      "sha256": "9526ee85cb4ac47cdf57afc73a0bf0f2afb4518e376f0b3a028b200faa4ad4ad",
+      "commit": "b67e751f"
+    },
+    {
+      "path": "apps/three-surface-poc/src/test-model-fixture.test.ts",
+      "sha256": "8abd09cca2b37e73affccc30b00867c3c23e53185e7a3e7395b96639063f730e",
+      "commit": "b67e751f"
+    },
+    {
+      "path": "packages/three-surface-poc-core/src/model.test.ts",
+      "sha256": "948e023c9e6924573710176ff24cd320f206b46ae4bafb577e20d3303625b5e1",
+      "commit": "b67e751f"
+    }
+  ],
+  "reviewRepair": {
+    "review": "reviewer-332 REVISE at 318a5240 (threads r4174622691, r4174622834)",
+    "templateTeardown": "process.once(exit) never fires in a Vitest worker, so each test file left its template in /tmp. vitest.setup.ts now runs helper-registered teardowns in a root afterAll; the fixture template registers there (exit hook kept only outside Vitest), and model.test.ts removes its git template in afterAll. Full npx vitest run at the final code commit: 130 template directories in /tmp before and after, 0 new. r8-* record templatesLeftInTmp per run. 523 directories (219 MB) older than 10 minutes left by earlier runs of this branch were removed by hand.",
+    "gitStateIsolation": "The isolation test stages, commits and adds a ref in one copy, then checks that a sibling and a later copy keep HEAD, refs (for-each-ref) and index (ls-files --stage). The reviewer's symlinked-.git mutant (F5) is now killed.",
+    "gitConfig": "The fixture's git calls run with GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_NOSYSTEM=1; the test's own commit passes -c commit.gpgsign=false."
+  },
+  "mutantsCommitNote": "Pre-rebase commit; every subject hashes identically there and at the final code commit.",
+  "teardownMutants": {
+    "commit": "3c1a6bb1e260a76e0de41aede18f538993900517",
+    "check": "template directories left in /tmp by the run (set difference before/after); a test cannot observe its own file teardown",
+    "command": "npx vitest run apps/three-surface-poc/src/polaris-reachability.test.ts apps/three-surface-poc/src/test-model-fixture.test.ts packages/three-surface-poc-core/src/model.test.ts",
+    "mutants": [
+      {
+        "id": "T0-unmutated",
+        "file": null,
+        "old": null,
+        "new": null,
+        "exitCode": 0,
+        "templatesLeft": 0,
+        "outcome": "baseline"
+      },
+      {
+        "id": "T1-file-teardowns-never-run",
+        "file": "vitest.setup.ts",
+        "old": "  for (const teardown of afterTestFile.splice(0).reverse()) teardown();",
+        "new": "  afterTestFile.splice(0);",
+        "exitCode": 0,
+        "templatesLeft": 2,
+        "outcome": "killed"
+      },
+      {
+        "id": "T2-model-git-template-kept",
+        "file": "packages/three-surface-poc-core/src/model.test.ts",
+        "old": "  if (butlersGitTemplate !== undefined) removeFixtureDirectory(butlersGitTemplate.repoRoot);",
+        "new": "  if (butlersGitTemplate !== undefined) void butlersGitTemplate.repoRoot;",
+        "exitCode": 0,
+        "templatesLeft": 1,
+        "outcome": "killed"
+      }
+    ]
+  }
+}

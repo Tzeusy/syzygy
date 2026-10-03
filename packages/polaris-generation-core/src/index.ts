@@ -8,7 +8,7 @@ export {
 } from './canonical-json.js';
 
 export { parseBoundedJson, BoundedJsonError } from './parse-json.js';
-export { generationSourceIdentity, generationAnchorId, gitBlobObjectId, validateGenerationSources, quotableGenerationSources, generationSourcesForBody, segmentBody, GenerationSourceError, type BodyPiece, type BodySourceInput, type GenerationSource, type GenerationSourceFailure } from './generation-source.js';
+export { generationSourceIdentity, generationAnchorId, gitBlobObjectId, validateGenerationSources, quotableGenerationSources, generationSourcesForBody, segmentBody, GENERATION_EXCLUSION_REASONS, isGenerationExclusionReason, newGenerationRunKey, keyedDigest, excludedSourceId, type GenerationExclusionReason, GenerationSourceError, type BodyPiece, type BodySourceInput, type GenerationSource, type GenerationSourceFailure } from './generation-source.js';
 export {
   admitSourcePopulation,
   admittedSources,

@@ -163,8 +163,9 @@ export function observeObservatoryDrift(
     return { buildRevision, currentRevision: null, commitsSinceBuild: null };
   }
   try {
-    const count = Number(runGit(root, ['rev-list', '--count', `${buildRevision}..${currentRevision}`]).trim());
-    return { buildRevision, currentRevision, commitsSinceBuild: Number.isInteger(count) && count >= 0 ? count : null };
+    // Only a plain non-negative integer is a count; empty output is not zero.
+    const reply = runGit(root, ['rev-list', '--count', `${buildRevision}..${currentRevision}`]).trim();
+    return { buildRevision, currentRevision, commitsSinceBuild: /^[0-9]+$/.test(reply) ? Number(reply) : null };
   } catch {
     return { buildRevision, currentRevision, commitsSinceBuild: null };
   }

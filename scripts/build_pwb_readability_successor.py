@@ -35,9 +35,11 @@ until the tree-framing v1.0 sign-off of 2026-10-03 rewrote five of the eleven
 subjects. Since then ``applied()`` is false and ``--check`` falls through to
 the candidate check. Its predecessor pins and patches no longer match, so it
 fails with "stale predecessor" and "patch does not apply". That result means
-superseded, not broken. ``--selftest`` builds from the pre-adoption bytes and
-fails the same way. To check the bytes in force, run the builder of the latest
-sign-off (``build_pwb_tree_framing_amendment.py --check`` as of 2026-10-03).
+superseded, not broken. ``--selftest`` does not fail there: since syzygy-tmkb
+it re-runs itself against the pre-adoption tree through
+``scripts/pwb_signed_selftest.py`` (``rerun_before_signoff``) and passes. To
+check the bytes in force, run the builder of the latest sign-off
+(``build_pwb_tree_framing_amendment.py --check`` as of 2026-10-03).
 """
 
 from __future__ import annotations

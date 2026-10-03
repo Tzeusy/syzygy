@@ -1,0 +1,610 @@
+{
+  "subject": {
+    "commit": "f357328561eeef049b35e80926cc9350fae6dcb6",
+    "branch": "agent/dossier-engine-6",
+    "fileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-main.ts": "724861f7b17be0f70ad4bded975869eda3854b6675b73280fdc5e1092fc3501d",
+      "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts": "97603e5cce386536dbc1d614c86431172cbf2a1f58ee0429759911abf852941c",
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "948fe20f47f8a601d007b8ec3a5963cd56c99c60b4abea12255e6733d0561348",
+      "apps/three-surface-poc/src/polaris-generation/isolated-git.ts": "1a8867e9038746d4515c09877c5b768bac964dc4b8e409647fcfaa3ed1d713b7"
+    }
+  },
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/three-surface-poc-app",
+  "ranAt": "2026-10-03T20:02:52+00:00",
+  "mutants": [
+    {
+      "id": "materialize-env-inherits",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "const env = minimalGitEnv(home, allowProtocol);",
+      "new": "const env = { ...process.env, ...minimalGitEnv(home, allowProtocol) };",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 26
+    },
+    {
+      "id": "lsremote-env-inherits",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "env: minimalGitEnv(home, allowProtocol), cwd: home });",
+      "new": "env: { ...process.env, ...minimalGitEnv(home, allowProtocol) }, cwd: home });",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 26
+    },
+    {
+      "id": "materialize-not-bare",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "'init', '-q', '--bare', '--template=', target.dir",
+      "new": "'init', '-q', target.dir",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "materialize-template",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "'--bare', '--template=',",
+      "new": "'--bare',",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "materialize-isolation-flags",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "execFileSync('git', [...ISOLATED_GIT_FLAGS, 'init'",
+      "new": "execFileSync('git', ['init'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26,
+      "note": "killed by the spy test: init must carry the isolation flags"
+    },
+    {
+      "id": "scratch-checkout-cleanup",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "rmSync(dirname(checkoutDir), { recursive: true, force: true });",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "default-out-cleanup",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "if (defaultOut !== undefined && !existsSync(runDir)) rmSync(defaultOut, { recursive: true, force: true });",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "permitted-always",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "(await records.check(egress)).satisfied === true",
+      "new": "true",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 26
+    },
+    {
+      "id": "permitted-never",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "(await records.check(egress)).satisfied === true",
+      "new": "false",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 26
+    },
+    {
+      "id": "permitted-wrong-record",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "requirement.kind === 'egress-consent')!;",
+      "new": "requirement.kind === 'observation-consent')!;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 26
+    },
+    {
+      "id": "collision",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "if (rendered.files.has(recordFile[0])) throw new Error('renderer-collides-with-run-record');",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "no-renderer-record",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "if (ports.render === undefined) {",
+      "new": "if (false) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "exit-unavailable",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "'generation-unavailable': 5",
+      "new": "'generation-unavailable': 0",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "exit-stopped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "'generation-stopped': 6",
+      "new": "'generation-stopped': 1",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "exit-complete",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "complete: 0",
+      "new": "complete: 1",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "out-ignored",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "...(out ? { outDir: resolve(out) } : {})",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "question-text",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "config.readerQuestions.map(question => question.text)",
+      "new": "config.readerQuestions.map(question => question.id)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "receipts-in-record",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "discoveryReceipts: discovery.receipts,",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "network-home",
+      "file": "apps/three-surface-poc/src/polaris-generation/isolated-git.ts",
+      "old": "HOME: home, GIT_ALLOW_PROTOCOL: allowProtocol",
+      "new": "GIT_ALLOW_PROTOCOL: allowProtocol",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "network-protocol",
+      "file": "apps/three-surface-poc/src/polaris-generation/isolated-git.ts",
+      "old": "HOME: home, GIT_ALLOW_PROTOCOL: allowProtocol",
+      "new": "HOME: home",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "network-builds-on-allowlist",
+      "file": "apps/three-surface-poc/src/polaris-generation/isolated-git.ts",
+      "old": "({ ...isolatedGitEnv(), HOME: home",
+      "new": "({ ...process.env, HOME: home",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 26
+    },
+    {
+      "id": "discovery-spreads-ports",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "...(ports.discovery?.map === undefined ? {} : { map: ports.discovery.map }), ...(ports.discovery?.reduce === undefined ? {} : { reduce: ports.discovery.reduce }),",
+      "new": "...(ports.discovery ?? {}),",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "discovery-receipt-defaulted",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "...(ports.discoveryReceipt === undefined ? {} : { receipt: ports.discoveryReceipt })",
+      "new": "receipt: ports.discoveryReceipt ?? (async () => undefined)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "main-default-render",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "render: ({ result, sources }) => renderDossier({ result, sources }), ",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "read-env-inherits",
+      "file": "apps/three-surface-poc/src/polaris-generation/isolated-git.ts",
+      "old": "PATH: process.env.PATH ?? '/usr/bin:/bin', LANG: process.env.LANG ?? 'C',\n  GIT_CONFIG_NOSYSTEM",
+      "new": "...process.env, PATH: process.env.PATH ?? '/usr/bin:/bin', LANG: process.env.LANG ?? 'C',\n  GIT_CONFIG_NOSYSTEM",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 26
+    },
+    {
+      "id": "read-env-config-global",
+      "file": "apps/three-surface-poc/src/polaris-generation/isolated-git.ts",
+      "old": "GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_TERMINAL_PROMPT: '0', GIT_NO_REPLACE_OBJECTS: '1',\n});",
+      "new": "GIT_CONFIG_NOSYSTEM: '1', GIT_TERMINAL_PROMPT: '0', GIT_NO_REPLACE_OBJECTS: '1',\n});",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 26
+    },
+    {
+      "id": "write-through-writedossierrun",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "await writeDossierRun(runDir, new Map([...rendered.files, recordFile]))",
+      "new": "(await Promise.resolve(runDir))",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 26
+    },
+    {
+      "id": "missing-truthy-count",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "entry.answer.satisfied !== true).length",
+      "new": "!entry.answer.satisfied).length",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 25,
+      "note": "equivalent: every answer reaches this count through soundAnswer, which returns satisfied as the literal true or false, so !satisfied and satisfied !== true agree; the strict form is defence in depth, and the sound-answer-bypass mutant (which removes soundAnswer) is the one that kills"
+    },
+    {
+      "id": "sound-answer-bypass",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "answer: soundAnswer(await records.check(requirement))",
+      "new": "answer: await records.check(requirement)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "sound-answer-true-strict",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "if (a.satisfied === true) {",
+      "new": "if (a.satisfied) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "sound-answer-record-required",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "return typeof a.record === 'string' && a.record.trim().length > 0 ? ",
+      "new": "return true ? ",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "sound-answer-record-nonempty",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "typeof a.record === 'string' && a.record.trim().length > 0",
+      "new": "typeof a.record === 'string' && a.record.length > 0",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "permitted-unsound",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "soundAnswer(await records.check(egress)).satisfied === true",
+      "new": "(await records.check(egress)).satisfied == true",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "preflight-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "    await checkDossierRunDestination(runDir);\n",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "preflight-absence-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts",
+      "old": "  await absent();\n  return { parent, target, absent };",
+      "new": "  return { parent, target, absent };",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "repo-id-dot-collides",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "ch => (ch === '_' ? '__' : '_d')",
+      "new": "ch => '_'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "repo-id-underscore-collides",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "ch => (ch === '_' ? '__' : '_d')",
+      "new": "ch => (ch === '_' ? '_' : '_d')",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "discovery-refusal-rethrown",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "if (!(error instanceof DiscoveryRefusal)) throw error;",
+      "new": "throw error;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "discovery-refusal-all-swallowed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "if (!(error instanceof DiscoveryRefusal)) throw error;",
+      "new": "void 0;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "discovery-refusal-no-record",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "const written = await writeDossierRun(runDir, new Map([['run-record.json', `${JSON.stringify(refused, null, 2)}\\n`]]));",
+      "new": "const written = runDir;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "sole-derived",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "  target = { ...target, repositoryId: sole };\n",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 25
+    },
+    {
+      "id": "sole-length",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "answer.length === 1 && typeof",
+      "new": "answer.length >= 1 && typeof",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "sole-string-type",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "typeof answer[0] === 'string' && idPattern",
+      "new": "idPattern",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "sole-pattern",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": " && idPattern.test(answer[0]) ? answer[0]",
+      "new": " ? answer[0]",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "sole-array-check",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "Array.isArray(answer) && answer.length === 1",
+      "new": "answer.length === 1",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "sole-throw-swallowed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "catch { answer = undefined; }",
+      "new": "catch (error) { throw error; }",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "sole-ambiguous-silent",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "answer.length > 1 ? `${answer.length}",
+      "new": "answer.length > 5 ? `${answer.length}",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    }
+  ]
+}
