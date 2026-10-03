@@ -16,16 +16,20 @@ files, and the guides under a top-level docs folder.
 **Becomes readable and, under a consent that lists the class and a separate
 egress consent, sendable:**
 
-- root-level README, CHANGELOG or CHANGES, release notes, CONTRIBUTING,
-  LICENSE or LICENCE, COPYING, NOTICE, with no extension or .md, .rst or .txt,
-  in any letter case;
+- root-level README, CHANGELOG or CHANGES, release notes (including a numbered
+  name such as 00-RELEASENOTES), NEWS, HISTORY, CONTRIBUTING, LICENSE or
+  LICENCE, COPYING, NOTICE, AUTHORS, SECURITY, MANIFESTO, ARCHITECTURE, DESIGN,
+  FAQ, GOVERNANCE and CODE_OF_CONDUCT (or with hyphens), with no extension or
+  .md, .rst or .txt, in any letter case. The list is wide because a project's
+  top level often holds its stated ideas and trade-offs in files like these
+  [Inferred, from general knowledge; no body was read];
 - any .md, .rst or .txt file under a top-level docs or doc folder, at any depth;
 - .txt or .md files directly inside a top-level licenses folder.
 
 **Stays withheld (excluded from reading and from egress, hash-not-body):**
 
-- READMEs below the root outside docs (including vendored libraries'), security
-  and conduct policies, specification, design and decision documents, reports,
+- READMEs below the root outside docs (including vendored libraries'), the
+  root names above when they sit in a subfolder outside docs, specification, design and decision documents, reports,
   and any other prose;
 - any file that fails a secret detector or the active-content rule: those
   screens are unchanged and apply to this prose in full;
@@ -56,8 +60,12 @@ is impossible: its base requires version 1.
 
 **Q3. design/ and specification text.** The request asked whether a design
 folder belongs here. RFC5-14 puts design, specification and decision text in
-`governance-text`, which this policy leaves unmapped. *Recommended:* leave it
-withheld. The alternative is a separate closed rule for that class, offered with
+`governance-text`, which this policy leaves unmapped. The design directory is
+withheld. Note the tension: root files named DESIGN, GOVERNANCE, SECURITY or
+ARCHITECTURE are mapped at the lead's direction, and a reviewer may find one of
+them is governance-text by RFC5-14; the file name, not its content, decides.
+*Recommended:* keep the directory withheld, and confirm or strike those four
+root names. The alternative is a separate closed rule for that class, offered with
 its own review, not folded into prose.
 
 **Q4. Nested READMEs.** Only the root README is mapped, because a README below
