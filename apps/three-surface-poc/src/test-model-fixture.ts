@@ -13,7 +13,9 @@ function git(root: string, args: readonly string[]): string {
     // same revision, or a slice-identity comparison that straddles a
     // wall-clock second boundary fails for a reason unrelated to the page
     // (seen once in hosted CI at ca6b28f).
-    env: { ...process.env, GIT_AUTHOR_DATE: '2026-08-24T00:00:00Z', GIT_COMMITTER_DATE: '2026-08-24T00:00:00Z' },
+    // No global or system config either: a host's commit.gpgsign, hooks or
+    // templates would change the pinned revision or fail the commit.
+    env: { ...process.env, GIT_AUTHOR_DATE: '2026-08-24T00:00:00Z', GIT_COMMITTER_DATE: '2026-08-24T00:00:00Z', GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_NOSYSTEM: '1' },
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'ignore'],
   }).trim();
@@ -46,9 +48,22 @@ export function fixtureRepoWithGit(cleanups: string[]): FixtureRepo {
 
 let template: FixtureRepo | undefined;
 
+/** Removes the template when the test file ends, through the hook
+ * `vitest.setup.ts` installs; outside Vitest (the accessibility CLI imports
+ * this module) the process's own exit does. */
+function removeAtEndOfFile(root: string): void {
+  const remove = (): void => {
+    rmSync(root, { recursive: true, force: true });
+    if (template?.repoRoot === root) template = undefined;
+  };
+  const afterTestFile = (globalThis as { syzygyAfterTestFile?: (teardown: () => void) => void }).syzygyAfterTestFile;
+  if (afterTestFile === undefined) process.once('exit', remove);
+  else afterTestFile(remove);
+}
+
 function committedFixtureRepo(): FixtureRepo {
   const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-surface-fixture-template-'));
-  process.once('exit', () => rmSync(root, { recursive: true, force: true }));
+  removeAtEndOfFile(root);
   const files: Readonly<Record<string, string>> = {
     'docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md':
       '# design\nStatus: Approved for implementation\n',

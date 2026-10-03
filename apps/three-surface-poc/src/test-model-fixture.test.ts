@@ -24,6 +24,20 @@ describe('fixture repositories (syzygy-jsyi)', () => {
       writeFileSync(join(first.repoRoot, 'README.md'), 'changed\n');
       expect(git(first.repoRoot, ['status', '--porcelain'])).toBe('M README.md');
       expect(git(second.repoRoot, ['status', '--porcelain'])).toBe('');
+      // Git state is per copy too: a stage, a commit and a new ref in one copy
+      // reach neither a sibling nor the template a later copy comes from.
+      const refs = git(second.repoRoot, ['for-each-ref', '--format=%(refname) %(objectname)']);
+      const index = git(second.repoRoot, ['ls-files', '--stage']);
+      git(first.repoRoot, ['add', 'README.md']);
+      git(first.repoRoot, ['-c', 'commit.gpgsign=false', '-c', 'user.name=Writer', '-c', 'user.email=writer@example.invalid', 'commit', '-qm', 'write']);
+      git(first.repoRoot, ['update-ref', 'refs/heads/written', 'HEAD']);
+      expect(git(first.repoRoot, ['rev-parse', 'HEAD'])).not.toBe(first.revision);
+      for (const copy of [second, fixtureRepoWithGit(cleanups)]) {
+        expect(git(copy.repoRoot, ['rev-parse', 'HEAD'])).toBe(first.revision);
+        expect(git(copy.repoRoot, ['for-each-ref', '--format=%(refname) %(objectname)'])).toBe(refs);
+        expect(git(copy.repoRoot, ['ls-files', '--stage'])).toBe(index);
+        expect(git(copy.repoRoot, ['status', '--porcelain'])).toBe('');
+      }
       rmSync(first.repoRoot, { recursive: true, force: true });
       const third = fixtureRepoWithGit(cleanups);
       expect(git(third.repoRoot, ['rev-parse', 'HEAD'])).toBe(third.revision);
