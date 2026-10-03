@@ -208,9 +208,16 @@ describe('with every record satisfied', () => {
     }
     const map = vi.fn(async (input: { readonly items: readonly { readonly blobId: string }[] }) => ({ usageUnits: 1, claims: input.items.map(i => ({ blobId: i.blobId, claim: 'c', relevance: 5 })) }));
     let n = 0;
-    const flaky: AdmissionRecordsPort = { source: 's', check: async r => (r.kind === 'egress-consent' && ++n > 1 ? { satisfied: 'false' } as never : { satisfied: true, record: `r/${r.kind}` }) };
+    const flaky: AdmissionRecordsPort = { source: 's', check: async r => (r.kind === 'egress-consent' && ++n > 1 ? { satisfied: 1, record: 'r/egress-consent' } as never : { satisfied: true, record: `r/${r.kind}` }) };
     await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), records: flaky, discoveryReceipt: async () => undefined, discovery: { map } }));
     expect(map).not.toHaveBeenCalled();
+  });
+
+  it('lets a failure that is not a discovery refusal propagate instead of recording it as a stop', async () => {
+    const discovery = Object.defineProperty({}, 'map', { enumerable: true, get: () => { throw new Error('port exploded'); } });
+    const out = join(scratch(), 'run');
+    await expect(runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out, discovery, discoveryReceipt: async () => undefined }))).rejects.toThrow('port exploded');
+    expect(existsSync(out)).toBe(false);
   });
 
   it('refuses a misplaced or existing run directory before the checkout, so nothing is fetched or called', async () => {
