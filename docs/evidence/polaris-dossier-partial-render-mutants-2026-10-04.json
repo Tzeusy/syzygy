@@ -1,0 +1,356 @@
+{
+  "record": "rule-6 mutation evidence (AGENTS.md verification rule 6)",
+  "date": "2026-10-04",
+  "bead": "syzygy-k4t2",
+  "ranAt": "fc6adba14e254224094c7767e04b45dc199a0aff",
+  "subjects": [
+    {
+      "path": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "sha256": "d5e0ff79ab492b43d4aceb91e7dbed7cf7b8f339da598d95d4e72f71445e8e4e"
+    },
+    {
+      "path": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts",
+      "sha256": "137ce535f323e56bc9c8491c642bacf9ff33567e5d63e458d63a678ecf08d6ea"
+    }
+  ],
+  "tests": [
+    {
+      "path": "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts",
+      "sha256": "5bdcaf1a4905e96e621059d1f52989e99e6cad314e0c2846948eed53cad01799"
+    },
+    {
+      "path": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+      "sha256": "4da681477b9a98b1995368deb0a8f6af70d3d31247c950b12cb46b9070082731"
+    }
+  ],
+  "method": "Each mutant replaces exactly one occurrence of `old` with `new` in its `file` (applied only when `old` occurs exactly once), runs `npx vitest run` over the listed test files, and restores the subject. Killed means the run exited non-zero with at least one failed test.",
+  "summary": {
+    "mutants": 23,
+    "killed": 23,
+    "survived": 0
+  },
+  "priorSweep": {
+    "ranAt": "0ea421ff36b4f828f9b1f9808218a501f2373fbf",
+    "mutants": 23,
+    "killed": 22,
+    "survivors": [
+      {
+        "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+        "id": "double-listed-sections",
+        "old": "!(draftAt < 0 && asset.kind === 'section' && draft.sections.some(section => section.id === asset.id))",
+        "new": "true",
+        "outcome": "survived",
+        "failedTests": 0,
+        "totalTests": 52,
+        "killedBy": []
+      }
+    ],
+    "disposition": "The survivor removed a clause that the later not-generated filter made redundant (an equivalent mutant). The code was restructured so each condition is load-bearing (deferredSections and notGenerated as two lists), and the sweep below re-ran every mutant against the restructured subject."
+  },
+  "mutants": [
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "budget-label-dropped",
+      "old": "return reason === 'budget-exhausted' ? 'deferred-by-budget' : reason;",
+      "new": "return reason;",
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran",
+        "a stopped run still renders (syzygy-k4t2) > renders the latest draft when the budget runs out before review, every generated sentence Unknown",
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "requested-assets-unchecked",
+      "old": "  if (input.requestedAssets === undefined) throw new DossierRenderError('missing-requested-assets');\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > refuses a stopped result without the requested assets it must account for",
+        "multi-page dossier render > refuses a stopped run with no requested assets, and a citation of a source with no admitted text"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "requested-assets-unvalidated",
+      "old": "const requested = validateRequestedAssets(input.requestedAssets);",
+      "new": "const requested = [...input.requestedAssets];",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > refuses a stopped result without the requested assets it must account for"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "edit-not-a-draft",
+      "old": "['author', 'edit', 'repair']",
+      "new": "['author', 'repair']",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > labels a stopped draft Inferred only where a review later than it says supported"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "review-before-draft-counts",
+      "old": "review = reviewAt > draftAt ? valueAt(reviewAt) : null;",
+      "new": "review = valueAt(reviewAt);",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > labels a stopped draft Inferred only where a review later than it says supported"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "plan-ignored",
+      "old": "const sections = Array.isArray(planned) ? planned.map(section => ({ id: section.id, title: section.title }))\n      :",
+      "new": "const sections = false ? []\n      :",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "not-generated-inferred",
+      "old": "claim('aside', `not-generated:${id}`, 'unknown',",
+      "new": "claim('aside', `not-generated:${id}`, 'inferred',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "stop-reason-raw",
+      "old": "data-asset-disposition=\"not-generated\" data-stop-reason=\"${escape(stop!.shown)}\"",
+      "new": "data-asset-disposition=\"not-generated\" data-stop-reason=\"${escape(stop!.reason)}\"",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "banner-dropped",
+      "old": "${banner}${introduction}",
+      "new": "${introduction}",
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran",
+        "a stopped run still renders (syzygy-k4t2) > renders the latest draft when the budget runs out before review, every generated sentence Unknown",
+        "a stopped run still renders (syzygy-k4t2) > shows any stop reason other than the budget verbatim",
+        "a stopped run still renders (syzygy-k4t2) > stops on the usage total the same way"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "banner-review-clause",
+      "old": "${view.drafted && view.review === null ?",
+      "new": "${view.review === null ?",
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran",
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "last-stage-first",
+      "old": "lastStage: artifacts.at(-1)?.stage ?? null",
+      "new": "lastStage: artifacts[0]?.stage ?? null",
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > renders the latest draft when the budget runs out before review, every generated sentence Unknown",
+        "a stopped run still renders (syzygy-k4t2) > stops on the usage total the same way",
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "synthetic-introduction-rendered",
+      "old": "const introduction = view.drafted ? paragraph(from, draft.introduction, 'p') : '';",
+      "new": "const introduction = paragraph(from, draft.introduction, 'p');",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "missing-list-dropped",
+      "old": "${sections}${missingList}",
+      "new": "${sections}",
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran",
+        "a stopped run still renders (syzygy-k4t2) > keeps the glossary from an inventory that did complete",
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "glossary-throws-when-stopped",
+      "old": "if (!Array.isArray(entries) && !(stop !== null && view.inventory === null)) throw",
+      "new": "if (!Array.isArray(entries)) throw",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "glossary-unknown-inferred",
+      "old": "claim('p', 'glossary:not-generated', 'unknown',",
+      "new": "claim('p', 'glossary:not-generated', 'inferred',",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "inventory-from-first",
+      "old": "const inventory = valueAt(lastIndex(artifacts, artifact => artifact.stage === 'inventory'));",
+      "new": "const inventory = null;",
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > keeps the glossary from an inventory that did complete",
+        "a stopped run still renders (syzygy-k4t2) > renders the latest draft when the budget runs out before review, every generated sentence Unknown",
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "stopped-unrenderable",
+      "old": "if (result.status !== 'stopped' || !Array.isArray(result.artifacts)) throw new DossierRenderError('not-renderable');",
+      "new": "throw new DossierRenderError('not-renderable');",
+      "outcome": "killed",
+      "failedTests": 9,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran",
+        "a stopped run still renders (syzygy-k4t2) > keeps the glossary from an inventory that did complete",
+        "a stopped run still renders (syzygy-k4t2) > labels a stopped draft Inferred only where a review later than it says supported",
+        "a stopped run still renders (syzygy-k4t2) > refuses a stopped result without the requested assets it must account for"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "last-index-from-start",
+      "old": "for (let i = items.length - 1; i >= 0; i--) if (test(items[i]!)) return i;",
+      "new": "for (let i = 0; i < items.length; i++) if (test(items[i]!)) return i;",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > labels a stopped draft Inferred only where a review later than it says supported"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "rendered-ignored",
+      "old": "const notGenerated = requested.filter(asset => !rendered.has(asset.id)).map(",
+      "new": "const notGenerated = requested.map(",
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran",
+        "a stopped run still renders (syzygy-k4t2) > keeps the glossary from an inventory that did complete",
+        "a stopped run still renders (syzygy-k4t2) > renders the latest draft when the budget runs out before review, every generated sentence Unknown",
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "deferred-when-drafted",
+      "old": "const deferredSections = new Set(draftAt >= 0 ? [] : draft.sections.map(section => section.id));",
+      "new": "const deferredSections = new Set(draft.sections.map(section => section.id));",
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > labels a stopped draft Inferred only where a review later than it says supported",
+        "a stopped run still renders (syzygy-k4t2) > renders the latest draft when the budget runs out before review, every generated sentence Unknown"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "deferred-section-branch",
+      "old": "    if (view.deferredSections.has(section.id)) return `<section id=\"section-${escape(section.id)}\" data-reading-level=\"1\" data-topics=\"\">${head}${notGenerated(section.id, 'section')}</section>`;\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran",
+        "a stopped run still renders (syzygy-k4t2) > keeps the glossary from an inventory that did complete",
+        "a stopped run still renders (syzygy-k4t2) > shows any stop reason other than the budget verbatim",
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "not-generated-list-empty",
+      "old": "${view.notGenerated.map(item => notGenerated(item.id, item.kind)).join('')}",
+      "new": "${''}",
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran",
+        "a stopped run still renders (syzygy-k4t2) > keeps the glossary from an inventory that did complete",
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts",
+      "id": "budget-override-ignored",
+      "old": "accountingPolicy: 'synthetic-unit-v1', ...budget },",
+      "new": "accountingPolicy: 'synthetic-unit-v1' },",
+      "outcome": "killed",
+      "failedTests": 8,
+      "totalTests": 52,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran",
+        "a stopped run still renders (syzygy-k4t2) > keeps the glossary from an inventory that did complete",
+        "a stopped run still renders (syzygy-k4t2) > labels a stopped draft Inferred only where a review later than it says supported",
+        "a stopped run still renders (syzygy-k4t2) > refuses a stopped result without the requested assets it must account for"
+      ]
+    }
+  ]
+}
