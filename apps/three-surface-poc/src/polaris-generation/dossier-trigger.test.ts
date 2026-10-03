@@ -112,6 +112,18 @@ describe('with every record satisfied', () => {
     expect(record.clarification.wouldHaveAsked.map((q: { id: string }) => q.id)).toEqual(['audience']);
   });
 
+  it('gives model-assisted discovery a receipt sink and keeps every receipt in the run record', async () => {
+    const out = join(scratch(), 'run');
+    const sunk: string[] = [];
+    const outcome = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out, discoveryReceipt: async r => { sunk.push(r.outcome); },
+      discovery: { map: async input => ({ usageUnits: 1, claims: input.items.map(i => ({ blobId: i.blobId, claim: 'c', relevance: 5 })) }) } }));
+    expect(outcome.state).toBe('generation-unavailable');
+    const record = JSON.parse(readFileSync(join(out, 'run-record.json'), 'utf8'));
+    expect(sunk).toEqual(['dispatching', 'accepted']);
+    expect(record.discoveryReceipts.map((r: { outcome: string }) => r.outcome)).toEqual(['dispatching', 'accepted']);
+    expect(record.discovery).toMatchObject({ mapCalls: 1, rankingBasis: 'model-map' });
+  });
+
   it('records the corpus and stops honestly when no generate port exists or the pipeline stops', async () => {
     const out = join(scratch(), 'run');
     const unavailable = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out }));
