@@ -1,0 +1,161 @@
+{
+  "subject": {
+    "commit": "c75cfb992e5c23297338dc9fd5d8b47599adae38",
+    "branch": "agent/dossier-engine-7",
+    "fileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/source-adapter.ts": "2dc6d23eaa2fa6dd36348d9a3cd89cb4c04f867fec2bc404a3d8f427cf722ef6",
+      "packages/polaris-generation-core/src/generation-source.ts": "0948d9d745a6b414c35a1eb20567ea9756d65401b3ae4eb033219a7485361c22"
+    }
+  },
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-core",
+  "ranAt": "2026-10-03T09:39:24+00:00",
+  "mutants": [
+    {
+      "id": "validator-reason",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "!isGenerationExclusionReason(source.exclusion.reason) ||",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/generation-source.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 15
+    },
+    {
+      "id": "validator-opaque-id",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "|| !OPAQUE_SOURCE_ID.test(source.sourceId)",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/generation-source.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 15
+    },
+    {
+      "id": "opaque-id-anchor",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "/^s-[0-9a-f]{24}$/u",
+      "new": "/^s-[0-9a-f]{24}/u",
+      "tests": [
+        "packages/polaris-generation-core/src/generation-source.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 15
+    },
+    {
+      "id": "guard-type",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "typeof value === 'string' && ",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/generation-source.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 15,
+      "note": "equivalent-ish: includes() on a non-string already returns false for every non-string, so the typeof guard only narrows the type"
+    },
+    {
+      "id": "drop-oversize",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "  'oversize-source-excluded',\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/generation-source.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 15
+    },
+    {
+      "id": "drop-git-read-failed",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "  'git-read-failed',\n",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 5,
+      "note": "type error in the adapter also surfaces; killed by the adapter membership test"
+    },
+    {
+      "id": "drop-policy-excluded",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "  'policy-excluded',\n",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 5
+    },
+    {
+      "id": "duplicate-reason",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
+      "old": "  'empty-file',\n",
+      "new": "  'empty-file',\n  'empty-file',\n",
+      "tests": [
+        "packages/polaris-generation-core/src/generation-source.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 15
+    },
+    {
+      "id": "adapter-fallback",
+      "file": "apps/three-surface-poc/src/polaris-generation/source-adapter.ts",
+      "old": "return isGenerationExclusionReason(candidate) ? candidate : 'unclassified-exclusion';",
+      "new": "return candidate as GenerationExclusionReason;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 5
+    },
+    {
+      "id": "adapter-secret-default",
+      "file": "apps/three-surface-poc/src/polaris-generation/source-adapter.ts",
+      "old": "(record.exclusion.exclusionReason ?? 'policy-excluded')",
+      "new": "(record.exclusion.exclusionReason ?? 'denied-path')",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 5
+    },
+    {
+      "id": "adapter-unavailable-reason",
+      "file": "apps/three-surface-poc/src/polaris-generation/source-adapter.ts",
+      "old": "record.outcome === 'unavailable' ? record.reason",
+      "new": "record.outcome === 'unavailable' ? 'git-read-failed'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 5
+    },
+    {
+      "id": "adapter-passes-sentence",
+      "file": "apps/three-surface-poc/src/polaris-generation/source-adapter.ts",
+      "old": "reason: generationExclusionReason(source.record) }\n      : source.record.outcome === 'unavailable'",
+      "new": "reason: source.record.unknown.unknownReason as never }\n      : source.record.outcome === 'unavailable'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 5
+    }
+  ]
+}
