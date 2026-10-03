@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import type { PocEvaluationEvidence, PocModel } from '@syzygy/three-surface-poc-core';
+import { describeReevaluation, evaluationClocks, evaluationIdentity, type PocEvaluationEvidence, type PocModel } from '@syzygy/three-surface-poc-core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createReobserveState } from './reobserve-state.js';
@@ -129,6 +129,34 @@ describe('production-owned capture-to-model re-observation seam', () => {
     expect(a.model.evaluation.evidence.probe.changedSources).toBe(3);
     expect(state.get()).toBe(a.model);
     expect(state.getCapture()).toBe(nextCapture);
+  }, PRODUCTION_BUILD_TIMEOUT_MS);
+
+  it('re-evaluates an unchanged repository twice: two distinct named identities, the first result unchanged (syzygy-u05.2)', async () => {
+    const fixture = fixtureRepoWithGit(cleanups);
+    const stateDir = mkdtempSync(join(tmpdir(), 'syzygy-production-reobserve-state-'));
+    cleanups.push(stateDir);
+    const captures = [
+      capture(fixture.revision, '2026-10-03T01:00:00Z', 0),
+      capture(fixture.revision, '2026-10-03T02:00:00Z', 0),
+      capture(fixture.revision, '2026-10-03T03:00:00Z', 0, 'working-tree-b'),
+    ];
+    const models = captures.map((next) => build(fixture.repoRoot, stateDir, next));
+    const observatory = { buildRevision: observerRevision, currentRevision: observerRevision, commitsSinceBuild: 0 };
+    const named = (index: number) => ({ evaluation: evaluationIdentity(models[index] as PocModel), clocks: evaluationClocks(models[index] as PocModel, (captures[index] as PocRuntimeCapture).workingTreeDigest) });
+    const initial = describeReevaluation({ prior: null, next: named(0), projectChange: null, observatory });
+    const frozen = JSON.stringify(initial);
+    const once = describeReevaluation({ prior: initial, next: named(1), projectChange: { changedSources: 0, addedSources: 0 }, observatory });
+    const twice = describeReevaluation({ prior: once, next: named(2), projectChange: { changedSources: 0, addedSources: 0 }, observatory });
+    // An unchanged repository keeps one snapshot; each re-evaluation is still its own identity.
+    expect(models[0]?.evaluation.snapshot).toBe(models[1]?.evaluation.snapshot);
+    expect(new Set([initial.evaluation, once.evaluation, twice.evaluation]).size).toBe(3);
+    expect(once.supersedes).toBe(initial.evaluation);
+    expect(twice.supersedes).toBe(once.evaluation);
+    expect(JSON.stringify(initial)).toBe(frozen);
+    expect(initial.evaluation.endsWith('|observed:2026-10-03T01:00:00Z')).toBe(true);
+    expect(once.clocks).toEqual({ butlersHead: fixture.revision, workingTreeDigest: 'working-tree-a', doltRevision: 'dolt-fixture-revision' });
+    expect(once.moved).toEqual({ butlersHead: 'unchanged', workingTreeDigest: 'unchanged', doltRevision: 'unchanged' });
+    expect(twice.moved).toEqual({ butlersHead: 'unchanged', workingTreeDigest: 'moved', doltRevision: 'unchanged' });
   }, PRODUCTION_BUILD_TIMEOUT_MS);
 
   it('retains the prior production model and non-zero drift when the production build fails', async () => {

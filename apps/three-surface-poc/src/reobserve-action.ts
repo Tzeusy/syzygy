@@ -1,13 +1,15 @@
 import { escapeHtml, type Route, type RouteResponse } from '@syzygy/cap1-daemon';
+import type { Reevaluation } from '@syzygy/three-surface-poc-core';
 
 import { browserRequestAllowed } from './browser-origin.js';
+import { reevaluationLines } from './reevaluation-copy.js';
 import { mountPrefixForRequest, TAILNET_MOUNT_PREFIX, withMountPrefix } from './tailnet.js';
 
 export const REOBSERVE_HUMAN_PATH = '/polaris/reobserve' as const;
 export const REOBSERVE_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}${REOBSERVE_HUMAN_PATH}` as const;
 
 export type ReobserveResult =
-  | { readonly kind: 'reobserved'; readonly evaluation: string }
+  | { readonly kind: 'reobserved'; readonly reevaluation: Reevaluation }
   | { readonly kind: 'failed'; readonly reason: string };
 
 export interface ReobserveRoutesOptions {
@@ -20,7 +22,7 @@ function resultPage(result: ReobserveResult, mountPrefix: string): RouteResponse
     return {
       status: 200,
       contentType: 'text/html; charset=utf-8',
-      body: `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Re-observed</title></head><body><h1>Re-observed</h1><p data-reobserve-evaluation="${escapeHtml(result.evaluation)}">A new identified evaluation was captured: <code>${escapeHtml(result.evaluation)}</code>.</p><p><a href="${escapeHtml(back)}">Back to Polaris</a></p></body></html>`,
+      body: `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Re-observed</title></head><body><h1>Re-observed</h1><p data-reobserve-evaluation="${escapeHtml(result.reevaluation.evaluation)}" data-reobserve-supersedes="${escapeHtml(result.reevaluation.supersedes ?? '')}">A new identified evaluation was captured: <code>${escapeHtml(result.reevaluation.evaluation)}</code>. The superseded evaluation is named, never rewritten.</p><ul data-reobserve-clocks>${reevaluationLines(result.reevaluation).map((line) => `<li>${escapeHtml(line)}</li>`).join('')}</ul><p><a href="${escapeHtml(back)}">Back to Polaris</a></p></body></html>`,
     };
   }
   return {

@@ -6,25 +6,32 @@ import { join, resolve } from 'node:path';
 import { createDaemon } from '@syzygy/cap1-daemon';
 import {
   PocObservationError,
+  describeReevaluation,
+  evaluationClocks,
+  evaluationIdentity,
   type PocModel,
+  type Reevaluation,
 } from '@syzygy/three-surface-poc-core';
 
 import { parsePocCli } from './cli.js';
 import {
   observeGitHorizon,
   observeGitRepository,
+  observeObservatoryDrift,
+  observeRevisionChange,
   pocObserverInputsAreClean,
   resolvePwbRepositoryBinding,
 } from './git-observation.js';
 import { launchAfterPwbRepositoryBinding } from './launcher.js';
 import { materializeRoutes } from './materialize-action.js';
 import { buildPocEvaluationEvidence, buildProductionPocModel, type PocRuntimeCapture } from './production-reobserve.js';
-import { reobserveRoutes } from './reobserve-action.js';
+import { reobserveRoutes, type ReobserveResult } from './reobserve-action.js';
 import { createReobserveState } from './reobserve-state.js';
 import { pocRoutes } from './routes.js';
 import { ServedResponseRecorder } from './served-response-recorder.js';
 import { daemonStartDetail, gitObservationDetail, unexpectedObservationDetail } from './startup-detail.js';
 import { gitBlobReaderFor, verbatimRouteReader } from './verbatim-route.js';
+import { attachWatchMode } from './watch-mode.js';
 
 /** The exact binding a PWB-WALKTHROUGH-001 record must name for this
  * evaluation, printed so the recording session copies it rather than
@@ -47,6 +54,7 @@ Options:
   --repo <path>       one explicit Butlers repository (required)
   --state-dir <path>  credential/state directory (default: OS temp directory)
   --port <n>          loopback TCP port; 0 selects an ephemeral port (default: 7478)
+  --watch             re-observe each time Enter is pressed on this console, and only then
   --help              print this usage and exit
 `;
 
@@ -139,6 +147,32 @@ if (parsed.kind === 'help') {
               },
               build: buildModel,
             });
+            // syzygy-u05.2: every evaluation is a named re-evaluation result
+            // carrying the identity it supersedes, the three clocks and the
+            // two staleness limbs. The observatory limb counts Syzygy commits
+            // since the revision this daemon was started from.
+            const buildRevision = observerRevision;
+            const reevaluate = (prior: Reevaluation | null, current: PocModel, currentCapture: PocRuntimeCapture): Reevaluation => describeReevaluation({
+              prior,
+              next: { evaluation: evaluationIdentity(current), clocks: evaluationClocks(current, currentCapture.workingTreeDigest) },
+              projectChange: prior === null ? null : observeRevisionChange(repoRoot, prior.clocks.butlersHead, current.project.revision),
+              observatory: observeObservatoryDrift(process.cwd(), buildRevision),
+            });
+            let latest = reevaluate(null, model, capture);
+            let reobserving: Promise<ReobserveResult> | undefined;
+            // One owner request at a time, from the browser or the console.
+            const reobserveNow = (): Promise<ReobserveResult> => reobserving ?? (reobserving = (async (): Promise<ReobserveResult> => {
+              const result = await reobserver.reobserve();
+              if (result.kind === 'failed') return result;
+              model = result.model;
+              capture = reobserver.getCapture();
+              try {
+                latest = reevaluate(latest, model, capture);
+              } catch (cause) {
+                return { kind: 'failed', reason: cause instanceof Error ? cause.message : 'the re-evaluation could not be named' };
+              }
+              return { kind: 'reobserved', reevaluation: latest };
+            })().finally(() => { reobserving = undefined; }));
             const start = await createDaemon({
               stateDir,
               port: parsed.config.port,
@@ -146,7 +180,7 @@ if (parsed.kind === 'help') {
                 // PWB-REQ-011 (amended): Polaris's transient exact-requirement
                 // route — the observed shape's own admitted baseline-spec object,
                 // read at render and never stored.
-                ...pocRoutes(() => model, undefined, (current) => ({ verbatim: verbatimRouteReader(current, gitBlobReaderFor(repoRoot)) }), servedResponses, () => credentialProvision),
+                ...pocRoutes(() => model, undefined, (current) => ({ verbatim: verbatimRouteReader(current, gitBlobReaderFor(repoRoot)) }), servedResponses, () => credentialProvision, () => latest),
                 ...materializeRoutes({
                   getModel: () => model,
                   targetRepoRoot: repoRoot,
@@ -156,15 +190,7 @@ if (parsed.kind === 'help') {
                     reobserver.replace(capture, model);
                   },
                 }),
-                ...reobserveRoutes({
-                  reobserve: async () => {
-                    const result = await reobserver.reobserve();
-                    if (result.kind === 'failed') return result;
-                    model = result.model;
-                    capture = reobserver.getCapture();
-                    return { kind: 'reobserved', evaluation: result.model.evaluation.snapshot };
-                  },
-                }),
+                ...reobserveRoutes({ reobserve: reobserveNow }),
               ],
             });
             if (!start.started) {
@@ -185,6 +211,9 @@ if (parsed.kind === 'help') {
                   '',
                 ].join('\n'),
               );
+              if (parsed.config.watch) {
+                void attachWatchMode({ input: process.stdin, output: process.stdout, reobserve: reobserveNow });
+              }
 
               await new Promise<void>((resolveShutdown) => {
                 let closing = false;

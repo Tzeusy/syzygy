@@ -20,6 +20,7 @@ import { responseIdentityPreimage } from '@syzygy/three-surface-poc-core';
 
 import { renderPolarisPage } from './polaris.js';
 import { POC_MACHINE_PATH, POLARIS_PRESENTATION_PATH, pocRoutes } from './routes.js';
+import { reobserveRoutes } from './reobserve-action.js';
 import { buildFixtureModel, fixtureRepoWithGit } from './test-model-fixture.js';
 import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET, REJECTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 import { walkthroughJudgmentFixture, type JudgmentFixtureState } from './test-walkthrough-judgment-fixture.js';
@@ -624,6 +625,24 @@ describe('PWB-REQ-020 exhaustive Polaris parity sweep', () => {
     expect(section).toContain(`data-currency-probe-added="${probe.addedSources}"`);
     expect(section).not.toContain('data-epistemic-freshness');
     expect(evidence.currencyBounds).toEqual([]);
+  });
+
+  it('declares the human-triggered re-observe action as a parity family with an empty machine denominator (syzygy-u05.2)', () => {
+    const model = modelFor('observed', 'lawful-state-2');
+    const machineBody = JSON.stringify(model);
+    const actions = reobserveRoutes({ reobserve: async () => ({ kind: 'failed', reason: 'unused' }) });
+    const machineRoutes = pocRoutes(() => model).filter((route) => route.credentialClass !== 'human-open');
+    const report = {
+      family: 'action:reobserve',
+      human: actions.filter((route) => route.method === 'POST' && route.credentialClass === 'human-open').length,
+      machine: machineRoutes.filter((route) => route.path.includes('/reobserve')).length + machineBody.split('/polaris/reobserve').length - 1,
+    };
+    expect(actions.map((route) => `${route.method} ${route.path} ${route.credentialClass}`)).toEqual([
+      'POST /polaris/reobserve human-open',
+      'POST /butlers-syzygy/polaris/reobserve human-open',
+    ]);
+    expect(machineRoutes.length).toBeGreaterThan(0);
+    expect(report).toEqual({ family: 'action:reobserve', human: 2, machine: 0 });
   });
 
   it('declares response identity and both route-link fields as machine-only parity families with real denominators', () => {

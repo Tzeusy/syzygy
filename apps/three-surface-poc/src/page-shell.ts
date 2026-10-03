@@ -1,5 +1,6 @@
 import { DESIGN_TOKENS_CSS, legendHtml, skipLinkHtml } from './design-tokens.js';
-import type { PocSurface } from '@syzygy/three-surface-poc-core';
+import type { PocSurface, Reevaluation } from '@syzygy/three-surface-poc-core';
+import { doltClockText, observatoryLimbText, projectLimbText } from './reevaluation-copy.js';
 import { withMountPrefix } from './tailnet.js';
 
 export type SurfaceRouteId = 'home' | 'polaris' | 'trajectory' | 'orrery';
@@ -32,6 +33,8 @@ export interface HumanOperabilityStatus {
   readonly inputBreaches: number | null;
   readonly servedBreaches: number | null;
   readonly latestBreach: { readonly limit: 'maxHumanResponseBytes' | 'maxMachineResponseBytes'; readonly sequence: number; readonly declared: number; readonly observed: number } | null;
+  /** The latest named re-evaluation (syzygy-u05.2); absent renders Unknown. */
+  readonly reevaluation?: Reevaluation | null;
 }
 
 /** One compact, non-verdict summary. Prefixes are labeled as prefixes; full
@@ -46,7 +49,8 @@ export function humanStatusLine(status: HumanOperabilityStatus | undefined, esca
   const latest = status?.latestBreach === null || status?.latestBreach === undefined
     ? ''
     : `; ${status.latestBreach.limit === 'maxHumanResponseBytes' ? 'human' : 'machine'} #${status.latestBreach.sequence} ${status.latestBreach.observed}/${status.latestBreach.declared} B`;
-  return `<p class="operability-status" data-human-status data-eval="${escapeHtml(status?.evaluationDigest?.slice(0, 12) ?? 'unknown')}" data-breaches="${status?.servedBreaches ?? 'unknown'}" data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable>Eval ${escapeHtml(evaluation)}; project ${escapeHtml(project)}; observer ${escapeHtml(observer)}; credential ${escapeHtml(credential)}; breaches input ${escapeHtml(input)}, served ${escapeHtml(served)}${latest}</p>`;
+  return `<p class="operability-status" data-human-status data-eval="${escapeHtml(status?.evaluationDigest?.slice(0, 12) ?? 'unknown')}" data-breaches="${status?.servedBreaches ?? 'unknown'}" data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable>Eval ${escapeHtml(evaluation)}; project ${escapeHtml(project)}; observer ${escapeHtml(observer)}; credential ${escapeHtml(credential)}; breaches input ${escapeHtml(input)}, served ${escapeHtml(served)}${latest}</p>
+  <p class="operability-limbs" data-human-limbs data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable>Observed-project limb: ${escapeHtml(projectLimbText(status?.reevaluation ?? null))}; observatory limb: ${escapeHtml(observatoryLimbText(status?.reevaluation ?? null))}; Dolt clock: ${escapeHtml(doltClockText(status?.reevaluation ?? null))}</p>`;
 }
 
 const NAV_ITEMS: readonly { readonly id: SurfaceRouteId; readonly href: string; readonly label: string }[] = [
