@@ -21,3 +21,16 @@ sys.stdout.write(m.render_act(m.ACT_BY_KEY['${key}'], '${argument}', '${date}', 
   cache.set(id, run.stdout);
   return run.stdout;
 }
+
+/** The public-source screening-scope policy act as scripts/record_public_source_screening_scope_act.py renders it. */
+export function renderPolicyAct(argument: string, date: string, instant: string): string {
+  const id = ['policy', argument, date, instant].join('|');
+  const hit = cache.get(id);
+  if (hit !== undefined) return hit;
+  const py = `import sys; sys.path.insert(0, 'scripts'); import record_public_source_screening_scope_act as m
+sys.stdout.write(m.render_act(m.ACT, '${argument}', '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*64, '${instant}', '1'*64, '1.2.0-public-source-candidate.1'))`;
+  const run = spawnSync('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8' });
+  if (run.status !== 0) throw new Error(`recorder render failed: ${run.stderr}`);
+  cache.set(id, run.stdout);
+  return run.stdout;
+}
