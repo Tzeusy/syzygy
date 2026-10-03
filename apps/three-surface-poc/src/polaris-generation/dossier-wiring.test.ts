@@ -124,6 +124,18 @@ describe('openGeneration against a loopback provider', () => {
     expect(await session.discoveryPermitted({ kind: 'reduce', itemCount: 1, requestDigest: 'r' })).toBe(false);
   });
 
+  it('a withdrawn or unsatisfied egress record refuses every stage even when the record found would authorise it', async () => {
+    upstream ??= await startCaptureEndpoint({ kind: 'text', text: '{"claims":[]}' });
+    const parent = mkdtempSync(path.join(tmpdir(), 'wiring-')); dirs.push(parent);
+    let asked: ((permit: { attemptId: string; maxUsageUnits: number; maxOutputBytes: number }, stage: never) => Promise<boolean>) | undefined;
+    const factory: ProviderFactory = build => { asked = build.permitted as never; return { generate: async () => { throw new Error('unused'); }, attempts: () => [], gateDecisions: () => [], close: async () => undefined }; };
+    const context: GenerationOpenContext = { target: { owner: 'redis', repo: 'redis' } as never, revision: 'a'.repeat(40), runDir: path.join(parent, 'run'), egress: requirement, records: recordsFor(EGRESS_V2_DIGEST, false) };
+    const session = await openGeneration({ route: 'messages-api', apiKey: SECRET, root: REPO_ROOT, providerFactory: factory })(context);
+    sessions.push(session);
+    for (const stage of ['inventory', 'discovery-map'] as const) expect(await asked!({ attemptId: 'a', maxUsageUnits: 1, maxOutputBytes: 1 }, stage as never)).toBe(false);
+    expect(await session.discoveryPermitted({ kind: 'map', itemCount: 1, requestDigest: 'x' })).toBe(false);
+  });
+
   it('unknown usage counts at the full call ceiling', async () => {
     upstream = await startCaptureEndpoint({ kind: 'text', text: '{"claims":[]}', noUsage: true });
     const { session } = await open(EGRESS_V2_DIGEST);
