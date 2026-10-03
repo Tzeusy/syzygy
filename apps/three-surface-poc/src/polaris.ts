@@ -363,7 +363,7 @@ export function reasonCountsBlock(claimId: string, counts: ReasonCounts): string
     if (rows.length === 0) return '';
     return `<p${DISCLOSURE}>${copy(which === 'primary' ? 'label.primary-reasons' : 'label.secondary-reasons')}</p>
       <ul data-reason-counts-${which}="${escapeHtml(claimId)}"${DISCLOSURE}>${rows
-        .map(([reason, count]) => `<li data-reason="${escapeHtml(reason)}" data-count="${count}">${unknownReasonRef(reason)}: ${count}. <details class="reason-remedies"><summary${copyAttr('label.source-remedies')}>${copy('label.source-remedies')} — ${escapeHtml(reason)} for ${escapeHtml(claimId)}</summary><p>${copy('label.route')} ${reasonRouteHtml(reason)}</p></details></li>`)
+        .map(([reason, count]) => `<li data-reason="${escapeHtml(reason)}" data-count="${count}">${unknownReasonRef(reason)}: ${count}. <details class="reason-remedies"><summary${copyAttr('label.source-remedies')}>${copy('label.source-remedies')} — ${escapeHtml(reason)} for ${escapeHtml(claimId)}</summary>${reasonRemedyHtml(reason)}</details></li>`)
         .join('')}</ul>`;
   };
   const primary = list('primary', counts.primary);
@@ -565,18 +565,38 @@ function routeOf(claim: ProjectShapeClaim, reason: string): string {
   return route ?? UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route');
 }
 
-/** The route text of one reason in a list keyed by reason (gaps, reason
- * counts): the generic route, then the evaluation's causes when it records
- * any, so the reader reaches the actual cause without leaving the list. */
-function reasonRouteHtml(reason: string, causeList = false): string {
+/** The route text of one reason in the gaps list: the generic route, then
+ * the evaluation's causes when it records any, so the reader reaches the
+ * actual cause without leaving the list. */
+function reasonRouteHtml(reason: string): string {
   const generic = UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route');
   const causes = causeRoutes(reason, undefined);
   if (causes === undefined) return `${escapeHtml(generic)}.`;
   // The gaps entry lists one cause per item (syzygy-u05.4; S4-F5); the
-  // reason counts keep the run-on form, since a list cannot sit in their <p>.
-  return causeList
-    ? `${escapeHtml(generic)}. <span${copyAttr('label.by-cause')}>${copy('label.by-cause')}</span><ul data-polaris-gap-causes="${causes.length}">${causes.map((cause) => `<li>${escapeHtml(cause)}.</li>`).join('')}</ul>`
-    : `${escapeHtml(generic)}. <span${copyAttr('label.by-cause')}>${copy('label.by-cause')}</span> ${escapeHtml(causes.join('; '))}.`;
+  // reason counts split lead and list instead (reasonRouteParts), since a
+  // list cannot sit in their <p>.
+  return `${escapeHtml(generic)}. <span${copyAttr('label.by-cause')}>${copy('label.by-cause')}</span><ul data-polaris-gap-causes="${causes.length}">${causes.map((cause) => `<li>${escapeHtml(cause)}.</li>`).join('')}</ul>`;
+}
+
+function reasonRemedyHtml(reason: string): string {
+  const { lead, list } = reasonRouteParts(reason);
+  return `<p>${copy('label.route')} ${lead}</p>${list}`;
+}
+
+/** The route split at the block boundary: `lead` is inline text, safe in a
+ * paragraph; `list` is empty unless two or more causes are recorded, when it
+ * is an ordered list that must follow the paragraph, never sit inside it.
+ * <ol>, not <ul>: the reason-counts oracles end a block at its first </ul>. */
+function reasonRouteParts(reason: string): { lead: string; list: string } {
+  const generic = UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route');
+  const causes = causeRoutes(reason, undefined);
+  if (causes === undefined) return { lead: `${escapeHtml(generic)}.`, list: '' };
+  const byCause = `<span${copyAttr('label.by-cause')}>${copy('label.by-cause')}</span>`;
+  if (causes.length === 1) return { lead: `${escapeHtml(generic)}. ${byCause} ${escapeHtml(causes[0] as string)}.`, list: '' };
+  return {
+    lead: `${escapeHtml(generic)}. ${byCause}`,
+    list: `<ol class="cause-routes">${causes.map((cause) => `<li>${escapeHtml(cause)}.</li>`).join('')}</ol>`,
+  };
 }
 
 function unknownRoutes(claim: ProjectShapeClaim, prefix: string): string {
@@ -1063,7 +1083,7 @@ function gapsList(claims: readonly ProjectShapeClaim[], presented: readonly Proj
     return b[1] - a[1] || a[0].localeCompare(b[0]);
   });
   return `<ul data-polaris-gaps="${counts.size}"${DISCLOSURE}>${ordered
-    .map(([reason, count]) => `<li id="${gapId(reason)}" data-polaris-gap="${escapeHtml(reason)}"><span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>: ${count} claim(s). ${copy('label.route')} ${reasonRouteHtml(reason, true)}${folded(reason)}</li>`)
+    .map(([reason, count]) => `<li id="${gapId(reason)}" data-polaris-gap="${escapeHtml(reason)}"><span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>: ${count} claim(s). ${copy('label.route')} ${reasonRouteHtml(reason)}${folded(reason)}</li>`)
     .join('')}</ul>`;
 }
 
@@ -1487,7 +1507,7 @@ const POLARIS_STYLE = `
   ${TUPLE_MARKS_CSS}
   .tuple-line { margin-top: -.4rem; }
   .reason-counts { font-size: .95rem; }
-  .reason-counts ul { padding-left: 1.2rem; }
+  .reason-counts ul, .cause-routes { padding-left: 1.2rem; }
   .coverage-counts { margin: .6rem 0 1rem; }
   .coverage-counts summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
   .population { margin: .6rem 0 1rem; }
