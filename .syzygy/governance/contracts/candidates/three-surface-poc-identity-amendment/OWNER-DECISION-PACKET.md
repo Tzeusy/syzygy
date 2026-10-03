@@ -4,9 +4,10 @@
 > accepted. This packet puts two questions to the owner; only the owner's
 > answer binds anything (VIS-4).
 
-**Status:** drafted 2026-10-03 under ruling P-75 (A). The review of record and
-whether the package is ready to offer are recorded in this package's
-`ROUND-1-DISPOSITIONS.md`.
+**Status:** drafted 2026-10-03 under ruling P-75 (A). Each review round's
+verdict and dispositions are recorded in the package's
+`ROUND-<n>-DISPOSITIONS.md` records beside this file, and the latest one says
+whether this version is ready to offer.
 
 ## What you would be signing
 
@@ -21,12 +22,27 @@ ruled. Read `SEMANTIC-DELTA.md` for the full account. In short:
 - **POC-REQ-055 (new).** Every relation kind the POC emits is either a name
   from RFC1-25's closed table, in the right direction, or carries a flag
   saying it is outside that table. Seven of today's eight are outside. The
-  signed coverage row that mapped this to POC-REQ-052 stays as it is; an
-  added row and a disclosure beside it say what really covers it.
+  signed coverage row that mapped this to POC-REQ-052 stays as it is. Beside
+  it, an added row and a disclosure say that the flag is the repair you
+  ruled. Closure itself — no outside kind emitted at all — stays Unknown.
 - **POC-REQ-060 (amended).** The one-encoding rule now names all three labels,
   Observed, Inferred and Unknown, and one record shape. Inferred is allowed
   only for an agent's assertion and never counts as Observed. Nothing
   produces one today.
+
+**One departure from the design you adopted.** The M9 design said
+POC-REQ-054 "Declares the canonical join key". This package does not: it
+requires one identity per subject but leaves the identity's *form* to the
+implementation slice.
+
+- **Why.** The design's proposed key, `repository:<repo>@<rev>:<path>#<objectId>`,
+  contains a file path. RFC6-1 bars a file path from being a selection
+  identity, so writing that key into the signed text would put the
+  specification against a contract clause. [Inferred]
+- **The consequence if you sign.** Slice 6b picks the form under POC-REQ-054
+  with no further act from you.
+- **If you would rather settle the form in the specification,** answer
+  "Revise" below and name it.
 
 **What signing does not do.** It starts no implementation. M9 slices 4–8
 become eligible to start under your ruling only after this sign-off.

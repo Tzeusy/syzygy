@@ -1,8 +1,8 @@
 diff --git a/openspec/changes/three-surface-poc-experience/proposal.md b/openspec/changes/three-surface-poc-experience/proposal.md
-index 91677c7..c7fbbb6 100644
+index 91677c7..9b371a8 100644
 --- a/openspec/changes/three-surface-poc-experience/proposal.md
 +++ b/openspec/changes/three-surface-poc-experience/proposal.md
-@@ -77,6 +77,26 @@ configured Butlers repository also remains Unknown. This specification does
+@@ -77,6 +77,29 @@ configured Butlers repository also remains Unknown. This specification does
  not turn missing
  evidence into an empty or successful state.
  
@@ -23,8 +23,11 @@ index 91677c7..c7fbbb6 100644
 +today, so no Inferred record exists until an agent does; the non-goal above
 +against inferred mappings, edges or intent is unchanged. In
 +`CONTRACT-COVERAGE.md` the one signed row the ruling names is preserved
-+unedited beside the amendment row that supersedes it, and four Part B2 beliefs
-+move to Part A because a requirement now covers them.
++unedited beside the amendment rows that supersede it, and four Part B2 beliefs
++move to Part A because a requirement now covers one of their consequences.
++The form of the subject identity is not settled here; the implementation
++slice that lands it proposes the form under POC-REQ-054, and RFC6-1's bar on
++a file path as a selection identity still applies.
 +
  ## Acceptance inputs
  

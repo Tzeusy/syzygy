@@ -57,8 +57,8 @@ and in its consequences column:
 > at catalog fan-out without re-measurement. The bound coverage-matrix row is
 > edited on no arm.
 
-[Observed] Lane B's manifest is disposed of: the bead's 2026-10-03 audit note
-records it "declined 2026-10-02". The content list — POC-REQ-054, the
+[Observed] Lane B's manifest is disposed of. `scripts/check_governance.py`
+line 1780 records: "Lane B was declined 2026-10-02 and never performed". The content list — POC-REQ-054, the
 POC-REQ-060 amendment, POC-REQ-055 and a ribbon scenario — is the slice-3
 design in `docs/design/POLARIS-M9-ONE-IDENTITY-FUNNEL.md` §"Slice 3 — One
 amendment package", which the ruling adopted.
@@ -74,9 +74,14 @@ example `RFC6-1 | RFC1-qualified selection-reference identity scheme … POC
 builds no cross-surface selection/identity system`. Its own preamble says "A
 belief is not a reviewed N/A".
 
-**Proposed meaning.** Every subject carries one identity minted by the shared
-model, and every surface and the machine answer name it by that identity
-alone. A link between surfaces resolves, by that identity, to exactly one
+**Proposed meaning.** Every subject carries one identity, held once in the
+shared model, and every surface and the machine answer name it by that
+identity alone. Where a source authority owns the identity (a work item's
+tracker, a code region's observed revision), the model holds that identity
+and mints none of its own. This keeps the requirement consistent with
+RFC1-9's "the kernel **never mints an identity it does not own**" (bold in
+the source), which the signed matrix already maps to POC-REQ-010 and
+POC-REQ-012. A link between surfaces resolves, by that identity, to exactly one
 element for the same subject. No surface-local handle crosses a boundary as
 the identity.
 
@@ -96,23 +101,39 @@ The requirement has two scenarios:
 
 - **RFC6-1**, at
   `.syzygy/governance/contracts/rfcs/RFC-0006-cross-surface-selection-query-drawer.md`
-  line 108 (the clause; the quoted bullet sits at lines 113–115, bold in
-  the source): "no surface-local handle — file path, node index, work-item
-  row, layout coordinate, scene object id — is ever a selection identity", and
-  "every handle must resolve to a selection reference before it crosses a
-  surface boundary, a URL, or an endpoint."
+  line 108. Its first bullet (lines 112–115, partly bold in the source)
+  reads: "the kernel mints nothing new for selection, and no surface-local
+  handle — file path, node index, work-item row, layout coordinate, scene
+  object id — is ever a selection identity". Its second bullet (lines
+  116–118) reads: "every handle must resolve to a selection reference
+  before it crosses a surface boundary, a URL, or an endpoint." The
+  surface-handle limb is covered. Two limbs are added as Unknown rows: the
+  tuple limb (a reference is RFC 0001's (entity kind, durable entity
+  identity), and the POC's entity kinds are not RFC1-5's) and the
+  qualifiers limb.
 - **RFC6-3**, line 135: "One selection reference resolves **identically in all
-  three surfaces**". Its skew limb ("must render the skew explicitly — naming
-  both evaluation identities") is **not** covered. The amendment adds it as an
-  Unknown row.
+  three surfaces**". Only "same entity" is covered. Two limbs are added as
+  Unknown rows: same evaluation, same scenario context and same drawer fact
+  set; and the skew limb ("must render the skew explicitly — naming both
+  evaluation identities").
 - **RFC6-12**, line 263: "Every URL-pinned selection is openable in any
   surface". The covered consequence is narrower — the same identity opens the
-  subject on every surface that renders it. The URL-hint and bookmark limb is
-  added as an Unknown row.
+  subject on every surface that renders it. Two limbs are added as Unknown
+  rows: the URL-hint and bookmark limb, and the clause's "subject to
+  `not-applicable` per RFC6-5" limb.
 - **RFC1-26**, at
   `.syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md`
   line 736: "Every rendered internal edge must resolve to its identified
   target (trust floor)". This is applied to links between surfaces.
+
+**Departure from the adopted design: the join key.** The design the ruling
+adopted says POC-REQ-054 "Declares the canonical join key", and it labels
+slice 6b "The key, slice 3's act" (`docs/design/POLARIS-M9-ONE-IDENTITY-FUNNEL.md`
+lines 797–798 and 920). This package does **not** declare the key. If the
+owner signs it, slice 6b chooses the key's form under POC-REQ-054 with no
+further act, where the design expected the form to be in the signed text.
+`OWNER-DECISION-PACKET.md` puts this to the owner, and the proposed
+`proposal.md` states it as an open question.
 
 **Why the identity is not spelled out.** The M9 packet's slice 6b proposes a
 concrete key. The requirement deliberately names "the identity the shared
@@ -148,10 +169,20 @@ the table.
 **The repair, not at the bound site.** The signed row is kept byte for byte.
 The proposed matrix adds two things:
 
-- an amendment row beneath it, mapping the closure consequence to
+- an amendment row beneath it that maps the *disclosure* the ruling chose to
   POC-REQ-055;
+- a separate Unknown amendment row for closure itself, "No relation outside
+  the closed table is emitted at all". POC-REQ-055's oracle observes
+  naming-or-flag, not absence, and the ruling chose disclosure rather than
+  removal;
 - a dated **amendment disclosure** paragraph after the Part A totals, telling
-  a reader which row to read.
+  a reader which rows to read.
+
+The RFC1-25 amendment row likewise claims only what the oracle observes:
+closed names are emitted in a role pair the table assigns them, and every
+other kind is flagged. The table assigns several role pairs to some
+relations, such as `contains`/`part_of`, so the requirement checks against
+the set.
 
 The builder fails if the signed row changes (`--selftest`, mutant "bound row
 edited").
@@ -173,8 +204,13 @@ extends it:
   three; a tier from RFC2-25's closed six where one applies, inside its parent
   label; and, where Unknown, exactly one primary reason from RFC2-24's closed
   twelve with its route.
-- **Inferred:** it arises only from an agent's assertion, never counts toward
-  an Observed total or clears an Unknown, and renders distinctly.
+- **Inferred:** it arises only from an agent's assertion, which it names,
+  never counts toward an Observed total or clears an Unknown, and renders
+  distinctly. The oracle names a procedure for each of these limbs:
+  - a check that the record names an agent assertion;
+  - a recount of every Observed total without the record;
+  - a before-and-after comparison of each Unknown it addresses;
+  - an encoding comparison.
 
 The signed scenario "Unknown looks the same everywhere" is preserved verbatim;
 the builder checks this. A second scenario is added: "An agent assertion stays
@@ -191,9 +227,16 @@ row is "Visible, never green, challengeable, never a status input".
 
 **Q2's plane boundary.** The record shape is set here and not by reference to
 PWB-REQ-007, because Q2 ruled that "PWB-REQ-007 reaches only the
-project-shape plane". Freshness, which PWB-REQ-007 carries, is **not** part of
-this shape. The matrix adds RFC6-14's freshness limb as an Unknown row rather
-than claiming it.
+project-shape plane". Freshness and secondary Unknown annotations, which
+PWB-REQ-007 carries, are **not** part of this shape. The matrix adds them as
+Unknown rows under RFC6-14 and RFC2-24 rather than claiming them.
+
+The same goes for the RFC2-25 limbs the oracle does not observe. Each tier's
+authority — for example, only `gate-backed` supports a positive status — is
+an Unknown row. So is the `asserted-by-worker` row's "challengeable" and
+"never a status input" limb. The signed RFC6-14 row's fold note is preserved,
+with a second disclosure saying which of its limbs the amendment now
+covers.
 
 ## Coverage matrix, computed
 
@@ -204,7 +247,7 @@ checked by `--check`]
 | | Signed | Proposed |
 |---|---:|---:|
 | Part A clauses (= `contracts[]` union) | 74 | 78 |
-| Part A rows: covered / Unknown | 92 / 15 | 102 / 20 |
+| Part A rows: covered / Unknown | 92 / 15 | 102 / 28 |
 | Part B1 clauses (rows) | 27 (28) | 27 (28) |
 | Part B2 clauses | 223 | 219 |
 

@@ -78,7 +78,10 @@ BOUND_ROW = (
     "| RFC1-26 | Relations outside the closed table don't exist; "
     "no prose-widening | covered | POC-REQ-052 |"
 )
-#: Part B2 beliefs that move to Part A because a requirement now covers them.
+#: P-75 Q3 chose disclosure, not removal, so closure itself stays Unknown.
+CLOSURE_ROW_PREFIX = "| RFC1-26 | No relation outside the closed table is emitted at all |"
+#: Part B2 beliefs that move to Part A because a requirement now covers one
+#: of their consequences.
 MOVED_FROM_B2 = ("RFC2-25", "RFC6-1", "RFC6-3", "RFC6-12")
 AMENDMENT_MARK = "Amendment row"
 POC_DIR_KEY = "`POC-DIR-2026-09-21`"
@@ -378,6 +381,9 @@ def coverage_findings(
             )
     if "**Amendment disclosure — the RFC1-26 closure row (ruling P-75 Q3).**" not in new:
         findings.append("the amendment disclosure for the preserved RFC1-26 row is missing")
+    closure = [row for row in new_parts["A"] if row.startswith(CLOSURE_ROW_PREFIX)]
+    if len(closure) != 1 or not _disposition(closure[0]).startswith("**Unknown**"):
+        findings.append("closure itself is not disclosed as one Unknown RFC1-26 row")
     findings.extend(totals_findings(new))
     return findings
 
@@ -556,6 +562,15 @@ def selftest() -> int:
             COVERAGE,
             _replace(proposed[COVERAGE], "**Amendment disclosure — the RFC1-26 closure row (ruling P-75 Q3).**", "**Note.**"),
             "the amendment disclosure for the preserved RFC1-26 row is missing",
+        ),
+        "closure claimed covered": (
+            COVERAGE,
+            _replace(
+                proposed[COVERAGE],
+                CLOSURE_ROW_PREFIX + " **Unknown** — Amendment row;",
+                CLOSURE_ROW_PREFIX + " covered — Amendment row;",
+            ),
+            "closure itself is not disclosed as one Unknown RFC1-26 row",
         ),
         "dependency drift": (
             DEPENDENCIES,

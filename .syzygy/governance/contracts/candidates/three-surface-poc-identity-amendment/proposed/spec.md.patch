@@ -1,5 +1,5 @@
 diff --git a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
-index 092711e..70f474f 100644
+index 092711e..7ebdf4c 100644
 --- a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
 +++ b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
 @@ -29,16 +29,20 @@ Reader notes, binding on how this file is read:
@@ -29,7 +29,7 @@ index 092711e..70f474f 100644
    from the CC-SPEC-8 sweep recorded in this change's
    `CONTRACT-COVERAGE.md`: a clause is listed exactly where the sweep
    found the requirement's oracle observes one of that clause's
-@@ -937,27 +941,179 @@ warrants:
+@@ -937,27 +941,193 @@ warrants:
    parent_requirements: []
  ```
  
@@ -42,8 +42,11 @@ index 092711e..70f474f 100644
 -design tokens, and SHALL encode epistemic states (Observed, Unknown, and their
 -reasons) identically wherever they appear.
 +**Required behavior.** Every subject the shared model holds SHALL carry one
-+identity, minted once by the shared model, and every surface and the machine
-+answer SHALL name that subject by that identity and by no other. An element on
++identity, held once in the shared model, and every surface and the machine
++answer SHALL name that subject by that identity and by no other. Where a
++subject's identity is owned by a source authority (a work item's by its
++tracker, a code region's by its observed revision), the shared model holds
++that identity and mints none of its own. An element on
 +one surface that names a subject another surface also renders SHALL resolve,
 +by that identity, to exactly one element for the same subject on that surface.
 +No surface-local handle — a file path, a row position, a layout coordinate, a
@@ -72,12 +75,16 @@ index 092711e..70f474f 100644
 +  element carrying the same identity; each slot is a joined subject or an
 +  Unknown with its reason and route, on the surface and in the machine
 +  answer alike.
-+- **Oracle**: per-element identity equality with the machine answer's
-+  subject set, and HTTP/anchor resolution per link, over the exhausted
++- **Oracle**: per-element identity equality with an independently
++  derived subject set, HTTP/anchor resolution per link, and per-slot
++  comparison with independently derived joins, over the exhausted
 +  populations; zero mismatched identities, zero dangling or
 +  mis-resolving links and zero absent or unjoined slots decide.
-+- **Oracle independence**: the subject identities and slot values come
-+  from the machine answer, never from a surface's renderer.
++- **Oracle independence**: the checker derives each subject's expected
++  identity and each slot's expected join from the source records the
++  shared model reads — each subject's owning source record, and a work
++  item's or code region's own reference to the claim it names — never
++  from the machine answer or a surface's renderer.
 +- **Falsifier**: one subject named by two identity values, a link between
 +  surfaces resolving to no element or to a different subject, a
 +  surface-local handle used as a crossing identity, or a three-state slot
@@ -86,16 +93,16 @@ index 092711e..70f474f 100644
 +#### Scenario: One subject, one identity on every surface
 +
 +- **WHEN** a subject is rendered on Polaris and on Orrery and appears in
-+  the machine answer
-+- **THEN** all three name it by the same identity value, a link from one
-+  surface to the other resolves to exactly one element carrying that
-+  identity, and the check reports the number of identities rendered on
++  the machine answer, and one of those surfaces links to the subject on
++  the other
++- **THEN** all three name it by the same identity value, the link
++  resolves to exactly one element carrying that identity, and the check reports the number of identities rendered on
 +  more than one surface as its denominator
 +
 +#### Scenario: A three-state view with nothing joined
 +
-+- **WHEN** a claim has no work item and no code region joined to it by
-+  its identity
++- **WHEN** a surface renders the three-state view for a claim that has
++  no work item and no code region joined to it by its identity
 +- **THEN** its execution and observed slots each render Unknown with a
 +  reason and a resolution route, neither slot is absent, blank or styled
 +  as Observed, and the machine answer carries the same three slots for
@@ -131,7 +138,8 @@ index 092711e..70f474f 100644
 +  in the machine answer — the denominator is that population — and every
 +  relationship carrying each; it checks each kind against a copy of
 +  RFC1-25's relation names, each named relationship's source and target
-+  against an expected role pair for that relation, and each flagged kind
++  against the set of role pairs the table assigns that relation, and each
++  flagged kind
 +  for a non-empty reason in the machine answer and beside every rendering.
 +- **Observable**: every kind is a closed relation name with its source and
 +  target in their assigned roles, or is flagged with a reason everywhere
@@ -139,8 +147,9 @@ index 092711e..70f474f 100644
 +- **Oracle**: per-kind membership-or-flag over the exhausted population;
 +  zero unflagged out-of-vocabulary kinds, zero flagged in-vocabulary kinds
 +  and zero reversed roles decide.
-+- **Oracle independence**: the relation names and role pairs are literals
-+  transcribed from RFC1-25's table, never imported from the model.
++- **Oracle independence**: the relation names and each relation's set of
++  role pairs are literals transcribed from RFC1-25's table, never
++  imported from the model.
 +- **Falsifier**: one emitted kind outside RFC1-25's table without a flag,
 +  a flag on a kind that is in the table, a flagged kind rendered without
 +  its reason, or a closed relation name emitted with source and target
@@ -180,8 +189,8 @@ index 092711e..70f474f 100644
 +where the label is Unknown, exactly one primary reason from RFC2-24's closed
 +twelve with its resolution route. An Inferred state SHALL arise only from an
 +agent's assertion, SHALL never count toward an Observed total or clear an
-+Unknown, and SHALL render with an encoding the legend distinguishes from
-+Observed.
++Unknown, SHALL name the agent assertion it arises from, and SHALL render
++with an encoding the legend distinguishes from Observed.
 +
 +- **Scope.** every epistemic encoding across the three surfaces, and every
 +  epistemic record in the shared model and the machine answer.
@@ -204,12 +213,17 @@ index 092711e..70f474f 100644
 -- **Falsifier**: one surface encoding Unknown (or Observed) differently
 -  from the declared table, or a surface styling epistemic state ad hoc.
 +  encodings on every surface; every record carries the closed-vocabulary
-+  shape; an Inferred record is absent from every Observed total, leaves
-+  each Unknown it addresses Unknown, and renders distinctly from
-+  Observed.
++  shape; an Inferred record names the agent assertion it arises from, is
++  absent from every Observed total, leaves each Unknown it addresses
++  Unknown, and renders distinctly from Observed.
 +- **Oracle**: per-encoding equality with the declared table and
-+  per-record vocabulary validation over the exhausted populations; the
-+  table is a checked-in declaration; zero off-vocabulary records decide.
++  per-record vocabulary validation over the exhausted populations; for
++  each Inferred record, a check that it names an agent assertion, a
++  recount of every Observed total without it, a comparison of each
++  Unknown it addresses before and after it is added, and an encoding
++  comparison with the declared Inferred entry; the table is a checked-in
++  declaration; zero off-vocabulary records and zero breached Inferred
++  limbs decide.
 +- **Oracle independence**: the declared table and the closed RFC2-24 and
 +  RFC2-25 lists are expected values written as literals; the sweep reads
 +  served output and the machine answer.
@@ -217,12 +231,12 @@ index 092711e..70f474f 100644
 +  differently from the declared table, or a surface styling epistemic
 +  state ad hoc; a record with no label, a tier outside its parent label,
 +  a reason outside the twelve or an Unknown with no route; or an
-+  Inferred record counted as Observed, clearing an Unknown, arising from
-+  a non-agent source, or rendered with the Observed encoding.
++  Inferred record counted as Observed, clearing an Unknown, naming no
++  agent assertion, or rendered with the Observed encoding.
  
  #### Scenario: Unknown looks the same everywhere
  
-@@ -966,13 +1122,22 @@ reasons) identically wherever they appear.
+@@ -966,13 +1136,22 @@ reasons) identically wherever they appear.
  - **THEN** all three render it with the declared Unknown encoding from
    the shared token set
  
