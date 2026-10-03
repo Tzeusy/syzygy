@@ -104,8 +104,9 @@ Each is a yes/no question with the evidence that settles it.
 ## Recording
 
 Store the raw output verbatim in this package's `reviews/` directory as
-`R-PROVIDER-ROUTE-MESSAGES-API-ENTRY-2-RAW.md` (round 1 is the `-1-RAW.md`
-beside it and is never overwritten; a re-issue is a further `-RAW.md`). **The raw's head is a predicate a recorder will enforce.** The
+`R-PROVIDER-ROUTE-MESSAGES-API-ENTRY-<n>-RAW.md`, with `<n>` the round number
+you were given (earlier rounds' raws sit beside it and are never overwritten;
+a re-issue is a further `-RAW.md`). **The raw's head is a predicate a recorder will enforce.** The
 first four non-blank lines must be the title and exactly:
 
 ```text

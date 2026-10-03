@@ -412,7 +412,7 @@ def findings_for(name, doc, butlers_contract, sibling=None):
 
 
 def manifest_text(root=PKG):
-    rows = sorted((f"{root.as_posix()}/proposed/{p.name}", sha(p.read_bytes())) for p in proposed(root))
+    rows = sorted((f"{PKG.as_posix()}/proposed/{p.name}", sha(p.read_bytes())) for p in proposed(root))
     return ("# MESSAGES API PROVIDER ROUTE REGISTRY ENTRY MANIFEST\n"
             "# Candidate; this file and its row bind nothing by themselves.\n"
             f"# {len(rows)} artifact; each row hashes the proposed file's exact bytes and is\n"
@@ -613,6 +613,7 @@ def selftest():
         (root / MANIFEST).write_text(manifest_text(root))
         nosib = pathlib.Path(t) / "none.json"
         muts.append(("clean temp package passes", check(root, BUTLERS, inst, nosib) == []))
+        muts.append(("manifest rows do not depend on the root handed in", manifest_text(root) == manifest_text(PKG)))
         victim = next(iter(proposed(root)))
         keep = victim.read_text()
         victim.write_text("{not json")

@@ -84,4 +84,27 @@ consent. It does not touch the Butlers entry.
 ## Review
 
 A fresh-context review precedes any offering; `REVIEW-BRIEF.md` names the
-artifacts, references and criteria. Round 1 ran (REVISE) and round 2 ran (REVISE); each raw's own `Verdict:` line is the verdict of record and the raws are retained in `reviews/`.
+artifacts, references and criteria. Round 1 ran (REVISE), round 2 ran (REVISE) and round 3 ran (CONFIRM WITH EXCEPTIONS, seven notes, all dispositioned in `reviews/ROUND-3-DISPOSITIONS.md`); each raw's own `Verdict:` line is the verdict of record and the raws are retained in `reviews/`.
+
+## Known limitations carried to the act
+
+Three round-3 notes concern bytes the act would bind, so they are not edited
+(a bound false sentence can be corrected only by a successor). The owner can
+accept them as they stand or ask for a successor entry before the act.
+
+- **A stale "head" (round-3 finding 1).** The entry's `implementationStatus`
+  calls PR #264's commit `e76b6929` its "head". PR #264 was force-pushed
+  afterwards; that commit is still the provenance pin and the three pinned
+  blobs are byte-identical at the new head, so no [Observed] claim about the
+  source moves. *Proposed wording for a successor:* "PR #264 at drafting, since
+  force-pushed; the commit this entry pins as provenance is `e76b6929`, held
+  in no remote branch", or re-pin to the new head.
+- **A missing citation (finding 2).** `timeoutNote` says an implementation must
+  enforce the literal 600 before the entry is usable but does not name the
+  tracking bead. *Proposed wording:* append "(bead syzygy-yqtg, item 1)".
+- **An open Node transport list (finding 3).** The Node environment inputs the
+  entry lists do not claim completeness; [Inferred, from Node's documentation,
+  not exercised] `NODE_OPTIONS` and the lower-case proxy variables also reach
+  the forwarded TLS request. *Proposed wording:* a closing row "any other
+  environment input Node honours for TLS or proxying", and the bead's refusal
+  list covers the named ones.
