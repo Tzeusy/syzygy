@@ -41,6 +41,7 @@ from __future__ import annotations
 import argparse
 import datetime
 import hashlib
+import os
 import pathlib
 import re
 import subprocess
@@ -177,10 +178,17 @@ class Inputs:
 
 
 def live_inputs(root: pathlib.Path) -> Inputs:
-    subject_dirs = list((root / PKG / "instances").glob("*/params.json"))
-    del subject_dirs
-    produced = [path.as_posix() for path, _t in build.instances(root / PKG)]
-    stale = [str(p) for p in build.stale(root / PKG)]
+    # The builder expects the package as the repo-relative `PKG` and emits
+    # repo-relative paths (the manifest rows are those paths). Handing it
+    # `root / PKG` turned every produced path absolute and refused every
+    # --record, so it is run with `root` as the working directory instead.
+    cwd = os.getcwd()
+    os.chdir(root)
+    try:
+        produced = [path.as_posix() for path, _t in build.instances(PKG)]
+        stale = [str(p) for p in build.stale(PKG)]
+    finally:
+        os.chdir(cwd)
     files = {rel: (root / rel).read_bytes() for rel in
              [MANIFEST_REL, PACKET_REL, BRIEF_REL] + [pathlib.Path(p) for p in produced]
              if (root / rel).is_file()}
@@ -608,11 +616,41 @@ def selftest() -> int:
                       ("a lowercase z", "2026-10-04T09:30:00z")):
         results.append((f"{name} refused", _raises(lambda bad=bad: expected(
             act, arg, "2026-10-04", ok_sel, make(subject=subj), bad))))
+    results.append(("record, check and a repeat --record on a scratch tree with no git", _end_to_end()))
     failed = [name for name, ok in results if not ok]
     for name, ok in results:
         print(("ok   " if ok else "FAIL ") + name)
     print(f"selftest: {len(results) - len(failed)} of {len(results)} predicates held")
     return 1 if failed else 0
+
+
+def _end_to_end() -> bool:
+    """Run --record and --check for real on a scratch copy of the package with
+    no git at all, so a path or root-handling bug in the recorder's own input
+    reading fails the selftest instead of the owner's sitting."""
+    import contextlib
+    import io
+    import shutil
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        root = pathlib.Path(d)
+        shutil.copytree(ROOT / PKG, root / PKG)
+        (root / DECISIONS).mkdir(parents=True, exist_ok=True)
+        (root / AGGREGATE_REL).write_text("# Acceptance record\n")
+        act = ACTS[0]
+        arg = digest((root / act.subject).read_bytes())
+        sel = Selection("Perform the admission acts?", "All three now", "Perform the acts at the manifest rows.")
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            wrote = do_record(root, act, arg, "2026-10-04", sel, INSTANT_OK)
+            checked = do_check(root, act, arg, "2026-10-04", sel)
+            again = do_record(root, act, arg, "2026-10-04", sel, INSTANT_OK)
+        if wrote != 0:
+            print("  (end-to-end --record said: " + out.getvalue().strip().splitlines()[0][:200] + ")")
+        record = (root / act.record).read_text() if (root / act.record).is_file() else ""
+        return (wrote == 0 and checked == 0 and again == 1
+                and record.count(f"Recorded at (UTC): {INSTANT_OK}") == 1
+                and not (root / ".git").exists())
 
 
 INSTANT_OK = "2026-10-04T09:30:00Z"
