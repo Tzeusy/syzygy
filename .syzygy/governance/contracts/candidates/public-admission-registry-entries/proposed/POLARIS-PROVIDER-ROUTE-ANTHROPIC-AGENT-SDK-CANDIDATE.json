@@ -234,9 +234,9 @@
         "routeFixedByThisEntry": {
           "model": "claude-opus-5-5",
           "tools": [],
-          "effort": "medium",
+          "effort": "high",
           "thinking": "absent (CLAUDE_CODE_DISABLE_THINKING=1); enabling it adds thinking and context_management and is not a permitted configuration",
-          "maxTokensCeiling": "[Inferred proposal] 32000; the sent max_tokens is the minimum of this ceiling, the profile's maxOutputTokens and the dispatch permit's output and usage allowances, so the permit may only lower it",
+          "maxTokensCeiling": "[Inferred proposal, an owner choice] 64000, because a multi-page draft stage can exceed 32000; check it against the first requests run; the sent max_tokens is the minimum of this ceiling, the profile's maxOutputTokens and the dispatch permit's output and usage allowances, so the permit may only lower it",
           "note": "model, tools, effort and max_tokens are profile-set in the measurement; this entry pins them so they are bytes it lists as fixed, the form the egress record admits"
         },
         "headers": [
