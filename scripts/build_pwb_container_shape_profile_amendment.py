@@ -521,7 +521,7 @@ SCENARIO_RULES = {
 RULE_TABLES_SHA256 = "14463b5d080d5f749bef5b231b983e0bb1b6e8bae87ec69a9dc83ea259f561cf"
 # The selftest's total, fixed so that a rule removed from any table above
 # fails the selftest instead of lowering its count.
-EXPECTED_KILLED = 182
+EXPECTED_KILLED = 184
 # The whole proposed spec.md, pinned by construction: it must equal the
 # current spec.md with each (anchor, replacement) pair applied once, and every
 # other byte of the file unchanged. Each anchor must occur exactly once in the
@@ -1298,6 +1298,7 @@ def _replace_once(text: str, old: str, new: str, name: str) -> str:
 
 
 def selftest() -> int:
+    global patch_files
     if len(BEHAVIOR_SUBJECTS) != 11 or len(set(BEHAVIOR_SUBJECTS)) != 11:
         return _fail("behavior subject is not eleven unique paths")
     proposed = proposed_bytes()
@@ -1789,6 +1790,44 @@ def selftest() -> int:
         return _fail("check() passed without the shared-text digest")
     killed += 1
 
+    # check() also wires in its patch-population and structure predicates:
+    # a patch set missing one patch, and a spec patch whose added text is
+    # reworded, must each surface through check() itself.
+    kept_patch_files = patch_files
+    patches = kept_patch_files()
+    with tempfile.TemporaryDirectory() as scratch:
+        reworded = []
+        for patch in patches:
+            body = patch.read_text()
+            if patch.name == f"{SPEC.name}.patch":
+                body = re.sub(r"\n\+(?!\+)", "\n+REWORDED ", body, count=1)
+            copy = pathlib.Path(scratch) / patch.name
+            copy.write_text(body)
+            reworded.append(copy)
+        reworded_structure = structure_findings(proposed_bytes(patches=reworded))
+        if population_findings(reworded) or not reworded_structure:
+            return _fail("reworded spec patch did not isolate the structure predicate")
+        for label, replaced, expected in (
+            (
+                "check() without its patch population predicate",
+                [p for p in patches if p.name != "CAPABILITY-COVERAGE.md.patch"],
+                ["proposed patch population differs from declared subjects"],
+            ),
+            (
+                "check() without its structure predicate",
+                reworded,
+                reworded_structure,
+            ),
+        ):
+            patch_files = lambda replaced=replaced: replaced  # noqa: E731
+            try:
+                found = check()
+            finally:
+                patch_files = kept_patch_files
+            if not all(finding in found for finding in expected):
+                return _fail(f"{label} passed")
+            killed += 1
+
     # The shared sentences drifted on both sides at once: the sentence
     # comparison agrees, and only the pinned dov.24 digest refuses it.
     key = next(iter(SHAPES))
@@ -1825,7 +1864,7 @@ def selftest() -> int:
         f"the whole-spec pin over {len(unamended)} unamended clauses, a "
         f"scenario swap, the unscoped falsifier, {len(SPEC_EDITS)} drifted and "
         f"{len(SPEC_EDITS)} duplicated anchors, check() without its manifest "
-        "comparison or its shared-text digest, bullet order/duplicate/missing, retired opening, the "
+        "comparison, its shared-text digest, its patch population or its structure predicate, bullet order/duplicate/missing, retired opening, the "
         "hoisted exactness paragraph reworded or left behind, Butlers grammar "
         f"drift, {len(REQUIREMENT_RULES)} PWB-REQ-002 rules, retired "
         f"requirement text, SHALL made MAY, the falsifier relabelled, three "
