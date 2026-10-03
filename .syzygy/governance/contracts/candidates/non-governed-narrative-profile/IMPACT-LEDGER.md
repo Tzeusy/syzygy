@@ -64,6 +64,33 @@ requirement by a name other than these seven forms is not covered [Unknown];
 a range such as "001 to 012" written with other separators than G's is not
 covered either.
 
+**Sweep H, the bare `REQ-004` form (round 3, finding 2).** The seven sweeps
+above miss the bare short form. Python `re`, case-sensitive, no flags, over
+the same 1,984 searched paths at `9a6e8e31` (this package's two directories
+excluded; run length: any number of three-digit predecessors, separated by
+`/`, `,`, `, and`, ` and`, `..` or an en dash, each followed by optional
+whitespace):
+
+    (?<![A-Za-z0-9-])REQ-(?:\d{3}\s*(?:/|,|, and| and|\.\.|\u2013)\s*)*004\b
+
+[Observed] It hits 28 files (re-run for this edit; the 4 undecodable paths are
+skipped as before). The round-3 reviewer's split of those 28 against the
+union of A, B, E, F and G is 16 outside it, one of which (a Three-Surface POC
+file, where `REQ-004` is a POC requirement) is not a citer of 004, so 15 new
+citers and a population of 78 (63 + 15) [Observed by the reviewer; the 28 is
+re-run here, the split is not]. The 15: the four tree-form review raws; two
+design notes (`docs/design/POLARIS-GENERATOR-RFC7-COVERAGE-V2.md`, `-V3.md`);
+four files under `docs/evidence/polaris-understanding-reconciliation-2026-09-28/`;
+one `docs/evidence/spec-readability-reconciliation-2026-10-02/README.md`;
+`docs/polaris-generation/REDIS-DOSSIER-GAP-ANALYSIS.md`;
+`docs/polaris-generation/TRACKER.md`; and the two vision-pursuit JSON files
+under `docs/pursuits/`. Disposition: no edit. The raws and evidence are
+retained or evidence records; the two design notes, the gap analysis and the
+tracker read 004's band rule as it stands today and are unaffected until
+adoption, when the migration plan's "update the status count" step is the
+moment to re-read them. They are unbound documents; an optional touch-up
+then, not a precondition.
+
 ## The sets (CC-IMPACT-3)
 
 | Set | A | B | C | D | E | F |
