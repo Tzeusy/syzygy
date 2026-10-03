@@ -1,0 +1,489 @@
+{
+  "record": "rule-6 mutation evidence (AGENTS.md verification rule 6)",
+  "date": "2026-10-04",
+  "ranAt": "3e5d8da36c6923c141768c0338286577091ad74c",
+  "sweepFinished": "2026-10-03T21:21:31+00:00",
+  "runner": {
+    "method": "Before every mutant: rewrite every subject from HEAD, check its sha256, and run the mutant's test files unmutated, which must pass. Then apply the mutant (every edit's `old` must occur exactly once, a pair through `also`), run `npx vitest run --project @syzygy/polaris-generation-provider <tests>`, and restore and re-check every subject. Killed = at least one failed test."
+  },
+  "subjects": [
+    {
+      "path": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "sha256": "53dccfc838cadbe7a4f510699fd5552d8c00b3404e1e6c8f1750163d52d15599"
+    }
+  ],
+  "tests": [
+    {
+      "path": "packages/polaris-generation-provider/src/messages-api-provider.test.ts",
+      "sha256": "9ab403131446271514ec9648e58edd3a48653dc6ab48b367edcd947160f7b896"
+    }
+  ],
+  "supersedes": {
+    "path": "docs/evidence/polaris-messages-adapter-mutants-2026-10-03.json",
+    "reason": "The #264 re-review (blocker 3): own-key checks (Object.hasOwn) for body keys, literal and shape headers; Q1-Q3 restore the `in` forms. Every mutant re-run at one commit, after rebasing onto the #258 head."
+  },
+  "summary": {
+    "mutants": 27,
+    "killed": 25,
+    "survived": 2,
+    "survivedIds": [
+      "M17-authToken-null-removed",
+      "M18-noop-control"
+    ],
+    "expectedToSurviveButKilled": []
+  },
+  "mutants": [
+    {
+      "id": "M1-tools-field-added",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "output_config: { effort: config.effort },",
+      "new": "output_config: { effort: config.effort }, tools: [],",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 23,
+      "killedBy": [
+        "Messages API route > rule 6: the acceptance predicate rejects each added or altered field",
+        "Messages API route > sends exactly the generator bytes plus profile-set limits, and maps usage and model",
+        "thinking profile > off omits the field; adaptive and a budget add exactly one thinking field and the reply may carry thinking blocks"
+      ]
+    },
+    {
+      "id": "M2-retry-on-500",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "status === 429 || status === 529) {",
+      "new": "status === 429 || status === 529 || status === 500) {",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "Messages API route > retries 429 then 529, reports every try, and stops on exhaustion or other statuses"
+      ]
+    },
+    {
+      "id": "M3-abort-signal-not-passed",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "{ signal: controller.signal }",
+      "new": "{}",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 23,
+      "killedBy": [
+        "Messages API route > aborts mid-response and closes the connection, and does not start when already aborted",
+        "accounting and budget > honours retry-after, stops when it cannot fit the budget, and carries spent tokens as unknown after a timeout"
+      ]
+    },
+    {
+      "id": "M4-permit-cap-ignored",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "Math.min(input.permit.maxOutputBytes, input.permit.maxUsageUnits, config.maxOutputTokens)",
+      "new": "config.maxOutputTokens",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "Messages API route > lets permit allowances lower max_tokens but never raise it"
+      ]
+    },
+    {
+      "id": "M5-retry-after-ignored",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "), hinted);",
+      "new": "), 0);",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "accounting and budget > honours retry-after, stops when it cannot fit the budget, and carries spent tokens as unknown after a timeout"
+      ]
+    },
+    {
+      "id": "M6-unknown-billing-coerced",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "total = null;   // the try's billing",
+      "new": "void 0;   // the try's billing",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "accounting and budget > honours retry-after, stops when it cannot fit the budget, and carries spent tokens as unknown after a timeout"
+      ]
+    },
+    {
+      "id": "M7-thinking-bytes-altered",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "{ type: 'adaptive' } : { type: 'enabled'",
+      "new": "{ type: 'adaptive', display: 'x' } : { type: 'enabled'",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "thinking profile > off omits the field; adaptive and a budget add exactly one thinking field and the reply may carry thinking blocks"
+      ]
+    },
+    {
+      "id": "M8-try-deadline-removed",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "const timer = setTimeout(() => { timedOut = true; controller.abort(); }, remaining);",
+      "new": "const timer = setTimeout(() => undefined, remaining);",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "accounting and budget > honours retry-after, stops when it cannot fit the budget, and carries spent tokens as unknown after a timeout"
+      ]
+    },
+    {
+      "id": "M9-header-literal-dropped",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "'x-stainless-helper-method': 'stream',",
+      "new": "",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 19,
+      "totalTests": 23,
+      "killedBy": [
+        "Messages API route > aborts mid-response and closes the connection, and does not start when already aborted",
+        "Messages API route > lets permit allowances lower max_tokens but never raise it",
+        "Messages API route > refuses a tool-use reply (stop reason tool_use) as incomplete",
+        "Messages API route > refuses body fields and headers named like Object.prototype members",
+        "Messages API route > retries 429 then 529, reports every try, and stops on exhaustion or other statuses",
+        "Messages API route > rule 6: the acceptance predicate rejects each added or altered field"
+      ]
+    },
+    {
+      "id": "M10-ambient-env-guard-removed",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "Object.keys(process.env).some(name => name.startsWith('ANTHROPIC_')) || ambientNetworkEnvironment().length > 0",
+      "new": "false",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 23,
+      "killedBy": [
+        "ambient environment and pins > re-checks the ambient environment before every try, not only the first",
+        "ambient environment and pins > refuses construction while any ANTHROPIC_* variable or Node TLS/proxy variable is set, and refuses a later start the same way"
+      ]
+    },
+    {
+      "id": "M11-version-pin-removed",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "if (INSTALLED_MESSAGES_SDK_VERSION !== (config.pinnedVersion ?? PINNED_MESSAGES_SDK_VERSION)) throw",
+      "new": "if (false) throw",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "ambient environment and pins > sends no Authorization header and no custom header, and refuses an unpinned SDK"
+      ]
+    },
+    {
+      "id": "M12-stop-reason-unchecked",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "if (message.stop_reason !== 'end_turn') {",
+      "new": "if (false) {",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 23,
+      "killedBy": [
+        "Messages API route > refuses a tool-use reply (stop reason tool_use) as incomplete",
+        "completion and billing evidence > treats any stop reason but end_turn as a failure"
+      ]
+    },
+    {
+      "id": "M13-rejected-try-total-assumed-unbilled",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "total = unbilledTry ? prior(attempts, id, n) : null;",
+      "new": "total = prior(attempts, id, n);",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "completion and billing evidence > counts a rejected try as unbilled only on the provider's documented error body"
+      ]
+    },
+    {
+      "id": "M14-rejected-try-usage-assumed-zero",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "usageUnits: unbilledTry ? 0 : null, backoffMs: more",
+      "new": "usageUnits: 0, backoffMs: more",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "completion and billing evidence > counts a rejected try as unbilled only on the provider's documented error body"
+      ]
+    },
+    {
+      "id": "M15-null-usage-coerced",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "? parts.reduce((a, b) => a + b, 0) : null;",
+      "new": "? parts.reduce((a, b) => a + b, 0) : 0;",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "completion and billing evidence > reports unknown usage when the reply carries none"
+      ]
+    },
+    {
+      "id": "M16-non-text-block-allowed",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "message.content.some(block => block.type !== 'text' && block.type !== 'thinking' && block.type !== 'redacted_thinking') ||",
+      "new": "false ||",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "completion and billing evidence > refuses a reply that mixes text with a tool call"
+      ]
+    },
+    {
+      "id": "M17-authToken-null-removed",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "authToken: null, ",
+      "new": "",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 23,
+      "killedBy": [],
+      "note": "equivalent while the ambient-environment guard holds: no ANTHROPIC_AUTH_TOKEN can reach the client"
+    },
+    {
+      "id": "M18-noop-control",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "const DEFAULT_RETRY = { maxAttempts: 4,",
+      "new": "const DEFAULT_RETRY = { maxAttempts: 4.0,",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 23,
+      "killedBy": [],
+      "expected": "survived",
+      "note": "equivalent control"
+    },
+    {
+      "id": "M19-node-network-env-ignored",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "Object.keys(process.env).some(name => name.startsWith('ANTHROPIC_')) || ambientNetworkEnvironment().length > 0",
+      "new": "Object.keys(process.env).some(name => name.startsWith('ANTHROPIC_'))",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 23,
+      "killedBy": [
+        "ambient environment and pins > re-checks the ambient environment before every try, not only the first",
+        "ambient environment and pins > refuses construction while any ANTHROPIC_* variable or Node TLS/proxy variable is set, and refuses a later start the same way"
+      ]
+    },
+    {
+      "id": "M22-timeout-and-connection-unpinned",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "'x-stainless-timeout': '600', connection: 'keep-alive',",
+      "new": "",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 19,
+      "totalTests": 23,
+      "killedBy": [
+        "Messages API route > aborts mid-response and closes the connection, and does not start when already aborted",
+        "Messages API route > lets permit allowances lower max_tokens but never raise it",
+        "Messages API route > refuses a tool-use reply (stop reason tool_use) as incomplete",
+        "Messages API route > refuses body fields and headers named like Object.prototype members",
+        "Messages API route > retries 429 then 529, reports every try, and stops on exhaustion or other statuses",
+        "Messages API route > rule 6: the acceptance predicate rejects each added or altered field"
+      ]
+    },
+    {
+      "id": "M23-connection-value-unpinned",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "'x-stainless-timeout': '600', connection: 'keep-alive',",
+      "new": "'x-stainless-timeout': '600',",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 19,
+      "totalTests": 23,
+      "killedBy": [
+        "Messages API route > aborts mid-response and closes the connection, and does not start when already aborted",
+        "Messages API route > lets permit allowances lower max_tokens but never raise it",
+        "Messages API route > refuses a tool-use reply (stop reason tool_use) as incomplete",
+        "Messages API route > refuses body fields and headers named like Object.prototype members",
+        "Messages API route > retries 429 then 529, reports every try, and stops on exhaustion or other statuses",
+        "Messages API route > rule 6: the acceptance predicate rejects each added or altered field"
+      ]
+    },
+    {
+      "id": "M25-literal-values-unchecked",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "if (Object.hasOwn(LITERALS, name)) { if (value !== LITERALS[name])",
+      "new": "if (Object.hasOwn(LITERALS, name)) { if (false)",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "Messages API route > rule 6: the acceptance predicate rejects each added or altered field"
+      ]
+    },
+    {
+      "id": "M27-ambient-env-not-rechecked-per-try",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "      try { refuseAmbientEnvironment(n - 1); } catch (error) { if (error instanceof MessagesApiProviderError) throw fail('ambient-environment', n - 1); throw error; }   // every try, not only the first\n",
+      "new": "",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "ambient environment and pins > re-checks the ambient environment before every try, not only the first"
+      ]
+    },
+    {
+      "id": "M28-upstream-not-validated-at-construction",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "  if (config.upstream !== undefined) { try { assertAllowedUpstream(config.upstream.url, config.upstream.loopbackForTests); } catch { throw new MessagesApiProviderError('invalid-config', 0); } }\n",
+      "new": "",
+      "tests": [
+        "messages-api-provider"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "ambient environment and pins > refuses, at construction, a loopback upstream without the test-only token and any other non-provider upstream (production wiring)"
+      ]
+    },
+    {
+      "id": "Q1-body-key-via-in",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "if (!Object.hasOwn(want, key)) violations.push(`unlisted body field ${key}`);",
+      "new": "if (!(key in want)) violations.push(`unlisted body field ${key}`);",
+      "tests": [
+        "messages-api"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "Messages API route > refuses body fields and headers named like Object.prototype members"
+      ]
+    },
+    {
+      "id": "Q2-literal-header-via-in",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "    if (Object.hasOwn(LITERALS, name)) {",
+      "new": "    if (name in LITERALS) {",
+      "tests": [
+        "messages-api"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "Messages API route > refuses body fields and headers named like Object.prototype members"
+      ]
+    },
+    {
+      "id": "Q3-shape-header-via-in",
+      "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+      "old": "    else if (Object.hasOwn(SHAPES, name)) {",
+      "new": "    else if (name in SHAPES) {",
+      "tests": [
+        "messages-api"
+      ],
+      "baselineGreen": true,
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 23,
+      "killedBy": [
+        "Messages API route > refuses body fields and headers named like Object.prototype members"
+      ]
+    }
+  ]
+}
