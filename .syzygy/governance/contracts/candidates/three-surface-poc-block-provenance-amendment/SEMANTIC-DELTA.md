@@ -72,26 +72,45 @@ with both captures' byte counts and digests. The script is
   5,751,883-byte `/api/poc` body. The pursuit's "~740 KB / 13.2%" was
   measured at an earlier Butlers revision over 7,527 items and 6,749 files;
   the figure grows with row count.
-- **Nothing else in the body repeats a header this way.** A sweep over every
-  list of records in the body, comparing each record field against the
-  enclosing object's scalar field of the same key, finds four populations:
-  the two above, and two inside `projectShape.facts[].fact.declarations[]`
-  (`fact` 416 of 416, `value` 415 of 416). Those two are per-declaration
-  evidence, owned by the PWB specification. The one `value` that differs
-  shows why a declaration carries its own: that fact is Unknown and states no
-  value, while its declaration still records what it declared.
+- **Nothing else in the body repeats a header this way.** The script's
+  `headerRepeats` sweep compares each field of every record in every list in
+  the body with the same-named scalar field of the object holding the list,
+  as whole values. It finds four populations: the two above, and two inside
+  `projectShape.facts[].fact.declarations[]` (`fact` in 416 of 416
+  declarations, and `value` in 415 of the 415 whose fact states a value).
+  Those two are per-declaration evidence, owned by the PWB specification. The
+  416th declaration shows why a declaration carries its own value: its fact is
+  Unknown and states none, while the declaration still records what it
+  declared.
 
 ## What changes, and why each part has the shape it has
 
 ### 1. One statement of provenance per observation
 
-Each observation states its provenance once, as one record in the shape the
-machine answer's entities and relationships carry, and names its revision
-nowhere else. The second clause matters: without it, an implementation could
+Each observation states its provenance once, as one record in the shape each
+element of the entities' and relationships' provenance lists takes, and no
+other field of the observation, its own or a row's, holds the revision as its
+whole value. The second clause matters: without it, an implementation could
 add the shared record and keep `doltRevision` beside it, which is a second
-statement of the same value inside the same block. The text names the shape
-by reference to the entities and relationships, not by field names, so the
-specification does not freeze a type name.
+statement of the same value inside the same block. Round 1 found the first
+draft's oracle swept only the rows, so that case passed; the oracle now
+sweeps every field of the observation and requires exactly one field to hold
+the revision, the record's. "Names" is whole-value equality: an abbreviated
+or prefixed form elsewhere on the page (an anchor's `git-tree:<revision>`) is
+not in the observation and is not counted.
+
+The text names the shape by reference to the entities and relationships, not
+by field names, so the specification does not freeze a type name. Entities
+carry a list of such records; an observation carries one.
+
+**Where the capture instant lives.** [Observed] The shared shape has no
+capture-instant field (`model.ts`, `PocProvenance`: kind, source, revision,
+optional digest), while the reader notes define an identified observation as
+the pair (source revision, capture instant). Round 1 asked where the instant
+goes. The amended text answers: it stays on the observation beside the
+record, as the second half of the observation's identity, and it is not a
+second statement of provenance. That keeps the shared shape as it is, so no
+fourth shape appears, and keeps the identity pair whole.
 
 [Inferred] The existing provenance kinds have no Dolt kind. Adding one is an
 implementation choice inside the shared shape, not a second shape.
@@ -100,8 +119,13 @@ implementation choice inside the shared shape, not a second shape.
 
 "Identified observation" is already defined in the reader notes as the pair
 (source revision, capture instant). The rule forbids exactly those two values,
-compared as whole field values, in any row field. It is narrower than the
-bead's "a row may not repeat a value its block declares", on purpose:
+compared as whole field values, in any row field, with one exception: a work
+item's created, updated and closed times are read from the database, so one
+of them equal to the capture instant would be a fact, not a restatement, and
+the oracle leaves them out of the capture-instant comparison. [Inferred] The
+coincidence is unlikely (the capture instant carries milliseconds and those
+times do not), but a true fact must never be a falsifier. It is narrower than
+the bead's "a row may not repeat a value its block declares", on purpose:
 
 - the general form would also reach the PWB-owned declaration fields above,
   where repetition is evidence, and this package may not amend the PWB
@@ -117,8 +141,15 @@ requirements, and the amendment says how: by belonging to the observation.
 ### 3. The oracles become sweeps
 
 Both requirements were sampled checks. Each now adds a sweep over every
-served row, with the complete served set as its denominator, comparing field
-values against the two identity values.
+field of the served observation, its own and every row's, with the
+observation's own fields and the complete served set as its denominator,
+comparing whole values against the two identity values: exactly one field
+holds each, the record's revision and the observation's own capture instant.
+
+**Still one obligation form.** The new bullets read "The observation so
+produced (or so served) SHALL …", tying them to the requirement's own
+trigger, so each requirement stays `event-response`. Round 1 judged the form
+unchanged and asked for that anchoring.
 
 ## Current meaning, and proposed meaning
 
@@ -129,16 +160,17 @@ The builder lists every signed line the patch replaces (13 in POC-REQ-001,
 
 | Part | POC-REQ-001 now | POC-REQ-001 proposed |
 |---|---|---|
-| Required behavior | One identified observation; every entry carries the revision as provenance | Unchanged sentence, plus **One statement of provenance**: one shared-shape record names the revision, the revision appears nowhere else, no entry carries the revision or capture instant |
-| Case | Run at a known commit | Plus a sweep of every served entry, denominator the complete inventory |
+| Required behavior | One identified observation; every entry carries the revision as provenance | Unchanged sentence, plus **One statement of provenance**: one shared-shape record names the revision, no other field holds it, the capture instant stays on the observation, no entry carries the revision or capture instant |
+| Case | Run at a known commit | Plus a sweep of every field of the observation, denominator its own fields and the complete inventory |
 | Observable | Revision and inventory in the machine answer | The provenance record and inventory in the machine answer |
-| Oracle | Served revision vs `git rev-parse HEAD`; sampled size and digest | The record's revision vs `git rev-parse HEAD`; sampled size and digest; every entry's fields vs the two identity values |
-| Falsifier | An entry whose revision, size or digest differs; no revision | A differing record revision or sampled size or digest; no record, another shape, or the revision twice; an entry carrying the revision or capture instant |
+| Oracle | Served revision vs `git rev-parse HEAD`; sampled size and digest | The record's revision vs `git rev-parse HEAD`; sampled size and digest; every field of the observation vs the two identity values, exactly one holding each |
+| Falsifier | An entry whose revision, size or digest differs; no revision | A differing record revision or sampled size or digest; no record, another shape, or another field holding the revision; an entry carrying the revision or capture instant |
 | Scenario | Identified by R; every entry cites R as its provenance revision | Identified by R, whose one record names R; every entry takes R from that record; AND no entry carries R or the capture instant |
 
 POC-REQ-010 changes the same way, with "Dolt revision" for "revision" and
-"work-item fact" for "inventory entry". Its signed sentence "with every served
-work-item fact carrying that revision as provenance" stays.
+"work-item fact" for "inventory entry", plus the database-time exception
+above. Its signed sentence "with every served work-item fact carrying that
+revision as provenance" stays.
 
 The warrants blocks do not move, so no `CONTRACT-COVERAGE.md` row moves.
 
@@ -156,6 +188,10 @@ The warrants blocks do not move, so no `CONTRACT-COVERAGE.md` row moves.
   `IMPACT-LEDGER.md`).
 - The PWB specification, including the per-anchor revision PWB-REQ-014
   requires on every anchor.
+- The bead's third ask, a test asserting what fraction of `workItems` and
+  `codeStructure` the human page renders (pursuit move S6-M3), is in neither
+  package. [Inferred] It needs no specification change, and S6-M3's own
+  prerequisite is "none". It belongs in a test-only bead.
 
 ## Terms introduced / retired
 
@@ -189,5 +225,8 @@ lose the per-row field and gain one shared-shape record, and every reader of
 the PWB half; stopping rule: on REVISE, repair once, dispatch no second round,
 and route the result to the owner.
 **Reviewer:** a fresh-context subagent that did not draft this package.
-**Verdict:** recorded verbatim in the raw under `docs/reviews/`, and in the
-PWB half's `ROUND-1-DISPOSITIONS.md`, which covers both packages.
+**Verdict:** `REVISE` for both packages, copied from lines 5 and 6 of
+`docs/reviews/R-N9-MACHINE-CHANNEL-AMENDMENTS-1-RAW.md`. Every finding was
+repaired once (the PWB half's `ROUND-1-DISPOSITIONS.md`, which covers both
+packages) and, under the stopping rule, no round 2 was dispatched. The
+repaired bytes are unreviewed.

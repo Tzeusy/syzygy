@@ -5,9 +5,13 @@
 > answer binds anything (VIS-4). Register row: P-97.
 
 **Status:** drafted 2026-10-03 under bead `syzygy-u05.9`. One fresh-context
-review round covers this package and its PWB sibling; its verdict and
-dispositions are recorded in the PWB half's `ROUND-1-DISPOSITIONS.md`, in
-`../pwb-anchor-resolution-amendment/`, once the round has run.
+review round covered this package and its PWB sibling. It returned `REVISE`
+for both (`docs/reviews/R-N9-MACHINE-CHANNEL-AMENDMENTS-1-RAW.md` lines 5
+and 6). Every finding was repaired once (the PWB half's
+`ROUND-1-DISPOSITIONS.md`, in `../pwb-anchor-resolution-amendment/`) and,
+under the stopping rule set before the round, no round 2 was dispatched.
+**The repaired bytes are unreviewed.** The drafter recommends ordering one
+confirmation round before signing (question 1).
 
 ## What you would be signing
 
@@ -17,7 +21,9 @@ full account. In short:
 
 - **One provenance shape.** Each of the two observations states where it came
   from once, as one record in the same shape the machine answer's entities and
-  relationships already use. Today they use three different shapes.
+  relationships already use, and no other field repeats the revision. Today
+  they use three different shapes. The capture instant stays on the
+  observation beside the record.
 - **No row repeats it.** No work item and no file entry may carry the
   observation's revision or capture instant in a field of its own. Each still
   carries the revision as provenance, by belonging to the observation.
@@ -34,7 +40,8 @@ no served fact and no human surface.
 
 | Option | Meaning |
 |---|---|
-| **Sign v1.0** (recommended once the review clears) | The sign-off change applies the patches and carries the reconciliation updates in `IMPACT-LEDGER.md`. |
+| Sign v1.0 | The sign-off change applies the patches and carries the reconciliation updates in `IMPACT-LEDGER.md`. |
+| **Order one confirmation round** (recommended) | A fresh reviewer reads the repaired bytes before you sign. |
 | Decline | The two requirements stay as signed, and every row keeps its revision. |
 | Revise | Name what to change; a new version gets a new review round. |
 
@@ -57,7 +64,7 @@ The bead asked for "the rule that a row may not repeat a value its block
 declares". This package forbids exactly two values per row: the observation's
 revision and its capture instant.
 
-- **Why narrower.** [Observed] The only other repeats of this kind in the body
+- **Why narrower.** [Observed, the evidence record's `headerRepeats`] The only other repeats of this kind in the body
   are inside PWB-owned project-shape declarations, where a per-declaration
   value is evidence: in one of 416, the fact is Unknown and states no value
   while its declaration still carries the value it declared. A general rule

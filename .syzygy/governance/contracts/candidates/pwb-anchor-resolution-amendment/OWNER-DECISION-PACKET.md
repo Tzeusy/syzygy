@@ -5,9 +5,12 @@
 > answer binds anything (VIS-4). Register row: P-96.
 
 **Status:** drafted 2026-10-03 under bead `syzygy-u05.9`. One fresh-context
-review round covers this package and its POC sibling; its verdict and
-dispositions are recorded in `ROUND-1-DISPOSITIONS.md` beside this file once
-the round has run.
+review round covered this package and its POC sibling. It returned `REVISE`
+for both (`docs/reviews/R-N9-MACHINE-CHANNEL-AMENDMENTS-1-RAW.md` lines 5
+and 6). Every finding was repaired once (`ROUND-1-DISPOSITIONS.md` beside
+this file) and, under the stopping rule set before the round, no round 2 was
+dispatched. **The repaired bytes are unreviewed.** The drafter recommends
+ordering one confirmation round before signing (question 1).
 
 ## What you would be signing
 
@@ -20,11 +23,17 @@ One amendment to PWB-REQ-014 in the signed PWB specification. Read
   rather than asking for new work.
 - **A resolution count.** Each anchored block, and the narrative as a whole,
   carries `anchorsResolved`: how many of its anchors resolve against the
-  machine answer, out of how many. [Observed] At Butlers `32f38feb` the
-  narrative would read 883 of 902. The 19 that do not resolve point at
-  records the machine answer serves without an identity of their own.
+  machine answer, out of how many. An anchor resolves when the machine
+  answer serves exactly one record whose own `identity` field equals the
+  anchor's target. [Observed] At Butlers `32f38feb` the narrative would read
+  883 of 902. The 19 that do not resolve name a target the machine answer
+  serves nowhere as a whole value; [Inferred] each is composed from fields it
+  does serve (a provenance record's kind and digest, or a block header's
+  revision). When there is nothing to resolve against, the pair says Unknown,
+  never zero.
 - **Still never authority.** Every narrative unit stays `non-citable`, at 902
-  of 902 as at 0 of 902.
+  of 902 as at 0 of 902, and the pair itself may not feed any evidence or
+  status claim.
 
 **What the bead asked for and this package does not do.** The bead said
 "compute citable from the 934 resolved anchors instead of hardcoding false".
@@ -38,7 +47,8 @@ count needs a fresh implementation authorization after sign-off.
 
 | Option | Meaning |
 |---|---|
-| **Sign v1.0** (recommended once the review clears) | Signed by version tag under Scope A. The sign-off change applies the patches and carries the reconciliation updates listed in `IMPACT-LEDGER.md`. |
+| Sign v1.0 | Signed by version tag under Scope A. The sign-off change applies the patches and carries the reconciliation updates listed in `IMPACT-LEDGER.md`. |
+| **Order one confirmation round** (recommended) | A fresh reviewer reads the repaired bytes before you sign. |
 | Decline | PWB-REQ-014 stays as signed; the narrative serves no count. |
 | Revise | Name what to change; a new version gets a new review round. |
 
@@ -77,7 +87,7 @@ exact-intent band, not by the anchor set, so this package leaves it alone.
 
 | Option | Meaning |
 |---|---|
-| **Leave it** (recommended) | One instance, and its identity already equals a block anchor's target identity. |
+| **Leave it** (recommended) | One instance, and [Observed] its identity already equals a block anchor's target identity. |
 | Commission a PWB-REQ-015 delta | That record takes the anchor shape too, in a separate package. |
 
 ## Question 4 — show the count on the page?

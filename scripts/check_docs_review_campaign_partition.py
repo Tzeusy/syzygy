@@ -258,6 +258,11 @@ CAMPAIGNS = (
         "PWB class-granular extraction gate",
         r"R-PWB-CLASS-GRANULAR-EXTRACTION-.*\.md",
     ),
+    campaign(
+        "n9-machine-channel",
+        "N9 machine-channel amendments gate",
+        r"R-N9-MACHINE-CHANNEL-.*\.md",
+    ),
 )
 
 

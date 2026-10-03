@@ -37,9 +37,11 @@ authorization:
   `model-observations.test.ts`, `trajectory-projection.test.ts`,
   `trajectory.test.ts`, `polaris-narrative.test.ts`,
   `page-size-delta.test.ts`, and the two `.live.test.ts` files.
-- A new sweep test per requirement: every served row, no field whose whole
-  value is the observation's revision or capture instant, with a rule-6
-  mutant that puts one back.
+- A new sweep test per requirement: over every field of the observation, its
+  own and every row's, exactly one holds the revision (the record's) and
+  exactly one the capture instant (the observation's own, leaving out a work
+  item's database times), with rule-6 mutants that put a copy back in a row
+  and in the header.
 - `materialization.ts`'s `doltRevisionAtCreation` is a different record (the
   Dolt head when a bead was materialized) and is out of scope.
 

@@ -35,10 +35,11 @@ authorization:
   intent. It should keep passing, since no unit becomes citable.
 
 [Observed] At this capture the pair would read 883 of 902 for the narrative.
-The 19 unresolved anchors target records the machine answer serves without an
-identity of their own (`SEMANTIC-DELTA.md`, evidence). Giving those records a
-served identity is not part of this delta; until something does, the count
-stays below its total and is served that way.
+The 19 unresolved anchors name targets the machine answer serves nowhere as a
+whole value; [Inferred] each is composed from served fields
+(`SEMANTIC-DELTA.md`, evidence). Serving those records with an `identity` of
+their own is not part of this delta; until something does, the count stays
+below its total and is served that way.
 
 ## Packages and fields this collides with
 

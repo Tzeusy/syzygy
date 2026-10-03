@@ -71,6 +71,10 @@ class Target:
     replaced: tuple[str, ...]
     #: Every scenario heading the proposed block carries, in order.
     scenarios: tuple[str, ...]
+    #: Exact occurrence counts of tokens (regular expressions) in the proposed
+    #: block, so an inserted sentence that names one fails even when every
+    #: required phrase survives.
+    token_counts: tuple[tuple[str, int], ...] = ()
 
 
 @dataclasses.dataclass(frozen=True)
@@ -243,6 +247,10 @@ def spec_findings(pkg: Package, proposed: bytes, current: bytes) -> list[str]:
             findings.append(f"{rid} scenario population differs: {headings}")
         if WARRANTS_RE.findall(block) != WARRANTS_RE.findall(old[rid]):
             findings.append(f"{rid} warrants changed")
+        for token, expected in target.token_counts:
+            found = len(re.findall(token, block))
+            if found != expected:
+                findings.append(f"{rid} carries {found} matches of token {token!r}, expected {expected}")
     return findings
 
 
@@ -384,6 +392,9 @@ def replace_once(data: bytes, old: str, new: str) -> bytes:
     return pattern.sub(lambda _match: new.encode("utf-8"), data, count=1)
 
 
+UNQUOTE = str.maketrans("", "", "'\"")
+
+
 def run_selftest(
     pkg: Package,
     mutants: dict[str, tuple[pathlib.Path, bytes, str]],
@@ -403,7 +414,9 @@ def run_selftest(
             failed += 1
             continue
         findings = structure_findings(pkg, {**proposed, rel: mutated}, current)
-        if not any(finding.startswith(expected) for finding in findings):
+        # repr() picks its quote by content, so compare with quotes removed.
+        unquoted = expected.translate(UNQUOTE)
+        if not any(finding.translate(UNQUOTE).startswith(unquoted) for finding in findings):
             print(f"SELFTEST FAILED: mutant {name!r} gave {findings}, expected {expected!r}")
             failed += 1
     spec_patch = ROOT / pkg.proposed_dir / "spec.md.patch"
@@ -560,22 +573,28 @@ REQ_014 = Target(
     req_id="PWB-REQ-014",
     required_once=(
         "Every anchor the machine narrative serves SHALL take one shape:",
-        "its own identity, which names the one block it belongs to;",
+        "its own identity, which begins with the identity of the one block it belongs to followed by `#`; its target class and target identity; its revision; the claims of that block it supports; the target's captured label, tier and reason; and its locator.",
         "The machine narrative SHALL carry an `anchorsResolved` pair on each anchored claim block, and one for the whole narrative:",
-        "An anchor resolves when the machine answer at the same evaluation serves exactly one record whose own served identity equals the anchor's target identity.",
+        "An anchor resolves when the machine answer at the same evaluation serves exactly one record with an `identity` field of its own whose whole value equals the anchor's target identity.",
+        "A field that refers to another record's identity, such as a stamp's or a support's source identity, is a reference and not a record's own identity, and an identity composed from other fields counts for nothing.",
         "An anchor whose target the machine answer does not serve, or serves without an identity of its own, does not resolve.",
-        "the narrative's pair is the sum of its blocks' pairs.",
+        "It is not the relation RFC7-3 forbids, under which something resolves to Polaris as its authority.",
+        "Both numbers are counted, never estimated, and the narrative's pair is the sum of its blocks' pairs.",
         "A count below its total SHALL be served as counted, never rounded up, omitted or rendered as a pass.",
+        "When the machine answer at that evaluation serves no record with an identity of its own, every pair is Unknown with its reason, never a count.",
+        "The pair counts resolution and never confers authority.",
         "A block whose every anchor resolves stays `presentation-artifact` and `non-citable`;",
         "no field derived from the pair SHALL make a narrative unit citable or stand in for an epistemic label.",
+        "The pair is itself presentation: no evidence, snapshot input or status claim SHALL take it as input.",
         "An opening carries no anchor set, so it carries no pair",
         "The pair is a machine-narrative field, not a project-shape claim, and Polaris need not render it.",
-        "then withhold one resolved target's identity from the machine answer and resolve again.",
-        "An independent resolver reading only the machine answer's bytes reproduces each block's `anchorsResolved` pair and the narrative's pair exactly;",
-        "withholding one resolved target's identity lowers the resolved count of exactly the blocks anchored to it, by the number of their anchors that name it, and every such block stays non-citable.",
-        "Expected resolution counts come from that independent resolver over the machine answer's bytes, never from the narrative builder.",
+        "then withhold one resolved target's identity from the machine answer and resolve again, and withhold every identity and resolve once more.",
+        "and its identity begins with the identity of the block that serves it followed by `#`.",
+        "An independent resolver that reads only the machine narrative's anchors and the machine answer's bytes at the same evaluation, and imports no rendering code, reproduces each block's `anchorsResolved` pair and the narrative's pair exactly;",
+        "withholding one resolved target's identity lowers the resolved count of exactly the blocks anchored to it, by the number of their anchors that name it, and every such block stays non-citable; withholding every identity turns every pair Unknown.",
+        "Expected resolution counts come from that independent resolver, never from the narrative builder.",
         "an anchor missing a field of the one shape or naming no block or another block;",
-        "a pair that differs from the independent count or is rounded up; or a narrative unit made citable by its pair.",
+        "a pair that differs from the independent count, is rounded up, or is a count where it should be Unknown; or a narrative unit made citable, or a status claim fed, by its pair.",
         "the block's `anchorsResolved` pair is 2 of 3",
         "the block stays `non-citable` presentation, exactly as it would at 3 of 3",
         # The signed non-citability obligations this amendment leaves in force.
@@ -601,6 +620,9 @@ REQ_014 = Target(
         "#### Scenario: A failed or unsafe diagram emits nothing active",
         "#### Scenario: Anchor resolution is counted, never made authority",
     ),
+    # Nine mentions of citability, all of them prohibitions or the signed
+    # attribute; no permissive modal at all.
+    token_counts=((r"citable", 9), (r"\bMAY\b", 0)),
 )
 
 
@@ -680,6 +702,7 @@ def selftest() -> int:
     pkg = PACKAGE
     proposed = proposed_bytes(pkg)
     spec = proposed[SPEC]
+    phrase = "PWB-REQ-014 carries 0 copies of required phrase: "
     mutants = {
         "other requirement drift": (
             SPEC, replace_once(spec, "### Requirement: PWB-REQ-015 — Item detail preserves authority bands and exact intent\n", "### Requirement: PWB-REQ-015 — Item detail preserves authority bands\n"),
@@ -694,47 +717,79 @@ def selftest() -> int:
             "signed PWB-REQ-014 line edited or removed",
         ),
         "non-citability dropped": (
-            SPEC, replace_once(spec, "every\n    anchor resolves stays `presentation-artifact` and `non-citable`;", "every\n    anchor resolves becomes citable;"),
-            "PWB-REQ-014 carries 0 copies of required phrase: 'A block whose every anchor resolves",
+            SPEC, replace_once(spec, "every anchor resolves stays `presentation-artifact` and `non-citable`;", "every anchor resolves becomes citable;"),
+            phrase + "'A block whose every anchor resolves",
         ),
         "citable-by-count allowed": (
-            SPEC, replace_once(spec, "no field derived from the pair SHALL make a narrative unit citable", "a field derived from the pair MAY make a narrative unit citable"),
-            "PWB-REQ-014 carries 0 copies of required phrase: 'no field derived from the pair",
+            SPEC, replace_once(spec, "no field derived from the pair SHALL make a narrative unit citable", "a field derived from the pair may make a narrative unit citable"),
+            phrase + "'no field derived from the pair",
+        ),
+        "authority sentence dropped": (
+            SPEC, replace_once(spec, "The pair counts resolution and never confers authority.", ""),
+            phrase + "'The pair counts resolution",
+        ),
+        "pair fed to evidence": (
+            SPEC, replace_once(spec, "The pair is itself presentation: no evidence, snapshot input or status claim SHALL take it as input.", ""),
+            phrase + "'The pair is itself presentation",
+        ),
+        "permissive citation inserted": (
+            SPEC, replace_once(spec, "  - The pair is a machine-narrative field,", "  - A block at its full count is citable evidence.\n  - The pair is a machine-narrative field,"),
+            "PWB-REQ-014 carries 10 matches of token 'citable', expected 9",
+        ),
+        "permissive modal inserted": (
+            SPEC, replace_once(spec, "  - The pair is a machine-narrative field,", "  - A block at its full count MAY be cited as evidence.\n  - The pair is a machine-narrative field,"),
+            "PWB-REQ-014 carries 1 matches of token '\\\\bMAY\\\\b', expected 0",
+        ),
+        "estimation allowed": (
+            SPEC, replace_once(spec, "Both numbers are counted, never estimated,", "Both numbers may be estimated,"),
+            phrase + "\"Both numbers are counted",
         ),
         "rounding allowed": (
             SPEC, replace_once(spec, "never rounded up, omitted or rendered as a pass.", "rounded to the nearest pass."),
-            "PWB-REQ-014 carries 0 copies of required phrase: 'A count below its total",
+            phrase + "'A count below its total",
+        ),
+        "Unknown arm dropped": (
+            SPEC, replace_once(spec, "When the machine answer at that evaluation serves no record with an identity of its own, every pair is Unknown with its reason, never a count.", ""),
+            phrase + "'When the machine answer at that evaluation",
         ),
         "resolution loosened": (
-            SPEC, replace_once(spec, "serves exactly one record whose own served identity", "serves a record whose own served identity"),
-            "PWB-REQ-014 carries 0 copies of required phrase: 'An anchor resolves when",
+            SPEC, replace_once(spec, "serves exactly one record with an `identity` field of its own", "serves a record with an `identity` field of its own"),
+            phrase + "'An anchor resolves when",
+        ),
+        "references admitted": (
+            SPEC, replace_once(spec, "is a reference and not a record's own identity, and an identity composed from other fields counts for nothing.", "counts as the record's identity."),
+            phrase + "\"A field that refers to another record",
         ),
         "identity-less target resolves": (
-            SPEC, replace_once(spec, "or\n    serves without an identity of its own, does not resolve.", "does not resolve."),
-            "PWB-REQ-014 carries 0 copies of required phrase: 'An anchor whose target",
+            SPEC, replace_once(spec, "or serves without an identity of its own, does not resolve.", "does not resolve."),
+            phrase + "'An anchor whose target",
         ),
         "envelope pair dropped": (
-            SPEC, replace_once(spec, " and the narrative's pair is\n    the sum of its blocks' pairs.", "."),
-            "PWB-REQ-014 carries 0 copies of required phrase: \"the narrative's pair is the sum",
+            SPEC, replace_once(spec, "and the narrative's pair is the sum of its blocks' pairs.", "."),
+            phrase + "\"Both numbers are counted",
         ),
-        "anchor-to-block link dropped": (
-            SPEC, replace_once(spec, "its own identity, which names the one block it belongs to;", "its own identity;"),
-            "PWB-REQ-014 carries 0 copies of required phrase: 'its own identity, which names",
+        "shape field dropped": (
+            SPEC, replace_once(spec, "its target class and target identity; its revision; the claims", "its target class and target identity; the claims"),
+            phrase + "\"its own identity, which begins",
+        ),
+        "anchor-to-block link loosened": (
+            SPEC, replace_once(spec, "its own identity, which begins with the identity of the one block it belongs to followed by `#`;", "its own identity;"),
+            phrase + "\"its own identity, which begins",
         ),
         "independent resolver dropped": (
-            SPEC, replace_once(spec, "An independent resolver reading only the machine answer's bytes", "The narrative builder"),
-            "PWB-REQ-014 carries 0 copies of required phrase: \"An independent resolver",
+            SPEC, replace_once(spec, "An independent resolver that reads only the machine narrative's anchors", "The narrative builder, reading the machine narrative's anchors"),
+            phrase + "\"An independent resolver",
         ),
         "withholding limb dropped": (
-            SPEC, replace_once(spec, " Resolve every\n  anchor of the machine narrative against the machine answer at the same\n  evaluation, then withhold one resolved target's identity from the machine\n  answer and resolve again.", ""),
-            "PWB-REQ-014 carries 0 copies of required phrase: \"then withhold",
+            SPEC, replace_once(spec, "Resolve every anchor of the machine narrative against the machine answer at the same evaluation, then withhold one resolved target's identity from the machine answer and resolve again, and withhold every identity and resolve once more.", ""),
+            phrase + "\"then withhold",
         ),
         "falsifier limb dropped": (
-            SPEC, replace_once(spec, "an anchor missing a field of the one shape or naming no block\n  or another block; ", ""),
-            "PWB-REQ-014 carries 0 copies of required phrase: 'an anchor missing a field",
+            SPEC, replace_once(spec, "an anchor missing a field of the one shape or naming no block or another block;", ""),
+            phrase + "'an anchor missing a field",
         ),
         "signed non-citable bullet dropped": (
-            SPEC, replace_once(spec, "- Every owner-visible narrative unit SHALL carry `presentation-artifact` and\n  `non-citable` attributes", "- Every owner-visible narrative unit SHALL carry `presentation-artifact`\n  attributes"),
+            SPEC, replace_once(spec, "- Every owner-visible narrative unit SHALL carry `presentation-artifact` and `non-citable` attributes", "- Every owner-visible narrative unit SHALL carry `presentation-artifact` attributes"),
             "signed PWB-REQ-014 line edited or removed",
         ),
         "new scenario dropped": (

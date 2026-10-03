@@ -48,9 +48,13 @@ SUBJECTS = tuple(
 
 #: Phrases both amended requirements carry, one copy each.
 SHARED_REQUIRED = (
-    "The observation SHALL state its provenance once, as one record in the provenance shape the machine answer's entities and relationships carry,",
+    "provenance once, as one record in the shape each element of the machine answer's entity and relationship provenance lists takes,",
+    "The capture instant stays on the observation beside that record, as the second half of the observation's identity. It is not a second statement of provenance.",
     "carries that revision as provenance by belonging to the observation.",
-    "an exhausted sweep with no equal value decides.",
+    "Over every field of the served observation, compare each whole value against the",
+    "exactly one field holds the",
+    "the provenance record's, and exactly one holds the capture instant, the observation's own",
+    "an exhausted sweep decides.",
     "the provenance shape compared against is the one the machine answer's entities carry.",
 )
 
@@ -58,12 +62,12 @@ REQ_001 = engine.Target(
     req_id="POC-REQ-001",
     required_once=SHARED_REQUIRED + (
         "whose every entry carries that revision as provenance.",
-        "and that record names the revision. The observation SHALL name the revision nowhere else.",
+        "The observation so produced SHALL state its",
+        "and that record names the revision. No other field of the observation, its own or an entry's, SHALL hold the revision as its whole value.",
         "No inventory entry SHALL carry a field whose whole value is the observation's revision or its capture instant.",
-        "then sweeps every served inventory entry; the denominator is the complete served inventory.",
-        "compare each field's whole value against the observation's revision and capture instant;",
-        "Bounded: one revision, sampled entries for size and digest, every entry for the sweep.",
-        "an observation served without a provenance record, with it in another shape, or naming its revision twice;",
+        "then sweeps every field of the served observation, its own and every entry's; the denominator is the observation's own fields and the complete served inventory.",
+        "Bounded: one revision, sampled entries for size and digest, every field for the sweep.",
+        "an observation served without a provenance record, with it in another shape, or with any other field holding the revision;",
         "or an inventory entry that carries the observation's revision or capture instant.",
         "identified by R, whose one provenance record names R,",
         "no inventory entry carries R, or the observation's capture instant, in a field of its own",
@@ -84,18 +88,20 @@ REQ_001 = engine.Target(
         "  revision",
     ),
     scenarios=("#### Scenario: Structure observed at a commit",),
+    token_counts=((r"\bMAY\b", 0),),
 )
 
 REQ_010 = engine.Target(
     req_id="POC-REQ-010",
     required_once=SHARED_REQUIRED + (
         "with every served work-item fact carrying that revision as provenance.",
-        "and that record names the Dolt revision. The observation SHALL name the Dolt revision nowhere else.",
-        "No work-item fact SHALL carry a field whose whole value is the observation's Dolt revision or its capture instant.",
-        "then sweeps every served work-item fact; the denominator is the complete served item set.",
-        "compare each field's whole value against the observation's Dolt revision and capture instant;",
-        "without a provenance record, with it in another shape, or naming its Dolt revision twice;",
-        "or a work-item fact that carries the observation's Dolt revision or capture instant.",
+        "The observation so served SHALL state its",
+        "and that record names the Dolt revision. No other field of the observation, its own or a work-item fact's, SHALL hold the Dolt revision as its whole value.",
+        "No work-item fact SHALL carry a field whose whole value is the observation's Dolt revision, or carry the capture instant in any field other than a time the database itself records for that item.",
+        "then sweeps every field of the served observation, its own and every item's; the denominator is the observation's own fields and the complete served item set.",
+        "leaving out each item's created, updated and closed times, which the database records;",
+        "without a provenance record, with it in another shape, or with any other field holding the Dolt revision;",
+        "or a work-item fact that carries the observation's Dolt revision, or its capture instant outside a time the database records for that item.",
         "the served observation is identified by D, its one provenance record names D,",
         "no work-item fact carries D, or the observation's capture instant, in a field of its own",
     ),
@@ -113,6 +119,7 @@ REQ_010 = engine.Target(
         "  facts equal direct reads at D",
     ),
     scenarios=("#### Scenario: Items read at a Dolt head",),
+    token_counts=((r"\bMAY\b", 0),),
 )
 
 PACKAGE = engine.Package(
@@ -145,6 +152,8 @@ def selftest() -> int:
     proposed = engine.proposed_bytes(pkg)
     spec = proposed[SPEC]
     replace = engine.replace_once
+    one = "POC-REQ-001 carries 0 copies of required phrase: "
+    ten = "POC-REQ-010 carries 0 copies of required phrase: "
     mutants = {
         "other requirement drift": (
             SPEC, replace(spec, "### Requirement: POC-REQ-011 — Work-item observation is scoped to the registered bead-prefix", "### Requirement: POC-REQ-011 — Work-item observation is scoped"),
@@ -159,32 +168,48 @@ def selftest() -> int:
             "signed POC-REQ-001 line edited or removed",
         ),
         "second statement allowed": (
-            SPEC, replace(spec, "The observation SHALL name the revision nowhere else.", "The observation MAY name the revision elsewhere."),
-            "POC-REQ-001 carries 0 copies of required phrase",
+            SPEC, replace(spec, "No other field of the observation, its own or an entry's, SHALL hold the revision as its whole value.", "The header MAY repeat the revision."),
+            one + "and that record names the revision.",
         ),
         "per-entry repeat allowed": (
             SPEC, replace(spec, "No inventory entry SHALL carry a field whose whole value is the observation's revision or its capture instant.", "An inventory entry MAY carry the observation's revision."),
-            "POC-REQ-001 carries 0 copies of required phrase",
+            one + "No inventory entry SHALL",
         ),
-        "capture instant dropped": (
-            SPEC, replace(spec, "No work-item fact SHALL carry a field whose whole value is the observation's Dolt revision or its capture instant.", "No work-item fact SHALL carry a field whose whole value is the observation's Dolt revision."),
-            "POC-REQ-010 carries 0 copies of required phrase",
+        "capture instant homeless": (
+            SPEC, replace(spec, "SHALL hold the revision as its whole value. - The capture instant stays on the observation beside that record, as the second half of the observation's identity. It is not a second statement of provenance.", "SHALL hold the revision as its whole value.\n  - The capture instant is dropped."),
+            one + "The capture instant stays",
+        ),
+        "source timestamps not exempt": (
+            SPEC, replace(spec, "or carry the capture instant in any field other than a time the database itself records for that item.", "or its capture instant."),
+            ten + "No work-item fact SHALL",
         ),
         "shape requirement dropped": (
-            SPEC, replace(spec, "once, as one record in the provenance shape the machine answer's entities and relationships carry, and that record names the Dolt revision.", "once, and names the Dolt revision."),
-            "POC-REQ-010 carries 0 copies of required phrase",
+            SPEC, replace(spec, "provenance once, as one record in the shape each element of the machine answer's entity and relationship provenance lists takes, and that record names the Dolt revision.", "provenance once, and names the Dolt revision."),
+            ten + "provenance once, as one record",
+        ),
+        "sweep narrowed to a sample (001)": (
+            SPEC, replace(spec, "Over every field of the served observation, compare each whole value against the revision and", "Over one sampled entry, compare each whole value against the revision and"),
+            one + "Over every field of the served observation",
+        ),
+        "sweep narrowed to a sample (010)": (
+            SPEC, replace(spec, "Over every field of the served observation, compare each whole value against the Dolt revision", "Over one sampled item, compare each whole value against the Dolt revision"),
+            ten + "Over every field of the served observation",
+        ),
+        "header limb dropped": (
+            SPEC, replace(spec, "exactly one field holds the Dolt revision, the provenance record's, and", "no item field holds the Dolt revision, and"),
+            ten + "exactly one field holds the",
         ),
         "sweep denominator dropped": (
-            SPEC, replace(spec, "then sweeps every served inventory entry; the denominator is the complete served inventory.", "then samples entries."),
-            "POC-REQ-001 carries 0 copies of required phrase",
+            SPEC, replace(spec, "then sweeps every field of the served observation, its own and every entry's; the denominator is the observation's own fields and the complete served inventory.", "then samples entries."),
+            one + "then sweeps every field",
         ),
         "repeat falsifier dropped": (
-            SPEC, replace(spec, "or a work-item fact that carries the observation's Dolt revision or capture instant.", "."),
-            "POC-REQ-010 carries 0 copies of required phrase",
+            SPEC, replace(spec, "or a work-item fact that carries the observation's Dolt revision, or its capture instant outside a time the database records for that item.", "."),
+            ten + "or a work-item fact that carries",
         ),
         "scenario AND dropped": (
             SPEC, replace(spec, "- **AND** no inventory entry carries R, or the observation's capture instant, in a field of its own", ""),
-            "POC-REQ-001 carries 0 copies of required phrase",
+            one + "no inventory entry carries R",
         ),
         "signed obligation sentence dropped": (
             SPEC, replace(spec, "with every served work-item fact carrying that revision as provenance.", "."),
@@ -197,6 +222,10 @@ def selftest() -> int:
         "warrant moved": (
             SPEC, replace(spec, "contracts: [RFC1-5, RFC2-1, RFC4-3, RFC4-11, RFC4-12, RFC6-15, RFC9-38]", "contracts: [RFC1-5, RFC2-1, RFC4-3, RFC4-11, RFC4-12, RFC6-15]"),
             "POC-REQ-001 warrants changed",
+        ),
+        "permissive modal inserted": (
+            SPEC, replace(spec, "  - Every inventory entry carries that revision as provenance by", "  - An entry MAY restate it.\n  - Every inventory entry carries that revision as provenance by"),
+            "POC-REQ-001 carries 1 matches of token",
         ),
         "dependency drift": (
             GOVERNING, replace(proposed[GOVERNING], "24 requirement(s)", "25 requirement(s)"),

@@ -15,7 +15,7 @@
     "capturesRetained": false,
     "capturesRetainedNote": "the two response bodies are not committed; their byte counts and sha256 are recorded under capture, so a later capture can be compared byte for byte"
   },
-  "method": "python3 scripts/measure_machine_channel_provenance.py <api-poc.json> <api-poc-polaris.json>; output copied verbatim under figures",
+  "method": "python3 scripts/measure_machine_channel_provenance.py <api-poc.json> <api-poc-polaris.json>, run on the two captures; its whole output is copied verbatim under figures, and nothing else in this record is a measured figure",
   "figures": {
     "capture": {
       "apiPoc": {
@@ -56,9 +56,28 @@
       "anchorSupportsWithinBlockClaims": 902,
       "distinctTargetIds": 285
     },
+    "headerRepeats": {
+      "$.codeStructure.files[].revision": {
+        "rows": 6950,
+        "repeating": 6950
+      },
+      "$.projectShape.facts[].fact.declarations[].fact": {
+        "rows": 416,
+        "repeating": 416
+      },
+      "$.projectShape.facts[].fact.declarations[].value": {
+        "rows": 415,
+        "repeating": 415
+      },
+      "$.workItems.items[].doltRevision": {
+        "rows": 7952,
+        "repeating": 7952
+      }
+    },
     "resolution": {
-      "predicate": "exactly one projectShape.sources[] record whose served identity equals the anchor's targetId",
+      "predicate": "exactly one object in the /api/poc body with a string `identity` field whose whole value equals the anchor's targetId",
       "servedIdentities": 285,
+      "servedIdentitiesInProjectShapeSources": 285,
       "resolved": 883,
       "total": 902,
       "unresolvedByClassSchemeAndHits": {
@@ -67,16 +86,21 @@
         "evidence:manual-mapping:0": 5,
         "evidence:repository-file:0": 11,
         "work:beads-dolt:0": 1
+      },
+      "secondMethod": {
+        "predicate": "the unresolved anchor's targetId occurs as a whole string value anywhere in the /api/poc body",
+        "unresolved": 19,
+        "occurring": 0
       }
+    },
+    "deepDiveLeaves": {
+      "count": 1,
+      "equalToAnAnchorTargetId": 1
     }
-  },
-  "secondMethod": {
-    "predicate": "every string value anywhere in the /api/poc body, counted as whole values; an unresolved anchor's targetId is checked for any occurrence",
-    "unresolvedAnchors": 19,
-    "unresolvedWhoseTargetIdOccursAsAWholeStringValueAnywhereInApiPoc": 0
   },
   "supersedes": {
     "pursuitFigures": "docs/pursuits/2026-09-22-vision-pursuit-data.json findings L11-F4, L11-M3, S6-F4 and S4-F6 (730 narrative blocks, 934 anchors, 740,796 bytes = 13.2% over 7,527 work items and 6,749 files), measured at an earlier Butlers revision",
     "note": "the pursuit's '934 of 934 resolved anchors' names no resolution predicate; under the amendment's predicate the figure at this capture is 883 of 902"
-  }
+  },
+  "scriptCommitNote": "the script was extended after review round 1 (header-repeat sweep, second method, deep-dive leaves, identity population widened to every object with a string identity field); every figure here is from the extended script, re-run on the same two captures"
 }

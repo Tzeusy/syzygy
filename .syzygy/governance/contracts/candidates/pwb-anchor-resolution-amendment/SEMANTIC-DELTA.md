@@ -79,18 +79,28 @@ with both captures' byte counts and digests. The script that produced it is
   that work; it writes it down as an obligation (the **Anchor shape**
   bullet), so a later change cannot lose it silently.
 - **Resolution under this delta's predicate: 883 of 902.** An anchor resolves
-  when the machine answer serves exactly one record whose own served identity
-  equals the anchor's target identity. Today the only records with a served
-  identity are the 285 `projectShape.sources[]` entries. 883 anchors resolve
-  to exactly one of them; none resolves to more than one. The 19 that do not
-  are:
+  when the machine answer serves exactly one record with an `identity` field
+  of its own whose whole value equals the anchor's target identity. Today 285
+  objects in the `/api/poc` body carry a string `identity` field, and all 285
+  are `projectShape.sources[]` entries. 883 anchors resolve to exactly one of
+  them; none resolves to more than one. The 19 that do not are:
   - 17 evidence anchors whose targets are provenance records (11
     `repository-file`, 5 `manual-mapping`, 1 `git-revision`);
   - the code-structure region anchor (`git-tree:<revision>`);
   - the work-items region anchor (`beads-dolt:<dolt revision>`).
 
   A second method agrees: none of those 19 target identities occurs as a
-  whole string value anywhere in the `/api/poc` body.
+  whole string value anywhere in the `/api/poc` body. [Inferred, from
+  `polaris-narrative.ts` line 105 and `polaris.ts` lines 283 and 304] Each is
+  composed from fields the machine answer does serve: a provenance record's
+  kind with its digest or revision, or a block header's revision.
+- **How the anchors meet PWB-REQ-020's derivability rule.** 883 target
+  identities are served verbatim by the machine answer, and the other 19 are
+  compositions of served fields, as above. [Inferred] PWB-REQ-020 asks that
+  every value a derived view serves be "derivable" from the machine answer's
+  bytes, and a composition of served fields is derivable. This delta does not
+  change how anchors are composed; it only counts which of them resolve to a
+  record, and a composition never does.
 - **The pursuit's figures are superseded.** "730 blocks", "934 anchors" and
   "934 of 934 resolved" were measured at an earlier Butlers revision, and the
   resolution figure named no predicate. [Unknown] Which predicate produced
@@ -102,9 +112,12 @@ with both captures' byte counts and digests. The script that produced it is
 
 The coordinator's ruling asked for "one provenance shape on /api/poc/polaris".
 That route's provenance is its anchors, and they already share one shape. The
-delta states that shape as a SHALL: identity naming its block, target class
-and identity, revision, supported claims, captured state, locator. It names
-fields by meaning, not by JSON key, as the rest of PWB-REQ-014 does.
+delta states that shape as a SHALL: an identity that begins with its block's
+identity followed by `#`, target class and identity, revision, supported
+claims, captured state, locator. It names fields by meaning, not by JSON key,
+as the rest of PWB-REQ-014 does; the one exception is the `#` relation, which
+round 1 asked to be stated so a checker has one predicate (today's identities
+are `<block>#a<n>`).
 
 Not included: the capability deep-dive's `intent.leaf` record (`path`,
 `revision`, `identity`) is a second encoding of a source reference on the same
@@ -118,15 +131,26 @@ second requirement. It is put to the owner as question 3.
   narrative. The narrative's pair is the sum of its blocks' pairs, so a
   reader can check one against the other.
 - **What "resolves" means.** The predicate is stated against the machine
-  answer, not the narrative builder. That keeps the field inside PWB-REQ-020's
-  rule for a derived read-only view: every value it serves must be derivable
-  from the machine answer's own bytes at that evaluation.
+  answer, not the narrative builder, and it names the field: a record's own
+  `identity`, compared as a whole value. A reference to a record (a stamp's or
+  a support's `sourceIdentity`) and an identity composed from other fields do
+  not count. Round 1 found the first draft left both open, so two checkers
+  could reach different figures. The resolver reads the narrative's anchors
+  and the machine answer; it imports no rendering code. That keeps the pair
+  inside PWB-REQ-020's rule for a derived read-only view.
+- **Unknown, never zero.** When the machine answer serves no record with an
+  identity of its own, every pair is Unknown with its reason. A measured
+  "0 of 902" there would be a zero standing in for no evidence (VIS-2).
+- **Not RFC7-3's verb.** RFC7-3 forbids anything to "resolve to" Polaris as
+  its authority. This resolution runs the other way, from an anchor to a
+  record of the machine answer, and the amended text says so.
 - **No rounding.** A count below its total is served as counted. 883 of 902
   is the honest figure today, and the 19 are named above.
 - **Never authority.** The pair sits beside `non-citable`, never in place of
   it. No field derived from the pair may make a unit citable or act as an
-  epistemic label. This is the point of ruling 1: resolution is not
-  authority.
+  epistemic label, and the pair is itself presentation: no evidence,
+  snapshot input or status claim may take it as input (RFC7-3's own list).
+  This is the point of ruling 1: resolution is not authority.
 - **Openings.** An opening carries child identities in place of an anchor set
   (signed text), so it has no pair.
 - **No rendering duty.** The pair is a machine-narrative field, not a
@@ -145,11 +169,11 @@ is lost.
 | Part | Current | Proposed |
 |---|---|---|
 | Obligations | Typed, revision-bound anchor sets, closed target classes, `non-citable` units | Adds **Anchor shape** and **Anchor resolution count** after the anchor-target bullet |
-| Case | Sweep of units, claims, anchors and downstream citations | Adds: resolve every anchor against the machine answer, withhold one resolved target's identity, resolve again |
+| Case | Sweep of units, claims, anchors and downstream citations | Adds: resolve every anchor against the machine answer, withhold one resolved target's identity, resolve again, then withhold every identity |
 | Observable | Roles and non-authority attributes are machine-readable | Adds: every anchor's shape, and each pair |
-| Oracle | Covering, minimality, captured state, zero Polaris authority targets | Adds: every anchor has the one shape and names its block; an independent resolver reproduces every pair exactly; withholding one target lowers exactly the right blocks' counts, and those blocks stay non-citable |
+| Oracle | Covering, minimality, captured state, zero Polaris authority targets | Adds: every anchor has the one shape and its identity begins with its block's and `#`; an independent resolver over the anchors and the machine answer reproduces every pair exactly; withholding one target lowers exactly the right blocks' counts, and those blocks stay non-citable; withholding all turns every pair Unknown |
 | Oracle independence | Expected spans from captured artifacts | Adds: expected counts from the independent resolver, never the builder |
-| Falsifier | Unclassified unit, uncovered claim, missing `non-citable`, … | Adds: an anchor off the shape or naming no or another block; a missing, wrong or rounded pair; a unit made citable by its pair |
+| Falsifier | Unclassified unit, uncovered claim, missing `non-citable`, … | Adds: an anchor off the shape or naming no or another block; a missing, wrong or rounded pair, or a count where it should be Unknown; a unit made citable, or a status claim fed, by its pair |
 | Scenarios | 8 | 9: adds "Anchor resolution is counted, never made authority" |
 
 The warrants block does not move. RFC7-3 is already among its contracts.
@@ -166,6 +190,11 @@ The warrants block does not move. RFC7-3 is already among its contracts.
 - The human page's anchor rendering (`data-anchor-id` only) is unchanged.
   Linking a page anchor to its resolver (pursuit move S6-M2 slice 2) is out of
   scope.
+- The bead's third ask, a test asserting what fraction of `workItems` and
+  `codeStructure` the human page renders (pursuit move S6-M3), is in neither
+  package. [Inferred] It needs no specification change: it measures an
+  existing page against an existing model, and S6-M3's own prerequisite is
+  "none". It belongs in a test-only bead.
 
 ## Terms introduced / retired
 
@@ -200,5 +229,7 @@ spec-reconciliation census moves PWB-REQ-014 from 8 to 9 scenarios.
 the POC half; stopping rule: on REVISE, repair once, dispatch no second round,
 and route the result to the owner.
 **Reviewer:** a fresh-context subagent that did not draft this package.
-**Verdict:** recorded verbatim in the raw under `docs/reviews/`, and in
-`ROUND-1-DISPOSITIONS.md` beside this file once the round has run.
+**Verdict:** `REVISE` for both packages, copied from lines 5 and 6 of
+`docs/reviews/R-N9-MACHINE-CHANNEL-AMENDMENTS-1-RAW.md`. Every finding was
+repaired once (`ROUND-1-DISPOSITIONS.md` beside this file) and, under the
+stopping rule, no round 2 was dispatched. The repaired bytes are unreviewed.
