@@ -291,7 +291,9 @@ describe('egress gate', () => {
         if (!/\.(ts|tsx|mts|js|mjs|cjs)$/.test(entry)) continue;
         if (/\.test\.(ts|tsx|mts)$/.test(entry) || /\.testkit\.ts$/.test(entry)) continue;
         const text = readFileSync(full, 'utf8');
-        if (text.includes('LOOPBACK_FOR_TESTS') && path.relative(root, full) !== 'packages/polaris-generation-provider/src/egress-gate.ts') hits.push(path.relative(root, full));
+        const rel = path.relative(root, full);
+        if (text.includes('LOOPBACK_FOR_TESTS') && rel !== 'packages/polaris-generation-provider/src/egress-gate.ts' && rel !== 'packages/polaris-generation-provider/src/testing.ts') hits.push(rel);
+        if (/polaris-generation-provider\/testing|\.\/testing\.js/.test(text) && rel !== 'packages/polaris-generation-provider/src/testing.ts') hits.push(`${rel} (imports the test support module)`);
         if (/polaris-generation-provider\/src\/egress-gate/.test(text) && !path.relative(root, full).startsWith('packages/polaris-generation-provider/')) hits.push(`${path.relative(root, full)} (imports the gate by path)`);
       }
     };
