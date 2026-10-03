@@ -36,8 +36,19 @@ REQUIRED = ("observerId", "implementationId", "observerVersion", "implementation
 #: The egress record's route conditions, as keys the provider entry must carry.
 ROUTE_KEYS = ("tools", "ambientContext", "telemetry", "stateLocation",
               "acceptanceCheck", "fallback")
+#: RFC2-23's six states; "Missing quantity" is the one for absent tokens or cost.
 DEGRADATION = {"Observer failed", "Source unreachable", "Partial snapshot",
-               "Excluded content", "Consent withdrawn"}
+               "Excluded content", "Consent withdrawn", "Missing quantity"}
+#: RFC2-24's closed twelve reasons.
+REASONS = {"missing-declaration", "missing-evidence", "no-currency-bound-declared",
+           "stale-beyond-currency-bound", "mapping-coverage-absent",
+           "unconsented-source-or-provider", "excluded-content",
+           "contradicted-pending-adjudication", "challenge-suspended",
+           "source-uncaptured-or-unreachable", "reference-unresolvable",
+           "execution-blocked"}
+CLASSES = {"capture", "derivation-deterministic"}
+FETCH = "git fetch --depth=1 --no-tags --no-recurse-submodules <upstream> <commit>"
+RUNTIME_PIN = ("0.3.288", "2.1.288")
 
 
 def sha(data):
@@ -62,29 +73,71 @@ def findings_for(name, doc, butlers_contract):
         out.append(f"{name}: implementationVersion must stay null until implemented")
     if e.get("typedAuthority", {}).get("writeSurface") != []:
         out.append(f"{name}: writeSurface must be empty")
+    if e.get("typedAuthority", {}).get("workingTreeRead") is not False:
+        out.append(f"{name}: workingTreeRead must be false")
     if e.get("typedAuthority", {}).get("executeObservedCode") is not False:
         out.append(f"{name}: executeObservedCode must be false")
-    if e.get("determinismClass") not in ("capture", "derivation-deterministic"):
+    if e.get("determinismClass") not in CLASSES:
         out.append(f"{name}: determinismClass outside RFC4-2")
+    by_class = e.get("determinismByOutputClass", {})
+    outputs = {c.get("class") for c in e.get("outputFactClasses", [])}
+    if set(by_class) != outputs or not set(by_class.values()) <= CLASSES:
+        out.append(f"{name}: determinismByOutputClass does not cover each output class once")
     if e.get("contractVersion") != butlers_contract:
         out.append(f"{name}: contractVersion differs from the adopted Butlers entry's")
     if e.get("adoptionStatus") != "candidate-entry-unadopted":
         out.append(f"{name}: adoptionStatus is not candidate-entry-unadopted")
     for key, state in e.get("failureStates", {}).items():
-        if isinstance(state, dict) and state.get("degradationState") not in DEGRADATION:
+        if not isinstance(state, dict):
+            continue
+        if "degradationState" in state and state["degradationState"] not in DEGRADATION:
             out.append(f"{name}: failure state {key} names a degradation state outside the set")
+        if "degradationState" not in state and "executionFact" not in state:
+            out.append(f"{name}: failure state {key} names neither a degradation state nor an execution fact")
+        if state.get("unknownReason") not in REASONS:
+            out.append(f"{name}: failure state {key} names a reason outside RFC2-24")
+    if e.get("supersession") is None:
+        out.append(f"{name}: supersession statement missing")
+    if e.get("snapshotInputMapping") is None:
+        out.append(f"{name}: snapshotInputMapping missing")
     if e.get("typedAuthority", {}).get("authorityType") == "model-provider":
         for k in ROUTE_KEYS:
             if k not in e.get("routeConditions", {}):
                 out.append(f"{name}: routeConditions lacks {k}")
-        if e.get("typedAuthority", {}).get("toolInvocation") != []:
+        ta = e.get("typedAuthority", {})
+        if ta.get("toolInvocation") != []:
             out.append(f"{name}: toolInvocation must be empty")
+        pin = e.get("runtimePin", {})
+        if (pin.get("version"), pin.get("bundledCli")) != RUNTIME_PIN:
+            out.append(f"{name}: runtimePin is not the measured SDK and CLI versions")
+        rc = e.get("routeConditions", {})
+        if "PUBLIC-EGRESS-anthropic" not in rc.get("source", "") or "version" not in rc.get("source", ""):
+            out.append(f"{name}: routeConditions.source names no egress record ID and version")
+        if not rc.get("fallback", "").startswith("none"):
+            out.append(f"{name}: fallback must be none")
+        if len(ta.get("networkAccess", [])) != 1:
+            out.append(f"{name}: provider networkAccess must be exactly one destination")
+        for cls in ("model-identity",):
+            if cls not in outputs:
+                out.append(f"{name}: outputFactClasses lacks {cls}")
+        if "runtime-version-and-configuration" not in {c.get("class") for c in e.get("inputClasses", [])}:
+            out.append(f"{name}: inputClasses lacks runtime-version-and-configuration")
+        if "writeSurfaceArgument" not in ta:
+            out.append(f"{name}: writeSurface is not argued")
+        if "[Unknown]" not in " ".join(e.get("unknowns", [])):
+            out.append(f"{name}: unknowns lists no Unknown")
     else:
         fetch = e.get("typedAuthority", {}).get("fetch", "")
-        if "--depth=1" not in fetch or "exactly one admitted commit" not in fetch:
-            out.append(f"{name}: fetch is not declared shallow by exactly one commit")
-        if e.get("typedAuthority", {}).get("workingTreeRead") is not False:
-            out.append(f"{name}: workingTreeRead must be false")
+        if not fetch.startswith(FETCH + ":") or "exactly one admitted commit" not in fetch:
+            out.append(f"{name}: fetch is not the declared shallow single-commit form")
+        ta = e.get("typedAuthority", {})
+        if len(ta.get("networkAccess", [])) != 1:
+            out.append(f"{name}: networkAccess must be exactly one destination")
+        limits = e.get("resourceLimits", {})
+        sem = e.get("resourceLimitSemantics", {})
+        for k in limits:
+            if k != "status" and k not in sem:
+                out.append(f"{name}: resource limit {k} has no semantics")
     return out
 
 
@@ -137,20 +190,47 @@ def selftest():
         fn(d["entries"][0], d)
         muts.append((name, any(needle in f for f in findings_for("m", d, contract))))
 
-    mut("status upgraded", prov, lambda e, d: d.update(status="adopted"), "status")
-    mut("declaration dropped", prov, lambda e, d: e.pop("failureStates"), "missing RFC4-2")
-    mut("invented version", prov, lambda e, d: e.update(implementationVersion="1.0.0"), "implementationVersion")
-    mut("write surface granted", src, lambda e, d: e["typedAuthority"].update(writeSurface=["x"]), "writeSurface")
-    mut("observed code executed", src, lambda e, d: e["typedAuthority"].update(executeObservedCode=True), "executeObservedCode")
-    mut("wrong determinism class", prov, lambda e, d: e.update(determinismClass="live"), "determinismClass")
-    mut("contract version drift", prov, lambda e, d: e.update(contractVersion="sha256:0"), "contractVersion")
-    mut("adopted label", src, lambda e, d: e.update(adoptionStatus="adopted"), "adoptionStatus")
-    mut("degradation state invented", src,
-        lambda e, d: e["failureStates"]["fetchFailed"].update(degradationState="Fine"), "degradation state")
-    mut("route condition dropped", prov, lambda e, d: e["routeConditions"].pop("telemetry"), "routeConditions")
+    for doc, tag in ((prov, "provider"), (src, "git")):
+        mut(f"{tag}: status upgraded", doc, lambda e, d: d.update(status="adopted"), "status")
+        mut(f"{tag}: adoptionStatus adopted", doc, lambda e, d: e.update(adoptionStatus="adopted"), "adoptionStatus")
+        mut(f"{tag}: invented version", doc, lambda e, d: e.update(implementationVersion="1.0.0"), "implementationVersion")
+        mut(f"{tag}: write surface granted", doc, lambda e, d: e["typedAuthority"].update(writeSurface=["x"]), "writeSurface")
+        mut(f"{tag}: observed code executed", doc, lambda e, d: e["typedAuthority"].update(executeObservedCode=True), "executeObservedCode")
+        mut(f"{tag}: working tree read", doc, lambda e, d: e["typedAuthority"].update(workingTreeRead=True), "workingTreeRead")
+        mut(f"{tag}: wrong determinism class", doc, lambda e, d: e.update(determinismClass="live"), "determinismClass")
+        mut(f"{tag}: per-class determinism dropped", doc, lambda e, d: e.pop("determinismByOutputClass"), "determinismByOutputClass")
+        mut(f"{tag}: per-class value invented", doc,
+            lambda e, d: e["determinismByOutputClass"].update({next(iter(e["determinismByOutputClass"])): "live"}), "determinismByOutputClass")
+        mut(f"{tag}: contract version drift", doc, lambda e, d: e.update(contractVersion="sha256:0"), "contractVersion")
+        mut(f"{tag}: two entries", doc, lambda e, d: d["entries"].append(e), "not exactly one")
+        mut(f"{tag}: network widened", doc, lambda e, d: e["typedAuthority"]["networkAccess"].append("elsewhere"), "networkAccess")
+        mut(f"{tag}: supersession dropped", doc, lambda e, d: e.pop("supersession"), "supersession")
+        mut(f"{tag}: snapshot mapping dropped", doc, lambda e, d: e.pop("snapshotInputMapping"), "snapshotInputMapping")
+        mut(f"{tag}: degradation state invented", doc,
+            lambda e, d: next(v for v in e["failureStates"].values() if isinstance(v, dict) and "degradationState" in v).update(degradationState="Fine"),
+            "degradation state")
+        mut(f"{tag}: reason outside RFC2-24", doc,
+            lambda e, d: next(v for v in e["failureStates"].values() if isinstance(v, dict)).update(unknownReason="made-up"), "RFC2-24")
+        mut(f"{tag}: state names neither state nor fact", doc,
+            lambda e, d: e["failureStates"].update(x={"unknownReason": "excluded-content"}), "neither a degradation state")
+        for k in REQUIRED:
+            mut(f"{tag}: declaration {k} dropped", doc, lambda e, d, k=k: e.pop(k), "missing RFC4-2")
+    for k in ROUTE_KEYS:
+        mut(f"route condition {k} dropped", prov, lambda e, d, k=k: e["routeConditions"].pop(k), "routeConditions")
     mut("tool invocation allowed", prov, lambda e, d: e["typedAuthority"].update(toolInvocation=["bash"]), "toolInvocation")
+    mut("runtime pin drift", prov, lambda e, d: e["runtimePin"].update(version="0.3.289"), "runtimePin")
+    mut("egress record unnamed", prov, lambda e, d: e["routeConditions"].update(source="instances/egress-anthropic"), "egress record ID")
+    mut("fallback allowed", prov, lambda e, d: e["routeConditions"].update(fallback="the direct API"), "fallback")
+    mut("model identity dropped", prov, lambda e, d: e["outputFactClasses"].pop(3) and e["determinismByOutputClass"].pop("model-identity"), "model-identity")
+    mut("runtime version input dropped", prov, lambda e, d: e["inputClasses"].pop(-2), "runtime-version")
+    mut("write surface unargued", prov, lambda e, d: e["typedAuthority"].pop("writeSurfaceArgument"), "not argued")
+    mut("unknowns emptied", prov, lambda e, d: e.update(unknowns=[]), "lists no Unknown")
     mut("full-history fetch", src, lambda e, d: e["typedAuthority"].update(fetch="git clone <upstream>"), "fetch")
-    mut("working tree read", src, lambda e, d: e["typedAuthority"].update(workingTreeRead=True), "workingTreeRead")
+    mut("fetch loses --no-tags", src,
+        lambda e, d: e["typedAuthority"].update(fetch=e["typedAuthority"]["fetch"].replace("--no-tags ", "")), "fetch")
+    mut("fetch adds all tags", src,
+        lambda e, d: e["typedAuthority"].update(fetch=e["typedAuthority"]["fetch"].replace(": one", " --tags: one")), "fetch")
+    mut("limit without semantics", src, lambda e, d: e["resourceLimits"].update(maxIndexDepth=16), "no semantics")
     with tempfile.TemporaryDirectory() as t:
         root = pathlib.Path(t) / "pkg"
         (root / "proposed").mkdir(parents=True)
@@ -160,6 +240,14 @@ def selftest():
             (root / "proposed" / p.name).write_bytes(p.read_bytes())
         (root / MANIFEST).write_text(manifest_text(root))
         muts.append(("clean temp package passes", check(root, BUTLERS, inst) == []))
+        victim = next(iter(proposed(root)))
+        keep = victim.read_text()
+        victim.write_text("{not json")
+        muts.append(("proposed file not JSON", any("not JSON" in f for f in check(root, BUTLERS, inst))))
+        victim.write_text(keep)
+        victim.rename(victim.with_suffix(".moved"))
+        muts.append(("one proposed entry missing", any("expected 2" in f for f in check(root, BUTLERS, inst))))
+        victim.with_suffix(".moved").rename(victim)
         (root / "X.md").write_text("a" * 64)
         muts.append(("hex token in package prose", any("64-hex" in f for f in check(root, BUTLERS, inst))))
         (root / "X.md").unlink()

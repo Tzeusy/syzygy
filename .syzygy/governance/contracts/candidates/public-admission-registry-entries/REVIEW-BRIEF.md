@@ -1,8 +1,8 @@
-# Review brief — public-admission registry entries
+# Review brief — public-admission registry entries (round 2)
 
 > **Candidate — binds nothing.** This brief says what an independent reviewer
 > is given and what they decide. It is not a review and carries no verdict.
-> No review has been run against this package.
+> Round 1 returned REVISE; this is the round-2 brief over the repaired bytes.
 
 ## What the reviewer is given, and nothing else
 
@@ -15,7 +15,7 @@ references and the acceptance criteria.
 `OWNER-DECISION-PACKET.md`, `PUBLIC-ADMISSION-REGISTRY-MANIFEST.txt` and the
 two files under `proposed/`), plus
 `scripts/build_public_admission_registry_entries.py` and the candidate
-registration in `scripts/check_governance.py` (`PUBLIC_ADMISSION_REGISTRY_*`).
+registration in `scripts/check_governance.py` (`PUBLIC_REGISTRY_DIR`, `PUBLIC_REGISTRY_MANIFEST`, `PUBLIC_REGISTRY_ACTS`, `_activate_public_registry_manifest_copy_registry`).
 
 **Governing references.**
 
@@ -35,6 +35,29 @@ registration in `scripts/check_governance.py` (`PUBLIC_ADMISSION_REGISTRY_*`).
 - `decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md` and
   `decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md` (Ceremony).
 - `packages/polaris-generation-core/src/pipeline.ts` (`PipelinePorts`).
+
+## Round 1 and the repair
+
+The round-1 raw is `reviews/R-PUBLIC-ADMISSION-REGISTRY-ENTRIES-1-RAW.md` in
+this directory (verdict REVISE, 18 findings), retained verbatim. Criterion 12
+asks you to check each repair against its finding; do not take the list below
+on trust. Population: findings 1 to 18; blocking 1; revise 2 to 9; notes 10 to 18.
+
+- F1, F2: provider entry rewritten around the runtime-fixed bytes (named by
+  reference to `PROVIDER-EGRESS-BYTES.md` on PR #258, branch
+  agent/dossier-provider; pins SDK 0.3.288 and CLI 2.1.288); acceptance check
+  separates envelope from content; unknowns extended.
+- F3, F4, F5, F17: failure mappings re-cut (Missing quantity added to the
+  builder's set; consent split; non-admitted revision refused before fetch;
+  `execution-blocked`).
+- F6: per-output-class determinism field. F7: semantics for every limit;
+  `maxIndexDepth` removed; oversize blob excluded, never chunked.
+- F8: statement that these are not usable entries and what signing buys.
+- F9: runtime version and sign-in credential as inputs; model identity as an
+  output; credential write unknown. F10: write-surface argument.
+- F11 to F16, F18: tool condition and record pin, brief symbols, RFC4-19,
+  `--no-tags --no-recurse-submodules`, substitution wording, snapshot mapping note.
+- F12: selftest now has a mutant per `REQUIRED` and `ROUTE_KEYS` key, per entry.
 
 ## Acceptance criteria
 
@@ -74,7 +97,12 @@ Each is a yes/no question with the evidence that settles it.
     64-hex digest; `--check` and `--selftest` must pass, and any claim the
     selftest covers with no mutant must be named.
 11. **Is each proposed resource limit labelled as a proposal rather than a
-    measurement?**
+    measurement, and does each declared limit have semantics?**
+12. **Does each round-1 repair hold against its finding, and did any repair
+    introduce a new defect?** Re-derive counts and quotes from the bytes.
+13. **Does the provider entry's account of the request match
+    `PROVIDER-EGRESS-BYTES.md` for the pinned versions, with nothing the
+    capture did not show stated as fact?**
 
 ## Out of scope
 
@@ -86,8 +114,8 @@ Each is a yes/no question with the evidence that settles it.
 
 ## Recording
 
-Store the raw output verbatim under `docs/reviews/` as
-`R-PUBLIC-ADMISSION-REGISTRY-ENTRIES-RAW.md` (a re-issue is a second
+Store the raw output verbatim in this package's `reviews/` directory as
+`R-PUBLIC-ADMISSION-REGISTRY-ENTRIES-2-RAW.md` (a re-issue is a further
 `-RAW.md`). **The raw's head is a predicate a recorder will enforce.** The
 first four non-blank lines must be the title and exactly:
 

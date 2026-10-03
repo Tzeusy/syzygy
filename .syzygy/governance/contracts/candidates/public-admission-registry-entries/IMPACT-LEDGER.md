@@ -8,7 +8,7 @@
 ## Sweep 1 — who reads the installed adapter-registry directory
 
 Commands: `git grep -l -F adapter-registry -- apps packages` (8 files) and
-`git grep -l -F adapter-registry -- apps packages scripts` (22 files).
+`git grep -l -F adapter-registry -- apps packages scripts` (22 files at the drafting base; 23 with this package's builder).
 
 [Observed] Every code reader names the Butlers file by its exact path
 (`governance-inputs.ts` constant `PWB_AUTHORITY_ARTIFACTS.registry`, the
