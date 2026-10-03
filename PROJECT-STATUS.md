@@ -347,6 +347,7 @@ python3 scripts/render_launch_administration.py --selftest
 CS=.syzygy/governance/contracts/candidates/scripts
 python3 $CS/verify_final_prespec.py
 python3 $CS/build_contract_index.py --check
+python3 $CS/build_contract_index.py --selftest   # needs PyYAML (test-only); without it the YAML cases fail, never skip
 python3 $CS/build_dependency_index.py --check
 python3 $CS/build_budget_report.py --check
 python3 $CS/build_active_manifest.py --check
@@ -412,7 +413,7 @@ python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
 ```
 
-The sixty-nine checks above are the same sixty-nine the hosted workflow runs
+The seventy checks above are the same seventy the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.
