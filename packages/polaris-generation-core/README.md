@@ -64,6 +64,27 @@ flowchart LR
 - `promptForStage` and `stageSchema` supply versioned recipes and concrete
   provider-local response contracts. The serialized input binds both prompt
   and schema bytes.
+  - They also serve the `dossier` profile (`promptForStage(stage, 'dossier')`)
+    and the `discovery-map` / `discovery-reduce` stages. No target text
+    reaches either symbol. Their shape illustrations are deep-frozen and
+    serialized once at module load, and the package entry point does not
+    export them, so no importer can change the instruction bytes.
+  - The dossier profile reports a stated advantage, trade-off or comparison
+    only as a quotation of the project's sources (`The project states: "…"`):
+    one contiguous span of a cited source, at most two sentences or one list
+    item, never elided or spliced. Double quotes are used for nothing else;
+    identifiers outside a quotation go in backticks. An advantage no source
+    states is never written. A mechanism-level cost no source states may be
+    one `Inferred:` sentence citing the mechanism's sources and agreeing with
+    them; otherwise it stays unresolved. Every inferential block must begin
+    `Inferred:`.
+  - `validateDossierStage` is the dossier profile's validate port:
+    `validateStage`, then `quotationsMatch` on every inventory entry and draft
+    block (the fidelity stage checks the draft it reviews). A quotation must
+    equal a contiguous span of one cited source after whitespace runs collapse
+    to one space and markdown emphasis and link syntax drop, keeping the link
+    text; otherwise the stage fails with `unverified-quotation`. The pipeline
+    still sends the manifesto profile, so no run uses it yet.
 - `parseBoundedJson` refuses duplicate keys, malformed responses and
   byte/depth/node overflow before stage validation.
 - `validateStage` checks closed fields, source references, requested section

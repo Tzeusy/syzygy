@@ -27,8 +27,11 @@ Steps (finding numbers are the runbook's):
                        manifest row and the directive register are regenerated;
                        the amendment becomes a row-argument contract chain link
   policy          F4,F10  the screening-scope act becomes the policy's chain link (the
-                       2026-10-02 re-pin turns to history); the read gate, its
-                       tests and the status battery and workflow follow it
+                       2026-10-02 re-pin turns to history); when the version-2 act
+                       exists it is the final link and version 1 turns to history
+                       too; the read gate, its tests and the status battery and
+                       workflow follow the final act, once (an act pair recorded
+                       in the wrong order is refused)
   profile         F8,F11  the narrative-profile spec moves from proposed/ to
                        specs/; package prose naming the old path is rewritten;
                        the status page figure follows the recount tool
@@ -36,6 +39,8 @@ Steps (finding numbers are the runbook's):
 from __future__ import annotations
 
 import argparse
+import ast
+from dataclasses import dataclass
 import hashlib
 import json
 import pathlib
@@ -92,6 +97,11 @@ RFC5_ACT = f"{DECISIONS}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md"
 SCOPE_PKG = f"{CAND}/public-source-screening-scope"
 SCOPE_MANIFEST = f"{SCOPE_PKG}/PUBLIC-SOURCE-SCREENING-SCOPE-MANIFEST.txt"
 SCOPE_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md"
+V2_PKG = f"{CAND}/public-source-screening-scope-v2"
+V2_MANIFEST = f"{V2_PKG}/PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt"
+V2_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md"
+V1_SCRIPT = "record_public_source_screening_scope_act"
+V2_SCRIPT = "record_public_source_screening_scope_v2_act"
 REPIN_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md"
 AMENDMENT_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md"
 POLICY_JSON = ".syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json"
@@ -256,6 +266,21 @@ def rfc5_precondition(root: pathlib.Path) -> None:
                       "(runbook finding F12: re-run the recorder from a build that writes it)")
 
 
+def rfc5_act_argument(root: pathlib.Path) -> str:
+    """The digest the row-7 act bound; the installed RFC-0005 bytes must be exactly this."""
+    m = re.findall(r"^Exact digest \(SHA-256\): `([0-9a-f]{64})`", (root / RFC5_ACT).read_text(), re.M)
+    if len(m) != 1:
+        raise Refusal(f"the RFC5-14 act record carries {len(m)} 'Exact digest (SHA-256)' lines, expected one")
+    return m[0]
+
+
+def rfc5_installed_matches(root: pathlib.Path, act_arg: str) -> None:
+    for mirror in ("rfcs", "candidates/rfcs"):
+        module = root / ".syzygy/governance/contracts" / mirror / "RFC-0005/consent-egress-secrets.md"
+        if not module.is_file() or sha(module.read_bytes()) != act_arg:
+            raise Refusal(f"installed {module} does not hash to the row-7 act's argument")
+
+
 # ---- steps -----------------------------------------------------------------
 
 def step_registrations(root: pathlib.Path, write: bool) -> bool:
@@ -286,6 +311,10 @@ def step_rfc5(root: pathlib.Path, write: bool) -> bool:
     if [p for _d, p in rows] != [RFC5_MODULE]:
         raise Refusal(f"rfc5 manifest rows are {[p for _d, p in rows]}, expected exactly [{RFC5_MODULE}]")
     row = rows[0][0]
+    act_arg = rfc5_act_argument(root)
+    if row != act_arg:
+        raise Refusal("the rfc5 manifest row is not the digest the row-7 act bound; refusing to install "
+                      "text the act did not bind")
     patch = root / RFC5_PKG / "proposed/RFC-0005/consent-egress-secrets.md.patch"
     for mirror in ("rfcs", "candidates/rfcs"):
         module = root / ".syzygy/governance/contracts" / mirror / "RFC-0005/consent-egress-secrets.md"
@@ -297,6 +326,8 @@ def step_rfc5(root: pathlib.Path, write: bool) -> bool:
             r = subprocess.run(["patch", "-s", "-p0", str(module), "-i", str(patch)], capture_output=True, text=True)
             if r.returncode or sha(module.read_bytes()) != row:
                 raise Refusal(f"patch did not produce the manifest row for {module}: {r.stdout}{r.stderr}")
+    if write or not changed:
+        rfc5_installed_matches(root, act_arg)
     active = root / CAND / "ACTIVE-CONTRACT-MANIFEST.txt"
     lines = active.read_text().split("\n")
     idx = [i for i, l in enumerate(lines) if l.endswith(f"  {RFC5_MODULE}")]
@@ -469,7 +500,46 @@ _activate_pwb_scope_manifest_copy_registry()
     return add_exemptions(text, '    (PWB_SCOPE_ACT, "manifest"): PWB_SCOPE_MANIFEST,\n')
 
 
-def battery_lines(record: str, new_arg: str, date: str) -> tuple[str, str]:
+V2_CHAIN_MARK = "screening-scope v2 chain row"
+OFFERINGS_END_ANCHOR = "}\nPWB_STATE1_SUBJECTS = tuple(sorted(("
+V1_MANIFEST_GATE_OLD = ("    if os.path.isfile(os.path.join(ROOT, PWB_SCOPE_MANIFEST)):\n"
+                        "        ACT_DIGEST_COPY_FILES[PWB_SCOPE_MANIFEST] = (PWB_EFFECT_ACTS[1][0],)\n")
+V1_MANIFEST_GATE_NEW = ("    if (os.path.isfile(os.path.join(ROOT, PWB_SCOPE_MANIFEST))\n"
+                        '            and not os.path.isfile(os.path.join(ROOT, f"{DECISIONS}/'
+                        'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md"))):\n'
+                        "        # once the version-2 act supersedes it, the version-1 manifest row is history\n"
+                        "        ACT_DIGEST_COPY_FILES[PWB_SCOPE_MANIFEST] = (PWB_EFFECT_ACTS[1][0],)\n")
+
+
+def policy_cg_v2_edits(text: str, v1_arg: str) -> str:
+    """The version-2 act supersedes the version-1 act for the policy subject. Applies on top of
+    `policy_cg_edits`; the version-1 manifest becomes history and the version-2 manifest, which
+    check_governance registers once the performed record exists, takes its place."""
+    if V2_CHAIN_MARK in text:
+        return text
+    if POLICY_MARK not in text:
+        raise Refusal("the version-2 chain row needs the version-1 install first (policy_cg_edits)")
+    i = once(text, ")\n#: For a chained amendment row", "policy chain end")
+    row = ('    # The public-source screening-scope version-2 act supersedes the version-1 act for\n'
+           f'    # the policy subject ({V2_CHAIN_MARK}).\n'
+           '    (PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[1][1],\n'
+           '     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md",\n'
+           '     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md",\n'
+           f'     "{v1_arg}"),\n')
+    text = text[:i] + row + text[i:]
+    i = once(text, OFFERINGS_END_ANCHOR, "policy offerings end")
+    text = text[:i] + (
+        '    # The version-1 screening-scope act was offered as the one row of its manifest;\n'
+        '    # its packet by design carries no digest.\n'
+        '    f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md": {\n'
+        '        f"{CANDIDATES}/public-source-screening-scope/PUBLIC-SOURCE-SCREENING-SCOPE-MANIFEST.txt": "row",\n'
+        '    },\n') + text[i:]
+    once(text, V1_MANIFEST_GATE_OLD, "version-1 manifest registration")
+    text = text.replace(V1_MANIFEST_GATE_OLD, V1_MANIFEST_GATE_NEW, 1)
+    return add_exemptions(text, '    (PUBLIC_SOURCE_SCOPE_V2_ACT, "manifest"): PUBLIC_SOURCE_SCOPE_V2_MANIFEST,\n')
+
+
+def battery_lines(record: str, new_arg: str, date: str, script: str = V1_SCRIPT) -> tuple[str, str]:
     """The scope recorder's --check line needs the owner's selection text, read back from the record."""
     opening = " ".join(grab(r'that opened "(.+?)" by selecting', record, "question opening", re.S).split())
     rows = re.findall(r'^\| "(.*)" \| "(.*)" \|$', record, re.M)
@@ -481,14 +551,53 @@ def battery_lines(record: str, new_arg: str, date: str) -> tuple[str, str]:
             raise Refusal("the owner's selection text contains ': ', ' #' or a quote, which a plain YAML "
                           "workflow line and the battery splitter cannot carry; add the --check line "
                           "to PROJECT-STATUS.md and the workflow by hand")
-    cmd = (f"python3 scripts/record_public_source_screening_scope_act.py --check {new_arg} --date {date} "
+    cmd = (f"python3 scripts/{script}.py --check {new_arg} --date {date} "
            f"--question-opening '{opening}' --selection-label '{label}' --selection-description '{desc}'")
-    return cmd, "python3 scripts/record_public_source_screening_scope_act.py --selftest"
+    return cmd, f"python3 scripts/{script}.py --selftest"
 
 
-def edit_battery(status: str, workflow: str, check_cmd: str, selftest_cmd: str) -> tuple[str, str]:
-    if "record_public_source_screening_scope_act.py --check" in status:
+def edit_battery(status: str, workflow: str, check_cmd: str, selftest_cmd: str,
+                 script: str = V1_SCRIPT) -> tuple[str, str]:
+    """Idempotent. Three starting states: the re-pin lines (install the final recorder's lines in
+    their place), the version-1 recorder's lines (replace them when the final recorder is
+    version 2), or the final recorder's lines already (nothing to do)."""
+    if f"{script}.py --check" in status:
         return status, workflow
+    note = "   # screening-scope policy act: record, aggregate block and applied subject"
+    if script != V1_SCRIPT and f"{V1_SCRIPT}.py --check" in status:
+        lines = status.split("\n")
+        out, hit = [], 0
+        for ln in lines:
+            if ln.startswith(f"python3 scripts/{V1_SCRIPT}.py --check"):
+                out.append(check_cmd + note)
+                hit += 1
+            elif ln.startswith(f"python3 scripts/{V1_SCRIPT}.py --selftest"):
+                out.append(selftest_cmd)
+                hit += 1
+            else:
+                out.append(ln)
+        if hit != 2:
+            raise Refusal("status battery: expected to replace exactly the version-1 check and selftest lines")
+        status = "\n".join(out)
+        wl = workflow.split("\n")
+        out, hit = [], 0
+        for ln in wl:
+            st = ln.strip()
+            if st == f"- name: {V1_SCRIPT} --check":
+                out.append(ln.replace(V1_SCRIPT, script))
+                hit += 1
+            elif st == f"- name: {V1_SCRIPT} --selftest":
+                out.append(ln.replace(V1_SCRIPT, script))
+                hit += 1
+            elif st.startswith(f"run: python3 scripts/{V1_SCRIPT}.py --check"):
+                out.append("        run: " + check_cmd)
+            elif st.startswith(f"run: python3 scripts/{V1_SCRIPT}.py --selftest"):
+                out.append("        run: " + selftest_cmd)
+            else:
+                out.append(ln)
+        if hit != 2:
+            raise Refusal("workflow: expected to replace exactly the version-1 check and selftest steps")
+        return status, "\n".join(out)
     drop_b = "python3 scripts/build_pwb_behavior_contract_repin.py --check"
     drop_r = "python3 scripts/record_pwb_behavior_contract_repin_acts.py --check policy "
     lines = status.split("\n")
@@ -498,7 +607,7 @@ def edit_battery(status: str, workflow: str, check_cmd: str, selftest_cmd: str) 
             continue
         keep.append(ln)
         if ln.startswith("python3 scripts/record_pwb_behavior_contract_repin_acts.py --selftest"):
-            keep.append(check_cmd + "   # screening-scope policy act: record, aggregate block and applied subject")
+            keep.append(check_cmd + note)
             keep.append(selftest_cmd)
     if len(keep) != len(lines):
         raise Refusal("status battery: expected to drop exactly two lines and add two")
@@ -516,9 +625,9 @@ def edit_battery(status: str, workflow: str, check_cmd: str, selftest_cmd: str) 
             continue
         out.append(ln)
         if ln.strip() == "run: python3 scripts/record_pwb_behavior_contract_repin_acts.py --selftest":
-            out += ["", "      - name: record_public_source_screening_scope_act --check",
+            out += ["", f"      - name: {script} --check",
                     f"        run: {check_cmd}", "",
-                    "      - name: record_public_source_screening_scope_act --selftest",
+                    f"      - name: {script} --selftest",
                     f"        run: {selftest_cmd}"]
         i += 1
     if skip != 2:
@@ -534,29 +643,113 @@ def edit_battery(status: str, workflow: str, check_cmd: str, selftest_cmd: str) 
     return status, workflow
 
 
+@dataclass
+class PolicyAct:
+    key: str
+    path: str
+    text: str
+    arg: str
+    identity: str
+    tag: str
+    date: str
+    instant: str
+    script: str
+    supersedes: str          # the act record this one supersedes in the read gate's pair
+    manifest: str
+
+
+def read_policy_act(root: pathlib.Path, key: str, path: str, script: str, manifest: str,
+                    supersedes: str) -> PolicyAct:
+    if not (root / path).is_file():
+        raise Refusal(f"the {key} policy act record is absent: {path}")
+    text = (root / path).read_text()
+    return PolicyAct(
+        key, path, text,
+        grab(r"^Exact digest \(SHA-256\): `([0-9a-f]{64})`$", text, f"{key} act digest"),
+        grab(r"^Act identity: `([^`]+)`$", text, f"{key} act identity"),
+        grab(r"recording tag: `([^`]+)`", text, f"{key} recording tag"),
+        grab(r"^Date: (\d{4}-\d{2}-\d{2})$", text, f"{key} act date"),
+        grab(r"^Recorded at \(UTC\): (\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)$", text, f"{key} recorded instant"),
+        script, supersedes, manifest)
+
+
+def policy_acts(root: pathlib.Path) -> list[PolicyAct]:
+    """The policy acts in force, in order: version 1, then version 2 when it exists. Refuses an
+    order or a pair the records themselves contradict, so the wrong order is never installed."""
+    v1 = read_policy_act(root, "v1", SCOPE_ACT, V1_SCRIPT, SCOPE_MANIFEST, REPIN_ACT)
+    acts = [v1]
+    if (root / V2_ACT).is_file():
+        v2 = read_policy_act(root, "v2", V2_ACT, V2_SCRIPT, V2_MANIFEST, SCOPE_ACT)
+        if v2.arg == v1.arg:
+            raise Refusal("the version-2 act carries the version-1 act's argument: it cannot supersede it")
+        if v2.instant <= v1.instant:
+            raise Refusal(f"the version-2 act ({v2.instant}) is not recorded after the version-1 act "
+                          f"({v1.instant}): it supersedes the version-1 act, so the order is v1 then v2")
+        if SCOPE_ACT not in v2.text or v1.arg not in v2.text:
+            raise Refusal("the version-2 act record does not name the version-1 act and its argument "
+                          "as the act it supersedes")
+        acts.append(v2)
+    policy = sha((root / POLICY_JSON).read_bytes())
+    if policy != acts[-1].arg:
+        raise Refusal(f"the policy on disk does not hash to the final policy act's argument "
+                      f"({acts[-1].key}); the acts and the policy disagree")
+    return acts
+
+
+GATE_POLICY_POINTER = re.compile(
+    r"policy: '(\.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-[A-Z0-9-]+-ACT\.md)'")
+GATE_COMMENT = re.compile(r"// The policy act is the [^\n]*\n(?://[^\n]*\n)*(?=export const PWB_ACT_RECORDS:)")
+
+
+def repoint_gate(inputs: str, desired: list[str], comment: str) -> str:
+    """Rewrite the two policy record pointers to (final act, the act it supersedes) and the
+    explanatory comment, whatever pair the file carries now."""
+    if len(GATE_POLICY_POINTER.findall(inputs)) != 2:
+        raise Refusal("governance-inputs.ts does not carry exactly two policy record pointers")
+    count = iter(range(2))
+    out = GATE_POLICY_POINTER.sub(lambda m: f"policy: '{desired[next(count)]}'", inputs)
+    out = GATE_COMMENT.sub("", out)
+    marker = "export const PWB_ACT_RECORDS:"
+    once(out, marker, "gate act-records marker")
+    return out.replace(marker, comment + marker, 1)
+
+
+def gate_comment(acts: list[PolicyAct]) -> str:
+    final = acts[-1]
+    if final.key == "v2":
+        return (f"// The policy act is the {final.date} public-source screening-scope version 2 act, superseding the\n"
+                f"// {acts[0].date} version-1 act; the registry act is still its 2026-10-02 re-pin act.\n")
+    return (f"// The policy act is the {final.date} public-source screening-scope act, superseding the\n"
+            f"// 2026-10-02 policy re-pin act; the registry act is still its 2026-10-02 re-pin act.\n")
+
+
 def step_policy(root: pathlib.Path, write: bool) -> bool:
-    record = (root / SCOPE_ACT).read_text()
+    acts = policy_acts(root)
+    final = acts[-1]
     repin = (root / REPIN_ACT).read_text()
-    old_arg = grab(r"^Exact digest \(SHA-256\): `([0-9a-f]{64})`$", repin, "re-pin digest")
-    new_arg = grab(r"^([0-9a-f]{64})  ", (root / SCOPE_MANIFEST).read_text(), "scope manifest row")
-    identity = grab(r"^Act identity: `([^`]+)`$", record, "act identity")
-    tag = grab(r"recording tag: `([^`]+)`", record, "recording tag")
-    date = grab(r"^Date: (\d{4}-\d{2}-\d{2})$", record, "act date")
+    repin_arg = grab(r"^Exact digest \(SHA-256\): `([0-9a-f]{64})`$", repin, "re-pin digest")
     new_ver = json.loads((root / POLICY_JSON).read_text())["policyVersion"]
     reader = (root / "packages/three-surface-poc-core/src/git-object-reader.ts").read_text()
     old_ver = grab(r"policyVersion: '([^']+)'", reader, "reader policy version") if "policyVersion: '" in reader else new_ver
     inputs = (root / INPUTS_TS).read_text()
     changed = False
-    # check_governance supersession
+    # check_governance supersession: the version-1 link, then the version-2 link on top of it
     cg = root / CG
     text = cg.read_text()
-    new_text = policy_cg_edits(text, old_arg)
+    new_text = policy_cg_edits(text, repin_arg)
+    if final.key == "v2":
+        new_text = policy_cg_v2_edits(new_text, acts[0].arg)
     if new_text != text:
         changed = True
         if write:
             J.write(cg, new_text)
-    # the read gate and its tests follow the act
-    if SCOPE_ACT.split("/")[-1] not in inputs:
+    # the read gate and its tests follow the final act, once: its policy pointer pair is
+    # (final act, the act it supersedes)
+    desired = [final.path, final.supersedes]
+    found = GATE_POLICY_POINTER.findall(inputs)
+    if len(found) != 2:
+        raise Refusal(f"governance-inputs.ts carries {len(found)} policy record pointers, expected two")
+    if found != desired:
         changed = True
         if write:
             old_id = grab(r"actIdentity: '(PWB-SECRET-CLASSIFICATION-POLICY-[^']+)'", inputs, "gate policy identity")
@@ -564,26 +757,19 @@ def step_policy(root: pathlib.Path, write: bool) -> bool:
             for rel in PIN_FILES:
                 p = root / rel
                 s = p.read_text()
-                for a, b in ((old_id, identity), (old_tag, tag), (old_ver, new_ver)):
+                for a, b in ((old_id, final.identity), (old_tag, final.tag), (old_ver, new_ver)):
                     if a in s:
                         s = s.replace(a, b)
                 J.write(p, s)
-            s = (root / INPUTS_TS).read_text()
-            s = replace_all_counted(s, f"policy: '{REPIN_ACT}'", f"policy: '{SCOPE_ACT}'", "gate policy record")
-            s = replace_all_counted(s, f"policy: '{AMENDMENT_ACT}'", f"policy: '{REPIN_ACT}'", "gate superseded record")
-            marker = "export const PWB_ACT_RECORDS:"
-            s = s.replace(marker, f"// The policy act is the {date} public-source screening-scope act, superseding the\n"
-                                  f"// 2026-10-02 policy re-pin act; the registry act is still its 2026-10-02 re-pin act.\n"
-                                  + marker, 1)
-            J.write(root / INPUTS_TS, s)
+            J.write(root / INPUTS_TS, repoint_gate((root / INPUTS_TS).read_text(), desired, gate_comment(acts)))
             t = (root / INPUTS_TEST).read_text()
-            t = re.sub(r"const EVALUATION_INSTANT = '[^']+';", f"const EVALUATION_INSTANT = '{date}T00:00:00Z';", t)
+            t = re.sub(r"const EVALUATION_INSTANT = '[^']+';", f"const EVALUATION_INSTANT = '{final.date}T00:00:00Z';", t)
             J.write(root / INPUTS_TEST, t)
-    # the status battery and the hosted workflow
-    check_cmd, selftest_cmd = battery_lines(record, new_arg, date)
+    # the status battery and the hosted workflow carry the final recorder's lines
+    check_cmd, selftest_cmd = battery_lines(final.text, final.arg, final.date, final.script)
     status = (root / STATUS).read_text()
     workflow = (root / WORKFLOW).read_text()
-    ns, nw = edit_battery(status, workflow, check_cmd, selftest_cmd)
+    ns, nw = edit_battery(status, workflow, check_cmd, selftest_cmd, final.script)
     if (ns, nw) != (status, workflow):
         changed = True
         if write:
@@ -622,6 +808,133 @@ def run(root: pathlib.Path, write: bool) -> int:
 
 
 # ---- selftest ----------------------------------------------------------------
+
+def policy_selftests() -> list[tuple[str, bool]]:
+    """The two-policy-act install: order, pairs, the chain edits, the gate pointers, the battery."""
+    ok: list[tuple[str, bool]] = []
+
+    def refused(fn) -> bool:
+        try:
+            fn()
+        except Refusal:
+            return True
+        return False
+
+    def record(arg, ident, tag, date, instant, extra=""):
+        return (f"# act\n\nDate: {date}\n\nRecorded at (UTC): {instant}\n\nAct identity: `{ident}`\n\n"
+                f"Exact digest (SHA-256): `{arg}`\n\n- recording tag: `{tag}`, on the commit\n{extra}\n"
+                'that opened "Q one" by selecting the\n| "L" | "D d" |\n')
+
+    a1, a2, repin = "1" * 64, "2" * 64, "0" * 64
+    pol1, pol2 = b'{"policyVersion": "1.2.0"}\n', b'{"policyVersion": "1.3.0"}\n'
+    a1, a2 = sha(pol1), sha(pol2)
+
+    def tree(t, v2=True, v2_instant="2026-10-04T10:00:00Z", v2_arg=None, policy=None, naming=True, v1=True):
+        root = pathlib.Path(t)
+        (root / SCOPE_ACT).parent.mkdir(parents=True, exist_ok=True)
+        if v1:
+            (root / SCOPE_ACT).write_text(record(a1, "ID1", "tag1", "2026-10-04", "2026-10-04T09:00:00Z"))
+        (root / REPIN_ACT).write_text(record(repin, "ID0", "tag0", "2026-10-02", "2026-10-02T09:00:00Z"))
+        if v2:
+            extra = f"supersedes `{SCOPE_ACT}` argument `{a1}`\n" if naming else "\n"
+            (root / V2_ACT).write_text(record(v2_arg or a2, "ID2", "tag2", "2026-10-04", v2_instant, extra))
+        (root / POLICY_JSON).parent.mkdir(parents=True, exist_ok=True)
+        (root / POLICY_JSON).write_bytes(policy if policy is not None else (pol2 if v2 else pol1))
+        return root
+
+    with tempfile.TemporaryDirectory() as t:
+        got = policy_acts(tree(t, v2=False))
+        ok.append(("policy acts: version 1 alone is the final act, superseding the re-pin",
+                   [a.key for a in got] == ["v1"] and got[-1].supersedes == REPIN_ACT))
+    with tempfile.TemporaryDirectory() as t:
+        got = policy_acts(tree(t))
+        ok.append(("policy acts: version 1 then version 2, the final act supersedes version 1",
+                   [a.key for a in got] == ["v1", "v2"] and got[-1].supersedes == SCOPE_ACT
+                   and got[-1].script == V2_SCRIPT and got[-1].arg == a2))
+    for name, kwargs in (("version 2 recorded before version 1", dict(v2_instant="2026-10-04T08:00:00Z")),
+                         ("version 2 recorded at the same instant", dict(v2_instant="2026-10-04T09:00:00Z")),
+                         ("version 2 carrying version 1's argument", dict(v2_arg=a1, policy=pol1)),
+                         ("version 2 that does not name version 1", dict(naming=False)),
+                         ("the policy still at version 1's bytes after version 2", dict(policy=pol1)),
+                         ("version 2 without version 1", dict(v1=False))):
+        with tempfile.TemporaryDirectory() as t:
+            root = tree(t, **kwargs)
+            ok.append((f"policy acts refuse the wrong order or pair: {name}", refused(lambda: policy_acts(root))))
+    with tempfile.TemporaryDirectory() as t:
+        root = tree(t, v2=False, policy=pol2)
+        ok.append(("policy acts: a policy that is not the final act's argument is refused",
+                   refused(lambda: policy_acts(root))))
+
+    # the check_governance edits: version 1, then version 2 on top, in that order only
+    cg_text = (ROOT / CG).read_text()
+    try:
+        v1_only = policy_cg_edits(cg_text, "a" * 64)
+        both = policy_cg_v2_edits(v1_only, "b" * 64)
+        ast.parse(both)
+        ok.append(("chain edits: version 2 on top of version 1 is valid Python", True))
+        ok.append(("chain edits: one version-2 row, one offering, the version-1 manifest gated, one exemption",
+                   both.count(V2_CHAIN_MARK) == 1
+                   and both.count('PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md": ') == 0
+                   and both.count("PUBLIC-SOURCE-SCREENING-SCOPE-MANIFEST.txt\": \"row\"") == 1
+                   and V1_MANIFEST_GATE_NEW in both and V1_MANIFEST_GATE_OLD not in both
+                   and both.count("PUBLIC_SOURCE_SCOPE_V2_MANIFEST,") == 1 + cg_text.count("PUBLIC_SOURCE_SCOPE_V2_MANIFEST,")))
+        ok.append(("chain edits: version 2 is idempotent", policy_cg_v2_edits(both, "b" * 64) == both))
+        ok.append(("chain edits: the argument quoted is version 1's", f'"{"b" * 64}"),' in both))
+    except (SyntaxError, Refusal) as exc:
+        print(f"  (chain edit failure: {exc})")
+        ok.append(("chain edits: version 2 on top of version 1 is valid Python", False))
+    ok.append(("chain edits: version 2 without version 1 is refused",
+               refused(lambda: policy_cg_v2_edits(cg_text, "b" * 64))))
+
+    # the read gate pointers, from each starting state to the final pair
+    mark = "export const PWB_ACT_RECORDS: x = 1;\n"
+
+    def gate(cur, sup, comment=""):
+        return (f"{{ policy: '{cur}',\n registry: 'r' }}\n{{ policy: '{sup}',\n registry: 'r2' }}\n{comment}{mark}")
+    amend = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md"
+    acts_v1 = [PolicyAct("v1", SCOPE_ACT, "", "", "", "", "2026-10-04", "", V1_SCRIPT, REPIN_ACT, "")]
+    acts_v2 = [acts_v1[0], PolicyAct("v2", V2_ACT, "", "", "", "", "2026-10-05", "", V2_SCRIPT, SCOPE_ACT, "")]
+    for name, start, acts in (("re-pin to version 1", gate(REPIN_ACT, amend), acts_v1),
+                              ("re-pin straight to version 2", gate(REPIN_ACT, amend), acts_v2),
+                              ("version 1 up to version 2", gate(SCOPE_ACT, REPIN_ACT, gate_comment(acts_v1)), acts_v2)):
+        desired = [acts[-1].path, acts[-1].supersedes]
+        done = repoint_gate(start, desired, gate_comment(acts))
+        ok.append((f"gate pointers: {name}",
+                   GATE_POLICY_POINTER.findall(done) == desired and done.count("// The policy act is the") == 1
+                   and repoint_gate(done, desired, gate_comment(acts)) == done))
+    ok.append(("gate pointers: a file with one policy pointer is refused",
+               refused(lambda: repoint_gate(f"policy: '{SCOPE_ACT}'\n{mark}", [V2_ACT, SCOPE_ACT], ""))))
+
+    # the battery, from each starting state
+    st = ("## How to verify this page\n```sh\n"
+          "python3 scripts/build_pwb_behavior_contract_repin.py --check   # x\n"
+          "python3 scripts/record_pwb_behavior_contract_repin_acts.py --check policy abc --date d\n"
+          "python3 scripts/record_pwb_behavior_contract_repin_acts.py --selftest\n```\n"
+          "The three checks above are the same three the hosted workflow runs.\n")
+    wf = ("      - name: build_pwb_behavior_contract_repin --check\n"
+          "        run: python3 scripts/build_pwb_behavior_contract_repin.py --check\n\n"
+          "      - name: record_pwb_behavior_contract_repin_acts --check policy\n"
+          "        run: python3 scripts/record_pwb_behavior_contract_repin_acts.py --check policy abc --date d\n\n"
+          "      - name: record_pwb_behavior_contract_repin_acts --selftest\n"
+          "        run: python3 scripts/record_pwb_behavior_contract_repin_acts.py --selftest\n")
+    c1, s1 = f"python3 scripts/{V1_SCRIPT}.py --check z", f"python3 scripts/{V1_SCRIPT}.py --selftest"
+    c2, s2 = f"python3 scripts/{V2_SCRIPT}.py --check y", f"python3 scripts/{V2_SCRIPT}.py --selftest"
+    n1, w1 = edit_battery(st, wf, c1, s1, V1_SCRIPT)
+    n2, w2 = edit_battery(st, wf, c2, s2, V2_SCRIPT)
+    n12, w12 = edit_battery(n1, w1, c2, s2, V2_SCRIPT)
+    ok.append(("battery: re-pin to version 1 adds its two lines", c1 in n1 and s1 in n1 and V1_SCRIPT in w1))
+    ok.append(("battery: re-pin straight to version 2 adds only version 2's lines",
+               c2 in n2 and V1_SCRIPT not in n2 + w2 and "--check policy" not in n2 + w2))
+    ok.append(("battery: version 1 up to version 2 replaces its lines in place",
+               V1_SCRIPT not in n12 + w12 and (n12, w12) == (n2, w2)))
+    ok.append(("battery: every final state is idempotent",
+               edit_battery(n1, w1, c1, s1, V1_SCRIPT) == (n1, w1) and edit_battery(n2, w2, c2, s2, V2_SCRIPT) == (n2, w2)))
+    ok.append(("battery: version 2's lines keep the count at three",
+               "The three checks above are the same three" in n2 and n2.count("python3 ") == 3))
+    ok.append(("battery: a workflow without the version-1 steps is refused on upgrade",
+               refused(lambda: edit_battery(n1, wf, c2, s2, V2_SCRIPT))))
+    return ok
+
 
 def selftest() -> int:
     ok: list[tuple[str, bool]] = []
@@ -686,6 +999,7 @@ def selftest() -> int:
                "The three checks above are the same three" in ns and ns.count("python3 ") == 3
                and nw.count("run: python3") == 3 and "--check policy" not in ns + nw))
     ok.append(("battery edit is idempotent", edit_battery(ns, nw, "x", "y") == (ns, nw)))
+    ok.extend(policy_selftests())
     try:
         once("a b a", "a", "x")
         ok.append(("a repeated anchor is refused", False))
@@ -715,6 +1029,40 @@ def selftest() -> int:
             except Refusal:
                 passed = False
             ok.append((f"act instant precondition: {name}", passed == (name == "single instant")))
+    with tempfile.TemporaryDirectory() as t:
+        root = pathlib.Path(t)
+        good = b"rfc five text\n"
+        arg = sha(good)
+        (root / RFC5_ACT).parent.mkdir(parents=True)
+        (root / RFC5_ACT).write_text(f"# x\nExact digest (SHA-256): `{arg}`\n")
+        ok.append(("the row-7 act argument is read from its record", rfc5_act_argument(root) == arg))
+        (root / RFC5_ACT).write_text(f"# x\nExact digest (SHA-256): `{arg}`\nExact digest (SHA-256): `{arg}`\n")
+        try:
+            rfc5_act_argument(root)
+            ok.append(("two argument lines in the row-7 record are refused", False))
+        except Refusal:
+            ok.append(("two argument lines in the row-7 record are refused", True))
+        mods = [root / ".syzygy/governance/contracts" / m / "RFC-0005/consent-egress-secrets.md"
+                for m in ("rfcs", "candidates/rfcs")]
+        for m in mods:
+            m.parent.mkdir(parents=True)
+            m.write_bytes(good)
+        rfc5_installed_matches(root, arg)
+        ok.append(("installed RFC-0005 bytes equal to the act argument pass", True))
+        for which in (0, 1):
+            mods[which].write_bytes(good + b"x")
+            try:
+                rfc5_installed_matches(root, arg)
+                ok.append((f"a mirror {which} not hashing to the act argument is refused", False))
+            except Refusal:
+                ok.append((f"a mirror {which} not hashing to the act argument is refused", True))
+            mods[which].write_bytes(good)
+        mods[1].unlink()
+        try:
+            rfc5_installed_matches(root, arg)
+            ok.append(("a missing mirror is refused", False))
+        except Refusal:
+            ok.append(("a missing mirror is refused", True))
     failed = [n for n, g in ok if not g]
     for n, g in ok:
         print(("ok   " if g else "FAIL ") + n)

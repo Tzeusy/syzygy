@@ -68,6 +68,7 @@ DECISIONS = ".syzygy/governance/decisions"
 BRANCHES = (
     (278, "agent/dossier-engine-7"),
     (273, "governance/provider-route-messages-api-entry"),
+    (326, "governance/screening-scope-v2"),
     (260, "governance/admission-sitting-packet"),
 )
 ORDERING_CASE = (120, "agent/tier4-dov25")
@@ -84,6 +85,9 @@ PKG_ADMISSION = f"{CAND}/public-repo-admission"
 PKG_REGISTRY = f"{CAND}/public-admission-registry-entries"
 PKG_MESSAGES = f"{CAND}/provider-route-messages-api-entry"
 PKG_SCOPE = f"{CAND}/public-source-screening-scope"
+PKG_SCOPE_V2 = f"{CAND}/public-source-screening-scope-v2"
+V2_RECORDER = "scripts/record_public_source_screening_scope_v2_act.py"
+V2_VARIANTS = ("none", "manifesto", "architecture", "both")
 PKG_RFC5 = f"{CAND}/rfc5-project-documentation-class"
 PKG_PROFILE_SPEC = "openspec/changes/polaris-non-governed-narrative-profile"
 POLICY = ".syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json"
@@ -236,6 +240,7 @@ class Sim:
         self.report_path = report_path
         self.base = base
         self.vitest = vitest
+        self.v2_variant = "none"
         self.steps = []
         self.findings = []
         self.baseline_failing = set()
@@ -439,6 +444,36 @@ class Sim:
         rec.write_text(text)
         self.step("freeze-route-B", note="synthetic confirming raw and synthetic freeze, scratch only")
 
+    def freeze_v2_recorder(self):
+        """Once the recorder is frozen it is used as it stands, on the package's real round-4 raw. A
+        recorder still unfrozen (an older branch) gets a synthetic confirming raw and a table from its
+        own --freeze-table, in the scratch only."""
+        rec = self.scratch / V2_RECORDER
+        pkg = self.scratch / PKG_SCOPE_V2
+        review = pkg / "reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-6-RAW.md"
+        text = rec.read_text()
+        if "FROZEN_SUBJECT: str | None = None" not in text:
+            self.step("freeze-v2", note="recorder already frozen (the round-4 REVISE and its disclosed repairs); the real raw is used")
+            return True
+        review.parent.mkdir(parents=True, exist_ok=True)
+        review.write_text(f"# R4 (synthetic, scratch only)\nReviewed commit: {'a' * 40}\n"
+                          f"Manifest SHA-256: {sha256(pkg / 'PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt')}\n"
+                          "Verdict: CONFIRM\n\n## Findings\n\nnone\n")
+        p = self.run([sys.executable, V2_RECORDER, "--freeze-table"])
+        if p.returncode or "FROZEN_FILE_DIGESTS" not in p.stdout:
+            self.step("freeze-v2", exit=p.returncode, tail=(p.stderr + p.stdout)[-200:])
+            return False
+        text = text.replace("FROZEN_SUBJECT: str | None = None", f'FROZEN_SUBJECT: str | None = "{"f" * 40}"')
+        text = text.replace("FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {}", p.stdout.strip())
+        rec.write_text(text)
+        self.step("freeze-v2", note="synthetic confirming raw and synthetic freeze, scratch only")
+        return True
+
+    def v2_row(self, variant):
+        text = (self.scratch / PKG_SCOPE_V2 / "PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt").read_text()
+        m = re.search(rf"^([0-9a-f]{{64}})  \S+  \[variant: {variant}\]$", text, re.M)
+        return m.group(1) if m else None
+
     def acts(self, route):
         scope = (self.scratch / PKG_SCOPE / "PUBLIC-SOURCE-SCREENING-SCOPE-MANIFEST.txt").read_text()
         reg = (self.scratch / PKG_REGISTRY / "PUBLIC-ADMISSION-REGISTRY-MANIFEST.txt").read_text()
@@ -460,6 +495,14 @@ class Sim:
                                    ("egress-anthropic", "EGRESS-CONSENT-ANTHROPIC.md", "row6")):
             self.record("record_public_repo_admission_acts.py", key, row_digest(adm, suffix), label, sel)
         self.record("record_rfc5_project_documentation_act.py", None, row_digest(rfc, "consent-egress-secrets.md"), "row7", sel)
+        if (self.scratch / V2_RECORDER).is_file() and self.v2_variant and self.freeze_v2_recorder():
+            arg = self.v2_row(self.v2_variant)
+            if arg is None:
+                self.step("row12-policy-v2", note=f"no manifest row for variant {self.v2_variant}")
+            else:
+                self.record("record_public_source_screening_scope_v2_act.py", None, arg, "row12-policy-v2", sel)
+        else:
+            self.step("row12-policy-v2", note="not run: the package is absent or --no-v2 was given")
         self.record("record_narrative_profile_adoption.py", None, None, "row8-profile", sel)
         self.commit("sim: every recorder run")
         self.checks("after-acts")
@@ -589,6 +632,8 @@ def main(argv):
     ap.add_argument("--base", default="refs/remotes/origin/main")
     ap.add_argument("--route", choices=("a", "b"), default="b")
     ap.add_argument("--vitest", action="store_true")
+    ap.add_argument("--v2-variant", choices=V2_VARIANTS + ("skip",), default="none",
+                    help="the screening-scope v2 variant row recorded as row 12 (skip: version 1 only)")
     ap.add_argument("--keep", action="store_true")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args(argv)
@@ -601,6 +646,7 @@ def main(argv):
         a.scratch = os.path.join(tmp, "clone")
     scratch = build_scratch(ROOT, a.scratch, a.base)
     sim = Sim(scratch, a.report, a.base, a.vitest)
+    sim.v2_variant = None if a.v2_variant == "skip" else a.v2_variant
     try:
         sim.merge_all()
         sim.merge_fixup()

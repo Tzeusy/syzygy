@@ -1,0 +1,1385 @@
+{
+  "supersededBy": {
+    "path": "docs/evidence/polaris-prompt-mutants-2026-10-04.json",
+    "date": "2026-10-04",
+    "reason": "Subjects changed after the #336 review; see the successor. Nothing below was edited."
+  },
+  "record": "rule-6 mutation evidence (AGENTS.md verification rule 6)",
+  "date": "2026-10-04",
+  "ranAt": "dfb6f8148e92626396412231f4d586f28d71aec6",
+  "subjects": [
+    {
+      "path": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "sha256": "1b90b6ca2430099ab223edbdace7e5bbfe27057a72c78b01c625fd6b9a3b7cda"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/index.ts",
+      "sha256": "b6a49535133a6dbdbbb9c77d0c67a416e943eab94eef4db539b1b5eeed23ee30"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/prompts.ts",
+      "sha256": "66a8c575a5b5a0339da1aa493e6f9c39e0544c7c7ec09be75020a896cda7d259"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/provider-draft.ts",
+      "sha256": "910b01c8919610026a0568a7f936a3194bbcc0721bec6cdfc22eb2142bd0ba6b"
+    }
+  ],
+  "tests": [
+    {
+      "path": "packages/polaris-generation-core/src/dossier-prompts.test.ts",
+      "sha256": "ab41f80ec2b869820963fe8c471bc7bb3efe160f7711b87f77b348da01ceb1a7"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/prompts.test.ts",
+      "sha256": "7db43a7ceb9e78509c9ecf39e39f5b4ba3442b0c4e9910809508e6780ec30253"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/discovery-provider.test.ts",
+      "sha256": "89247882d06b3983b2bfa49e11e9bac11da4c985911851e0dd25b733990883f9"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/provider-draft.test.ts",
+      "sha256": "5e49d02c6b2c44810e037bea5c45875ee6fb42aa7679540cecb96c528cacc9a3"
+    }
+  ],
+  "supersedes": {
+    "path": "docs/evidence/polaris-discovery-provider-mutants-2026-10-03.json",
+    "defect": "That sweep rewrote only the current mutant's file from its pristine copy and restored every subject only once, at the end. When the sweep moved to the next file, the last mutant of the previous file stayed applied: prompts.ts mutant 32 (discovery-instructions-swapped) was live for every provider-draft.ts and discovery-provider.ts mutant (indexes 33-61), and provider-draft.ts mutant 45 for every discovery-provider.ts mutant (46-61). Those runs failed on the contaminating mutant's digest pins, so their kills say nothing about their own predicate; number-type-unchecked (index 41) is equivalent and only read as killed because of it."
+  },
+  "method": "Before every mutant the runner rewrites every subject from its committed bytes, checks each subject's sha256 against the commit, and runs the unmutated battery (`npx vitest run` over the four test files), which must pass with no failure. It then replaces exactly one occurrence of `old` with `new` in `file` (applied only when `old` occurs exactly once), runs the battery, and restores and re-checks every subject. Killed means the run exited non-zero with at least one failed test.",
+  "summary": {
+    "mutants": 89,
+    "killed": 88,
+    "survived": 1,
+    "survivedEquivalent": [
+      "json-at-call-time"
+    ]
+  },
+  "mutants": [
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-7-unnumbered",
+      "old": "\n7. Thin evidence stays Unknown. Where",
+      "new": "\nThin evidence. Where",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 12,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-5-unnumbered",
+      "old": "\n5. Comparisons. Report",
+      "new": "\nComparisons. Report",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 12,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-6-unnumbered",
+      "old": "\n6. Marked inference. A block",
+      "new": "\nMarked inference. A block",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 12,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-4-paraphrase-allowed",
+      "old": "copied character for character from a cited source. Never supply",
+      "new": "paraphrased from a cited source. Never supply",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 6,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-4-inferred-half-allowed",
+      "old": "A cost no source states is unresolved (No source states a cost for X.), or at most one Inferred: sentence citing the sources of the mechanism it reasons from.",
+      "new": "A cost no source states may be inferred from the code.",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 6,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-5-extension-allowed",
+      "old": "Never extend or generalize it, and never add an alternative of your own.",
+      "new": "Never extend or generalize it.",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 6,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rules-govern-line-dropped",
+      "old": " Where these dossier rules and the manifesto instructions above differ, the dossier rules govern.",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 12,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "guidance-word",
+      "old": "never by rewording it to sound supported",
+      "new": "never by rewording it",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "fidelity-quote-check-dropped",
+      "old": "whose quoted sentence appears character for character in a cited source",
+      "new": "with a cited source",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > pins the fidelity dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "guidance-shared",
+      "old": "  edit: `Dossier edit: never soften",
+      "new": "  edit: `Dossier repair: never soften",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > pins the edit dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "adv-paraphrased-in-quotes",
+      "old": "block('b-adv', 'The maintainers state: \"We chose a single-threaded event loop because it avoids lock contention.\"'",
+      "new": "block('b-adv', 'The maintainers state: \"The single-threaded event loop avoids lock contention.\"'",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier illustrations obey their own rules > quotes every advantage and trade-off verbatim from a cited source",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "inventory-adv-unquoted",
+      "old": "statement: 'The maintainers state: \"We chose a single-threaded event loop because it avoids lock contention.\"'",
+      "new": "statement: 'The maintainers state that the single-threaded event loop avoids lock contention.'",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier illustrations obey their own rules > quotes every advantage and trade-off verbatim from a cited source",
+        "dossier stage prompts > pins the inventory dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "cost-half-supplied",
+      "old": "What it buys in return is not stated in the sources.",
+      "new": "In return it evicts quickly.",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier illustrations obey their own rules > states which half of a trade-off no source states",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "dive-unmarked",
+      "old": "block('b-dive', 'Inferred: only a key",
+      "new": "block('b-dive', 'Only a key",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier illustrations obey their own rules > marks the one inferential block Inferred: and no other",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "restatement-marked-inferred",
+      "old": "block('b-mech', '`maybeEvict` samples",
+      "new": "block('b-mech', 'Inferred: `maybeEvict` samples",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier illustrations obey their own rules > marks the one inferential block Inferred: and no other",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "hop-merged",
+      "old": "\n      leaf('b-flow-2', 'When `maxmemory` is exceeded, `handleSet` calls `maybeEvict`.', 'src-server'),",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 5,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier illustrations obey their own rules > traces the workflow one hop per child block and draws only those hops",
+        "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "identifier-respelled",
+      "old": "block('b-mech', '`maybeEvict` samples",
+      "new": "block('b-mech', '`maybe_evict` samples",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier illustrations obey their own rules > spells every backticked identifier as a cited source spells it",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "inventory-identifier-respelled",
+      "old": "hands off to `maybeEvict` when `maxmemory`",
+      "new": "hands off to `maybeEvict` when `max_memory`",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier illustrations obey their own rules > spells every backticked identifier as a cited source spells it",
+        "dossier stage prompts > pins the inventory dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "gap-filled-inventory",
+      "old": "disposition: { kind: 'unresolved', reason: 'No admitted source shows the read path.', references: ['src-server'] } },",
+      "new": "disposition: produced('end-to-end-workflows') },",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier illustrations obey their own rules > keeps thin evidence unresolved in the inventory, the draft and the review",
+        "dossier stage prompts > pins the inventory dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "gap-dropped-draft",
+      "old": "unresolved: [{ question: 'How is a read request served?', reason: 'No admitted source shows the read path.', references: ['src-server'] }],",
+      "new": "unresolved: [],",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier illustrations obey their own rules > keeps thin evidence unresolved in the inventory, the draft and the review",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "edge-label-not-in-text",
+      "old": "label: 'calls', sourceIds",
+      "new": "label: 'invokes', sourceIds",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 7,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage illustrations pass the stage validators > validates the author illustration",
+        "dossier stage illustrations pass the stage validators > validates the edit illustration",
+        "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
+        "dossier stage illustrations pass the stage validators > validates the repair illustration",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "edge-cited-outside-flow",
+      "old": "label: 'calls', sourceIds: ['src-server']",
+      "new": "label: 'calls', sourceIds: ['src-evict']",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 5,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier illustrations obey their own rules > traces the workflow one hop per child block and draws only those hops",
+        "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "diagram-kind",
+      "old": "kind: 'flow', relationship",
+      "new": "kind: 'dependency', relationship",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier illustrations obey their own rules > traces the workflow one hop per child block and draws only those hops",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "plan-required-section-dropped",
+      "old": "  sectionPlan('mechanisms', 'Sampled eviction', 'Answers the mechanisms question from e-evict; a deep dive answers why eviction samples instead of ordering every key.', ['src-evict']),\n",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 6,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage illustrations pass the stage validators > validates the author illustration",
+        "dossier stage illustrations pass the stage validators > validates the edit illustration",
+        "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
+        "dossier stage illustrations pass the stage validators > validates the plan illustration",
+        "dossier stage illustrations pass the stage validators > validates the repair illustration",
+        "dossier stage prompts > pins the plan dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "review-coverage-row-dropped",
+      "old": "represented('e-adv', 'b-adv'), ",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "review-gap-represented",
+      "old": "{ entryId: 'e-read', disposition: 'unresolved', blockIds: [], reason:",
+      "new": "{ entryId: 'e-read', disposition: 'justified-omission', blockIds: [], reason:",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier illustrations obey their own rules > keeps thin evidence unresolved in the inventory, the draft and the review",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "edit-illustration-swapped",
+      "old": "  inventory: inventoryIllustration, plan: planIllustration, author: draftIllustration, edit: draftIllustration,",
+      "new": "  inventory: inventoryIllustration, plan: planIllustration, author: draftIllustration, edit: planIllustration,",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 3,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage illustrations pass the stage validators > shares one draft illustration across author, edit and repair",
+        "dossier stage illustrations pass the stage validators > validates the edit illustration",
+        "dossier stage prompts > ends the edit prompt with the illustration it was tested with"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "repair-illustration-cloned",
+      "old": "fidelity: reviewIllustration, repair: draftIllustration,\n});",
+      "new": "fidelity: reviewIllustration, repair: structuredClone(draftIllustration),\n});",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage illustrations pass the stage validators > shares one draft illustration across author, edit and repair"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "edit-json-wrong-stage",
+      "old": "  edit: JSON.stringify(draftIllustration), fidelity:",
+      "new": "  edit: JSON.stringify(planIllustration), fidelity:",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > ends the edit prompt with the illustration it was tested with",
+        "dossier stage prompts > pins the edit dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "freeze-dropped",
+      "old": "    Object.freeze(value);\n",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "the embedded illustrations are fixed at module load > deep-freezes every exported illustration and source",
+        "the embedded illustrations are fixed at module load > refuses every mutation an importer could attempt, and the prompts stay byte-identical"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "freeze-shallow",
+      "old": "    for (const child of Object.values(value)) deepFreeze(child);\n",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "the embedded illustrations are fixed at module load > deep-freezes every exported illustration and source",
+        "the embedded illustrations are fixed at module load > refuses every mutation an importer could attempt, and the prompts stay byte-identical"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "sources-unfrozen",
+      "old": "export const DOSSIER_ILLUSTRATION_SOURCES = deepFreeze([",
+      "new": "export const DOSSIER_ILLUSTRATION_SOURCES = ([",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "the embedded illustrations are fixed at module load > deep-freezes every exported illustration and source",
+        "the embedded illustrations are fixed at module load > refuses every mutation an importer could attempt, and the prompts stay byte-identical"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "discovery-unfrozen",
+      "old": "export const DISCOVERY_STAGE_ILLUSTRATIONS: Readonly<Record<DiscoveryStage, unknown>> = deepFreeze({",
+      "new": "export const DISCOVERY_STAGE_ILLUSTRATIONS: Readonly<Record<DiscoveryStage, unknown>> = ({",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "the embedded illustrations are fixed at module load > deep-freezes every exported illustration and source",
+        "the embedded illustrations are fixed at module load > refuses every mutation an importer could attempt, and the prompts stay byte-identical"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "json-at-call-time",
+      "old": "${ILLUSTRATION_HEADING}\\n${dossierIllustrationJson[generation]}",
+      "new": "${ILLUSTRATION_HEADING}\\n${JSON.stringify(DOSSIER_STAGE_ILLUSTRATIONS[generation])}",
+      "outcome": "survived",
+      "baselineGreen": true,
+      "failedTests": 0,
+      "totalTests": 139,
+      "killedBy": [],
+      "equivalent": "Equivalent while the freeze holds: the illustrations are deep-frozen, so serialising them at call time yields the same bytes as the load-time strings. The two layers are deliberate defence in depth for #266; each alone keeps an importer from changing the instruction text, and freeze-dropped, freeze-shallow, sources-unfrozen and discovery-unfrozen are each killed."
+    },
+    {
+      "file": "packages/polaris-generation-core/src/index.ts",
+      "id": "index-export-readded",
+      "old": "  promptForStage, ILLUSTRATION_HEADING,",
+      "new": "  promptForStage, ILLUSTRATION_HEADING, DOSSIER_STAGE_ILLUSTRATIONS,",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "the embedded illustrations are fixed at module load > keeps the illustrations out of the package entry point"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "version-bumped",
+      "old": "version: `polaris-${generation}-dossier-v2`",
+      "new": "version: `polaris-${generation}-dossier-v3`",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 6,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "base-prefix-dropped",
+      "old": "system: `${manifesto}\\n\\n${dossierRules}",
+      "new": "system: `${dossierRules}",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 12,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > extends the reviewed author manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed edit manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed fidelity manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed inventory manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed plan manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed repair manifesto prompt without changing it"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "illustration-heading",
+      "old": "Copy its structure, never its content, handles or claims;",
+      "new": "Copy its structure;",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 16,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "dossier stage prompts > ends the author prompt with the illustration it was tested with",
+        "dossier stage prompts > ends the edit prompt with the illustration it was tested with"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "profile-guard-removed",
+      "old": "  if (profile !== 'manifesto' && profile !== 'dossier') throw new Error('unknown-prompt-profile');\n",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > refuses unsupported profile Dossier",
+        "dossier stage prompts > refuses unsupported profile __proto__",
+        "dossier stage prompts > refuses unsupported profile constructor",
+        "dossier stage prompts > refuses unsupported profile unknown"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "default-profile-dossier",
+      "old": "profile: PromptProfile = 'manifesto'",
+      "new": "profile: PromptProfile = 'dossier'",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 13,
+      "totalTests": 139,
+      "killedBy": [
+        "dossier stage prompts > extends the reviewed author manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed edit manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed fidelity manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed inventory manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed plan manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed repair manifesto prompt without changing it"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "map-relevance-out-of-range",
+      "old": "relevance: 9 },",
+      "new": "relevance: 11 },",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 3,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > ends each prompt with an illustration its own parser accepts",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "map-unknown-blob",
+      "old": "{ blobId: 'blob-server', claim:",
+      "new": "{ blobId: 'blob-other', claim:",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 3,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > ends each prompt with an illustration its own parser accepts",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "map-duplicate-blob",
+      "old": "{ blobId: 'blob-server', claim:",
+      "new": "{ blobId: 'blob-readme', claim:",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 3,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > ends each prompt with an illustration its own parser accepts",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "reduce-illustration-duplicate",
+      "old": "ranked: ['blob-readme', 'blob-server', 'blob-evict']",
+      "new": "ranked: ['blob-readme', 'blob-server', 'blob-readme']",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 3,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > ends each prompt with an illustration its own parser accepts",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "map-instruction-word",
+      "old": "Claim only what the excerpt shows, never what the rest of the file might hold.",
+      "new": "Claim what the file holds.",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "map-code-points-dropped",
+      "old": "at most 400 characters (Unicode code points)",
+      "new": "at most 400 characters",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "map-sources-dropped",
+      "old": " (these usually live in a README, CHANGELOG, design document or architecture decision record)",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "reduce-instruction-word",
+      "old": ", choosing only among the blobIds the claims name.",
+      "new": ".",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "map-version-unbumped",
+      "old": "'discovery-map': 'polaris-discovery-map-v2'",
+      "new": "'discovery-map': 'polaris-discovery-map-v1'",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 3,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > builds the map envelope with the stage envelope fields and the request rebuilt field by field",
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "reduce-version-bumped",
+      "old": "'discovery-reduce': 'polaris-discovery-reduce-v1' }",
+      "new": "'discovery-reduce': 'polaris-discovery-reduce-v2' }",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 3,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > builds the reduce envelope the same way",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "discovery-instructions-swapped",
+      "old": "{ 'discovery-map': mapInstructions, 'discovery-reduce': reduceInstructions }",
+      "new": "{ 'discovery-map': reduceInstructions, 'discovery-reduce': mapInstructions }",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "reduce-schema-version",
+      "old": "'discovery-map': 'v1', 'discovery-reduce': 'v1' };",
+      "new": "'discovery-map': 'v1', 'discovery-reduce': 'v2' };",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 3,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > builds the reduce envelope the same way",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce reply schema bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "schema-map-blob-unpatterned",
+      "old": "  blobId: handle, claim: { type: 'string', minLength: 1, maxLength: DISCOVERY_CLAIM_MAX_LENGTH },",
+      "new": "  blobId: text, claim: { type: 'string', minLength: 1, maxLength: DISCOVERY_CLAIM_MAX_LENGTH },",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 3,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map reply schema bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "schema-map-maxitems",
+      "old": "}), 0, 200) });\nconst discoveryReduce",
+      "new": "}), 0, 2000) });\nconst discoveryReduce",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 3,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map reply schema bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "schema-reduce-unique-dropped",
+      "old": "const discoveryReduce = object({ ranked: { ...list(handle, 0, 200), uniqueItems: true } });",
+      "new": "const discoveryReduce = object({ ranked: list(handle, 0, 200) });",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 3,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > closes the reduce reply schema: exactly a unique ranked list of handles",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce reply schema bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "claim-max-raised",
+      "old": "DISCOVERY_CLAIM_MAX_LENGTH = 400;",
+      "new": "DISCOVERY_CLAIM_MAX_LENGTH = 4000;",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 5,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > refuses a reduce request with a claim of 401 code points",
+        "discovery instruction text comes from promptForStage and stageSchema > closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map reply schema bytes",
+        "discovery reply parsers > counts a claim's length in code points, as discovery truncates it"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "relevance-max-raised",
+      "old": "DISCOVERY_RELEVANCE_MAX = 10;",
+      "new": "DISCOVERY_RELEVANCE_MAX = 11;",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 5,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > refuses a reduce request with a relevance above 10",
+        "discovery instruction text comes from promptForStage and stageSchema > closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map reply schema bytes",
+        "discovery reply parsers > refuses a map reply with relevance above 10"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "relevance-min-lowered",
+      "old": "relevance: { type: 'number', minimum: 0, maximum",
+      "new": "relevance: { type: 'number', minimum: -1, maximum",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map reply schema bytes",
+        "discovery reply parsers > refuses a map reply with relevance below 0"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "number-min-unchecked",
+      "old": "!(value >= schema.minimum && value <= schema.maximum)",
+      "new": "!(value <= schema.maximum)",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery instruction text comes from promptForStage and stageSchema > refuses a relevance of -Infinity in validateDiscoveryReply",
+        "discovery reply parsers > refuses a map reply with relevance below 0"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "number-type-unchecked",
+      "old": "if (typeof value !== 'number' || !(value >=",
+      "new": "if (!(value >=",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery reply parsers > refuses a map reply with a string relevance"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "number-exclusion-form",
+      "old": "!(value >= schema.minimum && value <= schema.maximum)",
+      "new": "(value < schema.minimum || value > schema.maximum)",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery instruction text comes from promptForStage and stageSchema > refuses a relevance of NaN in validateDiscoveryReply"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "reply-stage-guard",
+      "old": "  if (stage !== 'discovery-map' && stage !== 'discovery-reduce') throw new Error('invalid-stage');\n  check(schemas[stage], value);",
+      "new": "  check(schemas[stage], value);",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery instruction text comes from promptForStage and stageSchema > refuses a generation-stage name in validateDiscoveryReply"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "reply-duplicates",
+      "old": "  unique(ids);\n  if (ids.some",
+      "new": "  if (ids.some",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery reply parsers > refuses a map reply with a repeated blob id",
+        "discovery reply parsers > refuses a map reply with more claims than items"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "reply-unknown-blob",
+      "old": "  if (ids.some(id => !candidates.has(id))) throw new Error('unknown-blob');\n",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery reply parsers > refuses a map reply with a blob id outside the request",
+        "discovery reply parsers > refuses a reduce reply with an id no claim names"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "reply-over-selection",
+      "old": "ids.length > call.maxSelected!)) throw new Error('over-selection');",
+      "new": "ids.length > call.maxSelected! + 1)) throw new Error('over-selection');",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > reads each reduce request field once and binds the reply to what it validated",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "envelope-wrong-prompt",
+      "old": "  const prompt = promptForStage(stage);\n  const schema = stageSchema(stage);",
+      "new": "  const prompt = promptForStage('discovery-map');\n  const schema = stageSchema(stage);",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 3,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > builds the reduce envelope the same way",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > sends exactly those two symbols' output as the instruction text, whatever the request"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "envelope-wrong-schema",
+      "old": "  const prompt = promptForStage(stage);\n  const schema = stageSchema(stage);",
+      "new": "  const prompt = promptForStage(stage);\n  const schema = stageSchema('discovery-map');",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 3,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > builds the reduce envelope the same way",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > sends exactly those two symbols' output as the instruction text, whatever the request"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "map-candidates-widened",
+      "old": "{ candidateIds: mapSnapshot(request).candidateIds }",
+      "new": "{ candidateIds: [...mapSnapshot(request).candidateIds, 'blob-other'] }",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery reply parsers > refuses a map reply with a blob id outside the request"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-candidates-widened",
+      "old": "{ candidateIds, maxSelected: inputs.maxSelected }",
+      "new": "{ candidateIds: [...candidateIds, 'blob-unclaimed'], maxSelected: inputs.maxSelected }",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery reply parsers > refuses a reduce reply with an id no claim names"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-cap-widened",
+      "old": "maxSelected: inputs.maxSelected }, 'invalid-reduce-reply')",
+      "new": "maxSelected: inputs.maxSelected + 1 }, 'invalid-reduce-reply')",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > reads each reduce request field once and binds the reply to what it validated",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-cap-reread",
+      "old": "maxSelected: inputs.maxSelected }, 'invalid-reduce-reply')",
+      "new": "maxSelected: request.maxSelected }, 'invalid-reduce-reply')",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > reads each reduce request field once and binds the reply to what it validated"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "map-item-spread",
+      "old": "return { blobId: item.blobId as unknown, path: item.path as unknown, excerpt: item.excerpt as unknown };",
+      "new": "return { ...item };",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > builds the map envelope with the stage envelope fields and the request rebuilt field by field"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-claim-spread",
+      "old": "return { blobId: claim.blobId as unknown, path: claim.path as unknown, claim: claim.claim as unknown, relevance: claim.relevance as unknown };",
+      "new": "return { ...claim };",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > builds the reduce envelope the same way"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-entry-spread",
+      "old": "return { subsystem: entry.subsystem as unknown, blobs: entry.blobs as unknown, claims };",
+      "new": "return { ...entry, claims };",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > builds the reduce envelope the same way"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "map-envelope-reread",
+      "old": "items: inputs.items });",
+      "new": "items: request.items });",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > builds the map envelope with the stage envelope fields and the request rebuilt field by field",
+        "discovery envelopes > reads each map request field once and encodes what it validated"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-envelope-reread",
+      "old": "subsystems: inputs.subsystems });",
+      "new": "subsystems: request.subsystems });",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > builds the reduce envelope the same way",
+        "discovery envelopes > reads each reduce request field once and binds the reply to what it validated"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "map-request-duplicates",
+      "old": "  if (!distinct(candidateIds)) fail();\n  return { inputs: { subsystem",
+      "new": "  return { inputs: { subsystem",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > refuses a map request with duplicate item ids"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "map-request-empty-items",
+      "old": "items === undefined || items.length === 0) return fail();",
+      "new": "items === undefined) return fail();",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > refuses a map request with no items"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "map-request-empty-subsystem",
+      "old": "if (!isText(subsystem) ||",
+      "new": "if (typeof subsystem !== 'string' ||",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > refuses a map request with an empty subsystem name"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-request-max-zero",
+      "old": "maxSelected < 1",
+      "new": "maxSelected < 0",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > refuses a reduce request with maxSelected 0"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-request-no-claims",
+      "old": "if (candidateIds.length === 0 || !distinct(candidateIds)) fail();",
+      "new": "if (!distinct(candidateIds)) fail();",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > refuses a reduce request with no claims"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-request-duplicates",
+      "old": "if (candidateIds.length === 0 || !distinct(candidateIds)) fail();",
+      "new": "if (candidateIds.length === 0) fail();",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > refuses a reduce request with a blob claimed twice"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-claim-length-unchecked",
+      "old": "isText(value) && [...value].length <= DISCOVERY_CLAIM_MAX_LENGTH",
+      "new": "isText(value)",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > refuses a reduce request with a claim of 401 code points"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-claim-utf16-length",
+      "old": "[...value].length <= DISCOVERY_CLAIM_MAX_LENGTH",
+      "new": "value.length <= DISCOVERY_CLAIM_MAX_LENGTH",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > accepts reduce claims at the map reply bounds, counted in code points"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-claim-empty-allowed",
+      "old": "const isClaimText = (value: unknown): value is string => isText(value) &&",
+      "new": "const isClaimText = (value: unknown): value is string => typeof value === 'string' &&",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > refuses a reduce request with an empty claim"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-relevance-low",
+      "old": "value >= 0 && value <= DISCOVERY_RELEVANCE_MAX",
+      "new": "value >= -1 && value <= DISCOVERY_RELEVANCE_MAX",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > refuses a reduce request with a relevance below 0"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-relevance-high",
+      "old": "value <= DISCOVERY_RELEVANCE_MAX;",
+      "new": "value <= DISCOVERY_RELEVANCE_MAX + 1;",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > refuses a reduce request with a relevance above 10"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-relevance-type-unchecked",
+      "old": "value is number => typeof value === 'number' && value >= 0",
+      "new": "value is number => (value as number) >= 0",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > refuses a reduce request with a string relevance"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-relevance-exclusion-form",
+      "old": "typeof value === 'number' && value >= 0 && value <= DISCOVERY_RELEVANCE_MAX;",
+      "new": "typeof value === 'number' && !(value < 0 || value > DISCOVERY_RELEVANCE_MAX);",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 139,
+      "killedBy": [
+        "discovery envelopes > refuses a reduce request with a non-finite relevance"
+      ]
+    }
+  ],
+  "priorRunsOnThisBranch": [
+    {
+      "ranAt": "be27b358 (before rebase onto main)",
+      "finding": "With the fixed runner, reduce-claim-spread survived: no test put an extra field on a reduce entry or claim. json-at-call-time also survived; it is equivalent. The test was added, reduce-entry-spread joined the list, and the sweep re-ran."
+    },
+    {
+      "ranAt": "3dbfece2 (before rebase onto main)",
+      "finding": "89 mutants, 88 killed, the same survivor as this record. It was re-run here because the rebase onto main changed index.ts, one of the subjects."
+    }
+  ]
+}

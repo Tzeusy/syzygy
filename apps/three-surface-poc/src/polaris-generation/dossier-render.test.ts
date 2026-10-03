@@ -96,7 +96,7 @@ describe('multi-page dossier render', () => {
     const inventory = structuredClone(run.result.inventory) as { entries: object[] };
     inventory.entries.push({ id: 'seasonal-plan', kind: 'term', statement: 'The plan that turns observations into tasks.', sourceIds: ['mechanism'], disposition: { kind: 'produced', assetIds: [] } });
     const { files } = renderDossier({ result: { ...run.result, inventory }, sources: run.sources });
-    expect(files.get('glossary.html')).toContain('data-claim-id="glossary:seasonal-plan" data-epistemic="inferred"');
+    expect(files.get('glossary.html')).toContain('data-claim-id="glossary/seasonal-plan" data-epistemic="inferred"');
     const report = await evaluate(files, run.sources);
     expect(report.fidelity.claims.denominator).toBe(9);
     expect(report.fidelity.claims.outcome).toBe('all-labelled');
@@ -371,14 +371,14 @@ describe('a stopped run still renders (syzygy-k4t2)', () => {
     expect(stopped.result.artifacts.map(artifact => artifact.stage)).toEqual(['inventory', 'plan', 'author', 'edit']);
     const { files } = renderDossier(stopped);
     const index = files.get('index.html')!;
-    expect(asides(index, 'run-stopped')).toEqual(['<aside class="run-stopped" data-stop-reason="deferred-by-budget" data-claim-id="run-stopped" data-epistemic="unknown">']);
+    expect(asides(index, 'run-stopped')).toEqual(['<aside class="run-stopped" data-stop-reason="deferred-by-budget" data-claim-id="run-stopped/entry" data-epistemic="unknown">']);
     expect(index).toContain('after the edit stage; no fidelity review covers this draft, so every generated sentence is Unknown.');
     expect(files.has('deep-dives/component-depth.html')).toBe(true);
     expect(asides(index, 'unresolved-asset')).toEqual([]);
     const report = await evaluate(files, stopped.sources);
-    // run-stopped, opening, mechanism-text, mechanism-detail-0, qualification-text, depth-text: Unknown;
-    // the diagram's two nodes and edge keep their own Observed marking.
-    expect(report.fidelity.claims).toMatchObject({ denominator: 9, labelled: 9, byLabel: { observed: 3, inferred: 0, unknown: 6 }, outcome: 'all-labelled' });
+    // run-stopped (on the entry page and the deep-dive page), opening, mechanism-text, mechanism-detail-0,
+    // qualification-text, depth-text: Unknown; the diagram's two nodes and edge keep their own Observed marking.
+    expect(report.fidelity.claims).toMatchObject({ denominator: 10, labelled: 10, byLabel: { observed: 3, inferred: 0, unknown: 7 }, outcome: 'all-labelled' });
     expect(report.fidelity.quotes).toMatchObject({ outcome: 'all-resolved' });
     expect(report.scanFindings).toEqual([]);
   });
@@ -398,7 +398,7 @@ describe('a stopped run still renders (syzygy-k4t2)', () => {
     expect(manifest.title).toBe('Dossier draft (incomplete)');
     const notices = asides(index, 'unresolved-asset');
     expect(notices).toEqual(['how', 'judgment', 'architecture', 'component-depth'].map(id =>
-      `<aside class="unresolved-asset" data-asset-disposition="not-generated" data-stop-reason="deferred-by-budget" data-claim-id="not-generated:${id}" data-epistemic="unknown">`));
+      `<aside class="unresolved-asset" data-asset-disposition="not-generated" data-stop-reason="deferred-by-budget" data-claim-id="not-generated/${id}" data-epistemic="unknown">`));
     expect(index).toContain('<strong>architecture</strong> (diagram): not generated; the run stopped before it was written (deferred-by-budget).');
     expect(index).toContain('<section id="section-how" data-reading-level="1" data-topics=""><span class="eyebrow">01</span><h2>How the pieces connect</h2>');
     expect(index).toContain('after the plan stage.');
@@ -414,16 +414,16 @@ describe('a stopped run still renders (syzygy-k4t2)', () => {
     const stopped = { ...first, result: { status: 'stopped' as const, reason: 'budget-exhausted' as const, receipts: [], artifacts: [] } };
     const { files } = renderDossier(stopped);
     const index = files.get('index.html')!;
-    expect(asides(index, 'unresolved-asset').map(tag => /not-generated:([^"]+)/u.exec(tag)![1])).toEqual(['how', 'architecture', 'component-depth']);
+    expect(asides(index, 'unresolved-asset').map(tag => /not-generated\/([^"]+)/u.exec(tag)![1])).toEqual(['how', 'architecture', 'component-depth']);
     expect(index).toContain('The run stopped (deferred-by-budget) before any stage completed.');
-    expect(files.get('glossary.html')).toContain('data-claim-id="glossary:not-generated" data-epistemic="unknown">No inventory was produced before the run stopped (deferred-by-budget), so this glossary is empty.');
+    expect(files.get('glossary.html')).toContain('data-claim-id="glossary/not-generated" data-epistemic="unknown">No inventory was produced before the run stopped (deferred-by-budget), so this glossary is empty.');
   });
 
   it('keeps the glossary from an inventory that did complete', async () => {
     const stopped = await stopAfter({ maxCalls: 1 });
     const { files } = renderDossier(stopped);
     expect(files.get('glossary.html')).toContain('The inventory recorded no terms, so this glossary is empty.');
-    expect(asides(files.get('index.html')!, 'unresolved-asset').map(tag => /not-generated:([^"]+)/u.exec(tag)![1])).toEqual(['how', 'architecture', 'component-depth']);
+    expect(asides(files.get('index.html')!, 'unresolved-asset').map(tag => /not-generated\/([^"]+)/u.exec(tag)![1])).toEqual(['how', 'architecture', 'component-depth']);
   });
 
   it('shows any stop reason other than the budget verbatim', async () => {
@@ -433,6 +433,40 @@ describe('a stopped run still renders (syzygy-k4t2)', () => {
       expect(asides(index, 'run-stopped')[0]).toContain(`data-stop-reason="${reason}"`);
       expect(asides(index, 'unresolved-asset').every(tag => tag.includes(`data-stop-reason="${reason}"`))).toBe(true);
     }
+  });
+
+  it('renders every pipeline stop reason and refuses any other, so no reason reaches the markup unchecked', async () => {
+    const stopped = await stopAfter({ maxCalls: 2 });
+    const reasons = ['invalid-request', 'source-refused', 'admission-refused', 'budget-exhausted', 'cancelled', 'deadline',
+      'effect-uncertain', 'invalid-output', 'usage-uncertain', 'repair-exhausted', 'adapter-failure'] as const;
+    for (const reason of reasons) {
+      const shown = reason === 'budget-exhausted' ? 'deferred-by-budget' : reason;
+      const index = renderDossier({ ...stopped, result: { ...stopped.result, reason } }).files.get('index.html')!;
+      expect(asides(index, 'run-stopped')).toEqual([`<aside class="run-stopped" data-stop-reason="${shown}" data-claim-id="run-stopped/entry" data-epistemic="unknown">`]);
+    }
+    for (const reason of ["$'", '$&', 'budget', 'Deadline', '']) {
+      expect(() => renderDossier({ ...stopped, result: { ...stopped.result, reason: reason as Stopped['reason'] } })).toThrow('unknown-stop-reason');
+    }
+  });
+
+  it('counts a requested asset as present only when a drafted item has its id and its kind', async () => {
+    const stopped = await stopAfter({ maxCalls: 4 });
+    const index = renderDossier(stopped).files.get('index.html')!;
+    expect(index).toContain('<section id="section-judgment"');
+    // A requested diagram named like a drafted section is still missing.
+    const requestedAssets = [...stopped.requestedAssets.filter(asset => asset.id !== 'judgment'), { id: 'judgment', kind: 'diagram' as const, required: false }];
+    const notices = asides(renderDossier({ ...stopped, requestedAssets }).files.get('index.html')!, 'unresolved-asset');
+    expect(notices).toEqual(['<aside class="unresolved-asset" data-asset-disposition="not-generated" data-stop-reason="deferred-by-budget" data-claim-id="not-generated/judgment" data-epistemic="unknown">']);
+  });
+
+  it('carries the run-stopped banner onto every deep-dive page', async () => {
+    const stopped = await stopAfter({ maxCalls: 4 });
+    const { files } = renderDossier(stopped);
+    const dives = [...files.keys()].filter(path => path.startsWith('deep-dives/'));
+    expect(dives).toEqual(['deep-dives/component-depth.html']);
+    expect(asides(files.get(dives[0]!)!, 'run-stopped')).toEqual(['<aside class="run-stopped" data-stop-reason="deferred-by-budget" data-claim-id="run-stopped/dive/component-depth" data-epistemic="unknown">']);
+    expect(files.get(dives[0]!)).toContain('after the edit stage; no fidelity review covers this draft');
+    expect([...renderDossier(run).files.entries()].filter(([path, html]) => path.startsWith('deep-dives/') && html.includes('run-stopped'))).toEqual([]);
   });
 
   it('labels a stopped draft Inferred only where a review later than it says supported', async () => {
@@ -451,6 +485,47 @@ describe('a stopped run still renders (syzygy-k4t2)', () => {
     expect(() => renderDossier({ result: stopped.result, sources: stopped.sources })).toThrow('missing-requested-assets');
     const how = stopped.requestedAssets[0]!;
     expect(() => renderDossier({ ...stopped, requestedAssets: [how, how] })).toThrow('duplicate-handle');
+  });
+
+  it('mints every id with a slash, so draft handles named like the renderer\'s own ids never repeat a claim id', async () => {
+    const stopped = await stopAfter({ maxCalls: 4 });
+    const draftAt = stopped.result.artifacts.map(artifact => artifact.stage).lastIndexOf('edit');
+    const inventory = structuredClone(stopped.result.artifacts.find(artifact => artifact.stage === 'inventory')!.value) as { entries: unknown[] };
+    const term = 'seasonal-term';
+    inventory.entries.push({ id: term, kind: 'term', statement: 'A term the glossary lists.', sourceIds: [stopped.sources[0]!.sourceId] });
+    const draft = structuredClone(stopped.result.artifacts[draftAt]!.value) as { unresolved: unknown[]; sections: unknown[]; deepDives: unknown[]; introduction: unknown };
+    draft.unresolved.push({ question: 'What is left?', reason: 'Not stated.', references: [stopped.sources[0]!.sourceId] });
+    const paragraphs: { id: string }[] = [];
+    const walk = (node: unknown): void => {
+      if (Array.isArray(node)) { node.forEach(walk); return; }
+      if (node === null || typeof node !== 'object') return;
+      const record = node as Record<string, unknown>;
+      if (typeof record.id === 'string' && typeof record.text === 'string' && Array.isArray(record.sourceIds)) paragraphs.push(record as { id: string });
+      Object.values(record).forEach(walk);
+    };
+    walk([draft.introduction, draft.sections, draft.deepDives]);
+    const clashing = ['run-stopped', 'run-stopped:component-depth', 'not-generated:how', 'unresolved-1', `glossary:${term}`];
+    expect(paragraphs.length).toBeGreaterThanOrEqual(clashing.length);
+    clashing.forEach((id, index) => { paragraphs[index]!.id = id; });
+    const artifacts = stopped.result.artifacts.map((artifact, index) => index === draftAt ? { ...artifact, value: draft } : artifact.stage === 'inventory' ? { ...artifact, value: inventory } : artifact);
+    const { files } = renderDossier({ ...stopped, result: { ...stopped.result, artifacts } });
+    const claimIds = [...files.values()].flatMap(html => [...html.matchAll(/data-claim-id="([^"]+)"/gu)].map(match => match[1]!));
+    for (const id of ['run-stopped/entry', 'run-stopped/dive/component-depth', 'unresolved/1', `glossary/${term}`]) expect(claimIds, id).toContain(id);
+    for (const id of clashing) expect(claimIds, id).toContain(id);
+    const report = await evaluate(files, stopped.sources);
+    expect(report.fidelity.claims.duplicateClaimIds).toEqual([]);
+    expect(report.fidelity.claims.outcome).toBe('all-labelled');
+    // The pages list each draft handle once and each renderer id once.
+    expect(new Set(claimIds).size).toBe(claimIds.filter((id, index) => claimIds.indexOf(id) === index).length);
+  });
+
+  it('refuses a draft handle that carries the slash the renderer reserves', async () => {
+    const stopped = await stopAfter({ maxCalls: 4 });
+    const draftAt = stopped.result.artifacts.map(artifact => artifact.stage).lastIndexOf('edit');
+    const draft = structuredClone(stopped.result.artifacts[draftAt]!.value) as { introduction: { id: string } };
+    draft.introduction.id = 'run-stopped/x';
+    const artifacts = stopped.result.artifacts.map((artifact, index) => index === draftAt ? { ...artifact, value: draft } : artifact);
+    expect(() => renderDossier({ ...stopped, result: { ...stopped.result, artifacts } })).toThrow();
   });
 
   it('leaves a complete run without a stop banner or not-generated notice', () => {

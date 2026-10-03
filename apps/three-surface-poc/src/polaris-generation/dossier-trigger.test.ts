@@ -386,7 +386,7 @@ describe('command', () => {
       expect(readdirSync(dest)).toContain('run-record.json');
       const entry = readFileSync(join(dest, 'index.html'), 'utf8');
       expect(entry).toContain('class="run-stopped" data-stop-reason="deferred-by-budget"');
-      for (const asset of DOSSIER_REQUESTED_ASSETS) expect(entry).toContain(`data-claim-id="not-generated:${asset.id}"`);
+      for (const asset of DOSSIER_REQUESTED_ASSETS) expect(entry).toContain(`data-claim-id="not-generated/${asset.id}"`);
       expect(entry).not.toContain('data-epistemic="observed"');
     } finally { out.mockRestore(); }
   });

@@ -9,9 +9,12 @@
  * the only source of it.
  *
  * The envelope has the pipeline stage envelope's five fields (promptVersion,
- * system, responseSchemaVersion, responseSchema, inputs). `inputs` is rebuilt
- * field by field from the request, so a caller's extra property never crosses
- * the boundary. The schema is fixed; which blob ids a reply may name is the
+ * system, responseSchemaVersion, responseSchema, inputs). Each call reads every
+ * request field exactly once into a plain snapshot, validates the snapshot, and
+ * builds `inputs` and the candidate ids from it alone, so a caller's extra
+ * property never crosses the boundary and a getter cannot answer validation
+ * and encoding differently. A reduce request's claims carry the bounds a map
+ * reply's claims do (1..400 code points, relevance 0..10). The schema is fixed; which blob ids a reply may name is the
  * call's own business, checked by `validateDiscoveryReply`: a map reply only
  * its input's blob ids, a reduce reply only the blob ids its input's claims
  * name, at most `maxSelected`. Any breach refuses the whole reply.
@@ -23,7 +26,7 @@
 import { encodeCanonicalJson, type CanonicalJsonLimits } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
 import { promptForStage, type DiscoveryStage } from './prompts.js';
-import { stageSchema, validateDiscoveryReply } from './provider-draft.js';
+import { DISCOVERY_CLAIM_MAX_LENGTH, DISCOVERY_RELEVANCE_MAX, stageSchema, validateDiscoveryReply } from './provider-draft.js';
 
 export interface DiscoveryMapRequest {
   readonly subsystem: string;
@@ -67,29 +70,63 @@ const isText = (value: unknown): value is string => typeof value === 'string' &&
 const isQuestions = (value: unknown): value is string[] => Array.isArray(value) && value.length > 0 && value.every(isText);
 const distinct = (values: readonly string[]): boolean => new Set(values).size === values.length;
 
-function mapCandidates(request: DiscoveryMapRequest): string[] {
+/** Reads an array's length once and each element once; anything else is refused. */
+function snapshotList<T>(value: unknown, read: (item: unknown) => T): T[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const length = value.length;
+  const items: T[] = [];
+  for (let index = 0; index < length; index++) items.push(read(value[index]));
+  return items;
+}
+const textList = (value: unknown): string[] | undefined => snapshotList(value, item => item as string);
+const isClaimText = (value: unknown): value is string => isText(value) && [...value].length <= DISCOVERY_CLAIM_MAX_LENGTH;
+// NaN fails both comparisons, so the bounds also refuse a non-finite relevance.
+const isRelevance = (value: unknown): value is number => typeof value === 'number' && value >= 0 && value <= DISCOVERY_RELEVANCE_MAX;
+
+interface MapSnapshot { readonly inputs: DiscoveryMapRequest; readonly candidateIds: readonly string[] }
+interface ReduceSnapshot { readonly inputs: DiscoveryReduceRequest; readonly candidateIds: readonly string[] }
+
+function mapSnapshot(request: DiscoveryMapRequest): MapSnapshot {
   const fail = (): never => { throw new DiscoveryProviderError('invalid-map-request'); };
-  if (!isRecord(request) || !isText(request.subsystem) || !isQuestions(request.readerQuestions) || !Array.isArray(request.items) || request.items.length === 0) fail();
-  for (const item of request.items) if (!isRecord(item) || !isText(item.blobId) || !isText(item.path) || typeof item.excerpt !== 'string') fail();
-  const ids = request.items.map(item => item.blobId);
-  if (!distinct(ids)) fail();
-  return ids;
+  if (!isRecord(request)) fail();
+  const subsystem: unknown = request.subsystem;
+  const readerQuestions = textList(request.readerQuestions);
+  const items = snapshotList(request.items, item => {
+    if (!isRecord(item)) return fail();
+    return { blobId: item.blobId as unknown, path: item.path as unknown, excerpt: item.excerpt as unknown };
+  });
+  if (!isText(subsystem) || !isQuestions(readerQuestions) || items === undefined || items.length === 0) return fail();
+  for (const item of items) if (!isText(item.blobId) || !isText(item.path) || typeof item.excerpt !== 'string') fail();
+  const valid = items as { blobId: string; path: string; excerpt: string }[];
+  const candidateIds = valid.map(item => item.blobId);
+  if (!distinct(candidateIds)) fail();
+  return { inputs: { subsystem, readerQuestions, items: valid }, candidateIds };
 }
 
-function reduceCandidates(request: DiscoveryReduceRequest): string[] {
+function reduceSnapshot(request: DiscoveryReduceRequest): ReduceSnapshot {
   const fail = (): never => { throw new DiscoveryProviderError('invalid-reduce-request'); };
-  if (!isRecord(request) || !isQuestions(request.readerQuestions) || !Number.isSafeInteger(request.maxSelected) || request.maxSelected < 1
-    || !Array.isArray(request.subsystems)) fail();
-  for (const entry of request.subsystems) {
-    if (!isRecord(entry) || !isText(entry.subsystem) || !Number.isSafeInteger(entry.blobs) || entry.blobs < 0 || !Array.isArray(entry.claims)) fail();
-    for (const claim of entry.claims) {
-      if (!isRecord(claim) || !isText(claim.blobId) || !isText(claim.path) || typeof claim.claim !== 'string'
-        || typeof claim.relevance !== 'number' || !Number.isFinite(claim.relevance)) fail();
+  if (!isRecord(request)) fail();
+  const readerQuestions = textList(request.readerQuestions);
+  const maxSelected: unknown = request.maxSelected;
+  const subsystems = snapshotList(request.subsystems, entry => {
+    if (!isRecord(entry)) return fail();
+    const claims = snapshotList(entry.claims, claim => {
+      if (!isRecord(claim)) return fail();
+      return { blobId: claim.blobId as unknown, path: claim.path as unknown, claim: claim.claim as unknown, relevance: claim.relevance as unknown };
+    });
+    return { subsystem: entry.subsystem as unknown, blobs: entry.blobs as unknown, claims };
+  });
+  if (!isQuestions(readerQuestions) || typeof maxSelected !== 'number' || !Number.isSafeInteger(maxSelected) || maxSelected < 1 || subsystems === undefined) return fail();
+  for (const entry of subsystems) {
+    if (!isText(entry.subsystem) || typeof entry.blobs !== 'number' || !Number.isSafeInteger(entry.blobs) || entry.blobs < 0 || entry.claims === undefined) fail();
+    for (const claim of entry.claims ?? []) {
+      if (!isText(claim.blobId) || !isText(claim.path) || !isClaimText(claim.claim) || !isRelevance(claim.relevance)) fail();
     }
   }
-  const ids = request.subsystems.flatMap(entry => entry.claims.map(claim => claim.blobId));
-  if (ids.length === 0 || !distinct(ids)) fail();
-  return ids;
+  const valid = subsystems as DiscoveryReduceRequest['subsystems'][number][];
+  const candidateIds = valid.flatMap(entry => entry.claims.map(claim => claim.blobId));
+  if (candidateIds.length === 0 || !distinct(candidateIds)) fail();
+  return { inputs: { readerQuestions, maxSelected, subsystems: valid }, candidateIds };
 }
 
 function envelopeFor(stage: DiscoveryStage, inputs: Record<string, unknown>): { readonly envelope: DiscoveryEnvelope; readonly input: string } {
@@ -101,21 +138,14 @@ function envelopeFor(stage: DiscoveryStage, inputs: Record<string, unknown>): { 
 
 /** The envelope a map call sends, and its canonical encoding (the user message). */
 export function discoveryMapEnvelope(request: DiscoveryMapRequest): { readonly envelope: DiscoveryEnvelope; readonly input: string } {
-  mapCandidates(request);
-  return envelopeFor('discovery-map', {
-    subsystem: request.subsystem, readerQuestions: [...request.readerQuestions],
-    items: request.items.map(item => ({ blobId: item.blobId, path: item.path, excerpt: item.excerpt })),
-  });
+  const { inputs } = mapSnapshot(request);
+  return envelopeFor('discovery-map', { subsystem: inputs.subsystem, readerQuestions: inputs.readerQuestions, items: inputs.items });
 }
 
 /** The envelope a reduce call sends, and its canonical encoding (the user message). */
 export function discoveryReduceEnvelope(request: DiscoveryReduceRequest): { readonly envelope: DiscoveryEnvelope; readonly input: string } {
-  reduceCandidates(request);
-  return envelopeFor('discovery-reduce', {
-    readerQuestions: [...request.readerQuestions], maxSelected: request.maxSelected,
-    subsystems: request.subsystems.map(entry => ({ subsystem: entry.subsystem, blobs: entry.blobs,
-      claims: entry.claims.map(claim => ({ blobId: claim.blobId, path: claim.path, claim: claim.claim, relevance: claim.relevance })) })),
-  });
+  const { inputs } = reduceSnapshot(request);
+  return envelopeFor('discovery-reduce', { readerQuestions: inputs.readerQuestions, maxSelected: inputs.maxSelected, subsystems: inputs.subsystems });
 }
 
 /** One reply body, parsed and validated against its own call; any breach refuses all of it. */
@@ -130,7 +160,7 @@ function parseReply(stage: DiscoveryStage, body: string, call: { readonly candid
  * at most once, a claim of 1..400 code points and a relevance in 0..10.
  */
 export function parseDiscoveryMapReply(request: DiscoveryMapRequest, body: string): { readonly claims: readonly DiscoveryReplyClaim[] } {
-  const value = parseReply('discovery-map', body, { candidateIds: mapCandidates(request) }, 'invalid-map-reply') as { claims: DiscoveryReplyClaim[] };
+  const value = parseReply('discovery-map', body, { candidateIds: mapSnapshot(request).candidateIds }, 'invalid-map-reply') as { claims: DiscoveryReplyClaim[] };
   return { claims: value.claims.map(claim => ({ blobId: claim.blobId, claim: claim.claim, relevance: claim.relevance })) };
 }
 
@@ -139,6 +169,7 @@ export function parseDiscoveryMapReply(request: DiscoveryMapRequest, body: strin
  * each id one the request's claims name, at most once, at most `maxSelected`.
  */
 export function parseDiscoveryReduceReply(request: DiscoveryReduceRequest, body: string): { readonly ranked: readonly string[] } {
-  const value = parseReply('discovery-reduce', body, { candidateIds: reduceCandidates(request), maxSelected: request.maxSelected }, 'invalid-reduce-reply') as { ranked: string[] };
+  const { inputs, candidateIds } = reduceSnapshot(request);
+  const value = parseReply('discovery-reduce', body, { candidateIds, maxSelected: inputs.maxSelected }, 'invalid-reduce-reply') as { ranked: string[] };
   return { ranked: [...value.ranked] };
 }
