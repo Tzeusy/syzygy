@@ -1,0 +1,58 @@
+--- a/openspec/changes/polaris-project-wide-butlers-model/design.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
+@@ -87,4 +87,6 @@
+   4. top-level roster directories that contain `butler.toml`, plus their
+      `MANIFESTO.md` when present.
++- **Root independence.** Rules 1 and 2 need the root index read; rules 3
++  and 4 do not, and what they admit without it is qualified (decision 12).
+ - **No recursion.** Narrative links do not recurse. Active changes are
+   inventoried separately for capability drill-down and never enter the
+@@ -530,4 +532,48 @@
+ ```
+
++### 12. Read each class of a source on its own
++
++A fact the model holds does not vanish because a different fact beside it
++could not be read.
++
++- **Per class, not per source.** A grammar failure fails the one class whose
++  row it reads, in that one source. The source's other classes keep their
++  items and denominators.
++  - The extraction outcome gains a third kind beside extracted and Unknown:
++    *partially extracted*. It carries items and denominators for the classes
++    that read, and for each class that failed a record drawn from the same
++    closed failure reasons.
++  - A failed class's own denominator, its class total and its category total
++    are Unknown. A class that read never masks a failed sibling.
++  - The two independent extractors are compared per source and class.
++- **Unenumerated headings.** Where a list or table row names several headings
++  at one level, such as the nine V1 catalog headings, any other heading at
++  that level in the sections that hold them is surfaced as an
++  unenumerated heading: counted, anchored and routed, minting nothing.
++  - The row's own items stay modeled; its denominator in that source is
++    Unknown, because the items under the extra heading are not read.
++  - No `catalog-count` declaration is minted for it; that family stays
++    closed at nine.
++- **Root independence.** Each population rule declares whether it needs the
++  root index. A loaded profile's tree population declares
++  `rootIndexRequired` and needs the root index unless it says otherwise.
++  - Under an unread root index, a rule that needs it mints nothing and keeps
++    each source it can still name counted as Unknown.
++  - A rule that does not need it still admits its sources, and every
++    aggregate that counts them says it was derived without a read root
++    index.
++  - Butlers' baseline-spec and roster rules declare that they do not need
++    it, so its manifest admits the same sources as before.
++
++```mermaid
++flowchart TD
++    S["Admitted source,<br/>classes C1..Cn"] --> R["Read each class<br/>on its own"]
++    R --> A{"Every class<br/>reads?"}
++    A -- "yes" --> X["Extracted:<br/>items and denominators"]
++    A -- "some" --> P["Partially extracted:<br/>read classes keep items;<br/>failed classes Unknown with reason"]
++    A -- "none" --> U["Unknown:<br/>every class fails"]
++    P --> T["Class and category totals<br/>that count a failed class<br/>are Unknown"]
++```
++
+ ## Risks / Trade-offs
+

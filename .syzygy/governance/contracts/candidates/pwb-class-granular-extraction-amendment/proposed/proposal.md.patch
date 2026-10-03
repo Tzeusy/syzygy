@@ -1,0 +1,11 @@
+--- a/openspec/changes/polaris-project-wide-butlers-model/proposal.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/proposal.md
+@@ -38,4 +38,8 @@
+     grammar only until its profile is declared, and a loaded profile has no
+     built-in fallback.
++  - Each class of a source is read on its own: one class that fails leaves
++    only itself Unknown, a heading the grammar does not enumerate is
++    surfaced rather than skipped, and a count made without a read root index
++    says so.
+ - **Conflicts stay visible.** Project-fact identity and precedence use a
+   closed grammar.

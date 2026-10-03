@@ -1,0 +1,9 @@
+--- a/openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
+@@ -9,5 +9,5 @@
+ > nothing here quotes or paraphrases any clause.
+ >
+-> Source: `spec.md` sha256 `d0ac6ba20501798e715aae42e16fbc7555fc8d4d60f9f16e01f376fb75349c4a` — 17 requirement(s), 101 distinct authorities.
++> Source: `spec.md` sha256 `ad7c234d1f88d02524340e2e4ac0ba892b1df043679511920151a29c1915aa76` — 17 requirement(s), 101 distinct authorities.
+
+ ## doctrine (9)

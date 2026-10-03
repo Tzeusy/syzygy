@@ -1,0 +1,192 @@
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -72,4 +72,19 @@
+   with their `MANIFESTO.md` when present.
+   - Narrative links do not recurse.
++  - Each rule declares whether it needs the root index read, and every
++    source carries the name of the rule that admitted it. The flag belongs to
++    the rule; a loaded profile sets it for each tree population it declares.
++    The pillar-root and pillar-index rules need the root index; the
++    baseline-spec and roster rules, whose path patterns these definitions
++    write, do not.
++  - When the root index was not read, a rule that needs it mints no item.
++    Where that rule is a tree population, each source its path pattern
++    matches stays counted in the source-path population with an Unknown item
++    denominator, giving the reason that the root index was not read; the
++    pillar rules name no source without the root index, so they admit none.
++  - When the root index was not read, a rule that does not need it still
++    admits its sources, and every class and category item denominator, and
++    every source-path population total, that counts one of them states that
++    it was derived without a read root index.
+ - A **declared item** has one class from this closed set, read by that class's
+   extraction rule (for a loaded profile, the class's grammar rows):
+@@ -107,4 +122,18 @@
+     that is missing fails the source as missing-heading, and one that occurs
+     more than once fails it as duplicate-key.
++  - Wherever a shape or key form below fails the source, it fails the class
++    whose row it reads, in that source, as the exactness rules below state.
++  - A list or table row that declares two or more headings at one level
++    encloses that level: within the section of each heading one level higher
++    that holds one of them (or the whole file, when the level is 1 or no
++    such heading holds them), a heading at that level that no row of the
++    source's grammar declares is an unenumerated heading.
++    - An unenumerated heading mints no item and fails nothing: the row's
++      declared headings keep their items.
++    - It is surfaced, never skipped: the machine answer and Polaris give its
++      text, its level and its exact source anchor, and route to that source.
++    - The class's item denominator in that source renders Unknown with the
++      reason unenumerated-heading and the count of such headings, because the
++      items beneath them are not read.
+   - When a list or table row declares more than one heading, the shape reads
+     the section under each in the order declared, as it reads one section, and
+@@ -204,5 +233,7 @@
+     prefix; exactly one container shape; and exactly one item key form.
+   - A tree population is declared by a path pattern, `pathPattern`, whose one
+-    `<key>` segment is a single directory name.
++    `<key>` segment is a single directory name, and by `rootIndexRequired`,
++    true or false; a tree population that does not declare it needs the root
++    index.
+   - A profile cannot add a class, a shape or a key form.
+ - Until a profile is declared for Butlers, the observer reads Butlers by the
+@@ -236,7 +267,28 @@
+   - Unicode is NFC-normalized; no case folding, stemming or punctuation
+     rewriting occurs.
+-  - A missing heading, malformed row/list/TOML, unexpected duplicate key or
+-    ambiguous leading label makes the enclosing source's item denominator
+-    Unknown; it never produces a partial item set.
++  - Each class a source is assigned is read on its own. A missing heading,
++    malformed row/list/TOML, unexpected duplicate key or ambiguous leading
++    label in any of a class's rows fails that class in that source: the
++    class's item denominator in that source is Unknown, with the failure as
++    its reason, and the class yields none of its items from that source. A
++    class that fails never produces a partial item set; an unenumerated
++    heading is not a failure, and the items it leaves in place are complete
++    for the headings the row declares.
++  - A source in which a class fails keeps every other class it is assigned:
++    each class that reads without failure keeps its items and its own item
++    denominator. A source in which some classes fail and others read is
++    partially extracted, and states for each class either its items and
++    denominator or its failure and reason.
++  - A source's own item denominator is Unknown whenever any class it is
++    assigned has an Unknown item denominator in it, for any reason: a failed
++    class, or a class with an unenumerated heading. A source whose every
++    class reads but one carries an unenumerated heading is extracted, not
++    partially extracted, and its own item denominator is still Unknown.
++  - A class's item denominator across its sources, and its category's, is
++    Unknown whenever the class is Unknown in any of those sources; the items
++    of the sources where it read stay modeled and counted.
++  - A source whose body is unavailable, unclassifiable or excluded, or whose
++    read breaches a resource limit, has no class that reads: every class it is
++    assigned has an Unknown item denominator in it.
+ - Butlers' profile declares exactly the following extraction grammar, which is
+   literal:
+@@ -259,5 +311,6 @@
+     and Lore README; the first-column RFC link text is the key.
+   - `baseline-spec` is each Git-tree path matching
+-    openspec/specs/<one-directory>/spec.md; the one directory is the key.
++    openspec/specs/<one-directory>/spec.md; the one directory is the key; its
++    tree population does not need the root index.
+   - `topology-component` is each first-column bold label in tables under an H2
+     in lay-and-land/components.md whose text begins with a decimal plus
+@@ -269,5 +322,6 @@
+   - `roster-identity` is each Git-tree path
+     roster/<one-directory>/butler.toml; the directory is the key and the TOML
+-    `[butler].name` must be non-empty.
++    `[butler].name` must be non-empty; its tree population does not need the
++    root index.
+ - The source-path denominator remains known through body-read failures.
+   - An unavailable body's within-source item denominator is Unknown, never
+@@ -338,4 +392,10 @@
+ Unknown or contradicted. A source whose item population cannot be read SHALL
+ retain its source identity while its item denominator renders Unknown.
++Each class of a source SHALL be accounted for on its own: a class that fails
++in a source SHALL leave its own item denominator there Unknown without
++withholding the items of any other class the source reads; a source with a
++class whose item denominator is Unknown SHALL leave its own item denominator
++Unknown; an unenumerated heading SHALL be surfaced, never skipped; and a
++count derived without a read root index SHALL say so wherever it is shown.
+
+ **Verification.**
+@@ -346,7 +406,12 @@
+   loaded profile with a row that names a shape outside the vocabulary, a
+   Butlers profile the loader refuses, and a project other than Butlers with no
+-  loaded profile.
++  loaded profile; also a source assigned three classes in which one class
++  fails and two read, a section enclosing the V1 catalog headings that holds
++  a tenth level-3 heading, and an observation whose root index was not read
++  while baseline specs and roster directories exist in the tree.
+ - **Observable**: per-category identities and reconciling counts are visible in
+-  the machine answer and reachable from Polaris.
++  the machine answer and reachable from Polaris, together with each partially
++  extracted source's per-class outcome, each unenumerated heading with its
++  anchor and route, and each root-index qualification.
+ - **Oracle**: two independent extractors apply the literal grammar that
+   governs the project to the revision-bound source population and must produce
+@@ -358,9 +423,27 @@
+   equals D, with each identity appearing once; malformed/unreadable sources,
+   and every class a loaded profile leaves unreadable, carry an Unknown item
+-  denominator.
++  denominator. The comparison is made per source and class: both extractors
++  must name the same failed classes with the same reasons, and the same
++  identities and D for every class that reads, so a failed class's D is
++  Unknown while each sibling's D is known, and each source with a class whose
++  D is Unknown has its own D Unknown; an independent scan of each enclosing
++  section finds every unenumerated heading, the count per source and class
++  equals the count the answer gives, and each one is surfaced; every source
++  names the rule that an independent derivation of the source-path
++  population admits it under; and with the root index unread, every source a
++  rule that does not need it admitted carries the qualification, while no
++  source of a rule that needs it mints an item.
+ - **Oracle independence**: the expected denominator is extracted from the
+   source files, not from the POC's coverage object.
+-- **Falsifier**: the independent extractors disagree, a malformed source emits
+-  a partial population, a known source disappears, an admitted item appears twice or
++- **Falsifier**: the independent extractors disagree, a failed class emits a
++  partial population, a failed class withholds the items of a sibling class
++  that reads, a class or category item denominator that counts a failed class
++  or an unenumerated heading is presented as known, a source with a class
++  whose item denominator is Unknown presents its own item denominator as
++  known, an unenumerated heading is skipped or mints an item or is
++  miscounted, a source names no rule or a rule other than the one that
++  admitted it, a count derived without a read root index is shown without
++  that qualification, a rule that needs the root index mints an item when it
++  was not read, a known source disappears, an admitted item appears twice or
+   lacks a state, a known count does not reconcile, an unavailable body's
+   item denominator is presented as known, an item is read through a shape or
+@@ -420,4 +503,36 @@
+ - **AND** no item is minted for it and the grammar written in these reader
+   definitions reads none of its classes
++
++#### Scenario: A failing class keeps its siblings
++
++- **WHEN** a source is assigned three classes and one of them fails its
++  grammar while the other two read
++- **THEN** the failed class's item denominator in that source, its class's
++  and its category's item denominators render Unknown with the failure's
++  reason
++- **AND** the two classes that read keep their items modeled and their own
++  item denominators known
++
++#### Scenario: An unenumerated heading is surfaced, not skipped
++
++- **WHEN** a section that holds the V1 catalog headings also holds a level-3
++  heading outside the nine
++- **THEN** that heading is surfaced with its text and exact source anchor,
++  routes to its source and mints no item
++- **AND** the items under the nine headings stay modeled while the
++  catalog-entry and Heart and Soul item denominators, and the V1 index's own
++  item denominator, render Unknown with the reason unenumerated-heading
++
++#### Scenario: Counts derived without a read root index say so
++
++- **WHEN** the root index was not read and the tree holds baseline specs and
++  roster directories
++- **THEN** the baseline-spec and roster sources are admitted and every class
++  and category count that includes them states that it was derived without a
++  read root index
++- **AND** no source of a rule that needs the root index mints an item, nor
++  does any source of a loaded profile's tree population that does not
++  declare `rootIndexRequired`
++- **AND** every admitted source names the rule that admitted it
+
+ ```yaml
