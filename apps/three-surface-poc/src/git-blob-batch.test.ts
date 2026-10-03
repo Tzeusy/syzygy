@@ -4,11 +4,12 @@
 // reader, and requires the batched loaders to read the same objects and
 // return the same bytes and the same evaluation as single reads.
 
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { evaluateBodyReadAuthority } from '@syzygy/three-surface-poc-core';
@@ -35,6 +36,31 @@ const OID_B = 'b'.repeat(40);
 
 function singleRead(object: string): Uint8Array {
   return new Uint8Array(execFileSync('git', ['-C', REPO_ROOT, 'cat-file', 'blob', object], { maxBuffer: 64 * 1024 * 1024 }));
+}
+
+// The same single reads, awaited one at a time. A synchronous loop over every
+// self-corpus object blocked the worker's event loop for 68 s under load, past
+// vitest's fixed 60 s worker RPC timeout, and failed a run whose tests all
+// passed (syzygy-w90k).
+const run = promisify(execFile);
+// A failed read is kept and thrown where the synchronous read would have
+// thrown; an object the run did not read first fails the test.
+async function singleReads(objects: Iterable<string>): Promise<(object: string) => Uint8Array> {
+  const reads = new Map<string, Uint8Array | Error>();
+  for (const object of new Set(objects)) {
+    try {
+      const { stdout } = await run('git', ['-C', REPO_ROOT, 'cat-file', 'blob', object], { encoding: 'buffer', maxBuffer: 64 * 1024 * 1024 });
+      reads.set(object, new Uint8Array(stdout));
+    } catch (cause) {
+      reads.set(object, cause instanceof Error ? cause : new Error(String(cause)));
+    }
+  }
+  return (object) => {
+    const value = reads.get(object);
+    if (value === undefined) throw new Error(`not read before the run: ${object}`);
+    if (value instanceof Error) throw value;
+    return value;
+  };
 }
 
 describe('parseGitCatFileBatch', () => {
@@ -177,16 +203,14 @@ describe('governance tree prefetch', () => {
 });
 
 describe('batched reads over the real tree (oracle: one git cat-file blob per object)', () => {
-  it('reads the same objects and returns the same inputs and evaluation for the governance load', () => {
+  it('reads the same objects and returns the same inputs and evaluation for the governance load', async () => {
     const governanceRevision = execFileSync('git', ['-C', REPO_ROOT, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
     const options = { repoRoot: REPO_ROOT, governanceRevision, evaluationId: 'eval-svoj', evaluationInstant: EVALUATION_INSTANT };
-
-    const singleObjects: string[] = [];
-    const single = loadBodyReadAuthorityInputs({ ...options, readGitBlob: (_root, object) => { singleObjects.push(object); return singleRead(object); } });
 
     const batchedObjects: string[] = [];
     const singlesWhileBatched: string[] = [];
     const batches: number[] = [];
+    const batchedBytes = new Map<string, Uint8Array>();
     const batched = loadBodyReadAuthorityInputs({
       ...options,
       readGitBlob: (_root, object) => { singlesWhileBatched.push(object); return singleRead(object); },
@@ -196,11 +220,16 @@ describe('batched reads over the real tree (oracle: one git cat-file blob per ob
         for (const object of objects) {
           batchedObjects.push(object);
           const value = out.get(object);
-          if (value instanceof Uint8Array) expect(value, object).toEqual(singleRead(object));
+          if (value instanceof Uint8Array) batchedBytes.set(object, value);
         }
         return out;
       },
     });
+
+    const read = await singleReads([...batchedObjects, ...singlesWhileBatched]);
+    for (const [object, value] of batchedBytes) expect(value, object).toEqual(read(object));
+    const singleObjects: string[] = [];
+    const single = loadBodyReadAuthorityInputs({ ...options, readGitBlob: (_root, object) => { singleObjects.push(object); return read(object); } });
 
     expect([...new Set([...batchedObjects, ...singlesWhileBatched])].sort()).toEqual([...new Set(singleObjects)].sort());
     expect(batchedObjects.length).toBeGreaterThan(100);
@@ -211,13 +240,14 @@ describe('batched reads over the real tree (oracle: one git cat-file blob per ob
     expect(viaDefault).toEqual(single);
   }, REAL_TREE_TIMEOUT_MS);
 
-  it('reads the same blobs with the same bytes for the self-corpus at the pinned commit', () => {
+  it('reads the same blobs with the same bytes for the self-corpus at the pinned commit', async () => {
+    const batched = readSelfCorpus(REPO_ROOT, PINNED_MAIN);
+    const read = await singleReads(batched.sources.flatMap((source) => (source.objectId === null ? [] : [source.objectId])));
     const requested: string[] = [];
     const single = readSelfCorpus(REPO_ROOT, PINNED_MAIN, (_root, objects) => {
       requested.push(...objects);
-      return new Map(objects.map((object) => [object, singleRead(object)]));
+      return new Map(objects.map((object) => [object, read(object)]));
     });
-    const batched = readSelfCorpus(REPO_ROOT, PINNED_MAIN);
     expect(batched).toEqual(single);
     expect(requested.sort()).toEqual(single.sources.map((source) => source.objectId).sort());
   }, REAL_TREE_TIMEOUT_MS);
@@ -243,10 +273,13 @@ describe('batched reads over the real tree (oracle: one git cat-file blob per ob
     expect(requested.length).toBe(1);
   });
 
-  it('fails the self-corpus read on a missing, unread or altered blob', () => {
+  it('fails the self-corpus read on a missing, unread or altered blob', async () => {
+    const requested: string[] = [];
+    readSelfCorpus(REPO_ROOT, PINNED_MAIN, (root, objects) => { requested.push(...objects); return readGitBlobsBatch(root, objects); });
+    const read = await singleReads(requested);
     const answer = (change: (objects: readonly string[]) => Map<string, Uint8Array | Error>) => () => readSelfCorpus(REPO_ROOT, PINNED_MAIN, (_root, objects) => change(objects));
-    expect(answer((objects) => new Map(objects.map((object, index) => [object, index === 3 ? new Error('git object missing: x') : singleRead(object)])))).toThrow('git object missing');
-    expect(answer((objects) => new Map(objects.slice(1).map((object) => [object, singleRead(object)])))).toThrow('self-corpus-blob-unread');
-    expect(answer((objects) => new Map(objects.map((object, index) => [object, index === 0 ? bytes('# altered\n') : singleRead(object)])))).toThrow('self-corpus-object-mismatch');
+    expect(answer((objects) => new Map(objects.map((object, index) => [object, index === 3 ? new Error('git object missing: x') : read(object)])))).toThrow('git object missing');
+    expect(answer((objects) => new Map(objects.slice(1).map((object) => [object, read(object)])))).toThrow('self-corpus-blob-unread');
+    expect(answer((objects) => new Map(objects.map((object, index) => [object, index === 0 ? bytes('# altered\n') : read(object)])))).toThrow('self-corpus-object-mismatch');
   }, REAL_TREE_TIMEOUT_MS);
 });
