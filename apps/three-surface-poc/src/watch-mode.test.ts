@@ -42,9 +42,11 @@ describe('--watch console', () => {
     expect(calls).toBe(0);
     expect(written()).toBe(`${PROMPT}\n`);
 
+    const printed = new Promise<void>((resolve) => {
+      output.on('data', () => { if (written().includes('Observatory limb')) resolve(); });
+    });
     input.write('\n');
-    await new Promise((resolve) => setImmediate(resolve));
-    await settle();
+    await printed;
     expect(calls).toBe(1);
     expect(written()).toContain([
       'Re-observing…',
