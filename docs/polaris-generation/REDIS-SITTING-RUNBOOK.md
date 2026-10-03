@@ -83,7 +83,9 @@ same arguments re-verifies a record afterwards.
    [Observed] The recorder is frozen to the round-3 bytes (notes only, which
    under the 2026-09-26 ruling clears them) and refuses while row 7's record
    does not exist. `--check` with the same arguments re-verifies the record.
-   The simulator does not rehearse this step; the install does not read it.
+   The record carries an `Act instant:` line written from `--instant` (default
+   now); the owner never types it. The simulator rehearses this step (#344),
+   and the install does not read the record.
 8a. **Row 12, screening scope version 2** (PR 326, merged to main as a
    candidate; after rows 1 and 7, before step 9). The owner picks exactly one
    of the package's four variant rows (none, manifesto, architecture, both);
@@ -125,9 +127,8 @@ same arguments re-verifies a record afterwards.
      figure follows the recount tool.
 11. **Verify.** `python3 scripts/check_governance.py && python3 scripts/check_docs_review_campaign_partition.py && npx vitest run`
 
-Row 8 (a second egress version) is not generatable before row 7 is performed
-and is out of the simulator's rehearsal; its builder, recorder and selftests
-run on their own.
+Row 8 (a second egress version) is not generatable before row 7 is performed,
+so the simulator rehearses it after row 7.
 
 After the sitting the order is: the recorders, then
 `install_redis_sitting.py`, then `poc:dossier`. Pending: the `poc:dossier`
