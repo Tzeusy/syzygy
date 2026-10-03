@@ -32,8 +32,9 @@ function assertOutsideGit(directory: string, path: string | undefined): void {
  * The directory itself must not exist. Every file is written into a fresh
  * sibling temporary directory, which is renamed into place only when all of
  * them are written, so a refused or failed write leaves no run directory.
+ * Returns the real path written, which is the path that was checked.
  */
-export async function writeDossierRun(destination: string, files: ReadonlyMap<string, string>, env: { readonly PATH?: string } = process.env): Promise<void> {
+export async function writeDossierRun(destination: string, files: ReadonlyMap<string, string>, env: { readonly PATH?: string } = process.env): Promise<string> {
   for (const path of files.keys()) if (!isDossierPagePath(path)) throw new Error('invalid-output-path');
   const parent = await realpath(dirname(resolve(destination)));
   assertOutsideGit(parent, env.PATH);
@@ -52,6 +53,7 @@ export async function writeDossierRun(destination: string, files: ReadonlyMap<st
     // rename() would replace an empty directory created since the first check.
     await absent();
     await rename(staging, target);
+    return target;
   } catch (error) {
     await rm(staging, { recursive: true, force: true });
     throw error;
@@ -59,13 +61,13 @@ export async function writeDossierRun(destination: string, files: ReadonlyMap<st
 }
 
 /** Reads a pipeline run record (`{ result, sources }`, as the synthetic demo writes it) and an optional topic map. */
-export async function renderDossierRun(runFile: string, out: string, topicsFile?: string): Promise<void> {
+export async function renderDossierRun(runFile: string, out: string, topicsFile?: string): Promise<string> {
   const run = parseBoundedJson(await readFile(resolve(runFile), 'utf8'), RUN_LIMITS) as { result?: PipelineResult; sources?: GenerationSource[] };
   if (run === null || typeof run !== 'object' || run.result === undefined || !Array.isArray(run.sources)) throw new Error('invalid-run-record');
   const topics = topicsFile === undefined ? undefined
     : parseBoundedJson(await readFile(resolve(topicsFile), 'utf8'), RUN_LIMITS) as Record<string, OwnerTopic[]>;
   const rendered = renderDossier({ result: run.result, sources: run.sources, ...(topics === undefined ? {} : { topics }) });
-  await writeDossierRun(out, rendered.files);
+  return writeDossierRun(out, rendered.files);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
@@ -77,7 +79,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     process.exitCode = 2;
   } else {
     renderDossierRun(args[1]!, args[3]!, args[5]).then(
-      () => process.stdout.write(`Wrote the dossier to ${resolve(args[3]!)}. It is an unreviewed editorial draft.\n`),
+      written => process.stdout.write(`Wrote the dossier to ${written}. It is an unreviewed editorial draft.\n`),
       error => { process.stderr.write(`Dossier render refused: ${error instanceof Error ? error.message : 'unknown'}\n`); process.exitCode = 1; },
     );
   }

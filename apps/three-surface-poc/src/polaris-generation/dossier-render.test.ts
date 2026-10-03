@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
@@ -298,6 +298,24 @@ describe('run directory', () => {
       if (saved === undefined) delete process.env.GIT_DIR; else process.env.GIT_DIR = saved;
     }
     expect(readdirSync(repo)).toEqual(['.git']);
+  });
+
+  it('refuses a parent inside a .git directory, where Git answers "false" rather than "not a git repository"', async () => {
+    const repo = mkdtempSync(join(tmpdir(), 'syzygy-dossier-dotgit-'));
+    cleanups.push(repo);
+    execFileSync('git', ['init', '-q', repo]);
+    await expect(writeDossierRun(join(repo, '.git', 'run'), renderDossier(run).files)).rejects.toThrow('run-directory-inside-git-work-tree');
+    expect(existsSync(join(repo, '.git', 'run'))).toBe(false);
+  });
+
+  it('writes through a symlinked parent outside Git to the real path, and returns that path', async () => {
+    const root = realpathSync(mkdtempSync(join(tmpdir(), 'syzygy-dossier-real-')));
+    cleanups.push(root);
+    mkdirSync(join(root, 'real'));
+    symlinkSync(join(root, 'real'), join(root, 'link'));
+    const written = await writeDossierRun(join(root, 'link', 'run'), renderDossier(run).files);
+    expect(written).toBe(join(root, 'real', 'run'));
+    expect(existsSync(join(root, 'real', 'run', 'index.html'))).toBe(true);
   });
 
   it('refuses when Git cannot be run, rather than assuming no work tree', async () => {
