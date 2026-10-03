@@ -1,0 +1,239 @@
+{
+  "subject": "syzygy-w90k: vitest worker RPC timeout (\"Timeout calling onTaskUpdate\") under load",
+  "date": "2026-10-03",
+  "loadProtocol": "24 node busy-loop CPU burners on a 12-core host shared with other lanes; full @syzygy/three-surface-poc-app project per run",
+  "loadedRuns": [
+    {
+      "run": "loaded-1",
+      "commit": "bb9eb741ae4689ae0750991017353ee784958068",
+      "maxWorkers": "default",
+      "testsLine": "Tests  5 failed | 708 passed | 1 skipped (714)",
+      "rpcTimeouts": 1,
+      "failedFiles": [
+        "polaris-first-reading.test.ts",
+        "polaris-narrative.test.ts",
+        "tuple-encoding.test.ts"
+      ],
+      "failureMessages": [
+        "Error: Test timed out in 5000ms.",
+        "Error: [vitest-worker]: Timeout calling \"onTaskUpdate\""
+      ],
+      "exitCode": 1,
+      "seconds": 223,
+      "loadAverage1m": 63.94
+    },
+    {
+      "run": "loaded-2",
+      "commit": "bb9eb741ae4689ae0750991017353ee784958068",
+      "maxWorkers": "default",
+      "testsLine": "Tests  3 failed | 710 passed | 1 skipped (714)",
+      "rpcTimeouts": 1,
+      "failedFiles": [
+        "polaris-narrative.test.ts",
+        "tuple-encoding.test.ts"
+      ],
+      "failureMessages": [
+        "Error: Test timed out in 5000ms.",
+        "Error: [vitest-worker]: Timeout calling \"onTaskUpdate\""
+      ],
+      "exitCode": 1,
+      "seconds": 209,
+      "loadAverage1m": 62.17
+    },
+    {
+      "run": "loaded-3",
+      "commit": "bb9eb741ae4689ae0750991017353ee784958068",
+      "maxWorkers": "default",
+      "testsLine": "Tests  2 failed | 711 passed | 1 skipped (714)",
+      "rpcTimeouts": 1,
+      "failedFiles": [
+        "polaris-narrative.test.ts",
+        "tuple-encoding.test.ts"
+      ],
+      "failureMessages": [
+        "Error: Test timed out in 5000ms.",
+        "Error: [vitest-worker]: Timeout calling \"onTaskUpdate\""
+      ],
+      "exitCode": 1,
+      "seconds": 169,
+      "loadAverage1m": 66.45
+    },
+    {
+      "run": "yield-1",
+      "commit": "f9c14ae34365571981cd0c157f4a630775283de4 (tree; committed after the runs)",
+      "maxWorkers": "default",
+      "testsLine": "Tests  8 failed | 705 passed | 1 skipped (714)",
+      "rpcTimeouts": 0,
+      "failedFiles": [
+        "polaris-epistemic-tuples.test.ts",
+        "polaris-generation/pipeline-demo.test.ts",
+        "polaris-narrative.test.ts",
+        "polaris-parity-sweep.test.ts",
+        "polaris-proposed-work.test.ts",
+        "proposal-disclosure.test.ts",
+        "tuple-encoding.test.ts"
+      ],
+      "failureMessages": [
+        "Error: Command failed: npm run build:poc --silent",
+        "Error: Test timed out in 5000ms."
+      ],
+      "exitCode": 1,
+      "seconds": 243,
+      "loadAverage1m": 62.82
+    },
+    {
+      "run": "yield-2",
+      "commit": "f9c14ae34365571981cd0c157f4a630775283de4 (tree; committed after the runs)",
+      "maxWorkers": "default",
+      "testsLine": "Tests  5 failed | 708 passed | 1 skipped (714)",
+      "rpcTimeouts": 0,
+      "failedFiles": [
+        "polaris-narrative.test.ts",
+        "tuple-encoding.test.ts"
+      ],
+      "failureMessages": [
+        "Error: Test timed out in 5000ms."
+      ],
+      "exitCode": 1,
+      "seconds": 217,
+      "loadAverage1m": 61.6
+    },
+    {
+      "run": "yield-3",
+      "commit": "f9c14ae34365571981cd0c157f4a630775283de4 (tree; committed after the runs)",
+      "maxWorkers": "default",
+      "testsLine": "Tests  10 failed | 703 passed | 1 skipped (714)",
+      "rpcTimeouts": 0,
+      "failedFiles": [
+        "polaris-authority-sweep.test.ts",
+        "polaris-epistemic-tuples.test.ts",
+        "polaris-generation/pipeline-demo.test.ts",
+        "polaris-narrative.test.ts",
+        "polaris-parity-sweep.test.ts",
+        "polaris-reachability.test.ts",
+        "polaris-walkthrough-readiness.test.ts",
+        "proposal-disclosure.test.ts",
+        "tuple-encoding.test.ts",
+        "verbatim-route.test.ts"
+      ],
+      "failureMessages": [
+        "Error: Test timed out in 180000ms.",
+        "Error: Test timed out in 5000ms."
+      ],
+      "exitCode": 1,
+      "seconds": 242,
+      "loadAverage1m": 68.5
+    },
+    {
+      "run": "mw4-1",
+      "commit": "f9c14ae34365571981cd0c157f4a630775283de4 (tree; committed after the runs)",
+      "maxWorkers": 4,
+      "testsLine": "Tests  7 failed | 706 passed | 1 skipped (714)",
+      "rpcTimeouts": 0,
+      "failedFiles": [
+        "polaris-first-reading.test.ts",
+        "polaris-narrative.test.ts",
+        "polaris-reachability.test.ts",
+        "restart.test.ts",
+        "tuple-encoding.test.ts"
+      ],
+      "failureMessages": [
+        "Error: Test timed out in 5000ms."
+      ],
+      "exitCode": 1,
+      "seconds": 304,
+      "loadAverage1m": 73.23
+    }
+  ],
+  "mechanismAndMutants": {
+    "subject": "syzygy-w90k vitest worker RPC fix",
+    "commit": "f9c14ae34365571981cd0c157f4a630775283de4",
+    "runner": "npx vitest run --project @syzygy/three-surface-poc-app <file>",
+    "records": [
+      {
+        "id": "E1-summed-sync-75s-with-setup",
+        "probe": "import { describe, expect, it } from 'vitest';\nconst busy = (ms: number) => { const end = Date.now() + ms; while (Date.now() < end) { /* spin */ } };\ndescribe('w90k probe', () => {\n  for (const n of [1, 2, 3]) it(`synchronous block ${n}`, () => { busy(25_000); expect(n).toBeGreaterThan(0); }, 60_000);\n});\n",
+        "expect": "exit 0, no RPC timeout",
+        "exitCode": 0,
+        "testsLine": "Tests  3 passed (3)",
+        "rpcTimeouts": 0
+      },
+      {
+        "id": "M1-setup-yield-removed",
+        "file": "vitest.setup.ts",
+        "old": "beforeEach(() => new Promise<void>((resolve) => setImmediate(resolve)));",
+        "new": "void beforeEach;",
+        "expect": "exit 1 with an RPC timeout (killed)",
+        "exitCode": 1,
+        "testsLine": "Tests  3 passed (3)",
+        "rpcTimeouts": 1,
+        "outcome": "killed"
+      },
+      {
+        "id": "E2-deliberately-failing-test",
+        "probe": "import { expect, it } from 'vitest';\nit('fails on purpose', () => { expect(1).toBe(2); });\nit('passes beside it', () => { expect(1).toBe(1); });\n",
+        "expect": "exit 1, 1 failed",
+        "exitCode": 1,
+        "testsLine": "Tests  1 failed | 1 passed (2)",
+        "rpcTimeouts": 0
+      },
+      {
+        "id": "M2-batched-reader-flips-first-byte",
+        "file": "apps/three-surface-poc/src/git-blob-batch.ts",
+        "old": "    const body = output.slice(offset, offset + size);",
+        "new": "    const body = Uint8Array.from(output.slice(offset, offset + size), (b, i) => (i === 0 ? b ^ 1 : b));",
+        "command": "-t \"real tree\"",
+        "expect": "the async single-read oracle fails the batched reads (killed)",
+        "exitCode": 1,
+        "testsLine": "Tests  3 failed | 1 passed | 17 skipped (21)",
+        "rpcTimeouts": 0,
+        "outcome": "killed"
+      }
+    ]
+  },
+  "guardMutants": {
+    "subject": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+    "commit": "bb9eb741ae4689ae0750991017353ee784958068",
+    "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+    "mutants": [
+      {
+        "id": "M1-build-output-sync-npm",
+        "file": "apps/three-surface-poc/src/build-output.test.ts",
+        "old": "  await run('npm', ['ci', '--silent'], { cwd: root });",
+        "new": "  execFileSync('npm', ['ci', '--silent'], { cwd: root });",
+        "exitCode": 1,
+        "testsLine": "AssertionError: expected [ Array(1) ] to deeply equal []",
+        "outcome": "killed"
+      },
+      {
+        "id": "M2-pipeline-demo-sync-computed-command",
+        "file": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+        "old": "    await run(documented[0]!, documented.slice(1), { cwd: checkout, timeout: 120_000 });",
+        "new": "    execFileSync(documented[0]!, documented.slice(1), { cwd: checkout, timeout: 120_000 });",
+        "exitCode": 1,
+        "testsLine": "AssertionError: expected [ Array(1) ] to deeply equal []",
+        "outcome": "killed"
+      },
+      {
+        "id": "M3-guard-exemption-removed",
+        "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+        "old": "const EXEMPT = new Set(['packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts:31']);",
+        "new": "const EXEMPT = new Set<string>([]);",
+        "exitCode": 1,
+        "testsLine": "AssertionError: expected [ Array(1) ] to deeply equal []",
+        "outcome": "killed"
+      },
+      {
+        "id": "M4-guard-allows-every-literal",
+        "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+        "old": "!SHORT_COMMANDS.has(command.replace(/^(['\"`])(.*)\\1$/, '$2')) || ",
+        "new": "true || ",
+        "exitCode": 1,
+        "testsLine": "AssertionError: expected [ '\\'git\\'' ] to deeply equal []",
+        "outcome": "killed"
+      }
+    ],
+    "killed": 4,
+    "total": 4
+  }
+}
