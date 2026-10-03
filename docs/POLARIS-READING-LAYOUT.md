@@ -88,5 +88,15 @@ emit either item state from the admitted Butlers fixture.
 Freshness remains the closed four-value field. If it is absent, an Unknown
 claim shows a separate currency disclosure; an Observed claim is refused.
 The disclosure is not a fifth freshness value or a route to the gated
-currency-bound assessment. Tier, freshness and challenge treatment tables
-and the full proposal legend are later work.
+currency-bound assessment.
+
+The tier, freshness and challenge values have their own declared tables
+beside `EPISTEMIC_ENCODING` in `design-tokens.ts`: six tiers, four freshness
+values and `unchallenged`, each with a class, symbol, token, copy row and,
+for freshness, the reason and route stated when no claim carries it.
+`unstated` is the tier slot's absence and sits outside the six. Each tuple
+stays one text node; after it, one empty mark per field takes its value's
+class and renders the symbol in its token. The words carry the value, so a
+mark's symbol has an empty alternative text. The claim-state glossary rows
+are generated from the same tables and carry the same classes. An undeclared
+value refuses to render. The full proposal legend is later work.

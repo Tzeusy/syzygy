@@ -46,6 +46,16 @@ import {
   type VerbatimResolution,
 } from './capability-detail.js';
 import { pageShell, type HumanOperabilityStatus } from './page-shell.js';
+import {
+  CHALLENGE_ENCODING,
+  FRESHNESS_ENCODING,
+  TIER_ABSENCE_ENCODING,
+  TIER_ENCODING,
+  TUPLE_FIELD_TREATMENTS_CSS,
+  tupleFieldEncoding,
+  type TupleField,
+  type TupleFieldEncoding,
+} from './design-tokens.js';
 import { copyAttr, copyText, hasCopyRow, roleAttr, type PolarisCopyId } from './polaris-copy.js';
 import {
   NarrativeRegistry,
@@ -325,7 +335,17 @@ function claimTuple(claim: ProjectShapeClaim): string {
   const absence = freshness === undefined
     ? `<span class="freshness-absence" data-unknown-disclosure="${escapeHtml(claim.claimId)}:currency"${DISCLOSURE}>Currency bound not declared; this claim remains Unknown.</span>`
     : '';
-  return `<span class="claim-tuple" data-claim-id="${escapeHtml(claim.claimId)}" data-epistemic-label="${escapeHtml(epistemic.label)}" data-epistemic-tier="${escapeHtml(tier)}" data-epistemic-primary-reason="${escapeHtml(primary)}" data-epistemic-secondary-reasons="${escapeHtml(secondary.join(','))}"${freshnessAttribute} data-challenge-state="${escapeHtml(claim.challenge)}" data-evaluation-id="${escapeHtml(claim.evaluationId)}" aria-describedby="polaris-claim-states-lede"${DISCLOSURE}>${escapeHtml(epistemic.label)}${reasonText} · ${escapeHtml(tier)}${freshnessText} · ${escapeHtml(claim.challenge)}</span>${absence}`;
+  return `<span class="claim-tuple" data-claim-id="${escapeHtml(claim.claimId)}" data-epistemic-label="${escapeHtml(epistemic.label)}" data-epistemic-tier="${escapeHtml(tier)}" data-epistemic-primary-reason="${escapeHtml(primary)}" data-epistemic-secondary-reasons="${escapeHtml(secondary.join(','))}"${freshnessAttribute} data-challenge-state="${escapeHtml(claim.challenge)}" data-evaluation-id="${escapeHtml(claim.evaluationId)}" aria-describedby="polaris-claim-states-lede"${DISCLOSURE}>${escapeHtml(epistemic.label)}${reasonText} · ${escapeHtml(tier)}${freshnessText} · ${escapeHtml(claim.challenge)}</span>${tupleMarks(tier, freshness, claim.challenge)}${absence}`;
+}
+
+/** The declared treatment of each tuple field (syzygy-dov.3.2; P-70 M3
+ * slice 5): one empty span per field, after the tuple, whose class renders
+ * the value's symbol in its token. The tuple itself stays one text node, so
+ * the words remain the carrier (RFC7-34) and the PWB-REQ-020 sweep still
+ * reads it as a leaf; an undeclared value refuses to render. */
+function tupleMarks(tier: string, freshness: string | undefined, challenge: string): string {
+  const fields: [TupleField, string][] = [['tier', tier], ...(freshness === undefined ? [] : [['freshness', freshness] as [TupleField, string]]), ['challenge', challenge]];
+  return fields.map(([field, value]) => `<span class="${tupleFieldEncoding(field, value).className}"></span>`).join('');
 }
 
 /** PWB-REQ-007: an aggregate discloses its members' primary and secondary
@@ -359,19 +379,15 @@ function onDemandCounts(claimId: string, text: string): string {
  * strengthen a claim. One disclosure, once, described-by from every tuple. */
 function claimStatesBlock(model: PocModel): string {
   const sentence = (id: PolarisCopyId): string => `<p${copyAttr(id)}>${copy(id)}</p>`;
-  const group = (labelId: PolarisCopyId, ids: readonly PolarisCopyId[]): string =>
-    `<p${copyAttr(labelId)}>${copy(labelId)}</p><ul>${ids.map((id) => {
-      if (labelId !== 'states.freshness') return `<li${copyAttr(id)}>${copy(id)}</li>`;
-      const value = id.slice('states.freshness.'.length);
-      const used = shapeClaims(model.projectShape).some((claim) => claim.epistemic.freshness === value);
-      const marker = used ? '' : value === 'stale'
-        ? ' Not reachable at this evaluation: no claim freshness is judged against a currency bound; declare the bound and route freshness through the currency assessor.'
-        : value === 'broken'
-          ? ' Not reachable at this evaluation: one pinned revision carries no earlier claim; a changed source belongs to a later evidence probe, not this freshness value. Route: re-observe the repository.'
-          : value === 'superseded'
-            ? ' Not reachable at this evaluation: no claim from an earlier evaluation is carried. Route: capture a new evaluation that carries the replacement.'
-            : ' Not reachable at this evaluation: no claim was captured at this evaluation. Route: capture an evaluation that carries the evidence.';
-      return `<li${copyAttr(id)}>${escapeHtml(copyText(id) + marker)}</li>`;
+  // Generated from the declared encodings (syzygy-dov.3.2): one row per
+  // declared value, in its treatment class; a value that declares a
+  // reachability note states it when no claim carries the value.
+  const claims = shapeClaims(model.projectShape);
+  const used = (entry: TupleFieldEncoding): boolean => claims.some((claim) => entry.field === 'freshness' ? claim.epistemic.freshness === entry.value : entry.field === 'tier' ? (claim.epistemic.tier ?? 'unstated') === entry.value : claim.challenge === entry.value);
+  const group = (labelId: PolarisCopyId, entries: readonly TupleFieldEncoding[]): string =>
+    `<p${copyAttr(labelId)}>${copy(labelId)}</p><ul>${entries.map((entry) => {
+      const marker = entry.unreachable === undefined || used(entry) ? '' : ` ${entry.unreachable}`;
+      return `<li class="${entry.className}"${copyAttr(entry.description)}>${escapeHtml(copyText(entry.description) + marker)}</li>`;
     }).join('')}</ul>`;
   return `<details id="polaris-claim-states" class="claim-states" data-polaris-claim-states>
     <summary${copyAttr('label.claim-states')}>${copy('label.claim-states')} — definitions</summary>
@@ -379,9 +395,9 @@ function claimStatesBlock(model: PocModel): string {
     ${sentence('states.observed')}
     ${sentence('states.inferred')}
     ${sentence('states.unknown')}
-    ${group('states.tier', ['states.tier.gate-backed', 'states.tier.report-fact', 'states.tier.reduced-fidelity', 'states.tier.asserted-by-worker', 'states.tier.declared-only', 'states.tier.suspended', 'states.tier.unstated'])}
-    ${group('states.freshness', ['states.freshness.fresh', 'states.freshness.stale', 'states.freshness.broken', 'states.freshness.superseded'])}
-    ${group('states.challenge', ['states.challenge.unchallenged'])}
+    ${group('states.tier', [...TIER_ENCODING, TIER_ABSENCE_ENCODING])}
+    ${group('states.freshness', FRESHNESS_ENCODING)}
+    ${group('states.challenge', CHALLENGE_ENCODING)}
     ${sentence('states.strengthen')}
   </details>`;
 }
@@ -392,13 +408,17 @@ function claimStatesBlock(model: PocModel): string {
  * sentence is left out here, as it is there. */
 function tupleGloss(claim: ProjectShapeClaim): string {
   const epistemic = claim.epistemic;
-  const ids = [
-    `states.${epistemic.label.toLowerCase()}`,
-    `states.tier.${epistemic.tier ?? 'unstated'}`,
-    ...(epistemic.freshness === undefined ? [] : [`states.freshness.${epistemic.freshness}`]),
-    `states.challenge.${claim.challenge}`,
-  ].filter(hasCopyRow);
-  return `<div class="tuple-gloss" data-polaris-tuple-gloss="${escapeHtml(claim.claimId)}"${DISCLOSURE}><p${copyAttr('gloss.tuple')}>${copy('gloss.tuple')}</p><ul>${ids.map((id) => `<li${copyAttr(id)}>${copy(id)}</li>`).join('')}</ul><p><a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p></div>`;
+  const label = `states.${epistemic.label.toLowerCase()}`;
+  const fields = [
+    tupleFieldEncoding('tier', epistemic.tier ?? 'unstated'),
+    ...(epistemic.freshness === undefined ? [] : [tupleFieldEncoding('freshness', epistemic.freshness)]),
+    tupleFieldEncoding('challenge', claim.challenge),
+  ];
+  const rows = [
+    ...(hasCopyRow(label) ? [`<li${copyAttr(label)}>${copy(label)}</li>`] : []),
+    ...fields.map((entry) => `<li class="${entry.className}"${copyAttr(entry.description)}>${copy(entry.description)}</li>`),
+  ];
+  return `<div class="tuple-gloss" data-polaris-tuple-gloss="${escapeHtml(claim.claimId)}"${DISCLOSURE}><p${copyAttr('gloss.tuple')}>${copy('gloss.tuple')}</p><ul>${rows.join('')}</ul><p><a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p></div>`;
 }
 
 /** The claim whose tuple the page renders first: Purpose's, else the whole
@@ -1446,6 +1466,7 @@ const POLARIS_STYLE = `
   .citation { color: var(--muted); font-family: var(--font-mono); font-size: .82rem; }
   .citation a { color: inherit; }
   .claim-tuple { font-family: var(--font-mono); font-size: .78rem; letter-spacing: .04em; }
+  ${TUPLE_FIELD_TREATMENTS_CSS}
   .tuple-line { margin-top: -.4rem; }
   .reason-counts { font-size: .95rem; }
   .reason-counts ul { padding-left: 1.2rem; }

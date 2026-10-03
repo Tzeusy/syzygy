@@ -250,14 +250,16 @@ describe('Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9)',
     const shape = model.projectShape;
     if (shape.kind !== 'observed') throw new Error('fixture must observe');
     const source = shape.sources[0] as { claim: { epistemic: { tier?: string } } };
-    (source.claim.epistemic as { tier?: string }).tier = 'derived-fact';
+    // A declared tier other than the captured one: the renderer refuses an
+    // undeclared tier value (syzygy-dov.3.2).
+    (source.claim.epistemic as { tier?: string }).tier = 'reduced-fidelity';
     // The already-rendered artifact is unchanged; a fresh render reflects the
     // later-read state as a *new* capture, never by rewriting the old one.
     expect(JSON.parse(JSON.stringify(before))).toEqual(beforeSnapshot);
     const after = renderPolarisPresentation(model).narrative;
     const sourceBlock = (n: typeof before): string | undefined => n.blocks.find((block) => block.blockId === `block:${shape.sources[0]?.claim.claimId ?? ''}`)?.anchors[0]?.captured.tier;
     expect(sourceBlock(before)).toBe('report-fact');
-    expect(sourceBlock(after)).toBe('derived-fact');
+    expect(sourceBlock(after)).toBe('reduced-fidelity');
   });
 
   it('clones and freezes anchors at registration so the caller cannot rewrite a captured state afterwards', () => {
