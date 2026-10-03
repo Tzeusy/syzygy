@@ -1,5 +1,13 @@
 # Owner direction record — rev10 final pre-specification run
 
+> **Historical record of the rev10 run (first tracked 2026-08-05).** The
+> lead's restatement of the owner directive for that run, kept as the citable
+> home of the identifiers OD-R10-1..7; it is not itself an owner act and
+> adopts nothing. Later acts and directions decide what binds today: read
+> `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md`, and for Mission
+> Control and the other deferred waves `DEFERRED-WAVE-POSTURE.md`. Banner
+> added 2026-10-03 (RD-6 C-2); the text below it is unchanged.
+
 **Source:** `REV9-FINAL-PRESPEC-DIRECTIVE.md`, owner-supplied 2026-08-02.
 This record restates the *settled* direction ("record, do not re-ask") so the
 rework can cite it as owner authority. Each item cites its directive section.

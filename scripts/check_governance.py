@@ -1180,6 +1180,14 @@ FRONT_DOOR = (
     f"{CANDIDATES}/README.md",
     f"{CANDIDATES}/00-README.md",
 )
+#: **The rest of the candidates root is outside CG-4a, by decision**
+#: (syzygy-afuy, 2026-10-03, RD-6 C-2). Of its 33 `.md` files, 21 lack the
+#: word "candidate" in their first ten lines. "Candidate" is the wrong word
+#: for most of them: some are historical working records of the rev10 run,
+#: whose banners say "historical", and one is the acceptance record that
+#: defines the foundational acts. Others cannot take a banner: `07-…` is
+#: digest-cited by the RC-7 raw.
+#: Only the two front-door markers above are tested.
 
 #: The inverse predicate CG-5 has had for craft since it was written. A
 #: missing word is a weak test — the strong one is a positive claim of
