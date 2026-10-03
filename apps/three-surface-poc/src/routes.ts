@@ -216,6 +216,7 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
       servedBreaches: snapshot.count,
       latestBreach: snapshot.latest === null ? null : { limit: snapshot.latest.limit, sequence: snapshot.latest.sequence, declared: snapshot.latest.declared, observed: snapshot.latest.observed },
       reevaluation: reevaluation?.() ?? null,
+      resourceHeadroom: model.resourceHeadroom,
     };
   };
   const html = (model: PocModel, body: string): RouteResponse => boundedResponse(model, limits, 'maxHumanResponseBytes', 'text/html; charset=utf-8', body, recorder);

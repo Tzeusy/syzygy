@@ -27,6 +27,7 @@ export * from './proposed-work.js';
 export * from './reevaluation.js';
 export * from './walkthrough-judgment.js';
 export * from './resource-ledger.js';
+export * from './resource-headroom.js';
 export * from './walkthrough-readiness.js';
 export * from './response-identity.js';
 export * from './fixtures/synthetic-corpora.js';
