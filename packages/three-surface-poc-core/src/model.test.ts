@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, describe, expect, it } from 'vitest';
 
 import {
   buildPocModel as buildPocModelWithDefaultRunners,
@@ -98,9 +98,13 @@ function butlersGitFixture(): ButlersGitFixture {
   return { ...butlersGitTemplate, repoRoot: root };
 }
 
+afterAll(() => {
+  if (butlersGitTemplate !== undefined) removeFixtureDirectory(butlersGitTemplate.repoRoot);
+  butlersGitTemplate = undefined;
+});
+
 function committedButlersGitFixture(): ButlersGitFixture {
   const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-butlers-git-template-'));
-  process.once('exit', () => rmSync(root, { recursive: true, force: true }));
   const files: Readonly<Record<string, string>> = {
     'docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md':
       '# WhatsApp identity design\nStatus: Approved for implementation\n',

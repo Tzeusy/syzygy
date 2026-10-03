@@ -1,4 +1,4 @@
-import { beforeEach } from 'vitest';
+import { afterAll, beforeEach } from 'vitest';
 
 // Vitest runs a file's tests back to back without yielding to the event
 // loop, so a file of synchronous tests is one long macrotask. The worker
@@ -10,3 +10,13 @@ import { beforeEach } from 'vitest';
 // 60 s can still starve the RPC; sync-child-process-guard.test.ts keeps long
 // child processes out of that position.
 beforeEach(() => new Promise<void>((resolve) => setImmediate(resolve)));
+
+// Teardown for state a helper module builds once per test file (syzygy-jsyi).
+// A helper also imported outside Vitest cannot call `afterAll` itself, and
+// `process.on('exit')` never fires in a Vitest worker, so a helper registers
+// here: everything registered runs once the file's tests have finished.
+const afterTestFile: (() => void)[] = [];
+Object.assign(globalThis, { syzygyAfterTestFile: (teardown: () => void) => { afterTestFile.push(teardown); } });
+afterAll(() => {
+  for (const teardown of afterTestFile.splice(0).reverse()) teardown();
+});
