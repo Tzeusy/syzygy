@@ -226,3 +226,10 @@ npm run poc:dossier-evaluation -- --dossier <run-dir> --sources <sources.json> \
 
 The command refuses a page that is a symlink, is not a regular file, or
 resolves outside the run directory.
+
+The renderer that emits this format from a pipeline run is
+`apps/three-surface-poc/src/polaris-generation/dossier-render.ts`
+(`npm run poc:dossier-render -- --run <run.json> --out <new-dir>`).
+Generated prose is labelled Inferred when the fidelity review judged its
+block supported and Unknown otherwise; diagram elements keep their own
+marking.
