@@ -102,6 +102,10 @@ the correction.
 3. Run `poc:dossier` (PR #268) on the Redis URL. It stops with exit 3 if an
    admission record is missing.
 
+Preconditions: PR #278 merged (the closed exclusion-reason set; runbook finding
+F13) and PR #273 merged if route B is chosen. A rehearsal against synthetic
+arguments is in PR #286 and changes nothing real.
+
 Nothing in this order is an act; each step only records or applies what the
 owner has already given.
 
