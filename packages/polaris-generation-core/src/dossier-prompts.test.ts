@@ -2,18 +2,20 @@ import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { DISCOVERY_STAGE_ILLUSTRATIONS, DOSSIER_ILLUSTRATION_SOURCES, DOSSIER_STAGE_ILLUSTRATIONS, promptForStage, type GenerationStage, type PromptProfile } from './prompts.js';
 import { validateStage, type ProviderDraft, type ProviderInventory } from './provider-draft.js';
+import { validateDossierStage } from './dossier-validation.js';
+import { QUOTATION_LEAD, quotationsMatch } from './quotations.js';
 
 const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 
 // Recipe replay, as in prompts.test.ts: an intentional edit needs a version
 // decision and a new reviewed digest. These pin bytes; they are not LLM evals.
 const recipes: [GenerationStage, string, string][] = [
-  ['inventory', 'polaris-inventory-dossier-v2', 'dcbc0a0f0ae5360ff655ef49d842f007736e03e6b93114036f7446a06ba873f4'],
-  ['plan', 'polaris-plan-dossier-v2', '9bb9b0a2094c522b8b5db7b3ec899f689044e54a5a126a64f6320066d6095a4e'],
-  ['author', 'polaris-author-dossier-v2', 'fc8b1ee986179d64ce28360dba04791ff24bcab5aae0538eabc476a643ade541'],
-  ['edit', 'polaris-edit-dossier-v2', '3d19a2ff5d18eb72e750d54e63a629981ad0aeec5b8d18b1300c0d1f4fc632c1'],
-  ['fidelity', 'polaris-fidelity-dossier-v2', '845084c1f3f4ddc8dec55fa2f6f9a0b72abe01e307e2350feb6c623293f8515f'],
-  ['repair', 'polaris-repair-dossier-v2', 'f98de431b567930570c353fc7acc6c4259327b96ad8a47888be1e133c07765c5'],
+  ['inventory', 'polaris-inventory-dossier-v2', '4f7545be152d6e0ff400c6f01a6c98b80545926069564019e700f3b584cb4fde'],
+  ['plan', 'polaris-plan-dossier-v2', 'af42468b33f9369ac5c0b5e9b99cfe244573f7bb8b122f9363c8ff2b01dc9cc2'],
+  ['author', 'polaris-author-dossier-v2', '9d06cdb7fbc421e0b242bdb1cd2c50dd035c160fe2db5dce691d739c50b0e7c0'],
+  ['edit', 'polaris-edit-dossier-v2', '4ca9b8e146605785b4221b815130c016070e8ae43902e36be2bf06210bf59bdf'],
+  ['fidelity', 'polaris-fidelity-dossier-v2', 'cf287a42fa24e14d29f8913dcfb51a939d8bb0481bc36df691547c0710520322'],
+  ['repair', 'polaris-repair-dossier-v2', 'a751d6cedb1549151f59c47cdff18bc204c011d515c6cf5b53ebf02c0aa85d52'],
 ];
 
 // The dossier profile's requested assets (dossier-profile.ts on the profile
@@ -43,11 +45,27 @@ describe('dossier stage prompts', () => {
     expect(Buffer.byteLength(prompt.system, 'utf8')).toBeLessThan(16_384);
   });
 
-  it.each(recipes)('extends the reviewed %s manifesto prompt without changing it', (stage) => {
-    const base = promptForStage(stage).system;
+  // The dossier base is the reviewed manifesto prompt with exactly these
+  // manifesto-only phrases replaced; every other byte is unchanged.
+  const substitutions: [string, string][] = [
+    ['You are producing one stage of a project-neutral Polaris manifesto pipeline.', 'You are producing one stage of a project-neutral Polaris dossier pipeline.'],
+    [' Generated content is editorial draft, not adopted intent.', ' Generated content is an editorial draft.'],
+  ];
+  const stageSubstitutions: Partial<Record<GenerationStage, [string, string]>> = {
+    inventory: ['Do not draft or plan the manifesto,', 'Do not draft or plan the dossier,'],
+    author: ['Write a coherent, concise manifesto following', 'Write a coherent, concise dossier following'],
+    fidelity: [", accept the author's self-assessment as evidence, or grant owner approval.", " or accept the author's self-assessment as evidence."],
+  };
+
+  it.each(recipes)('derives the %s dossier base from the reviewed manifesto prompt by named substitutions only', (stage) => {
+    let base = promptForStage(stage).system;
+    for (const [from, to] of [...substitutions, ...(stageSubstitutions[stage] === undefined ? [] : [stageSubstitutions[stage]!])]) {
+      expect(base.split(from).length, from).toBe(2);
+      base = base.replace(from, () => to);
+    }
     const prompt = promptForStage(stage, 'dossier').system;
     expect(prompt.startsWith(`${base}\n\n`)).toBe(true);
-    expect(prompt.length).toBeGreaterThan(base.length + 2);
+    for (const phrase of ['manifesto', 'adopted intent', 'owner approval']) expect(prompt, phrase).not.toContain(phrase);
   });
 
   it.each(recipes)('ends the %s prompt with the illustration it was tested with', (stage) => {
@@ -58,10 +76,12 @@ describe('dossier stage prompts', () => {
 
   it.each(recipes)('states the seven dossier rules in the %s prompt', (stage) => {
     const prompt = promptForStage(stage, 'dossier').system;
-    for (const rule of ['1. Claim ledger.', '2. Workflow traces.', '3. Mechanisms.', '4. Maintainer statements.', '5. Comparisons.', '6. Marked inference.', '7. Thin evidence stays Unknown.']) {
+    for (const rule of ['1. Claim ledger.', '2. Workflow traces.', '3. Mechanisms.', '4. Stated advantages and trade-offs.', '5. Comparisons.', '6. Marked inference.', '7. Thin evidence stays Unknown.']) {
       expect(prompt).toContain(`\n${rule} `);
     }
-    expect(prompt).toContain(' Where these dossier rules and the manifesto instructions above differ, the dossier rules govern. ');
+    expect(prompt).toContain(' Where these dossier rules and the instructions above differ, the dossier rules govern. ');
+    // The asset id maintainer-stated-advantages is the profile's; only the illustration line carries it.
+    expect(prompt.split('\n').slice(0, -1).join('\n')).not.toContain('maintainer');
   });
 
   it('gives every stage its own dossier guidance', () => {
@@ -86,6 +106,7 @@ describe('dossier stage prompts', () => {
 describe('dossier stage illustrations pass the stage validators', () => {
   it.each(recipes)('validates the %s illustration', (stage) => {
     expect(validateStage(stage, illustration(stage), context())).toEqual(illustration(stage));
+    expect(validateDossierStage(stage, illustration(stage), context())).toEqual(illustration(stage));
   });
 
   it('shares one draft illustration across author, edit and repair', () => {
@@ -145,34 +166,40 @@ describe('dossier illustrations obey their own rules', () => {
     for (const { name, sourceIds } of identifiers) expect(sourceIds.some(id => sourceText(id).includes(name)), name).toBe(true);
   });
 
-  // Rule 4: "The maintainers state:" then their sentence in double quotes, copied from a cited source.
+  // Rule 4: "The project states:" then one or two sentences in double quotes, matching a cited source.
   const quoted = (claim: { text: string; sourceIds: readonly string[] }): void => {
-    const match = /^The maintainers state: "([^"]+)"/u.exec(claim.text);
-    expect(match, claim.text).not.toBeNull();
-    expect(claim.sourceIds.some(id => sourceText(id).includes(match![1]!)), claim.text).toBe(true);
+    expect(claim.text.startsWith(QUOTATION_LEAD), claim.text).toBe(true);
+    expect(quotationsMatch(claim.text, claim.sourceIds.map(sourceText)), claim.text).toBe(true);
   };
 
   it('quotes every advantage and trade-off verbatim from a cited source', () => {
     for (const id of ['maintainer-stated-advantages', 'trade-offs']) {
       const section = draft.sections.find(candidate => candidate.id === id)!;
-      expect(section.paragraphs.length).toBeGreaterThan(0);
-      for (const block of section.paragraphs) quoted(block);
+      const stated = section.paragraphs.filter(block => !block.text.startsWith('Inferred: '));
+      expect(stated.length).toBe(1);
+      for (const block of stated) quoted(block);
     }
     const inventory = illustration('inventory') as ProviderInventory;
-    const stated = inventory.entries.filter(entry => ['other', 'qualification'].includes(entry.kind));
+    const stated = inventory.entries.filter(entry => ['other', 'qualification'].includes(entry.kind) && !entry.statement.startsWith('Inferred: '));
     expect(stated.length).toBe(2);
     for (const entry of stated) quoted({ text: entry.statement, sourceIds: entry.sourceIds });
   });
 
-  it('marks the one inferential block Inferred: and no other', () => {
+  it('marks the two inferential blocks Inferred: and no other', () => {
     const inferred = blocks.filter(block => block.text.startsWith('Inferred: '));
-    expect(inferred.map(block => block.id)).toEqual(['b-dive']);
+    expect(inferred.map(block => block.id)).toEqual(['b-cost-inferred', 'b-dive']);
     expect(blocks.filter(block => block.text.includes('Inferred'))).toEqual(inferred);
   });
 
-  it('states which half of a trade-off no source states', () => {
-    const block = draft.sections.find(candidate => candidate.id === 'trade-offs')!.paragraphs[0]!;
-    expect(block.text).toContain('is not stated in the sources');
+  it('gives an unstated mechanism-level cost its own Inferred: block, citing the mechanism and never quoting', () => {
+    const [stated, inferred] = draft.sections.find(candidate => candidate.id === 'trade-offs')!.paragraphs;
+    expect(stated!.text.startsWith(QUOTATION_LEAD)).toBe(true);
+    expect(inferred!.text.startsWith('Inferred: ')).toBe(true);
+    expect(inferred!.text).not.toContain(QUOTATION_LEAD);
+    expect(inferred!.sourceIds).toEqual(['src-cache']);
+    const inventory = illustration('inventory') as ProviderInventory;
+    const entries = inventory.entries.filter(entry => entry.statement.startsWith('Inferred: '));
+    expect(entries.map(entry => [entry.id, entry.kind, entry.sourceIds])).toEqual([['e-cost-inferred', 'qualification', ['src-cache']]]);
   });
 
   it('traces the workflow one hop per child block and draws only those hops', () => {
