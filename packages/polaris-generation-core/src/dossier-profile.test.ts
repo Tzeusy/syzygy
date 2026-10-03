@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { OWNER_TOPICS, parseReaderQuestions } from './dossier-evaluation.js';
-import { clarify, DOSSIER_READER_QUESTIONS, OWNER_ANSWER_MAX_CHARS, DOSSIER_REQUESTED_ASSETS, dossierQuestionsFile, openQuestions, type ClarificationQuestion, type OwnerAnswer } from './dossier-profile.js';
+import { clarify, DOSSIER_READER_QUESTIONS, OWNER_ANSWER_MAX_CHARS, OWNER_PROVENANCE_MAX_CHARS, DOSSIER_REQUESTED_ASSETS, dossierQuestionsFile, openQuestions, type ClarificationQuestion, type OwnerAnswer } from './dossier-profile.js';
 import { generationSourcesForBody, gitBlobObjectId, type GenerationSource } from './generation-source.js';
 import { validateRequestedAssets } from './provider-draft.js';
 import { READER_QUESTION_TOPICS, validateReaderQuestions } from './reader-questions.js';
@@ -99,7 +99,9 @@ describe('REQ-031 clarification', () => {
     const [purpose] = openQuestions(mechanicsOnly);
     const good = { id: 'purpose' as const, contentDigest: purpose!.contentDigest, disposition: 'answered' as const, answer: 'cache', attribution: 'owner', revision: 'r0' };
     const bad: Record<string, unknown>[] = [{ answer: '' }, { answer: '   ' }, { answer: 'unknown' }, { answer: 'UNKNOWN' }, { answer: ' Unknown \n' }, { answer: 42 }, { answer: undefined },
-      { attribution: '' }, { attribution: '  ' }, { attribution: undefined }, { revision: '' }, { revision: '\t' }, { revision: undefined }, { answer: 'x'.repeat(OWNER_ANSWER_MAX_CHARS + 1) }];
+      { attribution: '' }, { attribution: '  ' }, { attribution: undefined }, { revision: '' }, { revision: '\t' }, { revision: undefined }, { answer: 'x'.repeat(OWNER_ANSWER_MAX_CHARS + 1) },
+      { answer: '\u200b' }, { answer: '\u200b \u2003\ufeff' }, { answer: '\u200bunknown\u200b' }, { attribution: '\u200b' }, { revision: '\u2060\u00a0' },
+      { attribution: 'o'.repeat(OWNER_PROVENANCE_MAX_CHARS + 1) }, { revision: 'r'.repeat(OWNER_PROVENANCE_MAX_CHARS + 1) }];
     for (const change of bad) {
       const record = await clarify({ sources: mechanicsOnly, mode: 'zero-interaction', prior: [{ ...good, ...change } as never] });
       expect(record.answers, JSON.stringify(change).slice(0, 50)).toEqual([]);
@@ -128,6 +130,26 @@ describe('REQ-031 clarification', () => {
     expect(long.aborted).toEqual({ id: 'purpose', reason: 'invalid-owner-answer' });
     const exact = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1, ask: async q => answer(q.id, 'x'.repeat(OWNER_ANSWER_MAX_CHARS)) });
     expect(exact.answers[0]).toMatchObject({ disposition: 'answered' });
+  });
+
+  it('treats zero-width and separator-only text as blank, bounds attribution and revision, and refuses a malformed prior', async () => {
+    for (const change of [{ answer: '\u200b' }, { answer: '\u200bUNKNOWN\u2003' }, { attribution: '\u200b\u200d' }, { revision: '\u2028' },
+      { attribution: 'o'.repeat(OWNER_PROVENANCE_MAX_CHARS + 1) }, { revision: 'r'.repeat(OWNER_PROVENANCE_MAX_CHARS + 1) }]) {
+      const record = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1, ask: async q => ({ ...answer(q.id), ...change }) as never });
+      const blankAnswer = 'answer' in change;
+      if (blankAnswer) expect(record.answers[0], JSON.stringify(change)).toMatchObject({ disposition: 'unknown', answer: null });
+      else expect(record.aborted, JSON.stringify(change)).toEqual({ id: 'purpose', reason: 'invalid-owner-answer' });
+    }
+    const exact = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1,
+      ask: async q => ({ ...answer(q.id), attribution: 'o'.repeat(OWNER_PROVENANCE_MAX_CHARS), revision: '\u200br'.repeat(1) }) });
+    expect(exact.answers[0]).toMatchObject({ disposition: 'answered', revision: 'r' });
+    const [purpose] = openQuestions(mechanicsOnly);
+    const entry = { id: 'purpose', contentDigest: purpose!.contentDigest, disposition: 'deferred' };
+    for (const prior of [{}, 'x', [null], [7], [{ ...entry, id: 7 }], [{ ...entry, contentDigest: undefined }], [{ ...entry, disposition: 'maybe' }],
+      [entry, entry], [{ ...entry, attribution: 7 }], [{ ...entry, revision: {} }]]) {
+      await expect(clarify({ sources: mechanicsOnly, mode: 'zero-interaction', prior: prior as never }), JSON.stringify(prior)).rejects.toThrow('invalid-prior-dispositions');
+    }
+    await expect(clarify({ sources: mechanicsOnly, mode: 'zero-interaction', prior: [entry] as never })).resolves.toMatchObject({ suppressedAsRepeats: ['purpose'] });
   });
 
   it('records an owner answer with attribution without adopting it, and keeps a declined one as a limitation', async () => {
