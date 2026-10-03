@@ -67,7 +67,7 @@ function replaceAtomic(path: string, value: unknown): void {
  * reserved record, which refuses replay even if a lease or receipt is lost. */
 export function createDurableLifecycle(options: DurableLifecycleOptions): PipelinePorts {
   for (const [name, value] of [['maxAttemptUsageUnits', options.maxAttemptUsageUnits], ['maxAttemptOutputBytes', options.maxAttemptOutputBytes]] as const) {
-    if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 1) throw new Error(`invalid-lifecycle-option: ${name}`);
+    if (!Number.isSafeInteger(value) || value < 1) throw new Error(`invalid-lifecycle-option: ${name}`);
   }
   mkdirSync(options.stateDir, { recursive: true, mode: 0o700 });
   const fileFor = (permit: DispatchPermit): string => join(options.stateDir, `${permit.attemptId}.json`);
