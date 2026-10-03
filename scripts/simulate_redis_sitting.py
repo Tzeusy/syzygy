@@ -450,7 +450,7 @@ class Sim:
         own --freeze-table, in the scratch only."""
         rec = self.scratch / V2_RECORDER
         pkg = self.scratch / PKG_SCOPE_V2
-        review = pkg / "reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-4-RAW.md"
+        review = pkg / "reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-6-RAW.md"
         text = rec.read_text()
         if "FROZEN_SUBJECT: str | None = None" not in text:
             self.step("freeze-v2", note="recorder already frozen (the round-4 REVISE and its disclosed repairs); the real raw is used")
