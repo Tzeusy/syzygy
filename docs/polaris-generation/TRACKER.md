@@ -116,6 +116,16 @@ Authorized implementation work (generator implementation authorization,
         with an allowlisted environment and `--no-replace-objects`
         (`isolated-git.ts`); an ambient `GIT_DIR` or a `refs/replace` entry
         cannot change what the pinned commit reads.
+  - [~] **Public-source screening** (`syzygy-vjqd`, gap #12).
+        `readScreenedRepoCorpus` (`public-source-screening.ts`) loads the
+        secret-classification policy by the public-source scope act record,
+        refuses the run when the record is absent or the policy bytes do not
+        hash to its argument, and runs the policy's denied-path rules, every
+        detector and the active-content scan over each selected blob. A
+        withheld row has a per-run HMAC id and no path, object id or body.
+        Not yet: the scope's extension rule (non-source blobs indeterminate),
+        and the trigger wiring (#268). Nothing passes the gate until the owner
+        performs the act.
   - [ ] **G2 Real `generate` port.** A Claude Agent SDK adapter behind
         `PipelinePorts.generate` (`pipeline.ts`): structured output for
         `responseSchema`, usage accounting, abort. Per the egress record:

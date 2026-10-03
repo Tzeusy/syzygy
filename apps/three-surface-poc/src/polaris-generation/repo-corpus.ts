@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import { SOURCE_TEXT_MAX_LENGTH, generationSourcesForBody, gitBlobObjectId, validateGenerationSources, validateRequestedAssets,
+import { SOURCE_TEXT_MAX_LENGTH, generationSourceIdentity, generationSourcesForBody, gitBlobObjectId, validateGenerationSources, validateRequestedAssets,
   type GenerationBudget, type GenerationSource, type GenerationStage, type PipelineRequest, type RequestedAsset } from '@syzygy/polaris-generation-core';
 
 import { isolatedGit } from './isolated-git.js';
@@ -112,6 +112,10 @@ export interface RepoCorpusCount {
   readonly binaryOrNonUtf8: number;
   readonly oversizeFiles: number;
   readonly oversizeExcluded: number;
+  /** Withheld by a screen (zero without one): denied path, detector match, active content. */
+  readonly deniedPath: number;
+  readonly secretDetectorMatches: number;
+  readonly activeContent: number;
 }
 export interface RepoCorpus {
   readonly repositoryId: string;
@@ -124,7 +128,17 @@ export interface RepoCorpus {
   readonly identityDigest: string;
 }
 
-export interface RepoCorpusPorts { readonly admission?: CorpusAdmissionPort; readonly readBlobs?: ReadGitBlobs }
+/** A whole-artifact screen over each selected blob. A denied path is decided
+ * before the blob is read; the body screen runs on the decoded text. A
+ * withheld row carries `opaqueId(identity)` and a placeholder path naming that
+ * id, never the repository path, object id or body. */
+export type CorpusScreenReason = 'denied-path' | 'secret-detector-match' | 'active-content';
+export interface CorpusScreen {
+  readonly deniedPath: (path: string) => boolean;
+  readonly screenBody: (body: string) => Exclude<CorpusScreenReason, 'denied-path'> | undefined;
+  readonly opaqueId: (identity: string) => string;
+}
+export interface RepoCorpusPorts { readonly admission?: CorpusAdmissionPort; readonly readBlobs?: ReadGitBlobs; readonly screen?: CorpusScreen }
 
 /** Reads exactly the named blobs of one pinned commit, after the admission
  * port says yes. Never the working tree, never another revision, never a
@@ -143,6 +157,7 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
     return { mode: match[1]!, type: match[2]!, objectId: match[3]!, path: match[4]! };
   });
   let notBlob = 0, outsideInclude = 0, excludedByGlob = 0, unquotablePath = 0, binaryOrNonUtf8 = 0, emptyFiles = 0, oversizeFiles = 0, oversizeExcluded = 0, rawBytes = 0;
+  const screened = { 'denied-path': 0, 'secret-detector-match': 0, 'active-content': 0 };
   const unrepresentable: { readonly pathSha256: string; readonly objectId: string; readonly reason: 'unquotable-path' }[] = [];
   const chosen = records.filter(record => {
     if (record.type !== 'blob' || record.mode === '120000') { notBlob++; return false; }
@@ -155,10 +170,20 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
   const evaluationId = `corpus:${config.repositoryId}@${config.revision}`;
   const sources: GenerationSource[] = [];
   const algorithm = (objectId: string): 'sha1' | 'sha256' => objectId.length === 40 ? 'sha1' : 'sha256';
+  const screen = ports.screen;
+  const withheld = (record: { readonly path: string; readonly objectId: string }, reason: CorpusScreenReason): GenerationSource => {
+    screened[reason]++;
+    const sourceId = screen!.opaqueId(generationSourceIdentity({ repositoryId: config.repositoryId, revision: config.revision, path: record.path, objectId: record.objectId }));
+    return { repositoryId: config.repositoryId, revision: config.revision, path: `withheld/${sourceId}`, objectId: null, evaluationId, sourceId,
+      classificationBasis: 'body', exclusion: { excluded: true, reason }, spans: [] };
+  };
   for (let at = 0; at < chosen.length; at += BLOB_BATCH) {
     const batch = chosen.slice(at, at + BLOB_BATCH);
-    const blobs = readBlobs(repoRoot, batch.map(record => record.objectId));
+    // A denied path is withheld unread.
+    const denied = new Set(screen === undefined ? [] : batch.filter(record => screen.deniedPath(record.path)));
+    const blobs = readBlobs(repoRoot, batch.filter(record => !denied.has(record)).map(record => record.objectId));
     for (const record of batch) {
+      if (denied.has(record)) { sources.push(withheld(record, 'denied-path')); continue; }
       const bytes = blobs.get(record.objectId);
       if (!(bytes instanceof Uint8Array)) throw bytes ?? new Error('corpus-blob-unread');
       rawBytes += bytes.length;
@@ -171,13 +196,16 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
       if (body === undefined) { binaryOrNonUtf8++; sources.push(excludedRow('binary-or-non-utf8')); continue; }
       if (gitBlobObjectId(body, algorithm(record.objectId)) !== record.objectId) throw new Error('corpus-object-mismatch');
       if (body.length === 0) { emptyFiles++; sources.push(excludedRow('empty-file')); continue; }
+      const screenedOut = screen?.screenBody(body);
+      if (screenedOut !== undefined) { sources.push(withheld(record, screenedOut)); continue; }
       if ([...body].length > SOURCE_TEXT_MAX_LENGTH) { oversizeFiles++; if (config.oversize === 'exclude') oversizeExcluded++; }
       sources.push(...generationSourcesForBody({ ...base, body, oversize: config.oversize }));
     }
   }
   validateGenerationSources(sources);
   return { repositoryId: config.repositoryId, revision: config.revision, permissionIdentity: decision.permissionIdentity, sources,
-    count: { listed: records.length, notBlob, outsideInclude, excludedByGlob, unquotablePath, selected: chosen.length, binaryOrNonUtf8, emptyFiles, oversizeFiles, oversizeExcluded, sourceRows: sources.length },
+    count: { listed: records.length, notBlob, outsideInclude, excludedByGlob, unquotablePath, selected: chosen.length, binaryOrNonUtf8, emptyFiles, oversizeFiles, oversizeExcluded, sourceRows: sources.length,
+      deniedPath: screened['denied-path'], secretDetectorMatches: screened['secret-detector-match'], activeContent: screened['active-content'] },
     unrepresentable,
     rawBytes, identityDigest: sha256(sources.map(source => `${source.path}\0${source.objectId}\0${source.sourceId}`).join('\n')) };
 }
