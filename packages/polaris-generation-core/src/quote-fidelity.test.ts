@@ -89,6 +89,7 @@ describe('folding forms of a true quotation', () => {
     ['src-close', 'first line\n */ second after the close\n'],
     ['src-under', 'Call active_expire_cycle, then *p = *q, and 2*3*4 and foobar.'],
     ['src-dots', 'He paused and said: wait... what is that?'],
+    ['src-dots2', 'He paused and said: wait\u2026 what is that?'],
     ['src-digits', 'The default port is 6379 for Redis.'],
     ['src-ellipsis', 'Redis evicts keys when memory is full, using an approximate LRU that samples a few keys, and then removes the best candidate.'],
   ]));
@@ -126,6 +127,11 @@ describe('folding forms of a true quotation', () => {
     expect(run('"wait \u2026 what"', 'src-dots')).toEqual(['elided-quote']);
     expect(run('"invented words ..."', 'src-dots')).toEqual(['elided-quote']);
     expect(run('"invented words"', 'src-dots')).toEqual(['quote-not-in-cited-sources']);
+  });
+  it('folds the ellipsis character and three periods to one form on both sides', () => {
+    expect(normaliseForQuote('wait\u2026 what')).toBe('wait... what');
+    expect(run('"wait\u2026 what"', 'src-dots')).toEqual([]);
+    expect(run('"wait... what"', 'src-dots2')).toEqual([]);
   });
   it('never joins two sources into one quotation', () => {
     expect(run('"The default port is 6379 for Redis. Redis evicts keys"', 'src-digits', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
@@ -186,7 +192,7 @@ describe('inspectBlockQuotes', () => {
 describe('the repair finding', () => {
   it('asks for a verbatim quotation or an Inferred sentence, and never for rewording that contradicts the repair prompt', () => {
     const { message } = quoteFindingAsReviewFinding({ blockId: 'b', kind: 'quote-not-in-cited-sources', quote: 'x' });
-    expect(message).toContain('Quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred.');
+    expect(message).toContain('Give one quotation per lead-in, and quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred.');
     expect(message).not.toContain('own words');
     expect(quoteFindingAsReviewFinding({ blockId: 'b', kind: 'elided-quote', quote: 'a ... b' }).message).toContain('elides text with an ellipsis, which is not allowed');
   });

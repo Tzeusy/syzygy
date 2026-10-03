@@ -13,7 +13,8 @@
  *   2. markdown links and images keep their text and lose url and brackets;
  *   3. HTML entities are decoded and markdown backslash escapes removed;
  *   4. backticks (code spans) and the emphasis characters `*` and `_` are dropped;
- *   5. curly quotes and apostrophes become straight;
+ *   5. curly quotes and apostrophes become straight, and the ellipsis
+ *      character becomes three periods;
  *   6. every whitespace run, line breaks included, becomes one space; ends trimmed.
  * A quote is one contiguous run of one source (never two sources joined) and
  * matches only on word boundaries, so a quote of "ed" does not match inside
@@ -65,6 +66,7 @@ export function normaliseForQuote(text: string): string {
     .replace(/`/gu, '')
     .replace(EMPHASIS, '$2').replace(EMPHASIS, '$2')
     .replace(/[\u2018\u2019]/gu, "'").replace(/[\u201c\u201d]/gu, '"')
+    .replace(/\u2026/gu, '...')
     .replace(/\s+/gu, ' ').trim();
 }
 
@@ -244,5 +246,5 @@ export function quoteFindingAsReviewFinding(finding: QuoteFinding): { severity: 
     'elided-quote': 'elides text with an ellipsis, which is not allowed (the ellipsis is not in the source at that spot)',
     'lead-in-without-quote': 'announces a verbatim quotation and gives none',
   };
-  return { severity: 'blocking', message: `Quotation ${finding.quote === '' ? '' : `"${finding.quote}" `}${what[finding.kind]} (${finding.kind}). Quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred.`, target: finding.blockId };
+  return { severity: 'blocking', message: `Quotation ${finding.quote === '' ? '' : `"${finding.quote}" `}${what[finding.kind]} (${finding.kind}). Give one quotation per lead-in, and quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred.`, target: finding.blockId };
 }
