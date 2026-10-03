@@ -38,7 +38,9 @@ None is decided by this packet.
 
 This entry is an RFC4-9 substitution: it keeps PR #255's role identity and
 registers a new implementation identity, so adopting it after PR #255's entry
-replaces that implementation and the act names it.
+replaces that implementation and the act names it. The shared role identity
+keeps PR #255's spelling, which names the Agent SDK; the name is kept, not
+chosen, and a route-neutral role name would be a change to PR #255's entry.
 
 **O1. Messages API route or Agent SDK route?** *Recommended:* this route, if
 the owner accepts a direct API key. It sends strictly less than the Agent SDK
@@ -82,4 +84,4 @@ consent. It does not touch the Butlers entry.
 ## Review
 
 A fresh-context review precedes any offering; `REVIEW-BRIEF.md` names the
-artifacts, references and criteria. No round has run.
+artifacts, references and criteria. Round 1 ran (REVISE) and round 2 ran (REVISE); each raw's own `Verdict:` line is the verdict of record and the raws are retained in `reviews/`.

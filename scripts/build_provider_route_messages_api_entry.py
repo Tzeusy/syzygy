@@ -113,6 +113,32 @@ def repo_blob(commit, path):
         return None
 
 
+def ctor_keys(source):
+    """The key names of the `new Anthropic({...})` call in adapter source text, or None."""
+    m = re.search(r"new Anthropic\(\{(.*?)\}\)", source, re.S)
+    if not m:
+        return None
+    items, depth, cur = [], 0, ""
+    for ch in m.group(1):
+        depth += ch in "{[(" 
+        depth -= ch in "}])"
+        if ch == "," and depth == 0:
+            items.append(cur)
+            cur = ""
+        else:
+            cur += ch
+    items.append(cur)
+    keys = [re.match(r"\s*(\w+)", i).group(1) for i in items if i.strip()]
+    return sorted(keys)
+
+
+#: How the entry's `constructorArguments` names each key the adapter passes.
+CTOR_NAMES = {"apiKey": "apiKey", "baseURL": "baseURL", "authToken": "authToken null",
+              "defaultHeaders": "defaultHeaders {}", "maxRetries": "maxRetries 0"}
+#: Node transport variables the entry must declare as inputs that must be unset.
+NODE_ENV = ("NODE_TLS_REJECT_UNAUTHORIZED", "NODE_EXTRA_CA_CERTS", "NODE_USE_ENV_PROXY", "HTTPS_PROXY")
+
+
 def sha(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -329,6 +355,47 @@ def findings_for(name, doc, butlers_contract, sibling=None):
     rf = " ".join(rb.get("runtimeFixed", []))
     if "fetch" not in rf or "not pinned" not in rf:
         out.append(f"{name}: runtimeFixed does not disclose the Node fetch headers and the unpinned Node")
+    lits = rb["headers"].get("pinnedLiterals", {}) if isinstance(rb.get("headers"), dict) else {}
+    for item in e.get("unknowns", []):
+        head = item.split("(")[0]
+        for h in lits:
+            if "[Unknown]" in head and h in head and "value" in head:
+                out.append(f"{name}: unknowns marks the value of pinned header {h} Unknown")
+    commit = rb["provenance"].get("commit", "") if isinstance(rb.get("provenance"), dict) else ""
+    if not commit or commit not in e.get("implementationStatus", ""):
+        out.append(f"{name}: implementationStatus does not name the provenance commit")
+    retention = [x for x in fit.get("fitsWithoutNewVersion", []) if x.startswith("retention")]
+    if not retention or any("ANTHROPIC_LOG" not in x for x in retention):
+        out.append(f"{name}: fitsWithoutNewVersion states retention without its ANTHROPIC_LOG condition")
+    ctor = env.get("constructorArguments", "")
+    for key, text in CTOR_NAMES.items():
+        if text not in ctor:
+            out.append(f"{name}: constructorArguments omits {key}")
+    for extra in ("logLevel", "timeout", "fetch", "dangerouslyAllowBrowser"):
+        if extra in ctor:
+            out.append(f"{name}: constructorArguments names {extra}, which the adapter does not pass")
+    src = None
+    if commit:
+        try:
+            src = subprocess.run(["git", "show", f"{commit}:{PROVENANCE_FILES[0]}"], capture_output=True,
+                                 text=True, check=True).stdout
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            src = None
+    if src is not None and ctor_keys(src) != sorted(CTOR_NAMES):
+        out.append(f"{name}: the adapter source at the pinned commit passes keys {ctor_keys(src)}, not {sorted(CTOR_NAMES)}")
+    nenv = ta.get("nodeTransportEnvironmentInputs", {})
+    named = {v.get("name", ""): v for v in nenv.get("variables", []) if isinstance(v, dict)}
+    for var in NODE_ENV:
+        hit = next((v for n, v in named.items() if var in n), None)
+        if hit is None:
+            out.append(f"{name}: nodeTransportEnvironmentInputs omits {var}")
+        elif "unset" not in hit.get("posture", ""):
+            out.append(f"{name}: nodeTransportEnvironmentInputs gives {var} no unset posture")
+    if "[Inferred]" not in nenv.get("enforcement", "") or "syzygy-yqtg" not in nenv.get("enforcement", ""):
+        out.append(f"{name}: nodeTransportEnvironmentInputs does not label its enforcement point")
+    for marker in ("Provider and route", "fixed by the runtime", "nothing else"):
+        if not any(marker in x for x in fit.get("needsReading", [])):
+            out.append(f"{name}: egressRecordFit needsReading omits the wording {marker!r}")
     if sibling is not None:
         se = sibling["entries"][0]
         if se.get("subject") != e.get("subject"):
@@ -446,6 +513,17 @@ def selftest():
     mut("gate dropped", lambda e, d: e["typedAuthority"].pop("runtimeEgressGate"), "runtimeEgressGate rules lack")
     mut("write surface unargued", lambda e, d: e["typedAuthority"].pop("writeSurfaceArgument"), "not argued")
     mut("unknowns emptied", lambda e, d: e.update(unknowns=[]), "lists no Unknown")
+    mut("timeout value marked Unknown", lambda e, d: e["unknowns"].append("[Unknown] the x-stainless-timeout value: the cited predicate checks the name only"), "marks the value of pinned header")
+    mut("implementationStatus names another head", lambda e, d: e.update(implementationStatus=e["implementationStatus"].replace(e["requestBytes"]["provenance"]["commit"], "dd526b0c3d4de2c1add4288469e320c8c52af99b")), "implementationStatus")
+    mut("retention unconditional", lambda e, d: e["routeConditions"]["egressRecordFit"].update(fitsWithoutNewVersion=[x.replace(" while ANTHROPIC_LOG is unset (retentionCondition)", "") for x in e["routeConditions"]["egressRecordFit"]["fitsWithoutNewVersion"]]), "ANTHROPIC_LOG condition")
+    mut("constructor drops authToken", lambda e, d: e["typedAuthority"]["sdkEnvironmentInputs"].update(constructorArguments=e["typedAuthority"]["sdkEnvironmentInputs"]["constructorArguments"].replace("authToken null, ", "")), "constructorArguments omits authToken")
+    mut("constructor names logLevel", lambda e, d: e["typedAuthority"]["sdkEnvironmentInputs"].update(constructorArguments=e["typedAuthority"]["sdkEnvironmentInputs"]["constructorArguments"] + " and logLevel off"), "names logLevel")
+    for _var in NODE_ENV:
+        mut(f"node variable {_var} dropped", lambda e, d, v=_var: e["typedAuthority"]["nodeTransportEnvironmentInputs"].update(variables=[x for x in e["typedAuthority"]["nodeTransportEnvironmentInputs"]["variables"] if v not in x["name"]]), f"omits {_var}")
+    mut("node variable posture loosened", lambda e, d: e["typedAuthority"]["nodeTransportEnvironmentInputs"]["variables"][0].update(posture="may be set"), "no unset posture")
+    mut("node enforcement unlabelled", lambda e, d: e["typedAuthority"]["nodeTransportEnvironmentInputs"].update(enforcement="enforced"), "nodeTransportEnvironmentInputs does not label")
+    for _w in ("Provider and route", "fixed by the runtime", "nothing else"):
+        mut(f"fit wording {_w} hidden", lambda e, d, w=_w: e["routeConditions"]["egressRecordFit"].update(needsReading=[x.replace(w, "x") for x in e["routeConditions"]["egressRecordFit"]["needsReading"]]), "omits the wording")
     mut("readAuthority stops pointing at requestBytes", lambda e, d: e["typedAuthority"].update(readAuthority="none"), "readAuthority")
     for k in REQUEST_KEYS:
         mut(f"requestBytes {k} dropped", lambda e, d, k=k: e["requestBytes"].pop(k), "requestBytes lacks")
@@ -558,6 +636,11 @@ def selftest():
         clash = pathlib.Path(t) / "sibling.json"
         clash.write_text(json.dumps({"status": "x", "entries": [{"observerId": SIBLING_ID, "subject": {"x": 1}, "typedAuthority": {"authorityType": "model-provider"}}]}))
         muts.append(("sibling file on disk is cross-checked", any("differs from the sibling" in f for f in check(root, BUTLERS, inst, clash))))
+    real = 'x = new Anthropic({ apiKey: config.apiKey, authToken: null, baseURL: gate.url, defaultHeaders: {}, maxRetries: 0 });'
+    muts.append(("ctor keys read from source", ctor_keys(real) == sorted(CTOR_NAMES)))
+    muts.append(("ctor key removed in source is seen", ctor_keys(real.replace("authToken: null, ", "")) != sorted(CTOR_NAMES)))
+    muts.append(("ctor key added in source is seen", ctor_keys(real.replace("maxRetries: 0", "maxRetries: 0, logLevel: 'off'")) != sorted(CTOR_NAMES)))
+    muts.append(("no ctor call yields None", ctor_keys("nothing") is None))
     bad = [n for n, ok in muts if not ok]
     for n, ok in muts:
         print(("ok   " if ok else "FAIL ") + n)

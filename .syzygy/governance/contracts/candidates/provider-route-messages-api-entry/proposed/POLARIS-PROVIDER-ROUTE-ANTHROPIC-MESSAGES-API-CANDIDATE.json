@@ -11,7 +11,7 @@
       "role": "adapter",
       "implementationId": "polaris-generation/provider-messages-api",
       "implementationVersion": null,
-      "implementationStatus": "not-yet-implemented as a registered adapter: the adapter (createMessagesApiGenerate) is on an unmerged branch (PR #264, stacked on PR #258, head dd526b0c3d4de2c1add4288469e320c8c52af99b at drafting). This version is a candidate for the owner to read, not a usable entry: RFC4-3 admits no output from an entry whose implementationVersion is Unknown, so a later version carrying the implementation version and the pinned governing contract version replaces this one through its own review and act. implementationVersion stays null (Unknown), never a placeholder",
+      "implementationStatus": "not-yet-implemented as a registered adapter: the adapter (createMessagesApiGenerate) is on an unmerged branch (PR #264, stacked on PR #258, head e76b692926d89342e7943ce0a2d7ef669a859b47, the commit this entry pins as provenance). This version is a candidate for the owner to read, not a usable entry: RFC4-3 admits no output from an entry whose implementationVersion is Unknown, so a later version carrying the implementation version and the pinned governing contract version replaces this one through its own review and act. implementationVersion stays null (Unknown), never a placeholder",
       "contractId": "RFC-0004/general-contract",
       "contractVersion": "sha256:b21fc950103964c34e2f9b2d78c97ac8e03720f311738e0e6323afb29b8d6f0e",
       "contractVersionSource": "the value the adopted Butlers observer entry declares for the same contract; re-derive by script before the offering",
@@ -135,7 +135,7 @@
             "the gate removes the incoming host and connection headers and forwards the rest unchanged; it forwards to the one configured upstream only",
             "a body-less HEAD /api/hello is answered by the gate and never forwarded; this route sends none",
             "the gate may drop x-stainless-os, x-stainless-arch and x-stainless-runtime-version from the forwarded request (stripFingerprint, default off); it never adds or alters a byte",
-            "the configured upstream must equal https://api.anthropic.com: any other scheme, host or port is refused with 403 and no byte leaves. [Observed] the gate at the cited commit accepts any upstream URL including plain http, so this rule is the entry's statement of what the implementation will enforce and is on PR #258's fix list ('upstream https') [Inferred]; it is not present at the cited commit"
+            "the configured upstream must equal https://api.anthropic.com: any other scheme, host or port is refused with 403 and no byte leaves. [Observed] the gate at the cited commit accepts any upstream URL including plain http, so this rule is the entry's statement of what the implementation will enforce; it is not present at the cited commit, and the work is tracked as bead syzygy-yqtg (lane-v) [Inferred: from the bead record, not re-read from the implementation]"
           ],
           "limits": "[Observed in the source] the gate sees only HTTP to its own port; anything the process does outside that port is bounded by the environment, the run directory and the isolation test, not by the gate"
         },
@@ -174,8 +174,18 @@
             }
           ],
           "constructorArguments": "the client is built with apiKey, baseURL (the loopback gate), authToken null, defaultHeaders {} and maxRetries 0 [Observed in the adapter source at the cited commit]",
-          "enforcement": "[Observed] the adapter at the pinned commit throws ambient-environment at construction and again at first start when any ANTHROPIC_-prefixed variable is set in the process; it did not at the commit the round-1 review read (dd526b0c) and is on PR #264's fix list [Inferred]. Absent that refusal the postures above are unenforced and a later entry version's offering re-checks the implementation",
+          "enforcement": "[Observed] the adapter at the pinned commit throws ambient-environment at construction and again at first start when any ANTHROPIC_-prefixed variable is set in the process; it did not at the commit the round-1 review read (dd526b0c); the guard is PR #264's commit c2305b19, already in the pinned head, so it is not pending work. [Inferred] that a later implementation keeps the guard: absent that refusal the postures above are unenforced, and a later entry version's offering re-checks the implementation",
           "failure": "a refused start is the execution fact 'the run does not start' (execution-blocked), never a degradation state"
+        },
+        "nodeTransportEnvironmentInputs": {
+          "label": "[Inferred, from Node's documented behaviour; not exercised here] the gate forwards the one request with node:https, so Node's own environment can weaken certificate validation for, or reroute, the request that carries x-api-key. The adapter's ambient guard covers only the ANTHROPIC_ prefix. Each variable is declared an input of the route that must be unset",
+          "variables": [
+            {"name": "NODE_TLS_REJECT_UNAUTHORIZED", "effect": "set to 0 disables certificate validation for the forwarded request", "posture": "must be unset"},
+            {"name": "NODE_EXTRA_CA_CERTS", "effect": "adds trusted certificate authorities for the forwarded request", "posture": "must be unset"},
+            {"name": "NODE_USE_ENV_PROXY", "effect": "on Node 24 makes the runtime honour the proxy variables below", "posture": "must be unset"},
+            {"name": "HTTPS_PROXY / HTTP_PROXY", "effect": "can reroute the forwarded request through another host once the runtime honours them", "posture": "must be unset"}
+          ],
+          "enforcement": "[Inferred] the adapter does not refuse these at the pinned commit; enforcement is the work of bead syzygy-yqtg (lane-v). Absent that refusal the postures are the entry's statement and unenforced, and a later entry version's offering re-checks the implementation"
         }
       },
       "routeConditions": {
@@ -193,7 +203,7 @@
             "no tools on the provider's or the route's side: satisfied (no tools field)",
             "adds no context of its own: satisfied more strictly than the Agent SDK route (no system prefix, no metadata, no environment message)",
             "telemetry, error reporting and update checks disabled: vacuous, no runtime process exists",
-            "retention in the run directory: satisfied; there is no runtime state to keep"
+            "retention in the run directory: satisfied while ANTHROPIC_LOG is unset (retentionCondition); there is no runtime state to keep"
           ],
           "needsReading": [
             "the record's 'Provider and route' line and title name the Claude Agent SDK (Claude Code runtime). If the owner reads that as descriptive, this route fits; if as restrictive, this route needs an egress record version that names the Messages API route, a text-only change that adds no class and no destination",
@@ -223,7 +233,7 @@
         "the model's context window and the account's rate limits",
         "the provider's own retention under the terms and settings of the key used, which the egress record discloses and does not promise",
         "[Unknown] no code at the cited commit reads SYZYGY_POLARIS_PROVIDER_API_KEY; the credential path is a proposal until the caller exists",
-        "[Unknown] the x-stainless-timeout and connection values: the cited predicate checks their names only"
+        "[Unknown] the connection header value: the cited predicate checks its name only (the x-stainless-timeout value is not Unknown: it is the literal 600, see headers.timeoutNote)"
       ],
       "failureStates": {
         "consentWithdrawn": {
@@ -237,7 +247,7 @@
         "gateOrConfigurationCannotMeetRouteConditions": {
           "executionFact": "the run does not start",
           "unknownReason": "execution-blocked",
-          "note": "an invalid configuration, a missing key, an SDK version other than the pin, a missing upstream or an unwritable run directory: an environment the profile could not satisfy (RFC2-24 reason 12); not an observer error, and no degradation state is invented, or an ANTHROPIC_-prefixed environment variable set in the process"
+          "note": "an invalid configuration, a missing key, an SDK version other than the pin, a missing upstream, an unwritable run directory or an ANTHROPIC_-prefixed environment variable set in the process: an environment the profile could not satisfy (RFC2-24 reason 12); not an observer error, and no degradation state is invented"
         },
         "gateRefusedRequest": {
           "executionFact": "the gate answered 403 and no byte left",
@@ -315,7 +325,7 @@
       "requestBytes": {
         "status": "the exact request the route may carry for the pinned version, inline so the bytes an act binds are these bytes; the cited source is provenance only and its later edits change nothing here",
         "provenance": {
-          "label": "[Observed, capture endpoint with a dummy credential, no provider contacted] by the author of PR #264; this entry only copies the values. The header literals and shapes below are those of acceptMessagesApiRequest in messages-api-provider.ts at this commit. No separate review record of the header list exists at drafting; the reviewer re-derives it from the source and the capture test. The branch is unmerged",
+          "label": "[Observed, capture endpoint with a dummy credential, no provider contacted] by the author of PR #264; this entry only copies the values. The header literals and shapes below are those of acceptMessagesApiRequest in messages-api-provider.ts at this commit, except x-stainless-timeout: 600, which that function does not pin (it treats the name as optional): the 600 comes from the SDK source (client.js, messages.js) and the round-1 reviewer's capture. No separate review record of the header list exists at drafting; the reviewer re-derives it from the source and the capture test. The branch is unmerged",
           "commit": "e76b692926d89342e7943ce0a2d7ef669a859b47",
           "files": [
             {

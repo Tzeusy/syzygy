@@ -3,4 +3,4 @@
 # 1 artifact; each row hashes the proposed file's exact bytes and is
 # the argument of one owner act. A substitute for the Agent SDK entry; the
 # two are never both adopted (RFC4-1).
-efe07621a83229e1eb420d62b5327f1a5fe5071bb12f2fe59152ae4c4dbeb1bf  .syzygy/governance/contracts/candidates/provider-route-messages-api-entry/proposed/POLARIS-PROVIDER-ROUTE-ANTHROPIC-MESSAGES-API-CANDIDATE.json
+b70b16eba27f49d4d3e91f757358eb94e9f6ad56c50b08e52ee07debfca79c11  .syzygy/governance/contracts/candidates/provider-route-messages-api-entry/proposed/POLARIS-PROVIDER-ROUTE-ANTHROPIC-MESSAGES-API-CANDIDATE.json

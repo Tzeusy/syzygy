@@ -11,7 +11,7 @@ and this package installs nothing there.
 
 **Stable IDs affected:** none minted, renamed or retired. The entry answers
 REQ-polaris-generation-017 (Source: RFC4-2) and cites RFC4-1, RFC4-2, RFC4-3,
-RFC2-23, RFC2-24, RFC3-16(a), RFC5-15 and RFC5-16.
+RFC4-9, RFC2-23, RFC2-24, RFC3-16(a), RFC5-15 and RFC5-16.
 
 **Change class:** Normative (it creates a registry entry; an entry is honored
 only under an owner act, RFC4-7).
@@ -61,13 +61,16 @@ identity and a new implementation identity, `polaris-generation/provider-message
   gate rule that its configured upstream equals that origin, refusing any
   other scheme, host or port, is the entry's statement of what the
   implementation will enforce; the gate at the cited commit accepts any
-  upstream URL, and the rule is on PR #258's fix list [Inferred].
+  upstream URL; the work is tracked as bead syzygy-yqtg (lane-v) [Inferred: from the bead record].
 - **SDK environment.** The client library reads `ANTHROPIC_`-prefixed
   variables of its own (an auth token, custom headers, a log level that can
   write the request body to the console, a base URL). The entry declares each
   as an input that must be unset, fail-closed; the adapter's refusal of any
   such variable is present at the cited commit and was absent at the commit
-  round 1 read.
+  round 1 read. Node's own transport variables (a TLS-validation switch, extra
+  certificate authorities, the environment-proxy switch and the proxy variables)
+  are declared as further inputs that must be unset, [Inferred] from Node's
+  documented behaviour and enforced only by bead syzygy-yqtg.
 - **Runtime egress gate.** A loopback forwarder passes a request only when the
   acceptance predicate holds, `permitted()` is true and an explicit upstream
   is set; otherwise it answers 403. Provenance is pinned by commit and blob
