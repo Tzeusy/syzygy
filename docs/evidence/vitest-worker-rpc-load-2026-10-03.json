@@ -20,7 +20,8 @@
       ],
       "exitCode": 1,
       "seconds": 223,
-      "loadAverage1m": 63.94
+      "loadAverage1m": 63.94,
+      "burners": 24
     },
     {
       "run": "loaded-2",
@@ -38,7 +39,8 @@
       ],
       "exitCode": 1,
       "seconds": 209,
-      "loadAverage1m": 62.17
+      "loadAverage1m": 62.17,
+      "burners": 24
     },
     {
       "run": "loaded-3",
@@ -56,7 +58,8 @@
       ],
       "exitCode": 1,
       "seconds": 169,
-      "loadAverage1m": 66.45
+      "loadAverage1m": 66.45,
+      "burners": 24
     },
     {
       "run": "yield-1",
@@ -79,7 +82,8 @@
       ],
       "exitCode": 1,
       "seconds": 243,
-      "loadAverage1m": 62.82
+      "loadAverage1m": 62.82,
+      "burners": 24
     },
     {
       "run": "yield-2",
@@ -96,7 +100,8 @@
       ],
       "exitCode": 1,
       "seconds": 217,
-      "loadAverage1m": 61.6
+      "loadAverage1m": 61.6,
+      "burners": 24
     },
     {
       "run": "yield-3",
@@ -122,7 +127,8 @@
       ],
       "exitCode": 1,
       "seconds": 242,
-      "loadAverage1m": 68.5
+      "loadAverage1m": 68.5,
+      "burners": 24
     },
     {
       "run": "mw4-1",
@@ -142,7 +148,8 @@
       ],
       "exitCode": 1,
       "seconds": 304,
-      "loadAverage1m": 73.23
+      "loadAverage1m": 73.23,
+      "burners": 24
     }
   ],
   "mechanismAndMutants": {
@@ -235,5 +242,52 @@
     ],
     "killed": 4,
     "total": 4
+  },
+  "acRuns": {
+    "note": "Team-lead steering 2026-10-03: 8 burners (24 flooded the shared host), workers bounded; judged by no unattributed onTaskUpdate error. Assertion timeouts are syzygy-k66p, reported not fixed.",
+    "runs": [
+      {
+        "run": "b8-1",
+        "tree": "final PR tree (maxWorkers 50%, 6 forks observed)",
+        "maxWorkers": "50%",
+        "burners": 8,
+        "testsLine": "Tests  1 failed | 715 passed | 1 skipped (717)",
+        "rpcTimeouts": 0,
+        "failedTests": [
+          "tuple-encoding.test.ts > tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a mark that does not resolve, and refuses to render an undeclared tier"
+        ],
+        "exitCode": 1,
+        "seconds": 149,
+        "loadAverage1m": 52.7
+      },
+      {
+        "run": "b8-2",
+        "tree": "final PR tree (maxWorkers 50%, 6 forks observed)",
+        "maxWorkers": "50%",
+        "burners": 8,
+        "testsLine": "Tests  716 passed | 1 skipped (717)",
+        "rpcTimeouts": 0,
+        "failedTests": [],
+        "exitCode": 0,
+        "seconds": 114,
+        "loadAverage1m": 43.71
+      },
+      {
+        "run": "b8-3",
+        "tree": "final PR tree (maxWorkers 50%, 6 forks observed)",
+        "maxWorkers": "50%",
+        "burners": 8,
+        "testsLine": "Tests  716 passed | 1 skipped (717)",
+        "rpcTimeouts": 0,
+        "failedTests": [],
+        "exitCode": 0,
+        "seconds": 120,
+        "loadAverage1m": 56.45
+      }
+    ],
+    "failingTestProofOnFinalTree": {
+      "testsLine": "Tests  1 failed | 1 passed (2)",
+      "exitCode": 1
+    }
   }
 }

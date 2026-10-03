@@ -17,6 +17,10 @@ export default defineConfig({
     },
   },
   test: {
+    // Half the cores (syzygy-w90k): several lanes run their suites on one
+    // host, and a worker per core oversubscribed it. Vitest takes the bound
+    // only here, for every project; a project may set no worker count.
+    maxWorkers: '50%',
     setupFiles: [fileURLToPath(new URL('./vitest.setup.ts', import.meta.url))],
     projects: [
       {
