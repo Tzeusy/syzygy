@@ -1,0 +1,611 @@
+{
+  "record": "sent-text derivation for the discovery provider envelope",
+  "date": "2026-10-03",
+  "ranAt": "587fec09d2bc76182da981d6b323e8a8ff5f8773",
+  "subjects": [
+    {
+      "path": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "sha256": "f0ce5556b163b50a2c2f01ac375290cc0c790d9649f4f8a17c0b088f37a95ac8"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "sha256": "af15de6def02b12c4fbec7ec8693f1b0bb20b145cf82e8d65837eba6e388d946"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/pipeline.ts",
+      "sha256": "c84b3558e258d9086a8145d456571ec63b24422b245d93c6a5610cf6ed84cefa"
+    }
+  ],
+  "runs": [
+    {
+      "script": "scripts/derive_generator_sent_text.mjs",
+      "scriptSource": "tracked on main (arrived with #215); byte-identical to the origin/polaris/public-repo-admission copy, and re-run from the tracked file with byte-identical output",
+      "scriptSha256": "9b2fec4296ad937a25ad694879bae1d7ab8aec8481c51c281475e4edb7712c35",
+      "exit": 0,
+      "finding": "Exits 0 with every pipeline field classified. It runs the six-stage pipeline only, so no discovery field appears in its output (0 occurrences of \"discovery\"); its authored table names promptForStage alone.",
+      "output": {
+        "generateInputFields": [
+          "input",
+          "permit",
+          "responseSchema",
+          "signal",
+          "stage",
+          "system"
+        ],
+        "envelopeKeys": [
+          "inputs",
+          "promptVersion",
+          "responseSchema",
+          "responseSchemaVersion",
+          "system"
+        ],
+        "inputKeysAcrossFirstStage": [
+          "readerQuestions",
+          "requestedAssets",
+          "sourcePopulation",
+          "sources"
+        ],
+        "authored": [
+          {
+            "stage": "inventory",
+            "promptVersion": "polaris-inventory-v1",
+            "systemBytes": 1971,
+            "systemSha256": "ea6c06ff89668f4914859b4c1133f9def4db51f2456f28b2cf86ba89fb1411af",
+            "schemaVersion": "polaris-provider-inventory-v1",
+            "schemaBytes": 1959,
+            "schemaSha256": "23e6b3fffb567ab84b11eb067c198bfa1269a6dbbdd0023456b71f2ca7cbc486"
+          },
+          {
+            "stage": "plan",
+            "promptVersion": "polaris-plan-v2",
+            "systemBytes": 2450,
+            "systemSha256": "e632eada2e46aac167345b95fa5911e04ebf6b183d1fb19e1564ede4da7db344",
+            "schemaVersion": "polaris-provider-plan-v1",
+            "schemaBytes": 1850,
+            "schemaSha256": "2f94e72c79feca922f424a8df013435ef6b06142d94f54c3d8e4b5521d8353b6"
+          },
+          {
+            "stage": "author",
+            "promptVersion": "polaris-author-v2",
+            "systemBytes": 3190,
+            "systemSha256": "5ff6d41c45e7fe9cf28d5e957d0c85ff3c714aa9f3f2de17523a4c2e554c9743",
+            "schemaVersion": "polaris-provider-author-v2",
+            "schemaBytes": 9514,
+            "schemaSha256": "bcd5705233d198831d01faad29aba8aeeb625882e06b42f4c71d9cb559c43077"
+          },
+          {
+            "stage": "edit",
+            "promptVersion": "polaris-edit-v2",
+            "systemBytes": 2205,
+            "systemSha256": "d0af06409f066c42c7a1f69f60b0c2f60b097926ea3508fd8322e6f11413e6de",
+            "schemaVersion": "polaris-provider-edit-v2",
+            "schemaBytes": 9514,
+            "schemaSha256": "bcd5705233d198831d01faad29aba8aeeb625882e06b42f4c71d9cb559c43077"
+          },
+          {
+            "stage": "fidelity",
+            "promptVersion": "polaris-fidelity-v1",
+            "systemBytes": 2515,
+            "systemSha256": "ea3d5f99f5ac1520ae46a1a3f9c0fca7e0180427ca92a2aaf85a0c975f97377c",
+            "schemaVersion": "polaris-provider-fidelity-v1",
+            "schemaBytes": 1796,
+            "schemaSha256": "719f471697a70a55d8d973d1de0c910145a0304f8d1e8d231ad76bac069db121"
+          },
+          {
+            "stage": "repair",
+            "promptVersion": "polaris-repair-v2",
+            "systemBytes": 2096,
+            "systemSha256": "0ad55710dc4c7dabc4586aa04861880533b6c88749acbc3ca2f1c9183b50b34b",
+            "schemaVersion": "polaris-provider-repair-v2",
+            "schemaBytes": 9514,
+            "schemaSha256": "bcd5705233d198831d01faad29aba8aeeb625882e06b42f4c71d9cb559c43077"
+          }
+        ],
+        "inputKeys": {
+          "inventory": [
+            "sources",
+            "sourcePopulation",
+            "readerQuestions",
+            "requestedAssets"
+          ],
+          "plan": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "requestedAssets"
+          ],
+          "author": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "plan",
+            "requestedAssets"
+          ],
+          "edit": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "plan",
+            "draft",
+            "requestedAssets"
+          ],
+          "fidelity": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "draft",
+            "requestedAssets"
+          ],
+          "repair": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "draft",
+            "findings",
+            "requestedAssets"
+          ]
+        },
+        "classified": [
+          {
+            "where": "envelope",
+            "field": "promptVersion",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ],
+            "cls": "envelope-control"
+          },
+          {
+            "where": "envelope",
+            "field": "responseSchema",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ],
+            "cls": "instruction-text"
+          },
+          {
+            "where": "envelope",
+            "field": "responseSchemaVersion",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ],
+            "cls": "envelope-control"
+          },
+          {
+            "where": "envelope",
+            "field": "system",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ],
+            "cls": "instruction-text"
+          },
+          {
+            "where": "inputs",
+            "field": "sources",
+            "cls": "target-content",
+            "stages": [
+              "inventory",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "sourcePopulation",
+            "cls": "target-metadata",
+            "stages": [
+              "inventory"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "readerQuestions",
+            "cls": "run-profile",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "requestedAssets",
+            "cls": "run-profile",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "sources",
+            "cls": "target-metadata",
+            "stages": [
+              "plan"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "inventory",
+            "cls": "composite",
+            "stages": [
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "plan",
+            "cls": "composite",
+            "stages": [
+              "author",
+              "edit"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "draft",
+            "cls": "composite",
+            "stages": [
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "findings",
+            "cls": "composite",
+            "stages": [
+              "repair"
+            ]
+          }
+        ],
+        "portRows": [
+          {
+            "where": "generate port",
+            "field": "input",
+            "cls": "the envelope",
+            "note": "sent as the user message"
+          },
+          {
+            "where": "generate port",
+            "field": "permit",
+            "cls": "dispatch permit",
+            "note": "never sent"
+          },
+          {
+            "where": "generate port",
+            "field": "responseSchema",
+            "cls": "instruction-text",
+            "note": "a copy of the envelope field; not sent separately"
+          },
+          {
+            "where": "generate port",
+            "field": "signal",
+            "cls": "abort signal",
+            "note": "never sent"
+          },
+          {
+            "where": "generate port",
+            "field": "stage",
+            "cls": "envelope-control",
+            "note": "never sent"
+          },
+          {
+            "where": "generate port",
+            "field": "system",
+            "cls": "instruction-text",
+            "note": "sent as the system prompt"
+          }
+        ],
+        "authoredBySource": {
+          "packages/polaris-generation-core/src/prompts.ts": "promptForStage",
+          "packages/polaris-generation-core/src/provider-draft.ts": "stageSchema"
+        }
+      }
+    },
+    {
+      "script": "scripts/derive_discovery_sent_text.mjs",
+      "scriptSha256": "3f50a32b60412bc4edb966dfbbfbb3cc049c4a8d13018e3f7f32b06883668e95",
+      "exit": 0,
+      "finding": "Every map and reduce envelope leaf classified with #215 class names; no new class. responseSchema is computed per call and its enum and maxItems leaves carry target metadata (blob ids and counts already sent in inputs).",
+      "output": {
+        "envelopeKeys": [
+          "inputs",
+          "promptVersion",
+          "responseSchema",
+          "responseSchemaVersion",
+          "system"
+        ],
+        "authored": [
+          {
+            "promptVersion": "polaris-discovery-map-v1",
+            "systemBytes": 1725,
+            "systemSha256": "b522e91ae2c99e659d1f9e39114698f5b0c2ae98e2fdffd473cb78638620dcef",
+            "responseSchemaVersion": "polaris-discovery-map-reply-v1",
+            "note": "responseSchema is computed per call; its enum and maxItems carry target metadata"
+          },
+          {
+            "promptVersion": "polaris-discovery-reduce-v1",
+            "systemBytes": 1247,
+            "systemSha256": "300cf688c755779ab28cdcbaf4a9cd7ed0fba0831483145ce3a54fb9c1169da3",
+            "responseSchemaVersion": "polaris-discovery-reduce-reply-v1",
+            "note": "responseSchema is computed per call; its enum and maxItems carry target metadata"
+          }
+        ],
+        "classified": [
+          {
+            "call": "map",
+            "field": "inputs.items[].blobId",
+            "cls": "target-metadata"
+          },
+          {
+            "call": "map",
+            "field": "inputs.items[].excerpt",
+            "cls": "target-content"
+          },
+          {
+            "call": "map",
+            "field": "inputs.items[].path",
+            "cls": "target-metadata"
+          },
+          {
+            "call": "map",
+            "field": "inputs.readerQuestions[]",
+            "cls": "run-profile"
+          },
+          {
+            "call": "map",
+            "field": "inputs.subsystem",
+            "cls": "target-metadata"
+          },
+          {
+            "call": "map",
+            "field": "promptVersion",
+            "cls": "envelope-control"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.additionalProperties",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.properties.claims.items.additionalProperties",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.properties.claims.items.properties.blobId.enum[]",
+            "cls": "target-metadata"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.properties.claims.items.properties.blobId.type",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.properties.claims.items.properties.claim.maxLength",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.properties.claims.items.properties.claim.minLength",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.properties.claims.items.properties.claim.type",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.properties.claims.items.properties.relevance.maximum",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.properties.claims.items.properties.relevance.minimum",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.properties.claims.items.properties.relevance.type",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.properties.claims.items.required[]",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.properties.claims.items.type",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.properties.claims.maxItems",
+            "cls": "target-metadata"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.properties.claims.type",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.required[]",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchema.type",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "map",
+            "field": "responseSchemaVersion",
+            "cls": "envelope-control"
+          },
+          {
+            "call": "map",
+            "field": "system",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "reduce",
+            "field": "inputs.maxSelected",
+            "cls": "envelope-control"
+          },
+          {
+            "call": "reduce",
+            "field": "inputs.readerQuestions[]",
+            "cls": "run-profile"
+          },
+          {
+            "call": "reduce",
+            "field": "inputs.subsystems[].blobs",
+            "cls": "target-metadata"
+          },
+          {
+            "call": "reduce",
+            "field": "inputs.subsystems[].claims[].blobId",
+            "cls": "target-metadata"
+          },
+          {
+            "call": "reduce",
+            "field": "inputs.subsystems[].claims[].claim",
+            "cls": "composite"
+          },
+          {
+            "call": "reduce",
+            "field": "inputs.subsystems[].claims[].path",
+            "cls": "target-metadata"
+          },
+          {
+            "call": "reduce",
+            "field": "inputs.subsystems[].claims[].relevance",
+            "cls": "composite"
+          },
+          {
+            "call": "reduce",
+            "field": "inputs.subsystems[].subsystem",
+            "cls": "target-metadata"
+          },
+          {
+            "call": "reduce",
+            "field": "promptVersion",
+            "cls": "envelope-control"
+          },
+          {
+            "call": "reduce",
+            "field": "responseSchema.additionalProperties",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "reduce",
+            "field": "responseSchema.properties.ranked.items.enum[]",
+            "cls": "target-metadata"
+          },
+          {
+            "call": "reduce",
+            "field": "responseSchema.properties.ranked.items.type",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "reduce",
+            "field": "responseSchema.properties.ranked.maxItems",
+            "cls": "target-metadata"
+          },
+          {
+            "call": "reduce",
+            "field": "responseSchema.properties.ranked.type",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "reduce",
+            "field": "responseSchema.properties.ranked.uniqueItems",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "reduce",
+            "field": "responseSchema.required[]",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "reduce",
+            "field": "responseSchema.type",
+            "cls": "instruction-text"
+          },
+          {
+            "call": "reduce",
+            "field": "responseSchemaVersion",
+            "cls": "envelope-control"
+          },
+          {
+            "call": "reduce",
+            "field": "system",
+            "cls": "instruction-text"
+          }
+        ],
+        "authoredBySource": {
+          "packages/polaris-generation-core/src/discovery-provider.ts": "discoveryMapEnvelope, discoveryReduceEnvelope"
+        }
+      },
+      "selftest": {
+        "method": "Removed one class rule at a time from the script and ran it; each run must exit 2 naming the unclassified leaf.",
+        "mutants": [
+          {
+            "removed": "[/^inputs\\.items\\[\\]\\.excerpt$/u, 'target-content']",
+            "exit": 2,
+            "reported": "map: inputs.items[].excerpt has no class"
+          },
+          {
+            "removed": "[/^responseSchema\\./u, 'instruction-text']",
+            "exit": 2,
+            "reported": "map: responseSchema.additionalProperties has no class"
+          },
+          {
+            "removed": "[/^inputs\\.subsystems\\[\\]\\.claims\\[\\]\\.(claim|relevance)$/u, 'composite']",
+            "exit": 2,
+            "reported": "reduce: inputs.subsystems[].claims[].claim has no class"
+          }
+        ]
+      }
+    }
+  ]
+}
