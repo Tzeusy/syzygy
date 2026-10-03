@@ -10,6 +10,16 @@ only in a scratch tree and hash those proposed bytes. ``--apply
 ``scripts/record_versioned_signoff.py`` after an owner's version-tagged
 sign-off and refuses unless the whole package verifies. A candidate commit,
 review, manifest or merge performs no owner act.
+
+**After sign-off** (syzygy-6bv9, 2026-10-03). The owner signed this package
+off as v1.0 on 2026-10-03 (``decisions/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md``).
+``--check`` reports the applied state when every signed subject carries its
+manifest row, as the readability successor's ``--check`` does. Until this
+branch existed, it failed with "patch does not apply" over bytes that matched
+its manifest exactly. ``--selftest`` and the candidate check build from the
+pre-adoption bytes, so after sign-off they still stop at "patch does not
+apply". When a later sign-off rewrites a subject, ``--check`` fails that same
+way, and the failure then means superseded, not broken.
 """
 
 from __future__ import annotations
@@ -1046,6 +1056,16 @@ def apply(at_adoption: bool) -> int:
     return 0
 
 
+def applied() -> bool:
+    """True once every signed subject carries its manifest row (after sign-off)."""
+    if not (ROOT / MANIFEST).is_file():
+        return False
+    rows = {path: sha for sha, path in
+            ROW_RE.findall((ROOT / MANIFEST).read_text(encoding="utf-8"))}
+    return bool(rows) and rows == {
+        rel.as_posix(): sha256((ROOT / rel).read_bytes()) for rel in BEHAVIOR_SUBJECTS}
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
@@ -1070,6 +1090,10 @@ def main(argv: list[str]) -> int:
         print("refusing: choose --check, --selftest, --diff or --write")
         return 2
 
+    if applied():
+        print(f"PWB tree-framing amendment applied: all {len(BEHAVIOR_SUBJECTS)} signed "
+              "subjects carry their manifest rows")
+        return 0
     findings, proposed = check()
     if findings:
         print("TREE-FRAMING CANDIDATE FINDINGS:")
