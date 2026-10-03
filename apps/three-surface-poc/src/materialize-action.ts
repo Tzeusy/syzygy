@@ -14,6 +14,7 @@ import {
 import { browserRequestAllowed } from './browser-origin.js';
 import { crossSurfaceLink } from './surface-links.js';
 import { mountPrefixForRequest, TAILNET_MOUNT_PREFIX, withMountPrefix } from './tailnet.js';
+import { unknownMarker, unknownRoute, unknownSubject } from './unknown-marker.js';
 
 export const MATERIALIZE_HUMAN_PATH = '/trajectory/materialize' as const;
 export const MATERIALIZE_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}/trajectory/materialize` as const;
@@ -68,10 +69,11 @@ export function renderMaterializePanel(
 ): string {
   const packet = buildTrajectoryMaterializationPacket(model);
   if (packet === null) {
+    const unknown = unknownSubject(model, 'materialization');
     return `
-      <section class="materialize-panel" aria-label="Materialization unavailable" data-materialize-panel>
+      <section class="materialize-panel" id="materialize-panel" aria-label="Materialization unavailable" data-materialize-panel>
         <h2>Materialization unavailable</h2>
-        <p class="materialize-status epistemic epistemic-unknown" data-unknown-disclosure="materialization">Unknown — no seed-backed proposed-work graph was evaluated for this model, so the human-triggered materialization action is disabled.</p>
+        <p class="materialize-status epistemic epistemic-unknown"${unknownMarker('materialization', unknown)}>Unknown — ${escapeHtml(unknown.reason)} ${unknownRoute(unknown)}</p>
       </section>`;
   }
   const beadId = currentMaterializedBeadId(model);
@@ -91,7 +93,7 @@ export function renderMaterializePanel(
     : `<button type="submit" data-parity-field="materialize-trigger" disabled aria-disabled="true" aria-describedby="materialize-refusal">${label}</button>`;
 
   return `
-    <section class="materialize-panel" aria-label="Materialize planned work" data-materialize-panel>
+    <section class="materialize-panel" id="materialize-panel" aria-label="Materialize planned work" data-materialize-panel>
       <h2>Materialize this work item</h2>
       ${notice}
       <dl>

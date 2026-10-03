@@ -10,7 +10,15 @@ import { projectTrajectory, type TrajectoryProjection } from './trajectory-proje
 import { buildDispatchDisclosure, type DispatchDisclosure, type MaterializationRecord } from './materialization.js';
 import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import { gitRunnerFor, type GitRunner, type PwbResourceLimits } from './project-shape-observation.js';
-import { buildProjectShape, unevaluatedProjectShape, type ProjectShape } from './project-shape-model.js';
+import type { UnknownReason } from '@syzygy/cap1-core';
+
+import {
+  buildProjectShape,
+  resolutionRoute,
+  unevaluatedProjectShape,
+  type ProjectShape,
+  type ResolutionRoutes,
+} from './project-shape-model.js';
 import { deriveProposedWork, type ProposedWork } from './proposed-work.js';
 import {
   evaluateWalkthroughJudgment,
@@ -38,8 +46,34 @@ import {
 
 const RECENT_CLOSED_WINDOW = 50;
 
-export type PocEpistemic =
-  { readonly label: 'Observed'; readonly basis: string } | { readonly label: 'Unknown'; readonly reason: string };
+/** The one lawful action a POC Unknown can lead to (M4 slice 1): the
+ * read-only materialize preview on Trajectory. Following it writes nothing. */
+export interface PocActionRoute {
+  readonly surface: 'trajectory';
+  readonly anchor: 'materialize-panel';
+}
+
+/** An Unknown carries its basis sentence (`reason`, the prose the page has
+ * always rendered), the closed RFC2-24 reason, and at least one route
+ * (M4 slices 1–2, P-71). */
+export interface PocUnknown {
+  readonly label: 'Unknown';
+  readonly reason: string;
+  readonly closedReason: UnknownReason;
+  readonly resolutionRoutes: ResolutionRoutes;
+  readonly actionRoute?: PocActionRoute;
+}
+
+export type PocEpistemic = { readonly label: 'Observed'; readonly basis: string } | PocUnknown;
+
+/** An Unknown the surfaces disclose that is neither an entity, a
+ * relationship nor a project-shape claim — a region, a lifecycle, a
+ * verification or the materialization action — so every rendered route
+ * has its machine twin under the same id. */
+export interface PocUnknownSubject {
+  readonly id: string;
+  readonly epistemic: PocUnknown;
+}
 
 export interface PocProvenance {
   readonly kind:
@@ -161,6 +195,10 @@ export interface PocModel {
    * live-observed work items). The typed source for renderers — never
    * re-derived from human-readable entity text. */
   readonly materializedBeadId: string | null;
+  /** Every surface Unknown that is not an entity, relationship or
+   * project-shape claim, by the id its disclosure renders under (M4
+   * slice 1): the human route and its machine twin share that id. */
+  readonly unknownSubjects: readonly PocUnknownSubject[];
   /** The project-wide Butlers shape (PWB): body-read authority disclosure,
    * revision-bound source population, items, coverage, contradictions and
    * the project account, every fact with its complete epistemic tuple.
@@ -465,8 +503,72 @@ function observed(basis: string): PocEpistemic {
   return { label: 'Observed', basis };
 }
 
-function unknown(reason: string): PocEpistemic {
-  return { label: 'Unknown', reason };
+function unknown(reason: string, closedReason: UnknownReason, actionRoute?: PocActionRoute): PocUnknown {
+  return {
+    label: 'Unknown',
+    reason,
+    closedReason,
+    resolutionRoutes: [resolutionRoute(closedReason)],
+    ...(actionRoute === undefined ? {} : { actionRoute }),
+  };
+}
+
+/** Exported for the renderers: the work-item verification Unknown every
+ * Trajectory card discloses, and the worker-change verification beside it. */
+export const WORK_ITEM_VERIFICATION_BASIS =
+  'Activity is not verification: no test evidence has been ingested for this item.';
+
+export function workItemVerificationId(itemId: string): string {
+  return `work-item:${itemId}/verification`;
+}
+
+export function workerChangeVerificationId(beadId: string): string {
+  return `worker-change:${beadId}/verification`;
+}
+
+interface UnknownSubjectInputs {
+  readonly codeStructure: CodeStructureResult;
+  readonly workItems: WorkItemsResult;
+  readonly orrery: OrreryProjection;
+  readonly trajectory: TrajectoryProjection;
+  readonly workerChange: WorkerChangeResult;
+  readonly testArtifactVerification: TestArtifactVerificationResult;
+  readonly governingIntentId: string | null;
+  /** Null when no seed set evaluated proposed work: no surface renders it. */
+  readonly proposedWork: ProposedWork | null;
+  readonly dispatch: DispatchDisclosure | null;
+}
+
+/** One entry per non-claim Unknown some surface renders, existing exactly
+ * when that disclosure renders. A region that was not captured routes to
+ * the observer; every other branch names the reason its producer
+ * establishes. */
+function deriveUnknownSubjects(input: UnknownSubjectInputs): readonly PocUnknownSubject[] {
+  const subjects: PocUnknownSubject[] = [];
+  const add = (id: string, basis: string, reason: UnknownReason): void => {
+    subjects.push({ id, epistemic: unknown(basis, reason) });
+  };
+  const code = input.codeStructure.kind === 'unknown' ? input.codeStructure : input.orrery.kind === 'unknown' ? input.orrery : null;
+  if (code !== null) add('region:code-structure', code.reason, 'source-uncaptured-or-unreachable');
+  const work = input.workItems.kind === 'unknown' ? input.workItems : input.trajectory.kind === 'unknown' ? input.trajectory : null;
+  if (work !== null) add('region:work-items', work.reason, 'source-uncaptured-or-unreachable');
+  const lifecycle = input.proposedWork?.lifecycle;
+  if (input.proposedWork !== null && lifecycle?.kind === 'unknown') add(`${input.proposedWork.id}/lifecycle`, lifecycle.reason, lifecycle.closedReason);
+  if (input.trajectory.kind === 'observed') {
+    for (const item of input.trajectory.rendered) add(workItemVerificationId(item.id), WORK_ITEM_VERIFICATION_BASIS, 'missing-evidence');
+    const change = input.workerChange;
+    if (change.kind === 'observed' && input.trajectory.rendered.some((item) => item.id === change.beadId)) {
+      const verification = input.testArtifactVerification;
+      if (verification.kind === 'unknown') add(workerChangeVerificationId(change.beadId), verification.reason, 'missing-evidence');
+      else if (input.governingIntentId === null) {
+        add(workerChangeVerificationId(change.beadId), 'The captured test artifact has no governing intent identity in this evaluation.', 'reference-unresolvable');
+      }
+    }
+  }
+  if (input.dispatch === null) {
+    add('materialization', 'No seed-backed proposed-work graph was evaluated for this model, so the human-triggered materialization action is disabled.', 'source-uncaptured-or-unreachable');
+  }
+  return subjects;
 }
 
 interface MaterializationEpistemic {
@@ -492,7 +594,7 @@ function resolveMaterializationEpistemic(
 ): MaterializationEpistemic {
   if (record === null) {
     return {
-      epistemic: unknown('No POC work item has been materialized.'),
+      epistemic: unknown('No POC work item has been materialized.', 'missing-evidence'),
       beadId: null,
       origin: null,
       createdAt: null,
@@ -501,7 +603,7 @@ function resolveMaterializationEpistemic(
   }
   if (workItems.kind === 'unknown') {
     return {
-      epistemic: unknown('A materialization record exists but work items could not be observed to confirm it.'),
+      epistemic: unknown('A materialization record exists but work items could not be observed to confirm it.', 'source-uncaptured-or-unreachable'),
       beadId: null,
       origin: null,
       createdAt: null,
@@ -511,7 +613,7 @@ function resolveMaterializationEpistemic(
   const found = workItems.items.find((item) => item.id === record.beadId);
   if (found === undefined) {
     return {
-      epistemic: unknown('A materialization record names a Bead that was not found among the observed work items.'),
+      epistemic: unknown('A materialization record names a Bead that was not found among the observed work items.', 'reference-unresolvable'),
       beadId: null,
       origin: null,
       createdAt: null,
@@ -625,7 +727,7 @@ function entityFromSeed(seed: PocSeedEntity, seeds: PocSeedInput, context: SeedO
         kind: seed.kind,
         title,
         detail,
-        epistemic: unknown('No test artifact has been captured for this evaluation.'),
+        epistemic: unknown('No test artifact has been captured for this evaluation.', 'missing-evidence'),
         provenance: [],
       };
     case 'runtime':
@@ -634,7 +736,7 @@ function entityFromSeed(seed: PocSeedEntity, seeds: PocSeedInput, context: SeedO
         kind: seed.kind,
         title,
         detail,
-        epistemic: unknown('No current runtime observation was supplied.'),
+        epistemic: unknown('No current runtime observation was supplied.', 'missing-evidence'),
         provenance: [],
       };
     case 'unknown-region':
@@ -643,7 +745,7 @@ function entityFromSeed(seed: PocSeedEntity, seeds: PocSeedInput, context: SeedO
         kind: seed.kind,
         title,
         detail,
-        epistemic: unknown('The first slice does not enumerate or map the remaining code.'),
+        epistemic: unknown('The first slice does not enumerate or map the remaining code.', 'mapping-coverage-absent'),
         provenance: [],
       };
   }
@@ -708,7 +810,7 @@ function relationshipFromSeed(
         statement,
         epistemic:
           context.materialization.beadId === null
-            ? unknown('The human-triggered materialization step has not run.')
+            ? unknown('The human-triggered materialization step has not run.', 'missing-evidence', { surface: 'trajectory', anchor: 'materialize-panel' })
             : observed(
                 `The human-triggered materialization step ${context.materialization.origin === 'created' ? 'created' : context.materialization.origin === 'reused' ? 'reused the existing' : 'created or reused'} Beads item ${context.materialization.beadId}.`,
               ),
@@ -721,7 +823,7 @@ function relationshipFromSeed(
         from: seed.from,
         to: seed.to,
         statement,
-        epistemic: unknown('No materialized work item or worker change was supplied.'),
+        epistemic: unknown('No materialized work item or worker change was supplied.', 'missing-evidence'),
         provenance: [],
       };
     case 'code-to-evidence':
@@ -731,7 +833,7 @@ function relationshipFromSeed(
         from: seed.from,
         to: seed.to,
         statement,
-        epistemic: unknown('No test artifact has been captured for this evaluation.'),
+        epistemic: unknown('No test artifact has been captured for this evaluation.', 'missing-evidence'),
         provenance: [],
       };
     case 'code-to-runtime':
@@ -741,7 +843,7 @@ function relationshipFromSeed(
         from: seed.from,
         to: seed.to,
         statement,
-        epistemic: unknown('No current runtime observation was supplied.'),
+        epistemic: unknown('No current runtime observation was supplied.', 'missing-evidence'),
         provenance: [],
       };
     case 'capability-to-unmapped-region':
@@ -751,7 +853,7 @@ function relationshipFromSeed(
         from: seed.from,
         to: seed.to,
         statement,
-        epistemic: unknown('The bounded POC mapping makes no claim about other code.'),
+        epistemic: unknown('The bounded POC mapping makes no claim about other code.', 'mapping-coverage-absent'),
         provenance: [],
       };
   }
@@ -813,6 +915,7 @@ function emptyProposedWork(input: BuildPocModelInput): ProposedWork {
     lifecycle: {
       kind: 'unknown',
       reason: 'No seeded proposed-work artifacts were supplied to this evaluation.',
+      closedReason: 'source-uncaptured-or-unreachable',
     },
     currentAuthority: {
       kind: 'unknown',
@@ -1122,6 +1225,17 @@ export function buildPocModel(input: BuildPocModelInput): PocModel {
     testArtifactVerification,
     orrery: orreryProjection,
     trajectory: trajectoryProjection,
+    unknownSubjects: deepFreeze(deriveUnknownSubjects({
+      codeStructure,
+      workItems,
+      orrery: orreryProjection,
+      trajectory: trajectoryProjection,
+      workerChange,
+      testArtifactVerification,
+      governingIntentId,
+      proposedWork: seeds === undefined || seedArtifacts === undefined ? null : proposedWork,
+      dispatch,
+    })),
     materializedBeadId: materialization.beadId,
     projectShape,
     proposedWork,

@@ -9,6 +9,7 @@ export * from './effect-authority.js';
 export * from './materialization.js';
 export * from './test-artifact-verification.js';
 export * from './owner-act-record.js';
+export * from './owner-act-drafter.js';
 export * from './authority-artifact-fields.js';
 export * from './body-read-authority.js';
 export * from './authority-disclosure.js';

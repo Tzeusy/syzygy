@@ -203,16 +203,38 @@ describe('three-surface Butlers POC model', () => {
     expect(entities.get('work:whatsapp-single-event-normalization')?.epistemic).toEqual({
       label: 'Unknown',
       reason: 'No POC work item has been materialized.',
+      closedReason: 'missing-evidence',
+      resolutionRoutes: [{ reason: 'missing-evidence', route: 'Produce or capture evidence', actor: 'operator', verb: 'capture', target: 'evaluation' }],
     });
     expect(entities.get('evidence:focused-pytest')?.epistemic).toEqual({
       label: 'Unknown',
       reason: 'No test artifact has been captured for this evaluation.',
+      closedReason: 'missing-evidence',
+      resolutionRoutes: [{ reason: 'missing-evidence', route: 'Produce or capture evidence', actor: 'operator', verb: 'capture', target: 'evaluation' }],
     });
     expect(entities.get('runtime:live-satisfaction')?.epistemic).toEqual({
       label: 'Unknown',
       reason: 'No current runtime observation was supplied.',
+      closedReason: 'missing-evidence',
+      resolutionRoutes: [{ reason: 'missing-evidence', route: 'Produce or capture evidence', actor: 'operator', verb: 'capture', target: 'evaluation' }],
     });
     expect(entities.get('region:unmapped-code')?.epistemic.label).toBe('Unknown');
+
+    // M4 slice 1 (P-71 Q1): the nine routeless disclosures, each with the
+    // design's closed reason; only intent-to-work carries an action route.
+    const closed = (item: { readonly epistemic: { readonly label: string } } | undefined): unknown =>
+      item?.epistemic.label === 'Unknown' && 'closedReason' in item.epistemic ? [item.epistemic.closedReason, 'actionRoute' in item.epistemic ? item.epistemic.actionRoute : null] : null;
+    const firstRelationships = byId(first.relationships);
+    expect([
+      'work:whatsapp-single-event-normalization', 'evidence:focused-pytest', 'runtime:live-satisfaction', 'region:unmapped-code',
+    ].map((id) => closed(entities.get(id)))).toEqual([
+      ['missing-evidence', null], ['missing-evidence', null], ['missing-evidence', null], ['mapping-coverage-absent', null],
+    ]);
+    expect([
+      'relationship:intent-to-work', 'relationship:work-to-code', 'relationship:code-to-evidence', 'relationship:code-to-runtime', 'relationship:capability-to-unmapped-region',
+    ].map((id) => closed(firstRelationships.get(id)))).toEqual([
+      ['missing-evidence', { surface: 'trajectory', anchor: 'materialize-panel' }], ['missing-evidence', null], ['missing-evidence', null], ['missing-evidence', null], ['mapping-coverage-absent', null],
+    ]);
 
     // C3-1: the code/test entities carry a sentence naming the path, not a
     // bare path constant for the renderer to show without context.
@@ -462,6 +484,8 @@ describe('three-surface Butlers POC model', () => {
     expect(noneEntities.get('work:whatsapp-single-event-normalization')?.epistemic).toEqual({
       label: 'Unknown',
       reason: 'No POC work item has been materialized.',
+      closedReason: 'missing-evidence',
+      resolutionRoutes: [{ reason: 'missing-evidence', route: 'Produce or capture evidence', actor: 'operator', verb: 'capture', target: 'evaluation' }],
     });
     expect(none.dispatch?.dispatchState).toBe('undispatched');
 

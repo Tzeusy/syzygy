@@ -6,6 +6,7 @@ import { escapeHtml } from '@syzygy/cap1-daemon';
 import {
   EXTRACTION_CLASSES,
   UNKNOWN_REASON_ROUTES,
+  resolutionRoute,
   type AuthorityDisclosure,
   type Declaration,
   type Exclusion,
@@ -13,6 +14,7 @@ import {
   type ObservationDegradation,
   type PillarDiscovery,
   type PocEntity,
+  type PocUnknown,
   type PocModel,
   type PocProvenance,
   type PocRelationship,
@@ -74,6 +76,7 @@ import {
 import { catalogReconciliation, renderCatalogReconciliation, RECONCILIATION_PLACEHOLDER, substituteCatalogReconciliation } from './polaris-reconciliation.js';
 import { sourceRouteHref, sourceSlug } from './polaris-source.js';
 import { crossSurfaceLink } from './surface-links.js';
+import { actionRouteLink, unknownRoute, unknownSubject } from './unknown-marker.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 
 export { sourceSlug };
@@ -241,6 +244,14 @@ function provenanceCitations(provenance: readonly PocProvenance[], anchors: read
   return ` <span class="citation">(${items})</span>`;
 }
 
+/** A model Unknown's disclosure body: the closed reason, its route, the
+ * action route when one exists, and the basis sentence the page has always
+ * rendered (M4 slice 1). */
+function pocUnknownBody(id: string, epistemic: PocUnknown, model?: PocModel): string {
+  const action = model === undefined ? '' : actionRouteLink(model, id, epistemic, activeMountPrefix, copyText('label.action-route'));
+  return `${copy('label.unknown')} — ${unknownReasonRef(epistemic.closedReason)}. ${unknownRoute(epistemic, copy('label.route'))}${action}<br><small>${escapeHtml(epistemic.reason)}</small>`;
+}
+
 function entitySection(entity: PocEntity, model: PocModel, blockAttrs = ` data-polaris-section="${escapeHtml(entity.id)}"`): string {
   const link = crossSurfaceLink({ model, className: 'reality-entity', sourceId: entity.id, target: 'orrery', targetId: entity.id,
     mountPrefix: activeMountPrefix, label: entity.title });
@@ -254,20 +265,18 @@ function entitySection(entity: PocEntity, model: PocModel, blockAttrs = ` data-p
   }
   return `<section class="claim-section"${blockAttrs}>
     ${title}
-    <p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(entity.id)}"${DISCLOSURE}>
-      ${copy('label.unknown')} — ${escapeHtml(entity.epistemic.reason)}
-    </p>
+    <p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(entity.id)}"${DISCLOSURE}>${pocUnknownBody(entity.id, entity.epistemic, model)}</p>
   </section>`;
 }
 
-function relationshipBullet(relationship: PocRelationship, entities: ReadonlyMap<string, PocEntity>): string {
+function relationshipBullet(relationship: PocRelationship, entities: ReadonlyMap<string, PocEntity>, model: PocModel): string {
   const fromTitle = entities.get(relationship.from)?.title ?? relationship.from;
   const toTitle = entities.get(relationship.to)?.title ?? relationship.to;
   if (relationship.epistemic.label === 'Observed') {
     const block = anchoredBlock(`block:${relationship.id}`, [{ claimId: relationship.id, anchors: relationship.provenance.map(provenanceAnchor), captured: entityCaptured(relationship.epistemic) }]);
     return `<li${block.attrs}><span data-claim-provenance="${escapeHtml(relationship.id)}">${escapeHtml(fromTitle)} → ${escapeHtml(toTitle)}: ${escapeHtml(relationship.statement)}</span>${provenanceCitations(relationship.provenance, block.anchors)}</li>`;
   }
-  return `<li class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(relationship.id)}"${DISCLOSURE}>${escapeHtml(fromTitle)} → ${escapeHtml(toTitle)}: ${copy('label.unknown')} — ${escapeHtml(relationship.epistemic.reason)}</li>`;
+  return `<li class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(relationship.id)}"${DISCLOSURE}>${escapeHtml(fromTitle)} → ${escapeHtml(toTitle)}: ${pocUnknownBody(relationship.id, relationship.epistemic, model)}</li>`;
 }
 
 function codeStructureSection(model: PocModel): string {
@@ -275,7 +284,7 @@ function codeStructureSection(model: PocModel): string {
   if (model.codeStructure.kind === 'unknown') {
     return `<section class="claim-section" data-polaris-section="region:code-structure">
       ${title}
-      <p class="unknown-disclosure" data-unknown-disclosure="region:code-structure"${DISCLOSURE}>${copy('label.unknown')} — ${escapeHtml(model.codeStructure.reason)}</p>
+      <p class="unknown-disclosure" data-unknown-disclosure="region:code-structure"${DISCLOSURE}>${pocUnknownBody('region:code-structure', unknownSubject(model, 'region:code-structure'))}</p>
     </section>`;
   }
   const cs = model.codeStructure;
@@ -296,7 +305,7 @@ function workItemsSection(model: PocModel): string {
   if (model.workItems.kind === 'unknown') {
     return `<section class="claim-section" data-polaris-section="region:work-items">
       ${title}
-      <p class="unknown-disclosure" data-unknown-disclosure="region:work-items"${DISCLOSURE}>${copy('label.unknown')} — ${escapeHtml(model.workItems.reason)}</p>
+      <p class="unknown-disclosure" data-unknown-disclosure="region:work-items"${DISCLOSURE}>${pocUnknownBody('region:work-items', unknownSubject(model, 'region:work-items'))}</p>
     </section>`;
   }
   const wi = model.workItems;
@@ -336,7 +345,7 @@ function claimTuple(claim: ProjectShapeClaim): string {
   const freshnessAttribute = freshness === undefined ? '' : ` data-epistemic-freshness="${escapeHtml(freshness)}"`;
   const freshnessText = freshness === undefined ? '' : ` · ${escapeHtml(freshness)}`;
   const absence = freshness === undefined
-    ? `<span class="freshness-absence" data-unknown-disclosure="${escapeHtml(claim.claimId)}:currency"${DISCLOSURE}>Currency bound not declared; this claim remains Unknown.</span>`
+    ? `<span class="freshness-absence" data-unknown-disclosure="${escapeHtml(claim.claimId)}:currency" data-unknown-reason="no-currency-bound-declared"${DISCLOSURE}>Currency bound not declared; this claim remains Unknown. ${copy('label.route')} ${escapeHtml(UNKNOWN_REASON_ROUTES['no-currency-bound-declared'])}.</span>`
     : '';
   return `<span class="claim-tuple" data-claim-id="${escapeHtml(claim.claimId)}" data-epistemic-label="${escapeHtml(epistemic.label)}" data-epistemic-tier="${escapeHtml(tier)}" data-epistemic-primary-reason="${escapeHtml(primary)}" data-epistemic-secondary-reasons="${escapeHtml(secondary.join(','))}"${freshnessAttribute} data-challenge-state="${escapeHtml(claim.challenge)}" data-evaluation-id="${escapeHtml(claim.evaluationId)}" aria-describedby="polaris-claim-states-lede"${DISCLOSURE}>${escapeHtml(epistemic.label)}${reasonText} · ${escapeHtml(tier)}${freshnessText} · ${escapeHtml(claim.challenge)}</span>${tupleMarks(tier, freshness, claim.challenge)}${absence}`;
 }
@@ -1294,7 +1303,7 @@ function proposalPart(dive: CapabilityDeepDive, work: ProposedWork, ledger: Deep
   const exclusive = exclusiveWith(dive, work.changeId);
   const lifecycle = work.lifecycle.kind === 'observed'
     ? `<p${FACT}>${copy('label.lifecycle')} <span data-proposal-lifecycle-state="${escapeHtml(work.lifecycle.state)}">${escapeHtml(work.lifecycle.state)}</span> — ${escapeHtml(work.lifecycle.basis)}</p>`
-    : `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(work.id)}/lifecycle"${DISCLOSURE}>${copy('label.lifecycle')} ${copy('label.unknown')} — ${escapeHtml(work.lifecycle.reason)}</p>`;
+    : `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(work.id)}/lifecycle"${DISCLOSURE}>${copy('label.lifecycle')} ${pocUnknownBody(`${work.id}/lifecycle`, { label: 'Unknown', reason: work.lifecycle.reason, closedReason: work.lifecycle.closedReason, resolutionRoutes: [resolutionRoute(work.lifecycle.closedReason)] })}</p>`;
   const futures = exclusive.length === 0
     ? `<p${FACT}>${copy('label.candidate-future')} — ${copy(dive.exclusivityBasis === 'declared' ? 'sentence.no-competitor' : 'sentence.exclusivity-not-captured')}</p>`
     : `<p${FACT}>${copy('label.candidate-future')} — ${copy('label.exclusive-with')} ${exclusive.map((other) => `<code data-exclusive-change="${escapeHtml(other)}">${escapeHtml(other)}</code>`).join(', ')}. ${copy('sentence.separate-futures')}</p>`;
@@ -1371,7 +1380,7 @@ function realityBand(dive: CapabilityDeepDive, model: PocModel, ledger: DeepDive
     .filter((entity) => entity.id === dive.capabilityId || dive.related.some((related) => related.id === entity.id))
     .map((entity) => entitySection(entity, model, ledger.block('reality', entity.id)))
     .join('');
-  const relationshipList = dive.relationships.map((relationship) => relationshipBullet(relationship, entitiesById)).join('');
+  const relationshipList = dive.relationships.map((relationship) => relationshipBullet(relationship, entitiesById, model)).join('');
   return `<section class="band"${ledger.block('reality', `reality:${dive.capabilityId}`)}>
       ${bandHeader('reality', dive)}
       ${sections}

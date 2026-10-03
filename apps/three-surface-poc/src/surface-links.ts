@@ -5,7 +5,7 @@ import { sourceSlug } from './polaris-source.js';
 import { withMountPrefix } from './tailnet.js';
 
 type SurfaceId = PocSurface['id'];
-export type CrossSurfaceClass = 'work-count' | 'code-count' | 'reality-entity' | 'governing-intent' | 'mapped-capability';
+export type CrossSurfaceClass = 'work-count' | 'code-count' | 'reality-entity' | 'governing-intent' | 'mapped-capability' | 'action-route';
 
 const ROUTES: Readonly<Record<SurfaceId, string>> = {
   polaris: '/polaris', trajectory: '/trajectory', orrery: '/orrery',
@@ -22,7 +22,9 @@ export function crossSurfaceHref(model: PocModel, target: SurfaceId, targetId: s
   if (targetId !== null) {
     if (target === 'orrery' && !model.entities.some(entity => entity.id === targetId)) return null;
     if (target === 'polaris' && !model.entities.some(entity => entity.id === targetId && entity.kind === 'capability')) return null;
-    if (target === 'trajectory') return null;
+    // The one Trajectory fragment a model route names: the read-only
+    // materialize preview (M4 slice 1's action route).
+    if (target === 'trajectory' && targetId !== 'materialize-panel') return null;
   }
   const fragment = targetId === null ? '' : target === 'polaris' ? capabilityDeepDiveId(targetId) : targetId;
   return `${withMountPrefix(mountPrefix, ROUTES[target])}${fragment === '' ? '' : `#${fragment}`}`;

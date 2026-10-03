@@ -37,6 +37,7 @@ describe('proposed work (PWB-REQ-013)', () => {
     const both = deriveLifecycle(CHANGE, tree([`openspec/changes/${CHANGE}/proposal.md`, `openspec/changes/archive/2026-08-30-${CHANGE}/proposal.md`]));
     expect(both.kind).toBe('unknown');
     expect(both.kind === 'unknown' ? both.reason : '').toContain('contradicted');
+    expect(both.kind === 'unknown' ? both.closedReason : '').toBe('contradicted-pending-adjudication');
 
     const absent = deriveLifecycle(CHANGE, tree(['src/x.py', 'openspec/changes/other-change/proposal.md']));
     expect(absent.kind).toBe('unknown');
@@ -46,7 +47,8 @@ describe('proposed work (PWB-REQ-013)', () => {
     expect(deriveLifecycle('repair', tree([`openspec/changes/${CHANGE}/proposal.md`])).kind).toBe('unknown');
 
     const noTree = deriveLifecycle(CHANGE, { kind: 'unknown', reason: 'listing refused' });
-    expect(noTree).toEqual({ kind: 'unknown', reason: "The tree listing was not observed (listing refused); the change's lifecycle state was not read." });
+    expect(noTree).toEqual({ kind: 'unknown', reason: "The tree listing was not observed (listing refused); the change's lifecycle state was not read.", closedReason: 'source-uncaptured-or-unreachable' });
+    expect(absent.kind === 'unknown' ? absent.closedReason : '').toBe('reference-unresolvable');
   });
 
   it('leaves the current authority Unknown with the shape\'s own reason and route when the shape was not observed', () => {

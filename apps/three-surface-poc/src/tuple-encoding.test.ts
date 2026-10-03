@@ -235,7 +235,7 @@ describe('tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5)', () => 
       const attributes = [...html.matchAll(/\sdata-epistemic-freshness="([^"]*)"/g)].map((match) => match[1]);
       for (const value of attributes) expect(FRESHNESS).toContain(value);
       for (const absence of html.matchAll(/<span class="freshness-absence"[^>]*>([\s\S]*?)<\/span>/g)) {
-        expect(absence[1]).toBe('Currency bound not declared; this claim remains Unknown.');
+        expect(absence[1]).toBe('Currency bound not declared; this claim remains Unknown. Route: Declare the bound in quality policy.');
         expect(absence[0]).not.toContain('href=');
       }
       total += census.tuples;
