@@ -1,0 +1,106 @@
+{
+  "record": "PWB shared amendment engine: all-orders composition check, rule-6 mutation run",
+  "bead": "syzygy-nejn",
+  "date": "2026-10-03",
+  "subject": {
+    "path": "scripts/pwb_requirement_amendment.py",
+    "sha256": "be3e22715798af26ae9bc1eb7c50f05fc5bfecc85a0c4c2537e7e824850fdfe3",
+    "commit": "e69ff6fcc34371ce5b9c89c73840d24491af76c6"
+  },
+  "method": "Each mutant rewrites exactly one fragment (asserted to occur once) of the subject in a scratch clone at the commit, runs --selftest of both builders that import the engine (scripts/build_pwb_opening_index_amendment.py, scripts/build_pwb_accessible_name_amendment.py), and restores the file byte-for-byte. A mutant is killed when both runs exit nonzero and print the expected SELFTEST FAILED line for its own predicate.",
+  "soundness": "git apply is a function of its input bytes, so two application orders that reach the same spec bytes with the same patches remaining share every outcome; memoizing on (bytes, remaining set) therefore covers all n! orders exactly. Each step removes one patch, so a key is never re-entered before it is memoized and first visits count distinct states.",
+  "liveMeasurement": {
+    "pendingPatches": 5,
+    "orders": 120,
+    "distinctStates": 32,
+    "gitApplyCalls": 80,
+    "distinctResults": 1,
+    "capAt31": "finding: composition search exceeded 31 states over 5 pending patches",
+    "capAt32": "no finding",
+    "stateCap": 4096
+  },
+  "mutants": [
+    {
+      "name": "result comparison loosened",
+      "file": "scripts/pwb_requirement_amendment.py",
+      "old": "    if len(results) > 1:\n",
+      "new": "    if len(results) > 2:\n",
+      "expected": "SELFTEST FAILED: divergent orders gave",
+      "results": {
+        "opening_index": {
+          "rc": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: divergent orders gave []"
+        },
+        "accessible_name": {
+          "rc": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: divergent orders gave []"
+        }
+      },
+      "killed": true
+    },
+    {
+      "name": "memo key ignores spec bytes",
+      "file": "scripts/pwb_requirement_amendment.py",
+      "old": "        key = (body, left)\n",
+      "new": "        key = (b\"\", left)\n",
+      "expected": "SELFTEST FAILED: divergent orders gave",
+      "results": {
+        "opening_index": {
+          "rc": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: divergent orders gave []"
+        },
+        "accessible_name": {
+          "rc": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: divergent orders gave []"
+        }
+      },
+      "killed": true
+    },
+    {
+      "name": "state cap disabled",
+      "file": "scripts/pwb_requirement_amendment.py",
+      "old": "        if visited[0] > cap:\n",
+      "new": "        if visited[0] > cap * 1000:\n",
+      "expected": "SELFTEST FAILED: the state cap gave",
+      "results": {
+        "opening_index": {
+          "rc": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: the state cap gave ['pending spec patches give 2 different results across the 2! application orders']"
+        },
+        "accessible_name": {
+          "rc": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: the state cap gave ['pending spec patches give 2 different results across the 2! application orders']"
+        }
+      },
+      "killed": true
+    },
+    {
+      "name": "--check drops the all-orders predicate",
+      "file": "scripts/pwb_requirement_amendment.py",
+      "old": "    findings.extend(pending_order_findings(amendment))\n",
+      "new": "",
+      "expected": "SELFTEST FAILED: --check with a sentinel order predicate gave",
+      "results": {
+        "opening_index": {
+          "rc": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: --check with a sentinel order predicate gave []"
+        },
+        "accessible_name": {
+          "rc": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: --check with a sentinel order predicate gave []"
+        }
+      },
+      "killed": true
+    }
+  ],
+  "killed": 4,
+  "total": 4
+}
