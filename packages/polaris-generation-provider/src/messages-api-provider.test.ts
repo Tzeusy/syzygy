@@ -184,8 +184,8 @@ describe('thinking profile', () => {
 });
 
 describe('ambient environment and pins', () => {
-  const canaries = ['ANTHROPIC_BASE_URL', 'ANTHROPIC_AUTH_TOKEN', 'ANTHROPIC_CUSTOM_HEADERS', 'ANTHROPIC_API_KEY', 'ANTHROPIC_PROFILE', 'NODE_TLS_REJECT_UNAUTHORIZED', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'HTTPS_PROXY', 'HTTP_PROXY', 'ALL_PROXY', 'https_proxy', 'http_proxy', 'all_proxy'];
-  afterEach(() => { for (const name of canaries) delete process.env[name]; });
+  const canaries = ['ANTHROPIC_BASE_URL', 'ANTHROPIC_AUTH_TOKEN', 'ANTHROPIC_CUSTOM_HEADERS', 'ANTHROPIC_API_KEY', 'ANTHROPIC_PROFILE', 'NODE_TLS_REJECT_UNAUTHORIZED', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'NODE_USE_SYSTEM_CA', 'NODE_OPTIONS', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'HTTPS_PROXY', 'HTTP_PROXY', 'ALL_PROXY', 'https_proxy', 'http_proxy', 'all_proxy'];
+  afterEach(() => { for (const name of canaries) delete process.env[name]; delete process.env.NODE_EXTRA_CA_CERTS; });
   it('refuses construction while any ANTHROPIC_* variable or Node TLS/proxy variable is set, and refuses a later start the same way', async () => {
     for (const name of canaries) {
       process.env[name] = 'canary';
@@ -197,10 +197,15 @@ describe('ambient environment and pins', () => {
     await expect(call(h)).rejects.toMatchObject({ code: 'ambient-environment' });
     expect(endpoint.requests).toEqual([]);
   });
-  it('refuses a loopback upstream when the test-only token is absent (production wiring)', async () => {
-    const h = make(config({ upstream: { url: endpoint.url } }));
-    await expect(call(h)).rejects.toThrow();
+  it('refuses, at construction, a loopback upstream without the test-only token and any other non-provider upstream (production wiring)', async () => {
+    for (const url of [endpoint.url, 'https://evil.test', 'http://api.anthropic.com']) expect(() => make(config({ upstream: { url } })), url).toThrow(MessagesApiProviderError);
     expect(endpoint.requests).toEqual([]);
+  });
+  it('re-checks the ambient environment before every try, not only the first', async () => {
+    endpoint.script({ kind: 'status', status: 429, retryAfter: '0' }, { kind: 'text', text: '{}' });
+    const h = make(config({ onAttempt: () => { process.env.NODE_EXTRA_CA_CERTS = '/etc/ssl/other.pem'; } }));
+    await expect(call(h)).rejects.toMatchObject({ code: 'ambient-environment', attempts: 1 });
+    expect(endpoint.messages()).toHaveLength(1);   // the second try never reached the gate
   });
   it('sends no Authorization header and no custom header, and refuses an unpinned SDK', async () => {
     await call(make(config()));

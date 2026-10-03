@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { VERSION as INSTALLED_MESSAGES_SDK_VERSION } from '@anthropic-ai/sdk/version';
 import type { DispatchPermit, PipelinePorts, ProviderReply } from '@syzygy/polaris-generation-core';
-import { parseRetryAfterMs, startEgressGate, type EgressGate, type EgressGateOptions, type GateDecision } from './egress-gate.js';
+import { ambientNetworkEnvironment, assertAllowedUpstream, parseRetryAfterMs, startEgressGate, type EgressGate, type EgressGateOptions, type GateDecision } from './egress-gate.js';
 import type { CapturedRequest, RequestAcceptance } from './request-acceptance.js';
 
 type GenerateInput = Parameters<PipelinePorts['generate']>[0];
@@ -84,13 +84,8 @@ export function messagesApiBody(config: BodyConfig, system: string, input: strin
  * profile variables from the process environment. None may be set, nor the Node TLS and proxy variables
  * (syzygy-yqtg): ambient state must not
  * redirect, re-authenticate or add headers to this route. */
-/** Node TLS, certificate-store and proxy variables change where the bytes go or who can read them. */
-export const AMBIENT_NODE_NETWORK_ENV: readonly string[] = [
-  'NODE_TLS_REJECT_UNAUTHORIZED', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY',
-  'HTTPS_PROXY', 'HTTP_PROXY', 'ALL_PROXY', 'https_proxy', 'http_proxy', 'all_proxy',
-];
-function refuseAmbientEnvironment(): void {
-  if (Object.keys(process.env).some(name => name.startsWith('ANTHROPIC_') || AMBIENT_NODE_NETWORK_ENV.includes(name))) throw new MessagesApiProviderError('ambient-environment', 0);
+function refuseAmbientEnvironment(tries = 0): void {
+  if (Object.keys(process.env).some(name => name.startsWith('ANTHROPIC_')) || ambientNetworkEnvironment().length > 0) throw new MessagesApiProviderError('ambient-environment', tries);
 }
 
 /** Messages API route (`@anthropic-ai/sdk`): no subprocess, no tools, no
@@ -98,6 +93,7 @@ function refuseAmbientEnvironment(): void {
 export function createMessagesApiGenerate(config: MessagesApiProviderConfig): MessagesApiProviderHandle {
   if (INSTALLED_MESSAGES_SDK_VERSION !== (config.pinnedVersion ?? PINNED_MESSAGES_SDK_VERSION)) throw new MessagesApiProviderError('unpinned-version', 0);
   refuseAmbientEnvironment();
+  if (config.upstream !== undefined) { try { assertAllowedUpstream(config.upstream.url, config.upstream.loopbackForTests); } catch { throw new MessagesApiProviderError('invalid-config', 0); } }
   const retry = config.retry ?? DEFAULT_RETRY;
   const budgetTokens = typeof config.thinking === 'object' ? config.thinking.budgetTokens : undefined;
   if (config.model.length === 0 || config.apiKey.length === 0 || !Number.isSafeInteger(config.maxOutputTokens) || config.maxOutputTokens <= 0
@@ -135,6 +131,7 @@ export function createMessagesApiGenerate(config: MessagesApiProviderConfig): Me
     };
     for (let n = 1; ; n++) {
       if (input.signal.aborted) throw fail('aborted', n - 1);
+      try { refuseAmbientEnvironment(n - 1); } catch (error) { if (error instanceof MessagesApiProviderError) throw fail('ambient-environment', n - 1); throw error; }   // every try, not only the first
       const remaining = retry.budgetMs - (now() - begun);
       if (remaining <= 0) throw fail('deadline', n - 1);
       if (!gate.arm(captured => acceptMessagesApiRequest(captured, expected))) throw fail('concurrent-call', n - 1);
