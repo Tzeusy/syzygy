@@ -27,6 +27,21 @@ tree. GOVERNING-DEPENDENCIES.md and CONTRACT-COVERAGE.md are regenerated and
 compared byte for byte. CAPABILITY-COVERAGE.md is pinned only by row 4 and its
 totals, and otherwise only by the manifest digest. The patch files' own bytes
 are not pinned beyond what they produce.
+
+**After sign-off, ``--check`` and ``--selftest`` fail by design**
+(syzygy-gv2f, 2026-10-03). The owner signed this package off as v1.0 on
+2026-10-02
+(``decisions/PWB-CONTAINER-SHAPE-PROFILE-AMENDMENT-SIGNOFF-v1.0.md``), and the
+recorder applied its patches. They are deltas *to* the signed bytes, so the
+first one applied (``CAPABILITY-COVERAGE.md.patch``) cannot apply a second
+time, and this builder has no mode that recognises the applied state. Both
+modes therefore stop at "patch does not apply" from the sign-off commit
+onward. That is not a defect. The item-depth, readability-successor and
+tree-framing sign-offs then rewrote seven of the eleven subjects. This
+manifest now matches 4 of 11 and describes superseded bytes, so an
+applied-state mode would never fire here. To check the bytes in force, run the
+builder of the latest sign-off in the chain
+(``build_pwb_tree_framing_amendment.py --check`` as of 2026-10-03).
 """
 
 from __future__ import annotations
