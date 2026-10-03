@@ -13,7 +13,11 @@ Usage: build_contract_index.py [--root DIR] [--check] [--selftest]
 import argparse
 import re
 import sys
+import textwrap
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from verify_final_prespec import PHASE_RULE_CLAUSES  # noqa: E402
 
 CLAUSE_DEF = re.compile(r"^\*\*(RFC\d+-\d+)(\([a-z]\))?\s*(?:\.|—|—)", re.M)
 # A minority of lettered limbs open their bold headline with running prose
@@ -33,10 +37,23 @@ CLAUSE_DEF = re.compile(r"^\*\*(RFC\d+-\d+)(\([a-z]\))?\s*(?:\.|—|—)", re.M)
 LETTERED_LIMB = re.compile(r"^\*\*(RFC(\d+)-\d+)(\([a-z]\))\s", re.M)
 SECTION = re.compile(r"^#{2,3}\s+(\d+)\.?\s", re.M)
 LIST_VAL = re.compile(r"^\[(.*)\]$")
-# The six phase-boundary clauses: marked so a selector can force the
-# governing phase rule into every packet that selects the contract
-# (RFC11-4; boundary-review E1).
-PHASE_RULES = {"RFC6-28", "RFC7-38", "RFC8-32", "RFC9-52", "RFC10-16", "RFC11-12"}
+# The phase-boundary clauses: marked so a selector can force the governing
+# phase rule into every packet that selects the contract (RFC11-4;
+# boundary-review E1). **Read from the verifier, never typed here.** This
+# file kept its own six while `verify_final_prespec.py` listed eleven, so
+# the five round-2026-08d phase rules (RFC1-33, RFC2-26, RFC3-33, RFC4-30,
+# RFC5-27) were indexed `normative` (review RD-6 E-3/C-1, F-3 row 2).
+PHASE_RULES = frozenset(PHASE_RULE_CLAUSES)
+# The section-number convention `clause_kind` applies, stated once here and
+# printed into the generated header from this same mapping, so the
+# convention is visible to an index reader rather than living only in code
+# (RD-6 F-3 row 10). A section absent from the mapping is `normative`.
+SECTION_KINDS = {"0": "informative", "6": "informative", "7": "informative",
+                 "8": "open-question"}
+# The field that speaks to authority, projected from front matter like every
+# sibling key (RD-6 C-1, F-3 row 9). Its absence or disagreement across a
+# contract's modules is rendered [Unknown] and fails `--check`.
+STATUS_KEY = "status_source"
 RULE_ID = re.compile(r"\b(VIS-\d+|SEC-\d+|CC-[A-Z]+-\d+)\b")
 # Non-contract governance sources, projected so deterministic selection
 # metadata exists for them too (digestibility E2). Since the 2026-08-05
@@ -89,21 +106,38 @@ def parse_front_matter(text):
 
 
 def clause_kind(text, pos):
-    """normative = numbered clause; open-question = §8; informative = §0/§6/§7 blocks."""
+    """The kind SECTION_KINDS gives the clause's enclosing §-number, else normative."""
     sec = None
     for m in SECTION.finditer(text[:pos]):
         sec = m.group(1)
-    if sec == "8":
-        return "open-question"
-    if sec in ("0", "6", "7"):
-        return "informative"
-    return "normative"
+    return SECTION_KINDS.get(sec, "normative")
+
+
+def header():
+    """The generated banner: non-authority, then the conventions applied."""
+    by_kind = {}
+    for sec, kind in sorted(SECTION_KINDS.items(), key=lambda kv: int(kv[0])):
+        by_kind.setdefault(kind, []).append(f"§{sec}")
+    order = sorted(PHASE_RULES, key=lambda c: tuple(int(x) for x in re.findall(r"\d+", c)))
+    return [
+        "# CONTRACT-INDEX — generated projection; rebuild with scripts/build_contract_index.py",
+        "# Authoritative metadata lives in the active contract files' front matter.",
+        "#",
+        "# NOT AUTHORITY. This candidate-lane projection binds nothing and states no",
+        "# contract's acceptance: a contract's effective standing is whatever the",
+        "# owner act record its `status_source` names says, never this file (RFC11-7).",
+        f"# `{STATUS_KEY}` is read from each module's front matter; a contract whose",
+        "# modules omit it or disagree shows [Unknown] here and fails --check.",
+        "#",
+    ] + ["# " + ln for ln in textwrap.wrap(
+        "clause kind: phase-rule for a clause or limb of " + ", ".join(order)
+        + "; otherwise by the enclosing section number — "
+        + "; ".join(f"{', '.join(secs)} {kind}" for kind, secs in by_kind.items())
+        + "; any other section normative.", width=76, break_on_hyphens=False)]
 
 
 def emit(root):
-    lines = ["# CONTRACT-INDEX — generated projection; rebuild with scripts/build_contract_index.py",
-             "# Authoritative metadata lives in the active contract files' front matter.",
-             "contracts:"]
+    lines = header() + ["contracts:"]
     rfcs = root / "rfcs"
     files = sorted(rfcs.glob("RFC-00*.md"))
     for pkg in sorted(p for p in rfcs.glob("RFC-00*") if p.is_dir()):
@@ -117,8 +151,12 @@ def emit(root):
             continue
         entry = by_id.setdefault(cid, {"fm": fm, "modules": [], "clauses": [],
                                        "constrains": [], "constrains_source": "",
-                                       "boundary": {}, "boundary_file": ""})
+                                       "boundary": {}, "boundary_file": "",
+                                       "status": {}})
         entry["modules"].append(str(f.relative_to(rfcs)))
+        status = fm.get(STATUS_KEY)
+        entry["status"][str(f.relative_to(rfcs))] = \
+            status if isinstance(status, str) and status else None
         # Declared on exactly one module per contract (the package index, or
         # the single file). Projected with the file it was read from, so the
         # projection points at the governed artifact rather than replacing it.
@@ -163,7 +201,7 @@ def emit(root):
         lines.append(f"  - id: {cid}")
         if isinstance(fm.get("title"), str):
             lines.append(f"    title: {fm['title']}")
-        lines.append("    status_source: owner-act-record")
+        lines.append(f"    {STATUS_KEY}: {status_projection(e['status'])}")
         # `provides_to` is gone from every module's front matter (it is derived
         # by reversal in build_dependency_index.py) and is kept in this loop's
         # key list only so that a module re-introducing it by hand is still
@@ -222,6 +260,35 @@ def emit(root):
     return "\n".join(lines) + "\n"
 
 
+def status_projection(per_module):
+    """One value when every module declares the same one; else [Unknown] with why."""
+    values = set(per_module.values())
+    if len(values) == 1 and None not in values:
+        return values.pop()
+    missing = sorted(m for m, v in per_module.items() if v is None)
+    declared = sorted(v for v in values if v is not None)
+    why = []
+    if missing:
+        why.append(f"{len(missing)} of {len(per_module)} module(s) declare none")
+    if len(declared) > 1:
+        why.append("modules disagree: " + ", ".join(declared))
+    return "[Unknown] — " + "; ".join(why)
+
+
+def status_mismatches(generated):
+    return [ln.strip() for ln in generated.splitlines()
+            if ln.startswith(f"    {STATUS_KEY}: [Unknown]")]
+
+
+def check_findings(current, generated):
+    """What `--check` fails on: drift, and every status_source it could not project."""
+    findings = []
+    if current != generated:
+        findings.append("DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration")
+    findings += [f"STATUS MISMATCH: {line}" for line in status_mismatches(generated)]
+    return findings
+
+
 def population(root, generated):
     """The denominator `--check` states, computed from the generated text.
 
@@ -243,17 +310,24 @@ def population(root, generated):
     boundaries = sum(1 for ln in generated.splitlines()
                      if ln.strip().startswith("implementation_boundary:")
                      and "[Unknown]" not in ln)
+    phase = sum(1 for ln in generated.splitlines()
+                if ln.lstrip().startswith("- {id: RFC") and ln.endswith("kind: phase-rule}"))
+    projected = contracts - len(status_mismatches(generated))
     return (f"{contracts} contract(s), {keyed} of {len(files)} module(s) "
             f"carry a front-matter id, {clauses} clause(s), "
-            f"{boundaries} implementation-boundary declaration(s)")
+            f"{boundaries} implementation-boundary declaration(s), "
+            f"{phase} phase-rule clause(s) over {len(PHASE_RULES)} shared rule(s), "
+            f"{STATUS_KEY} projected for {projected} of {contracts}")
 
 
 def selftest(root):
     """Mutate a copy per predicate class; confirm the regeneration differs.
 
     Review RD-17 finding 13: this script shipped no fixture at all, so its
-    green `--check` was a claim nobody had seen fail. Three classes, because
-    one comparison covering three can pass on the shape it happens to see.
+    green `--check` was a claim nobody had seen fail. One case per predicate
+    class, because one comparison covering several can pass on the shape it
+    happens to see; review RD-6 E-3/C-1 and F-3 rows 2, 9 and 10 added the
+    status_source, phase-rule and header classes.
     """
     import shutil
     import tempfile
@@ -297,6 +371,44 @@ def selftest(root):
         cases.append(("removed clause definition changes the projection",
                       False))
 
+    # 4. A module whose status_source differs is reported, never overwritten
+    #    (RD-6 C-1): the contract's row turns [Unknown] and names both values.
+    after = mutated(readme,
+                    lambda t: t.replace(f"\n{STATUS_KEY}: owner-act-record",
+                                        f"\n{STATUS_KEY}: self-declared", 1),
+                    "a divergent status_source changes the projection")
+    cases.append(("a divergent status_source renders [Unknown] naming both values",
+                  any("disagree: owner-act-record, self-declared" in ln
+                      for ln in status_mismatches(after or ""))))
+    cases.append(("--check fails on a mismatch even when the committed index agrees",
+                  any(f.startswith("STATUS MISMATCH")
+                      for f in check_findings(after or "", after or ""))))
+    # 5. A module that drops status_source is counted, not papered over.
+    after = mutated(readme,
+                    lambda t: t.replace(f"\n{STATUS_KEY}:", f"\n{STATUS_KEY}_was:", 1),
+                    "a dropped status_source changes the projection")
+    cases.append(("a dropped status_source renders [Unknown] with its count",
+                  any("module(s) declare none" in ln
+                      for ln in status_mismatches(after or ""))))
+    # 6. Every shared phase rule is indexed phase-rule, the five round-2026-08d
+    #    rules included (RD-6 F-3 row 2), and nothing else is.
+    phase = {ln.split("id: ", 1)[1].split(",", 1)[0].split("(", 1)[0]
+             for ln in base.splitlines()
+             if ln.lstrip().startswith("- {id: RFC") and ln.endswith("kind: phase-rule}")}
+    cases.append(("the indexed phase-rule set is exactly the shared list",
+                  phase == set(PHASE_RULE_CLAUSES)))
+    cases.append(("the five round-2026-08d phase rules are indexed phase-rule",
+                  {"RFC1-33", "RFC2-26", "RFC3-33", "RFC4-30", "RFC5-27"} <= phase))
+    # 7. The banner and the clause-kind convention are in the generated header,
+    #    and the convention line is derived from SECTION_KINDS and PHASE_RULES.
+    head = base.split("\ncontracts:\n", 1)[0]
+    cases.append(("the header carries the non-authority banner",
+                  "NOT AUTHORITY." in head and "binds nothing" in head))
+    cases.append(("the header states every section-kind and phase rule it applies",
+                  all(f"§{sec}" in head for sec in SECTION_KINDS)
+                  and all(kind in head for kind in SECTION_KINDS.values())
+                  and all(rule in head for rule in PHASE_RULE_CLAUSES)))
+
     ok = True
     for label, passed in cases:
         print(f"SELFTEST {'OK' if passed else 'FAIL'}: {label}")
@@ -318,8 +430,10 @@ def main():
     pop = population(root, generated)
     if args.check:
         current = out.read_text(encoding="utf-8") if out.exists() else ""
-        if current != generated:
-            print("DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration")
+        findings = check_findings(current, generated)
+        if findings:
+            for finding in findings:
+                print(finding)
             print(f"population: {pop}")
             sys.exit(1)
         print(f"index matches regeneration — no drift over {pop}")

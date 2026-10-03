@@ -1,5 +1,16 @@
 # CONTRACT-INDEX — generated projection; rebuild with scripts/build_contract_index.py
 # Authoritative metadata lives in the active contract files' front matter.
+#
+# NOT AUTHORITY. This candidate-lane projection binds nothing and states no
+# contract's acceptance: a contract's effective standing is whatever the
+# owner act record its `status_source` names says, never this file (RFC11-7).
+# `status_source` is read from each module's front matter; a contract whose
+# modules omit it or disagree shows [Unknown] here and fails --check.
+#
+# clause kind: phase-rule for a clause or limb of RFC1-33, RFC2-26, RFC3-33,
+# RFC4-30, RFC5-27, RFC6-28, RFC7-38, RFC8-32, RFC9-52, RFC10-16, RFC11-12;
+# otherwise by the enclosing section number — §0, §6, §7 informative; §8
+# open-question; any other section normative.
 contracts:
   - id: RFC-0001
     title: Project Graph, Identity and State Planes
@@ -52,7 +63,7 @@ contracts:
       - {id: RFC1-30, module: RFC-0001-project-graph-identity-state-planes.md, kind: normative}
       - {id: RFC1-31, module: RFC-0001-project-graph-identity-state-planes.md, kind: normative}
       - {id: RFC1-32, module: RFC-0001-project-graph-identity-state-planes.md, kind: normative}
-      - {id: RFC1-33, module: RFC-0001-project-graph-identity-state-planes.md, kind: normative}
+      - {id: RFC1-33, module: RFC-0001-project-graph-identity-state-planes.md, kind: phase-rule}
   - id: RFC-0002
     title: Observation, Evaluation and Reconciliation — contract package index
     status_source: owner-act-record
@@ -86,7 +97,7 @@ contracts:
       - {id: RFC2-23, module: RFC-0002/rendering-vocabularies.md, kind: normative}
       - {id: RFC2-24, module: RFC-0002/rendering-vocabularies.md, kind: normative}
       - {id: RFC2-25, module: RFC-0002/rendering-vocabularies.md, kind: normative}
-      - {id: RFC2-26, module: RFC-0002/rendering-vocabularies.md, kind: normative}
+      - {id: RFC2-26, module: RFC-0002/rendering-vocabularies.md, kind: phase-rule}
       - {id: RFC2-1, module: RFC-0002/snapshot-and-evaluation-core.md, kind: normative}
       - {id: RFC2-2, module: RFC-0002/snapshot-and-evaluation-core.md, kind: normative}
       - {id: RFC2-3, module: RFC-0002/snapshot-and-evaluation-core.md, kind: normative}
@@ -151,7 +162,7 @@ contracts:
       - {id: RFC3-30, module: RFC-0003/manifests-and-namespace.md, kind: normative}
       - {id: RFC3-31, module: RFC-0003/manifests-and-namespace.md, kind: normative}
       - {id: RFC3-32, module: RFC-0003/manifests-and-namespace.md, kind: normative}
-      - {id: RFC3-33, module: RFC-0003/manifests-and-namespace.md, kind: normative}
+      - {id: RFC3-33, module: RFC-0003/manifests-and-namespace.md, kind: phase-rule}
   - id: RFC-0004
     title: Observation Sources, Evidence, Execution Records and Adapters — contract package index
     status_source: owner-act-record
@@ -182,7 +193,7 @@ contracts:
       - {id: RFC4-27, module: RFC-0004/fidelity-joins-and-mappings.md, kind: normative}
       - {id: RFC4-28, module: RFC-0004/fidelity-joins-and-mappings.md, kind: normative}
       - {id: RFC4-29, module: RFC-0004/fidelity-joins-and-mappings.md, kind: normative}
-      - {id: RFC4-30, module: RFC-0004/fidelity-joins-and-mappings.md, kind: normative}
+      - {id: RFC4-30, module: RFC-0004/fidelity-joins-and-mappings.md, kind: phase-rule}
       - {id: RFC4-1, module: RFC-0004/general-contract.md, kind: normative}
       - {id: RFC4-2, module: RFC-0004/general-contract.md, kind: normative}
       - {id: RFC4-3, module: RFC-0004/general-contract.md, kind: normative}
@@ -235,7 +246,7 @@ contracts:
       - {id: RFC5-24, module: RFC-0005/admission-and-boundary.md, kind: normative}
       - {id: RFC5-25, module: RFC-0005/admission-and-boundary.md, kind: normative}
       - {id: RFC5-26, module: RFC-0005/admission-and-boundary.md, kind: normative}
-      - {id: RFC5-27, module: RFC-0005/admission-and-boundary.md, kind: normative}
+      - {id: RFC5-27, module: RFC-0005/admission-and-boundary.md, kind: phase-rule}
       - {id: RFC5-12, module: RFC-0005/consent-egress-secrets.md, kind: normative}
       - {id: RFC5-13, module: RFC-0005/consent-egress-secrets.md, kind: normative}
       - {id: RFC5-14, module: RFC-0005/consent-egress-secrets.md, kind: normative}

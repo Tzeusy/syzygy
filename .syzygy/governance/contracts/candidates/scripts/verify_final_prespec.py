@@ -71,6 +71,9 @@ ENDS = {**REV9_ENDS, **REV10_ENDS, **ROUND_08D_ENDS}
 # ownership is validated from actual definitions per module (each clause in
 # exactly one module, union complete), with front-matter 'clauses:' declared
 # ranges cross-checked where they parse.
+# **The one phase-rule list.** `build_contract_index.py` imports it to mark
+# these clauses `kind: phase-rule`; it kept its own six until review RD-6
+# (F-3 row 2) found the two copies disagreeing on the five round-2026-08d rules.
 PHASE_RULE_CLAUSES = ["RFC1-33", "RFC2-26", "RFC3-33", "RFC4-30", "RFC5-27",
                       "RFC6-28", "RFC7-38", "RFC8-32", "RFC9-52", "RFC10-16",
                       "RFC11-12"]
