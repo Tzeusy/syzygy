@@ -159,7 +159,7 @@ describe('act instant', () => {
     expect(records.find(r => r.class === 'observation')!.inForceAt).toBe(Date.UTC(2026, 9, 4, 9, 30, 0));
   });
   it('refuses a malformed, repeated, wrong-day or non-whole-second instant', async () => {
-    for (const bad of ['2026-10-04T09:30:00', '2026-10-04T09:30:00.5Z', '2026-10-05T00:00:00Z', '2026-10-04T25:00:00Z', '2026-02-30T00:00:00Z', 'soon'])
+    for (const bad of ['2026-10-04T09:30:00', '2026-10-04T09:30:00.5Z', '2026-10-05T00:00:00Z', '2026-10-04T25:00:00Z', '2026-10-04T24:00:00Z', '2026-02-30T00:00:00Z', 'soon'])
       await expect(reader(world({ [actPath]: withInstant(bad) })).read(), bad).rejects.toBeInstanceOf(AdmissionRecordError);
     const twice = withInstant('2026-10-04T09:30:00Z').replace('Recorded at (UTC): 2026-10-04T09:30:00Z', 'Recorded at (UTC): 2026-10-04T09:30:00Z\n\nRecorded at (UTC): 2026-10-04T10:30:00Z');
     await expect(reader(world({ [actPath]: twice })).read()).rejects.toBeInstanceOf(AdmissionRecordError);
