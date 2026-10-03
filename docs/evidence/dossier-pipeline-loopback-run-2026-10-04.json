@@ -2,7 +2,7 @@
  "subject": "poc:dossier wiring (dossier-main.ts through dossier-generation.ts) run against a loopback stub provider on route messages-api",
  "testFile": {
   "path": "apps/three-surface-poc/src/polaris-generation/dossier-pipeline-run.test.ts",
-  "sha256": "cd83130394d6aa35c3a1c0efb08bf6da201574b996106290f1d71a26e24c746c"
+  "sha256": "c4ab5622b5406d73765231d585ff39f7368ecef264f91e6249d82645ea053685"
  },
  "providerCallPerformed": false,
  "note": "every request went to a 127.0.0.1 stub through the egress gate; the repository is a two-file synthetic fixture; the records are the real recorders' acts over the real egress version 2 bytes in a scratch root",
@@ -15,8 +15,8 @@
    "url": "https://github.com/redis/redis",
    "repositoryId": "redis-redis"
   },
-  "revision": "5c754b6ed03a0ba3aabf61737faf05de75652f56",
-  "runDir": "/tmp/syzygy-pipeline-out-lHKvnO/run",
+  "revision": "d9e1405194963bf5082b3454226e4a386ea6c997",
+  "runDir": "/tmp/syzygy-pipeline-out-rYrBEi/run",
   "detail": "10 files"
  },
  "stagesRequested": [
@@ -206,7 +206,7 @@
     "upstreamStatus": 200
    }
   ],
-  "stateDir": "/tmp/syzygy-pipeline-out-lHKvnO/run.state"
+  "stateDir": "/tmp/syzygy-pipeline-out-rYrBEi/run.state"
  },
  "files": [
   {
@@ -216,12 +216,12 @@
   },
   {
    "path": "deep-dives/mechanism-deep-dive.html",
-   "sha256": "22599a7dacca5b20de4e29dd359dd929359c0de53d5cfe45e26439686abc430d",
+   "sha256": "d536c50cf5a253d1388df4f038e0f0ac78ffcce0721b40fdfc0a5121fc957dd8",
    "bytes": 13644
   },
   {
    "path": "dossier.json",
-   "sha256": "2cb60735d6e593cf1a3d1fc96a8590b6d1a51a8dae0c90e35be5c26a6ec7c9a3",
+   "sha256": "44017bb0e36103953e0ef9a13a0b529635114e3dae8e98b1779d0503e3021086",
    "bytes": 612
   },
   {
@@ -231,34 +231,34 @@
   },
   {
    "path": "index.html",
-   "sha256": "09ba9db4b20cf26b591379ba6f9a72991329ed8d5b0fd7980d4dd01e38c0a169",
+   "sha256": "8e18b4e9d8ada134e590750cf743b5acbdaa9317ec970218414293277d333a67",
    "bytes": 19987
   },
   {
    "path": "size-report.html",
-   "sha256": "95f37ae3a5f8200ceb5c202bbbf0a16eaced02f508dc71ac62807a76e070f331",
+   "sha256": "ac1c8730b39249e650a9dc587bb7c1d4b124411df2c18d3b3680078a21d8a4bf",
    "bytes": 14566
   },
   {
    "path": "size-report.json",
-   "sha256": "8f564f4a3f4d012a6a07f696b8b102725f2a63413b2918f5e209eb4bc955d0aa",
+   "sha256": "ce4e4520adb4ca8d854d5afcb4fc25e1c00fad40b3700622f9fbb3b6e36d0b88",
    "bytes": 2793
   },
   {
-   "path": "sources/239fdb5e4ff353df20589f12.html",
-   "sha256": "c98514cd7602c79415f43599ed050f995d73ba42bde292bc30a5eb2da64ae458",
+   "path": "sources/73729b171b2378f2d0fe4b08.html",
+   "sha256": "802cdfcfa740d4edbe32a072f16afa30c6ad11b781271f50493f0564df42b85f",
    "bytes": 13451
   },
   {
-   "path": "sources/e26b421abc9b83cdb7a4b5fb.html",
-   "sha256": "aa768666421992b08d54c4ed62c29f34843859fc9b37a7933e3604a2f4d32b0f",
+   "path": "sources/b70ef00f0de4fdec80ff5369.html",
+   "sha256": "2edb140a2d5c76de8788b3555539da936ab9dfaa420ec98d48e9e18d48749ea4",
    "bytes": 13446
   },
   {
    "path": "sources/index.html",
-   "sha256": "e6d65c3a14197fd8f7766e3487616bdffb11501bb371a4ac4465c06ac0111728",
+   "sha256": "715903ccd9177e43898f7f03887260ce8fad78f70cde012f11a8b24ee04acd56",
    "bytes": 13269
   }
  ],
- "ranAtCommit": "85f4f3051512184afa124e0d15c62449b010e064"
+ "ranAtCommit": "0e43015d752ed2c238a1e1babf3d53e99190780f"
 }

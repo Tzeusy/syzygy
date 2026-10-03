@@ -148,7 +148,38 @@
    "outcome": "killed",
    "failedTests": 3,
    "totalTests": 253
+  },
+  {
+   "id": "W13-repair-cycles-one",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-run-profile.ts",
+   "old": "maxRepairCycles: 3,",
+   "new": "maxRepairCycles: 1,",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 255
+  },
+  {
+   "id": "W14-calls-not-derived-from-cycles",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-run-profile.ts",
+   "old": "maxCalls: NARRATIVE_BASE_CALLS + 2 * profile.maxRepairCycles,",
+   "new": "maxCalls: NARRATIVE_BASE_CALLS,",
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 255
+  },
+  {
+   "id": "W15-narrative-units-uncapped",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-run-profile.ts",
+   "old": "maxUsageUnits: narrativeUnits(profile),",
+   "new": "maxUsageUnits: narrativeUnits(profile) * 10,",
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 255
   }
  ],
- "summary": "12 of 14 mutants killed at 85f4f3051512184afa124e0d15c62449b010e064; not killed: ['W9-consent-half-dropped', 'X-noop-control'] (X-noop-control is the control; see W9's note)"
+ "summary": "15 of 17 mutants killed; not killed: ['W9-consent-half-dropped', 'X-noop-control'] (X-noop-control is the control; see W9's note)",
+ "addendum": {
+  "ranAtCommit": "0e43015d752ed2c238a1e1babf3d53e99190780f",
+  "covers": "W13-W15 (repair cycles 3, calls derived from cycles, narrative units cap); the first 14 ran at the commit in ranAtCommit above"
+ }
 }
