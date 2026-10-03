@@ -1,17 +1,19 @@
 {
   "subject": {
-    "commit": "2ae510fa7466bdd8170d5506c354152c1cfa24ca",
+    "commit": "d97fb889a0b75b19b6e9b8cab0d0b275742847b7",
     "branch": "agent/dossier-engine-7",
     "fileSha256": {
       "apps/three-surface-poc/src/polaris-generation/source-adapter.ts": "980d0b5baa40fef01923bbce72219e9e326156379ad4a459f6d804d8e9b59d85",
-      "packages/polaris-generation-core/src/generation-source.ts": "9d44c20519bf8b08cc725e27f988efb4d465b69a13a66cf323485529cb1f55f3",
-      "apps/three-surface-poc/src/polaris-generation/run-key.ts": "b39f832143a85d36ad3db0dd2f5e0dc60e08f88172fef11d4f838257924bc7c4",
-      "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts": "b34e8e8b98b8dd30295943bedda356c493c0e9d763140af51faca9f827cb3b21"
+      "packages/polaris-generation-core/src/generation-source.ts": "f9a1b9229b4ec717199addc5c0b80ef8655dbb1a3d351fd5716233e9a3fb1ede",
+      "apps/three-surface-poc/src/polaris-generation/run-key.ts": "089f3401e707131c0f8bb348c0901f95d676ff25831d75f30d13a832c444a390",
+      "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts": "988a00d03c2e02691563c441ba09a92e4e853c8081ca37e6b4b2669412dfb941",
+      "packages/polaris-generation-core/src/discovery.ts": "9620757222005a88e5a0daaaa2174c08f7251dc571bd17787ae517e2b7b97561",
+      "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts": "c6946c8a51df230b00ad391726bade32579dd554069f5ebb46b13fb82dfb10d4"
     }
   },
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/polaris-generation-core",
-  "ranAt": "2026-10-03T12:09:40+00:00",
+  "ranAt": "2026-10-03T18:00:25+00:00",
   "mutants": [
     {
       "id": "validator-reason",
@@ -161,7 +163,7 @@
     },
     {
       "id": "excluded-id-plain-sha256",
-      "file": "apps/three-surface-poc/src/polaris-generation/run-key.ts",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
       "old": "createHmac('sha256', runKey).update(input).digest('hex')",
       "new": "globalThis.process.getBuiltinModule('node:crypto').createHash('sha256').update(input).digest('hex')",
       "tests": [
@@ -173,7 +175,7 @@
     },
     {
       "id": "excluded-id-constant-key",
-      "file": "apps/three-surface-poc/src/polaris-generation/run-key.ts",
+      "file": "packages/polaris-generation-core/src/generation-source.ts",
       "old": "createHmac('sha256', runKey)",
       "new": "createHmac('sha256', Buffer.alloc(32))",
       "tests": [
@@ -210,7 +212,7 @@
     {
       "id": "corpus-digest-keyed-id",
       "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
-      "old": "source.exclusion.excluded ? `s-${sha256(source.path).slice(0, 24)}` : source.sourceId",
+      "old": "source.exclusion.excluded && source.objectId !== null ? `s-${sha256(source.path).slice(0, 24)}` : source.sourceId",
       "new": "source.sourceId",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts"
@@ -230,6 +232,30 @@
       "outcome": "killed",
       "failedTests": 1,
       "totalTests": 21
+    },
+    {
+      "id": "discovery-deferred-unkeyed-id",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "sourceId: excludedSourceId(runKey, id), exclusion",
+      "new": "sourceId: id, exclusion",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 7,
+      "totalTests": 26
+    },
+    {
+      "id": "screen-withheld-own-key",
+      "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+      "old": "screen, runKey });",
+      "new": "screen });",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 17
     }
   ]
 }
