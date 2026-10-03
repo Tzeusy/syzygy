@@ -208,7 +208,7 @@ describe('with every record satisfied', () => {
       check: async r => { asked.push(`${r.kind}:${r.repositoryId}`); return { satisfied: true, record: `r/${r.kind}` }; } });
     const out = join(scratch(), 'run');
     let seen: PipelineRequest | undefined;
-    const outcome = await runDossierTrigger('https://github.com/fixture/repo.git', base({ outDir: out, records: store(['redis-redis', 'redis-redis']), runPipeline: async request => { seen = request; return stoppedResult; } }));
+    const outcome = await runDossierTrigger('https://github.com/fixture/repo.git', base({ outDir: out, records: store(['redis-redis']), runPipeline: async request => { seen = request; return stoppedResult; } }));
     expect(outcome).toMatchObject({ state: 'generation-stopped', target: { repositoryId: 'redis-redis' } });
     const first = asked.splice(0);
     expect(first[0]).toBe('https://github.com/fixture/repo');
@@ -216,13 +216,21 @@ describe('with every record satisfied', () => {
     expect(first.slice(1).every(entry => entry.endsWith(':redis-redis'))).toBe(true);
     expect(seen!.projectId).toBe('redis-redis');
     expect(JSON.parse(readFileSync(join(out, 'run-record.json'), 'utf8')).target.repositoryId).toBe('redis-redis');
-    for (const found of [[], ['a-b', 'c-d'], ['bad id!']]) {
+    const cases: [unknown, string][] = [[[], 'no observation record names'], [['a-b', 'c-d'], 'ambiguous'], [['rid', 'rid'], 'ambiguous'], [['bad id!'], 'malformed repository id'],
+      [['rid', 42], 'ambiguous'], [['rid', ''], 'ambiguous'], [['rid', 'bad id!'], 'ambiguous'], [[42], 'malformed repository id'], [[''], 'malformed repository id'],
+      ['rid', 'malformed answer'], [{ length: 1, 0: 'rid' }, 'malformed answer'], [null, 'malformed answer'], [undefined, 'malformed answer']];
+    for (const [found, text] of cases) {
       const materialize = vi.fn(async () => repo);
-      const refused = await runDossierTrigger('https://github.com/fixture/repo', base({ materialize, records: store(found) }));
+      const refused = await runDossierTrigger('https://github.com/fixture/repo', base({ materialize, records: store(found as never) }));
       expect(refused, JSON.stringify(found)).toMatchObject({ state: 'admission-missing', missing: 3 });
-      expect(formatOutcome(refused)).toContain(found.length === 2 ? 'ambiguous' : 'no observation record names https://github.com/fixture/repo');
+      expect(formatOutcome(refused), JSON.stringify(found)).toContain(text);
       expect(materialize).not.toHaveBeenCalled();
     }
+    const throwing = vi.fn(async () => repo);
+    expect(await runDossierTrigger('https://github.com/fixture/repo', base({ materialize: throwing,
+      records: { source: 's', repositoryIdsFor: async () => { throw new Error('store down'); }, check: async () => ({ satisfied: true, record: 'r' }) } })))
+      .toMatchObject({ state: 'admission-missing', missing: 3 });
+    expect(throwing).not.toHaveBeenCalled();
     expect(asked.some(entry => entry.endsWith(':github:fixture:repo'))).toBe(false);
   });
 
