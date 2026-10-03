@@ -134,14 +134,24 @@ export function openQuestions(sources: readonly GenerationSource[], audienceDecl
 export const OWNER_ANSWER_MAX_CHARS = 4000;
 /** The longest attribution or revision kept, in characters; a longer one is a malformed reply. */
 export const OWNER_PROVENANCE_MAX_CHARS = 200;
-/** Whitespace, separators and invisible format characters (zero-width space, joiners, bidi marks) at either edge are not content. */
-const edge = (value: string): string => value.replace(/^[\p{Cf}\p{Z}\s]+|[\p{Cf}\p{Z}\s]+$/gu, '');
+/** Characters that show nothing: whitespace, separators, format characters (zero-width space, joiners, bidi marks), default-ignorable code
+ * points (Hangul fillers, combining grapheme joiner) and the blank braille pattern. */
+const INVISIBLE = /^[\p{Cf}\p{Z}\s\p{Default_Ignorable_Code_Point}\u2800]$/u;
+const INVISIBLE_ANYWHERE = /[\p{Cf}\p{Default_Ignorable_Code_Point}]/gu;
+/** Strips invisible characters from both edges in one linear pass (a backtracking regex was quadratic on a long run of spaces). */
+const edge = (value: string): string => {
+  const chars = [...value];
+  let start = 0, end = chars.length;
+  while (start < end && INVISIBLE.test(chars[start]!)) start++;
+  while (end > start && INVISIBLE.test(chars[end - 1]!)) end--;
+  return chars.slice(start, end).join('');
+};
 const present = (value: unknown): value is string => typeof value === 'string' && edge(value).length > 0;
 /** Attribution or revision that names someone or something and stays within bound. */
 const provenance = (value: unknown): value is string => present(value) && [...edge(value)].length <= OWNER_PROVENANCE_MAX_CHARS;
 /** An answer that says something: visibly non-blank and not `unknown` in any case. Null otherwise, never a default. */
 const normalise = (answer: unknown): string | null =>
-  present(answer) && edge(answer).toLowerCase() !== 'unknown' ? edge(answer) : null;
+  present(answer) && edge(answer).replace(INVISIBLE_ANYWHERE, '').toLowerCase() !== 'unknown' ? edge(answer) : null;
 const DISPOSITIONS: readonly unknown[] = ['answered', 'unknown', 'deferred', 'redacted'];
 /** A prior must be a list of well-formed dispositions with distinct ids; anything else is refused, not skipped. */
 const checkPrior = (prior: unknown): readonly PriorDisposition[] => {
