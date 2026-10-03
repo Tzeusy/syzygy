@@ -385,6 +385,21 @@ describe('source to editorial draft pipeline', () => {
       }
     });
 
+    it('sends the dossier prompts on repair and on the second fidelity review too', async () => {
+      const h = harness();
+      let n = 0;
+      const result = await runGenerationPipeline({ ...request(), promptProfile: 'dossier' }, { ...h.ports, validate: (_stage, data) => data, fidelity: () => ({ blocking: ++n === 1, findings: ['fix it'] }) }, signal());
+      expect(result.status).toBe('awaiting-rendered-review');
+      expect(h.sends.map(x => x.stage)).toEqual(['inventory', 'plan', 'author', 'edit', 'fidelity', 'repair', 'fidelity']);
+      for (const index of [5, 6]) {
+        const stage = h.sends[index]!.stage as 'repair' | 'fidelity';
+        const expected = promptForStage(stage, 'dossier');
+        expect(JSON.parse(h.sends[index]!.input).system).toBe(expected.system);
+        expect(expected.system).not.toBe(promptForStage(stage, 'manifesto').system);
+        expect(result.receipts[index]).toMatchObject({ stage, promptProfile: 'dossier', promptDigest: digest(expected.system) });
+      }
+    });
+
     it('sends the manifesto prompts when no profile is named', async () => {
       const { h, result } = await run();
       for (const [index, stage] of stages.entries()) {
