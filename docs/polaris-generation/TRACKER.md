@@ -59,9 +59,12 @@ Authorized implementation work (generator implementation authorization,
         split into contiguous `-pN` pieces (`segment` on `GenerationSource`,
         blob-absolute anchors, contiguity checked per population) or excluded
         as `oversize-source-excluded`; it no longer fails the population.
-  - [ ] **G4 Discovery under budget (REQ-030).** The pipeline refuses more than
-        200 quotable sources, and requests has more; needs ranked selection
-        with `deferred-by-budget` exclusions.
+  - [x] **G4 Discovery under budget (REQ-030).** `discovery.ts`
+        (`packages/polaris-generation-core`): partition into subsystems, map
+        to a claim ledger, reduce to a ranking, select under the 200 cap;
+        every unselected file stays counted as `deferred-by-budget`. Model
+        ports are injected and egress-gated; the report names the ranking
+        basis. Wiring to a real model is still G2/G3.
   - [ ] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.
