@@ -11,6 +11,7 @@ import {
 import { renderDossier, sourceRoute } from './dossier-render.js';
 import { writeDossierRun } from './dossier-render-main.js';
 import { runSyntheticProject, syntheticProjects } from './pipeline-demo.js';
+import { syntheticGenerationSource } from './synthetic-source.js';
 
 type Success = Extract<PipelineResult, { status: 'awaiting-rendered-review' }>;
 let run: { sources: readonly GenerationSource[]; result: Success };
@@ -118,6 +119,27 @@ describe('multi-page dossier render', () => {
     expect(() => renderDossier({ result: run.result, sources: [pathOnly, ...run.sources.slice(1)] })).toThrow('unquotable-source');
   });
 
+  it('escapes markup-bearing and multibyte source text and still resolves every quote exactly', async () => {
+    const revision = 'e'.repeat(40);
+    const sources = [
+      syntheticGenerationSource('escape', revision, 'purpose', 'Use <b>bold</b> & "quotes" \u2014 it\'s fine.'),
+      syntheticGenerationSource('escape', revision, 'mechanism', 'Caf\u00e9 \u{1F331} grows; a < b && c > d.'),
+      syntheticGenerationSource('escape', revision, 'qualification', '&amp; stays literal: &lt;not a tag&gt;.'),
+    ];
+    const { files } = renderDossier({ result: run.result, sources });
+    const report = await evaluate(files, sources);
+    expect(report.fidelity.quotes).toMatchObject({ denominator: 3, exact: 3, outcome: 'all-resolved' });
+    expect([...files.values()].join('')).not.toContain('<b>bold</b>');
+  });
+
+  it('refuses two deep dives whose page paths would collide', () => {
+    const draft = structuredClone(run.result.draft) as { deepDives: { id: string }[] };
+    draft.deepDives.push({ ...structuredClone(draft.deepDives[0]!), id: 'component:depth' });
+    draft.deepDives[0]!.id = 'component_depth';
+    (draft.deepDives[1] as unknown as { paragraphs: { id: string }[] }).paragraphs[0]!.id = 'depth-text-2';
+    expect(() => renderDossier({ result: { ...run.result, draft }, sources: run.sources })).toThrow('page-path-collision');
+  });
+
   it('writes the size report from the rendered bytes', () => {
     const { files } = renderDossier(run);
     const report = JSON.parse(files.get('size-report.json')!);
@@ -158,6 +180,13 @@ describe('run directory', () => {
     await writeDossierRun(out, files);
     for (const [path, content] of files) expect(readFileSync(join(out, path), 'utf8')).toBe(content);
     await expect(writeDossierRun(out, files)).rejects.toThrow();
+  });
+
+  it('refuses an existing empty run directory', async () => {
+    const parent = mkdtempSync(join(tmpdir(), 'syzygy-dossier-run-'));
+    cleanups.push(parent);
+    await expect(writeDossierRun(parent, renderDossier(run).files)).rejects.toThrow();
+    expect(existsSync(join(parent, 'index.html'))).toBe(false);
   });
 
   it('refuses a run directory inside a Git work tree', async () => {
