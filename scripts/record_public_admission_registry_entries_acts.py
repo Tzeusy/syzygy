@@ -40,6 +40,7 @@ closed.
 from __future__ import annotations
 
 import argparse
+import datetime
 import hashlib
 import pathlib
 import re
@@ -82,6 +83,11 @@ FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {
 }
 VERDICTS = ("CONFIRM", "CONFIRM WITH EXCEPTIONS")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+#: The moment of recording, UTC, whole seconds. A record that carried only a
+#: date could be read as in force from the next UTC day at the earliest; the
+#: instant lets a reader honour an act from the moment it was recorded.
+INSTANT_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+RECORDED_RE = re.compile(r"^Recorded at \(UTC\): (\S+)$", re.MULTILINE)
 SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 HEX64_RE = re.compile(r"[0-9a-f]{64}")
 ROW_RE = re.compile(r"^([0-9a-f]{64})  (\S+)$", re.MULTILINE)
@@ -271,10 +277,12 @@ class Selection:
 
 
 def render_act(act: Act, argument: str, date: str, manifest_sha: str, reviewed: str,
-               verdict: str, sel: Selection, frozen: str) -> str:
+               verdict: str, sel: Selection, frozen: str, instant: str) -> str:
     return f"""# Owner act — {act.title}
 
 Date: {date}
+
+Recorded at (UTC): {instant}
 
 Owner: Tzeusy
 
@@ -360,7 +368,7 @@ def aggregate_heading(act: Act, date: str) -> str:
 
 
 def render_aggregate_block(act: Act, argument: str, date: str, manifest_sha: str,
-                           verdict: str, frozen: str) -> str:
+                           verdict: str, frozen: str, instant: str) -> str:
     return f"""{aggregate_heading(act, date)}
 
 **Phrase the act takes (given {date} by option selection, not typed; see the
@@ -380,6 +388,7 @@ dedicated record):**
 | Frozen subject | `{frozen}` |
 | Manifest | `{MANIFEST_REL.as_posix()}`, SHA-256 `{manifest_sha}` |
 | Review outcome | `{CONFIRMATION_REVIEW_REL.as_posix()}`: `{verdict}`, its head bound to the manifest file |
+| Recorded at (UTC) | `{instant}` |
 | Recording | `{act.record.as_posix()}`; annotated tag `{tag_for(act, date)}` on the commit carrying these records |
 
 Effective status: this one entry is **registered — owner-adopted (bootstrap,
@@ -388,14 +397,16 @@ output is admitted from it. The package's other entry remains a separate act.
 """
 
 
-def expected(act: Act, argument: str, date: str, sel: Selection, inp: Inputs):
+def expected(act: Act, argument: str, date: str, sel: Selection, inp: Inputs, instant: str):
     sel.validate()
     if not DATE_RE.fullmatch(date):
         raise ValueError("date must be YYYY-MM-DD")
+    if not INSTANT_RE.fullmatch(instant) or not instant.startswith(date + "T"):
+        raise ValueError("instant must be YYYY-MM-DDTHH:MM:SSZ (UTC) on the act's date")
     manifest_sha, reviewed, verdict = validate(act, argument, inp)
     frozen = inp.frozen or ""
-    return (render_act(act, argument, date, manifest_sha, reviewed, verdict, sel, frozen),
-            render_aggregate_block(act, argument, date, manifest_sha, verdict, frozen))
+    return (render_act(act, argument, date, manifest_sha, reviewed, verdict, sel, frozen, instant),
+            render_aggregate_block(act, argument, date, manifest_sha, verdict, frozen, instant))
 
 
 def with_subject(inp: Inputs, root: pathlib.Path, act: Act) -> Inputs:
@@ -404,12 +415,15 @@ def with_subject(inp: Inputs, root: pathlib.Path, act: Act) -> Inputs:
     return inp
 
 
-def do_record(root: pathlib.Path, act: Act, argument: str, date: str, sel: Selection) -> int:
+def do_record(root: pathlib.Path, act: Act, argument: str, date: str, sel: Selection,
+              instant: str | None = None) -> int:
+    if instant is None:
+        instant = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     if (root / act.record).exists():
         print(f"FAILED: dedicated act already exists: {act.record.as_posix()}")
         return 1
     try:
-        record, block = expected(act, argument, date, sel, with_subject(live_inputs(root), root, act))
+        record, block = expected(act, argument, date, sel, with_subject(live_inputs(root), root, act), instant)
     except (ValueError, subprocess.CalledProcessError) as exc:
         print(f"FAILED (nothing written): {exc}")
         return 1
@@ -424,6 +438,7 @@ def do_record(root: pathlib.Path, act: Act, argument: str, date: str, sel: Selec
     (root / act.record).write_text(record)
     (root / AGGREGATE_REL).write_text(aggregate.rstrip() + "\n\n" + block)
     installed.write_bytes((root / act.subject).read_bytes())
+    print(f"recorded at {instant}")
     print(f"wrote {act.record.as_posix()}\nappended one section to {AGGREGATE_REL.as_posix()}\n"
           f"installed {installed.relative_to(root).as_posix()}")
     print(f"next, in the same change: tag {tag_for(act, date)} on the commit carrying them; "
@@ -432,9 +447,17 @@ def do_record(root: pathlib.Path, act: Act, argument: str, date: str, sel: Selec
     return 0
 
 
-def do_check(root: pathlib.Path, act: Act, argument: str, date: str, sel: Selection) -> int:
+def do_check(root: pathlib.Path, act: Act, argument: str, date: str, sel: Selection,
+             instant: str | None = None) -> int:
+    if instant is None:   # the instant is part of the record: read it, then regenerate and compare
+        on_disk = (root / act.record).read_text() if (root / act.record).is_file() else ""
+        found = RECORDED_RE.findall(on_disk)
+        if len(found) != 1:
+            print(f"FAILED: {act.record.as_posix()} carries {len(found)} 'Recorded at (UTC)' lines, not 1")
+            return 1
+        instant = found[0]
     try:
-        record, block = expected(act, argument, date, sel, with_subject(live_inputs(root), root, act))
+        record, block = expected(act, argument, date, sel, with_subject(live_inputs(root), root, act), instant)
     except (ValueError, subprocess.CalledProcessError) as exc:
         print(f"FAILED: {exc}")
         return 1
@@ -578,7 +601,7 @@ def selftest() -> int:
             results.append((f"selection with {name} refused", True))
     ok_sel = Selection("Perform the admission acts?", "All three now", "Perform the acts at the manifest rows.")
     try:
-        record, block = expected(act, arg, "2026-10-04", ok_sel, make(subject=subj))
+        record, block = expected(act, arg, "2026-10-04", ok_sel, make(subject=subj), INSTANT_OK)
         results.append(("record and block render, naming the row and the tag",
                         arg in record and arg in block and tag_for(act, "2026-10-04") in record))
         results.append(("record carries the phrase exactly once in its ceremony",
@@ -587,7 +610,14 @@ def selftest() -> int:
         print(f"  (render failure: {exc})")
         results.append(("record and block render", False))
     results.append(("bad date refused", _raises(lambda: expected(
-        act, arg, "04/10", ok_sel, make(subject=subj)))))
+        act, arg, "04/10", ok_sel, make(subject=subj), INSTANT_OK))))
+    results.append(("record and block carry the instant exactly once each",
+                    record.count(f"Recorded at (UTC): {INSTANT_OK}") == 1 and block.count(f"`{INSTANT_OK}`") == 1))
+    for name, bad in (("a date-only instant", "2026-10-04"), ("a local-offset instant", "2026-10-04T09:30:00+08:00"),
+                      ("fractional seconds", "2026-10-04T09:30:00.5Z"), ("an instant on another date", "2026-10-05T00:00:00Z"),
+                      ("a lowercase z", "2026-10-04T09:30:00z")):
+        results.append((f"{name} refused", _raises(lambda bad=bad: expected(
+            act, arg, "2026-10-04", ok_sel, make(subject=subj), bad))))
     results.append(("record then check in a bare copy installs the entry and passes", _end_to_end()))
     failed = [name for name, ok in results if not ok]
     for name, ok in results:
@@ -614,13 +644,16 @@ def _end_to_end() -> bool:
         import contextlib
         import io
         with contextlib.redirect_stdout(io.StringIO()):
-            wrote = do_record(root, act, arg, "2026-10-04", sel)
+            wrote = do_record(root, act, arg, "2026-10-04", sel, INSTANT_OK)
             checked = do_check(root, act, arg, "2026-10-04", sel)
-            again = do_record(root, act, arg, "2026-10-04", sel)
+            again = do_record(root, act, arg, "2026-10-04", sel, INSTANT_OK)
         installed = root / INSTALLED_REL / act.subject.name
         return (wrote == 0 and checked == 0 and again == 1 and installed.is_file()
                 and installed.read_bytes() == (root / act.subject).read_bytes()
                 and not (root / ".git").exists())
+
+
+INSTANT_OK = "2026-10-04T09:30:00Z"
 
 
 def _accepts(act, argument, inp) -> bool:
@@ -646,6 +679,7 @@ def main(argv: list[str]) -> int:
     mode.add_argument("--check", nargs=2, metavar=("KEY", "ARGUMENT"))
     mode.add_argument("--selftest", action="store_true")
     ap.add_argument("--date")
+    ap.add_argument("--instant", help="UTC instant YYYY-MM-DDTHH:MM:SSZ; --record defaults to now, --check reads it from the record")
     ap.add_argument("--question-opening")
     ap.add_argument("--selection-label")
     ap.add_argument("--selection-description")
@@ -663,7 +697,7 @@ def main(argv: list[str]) -> int:
         return 2
     sel = Selection(args.question_opening, args.selection_label, args.selection_description)
     fn = do_record if args.record else do_check
-    return fn(ROOT, ACT_BY_KEY[key], argument, args.date, sel)
+    return fn(ROOT, ACT_BY_KEY[key], argument, args.date, sel, args.instant)
 
 
 if __name__ == "__main__":
