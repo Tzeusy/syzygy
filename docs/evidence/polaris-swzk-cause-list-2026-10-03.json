@@ -1,0 +1,74 @@
+{
+  "bead": "syzygy-swzk",
+  "date": "2026-10-03",
+  "subject": "Polaris reason-counts and gap entries: two or more cause routes render as an ordered list after the paragraph",
+  "measuredOn": {
+    "butlersRevision": "32f38feb51d86e33bfec00b78777cce5ec280198",
+    "baseCommit": "0a10977bfa82c1aea20f5d06c34470701c7bb8de",
+    "changeCommit": "581674e08fda70d3c1496d1efca85d1ac31df714"
+  },
+  "method": "npm run build:poc at each commit on a detached clean worktree; node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir <scratch>; GET /polaris direct and with Host: tzeusy.parrot-hen.ts.net; one private daemon per commit; the loopback daemon on 7478 was not contacted.",
+  "served": {
+    "base": {
+      "direct": {
+        "bytes": 1467261,
+        "sha256": "91ae4df72c22dad890d1f70b39e4e9ce3dc76db31ef74cb206ded1f022b772fe"
+      },
+      "tailnet": {
+        "bytes": 1473366,
+        "sha256": "5f8f75840dbe8d9b45e6aec7ce413b8853e3fc449d56548b2ce272b315be6158"
+      },
+      "causeRoutesLists": 0
+    },
+    "change": {
+      "direct": {
+        "bytes": 1467582,
+        "sha256": "69f8b7a0d1cb1edd1c9f059fac76a30dc1da88df4427ec74c93dc6c7975ecbad"
+      },
+      "tailnet": {
+        "bytes": 1473687,
+        "sha256": "8ce406e1f8b81b6408eb99e16feab4029003dc564b4e2e99e2e21f43a587a6e7"
+      },
+      "causeRoutesMentions": 4
+    },
+    "deltaBytes": {
+      "direct": 321,
+      "tailnet": 321
+    },
+    "ceilingBytes": 2097152
+  },
+  "designNote": "The list follows the paragraph as a sibling instead of replacing the paragraph with a div: the epistemic-tuples oracle ends a reason-counts block at its first </div>, and the ul/first-</ul> oracles forbid a nested ul. Single-cause and no-cause rows are byte-identical to before.",
+  "rule6": {
+    "file": "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+    "test": "lists two or more causes as separate items after the paragraph...",
+    "runOver": "polaris-first-reading, polaris-epistemic-tuples, polaris-parity-sweep (66 tests)",
+    "mutants": [
+      {
+        "id": "M1",
+        "old": "if (causes.length === 1) return",
+        "new": "if (causes.length >= 1) return",
+        "result": "Tests  1 failed | 65 passed (66)"
+      },
+      {
+        "id": "M2",
+        "old": "<ol class=\"cause-routes\">...</ol>",
+        "new": "<ul class=\"cause-routes\">...</ul>",
+        "result": "Tests  1 failed | 65 passed (66)"
+      },
+      {
+        "id": "M3",
+        "old": "return `<p>${copy('label.route')} ${lead}</p>${list}`;",
+        "new": "return `<p>${copy('label.route')} ${lead}${list}</p>`;",
+        "result": "Tests  1 failed | 65 passed (66)"
+      },
+      {
+        "id": "M4",
+        "old": "causes.map((cause) => `<li>",
+        "new": "causes.slice(1).map((cause) => `<li>",
+        "result": "Tests  1 failed | 65 passed (66)"
+      }
+    ],
+    "commit": "581674e08fda70d3c1496d1efca85d1ac31df714",
+    "allKilled": true
+  }
+}
