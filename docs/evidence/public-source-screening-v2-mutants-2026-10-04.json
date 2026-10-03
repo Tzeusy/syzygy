@@ -1,7 +1,7 @@
 {
- "subject": "Screening-scope v2 project-documentation rule in the public-source screen (syzygy-vjqd; package #326 merged to main as a candidate): the TS port of the builder reference reader, the v2 act record and its supersession line, and the RFC5-14 class-act prerequisite",
+ "subject": "Screening-scope v2 project-documentation rule in the public-source screen (syzygy-vjqd; package #326 merged to main as a candidate): the TS port of the builder reference reader, the v2 act record, its supersession line and the v1/v2 pair checks the sitting installer makes, and the RFC5-14 class-act prerequisite",
  "date": "2026-10-04",
- "ranAt": "dfe4bc324cf07397c2c1fd93b63155929b43be12",
+ "ranAt": "efb944cb33048a1a473b0f2608253f9d6532d7c9",
  "digestAnchor": "ranAt is provenance only (a rebase-merge leaves it unreachable); fileSha256 is the anchor",
  "subjectFiles": [
   {
@@ -18,7 +18,7 @@
   },
   {
    "path": "apps/three-surface-poc/src/polaris-generation/public-source-screening-v2.test.ts",
-   "fileSha256": "24cc99793eb2a2610c5272fcb71744f85c8784b6ed7aaa336e900d52746133da"
+   "fileSha256": "bbeee708534be2fe38ddffb8769b54399f3917fd7d5e681f32c638afe659a506"
   },
   {
    "path": "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
@@ -26,7 +26,7 @@
   },
   {
    "path": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
-   "fileSha256": "f15fab661769661a9ae3184a79df62cb2d52aa3c7cbf895861c0523bee394bc7"
+   "fileSha256": "3aeedf02088633272ed0413b00b700d4c7a7daf2cecbf7de23e6a730233ee6e9"
   },
   {
    "path": "scripts/export_screening_scope_v2_parity.py",
@@ -34,10 +34,10 @@
   }
  ],
  "method": "Each mutant replaced exactly one fragment (asserted to occur once) in the named file, ran npx vitest run apps/three-surface-poc/src/polaris-generation/project-documentation.parity.test.ts apps/three-surface-poc/src/polaris-generation/public-source-screening-v2.test.ts apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts, and restored the file; the worktree was clean afterwards (asserted). A mutant is killed when at least one test fails.",
- "tests": "project-documentation.parity.test.ts (10, the live re-export from main's builder included), public-source-screening-v2.test.ts (18), public-source-screening.test.ts (23); fixtures are synthetic git repositories, literal strings and the snapshot exported from the #326 builder; no external repository read, no provider call",
+ "tests": "project-documentation.parity.test.ts (10, the live re-export from main's builder included), public-source-screening-v2.test.ts (20; the this-checkout v2 test skips until a v2 record exists), public-source-screening.test.ts (23); fixtures are synthetic git repositories, literal strings and the snapshot exported from the #326 builder; no external repository read, no provider call",
  "result": {
-  "mutants": 49,
-  "killed": 47,
+  "mutants": 56,
+  "killed": 54,
   "survived": [
    "leading-slash-allowed",
    "trailing-slash-allowed"
@@ -55,7 +55,7 @@
    "old": "path.replace(/[A-Z]/gu, letter => letter.toLowerCase())",
    "new": "path.toLowerCase()",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "no-fold",
@@ -64,7 +64,7 @@
    "old": "const folded = asciiFold(path);",
    "new": "const folded = path;",
    "killed": true,
-   "tests": "6 failed | 45 passed (51)"
+   "tests": "6 failed | 46 passed | 1 skipped (53)"
   },
   {
    "id": "leading-slash-allowed",
@@ -73,7 +73,7 @@
    "old": "folded.startsWith('/') || ",
    "new": "",
    "killed": false,
-   "tests": "51 passed (51)"
+   "tests": "52 passed | 1 skipped (53)"
   },
   {
    "id": "trailing-slash-allowed",
@@ -82,7 +82,7 @@
    "old": "folded.endsWith('/') || ",
    "new": "",
    "killed": false,
-   "tests": "51 passed (51)"
+   "tests": "52 passed | 1 skipped (53)"
   },
   {
    "id": "backslash-allowed",
@@ -91,7 +91,7 @@
    "old": " || folded.includes('\\\\')) return false;",
    "new": ") return false;",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "dot-segments-allowed",
@@ -100,7 +100,7 @@
    "old": "segment === '' || segment === '.' || segment === '..'",
    "new": "segment === ''",
    "killed": true,
-   "tests": "2 failed | 49 passed (51)"
+   "tests": "2 failed | 50 passed | 1 skipped (53)"
   },
   {
    "id": "prefix-unicode-digit",
@@ -109,7 +109,7 @@
    "old": "every(point => prefix.digits.includes(point))",
    "new": "every(point => /\\p{Nd}/u.test(point))",
    "killed": true,
-   "tests": "2 failed | 49 passed (51)"
+   "tests": "2 failed | 50 passed | 1 skipped (53)"
   },
   {
    "id": "prefix-ignored",
@@ -118,7 +118,7 @@
    "old": "hasNumericPrefix(points, rule.prefix) ?",
    "new": "false ?",
    "killed": true,
-   "tests": "3 failed | 48 passed (51)"
+   "tests": "3 failed | 49 passed | 1 skipped (53)"
   },
   {
    "id": "prefix-separator-unchecked",
@@ -127,7 +127,7 @@
    "old": " && name[prefix.digitCount] === prefix.separator",
    "new": "",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "prefix-keeps-separator",
@@ -136,7 +136,7 @@
    "old": "points.slice(rule.prefix.digitCount + 1)",
    "new": "points.slice(rule.prefix.digitCount)",
    "killed": true,
-   "tests": "3 failed | 48 passed (51)"
+   "tests": "3 failed | 49 passed | 1 skipped (53)"
   },
   {
    "id": "root-suffix-unchecked",
@@ -145,7 +145,7 @@
    "old": "candidate.endsWith(suffix) && rule.rootStems",
    "new": "rule.rootStems",
    "killed": true,
-   "tests": "2 failed | 49 passed (51)"
+   "tests": "2 failed | 50 passed | 1 skipped (53)"
   },
   {
    "id": "docs-empty-stem",
@@ -154,7 +154,7 @@
    "old": "rule.docTreeExtensions.find(suffix => endsLonger(name, suffix))",
    "new": "rule.docTreeExtensions.find(suffix => name.endsWith(suffix))",
    "killed": true,
-   "tests": "2 failed | 49 passed (51)"
+   "tests": "2 failed | 50 passed | 1 skipped (53)"
   },
   {
    "id": "dir-words-unchecked",
@@ -163,7 +163,7 @@
    "old": "[...parts.slice(1, -1), name.slice(0, name.length - extension.length)]",
    "new": "[name.slice(0, name.length - extension.length)]",
    "killed": true,
-   "tests": "4 failed | 47 passed (51)"
+   "tests": "4 failed | 48 passed | 1 skipped (53)"
   },
   {
    "id": "stem-words-unchecked",
@@ -172,7 +172,7 @@
    "old": "[...parts.slice(1, -1), name.slice(0, name.length - extension.length)]",
    "new": "[...parts.slice(1, -1)]",
    "killed": true,
-   "tests": "3 failed | 48 passed (51)"
+   "tests": "3 failed | 49 passed | 1 skipped (53)"
   },
   {
    "id": "denylist-substring",
@@ -181,7 +181,7 @@
    "old": "tokens(segment, rule.docTokenSeparators).some(word => rule.docExcludedTokens.includes(word))",
    "new": "rule.docExcludedTokens.some(word => segment.includes(word))",
    "killed": true,
-   "tests": "3 failed | 48 passed (51)"
+   "tests": "3 failed | 49 passed | 1 skipped (53)"
   },
   {
    "id": "separators-ignored",
@@ -190,7 +190,7 @@
    "old": "if (separators.includes(point))",
    "new": "if (false)",
    "killed": true,
-   "tests": "3 failed | 48 passed (51)"
+   "tests": "3 failed | 49 passed | 1 skipped (53)"
   },
   {
    "id": "txt-names-skipped",
@@ -199,7 +199,7 @@
    "old": "rule.docTxtExcludedNames.includes(name) || ",
    "new": "",
    "killed": true,
-   "tests": "2 failed | 49 passed (51)"
+   "tests": "2 failed | 50 passed | 1 skipped (53)"
   },
   {
    "id": "txt-prefixes-skipped",
@@ -208,7 +208,7 @@
    "old": " || rule.docTxtExcludedPrefixes.some(prefix => name.startsWith(prefix))",
    "new": "",
    "killed": true,
-   "tests": "4 failed | 47 passed (51)"
+   "tests": "4 failed | 48 passed | 1 skipped (53)"
   },
   {
    "id": "txt-rule-any-extension",
@@ -217,7 +217,7 @@
    "old": "if (name.endsWith('.txt') && (",
    "new": "if ((",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "licenses-any-depth",
@@ -226,7 +226,7 @@
    "old": "if (parts.length !== 2 || !rule.licenseTreeRoots",
    "new": "if (!rule.licenseTreeRoots",
    "killed": true,
-   "tests": "2 failed | 49 passed (51)"
+   "tests": "2 failed | 50 passed | 1 skipped (53)"
   },
   {
    "id": "licenses-empty-stem",
@@ -235,7 +235,7 @@
    "old": "rule.licenseTreeSuffixes.find(candidate => endsLonger(name, candidate))",
    "new": "rule.licenseTreeSuffixes.find(candidate => name.endsWith(candidate))",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "licenses-denylist-off",
@@ -244,7 +244,7 @@
    "old": "return !deniedWord(name.slice(0, name.length - suffix.length), rule);",
    "new": "return true;",
    "killed": true,
-   "tests": "4 failed | 47 passed (51)"
+   "tests": "4 failed | 48 passed | 1 skipped (53)"
   },
   {
    "id": "variant-unchecked",
@@ -253,7 +253,7 @@
    "old": "if (stems.includes(optIn) !== added || optInWords.some(word => denied.includes(word) === added)) return",
    "new": "if (false) return",
    "killed": true,
-   "tests": "2 failed | 49 passed (51)"
+   "tests": "2 failed | 50 passed | 1 skipped (53)"
   },
   {
    "id": "variant-denylist-unchecked",
@@ -262,7 +262,7 @@
    "old": " || optInWords.some(word => denied.includes(word) === added)",
    "new": "",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "variant-always-none",
@@ -271,7 +271,7 @@
    "old": "policyVersion.endsWith(`.${name}`)",
    "new": "name === 'none'",
    "killed": true,
-   "tests": "6 failed | 45 passed (51)"
+   "tests": "6 failed | 46 passed | 1 skipped (53)"
   },
   {
    "id": "path-rules-unchecked",
@@ -280,7 +280,7 @@
    "old": "if (ids.length !== PATH_RULE_IDS.length || ids.some((id, index) => id !== PATH_RULE_IDS[index])) return",
    "new": "if (false) return",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "prefix-digits-unchecked",
@@ -289,7 +289,7 @@
    "old": " || prefix.digits.length === 0 || !ascii(prefix.digits)",
    "new": "",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "lists-not-folded",
@@ -298,7 +298,7 @@
    "old": " && item === item.toLowerCase()",
    "new": "",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "separators-non-ascii",
@@ -307,7 +307,7 @@
    "old": " || !ascii(rule.docTokenSeparators)",
    "new": "",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "v2-act-ignored",
@@ -316,7 +316,7 @@
    "old": "const v2 = v2ActRecord !== undefined;",
    "new": "const v2 = false;",
    "killed": true,
-   "tests": "17 failed | 34 passed (51)"
+   "tests": "18 failed | 34 passed | 1 skipped (53)"
   },
   {
    "id": "v2-identity-either",
@@ -325,7 +325,7 @@
    "old": "v2 ? V2_ACT_IDENTITY : ACT_IDENTITY",
    "new": "v2 ? /^Act identity: `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-(?:V2-)?APPROVAL-\\d{4}-\\d{2}-\\d{2}`$/mu : ACT_IDENTITY",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "rule-act-pairing-unchecked",
@@ -334,7 +334,7 @@
    "old": "if (documentation.length !== (v2 ? 1 : 0)) refuse(",
    "new": "if (false) refuse(",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "two-rules-allowed",
@@ -343,7 +343,7 @@
    "old": "if (documentation.length > 1) refuse(",
    "new": "if (false) refuse(",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "classes-unlisted-allowed",
@@ -352,7 +352,7 @@
    "old": "if (!Array.isArray(classification!.classesClassified) || !classification!.classesClassified.includes('project-documentation')) refuse(",
    "new": "if (false) refuse(",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "prerequisite-unchecked",
@@ -361,7 +361,7 @@
    "old": "if (prerequisite === null || typeof prerequisite !== 'object' || typeof prerequisite.rule !== 'string') refuse(",
    "new": "if (false) refuse(",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "prerequisite-assumed",
@@ -370,7 +370,7 @@
    "old": "classActInForce(classActRecord, rfc5Module) ? 'mapped'",
    "new": "true ? 'mapped'",
    "killed": true,
-   "tests": "10 failed | 41 passed (51)"
+   "tests": "10 failed | 42 passed | 1 skipped (53)"
   },
   {
    "id": "module-digest-unchecked",
@@ -379,7 +379,7 @@
    "old": "sha256(module) === argument.digest && ",
    "new": "",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "module-row-unchecked",
@@ -388,7 +388,7 @@
    "old": " && Buffer.from(module).toString('utf8').includes(RFC5_CLASS_ROW)",
    "new": "",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "class-identity-unchecked",
@@ -397,7 +397,7 @@
    "old": "actArgument(record, RFC5_ACT_IDENTITY, ",
    "new": "actArgument(record, /^Act identity: /mu, ",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "act-type-unchecked",
@@ -406,7 +406,7 @@
    "old": " || !record.includes(`\\nAct type: \\`${type}\\`\\n`)",
    "new": "",
    "killed": true,
-   "tests": "3 failed | 48 passed (51)"
+   "tests": "3 failed | 49 passed | 1 skipped (53)"
   },
   {
    "id": "act-artifact-unchecked",
@@ -415,7 +415,7 @@
    "old": " || !record.includes(`\\nArtifact identity: \\`${artifact}\\`\\n`)",
    "new": "",
    "killed": true,
-   "tests": "3 failed | 48 passed (51)"
+   "tests": "3 failed | 49 passed | 1 skipped (53)"
   },
   {
    "id": "act-project-unchecked",
@@ -424,7 +424,7 @@
    "old": "\n    || !record.includes('\\nProject identity: `project:syzygy`\\n')) return 'not-the-act';",
    "new": ") return 'not-the-act';",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "act-two-digests",
@@ -433,7 +433,7 @@
    "old": "digests.length === 1 ? { digest: digests[0]! }",
    "new": "digests.length >= 1 ? { digest: digests[0]! }",
    "killed": true,
-   "tests": "3 failed | 48 passed (51)"
+   "tests": "3 failed | 49 passed | 1 skipped (53)"
   },
   {
    "id": "both-classes-code",
@@ -442,7 +442,7 @@
    "old": "return code === prose ? undefined",
    "new": "return !code && !prose ? undefined",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "mapped-ignores-prerequisite",
@@ -451,7 +451,7 @@
    "old": "const mapped = projectDocumentation === 'mapped' ? documentationRule : undefined;",
    "new": "const mapped = documentationRule;",
    "killed": true,
-   "tests": "9 failed | 42 passed (51)"
+   "tests": "9 failed | 43 passed | 1 skipped (53)"
   },
   {
    "id": "documentation-before-screens",
@@ -460,7 +460,7 @@
    "old": "screenPath: path => deniedPathReason(path, rules) !== undefined ? 'denied-path'",
    "new": "screenPath: path => classifyPath(path) === 'project-documentation' ? undefined : deniedPathReason(path, rules) !== undefined ? 'denied-path'",
    "killed": true,
-   "tests": "2 failed | 49 passed (51)"
+   "tests": "2 failed | 50 passed | 1 skipped (53)"
   },
   {
    "id": "supersession-unchecked",
@@ -469,7 +469,7 @@
    "old": "if (v2 && !v2ActRecord.split",
    "new": "if (false && !v2ActRecord.split",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "supersession-any-record",
@@ -478,7 +478,70 @@
    "old": " && line.includes(`\\`${PUBLIC_SOURCE_ACT_RECORD_PATH}\\``)))",
    "new": "))",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
+  },
+  {
+   "id": "v2-without-v1",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "a v2 record without a v1 record is accepted",
+   "old": "  if (actRecord === undefined) refuse(`no act record at",
+   "new": "  if (!v2 && actRecord === undefined) refuse(`no act record at",
+   "killed": true,
+   "tests": "2 failed | 50 passed | 1 skipped (53)"
+  },
+  {
+   "id": "v1-record-unchecked",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "the superseded v1 record need not be the v1 act",
+   "old": "if (typeof v1 === 'string') refuse(",
+   "new": "if (false) refuse(",
+   "killed": true,
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
+  },
+  {
+   "id": "same-argument-allowed",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "a v2 act carrying the v1 argument is accepted",
+   "old": "if (v1Digest === policySha256) refuse(",
+   "new": "if (false) refuse(",
+   "killed": true,
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
+  },
+  {
+   "id": "v1-argument-unnamed",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "the v2 record need not name the v1 argument",
+   "old": "if (!v2ActRecord.includes(v1Digest)) refuse(",
+   "new": "if (false) refuse(",
+   "killed": true,
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
+  },
+  {
+   "id": "instant-order-unchecked",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "the v2 act may be recorded before the v1 act",
+   "old": "if (v2At![0]! <= v1At![0]!) refuse(",
+   "new": "if (false) refuse(",
+   "killed": true,
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
+  },
+  {
+   "id": "instant-equal-allowed",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "a v2 act recorded at the v1 instant is accepted",
+   "old": "if (v2At![0]! <= v1At![0]!) refuse(",
+   "new": "if (v2At![0]! < v1At![0]!) refuse(",
+   "killed": true,
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
+  },
+  {
+   "id": "instant-count-unchecked",
+   "file": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts",
+   "description": "a record without exactly one recorded instant is accepted",
+   "old": "if (v1At!.length !== 1 || v2At!.length !== 1) refuse(",
+   "new": "if (false) refuse(",
+   "killed": true,
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   },
   {
    "id": "checkout-paths-swapped",
@@ -487,12 +550,13 @@
    "old": "PUBLIC_SOURCE_V2_ACT_RECORD_PATH, RFC5_CLASS_ACT_RECORD_PATH, RFC5_MODULE_PATH]",
    "new": "RFC5_CLASS_ACT_RECORD_PATH, PUBLIC_SOURCE_V2_ACT_RECORD_PATH, RFC5_MODULE_PATH]",
    "killed": true,
-   "tests": "1 failed | 50 passed (51)"
+   "tests": "1 failed | 51 passed | 1 skipped (53)"
   }
  ],
  "history": [
   "first run at a pre-rebase commit over the round-3 builder: 44 of 46 killed, the same two equivalent survivors",
   "second and third runs over the #326 fd4e2509 builder (49 mutants, licenses denylist and supersession added): 47 of 49 both times",
-  "this run, rebased on main with #326 merged: 47 of 49"
+  "this run, rebased on main with #326 merged: 47 of 49 (49 mutants, at dfe4bc32)",
+  "this run adds the seven v1/v2 pair mutants: 54 of 56"
  ]
 }
