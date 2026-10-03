@@ -90,6 +90,8 @@ SCRATCH_EXTRAS = (
     "SURFACE-CLAUSE-ROUTING-MATRIX.md",
 )
 VERIFIER = CANDIDATES / "scripts" / "verify_final_prespec.py"
+#: The frozen rev9 corpus the verifier recomputes REV9_ENDS from.
+REV9_CORPUS = pathlib.PurePosixPath("history/rev9-rfcs")
 RECORDER = pathlib.Path("scripts") / "record_contract_readability_restyle.py"
 ROW = re.compile(r"^([0-9a-f]{64})  (\S[^\n]*)$", re.MULTILINE)
 HEADING = re.compile(r"^#{1,6}\s")
@@ -279,6 +281,10 @@ def scratch_findings(root: pathlib.Path, proposed: dict[str, bytes]) -> list[str
                 shutil.copy(root / CANDIDATES / extra, cands / extra)
         if (root / CANDIDATES / "fixtures").is_dir():
             shutil.copytree(root / CANDIDATES / "fixtures", cands / "fixtures")
+        # The verifier asserts REV9_ENDS against this frozen corpus and fails
+        # when it is absent (syzygy-3rhe), so the scratch tree carries it.
+        if (root / CANDIDATES / REV9_CORPUS).is_dir():
+            shutil.copytree(root / CANDIDATES / REV9_CORPUS, cands / REV9_CORPUS)
         for path, body in proposed.items():
             (cands / path).write_bytes(body)
         done = subprocess.run(
@@ -454,7 +460,8 @@ def write(root: pathlib.Path) -> int:
 def _fixture_root(scratch: pathlib.Path) -> pathlib.Path:
     """A copy of the inputs this builder reads, with a synthetic package."""
     root = scratch / "repo"
-    for rel in (CONTRACTS / "rfcs", CANDIDATES / "rfcs", CANDIDATES / "fixtures"):
+    for rel in (CONTRACTS / "rfcs", CANDIDATES / "rfcs", CANDIDATES / "fixtures",
+                CANDIDATES / REV9_CORPUS):
         shutil.copytree(ROOT / rel, root / rel)
     for rel in (BOOTSTRAP_MANIFEST, *(CANDIDATES / e for e in SCRATCH_EXTRAS)):
         (root / rel).parent.mkdir(parents=True, exist_ok=True)

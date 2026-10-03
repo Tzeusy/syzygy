@@ -313,7 +313,10 @@ def write_quiet(root: pathlib.Path) -> None:
 def _fixture_root(scratch: pathlib.Path) -> pathlib.Path:
     """A copy of the inputs this builder reads, with a synthetic package."""
     root = scratch / "repo"
-    for rel in (CONTRACTS / "rfcs", CANDIDATES / "rfcs", CANDIDATES / "fixtures"):
+    # The frozen rev9 corpus too: the verifier asserts REV9_ENDS against it
+    # and fails when it is absent (syzygy-3rhe).
+    for rel in (CONTRACTS / "rfcs", CANDIDATES / "rfcs", CANDIDATES / "fixtures",
+                CANDIDATES / "history" / "rev9-rfcs"):
         shutil.copytree(ROOT / rel, root / rel)
     for rel in (shared.BOOTSTRAP_MANIFEST,
                 *(CANDIDATES / e for e in shared.SCRATCH_EXTRAS)):
