@@ -15,6 +15,7 @@
  */
 
 import { digestCanonicalJson } from './canonical-json.js';
+import { buildExcerpt, type ExcerptKind, type ExcerptRange } from './excerpt.js';
 import { excludedSourceId, newGenerationRunKey, type GenerationSource } from './generation-source.js';
 
 export const DEFERRED_BY_BUDGET = 'deferred-by-budget';
@@ -70,7 +71,11 @@ export interface DiscoveryReceipt {
   readonly dropped: number;
   readonly reply?: { readonly claims: readonly DiscoveryClaim[] } | { readonly ranked: readonly string[] };
   readonly detail?: string;
+  /** Map receipts only: how each item's excerpt was taken (local audit; not part of the request). */
+  readonly excerpts?: readonly ExcerptAudit[];
 }
+/** What one map item's excerpt was, kept in the local receipt and never sent: its kind, the blob byte ranges it quotes, and the leading licence comment left out. Offsets only, no text. */
+export interface ExcerptAudit { readonly blobId: string; readonly kind: ExcerptKind; readonly ranges: readonly ExcerptRange[]; readonly licenceSkipped: ExcerptRange | null }
 export interface DiscoveryPorts {
   /** Asked once per provider call; anything but `true` means the call is not made. */
   readonly permitted: (call: DiscoveryCall) => Promise<boolean>;
@@ -215,11 +220,11 @@ async function discover(
 
   /** One provider call: ask, write a dispatching receipt, call, validate, write the outcome. */
   const providerCall = async <In, Raw, Valid extends { readonly usageUnits: number | null; readonly dropped: number; readonly reply: NonNullable<DiscoveryReceipt['reply']> }>(
-    kind: 'map' | 'reduce', subsystem: string | undefined, input: In, itemCount: number, invoke: (input: In, signal: AbortSignal) => Promise<Raw>, validate: (raw: Raw) => Valid,
+    kind: 'map' | 'reduce', subsystem: string | undefined, input: In, itemCount: number, invoke: (input: In, signal: AbortSignal) => Promise<Raw>, validate: (raw: Raw) => Valid, excerpts?: readonly ExcerptAudit[],
   ): Promise<Valid | undefined> => {
     if (signal.aborted) throw new DiscoveryRefusal('cancelled');
     const call: DiscoveryCall = { kind, ...(subsystem === undefined ? {} : { subsystem }), itemCount, requestDigest: digestCanonicalJson(input, DIGEST_LIMITS).digest };
-    const shared = { kind, ordinal: ordinal++, ...(subsystem === undefined ? {} : { subsystem }), requestDigest: call.requestDigest, itemCount };
+    const shared = { kind, ordinal: ordinal++, ...(subsystem === undefined ? {} : { subsystem }), requestDigest: call.requestDigest, itemCount, ...(excerpts === undefined ? {} : { excerpts }) };
     let allowed = false;
     try { allowed = await raced(ports.permitted(call)) === true; } catch (error) { if (error instanceof DiscoveryRefusal) throw error; }
     if (!allowed) { refusedCalls++; await emit({ ...shared, outcome: 'refused', usageUnits: null, dropped: 0 }); return undefined; }
@@ -243,8 +248,12 @@ async function discover(
     if (ports.map === undefined || mapCalls >= budget.maxMapCalls) { unmapped.push(group.name); continue; }
     mapCalls++;
     const known = new Set(group.blobs.map(blob => blob.blobId));
-    const input: MapInput = { subsystem: group.name, readerQuestions, items: group.blobs.map(blob => ({ blobId: blob.blobId, path: blob.path,
-      excerpt: [...(blob.pieces[0]!.body ?? blob.pieces[0]!.spans[0]?.text ?? '')].slice(0, budget.maxExcerptChars).join('') })) };
+    const taken = group.blobs.map(blob => {
+      const first = [...blob.pieces].sort((a, b) => (a.segment?.index ?? 0) - (b.segment?.index ?? 0))[0]!;
+      return { blob, excerpt: buildExcerpt(blob.path, first.body ?? first.spans[0]?.text ?? '', first.segment?.start ?? 0, budget.maxExcerptChars) };
+    });
+    const input: MapInput = { subsystem: group.name, readerQuestions, items: taken.map(({ blob, excerpt }) => ({ blobId: blob.blobId, path: blob.path, excerpt: excerpt.text })) };
+    const audit: ExcerptAudit[] = taken.map(({ blob, excerpt }) => ({ blobId: blob.blobId, kind: excerpt.kind, ranges: excerpt.ranges, licenceSkipped: excerpt.licenceSkipped }));
     // The whole reply is validated before any claim reaches the ledger.
     const outcome = await providerCall('map', group.name, input, input.items.length, ports.map, (raw: unknown) => {
       if (!isObject(raw) || !Array.isArray(raw.claims)) throw new Error('invalid-map-reply');
@@ -259,7 +268,7 @@ async function discover(
         accepted.push({ blobId: claim.blobId, relevance: claim.relevance, claim: [...claim.claim].slice(0, budget.maxClaimChars).join('') });
       }
       return { usageUnits: usage(raw.usageUnits), dropped: discarded, reply: { claims: accepted } };
-    });
+    }, audit);
     if (outcome === undefined) { mapFailures++; unmapped.push(group.name); continue; }
     dropped += outcome.dropped;
     for (const claim of (outcome.reply as { claims: DiscoveryClaim[] }).claims) {

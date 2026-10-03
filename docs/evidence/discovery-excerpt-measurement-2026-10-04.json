@@ -1,0 +1,247 @@
+{
+  "fixture": {
+    "files": 510,
+    "oversizeFiles": [
+      "00-RELEASENOTES",
+      "deps/jemalloc/src/jemalloc.c",
+      "src/cluster_legacy.c",
+      "src/redis-cli.c",
+      "src/server.c"
+    ],
+    "sha256": "d097a8d0f2edc989cc7190bf1149fc1546e86b8b10831f73db33ad350e51dd56"
+  },
+  "corpus": {
+    "sourceRows": 515,
+    "quotableRows": 515,
+    "oversizeFiles": 5,
+    "oversizePieces": {
+      "00-RELEASENOTES": 2,
+      "deps/jemalloc/src/jemalloc.c": 2,
+      "src/cluster_legacy.c": 2,
+      "src/redis-cli.c": 2,
+      "src/server.c": 2
+    }
+  },
+  "selection": {
+    "selectedBlobs": 196,
+    "selectedSources": 200,
+    "rankingBasis": "heuristic",
+    "byTopDirectory": {
+      "(root)": 5,
+      "modules": 4,
+      "src": 187
+    },
+    "vendored": 0,
+    "srcFiles": 187
+  },
+  "coreMechanisms": {
+    "eventLoop": {
+      "selected": [
+        "src/ae.c",
+        "src/ae_epoll.c",
+        "src/ae_kqueue.c",
+        "src/networking.c",
+        "src/server.c"
+      ],
+      "deferred": []
+    },
+    "persistence": {
+      "selected": [
+        "src/aof.c",
+        "src/rdb.c",
+        "src/rio.c"
+      ],
+      "deferred": []
+    },
+    "replication": {
+      "selected": [
+        "src/replication.c",
+        "src/cluster.c",
+        "src/cluster_legacy.c",
+        "src/sentinel.c"
+      ],
+      "deferred": []
+    },
+    "dataTypes": {
+      "selected": [
+        "src/t_string.c",
+        "src/t_list.c",
+        "src/t_hash.c",
+        "src/t_set.c",
+        "src/t_zset.c",
+        "src/t_stream.c"
+      ],
+      "deferred": []
+    }
+  },
+  "excerpts": {
+    "files": 196,
+    "byKind": {
+      "head": 6,
+      "code-declarations": 190
+    },
+    "codeFiles": 190,
+    "before": {
+      "meanChars": 1489,
+      "codeFilesWithNoCodeLine": 190,
+      "codeFilesLicenceOnly": 190
+    },
+    "after": {
+      "meanChars": 1184,
+      "codeFilesWithNoCodeLine": 0,
+      "licenceCommentInExcerpt": 0,
+      "meanCodeLines": 17,
+      "licenceRangeRecorded": 190
+    },
+    "coreMechanisms": {
+      "eventLoop": {
+        "files": 5,
+        "beforeWithCodeLine": 0,
+        "afterWithCodeLine": 5
+      },
+      "persistence": {
+        "files": 3,
+        "beforeWithCodeLine": 0,
+        "afterWithCodeLine": 3
+      },
+      "replication": {
+        "files": 4,
+        "beforeWithCodeLine": 0,
+        "afterWithCodeLine": 4
+      },
+      "dataTypes": {
+        "files": 6,
+        "beforeWithCodeLine": 0,
+        "afterWithCodeLine": 6
+      }
+    },
+    "sample": {
+      "path": "src/ae.c",
+      "before": "/*\n * Copyright (c) 2009-2024, Example Author <author at example.invalid>\n * All rights reserved.\n *\n * SYNTHETIC FIXTURE FILE src/ae.c: generated filler, not the contents of any real repository.\n *\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions are met:\n *\n *   * Redistributions of source code must retain the above copyright notice,\n *     this list of conditions and the following disclaimer.\n *   * Redistributions in binary form must reproduce the above copyright\n *     notice, this list of conditions and the following disclaimer in the\n *     documentation and/or other materials provided with the distribution.\n *   * Neither the name of the copyright holder nor the names of its\n *     contributors may be used to endorse or promote products derived from\n *     this software without specific prior written permission.\n *\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\n * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\n * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE\n * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE\n * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR\n * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF\n * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS\n * INTERRUPTION) HOWEVER CAUSED AND ON ANY TH",
+      "after": "/* src/ae.c: synthetic overview. This unit owns the src_ae_c state machine: it accepts work from the event loop, applies it to the keyspace and reports the outc\n#define SRC_AE_C_MAX 1024\n#define SRC_AE_C_FLAG(x) ((x) & 0x1)\nstruct src_ae_c_state {\ntypedef struct src_ae_c_item {\nint src_ae_c_op_0(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_1(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_2(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_3(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_4(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_5(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_6(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_7(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_8(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_9(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_10(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_11(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_12(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_13(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_14(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_15(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_16(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_17(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_18(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_19(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_20(struct src_ae_c_state *s, int arg) {\nint src_ae_c_op_21(struct src_ae_c_state *s, int arg) {",
+      "afterKind": "code-declarations",
+      "afterRanges": [
+        [
+          1664,
+          1824
+        ],
+        [
+          1866,
+          1952
+        ],
+        [
+          1989,
+          2019
+        ],
+        [
+          2049,
+          2103
+        ],
+        [
+          2184,
+          2238
+        ],
+        [
+          2319,
+          2373
+        ],
+        [
+          2454,
+          2508
+        ],
+        [
+          2589,
+          2643
+        ],
+        [
+          2724,
+          2778
+        ],
+        [
+          2859,
+          2913
+        ],
+        [
+          2994,
+          3048
+        ],
+        [
+          3129,
+          3183
+        ],
+        [
+          3264,
+          3318
+        ],
+        [
+          3399,
+          3454
+        ],
+        [
+          3537,
+          3592
+        ],
+        [
+          3675,
+          3730
+        ],
+        [
+          3813,
+          3868
+        ],
+        [
+          3951,
+          4006
+        ],
+        [
+          4089,
+          4144
+        ],
+        [
+          4227,
+          4282
+        ],
+        [
+          4365,
+          4420
+        ],
+        [
+          4503,
+          4558
+        ],
+        [
+          4641,
+          4696
+        ],
+        [
+          4779,
+          4834
+        ],
+        [
+          4917,
+          4972
+        ]
+      ],
+      "licenceSkipped": [
+        0,
+        1663
+      ]
+    }
+  },
+  "accounting": {
+    "population": 515,
+    "candidateBlobs": 510,
+    "deferredBlobs": 314,
+    "deferredRows": 314,
+    "deferredVendored": 199,
+    "closes": true
+  },
+  "codeSubjects": {
+    "commit": "d63d73107c48d213ca04ac967318e5ef8952a736",
+    "sha256": {
+      "packages/polaris-generation-core/src/excerpt.ts": "5b996974a65cdd51258fc590b3a804f5e57192c3e705383474c346caccff3937",
+      "packages/polaris-generation-core/src/discovery.ts": "3eb393b24b2100cbd7bb0498ad71c64be76b6b2fae77d86315e15977ec922ec5",
+      "apps/three-surface-poc/src/polaris-generation/redis-shaped-measure.ts": "039a2de2abce1c4738c37a045b7e4aeef66a3a422ca2a9cb5ebde8a6edce5adb"
+    }
+  }
+}

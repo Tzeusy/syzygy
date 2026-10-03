@@ -407,6 +407,8 @@ def render_aggregate_block(act: Act, argument: str, date: str, manifest_sha: str
                            verdict: str, frozen: str, instant: str) -> str:
     return f"""{aggregate_heading(act, date)}
 
+Act instant: {instant}
+
 **Phrase the act takes (given {date} by option selection, not typed; see the
 dedicated record):**
 
@@ -650,6 +652,12 @@ def selftest() -> int:
                       ("a lowercase z", "2026-10-04T09:30:00z")):
         results.append((f"{name} refused", _raises(lambda bad=bad: expected(
             act, arg, "2026-10-04", ok_sel, make(), bad))))
+    block = render_aggregate_block(ACTS[0], "a" * 64, "2026-10-04", "b" * 64, "CONFIRM", "c" * 40, "2026-10-04T01:02:03Z")
+    # CG-7h closes an earlier contract act's section at the next `Act instant:` line, a marker or the end
+    # of the record; without this line the RFC5-14 act's section swallowed this block's phrase.
+    results.append(("the aggregate block carries the act instant once, above its phrase",
+                    block.count("Act instant: 2026-10-04T01:02:03Z\n") == 1
+                    and block.index("Act instant:") < block.index("CONSENT TO PUBLIC TARGET EGRESS")))
     results.append(("record, check and a repeat --record on a scratch tree with no git", _end_to_end()))
     import record_public_repo_admission_acts as v1rec
     results.append(("the first version's recorder refuses on exactly this act's record path",
