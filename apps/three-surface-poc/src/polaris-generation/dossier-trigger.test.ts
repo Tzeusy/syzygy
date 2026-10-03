@@ -144,6 +144,27 @@ describe('with every record satisfied', () => {
     expect(readdirSync(out2)).toEqual(['run-record.json']);
   });
 
+  it('renders the completed stages of a stopped run, keeps the run record, and falls back to the record alone when the renderer cannot', async () => {
+    const withArtifacts: PipelineResult = { status: 'stopped', reason: 'budget-exhausted', receipts: [], artifacts: [{ stage: 'inventory', value: { marker: 'inv' } }] };
+    let seen: { result: PipelineResult; sources: number } | undefined;
+    const partialRender: NonNullable<TriggerPorts['render']> = ({ result, sources }) => { seen = { result, sources: sources.length }; return { files: new Map([['index.html', '<p>partial</p>']]) }; };
+    const out = join(scratch(), 'run');
+    const partial = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out, render: partialRender, runPipeline: async () => withArtifacts }));
+    expect(partial).toMatchObject({ state: 'generation-stopped-partial', runDir: out, detail: 'budget-exhausted; 1 files rendered from 1 completed stage outputs' });
+    expect(seen).toMatchObject({ result: withArtifacts });
+    expect(seen!.sources).toBeGreaterThan(0);
+    expect(readdirSync(out).sort()).toEqual(['index.html', 'run-record.json']);
+    const cannot: NonNullable<TriggerPorts['render']> = () => { throw Object.assign(new Error('Dossier render refused: not-renderable'), { name: 'DossierRenderError' }); };
+    const out2 = join(scratch(), 'run');
+    expect(await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out2, render: cannot, runPipeline: async () => withArtifacts })))
+      .toMatchObject({ state: 'generation-stopped', detail: 'budget-exhausted' });
+    expect(readdirSync(out2)).toEqual(['run-record.json']);
+    const broken: NonNullable<TriggerPorts['render']> = () => { throw new Error('boom'); };
+    await expect(runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), render: broken, runPipeline: async () => withArtifacts }))).rejects.toThrow('boom');
+    await expect(runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), runPipeline: async () => withArtifacts,
+      render: () => ({ files: new Map([['run-record.json', '{}']]) }) }))).rejects.toThrow('renderer-collides-with-run-record');
+  });
+
   it('records an unrendered result when no renderer is wired, and refuses a renderer that collides with the run record', async () => {
     const out = join(scratch(), 'run');
     const outcome = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out, runPipeline: async request => finished(request) }));
@@ -364,8 +385,14 @@ describe('command', () => {
       expect(await main(['https://github.com/a/b', '--out', dest5], wired())).toBe(5);
       expect(readdirSync(dest5)).toEqual(['run-record.json']);
       const dest6 = join(scratch(), 'site');
-      expect(await main(['https://github.com/a/b', '--out', dest6, '--json'], wired({ runPipeline: async () => ({ status: 'stopped', reason: 'cancelled', receipts: [], artifacts: [] }) }))).toBe(6);
+      expect(await main(['https://github.com/a/b', '--out', dest6, '--json'], wired({ runPipeline: async () => ({ status: 'stopped', reason: 'cancelled', receipts: [], artifacts: [] }),
+        render: () => { throw Object.assign(new Error('refused'), { name: 'DossierRenderError' }); } }))).toBe(6);
       expect(JSON.parse(String(out.mock.calls.at(-1)![0]))).toMatchObject({ state: 'generation-stopped', detail: 'cancelled', runDir: dest6 });
+
+      const dest7 = join(scratch(), 'site');
+      expect(await main(['https://github.com/a/b', '--out', dest7, '--json'], wired({ runPipeline: async () => ({ status: 'stopped', reason: 'budget-exhausted', receipts: [], artifacts: [{ stage: 'inventory', value: {} }] }),
+        render: () => ({ files: new Map([['index.html', '<p>x</p>']]) }) }))).toBe(7);
+      expect(JSON.parse(String(out.mock.calls.at(-1)![0]))).toMatchObject({ state: 'generation-stopped-partial', runDir: dest7 });
     } finally { out.mockRestore(); }
   });
 

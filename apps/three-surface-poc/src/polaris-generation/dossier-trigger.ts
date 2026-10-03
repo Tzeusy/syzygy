@@ -104,7 +104,7 @@ export type TriggerOutcome =
   | { readonly state: 'unresolved-revision'; readonly reason: string }
   | { readonly state: 'admission-missing'; readonly target: GithubTarget; readonly revision: string; readonly resolvedRef: string; readonly source: string;
       readonly requirements: readonly (AdmissionRequirement & { readonly answer: AdmissionAnswer })[]; readonly missing: number }
-  | { readonly state: 'generation-unavailable' | 'generation-stopped' | 'complete'; readonly target: GithubTarget; readonly revision: string; readonly runDir: string; readonly detail: string };
+  | { readonly state: 'generation-unavailable' | 'generation-stopped' | 'generation-stopped-partial' | 'complete'; readonly target: GithubTarget; readonly revision: string; readonly runDir: string; readonly detail: string };
 
 const BUDGET: GenerationBudget = { maxCalls: 7, maxInputBytes: 8_000_000, maxOutputBytes: 1_000_000, maxUsageUnits: 1000, maxElapsedMs: 3_600_000, maxRepairCycles: 1, accountingPolicy: 'dossier-units-v1' };
 
@@ -174,8 +174,17 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
     const request = buildPipelineRequest({ ...corpus, sources: discovery.sources }, config, (ports.now ?? Date.now)());
     const result = await ports.runPipeline(request);
     if (result.status === 'stopped') {
-      const written = await writeDossierRun(runDir, new Map([recordFile]));
-      return { state: 'generation-stopped', target, revision: pinned.revision, runDir: written, detail: result.reason };
+      // Render what the completed stages support; a renderer that cannot (no usable artifact) leaves the record alone.
+      let partial: ReadonlyMap<string, string> | undefined;
+      if (ports.render !== undefined) {
+        try { partial = ports.render({ result, sources: discovery.sources }).files; }
+        catch (error) { if (!(error instanceof Error) || error.name !== 'DossierRenderError') throw error; }
+      }
+      if (partial !== undefined && partial.has(recordFile[0])) throw new Error('renderer-collides-with-run-record');
+      const written = await writeDossierRun(runDir, new Map([...(partial ?? []), recordFile]));
+      return partial === undefined
+        ? { state: 'generation-stopped', target, revision: pinned.revision, runDir: written, detail: result.reason }
+        : { state: 'generation-stopped-partial', target, revision: pinned.revision, runDir: written, detail: `${result.reason}; ${partial.size} files rendered from ${result.artifacts.length} completed stage outputs` };
     }
     if (ports.render === undefined) {
       const written = await writeDossierRun(runDir, new Map([recordFile, ['pipeline-result.json', `${JSON.stringify(result, null, 2)}\n`]]));

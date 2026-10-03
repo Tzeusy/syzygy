@@ -188,6 +188,12 @@ Authorized implementation work (generator implementation authorization,
         git check, atomic staging) and rendered by `renderDossier`
         (polaris-dossier-v1), which `dossier-main` wires as the default `render`
         port.
+        A stopped run (usage, wall clock, refused stage) is rendered from its
+        completed stage outputs (`artifacts` on the stopped result) alongside
+        `run-record.json` and exits 7; when the renderer cannot render it
+        (`DossierRenderError`), only the record is written and the exit is 6
+        (syzygy-k4t2, trigger half; the renderer accepting a stopped result
+        is lane-p's).
   - [~] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.
