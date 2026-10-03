@@ -1,0 +1,18 @@
+{
+  "OBSERVATION-CONSENT.md": {
+    "template": "OBSERVATION-CONSENT-TEMPLATE.md",
+    "fields": {
+      "TARGET_NAME": "redis",
+      "TARGET_ID": "REDIS",
+      "REPOSITORY_ID": "redis-redis",
+      "UPSTREAM_URL": "https://github.com/redis/redis",
+      "REVISION_TABLE": "| Label | Commit object id |\n|---|---|\n| `8.10.2` | `498ecd0d6d007db11ddb3aea9428552598a78622` |\n| `7.2.4` | `d2c8a4b91e8c0e6aefd1f5bc0bf582cddbe046b7` |\n| `7.4.0` | `c9d29f6a918c335bc1778d9f68e521c1bbb36a0f` |\n| `8.0.0` | `e91a340e241cf0abe3c6a0c254214fbe4aa1d95f` |",
+      "SUPERSEDES": "supersedes no earlier consent"
+    }
+  },
+  "common": {
+    "DRAFT_DATE": "2026-10-03",
+    "OWNER": "Tzeusy",
+    "VERSION": "0.1.0-candidate.7"
+  }
+}

@@ -1,0 +1,8 @@
+# PUBLIC REPOSITORY ADMISSION MANIFEST
+# Candidate; this file and its rows bind nothing by themselves.
+# 3 records; rows sorted by codepoint path; each row hashes the
+# record's exact bytes and is the argument of one separate owner act over
+# that record. Each row requires its own act; no row binds another.
+68119156f5ce70232422947aa66b2be756dcdce38c26751fc3e99feea6567365  .syzygy/governance/contracts/candidates/public-repo-admission/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md
+a733220dcbc4276d396e32f51c39dcc4665e07579ecca3f0074e7e6e5a1916a4  .syzygy/governance/contracts/candidates/public-repo-admission/instances/redis/OBSERVATION-CONSENT.md
+d154165cc4c4e0d995644f1d764bfacddf070a9aa301ee2c9fc62dff4ba06d41  .syzygy/governance/contracts/candidates/public-repo-admission/instances/requests/OBSERVATION-CONSENT.md
