@@ -64,6 +64,14 @@ flowchart LR
 - `promptForStage` and `stageSchema` supply versioned recipes and concrete
   provider-local response contracts. The serialized input binds both prompt
   and schema bytes.
+  - They also serve the `dossier` profile (`promptForStage(stage, 'dossier')`)
+    and the `discovery-map` / `discovery-reduce` stages. No target text
+    reaches either symbol. Their shape illustrations are deep-frozen and
+    serialized once at module load, and the package entry point does not
+    export them, so no importer can change the instruction bytes.
+  - The dossier profile reports advantages, trade-offs and comparisons only
+    as quoted maintainer statements. Every inferential block must begin
+    `Inferred:`.
 - `parseBoundedJson` refuses duplicate keys, malformed responses and
   byte/depth/node overflow before stage validation.
 - `validateStage` checks closed fields, source references, requested section

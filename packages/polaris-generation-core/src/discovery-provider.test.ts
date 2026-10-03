@@ -118,7 +118,8 @@ describe('discovery envelopes', () => {
   });
 
   it('builds the reduce envelope the same way', () => {
-    const request = { ...reduceRequest(), extra: 'never sent' };
+    const request = { ...reduceRequest(), extra: 'never sent', subsystems: reduceRequest().subsystems.map(entry => ({
+      ...entry, owner: 'entry extra', claims: entry.claims.map(claim => ({ ...claim, mode: '100644' })) })) };
     const { envelope, input } = discoveryReduceEnvelope(request);
     expect(envelope.promptVersion).toBe('polaris-discovery-reduce-v1');
     expect(envelope.responseSchemaVersion).toBe('polaris-provider-discovery-reduce-v1');
@@ -126,6 +127,8 @@ describe('discovery envelopes', () => {
     expect(envelope.inputs).toEqual(reduceRequest());
     expect(JSON.parse(input)).toEqual(envelope);
     expect(input).not.toContain('never sent');
+    expect(input).not.toContain('entry extra');
+    expect(input).not.toContain('100644');
   });
 
   // The whole user message, schema included, for the fixtures above.
