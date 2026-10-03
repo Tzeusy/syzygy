@@ -197,6 +197,11 @@ describe('ambient environment and pins', () => {
     await expect(call(h)).rejects.toMatchObject({ code: 'ambient-environment' });
     expect(endpoint.requests).toEqual([]);
   });
+  it('refuses a loopback upstream when the test-only token is absent (production wiring)', async () => {
+    const h = make(config({ upstream: { url: endpoint.url } }));
+    await expect(call(h)).rejects.toThrow();
+    expect(endpoint.requests).toEqual([]);
+  });
   it('sends no Authorization header and no custom header, and refuses an unpinned SDK', async () => {
     await call(make(config()));
     expect(Object.keys(endpoint.requests[0]!.headers)).not.toContain('authorization');
