@@ -38,7 +38,7 @@ export class GenerationSourceError extends Error {
 const fail = (code: GenerationSourceFailure): never => { throw new GenerationSourceError(code); };
 const handle = new RegExp(SOURCE_ID_PATTERN, 'u');
 
-/** An excluded row carries no path-derived id: `s-` plus 24 hex digits of a digest. */
+/** An excluded row's id is `s-` plus 24 hex digits; the shape is checked here, the keying belongs to the emitter. */
 const OPAQUE_SOURCE_ID = /^s-[0-9a-f]{24}$/u;
 
 export const GENERATION_EXCLUSION_REASONS = [
@@ -54,7 +54,7 @@ export const GENERATION_EXCLUSION_REASONS = [
   'active-content',
   'unknown-extraction-class',
   'parse-failure',
-  'policy-excluded',
+  'secret-detector-match',
   'not-in-manifest',
   'missing-at-revision',
   'not-a-regular-blob',

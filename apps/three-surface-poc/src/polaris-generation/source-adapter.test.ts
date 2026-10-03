@@ -1,3 +1,4 @@
+import { createHash, randomBytes } from 'node:crypto';
 import { rmSync } from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -42,7 +43,7 @@ describe('PWB-to-generator projection', () => {
     const unavailable = (reason: string) => ({ path: 'a', outcome: 'unavailable', reason, unknown }) as unknown as ClassificationRecord;
     for (const reason of EXCLUSION_REASONS) expect(generationExclusionReason(excluded(reason))).toBe(reason);
     for (const reason of UNAVAILABLE_REASONS) expect(generationExclusionReason(unavailable(reason))).toBe(reason);
-    expect(generationExclusionReason(excluded())).toBe('policy-excluded');
+    expect(generationExclusionReason(excluded())).toBe('secret-detector-match');
     expect(generationExclusionReason(excluded('a-new-reason'))).toBe('unclassified-exclusion');
     expect(generationExclusionReason(unavailable('a-new-reason'))).toBe('unclassified-exclusion');
     for (const reason of [...EXCLUSION_REASONS, ...UNAVAILABLE_REASONS, 'body-not-retained-for-generation', 'oversize-source-excluded']) expect(GENERATION_EXCLUSION_REASONS).toContain(reason);
@@ -71,9 +72,33 @@ describe('PWB-to-generator projection', () => {
     ] } } as unknown as Parameters<typeof generationSourcesFromPocModel>[0];
     const byPath = new Map(generationSourcesFromPocModel(model).map(source => [source.path, source.exclusion]));
     expect(byPath.get('a.md')).toEqual({ excluded: true, reason: 'active-content' });
-    expect(byPath.get('b.md')).toEqual({ excluded: true, reason: 'policy-excluded' });
+    expect(byPath.get('b.md')).toEqual({ excluded: true, reason: 'secret-detector-match' });
     expect(byPath.get('c.md')).toEqual({ excluded: true, reason: 'not-in-tree' });
     expect(byPath.get('d.md')).toEqual({ excluded: true, reason: 'body-not-retained-for-generation' });
     expect(byPath.get('e.md')).toEqual({ excluded: false });
+  });
+
+  describe('excluded-source ids', () => {
+    const model = { projectShape: { kind: 'observed', identity: { repositoryId: 'repository:fixture', revision: 'b'.repeat(40) }, sources: [
+      { identity: 'README.md', path: 'README.md', anchor: { kind: 'none' }, claim: { evaluationId: 'e' }, record: { path: 'README.md', outcome: 'unavailable', reason: 'not-in-tree' } },
+      { identity: 'ok.md', path: 'ok.md', anchor: { kind: 'blob', objectId: 'a'.repeat(40) }, claim: { evaluationId: 'e' }, record: { path: 'ok.md', outcome: 'classified', basis: 'path-only' } },
+    ] } } as unknown as Parameters<typeof generationSourcesFromPocModel>[0];
+    const ids = (key?: Buffer) => new Map(generationSourcesFromPocModel(model, key).map(source => [source.path, source.sourceId]));
+    const plain = (text: string) => `s-${createHash('sha256').update(text).digest('hex').slice(0, 24)}`;
+
+    it('is not the unkeyed path hash, so a candidate path list confirms nothing', () => {
+      expect(ids().get('README.md')).not.toBe(plain('README.md'));
+      expect(ids().get('README.md')).toMatch(/^s-[0-9a-f]{24}$/u);
+    });
+    it('differs between runs for the same path', () => {
+      expect(ids(randomBytes(32)).get('README.md')).not.toBe(ids(randomBytes(32)).get('README.md'));
+    });
+    it('is stable within one run key', () => {
+      const key = randomBytes(32);
+      expect(ids(key).get('README.md')).toBe(ids(key).get('README.md'));
+    });
+    it('leaves a non-excluded row on the unkeyed identity hash', () => {
+      expect(ids().get('ok.md')).toBe(plain('ok.md'));
+    });
   });
 });

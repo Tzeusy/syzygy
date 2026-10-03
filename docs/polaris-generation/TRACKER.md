@@ -156,8 +156,12 @@ Authorized implementation work (generator implementation authorization,
         (`generation-source.ts`, a plain literal array) lists every reason an
         excluded source may carry; `validateGenerationSources` refuses any
         other reason and any excluded row whose id is not `s-` plus 24 hex
-        digits of a digest (no path-derived id). The PWB adapter maps its
-        closed withholding reasons onto the set and falls back to
+        digits (the validator checks that shape only). The PWB adapter
+        keys an excluded row's id as HMAC-SHA256 of a per-run random key over
+        the source identity, so it is stable within a run and not across runs;
+        non-excluded rows keep the unkeyed identity hash. It maps its closed
+        withholding reasons onto the set (a detector match with no closed
+        reason is `secret-detector-match`) and falls back to
         `unclassified-exclusion`; it never passes the classifier's sentence
         through.
   - [~] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
