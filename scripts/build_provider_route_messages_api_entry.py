@@ -22,6 +22,7 @@ import hashlib
 import json
 import pathlib
 import re
+import subprocess
 import sys
 
 PKG = pathlib.Path(".syzygy/governance/contracts/candidates/provider-route-messages-api-entry")
@@ -63,16 +64,45 @@ ACCEPTANCE = ("byte for byte", "requestBytes", "in neither fails")
 #: Request fields the entry must pin itself, so the acceptance admits no profile-set byte.
 PINNED = ("model", "tools", "effort", "thinking", "maxTokensCeiling")
 SDK_PIN = ("@anthropic-ai/sdk", "0.131.0")
-ENV_VAR = "ANTHROPIC_API_KEY"
+ENV_VAR = "SYZYGY_POLARIS_PROVIDER_API_KEY"
 GATE_RULES = ("permitted()", "explicit upstream", "403")
-REQUEST_KEYS = ("pinnedVersions", "generatorBuilt", "sdkFixed", "runtimeFixed",
-                "routeFixedByThisEntry", "headers", "probe", "absentByConstruction",
-                "unlistedBytes")
+REQUEST_KEYS = ("provenance", "pinnedVersions", "endpoint", "bodyFields", "generatorBuilt",
+                "sdkFixed", "runtimeFixed", "routeFixedByThisEntry", "headers", "probe",
+                "absentByConstruction", "unlistedBytes")
 FIT_KEYS = ("fitsWithoutNewVersion", "needsReading", "conclusion")
-#: Header names the entry must list and the ones it must never list.
-HEADERS_PRESENT = ("user-agent: Anthropic/JS 0.131.0", "x-api-key", "x-stainless-os",
-                   "x-stainless-arch", "x-stainless-runtime-version", "content-length")
-HEADERS_ABSENT = ("anthropic-beta", "authorization", "cookie", "claude-cli", "agent-sdk")
+#: The header table of acceptMessagesApiRequest at the cited commit, as values: the
+#: entry must equal these, not merely name them (a presence-only check passed a
+#: wrong literal in the sibling package's round 3).
+EXPECTED_LITERALS = {
+    "accept": "application/json", "content-type": "application/json",
+    "anthropic-version": "2023-06-01", "user-agent": "Anthropic/JS 0.131.0",
+    "accept-language": "*", "sec-fetch-mode": "cors", "x-stainless-lang": "js",
+    "x-stainless-package-version": "0.131.0", "x-stainless-retry-count": "0",
+    "x-stainless-runtime": "node", "x-stainless-helper-method": "stream"}
+EXPECTED_SHAPES = {
+    "x-stainless-os": "^[A-Za-z]{1,16}$", "x-stainless-arch": "^[a-z0-9_]{1,16}$",
+    "x-stainless-runtime-version": "^v\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$",
+    "accept-encoding": "^[a-z, ]{1,40}$"}
+EXPECTED_RULES = {"x-api-key", "content-length", "host", "connection", "x-stainless-timeout"}
+EXPECTED_CLOSED = sorted(set(EXPECTED_LITERALS) | set(EXPECTED_SHAPES) | EXPECTED_RULES)
+HEADERS_ABSENT = ("anthropic-beta", "authorization", "cookie", "claude-cli", "agent-sdk",
+                  "x-app", "anthropic-dangerous-direct-browser-access", "x-claude-code-session-id")
+HEADER_KEYS = ("pinnedLiterals", "shapes", "valueRules", "closedSet", "unlisted", "machineFingerprint")
+#: Files the provenance must pin: the adapter that holds the header table, the gate, the bytes note.
+PROVENANCE_FILES = ("packages/polaris-generation-provider/src/messages-api-provider.ts",
+                    "packages/polaris-generation-provider/src/egress-gate.ts",
+                    "docs/polaris-generation/PROVIDER-EGRESS-BYTES.md")
+ACCEPT_CLAUSE = "admits no profile-set byte beyond the values this entry pins"
+SHA1 = re.compile(r"[0-9a-f]{40}")
+
+
+def repo_blob(commit, path):
+    """The blob id of `path` at `commit`, or None when the commit is not in the local store."""
+    try:
+        return subprocess.run(["git", "rev-parse", f"{commit}:{path}"], capture_output=True,
+                              text=True, check=True).stdout.strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
 
 
 def sha(data):
@@ -149,6 +179,8 @@ def findings_for(name, doc, butlers_contract, sibling=None):
         out.append(f"{name}: runtimePin is not the measured SDK version")
     if not EGRESS_SOURCE.search(rc.get("source", "")) or EGRESS_BLOB not in rc.get("source", ""):
         out.append(f"{name}: routeConditions.source names no egress record ID, version and blob")
+    if ACCEPT_CLAUSE not in rc.get("acceptanceCheck", ""):
+        out.append(f"{name}: acceptanceCheck does not end on the clause admitting no profile-set byte beyond the pins")
     if not all(w in rc.get("acceptanceCheck", "") for w in ACCEPTANCE):
         out.append(f"{name}: acceptanceCheck does not require generator parts byte for byte and the listed bytes")
     if not str(rc.get("fallback", "")).startswith("none"):
@@ -179,13 +211,44 @@ def findings_for(name, doc, butlers_contract, sibling=None):
         out.append(f"{name}: thinking is not pinned to off or adaptive with other values refused")
     if (rb.get("pinnedVersions", {}).get("package"), rb.get("pinnedVersions", {}).get("version")) != SDK_PIN:
         out.append(f"{name}: requestBytes pins other versions than runtimePin")
-    headers = " | ".join(rb.get("headers", []))
-    for h in HEADERS_PRESENT:
-        if h not in headers:
-            out.append(f"{name}: headers list lacks {h}")
-    for h in HEADERS_ABSENT:
-        if h in headers:
-            out.append(f"{name}: headers list admits {h}")
+    hd = rb.get("headers", {})
+    if not isinstance(hd, dict) or any(k not in hd for k in HEADER_KEYS):
+        out.append(f"{name}: headers lacks one of {HEADER_KEYS}")
+    else:
+        if hd["pinnedLiterals"] != EXPECTED_LITERALS:
+            out.append(f"{name}: headers.pinnedLiterals differ from the cited table")
+        if hd["shapes"] != EXPECTED_SHAPES:
+            out.append(f"{name}: headers.shapes differ from the cited table")
+        if set(hd["valueRules"]) != EXPECTED_RULES:
+            out.append(f"{name}: headers.valueRules cover other headers than the cited table")
+        if hd["closedSet"] != EXPECTED_CLOSED:
+            out.append(f"{name}: headers.closedSet is not the closed header set")
+        rules = hd["valueRules"]
+        if "configured credential" not in rules.get("x-api-key", "") or "never recorded" not in rules.get("x-api-key", ""):
+            out.append(f"{name}: x-api-key rule does not bind the configured credential and say it is never recorded")
+        if "there is no open class" not in hd["unlisted"]:
+            out.append(f"{name}: headers.unlisted admits an open class of headers")
+        listed = json.dumps(hd["pinnedLiterals"]) + json.dumps(hd["closedSet"])
+        for h in HEADERS_ABSENT:
+            if h in listed:
+                out.append(f"{name}: headers list admits {h}")
+    for k in ("model", "max_tokens", "output_config"):
+        if k not in str(rb.get("bodyFields", "")):
+            out.append(f"{name}: bodyFields does not name {k}")
+    if "no tools" not in str(rb.get("bodyFields", "")):
+        out.append(f"{name}: bodyFields does not exclude tools")
+    prov = rb.get("provenance", {})
+    if not isinstance(prov, dict) or not SHA1.fullmatch(str(prov.get("commit", ""))):
+        out.append(f"{name}: provenance names no 40-hex commit")
+    else:
+        files = prov.get("files", [])
+        if sorted(f.get("path") for f in files) != sorted(PROVENANCE_FILES):
+            out.append(f"{name}: provenance files are not the adapter, the gate and the bytes note")
+        for f in files:
+            if not SHA1.fullmatch(str(f.get("blob", ""))):
+                out.append(f"{name}: provenance blob for {f.get('path')} is not 40-hex")
+            elif repo_blob(prov["commit"], str(f.get("path"))) not in (None, f["blob"]):
+                out.append(f"{name}: provenance blob for {f.get('path')} is not the file at the commit")
     if not str(rb.get("probe", "")).startswith("none"):
         out.append(f"{name}: the route sends no probe")
     if "requestBytes" not in ta.get("readAuthority", ""):
@@ -203,6 +266,10 @@ def findings_for(name, doc, butlers_contract, sibling=None):
         out.append(f"{name}: credential is not API key only")
     if cred.get("source", "").count(ENV_VAR) != 1 or "one environment variable" not in cred.get("source", ""):
         out.append(f"{name}: credential is not read from one named environment variable")
+    named = re.search(r"one environment variable, ([A-Z0-9_]+)", cred.get("source", ""))
+    if (named is None or named.group(1).startswith("ANTHROPIC_")
+            or "ambient-environment" not in cred.get("source", "")):
+        out.append(f"{name}: credential variable is not outside the ANTHROPIC_ prefix the adapter refuses")
     for k in ("neverLogged", "disclosure", "refresh"):
         if k not in cred:
             out.append(f"{name}: credential lacks {k}")
@@ -347,11 +414,37 @@ def selftest():
     mut("max_tokens ceiling changed", lambda e, d: e["requestBytes"]["routeFixedByThisEntry"].update(maxTokensCeiling="[Inferred] 128000"), "maxTokensCeiling")
     mut("thinking budget admitted", lambda e, d: e["requestBytes"]["routeFixedByThisEntry"].update(thinking="off, adaptive or enabled with budget_tokens"), "thinking is not pinned")
     mut("thinking adaptive dropped", lambda e, d: e["requestBytes"]["routeFixedByThisEntry"].update(thinking="off; any other value is not a permitted configuration"), "thinking is not pinned")
-    mut("beta header admitted", lambda e, d: e["requestBytes"]["headers"].append("anthropic-beta: x"), "admits anthropic-beta")
-    mut("agent sdk header admitted", lambda e, d: e["requestBytes"]["headers"].append("user-agent: claude-cli/2.1.288 (agent-sdk)"), "admits")
-    mut("api key header dropped", lambda e, d: e["requestBytes"].update(headers=[h for h in e["requestBytes"]["headers"] if "x-api-key" not in h]), "lacks x-api-key")
-    mut("platform header dropped", lambda e, d: e["requestBytes"].update(headers=[h for h in e["requestBytes"]["headers"] if "x-stainless-os" not in h]), "lacks x-stainless-os")
-    mut("user agent pin dropped", lambda e, d: e["requestBytes"].update(headers=[h.replace("Anthropic/JS 0.131.0", "Anthropic/JS") for h in e["requestBytes"]["headers"]]), "lacks user-agent")
+    def hdr(e):
+        return e["requestBytes"]["headers"]
+    mut("beta header admitted", lambda e, d: hdr(e)["pinnedLiterals"].update({"anthropic-beta": "x"}), "pinnedLiterals differ")
+    mut("beta header in closed set", lambda e, d: hdr(e)["closedSet"].append("anthropic-beta"), "closedSet")
+    mut("agent sdk user agent", lambda e, d: hdr(e)["pinnedLiterals"].update({"user-agent": "claude-cli/2.1.288 (agent-sdk)"}), "pinnedLiterals differ")
+    mut("literal value drifts", lambda e, d: hdr(e)["pinnedLiterals"].update({"anthropic-version": "2024-01-01"}), "pinnedLiterals differ")
+    mut("literal dropped", lambda e, d: hdr(e)["pinnedLiterals"].pop("sec-fetch-mode"), "pinnedLiterals differ")
+    mut("sdk version literal drifts", lambda e, d: hdr(e)["pinnedLiterals"].update({"x-stainless-package-version": "0.131.1"}), "pinnedLiterals differ")
+    mut("shape loosened", lambda e, d: hdr(e)["shapes"].update({"x-stainless-os": ".*"}), "shapes differ")
+    mut("shape dropped", lambda e, d: hdr(e)["shapes"].pop("x-stainless-arch"), "shapes differ")
+    mut("value rule dropped", lambda e, d: hdr(e)["valueRules"].pop("host"), "valueRules")
+    mut("value rule added", lambda e, d: hdr(e)["valueRules"].update({"cookie": "any"}), "valueRules")
+    mut("api key rule unbound", lambda e, d: hdr(e)["valueRules"].update({"x-api-key": "any non-empty value"}), "x-api-key rule")
+    mut("closed set widened", lambda e, d: hdr(e)["closedSet"].append("x-extra"), "closedSet")
+    mut("closed set narrowed", lambda e, d: hdr(e)["closedSet"].remove("host"), "closedSet")
+    mut("open header class admitted", lambda e, d: hdr(e).update(unlisted="transport headers are not checked"), "open class")
+    for k in ("pinnedLiterals", "shapes", "valueRules", "closedSet", "unlisted", "machineFingerprint"):
+        mut(f"headers key {k} dropped", lambda e, d, k=k: hdr(e).pop(k), "headers lacks")
+    mut("headers back to a list", lambda e, d: e["requestBytes"].update(headers=["x-api-key"]), "headers lacks")
+    mut("body fields drop tools exclusion", lambda e, d: e["requestBytes"].update(bodyFields="max_tokens, messages, model, output_config, stream, system"), "exclude tools")
+    mut("body fields drop output_config", lambda e, d: e["requestBytes"].update(bodyFields="max_tokens, model, no tools"), "output_config")
+    mut("acceptance admits profile-set bytes", lambda e, d: e["routeConditions"].update(acceptanceCheck=e["routeConditions"]["acceptanceCheck"].replace("admits no profile-set byte beyond the values this entry pins", "")), "admitting no profile-set")
+    mut("credential variable under the refused prefix", lambda e, d: e["typedAuthority"]["credential"].update(source=e["typedAuthority"]["credential"]["source"].replace(ENV_VAR, "ANTHROPIC_API_KEY")), "ANTHROPIC_")
+    mut("ambient guard unsaid", lambda e, d: e["typedAuthority"]["credential"].update(source=e["typedAuthority"]["credential"]["source"].replace("ambient-environment", "")), "ANTHROPIC_")
+    mut("provenance commit dropped", lambda e, d: e["requestBytes"]["provenance"].pop("commit"), "40-hex commit")
+    mut("provenance commit not hex", lambda e, d: e["requestBytes"]["provenance"].update(commit="main"), "40-hex commit")
+    mut("provenance file dropped", lambda e, d: e["requestBytes"]["provenance"]["files"].pop(), "provenance files")
+    mut("provenance blob not hex", lambda e, d: e["requestBytes"]["provenance"]["files"][0].update(blob="abc"), "40-hex")
+    if repo_blob(prov["entries"][0]["requestBytes"]["provenance"]["commit"], PROVENANCE_FILES[0]) is not None:
+        mut("provenance blob of another file", lambda e, d: e["requestBytes"]["provenance"]["files"][0].update(blob="0" * 40), "not the file at the commit")
+        mut("provenance blob of the next commit", lambda e, d: e["requestBytes"]["provenance"]["files"][1].update(blob=e["requestBytes"]["provenance"]["files"][0]["blob"]), "not the file at the commit")
     mut("probe admitted", lambda e, d: e["requestBytes"].update(probe="after some failures a HEAD probe"), "no probe")
     mut("substitution unnamed", lambda e, d: e["routeSubstitution"].update(substitutes="something-else"), "substitutes")
     mut("authority key drifts", lambda e, d: e["routeSubstitution"]["authorityKey"].update(provider="provider:other"), "authorityKey")

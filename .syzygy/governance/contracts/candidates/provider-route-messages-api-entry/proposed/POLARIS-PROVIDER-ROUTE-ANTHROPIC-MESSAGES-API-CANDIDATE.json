@@ -116,20 +116,21 @@
         "toolInvocationNote": "the empty list holds: the body carries no tools field, and the adapter refuses any reply content block that is not text, thinking or redacted thinking, so a tool call is never output",
         "credential": {
           "kind": "API key only; no subscription sign-in, no OAuth, no credential file",
-          "source": "one environment variable, ANTHROPIC_API_KEY [Inferred: the name is this entry's proposal; the adapter takes the key as its apiKey configuration value and no code at the drafting commit reads any environment variable for it, so the caller that builds the configuration reads exactly this variable and no other]",
+          "source": "one environment variable, SYZYGY_POLARIS_PROVIDER_API_KEY [Inferred: the name is this entry's proposal; the adapter takes the key as its apiKey configuration value and no code at the cited commit reads any environment variable for it, so the caller that builds the configuration reads exactly this variable and no other]. [Observed in the adapter source] the adapter throws ambient-environment if any variable whose name starts with ANTHROPIC_ is set in the process, so the variable cannot carry that prefix and the conventional ANTHROPIC_API_KEY must be unset",
           "disclosure": "the key leaves the machine in the x-api-key header of the one forwarded request, to the upstream host only; the gate refuses any request whose x-api-key differs from the configured key",
           "neverLogged": "the key is never written to a record, log, error or receipt. [Observed in the adapter source at drafting] the failure object carries a closed code, an attempt count and a status; the attempt record carries ids, outcome, status, usage and backoff; the gate decision records are content-free; none has a credential field. A later version's offering re-checks this against the implementation",
           "refresh": "none: a static key is neither refreshed nor rewritten"
         },
         "runtimeEgressGate": {
           "name": "the loopback runtime egress gate (startEgressGate)",
-          "source": "packages/polaris-generation-provider/src/egress-gate.ts at commit dd526b0c3d4de2c1add4288469e320c8c52af99b of PR #264, git blob 3704e4036479cb5edd7f63700380e645370a3c59; request-acceptance.ts blob 87b30864de8d79fa8b69f2be2ca94d8c22f94a3d; messages-api-provider.ts blob 5247e452e79810fda944b6bb8ec2e4900d27c7d6. Unmerged; provenance only, and the rules below are the entry's own statement of what the implementation will enforce",
+          "source": "packages/polaris-generation-provider/src/egress-gate.ts and messages-api-provider.ts at commit e76b692926d89342e7943ce0a2d7ef669a859b47 of PR #264, blobs as pinned in requestBytes.provenance. Unmerged; provenance only, and the rules below are the entry's own statement of what the implementation will enforce",
           "rules": [
             "the adapter's client is pointed at an in-process loopback server and never at a provider",
             "a request is forwarded only when all hold: (1) the current try armed an acceptance predicate and the exact request satisfies it (body fields by value, header names and values against the literals and shapes in requestBytes, x-api-key equal to the configured key); (2) the injected consent switch permitted() returns exactly true now, asked again for every request, retries included; (3) an explicit upstream is configured",
             "otherwise the gate answers 403 and no byte leaves; one try is armed at a time",
             "the gate removes the incoming host and connection headers and forwards the rest unchanged; it forwards to the one configured upstream only",
-            "a body-less HEAD /api/hello is answered by the gate and never forwarded; this route sends none"
+            "a body-less HEAD /api/hello is answered by the gate and never forwarded; this route sends none",
+            "the gate may drop x-stainless-os, x-stainless-arch and x-stainless-runtime-version from the forwarded request (stripFingerprint, default off); it never adds or alters a byte"
           ],
           "limits": "[Observed in the source] the gate sees only HTTP to its own port; anything the process does outside that port is bounded by the environment, the run directory and the isolation test, not by the gate"
         }
@@ -137,10 +138,10 @@
       "routeConditions": {
         "source": "record PUBLIC-EGRESS-anthropic of the public-repo admission package (PR #215), record version 0.1.0-candidate.7. A version string does not identify bytes (the record kept that version across edits), so this entry pins the bytes it was compared against: path .syzygy/governance/contracts/candidates/public-repo-admission/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md, git blob 57f11a71e944e94f640f1748358e76faba49ae90, identical at commit 7704b4a575acf29de93e3872ff549a856e6395ec and at the branch head b17207ce7d2d5d314b683e111e4440886916cffe at drafting; the offering step re-pins the record by the digest of its own manifest row. The egress record is the authority; this block only declares what the implementation will enforce and cannot widen it",
         "tools": "the body carries no tools field and no tool of the provider's side is offered or invoked; a reply content block that is not text, thinking or redacted thinking is refused as no output",
-        "ambientContext": "none: the request carries no instruction or memory files, settings, MCP servers, hooks, environment summary, safeguards block, metadata or context field, and no system prefix of the SDK's own. The only model-visible bytes the generator did not build are the profile-set fields listed in requestBytes (model, max_tokens, output_config.effort and the thinking field when on), which steer the model without being context",
+        "ambientContext": "none: the request carries no instruction or memory files, settings, MCP servers, hooks, environment summary, safeguards block, metadata or context field, and no system prefix of the SDK's own. The only model-visible bytes the generator did not build are the profile-set fields listed in requestBytes (model, max_tokens, output_config.effort and the thinking field when on), which steer the model without being context. [Observed in the adapter source] the adapter refuses to start when any ANTHROPIC_-prefixed environment variable is set, so the SDK's base URL, auth token and custom-header variables cannot redirect, re-authenticate or add headers",
         "telemetry": "the route has no subprocess, runtime or update check; the SDK is a library called in-process and sends nothing outside the gated request. [Observed, capture endpoint] the one successful path names no other socket address; error paths beyond 429 and 529 were not captured",
         "stateLocation": "the route keeps no state or transcript of its own; run records are written inside the run directory. A run whose adapter cannot write there does not start",
-        "acceptanceCheck": "the adapter is accepted only when a request captured at a local endpoint, before any real call, shows (1) the generator-built parts (system string, user message string) byte for byte equal to what the generator built and (2) every other byte equal to requestBytes: the sdkFixed list, the routeFixedByThisEntry values, the headers list and the shapes, for the pinned SDK version. Any byte, header or field in neither fails. The same predicate is enforced per request by the runtime egress gate",
+        "acceptanceCheck": "the adapter is accepted only when a request captured at a local endpoint, before any real call, shows (1) the generator-built parts (system string, user message string) byte for byte equal to what the generator built and (2) every other byte equal to requestBytes: bodyFields, sdkFixed, routeFixedByThisEntry, headers (literals, shapes, value rules and closedSet) and probe, for the pinned SDK version. Any byte, header or field in neither fails. The check admits no profile-set byte beyond the values this entry pins. The same predicate is enforced per request by the runtime egress gate",
         "fallback": "none: a failure never routes to another provider, to the Agent SDK route or to a tool",
         "egressRecordFit": {
           "status": "[Inferred] a drafter's comparison of this entry with the confirmed egress record bytes pinned in source; the owner reads the record's own wording",
@@ -175,9 +176,10 @@
         "[Unknown] whether the real API accepts output_config.effort, or the adaptive thinking field, for the pinned model with this body: only a capture endpoint has seen these bytes (PROVIDER-EGRESS-BYTES.md, PR #264)",
         "[Unknown] traffic on paths the capture did not take: error handling beyond 429 and 529, long streams and connection resets",
         "[Unknown] whether the SDK library writes a file outside the run directory",
-        "[Unknown] no code at the drafting commit reads ANTHROPIC_API_KEY; the credential path is a proposal until the caller exists",
         "the model's context window and the account's rate limits",
-        "the provider's own retention under the terms and settings of the key used, which the egress record discloses and does not promise"
+        "the provider's own retention under the terms and settings of the key used, which the egress record discloses and does not promise",
+        "[Unknown] no code at the cited commit reads SYZYGY_POLARIS_PROVIDER_API_KEY; the credential path is a proposal until the caller exists",
+        "[Unknown] the x-stainless-timeout and connection values: the cited predicate checks their names only"
       ],
       "failureStates": {
         "consentWithdrawn": {
@@ -262,14 +264,33 @@
         "unknown": "derivation-deterministic"
       },
       "requestBytes": {
-        "status": "the exact request the route may carry for the pinned version, inline so the bytes an act binds are these bytes; PROVIDER-EGRESS-BYTES.md is cited as provenance only and its later edits change nothing here",
-        "provenance": "[Observed, capture endpoint, no provider contacted] PROVIDER-EGRESS-BYTES.md, section 'Messages API route', on the branch of PR #264: blob cd50a3139f0ea35dbb5134f7b233afe452836071 at commit dd526b0c3d4de2c1add4288469e320c8c52af99b; the header literals and shapes below are those of acceptMessagesApiRequest in messages-api-provider.ts (blob 5247e452e79810fda944b6bb8ec2e4900d27c7d6) at that commit. No separate review record of the header list exists at drafting; this list is the source and the capture test, and the reviewer re-derives it. That adapter is unmerged",
+        "status": "the exact request the route may carry for the pinned version, inline so the bytes an act binds are these bytes; the cited source is provenance only and its later edits change nothing here",
+        "provenance": {
+          "label": "[Observed, capture endpoint with a dummy credential, no provider contacted] by the author of PR #264; this entry only copies the values. The header literals and shapes below are those of acceptMessagesApiRequest in messages-api-provider.ts at this commit. No separate review record of the header list exists at drafting; the reviewer re-derives it from the source and the capture test. The branch is unmerged",
+          "commit": "e76b692926d89342e7943ce0a2d7ef669a859b47",
+          "files": [
+            {
+              "path": "docs/polaris-generation/PROVIDER-EGRESS-BYTES.md",
+              "blob": "fa8cdceb52256eebd6271ed7b753bfa48fd89438"
+            },
+            {
+              "path": "packages/polaris-generation-provider/src/messages-api-provider.ts",
+              "blob": "bb7f222f146e824cda8ab364df6ff19b343c7c95"
+            },
+            {
+              "path": "packages/polaris-generation-provider/src/egress-gate.ts",
+              "blob": "99d79e9d25601c8d2f464f8e2dada351bfbe84b0"
+            }
+          ],
+          "note": "each blob is the file at that commit (git rev-parse <commit>:<path>); the builder re-checks the pairs whenever the commit is present in the local object database"
+        },
         "pinnedVersions": {
           "package": "@anthropic-ai/sdk",
           "version": "0.131.0",
           "bundledCli": null
         },
         "endpoint": "POST /v1/messages (no query string)",
+        "bodyFields": "exactly: max_tokens, messages, model, output_config, stream, system, and thinking only when the profile is adaptive; no tools, metadata, context_management or cache_control field; system is a string, messages has one user message whose content is a string, output_config is exactly {effort}, stream is true",
         "generatorBuilt": [
           "system: exactly the stage system prompt, as a string (no cache_control)",
           "messages[0]: one user message whose content is exactly the stage input envelope, as a string (no cache_control)"
@@ -290,28 +311,58 @@
           "maxTokensCeiling": "[Inferred proposal, an owner choice] 64000, because a multi-page draft stage can exceed 32000; check it against the first requests run; the sent max_tokens is the minimum of this ceiling, the profile's maxOutputTokens and the dispatch permit's output and usage allowances (at least 1), so the permit may only lower it",
           "note": "model, tools, effort, thinking and max_tokens are profile-set in the measurement; this entry pins them so they are bytes it lists as fixed, the form the egress record admits"
         },
-        "headers": [
-          "user-agent: Anthropic/JS 0.131.0",
-          "anthropic-version: 2023-06-01",
-          "accept: application/json",
-          "content-type: application/json",
-          "accept-language: *",
-          "sec-fetch-mode: cors",
-          "x-stainless-lang: js",
-          "x-stainless-package-version: 0.131.0",
-          "x-stainless-retry-count: 0",
-          "x-stainless-runtime: node",
-          "x-stainless-helper-method: stream",
-          "x-stainless-os (shape: letters, 1 to 16)",
-          "x-stainless-arch (shape: lower-case letters, digits and underscore, 1 to 16)",
-          "x-stainless-runtime-version (shape: v<digits>.<digits>.<digits>)",
-          "accept-encoding (shape: lower-case letters, comma and space, 1 to 40)",
-          "content-length (must equal the byte length of the body)",
-          "x-api-key (must equal the configured key)",
-          "x-stainless-timeout (optional; the adapter's predicate checks the name only, not the value)",
-          "host and connection (removed by the gate; the Node forwarding hop sets its own for the upstream host)"
-        ],
-        "headerNote": "the x-stainless-os, x-stainless-arch and x-stainless-runtime-version headers identify the machine's OS, CPU architecture and Node runtime version, and are sent; x-stainless-retry-count is always 0 because the SDK's own retries are off, and the adapter's retries (429 and 529 only, inside a run budget) are new requests",
+        "headers": {
+          "pinnedLiterals": {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01",
+            "user-agent": "Anthropic/JS 0.131.0",
+            "accept-language": "*",
+            "sec-fetch-mode": "cors",
+            "x-stainless-lang": "js",
+            "x-stainless-package-version": "0.131.0",
+            "x-stainless-retry-count": "0",
+            "x-stainless-runtime": "node",
+            "x-stainless-helper-method": "stream"
+          },
+          "shapes": {
+            "x-stainless-os": "^[A-Za-z]{1,16}$",
+            "x-stainless-arch": "^[a-z0-9_]{1,16}$",
+            "x-stainless-runtime-version": "^v\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$",
+            "accept-encoding": "^[a-z, ]{1,40}$"
+          },
+          "valueRules": {
+            "x-api-key": "equal to the configured credential and non-empty; the credential is never recorded",
+            "content-length": "the byte length of the body, computed",
+            "host": "set by the transport: at the loopback egress gate it matches ^127\\.0\\.0\\.1:\\d{1,5}$; the gate removes it, and the forwarded request names the one upstream host the gate is configured with",
+            "connection": "optional; set by the transport and removed by the gate; the cited predicate checks the name only [Unknown: no value is pinned]",
+            "x-stainless-timeout": "optional; the SDK's request timeout in seconds. [Inferred] the entry bounds it to ^\\d{1,5}$; the cited predicate checks the name only, so an implementation must enforce this shape before the entry is usable"
+          },
+          "closedSet": [
+            "accept",
+            "accept-encoding",
+            "accept-language",
+            "anthropic-version",
+            "connection",
+            "content-length",
+            "content-type",
+            "host",
+            "sec-fetch-mode",
+            "user-agent",
+            "x-api-key",
+            "x-stainless-arch",
+            "x-stainless-helper-method",
+            "x-stainless-lang",
+            "x-stainless-os",
+            "x-stainless-package-version",
+            "x-stainless-retry-count",
+            "x-stainless-runtime",
+            "x-stainless-runtime-version",
+            "x-stainless-timeout"
+          ],
+          "unlisted": "any header name outside closedSet, or a value outside its literal, shape or rule, fails the acceptance check; there is no open class of transport headers; anthropic-beta, authorization and cookie are not in the set",
+          "machineFingerprint": "x-stainless-os, x-stainless-arch and x-stainless-runtime-version identify the machine and are sent; the cited gate has a stripFingerprint option, default off, which removes them from the forwarded request but not from what the acceptance predicate sees; whether the egress record should require stripping is an owner choice (packet O2) and this entry assumes no answer"
+        },
         "probe": "none: the route sends no HEAD /api/hello; a probe arriving at the gate would be answered locally and never forwarded",
         "absentByConstruction": [
           "tools, metadata, context_management and cache_control fields",
@@ -320,7 +371,7 @@
           "any cookie, authorization or other header not listed",
           "a thinking field other than the two permitted values"
         ],
-        "unlistedBytes": "any byte, header or field not listed above fails the acceptance check"
+        "unlistedBytes": "any byte, header or field not listed above fails the acceptance check; the sent max_tokens, model, effort and thinking are compared by value with the values this entry pins"
       },
       "determinismClassNote": "the scalar form is kept for the shape precedent's key and names the primary class; determinismByOutputClass is the machine form and governs"
     }
