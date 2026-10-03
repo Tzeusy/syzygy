@@ -1,16 +1,16 @@
 {
   "subject": {
-    "commit": "cbce346688af74b1e65a772d205e06fa43d7d7b5",
+    "commit": "828c6110e2601e54a89e8d18d0c2ea79bf4189c8",
     "branch": "agent/dossier-engine-4",
     "fileSha256": {
-      "packages/polaris-generation-core/src/dossier-profile.ts": "977d2afc150c4885f7220de0e5ef43bb0ae368af6a5cd9d7a954a0891566bf49",
+      "packages/polaris-generation-core/src/dossier-profile.ts": "a7bf94ee590c350a1f143763283eae5c9becf71887f1752955a1b4cb01ade516",
       "packages/polaris-generation-core/src/pipeline.ts": "9403125dcdb378caa2e0b10a193801577a55a560b24e6beda5105dd51a73035f",
-      "packages/polaris-generation-core/src/reader-questions.ts": "ab4234bdaf490699e6136318d7e96d390b495a9cb272c83edc7179d31f7e996f"
+      "packages/polaris-generation-core/src/reader-questions.ts": "ec59bad9104019f373b70d082091c6dcbf6590089f9b79f00a737aebb769d516"
     }
   },
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/polaris-generation-core",
-  "ranAt": "2026-10-03T09:08:40+00:00",
+  "ranAt": "2026-10-03T10:17:08+00:00",
   "mutants": [
     {
       "id": "rq-extra-keys",
@@ -157,30 +157,6 @@
       "totalTests": 23
     },
     {
-      "id": "blank-answer",
-      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
-      "old": "answer.trim().length > 0 &&",
-      "new": "",
-      "tests": [
-        "packages/polaris-generation-core/src/dossier-profile.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 14
-    },
-    {
-      "id": "unknown-literal",
-      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
-      "old": "&& answer.trim() !== 'unknown'",
-      "new": "",
-      "tests": [
-        "packages/polaris-generation-core/src/dossier-profile.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 14
-    },
-    {
       "id": "permitted-redaction",
       "file": "packages/polaris-generation-core/src/dossier-profile.ts",
       "old": "const permitted = reply.permittedDraftUse && text !== null;",
@@ -190,31 +166,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 14
-    },
-    {
-      "id": "permitted-type",
-      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
-      "old": "|| typeof reply.permittedDraftUse !== 'boolean'",
-      "new": "",
-      "tests": [
-        "packages/polaris-generation-core/src/dossier-profile.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 14
-    },
-    {
-      "id": "attribution-required",
-      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
-      "old": "|| !reply.attribution\n",
-      "new": "\n",
-      "tests": [
-        "packages/polaris-generation-core/src/dossier-profile.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 14
+      "totalTests": 17
     },
     {
       "id": "id-mismatch",
@@ -226,19 +178,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 14
-    },
-    {
-      "id": "digest-reuse",
-      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
-      "old": "earlier !== undefined && earlier.contentDigest === question.contentDigest ? earlier : undefined",
-      "new": "earlier !== undefined ? earlier : undefined",
-      "tests": [
-        "packages/polaris-generation-core/src/dossier-profile.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 14
+      "totalTests": 17
     },
     {
       "id": "reask-record",
@@ -250,19 +190,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 14
-    },
-    {
-      "id": "reuse-answered",
-      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
-      "old": "earlier.disposition === 'answered' && earlier.answer !== undefined",
-      "new": "false",
-      "tests": [
-        "packages/polaris-generation-core/src/dossier-profile.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 14
+      "totalTests": 17
     },
     {
       "id": "budget-carry",
@@ -274,7 +202,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 14
+      "totalTests": 17
     },
     {
       "id": "abort-carry",
@@ -286,7 +214,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 14
+      "totalTests": 17
     },
     {
       "id": "unresolved-unanswered",
@@ -298,7 +226,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 14
+      "totalTests": 17
     },
     {
       "id": "unaccounted-measured",
@@ -310,7 +238,7 @@
       ],
       "outcome": "survived",
       "failedTests": 0,
-      "totalTests": 14,
+      "totalTests": 17,
       "note": "equivalent: every open question is answered (answeredIds) or carried (unresolved), so the measured count is structurally 0; the expression is a guard that would report any future leak, not a reachable branch"
     },
     {
@@ -323,7 +251,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 14
+      "totalTests": 17
     },
     {
       "id": "budget-validate",
@@ -335,7 +263,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 14
+      "totalTests": 17
     },
     {
       "id": "scope-count",
@@ -347,7 +275,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 14
+      "totalTests": 17
     },
     {
       "id": "purpose-doc",
@@ -358,8 +286,224 @@
         "packages/polaris-generation-core/src/dossier-profile.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 8,
-      "totalTests": 14
+      "failedTests": 10,
+      "totalTests": 17
+    },
+    {
+      "id": "present-blank",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "typeof value === 'string' && value.trim().length > 0",
+      "new": "typeof value === 'string'",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 17
+    },
+    {
+      "id": "present-type",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "typeof value === 'string' && value.trim().length > 0",
+      "new": "value.trim().length > 0",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 17
+    },
+    {
+      "id": "unknown-literal",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "&& answer.trim().toLowerCase() !== 'unknown'",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 17
+    },
+    {
+      "id": "unknown-case",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "answer.trim().toLowerCase() !== 'unknown'",
+      "new": "answer.trim() !== 'unknown'",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 17
+    },
+    {
+      "id": "answer-bound",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "[...text].length <= OWNER_ANSWER_MAX_CHARS",
+      "new": "true",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 17
+    },
+    {
+      "id": "answer-bound-edge",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "[...text].length <= OWNER_ANSWER_MAX_CHARS",
+      "new": "[...text].length < OWNER_ANSWER_MAX_CHARS",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 17
+    },
+    {
+      "id": "live-attribution",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "!present(reply.attribution) ||",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 17
+    },
+    {
+      "id": "live-revision",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "|| !present(reply.revision)",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 17
+    },
+    {
+      "id": "live-bound",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "if (text !== null && !withinBound(text)) throw new Error('invalid-owner-answer');",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 17
+    },
+    {
+      "id": "permitted-type",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "|| typeof reply.permittedDraftUse !== 'boolean'",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 17
+    },
+    {
+      "id": "trim-attribution",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "attribution: reply.attribution.trim(),",
+      "new": "attribution: reply.attribution,",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 17
+    },
+    {
+      "id": "digest-reuse",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "earlier !== undefined && earlier.contentDigest === question.contentDigest ? earlier : undefined",
+      "new": "earlier !== undefined ? earlier : undefined",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 17
+    },
+    {
+      "id": "prior-normalise",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "const text = normalise(earlier.answer);",
+      "new": "const text = earlier.answer ?? null;",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 17
+    },
+    {
+      "id": "prior-bound",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "text !== null && withinBound(text) && present(earlier.attribution)",
+      "new": "text !== null && present(earlier.attribution)",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 17
+    },
+    {
+      "id": "prior-attribution",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "&& present(earlier.attribution) && present(earlier.revision)",
+      "new": "&& present(earlier.revision)",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 17
+    },
+    {
+      "id": "prior-revision",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "&& present(earlier.revision)) {",
+      "new": "){",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 17
+    },
+    {
+      "id": "prior-reuse",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "if (earlier.disposition === 'answered') {",
+      "new": "if (false) {",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 17
+    },
+    {
+      "id": "prior-fresh",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "} else fresh.push(question);",
+      "new": "} else { /* dropped */ }",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 17
     }
   ]
 }
