@@ -14,7 +14,7 @@ const request = (): PipelineRequest => ({
   requestId: 'request-1', projectId: 'project-a', snapshotId: 'snapshot-1',
   routes: { inventory: 'synthetic', plan: 'synthetic', author: 'synthetic', edit: 'synthetic', fidelity: 'synthetic', repair: 'synthetic' }, startedAt: Date.now(),
   budget: { maxCalls: 10, maxInputBytes: 200_000, maxOutputBytes: 20_000, maxUsageUnits: 100, maxElapsedMs: 10_000, maxRepairCycles: 1, accountingPolicy: 'synthetic-units-v1' },
-  sources: [fixtureSource()], readerQuestions: ['Why does this project exist?'], requestedAssets: [],
+  sources: [fixtureSource()], readerQuestions: [{ id: 'why', topics: [], text: 'Why does this project exist?' }], requestedAssets: [],
 });
 
 function harness() {
@@ -122,6 +122,14 @@ describe('source to editorial draft pipeline', () => {
     expect(inventory.sourcePopulation).toHaveLength(2);
     expect(inventory.sourcePopulation[1]).toMatchObject({ sourceId: 'path-only', classificationBasis: 'path-only' });
     expect(inventory.sources).toEqual([{ sourceId: 'purpose', text: 'Reduce recurring mental labor.' }]);
+  });
+
+  it('stops on malformed reader questions before any dispatch', async () => {
+    for (const readerQuestions of ['Why?', ['Why?'], [], [{ id: 'q', topics: ['nope'], text: 'x' }], [{ id: 'q', topics: [], text: 'x', extra: true }]]) {
+      const h = harness();
+      expect(await runGenerationPipeline({ ...request(), readerQuestions }, h.ports, signal())).toMatchObject({ status: 'stopped', reason: 'invalid-request' });
+      expect(h.sends).toHaveLength(0);
+    }
   });
 
   it('refuses a 201st quotable source instead of silently truncating the corpus', async () => {

@@ -13,7 +13,7 @@ import { buildPipelineRequest, CorpusRefusal, globToRegExp, parseReaderConfig, r
 
 const allow: CorpusAdmissionPort = { decide: async () => ({ allowed: true, permissionIdentity: 'fixture-consent-v1' }) };
 const budget = { maxCalls: 7, maxInputBytes: 5_000_000, maxOutputBytes: 1_000_000, maxUsageUnits: 100, maxElapsedMs: 30_000, maxRepairCycles: 1, accountingPolicy: 'fixture-v1' };
-const configText = (extra: Record<string, unknown> = {}): string => JSON.stringify({ repositoryId: 'repository:fixture', revision: 'a'.repeat(40), readerQuestions: ['What is it?'],
+const configText = (extra: Record<string, unknown> = {}): string => JSON.stringify({ repositoryId: 'repository:fixture', revision: 'a'.repeat(40), readerQuestions: [{ id: 'what', topics: [], text: 'What is it?' }],
   requestedAssets: [{ id: 'overview', kind: 'section', required: true }], budget, ...extra });
 const cleanups: string[] = [];
 afterAll(() => rmSync(root, { recursive: true, force: true }));
@@ -188,6 +188,7 @@ describe('globs and config', () => {
     expect(() => parseReaderConfig(configText({ oversize: 'truncate' }))).toThrow('config-invalid: oversize');
     expect(() => parseReaderConfig(configText({ requestedAssets: [{ id: 'x' }] }))).toThrow();
     expect(() => parseReaderConfig(configText({ revision: 'main' }))).toThrow('invalid-pinned-commit');
+    expect(() => parseReaderConfig(configText({ readerQuestions: ['a bare string'] }))).toThrow();
   });
 
   it('takes the dossier questions and assets from the profile unless the config overrides them', () => {
@@ -195,7 +196,7 @@ describe('globs and config', () => {
     const dossier = parseReaderConfig(JSON.stringify({ ...bare, profile: 'dossier' }));
     expect(dossier.readerQuestions).toEqual(DOSSIER_READER_QUESTIONS);
     expect(dossier.requestedAssets).toEqual(DOSSIER_REQUESTED_ASSETS);
-    expect(parseReaderConfig(JSON.stringify({ ...bare, profile: 'dossier', readerQuestions: ['Own question?'] })).readerQuestions).toEqual(['Own question?']);
+    expect(parseReaderConfig(JSON.stringify({ ...bare, profile: 'dossier', readerQuestions: [{ id: 'own', topics: ['mechanisms'], text: 'Own question?' }] })).readerQuestions).toEqual([{ id: 'own', topics: ['mechanisms'], text: 'Own question?' }]);
     expect(() => parseReaderConfig(JSON.stringify(bare))).toThrow('config-invalid');
     expect(() => parseReaderConfig(JSON.stringify({ ...bare, profile: 'other' }))).toThrow('config-invalid: profile');
   });
@@ -204,7 +205,7 @@ describe('globs and config', () => {
     const config = parseReaderConfig(configText({ revision: commit }));
     const corpus = await readRepoCorpus(root, config, { admission: allow });
     const request = buildPipelineRequest(corpus, config, 1);
-    expect(request).toMatchObject({ projectId: 'repository:fixture', readerQuestions: ['What is it?'], budget, snapshotId: corpus.identityDigest });
+    expect(request).toMatchObject({ projectId: 'repository:fixture', readerQuestions: [{ id: 'what', topics: [], text: 'What is it?' }], budget, snapshotId: corpus.identityDigest });
     expect(request.routes.author).toBe('provider-author');
     expect(request.sources).toBe(corpus.sources);
   });

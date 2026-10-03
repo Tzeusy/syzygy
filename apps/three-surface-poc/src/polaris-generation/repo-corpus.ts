@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 
-import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, SOURCE_TEXT_MAX_LENGTH, generationSourceIdentity, generationSourcesForBody, gitBlobObjectId, validateGenerationSources, validateRequestedAssets,
-  type GenerationBudget, type GenerationSource, type GenerationStage, type PipelineRequest, type RequestedAsset } from '@syzygy/polaris-generation-core';
+import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, SOURCE_TEXT_MAX_LENGTH, generationSourceIdentity, generationSourcesForBody, gitBlobObjectId, validateGenerationSources, validateReaderQuestions, validateRequestedAssets,
+  type GenerationBudget, type ReaderQuestion, type GenerationSource, type GenerationStage, type PipelineRequest, type RequestedAsset } from '@syzygy/polaris-generation-core';
 
 import { isolatedGit } from './isolated-git.js';
 import { readGitBlobsBatch, type ReadGitBlobs } from '../git-blob-batch.js';
@@ -34,7 +34,7 @@ export interface ReaderConfig {
   readonly revision: string;
   readonly include: readonly string[];
   readonly exclude: readonly string[];
-  readonly readerQuestions: readonly string[];
+  readonly readerQuestions: readonly ReaderQuestion[];
   readonly requestedAssets: readonly RequestedAsset[];
   readonly budget: GenerationBudget;
   readonly oversize: 'split' | 'exclude';
@@ -50,6 +50,10 @@ const strings = (value: unknown, what: string): string[] => {
 
 /** `profile: "dossier"` supplies the dossier reader questions and assets unless the config sets its own.
  * Strict parse: unknown keys, wrong types and an unset revision are refused. */
+function questionsFrom(value: unknown): readonly ReaderQuestion[] {
+  try { return validateReaderQuestions(value); } catch (error) { throw new Error(`config-invalid: readerQuestions (${error instanceof Error ? error.message : 'invalid'})`); }
+}
+
 export function parseReaderConfig(text: string, overrides: Partial<Pick<ReaderConfig, 'repositoryId' | 'revision'>> & { include?: readonly string[]; exclude?: readonly string[] } = {}): ReaderConfig {
   const raw = JSON.parse(text) as Record<string, unknown>;
   if (raw === null || typeof raw !== 'object' || Array.isArray(raw) || Object.keys(raw).some(key => !CONFIG_KEYS.has(key))) throw new Error('config-invalid: keys');
@@ -67,7 +71,7 @@ export function parseReaderConfig(text: string, overrides: Partial<Pick<ReaderCo
     revision: overrides.revision ?? String(raw.revision ?? ''),
     include: overrides.include?.length ? overrides.include : strings(raw.include ?? ['**'], 'include'),
     exclude: overrides.exclude?.length ? overrides.exclude : strings(raw.exclude ?? [], 'exclude'),
-    readerQuestions: dossier && raw.readerQuestions === undefined ? DOSSIER_READER_QUESTIONS : strings(raw.readerQuestions, 'readerQuestions'),
+    readerQuestions: dossier && raw.readerQuestions === undefined ? DOSSIER_READER_QUESTIONS : questionsFrom(raw.readerQuestions),
     requestedAssets: dossier && raw.requestedAssets === undefined ? DOSSIER_REQUESTED_ASSETS : raw.requestedAssets as RequestedAsset[], budget: budget as unknown as GenerationBudget,
     oversize, ...(routes === undefined ? {} : { routes: routes as unknown as Record<GenerationStage, string> }),
   };
