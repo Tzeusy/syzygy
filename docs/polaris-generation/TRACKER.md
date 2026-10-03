@@ -123,7 +123,10 @@ Authorized implementation work (generator implementation authorization,
         context; empty working directory and all runtime state inside the
         run directory; telemetry off; accepted only when a captured request
         shows nothing but what the generator built. Only `scriptedGenerate`
-        exists.
+        exists. The durable lifecycle around it is now generic
+        (`createDurableLifecycle` in `durable-lifecycle.ts`, injected
+        `generate`, same dispatch-claim crash semantics); the scripted
+        version is a thin wrapper.
   - [ ] **G3 Consent-backed ports.** `permissionIdentity` / `admit` /
         `permitted` read the admission records instead of returning `true`
         (blocked on Phase 0 sign-off for the first real call, not for the code).
