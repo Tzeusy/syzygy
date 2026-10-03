@@ -58,6 +58,7 @@ re-derives the record and counts exactly one copy of the block.
 from __future__ import annotations
 
 import argparse
+import datetime
 import hashlib
 import pathlib
 import re
@@ -261,8 +262,11 @@ class Selection:
                 raise ValueError(f"owner selection {name} carries a 64-hex digest")
 
 
+INSTANT_RE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")
+
+
 def render_act(argument: str, date: str, manifest_sha: str, reviewed: str,
-               verdict: str, sel: Selection, frozen: str) -> str:
+               verdict: str, sel: Selection, frozen: str, instant: str) -> str:
     return f"""# Owner act — RFC5-14 project-documentation content-class amendment
 
 Date: {date}
@@ -270,6 +274,8 @@ Date: {date}
 Owner: Tzeusy
 
 Act identity: `{identity_for(date)}`
+
+Act instant: {instant}
 
 Act type: `{ACT_TYPE}`
 
@@ -344,8 +350,10 @@ def aggregate_heading(date: str) -> str:
 
 
 def render_aggregate_block(argument: str, date: str, manifest_sha: str,
-                           verdict: str, frozen: str) -> str:
+                           verdict: str, frozen: str, instant: str) -> str:
     return f"""{aggregate_heading(date)}
+
+Act instant: {instant}
 
 **Phrase the act takes (given {date} by option selection, not typed; see the
 dedicated record):**
@@ -372,22 +380,26 @@ takes effect in the change that installs it.
 """
 
 
-def expected(argument: str, date: str, sel: Selection, inp: Inputs):
+def expected(argument: str, date: str, sel: Selection, inp: Inputs, instant: str):
     sel.validate()
     if not DATE_RE.fullmatch(date):
         raise ValueError("date must be YYYY-MM-DD")
+    if not INSTANT_RE.fullmatch(instant) or not instant.startswith(date):
+        raise ValueError("instant must be YYYY-MM-DDTHH:MM:SSZ on the act date")
     manifest_sha, reviewed, verdict = validate(argument, inp)
     frozen = inp.frozen or ""
-    return (render_act(argument, date, manifest_sha, reviewed, verdict, sel, frozen),
-            render_aggregate_block(argument, date, manifest_sha, verdict, frozen))
+    return (render_act(argument, date, manifest_sha, reviewed, verdict, sel, frozen, instant),
+            render_aggregate_block(argument, date, manifest_sha, verdict, frozen, instant))
 
 
-def do_record(root: pathlib.Path, argument: str, date: str, sel: Selection) -> int:
+def do_record(root: pathlib.Path, argument: str, date: str, sel: Selection,
+              instant: str | None = None) -> int:
+    instant = instant or datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     if (root / RECORD_REL).exists():
         print(f"FAILED: dedicated act already exists: {RECORD_REL.as_posix()}")
         return 1
     try:
-        record, block = expected(argument, date, sel, live_inputs(root))
+        record, block = expected(argument, date, sel, live_inputs(root), instant)
     except (ValueError, subprocess.CalledProcessError) as exc:
         print(f"FAILED (nothing written): {exc}")
         return 1
@@ -405,9 +417,19 @@ def do_record(root: pathlib.Path, argument: str, date: str, sel: Selection) -> i
     return 0
 
 
-def do_check(root: pathlib.Path, argument: str, date: str, sel: Selection) -> int:
+def recorded_instant(root: pathlib.Path) -> str | None:
+    path = root / RECORD_REL
+    if not path.is_file():
+        return None
+    found = re.findall(r"^Act instant: (\S+)$", path.read_text(), re.M)
+    return found[0] if len(found) == 1 else None
+
+
+def do_check(root: pathlib.Path, argument: str, date: str, sel: Selection,
+             instant: str | None = None) -> int:
+    instant = instant or recorded_instant(root) or f"{date}T00:00:00Z"
     try:
-        record, block = expected(argument, date, sel, live_inputs(root))
+        record, block = expected(argument, date, sel, live_inputs(root), instant)
     except (ValueError, subprocess.CalledProcessError) as exc:
         print(f"FAILED: {exc}")
         return 1
@@ -535,7 +557,7 @@ def selftest() -> int:
     ok_sel = Selection("Perform the amendment act?", "Amend RFC5-14 at its manifest row",
                        "Perform the act at the manifest row.")
     try:
-        record, block = expected(row, "2026-10-04", ok_sel, make())
+        record, block = expected(row, "2026-10-04", ok_sel, make(), "2026-10-04T01:02:03Z")
         results.append(("record and block render, naming the row and the tag",
                         row in record and row in block and tag_for("2026-10-04") in record))
         results.append(("record carries the phrase exactly once in its ceremony",
@@ -546,10 +568,20 @@ def selftest() -> int:
         print(f"  (render failure: {exc})")
         results.append(("record and block render", False))
     try:
-        expected(row, "04/10", ok_sel, make())
+        expected(row, "04/10", ok_sel, make(), "2026-10-04T01:02:03Z")
         results.append(("bad date refused", False))
     except ValueError:
         results.append(("bad date refused", True))
+    for bad, why in (("2026-10-04 01:02:03", "instant not ISO"), ("2026-10-05T01:02:03Z", "instant on another day")):
+        try:
+            expected(row, "2026-10-04", ok_sel, make(), bad)
+            results.append((why + " refused", False))
+        except ValueError:
+            results.append((why + " refused", True))
+    rec2, blk2 = expected(row, "2026-10-04", ok_sel, make(), "2026-10-04T01:02:03Z")
+    results.append(("instant in the record once", rec2.count("Act instant: 2026-10-04T01:02:03Z\n") == 1))
+    above = blk2.split("\n```text")[0]
+    results.append(("instant above the phrase in the aggregate block", above.count("Act instant: 2026-10-04T01:02:03Z") == 1))
     failed = [name for name, ok in results if not ok]
     for name, ok in results:
         print(("ok   " if ok else "FAIL ") + name)
@@ -567,6 +599,7 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--question-opening")
     ap.add_argument("--selection-label")
     ap.add_argument("--selection-description")
+    ap.add_argument("--instant", help="act instant YYYY-MM-DDTHH:MM:SSZ (record: default now; check: default read from the record)")
     args = ap.parse_args(argv[1:])
     if args.selftest:
         return selftest()
@@ -578,7 +611,7 @@ def main(argv: list[str]) -> int:
         return 2
     sel = Selection(args.question_opening, args.selection_label, args.selection_description)
     fn = do_record if args.record else do_check
-    return fn(ROOT, argument, args.date, sel)
+    return fn(ROOT, argument, args.date, sel, args.instant)
 
 
 if __name__ == "__main__":
