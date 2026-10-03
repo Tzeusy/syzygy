@@ -18,13 +18,14 @@
 // Not implemented here, and reported rather than assumed: the scope's
 // extension-based `code-content` rule (every other blob indeterminate and
 // excluded) and its run-profile and instruction-text rules.
-import { createHash, createHmac, randomBytes } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, type DeniedPathRules, type SecretDetector } from '@syzygy/three-surface-poc-core';
 
+import { excludedSourceId, newGenerationRunKey } from './run-key.js';
 import { CorpusRefusal, readRepoCorpus, type CorpusScreen, type ReaderConfig, type RepoCorpus, type RepoCorpusPorts } from './repo-corpus.js';
 
 const REPO_ROOT = fileURLToPath(new URL('../../../../', import.meta.url));
@@ -65,7 +66,7 @@ function refuse(why: string): never { throw new CorpusRefusal(`public-source-pol
 const stringList = (value: unknown): value is readonly string[] => Array.isArray(value) && value.every(item => typeof item === 'string' && item.length > 0);
 
 /** Verifies the act record against the policy bytes and builds the screen. Any gap refuses. */
-export async function loadPublicSourceScreen(port: PublicSourcePolicyActPort = checkoutPolicyActPort(), runKey: Uint8Array = randomBytes(32)): Promise<PublicSourceScreen> {
+export async function loadPublicSourceScreen(port: PublicSourcePolicyActPort = checkoutPolicyActPort(), runKey: Uint8Array = newGenerationRunKey()): Promise<PublicSourceScreen> {
   if (runKey.byteLength < 32) refuse('run key shorter than 32 bytes');
   const { actRecord, policy } = await port.read();
   if (actRecord === undefined) refuse(`no act record at ${PUBLIC_SOURCE_ACT_RECORD_PATH}`);
@@ -93,14 +94,15 @@ export async function loadPublicSourceScreen(port: PublicSourcePolicyActPort = c
     deniedPath: path => deniedPathReason(path, rules) !== undefined,
     // Detectors scan the raw text (inert code contexts included), then the active-content scan.
     screenBody: body => detectSecrets(detectors, body) !== undefined ? 'secret-detector-match' : scanActiveContent(body).length > 0 ? 'active-content' : undefined,
-    opaqueId: identity => `s-${createHmac('sha256', key).update(identity).digest('hex').slice(0, 24)}`,
+    opaqueId: identity => excludedSourceId(key, identity),
   };
 }
 
 /** The any-repo reader with the public-source screen in force: the policy act
  * is verified before the admission port is asked or the repository touched. */
 export async function readScreenedRepoCorpus(repoRoot: string, config: Pick<ReaderConfig, 'repositoryId' | 'revision' | 'include' | 'exclude' | 'oversize'>,
-  ports: Omit<RepoCorpusPorts, 'screen'> & { readonly policyAct?: PublicSourcePolicyActPort; readonly runKey?: Uint8Array } = {}): Promise<RepoCorpus> {
-  const screen = await loadPublicSourceScreen(ports.policyAct, ports.runKey);
-  return readRepoCorpus(repoRoot, config, { ...(ports.admission === undefined ? {} : { admission: ports.admission }), ...(ports.readBlobs === undefined ? {} : { readBlobs: ports.readBlobs }), screen });
+  ports: Omit<RepoCorpusPorts, 'screen'> & { readonly policyAct?: PublicSourcePolicyActPort; readonly runKey?: Buffer } = {}): Promise<RepoCorpus> {
+  const runKey = ports.runKey ?? newGenerationRunKey();
+  const screen = await loadPublicSourceScreen(ports.policyAct, runKey);
+  return readRepoCorpus(repoRoot, config, { ...(ports.admission === undefined ? {} : { admission: ports.admission }), ...(ports.readBlobs === undefined ? {} : { readBlobs: ports.readBlobs }), screen, runKey });
 }

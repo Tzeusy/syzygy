@@ -1,9 +1,10 @@
 import { createHash } from 'node:crypto';
 
 import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, SOURCE_TEXT_MAX_LENGTH, generationSourceIdentity, generationSourcesForBody, gitBlobObjectId, validateGenerationSources, validateReaderQuestions, validateRequestedAssets,
-  type GenerationBudget, type ReaderQuestion, type GenerationSource, type GenerationStage, type PipelineRequest, type RequestedAsset } from '@syzygy/polaris-generation-core';
+  type GenerationBudget, type GenerationExclusionReason, type ReaderQuestion, type GenerationSource, type GenerationStage, type PipelineRequest, type RequestedAsset } from '@syzygy/polaris-generation-core';
 
 import { isolatedGit } from './isolated-git.js';
+import { excludedSourceId, keyedDigest, newGenerationRunKey } from './run-key.js';
 import { readGitBlobsBatch, type ReadGitBlobs } from '../git-blob-batch.js';
 
 const sha256 = (value: string): string => createHash('sha256').update(value).digest('hex');
@@ -130,7 +131,7 @@ export interface RepoCorpus {
   readonly permissionIdentity: string;
   readonly sources: readonly GenerationSource[];
   readonly count: RepoCorpusCount;
-  readonly unrepresentable: readonly { readonly pathSha256: string; readonly objectId: string; readonly reason: 'unquotable-path' }[];
+  readonly unrepresentable: readonly { readonly pathHmac: string; readonly objectId: string; readonly reason: 'unquotable-path' }[];
   readonly rawBytes: number;
   readonly identityDigest: string;
 }
@@ -139,13 +140,15 @@ export interface RepoCorpus {
  * before the blob is read; the body screen runs on the decoded text. A
  * withheld row carries `opaqueId(identity)` and a placeholder path naming that
  * id, never the repository path, object id or body. */
-export type CorpusScreenReason = 'denied-path' | 'secret-detector-match' | 'active-content';
+export type CorpusScreenReason = Extract<GenerationExclusionReason, 'denied-path' | 'secret-detector-match' | 'active-content'>;
 export interface CorpusScreen {
   readonly deniedPath: (path: string) => boolean;
   readonly screenBody: (body: string) => Exclude<CorpusScreenReason, 'denied-path'> | undefined;
   readonly opaqueId: (identity: string) => string;
 }
-export interface RepoCorpusPorts { readonly admission?: CorpusAdmissionPort; readonly readBlobs?: ReadGitBlobs; readonly screen?: CorpusScreen }
+/** `runKey` keys every excluded row's id and the unrepresentable path digests
+ * (syzygy-75ds); it defaults to a fresh key per read and is never serialised. */
+export interface RepoCorpusPorts { readonly admission?: CorpusAdmissionPort; readonly readBlobs?: ReadGitBlobs; readonly screen?: CorpusScreen; readonly runKey?: Buffer }
 
 /** Reads exactly the named blobs of one pinned commit, after the admission
  * port says yes. Never the working tree, never another revision, never a
@@ -156,6 +159,7 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
   if (decision.allowed !== true) throw new CorpusRefusal(decision.allowed === false ? decision.reason : 'admission-undecided');
   if (typeof decision.permissionIdentity !== 'string' || decision.permissionIdentity.length === 0) throw new CorpusRefusal('admission-without-permission-identity');
   const readBlobs = ports.readBlobs ?? readGitBlobsBatch;
+  const runKey = ports.runKey ?? newGenerationRunKey();
   if (git(repoRoot, ['cat-file', '-t', config.revision]).toString('utf8').trim() !== 'commit') throw new Error('invalid-pinned-commit');
   const include = config.include.map(globToRegExp), exclude = config.exclude.map(globToRegExp);
   const records = git(repoRoot, ['ls-tree', '-r', '-z', '--full-tree', config.revision]).toString('utf8').split('\0').filter(Boolean).map(row => {
@@ -165,13 +169,13 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
   });
   let notBlob = 0, outsideInclude = 0, excludedByGlob = 0, unquotablePath = 0, binaryOrNonUtf8 = 0, emptyFiles = 0, oversizeFiles = 0, oversizeExcluded = 0, rawBytes = 0;
   const screened = { 'denied-path': 0, 'secret-detector-match': 0, 'active-content': 0 };
-  const unrepresentable: { readonly pathSha256: string; readonly objectId: string; readonly reason: 'unquotable-path' }[] = [];
+  const unrepresentable: { readonly pathHmac: string; readonly objectId: string; readonly reason: 'unquotable-path' }[] = [];
   const chosen = records.filter(record => {
     if (record.type !== 'blob' || record.mode === '120000') { notBlob++; return false; }
     if (!include.some(re => re.test(record.path))) { outsideInclude++; return false; }
     if (exclude.some(re => re.test(record.path))) { excludedByGlob++; return false; }
     // A name no source row can carry is counted and listed by digest, never a failed run.
-    if (!representablePath(record.path)) { unquotablePath++; unrepresentable.push({ pathSha256: sha256(record.path), objectId: record.objectId, reason: 'unquotable-path' }); return false; }
+    if (!representablePath(record.path)) { unquotablePath++; unrepresentable.push({ pathHmac: keyedDigest(runKey, record.path), objectId: record.objectId, reason: 'unquotable-path' }); return false; }
     return true;
   }).sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
   const evaluationId = `corpus:${config.repositoryId}@${config.revision}`;
@@ -196,7 +200,7 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
       rawBytes += bytes.length;
       const sourceId = `s-${sha256(record.path).slice(0, 24)}`;
       const base = { repositoryId: config.repositoryId, revision: config.revision, path: record.path, objectId: record.objectId, evaluationId, sourceId };
-      const excludedRow = (reason: string): GenerationSource => ({ ...base, classificationBasis: 'body', exclusion: { excluded: true, reason }, spans: [] });
+      const excludedRow = (reason: GenerationExclusionReason): GenerationSource => ({ ...base, sourceId: excludedSourceId(runKey, record.path), classificationBasis: 'body', exclusion: { excluded: true, reason }, spans: [] });
       let body: string | undefined;
       // ignoreBOM keeps a leading U+FEFF so the text still hashes to its blob.
       try { body = bytes.includes(0) ? undefined : new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes); } catch { body = undefined; }
@@ -206,7 +210,7 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
       const screenedOut = screen?.screenBody(body);
       if (screenedOut !== undefined) { sources.push(withheld(record, screenedOut)); continue; }
       if ([...body].length > SOURCE_TEXT_MAX_LENGTH) { oversizeFiles++; if (config.oversize === 'exclude') oversizeExcluded++; }
-      sources.push(...generationSourcesForBody({ ...base, body, oversize: config.oversize }));
+      sources.push(...generationSourcesForBody({ ...base, body, oversize: config.oversize }).map(row => row.exclusion.excluded ? { ...row, sourceId: excludedSourceId(runKey, record.path) } : row));
     }
   }
   validateGenerationSources(sources);
@@ -214,7 +218,9 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
     count: { listed: records.length, notBlob, outsideInclude, excludedByGlob, unquotablePath, selected: chosen.length, binaryOrNonUtf8, emptyFiles, oversizeFiles, oversizeExcluded, sourceRows: sources.length,
       deniedPath: screened['denied-path'], secretDetectorMatches: screened['secret-detector-match'], activeContent: screened['active-content'] },
     unrepresentable,
-    rawBytes, identityDigest: sha256(sources.map(source => `${source.path}\0${source.objectId}\0${source.sourceId}`).join('\n')) };
+    rawBytes, // The digest binds the population across runs, so a path-bearing excluded row contributes its unkeyed id, never its keyed one.
+    // A withheld row (objectId null) carries only the screen's own keyed id, as before.
+    identityDigest: sha256(sources.map(source => `${source.path}\0${source.objectId}\0${source.exclusion.excluded && source.objectId !== null ? `s-${sha256(source.path).slice(0, 24)}` : source.sourceId}`).join('\n')) };
 }
 
 /** The request the pipeline would run; startedAt is the caller's clock. */
