@@ -1,0 +1,31 @@
+diff --git a/openspec/changes/three-surface-poc-experience/proposal.md b/openspec/changes/three-surface-poc-experience/proposal.md
+index 91677c7e..80f1d8d0 100644
+--- a/openspec/changes/three-surface-poc-experience/proposal.md
++++ b/openspec/changes/three-surface-poc-experience/proposal.md
+@@ -77,6 +77,26 @@ configured Butlers repository also remains Unknown. This specification does
+ not turn missing
+ evidence into an empty or successful state.
+ 
++## Amendment — governing intent on every work item
++
++This amendment adds POC-REQ-014: every served work item carries a
++governing-intent field that is either an edge to its warrant, joined by a
++recorded identity, or Unknown with a reason from RFC2-24's closed list. Both
++channels count the Unknown items over the served set, and Trajectory marks
++them and lets a reader narrow the board to them, as RFC8-23 requires of work
++with no traceable warrant. No edge is ever derived from a title or other
++work-item text, so the non-goal above against inferred edges and intent
++stands unchanged.
++
++The amendment admits no new work-item column. Which input, if any, may carry
++a warrant into the POC is an open owner question, recorded as P-100 in
++`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`. Until it is
++answered, every served item is Unknown with the reason
++`source-uncaptured-or-unreachable`. In `CONTRACT-COVERAGE.md`, RFC8-22 and
++RFC8-23 move from Part B2 to Part A, because a requirement now covers one of
++their consequences, and the one limb no requirement observes has its own
++Unknown amendment row.
++
+ ## Acceptance inputs
+ 
+ - `CONTRACT-COVERAGE.md` carries the clause-consequence review input and its

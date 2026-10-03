@@ -1,0 +1,91 @@
+diff --git a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
+index 092711e2..e9c436dd 100644
+--- a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
++++ b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
+@@ -27,7 +27,7 @@ Reader notes, binding on how this file is read:
+   observation points for every oracle below.
+ - **Groups.** Requirements are organized into seven literal groups,
+   named in each requirement's `Group` line: *Code-structure
+-  observation* (001–004), *Work-item observation* (010–013), *Client
++  observation* (001–004), *Work-item observation* (010–014), *Client
+   rendering and parity* (020–022), *Polaris* (030–032), *Trajectory*
+   (040–043), *Orrery* (050–053), *Cross-cutting experience* (060–061).
+   Identifiers are stable and literal: minted once, amended in place,
+@@ -380,6 +380,77 @@ warrants:
+   parent_requirements: []
+ ```
+ 
++### Requirement: POC-REQ-014 — Every work item's governing intent is a recorded edge or a counted Unknown
++
++Group: Work-item observation. Form: **invariant**.
++
++**Required behavior.** Every served work item SHALL carry a governing-intent
++field (`governedBy`). The field SHALL hold either an edge to the warrant the
++item was materialized under, joined by a recorded identity, or `Unknown` with
++exactly one primary reason from RFC2-24's closed list and that reason's
++resolution route. The POC SHALL NOT derive an edge from a work item's title,
++or from any other work-item text, by matching, similarity or inference. Both
++channels SHALL serve, over the served item set, how many items carry an edge
++and how many are Unknown. Trajectory SHALL mark each Unknown item, show the
++count, and let a reader narrow the board to the Unknown items. An Unknown item
++SHALL NOT be rendered as warranted, green or complete, and SHALL NOT be
++labelled orphaned work.
++
++- **Scope.** every served work item in the machine answer and on Trajectory.
++  This requirement admits no work-item column and no other input: the
++  projection stays as POC-REQ-010 to POC-REQ-013 bound it. While no admitted
++  input carries a warrant, every served item is Unknown with the reason
++  `source-uncaptured-or-unreachable`.
++
++- **Case (sweep + counterexample schema)**: a checker enumerates every served
++  work item from the machine answer — the denominator is the complete served
++  item set (POC-REQ-011) — and reads each item's `governedBy`. Separately, the
++  checker plants one fixture item whose title names a requirement identifier,
++  for example "Implement POC-REQ-010", and observes it.
++- **Observable**: each item's `governedBy` value; the served edge and Unknown
++  counts on both channels; Trajectory's Unknown markers, its count and its
++  narrowed view.
++- **Oracle**: every enumerated item carries exactly one of an edge with its
++  recorded join identity or an Unknown with one reason from RFC2-24's twelve;
++  the edge count plus the Unknown count equals the enumerated item count; the
++  two channels serve the same two counts; Trajectory's narrowed view lists
++  exactly the items the machine answer serves as Unknown; and the planted
++  item's `governedBy` is Unknown, never an edge to the identifier its title
++  names. Equality and set membership decide.
++- **Oracle independence**: the denominator is the checker's own enumeration
++  of served items, not the served counts; the reason list is read from
++  RFC2-24; the planted title is the checker's own.
++- **Falsifier**: a served item with no `governedBy`; an edge with no recorded
++  join identity; an edge whose only basis is work-item text; counts that do
++  not reconcile with the enumeration or differ between the channels; an
++  Unknown with no reason, a reason outside the twelve, or no route; or an
++  Unknown item rendered as warranted, green, complete or orphaned.
++
++#### Scenario: No admitted input carries a warrant
++
++- **WHEN** the machine answer serves N work items and no admitted input
++  carries a warrant
++- **THEN** both channels serve 0 items with an edge and N Unknown with the
++  reason `source-uncaptured-or-unreachable` and its route, and Trajectory
++  marks all N and lets a reader narrow the board to them
++
++#### Scenario: A title names a requirement
++
++- **WHEN** a served item's title reads "Implement POC-REQ-010"
++- **THEN** that item's `governedBy` is Unknown, and no edge to
++  POC-REQ-010 is served for it
++
++```yaml
++warrants:
++  primary: VIS-2
++  doctrine: [VIS-1, VIS-2, VIS-6]
++  contracts: [RFC2-24, RFC4-15, RFC8-22, RFC8-23]
++  policies: []
++  decisions: []
++  topology: []
++  parent_requirements: []
++```
++
+ ### Requirement: POC-REQ-020 — Client-rendered facts are the shared model's facts
+ 
+ Group: Client rendering and parity. Form: **invariant**.

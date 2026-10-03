@@ -1,0 +1,74 @@
+diff --git a/openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md b/openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
+index 758018f9..4a4dbd23 100644
+--- a/openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
++++ b/openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
+@@ -50,9 +50,9 @@ Every clause was judged exactly once and lands in exactly one part:
+ | RFC5 | 27 | 1 | 15 | 11 |
+ | RFC6 | 28 | 10 | 1 | 17 |
+ | RFC7 | 41 | 12 | 4 | 25 |
+-| RFC8 | 32 | 5 | 0 | 27 |
++| RFC8 | 32 | 7 | 0 | 25 |
+ | RFC9 | 60 | 17 | 2 | 41 |
+-| **Total** | **324** | **74** | **27** | **223** |
++| **Total** | **324** | **76** | **27** | **221** |
+ 
+ The Part A clause set is exactly the `contracts[]` union in the
+ generated `GOVERNING-DEPENDENCIES.md` (verified below).
+@@ -116,6 +116,7 @@ exhausted — a reviewer who finds an unlisted limb has found a real gap.
+ | RFC4-15 | Work-item identity + status vocabulary faithfully, capture-stamped transmitted as substrate declares (never hardcoded) | covered — direct match | POC-REQ-010 |
+ | RFC4-15 | Reads only the live/authoritative substrate, never a derived passive export, as a work-item source | covered — export-mutation oracle is exactly this authority-boundary check | POC-REQ-012 |
+ | RFC4-15 | Degraded mode: substrate unreadable renders Unknown-with-reason, distinct from a genuinely empty result | covered — matches "export unavailable → last-good marked stale," applied as Unknown-vs-empty distinction | POC-REQ-013 |
++| RFC4-15 | Authority is work lifecycle state, never intent: no work-item text is read as a work item's governing intent | covered — Amendment row; the planted-title counterexample observes it | POC-REQ-014 |
+ | RFC4-26 | Capability/entity↔code mappings are declared-only, inferred mappings excluded | covered — Orrery's declared-mappings-only design is exactly class (i) with class (ii) excluded, matching the scope's "no inferred mappings or edges" | POC-REQ-050, POC-REQ-052 |
+ | RFC4-27 | Unmapped/absence claim requires an executed coverage record with reconciling counts, never silent absence | covered — "unmapped code a visible Unknown region with reconciling counts" is this clause's coverage-record duty applied to Orrery | POC-REQ-051 |
+ | RFC5-16 | (a) Observation-capture ingest screening for Butlers repo structure | covered — POC-REQ-002's "never indexed contents" sentinel sweep structurally avoids most of the screening concern for code bodies, but doesn't test the secret-detection-policy mechanism itself | POC-REQ-002 (partial) |
+@@ -155,6 +156,10 @@ exhausted — a reviewer who finds an unlisted limb has found a real gap.
+ | RFC8-2 | Beads closure/activity never rendered as done/green/complete | covered — Anti-thesis limb (b) matches directly; limb (a) [no editable store — POC never writes] and limb (c) [fleet-change/cost/authority accounting] aren't touched by POC scope, so only (b) rows here | POC-REQ-043 |
+ | RFC8-12 | Kanban state field renders only a declared, closed set of status values — no minted/free-form values | covered — POC's "declared closed status-vocabulary mapping" exercises the closed-vocabulary/no-minting invariant; the specific 13-value partition, chain-state field separation, and `reconciled` carve-out aren't adopted since Trajectory renders no reconciliation chain state | POC-REQ-040 |
+ | RFC8-15 | Closure without a merge/verification fact never rendered as a normalized "done"/complete/finished/resolved label | covered — Matches the terminal-state closure-fallacy rule (`closed-unmerged` analog) this clause states directly | POC-REQ-043 |
++| RFC8-22 | The unestablished link between a work item and its warrant renders Unknown with its RFC2-24 reason, never silently skipped | covered — Amendment row; the POC walks only this one link of the chain | POC-REQ-014 |
++| RFC8-22 | A join is never reconstructed by similarity, interpolation or inference | covered — Amendment row; the planted-title counterexample observes it | POC-REQ-014 |
++| RFC8-23 | A work item with no traceable warrant renders Unknown-provenance: counted, filterable, never green, never pooled into warranted work and never an ingest rejection | covered — Amendment row | POC-REQ-014 |
++| RFC8-23 | Unknown-provenance never absorbs orphaned work: where an item is both, the orphaned-work Contradiction governs | **Unknown** — Amendment row; POC-REQ-014 forbids the orphaned label, but the POC detects no orphaned work, so no requirement observes the Contradiction governing | — |
+ | RFC8-30 | No aggregate, badge, progress bar, or prose sentence renders closed work as done/complete/satisfied absent verification evidence | covered — Same closure-fallacy prohibition restated at module-3 level; disclosed fold — RFC8-2(b), RFC8-15, and RFC8-30 all map to the same one POC requirement from three angles | POC-REQ-043 |
+ | RFC8-31 | Every rendered state/cause/absence value recoverable by text alone (no colour/position-only encoding); every traversal keyboard-operable | covered — Non-visual-parity limb matches the design-token/epistemic-encoding and accessibility-floor requirements directly; the RFC 0006 selection/drawer/scenario-context conformance bundle this clause also invokes is not touched (no drawer/selection UX in the POC-REQ list), so that limb is omitted rather than rowed | POC-REQ-060, POC-REQ-061 |
+ | RFC9-1 | Map surface is a non-authoritative projection of the shared fact model | covered — POC's Orrery projects the same shared fact model that parity (020) enforces; intended/proposed/historical planes and RFC2/RFC6 vocabulary limbs not touched | POC-REQ-020 |
+@@ -180,8 +185,8 @@ exhausted — a reviewer who finds an unlisted limb has found a real gap.
+ | RFC9-48 | A tabular/non-3D equivalent serves as the screen-reader-accessible surface | covered — Every Orrery entity links to its exact-table route; parity keeps that route truthful | POC-REQ-053, POC-REQ-020 |
+ 
+ Part A totals `[Observed, computed by the sweep in "Verifying this
+-table"]`: **107 consequence rows over 74 clauses — 92 covered,
+-15 Unknown.**
++table"]`: **112 consequence rows over 76 clauses — 96 covered,
++16 Unknown.**
+ 
+ ## Part B1 — applicable clauses no requirement covers
+ 
+@@ -415,8 +420,6 @@ are listed so the owner can review or contest each one directly.
+ | RFC8-19 | Absent-cost-means-Unknown-never-zero aggregation; same cost-machinery exclusion as RFC8-18 |
+ | RFC8-20 | Execution-Record-sourced telemetry staging; POC has no Execution Records or telemetry |
+ | RFC8-21 | Warrant→plan→materialization→work-item→run→PR→merge→reconciliation change-accounting chain; POC deliberately leaves this relationship Unknown, building no chain |
+-| RFC8-22 | Broken-join rendering within that same change-accounting chain; no chain exists in POC to break |
+-| RFC8-23 | Unknown-provenance rendering from failed warrant-tracing; POC attempts no warrant tracing for work items |
+ | RFC8-24 | The RFC2-24 claim-reasons Trajectory renders within that warrant/accounting context; same chain POC doesn't build |
+ | RFC8-25 | Inherited-mutation sub-entry accounting and warrant-coverage test; no diff/mutation attribution in POC |
+ | RFC8-26 | Compaction preservation set (what survives compaction); no compaction machinery in POC |
+@@ -466,15 +469,15 @@ are listed so the owner can review or contest each one directly.
+ | RFC9-51 | Illumination/highlight as non-truth-bearing interaction state; no highlighting feature established in POC scope |
+ | RFC9-52 | The RFC-prose-to-OpenSpec authority boundary and coverage-matrix obligation; this non-binding sweep doesn't cite RFC9 as binding authority for the POC spec |
+ 
+-Part B2 total `[Observed, computed]`: **223 clauses.**
++Part B2 total `[Observed, computed]`: **221 clauses.**
+ 
+ ## Verifying this table
+ 
+ - Denominator: re-run the two counting methods named above; both must
+-  return 324 for RFC1–9, and 74 + 27 + 223 = 324.
++  return 324 for RFC1–9, and 76 + 27 + 221 = 324.
+ - Mapped set: `python3 scripts/build_three_surface_poc_spec_dependencies.py
+   --check` — Part A's clause column must equal the generated
+-  `contracts[]` union (74 identifiers).
++  `contracts[]` union (76 identifiers).
+ - Totals: count rows and dispositions in this file's tables (e.g.
+   Python over the `| RFC` rows); the printed totals must match the
+   count — they were computed that way, not transcribed.
