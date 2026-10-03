@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   DossierEvaluationError, evaluateDossier, parseDossierManifest, parseReaderQuestions, readerCost, scanDossierPage,
-  scriptedAnswers, type ReaderAnswerPort, type ReaderPortFactory,
+  admittedSourcesDigest, scriptedAnswers, type ReaderAnswerPort, type ReaderPortFactory,
 } from './dossier-evaluation.js';
 import { generationAnchorId, generationSourcesForBody, gitBlobObjectId, type GenerationSource } from './generation-source.js';
 
@@ -316,6 +316,9 @@ describe('report subject (rule 11)', () => {
     const changed = bodySource('durability', 'docs/durability.md', 'Use "fsync" & <wait>!');
     const other = (await evaluateDossier(input({ index: INDEX.replace('&lt;wait&gt;.', '&lt;wait&gt;!'), sources: [README, changed, SECRET] }), signal)).subject;
     expect(other.sources.sha256).not.toBe(base.sources.sha256);
+    // The body is bound by its own hash, not through the declared object id alone.
+    const sameIdentity = admittedSourcesDigest([README, { ...changed, objectId: DURABILITY.objectId }, SECRET]);
+    expect(sameIdentity.sha256).not.toBe(base.sources.sha256);
   });
 
   it('binds the budget and the scripted answers, and records neither when absent', async () => {
