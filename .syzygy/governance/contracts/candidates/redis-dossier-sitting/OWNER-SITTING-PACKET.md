@@ -136,6 +136,25 @@ version. Also decide the egress-record wording both entries need read: the
 record's "fixed by the runtime" and "nothing else" phrases against the pinned
 fields.
 
+## Proposed run budget (owner-adjustable, not an act)
+
+[Inferred] These values come from code caps and are unmeasured. They need no
+phrase and bind nothing: the owner may change any value or leave them, and
+nothing is signed over them. They will live in code under syzygy-bc0g.
+
+- Unit `dossier-units-v1`: 1 unit is 1,000 tokens (input, cache and output),
+  rounded up per call; a call whose usage is unknown counts at its full
+  ceiling.
+- Run total 4,000 units, about 4M tokens: a worst-case ceiling; typical spend
+  is not measured.
+- Shares: 1,000 units for discovery (at most 40 units per call), 3,000 for
+  narrative.
+- Per-stage cap: 600 units on stages that read all sources, 300 on the others.
+- Per attempt: at most 64k output tokens. Wall clock: 2 hours.
+- When the budget runs out, the run renders what is complete and marks the
+  rest as deferred-by-budget.
+- Cost is stated in tokens only; no price has been measured.
+
 ## Later-gate options, not asked now
 
 A fingerprint-stripping option (`stripFingerprint`) is absent from the cited
