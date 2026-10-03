@@ -104,6 +104,7 @@ DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
 #: generated declaration is regenerated after whichever is signed second.
 PENDING_SIBLINGS = frozenset({
     "pwb-accessible-name-amendment",
+    "pwb-anchor-resolution-amendment",
     "pwb-class-granular-extraction-amendment",
     "pwb-opening-index-amendment",
     "pwb-release-label-amendment",

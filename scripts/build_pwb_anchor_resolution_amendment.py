@@ -691,7 +691,9 @@ PACKAGE = Package(
     #: one Source line is rewritten by each, so whichever is signed later is
     #: regenerated with --write over the earlier one's applied bytes.
     pending_siblings=frozenset({
+        "pwb-accessible-name-amendment",
         "pwb-class-granular-extraction-amendment",
+        "pwb-opening-index-amendment",
         "pwb-release-label-amendment",
     }),
     coverage=coverage_findings,
