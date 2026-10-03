@@ -140,6 +140,11 @@
     "rebase": {
       "note": "Rebased onto the slice-5 mark fixup at the coordinator's direction. Pre-rebase figures, at 0f5e77c1 over base 46918be: /polaris 1,544,325 direct / 1,550,430 tailnet (+647 each), and 7 of 7 mutants killed. The rebased slice adds the same +647 bytes.",
       "preRebaseCommit": "0f5e77c1ccf7def28f4b56aeafabe0c122a7f5a0"
+    },
+    "rebaseOntoMain": {
+      "note": "Rebased onto origin/main b39307fc after slice 5 (PR #240) was rebase-merged; not re-measured. git diff 6d460e69 b39307fc touches no file under apps/ or packages/ (21 files, all governance, docs and scripts), so the renderer and test bytes are those measured. Commits recorded above map: 75a4f318 -> d3825a12, 5412aa6c -> aae42040 (git range-diff reports each patch identical). Targeted tests (proposal-disclosure, polaris-copy, polaris-parity-sweep, polaris-first-reading) re-run after rebase: 4 files, 73 tests passed.",
+      "oldBase": "6d460e692b50fe3252ae9940e7e0461c572fdc84",
+      "newBase": "b39307fcbdc59a109fdd27cd388573a7f8da2fc0"
     }
   },
   "rule6": [
