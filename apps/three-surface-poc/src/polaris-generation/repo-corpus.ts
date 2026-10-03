@@ -1,13 +1,13 @@
-import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 
-import { generationSourcesForBody, gitBlobObjectId, validateGenerationSources, validateRequestedAssets,
+import { SOURCE_TEXT_MAX_LENGTH, generationSourcesForBody, gitBlobObjectId, validateGenerationSources, validateRequestedAssets,
   type GenerationBudget, type GenerationSource, type GenerationStage, type PipelineRequest, type RequestedAsset } from '@syzygy/polaris-generation-core';
 
+import { isolatedGit } from './isolated-git.js';
 import { readGitBlobsBatch, type ReadGitBlobs } from '../git-blob-batch.js';
 
 const sha256 = (value: string): string => createHash('sha256').update(value).digest('hex');
-const git = (repoRoot: string, args: readonly string[]): Buffer => execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], { maxBuffer: 512_000_000 });
+const git = isolatedGit;
 const BLOB_BATCH = 200;
 const STAGES: readonly GenerationStage[] = ['inventory', 'plan', 'author', 'edit', 'fidelity', 'repair'];
 
@@ -78,6 +78,12 @@ function assertIdentity(repositoryId: string, revision: string): void {
   if (!/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/u.test(revision)) throw new Error('invalid-pinned-commit');
 }
 
+/** The path rules the source validator enforces, so one odd name is accounted for rather than fatal. */
+function representablePath(path: string): boolean {
+  return path.length > 0 && !path.startsWith('/') && !path.includes('\0') && !path.includes('\\') && !path.includes('\uFFFD')
+    && !path.split('/').some(part => part === '' || part === '.' || part === '..');
+}
+
 /** `**` crosses directories, `**` + `/` may match none, `*` and `?` stay in one segment. */
 export function globToRegExp(glob: string): RegExp {
   let out = '';
@@ -97,7 +103,12 @@ export interface RepoCorpusCount {
   readonly notBlob: number;
   readonly outsideInclude: number;
   readonly excludedByGlob: number;
+  readonly unquotablePath: number;
+  /** Files chosen to read; listed = notBlob + outsideInclude + excludedByGlob + unquotablePath + selected. */
   readonly selected: number;
+  readonly emptyFiles: number;
+  /** Rows in `sources`: one per file, plus extra pieces of oversize files. */
+  readonly sourceRows: number;
   readonly binaryOrNonUtf8: number;
   readonly oversizeFiles: number;
   readonly oversizeExcluded: number;
@@ -108,6 +119,7 @@ export interface RepoCorpus {
   readonly permissionIdentity: string;
   readonly sources: readonly GenerationSource[];
   readonly count: RepoCorpusCount;
+  readonly unrepresentable: readonly { readonly pathSha256: string; readonly objectId: string; readonly reason: 'unquotable-path' }[];
   readonly rawBytes: number;
   readonly identityDigest: string;
 }
@@ -121,6 +133,7 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
   assertIdentity(config.repositoryId, config.revision);
   const decision = await (ports.admission ?? refusingAdmission).decide({ repositoryId: config.repositoryId, revision: config.revision, include: config.include, exclude: config.exclude });
   if (decision.allowed !== true) throw new CorpusRefusal(decision.allowed === false ? decision.reason : 'admission-undecided');
+  if (typeof decision.permissionIdentity !== 'string' || decision.permissionIdentity.length === 0) throw new CorpusRefusal('admission-without-permission-identity');
   const readBlobs = ports.readBlobs ?? readGitBlobsBatch;
   if (git(repoRoot, ['cat-file', '-t', config.revision]).toString('utf8').trim() !== 'commit') throw new Error('invalid-pinned-commit');
   const include = config.include.map(globToRegExp), exclude = config.exclude.map(globToRegExp);
@@ -129,15 +142,19 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
     if (!match) throw new Error('invalid-git-tree-record');
     return { mode: match[1]!, type: match[2]!, objectId: match[3]!, path: match[4]! };
   });
-  let notBlob = 0, outsideInclude = 0, excludedByGlob = 0, binaryOrNonUtf8 = 0, oversizeFiles = 0, oversizeExcluded = 0, rawBytes = 0;
+  let notBlob = 0, outsideInclude = 0, excludedByGlob = 0, unquotablePath = 0, binaryOrNonUtf8 = 0, emptyFiles = 0, oversizeFiles = 0, oversizeExcluded = 0, rawBytes = 0;
+  const unrepresentable: { readonly pathSha256: string; readonly objectId: string; readonly reason: 'unquotable-path' }[] = [];
   const chosen = records.filter(record => {
     if (record.type !== 'blob' || record.mode === '120000') { notBlob++; return false; }
     if (!include.some(re => re.test(record.path))) { outsideInclude++; return false; }
     if (exclude.some(re => re.test(record.path))) { excludedByGlob++; return false; }
+    // A name no source row can carry is counted and listed by digest, never a failed run.
+    if (!representablePath(record.path)) { unquotablePath++; unrepresentable.push({ pathSha256: sha256(record.path), objectId: record.objectId, reason: 'unquotable-path' }); return false; }
     return true;
   }).sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
   const evaluationId = `corpus:${config.repositoryId}@${config.revision}`;
   const sources: GenerationSource[] = [];
+  const algorithm = (objectId: string): 'sha1' | 'sha256' => objectId.length === 40 ? 'sha1' : 'sha256';
   for (let at = 0; at < chosen.length; at += BLOB_BATCH) {
     const batch = chosen.slice(at, at + BLOB_BATCH);
     const blobs = readBlobs(repoRoot, batch.map(record => record.objectId));
@@ -147,22 +164,21 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
       rawBytes += bytes.length;
       const sourceId = `s-${sha256(record.path).slice(0, 24)}`;
       const base = { repositoryId: config.repositoryId, revision: config.revision, path: record.path, objectId: record.objectId, evaluationId, sourceId };
+      const excludedRow = (reason: string): GenerationSource => ({ ...base, classificationBasis: 'body', exclusion: { excluded: true, reason }, spans: [] });
       let body: string | undefined;
-      try { body = bytes.includes(0) ? undefined : new TextDecoder('utf-8', { fatal: true }).decode(bytes); } catch { body = undefined; }
-      if (body === undefined) {
-        binaryOrNonUtf8++;
-        sources.push({ ...base, classificationBasis: 'body', exclusion: { excluded: true, reason: 'binary-or-non-utf8' }, spans: [] });
-        continue;
-      }
-      if (gitBlobObjectId(body, record.objectId.length === 40 ? 'sha1' : 'sha256') !== record.objectId) throw new Error('corpus-object-mismatch');
-      const made = generationSourcesForBody({ ...base, body, oversize: config.oversize });
-      if ([...body].length > 100_000) { oversizeFiles++; if (config.oversize === 'exclude') oversizeExcluded++; }
-      sources.push(...made);
+      // ignoreBOM keeps a leading U+FEFF so the text still hashes to its blob.
+      try { body = bytes.includes(0) ? undefined : new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes); } catch { body = undefined; }
+      if (body === undefined) { binaryOrNonUtf8++; sources.push(excludedRow('binary-or-non-utf8')); continue; }
+      if (gitBlobObjectId(body, algorithm(record.objectId)) !== record.objectId) throw new Error('corpus-object-mismatch');
+      if (body.length === 0) { emptyFiles++; sources.push(excludedRow('empty-file')); continue; }
+      if ([...body].length > SOURCE_TEXT_MAX_LENGTH) { oversizeFiles++; if (config.oversize === 'exclude') oversizeExcluded++; }
+      sources.push(...generationSourcesForBody({ ...base, body, oversize: config.oversize }));
     }
   }
   validateGenerationSources(sources);
   return { repositoryId: config.repositoryId, revision: config.revision, permissionIdentity: decision.permissionIdentity, sources,
-    count: { listed: records.length, notBlob, outsideInclude, excludedByGlob, selected: chosen.length, binaryOrNonUtf8, oversizeFiles, oversizeExcluded },
+    count: { listed: records.length, notBlob, outsideInclude, excludedByGlob, unquotablePath, selected: chosen.length, binaryOrNonUtf8, emptyFiles, oversizeFiles, oversizeExcluded, sourceRows: sources.length },
+    unrepresentable,
     rawBytes, identityDigest: sha256(sources.map(source => `${source.path}\0${source.objectId}\0${source.sourceId}`).join('\n')) };
 }
 

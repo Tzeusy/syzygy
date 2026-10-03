@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
@@ -7,6 +8,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import { quotableGenerationSources, validateGenerationSources } from '@syzygy/polaris-generation-core';
 
 import { main } from './repo-corpus-main.js';
+import { isolatedGit } from './isolated-git.js';
 import { buildPipelineRequest, CorpusRefusal, globToRegExp, parseReaderConfig, readRepoCorpus, refusingAdmission, type CorpusAdmissionPort } from './repo-corpus.js';
 
 const allow: CorpusAdmissionPort = { decide: async () => ({ allowed: true, permissionIdentity: 'fixture-consent-v1' }) };
@@ -36,7 +38,78 @@ beforeAll(() => {
 
 const cfg = (extra: Partial<Parameters<typeof readRepoCorpus>[1]> = {}) => ({ repositoryId: 'repository:fixture', revision: commit, include: ['**'], exclude: ['vendor/**'], oversize: 'split' as const, ...extra });
 
+const expectAccounted = (corpus: Awaited<ReturnType<typeof readRepoCorpus>>): void => {
+  const c = corpus.count;
+  expect(c.listed).toBe(c.notBlob + c.outsideInclude + c.excludedByGlob + c.unquotablePath + c.selected);
+  expect(new Set(corpus.sources.map(source => source.path)).size).toBe(c.selected);
+  expect(corpus.unrepresentable).toHaveLength(c.unquotablePath);
+};
+
+let hostile = '', hostileCommit = '', hostileTree = '', hostileTag = '';
+const sentinel = join(tmpdir(), `syzygy-fsmonitor-sentinel-${process.pid}`);
+beforeAll(() => {
+  hostile = mkdtempSync(join(tmpdir(), 'syzygy-repo-hostile-'));
+  const run = (...args: string[]): string => execFileSync('git', ['-C', hostile, ...args], { encoding: 'utf8' }).trim();
+  run('init', '-q'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
+  const files: Record<string, string | Buffer> = { 'bom.txt': Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), Buffer.from('hello\n')]), 'empty/__init__.py': '', 'we\\ird.txt': 'odd name\n', 'ok.md': '# ok\n' };
+  for (const [path, body] of Object.entries(files)) { mkdirSync(dirname(join(hostile, path)), { recursive: true }); writeFileSync(join(hostile, path), body); }
+  run('add', '-A');
+  run('update-index', '--add', '--cacheinfo', `160000,${'d'.repeat(40)},vendor/sub`);
+  run('commit', '-qm', 'hostile'); hostileCommit = run('rev-parse', 'HEAD'); hostileTree = run('rev-parse', 'HEAD^{tree}');
+  run('tag', '-a', 'v1', '-m', 'annotated'); hostileTag = run('rev-parse', 'v1');
+  // A repo-local config that would run a program if any git call honoured it.
+  const script = join(hostile, '.git', 'fsmonitor.sh');
+  writeFileSync(script, `#!/bin/sh\ntouch '${sentinel}'\n`); chmodSync(script, 0o755);
+  run('config', 'core.fsmonitor', script); run('config', 'core.hooksPath', join(hostile, '.git', 'evil-hooks'));
+});
+afterAll(() => { rmSync(sentinel, { force: true }); rmSync(hostile, { recursive: true, force: true }); });
+
+describe('hostile tree entries never fail the run', () => {
+  const hcfg = (extra: Partial<Parameters<typeof readRepoCorpus>[1]> = {}) => ({ ...cfg({ exclude: [] }), revision: hostileCommit, ...extra });
+
+  it('counts a BOM file, an empty file, a backslash name and a gitlink instead of throwing', async () => {
+    const corpus = await readRepoCorpus(hostile, hcfg(), { admission: allow });
+    expect(corpus.count).toMatchObject({ listed: 5, notBlob: 1, unquotablePath: 1, selected: 3, emptyFiles: 1, binaryOrNonUtf8: 0 });
+    expectAccounted(corpus);
+    const bom = corpus.sources.find(source => source.path === 'bom.txt')!;
+    expect(bom.body!.startsWith('\uFEFF')).toBe(true);
+    expect(corpus.sources.find(source => source.path === 'empty/__init__.py')).toMatchObject({ exclusion: { excluded: true, reason: 'empty-file' } });
+    expect(corpus.unrepresentable[0]).toMatchObject({ reason: 'unquotable-path', pathSha256: expect.stringMatching(/^[0-9a-f]{64}$/u) });
+    expect(JSON.stringify(corpus.sources)).not.toContain('ird.txt');
+  });
+
+  it('never asks for the gitlink object', async () => {
+    const asked: string[] = [];
+    await readRepoCorpus(hostile, hcfg(), { admission: allow, readBlobs: (_root, objects) => { asked.push(...objects); return new Map(objects.map(o => [o, new Uint8Array(0)])); } }).catch(() => undefined);
+    expect(asked).not.toContain('d'.repeat(40));
+  });
+
+  it('accepts only a commit: a tree id or an annotated tag id is refused', async () => {
+    await expect(readRepoCorpus(hostile, hcfg({ revision: hostileTree }), { admission: allow })).rejects.toThrow('invalid-pinned-commit');
+    await expect(readRepoCorpus(hostile, hcfg({ revision: hostileTag }), { admission: allow })).rejects.toThrow('invalid-pinned-commit');
+  });
+
+  it('refuses bytes that do not hash to the listed object', async () => {
+    const tamper = (_root: string, objects: readonly string[]) => new Map(objects.map(o => [o, new TextEncoder().encode('tampered\n')]));
+    await expect(readRepoCorpus(hostile, hcfg(), { admission: allow, readBlobs: tamper })).rejects.toThrow('corpus-object-mismatch');
+  });
+
+  it('runs git with the repo-local program hooks overridden', async () => {
+    expect(execFileSync('git', ['-C', hostile, 'config', '--get', 'core.fsmonitor'], { encoding: 'utf8' }).trim()).toContain('fsmonitor.sh');
+    expect(isolatedGit(hostile, ['config', '--get', 'core.fsmonitor']).toString().trim()).toBe('false');
+    expect(isolatedGit(hostile, ['config', '--get', 'core.hooksPath']).toString().trim()).toBe('/dev/null');
+    await readRepoCorpus(hostile, hcfg(), { admission: allow });
+    expect(existsSync(sentinel)).toBe(false);
+  });
+});
+
 describe('admission gate', () => {
+  it('requires a non-empty permission identity from an allowing port', async () => {
+    for (const permissionIdentity of ['', undefined, 7]) {
+      await expect(readRepoCorpus(root, cfg(), { admission: { decide: async () => ({ allowed: true, permissionIdentity }) as never } })).rejects.toThrow('admission-without-permission-identity');
+    }
+  });
+
   it('refuses by default before any git access', async () => {
     const readBlobs = vi.fn();
     await expect(readRepoCorpus('/nonexistent/never-touched', cfg(), { readBlobs })).rejects.toThrow(CorpusRefusal);
@@ -54,7 +127,10 @@ describe('admission gate', () => {
 describe('any-repo reader', () => {
   it('accounts for every tree entry and reads only the pinned commit', async () => {
     const corpus = await readRepoCorpus(root, cfg(), { admission: allow });
-    expect(corpus.count).toEqual({ listed: 7, notBlob: 1, outsideInclude: 0, excludedByGlob: 1, selected: 5, binaryOrNonUtf8: 2, oversizeFiles: 1, oversizeExcluded: 0 });
+    expect(corpus.count).toMatchObject({ listed: 7, notBlob: 1, outsideInclude: 0, excludedByGlob: 1, unquotablePath: 0, selected: 5, binaryOrNonUtf8: 2, emptyFiles: 0, oversizeFiles: 1, oversizeExcluded: 0 });
+    expect(corpus.count.sourceRows).toBe(corpus.sources.length);
+    expect(corpus.sources.length).toBeGreaterThan(corpus.count.selected);
+    expectAccounted(corpus);
     const text = JSON.stringify(corpus);
     for (const sentinel of ['LOCAL-EDIT-SENTINEL', 'UNTRACKED-SENTINEL', 'VENDOR']) expect(text).not.toContain(sentinel);
     expect(corpus.permissionIdentity).toBe('fixture-consent-v1');
