@@ -18,15 +18,21 @@ export interface DurableLifecycleOptions {
   readonly validate: PipelinePorts['validate'];
   readonly fidelity: PipelinePorts['fidelity'];
   readonly generate: PipelinePorts['generate'];
-  /** Reserved per attempt, capped by the request budget; default 5. */
-  readonly maxAttemptUsageUnits?: number;
-  /** Reserved per attempt, capped by the request budget; default 10,000. */
-  readonly maxAttemptOutputBytes?: number;
+  /** Reserved per attempt, capped by the request budget. Required, with no default: a live
+   * caller derives it from the run profile and the provider entry (a unit is whatever the
+   * request budget's `accountingPolicy` names and `generate` reports in `usageUnits`; this
+   * module only sums them). */
+  readonly maxAttemptUsageUnits: number;
+  /** Reserved per attempt, capped by the request budget. Required, with no default: it must
+   * cover the provider entry's largest reply for any stage, or that stage is refused. */
+  readonly maxAttemptOutputBytes: number;
   readonly now?: () => number;
 }
 
 /** The synthetic-only configuration of the lifecycle: a scripted generate port. */
-export interface ScriptedLifecycleOptions extends Omit<DurableLifecycleOptions, 'generate' | 'permitted'> {
+export interface ScriptedLifecycleOptions extends Omit<DurableLifecycleOptions, 'generate' | 'permitted' | 'maxAttemptUsageUnits' | 'maxAttemptOutputBytes'> {
+  readonly maxAttemptUsageUnits?: number;
+  readonly maxAttemptOutputBytes?: number;
   readonly permitted: () => Promise<boolean>;
   readonly scriptedGenerate: (input: Parameters<PipelinePorts['generate']>[0]) => Promise<ProviderReply>;
 }
@@ -61,7 +67,7 @@ function replaceAtomic(path: string, value: unknown): void {
  * reserved record, which refuses replay even if a lease or receipt is lost. */
 export function createDurableLifecycle(options: DurableLifecycleOptions): PipelinePorts {
   for (const [name, value] of [['maxAttemptUsageUnits', options.maxAttemptUsageUnits], ['maxAttemptOutputBytes', options.maxAttemptOutputBytes]] as const) {
-    if (value !== undefined && (!Number.isSafeInteger(value) || value < 1)) throw new Error(`invalid-lifecycle-option: ${name}`);
+    if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 1) throw new Error(`invalid-lifecycle-option: ${name}`);
   }
   mkdirSync(options.stateDir, { recursive: true, mode: 0o700 });
   const fileFor = (permit: DispatchPermit): string => join(options.stateDir, `${permit.attemptId}.json`);
@@ -82,7 +88,7 @@ export function createDurableLifecycle(options: DurableLifecycleOptions): Pipeli
       try { fd = openSync(lock, 'wx', 0o600); }
       catch { return { kind: 'refused', reason: 'uncertain' }; }
       try {
-        const permit: DispatchPermit = { attemptId: attemptId(input), maxUsageUnits: Math.min(options.maxAttemptUsageUnits ?? 5, input.budget.maxUsageUnits), maxOutputBytes: Math.min(options.maxAttemptOutputBytes ?? 10_000, input.budget.maxOutputBytes) };
+        const permit: DispatchPermit = { attemptId: attemptId(input), maxUsageUnits: Math.min(options.maxAttemptUsageUnits, input.budget.maxUsageUnits), maxOutputBytes: Math.min(options.maxAttemptOutputBytes, input.budget.maxOutputBytes) };
         const path = fileFor(permit);
         if (existsSync(path)) {
           let prior: JournalEntry;
@@ -135,5 +141,6 @@ export function createDurableLifecycle(options: DurableLifecycleOptions): Pipeli
 /** The synthetic wrapper: the generic lifecycle with a scripted generate port. */
 export function createDurableScriptedLifecycle(options: ScriptedLifecycleOptions): PipelinePorts {
   const { scriptedGenerate, permitted, ...rest } = options;
-  return createDurableLifecycle({ ...rest, generate: scriptedGenerate, permitted: async () => permitted() });
+  // The synthetic defaults live here, not in the generic lifecycle.
+  return createDurableLifecycle({ maxAttemptUsageUnits: 5, maxAttemptOutputBytes: 10_000, ...rest, generate: scriptedGenerate, permitted: async () => permitted() });
 }

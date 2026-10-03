@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -21,7 +21,7 @@ const request = (overrides: Partial<PipelineRequest['budget']> = {}): PipelineRe
 
 interface Stub { readonly calls: { stage: string; permit: DispatchPermit; signal: AbortSignal }[] }
 function lifecycle(stateDir: string, stub: Stub, generate: (stage: string, permit: DispatchPermit, signal: AbortSignal) => Promise<ProviderReply>, extra: Partial<DurableLifecycleOptions> = {}) {
-  return createDurableLifecycle({ stateDir, permissionIdentity: async () => 'permission-v1', verifySources: async () => true, permitted: async () => true,
+  return createDurableLifecycle({ stateDir, permissionIdentity: async () => 'permission-v1', verifySources: async () => true, permitted: async () => true, maxAttemptUsageUnits: 5, maxAttemptOutputBytes: 10_000,
     responseSchema: stage => ({ version: 'schema-v1', schema: { stage } }),
     validate: (stage, value) => { if ((value as { stage?: unknown }).stage !== stage) throw new Error('schema'); return value; },
     fidelity: () => ({ blocking: false, findings: [] }),
@@ -52,6 +52,17 @@ describe('durable lifecycle with an injected generate port', () => {
     await runGenerationPipeline(request({ maxUsageUnits: 12, maxOutputBytes: 8_000 }), lifecycle(scratch(), capped, async stage => ok(stage, 1), { maxAttemptUsageUnits: 30, maxAttemptOutputBytes: 50_000 }), new AbortController().signal);
     expect(capped.calls[0]!.permit).toMatchObject({ maxUsageUnits: 12, maxOutputBytes: 8_000 });
   }, T);
+
+  it('has no default ceilings: a missing or malformed one is refused at construction, before any state', () => {
+    const dir = join(scratch(), 'state');
+    const bare = { stateDir: dir, permissionIdentity: async () => 'p', verifySources: async () => true, permitted: async () => true, responseSchema: () => ({ version: 'v', schema: {} }),
+      validate: (_stage: unknown, value: unknown) => value, fidelity: () => ({ blocking: false, findings: [] }), generate: async () => ok('x') } as never as DurableLifecycleOptions;
+    expect(() => createDurableLifecycle(bare)).toThrow('invalid-lifecycle-option: maxAttemptUsageUnits');
+    expect(() => createDurableLifecycle({ ...bare, maxAttemptUsageUnits: 5 })).toThrow('invalid-lifecycle-option: maxAttemptOutputBytes');
+    expect(() => createDurableLifecycle({ ...bare, maxAttemptOutputBytes: 5 })).toThrow('invalid-lifecycle-option: maxAttemptUsageUnits');
+    expect(existsSync(dir)).toBe(false);
+    for (const bad of ['5', null]) expect(() => lifecycle(dir, { calls: [] }, async stage => ok(stage), { maxAttemptUsageUnits: bad as never })).toThrow('invalid-lifecycle-option');
+  });
 
   it('refuses a malformed per-attempt ceiling before creating any state', () => {
     for (const bad of [0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY]) {
