@@ -108,11 +108,11 @@ Authorized implementation work (generator implementation authorization,
       single-page static preview with a strict CSP run on synthetic input and on
       Syzygy's own governance Markdown. Never run: a real model. Gaps, smallest
       first:
-  - [ ] **G1 Any-repo CLI.** Make the self-corpus reader
-        (`apps/three-surface-poc/src/polaris-generation/self-corpus.ts`, fixed to
-        `project:syzygy`, `.syzygy/` roots and `.md`) take `--repo`,
-        `--revision`, include globs and a repository id; reader questions,
-        assets and budget from a config file.
+  - [x] **G1 Any-repo CLI.** `repo-corpus.ts` / `repo-corpus-main.ts` take
+        `--repo`, `--revision`, `--repository-id`, include/exclude globs and a
+        JSON config (reader questions, assets, budget, oversize policy); the
+        read happens only after an admission port answers `allowed: true`
+        (default port refuses). `readSelfCorpus` is unchanged.
   - [ ] **G2 Real `generate` port.** A Claude Agent SDK adapter behind
         `PipelinePorts.generate` (`pipeline.ts`): structured output for
         `responseSchema`, usage accounting, abort. Per the egress record:
