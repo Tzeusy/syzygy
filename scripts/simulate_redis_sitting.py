@@ -64,12 +64,10 @@ CAND = ".syzygy/governance/contracts/candidates"
 DECISIONS = ".syzygy/governance/decisions"
 
 #: (pull request, branch) in the order the scratch merges them. Merged pull
-#: requests (215, 255, 256, 257, 266, 284) are already in the base.
+#: requests (215, 255, 256, 257, 266, 284, 288, 290) are already in the base.
 BRANCHES = (
     (278, "agent/dossier-engine-7"),
     (273, "governance/provider-route-messages-api-entry"),
-    (288, "fix/recount-added-overlays"),
-    (290, "fix/rfc5-recorder-act-instant"),
     (260, "governance/admission-sitting-packet"),
 )
 ORDERING_CASE = (120, "agent/tier4-dov25")

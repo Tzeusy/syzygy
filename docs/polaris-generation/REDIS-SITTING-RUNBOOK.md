@@ -26,13 +26,11 @@ report is valid only for the commits it names).
 [Observed] The last full run (`--route b --vitest`) ended green: baseline
 31 OK / 0 FAIL, after the recorders 29 OK / 2 FAIL (CG-7e 12, CG-1b 1), after
 the install 31 OK / 0 FAIL; partition 343 of 343 assigned, 0 unmatched; Vitest
-2211 passed, 3 skipped, 0 failing at the start and at the end. The Vitest
-process exited 1 at the end with no failing test: it reported one unhandled
-worker RPC timeout error, which the same suite also reports on main. Heads
-simulated (PR, branch tip): main `66d42d09`, 278 (`597928be`), 273
-(`3656a103`), 288 (`52762c5b`), 290 (`cad1bc4b`), 260 (`05e59fcf`); PR 120
-(`0a8ef671`) as the ordering case. Already in main: 215, 255, 256, 257, 266,
-284.
+2211 passed, 3 skipped, 0 failing at the start and at the end (exit 0 on the
+latest run; an earlier run exited 1 on an unhandled worker RPC timeout that
+main also shows). Heads simulated (PR, branch tip): main `cf57e77c`, 278 (`597928be`), 273
+(`3656a103`), 260 (`05e59fcf`); PR 120 (`0a8ef671`) as the ordering case.
+Already in main: 215, 255, 256, 257, 266, 284, 288, 290.
 
 ## Order of operations
 
@@ -46,7 +44,7 @@ same arguments re-verifies a record afterwards.
 
 0. **Land the candidate bytes.** Merge, in this order: 278 (its closed
    exclusion-reason set is the precondition of the row-1 recorder; finding
-   F13), 273 if route B is the choice, 288, 290, 260; resolve the conflicts
+   F13), 273 if route B is the choice, 260; resolve the conflicts
    under "Merge conflicts" below. Ask PR 120's owner to rebase first.
    Rehearse: `python3 scripts/simulate_redis_sitting.py --vitest --report sim.json`
 1. **Row 1, screening scope.**
@@ -68,7 +66,7 @@ same arguments re-verifies a record afterwards.
 6. **Row 6, Anthropic egress.** Same recorder, key `egress-anthropic`.
 7. **Row 7, RFC5-14 class.**
    `python3 scripts/record_rfc5_project_documentation_act.py --record <ARGUMENT> ...`
-   (needs PR 290; finding F12).
+   (PR 290, merged; finding F12).
 8. **Row 9, narrative profile.**
    `python3 scripts/record_narrative_profile_adoption.py --record ...`
    (finding F7; no `ARGUMENT`, the adoption binds no digest). Between this
@@ -77,8 +75,7 @@ same arguments re-verifies a record afterwards.
 9. **Install, one commit with every record.**
    `python3 scripts/install_redis_sitting.py`. It refuses (exit 2, tree
    restored) unless every required record exists, is idempotent, and
-   `--check` reports what is not installed. Needs PR 288 (the recount fix) and
-   PR 290 merged first. Steps, with the findings each answers:
+   `--check` reports what is not installed. Needs PR 278 merged first (F13). Steps, with the findings each answers:
    - **registrations** (F5): the performed records become act-copy files; the
      `manifest SHA-256:` heading is a checked exemption.
    - **rfc5** (F6): the patch applies to both mirrors; the active-manifest row
@@ -111,11 +108,11 @@ request or the installer answers it; the finding is kept so a reader can see why
 | F5 | Rows 2 to 6 | Each performed record is an unregistered act-copy file and quotes `manifest SHA-256:` | Fixed by the installer's registrations step |
 | F6 | Row 7 install | The RFC-0005 patch fails CG-7a and CG-7h until the manifest row is refreshed and a chain link exists | Fixed by the installer's rfc5 step: the PR 257 act's argument is the manifest row, not the file, so the link is a row-argument link, ordered by the record's `Act instant:` line |
 | F7 | Rows 2 (route B) and 9 | No recorder | Fixed: `record_messages_api_route_registry_act.py` and `record_narrative_profile_adoption.py`. The versioned-signoff recorder does not apply to the profile: it covers the six PWB packages only and its package-builder contract is unmet (packet O3) |
-| F8 | Row 9 install | `count_polaris_effective_scenarios.py` stopped at a third polaris-generation spec | Fixed by PR 288 |
+| F8 | Row 9 install | `count_polaris_effective_scenarios.py` stopped at a third polaris-generation spec | Fixed (PR 288, merged) |
 | F9 | PR 120 | Based on a stale main; conflicts in docs/README.md, the partition checker and check_governance.py | Open, not ours: rebase onto main before the sitting |
 | F10 | Row 1 install, Vitest | Tests that pin the policy fail after the bytes change: content-classification, git-object-reader, governance-inputs, and also project-shape-model (PR 266's ledger lists the last as passing; it asserts the version at two lines) | Fixed by the installer's policy step, which also moves the loader test's evaluation instant to the act date |
 | F11 | Row 9 install | Moving the spec leaves four package files naming the old proposed/ path (CG-1b) | Fixed by the installer's profile step |
-| F12 | Row 7 | The PR 257 recorder wrote no act instant, so the chain link could not be ordered | Fixed by PR 290 |
+| F12 | Row 7 | The PR 257 recorder wrote no act instant, so the chain link could not be ordered | Fixed (PR 290, merged) |
 | F13 | PR 278 with main | The merge is textually clean, but main's repo-corpus.ts types an excluded row's reason as a string while PR 278 closes the type, so `npm run build:poc` fails (TS2322) and two Vitest files fail with it | Open, PR 278's: type the helper parameter `GenerationExclusionReason`. The simulator applies the same one-line change in the scratch |
 | F14 | PR 273 builder | `manifest_text` writes the root it is handed into the manifest rows, so a recorder passing an absolute root sees every manifest as stale | Worked around in the route-B recorder, which runs the builder from the root with relative paths; the builder is unchanged |
 | F15 | tuple-encoding.test.ts | One case times out at 5000 ms on main by itself | Open, bead syzygy-8wux; the simulator reports it without counting it |
