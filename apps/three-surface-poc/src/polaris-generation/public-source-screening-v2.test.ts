@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -53,22 +53,26 @@ const policy = (variant = 'none', publicSourceScope: unknown = scope(variant), v
   sourceAdmission: { deniedPathBasenames: PWB_DENIED_PATH_RULES.basenames, deniedPathPrefixes: PWB_DENIED_PATH_RULES.prefixes, deniedPathSuffixes: PWB_DENIED_PATH_RULES.suffixes },
   detectors: PWB_SECRET_POLICY.detectors, publicSourceScope,
 }, null, 2)}\n`);
-const SUPERSESSION = `Supersession / revocation: this act supersedes, for the \`approve-policy\` role only, the 2026-10-04 act recorded at \`${PUBLIC_SOURCE_ACT_RECORD_PATH}\`.`;
-const record = (identity: string, type: string, artifact: string, digests: readonly string[], supersession = SUPERSESSION): string => [
-  '# Owner act — synthetic fixture', '', `Act identity: \`${identity}\``, '', `Act type: \`${type}\``, '', 'Project identity: `project:syzygy`', '',
-  `Artifact identity: \`${artifact}\``, '', ...digests.map(digest => `Exact digest (SHA-256): \`${digest}\``), '', supersession, '',
+// The v1 policy the v2 act supersedes, and the v1 record that approved it (recorded first).
+const V1_POLICY = policy('none', { contentClassification: { rules: [{ class: 'code-content', sourceExtensions: ['.c'] }] } }, '1.2.0-public-source-candidate.1');
+const SUPERSESSION = `Supersession / revocation: this act supersedes, for the \`approve-policy\` role only, the 2026-10-04 act recorded at \`${PUBLIC_SOURCE_ACT_RECORD_PATH}\`. That is the version-1 screening-scope act. Its argument`;
+const V1_AT = '2026-10-04T10:00:00Z', V2_AT = '2026-10-04T12:00:00Z';
+const record = (identity: string, type: string, artifact: string, digests: readonly string[], supersession = SUPERSESSION, recordedAt = V2_AT, superseded = sha(V1_POLICY)): string => [
+  '# Owner act — synthetic fixture', '', `Act identity: \`${identity}\``, '', `Recorded at (UTC): ${recordedAt}`, '', `Act type: \`${type}\``, '', 'Project identity: `project:syzygy`', '',
+  `Artifact identity: \`${artifact}\``, '', ...digests.map(digest => `Exact digest (SHA-256): \`${digest}\``), '', supersession, `\`${superseded}\` was the policy's exact digest.`, '',
 ].join('\n');
 const V1_ID = 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04';
 const V2_ID = 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-2026-10-04';
 const RFC5_ID = 'RFC5-PROJECT-DOCUMENTATION-AMEND-2026-10-04';
 const policyAct = (bytes: Uint8Array, identity = V2_ID) => record(identity, 'approve-policy', PUBLIC_SOURCE_POLICY_PATH, [sha(bytes)]);
+const V1_RECORD = record(V1_ID, 'approve-policy', PUBLIC_SOURCE_POLICY_PATH, [sha(V1_POLICY)], 'Supersession / revocation: the 2026-10-02 re-pin act.', V1_AT, 'none');
 const MODULE = new TextEncoder().encode(`# RFC-0005\n\n| Class | Meaning |\n|---|---|\n${CLASS_ROW} the project's own prose |\n`);
 const classAct = (module: Uint8Array = MODULE, overrides: Partial<{ identity: string; type: string; artifact: string; digests: string[] }> = {}) =>
   record(overrides.identity ?? RFC5_ID, overrides.type ?? 'contract-amendment', overrides.artifact ?? RFC5_MODULE_PATH, overrides.digests ?? [sha(module)]);
 
 type Read = Awaited<ReturnType<PublicSourcePolicyActPort['read']>>;
 const v2Port = (overrides: Partial<Read> = {}, bytes = policy()): PublicSourcePolicyActPort => ({
-  read: async () => ({ actRecord: undefined, policy: bytes, v2ActRecord: policyAct(bytes), classActRecord: classAct(), rfc5Module: MODULE, ...overrides }),
+  read: async () => ({ actRecord: V1_RECORD, policy: bytes, v2ActRecord: policyAct(bytes), classActRecord: classAct(), rfc5Module: MODULE, ...overrides }),
 });
 const KEY = Buffer.alloc(32, 9);
 const allow: CorpusAdmissionPort = { decide: async () => ({ allowed: true, permissionIdentity: 'fixture-consent-v1' }) };
@@ -145,14 +149,32 @@ describe('screening scope v2: the RFC5-14 prerequisite', () => {
 
 describe('screening scope v2: the policy act gate', () => {
   const refused = (act: PublicSourcePolicyActPort) => expect(loadPublicSourceScreen(act, KEY)).rejects.toThrow(/^Corpus read refused: public-source-policy: /u);
-  const v1Policy = policy('none', { contentClassification: { rules: [{ class: 'code-content', sourceExtensions: ['.c'] }] } }, '1.2.0-public-source-candidate.1');
+  const v1Policy = V1_POLICY;
 
   it('reads the v2 act whenever it exists, over a v1 act that no longer matches', async () => {
     const bytes = policy();
-    const screen = await loadPublicSourceScreen({ read: async () => ({ actRecord: policyAct(v1Policy, V1_ID), policy: bytes, v2ActRecord: policyAct(bytes), classActRecord: classAct(), rfc5Module: MODULE }) }, KEY);
+    const screen = await loadPublicSourceScreen({ read: async () => ({ actRecord: V1_RECORD, policy: bytes, v2ActRecord: policyAct(bytes), classActRecord: classAct(), rfc5Module: MODULE }) }, KEY);
     expect(screen.policySha256).toBe(sha(bytes));
     // Without the v2 act, the v1 act decides and v2 bytes do not hash to it.
-    await expect(loadPublicSourceScreen({ read: async () => ({ actRecord: policyAct(v1Policy, V1_ID), policy: bytes }) }, KEY)).rejects.toThrow(/policy bytes do not hash to the act argument/u);
+    await expect(loadPublicSourceScreen({ read: async () => ({ actRecord: V1_RECORD, policy: bytes }) }, KEY)).rejects.toThrow(/policy bytes do not hash to the act argument/u);
+    // v1 alone keeps working.
+    expect((await loadPublicSourceScreen({ read: async () => ({ actRecord: V1_RECORD, policy: v1Policy }) }, KEY)).projectDocumentation).toBe('not-in-policy');
+  });
+
+  it('refuses a v2 record the v1 record does not stand behind', async () => {
+    const bytes = policy();
+    const v2With = (overrides: Partial<{ supersession: string; recordedAt: string; superseded: string }>) =>
+      record(V2_ID, 'approve-policy', PUBLIC_SOURCE_POLICY_PATH, [sha(bytes)], overrides.supersession ?? SUPERSESSION, overrides.recordedAt ?? V2_AT, overrides.superseded ?? sha(V1_POLICY));
+    const refusedWith = (read: Partial<Read>, why: RegExp) => expect(loadPublicSourceScreen(v2Port(read, bytes), KEY)).rejects.toThrow(why);
+    await refusedWith({ actRecord: undefined }, /no act record at/u);
+    await refusedWith({ actRecord: V1_RECORD.replace(V1_ID, V2_ID) }, /the superseded v1 record is not the public-source scope approve-policy act/u);
+    await refusedWith({ actRecord: record(V1_ID, 'approve-policy', PUBLIC_SOURCE_POLICY_PATH, [sha(bytes)], 'x', V1_AT) }, /the v2 act carries the v1 act argument/u);
+    await refusedWith({ v2ActRecord: v2With({ superseded: sha(policy('both')) }) }, /does not name the v1 argument it supersedes/u);
+    await refusedWith({ v2ActRecord: v2With({ recordedAt: V1_AT }) }, /the v2 act is not recorded after the v1 act/u);
+    await refusedWith({ v2ActRecord: v2With({ recordedAt: '2026-10-04T09:59:59Z' }) }, /the v2 act is not recorded after the v1 act/u);
+    await refusedWith({ v2ActRecord: v2With({ recordedAt: '2026-10-04 12:00' }) }, /exactly one recorded instant/u);
+    await refusedWith({ actRecord: `${V1_RECORD}\nRecorded at (UTC): ${V1_AT}\n` }, /exactly one recorded instant/u);
+    expect((await loadPublicSourceScreen(v2Port({ v2ActRecord: v2With({ recordedAt: '2026-10-04T10:00:01Z' }) }, bytes), KEY)).projectDocumentation).toBe('mapped');
   });
 
   it('refuses a v2 act of the wrong identity, type, artifact or digest', async () => {
@@ -170,9 +192,10 @@ describe('screening scope v2: the policy act gate', () => {
   });
 
   it('refuses a v2 act over a policy without the rule, and a rule without the v2 act', async () => {
-    await expect(loadPublicSourceScreen(v2Port({ v2ActRecord: policyAct(v1Policy) }, v1Policy), KEY)).rejects.toThrow(/the v2 act approves a policy without the project-documentation rule/u);
+    const ruleless = policy('none', { contentClassification: { rules: [{ class: 'code-content', sourceExtensions: ['.c', '.h'] }] } }, '1.3.0-public-source-candidate.1.none');
+    await expect(loadPublicSourceScreen(v2Port({ v2ActRecord: policyAct(ruleless) }, ruleless), KEY)).rejects.toThrow(/the v2 act approves a policy without the project-documentation rule/u);
     const bytes = policy();
-    await expect(loadPublicSourceScreen({ read: async () => ({ actRecord: policyAct(bytes, V1_ID), policy: bytes }) }, KEY)).rejects.toThrow(/a project-documentation rule needs the v2 act/u);
+    await expect(loadPublicSourceScreen({ read: async () => ({ actRecord: record(V1_ID, 'approve-policy', PUBLIC_SOURCE_POLICY_PATH, [sha(bytes)], 'x', V1_AT), policy: bytes }) }, KEY)).rejects.toThrow(/a project-documentation rule needs the v2 act/u);
   });
 
   it('refuses a malformed v2 policy', async () => {
@@ -192,16 +215,28 @@ describe('screening scope v2: the policy act gate', () => {
     const dir = mkdtempSync(join(tmpdir(), 'syzygy-public-screen-v2-port-'));
     try {
       const bytes = policy();
-      for (const [path, body] of [[PUBLIC_SOURCE_POLICY_PATH, bytes], [PUBLIC_SOURCE_V2_ACT_RECORD_PATH, policyAct(bytes)], [RFC5_CLASS_ACT_RECORD_PATH, classAct()], [RFC5_MODULE_PATH, MODULE]] as const) {
+      for (const [path, body] of [[PUBLIC_SOURCE_POLICY_PATH, bytes], [PUBLIC_SOURCE_ACT_RECORD_PATH, V1_RECORD], [PUBLIC_SOURCE_V2_ACT_RECORD_PATH, policyAct(bytes)], [RFC5_CLASS_ACT_RECORD_PATH, classAct()], [RFC5_MODULE_PATH, MODULE]] as const) {
         mkdirSync(dirname(join(dir, path)), { recursive: true }); writeFileSync(join(dir, path), body);
       }
       const read = await checkoutPolicyActPort(dir).read();
-      expect(read.actRecord).toBeUndefined();
+      expect([read.actRecord, read.v2ActRecord, read.classActRecord]).toEqual([V1_RECORD, policyAct(bytes), classAct()]);
       expect((await loadPublicSourceScreen(checkoutPolicyActPort(dir), KEY)).projectDocumentation).toBe('mapped');
-      writeFileSync(join(dir, PUBLIC_SOURCE_ACT_RECORD_PATH), 'v1');
-      expect((await checkoutPolicyActPort(dir).read()).actRecord).toBe('v1');
+      rmSync(join(dir, PUBLIC_SOURCE_ACT_RECORD_PATH));
+      await expect(loadPublicSourceScreen(checkoutPolicyActPort(dir), KEY)).rejects.toThrow(/no act record at/u);
+      writeFileSync(join(dir, PUBLIC_SOURCE_ACT_RECORD_PATH), V1_RECORD);
       rmSync(join(dir, RFC5_MODULE_PATH));
       expect((await loadPublicSourceScreen(checkoutPolicyActPort(dir), KEY)).projectDocumentation).toBe('prerequisite-unmet');
     } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
+});
+
+describe('screening scope v2: this checkout', () => {
+  // Runs once the sitting installer has written the v2 record beside the v1 record (skipped before).
+  const decisions = (path: string) => existsSync(fileURLToPath(new URL(`../../../../${path}`, import.meta.url)));
+  it.skipIf(!decisions(PUBLIC_SOURCE_V2_ACT_RECORD_PATH))('the default port loads a performed v2 act and reads the class prerequisite from this checkout', async () => {
+    const screen = await loadPublicSourceScreen(checkoutPolicyActPort());
+    expect(screen.policyId).toBe('polaris-butlers-project-shape-secrets');
+    expect(screen.policyVersion).toMatch(/\.(?:none|manifesto|architecture|both)$/u);
+    expect(screen.projectDocumentation).toBe(decisions(RFC5_CLASS_ACT_RECORD_PATH) ? 'mapped' : 'prerequisite-unmet');
   });
 });

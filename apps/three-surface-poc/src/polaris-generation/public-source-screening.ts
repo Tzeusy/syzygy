@@ -56,6 +56,7 @@ const RFC5_CLASS_ROW = '| `project-documentation` |';
 const ACT_IDENTITY = /^Act identity: `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-\d{4}-\d{2}-\d{2}`$/mu;
 const V2_ACT_IDENTITY = /^Act identity: `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-\d{4}-\d{2}-\d{2}`$/mu;
 const RFC5_ACT_IDENTITY = /^Act identity: `RFC5-PROJECT-DOCUMENTATION-AMEND-\d{4}-\d{2}-\d{2}`$/mu;
+const RECORDED_AT = /^Recorded at \(UTC\): (\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)$/gmu;
 const EXACT_DIGEST = /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gmu;
 
 /** The inputs the screen is loaded from; absent bytes are `undefined`. */
@@ -123,7 +124,8 @@ export async function loadPublicSourceScreen(port: PublicSourcePolicyActPort = c
   const { actRecord, policy, v2ActRecord, classActRecord, rfc5Module } = await port.read();
   // The version-2 act supersedes the version-1 act for this policy: read it whenever it exists.
   const v2 = v2ActRecord !== undefined;
-  if (!v2 && actRecord === undefined) refuse(`no act record at ${PUBLIC_SOURCE_ACT_RECORD_PATH}`);
+  // A v2 record supersedes a v1 record, so v2 without v1 refuses.
+  if (actRecord === undefined) refuse(`no act record at ${PUBLIC_SOURCE_ACT_RECORD_PATH}`);
   if (policy === undefined) refuse(`no policy at ${PUBLIC_SOURCE_POLICY_PATH}`);
   const argument = actArgument(v2 ? v2ActRecord : actRecord!, v2 ? V2_ACT_IDENTITY : ACT_IDENTITY, 'approve-policy', PUBLIC_SOURCE_POLICY_PATH);
   if (argument === 'not-the-act') refuse(`act record is not the public-source scope${v2 ? ' v2' : ''} approve-policy act`);
@@ -133,6 +135,18 @@ export async function loadPublicSourceScreen(port: PublicSourcePolicyActPort = c
   // The v2 record names the v1 record it supersedes; the line is required, not parsed.
   if (v2 && !v2ActRecord.split('\n').some(line => line.startsWith('Supersession / revocation: ') && line.includes(`\`${PUBLIC_SOURCE_ACT_RECORD_PATH}\``)))
     refuse('v2 act record names no superseded v1 record');
+  // The pair the records state, as the sitting installer (`policy_acts`) refuses it: the v1 record
+  // is the v1 act, its argument differs from and is named by the v2 record, and v2 is recorded after it.
+  if (v2) {
+    const v1 = actArgument(actRecord!, ACT_IDENTITY, 'approve-policy', PUBLIC_SOURCE_POLICY_PATH);
+    if (typeof v1 === 'string') refuse('the superseded v1 record is not the public-source scope approve-policy act');
+    const v1Digest = (v1 as { digest: string }).digest;
+    if (v1Digest === policySha256) refuse('the v2 act carries the v1 act argument');
+    if (!v2ActRecord.includes(v1Digest)) refuse('the v2 act record does not name the v1 argument it supersedes');
+    const [v1At, v2At] = [actRecord!, v2ActRecord].map(text => [...text.matchAll(RECORDED_AT)].map(match => match[1]!));
+    if (v1At!.length !== 1 || v2At!.length !== 1) refuse('an act record does not carry exactly one recorded instant');
+    if (v2At![0]! <= v1At![0]!) refuse('the v2 act is not recorded after the v1 act');
+  }
   let doc: Record<string, unknown>;
   try { doc = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(policy!)) as Record<string, unknown>; } catch { return refuse('policy is not UTF-8 JSON'); }
   const scope = doc.publicSourceScope, admission = doc.sourceAdmission as Record<string, unknown> | undefined;
