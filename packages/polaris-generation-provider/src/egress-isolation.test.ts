@@ -60,7 +60,7 @@ describe.skipIf(!available)('egress isolation (network namespace + strace)', () 
     expect(socketAddresses(control.trace).some(e => e.kind === 'inet' && e.address === '192.0.2.1' && e.port === 80)).toBe(true);
   });
 
-  it('the adapter names no socket address other than its capture endpoint, and its request is accepted', () => {
+  it.each(['agent-sdk', 'messages'])('the %s adapter names no socket address other than its capture endpoint, and its request is accepted', route => {
     const here = dirname(fileURLToPath(import.meta.url));
     const cache = join(here, '..', '..', '..', 'node_modules', '.cache', 'polaris-provider-isolation');
     mkdirSync(cache, { recursive: true });
@@ -68,7 +68,7 @@ describe.skipIf(!available)('egress isolation (network namespace + strace)', () 
     buildSync({ entryPoints: [join(here, 'isolation-helper.testkit.ts')], bundle: true, platform: 'node', format: 'esm', outfile: helper, external: ['@anthropic-ai/claude-agent-sdk'], logLevel: 'silent' });
     const runDir = mkdtempSync(join(tmpdir(), 'polaris-isolation-run-'));
     try {
-      const run = rig([process.execPath, helper, runDir]);
+      const run = rig([process.execPath, helper, runDir, route]);
       expect(run.status, run.stdout).toBe(0);
       const seen = JSON.parse(run.stdout.trim().split('\n').at(-1)!) as { port: number; gatePort: number; requests: string[]; verdict: { accepted: boolean; violations: string[] }; replyBody: string };
       expect(seen.verdict).toEqual({ accepted: true, violations: [] });

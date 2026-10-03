@@ -138,3 +138,44 @@ zero usage is not evidence. Without that evidence the try's usage is unknown
 - If the upstream drops mid-body, the caller's response is destroyed (an error), not left hanging.
 - `createAgentSdkGenerate` validates `upstream` at construction.
 - `LOOPBACK_FOR_TESTS` may appear only in the gate module, tests and testkits; a test scans `packages/`, `apps/` and `scripts/` for it.
+||||||| parent of d4a5d597 (feat(polaris-generation): Messages API adapter behind the runtime egress gate with thinking profile)
+
+||||||| parent of 1d9ef326 (feat(polaris-generation): Messages API adapter behind the runtime egress gate with thinking profile)
+
+## Messages API route (`@anthropic-ai/sdk` 0.131.0)
+
+The alternative route, `createMessagesApiGenerate`, has no subprocess and no
+SDK-fixed bytes of its own, and sits behind the same runtime gate (same consent
+switch, explicit upstream, 403 otherwise; header values enforced as literals).
+`POST /v1/messages` carries exactly: `model` (profile-set), `max_tokens`
+(profile-set, lowered by permit allowances), `system` (the stage system prompt, as
+a string), `messages` (one user message whose content is the stage input string),
+`output_config.effort` (profile-set), `stream: true`, and the profile's thinking
+field. No `tools`, `metadata` or context field, and no probe request.
+
+| Thinking value | Body adds |
+|---|---|
+| `off` (default) | nothing |
+| `adaptive` | `"thinking":{"type":"adaptive"}` |
+| `{ budgetTokens: N }` | `"thinking":{"type":"enabled","budget_tokens":N}` with 1024 <= N < `max_tokens` |
+
+[Unknown] whether the real API accepts `enabled` or `adaptive` for Opus 5.5 with
+`output_config.effort`; only the capture server has seen these bytes. Replies may
+carry `thinking` blocks; any other non-text block (a tool call) is refused.
+
+Headers (literals, version-scoped to the pin): `user-agent: Anthropic/JS 0.131.0`,
+`anthropic-version: 2023-06-01`, `accept: application/json`,
+`content-type: application/json`, `accept-language: *`, `sec-fetch-mode: cors`,
+`x-stainless-lang: js`, `x-stainless-package-version: 0.131.0`,
+`x-stainless-retry-count: 0`, `x-stainless-runtime: node`,
+`x-stainless-helper-method: stream`; shapes only for the machine-identifying
+`x-stainless-os`, `x-stainless-arch`, `x-stainless-runtime-version` (sent);
+`x-api-key` must equal the configured credential. [Observed] one successful call
+names no socket address but the gate and the capture endpoint.
+
+A try's deadline is the remaining run budget, and process start-up of the Agent
+SDK route counts against it: give the budget real headroom.
+
+### Messages route: ambient Node network environment (syzygy-yqtg)
+
+Besides any `ANTHROPIC_*` variable, construction and every later start refuse while `NODE_TLS_REJECT_UNAUTHORIZED`, `NODE_EXTRA_CA_CERTS`, `NODE_USE_ENV_PROXY`, `HTTPS_PROXY`, `HTTP_PROXY`, `ALL_PROXY` or their lower-case forms are set. The Messages route accepts `x-stainless-timeout` only as `600` and `connection` only as `keep-alive` (required, not optional). The Agent SDK route builds a closed child environment and is not affected by the ambient variables; its `diagnosticEnv` proxy variables are an explicit measurement option.
