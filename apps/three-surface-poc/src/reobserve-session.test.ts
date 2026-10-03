@@ -103,6 +103,32 @@ describe('re-evaluation session', () => {
     expect(h.session.latest()).toBe(before.latest);
   });
 
+  it('re-observes again after a completed re-observation: a second observation, and the supersedes chain continues', async () => {
+    const h = harness();
+    const first = h.session.reobserve();
+    h.release(capture('head-b', '2026-10-04T03:00:00Z'));
+    await first;
+    const second = h.session.reobserve();
+    expect(second).not.toBe(first);
+    expect(h.observeCalls()).toBe(2);
+    h.release(capture('head-c', '2026-10-04T04:00:00Z'));
+    expect(await second).toMatchObject({ kind: 'reobserved', reevaluation: { evaluation: 'snap:head-c|observed:2026-10-04T04:00:00Z', supersedes: 'snap:head-b|observed:2026-10-04T03:00:00Z' } });
+    expect(h.session.latest().evaluation).toBe('snap:head-c|observed:2026-10-04T04:00:00Z');
+  });
+
+  it('a rebuild after materialize that cannot be named swaps nothing', () => {
+    let reads = 0;
+    const h = harness({ observeObservatory: () => {
+      reads += 1;
+      if (reads > 1) throw new Error('observatory unreadable');
+      return { buildRevision: 'observer-a', currentRevision: 'observer-a', commitsSinceBuild: 0 };
+    } });
+    const before = { model: h.session.model(), latest: h.session.latest() };
+    expect(() => h.session.afterMaterialized()).toThrow('observatory unreadable');
+    expect(h.session.model()).toBe(before.model);
+    expect(h.session.latest()).toBe(before.latest);
+  });
+
   it('attaches the Enter console only when --watch is on', async () => {
     const off = harness();
     const offInput = new PassThrough();
