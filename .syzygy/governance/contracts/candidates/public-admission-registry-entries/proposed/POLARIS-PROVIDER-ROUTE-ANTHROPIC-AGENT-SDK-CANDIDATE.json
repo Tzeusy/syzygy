@@ -101,12 +101,12 @@
         "questions": [
           "What did the provider return for this exact request?"
         ],
-        "readAuthority": "none: the route reads no source. It transmits the request the generator built (the stage system prompt and the stage input envelope, each after the single egress check, RFC5-15) together with the bytes the pinned runtime adds itself, and receives the reply. [Observed, capture endpoint, no provider contacted] the additions are listed in full in requestBytes: a fixed system prefix, an empty system message carrying the pinned effort, metadata.user_id with a random per-run-directory device id and session id, stream, cache_control on the generator's parts, the pinned model, the max_tokens ceiling, the headers listed there (including the platform headers that identify the machine's OS, CPU architecture and Node runtime version) and, after some failures, a body-less HEAD /api/hello probe",
+        "readAuthority": "none: the route reads no source. It transmits the request the generator built (the stage system prompt and the stage input envelope, each after the single egress check, RFC5-15) together with the bytes listed in requestBytes, and receives the reply. [Observed in the cited measurement, not re-run by this entry] the runtime adds a fixed system prefix, an empty system message carrying the effort, metadata.user_id with a random per-run-directory device id and session id, stream, cache_control on the generator's parts and the headers listed in requestBytes.headers, including platform headers that identify the machine's OS, CPU architecture and Node runtime version. [Inferred] this entry additionally pins the model, effort, max_tokens ceiling, tools and thinking values listed in requestBytes; those pins were not observed in that form",
         "writeSurface": [],
         "runDirectoryWrites": "provider requests, replies, run records and the runtime's own state, including any session transcript, are written inside the run directory under project:syzygy's state directory, outside git, from the start of the run (the egress record's retention line). [Unknown] whether a signed-in runtime refreshes or writes its credential outside that directory; the entry cannot be offered until that is checked",
         "databaseAccess": [],
         "networkAccess": [
-          "the Anthropic API host, through the Claude Agent SDK runtime, signed in with the owner's account or key; the connectivity probe HEAD /api/hello goes to the same host and carries no generator bytes; no other destination"
+          "the Anthropic API host named as the one upstream of the egress gate, through the Claude Agent SDK runtime, signed in with the owner's account or key; no other destination"
         ],
         "executeObservedCode": false,
         "workingTreeRead": false,
@@ -121,8 +121,9 @@
         "ambientContext": "the runtime loads no instruction or memory files, user or project settings, MCP servers, hooks, environment summary or safeguards block; its working directory is an empty directory inside the run directory. The runtime-fixed system prefix and empty system message are model-visible context the generator did not build; they are listed in requestBytes. The egress record's Conditions say the route adds no context of its own, so accepting this envelope needs an egress record version that admits the listed runtime-fixed bytes (packet O4)",
         "telemetry": "telemetry, error reporting and update checks are disabled; a run whose runtime cannot disable them does not start",
         "stateLocation": "a run whose runtime cannot keep its state and transcript inside the run directory does not start",
-        "acceptanceCheck": "the adapter is accepted only when a request captured at a local endpoint, before any real call, shows (1) the generator-built parts byte for byte equal to what the generator built and (2) every other byte equal to requestBytes: the runtimeFixed list, the routeFixedByThisEntry values, the headers list and the probe, for the pinned SDK and CLI versions. Any byte, header or field in neither fails. The check separates runtime envelope from content and admits no profile-set byte beyond the values this entry pins",
-        "fallback": "none: a failure never routes to another provider, to the direct API or to a tool"
+        "acceptanceCheck": "the adapter is accepted only when a request captured at a local endpoint, before any real call, shows (1) the generator-built parts byte for byte equal to what the generator built and (2) every other byte equal to requestBytes: bodyFields, runtimeFixed, routeFixedByThisEntry, headers (literals, shapes, value rules and closedSet) and probe, for the pinned SDK and CLI versions. Any byte, header or field in neither fails. The check separates runtime envelope from content and admits no profile-set byte beyond the values this entry pins",
+        "fallback": "none: a failure never routes to another provider, to the direct API or to a tool",
+        "egressGate": "[Inferred, PR #258 unmerged] the adapter points the runtime at an in-process loopback egress gate, not at the provider. The gate forwards a request only when the acceptance predicate armed for the current try is satisfied by that exact request, the consent check returns exactly true now (asked for every request, retries included) and an explicit upstream is configured; otherwise it answers 403 and no byte leaves. This entry declares the gate as the enforcement point; the gate is not part of these bytes"
       },
       "portMapping": {
         "implements": "PipelinePorts.generate in packages/polaris-generation-core/src/pipeline.ts",
@@ -213,8 +214,26 @@
         "unknown": "derivation-deterministic"
       },
       "requestBytes": {
-        "status": "the exact request the route may carry for the pinned versions, inline so the bytes an act binds are these bytes; PROVIDER-EGRESS-BYTES.md is cited as provenance only and its later edits change nothing here",
-        "provenance": "[Observed, capture endpoint, no provider contacted] PROVIDER-EGRESS-BYTES.md on the branch of PR #258, blob 2e7d176e668417bf9842be8b11703f5fe2cc39ca at commit 420c60f91a7122cc0224a29ec41d4e9bb29d5ec8; that adapter is unmerged",
+        "status": "the exact request the route may carry for the pinned versions, inline so the bytes an act binds are these bytes. The cited files are provenance only: their later edits change nothing here, and a different value in them is not admitted by this entry",
+        "provenance": {
+          "label": "[Observed, capture endpoint with a dummy credential, no provider contacted] by the author of PR #258; this entry only copies the values; the branch is unmerged",
+          "commit": "3444c33f0cbf135ec0684d6394ddd59bbfdcfc0e",
+          "files": [
+            {
+              "path": "docs/polaris-generation/PROVIDER-EGRESS-BYTES.md",
+              "blob": "2e7d176e668417bf9842be8b11703f5fe2cc39ca"
+            },
+            {
+              "path": "packages/polaris-generation-provider/src/request-acceptance.ts",
+              "blob": "87b30864de8d79fa8b69f2be2ca94d8c22f94a3d"
+            },
+            {
+              "path": "packages/polaris-generation-provider/src/egress-gate.ts",
+              "blob": "3704e4036479cb5edd7f63700380e645370a3c59"
+            }
+          ],
+          "note": "each blob is the file at that commit (git rev-parse <commit>:<path>); the builder re-checks the pairs whenever the commit is present in the local object database"
+        },
         "pinnedVersions": {
           "package": "@anthropic-ai/claude-agent-sdk",
           "version": "0.3.288",
@@ -235,30 +254,65 @@
           "model": "claude-opus-5-5",
           "tools": [],
           "effort": "high",
-          "thinking": "absent (CLAUDE_CODE_DISABLE_THINKING=1); enabling it adds thinking and context_management and is not a permitted configuration",
+          "thinking": "off: thinking and context_management are absent from the body and anthropic-beta carries no thinking-display entry; the adaptive profile of the cited measurement is not permitted by this entry",
           "maxTokensCeiling": "[Inferred proposal, an owner choice] 64000, because a multi-page draft stage can exceed 32000; check it against the first requests run; the sent max_tokens is the minimum of this ceiling, the profile's maxOutputTokens and the dispatch permit's output and usage allowances, so the permit may only lower it",
-          "note": "model, tools, effort and max_tokens are profile-set in the measurement; this entry pins them so they are bytes it lists as fixed, the form the egress record admits"
+          "note": "[Inferred] model, tools, effort, thinking and max_tokens are profile-set in the measurement, not fixed by the runtime. This entry pins them as its own choices (never observed in these values) so that they are bytes it lists; whether the egress record's phrase \"fixed by the runtime\" admits them is a reading that a further egress record version must settle (packet O4)"
         },
-        "headers": [
-          "user-agent: claude-cli/2.1.288 (external, sdk-ts, agent-sdk/0.3.288)",
-          "x-claude-code-session-id (the same uuid)",
-          "x-stainless-os",
-          "x-stainless-arch",
-          "x-stainless-runtime",
-          "x-stainless-runtime-version",
-          "x-stainless-package-version",
-          "x-stainless-lang",
-          "x-stainless-retry-count",
-          "x-stainless-timeout",
-          "x-app: cli",
-          "anthropic-version",
-          "anthropic-beta (CLI feature betas)",
-          "anthropic-dangerous-direct-browser-access",
-          "x-api-key",
-          "transport headers"
-        ],
-        "headerNote": "the x-stainless platform headers identify the machine's OS, CPU architecture and Node runtime version",
-        "probe": "after some failures the CLI sends HEAD /api/hello with user-agent Bun/1.4.3 and no body to the API host; it carries no generator bytes and is the only non-message request allowed",
+        "headers": {
+          "pinnedLiterals": {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01",
+            "anthropic-dangerous-direct-browser-access": "true",
+            "x-app": "cli",
+            "user-agent": "claude-cli/2.1.288 (external, sdk-ts, agent-sdk/0.3.288)",
+            "anthropic-beta": "claude-code-20250219,interleaved-thinking-2025-05-14,thinking-token-count-2026-05-13,context-management-2025-06-27,prompt-caching-scope-2026-01-05,mid-conversation-system-2026-04-07,per-turn-control-2026-07-01,effort-2025-11-24",
+            "x-stainless-lang": "js",
+            "x-stainless-runtime": "node",
+            "x-stainless-package-version": "0.128.0",
+            "x-stainless-retry-count": "0",
+            "x-stainless-timeout": "600"
+          },
+          "shapes": {
+            "x-stainless-os": "^[A-Za-z]{1,16}$",
+            "x-stainless-arch": "^[a-z0-9_]{1,16}$",
+            "x-stainless-runtime-version": "^v\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$",
+            "accept-encoding": "^[a-z, ]{1,40}$"
+          },
+          "valueRules": {
+            "x-api-key": "equal to the configured credential; the credential is never recorded",
+            "x-claude-code-session-id": "equal to the session_id inside metadata.user_id and matching ^[0-9a-f-]{36}$",
+            "content-length": "the byte length of the body, computed",
+            "host": "set by the transport: at the loopback egress gate it matches ^127\\.0\\.0\\.1:\\d{1,5}$, and the forwarded request names the one upstream host the gate is configured with",
+            "connection": "set by the transport; no value beyond an HTTP connection token"
+          },
+          "closedSet": [
+            "accept",
+            "accept-encoding",
+            "anthropic-beta",
+            "anthropic-dangerous-direct-browser-access",
+            "anthropic-version",
+            "connection",
+            "content-length",
+            "content-type",
+            "host",
+            "user-agent",
+            "x-api-key",
+            "x-app",
+            "x-claude-code-session-id",
+            "x-stainless-arch",
+            "x-stainless-lang",
+            "x-stainless-os",
+            "x-stainless-package-version",
+            "x-stainless-retry-count",
+            "x-stainless-runtime",
+            "x-stainless-runtime-version",
+            "x-stainless-timeout"
+          ],
+          "unlisted": "any header name outside closedSet, or a value outside its literal, shape or rule, fails the acceptance check; there is no open class of transport headers",
+          "machineFingerprint": "x-stainless-os, x-stainless-arch and x-stainless-runtime-version identify the machine and are sent; the cited gate has a stripFingerprint option, default off, whether the egress record should require stripping is an owner choice (packet O4) and this entry assumes no answer"
+        },
+        "probe": "[Inferred, PR #258 unmerged] after some failures the CLI sends a body-less HEAD /api/hello (user-agent Bun/1.4.3, accept */*); the cited gate answers it locally and never forwards it, so it reaches no host; a probe that reached the API host would carry no generator bytes and still be listed here as the only non-message request",
         "absentByConstruction": [
           "the # Environment message (cwd, OS, date)",
           "the billing-header system block",
@@ -266,7 +320,8 @@
           "the safeguards block (permissionMode auto only)",
           "any tool, including StructuredOutput (schema mode is off by default)"
         ],
-        "unlistedBytes": "any byte, header or field not listed above fails the acceptance check"
+        "unlistedBytes": "any body field, header or request outside this block fails the acceptance check",
+        "bodyFields": "exactly: max_tokens, messages, metadata, model, output_config, stream, system, tools (thinking off); metadata.user_id is a JSON string with device_id (64 hex), account_uuid (empty) and session_id (36 hex and dashes)"
       },
       "determinismClassNote": "the scalar form is kept for the shape precedent's key and names the primary class; determinismByOutputClass is the machine form and governs"
     }

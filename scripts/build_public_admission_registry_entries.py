@@ -54,6 +54,72 @@ FETCH_FULL = (FETCH + ": one shallow fetch of exactly one admitted commit object
 EGRESS_SOURCE = re.compile(r"record PUBLIC-EGRESS-anthropic .*version \d+\.\d+\.\d+-candidate\.\d+")
 ACCEPTANCE = ("byte for byte", "requestBytes", "in neither fails")
 #: Request fields the entry must pin itself, so the acceptance admits no profile-set byte.
+#: The header table the provider entry must carry byte for byte (values, not names):
+#: round-3 Finding 1. Copied from the cited gate's request-acceptance.ts at the
+#: provenance commit; a different value, an added header or an open class fails.
+HEADERS = json.loads(r'''
+{
+    "pinnedLiterals": {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "x-app": "cli",
+        "user-agent": "claude-cli/2.1.288 (external, sdk-ts, agent-sdk/0.3.288)",
+        "anthropic-beta": "claude-code-20250219,interleaved-thinking-2025-05-14,thinking-token-count-2026-05-13,context-management-2025-06-27,prompt-caching-scope-2026-01-05,mid-conversation-system-2026-04-07,per-turn-control-2026-07-01,effort-2025-11-24",
+        "x-stainless-lang": "js",
+        "x-stainless-runtime": "node",
+        "x-stainless-package-version": "0.128.0",
+        "x-stainless-retry-count": "0",
+        "x-stainless-timeout": "600"
+    },
+    "shapes": {
+        "x-stainless-os": "^[A-Za-z]{1,16}$",
+        "x-stainless-arch": "^[a-z0-9_]{1,16}$",
+        "x-stainless-runtime-version": "^v\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$",
+        "accept-encoding": "^[a-z, ]{1,40}$"
+    },
+    "valueRules": {
+        "x-api-key": "equal to the configured credential; the credential is never recorded",
+        "x-claude-code-session-id": "equal to the session_id inside metadata.user_id and matching ^[0-9a-f-]{36}$",
+        "content-length": "the byte length of the body, computed",
+        "host": "set by the transport: at the loopback egress gate it matches ^127\\.0\\.0\\.1:\\d{1,5}$, and the forwarded request names the one upstream host the gate is configured with",
+        "connection": "set by the transport; no value beyond an HTTP connection token"
+    },
+    "closedSet": [
+        "accept",
+        "accept-encoding",
+        "anthropic-beta",
+        "anthropic-dangerous-direct-browser-access",
+        "anthropic-version",
+        "connection",
+        "content-length",
+        "content-type",
+        "host",
+        "user-agent",
+        "x-api-key",
+        "x-app",
+        "x-claude-code-session-id",
+        "x-stainless-arch",
+        "x-stainless-lang",
+        "x-stainless-os",
+        "x-stainless-package-version",
+        "x-stainless-retry-count",
+        "x-stainless-runtime",
+        "x-stainless-runtime-version",
+        "x-stainless-timeout"
+    ],
+    "unlisted": "any header name outside closedSet, or a value outside its literal, shape or rule, fails the acceptance check; there is no open class of transport headers",
+    "machineFingerprint": "x-stainless-os, x-stainless-arch and x-stainless-runtime-version identify the machine and are sent; the cited gate has a stripFingerprint option, default off, whether the egress record should require stripping is an owner choice (packet O4) and this entry assumes no answer"
+}
+''')
+PROVENANCE_COMMIT = "3444c33f0cbf135ec0684d6394ddd59bbfdcfc0e"
+PROVENANCE_BLOBS = {
+    "docs/polaris-generation/PROVIDER-EGRESS-BYTES.md": "2e7d176e668417bf9842be8b11703f5fe2cc39ca",
+    "packages/polaris-generation-provider/src/request-acceptance.ts": "87b30864de8d79fa8b69f2be2ca94d8c22f94a3d",
+    "packages/polaris-generation-provider/src/egress-gate.ts": "3704e4036479cb5edd7f63700380e645370a3c59",
+}
+PINNED_VALUES = {"model": "claude-opus-5-5", "tools": [], "effort": "high"}
 PINNED = ("model", "tools", "effort", "thinking", "maxTokensCeiling")
 RUNTIME_PIN = ("0.3.288", "2.1.288")
 
@@ -64,6 +130,24 @@ def sha(data):
 
 def proposed(root=PKG):
     return sorted((root / "proposed").glob("*.json"))
+
+
+ACCEPTANCE_END = re.compile(r"admits no profile-set byte beyond the values this entry pins$")
+
+
+def git_provenance_findings(name, prov):
+    """Each (commit, path, blob) pair must hold in git whenever the commit is present."""
+    import subprocess
+    commit = prov.get("commit", "")
+    have = subprocess.run(["git", "cat-file", "-e", f"{commit}^{{commit}}"], capture_output=True)
+    if have.returncode != 0:
+        return []
+    out = []
+    for f in prov.get("files", []):
+        got = subprocess.run(["git", "rev-parse", f"{commit}:{f.get('path')}"], capture_output=True, text=True)
+        if got.returncode != 0 or got.stdout.strip() != f.get("blob"):
+            out.append(f"{name}: blob {f.get('blob')} is not {f.get('path')} at {commit}")
+    return out
 
 
 def findings_for(name, doc, butlers_contract):
@@ -137,6 +221,21 @@ def findings_for(name, doc, butlers_contract):
         for k in PINNED:
             if k not in rb.get("routeFixedByThisEntry", {}):
                 out.append(f"{name}: routeFixedByThisEntry does not pin {k}")
+        for k, want in PINNED_VALUES.items():
+            if rb.get("routeFixedByThisEntry", {}).get(k) != want:
+                out.append(f"{name}: routeFixedByThisEntry.{k} is not {want!r}")
+        if not str(rb.get("routeFixedByThisEntry", {}).get("thinking", "")).startswith("off"):
+            out.append(f"{name}: routeFixedByThisEntry.thinking is not off")
+        if "64000" not in str(rb.get("routeFixedByThisEntry", {}).get("maxTokensCeiling", "")):
+            out.append(f"{name}: routeFixedByThisEntry.maxTokensCeiling is not the 64000 proposal")
+        if rb.get("headers") != HEADERS:
+            out.append(f"{name}: requestBytes.headers differs from the pinned header table")
+        prov = rb.get("provenance", {})
+        if prov.get("commit") != PROVENANCE_COMMIT or {f["path"]: f["blob"] for f in prov.get("files", [])} != PROVENANCE_BLOBS:
+            out.append(f"{name}: provenance commit and blob pairs differ from the recorded ones")
+        if not ACCEPTANCE_END.search(rc.get("acceptanceCheck", "")):
+            out.append(f"{name}: acceptanceCheck carries text after its closing clause")
+        out += git_provenance_findings(name, prov)
         if (rb.get("pinnedVersions", {}).get("version"), rb.get("pinnedVersions", {}).get("bundledCli")) != RUNTIME_PIN:
             out.append(f"{name}: requestBytes pins other versions than runtimePin")
         if "requestBytes" not in ta.get("readAuthority", ""):
@@ -264,6 +363,19 @@ def selftest():
         lambda e, d: e["typedAuthority"].update(readAuthority="none"), "readAuthority")
     mut("scalar determinism unexplained", src, lambda e, d: e.pop("determinismClassNote"), "unexplained")
     mut("input class unmapped", prov, lambda e, d: e["snapshotInputMapping"].pop("run-budget"), "omits input classes")
+    mut("header value changed", prov, lambda e, d: e["requestBytes"]["headers"]["pinnedLiterals"].update({"anthropic-version": "2024-01-01"}), "header table")
+    mut("header added", prov, lambda e, d: e["requestBytes"]["headers"]["closedSet"].append("cookie"), "header table")
+    mut("open transport class returns", prov, lambda e, d: e["requestBytes"]["headers"].update(unlisted="transport headers"), "header table")
+    mut("anthropic-beta widened", prov, lambda e, d: e["requestBytes"]["headers"]["pinnedLiterals"].update({"anthropic-beta": "x,y"}), "header table")
+    mut("model unpinned by value", prov, lambda e, d: e["requestBytes"]["routeFixedByThisEntry"].update(model="any model"), "model")
+    mut("thinking adaptive", prov, lambda e, d: e["requestBytes"]["routeFixedByThisEntry"].update(thinking="adaptive"), "thinking")
+    mut("effort changed", prov, lambda e, d: e["requestBytes"]["routeFixedByThisEntry"].update(effort="medium"), "effort")
+    mut("ceiling changed", prov, lambda e, d: e["requestBytes"]["routeFixedByThisEntry"].update(maxTokensCeiling="[Inferred] 32000"), "maxTokensCeiling")
+    mut("acceptance widened after its end", prov,
+        lambda e, d: e["routeConditions"].update(acceptanceCheck=e["routeConditions"]["acceptanceCheck"] + " Any header value is also admitted."), "after its closing")
+    mut("provenance blob wrong", prov,
+        lambda e, d: e["requestBytes"]["provenance"]["files"][0].update(blob="2ca77ab5f042ffeb8952fbad7c3a3a2825f7ff60"), "provenance")
+    mut("provenance commit moved", prov, lambda e, d: e["requestBytes"]["provenance"].update(commit="420c60f91a7122cc0224a29ec41d4e9bb29d5ec8"), "provenance")
     mut("full-history fetch", src, lambda e, d: e["typedAuthority"].update(fetch="git clone <upstream>"), "fetch")
     mut("fetch loses --no-tags", src,
         lambda e, d: e["typedAuthority"].update(fetch=e["typedAuthority"]["fetch"].replace("--no-tags ", "")), "fetch")

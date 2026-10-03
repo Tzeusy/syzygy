@@ -2,8 +2,8 @@
 
 > **Candidate — binds nothing.** Drafted by an agent for bead `syzygy-mea`.
 > Effect over either entry would come only from that entry's own owner act.
-> Round 1 returned REVISE (raw retained under `reviews/`); this is the
-> round-2 repair. No review has run against these bytes.
+> Rounds 1, 2 and 3 returned REVISE (raws retained under `reviews/`); this is
+> the round-4 text. No review has run against these bytes.
 
 **Artifact(s):** two new whole files under `proposed/` in this directory:
 `POLARIS-PROVIDER-ROUTE-ANTHROPIC-AGENT-SDK-CANDIDATE.json` and
