@@ -949,7 +949,16 @@ def main(argv: list[str]) -> int:
         parser.add_argument(flag, action="store_true")
     args = parser.parse_args(argv)
     if args.selftest:
-        return selftest()
+        # After sign-off the fixtures need the pre-adoption subjects: run this
+        # file's current bytes in an archive of the sign-off's parent commit
+        # (syzygy-tmkb). Before sign-off the record is absent and this is None.
+        import pwb_signed_selftest
+        rerun = pwb_signed_selftest.rerun_before_signoff(
+            __file__,
+            ".syzygy/governance/decisions/PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md",
+            "0dbe7ce6038c15b8eaffcfc2512580320614d345",  # parent of sign-off bd47409c
+        )
+        return selftest() if rerun is None else rerun
     if args.apply:
         return apply(args.at_adoption)
     if args.write:
