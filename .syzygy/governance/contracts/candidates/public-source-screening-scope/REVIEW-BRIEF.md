@@ -94,3 +94,14 @@ it with `python3 scripts/build_public_source_screening_scope.py --manifest-diges
 Number findings `**Finding N — title** (blocking|revise|note)` under a
 `## Findings` heading. CONFIRM WITH EXCEPTIONS clears the bytes only when every
 finding is a note, dispositioned in a sibling `ROUND-<n>-DISPOSITIONS.md`.
+
+11. **Is the exclusion-reason set structural?** `targetMetadataRule` lists no
+    reason and names `GENERATION_EXCLUSION_REASONS` in `generation-source.ts`.
+    That constant is [Inferred] not yet in code: run
+    `python3 scripts/build_public_source_screening_scope.py --check` and
+    confirm it reports the package current and then "not ready for an act"
+    (exit 1); `--pending-symbol` downgrades that to a note so the manifest
+    digest can be printed. Confirm the symbol must exist before the act, that
+    the reader fails closed on an absent, unexported, computed, empty or
+    repeating set (selftest), and that packet Q7 now asks only to confirm the
+    set.

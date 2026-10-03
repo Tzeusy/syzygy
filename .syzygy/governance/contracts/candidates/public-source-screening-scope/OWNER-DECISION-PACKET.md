@@ -69,12 +69,19 @@ backtick count are excluded independent of markup. *Recommended:* accept, run th
 first target, and decide any loosening or any trimming of the list from the
 measured counts as a later version.
 
-**Q7. Which exclusion reasons may leave.** The rule carries a source's reason
-only as one of the policy's two emitted classes (`excluded-artifact`,
-`unclassifiable-excluded`). The generator also emits `oversize-source-excluded`
-for a source that is too large, which no class lists, so that reason would be
-refused. *Recommended:* add it to the closed list in this scope rather than
-widen to free text.
+**Q7. Which exclusion reasons may leave.** The rule lists no reason. It
+carries a source's reason only as a member of the closed set that the exported
+constant `GENERATION_EXCLUSION_REASONS` in `generation-source.ts` holds, read
+from code at the commit a run names, and the generator's validator refuses any
+reason outside it. The engine emits more than the policy's two classes
+(`oversize-source-excluded` on the base; `deferred-by-budget`, `empty-file`
+and others on other open branches), so a hand-written list would refuse real
+runs and go stale. [Inferred] The constant and the validator are not in code at
+this package's base; they are requested of the generator's lane, and the
+builder fails closed (the package is not ready for an act) until the constant
+exists. *Ask:* confirm that the reason set is whatever that constant holds,
+and read its values at the act commit; no reason is added here. *Recommended:*
+confirm.
 
 **Q8. The run-profile carrier.** The rule classifies reader questions and
 requested assets only as the values of the code-declared symbols in the
