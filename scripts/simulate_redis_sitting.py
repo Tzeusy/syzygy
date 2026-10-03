@@ -522,7 +522,16 @@ def real_state(repo):
     status = subprocess.run(["git", "status", "--porcelain"], cwd=repo, capture_output=True, text=True).stdout
     refs = subprocess.run(["git", "for-each-ref", "--format=%(refname) %(objectname)"], cwd=repo,
                           capture_output=True, text=True).stdout
-    return head, status, hashlib.sha256(refs.encode()).hexdigest()
+    return head, status, dict(line.split(" ", 1) for line in refs.splitlines())
+
+
+def moved(before, after):
+    """(hard, refs): a moved HEAD or working tree is a failure; refs that
+    moved are reported by name, because other sessions share the object store
+    and fetch or push while a long run is going."""
+    hard = [n for n, b, a in (("HEAD", before[0], after[0]), ("status", before[1], after[1])) if b != a]
+    refs = sorted(r for r in set(before[2]) | set(after[2]) if before[2].get(r) != after[2].get(r))
+    return hard, refs
 
 
 def build_scratch(repo, scratch, base):
@@ -569,8 +578,12 @@ def main(argv):
     finally:
         sim.write_report()
     after = real_state(ROOT)
-    if before != after:
-        print("FAIL: the real tree moved during the simulation", file=sys.stderr)
+    hard, refs = moved(before, after)
+    if refs:
+        print(f"note: {len(refs)} ref(s) in the real repository moved during the run "
+              f"(other sessions share it): {refs[:5]}", file=sys.stderr)
+    if hard:
+        print(f"FAIL: the real tree moved during the simulation: {hard}", file=sys.stderr)
         return 2
     if tmp and not a.keep:
         shutil.rmtree(tmp, ignore_errors=True)
@@ -639,9 +652,12 @@ def selftest():
         except SystemExit:
             pass
         (repo / "f").write_text("2")
-        expect("real-tree comparison notices a modified file", real_state(repo) != s0)
+        expect("real-tree comparison notices a modified file", moved(s0, real_state(repo))[0] == ["status"])
         (repo / "f").write_text("1")
-        expect("real-tree comparison is stable when restored", real_state(repo) == s0)
+        expect("real-tree comparison is stable when restored", moved(s0, real_state(repo)) == ([], []))
+        g("branch", "other")
+        expect("a new ref is reported by name, not as a hard failure",
+               moved(s0, real_state(repo)) == ([], ["refs/heads/other"]))
 
     for f in failures:
         print(f"FAIL: {f}")
