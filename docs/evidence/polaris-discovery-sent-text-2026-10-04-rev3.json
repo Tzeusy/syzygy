@@ -1,13 +1,8 @@
 {
-  "supersededBy": {
-    "path": "docs/evidence/polaris-discovery-sent-text-2026-10-04-rev3.json",
-    "date": "2026-10-04",
-    "reason": "prompts.ts changed after the #336 re-review (dossier text only). Nothing below was edited."
-  },
   "record": "sent-text derivation for the discovery stages and the dossier profile",
   "date": "2026-10-04",
-  "ranAt": "de66147b30ffd8965309448bd79388b190c27309",
-  "subjectsUnchangedAt": "71b0ec3a70b19c55f29ab19cfd79c032f2ec17bb",
+  "ranAt": "7a6d6628fc4688cd3f4848d4b4eb1b368811c4c9",
+  "subjectsUnchangedAt": "49508f84b1111094d3a8aee9c7002290d7687e44",
   "ranIn": "a clean detached worktree of ranAt after npm ci and tsc -b packages/polaris-generation-core",
   "script": {
     "path": "scripts/derive_generator_sent_text.mjs",
@@ -16,7 +11,7 @@
   "subjects": [
     {
       "path": "packages/polaris-generation-core/src/prompts.ts",
-      "sha256": "887286615f2fec32145714582a0874bab09a081b1b52055dc070f5b9f498d758"
+      "sha256": "9f9b77da62f938139e2897a32bb57e4f052f4740bbfc2436b270f80936d6a577"
     },
     {
       "path": "packages/polaris-generation-core/src/provider-draft.ts",
@@ -31,7 +26,7 @@
       "sha256": "9403125dcdb378caa2e0b10a193801577a55a560b24e6beda5105dd51a73035f"
     }
   ],
-  "supersedes": "docs/evidence/polaris-discovery-sent-text-2026-10-04.json",
+  "supersedes": "docs/evidence/polaris-discovery-sent-text-2026-10-04-rev2.json",
   "runs": [
     {
       "args": [],
@@ -355,7 +350,7 @@
         "--discovery"
       ],
       "exit": 0,
-      "finding": "Every discovery envelope field and inputs leaf classified, the classification equal to the predecessor's; no new class. Against the predecessor only the two discovery prompts moved: discovery-map (illustration now a documentation builder; still v2) and discovery-reduce (now v2: it names comparisons). Both schemas are unchanged.",
+      "finding": "Equal, as parsed JSON, to the predecessor's --discovery output: the discovery prompts, schemas and classification are unchanged; only the dossier rules and illustrations in prompts.ts moved.",
       "output": {
         "generateInputFields": [
           "input",

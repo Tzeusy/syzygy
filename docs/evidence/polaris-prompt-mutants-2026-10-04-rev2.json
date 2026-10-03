@@ -1,15 +1,10 @@
 {
-  "supersededBy": {
-    "path": "docs/evidence/polaris-prompt-mutants-2026-10-04-rev2.json",
-    "date": "2026-10-04",
-    "reason": "Subjects changed after the #336 re-review; see the successor. Nothing below was edited."
-  },
   "record": "rule-6 mutation evidence (AGENTS.md verification rule 6)",
   "date": "2026-10-04",
-  "ranAt": "71b0ec3a70b19c55f29ab19cfd79c032f2ec17bb",
+  "ranAt": "49508f84b1111094d3a8aee9c7002290d7687e44",
   "runner": {
     "path": "scripts/polaris_prompt_mutants.py",
-    "sha256": "15bb79b292836e7d55702605ab95319deac2558a862e773193ed9791dbb72976",
+    "sha256": "f0a73a254938774fc85535a5b1960f8b24b8607853be83f6ce8632352eb36000",
     "command": "python3 scripts/polaris_prompt_mutants.py OUT.json"
   },
   "subjects": [
@@ -27,7 +22,7 @@
     },
     {
       "path": "packages/polaris-generation-core/src/prompts.ts",
-      "sha256": "887286615f2fec32145714582a0874bab09a081b1b52055dc070f5b9f498d758"
+      "sha256": "9f9b77da62f938139e2897a32bb57e4f052f4740bbfc2436b270f80936d6a577"
     },
     {
       "path": "packages/polaris-generation-core/src/provider-draft.ts",
@@ -41,7 +36,7 @@
   "tests": [
     {
       "path": "packages/polaris-generation-core/src/dossier-prompts.test.ts",
-      "sha256": "87375b2609304fdb0ecf8e6c0d481efc9dd3163e01961138c90e1a44f8a73efd"
+      "sha256": "c2b8f462d6e912faf14e848b5c12452ba3bef441d4d1002da12d02e54787341d"
     },
     {
       "path": "packages/polaris-generation-core/src/prompts.test.ts",
@@ -57,33 +52,33 @@
     },
     {
       "path": "packages/polaris-generation-core/src/quotations.test.ts",
-      "sha256": "93651dd5478015918331dc43a4944596c3110066c8399098ce3c776888faa960"
+      "sha256": "f4a27e574430c301f74685596efa7e15ba6badb9e4a78be7e2bebb62d61743d3"
     }
   ],
   "supersedes": {
-    "path": "docs/evidence/polaris-discovery-provider-mutants-2026-10-04.json",
-    "reason": "The #336 review (CHANGES) rewrote dossier rule 4, the guidance, the illustration and the discovery-reduce prompt and added quotations.ts and dossier-validation.ts; every subject except provider-draft.ts and discovery-provider.ts changed, so the whole population was re-run at one commit with the committed runner."
+    "path": "docs/evidence/polaris-prompt-mutants-2026-10-04.json",
+    "reason": "The #336 re-review (CHANGES at 26105ddb) made rule 4 explicit, added guidance, corrected the illustration's inferred cost and added semantic clause tests; prompts.ts and both dossier test files changed, so the whole population, 25 new mutants included, was re-run at one commit with the committed runner."
   },
   "method": "Before every mutant the runner rewrites every subject from its committed bytes, checks each subject's sha256 against the commit, and runs the unmutated battery (`npx vitest run` over the five test files), which must pass with no failure. It then replaces exactly one occurrence of `old` with `new` in `file` (applied only when `old` occurs exactly once), runs the battery, and restores and re-checks every subject. Killed means the run exited non-zero with at least one failed test.",
-  "firstRun": {
-    "commit": "de66147b30ffd8965309448bd79388b190c27309",
-    "mutants": 133,
-    "survived": [
-      "json-at-call-time",
-      "q-first-close-only",
-      "replace-once-unchecked"
-    ],
-    "finding": "q-first-close-only survived: quotationsMatch tried every closing double quote, so any quotation whose opening up to an inner quote matched a source passed with an unverified tail. 71b0ec3a ends a quotation at the last double quote before the next lead and adds two refusal tests; this record is the full re-run at that commit."
-  },
   "summary": {
-    "mutants": 135,
-    "killed": 133,
+    "mutants": 160,
+    "killed": 158,
     "survived": 2,
     "survivedEquivalent": [
       "json-at-call-time",
       "replace-once-unchecked"
     ]
   },
+  "killedOnlyByDigestPins": [
+    "discovery-instructions-swapped",
+    "map-code-points-dropped",
+    "map-comparison-dropped",
+    "map-instruction-word",
+    "map-sources-dropped",
+    "reduce-comparisons-dropped",
+    "reduce-instruction-word",
+    "version-bumped"
+  ],
   "mutants": [
     {
       "file": "packages/polaris-generation-core/src/prompts.ts",
@@ -93,14 +88,20 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 12,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
         "dossier stage prompts > pins the fidelity dossier prompt bytes",
         "dossier stage prompts > pins the inventory dossier prompt bytes",
         "dossier stage prompts > pins the plan dossier prompt bytes",
-        "dossier stage prompts > pins the repair dossier prompt bytes"
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states the seven dossier rules in the author prompt",
+        "dossier stage prompts > states the seven dossier rules in the edit prompt",
+        "dossier stage prompts > states the seven dossier rules in the fidelity prompt",
+        "dossier stage prompts > states the seven dossier rules in the inventory prompt",
+        "dossier stage prompts > states the seven dossier rules in the plan prompt",
+        "dossier stage prompts > states the seven dossier rules in the repair prompt"
       ]
     },
     {
@@ -111,14 +112,20 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 12,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
         "dossier stage prompts > pins the fidelity dossier prompt bytes",
         "dossier stage prompts > pins the inventory dossier prompt bytes",
         "dossier stage prompts > pins the plan dossier prompt bytes",
-        "dossier stage prompts > pins the repair dossier prompt bytes"
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states the seven dossier rules in the author prompt",
+        "dossier stage prompts > states the seven dossier rules in the edit prompt",
+        "dossier stage prompts > states the seven dossier rules in the fidelity prompt",
+        "dossier stage prompts > states the seven dossier rules in the inventory prompt",
+        "dossier stage prompts > states the seven dossier rules in the plan prompt",
+        "dossier stage prompts > states the seven dossier rules in the repair prompt"
       ]
     },
     {
@@ -129,14 +136,20 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 12,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
         "dossier stage prompts > pins the fidelity dossier prompt bytes",
         "dossier stage prompts > pins the inventory dossier prompt bytes",
         "dossier stage prompts > pins the plan dossier prompt bytes",
-        "dossier stage prompts > pins the repair dossier prompt bytes"
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states the seven dossier rules in the author prompt",
+        "dossier stage prompts > states the seven dossier rules in the edit prompt",
+        "dossier stage prompts > states the seven dossier rules in the fidelity prompt",
+        "dossier stage prompts > states the seven dossier rules in the inventory prompt",
+        "dossier stage prompts > states the seven dossier rules in the plan prompt",
+        "dossier stage prompts > states the seven dossier rules in the repair prompt"
       ]
     },
     {
@@ -146,15 +159,21 @@
       "new": "keeping the link text; small wording changes are allowed.",
       "outcome": "killed",
       "baselineGreen": true,
-      "failedTests": 6,
-      "totalTests": 177,
+      "failedTests": 12,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
         "dossier stage prompts > pins the fidelity dossier prompt bytes",
         "dossier stage prompts > pins the inventory dossier prompt bytes",
         "dossier stage prompts > pins the plan dossier prompt bytes",
-        "dossier stage prompts > pins the repair dossier prompt bytes"
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
       ]
     },
     {
@@ -164,15 +183,21 @@
       "new": "",
       "outcome": "killed",
       "baselineGreen": true,
-      "failedTests": 6,
-      "totalTests": 177,
+      "failedTests": 12,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
         "dossier stage prompts > pins the fidelity dossier prompt bytes",
         "dossier stage prompts > pins the inventory dossier prompt bytes",
         "dossier stage prompts > pins the plan dossier prompt bytes",
-        "dossier stage prompts > pins the repair dossier prompt bytes"
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
       ]
     },
     {
@@ -182,33 +207,45 @@
       "new": "",
       "outcome": "killed",
       "baselineGreen": true,
-      "failedTests": 6,
-      "totalTests": 177,
+      "failedTests": 12,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
         "dossier stage prompts > pins the fidelity dossier prompt bytes",
         "dossier stage prompts > pins the inventory dossier prompt bytes",
         "dossier stage prompts > pins the plan dossier prompt bytes",
-        "dossier stage prompts > pins the repair dossier prompt bytes"
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
       ]
     },
     {
       "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "rule-4-inferred-unbounded",
-      "old": "may be written as one Inferred: sentence citing the sources of the mechanism it reasons from; otherwise it is unresolved",
+      "old": "may be written as one Inferred: sentence citing the sources of the mechanism it reasons from, and it must agree with every cited source; otherwise it is unresolved",
       "new": "may be inferred",
       "outcome": "killed",
       "baselineGreen": true,
-      "failedTests": 6,
-      "totalTests": 177,
+      "failedTests": 12,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
         "dossier stage prompts > pins the fidelity dossier prompt bytes",
         "dossier stage prompts > pins the inventory dossier prompt bytes",
         "dossier stage prompts > pins the plan dossier prompt bytes",
-        "dossier stage prompts > pins the repair dossier prompt bytes"
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
       ]
     },
     {
@@ -218,15 +255,21 @@
       "new": "Never extend or generalize it.",
       "outcome": "killed",
       "baselineGreen": true,
-      "failedTests": 6,
-      "totalTests": 177,
+      "failedTests": 12,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
         "dossier stage prompts > pins the fidelity dossier prompt bytes",
         "dossier stage prompts > pins the inventory dossier prompt bytes",
         "dossier stage prompts > pins the plan dossier prompt bytes",
-        "dossier stage prompts > pins the repair dossier prompt bytes"
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
       ]
     },
     {
@@ -236,15 +279,21 @@
       "new": "",
       "outcome": "killed",
       "baselineGreen": true,
-      "failedTests": 6,
-      "totalTests": 177,
+      "failedTests": 12,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
         "dossier stage prompts > pins the fidelity dossier prompt bytes",
         "dossier stage prompts > pins the inventory dossier prompt bytes",
         "dossier stage prompts > pins the plan dossier prompt bytes",
-        "dossier stage prompts > pins the repair dossier prompt bytes"
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
       ]
     },
     {
@@ -255,14 +304,20 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 12,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
         "dossier stage prompts > pins the fidelity dossier prompt bytes",
         "dossier stage prompts > pins the inventory dossier prompt bytes",
         "dossier stage prompts > pins the plan dossier prompt bytes",
-        "dossier stage prompts > pins the repair dossier prompt bytes"
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states the seven dossier rules in the author prompt",
+        "dossier stage prompts > states the seven dossier rules in the edit prompt",
+        "dossier stage prompts > states the seven dossier rules in the fidelity prompt",
+        "dossier stage prompts > states the seven dossier rules in the inventory prompt",
+        "dossier stage prompts > states the seven dossier rules in the plan prompt",
+        "dossier stage prompts > states the seven dossier rules in the repair prompt"
       ]
     },
     {
@@ -273,14 +328,20 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 12,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
         "dossier stage prompts > pins the fidelity dossier prompt bytes",
         "dossier stage prompts > pins the inventory dossier prompt bytes",
         "dossier stage prompts > pins the plan dossier prompt bytes",
-        "dossier stage prompts > pins the repair dossier prompt bytes"
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states the seven dossier rules in the author prompt",
+        "dossier stage prompts > states the seven dossier rules in the edit prompt",
+        "dossier stage prompts > states the seven dossier rules in the fidelity prompt",
+        "dossier stage prompts > states the seven dossier rules in the inventory prompt",
+        "dossier stage prompts > states the seven dossier rules in the plan prompt",
+        "dossier stage prompts > states the seven dossier rules in the repair prompt"
       ]
     },
     {
@@ -290,36 +351,39 @@
       "new": "never by rewording it.",
       "outcome": "killed",
       "baselineGreen": true,
-      "failedTests": 1,
-      "totalTests": 177,
+      "failedTests": 2,
+      "totalTests": 202,
       "killedBy": [
-        "dossier stage prompts > pins the repair dossier prompt bytes"
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states the repair guidance clause: never by rewording it to sound stated."
       ]
     },
     {
       "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "fidelity-quote-check-dropped",
-      "old": "that every quotation matches a cited source under rule 4's normalization; ",
+      "old": "that every quotation is one contiguous span of a cited source, matching it under rule 4's normalization, with no ellipsis or splice; ",
       "new": "",
       "outcome": "killed",
       "baselineGreen": true,
-      "failedTests": 1,
-      "totalTests": 177,
+      "failedTests": 2,
+      "totalTests": 202,
       "killedBy": [
-        "dossier stage prompts > pins the fidelity dossier prompt bytes"
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > states the fidelity guidance clause: every quotation is one contiguous span of a cited source, matching it under rule 4's normalization, with no ellipsis or splice; that double quotes appear nowhere else;"
       ]
     },
     {
       "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "fidelity-inferred-half-dropped",
-      "old": "no trade-off half is presented as stated unless a cited source states it, and that an Inferred: half cites the sources it reasons from;",
+      "old": "no trade-off half is presented as stated unless a cited source states it, and that an Inferred: half cites the sources it reasons from and agrees with every one of them;",
       "new": "no trade-off half is presented as stated;",
       "outcome": "killed",
       "baselineGreen": true,
-      "failedTests": 1,
-      "totalTests": 177,
+      "failedTests": 2,
+      "totalTests": 202,
       "killedBy": [
-        "dossier stage prompts > pins the fidelity dossier prompt bytes"
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > states the fidelity guidance clause: that no trade-off half is presented as stated unless a cited source states it, and that an Inferred: half cites the sources it reasons from and agrees with every one of them;"
       ]
     },
     {
@@ -329,9 +393,10 @@
       "new": "  edit: `Dossier repair: never turn",
       "outcome": "killed",
       "baselineGreen": true,
-      "failedTests": 1,
-      "totalTests": 177,
+      "failedTests": 2,
+      "totalTests": 202,
       "killedBy": [
+        "dossier stage prompts > gives every stage its own dossier guidance",
         "dossier stage prompts > pins the edit dossier prompt bytes"
       ]
     },
@@ -343,14 +408,20 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 12,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > derives the author dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the edit dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the fidelity dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the inventory dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the plan dossier base from the reviewed manifesto prompt by named substitutions only",
-        "dossier stage prompts > derives the repair dossier base from the reviewed manifesto prompt by named substitutions only"
+        "dossier stage prompts > derives the repair dossier base from the reviewed manifesto prompt by named substitutions only",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
       ]
     },
     {
@@ -361,14 +432,20 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 12,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > derives the author dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the edit dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the fidelity dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the inventory dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the plan dossier base from the reviewed manifesto prompt by named substitutions only",
-        "dossier stage prompts > derives the repair dossier base from the reviewed manifesto prompt by named substitutions only"
+        "dossier stage prompts > derives the repair dossier base from the reviewed manifesto prompt by named substitutions only",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
       ]
     },
     {
@@ -379,7 +456,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > derives the fidelity dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > pins the fidelity dossier prompt bytes"
@@ -393,7 +470,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > derives the inventory dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > pins the inventory dossier prompt bytes"
@@ -407,7 +484,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > derives the author dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > pins the author dossier prompt bytes"
@@ -421,7 +498,7 @@
       "outcome": "survived",
       "baselineGreen": true,
       "failedTests": 0,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [],
       "equivalent": "Equivalent at the committed bytes: replaceOnce's guard only refuses a fragment that does not occur exactly once, and every fragment it is given occurs exactly once, so removing the guard changes no prompt byte. The guard fails a future edit of the manifesto prompt at module load instead of silently leaving manifesto framing in the dossier base; the derives-the-dossier-base test asserts each fragment occurs exactly once independently."
     },
@@ -433,14 +510,18 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 10,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > quotes every advantage and trade-off verbatim from a cited source",
         "dossier stage illustrations pass the stage validators > validates the author illustration",
         "dossier stage illustrations pass the stage validators > validates the edit illustration",
         "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
         "dossier stage illustrations pass the stage validators > validates the inventory illustration",
-        "dossier stage illustrations pass the stage validators > validates the repair illustration"
+        "dossier stage illustrations pass the stage validators > validates the repair illustration",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
       ]
     },
     {
@@ -451,14 +532,18 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 10,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > quotes every advantage and trade-off verbatim from a cited source",
         "dossier stage illustrations pass the stage validators > validates the author illustration",
         "dossier stage illustrations pass the stage validators > validates the edit illustration",
         "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
         "dossier stage illustrations pass the stage validators > validates the inventory illustration",
-        "dossier stage illustrations pass the stage validators > validates the repair illustration"
+        "dossier stage illustrations pass the stage validators > validates the repair illustration",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
       ]
     },
     {
@@ -469,7 +554,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > quotes every advantage and trade-off verbatim from a cited source",
         "dossier stage prompts > pins the inventory dossier prompt bytes",
@@ -479,55 +564,63 @@
     {
       "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "inferred-cost-unmarked",
-      "old": "const INFERRED_COST = 'Inferred: a page whose",
-      "new": "const INFERRED_COST = 'A page whose",
+      "old": "const INFERRED_COST = 'Inferred: every build",
+      "new": "const INFERRED_COST = 'Every build",
       "outcome": "killed",
       "baselineGreen": true,
-      "failedTests": 7,
-      "totalTests": 177,
+      "failedTests": 8,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > gives an unstated mechanism-level cost its own Inferred: block, citing the mechanism and never quoting",
+        "dossier illustrations obey their own rules > infers a cost that agrees with every cited source and gives the review no finding to praise it",
         "dossier illustrations obey their own rules > marks the two inferential blocks Inferred: and no other",
         "dossier illustrations obey their own rules > quotes every advantage and trade-off verbatim from a cited source",
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
-        "dossier stage prompts > pins the inventory dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/prompts.ts",
-      "id": "inferred-cost-cites-stated-source",
-      "old": "block('b-cost-inferred', INFERRED_COST, ['src-cache'])",
-      "new": "block('b-cost-inferred', INFERRED_COST, ['src-readme'])",
-      "outcome": "killed",
-      "baselineGreen": true,
-      "failedTests": 10,
-      "totalTests": 177,
-      "killedBy": [
-        "dossier illustrations obey their own rules > gives an unstated mechanism-level cost its own Inferred: block, citing the mechanism and never quoting",
-        "dossier illustrations obey their own rules > spells every backticked identifier as a cited source spells it",
-        "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
-        "dossier stage prompts > pins the author dossier prompt bytes",
-        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
         "dossier stage prompts > pins the repair dossier prompt bytes"
       ]
     },
     {
       "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "inferred-cost-cites-stated-source",
+      "old": "block('b-cost-inferred', INFERRED_COST, ['src-build', 'src-cache'])",
+      "new": "block('b-cost-inferred', INFERRED_COST, ['src-readme'])",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 11,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier illustrations obey their own rules > gives an unstated mechanism-level cost its own Inferred: block, citing the mechanism and never quoting",
+        "dossier illustrations obey their own rules > infers a cost that agrees with every cited source and gives the review no finding to praise it",
+        "dossier illustrations obey their own rules > spells every backticked identifier as a cited source spells it",
+        "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a deep-dive block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a section block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in the introduction"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "inferred-cost-entry-dropped",
-      "old": "  { id: 'e-cost-inferred', sourceIds: ['src-cache'], statement: INFERRED_COST, kind: 'qualification', disposition: produced('trade-offs') },\n",
+      "old": "  { id: 'e-cost-inferred', sourceIds: ['src-build', 'src-cache'], statement: INFERRED_COST, kind: 'qualification', disposition: produced('trade-offs') },\n",
       "new": "",
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 7,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > gives an unstated mechanism-level cost its own Inferred: block, citing the mechanism and never quoting",
         "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
         "dossier stage prompts > pins the inventory dossier prompt bytes",
         "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block",
         "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a deep-dive block",
-        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a section block"
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a section block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in the introduction"
       ]
     },
     {
@@ -538,7 +631,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 4,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > marks the two inferential blocks Inferred: and no other",
         "dossier stage prompts > pins the author dossier prompt bytes",
@@ -554,7 +647,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 4,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > marks the two inferential blocks Inferred: and no other",
         "dossier stage prompts > pins the author dossier prompt bytes",
@@ -570,14 +663,17 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 9,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > traces the workflow one hop per child block and draws only those hops",
         "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
         "dossier stage prompts > pins the repair dossier prompt bytes",
-        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block"
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a deep-dive block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a section block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in the introduction"
       ]
     },
     {
@@ -588,7 +684,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 4,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > spells every backticked identifier as a cited source spells it",
         "dossier stage prompts > pins the author dossier prompt bytes",
@@ -604,7 +700,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > spells every backticked identifier as a cited source spells it",
         "dossier stage prompts > pins the inventory dossier prompt bytes"
@@ -618,7 +714,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > keeps thin evidence unresolved in the inventory, the draft and the review",
         "dossier stage prompts > pins the inventory dossier prompt bytes"
@@ -632,7 +728,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 4,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > keeps thin evidence unresolved in the inventory, the draft and the review",
         "dossier stage prompts > pins the author dossier prompt bytes",
@@ -648,14 +744,23 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 15,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage illustrations pass the stage validators > validates the author illustration",
         "dossier stage illustrations pass the stage validators > validates the edit illustration",
         "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
         "dossier stage illustrations pass the stage validators > validates the repair illustration",
         "dossier stage prompts > pins the author dossier prompt bytes",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a deep-dive block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a section block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in the introduction",
+        "validateDossierStage > refuses a misquotation in a child block at author, edit and repair",
+        "validateDossierStage > refuses a misquotation in a deep-dive block at author, edit and repair",
+        "validateDossierStage > refuses a misquotation in a section block at author, edit and repair",
+        "validateDossierStage > refuses a misquotation in the introduction at author, edit and repair"
       ]
     },
     {
@@ -666,14 +771,17 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 9,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > traces the workflow one hop per child block and draws only those hops",
         "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
         "dossier stage prompts > pins the repair dossier prompt bytes",
-        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block"
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a deep-dive block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a section block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in the introduction"
       ]
     },
     {
@@ -684,7 +792,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 4,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > traces the workflow one hop per child block and draws only those hops",
         "dossier stage prompts > pins the author dossier prompt bytes",
@@ -695,19 +803,29 @@
     {
       "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "plan-required-section-dropped",
-      "old": "  sectionPlan('mechanisms', 'The render cache', 'Answers the mechanisms question from e-cache; a deep dive answers when a build is finished.', ['src-cache', 'src-build']),\n",
+      "old": "  sectionPlan('mechanisms', 'The render cache', 'Answers the mechanisms question from e-cache and explains the term source hash (e-term); a deep dive answers when a build is finished.', ['src-cache', 'src-build']),\n",
       "new": "",
       "outcome": "killed",
       "baselineGreen": true,
-      "failedTests": 15,
-      "totalTests": 177,
+      "failedTests": 16,
+      "totalTests": 202,
       "killedBy": [
+        "dossier illustrations obey their own rules > records a newcomer term and orders workflows before mechanisms",
         "dossier stage illustrations pass the stage validators > validates the author illustration",
         "dossier stage illustrations pass the stage validators > validates the edit illustration",
         "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
         "dossier stage illustrations pass the stage validators > validates the plan illustration",
         "dossier stage illustrations pass the stage validators > validates the repair illustration",
-        "dossier stage prompts > pins the plan dossier prompt bytes"
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "validateDossierStage > leaves the plan to validateStage",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a deep-dive block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a section block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in the introduction",
+        "validateDossierStage > refuses a misquotation in a child block at author, edit and repair",
+        "validateDossierStage > refuses a misquotation in a deep-dive block at author, edit and repair",
+        "validateDossierStage > refuses a misquotation in a section block at author, edit and repair",
+        "validateDossierStage > refuses a misquotation in the introduction at author, edit and repair"
       ]
     },
     {
@@ -718,7 +836,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 6,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
         "dossier stage prompts > pins the fidelity dossier prompt bytes",
@@ -736,7 +854,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > keeps thin evidence unresolved in the inventory, the draft and the review",
         "dossier stage prompts > pins the fidelity dossier prompt bytes"
@@ -750,7 +868,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage illustrations pass the stage validators > shares one draft illustration across author, edit and repair",
         "dossier stage illustrations pass the stage validators > validates the edit illustration",
@@ -765,7 +883,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage illustrations pass the stage validators > shares one draft illustration across author, edit and repair"
       ]
@@ -778,7 +896,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > ends the edit prompt with the illustration it was tested with",
         "dossier stage prompts > pins the edit dossier prompt bytes"
@@ -792,7 +910,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "the embedded illustrations are fixed at module load > deep-freezes every exported illustration and source",
         "the embedded illustrations are fixed at module load > refuses every mutation an importer could attempt, and the prompts stay byte-identical"
@@ -806,7 +924,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "the embedded illustrations are fixed at module load > deep-freezes every exported illustration and source",
         "the embedded illustrations are fixed at module load > refuses every mutation an importer could attempt, and the prompts stay byte-identical"
@@ -820,7 +938,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "the embedded illustrations are fixed at module load > deep-freezes every exported illustration and source",
         "the embedded illustrations are fixed at module load > refuses every mutation an importer could attempt, and the prompts stay byte-identical"
@@ -834,7 +952,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "the embedded illustrations are fixed at module load > deep-freezes every exported illustration and source",
         "the embedded illustrations are fixed at module load > refuses every mutation an importer could attempt, and the prompts stay byte-identical"
@@ -848,7 +966,7 @@
       "outcome": "survived",
       "baselineGreen": true,
       "failedTests": 0,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [],
       "equivalent": "Equivalent while the freeze holds: the illustrations are deep-frozen, so serialising them at call time yields the same bytes as the load-time strings. The two layers are deliberate defence in depth; each alone keeps an importer from changing the instruction text, and freeze-dropped, freeze-shallow, sources-unfrozen and discovery-unfrozen are each killed."
     },
@@ -860,7 +978,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "the embedded illustrations are fixed at module load > keeps the illustrations out of the package entry point"
       ]
@@ -873,7 +991,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 6,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
@@ -891,14 +1009,20 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 12,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > derives the author dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the edit dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the fidelity dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the inventory dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the plan dossier base from the reviewed manifesto prompt by named substitutions only",
-        "dossier stage prompts > derives the repair dossier base from the reviewed manifesto prompt by named substitutions only"
+        "dossier stage prompts > derives the repair dossier base from the reviewed manifesto prompt by named substitutions only",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
       ]
     },
     {
@@ -909,14 +1033,24 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 16,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery envelopes > pins the reduce envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
         "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
         "dossier stage prompts > ends the author prompt with the illustration it was tested with",
-        "dossier stage prompts > ends the edit prompt with the illustration it was tested with"
+        "dossier stage prompts > ends the edit prompt with the illustration it was tested with",
+        "dossier stage prompts > ends the fidelity prompt with the illustration it was tested with",
+        "dossier stage prompts > ends the inventory prompt with the illustration it was tested with",
+        "dossier stage prompts > ends the plan prompt with the illustration it was tested with",
+        "dossier stage prompts > ends the repair prompt with the illustration it was tested with",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
       ]
     },
     {
@@ -927,7 +1061,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 4,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > refuses unsupported profile Dossier",
         "dossier stage prompts > refuses unsupported profile __proto__",
@@ -943,14 +1077,465 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 13,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "dossier stage prompts > derives the author dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the edit dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the fidelity dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the inventory dossier base from the reviewed manifesto prompt by named substitutions only",
         "dossier stage prompts > derives the plan dossier base from the reviewed manifesto prompt by named substitutions only",
-        "dossier stage prompts > derives the repair dossier base from the reviewed manifesto prompt by named substitutions only"
+        "dossier stage prompts > derives the repair dossier base from the reviewed manifesto prompt by named substitutions only",
+        "dossier stage prompts > keeps the manifesto profile the default",
+        "versioned stage prompts > preserves the reviewed author recipe bytes",
+        "versioned stage prompts > preserves the reviewed edit recipe bytes",
+        "versioned stage prompts > preserves the reviewed fidelity recipe bytes",
+        "versioned stage prompts > preserves the reviewed inventory recipe bytes",
+        "versioned stage prompts > preserves the reviewed plan recipe bytes",
+        "versioned stage prompts > preserves the reviewed repair recipe bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-4-elision-allowed",
+      "old": "Quote that span exactly: never elide, splice or add ellipses, and keep",
+      "new": "Quote that span, and keep",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 12,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-4-span-unbounded",
+      "old": "one contiguous span of a cited source, at most two sentences or one list item.",
+      "new": "a passage from a cited source.",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 12,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-4-backticks-in-quotes",
+      "old": "identifiers included, without adding backticks.",
+      "new": "with identifiers in backticks.",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 12,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-4-double-quotes-anywhere",
+      "old": " Double quotes are used only for such a quotation; everywhere else put commands, identifiers, configuration keys and values in backticks and use no quotation marks.",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 12,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-4-advantage-restated",
+      "old": " Quote a stated advantage once: child blocks may explain its mechanism in your own words, citing their sources, but never restate the claim unquoted.",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 12,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-4-unstated-advantage-inferable",
+      "old": " An advantage no source states is never written, not even as Inferred:.",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 12,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-4-inferred-may-contradict",
+      "old": ", and it must agree with every cited source; otherwise",
+      "new": ", otherwise",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 12,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "rule-3-quotes-backticked",
+      "old": "3. Mechanisms. Outside a quotation, name each",
+      "new": "3. Mechanisms. Name each",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 12,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the author prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the edit prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the fidelity prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the inventory prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the plan prompt",
+        "dossier stage prompts > states every rule-4, 5 and 6 clause in the repair prompt"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "inventory-term-dropped",
+      "old": " each project-specific or domain term a newcomer would need explained as a term entry;",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > states the inventory guidance clause: each project-specific or domain term a newcomer would need explained as a term entry"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "inventory-motives-kept",
+      "old": "'thesis, motives, capabilities', 'thesis, capabilities'",
+      "new": "'thesis, motives, capabilities', 'thesis, motives, capabilities'",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > derives the inventory dossier base from the reviewed manifesto prompt by named substitutions only",
+        "dossier stage prompts > pins the inventory dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "plan-order-dropped",
+      "old": ": core ideas first, then the end-to-end workflows, then the mechanisms beneath them, then advantages and trade-offs, so each section builds on the last.",
+      "new": ", in an order that lets each section build on the last.",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > states the plan guidance clause: core ideas first, then the end-to-end workflows, then the mechanisms beneath them, then advantages and trade-offs"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "author-intro-dropped",
+      "old": "open with a two- or three-sentence introduction that says what the project is and how its central workflow runs, never a copy of the first section's block. ",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > states the author guidance clause: open with a two- or three-sentence introduction that says what the project is and how its central workflow runs, never a copy of the first section's block"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "author-glossary-dropped",
+      "old": "Explain each term a newcomer may not know at its first use, in one clause its sources support. ",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > states the author guidance clause: Explain each term a newcomer may not know at its first use"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "author-scare-quotes-allowed",
+      "old": " Double quotes appear only around a verbatim span of a cited source after The project states:; identifiers, commands, configuration keys and values go in backticks, and there are no scare quotes.",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > states the author guidance clause: Double quotes appear only around a verbatim span of a cited source after The project states:; identifiers, commands, configuration keys and values go in backticks, and there are no scare quotes."
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "author-refusals-unreconciled",
+      "old": " The trade-offs section is a requested section that gathers the costs, not the canned refusals section the instructions above rule out: beside any advantage a trade-off qualifies, keep a one-clause pointer to it.",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > states the author guidance clause: not the canned refusals section the instructions above rule out: beside any advantage a trade-off qualifies, keep a one-clause pointer to it."
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "edit-ellipsis-allowed",
+      "old": " shorten it with an ellipsis, add double quotes around anything but a verbatim span of a cited source,",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > states the edit guidance clause: shorten it with an ellipsis, add double quotes around anything but a verbatim span of a cited source"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "fidelity-advantage-check-dropped",
+      "old": "that a stated advantage is quoted once and never restated unquoted, and that no advantage is written that no source states; ",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > states the fidelity guidance clause: that a stated advantage is quoted once and never restated unquoted, and that no advantage is written that no source states;"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "fidelity-no-finding-dropped",
+      "old": "; a block with no failure needs no finding.",
+      "new": ".",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > states the fidelity guidance clause: a block with no failure needs no finding."
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "repair-quote-wording-dropped",
+      "old": "for a quotation that does not match its source, quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred: (an advantage no source states is removed instead). ",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier stage prompts > pins the repair dossier prompt bytes",
+        "dossier stage prompts > states the repair guidance clause: for a quotation that does not match its source, quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred: (an advantage no source states is removed instead)."
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "inferred-cost-contradicts-readme",
+      "old": "Inferred: every build looks up each page\\'s source hash in the cache, even when nothing has changed, because",
+      "new": "Inferred: a page whose own source is unchanged is not rendered again and can go stale, because",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 5,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier illustrations obey their own rules > infers a cost that agrees with every cited source and gives the review no finding to praise it",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "intro-copies-first-block",
+      "old": "'Brindle builds documentation sites from Markdown. A build hands each page to `renderPage`, which skips a page whose source is unchanged, then writes the output once every page has rendered.'",
+      "new": "'Brindle builds documentation sites from Markdown.'",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier illustrations obey their own rules > opens with a two- or three-sentence introduction that is not the first block",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "term-entry-dropped",
+      "old": "  { id: 'e-term', sourceIds: ['src-cache'], statement: 'Source hash: the value `renderPage` looks up in the cache to decide whether a page must be rendered again.', kind: 'term', disposition: produced('mechanisms') },\n",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 7,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier illustrations obey their own rules > records a newcomer term and orders workflows before mechanisms",
+        "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a deep-dive block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a section block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in the introduction"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "review-praise-finding",
+      "old": "  findings: [],",
+      "new": "  findings: [{ severity: 'advisory', message: 'The inferred cost is marked.', target: 'b-cost-inferred' }],",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier illustrations obey their own rules > infers a cost that agrees with every cited source and gives the review no finding to praise it",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "adv-restated-unquoted",
+      "old": "block('b-mech', '`renderPage` looks up the page\\'s source hash in the cache and skips rendering when the hash is unchanged.'",
+      "new": "block('b-mech', '`renderPage` looks up the page\\'s source hash in the cache and skips rendering when the hash is unchanged, so large sites build faster.'",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier illustrations obey their own rules > quotes a stated advantage once and restates it nowhere",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "scare-quote-in-block",
+      "old": "leaf('b-flow-1', '`buildSite` reads the content directory",
+      "new": "leaf('b-flow-1', '`buildSite` reads the \"content\" directory",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 202,
+      "killedBy": [
+        "dossier illustrations obey their own rules > uses double quotes only for the quotation after the lead, and never elides",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
       ]
     },
     {
@@ -961,7 +1546,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > ends each prompt with an illustration its own parser accepts",
@@ -976,7 +1561,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > ends each prompt with an illustration its own parser accepts",
@@ -991,7 +1576,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > ends each prompt with an illustration its own parser accepts",
@@ -1006,7 +1591,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the reduce envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > ends each prompt with an illustration its own parser accepts",
@@ -1021,7 +1606,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
@@ -1035,7 +1620,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
@@ -1049,7 +1634,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
@@ -1063,7 +1648,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
@@ -1077,7 +1662,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the reduce envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
@@ -1091,7 +1676,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the reduce envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
@@ -1105,7 +1690,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > builds the map envelope with the stage envelope fields and the request rebuilt field by field",
         "discovery envelopes > pins the map envelope encoding",
@@ -1120,7 +1705,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > builds the reduce envelope the same way",
         "discovery envelopes > pins the reduce envelope encoding",
@@ -1135,7 +1720,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 4,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery envelopes > pins the reduce envelope encoding",
@@ -1150,15 +1735,34 @@
       "new": "QUOTATION_LEAD = 'The maintainers state: \"';",
       "outcome": "killed",
       "baselineGreen": true,
-      "failedTests": 23,
-      "totalTests": 177,
+      "failedTests": 25,
+      "totalTests": 202,
       "killedBy": [
         "dossier illustrations obey their own rules > gives an unstated mechanism-level cost its own Inferred: block, citing the mechanism and never quoting",
+        "dossier illustrations obey their own rules > quotes a stated advantage once and restates it nowhere",
         "dossier illustrations obey their own rules > quotes every advantage and trade-off verbatim from a cited source",
+        "dossier illustrations obey their own rules > uses double quotes only for the quotation after the lead, and never elides",
         "quotationsMatch > matches within one source, never across two",
         "quotationsMatch > refuses a changed case",
         "quotationsMatch > refuses a changed word",
-        "quotationsMatch > refuses a matching opening with an unverified tail after an inner quote"
+        "quotationsMatch > refuses a matching opening with an unverified tail after an inner quote",
+        "quotationsMatch > refuses a quotation followed by prose that contains a double quote",
+        "quotationsMatch > refuses a quotation spliced from two places",
+        "quotationsMatch > refuses a second quotation that does not match",
+        "quotationsMatch > refuses an added word",
+        "quotationsMatch > refuses an empty quotation",
+        "quotationsMatch > refuses an unterminated quotation",
+        "quotationsMatch > refuses dropped punctuation",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a deep-dive block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a section block",
+        "validateDossierStage > refuses a fidelity review of a draft with a misquotation in the introduction",
+        "validateDossierStage > refuses a misquotation in a child block at author, edit and repair",
+        "validateDossierStage > refuses a misquotation in a deep-dive block at author, edit and repair",
+        "validateDossierStage > refuses a misquotation in a section block at author, edit and repair",
+        "validateDossierStage > refuses a misquotation in the introduction at author, edit and repair",
+        "validateDossierStage > refuses a quotation whose words are in a source the claim does not cite",
+        "validateDossierStage > refuses an inventory entry whose quotation its cited source does not hold"
       ]
     },
     {
@@ -1169,7 +1773,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "normalizeQuotation > keeps link text and drops the target",
         "quotationsMatch > accepts a quotation across the source line break",
@@ -1184,7 +1788,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "normalizeQuotation > keeps an image"
       ]
@@ -1197,7 +1801,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "normalizeQuotation > drops strong emphasis",
         "quotationsMatch > accepts a quotation across the source line break",
@@ -1212,7 +1816,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "normalizeQuotation > drops emphasis"
       ]
@@ -1225,7 +1829,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "normalizeQuotation > keeps arithmetic asterisks"
       ]
@@ -1238,7 +1842,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "normalizeQuotation > drops emphasis"
       ]
@@ -1251,7 +1855,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "normalizeQuotation > keeps intraword underscores"
       ]
@@ -1264,7 +1868,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "normalizeQuotation > collapses whitespace runs, line breaks included",
         "quotationsMatch > accepts a quotation across the source line break"
@@ -1278,7 +1882,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "normalizeQuotation > collapses whitespace runs, line breaks included"
       ]
@@ -1291,7 +1895,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 4,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "quotationsMatch > accepts a quotation across the source line break",
         "quotationsMatch > accepts a quotation with the link syntax kept",
@@ -1307,7 +1911,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "quotationsMatch > accepts a quotation with the link syntax kept",
         "quotationsMatch > accepts an exact quotation"
@@ -1321,7 +1925,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "quotationsMatch > refuses an empty quotation"
       ]
@@ -1334,7 +1938,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "quotationsMatch > refuses a matching opening with an unverified tail after an inner quote",
         "quotationsMatch > refuses a quotation followed by prose that contains a double quote"
@@ -1348,7 +1952,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "quotationsMatch > accepts two quotations in one text"
       ]
@@ -1361,7 +1965,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "quotationsMatch > refuses an unterminated quotation"
       ]
@@ -1374,7 +1978,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "quotationsMatch > matches within one source, never across two"
       ]
@@ -1387,7 +1991,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "quotationsMatch > refuses a second quotation that does not match"
       ]
@@ -1400,7 +2004,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "validateDossierStage > runs validateStage first"
       ]
@@ -1413,7 +2017,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block",
         "validateDossierStage > refuses a misquotation in a child block at author, edit and repair"
@@ -1427,7 +2031,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "validateDossierStage > refuses a fidelity review of a draft with a misquotation in the introduction",
         "validateDossierStage > refuses a misquotation in the introduction at author, edit and repair"
@@ -1441,7 +2045,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 4,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block",
         "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a section block",
@@ -1457,7 +2061,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a deep-dive block",
         "validateDossierStage > refuses a misquotation in a deep-dive block at author, edit and repair"
@@ -1471,7 +2075,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "validateDossierStage > refuses a quotation whose words are in a source the claim does not cite",
         "validateDossierStage > refuses an inventory entry whose quotation its cited source does not hold"
@@ -1485,7 +2089,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 4,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "validateDossierStage > refuses a misquotation in a child block at author, edit and repair",
         "validateDossierStage > refuses a misquotation in a deep-dive block at author, edit and repair",
@@ -1501,7 +2105,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 4,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "validateDossierStage > refuses a misquotation in a child block at author, edit and repair",
         "validateDossierStage > refuses a misquotation in a deep-dive block at author, edit and repair",
@@ -1517,7 +2121,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 4,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block",
         "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a deep-dive block",
@@ -1533,7 +2137,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "validateDossierStage > refuses a quotation whose words are in a source the claim does not cite"
       ]
@@ -1546,14 +2150,18 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 10,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a child block",
         "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a deep-dive block",
         "validateDossierStage > refuses a fidelity review of a draft with a misquotation in a section block",
         "validateDossierStage > refuses a fidelity review of a draft with a misquotation in the introduction",
         "validateDossierStage > refuses a misquotation in a child block at author, edit and repair",
-        "validateDossierStage > refuses a misquotation in a deep-dive block at author, edit and repair"
+        "validateDossierStage > refuses a misquotation in a deep-dive block at author, edit and repair",
+        "validateDossierStage > refuses a misquotation in a section block at author, edit and repair",
+        "validateDossierStage > refuses a misquotation in the introduction at author, edit and repair",
+        "validateDossierStage > refuses a quotation whose words are in a source the claim does not cite",
+        "validateDossierStage > refuses an inventory entry whose quotation its cited source does not hold"
       ]
     },
     {
@@ -1564,7 +2172,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "validateDossierStage > is exported from the package entry point with the quotation check"
       ]
@@ -1577,7 +2185,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > builds the reduce envelope the same way",
         "discovery envelopes > pins the reduce envelope encoding",
@@ -1592,7 +2200,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)",
@@ -1607,7 +2215,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)",
@@ -1622,7 +2230,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the reduce envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > closes the reduce reply schema: exactly a unique ranked list of handles",
@@ -1637,7 +2245,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 5,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery envelopes > refuses a reduce request with a claim of 401 code points",
@@ -1654,7 +2262,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 5,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery envelopes > refuses a reduce request with a relevance above 10",
@@ -1671,7 +2279,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 4,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery instruction text comes from promptForStage and stageSchema > closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)",
@@ -1687,7 +2295,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery instruction text comes from promptForStage and stageSchema > refuses a relevance of -Infinity in validateDiscoveryReply",
         "discovery reply parsers > refuses a map reply with relevance below 0"
@@ -1701,7 +2309,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery reply parsers > refuses a map reply with a string relevance"
       ]
@@ -1714,7 +2322,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery instruction text comes from promptForStage and stageSchema > refuses a relevance of NaN in validateDiscoveryReply"
       ]
@@ -1727,7 +2335,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery instruction text comes from promptForStage and stageSchema > refuses a generation-stage name in validateDiscoveryReply"
       ]
@@ -1740,7 +2348,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery reply parsers > refuses a map reply with a repeated blob id",
         "discovery reply parsers > refuses a map reply with more claims than items"
@@ -1754,7 +2362,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery reply parsers > refuses a map reply with a blob id outside the request",
         "discovery reply parsers > refuses a reduce reply with an id no claim names"
@@ -1768,7 +2376,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > reads each reduce request field once and binds the reply to what it validated",
         "discovery reply parsers > refuses a reduce reply with more than maxSelected"
@@ -1782,7 +2390,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > builds the reduce envelope the same way",
         "discovery envelopes > pins the reduce envelope encoding",
@@ -1797,7 +2405,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 3,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > builds the reduce envelope the same way",
         "discovery envelopes > pins the reduce envelope encoding",
@@ -1812,7 +2420,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery reply parsers > refuses a map reply with a blob id outside the request"
       ]
@@ -1825,7 +2433,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery reply parsers > refuses a reduce reply with an id no claim names"
       ]
@@ -1838,7 +2446,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > reads each reduce request field once and binds the reply to what it validated",
         "discovery reply parsers > refuses a reduce reply with more than maxSelected"
@@ -1852,7 +2460,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > reads each reduce request field once and binds the reply to what it validated"
       ]
@@ -1865,7 +2473,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > builds the map envelope with the stage envelope fields and the request rebuilt field by field"
       ]
@@ -1878,7 +2486,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > builds the reduce envelope the same way"
       ]
@@ -1891,7 +2499,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > builds the reduce envelope the same way"
       ]
@@ -1904,7 +2512,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > builds the map envelope with the stage envelope fields and the request rebuilt field by field",
         "discovery envelopes > reads each map request field once and encodes what it validated"
@@ -1918,7 +2526,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 2,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > builds the reduce envelope the same way",
         "discovery envelopes > reads each reduce request field once and binds the reply to what it validated"
@@ -1932,7 +2540,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > refuses a map request with duplicate item ids"
       ]
@@ -1945,7 +2553,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > refuses a map request with no items"
       ]
@@ -1958,7 +2566,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > refuses a map request with an empty subsystem name"
       ]
@@ -1971,7 +2579,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > refuses a reduce request with maxSelected 0"
       ]
@@ -1984,7 +2592,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > refuses a reduce request with no claims"
       ]
@@ -1997,7 +2605,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > refuses a reduce request with a blob claimed twice"
       ]
@@ -2010,7 +2618,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > refuses a reduce request with a claim of 401 code points"
       ]
@@ -2023,7 +2631,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > accepts reduce claims at the map reply bounds, counted in code points"
       ]
@@ -2036,7 +2644,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > refuses a reduce request with an empty claim"
       ]
@@ -2049,7 +2657,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > refuses a reduce request with a relevance below 0"
       ]
@@ -2062,7 +2670,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > refuses a reduce request with a relevance above 10"
       ]
@@ -2075,7 +2683,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > refuses a reduce request with a string relevance"
       ]
@@ -2088,7 +2696,7 @@
       "outcome": "killed",
       "baselineGreen": true,
       "failedTests": 1,
-      "totalTests": 177,
+      "totalTests": 202,
       "killedBy": [
         "discovery envelopes > refuses a reduce request with a non-finite relevance"
       ]
