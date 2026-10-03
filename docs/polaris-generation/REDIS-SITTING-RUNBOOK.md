@@ -35,7 +35,7 @@ Already in main: 215, 255, 256, 257, 266, 284, 288, 290.
 
 ## Order of operations
 
-Step 0 is a precondition, not an act. Steps 1 to 8 follow the row order of the
+Step 0 is a precondition, not an act. Steps 1 to 8a follow the row order of the
 sitting packet; each is one command. Every recorder takes `--date`,
 `--question-opening`, `--selection-label` and `--selection-description`, and
 `--instant` (UTC `YYYY-MM-DDTHH:MM:SSZ` on the act's date, default now). Give
@@ -64,17 +64,40 @@ same arguments re-verifies a record afterwards.
 4. **Row 4, requests observation.**
    `python3 scripts/record_public_repo_admission_acts.py --record requests-observation <ARGUMENT> ...`
 5. **Row 5, Redis observation.** Same recorder, key `redis-observation`.
-6. **Row 6, Anthropic egress.** Same recorder, key `egress-anthropic`.
+6. **Row 6, Anthropic egress: not offered at this sitting.** Row 8 carries
+   its whole scope plus the discovery stages and the `project-documentation`
+   class, and the first version is then never performed: the first version's
+   recorder refuses its egress act once row 8's record exists. If the owner
+   asks for row 6 alone, the recorder is the one above with key
+   `egress-anthropic`, but discovery cannot run under it.
 7. **Row 7, RFC5-14 class.**
    `python3 scripts/record_rfc5_project_documentation_act.py --record <ARGUMENT> ...`
    (PR 290, merged; finding F12).
-8. **Row 8, egress v2** (PR 299, a draft waiting on the stage list; after
-   row 7). The instance is generated with
+8. **Row 8, egress v2** (PR 299, merged to main as a candidate; after
+   row 7). The record is generated with
    ```
    python3 scripts/build_public_egress_v2.py --write
    ```
-   Its recorder is pending: until it lands row 8 is not rehearsed and the
-   install does not cover it.
+   and performed with
+   `python3 scripts/record_public_egress_v2_act.py --record egress-anthropic-v2 <ARGUMENT> ...`.
+   [Observed] The recorder is frozen to the round-3 bytes (notes only, which
+   under the 2026-09-26 ruling clears them) and refuses while row 7's record
+   does not exist. `--check` with the same arguments re-verifies the record.
+   The simulator does not rehearse this step; the install does not read it.
+8a. **Row 12, screening scope version 2** (PR 326, merged to main as a
+   candidate; after rows 1 and 7, before step 9). The owner picks exactly one
+   of the package's four variant rows (none, manifesto, architecture, both);
+   the argument is that row's digest:
+   `python3 scripts/record_public_source_screening_scope_v2_act.py --record <ARGUMENT> ...`
+   The recorder is frozen on a confirming round only: when a round returns
+   CONFIRM or notes only, the lead runs
+   `python3 scripts/record_public_source_screening_scope_v2_act.py --freeze <ROUND> <COMMIT>`
+   (PR 338), and until then it refuses every `--record`. The repair after
+   round 6 (R6-1) is unreviewed, so at the time of writing it is unfrozen
+   [Unknown until a round confirms]. The installer's policy step takes one or
+   two policy acts, in the order row 1 then row 12, refuses the other order and
+   a row-12 act without row 1's, and makes the one Butlers re-pin against the
+   last. The simulator rehearses row 12 (`--v2-variant none|manifesto|architecture|both|skip`).
 9. **Row 9, narrative profile.**
    `python3 scripts/record_narrative_profile_adoption.py --record ...`
    (finding F7; no `ARGUMENT`, the adoption binds no digest). Between this
@@ -103,15 +126,18 @@ same arguments re-verifies a record afterwards.
 11. **Verify.** `python3 scripts/check_governance.py && python3 scripts/check_docs_review_campaign_partition.py && npx vitest run`
 
 Row 8 (a second egress version) is not generatable before row 7 is performed
-and is out of this rehearsal.
+and is out of the simulator's rehearsal; its builder, recorder and selftests
+run on their own.
 
 After the sitting the order is: the recorders, then
 `install_redis_sitting.py`, then `poc:dossier`. Pending: the `poc:dossier`
-wiring PR will carry a map from each egress record digest to the stages it
+wiring PR (#334) will carry a map from each egress record digest to the stages it
 authorises (an unknown digest authorises none); the install must then check
 that the map's digests equal the recorded act arguments. That check does not
 exist yet and the rehearsal does not cover it [Unknown until the PR lands]. Rows 10 and 11 are rulings and directions with
 no bytes.
+
+Run budget: as of #334, see the run profile formula (`dossier-run-profile.ts`); the figures are the owner's, are not an act and are not repeated here.
 
 ## Merge conflicts and install-change findings
 
