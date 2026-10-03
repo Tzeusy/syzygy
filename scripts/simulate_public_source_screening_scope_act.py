@@ -103,6 +103,17 @@ def main(argv):
                     "commit", "-qam", "simulated act: proposed policy bytes"], cwd=clone, check=True)
 
     literals = {"old-policy-digest": old_digest, "old-policy-version": old_version}
+    # The performed act's identity, recording tag and record pointers, read from
+    # the gate's own pin file: a new act supersedes them whatever the version says.
+    gate = (ROOT / "apps/three-surface-poc/src/governance-inputs.ts").read_text()
+    block = re.search(r"\n      policy: \{(.*?)\n      \},", gate, re.S)
+    if block:
+        for key in ("actIdentity", "recordingTag"):
+            m = re.search(key + r": '([^']+)'", block.group(1))
+            if m:
+                literals[f"performed-act {key}"] = m.group(1)
+    for m in re.finditer(r"policy: '(\.syzygy/governance/decisions/[^']+)'", gate):
+        literals[f"act record pointer {pathlib.Path(m.group(1)).name}"] = m.group(1)
     hits = sweep(clone, literals)
     commands = [
         ("repin builder --check", ["python3", "scripts/build_pwb_behavior_contract_repin.py", "--check"]),
