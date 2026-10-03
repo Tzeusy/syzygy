@@ -39,6 +39,7 @@ describe.skipIf(executable === undefined || process.platform !== 'linux')('dispo
   it('closes and drains even when a helper cannot exit on its own', async () => {
     const browser = await launchBrowser(executable as string);
     let frozen: number[] = [];
+    let closeAttempted = false;
     try {
       const page = await browser.newPage();
       await page.navigate('data:text/html,<p>teardown</p>');
@@ -46,10 +47,13 @@ describe.skipIf(executable === undefined || process.platform !== 'linux')('dispo
       // One helper of this launch, so the case is not vacuous.
       expect(frozen).toHaveLength(1);
       for (const pid of frozen) process.kill(pid, 'SIGSTOP');
+      closeAttempted = true;
       await expect(browser.close()).resolves.toBeUndefined();
       expect(frozen.filter(alive)).toEqual([]);
     } finally {
       for (const pid of frozen.filter(alive)) process.kill(pid, 'SIGKILL');
+      // A failure before close() would otherwise leak this browser.
+      if (!closeAttempted) await browser.close().catch(() => undefined);
     }
   }, 60_000);
 });
