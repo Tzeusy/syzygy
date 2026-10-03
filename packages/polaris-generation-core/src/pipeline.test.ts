@@ -303,4 +303,49 @@ describe('source to editorial draft pipeline', () => {
     await new Promise(resolve => setTimeout(resolve, 0));
     expect(h.late).toEqual([{ model: 'late-model', usageUnits: 2 }]);
   });
+  describe('deterministic quote fidelity joins the reviewer verdict', () => {
+    const draftWith = (quote: string) => ({ introduction: { id: 'intro', text: `The project\'s sources state: "${quote}"`, sourceIds: ['purpose'], children: [] } });
+    const quoting = (quotes: () => string) => {
+      const h = harness();
+      const ports: PipelinePorts = { ...h.ports, validate: (_stage, data) => data,
+        generate: async input => { h.sends.push(input); const stage = input.stage;
+          return { body: JSON.stringify(['author', 'edit', 'repair'].includes(stage) ? { stage, ...draftWith(quotes()) } : { stage }), model: 'synthetic-v1', usageUnits: 1 }; } };
+      return { h, ports };
+    };
+
+    it('lets a verbatim quotation through without a repair', async () => {
+      const { h, ports } = quoting(() => 'Reduce recurring mental labor.');
+      const result = await runGenerationPipeline(request(), ports, signal());
+      expect(result.status).toBe('awaiting-rendered-review');
+      expect(h.sends.map(x => x.stage)).toEqual(['inventory', 'plan', 'author', 'edit', 'fidelity']);
+    });
+
+    it('blocks a quotation absent from the cited source even when the reviewer finds nothing, and hands the repair stage the finding', async () => {
+      let drafts = 0;
+      const { h, ports } = quoting(() => (++drafts <= 2 ? 'Remove recurring mental labor.' : 'Reduce recurring mental labor.'));
+      const result = await runGenerationPipeline(request(), ports, signal());
+      expect(result.status).toBe('awaiting-rendered-review');
+      expect(h.sends.map(x => x.stage)).toEqual(['inventory', 'plan', 'author', 'edit', 'fidelity', 'repair', 'fidelity']);
+      const repair = JSON.parse(h.sends[5]!.input).inputs;
+      expect(repair.findings).toEqual([expect.objectContaining({ severity: 'blocking', target: 'intro', message: expect.stringContaining('quote-not-in-cited-sources') })]);
+    });
+
+    it('stops as repair-exhausted when the repaired draft still misquotes, and keeps the reviewer\'s own findings first', async () => {
+      const { h, ports } = quoting(() => 'Remove recurring mental labor.');
+      const stopped = await runGenerationPipeline(request(), { ...ports, fidelity: () => ({ blocking: false, findings: ['reviewer note'] }) }, signal());
+      expect(stopped).toMatchObject({ status: 'stopped', reason: 'repair-exhausted' });
+      const repair = JSON.parse(h.sends.find(x => x.stage === 'repair')!.input).inputs;
+      expect(repair.findings[0]).toBe('reviewer note');
+      expect(repair.findings).toHaveLength(2);
+    });
+
+    it('keeps a blocking reviewer verdict blocking, and a non-array reviewer finding is carried', async () => {
+      const { h, ports } = quoting(() => 'Remove recurring mental labor.');
+      let n = 0;
+      await runGenerationPipeline(request(), { ...ports, fidelity: () => ({ blocking: ++n === 1, findings: 'single note' }) }, signal());
+      const repair = JSON.parse(h.sends.find(x => x.stage === 'repair')!.input).inputs;
+      expect(repair.findings[0]).toBe('single note');
+      expect(repair.findings[1]).toMatchObject({ target: 'intro' });
+    });
+  });
 });

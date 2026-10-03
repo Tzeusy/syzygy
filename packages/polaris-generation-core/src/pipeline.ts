@@ -4,6 +4,7 @@ import { parseBoundedJson } from './parse-json.js';
 import { promptForStage, type GenerationStage } from './prompts.js';
 import { validateRequestedAssets, type RequestedAsset } from './provider-draft.js';
 import { validateReaderQuestions } from './reader-questions.js';
+import { checkDraftQuotes, quoteFindingAsReviewFinding } from './quote-fidelity.js';
 
 export interface GenerationBudget {
   readonly maxCalls: number;
@@ -397,12 +398,20 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
     context.draft = await stage('author', { sources: citedSpans(context.plan), readerQuestions: context.readerQuestions, inventory: context.inventory, plan: context.plan, requestedAssets: context.requestedAssets });
     context.draft = await stage('edit', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, plan: context.plan, draft: context.draft, requestedAssets: context.requestedAssets });
     let review = await stage('fidelity', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, draft: context.draft, requestedAssets: context.requestedAssets });
-    let verdict = ports.fidelity(review);
+    // The reviewer's verdict is joined with a deterministic quote check the model cannot waive: a quotation that is not in a cited source blocks the draft.
+    const judge = (reviewed: unknown): { readonly blocking: boolean; readonly findings: unknown } => {
+      const verdict = ports.fidelity(reviewed);
+      const quoteFindings = checkDraftQuotes(context.draft, admitted);
+      if (quoteFindings.length === 0) return verdict;
+      const prior = verdict.findings === undefined ? [] : Array.isArray(verdict.findings) ? verdict.findings : [verdict.findings];
+      return { blocking: true, findings: [...prior, ...quoteFindings.map(quoteFindingAsReviewFinding)] };
+    };
+    let verdict = judge(review);
     for (let repairs = 0; verdict.blocking; repairs++) {
       if (repairs >= budget.maxRepairCycles) stop('repair-exhausted');
       context.draft = await stage('repair', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, draft: context.draft, findings: verdict.findings, requestedAssets: context.requestedAssets });
       review = await stage('fidelity', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, draft: context.draft, requestedAssets: context.requestedAssets });
-      verdict = ports.fidelity(review);
+      verdict = judge(review);
     }
     check();
     return { status: 'awaiting-rendered-review', draft: context.draft, inventory: context.inventory, review, receipts, artifacts };

@@ -170,6 +170,15 @@ Authorized implementation work (generator implementation authorization,
         selected, selected plus deferred equals the candidates. Evidence
         `docs/evidence/redis-shaped-discovery-2026-10-04.json`;
         `npm run poc:redis-shaped-discovery`.
+  - [x] **Deterministic quote fidelity.** `quote-fidelity.ts`: every
+        double-quoted span in a block (straight, or curly with nesting) must
+        occur, after one normalisation applied to both sides (comment
+        leaders, link syntax and emphasis dropped, whitespace collapsed), in
+        a source the block cites; an unterminated, empty, uncited or
+        lead-in-without-quote case fails too. The pipeline joins it to the
+        reviewer's verdict, so a failure blocks the draft (repair, then
+        `repair-exhausted`) whatever the model said; `evaluateDossier`
+        reports `fidelity.inBlockQuotes` per cited claim.
   - [x] **Closed exclusion reasons.** `GENERATION_EXCLUSION_REASONS`
         (`generation-source.ts`, a plain literal array) lists every reason an
         excluded source may carry; `validateGenerationSources` refuses any
