@@ -29,6 +29,7 @@ export {
   createMessagesApiGenerate,
   messagesApiBody,
   type MessagesApiAttemptRecord,
+  type MessagesThinking,
   type MessagesApiProviderConfig,
   type MessagesApiProviderHandle,
 } from './messages-api-provider.js';
