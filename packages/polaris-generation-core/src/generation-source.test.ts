@@ -114,4 +114,33 @@ describe('oversize bodies', () => {
     expect(() => validateGenerationSources([{ ...sources[0]!, body: 'short' }, ...sources.slice(1)])).toThrow('body-mismatch');
     expect(() => validateGenerationSources([{ ...sources[0]!, exclusion: { excluded: true, reason: 'r' }, body: undefined, spans: [] } as GenerationSource, ...sources.slice(1)])).toThrow('invalid-source');
   });
+  it('rejects a whole or excluded row of the same blob beside its pieces', () => {
+    const sources = generationSourcesForBody(ident(big));
+    const [excluded] = generationSourcesForBody({ ...ident(big), sourceId: 'big-whole', oversize: 'exclude' });
+    expect(() => validateGenerationSources([excluded!, ...sources])).toThrow('invalid-segments');
+  });
+
+  it('rejects a consistently truncated tail', () => {
+    const sources = generationSourcesForBody(ident(big));
+    const kept = sources.slice(0, -1).map(piece => ({ ...piece, segment: { ...piece.segment!, count: sources.length - 1 } }));
+    expect(kept.length).toBeGreaterThanOrEqual(1);
+    expect(() => validateGenerationSources(kept)).toThrow('invalid-segments');
+    const lied = sources.map(piece => ({ ...piece, segment: { ...piece.segment!, blobBytes: piece.segment!.blobBytes + 1 } }));
+    expect(() => validateGenerationSources(lied)).toThrow('invalid-segments');
+    expect(() => validateGenerationSources([sources[0]!, { ...sources[1]!, segment: { ...sources[1]!.segment!, blobBytes: sources[1]!.segment!.blobBytes + 1 } }, ...sources.slice(2)])).toThrow('invalid-segments');
+    expect(() => validateGenerationSources([{ ...sources[0]!, segment: { ...sources[0]!.segment!, blobBytes: 1 } }, ...sources.slice(1)])).toThrow();
+  });
+
+  it('slices real blob bytes on code-point boundaries with 4-byte characters and CRLF', () => {
+    const text = `${'row \u{1F600} \u00e9\u4e2d\r\n'.repeat(20_000)}tail\r\n`;
+    const blob = Buffer.from(text, 'utf8');
+    const sources = generationSourcesForBody(ident(text));
+    expect(sources.length).toBeGreaterThan(1);
+    for (const piece of sources) {
+      const { start, end } = piece.segment!;
+      expect(new TextDecoder('utf-8', { fatal: true }).decode(blob.subarray(start, end))).toBe(piece.body);
+    }
+    expect(sources.at(-1)!.segment!.end).toBe(blob.length);
+    expect(validateGenerationSources(sources)).toHaveLength(sources.length);
+  });
 });

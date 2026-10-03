@@ -16,7 +16,7 @@ export interface GenerationSource {
   /** Present only on one contiguous piece of a blob too long to quote whole.
    * `start`/`end` are UTF-8 byte offsets into the full blob; `body` and span
    * offsets are relative to the piece, anchors use the blob offsets. */
-  readonly segment?: { readonly index: number; readonly count: number; readonly start: number; readonly end: number };
+  readonly segment?: { readonly index: number; readonly count: number; readonly start: number; readonly end: number; readonly blobBytes: number };
   readonly exclusion: { readonly excluded: false } | { readonly excluded: true; readonly reason: string };
   /** Present only for an admitted body. Never sent to a provider except in
    * the inventory envelope or a later explicitly cited span. */
@@ -60,7 +60,7 @@ export function validateGenerationSources(value: readonly GenerationSource[]): r
   const sourceIds = new Set<string>();
   const identities = new Set<string>();
   const anchorIds = new Set<string>();
-  const blobs = new Map<string, { whole: boolean; pieces: { index: number; count: number; start: number; end: number }[] }>();
+  const blobs = new Map<string, { whole: boolean; pieces: { index: number; count: number; start: number; end: number; blobBytes: number }[] }>();
   for (const source of value) {
     if (source === null || typeof source !== 'object' || Object.keys(source).some(key => !sourceKeys.has(key))
       || (Object.hasOwn(source, 'body') && source.body === undefined)
@@ -75,7 +75,7 @@ export function validateGenerationSources(value: readonly GenerationSource[]): r
       || typeof source.exclusion?.excluded !== 'boolean' || !Array.isArray(source.spans)) fail('invalid-source');
     const segment = source.segment;
     if (segment !== undefined && (segment === null || typeof segment !== 'object'
-      || Object.keys(segment).length !== 4 || ['index', 'count', 'start', 'end'].some(key => !Number.isSafeInteger((segment as Record<string, unknown>)[key]))
+      || Object.keys(segment).length !== 5 || ['index', 'count', 'start', 'end', 'blobBytes'].some(key => !Number.isSafeInteger((segment as Record<string, unknown>)[key]))
       || segment.count < 2 || segment.index < 0 || segment.index >= segment.count || segment.start < 0 || segment.end <= segment.start
       || source.objectId === null || source.exclusion.excluded || source.classificationBasis !== 'body')) fail('invalid-source');
     const blobIdentity = source.objectId === null
@@ -124,8 +124,10 @@ export function validateGenerationSources(value: readonly GenerationSource[]): r
   for (const blob of blobs.values()) {
     if (blob.pieces.length === 0) continue;
     const pieces = [...blob.pieces].sort((a, b) => a.index - b.index);
-    if (blob.whole || pieces.some((piece, i) => piece.index !== i || piece.count !== pieces.length
-      || piece.start !== (i === 0 ? 0 : pieces[i - 1]!.end))) fail('invalid-segments');
+    // The last piece must reach the blob's declared size, so a consistently
+    // truncated tail cannot validate.
+    if (blob.whole || pieces.some((piece, i) => piece.index !== i || piece.count !== pieces.length || piece.blobBytes !== pieces[0]!.blobBytes
+      || piece.start !== (i === 0 ? 0 : pieces[i - 1]!.end)) || pieces.at(-1)!.end !== pieces[0]!.blobBytes) fail('invalid-segments');
   }
   return value;
 }
@@ -181,7 +183,7 @@ export function generationSourcesForBody(input: BodySourceInput): readonly Gener
   }
   const pieces = segmentBody(body);
   return pieces.map((piece, index) => ({ ...base, sourceId: `${sourceId}-p${index + 1}`, classificationBasis: 'body' as const,
-    segment: { index, count: pieces.length, start: piece.start, end: piece.end }, exclusion: { excluded: false as const }, body: piece.text,
+    segment: { index, count: pieces.length, start: piece.start, end: piece.end, blobBytes: bytes }, exclusion: { excluded: false as const }, body: piece.text,
     spans: [{ anchorId: generationAnchorId(base, piece.start, piece.end), start: 0, end: piece.end - piece.start, text: piece.text }] }));
 }
 
