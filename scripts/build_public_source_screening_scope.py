@@ -62,6 +62,11 @@ SOURCE_EXTENSIONS = [".c", ".h", ".cc", ".cpp", ".hpp", ".cs", ".go", ".java", "
                      ".mjs", ".cjs", ".jsx", ".kt", ".lua", ".php", ".py", ".pyi",
                      ".rb", ".rs", ".sh", ".sql", ".swift", ".tcl", ".ts", ".tsx"]
 
+RUN_PROFILE_SYMBOLS = [
+    {"path": "packages/polaris-generation-core/src/dossier-profile.ts", "symbol": "DOSSIER_READER_QUESTIONS"},
+    {"path": "packages/polaris-generation-core/src/dossier-profile.ts", "symbol": "DOSSIER_REQUESTED_ASSETS"},
+]
+
 INSTRUCTION_SYMBOLS = [
     {"path": "packages/polaris-generation-core/src/prompts.ts", "symbol": "promptForStage"},
     {"path": "packages/polaris-generation-core/src/provider-draft.ts", "symbol": "stageSchema"},
@@ -103,6 +108,14 @@ def public_scope() -> dict:
             "classOwner": "project:syzygy",
             "closedList": INSTRUCTION_SYMBOLS,
             "rule": "the generator's instruction text is the text produced by exactly these two symbols at the prompt and schema versions a request names; it is not target content and is not read from a target. No other file or symbol of project:syzygy's repository is classified by this rule. Every detector in this policy applies to it before the first request of a run",
+        },
+        "classificationBasis": "a class is decided at the runtime check from the origin of the content, tracked from where it entered the choke point (RFC5-14); a field name never assigns it. The field-level table in a public-target egress record is a gate on which fields may be carried and cannot confer a class, so content under a classed field name keeps the class of its origin (REQ-polaris-generation-025: composition preserves embedded classifications and origins)",
+        "exclusionMetadata": "the metadata of an excluded source that may leave the host is its content digest, its policy id and version and one exclusion reason drawn from this policy's closed redaction and exclusion classes; a free-text reason never leaves, and a path of an excluded source is carried only as code-structure tree metadata, which the pipeline does not send today",
+        "runProfileRule": {
+            "class": "code-content",
+            "classOwner": "project:syzygy",
+            "closedList": RUN_PROFILE_SYMBOLS,
+            "rule": "the run's reader questions and requested assets are classified only when they are the values of exactly these code-declared symbols at the profile id a request names (dossier-v1 at drafting). A value from any other origin, including a run-directory file or an operator-supplied string, is unclassified under this scope and is not carried until a later policy version defines its origin and a validation. [Observed on the branch of PR #259] these symbols are readonly constants in dossier-profile.ts; [Observed on the base] the pipeline types readerQuestions as unknown, validates only requestedAssets and forwards readerQuestions unchanged, and no code reads a run-profile file. The typed reader-question validation the owner asked for is not yet in code and is not assumed here",
         },
         "detectors": "every detector in this policy applies unchanged to every body under this scope, including inert code contexts; public visibility exempts nothing, and a match excludes the whole artifact with hash-not-body provenance (matchAction, RFC5-17)",
         "activeContent": {
@@ -214,6 +227,11 @@ def semantic_findings(base_text: str, proposed_text: str) -> list[str]:
     if [(s["path"], s["symbol"]) for s in scope["instructionTextRule"]["closedList"]] != [
             (s["path"], s["symbol"]) for s in INSTRUCTION_SYMBOLS]:
         bad.append("instruction-text list is not exactly the two declared symbols")
+    if [(x["path"], x["symbol"]) for x in scope["runProfileRule"]["closedList"]] != [
+            (x["path"], x["symbol"]) for x in RUN_PROFILE_SYMBOLS]:
+        bad.append("run-profile list is not exactly the two declared symbols")
+    if "never assigns it" not in scope.get("classificationBasis", ""):
+        bad.append("classificationBasis does not say a field name never assigns a class")
     raw = scope["rawBodyHandling"]
     if raw["logging"] != "never" or raw["machineResponse"] != "never":
         bad.append("logging and machine response must stay never")
@@ -327,6 +345,8 @@ def selftest() -> int:
         sem("work-history classified is caught", lambda x: x[SCOPE_KEY]["contentClassification"]["classesClassified"].append("work-history"), "work-history")
         sem("project-documentation named is caught", lambda x: x[SCOPE_KEY].update(note="project-documentation"), "project-documentation")
         sem("a third instruction symbol is caught", lambda x: x[SCOPE_KEY]["instructionTextRule"]["closedList"].append({"path": "x.ts", "symbol": "y"}), "instruction-text list")
+        sem("a third run-profile symbol is caught", lambda x: x[SCOPE_KEY]["runProfileRule"]["closedList"].append({"path": "x.ts", "symbol": "y"}), "run-profile list")
+        sem("classification by field name is caught", lambda x: x[SCOPE_KEY].update(classificationBasis="by field name"), "classificationBasis")
         sem("logging opened is caught", lambda x: x[SCOPE_KEY]["rawBodyHandling"].update(logging="run-directory-only"), "logging")
         sem("workingTree opened is caught", lambda x: x[SCOPE_KEY]["accessBoundary"].update(workingTree=True), "accessBoundary")
         sem("a third egress route is caught", lambda x: x[SCOPE_KEY]["accessBoundary"]["networkEgressRoutes"].append("z"), "exactly two")
