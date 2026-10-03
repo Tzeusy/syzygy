@@ -1,0 +1,241 @@
+{
+  "record": "PWB anchor-resolution, class-granular and release-label builders: all-orders composition check, rule-6 mutation run",
+  "bead": "syzygy-s7fw",
+  "date": "2026-10-04",
+  "commit": "cb394db320b3eca6985209082a49245e197522b1",
+  "subjects": [
+    {
+      "path": "scripts/build_pwb_anchor_resolution_amendment.py",
+      "sha256": "ae337946dab005d89ee7870774feb025cc6f3ee8d77a554712c96d99ac8c3437"
+    },
+    {
+      "path": "scripts/build_pwb_class_granular_extraction_amendment.py",
+      "sha256": "680b820f6ef562e408b60d77192587da0ead00a39c67cf6d2540aee8f573c741"
+    },
+    {
+      "path": "scripts/build_pwb_release_label_amendment.py",
+      "sha256": "0958b58746ab53ec1be1fb12279ba4be3c923e9580b250d91238df05f5cf8254"
+    },
+    {
+      "path": "scripts/pwb_requirement_amendment.py",
+      "sha256": "262317f56f1c4a34b47cd6c3ac5bbc6d8315097f0dce986cc66574b05f95e950"
+    }
+  ],
+  "priorCoverage": {
+    "commit": "653802c09e943f67b898ab8c0d365fce7f1a105c",
+    "anchorResolution": "composition_findings compared each pending sibling with this patch pairwise. Over the engine's shift fixture, every pair of which gives one result in both orders, it returned no finding for the three patches that diverge or for the four whose one order fails (generate stubbed so only order is in question)",
+    "probeResults": {
+      "3 shift patches": [],
+      "4 shift patches": []
+    },
+    "classGranularAndReleaseLabel": "no composition check: 0 occurrences of composition_findings or all_orders_findings in either builder at the probe commit; their one git apply call applies only their own patches"
+  },
+  "method": "Each mutant rewrites exactly one fragment (asserted to occur once) in a scratch clone at the commit, runs --selftest, and restores the file byte-for-byte. Builder mutants run that builder's --selftest; engine mutants run all three builders' --selftest and count as killed only when each exits non-zero with the named fixture's failure line. Baseline --selftest exit 0 for each builder before mutation.",
+  "mutants": [
+    {
+      "name": "order check not called by check()",
+      "file": "scripts/build_pwb_anchor_resolution_amendment.py",
+      "old": "    findings.extend(pending_order_findings(pkg))\n",
+      "new": "",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: check does not report the order check: []",
+      "outcome": "killed"
+    },
+    {
+      "name": "pending siblings dropped from the population",
+      "file": "scripts/build_pwb_anchor_resolution_amendment.py",
+      "old": "(name, siblings[name]) for name in sorted(pkg.pending_siblings) if name in siblings",
+      "new": "(name, siblings[name]) for name in sorted(pkg.pending_siblings) if False",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: divergent application orders gave []",
+      "outcome": "killed"
+    },
+    {
+      "name": "this package's patch dropped from the population",
+      "file": "scripts/build_pwb_anchor_resolution_amendment.py",
+      "old": "patches = [(pkg.candidate.name, mine)] + [",
+      "new": "patches = [] + [",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: divergent application orders gave []",
+      "outcome": "killed"
+    },
+    {
+      "name": "spec bytes ignored",
+      "file": "scripts/build_pwb_anchor_resolution_amendment.py",
+      "old": "    spec_bytes = (ROOT / pkg.spec).read_bytes() if spec_bytes is None else spec_bytes\n    siblings = sibling_patches(pkg) if siblings is None else siblings\n    patches =",
+      "new": "    spec_bytes = b\"\"\n    siblings = sibling_patches(pkg) if siblings is None else siblings\n    patches =",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: divergent application orders gave ['pending spec patches do not apply in every order: shift-a after [nothing]', 'pending spec patches do not apply in every order: shift-b after [nothing]', 'pending spec patches do not apply in every order: shift-relocating after [nothing]', 'pending spec patches have no application order that applies']",
+      "outcome": "killed"
+    },
+    {
+      "name": "target path not passed to the engine",
+      "file": "scripts/build_pwb_anchor_resolution_amendment.py",
+      "old": "return orders.all_orders_findings(spec_bytes, patches, pkg.spec)",
+      "new": "return orders.all_orders_findings(spec_bytes, patches)",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: divergent application orders gave []",
+      "outcome": "killed"
+    },
+    {
+      "name": "order check not called by check()",
+      "file": "scripts/build_pwb_class_granular_extraction_amendment.py",
+      "old": "    findings.extend(pending_order_findings())\n",
+      "new": "",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: check does not report the order check: []",
+      "outcome": "killed"
+    },
+    {
+      "name": "pending siblings dropped from the population",
+      "file": "scripts/build_pwb_class_granular_extraction_amendment.py",
+      "old": "        if theirs.is_file():\n            patches.append((name, theirs))",
+      "new": "        if False:\n            patches.append((name, theirs))",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: the pending patch population is ['pwb-class-granular-extraction-amendment']",
+      "outcome": "killed"
+    },
+    {
+      "name": "this package's patch dropped from the population",
+      "file": "scripts/build_pwb_class_granular_extraction_amendment.py",
+      "old": "patches = [(CANDIDATE.name, mine or ROOT / PROPOSED / \"spec.md.patch\")]",
+      "new": "patches = []",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: the pending patch population is ['pwb-accessible-name-amendment', 'pwb-anchor-resolution-amendment', 'pwb-opening-index-amendment', 'pwb-release-label-amendment']",
+      "outcome": "killed"
+    },
+    {
+      "name": "population widened past the pending siblings",
+      "file": "scripts/build_pwb_class_granular_extraction_amendment.py",
+      "old": "    for name in sorted(PENDING_SIBLINGS):\n        theirs",
+      "new": "    for name in sorted(PENDING_SIBLINGS | DECLINED_SIBLINGS):\n        theirs",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: the pending patch population is ['pwb-class-granular-extraction-amendment', 'pwb-accessible-name-amendment', 'pwb-anchor-resolution-amendment', 'pwb-opening-index-amendment', 'pwb-release-label-amendment', 'pwb-scoped-attributes-amendment']",
+      "outcome": "killed"
+    },
+    {
+      "name": "spec bytes ignored",
+      "file": "scripts/build_pwb_class_granular_extraction_amendment.py",
+      "old": "spec_bytes = (ROOT / rel).read_bytes() if spec_bytes is None else spec_bytes",
+      "new": "spec_bytes = b\"\"",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: divergent application orders gave ['pending spec patches do not apply in every order: shift-a after [nothing]', 'pending spec patches do not apply in every order: shift-b after [nothing]', 'pending spec patches do not apply in every order: shift-relocating after [nothing]', 'pending spec patches have no application order that applies']",
+      "outcome": "killed"
+    },
+    {
+      "name": "target path not passed to the engine",
+      "file": "scripts/build_pwb_class_granular_extraction_amendment.py",
+      "old": "return orders.all_orders_findings(spec_bytes, patches, rel)",
+      "new": "return orders.all_orders_findings(spec_bytes, patches)",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: divergent application orders gave []",
+      "outcome": "killed"
+    },
+    {
+      "name": "order check not called by check()",
+      "file": "scripts/build_pwb_release_label_amendment.py",
+      "old": "    findings.extend(pending_order_findings())\n",
+      "new": "",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: check does not report the order check: []",
+      "outcome": "killed"
+    },
+    {
+      "name": "pending siblings dropped from the population",
+      "file": "scripts/build_pwb_release_label_amendment.py",
+      "old": "        if theirs.is_file():\n            patches.append((name, theirs))",
+      "new": "        if False:\n            patches.append((name, theirs))",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: the pending patch population is ['pwb-release-label-amendment']",
+      "outcome": "killed"
+    },
+    {
+      "name": "this package's patch dropped from the population",
+      "file": "scripts/build_pwb_release_label_amendment.py",
+      "old": "patches = [(CANDIDATE.name, mine or ROOT / PROPOSED / \"spec.md.patch\")]",
+      "new": "patches = []",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: the pending patch population is ['pwb-accessible-name-amendment', 'pwb-anchor-resolution-amendment', 'pwb-class-granular-extraction-amendment', 'pwb-opening-index-amendment']",
+      "outcome": "killed"
+    },
+    {
+      "name": "population widened past the pending siblings",
+      "file": "scripts/build_pwb_release_label_amendment.py",
+      "old": "    for name in sorted(PENDING_SIBLINGS):\n        theirs",
+      "new": "    for name in sorted(PENDING_SIBLINGS | DECLINED_SIBLINGS):\n        theirs",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: the pending patch population is ['pwb-release-label-amendment', 'pwb-accessible-name-amendment', 'pwb-anchor-resolution-amendment', 'pwb-class-granular-extraction-amendment', 'pwb-opening-index-amendment', 'pwb-scoped-attributes-amendment']",
+      "outcome": "killed"
+    },
+    {
+      "name": "spec bytes ignored",
+      "file": "scripts/build_pwb_release_label_amendment.py",
+      "old": "spec_bytes = (ROOT / rel).read_bytes() if spec_bytes is None else spec_bytes",
+      "new": "spec_bytes = b\"\"",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: divergent application orders gave ['pending spec patches do not apply in every order: shift-a after [nothing]', 'pending spec patches do not apply in every order: shift-b after [nothing]', 'pending spec patches do not apply in every order: shift-relocating after [nothing]', 'pending spec patches have no application order that applies']",
+      "outcome": "killed"
+    },
+    {
+      "name": "target path not passed to the engine",
+      "file": "scripts/build_pwb_release_label_amendment.py",
+      "old": "return orders.all_orders_findings(spec_bytes, patches, rel)",
+      "new": "return orders.all_orders_findings(spec_bytes, patches)",
+      "selftestExit": 1,
+      "firstFailure": "SELFTEST FAILED: divergent application orders gave []",
+      "outcome": "killed"
+    },
+    {
+      "name": "order failure not recorded",
+      "file": "scripts/pwb_requirement_amendment.py",
+      "old": "                failures.add(f\"{name} after [{', '.join(applied) or 'nothing'}]\")\n",
+      "new": "                pass\n",
+      "expected": "SELFTEST FAILED: failing application orders gave",
+      "results": {
+        "build_pwb_anchor_resolution_amendment.py": {
+          "selftestExit": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: failing application orders gave []"
+        },
+        "build_pwb_class_granular_extraction_amendment.py": {
+          "selftestExit": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: failing application orders gave []"
+        },
+        "build_pwb_release_label_amendment.py": {
+          "selftestExit": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: failing application orders gave []"
+        }
+      },
+      "outcome": "killed"
+    },
+    {
+      "name": "divergent results not reported",
+      "file": "scripts/pwb_requirement_amendment.py",
+      "old": "    if len(results) > 1:\n",
+      "new": "    if len(results) > 2:\n",
+      "expected": "SELFTEST FAILED: divergent application orders gave",
+      "results": {
+        "build_pwb_anchor_resolution_amendment.py": {
+          "selftestExit": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: divergent application orders gave []"
+        },
+        "build_pwb_class_granular_extraction_amendment.py": {
+          "selftestExit": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: divergent application orders gave []"
+        },
+        "build_pwb_release_label_amendment.py": {
+          "selftestExit": 1,
+          "expectedLineSeen": true,
+          "firstFailure": "SELFTEST FAILED: divergent application orders gave []"
+        }
+      },
+      "outcome": "killed"
+    }
+  ],
+  "killed": 19,
+  "total": 19
+}
