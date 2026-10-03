@@ -634,6 +634,14 @@ def selftest() -> int:
                     "V2-7-RAW.md" in frozen and "ROUND-7-DISPOSITIONS.md" in frozen
                     and f'FROZEN_SUBJECT: str | None = "{"a" * 40}"' in frozen and "TABLE" in frozen
                     and "V2-6" not in frozen))
+    if FROZEN_SUBJECT is None:
+        real = freeze_text(pathlib.Path(__file__).read_text(), 7, "a" * 40, frozen_table())
+        try:
+            compile(real, "frozen", "exec")
+            real_ok = "V2-7-RAW.md" in real and "ROUND-7-DISPOSITIONS.md" in real
+        except SyntaxError:
+            real_ok = False
+        results.append(("--freeze on this very file yields a compilable, repointed recorder", real_ok))
     results.append(("--freeze refuses a recorder that is already frozen",
                     _raises(lambda: freeze_text(frozen, 7, "b" * 40, "T2"))))
     results.append(("--freeze refuses a short commit", _raises(lambda: freeze_text(snippet, 7, "abc", "T"))))
@@ -820,9 +828,9 @@ def freeze_text(text: str, round_n: int, commit: str, table: str) -> str:
             raise ValueError("the recorder is already frozen or not in its unfrozen form")
     text = text.replace("FROZEN_SUBJECT: str | None = None\n", f'FROZEN_SUBJECT: str | None = "{commit}"\n')
     text = text.replace(FROZEN_TABLE_UNSET, table)
-    text, n1 = re.subn(r'(CONFIRMATION_REVIEW_REL = PKG / "reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-)\d+(-RAW\.md")',
-                       rf"\g<1>{round_n}\g<2>", text)
-    text, n2 = re.subn(r'(DISPOSITION_REL = PKG / "ROUND-)\d+(-DISPOSITIONS\.md")', rf"\g<1>{round_n}\g<2>", text)
+    text, n1 = re.subn(r'^(CONFIRMATION_REVIEW_REL = PKG / "reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-)\d+(-RAW\.md")',
+                       rf"\g<1>{round_n}\g<2>", text, flags=re.M)
+    text, n2 = re.subn(r'^(DISPOSITION_REL = PKG / "ROUND-)\d+(-DISPOSITIONS\.md")', rf"\g<1>{round_n}\g<2>", text, flags=re.M)
     if (n1, n2) != (1, 1):
         raise ValueError("the review or dispositions path constant was not found exactly once")
     return text
