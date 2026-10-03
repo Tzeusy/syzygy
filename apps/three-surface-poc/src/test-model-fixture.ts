@@ -58,6 +58,18 @@ export function fixtureRepoWithGit(cleanups: string[]): FixtureRepo {
   return { repoRoot: root, revision: git(root, ['rev-parse', 'HEAD']) };
 }
 
+export function fixtureWorkItemRow(
+  id: string,
+  status: string,
+  createdAt: string,
+  updatedAt: string,
+  closedAt: string | null,
+): Record<string, unknown> {
+  return workItemRow(id, status, createdAt, updatedAt, closedAt, FIXTURE_DOLT_REVISION);
+}
+
+const FIXTURE_DOLT_REVISION = 'dolt-fixture-revision';
+
 function workItemRow(
   id: string,
   status: string,
@@ -93,12 +105,14 @@ export interface FixtureModelOptions {
   readonly evaluationAsOf?: string;
   /** Reuse one repository so two evaluations differ only where the test asks. */
   readonly fixtureRepo?: FixtureRepo;
+  /** Replace the five default work-item rows (built with `fixtureWorkItemRow`). */
+  readonly workItemRows?: readonly Record<string, unknown>[];
 }
 
 export function buildFixtureModel(cleanups: string[], options: FixtureModelOptions = {}): PocModel {
   const { repoRoot, revision } = options.fixtureRepo ?? fixtureRepoWithGit(cleanups);
-  const doltRevision = 'dolt-fixture-revision';
-  const rows = [
+  const doltRevision = FIXTURE_DOLT_REVISION;
+  const rows = options.workItemRows ?? [
     workItemRow('bu-open1', 'open', '2026-08-01T00:00:00Z', '2026-08-02T00:00:00Z', null, doltRevision),
     workItemRow(
       'bu-progress1',
