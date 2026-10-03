@@ -264,3 +264,27 @@ describe('Polaris progressive disclosure (PWB-REQ-011 as amended; PWB-LIVE-13)',
     expect(html).not.toContain('PURPOSE-PROSE-NEVER-RENDERED');
   });
 });
+
+// Bead syzygy-u05.4 slice 1 (pursuit 2026-09-22 N4, finding S2-F1): the
+// reading layout opens <main> with the legend, so the tuple's definition
+// precedes its first use instead of following every claim from the footer.
+describe('Polaris legend precedes the first claim tuple (syzygy-u05.4)', () => {
+  it('renders one legend and the state-plane line at the top of <main>, before the first data-epistemic element, and none in the footer', () => {
+    const { html } = observed();
+    const page = html.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<script[\s\S]*?<\/script>/g, '');
+    expect(page.match(/class="legend"/g)?.length).toBe(1);
+    expect(page.match(/data-surface-state-legend/g)?.length).toBe(1);
+    const main = page.indexOf('<main id="main-content">');
+    const legend = page.indexOf('class="legend"');
+    const stateLine = page.indexOf('data-surface-state-legend');
+    const firstTuple = page.search(/<[a-z][^>]*\sdata-epistemic-[a-z-]+=/);
+    expect(main).toBeGreaterThan(-1);
+    expect(firstTuple).toBeGreaterThan(-1);
+    expect(legend).toBeGreaterThan(main);
+    expect(stateLine).toBeGreaterThan(legend);
+    expect(stateLine).toBeLessThan(firstTuple);
+    const footer = /<footer[^>]*>([\s\S]*?)<\/footer>/.exec(page)?.[1] ?? '';
+    expect(footer).not.toContain('class="legend"');
+    expect(footer).not.toContain('data-surface-state-legend');
+  });
+});

@@ -14,9 +14,13 @@ export function surfacePlanePhrase(surface: PocSurface): string {
   return `${surface.title} · ${surface.state} state · ${STATE_PURPOSE[surface.state]}`;
 }
 
+// The legends open <main> (syzygy-u05.4), where nothing inherits the
+// footer's framing role, so the state-plane line carries the role itself.
+const STATE_LEGEND_ROLE = 'data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable';
+
 function surfaceStateLegend(surfaces: readonly PocSurface[], escapeHtml: (value: string) => string): string {
-  if (surfaces.length === 0) return '<p class="state-plane-legend" data-surface-state-legend>Surface state mapping unavailable: no seed-backed surfaces were evaluated.</p>';
-  return `<p class="state-plane-legend" data-surface-state-legend aria-label="Surface state plane legend">${surfaces.map(surface =>
+  if (surfaces.length === 0) return `<p class="state-plane-legend" data-surface-state-legend ${STATE_LEGEND_ROLE}>Surface state mapping unavailable: no seed-backed surfaces were evaluated.</p>`;
+  return `<p class="state-plane-legend" data-surface-state-legend aria-label="Surface state plane legend" ${STATE_LEGEND_ROLE}>${surfaces.map(surface =>
     `<span data-surface-state-map="${escapeHtml(surface.id)}">${escapeHtml(surface.title)} holds the ${escapeHtml(surface.state)} state</span>`).join('; ')}.</p>`;
 }
 
@@ -116,10 +120,10 @@ export function pageShell(input: PageShellInput): string {
   ${input.sidebar === undefined ? '' : `<aside class="reading-sidebar">${input.sidebar}</aside>`}
   ${input.readingLayout ? '' : siteNav(input.current, mountPrefix, escapeHtml)}
   <main id="main-content">
-    ${input.readingLayout ? '' : legendHtml(escapeHtml) + stateLegend}
+    ${legendHtml(escapeHtml) + stateLegend}
     ${input.body}
   </main>
-  <footer data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${input.readingLayout ? legendHtml(escapeHtml) + stateLegend : ''}${input.footer}</footer>
+  <footer data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${input.footer}</footer>
   ${input.sidebar === undefined ? '' : '</div>'}
 </body>
 </html>`;
