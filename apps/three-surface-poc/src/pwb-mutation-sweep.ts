@@ -658,8 +658,8 @@ const PARITY_MARKERS: SweepGroup = {
       'polaris-disclosure-collapsed',
       POLARIS_SOURCE,
       'disclosure/collapsed: Unknown relationship disclosures sharing a reason collapse into one',
-      'const relationshipList = dive.relationships.map((relationship) => relationshipBullet(relationship, entitiesById)).join(\'\');',
-      'const relationshipList = dive.relationships.filter((relationship, index, all) => relationship.epistemic.label !== \'Unknown\' || all.findIndex((other) => other.epistemic.label === \'Unknown\') === index).map((relationship) => relationshipBullet(relationship, entitiesById)).join(\'\');',
+      'const relationshipList = dive.relationships.map((relationship) => relationshipBullet(relationship, entitiesById, model)).join(\'\');',
+      'const relationshipList = dive.relationships.filter((relationship, index, all) => relationship.epistemic.label !== \'Unknown\' || all.findIndex((other) => other.epistemic.label === \'Unknown\') === index).map((relationship) => relationshipBullet(relationship, entitiesById, model)).join(\'\');',
       ['observed shape / not-evaluated judgment'],
     ),
     literal(

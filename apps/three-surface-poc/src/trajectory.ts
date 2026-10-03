@@ -1,5 +1,10 @@
 import { escapeHtml } from '@syzygy/cap1-daemon';
-import type { PocModel, WorkerChangeObserved } from '@syzygy/three-surface-poc-core';
+import {
+  workItemVerificationId,
+  workerChangeVerificationId,
+  type PocModel,
+  type WorkerChangeObserved,
+} from '@syzygy/three-surface-poc-core';
 import type { TrajectoryColumn, TrajectoryLaneItem } from '@syzygy/three-surface-poc-core';
 import type { TestArtifactVerificationResult } from '@syzygy/three-surface-poc-core';
 
@@ -11,6 +16,7 @@ import {
 import { substrateEvaluationFooter } from './evaluation-footer.js';
 import { pageShell, type HumanOperabilityStatus } from './page-shell.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
+import { unknownMarker, unknownRoute, unknownSubject } from './unknown-marker.js';
 
 export const TRAJECTORY_HUMAN_PATH = '/trajectory' as const;
 export const TRAJECTORY_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}/trajectory` as const;
@@ -60,19 +66,24 @@ const WORKER_CHANGE_STATE_LABEL = {
 } as const;
 
 function verificationBadge(
+  model: PocModel,
+  beadId: string,
   verification: TestArtifactVerificationResult,
   governingIntentId: string | null,
 ): string {
   if (verification.kind === 'verified' && governingIntentId !== null) {
     return `<span class="epistemic epistemic-observed" data-parity-field="worker-change-verification" title="A captured, passing focused-pytest artifact bound to commit ${escapeHtml(verification.record.repositoryCommit)} and the governing intent ${escapeHtml(governingIntentId)}.">Verification: Verified — ${escapeHtml(verification.record.summary)}</span>`;
   }
+  const id = workerChangeVerificationId(beadId);
+  const unknown = unknownSubject(model, id);
   if (verification.kind === 'verified') {
-    return '<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification" title="The captured test artifact has no governing intent identity in this evaluation.">Verification: Unknown — governing intent identity unavailable</span>';
+    return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification"${unknownMarker(id, unknown)} title="The captured test artifact has no governing intent identity in this evaluation.">Verification: Unknown — governing intent identity unavailable. ${unknownRoute(unknown)}</span>`;
   }
-  return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification" title="${escapeHtml(verification.reason)}">Verification: Not verified</span>`;
+  return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification"${unknownMarker(id, unknown)} title="${escapeHtml(verification.reason)}">Verification: Not verified. ${unknownRoute(unknown)}</span>`;
 }
 
 function workerChangeBadge(
+  model: PocModel,
   workerChange: WorkerChangeObserved | null,
   verification: TestArtifactVerificationResult,
   governingIntentId: string | null,
@@ -95,11 +106,18 @@ function workerChangeBadge(
     <span class="worker-change-label">External worker: ${escapeHtml(label)}</span>
     <span class="worker-change-note">Independent of the Bead status above: this row is the worker-change state observed from git on the bounded seam, not the Beads status.</span>
     ${detail === '' ? '' : `<span class="worker-change-detail">${detail}</span>`}
-    ${verificationBadge(verification, governingIntentId)}
+    ${verificationBadge(model, workerChange.beadId, verification, governingIntentId)}
   </div>`;
 }
 
+function itemVerification(model: PocModel, itemId: string): string {
+  const id = workItemVerificationId(itemId);
+  const unknown = unknownSubject(model, id);
+  return `<span class="epistemic epistemic-unknown" data-parity-field="work-item-verification"${unknownMarker(id, unknown)} title="${escapeHtml(unknown.reason)}">Verification: Unknown. ${unknownRoute(unknown)}</span>`;
+}
+
 function itemCard(
+  model: PocModel,
   item: TrajectoryLaneItem,
   range: { readonly earliest: string; readonly latest: string } | null,
   workerChange: WorkerChangeObserved | null,
@@ -112,8 +130,8 @@ function itemCard(
     <a class="wi-title" href="#workitem-${escapeHtml(item.id)}" data-parity-field="work-item-title">${escapeHtml(item.title)}</a>
     <code class="wi-id" data-parity-field="work-item-id">${escapeHtml(item.id)}</code>
     <span class="wi-status" data-parity-field="work-item-status">${escapeHtml(item.status)}</span>
-    <span class="epistemic epistemic-unknown" data-parity-field="work-item-verification" title="Activity is not verification: no test evidence has been ingested for this item.">Verification: Unknown</span>
-    ${workerChangeBadge(workerChange, testArtifactVerification, governingIntentId)}
+    ${itemVerification(model, item.id)}
+    ${workerChangeBadge(model, workerChange, testArtifactVerification, governingIntentId)}
     ${laneBar(item, range)}
   </li>`;
 }
@@ -151,7 +169,8 @@ export function renderTrajectoryPage(model: PocModel, mountPrefix = '', status?:
       trajectory.observedItemCount === undefined
         ? 'Unknown (work items were not independently observed)'
         : String(trajectory.observedItemCount);
-    body = `<p class="unavailable-notice" data-unknown-disclosure="region:work-items">Unknown — ${escapeHtml(trajectory.reason)}. This is a distinct state from an observed-empty board: no board is rendered because the seeded work-item graph is unavailable. Independently observed work-item denominator: ${escapeHtml(observedItemDenominator)}.</p>`;
+    const unknown = unknownSubject(model, 'region:work-items');
+    body = `<p class="unavailable-notice"${unknownMarker('region:work-items', unknown)}>Unknown — ${escapeHtml(trajectory.reason)}. ${unknownRoute(unknown)} This is a distinct state from an observed-empty board: no board is rendered because the seeded work-item graph is unavailable. Independently observed work-item denominator: ${escapeHtml(observedItemDenominator)}.</p>`;
   } else {
     const byColumn = new Map<TrajectoryColumn, TrajectoryLaneItem[]>();
     for (const column of COLUMN_ORDER) {
@@ -170,6 +189,7 @@ export function renderTrajectoryPage(model: PocModel, mountPrefix = '', status?:
         <ol class="wi-list">${items
           .map((item) =>
             itemCard(
+              model,
               item,
               trajectory.timeRange,
               workerChange !== null && workerChange.beadId === item.id ? workerChange : null,

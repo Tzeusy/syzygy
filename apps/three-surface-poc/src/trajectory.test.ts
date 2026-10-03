@@ -232,8 +232,8 @@ describe('Trajectory', () => {
       workerChangeIntentId,
     } as const;
 
-    const model = buildPocModel({
-      seeds: alternateSeeds,
+    const build = (seeds: typeof BUTLERS_POC_SEEDS) => buildPocModel({
+      seeds,
       repoRoot,
       repositoryRevision: changedRevision,
       observerRevision: revision,
@@ -251,6 +251,7 @@ describe('Trajectory', () => {
         summary: '4 passed, 0 failed, 0 errored, 0 skipped in 0.5s',
       },
     });
+    const model = build(alternateSeeds);
     expect(model.testArtifactVerification.kind).toBe('verified');
 
     const html = renderTrajectoryPage(model);
@@ -261,7 +262,11 @@ describe('Trajectory', () => {
     expect(card).not.toContain(BUTLERS_POC_SEEDS.workerChangeIntentId);
     expect(card).not.toContain('Verification: Not verified');
 
-    const missingIdentityHtml = renderTrajectoryPage({ ...model, governingIntentId: null });
+    // Built, not spread: the verification Unknown and its route are model
+    // facts under the disclosure's id (M4 slice 1).
+    const missingIdentityModel = build({ ...alternateSeeds, workerChangeIntentId: '' });
+    expect(missingIdentityModel.governingIntentId).toBeNull();
+    const missingIdentityHtml = renderTrajectoryPage(missingIdentityModel);
     const missingIdentityCard = cardBody(missingIdentityHtml, 'bu-verified-1');
     expect(missingIdentityCard).toContain('Verification: Unknown — governing intent identity unavailable');
     expect(missingIdentityCard).not.toContain('Verification: Verified');

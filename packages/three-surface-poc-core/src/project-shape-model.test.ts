@@ -386,7 +386,7 @@ describe('the gate comes first', () => {
     expect(shape.detail).toBe('daemon could not load the governance tree');
     isValidClaim(shape.claim);
     expect(shape.claim.epistemic.label).toBe('Unknown');
-    expect(shape.claim.resolutionRoutes).toEqual([{ reason: 'unconsented-source-or-provider', route: 'Record consent' }]);
+    expect(shape.claim.resolutionRoutes).toEqual([{ reason: 'unconsented-source-or-provider', route: 'Record consent', actor: 'owner', verb: 'consent', target: 'act' }]);
   });
 });
 
@@ -583,7 +583,7 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
       { path: 'about/craft-and-care/README.md', sourceIdentity: `repository:butlers-configured-poc@${COMMIT}:about/craft-and-care/README.md#${sha1Blob(encoder.encode(CRAFT_SECRET))}`, contentDigest: sha256(CRAFT_SECRET) },
     ]);
     expect(shape.classes['craft-policy'].reasonCounts).toEqual({ primary: { 'excluded-content': 1 }, secondary: {} });
-    expect(craft?.claim.resolutionRoutes).toEqual([{ reason: 'excluded-content', route: 'Policy change by the owner, or accept the exclusion' }]);
+    expect(craft?.claim.resolutionRoutes).toEqual([{ reason: 'excluded-content', route: 'Policy change by the owner, or accept the exclusion', actor: 'owner', verb: 'decide', target: 'policy' }]);
     expect(shape.exclusions).toEqual([
       {
         redactionClass: 'excluded-artifact',
@@ -700,8 +700,8 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
       freshness: 'fresh',
     });
     expect(shape.claim.resolutionRoutes).toEqual([
-      { reason: 'excluded-content', route: 'Policy change by the owner, or accept the exclusion' },
-      { reason: 'source-uncaptured-or-unreachable', route: 'Repair the observer or source; new snapshot' },
+      { reason: 'excluded-content', route: 'Policy change by the owner, or accept the exclusion', actor: 'owner', verb: 'decide', target: 'policy' },
+      { reason: 'source-uncaptured-or-unreachable', route: 'Repair the observer or source; new snapshot', actor: 'operator', verb: 'repair', target: 'evaluation' },
     ]);
     expect(JSON.stringify(shape)).not.toContain(SENTINEL);
     for (const entry of allClaims(shape)) isValidClaim(entry);
@@ -753,7 +753,7 @@ describe('contradictions are disclosed, resolved only by a root-declared layer r
       tier: 'suspended',
       freshness: 'fresh',
     });
-    expect(contradiction?.claim.resolutionRoutes).toEqual([{ reason: 'contradicted-pending-adjudication', route: 'Owner adjudication' }]);
+    expect(contradiction?.claim.resolutionRoutes).toEqual([{ reason: 'contradicted-pending-adjudication', route: 'Owner adjudication', actor: 'owner', verb: 'adjudicate', target: 'act' }]);
     expect(contradiction?.claim.support.map((s) => [s.path, s.line])).toEqual([['about/heart-and-soul/v1.md', 13], ['about/README.md', 8]]);
     expect(shape.counts.contradictedFacts).toBe(2);
     expect(shape.counts.rulesDeclared).toBe(0);

@@ -112,9 +112,47 @@ export interface ProjectShapeSupport {
   readonly sourceIdentity?: string;
 }
 
+// The machine form of a route (M4 slice 2, P-71): who acts, the closed
+// verb, and the kind of thing acted on, beside the route sentence the page
+// renders verbatim. One row per reason; the classification is this
+// implementation's reading of each `UNKNOWN_REASON_ROUTES` sentence
+// [Inferred], never a contract value.
+export const ROUTE_ACTORS = ['owner', 'operator', 'agent'] as const;
+export type RouteActor = (typeof ROUTE_ACTORS)[number];
+export const ROUTE_VERBS = ['draft', 'capture', 'declare', 'consent', 'decide', 'adjudicate', 'repair', 'run'] as const;
+export type RouteVerb = (typeof ROUTE_VERBS)[number];
+export const ROUTE_TARGETS = ['artifact', 'act', 'policy', 'evaluation', 'external-work'] as const;
+export type RouteTarget = (typeof ROUTE_TARGETS)[number];
+
+export const UNKNOWN_REASON_ACTIONS: Readonly<Record<UnknownReason, { readonly actor: RouteActor; readonly verb: RouteVerb; readonly target: RouteTarget }>> = {
+  'missing-declaration': { actor: 'agent', verb: 'draft', target: 'artifact' },
+  'missing-evidence': { actor: 'operator', verb: 'capture', target: 'evaluation' },
+  'no-currency-bound-declared': { actor: 'owner', verb: 'declare', target: 'policy' },
+  'stale-beyond-currency-bound': { actor: 'operator', verb: 'capture', target: 'evaluation' },
+  'mapping-coverage-absent': { actor: 'owner', verb: 'declare', target: 'artifact' },
+  'unconsented-source-or-provider': { actor: 'owner', verb: 'consent', target: 'act' },
+  'excluded-content': { actor: 'owner', verb: 'decide', target: 'policy' },
+  'contradicted-pending-adjudication': { actor: 'owner', verb: 'adjudicate', target: 'act' },
+  'challenge-suspended': { actor: 'owner', verb: 'adjudicate', target: 'act' },
+  'source-uncaptured-or-unreachable': { actor: 'operator', verb: 'repair', target: 'evaluation' },
+  'reference-unresolvable': { actor: 'operator', verb: 'repair', target: 'external-work' },
+  'execution-blocked': { actor: 'operator', verb: 'run', target: 'external-work' },
+};
+
 export interface ResolutionRoute {
   readonly reason: UnknownReason;
+  // The rendered route sentence, verbatim from `UNKNOWN_REASON_ROUTES`.
   readonly route: string;
+  readonly actor: RouteActor;
+  readonly verb: RouteVerb;
+  readonly target: RouteTarget;
+}
+
+/** At least one route: an Unknown that carries a reason never has none. */
+export type ResolutionRoutes = readonly [ResolutionRoute, ...ResolutionRoute[]];
+
+export function resolutionRoute(reason: UnknownReason): ResolutionRoute {
+  return { reason, route: UNKNOWN_REASON_ROUTES[reason], ...UNKNOWN_REASON_ACTIONS[reason] };
 }
 
 export interface ProjectShapeClaim {
@@ -150,7 +188,7 @@ function closedReason(value: string): UnknownReason {
 function routesFor(state: EpistemicState): readonly ResolutionRoute[] {
   if (state.label !== 'Unknown' || !('reasons' in state)) return [];
   const reasons = [state.reasons.primary, ...state.reasons.secondary];
-  return reasons.map((reason) => ({ reason, route: UNKNOWN_REASON_ROUTES[reason] }));
+  return reasons.map(resolutionRoute);
 }
 
 interface ClaimInput {

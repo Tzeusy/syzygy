@@ -146,7 +146,8 @@ describe('Polaris', () => {
           expect(revisions).toEqual(entity.provenance.map((item) => item.revision.slice(0, 12)));
         } else {
           expect(section).toContain(`data-unknown-disclosure="${entity.id}"`);
-          expect(section).toContain(`Unknown — ${entity.epistemic.reason}`);
+          expect(section).toContain(`Unknown — <span data-unknown-reason="${entity.epistemic.closedReason}">`);
+          expect(section).toContain(`<small>${entity.epistemic.reason}</small>`);
           expect(section).not.toContain(`data-claim-provenance="${entity.id}"`);
           expect(sources).toEqual([]);
         }

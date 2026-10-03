@@ -6,6 +6,7 @@ import { substrateEvaluationFooter } from './evaluation-footer.js';
 import { pageShell, type HumanOperabilityStatus } from './page-shell.js';
 import { capabilityDeepDiveId, crossSurfaceHref } from './surface-links.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
+import { unknownMarker, unknownRoute, unknownSubject } from './unknown-marker.js';
 
 export const ORRERY_HUMAN_PATH = '/orrery' as const;
 export const ORRERY_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}/orrery` as const;
@@ -31,6 +32,8 @@ interface OrreryDataIsland {
   readonly unmappedFileCount: number;
   readonly totalFileCount: number;
   readonly unmappedRegionEntityId: string;
+  /** The unmapped region's closed reason and route, from the model (M4 slice 1). */
+  readonly unmappedRegionUnknown: { readonly reason: string; readonly route: string; readonly actor: string; readonly verb: string; readonly target: string } | null;
 }
 
 const ORRERY_STYLE = `
@@ -132,10 +135,30 @@ const CLIENT_SCRIPT = `
     unmappedLink.dataset.parityField = 'orrery-unmapped-region';
     unmappedLink.textContent = 'Unknown — Unmapped (' + data.unmappedFileCount + ' files)';
     unmapped.appendChild(unmappedLink);
+    var known = data.unmappedRegionUnknown;
+    if (known) {
+      unmapped.dataset.unknownReason = known.reason;
+      var route = document.createElement('span');
+      route.dataset.unknownRoute = known.reason;
+      route.dataset.routeActor = known.actor;
+      route.dataset.routeVerb = known.verb;
+      route.dataset.routeTarget = known.target;
+      route.textContent = known.route;
+      unmapped.appendChild(document.createTextNode(' Route: '));
+      unmapped.appendChild(route);
+      unmapped.appendChild(document.createTextNode('.'));
+    }
     canvas.appendChild(unmapped);
   }
 })();
 `;
+
+function unmappedRegionUnknown(model: PocModel): OrreryDataIsland['unmappedRegionUnknown'] {
+  const entity = model.entities.find((candidate) => candidate.id === 'region:unmapped-code');
+  if (entity === undefined || entity.epistemic.label !== 'Unknown') return null;
+  const [route] = entity.epistemic.resolutionRoutes;
+  return { reason: entity.epistemic.closedReason, route: route.route, actor: route.actor, verb: route.verb, target: route.target };
+}
 
 export function renderOrreryPage(model: PocModel, mountPrefix = '', status?: HumanOperabilityStatus): string {
   const orrery = model.orrery;
@@ -148,8 +171,9 @@ export function renderOrreryPage(model: PocModel, mountPrefix = '', status?: Hum
         : String(orrery.observedFileCount);
     const mappedFileCount = orrery.mappedFileCount === undefined ? 'Unknown' : String(orrery.mappedFileCount);
     const unmappedFileCount = orrery.unmappedFileCount === undefined ? 'Unknown' : String(orrery.unmappedFileCount);
-    body = `<p class="unavailable-notice" data-unknown-disclosure="region:code-structure">Unknown — ${escapeHtml(orrery.reason)} The seed-backed map is unavailable; observed-file denominator: ${escapeHtml(observedFileDenominator)}; mapped: ${escapeHtml(mappedFileCount)}; unmapped: ${escapeHtml(unmappedFileCount)}. The exact tables below remain the honest record of what is known.</p>
-    ${exactTablesSection(model)}`;
+    const unknown = unknownSubject(model, 'region:code-structure');
+    body = `<p class="unavailable-notice"${unknownMarker('region:code-structure', unknown)}>Unknown — ${escapeHtml(orrery.reason)} ${unknownRoute(unknown)} The seed-backed map is unavailable; observed-file denominator: ${escapeHtml(observedFileDenominator)}; mapped: ${escapeHtml(mappedFileCount)}; unmapped: ${escapeHtml(unmappedFileCount)}. The exact tables below remain the honest record of what is known.</p>
+    ${exactTablesSection(model, mountPrefix)}`;
   } else {
     const island: OrreryDataIsland = {
       revision: orrery.revision,
@@ -162,6 +186,7 @@ export function renderOrreryPage(model: PocModel, mountPrefix = '', status?: Hum
       unmappedFileCount: orrery.unmappedFileCount,
       totalFileCount: orrery.totalFileCount,
       unmappedRegionEntityId: 'region:unmapped-code',
+      unmappedRegionUnknown: unmappedRegionUnknown(model),
     };
     const islandJson = JSON.stringify(island).replace(/</g, '\\u003c');
 
@@ -178,7 +203,7 @@ export function renderOrreryPage(model: PocModel, mountPrefix = '', status?: Hum
       <p class="orrery-height-legend">District blocks have a minimum height that grows with relative byte size; longer labels may add height.</p>
       <script type="application/json" id="orrery-data">${islandJson}</script>
       <script>${CLIENT_SCRIPT}</script>
-      ${exactTablesSection(model)}`;
+      ${exactTablesSection(model, mountPrefix)}`;
   }
 
   return pageShell({

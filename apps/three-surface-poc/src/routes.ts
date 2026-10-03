@@ -107,7 +107,7 @@ export function renderPocPage(model: PocModel, mountPrefix = '', status?: HumanO
   const body = `
     <p class="notice"><strong>POC, not product status.</strong> Desired, execution, and observed state remain distinct. Merge is not verification. Missing evidence is rendered Unknown.</p>
     <div class="surface-grid">${surfaces}</div>
-    ${exactTablesSection(model)}`;
+    ${exactTablesSection(model, mountPrefix)}`;
 
   return pageShell({
     title: 'Syzygy · Butlers proof of concept',

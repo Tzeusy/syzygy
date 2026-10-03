@@ -92,10 +92,13 @@ function encodingMembers(html: string): EncodingMember[] {
     let inherited: string | undefined;
     for (let i = scopes.length - 1; i >= 0; i--) if (scopes[i]?.label !== undefined) { inherited = scopes[i]?.label; break; }
     const own = attribute('data-epistemic-label');
-    const family: Family | undefined = classes.includes('epistemic') ? 'badge'
-      : classes.includes('claim-tuple') ? 'tuple'
-        : attribute('data-unknown-disclosure') !== undefined ? 'disclosure' : undefined;
-    if (family !== undefined) {
+    // An element may carry a badge and the shared disclosure marker at once
+    // (Trajectory's verification badges, M4 slice 1): it is a member of both.
+    const families: Family[] = [
+      ...(classes.includes('epistemic') ? ['badge' as const] : classes.includes('claim-tuple') ? ['tuple' as const] : []),
+      ...(attribute('data-unknown-disclosure') !== undefined ? ['disclosure' as const] : []),
+    ];
+    for (const family of families) {
       const label = family === 'badge' ? classes.find((cls) => cls.startsWith('epistemic-') && cls !== 'epistemic')?.slice('epistemic-'.length)
         : family === 'disclosure' ? 'Unknown' : own ?? inherited;
       if (label === undefined) throw new Error(`${family} has no local or inherited label: ${match[0]}`);
@@ -183,9 +186,8 @@ async function browserEncodingCensus(page: BrowserPage): Promise<BrowserEncoding
         (element.classList.contains('epistemic-observed') || element.classList.contains('epistemic-unknown'));
       const tuple = element.classList.contains('claim-tuple');
       const disclosure = element.hasAttribute('data-unknown-disclosure');
-      const family = badge ? 'badge' : tuple ? 'tuple' : disclosure ? 'disclosure' : undefined;
-      if (!family) continue;
-      walked[family]++;
+      const families = [...(badge ? ['badge'] : tuple ? ['tuple'] : []), ...(disclosure ? ['disclosure'] : [])];
+      if (families.length === 0) continue;
       const label = badge ? (element.classList.contains('epistemic-observed') ? 'Observed' : 'Unknown')
         : tuple ? (element.getAttribute('data-epistemic-label') || element.closest('[data-epistemic-scope-label]')?.getAttribute('data-epistemic-scope-label'))
         : 'Unknown';
@@ -193,8 +195,11 @@ async function browserEncodingCensus(page: BrowserPage): Promise<BrowserEncoding
       const symbol = getComputedStyle(element, '::before').content;
       const expectedColor = label === 'Observed' ? 'rgb(120, 225, 209)' : 'rgb(243, 197, 111)';
       const expectedSymbol = label === 'Observed' ? '●' : '?';
-      if ((label !== 'Observed' && label !== 'Unknown') || color !== expectedColor || !symbol.includes(expectedSymbol)) {
-        treatmentFailures.push(family + ':' + (label || 'missing'));
+      for (const family of families) {
+        walked[family]++;
+        if ((label !== 'Observed' && label !== 'Unknown') || color !== expectedColor || !symbol.includes(expectedSymbol)) {
+          treatmentFailures.push(family + ':' + (label || 'missing'));
+        }
       }
       if (element.classList.contains('orrery-block') && element.classList.contains('unmapped') && !element.textContent.includes('Unknown')) unnamedUnknowns++;
     }
@@ -203,7 +208,10 @@ async function browserEncodingCensus(page: BrowserPage): Promise<BrowserEncoding
       query,
       walked,
       unmapped: unmapped.length,
-      markedUnmapped: unmapped.filter((element) => element.getAttribute('data-unknown-disclosure') === element.querySelector('a')?.getAttribute('href')?.slice(1)).length,
+      // Marked, and carrying its closed reason and route (M4 slice 1).
+      markedUnmapped: unmapped.filter((element) => element.getAttribute('data-unknown-disclosure') === element.querySelector('a')?.getAttribute('href')?.slice(1)
+        && element.getAttribute('data-unknown-reason') === 'mapping-coverage-absent'
+        && element.querySelector('[data-unknown-route="mapping-coverage-absent"]')?.textContent === 'Run or declare the mapping').length,
       treatmentFailures,
       unnamedUnknowns,
     };
@@ -247,14 +255,14 @@ describe('surface routes', () => {
     }
   });
 
-  describe('13-link cross-surface exhaustion', () => {
+  describe('15-link cross-surface exhaustion', () => {
     // syzygy-8hr: this case timed out at 15,000ms under hosted CI load
     // (runs 36214865515 / 36215589451, 2026-09-26) though the identical
     // case measured 2,969ms/1,929ms (direct/tailnet) on prior hosted CI
     // (syzygy-bul). Phase timing (added and removed temporarily, 2026-09-27)
     // showed one Chrome launch+newPage+close cycle inside `withBrowserPage`
     // was 70-95%+ of this case's own wall time in every scenario tried,
-    // dwarfing the 13-link fetch loop and four-page navigation/DOM-census
+    // dwarfing the 15-link fetch loop and four-page navigation/DOM-census
     // loop below (tens to a few hundred ms even under load) — and each of
     // 'direct'/'tailnet' used to pay for its own separate launch+close.
     // Measured on this branch after moving the shared model/daemon/browser
@@ -319,10 +327,11 @@ describe('surface routes', () => {
       }
     }, 60_000);
 
-    it.skipIf(browserExecutable === undefined).each(['direct', 'tailnet'] as const)('exhausts 13 runtime cross-surface links over five classes and fetches every %s target', async (form) => {
+    it.skipIf(browserExecutable === undefined).each(['direct', 'tailnet'] as const)('exhausts 15 runtime cross-surface links over six classes and fetches every %s target', async (form) => {
       if (page === undefined) throw new Error('shared browser page not initialized');
       const activePage = page;
-      const expected = { 'work-count': 1, 'code-count': 1, 'reality-entity': 9, 'governing-intent': 1, 'mapped-capability': 1 };
+      // M4 slice 1 adds intent-to-work's action route on Polaris and Orrery.
+      const expected = { 'work-count': 1, 'code-count': 1, 'reality-entity': 9, 'governing-intent': 1, 'mapped-capability': 1, 'action-route': 2 };
       const mount = form === 'direct' ? '' : TAILNET_MOUNT_PREFIX;
       const request = (path: string) => form === 'direct' ? fetch(`${baseUrl}${path}`)
         : fetchWithHost(`${baseUrl}${path}`, TAILNET_HOST, { origin: `https://${TAILNET_HOST}` });
@@ -344,14 +353,15 @@ describe('surface routes', () => {
         expect(census.links.length, `${form} ${path} marked population`).toBe(census.all);
         links.push(...census.links);
       }
-      expect(links.length, `${form} cross-surface denominator`).toBe(13);
+      expect(links.length, `${form} cross-surface denominator`).toBe(15);
       const classes = Object.fromEntries(Object.keys(expected).map(key => [key, links.filter(link => link.className === key).length]));
       expect(classes).toEqual(expected);
-      expect(new Set(links.map(link => `${link.className}:${link.source}:${link.target}`)).size).toBe(13);
+      // The action route is the same link on Polaris and Orrery, so 14 distinct.
+      expect(new Set(links.map(link => `${link.className}:${link.source}:${link.target}`)).size).toBe(14);
 
-      // Every one of the 13 links still gets its own real HTTP fetch of its
+      // Every one of the 15 links still gets its own real HTTP fetch of its
       // target (preserving the identical-content check below byte for
-      // byte) — only the *sequencing* changes, from 13 chained awaits to
+      // byte) — only the *sequencing* changes, from 15 chained awaits to
       // one concurrent batch, since the sequential chain (not the fetch
       // cost itself, measured at 1-30ms per link even under heavy
       // synthetic load above) was what scaled with scheduler contention.
@@ -386,7 +396,8 @@ describe('surface routes', () => {
           existing.fragments.push({ href: link.href, id: fragment });
         } else runtimeTargets.set(targetPath, { html: targetHtml, fragments: [{ href: link.href, id: fragment }] });
       }
-      expect(runtimeTargets.size, `${form} distinct fragment target pages`).toBe(2);
+      // Polaris and Orrery, plus Trajectory's materialize panel (the action route).
+      expect(runtimeTargets.size, `${form} distinct fragment target pages`).toBe(3);
       for (const [targetPath, target] of runtimeTargets) {
         const targetFile = join(directory, `${form}-target-${targetPath.slice(1)}.html`);
         writeFileSync(targetFile, target.html);
@@ -510,6 +521,15 @@ describe('surface routes', () => {
           expect(() => verifyRuntimeCensus(server, unmarked, true)).toThrow();
           expect(unmarked.unmapped).toBe(1);
           expect(unmarked.markedUnmapped).toBe(0);
+          // M4 slice 1: a marked block that drops its closed reason fails too.
+          const reasonFragment = 'unmapped.dataset.unknownReason = known.reason;';
+          expect(html).toContain(reasonFragment);
+          const reasonlessFile = join(directory, `${form}-orrery-reasonless.html`);
+          writeFileSync(reasonlessFile, html.replace(reasonFragment, ''));
+          await page.navigate(pathToFileURL(reasonlessFile).href);
+          const reasonless = await browserEncodingCensus(page);
+          expect(() => verifyRuntimeCensus(server, reasonless, true)).toThrow();
+          expect(reasonless.markedUnmapped).toBe(0);
         }
       }
       expect(total).toBe(serverTotal + 2);

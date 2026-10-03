@@ -208,6 +208,7 @@ export const POLARIS_COPY = [
   { id: 'sentence.missing-statement', role: 'epistemic-disclosure', kind: 'sentence', text: 'the shared model carries no statement for this key.' },
   { id: 'label.unknown', role: 'epistemic-disclosure', kind: 'label', text: 'Unknown' },
   { id: 'label.route', role: 'epistemic-disclosure', kind: 'label', text: 'Route:' },
+  { id: 'label.action-route', role: 'epistemic-disclosure', kind: 'label', text: 'Materialize preview' },
   { id: 'label.also', role: 'epistemic-disclosure', kind: 'label', text: 'Also:' },
   { id: 'label.declarations-kept', role: 'epistemic-disclosure', kind: 'label', text: 'Declarations kept:' },
   { id: 'label.limit-breaches', role: 'project-fact', kind: 'label', text: 'Limit breaches:' },

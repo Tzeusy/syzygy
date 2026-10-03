@@ -148,12 +148,24 @@ function visibleProvenance(row: string): PocModel['entities'][number]['provenanc
   );
 }
 
-function visibleEpistemic(row: string): PocModel['entities'][number]['epistemic'] {
+// An Unknown row's closed reason is on its disclosure marker; each route's
+// machine form is on its route span; the action route is its link.
+function visibleEpistemic(row: string): unknown {
   const label = visibleField(row, 'epistemic-label');
   const explanation = visibleField(row, 'epistemic-explanation');
-  return label === 'Observed'
-    ? { label: 'Observed', basis: explanation }
-    : { label: 'Unknown', reason: explanation };
+  if (label === 'Observed') return { label: 'Observed', basis: explanation };
+  const closedReason = /\sdata-unknown-disclosure="[^"]*" data-unknown-reason="([^"]*)"/.exec(row)?.[1];
+  const resolutionRoutes = [
+    ...row.matchAll(/<span data-unknown-route="([^"]*)" data-route-actor="([^"]*)" data-route-verb="([^"]*)" data-route-target="([^"]*)">([^<]*)<\/span>/g),
+  ].map((route) => ({ reason: route[1], route: decodeHtmlText(route[5] ?? ''), actor: route[2], verb: route[3], target: route[4] }));
+  const action = /<a href="[^"#]*\/(trajectory)#([^"]*)"[^>]*data-cross-surface-class="action-route"/.exec(row);
+  return {
+    label: 'Unknown',
+    reason: explanation,
+    closedReason,
+    resolutionRoutes,
+    ...(action === null ? {} : { actionRoute: { surface: action[1], anchor: action[2] } }),
+  };
 }
 
 function visibleParityTuples(html: string): string[] {

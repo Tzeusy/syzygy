@@ -1,3 +1,5 @@
+import type { UnknownReason } from '@syzygy/cap1-core';
+
 import type { CodeStructureResult } from './code-structure.js';
 import {
   UNKNOWN_REASON_ROUTES,
@@ -38,6 +40,8 @@ export type ProposedWorkLifecycle =
   | {
       readonly kind: 'unknown';
       readonly reason: string;
+      /** The RFC2-24 reason the producing branch establishes (M4 slice 1). */
+      readonly closedReason: UnknownReason;
     };
 
 export type ProposedWorkCurrentAuthority =
@@ -89,14 +93,14 @@ export function baselineSpecPath(specKey: string): string {
 
 export function deriveLifecycle(changeId: string, codeStructure: CodeStructureResult): ProposedWorkLifecycle {
   if (codeStructure.kind === 'unknown') {
-    return { kind: 'unknown', reason: `The tree listing was not observed (${codeStructure.reason}); the change's lifecycle state was not read.` };
+    return { kind: 'unknown', reason: `The tree listing was not observed (${codeStructure.reason}); the change's lifecycle state was not read.`, closedReason: 'source-uncaptured-or-unreachable' };
   }
   const activePrefix = `openspec/changes/${changeId}/`;
   const archivedPattern = new RegExp(`^openspec/changes/archive/(?:[^/]*-)?${changeId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/`);
   const active = codeStructure.files.filter((file) => file.path.startsWith(activePrefix)).map((file) => file.path);
   const archived = codeStructure.files.filter((file) => archivedPattern.test(file.path)).map((file) => file.path);
   if (active.length > 0 && archived.length > 0) {
-    return { kind: 'unknown', reason: `Both an active and an archived entry for ${changeId} are present at this revision; the lifecycle state is contradicted.` };
+    return { kind: 'unknown', reason: `Both an active and an archived entry for ${changeId} are present at this revision; the lifecycle state is contradicted.`, closedReason: 'contradicted-pending-adjudication' };
   }
   if (active.length > 0) {
     return { kind: 'observed', state: 'active', evidence: active, basis: `openspec/changes/${changeId}/ is present in the tree listing at this revision and no archived copy is.` };
@@ -104,7 +108,7 @@ export function deriveLifecycle(changeId: string, codeStructure: CodeStructureRe
   if (archived.length > 0) {
     return { kind: 'observed', state: 'archived', evidence: archived, basis: `Only an archived copy of ${changeId} is present in the tree listing at this revision.` };
   }
-  return { kind: 'unknown', reason: `No OpenSpec change entry named ${changeId} is present in the tree listing at this revision.` };
+  return { kind: 'unknown', reason: `No OpenSpec change entry named ${changeId} is present in the tree listing at this revision.`, closedReason: 'reference-unresolvable' };
 }
 
 export function deriveCurrentAuthority(specKey: string, projectShape: ProjectShape): ProposedWorkCurrentAuthority {
