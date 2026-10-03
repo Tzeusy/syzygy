@@ -1,0 +1,134 @@
+{
+  "bead": "syzygy-u05.4",
+  "slice": 1,
+  "date": "2026-10-03",
+  "subject": "Polaris reading layout: the epistemic legend and the state-plane line open <main> instead of closing the footer (pursuit 2026-09-22 N4, finding S2-F1)",
+  "subjectFiles": {
+    "apps/three-surface-poc/src/page-shell.ts": {
+      "sha256": "2c50bf4a8a8d976b1ec6d186d71c7a689497e8b4d91bdb781183a7e17c448782"
+    },
+    "apps/three-surface-poc/src/polaris-first-reading.test.ts": {
+      "sha256": "415cdb3d4b38a576c888f0aaddc5055ae1a533966609b755d27e24ca81569ad5"
+    }
+  },
+  "authority": ".syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md P-75 Q6 (general reading) under .syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md; HOLD gate syzygy-dca closed 2026-09-22.",
+  "footerDecision": "The footer copy does not stay: one legend per page, at the top of <main> on every layout (the non-reading layouts already rendered it there). The footer keeps only the evaluation and as-of line. The state-plane line now carries the framing role (project-fact, non-normative-framing) it used to inherit from the footer, so the copy oracle still classifies every string.",
+  "measurement": {
+    "method": "node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir <scratch>, from the u05.4 worktree at each commit, detached and clean, after npm run build:poc; GET /polaris direct and with Host: tzeusy.parrot-hen.ts.net; one private daemon per capture; the loopback daemon on 7478 was not contacted. Counts are taken from the served HTML with <style> and <script> removed.",
+    "butlersRevision": "32f38feb51d86e33bfec00b78777cce5ec280198",
+    "base": {
+      "commit": "8ac15ecc6b2296ff7e2bee27a07be3e0d7a095da",
+      "direct": {
+        "bytes": 1467147,
+        "sha256": "67ea0ef7438588a2f6cfa1adad7b61e9ccce4e35730dbf3d2c76a1415f12b333",
+        "legends": 1,
+        "claimTuplesBeforeLegend": 699,
+        "legendInsideMain": true
+      },
+      "tailnet": {
+        "bytes": 1473252,
+        "sha256": "7253fe3fa1defb69de8e01bf664ee835d63b5d3c2e8d327dd5c9b1ba7c9fb533",
+        "legends": 1,
+        "claimTuplesBeforeLegend": 699,
+        "legendInsideMain": true
+      }
+    },
+    "slice1": {
+      "commit": "59eba77efd87f5eae57bb67d1dfb8ddb58961f33",
+      "direct": {
+        "bytes": 1467261,
+        "sha256": "ec37c7084d882d0d53297bd2f38e8f73a5f88d18ffdf2e3abee7e98769bdef68",
+        "legends": 1,
+        "claimTuplesBeforeLegend": 0,
+        "legendInsideMain": true
+      },
+      "tailnet": {
+        "bytes": 1473366,
+        "sha256": "d23451b8afaebd09996254b6794163481b85ada8ea9ced02fc745474c4e8facc",
+        "legends": 1,
+        "claimTuplesBeforeLegend": 0,
+        "legendInsideMain": true
+      }
+    },
+    "deltaBytes": {
+      "direct": 114,
+      "tailnet": 114
+    },
+    "ceiling": "2 MiB response ceiling (2,097,152 bytes); headroom after slice 1: direct 629891, tailnet 623786 bytes"
+  },
+  "rule6": [
+    {
+      "id": "S1-M1",
+      "predicate": "legend renders inside <main>, not the footer, under the reading layout",
+      "file": "apps/three-surface-poc/src/page-shell.ts",
+      "commit": "59eba77efd87f5eae57bb67d1dfb8ddb58961f33",
+      "edits": [
+        {
+          "old": "    ${legendHtml(escapeHtml) + stateLegend}\n    ${input.body}\n  </main>\n  <footer data-copy-role=\"project-fact\" data-claim-role=\"non-normative-framing\" data-presentation-artifact data-non-citable>${input.footer}</footer>",
+          "new": "    ${input.readingLayout ? '' : legendHtml(escapeHtml) + stateLegend}\n    ${input.body}\n  </main>\n  <footer data-copy-role=\"project-fact\" data-claim-role=\"non-normative-framing\" data-presentation-artifact data-non-citable>${input.readingLayout ? legendHtml(escapeHtml) + stateLegend : ''}${input.footer}</footer>"
+        }
+      ],
+      "command": "npx vitest run apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "\u00d7 Polaris legend precedes the first claim tuple (syzygy-u05.4) > renders one legend and the state-plane line at the top of <main>, before the first da"
+      ]
+    },
+    {
+      "id": "S1-M2",
+      "predicate": "legend precedes the body (first claim tuple)",
+      "file": "apps/three-surface-poc/src/page-shell.ts",
+      "commit": "59eba77efd87f5eae57bb67d1dfb8ddb58961f33",
+      "edits": [
+        {
+          "old": "    ${legendHtml(escapeHtml) + stateLegend}\n    ${input.body}\n  </main>",
+          "new": "    ${input.body}\n    ${legendHtml(escapeHtml) + stateLegend}\n  </main>"
+        }
+      ],
+      "command": "npx vitest run apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "\u00d7 Polaris legend precedes the first claim tuple (syzygy-u05.4) > renders one legend and the state-plane line at the top of <main>, before the first da"
+      ]
+    },
+    {
+      "id": "S1-M3",
+      "predicate": "the footer carries no second legend",
+      "file": "apps/three-surface-poc/src/page-shell.ts",
+      "commit": "59eba77efd87f5eae57bb67d1dfb8ddb58961f33",
+      "edits": [
+        {
+          "old": "data-non-citable>${input.footer}</footer>",
+          "new": "data-non-citable>${legendHtml(escapeHtml) + stateLegend}${input.footer}</footer>"
+        }
+      ],
+      "command": "npx vitest run apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "\u00d7 Polaris legend precedes the first claim tuple (syzygy-u05.4) > renders one legend and the state-plane line at the top of <main>, before the first da"
+      ]
+    },
+    {
+      "id": "S1-M4",
+      "predicate": "the state-plane line carries its own framing role in <main>",
+      "file": "apps/three-surface-poc/src/page-shell.ts",
+      "commit": "59eba77efd87f5eae57bb67d1dfb8ddb58961f33",
+      "edits": [
+        {
+          "old": "const STATE_LEGEND_ROLE = 'data-copy-role=\"project-fact\" data-claim-role=\"non-normative-framing\" data-presentation-artifact data-non-citable';",
+          "new": "const STATE_LEGEND_ROLE = '';"
+        }
+      ],
+      "command": "npx vitest run apps/three-surface-poc/src/polaris-copy.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "\u00d7 Polaris copy roles (PWB-REQ-012) > classifies each interpolated source control and preserves exact-source href order and multiplicity 108ms",
+        "\u00d7 Polaris copy roles (PWB-REQ-012) > renders the seven shape states and three judgment states with every string classified once, within the word bound"
+      ]
+    }
+  ]
+}
