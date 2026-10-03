@@ -123,9 +123,15 @@ Authorized implementation work (generator implementation authorization,
         hash to its argument, and runs the policy's denied-path rules, every
         detector and the active-content scan over each selected blob. A
         withheld row has a per-run HMAC id and no path, object id or body.
-        Not yet: the scope's extension rule (non-source blobs indeterminate),
-        and the trigger wiring (#268). Nothing passes the gate until the owner
-        performs the act.
+        Review repairs (reviewer-6 B1–B4): a blob whose final segment ends
+        in none of the scope's `sourceExtensions` is withheld unread as
+        indeterminate; the detectors also run over every path; with a screen
+        in force, binary, empty and oversize-excluded rows are withheld rows
+        too; a test pins a match past the first 100,000-character piece.
+        Policy residuals, pinned by tests: an encoded or line-split secret
+        passes the detectors. Not yet: the trigger wiring (#268) and #278's
+        shared run key. Nothing passes the gate until the owner performs the
+        act.
   - [ ] **G2 Real `generate` port.** A Claude Agent SDK adapter behind
         `PipelinePorts.generate` (`pipeline.ts`): structured output for
         `responseSchema`, usage accounting, abort. Per the egress record:

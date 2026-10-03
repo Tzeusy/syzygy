@@ -120,10 +120,12 @@ export interface RepoCorpusCount {
   readonly binaryOrNonUtf8: number;
   readonly oversizeFiles: number;
   readonly oversizeExcluded: number;
-  /** Withheld by a screen (zero without one): denied path, detector match, active content. */
+  /** Withheld by a screen (zero without one): denied path, detector match on
+   * the path or the body, active content, and a blob no class rule covers. */
   readonly deniedPath: number;
   readonly secretDetectorMatches: number;
   readonly activeContent: number;
+  readonly indeterminate: number;
 }
 export interface RepoCorpus {
   readonly repositoryId: string;
@@ -136,14 +138,15 @@ export interface RepoCorpus {
   readonly identityDigest: string;
 }
 
-/** A whole-artifact screen over each selected blob. A denied path is decided
- * before the blob is read; the body screen runs on the decoded text. A
- * withheld row carries `opaqueId(identity)` and a placeholder path naming that
+/** A whole-artifact screen over each selected blob. The path screen decides
+ * before the blob is read; the body screen runs on the whole decoded text,
+ * before any splitting. With a screen in force every excluded row, whatever
+ * its reason, carries `opaqueId(identity)` and a placeholder path naming that
  * id, never the repository path, object id or body. */
-export type CorpusScreenReason = Extract<GenerationExclusionReason, 'denied-path' | 'secret-detector-match' | 'active-content'>;
+export type CorpusScreenReason = Extract<GenerationExclusionReason, 'denied-path' | 'secret-detector-match' | 'active-content' | 'unknown-extraction-class'>;
 export interface CorpusScreen {
-  readonly deniedPath: (path: string) => boolean;
-  readonly screenBody: (body: string) => Exclude<CorpusScreenReason, 'denied-path'> | undefined;
+  readonly screenPath: (path: string) => Exclude<CorpusScreenReason, 'active-content'> | undefined;
+  readonly screenBody: (body: string) => 'secret-detector-match' | 'active-content' | undefined;
   readonly opaqueId: (identity: string) => string;
 }
 /** `runKey` keys every excluded row's id and the unrepresentable path digests
@@ -168,7 +171,7 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
     return { mode: match[1]!, type: match[2]!, objectId: match[3]!, path: match[4]! };
   });
   let notBlob = 0, outsideInclude = 0, excludedByGlob = 0, unquotablePath = 0, binaryOrNonUtf8 = 0, emptyFiles = 0, oversizeFiles = 0, oversizeExcluded = 0, rawBytes = 0;
-  const screened = { 'denied-path': 0, 'secret-detector-match': 0, 'active-content': 0 };
+  const screened: Record<CorpusScreenReason, number> = { 'denied-path': 0, 'secret-detector-match': 0, 'active-content': 0, 'unknown-extraction-class': 0 };
   const unrepresentable: { readonly pathHmac: string; readonly objectId: string; readonly reason: 'unquotable-path' }[] = [];
   const chosen = records.filter(record => {
     if (record.type !== 'blob' || record.mode === '120000') { notBlob++; return false; }
@@ -182,25 +185,26 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
   const sources: GenerationSource[] = [];
   const algorithm = (objectId: string): 'sha1' | 'sha256' => objectId.length === 40 ? 'sha1' : 'sha256';
   const screen = ports.screen;
-  const withheld = (record: { readonly path: string; readonly objectId: string }, reason: CorpusScreenReason): GenerationSource => {
-    screened[reason]++;
+  const withheld = (record: { readonly path: string; readonly objectId: string }, reason: GenerationExclusionReason): GenerationSource => {
     const sourceId = screen!.opaqueId(generationSourceIdentity({ repositoryId: config.repositoryId, revision: config.revision, path: record.path, objectId: record.objectId }));
     return { repositoryId: config.repositoryId, revision: config.revision, path: `withheld/${sourceId}`, objectId: null, evaluationId, sourceId,
       classificationBasis: 'body', exclusion: { excluded: true, reason }, spans: [] };
   };
   for (let at = 0; at < chosen.length; at += BLOB_BATCH) {
     const batch = chosen.slice(at, at + BLOB_BATCH);
-    // A denied path is withheld unread.
-    const denied = new Set(screen === undefined ? [] : batch.filter(record => screen.deniedPath(record.path)));
-    const blobs = readBlobs(repoRoot, batch.filter(record => !denied.has(record)).map(record => record.objectId));
+    // A path the screen refuses is withheld unread.
+    const byPath = new Map(screen === undefined ? [] : batch.flatMap(record => { const reason = screen.screenPath(record.path); return reason === undefined ? [] : [[record, reason] as const]; }));
+    const blobs = readBlobs(repoRoot, batch.filter(record => !byPath.has(record)).map(record => record.objectId));
     for (const record of batch) {
-      if (denied.has(record)) { sources.push(withheld(record, 'denied-path')); continue; }
+      const pathReason = byPath.get(record);
+      if (pathReason !== undefined) { screened[pathReason]++; sources.push(withheld(record, pathReason)); continue; }
       const bytes = blobs.get(record.objectId);
       if (!(bytes instanceof Uint8Array)) throw bytes ?? new Error('corpus-blob-unread');
       rawBytes += bytes.length;
       const sourceId = `s-${sha256(record.path).slice(0, 24)}`;
       const base = { repositoryId: config.repositoryId, revision: config.revision, path: record.path, objectId: record.objectId, evaluationId, sourceId };
-      const excludedRow = (reason: GenerationExclusionReason): GenerationSource => ({ ...base, sourceId: excludedSourceId(runKey, record.path), classificationBasis: 'body', exclusion: { excluded: true, reason }, spans: [] });
+      const excludedRow = (reason: GenerationExclusionReason): GenerationSource => screen !== undefined ? withheld(record, reason)
+        : ({ ...base, sourceId: excludedSourceId(runKey, record.path), classificationBasis: 'body', exclusion: { excluded: true, reason }, spans: [] });
       let body: string | undefined;
       // ignoreBOM keeps a leading U+FEFF so the text still hashes to its blob.
       try { body = bytes.includes(0) ? undefined : new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes); } catch { body = undefined; }
@@ -208,15 +212,16 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
       if (gitBlobObjectId(body, algorithm(record.objectId)) !== record.objectId) throw new Error('corpus-object-mismatch');
       if (body.length === 0) { emptyFiles++; sources.push(excludedRow('empty-file')); continue; }
       const screenedOut = screen?.screenBody(body);
-      if (screenedOut !== undefined) { sources.push(withheld(record, screenedOut)); continue; }
+      if (screenedOut !== undefined) { screened[screenedOut]++; sources.push(withheld(record, screenedOut)); continue; }
       if ([...body].length > SOURCE_TEXT_MAX_LENGTH) { oversizeFiles++; if (config.oversize === 'exclude') oversizeExcluded++; }
-      sources.push(...generationSourcesForBody({ ...base, body, oversize: config.oversize }).map(row => row.exclusion.excluded ? { ...row, sourceId: excludedSourceId(runKey, record.path) } : row));
+      sources.push(...generationSourcesForBody({ ...base, body, oversize: config.oversize }).map(row => !row.exclusion.excluded ? row
+        : screen !== undefined ? withheld(record, row.exclusion.reason) : { ...row, sourceId: excludedSourceId(runKey, record.path) }));
     }
   }
   validateGenerationSources(sources);
   return { repositoryId: config.repositoryId, revision: config.revision, permissionIdentity: decision.permissionIdentity, sources,
     count: { listed: records.length, notBlob, outsideInclude, excludedByGlob, unquotablePath, selected: chosen.length, binaryOrNonUtf8, emptyFiles, oversizeFiles, oversizeExcluded, sourceRows: sources.length,
-      deniedPath: screened['denied-path'], secretDetectorMatches: screened['secret-detector-match'], activeContent: screened['active-content'] },
+      deniedPath: screened['denied-path'], secretDetectorMatches: screened['secret-detector-match'], activeContent: screened['active-content'], indeterminate: screened['unknown-extraction-class'] },
     unrepresentable,
     rawBytes, // The digest binds the population across runs, so a path-bearing excluded row contributes its unkeyed id, never its keyed one.
     // A withheld row (objectId null) carries only the screen's own keyed id, as before.
