@@ -38,6 +38,8 @@ const FILES: Record<string, string | Buffer> = {
   'docs/inert.md': '# Inert\n\n```html\n<b>shown as code</b>\n```\n',
   '.env': `${SENTINEL}\nX=1\n`,
   'certs/denied-server.pem': `${SENTINEL}\n`,
+  // Denied by the `.env.` prefix although `.c` is a code-content extension: only the denied-path rule withholds it.
+  'config/.env.c': `${SENTINEL} env-prefixed source\n`,
   // A detector match in a file name or a directory name withholds the blob unread.
   [`src/${PATH_TOKEN}.ts`]: `${SENTINEL} path-token\n`,
   [`keys/${DIR_TOKEN}/a.c`]: `${SENTINEL} dir-token\n`,
@@ -51,7 +53,7 @@ const FILES: Record<string, string | Buffer> = {
   'src/late-secret.c': LATE_SECRET,
 };
 const WITHHELD = Object.keys(FILES).filter(path => !['src/clean.c', 'docs/inert.md'].includes(path));
-const UNREAD = ['.env', 'certs/denied-server.pem', `src/${PATH_TOKEN}.ts`, `keys/${DIR_TOKEN}/a.c`, 'README-screen-fixture', 'docs/guide-screen.rst', 'src/UPPER-SCREEN.C'];
+const UNREAD = ['.env', 'certs/denied-server.pem', 'config/.env.c', `src/${PATH_TOKEN}.ts`, `keys/${DIR_TOKEN}/a.c`, 'README-screen-fixture', 'docs/guide-screen.rst', 'src/UPPER-SCREEN.C'];
 const FIXTURE_EXTENSIONS = ['.c', '.js', '.py', '.ts', '.md', '.txt', '.bin'];
 const fixtureScope = (sourceExtensions: unknown = FIXTURE_EXTENSIONS) => ({ contentClassification: { rules: [{ class: 'code-structure', rule: 'paths' }, { class: 'code-content', sourceExtensions }] } });
 const allow: CorpusAdmissionPort = { decide: async () => ({ allowed: true, permissionIdentity: 'fixture-consent-v1' }) };
@@ -106,9 +108,9 @@ describe('synthetic secrets of each detector class', () => {
 
   it('withholds every secret, active-content, denied-path, indeterminate, binary and empty blob and admits the rest', async () => {
     const corpus = await readScreenedRepoCorpus(root, cfg(), { admission: allow, policyAct: goodPort });
-    expect(corpus.count).toMatchObject({ listed: 19, selected: 19, deniedPath: 2, secretDetectorMatches: 8, activeContent: 2, indeterminate: 3, binaryOrNonUtf8: 1, emptyFiles: 1, sourceRows: 19 });
+    expect(corpus.count).toMatchObject({ listed: 20, selected: 20, deniedPath: 3, secretDetectorMatches: 8, activeContent: 2, indeterminate: 3, binaryOrNonUtf8: 1, emptyFiles: 1, sourceRows: 20 });
     const reasons = corpus.sources.filter(source => source.exclusion.excluded).map(source => source.exclusion.excluded ? source.exclusion.reason : '').sort();
-    expect(reasons).toEqual(['active-content', 'active-content', 'binary-or-non-utf8', 'denied-path', 'denied-path', 'empty-file',
+    expect(reasons).toEqual(['active-content', 'active-content', 'binary-or-non-utf8', 'denied-path', 'denied-path', 'denied-path', 'empty-file',
       ...Array(8).fill('secret-detector-match'), 'unknown-extraction-class', 'unknown-extraction-class', 'unknown-extraction-class']);
     expect(corpus.sources.filter(source => !source.exclusion.excluded).map(source => source.path).sort()).toEqual(['docs/inert.md', 'src/clean.c']);
     validateGenerationSources(corpus.sources);
@@ -139,6 +141,24 @@ describe('synthetic secrets of each detector class', () => {
     expect(new Set(unreadIds).size).toBe(UNREAD.length);
     expect(read.flat().filter(id => unreadIds.includes(id))).toEqual([]);
     expect(read.flat()).toHaveLength(12);
+  });
+
+  it('a secret in an unrepresentable path is counted, and the path, its digest and its object id are not carried', async () => {
+    const only = fixtureRepo({ 'src/ok.c': 'int ok;\n', [`src/back\\${DIR_TOKEN}.c`]: 'int a;\n', [`src/new\nline-${DIR_TOKEN}.c`]: 'int b;\n' });
+    writeFileSync(Buffer.concat([Buffer.from(`${only.root}/src/bad-`), Buffer.from([0xff]), Buffer.from(`-${DIR_TOKEN}.c`)]), 'int c;\n');
+    execFileSync('git', ['-C', only.root, 'add', '-A']); execFileSync('git', ['-C', only.root, 'commit', '-qm', 'odd names']);
+    const revision = execFileSync('git', ['-C', only.root, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+    const ids = execFileSync('git', ['-C', only.root, 'ls-tree', '-r', '-z', revision], { encoding: 'utf8' }).split('\0').filter(Boolean)
+      .filter(row => !row.endsWith('\tsrc/ok.c')).map(row => row.split(' ')[2]!.split('\t')[0]!);
+    expect(ids).toHaveLength(3);
+    const corpus = await readScreenedRepoCorpus(only.root, cfg(revision), { admission: allow, policyAct: goodPort });
+    expect(corpus.count).toMatchObject({ listed: 4, unquotablePath: 3, selected: 1, secretDetectorMatches: 3, sourceRows: 1 });
+    expect(corpus.unrepresentable).toEqual([]);
+    const serialized = JSON.stringify(corpus);
+    expect(serialized).not.toContain(DIR_TOKEN);
+    for (const id of ids) expect(serialized).not.toContain(id);
+    // Without a screen the reader still lists them by digest, as before.
+    expect((await readRepoCorpus(only.root, cfg(revision), { admission: allow })).unrepresentable).toHaveLength(3);
   });
 
   it('screens the whole body before splitting: a match past the first 100,000-character piece withholds the file', async () => {
@@ -259,7 +279,8 @@ describe('the policy act gate fails closed', () => {
   });
   it('refuses a scope whose code-content extension list cannot be read', async () => {
     const twoRules = { contentClassification: { rules: [{ class: 'code-content', sourceExtensions: ['.c'] }, { class: 'code-content', sourceExtensions: ['.py'] }] } };
-    for (const scope of [{ purpose: 'no classification' }, fixtureScope(null), fixtureScope([]), fixtureScope(['c']), fixtureScope(['.c', 7]), twoRules]) {
+    for (const scope of [{ purpose: 'no classification' }, fixtureScope(null), fixtureScope([]), fixtureScope(['c']), fixtureScope(['.c', 7]), twoRules,
+      fixtureScope(['..']), fixtureScope(['.c', '..c']), fixtureScope(['.c', '. c']), fixtureScope(['.c\t']), fixtureScope(['.c\n'])]) {
       const bytes = policyBytes({ publicSourceScope: scope });
       expect(await refusal(port(actRecord(sha(bytes)), bytes))).toBe('public-source-policy: policy sourceExtensions unreadable');
     }
