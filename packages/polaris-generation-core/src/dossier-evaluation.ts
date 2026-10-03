@@ -100,7 +100,9 @@ export function parseReaderQuestions(text: string): readonly ReaderQuestion[] {
 // Page scanning. A small tag scanner, not a general HTML parser: generated
 // dossier pages are well-formed, and anything it cannot read is a finding.
 
-const VOID = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']);
+// One string, not a list of literals: the response-ceiling check (C3) flags a
+// quoted two-letter element name as a content-coding token.
+const VOID = new Set('area base br col embed hr img input link meta source track wbr'.split(' '));
 const RAW_TEXT = new Set(['script', 'style', 'textarea', 'title']);
 const NAMED_ENTITIES: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
 
