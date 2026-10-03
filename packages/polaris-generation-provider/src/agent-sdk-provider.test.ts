@@ -124,6 +124,18 @@ describe('captured request (text mode)', () => {
   });
 });
 
+describe('version pin', () => {
+  it('refuses an unpinned SDK at construction and fails a call whose CLI reports another version', async () => {
+    expect(() => createAgentSdkGenerate(config({ pin: { sdk: '0.0.1', cli: '2.1.288' } }))).toThrow(AgentSdkProviderError);
+    await expect(call(createAgentSdkGenerate(config({ pin: { sdk: '0.3.288', cli: '9.9.9' } })), envelope())).rejects.toMatchObject({ code: 'unpinned-version' });
+    // Detection, not prevention: the CLI announces its version as it starts the request, so the construction-time SDK pin (which fixes the CLI binary) is the gate.
+  });
+  it('lets the profile lower the output cap', async () => {
+    await call(createAgentSdkGenerate(config({ maxOutputTokens: 777 })), envelope());
+    expect((JSON.parse(endpoint.messages()[0]!.body) as { max_tokens: number }).max_tokens).toBe(777);
+  });
+});
+
 describe('captured request (schema-tool mode)', () => {
   it('adds exactly the SDK StructuredOutput tool carrying the stage schema, and nothing else', async () => {
     const e = envelope();
