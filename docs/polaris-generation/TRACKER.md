@@ -172,7 +172,10 @@ Authorized implementation work (generator implementation authorization,
 - [~] REQ-031 owner clarification: the consequential-questions step
       (`dossier-profile.ts`: question budget, no repeats, attributed
       non-adopting answers, zero-interaction mode that records the questions
-      it would have asked; synthetic only)
+      it would have asked; reuses an unchanged prior disposition and
+      re-asks when the question's content digest changed; reader questions
+      are `{id, topics, text}` objects validated at the pipeline entry by
+      `validateReaderQuestions`; synthetic only)
 - [x] Dossier run profile `dossier-v1`: five reader questions (core ideas,
       end-to-end workflows, underlying mechanisms, maintainer-claimed
       advantages, trade-offs) and their requested assets;
