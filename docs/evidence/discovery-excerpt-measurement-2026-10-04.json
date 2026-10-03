@@ -235,5 +235,13 @@
     "deferredRows": 314,
     "deferredVendored": 199,
     "closes": true
+  },
+  "codeSubjects": {
+    "commit": "d63d73107c48d213ca04ac967318e5ef8952a736",
+    "sha256": {
+      "packages/polaris-generation-core/src/excerpt.ts": "5b996974a65cdd51258fc590b3a804f5e57192c3e705383474c346caccff3937",
+      "packages/polaris-generation-core/src/discovery.ts": "3eb393b24b2100cbd7bb0498ad71c64be76b6b2fae77d86315e15977ec922ec5",
+      "apps/three-surface-poc/src/polaris-generation/redis-shaped-measure.ts": "039a2de2abce1c4738c37a045b7e4aeef66a3a422ca2a9cb5ebde8a6edce5adb"
+    }
   }
 }
