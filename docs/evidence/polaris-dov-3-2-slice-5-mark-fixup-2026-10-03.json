@@ -1,0 +1,613 @@
+{
+  "bead": "syzygy-dov.3.2",
+  "slice": 5,
+  "date": "2026-10-03",
+  "subject": "Slice 5 mark fixup requested by the coordinator on size: tuple field marks move from three empty spans per tuple to generated attribute-keyed pseudo-element CSS plus one bare <i> per tuple. Supersedes nothing in the slice-5 evidence record, which stays valid for 46918be.",
+  "subjectCommit": "30d685c1222fbeac9f07662eedb210297d1587b2",
+  "predecessorRecord": "docs/evidence/polaris-dov-3-2-slice-5-tuple-encoding-2026-10-03.json",
+  "subjectFiles": {
+    "apps/three-surface-poc/src/design-tokens.ts": {
+      "sha256": "d7eb283b589650370638d1f7ed4adfc745eecd767378e2a27fb0dd23c8b626a8"
+    },
+    "apps/three-surface-poc/src/polaris.ts": {
+      "sha256": "ad136996b2823ed85f24e627cca0c60a08b8efbb20bda1ab3a2b92eba11999e0"
+    },
+    "apps/three-surface-poc/src/tuple-encoding.test.ts": {
+      "sha256": "d51f1b2964b1de7e6c671dc5a232bd1ce2d0979505a57f29c32d84c885ea1fdf"
+    },
+    "docs/POLARIS-READING-LAYOUT.md": {
+      "sha256": "51f6d63379b469b7c46ebf3140cb55db72a4c1d279e3889560cecb168032daf7"
+    }
+  },
+  "authority": ".syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md P-70 under .syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md. No PocModel, machine, schema, route, read, egress or governed change.",
+  "design": {
+    "marks": "Generated from TIER_ENCODING, TIER_ABSENCE_ENCODING, FRESHNESS_ENCODING and CHALLENGE_ENCODING (TUPLE_MARKS_CSS): .claim-tuple[data-epistemic-tier=v]::after, .claim-tuple[data-epistemic-freshness=v] + i::before, .claim-tuple[data-challenge-state=v] + i::after, each { content: \"<symbol> \" / \"\"; color: var(<token>); }. The tuple stays one text node; the only markup is one bare <i></i> after it.",
+    "whyNotZeroDom": "The tuple's ::before already carries the M3.1 label symbol, so one pseudo-element (::after) is free, and it takes one colour. The declaration gives fields different tokens on served tuples (live: 13 tuples pair ∅ --muted with ◌ --ink; stale/broken/superseded --muted beside unchallenged --ink), so a single ::after would either change the reviewed token table or ignore the token for two fields. One bare <i> supplies two more pseudo-elements at 7 B.",
+    "accessibility": "Every mark symbol keeps empty alternative text (content: \"x \" / \"\"); the tuple words carry every value. Mutant S5-F5 (alt text dropped) is killed.",
+    "glossary": "Unchanged: the glossary rows keep the .tt-<value> classes and TUPLE_FIELD_TREATMENTS_CSS."
+  },
+  "measurement": {
+    "method": "measure.sh: clean detached checkout of 30d685c1 in the dov.3.2 worktree, npm run build:poc, private daemon --port 0 --state-dir <scratch>, GET /, /polaris, /trajectory, /orrery direct and with Host: tzeusy.parrot-hen.ts.net. Base (37c5da93) and slice 5 (46918be) are the captures recorded in the predecessor record, same Butlers commit.",
+    "butlersCommit": "32f38feb51d86e33bfec00b78777cce5ec280198",
+    "ceiling": 2097152,
+    "workingTarget": 1400000,
+    "pages": {
+      "home/direct": {
+        "base": 43577,
+        "slice5At46918be": 43577,
+        "fixup": 43577,
+        "deltaFromBase": 0,
+        "deltaFromSlice5": 0
+      },
+      "home/tailnet": {
+        "base": 43637,
+        "slice5At46918be": 43637,
+        "fixup": 43637,
+        "deltaFromBase": 0,
+        "deltaFromSlice5": 0
+      },
+      "polaris/direct": {
+        "base": 1470273,
+        "slice5At46918be": 1543678,
+        "fixup": 1477945,
+        "deltaFromBase": 7672,
+        "deltaFromSlice5": -65733,
+        "marginUnderCeiling": 619207,
+        "overWorkingTarget": 77945
+      },
+      "polaris/tailnet": {
+        "base": 1476378,
+        "slice5At46918be": 1549783,
+        "fixup": 1484050,
+        "deltaFromBase": 7672,
+        "deltaFromSlice5": -65733,
+        "marginUnderCeiling": 613102,
+        "overWorkingTarget": 84050
+      },
+      "trajectory/direct": {
+        "base": 330379,
+        "slice5At46918be": 330379,
+        "fixup": 330379,
+        "deltaFromBase": 0,
+        "deltaFromSlice5": 0
+      },
+      "trajectory/tailnet": {
+        "base": 330469,
+        "slice5At46918be": 330469,
+        "fixup": 330469,
+        "deltaFromBase": 0,
+        "deltaFromSlice5": 0
+      },
+      "orrery/direct": {
+        "base": 43120,
+        "slice5At46918be": 43120,
+        "fixup": 43120,
+        "deltaFromBase": 0,
+        "deltaFromSlice5": 0
+      },
+      "orrery/tailnet": {
+        "base": 43195,
+        "slice5At46918be": 43195,
+        "fixup": 43195,
+        "deltaFromBase": 0,
+        "deltaFromSlice5": 0
+      }
+    },
+    "census": {
+      "method": "Two methods per page and form: the test's serverCensus (body without style/script, every tuple followed by <i></i>, each value's served rule present) and its browser TreeWalker census (selector count vs walked, computed content and colour of each field's pseudo-element), over the eight captured files.",
+      "perPage": {
+        "home/direct": {
+          "queried": 0,
+          "walked": 0,
+          "serverTuples": 0,
+          "markElements": 0,
+          "glossaryRows": 0,
+          "failures": [],
+          "histogram": {
+            "label": {},
+            "tier": {},
+            "freshness": {},
+            "challenge": {}
+          },
+          "histogramsAgree": true
+        },
+        "home/tailnet": {
+          "queried": 0,
+          "walked": 0,
+          "serverTuples": 0,
+          "markElements": 0,
+          "glossaryRows": 0,
+          "failures": [],
+          "histogram": {
+            "label": {},
+            "tier": {},
+            "freshness": {},
+            "challenge": {}
+          },
+          "histogramsAgree": true
+        },
+        "polaris/direct": {
+          "queried": 699,
+          "walked": 699,
+          "serverTuples": 699,
+          "markElements": 699,
+          "glossaryRows": 12,
+          "failures": [],
+          "histogram": {
+            "label": {
+              "Observed": 686,
+              "Unknown": 13
+            },
+            "tier": {
+              "report-fact": 686,
+              "unstated": 13
+            },
+            "freshness": {
+              "fresh": 699
+            },
+            "challenge": {
+              "unchallenged": 699
+            }
+          },
+          "histogramsAgree": true
+        },
+        "polaris/tailnet": {
+          "queried": 699,
+          "walked": 699,
+          "serverTuples": 699,
+          "markElements": 699,
+          "glossaryRows": 12,
+          "failures": [],
+          "histogram": {
+            "label": {
+              "Observed": 686,
+              "Unknown": 13
+            },
+            "tier": {
+              "report-fact": 686,
+              "unstated": 13
+            },
+            "freshness": {
+              "fresh": 699
+            },
+            "challenge": {
+              "unchallenged": 699
+            }
+          },
+          "histogramsAgree": true
+        },
+        "trajectory/direct": {
+          "queried": 0,
+          "walked": 0,
+          "serverTuples": 0,
+          "markElements": 0,
+          "glossaryRows": 0,
+          "failures": [],
+          "histogram": {
+            "label": {},
+            "tier": {},
+            "freshness": {},
+            "challenge": {}
+          },
+          "histogramsAgree": true
+        },
+        "trajectory/tailnet": {
+          "queried": 0,
+          "walked": 0,
+          "serverTuples": 0,
+          "markElements": 0,
+          "glossaryRows": 0,
+          "failures": [],
+          "histogram": {
+            "label": {},
+            "tier": {},
+            "freshness": {},
+            "challenge": {}
+          },
+          "histogramsAgree": true
+        },
+        "orrery/direct": {
+          "queried": 0,
+          "walked": 0,
+          "serverTuples": 0,
+          "markElements": 0,
+          "glossaryRows": 0,
+          "failures": [],
+          "histogram": {
+            "label": {},
+            "tier": {},
+            "freshness": {},
+            "challenge": {}
+          },
+          "histogramsAgree": true
+        },
+        "orrery/tailnet": {
+          "queried": 0,
+          "walked": 0,
+          "serverTuples": 0,
+          "markElements": 0,
+          "glossaryRows": 0,
+          "failures": [],
+          "histogram": {
+            "label": {},
+            "tier": {},
+            "freshness": {},
+            "challenge": {}
+          },
+          "histogramsAgree": true
+        }
+      }
+    }
+  },
+  "rule6": [
+    {
+      "id": "S5-M1",
+      "predicate": "seventh tier",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "  { field: 'tier', value: 'suspended', className: 'tt-suspended', symbol: '‖', token: '--muted', description: 'states.tier.suspended' },\n",
+          "new": "  { field: 'tier', value: 'suspended', className: 'tt-suspended', symbol: '‖', token: '--muted', description: 'states.tier.suspended' },\n  { field: 'tier', value: 'derived-fact', className: 'tt-derived-fact', symbol: '◎', token: '--muted', description: 'states.tier.unstated' },\n"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris first reading (PWB-REQ-010 as amended; PWB-LIVE-06) > explains every tuple field once, in place: each label, tier, freshness and challenge value the page uses h",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > closes six tiers, four freshness values and one challenge value, with unstated outside the tier registry",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates one tuple mark rule and one glossary rule pair per declared value, and no other tuple-field ru"
+      ]
+    },
+    {
+      "id": "S5-M2",
+      "predicate": "dropped freshness value",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "  { field: 'freshness', value: 'superseded', className: 'tt-superseded', symbol: '»', token: '--muted', description: 'states.freshness.superseded',\n    unreachable: 'Not reachable at this evaluation: no claim from an earlier evaluation is carried. Route: capture a new evaluation that carries the replacement.' },\n",
+          "new": ""
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris copy roles (PWB-REQ-012) > marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices 82ms",
+        "× Polaris copy roles (PWB-REQ-012) > keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in so",
+        "× Polaris first reading (PWB-REQ-010 as amended; PWB-LIVE-06) > explains every tuple field once, in place: each label, tier, freshness and challenge value the page uses h"
+      ]
+    },
+    {
+      "id": "S5-M3",
+      "predicate": "reversed reachability",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "entry.unreachable === undefined || used(entry) ? '' :",
+          "new": "entry.unreachable === undefined || !used(entry) ? '' :"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris copy roles (PWB-REQ-012) > marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices 31ms",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates the glossary rows from the declaration: every value once, in its class, with freshness reachab"
+      ]
+    },
+    {
+      "id": "S5-M4",
+      "predicate": "duplicate treatment (symbol)",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "symbol: '△'",
+          "new": "symbol: '▲'"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > closes six tiers, four freshness values and one challenge value, with unstated outside the tier registry",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates one tuple mark rule and one glossary rule pair per declared value, and no other tuple-field ru",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > sweeps the post-JavaScript DOM of the three surfaces, Home apart: every tuple field and glossary row ren"
+      ]
+    },
+    {
+      "id": "S5-M5",
+      "predicate": "fifth served freshness",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "const freshnessAttribute = freshness === undefined ? '' :",
+          "new": "const freshnessAttribute = freshness === undefined ? ' data-epistemic-freshness=\"unrecorded\"' :"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× first-reading and item-level Unknown counterexamples (M3) > keeps missing freshness outside the four-value slot, discloses absence and refuses a positive claim 51ms",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > follows every served tuple with marks that resolve its declared values, keeps the freshness slot closed ",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a "
+      ]
+    },
+    {
+      "id": "S5-M6",
+      "predicate": "positive claim with missing freshness renders",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "if (freshness === undefined && epistemic.label !== 'Unknown') {",
+          "new": "if (false) {"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× first-reading and item-level Unknown counterexamples (M3) > keeps missing freshness outside the four-value slot, discloses absence and refuses a positive claim 102ms"
+      ]
+    },
+    {
+      "id": "S5-M7",
+      "predicate": "dropped strengthen sentence",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "    ${sentence('states.strengthen')}\n",
+          "new": ""
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris copy roles (PWB-REQ-012) > keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in so",
+        "× Polaris first reading (PWB-REQ-010 as amended; PWB-LIVE-06) > explains every tuple field once, in place: each label, tier, freshness and challenge value the page uses h",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates the glossary rows from the declaration: every value once, in its class, with freshness reachab"
+      ]
+    },
+    {
+      "id": "S5-M8",
+      "predicate": "dropped unstated row",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "${group('states.tier', [...TIER_ENCODING, TIER_ABSENCE_ENCODING])}",
+          "new": "${group('states.tier', TIER_ENCODING)}"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris first reading (PWB-REQ-010 as amended; PWB-LIVE-06) > explains every tuple field once, in place: each label, tier, freshness and challenge value the page uses h",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates the glossary rows from the declaration: every value once, in its class, with freshness reachab",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > sweeps the post-JavaScript DOM of the three surfaces, Home apart: every tuple field and glossary row ren"
+      ]
+    },
+    {
+      "id": "S5-M9",
+      "predicate": "omitted family (challenge mark rules)",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "export const TUPLE_MARKS_CSS = TUPLE_FIELD_TREATMENTS\n  .map(",
+          "new": "export const TUPLE_MARKS_CSS = TUPLE_FIELD_TREATMENTS\n  .filter((entry) => entry.field !== 'challenge').map("
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates one tuple mark rule and one glossary rule pair per declared value, and no other tuple-field ru",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > follows every served tuple with marks that resolve its declared values, keeps the freshness slot closed ",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a "
+      ]
+    },
+    {
+      "id": "S5-M10",
+      "predicate": "omitted page in the census denominator",
+      "file": "apps/three-surface-poc/src/tuple-encoding.test.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "for (const path of [POC_HUMAN_PATH, POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH]) {",
+          "new": "for (const path of [POC_HUMAN_PATH, POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH]) {"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > sweeps the post-JavaScript DOM of the three surfaces, Home apart: every tuple field and glossary row ren"
+      ]
+    },
+    {
+      "id": "S5-M11",
+      "predicate": "generated CSS ignores the declared token",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "`.${entry.className} { color: var(${entry.token}); }",
+          "new": "`.${entry.className} { color: var(--ink); }"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates one tuple mark rule and one glossary rule pair per declared value, and no other tuple-field ru",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > sweeps the post-JavaScript DOM of the three surfaces, Home apart: every tuple field and glossary row ren"
+      ]
+    },
+    {
+      "id": "S5-F1",
+      "predicate": "tuple mark rules ignore the declared token",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "content: \"${entry.symbol} \" / \"\"; color: var(${entry.token}); }`)",
+          "new": "content: \"${entry.symbol} \" / \"\"; color: var(--ink); }`)"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates one tuple mark rule and one glossary rule pair per declared value, and no other tuple-field ru",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > follows every served tuple with marks that resolve its declared values, keeps the freshness slot closed ",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a "
+      ]
+    },
+    {
+      "id": "S5-F2",
+      "predicate": "no mark element after the tuple",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "  return '<i></i>';\n",
+          "new": "  return '';\n"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > follows every served tuple with marks that resolve its declared values, keeps the freshness slot closed ",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a ",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > sweeps the post-JavaScript DOM of the three surfaces, Home apart: every tuple field and glossary row ren"
+      ]
+    },
+    {
+      "id": "S5-F3",
+      "predicate": "challenge on the freshness pseudo-element",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "challenge: { attribute: 'data-challenge-state', slot: ' + i::after' },",
+          "new": "challenge: { attribute: 'data-challenge-state', slot: ' + i::before' },"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates one tuple mark rule and one glossary rule pair per declared value, and no other tuple-field ru",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > follows every served tuple with marks that resolve its declared values, keeps the freshness slot closed ",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a "
+      ]
+    },
+    {
+      "id": "S5-F4",
+      "predicate": "tier keyed on the wrong attribute",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "tier: { attribute: 'data-epistemic-tier', slot: '::after' },",
+          "new": "tier: { attribute: 'data-epistemic-label', slot: '::after' },"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates one tuple mark rule and one glossary rule pair per declared value, and no other tuple-field ru",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > follows every served tuple with marks that resolve its declared values, keeps the freshness slot closed ",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a "
+      ]
+    },
+    {
+      "id": "S5-F5",
+      "predicate": "mark symbol exposed to assistive technology",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "content: \"${entry.symbol} \" / \"\"; color: var(${entry.token}); }`)",
+          "new": "content: \"${entry.symbol} \"; color: var(${entry.token}); }`)"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates one tuple mark rule and one glossary rule pair per declared value, and no other tuple-field ru",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > follows every served tuple with marks that resolve its declared values, keeps the freshness slot closed ",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a "
+      ]
+    },
+    {
+      "id": "S5-F6",
+      "predicate": "tuple mark CSS not served",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "  ${TUPLE_MARKS_CSS}\n",
+          "new": ""
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates one tuple mark rule and one glossary rule pair per declared value, and no other tuple-field ru",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > follows every served tuple with marks that resolve its declared values, keeps the freshness slot closed ",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a "
+      ]
+    },
+    {
+      "id": "S5-F7",
+      "predicate": "undeclared tier renders",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "8c5c662220ebffb8afb0bf1d34e255dabfe9081d",
+      "edits": [
+        {
+          "old": "  tupleFieldEncoding('tier', tier);\n",
+          "new": ""
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "survived",
+      "failedTests": [],
+      "repair": "Survived at 8c5c662: at 46918be the refusal was implicit in rendering a mark span and no test asserted it, so moving the marks to CSS left it unguarded; 30d685c1 adds the explicit undeclared-tier refusal test, and the same mutant re-ran killed there."
+    },
+    {
+      "id": "S5-F7",
+      "predicate": "undeclared tier renders",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "30d685c1222fbeac9f07662eedb210297d1587b2",
+      "edits": [
+        {
+          "old": "  tupleFieldEncoding('tier', tier);\n",
+          "new": ""
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-narrative.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a "
+      ]
+    }
+  ]
+}
