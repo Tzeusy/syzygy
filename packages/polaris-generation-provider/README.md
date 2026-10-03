@@ -8,16 +8,24 @@ read, egress or write: a real call still needs the egress consent act.
   One single-turn CLI call per try; the stage `system` is the custom system
   prompt and the stage `input` is the only user message.
 - **Closed environment.** `agentSdkEnvironment` names every variable; nothing is
-  inherited from `process.env`. Every state path (home, config, tmp, XDG) is
+  inherited from `process.env` (`diagnosticEnv` admits proxy variables only). Every state path (home, config, tmp, XDG) is
   inside the run directory, and the working directory is an empty
   `<runDir>/cwd` that the adapter refuses to use if anything else wrote there.
+- **Runtime egress gate.** The CLI's `ANTHROPIC_BASE_URL` is always an in-process
+  loopback gate that runs the acceptance predicate (body fields and header
+  values) on every request and forwards only if the injected consent
+  `permitted()` is exactly `true` and an explicit `upstream` is configured.
+  Otherwise it refuses and nothing leaves. `HEAD /api/hello` is answered locally.
+  See `docs/polaris-generation/PROVIDER-EGRESS-BYTES.md` for what is gated and
+  what is only version-scoped.
 - **No tools, settings, memory, MCP or skills.** `tools: []`, every built-in
   also in `disallowedTools`, `settingSources: []`, `mcpServers: {}`, bare mode,
   no session persistence, `permissionMode: 'default'`.
 - **Retry.** The CLI's own retry is off. This adapter retries only HTTP 429 and
-  529, with capped exponential backoff inside a run budget, and reports every
+  529, with capped exponential backoff or the upstream's `Retry-After` (whichever
+  is longer), inside a run budget that also bounds each try's deadline, and reports every
   try (`attempts()` / `onAttempt`), including its status, token usage and
-  backoff. Any other failure is thrown; the pipeline records it as
+  backoff. Any other failure is thrown, carrying the tokens spent (`spentUnits`, null when unknown); the pipeline records it as
   effect-uncertain.
 - **Usage.** Accounting policy `agent-sdk-tokens-v1`: input, cache-creation,
   cache-read and output tokens summed over all tries. A try that reports no

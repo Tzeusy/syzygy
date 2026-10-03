@@ -7,7 +7,7 @@ import type { CapturedRequest } from './request-acceptance.js';
 export type Script =
   | { readonly kind: 'text'; readonly text: string; readonly inputTokens?: number; readonly outputTokens?: number }
   | { readonly kind: 'tool'; readonly name: string; readonly input: unknown; readonly inputTokens?: number; readonly outputTokens?: number }
-  | { readonly kind: 'status'; readonly status: number }
+  | { readonly kind: 'status'; readonly status: number; readonly retryAfter?: string }
   | { readonly kind: 'hang' };
 
 export interface CaptureEndpoint {
@@ -34,7 +34,7 @@ export async function startCaptureEndpoint(defaultScript: Script = { kind: 'text
       const step = queue.shift() ?? defaultScript;
       if (step.kind === 'hang') { res.writeHead(200, { 'content-type': 'text/event-stream' }); res.write(': hold\n\n'); res.on('close', () => { closed++; }); return; }
       if (step.kind === 'status') {
-        res.writeHead(step.status, { 'content-type': 'application/json', 'request-id': 'req_capture' });
+        res.writeHead(step.status, { 'content-type': 'application/json', 'request-id': 'req_capture', ...(step.retryAfter === undefined ? {} : { 'retry-after': step.retryAfter }) });
         res.end(JSON.stringify({ type: 'error', error: { type: step.status === 429 ? 'rate_limit_error' : 'overloaded_error', message: 'capture' } }));
         return;
       }
