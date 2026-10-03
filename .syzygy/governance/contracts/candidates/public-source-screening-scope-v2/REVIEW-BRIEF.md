@@ -24,10 +24,11 @@ own `activeContentClassification`, `rawBodyHandling` and
 
 1. **Is the diff exactly the stated change?** Run
    `python3 scripts/build_public_source_screening_scope_v2.py --check`,
-   `--selftest` and `--ready --pending-prerequisite`. Confirm the patch moves
+   `--selftest` and `--ready --pending-prerequisite`. Confirm that each of the four variants' patches moves
    `policyVersion` and changes only `classesClassified`, `rules`,
-   `indeterminate` and the new `prerequisite`, and that the manifest row equals
-   the SHA-256 of the patched file.
+   `indeterminate` and the new `prerequisite`, and that each manifest row equals
+   the SHA-256 of that variant's patched file, and the variants differ only in
+   `rootStems`.
 2. **Is the base right?** The patch must be the same whether the policy on disk
    is the pre-version-1 bytes or the version-1 bytes (selftest). Confirm the
    version-1 manifest row is what the builder checks against.
@@ -45,7 +46,7 @@ own `activeContentClassification`, `rawBodyHandling` and
    data, `--ready` checks the installed RFC-0005 text and the version-1 act, and
    a consent without the class still permits no egress.
 6. **Is governance-shaped text kept out?** Check the root names, the docs-tree
-   excluded segments and the opt-ins against the RFC5-14 class text; the packet's
+   excluded segments and the variants against the RFC5-14 class text; the packet's
    lists are generated from the constants, check that they hold.
 7. **Are the claims in the owner packet true?** For each sendable and withheld
    example, run the reference reader in the builder (the fixtures).
@@ -55,13 +56,13 @@ own `activeContentClassification`, `rawBodyHandling` and
 9. **Do the round-1 repairs hold, and did one introduce a defect?** Findings 1
    to 4 blocking, 5 to 8 notes. Re-derive each from the bytes: the policy text
    and packet agree (F1); governance-shaped names and subtrees are withheld and
-   the opt-ins are off (F2); the prefix is literal ASCII (F3); `--ready` reads
+   the opt-in names are mapped only by their variants (F2); the prefix is literal ASCII (F3); `--ready` reads
    the real installed path and its selftest covers met and unmet (F4); the
    supersession state is specified and `--check` survives the act (F7).
 
 ## Out of scope
 
-Whether to perform the act; the read-gate re-pin (see packet Q2); the
+Whether to perform the act; the read-gate re-pin (see the packet's order section); the
 RFC-0005 amendment itself.
 
 ## Recording

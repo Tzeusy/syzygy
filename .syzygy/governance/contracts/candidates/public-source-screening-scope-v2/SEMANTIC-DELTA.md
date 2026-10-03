@@ -47,8 +47,8 @@ admitted as whole-blob spans, no extractor runs.
    release_notes, releasenotes, contributing, license, licence, copying, notice,
    notices, news, history, authors, faq. A top level often carries its stated
    ideas in files such as 00-RELEASENOTES [Inferred, from general knowledge; no
-   body was read]. architecture and manifesto are owner opt-ins, off in these
-   bytes (packet Q2, Q3).
+   body was read]. architecture and manifesto are added only by the variants
+   named for them (below).
 2. **docs-tree.** Two or more segments, the first being docs or doc, a file
    name ending in .md, .rst or .txt with a non-empty stem, at any depth, with
    two exclusions: no directory segment after the first may be adr, adrs,
@@ -86,6 +86,13 @@ doctrine, spec, decision and policy text in `governance-text`, and
 security and code of conduct, and docs paths under the directories listed in
 rule 2, are withheld. Withholding design is this policy's choice: the amendment
 does not name design. See packet Q4.
+
+## Variants
+
+The manifest carries four rows and the package four patches, one per variant:
+none (the default), manifesto, architecture, both. They differ only in
+`rootStems`; the owner picks exactly one row at the sitting (packet Q1) and
+`--check` verifies all four, including that no two produce the same bytes.
 
 ## Prerequisite
 

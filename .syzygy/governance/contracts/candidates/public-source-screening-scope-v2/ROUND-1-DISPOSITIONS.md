@@ -76,3 +76,12 @@ written after the review.
 
 Repaired: the order is stated as fact in the packet, and the label now reads "a
 second licences tree root".
+
+## Change directed after the repairs, before round 2
+
+An opt-in must not need a regenerate-and-re-review after the sitting. The
+builder now emits four variants (none, manifesto, architecture, both), each with
+its own patch and manifest row; the owner picks one row at the sitting; the
+packet asks one question (Q1, default none) and the order is fact. `--check`
+verifies all four and the generated lists show each variant's difference. This
+changes bound bytes, so it is part of the round-2 subject.

@@ -60,7 +60,17 @@ import build_public_source_screening_scope as v1  # noqa: E402
 POLICY = v1.POLICY
 SCOPE_KEY = v1.SCOPE_KEY
 PKG = pathlib.Path(".syzygy/governance/contracts/candidates/public-source-screening-scope-v2")
-PATCH = PKG / "proposed" / (POLICY.name + ".patch")
+#: The four variants the owner picks one of at the sitting: which opt-in root names are mapped.
+VARIANTS = {"none": (), "manifesto": ("manifesto",), "architecture": ("architecture",),
+            "both": ("architecture", "manifesto")}
+DEFAULT_VARIANT = "none"
+
+
+def patch_path(variant: str) -> pathlib.Path:
+    return PKG / "proposed" / f"{POLICY.name}.{variant}.patch"
+
+
+PATCH = patch_path(DEFAULT_VARIANT)
 MANIFEST = PKG / "PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt"
 V1_MANIFEST = v1.PKG / v1.MANIFEST.name
 RFC5_INSTALLED = pathlib.Path(".syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md")
@@ -79,10 +89,9 @@ V2_CLASSES = ("code-structure", "code-content", "project-documentation", "derive
 ROOT_STEMS = ["readme", "changelog", "changes", "release-notes", "release_notes", "releasenotes",
               "contributing", "license", "licence", "copying", "notice", "notices",
               "news", "history", "authors", "faq"]
-#: Owner opt-ins, off by default. Turning one on is an edit of ENABLED_OPT_INS,
-#: a --write and a fresh review; it is never a flag the act chooses.
+#: Owner opt-ins, off in the default variant. Each variant has its own patch and manifest
+#: row; the owner picks exactly one row at the sitting.
 OPT_IN_STEMS = {"architecture": "architecture", "manifesto": "manifesto"}
-ENABLED_OPT_INS: tuple[str, ...] = ()
 PREFIX_DIGITS = "0123456789"
 PREFIX_DIGIT_COUNT = 2
 PREFIX_SEPARATOR = "-"
@@ -99,8 +108,8 @@ LICENSE_TREE_ROOTS = ["licenses"]
 LICENSE_TREE_SUFFIXES = [".md", ".txt"]
 
 
-def enabled_stems() -> list[str]:
-    return ROOT_STEMS + [OPT_IN_STEMS[k] for k in ENABLED_OPT_INS]
+def enabled_stems(variant: str = DEFAULT_VARIANT) -> list[str]:
+    return ROOT_STEMS + [OPT_IN_STEMS[k] for k in VARIANTS[variant]]
 
 
 def ascii_fold(path: str) -> str:
@@ -163,8 +172,7 @@ FIXTURES = [
     ("licenses/agpl-3.0.txt", True), ("LICENSES/rsal.TXT", True),
     # policy and governance text by ordinary content: withheld at the root (and as directories under docs)
     ("SECURITY.md", False), ("SECURITY", False), ("DESIGN.md", False), ("GOVERNANCE.txt", False),
-    ("CODE_OF_CONDUCT.md", False), ("Code-Of-Conduct.md", False), ("ARCHITECTURE.md", False),
-    ("MANIFESTO", False), ("MANIFESTO.rst", False),
+    ("CODE_OF_CONDUCT.md", False), ("Code-Of-Conduct.md", False),
     ("docs/adr/0001-decision.md", False), ("docs/specs/protocol.md", False), ("docs/governance/policy.md", False),
     ("docs/security/policy.md", False), ("doc/rfc/rfc-1.txt", False), ("docs/a/Design/x.md", False),
     ("docs/policies/p.md", False), ("docs/specification/x.rst", False), ("docs/decisions/d.md", False),
@@ -187,7 +195,12 @@ FIXTURES = [
 ]
 
 
-def documentation_rule() -> dict:
+#: Opt-in root names: mapped only in the variants that enable them.
+OPT_IN_FIXTURES = [("ARCHITECTURE.md", "architecture"), ("Architecture", "architecture"),
+                   ("MANIFESTO", "manifesto"), ("MANIFESTO.rst", "manifesto"), ("00-MANIFESTO.txt", "manifesto")]
+
+
+def documentation_rule(variant: str = DEFAULT_VARIANT) -> dict:
     return {
         "class": "project-documentation",
         "rule": ("the body of an admitted blob whose repository-relative path is matched by exactly one "
@@ -217,7 +230,7 @@ def documentation_rule() -> dict:
                                   "separator": PREFIX_SEPARATOR, "optional": True,
                                   "note": "exactly the ASCII characters listed in digits; no other character, "
                                           "including any Unicode digit, is a digit here"},
-        "rootStems": enabled_stems(),
+        "rootStems": enabled_stems(variant),
         "documentSuffixes": DOCUMENT_SUFFIXES,
         "docTreeRoots": DOC_TREE_ROOTS,
         "docTreeExtensions": DOC_TREE_EXTENSIONS,
@@ -257,14 +270,14 @@ PREREQUISITE = {
 }
 
 
-def v2_scope(scope1: dict) -> dict:
+def v2_scope(scope1: dict, variant: str = DEFAULT_VARIANT) -> dict:
     """Version 2 of the scope object, derived from version 1's: four keys change or are added."""
     s = copy.deepcopy(scope1)
     cc = s["contentClassification"]
     cc["classesClassified"] = list(V2_CLASSES)
     rules = cc["rules"]
     at = next(i for i, r in enumerate(rules) if r["class"] == "code-content") + 1
-    rules.insert(at, documentation_rule())
+    rules.insert(at, documentation_rule(variant))
     cc["indeterminate"] = INDETERMINATE
     s["prerequisite"] = copy.deepcopy(PREREQUISITE)
     return s
@@ -298,9 +311,9 @@ def v1_bytes(base_text: str, root: pathlib.Path = ROOT) -> tuple[str, str]:
     if SCOPE_KEY in json.loads(base_text):
         if disk == row.group(1):
             return base_text, "performed"
-        own = re.search(r"^([0-9a-f]{64})  ", (root / MANIFEST).read_text(), re.M) if (root / MANIFEST).is_file() else None
-        if own and disk == own.group(1) and (root / PATCH).is_file():
-            back = reverse_patch((root / PATCH).read_text(), base_text)
+        own = [v for v, dg in manifest_rows(root).items() if dg == disk]
+        if own and (root / patch_path(own[0])).is_file():
+            back = reverse_patch((root / patch_path(own[0])).read_text(), base_text)
             if hashlib.sha256(back.encode()).hexdigest() != row.group(1):
                 raise ValueError("reversing the patch over the policy on disk does not give the version-1 bytes")
             return back, "performed-v2"
@@ -321,7 +334,7 @@ def block(scope: dict) -> str:
     return '  "' + SCOPE_KEY + '": ' + json.dumps(scope, indent=2, ensure_ascii=False).replace("\n", "\n  ") + ",\n"
 
 
-def propose(base1_text: str) -> str:
+def propose(base1_text: str, variant: str = DEFAULT_VARIANT) -> str:
     """Text replacement of the one scope block and the version line, so every other
     byte of the version-1 policy is preserved."""
     base = json.loads(base1_text)
@@ -331,12 +344,12 @@ def propose(base1_text: str) -> str:
     version = f'  "policyVersion": "{base["policyVersion"]}",\n'
     if base1_text.count(version) != 1:
         raise ValueError("policyVersion line not found exactly once")
-    out = base1_text.replace(old, block(v2_scope(base[SCOPE_KEY])), 1)
+    out = base1_text.replace(old, block(v2_scope(base[SCOPE_KEY], variant)), 1)
     out = out.replace(version, f'  "policyVersion": "{bump_minor(base["policyVersion"])}",\n', 1)
     got = json.loads(out)
     expected = dict(base)
     expected["policyVersion"] = bump_minor(base["policyVersion"])
-    expected[SCOPE_KEY] = v2_scope(base[SCOPE_KEY])
+    expected[SCOPE_KEY] = v2_scope(base[SCOPE_KEY], variant)
     if got != expected or list(got) != list(base):
         raise ValueError("text replacement changed something other than the scope block and policyVersion")
     return out
@@ -348,16 +361,28 @@ def unified(base_text: str, new_text: str) -> str:
         f"a/{POLICY.as_posix()}", f"b/{POLICY.as_posix()}", n=1))
 
 
-def manifest_text(proposed: str) -> str:
+def manifest_rows(root: pathlib.Path) -> dict[str, str]:
+    """variant -> row digest, read from the manifest file."""
+    path = root / MANIFEST
+    if not path.is_file():
+        return {}
+    return {m.group(2): m.group(1) for m in
+            re.finditer(r"^([0-9a-f]{64})  \S+  \[variant: (\w+)\]$", path.read_text(), re.M)}
+
+
+def manifest_text(proposeds: dict[str, str]) -> str:
+    rows = "".join(f"{hashlib.sha256(proposeds[v].encode()).hexdigest()}  {POLICY.as_posix()}  [variant: {v}]\n"
+                   for v in VARIANTS)
     return ("# PUBLIC-SOURCE SCREENING SCOPE VERSION 2 MANIFEST\n"
-            "# Candidate; this file and its row bind nothing by themselves.\n"
-            "# 1 artifact; the row hashes the PROPOSED bytes (the version-1 policy with\n"
-            "# proposed/<name>.patch applied) and is the argument of one superseding\n"
-            "# approve-policy act over that subject.\n"
-            f"{hashlib.sha256(proposed.encode()).hexdigest()}  {POLICY.as_posix()}\n")
+            "# Candidate; this file and its rows bind nothing by themselves.\n"
+            "# 4 rows, one per variant (none, manifesto, architecture, both). Each row hashes\n"
+            "# the PROPOSED bytes (the version-1 policy with that variant's\n"
+            "# proposed/<name>.<variant>.patch applied). The owner picks exactly one row at\n"
+            "# the sitting; that row is the argument of one superseding approve-policy act.\n"
+            + rows)
 
 
-def semantic_findings(base1_text: str, proposed_text: str) -> list[str]:
+def semantic_findings(base1_text: str, proposed_text: str, variant: str = DEFAULT_VARIANT) -> list[str]:
     """Structural claims the packet makes; each is mutated in --selftest."""
     base, new = json.loads(base1_text), json.loads(proposed_text)
     bad: list[str] = []
@@ -387,7 +412,7 @@ def semantic_findings(base1_text: str, proposed_text: str) -> list[str]:
     if others1 != others2:
         bad.append("a rule other than project-documentation differs from version 1")
     docs = [r for r in c2.get("rules", []) if r.get("class") == "project-documentation"]
-    if len(docs) != 1 or docs[0] != documentation_rule():
+    if len(docs) != 1 or docs[0] != documentation_rule(variant):
         bad.append("the project-documentation rule is not exactly the declared one")
     else:
         d = docs[0]
@@ -395,7 +420,7 @@ def semantic_findings(base1_text: str, proposed_text: str) -> list[str]:
         if set(d["documentSuffixes"]) & set(src) or set(d["docTreeExtensions"]) & set(src) \
                 or set(d["licenseTreeSuffixes"]) & set(src):
             bad.append("a documentation extension is also a source extension")
-        for path, want in FIXTURES:
+        for path, want in FIXTURES + [(n, k in VARIANTS[variant]) for n, k in OPT_IN_FIXTURES]:
             if classify_documentation(path, d) != want:
                 bad.append(f"fixture {path!r}: expected {want}")
     if "excluded from reading and from egress" not in c2.get("indeterminate", ""):
@@ -412,25 +437,28 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
     findings: list[str] = []
     try:
         base1, mode = v1_bytes((root / POLICY).read_text(), root)
-        proposed = propose(base1)
+        proposeds = {v: propose(base1, v) for v in VARIANTS}
     except ValueError as exc:
         return [str(exc)]
-    expected_patch = unified(base1, proposed)
-    patch_path, manifest_path = root / PATCH, root / MANIFEST
-    if not patch_path.is_file() or patch_path.read_text() != expected_patch:
-        findings.append("patch differs from its regeneration over the version-1 bytes")
-    else:
-        try:
-            if v1.apply_patch(root, base1, patch_path.read_text()) != proposed:
-                findings.append("applying the patch does not yield the proposed bytes")
-        except ValueError as exc:
-            findings.append(str(exc))
-    if not manifest_path.is_file() or manifest_path.read_text() != manifest_text(proposed):
+    if len(set(proposeds.values())) != len(VARIANTS):
+        findings.append("two variants produce the same bytes")
+    for v, proposed in proposeds.items():
+        path = root / patch_path(v)
+        if not path.is_file() or path.read_text() != unified(base1, proposed):
+            findings.append(f"{v}: patch differs from its regeneration over the version-1 bytes")
+        else:
+            try:
+                if v1.apply_patch(root, base1, path.read_text()) != proposed:
+                    findings.append(f"{v}: applying the patch does not yield the proposed bytes")
+            except ValueError as exc:
+                findings.append(f"{v}: {exc}")
+        findings += [f"{v}: {f}" for f in semantic_findings(base1, proposed, v)]
+    manifest_path = root / MANIFEST
+    if not manifest_path.is_file() or manifest_path.read_text() != manifest_text(proposeds):
         findings.append("manifest differs from its regeneration")
     present = sorted(p.name for p in (root / PKG / "proposed").glob("*")) if (root / PKG / "proposed").is_dir() else []
-    if present != [PATCH.name]:
-        findings.append(f"proposed/ holds {present}, not exactly the declared patch")
-    findings += semantic_findings(base1, proposed)
+    if present != sorted(patch_path(v).name for v in VARIANTS):
+        findings.append(f"proposed/ holds {present}, not exactly the four declared patches")
     if (root / PACKET).is_file():
         spliced = splice_packet((root / PACKET).read_text())
         if spliced is None:
@@ -439,12 +467,15 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
             findings.append("packet's generated lists differ from the rule's constants")
     for md in sorted((root / PKG).glob("*.md")):
         if re.search(r"(?<![0-9a-fA-F])[0-9a-f]{64}(?![0-9a-fA-F])", md.read_text()):
-            findings.append(f"{md.name}: carries a 64-hex token; the argument comes only from the manifest row")
+            findings.append(f"{md.name}: carries a 64-hex token; the argument comes only from the manifest rows")
     return findings
 
 
 PACKET = PKG / "OWNER-DECISION-PACKET.md"
 BEGIN, END = "<!-- BEGIN GENERATED: lists -->", "<!-- END GENERATED: lists -->"
+
+
+NONE_FIXTURES = FIXTURES + [(n, False) for n, _k in OPT_IN_FIXTURES]
 
 
 def packet_block() -> str:
@@ -453,8 +484,6 @@ def packet_block() -> str:
     r = documentation_rule()
     up = lambda xs: ", ".join(x.upper() for x in xs)
     names = ", ".join(x.upper() for x in r["rootStems"])
-    off = [k for k in OPT_IN_STEMS if k not in ENABLED_OPT_INS]
-    on = list(ENABLED_OPT_INS)
     return "\n".join([
         "**Becomes readable** (and, under a consent that lists the class and a separate egress consent, sendable):",
         "",
@@ -464,12 +493,13 @@ def packet_block() -> str:
         f"depth, except under a directory named {', '.join(r['docExcludedSegments'])}, and except .txt files named "
         f"{', '.join(r['docTxtExcludedNames'])} or starting {', '.join(r['docTxtExcludedPrefixes'])}.",
         f"- Files ending {', '.join(r['licenseTreeSuffixes'])} directly inside a top-level {' or '.join(r['licenseTreeRoots'])} folder.",
-        f"- Owner opt-ins, currently ON: {up(on) or 'none'}; currently OFF: {up(off) or 'none'}.",
+        "- Plus, only in the variant you pick: " + "; ".join(
+            f"variant {v} adds {up(VARIANTS[v]) or 'nothing'}" for v in VARIANTS) + ".",
         "",
         "**Stays withheld** (excluded from reading and from egress, hash-not-body):",
         "",
         "- Root files named DESIGN, GOVERNANCE, SECURITY, CODE_OF_CONDUCT or CODE-OF-CONDUCT, "
-        "and the opt-in names above while they are off.",
+        "and ARCHITECTURE and MANIFESTO unless the variant you pick adds them.",
         f"- Anything under a docs or doc directory named {', '.join(r['docExcludedSegments'])}.",
         f"- {', '.join(r['docTxtExcludedNames'])} and requirements*.txt files under docs or doc.",
         "- READMEs and the other root names when they sit below the root outside docs or doc "
@@ -502,10 +532,11 @@ def readiness(root: pathlib.Path = ROOT) -> list[str]:
 
 def write(root: pathlib.Path = ROOT) -> None:
     base1, _mode = v1_bytes((root / POLICY).read_text(), root)
-    proposed = propose(base1)
+    proposeds = {v: propose(base1, v) for v in VARIANTS}
     (root / PATCH).parent.mkdir(parents=True, exist_ok=True)
-    (root / PATCH).write_text(unified(base1, proposed))
-    (root / MANIFEST).write_text(manifest_text(proposed))
+    for v, proposed in proposeds.items():
+        (root / patch_path(v)).write_text(unified(base1, proposed))
+    (root / MANIFEST).write_text(manifest_text(proposeds))
     if (root / PACKET).is_file():
         spliced = splice_packet((root / PACKET).read_text())
         if spliced is None:
@@ -622,7 +653,7 @@ def selftest() -> int:
 
         # the rule oracle: every fixture holds, and each rule component can be made to fail
         rule = documentation_rule()
-        results.append(("every path fixture holds", all(classify_documentation(p, rule) == w for p, w in FIXTURES)))
+        results.append(("every path fixture holds", all(classify_documentation(p, rule) == w for p, w in NONE_FIXTURES)))
         results.append(("fixtures cover both outcomes", {w for _p, w in FIXTURES} == {True, False}))
 
         def broken(**over):
@@ -649,24 +680,48 @@ def selftest() -> int:
                 orig = ascii_fold
                 try:
                     globals()["ascii_fold"] = lambda p: p
-                    caught = any(classify_documentation(p, rule) != w for p, w in FIXTURES)
+                    caught = any(classify_documentation(p, rule) != w for p, w in NONE_FIXTURES)
                 finally:
                     globals()["ascii_fold"] = orig
             else:
-                caught = any(classify_documentation(p, bad_rule) != w for p, w in FIXTURES)
+                caught = any(classify_documentation(p, bad_rule) != w for p, w in NONE_FIXTURES)
             results.append((label, caught))
 
         def swapped(name, fn):
             orig = globals()[name]
             try:
                 globals()[name] = fn
-                return any(classify_documentation(p, rule) != w for p, w in FIXTURES)
+                return any(classify_documentation(p, rule) != w for p, w in NONE_FIXTURES)
             finally:
                 globals()[name] = orig
         results.append(("str.lower in place of the ASCII fold is caught (Kelvin sign)", swapped("ascii_fold", str.lower)))
         results.append(("str.casefold in place of the ASCII fold is caught (long s)", swapped("ascii_fold", str.casefold)))
         results.append(("a Unicode-aware digit test in the prefix is caught", swapped(
             "has_numeric_prefix", lambda name, r: len(name) > 2 and name[:2].isdigit() and name[2] == "-")))
+
+        # the four variants
+        rows = manifest_rows(scratch)
+        results.append(("the manifest has four rows, one per variant, all distinct", set(rows) == set(VARIANTS) and len(set(rows.values())) == 4))
+        results.append(("the default variant is none and maps neither opt-in",
+                        not classify_documentation("MANIFESTO") and not classify_documentation("ARCHITECTURE.md")))
+        for v in VARIANTS:
+            rv = documentation_rule(v)
+            want = {n: k in VARIANTS[v] for n, k in OPT_IN_FIXTURES}
+            results.append((f"variant {v}: the opt-in fixtures hold",
+                            all(classify_documentation(n, rv) == w for n, w in want.items())
+                            and all(classify_documentation(p, rv) == w for p, w in FIXTURES)))
+        wrong = json.loads(propose(v1text, "both"))
+        results.append(("a variant whose rule is another variant's is caught",
+                        any("declared one" in f for f in semantic_findings(v1text, dump(wrong), "manifesto"))))
+        mut = scratch / patch_path("both")
+        orig_patch = mut.read_text()
+        mut.write_text(orig_patch.replace('"manifesto"', '"manifestoo"', 1))
+        results.append(("an edited variant patch is caught", any("both: patch differs" in f for f in check(scratch))))
+        mut.write_text(orig_patch)
+        extra = scratch / PKG / "proposed" / "stray.patch"
+        extra.write_text("x")
+        results.append(("a fifth patch is caught", any("proposed/ holds" in f for f in check(scratch))))
+        extra.unlink()
 
         # readiness: the prerequisite, met and unmet, at the real installed path
         with tempfile.TemporaryDirectory() as d3:
@@ -689,12 +744,16 @@ def selftest() -> int:
         # the policy after this package's own act: the base is recovered by reversing the patch
         with tempfile.TemporaryDirectory() as d4:
             r4 = pathlib.Path(d4)
-            for rel in (V1_MANIFEST, MANIFEST, PATCH, PACKET):
+            for rel in (V1_MANIFEST, MANIFEST, PACKET, *[patch_path(v) for v in VARIANTS]):
                 (r4 / rel).parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy(scratch / rel if rel in (MANIFEST, PATCH, PACKET) else ROOT / rel, r4 / rel)
+                shutil.copy(ROOT / rel if rel == V1_MANIFEST else scratch / rel, r4 / rel)
             (r4 / POLICY).parent.mkdir(parents=True, exist_ok=True)
             (r4 / POLICY).write_text(proposed)
             results.append(("after this package's act, --check is still current (performed-v2)", check(r4) == []))
+            for v in VARIANTS:
+                (r4 / POLICY).write_text(propose(v1text, v))
+                results.append((f"after the act with variant {v}, --check is still current", check(r4) == []))
+            (r4 / POLICY).write_text(proposed)
             (r4 / POLICY).write_text(proposed.replace('"schemaVersion": 1', '"schemaVersion": 1,\n  "note": "x"', 1))
             results.append(("after the act, a policy that is neither manifest row is refused", any("neither" in f for f in check(r4))))
     failed = [n for n, ok in results if not ok]
