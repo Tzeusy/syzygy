@@ -3,7 +3,10 @@
   "date": "2026-10-03",
   "subject": {
     "path": "scripts/check_governance.py",
-    "commit": "f338c2aba7c79c4f4be8ed4a013f0f66607e4bff"
+    "commit": "b97b77ed",
+    "blob": "8826adc842010f03dd4581ff4956b5e100332bc8",
+    "sha256": "5a6e1ec9cff46cac5959b6c04b4cfee282ef80d1e858b979699b32694285e7e3",
+    "note": "merged head of PR 267. The mutants were run at f338c2ab, a pre-rebase commit now unreachable from any ref; this blob is the merged result of that change."
   },
   "baseline": {
     "path": "scripts/check_governance.py",
@@ -153,10 +156,22 @@
     "continuation_forms": {
       "wrapped_across_line_break": 0,
       "uppercase_64_hex": 0,
-      "truncated_prefix_of_known_digest": 17,
-      "note": "truncated prefixes (12+ hex then an ellipsis) are not full copies; the near-miss pass cannot judge them and they are out of scope"
+      "truncated_prefix_of_known_digest": 15,
+      "note": "truncated prefixes (12+ hex then an ellipsis) are not full copies; the near-miss pass cannot judge them and they are out of scope",
+      "truncated_prefix_predicate": "regex (?<![0-9A-Fa-f])([0-9a-f]{7,63})(?:…|\\.\\.\\.) over the same 67 files, counting matches whose hex run is a prefix of a recognized (current or performed) act digest: 15. Without the recognized-prefix restriction: 66. With a 12-hex lower bound: 0 in the 67 files (2 over all tracked .md/.txt, recognized only). The earlier figure of 17 is not reproducible under any of these and is withdrawn; the reviewer's 65 is within one of the unrestricted 66."
     },
-    "not_registered": "INSTALL-RECORD.md lines 52 and 72 carry the earlier retired CC-TEST-2 offers aa2d6353/3858820f, each marked retired at the line; outside the bead's named population"
+    "not_registered": "INSTALL-RECORD.md lines 52 and 72 carry the earlier retired CC-TEST-2 offers aa2d6353/3858820f, each marked retired at the line; outside the bead's named population",
+    "after": {
+      "predicate": "same predicate as above, measured at the blob named in subject",
+      "files": 67,
+      "tokens": 545,
+      "classes": {
+        "allowed": 179,
+        "other": 366,
+        "recognized-not-allowed": 0
+      },
+      "correction": "an earlier PR table read 177 / 368; 179 / 366 re-derived 2026-10-03, sums to 545"
+    }
   },
   "mutation": {
     "method": "one file at a time, one character at position 40 of the line's 64-hex token (to 'e', or 'f' if already 'e'); full check_governance.py run under the baseline checker and the subject checker; file restored and sha256-compared after each",
@@ -438,5 +453,8 @@
       "masked_under_baseline": 8
     }
   },
-  "digestPolicy": "No act argument or truncated digest is quoted (AGENTS.md: CG-7e/CG-15 copy rule). Each mutant is re-runnable from file, line, tokenStartColumn, characterIndexInToken and fromChar/toChar at the subject commit; the subject and baseline are named by commit and path."
+  "digestPolicy": "No act argument or truncated digest is quoted (AGENTS.md: CG-7e/CG-15 copy rule). Each mutant is re-runnable from file, line, tokenStartColumn, characterIndexInToken and fromChar/toChar at the subject commit; the subject and baseline are named by commit and path.",
+  "pinScope": {
+    "finding": "Pins prove the quoting line is present; they do not scope the digest to that line. Of 46 history and retired pins, 16 also carry the digest on a line the pin does not match, so refusing off-pin occurrences would fail the existing population; the comment was corrected instead."
+  }
 }
