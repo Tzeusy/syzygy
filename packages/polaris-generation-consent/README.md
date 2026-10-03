@@ -20,8 +20,17 @@ interface and fixtures.
   stages or between admit and send stops the send.
 - Every refusal renders as `unconsented-source-or-provider`; `reasons` in the
   audit say which test failed. An audit sink that throws also refuses.
-- `matches(request)` binds a run to the source population the ports were built
-  for; wire it into `verifySources`.
+- `withConsent(base, options)` is the intended wiring: it replaces `verifySources`,
+  `permissionIdentity`, `admit` and `permitted` together, so the population sent is
+  the population consented. `matches(request)` digests every source property
+  (bodies and span texts by hash, classification basis, any segment fields); a body
+  that one full-file span already carries digests the same with or without the
+  duplicate, as the pipeline drops it before `verifySources`.
+- The reader's output is validated whole (`parseAdmissionRecords`); a malformed
+  record, a non-integer time field, or a clock that is not a safe integer refuses,
+  attributed to its own reason. An empty population is refused.
+- Each check audits its final outcome once (a reservation refused, failed or
+  followed by a failed audit is not recorded as permitted).
 - `reserve` is the durable reservation (for example the lifecycle journal's
   `admit`), run only after consent holds.
 

@@ -68,6 +68,6 @@ export function parseAdmissionRecords(value: unknown): readonly AdmissionRecord[
       ? record.repositoryId !== null && record.providerId === null && record.admittedRepositories.length === 0 && record.contentClasses.length === 0
       : record.providerId !== null && record.repositoryId === null && record.admittedRevisions.length === 0;
     if (!shapeOk) throw new AdmissionRecordError('invalid-records');
-    return Object.freeze({ ...record });
+    return Object.freeze({ ...record, admittedRevisions: Object.freeze([...record.admittedRevisions]), admittedRepositories: Object.freeze([...record.admittedRepositories]), contentClasses: Object.freeze([...record.contentClasses]) });
   });
 }

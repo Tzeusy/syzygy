@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { generationAnchorId, gitBlobObjectId, runGenerationPipeline, type AdmissionDecision, type AttemptInput, type GenerationSource, type PipelinePorts, type PipelineRequest } from '@syzygy/polaris-generation-core';
 import { AdmissionRecordError, parseAdmissionRecords, type AdmissionRecord } from './admission-record.js';
-import { UNCONSENTED, createConsentPorts, type ConsentAudit, type ConsentPortsOptions, type ConsentReason } from './consent-ports.js';
+import { UNCONSENTED, createConsentPorts, withConsent, type ConsentAudit, type ConsentPortsOptions, type ConsentReason } from './consent-ports.js';
 
 const NOW = 1_800_000_000_000;
 const REDIS_REV = 'a'.repeat(40);
@@ -179,28 +179,31 @@ describe('consent-backed ports', () => {
   });
 });
 
-describe('through the pipeline', () => {
-  const harness = (records: AdmissionRecord[]) => {
-    const r = rig(records);
-    const sent: string[] = [];
-    let n = 0;
-    const base: PipelinePorts = {
-      now: () => NOW, verifySources: async request => r.ports.matches(request),
-      ...r.ports, releaseUnsent: async () => undefined,
-      responseSchema: () => ({ version: 'v1', schema: {} }),
-      generate: async input => { sent.push(input.stage); return { body: JSON.stringify({ stage: input.stage }), model: 'm', usageUnits: 1 }; },
-      validate: (stage, value) => { if ((value as { stage?: string }).stage !== stage) throw Error('schema'); return value; },
-      record: async () => undefined, lateReceipt: async () => undefined, fidelity: () => ({ blocking: false, findings: [] }),
-    };
-    const ports: PipelinePorts = { ...base, admit: async input => { const d = await r.ports.admit(input); return d.kind === 'refused' ? d : { kind: 'reserved', permit: { attemptId: `a${n++}`, maxUsageUnits: 10, maxOutputBytes: 1000 } }; } };
-    const request: PipelineRequest = {
-      requestId: 'r1', projectId: 'redis', snapshotId: 's1', startedAt: NOW,
-      routes: { inventory: 'agent-sdk', plan: 'agent-sdk', author: 'agent-sdk', edit: 'agent-sdk', fidelity: 'agent-sdk', repair: 'agent-sdk' },
-      budget: { maxCalls: 10, maxInputBytes: 200_000, maxOutputBytes: 20_000, maxUsageUnits: 100, maxElapsedMs: 10_000, maxRepairCycles: 0, accountingPolicy: 'p' },
-      sources: r.sources, readerQuestions: ['Why?'], requestedAssets: [],
-    };
-    return { r, ports, request, sent };
+function harness(records: AdmissionRecord[]) {
+  const r = rig(records);
+  const sent: string[] = [];
+  let n = 0;
+  const base: PipelinePorts = {
+    now: () => NOW, verifySources: async () => true,
+    permissionIdentity: async () => 'unused', admit: async () => ({ kind: 'reserved', permit: { attemptId: `a${n++}`, maxUsageUnits: 10, maxOutputBytes: 1000 } }),
+    permitted: async () => true, releaseUnsent: async () => undefined,
+    responseSchema: () => ({ version: 'v1', schema: {} }),
+    generate: async input => { sent.push(input.stage); return { body: JSON.stringify({ stage: input.stage }), model: 'm', usageUnits: 1 }; },
+    validate: (stage, value) => { if ((value as { stage?: string }).stage !== stage) throw Error('schema'); return value; },
+    record: async () => undefined, lateReceipt: async () => undefined, fidelity: () => ({ blocking: false, findings: [] }),
   };
+  const { reserve: _reserve, ...rest } = r.options;
+  const ports = withConsent(base, rest);
+  const request: PipelineRequest = {
+    requestId: 'r1', projectId: 'redis', snapshotId: 's1', startedAt: NOW,
+    routes: { inventory: 'agent-sdk', plan: 'agent-sdk', author: 'agent-sdk', edit: 'agent-sdk', fidelity: 'agent-sdk', repair: 'agent-sdk' },
+    budget: { maxCalls: 10, maxInputBytes: 200_000, maxOutputBytes: 20_000, maxUsageUnits: 100, maxElapsedMs: 10_000, maxRepairCycles: 0, accountingPolicy: 'p' },
+    sources: r.sources, readerQuestions: ['Why?'], requestedAssets: [],
+  };
+  return { r, ports, base, rest, request, sent };
+}
+
+describe('through the pipeline', () => {
 
   it('runs to rendered review when consent holds and sends nothing when it does not', async () => {
     const ok = harness([obs(), egress()]);
@@ -250,5 +253,105 @@ describe('parseAdmissionRecords', () => {
     expect(() => parseAdmissionRecords(egressBad)).toThrow(AdmissionRecordError);
     expect(() => parseAdmissionRecords({})).toThrow(AdmissionRecordError);
     expect(() => parseAdmissionRecords([null])).toThrow(AdmissionRecordError);
+  });
+});
+
+describe('malformed evidence fails closed', () => {
+  const bad: [string, (r: Record<string, unknown>) => void][] = [
+    ['inForceAt undefined', r => { r.inForceAt = undefined; }], ['inForceAt NaN', r => { r.inForceAt = NaN; }], ['inForceAt string', r => { r.inForceAt = '2026'; }],
+    ['withdrawnAt NaN', r => { r.withdrawnAt = NaN; }], ['inForceAt fractional', r => { r.inForceAt = 1.5; }], ['unknown key', r => { r.extra = 1; }],
+  ];
+  for (const [name, edit] of bad) {
+    it(`refuses on a record with ${name}`, async () => {
+      const broken = { ...egress() } as Record<string, unknown>;
+      edit(broken);
+      const { ports, state } = rig([obs(), broken as unknown as AdmissionRecord]);
+      expect(await ports.permissionIdentity(attempt())).toBe('');
+      expect(state.audits[0]!.reasons).toEqual(['records-invalid']);
+    });
+  }
+  it('refuses when the clock is not a safe integer, throws, or the reader returns a non-list', async () => {
+    for (const now of [() => NaN, () => 1.5, () => Infinity, () => { throw new Error('x'); }]) {
+      const r = rig([obs(), egress()], { now });
+      expect(await r.ports.permissionIdentity(attempt())).toBe('');
+      expect(r.state.audits[0]?.reasons ?? ['clock-invalid']).toEqual(['clock-invalid']);
+    }
+    const r = rig([obs(), egress()], { reader: { read: async () => ({}) as never } });
+    expect(await r.ports.permissionIdentity(attempt())).toBe('');
+    expect(r.state.audits[0]!.reasons).toEqual(['records-invalid']);
+  });
+  it('attributes a throwing content-class mapper to class-unknown, not to the reader', async () => {
+    const r = rig([obs(), egress()], { contentClassOf: () => { throw new Error('x'); } });
+    expect(await r.ports.permissionIdentity(attempt())).toBe('');
+    expect(r.state.audits[0]!.reasons).toEqual(['class-unknown']);
+  });
+  it('refuses an empty population explicitly', async () => {
+    const r = rig([obs(), egress()], { sources: [] });
+    expect(await r.ports.permissionIdentity(attempt())).toBe('');
+    expect(r.state.audits[0]!.reasons).toEqual(['empty-population']);
+  });
+  it('returns records whose lists are frozen', () => {
+    const [record] = parseAdmissionRecords([obs()]);
+    expect(Object.isFrozen(record!.admittedRevisions)).toBe(true);
+    expect(() => (record!.admittedRevisions as string[]).push('x')).toThrow();
+  });
+});
+
+describe('population binding covers content', () => {
+  it('matches only when bodies, spans, basis and any other source field are unchanged', () => {
+    const { ports, sources } = rig([obs(), egress()]);
+    const first = sources[0]!;
+    const changed: [string, GenerationSource][] = [
+      ['body', { ...first, body: 'Another body.' }],
+      ['body dropped but span edited', { ...first, body: undefined, spans: first.spans.map(s => ({ ...s, text: 'Another body.' })) }],
+      ['span text', { ...first, spans: first.spans.map(s => ({ ...s, text: 'Another body.' })) }],
+      ['span end', { ...first, spans: first.spans.map(s => ({ ...s, end: s.end - 1 })) }],
+      ['basis', { ...first, classificationBasis: 'path-only' }],
+      ['evaluation', { ...first, evaluationId: 'evaluation:other' }],
+      ['segment field', { ...first, segment: { start: 0, end: 5, index: 0, count: 2, blobBytes: 99 } } as GenerationSource],
+    ];
+    for (const [name, mutant] of changed) expect(ports.matches({ sources: [mutant, sources[1]!] }), name).toBe(false);
+    expect(ports.matches({ sources: [structuredClone(first), sources[1]!] })).toBe(true);
+    const { body: _dropped, ...compact } = first;   // what the pipeline hands verifySources
+    expect(ports.matches({ sources: [compact as GenerationSource, sources[1]!] })).toBe(true);
+  });
+});
+
+describe('audit records the final outcome', () => {
+  const ready = async (extra: Partial<ConsentPortsOptions> = {}) => {
+    const r = rig([obs(), egress()], extra);
+    const identity = await r.ports.permissionIdentity(attempt());
+    r.state.audits.length = 0;
+    return { ...r, input: full(attempt(), identity) };
+  };
+  it('writes one refusal, and no permitted record, when the reservation is refused or fails', async () => {
+    const a = await ready({ reserve: async () => ({ kind: 'refused', reason: 'budget-exhausted' }) });
+    expect((await a.ports.admit(a.input)).kind).toBe('refused');
+    expect(a.state.audits.map(x => [x.decision, x.reasons])).toEqual([['refused', ['reserve-refused']]]);
+    const b = await ready({ reserve: async () => { throw new Error('disk'); } });
+    await expect(b.ports.admit(b.input)).rejects.toThrow('disk');
+    expect(b.state.audits.map(x => [x.decision, x.reasons])).toEqual([['refused', ['reserve-failed']]]);
+  });
+  it('writes the identity-mismatch refusal, and treats a failed audit after a reservation as uncertain', async () => {
+    const a = await ready();
+    expect(await a.ports.admit({ ...a.input, permissionDigest: hex('4') })).toEqual({ kind: 'refused', reason: 'identity-mismatch' });
+    expect(a.state.audits.map(x => [x.decision, x.reasons])).toEqual([['refused', ['identity-mismatch']]]);
+    const b = await ready();
+    b.state.failAudit = true;
+    expect(await b.ports.admit(b.input)).toEqual({ kind: 'refused', reason: 'uncertain' });
+    expect(b.state.reserved).toHaveLength(1);
+  });
+});
+
+describe('withConsent', () => {
+  it('replaces the four ports together and keeps the base verifySources', async () => {
+    const h = harness([obs(), egress()]);
+    expect(await h.ports.verifySources({ ...h.request, sources: [h.request.sources[0]!] })).toBe(false);
+    expect(await h.ports.verifySources(h.request)).toBe(true);
+    const denying = withConsent({ ...h.base, verifySources: async () => false }, h.rest);
+    expect(await denying.verifySources(h.request)).toBe(false);
+    expect(h.ports.permissionIdentity).not.toBe(h.base.permissionIdentity);
+    expect(h.ports.admit).not.toBe(h.base.admit);
+    expect(h.ports.permitted).not.toBe(h.base.permitted);
   });
 });
