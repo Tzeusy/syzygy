@@ -1723,10 +1723,10 @@ MESSAGES_API_ACTS = (
 #: act over one record, given at its manifest row. Its phrase label differs from
 #: the first version's so the two subjects register separately; it depends on
 #: sitting row 7 and registers no chain link; the performed record arrives with
-#: the act. The round-1 notes record is registered once it exists.
+#: the act. The round notes records are registered once they exist.
 PUBLIC_EGRESS_V2_DIR = f"{CANDIDATES}/public-egress-v2"
 PUBLIC_EGRESS_V2_MANIFEST = f"{PUBLIC_EGRESS_V2_DIR}/PUBLIC-EGRESS-V2-MANIFEST.txt"
-PUBLIC_EGRESS_V2_DISPOSITIONS = f"{PUBLIC_EGRESS_V2_DIR}/ROUND-1-DISPOSITIONS.md"
+PUBLIC_EGRESS_V2_DISPOSITION_NAMES = ("ROUND-2-DISPOSITIONS.md",)
 PUBLIC_EGRESS_V2_ACTS = (
     ("CONSENT TO PUBLIC TARGET EGRESS TO ANTHROPIC VERSION 2",
      f"{PUBLIC_EGRESS_V2_DIR}/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md"),
@@ -3261,9 +3261,11 @@ def _activate_public_egress_v2_manifest_copy_registry():
     if os.path.isfile(os.path.join(ROOT, PUBLIC_EGRESS_V2_MANIFEST)):
         ACT_DIGEST_COPY_FILES[PUBLIC_EGRESS_V2_MANIFEST] = tuple(
             label for label, _subject in PUBLIC_EGRESS_V2_ACTS)
-    if os.path.isfile(os.path.join(ROOT, PUBLIC_EGRESS_V2_DISPOSITIONS)):
-        ACT_DIGEST_COPY_FILES[PUBLIC_EGRESS_V2_DISPOSITIONS] = tuple(
-            label for label, _subject in PUBLIC_EGRESS_V2_ACTS)
+    for name in PUBLIC_EGRESS_V2_DISPOSITION_NAMES:
+        rel = f"{PUBLIC_EGRESS_V2_DIR}/{name}"
+        if os.path.isfile(os.path.join(ROOT, rel)):
+            ACT_DIGEST_COPY_FILES[rel] = tuple(
+                label for label, _subject in PUBLIC_EGRESS_V2_ACTS)
 
 
 _activate_public_egress_v2_manifest_copy_registry()
