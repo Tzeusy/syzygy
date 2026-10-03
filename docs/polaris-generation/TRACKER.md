@@ -139,6 +139,12 @@ Authorized implementation work (generator implementation authorization,
         budget, quote and label fidelity, a scripted reader-test port, and
         coverage per owner topic. Open: a real reader port, answer grading,
         REQ-031 clarification questions.
+- [x] Multi-page static output `[gap #8]`: `renderDossier` /
+      `poc:dossier-render` (2026-10-03) writes an entry page, contents,
+      deep dives, glossary, one page per quotable source routed by anchor
+      and a size report, in `polaris-dossier-v1` markup; the run directory is
+      refused inside a Git work tree; round-trips through `evaluateDossier`
+      with 0 fidelity failures on synthetic runs
 - [ ] REQ-030 accounted discovery: walk an unfamiliar tree within a budget
       and say what was and was not read
 - [ ] REQ-031 owner clarification: the consequential-questions step

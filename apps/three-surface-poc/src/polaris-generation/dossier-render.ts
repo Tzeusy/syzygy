@@ -1,0 +1,203 @@
+import { createHash } from 'node:crypto';
+
+import { DESIGN_TOKENS_CSS } from '../design-tokens.js';
+
+import {
+  DOSSIER_FORMAT, OWNER_TOPICS, diagramToMermaid, parseDossierManifest, readerCost, reviewVerdict, scanDossierPage,
+  validateDraftRecord, validateGenerationSources,
+  type DossierManifest, type EpistemicMarking, type GenerationSource, type OwnerTopic, type PipelineResult,
+  type ProviderBlock, type ProviderDiagram, type ProviderDraft, type ProviderParagraph,
+} from '@syzygy/polaris-generation-core';
+import { renderDiagramSvg } from './diagram-layout.js';
+import { DRAFT_PREVIEW_CSP_META, DRAFT_PREVIEW_CSS, MARKING_LABEL, escapeHtml as escape } from './draft-preview.js';
+import { assertInertSvg } from './svg-inert.js';
+
+/**
+ * Multi-page static dossier (gap #8) from the pipeline's final output. It
+ * emits exactly the `polaris-dossier-v1` markup the evaluation harness reads
+ * (`packages/polaris-generation-core/src/dossier-evaluation.ts`):
+ *
+ * - `index.html` (depth 0): title, introduction and open questions at reading
+ *   level 0; every section at level 1, each linking its deep dives.
+ * - `contents.html`, `glossary.html`, `sources/index.html` (depth 1).
+ * - `deep-dives/<id>.html` (depth 1): one per produced deep dive, level 2.
+ * - `sources/<anchor-digest>.html` (depth 2): one per quotable source, its
+ *   exact admitted text as one quote with byte offsets, level 3.
+ * - `dossier.json` and `size-report.json` (reader cost, measured from the
+ *   rendered bytes by the harness's own scanner).
+ *
+ * Labels. A generated sentence is an LLM assertion, so a block the fidelity
+ * review judged `supported` is Inferred and any other block is Unknown;
+ * diagram elements keep their own marking; glossary terms are Inferred; open
+ * questions are Unknown. Nothing here is Observed except what the draft's
+ * diagram records say is.
+ *
+ * Source routes derive from each source's anchor (blob identity plus byte
+ * range), never from `generationSourceIdentity`, which every piece of a
+ * segmented blob shares: two pieces of one blob get two pages.
+ */
+
+export interface DossierRenderInput {
+  /** The pipeline's final output; only `awaiting-rendered-review` renders. */
+  readonly result: PipelineResult;
+  readonly sources: readonly GenerationSource[];
+  /** Owner topics a section or deep dive answers, by draft id (the run profile's mapping). */
+  readonly topics?: Readonly<Record<string, readonly OwnerTopic[]>>;
+}
+
+export interface RenderedDossier {
+  /** Every file of the run directory by relative path, `dossier.json` and `size-report.json` included. */
+  readonly files: ReadonlyMap<string, string>;
+  readonly manifest: DossierManifest;
+}
+
+export class DossierRenderError extends Error {
+  constructor(readonly code: 'not-renderable' | 'unknown-source' | 'unquotable-source' | 'ambiguous-source-anchor' | 'unknown-section' | 'unknown-topic' | 'page-path-collision' | 'invalid-inventory') {
+    super(`Dossier render refused: ${code}`);
+    this.name = 'DossierRenderError';
+  }
+}
+
+const digest = (value: string): string => createHash('sha256').update(value).digest('hex');
+
+/** The page a quotable source's exact text lives on, from its anchor alone. */
+export function sourceRoute(source: Pick<GenerationSource, 'spans'>): string {
+  if (source.spans.length !== 1) throw new DossierRenderError('ambiguous-source-anchor');
+  return `sources/${digest(source.spans[0]!.anchorId).slice(0, 24)}.html`;
+}
+
+const deepDivePath = (id: string): string => `deep-dives/${id.replace(/[^A-Za-z0-9_.-]/gu, '_')}.html`;
+
+/** A relative href from one page to another path (and optional fragment). */
+function href(from: string, to: string, fragment?: string): string {
+  const up = '../'.repeat(from.split('/').length - 1);
+  return `${up}${to}${fragment === undefined ? '' : `#${fragment}`}`;
+}
+
+const DOSSIER_CSS = '.dossier-nav{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem}.glossary dt{font-weight:600;margin-top:1rem}.glossary dd{margin:0 0 .5rem}.deep-links{font:.9rem var(--font-mono)}.source-path{font:400 1.4rem/1.4 var(--font-mono);overflow-wrap:anywhere;letter-spacing:0;max-width:none;width:auto}.source-anchor{font:.8rem/1.5 var(--font-mono);color:var(--muted);overflow-wrap:anywhere}';
+
+function page(title: string, path: string, nav: string, main: string): string {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${DRAFT_PREVIEW_CSP_META}<title>${escape(title)}</title><style>${DESIGN_TOKENS_CSS}
+${DRAFT_PREVIEW_CSS}${DOSSIER_CSS}
+</style></head><body><a class="skip" href="#content">Skip to content</a><div class="pipeline-notice">Generated dossier draft — not reviewed or adopted</div><div class="layout"><nav class="contents desktop-contents" aria-label="Dossier">${nav}</nav><details class="contents mobile-contents"><summary>In this dossier</summary><nav aria-label="Dossier">${nav}</nav></details><main id="content" data-page="${escape(path)}">${main}</main></div></body></html>`;
+}
+
+export function renderDossier(input: DossierRenderInput): RenderedDossier {
+  if (input.result.status !== 'awaiting-rendered-review') throw new DossierRenderError('not-renderable');
+  const draft: ProviderDraft = validateDraftRecord(input.result.draft);
+  reviewVerdict(input.result.review);
+  const support = new Map((input.result.review as { blockSupport: { blockId: string; verdict: string }[] }).blockSupport.map(row => [row.blockId, row.verdict]));
+  validateGenerationSources(input.sources);
+  const sources = new Map(input.sources.map(source => [source.sourceId, source]));
+  const topics = input.topics ?? {};
+  for (const list of Object.values(topics)) if (list.some(topic => !(OWNER_TOPICS as readonly string[]).includes(topic))) throw new DossierRenderError('unknown-topic');
+  const sectionIds = new Set(draft.sections.map(section => section.id));
+  for (const item of [...draft.diagrams, ...draft.deepDives]) if (!sectionIds.has(item.sectionId)) throw new DossierRenderError('unknown-section');
+
+  const deepDives = draft.deepDives.filter(dive => dive.disposition.kind === 'produced');
+  const deepPaths = new Map(deepDives.map(dive => [dive.id, deepDivePath(dive.id)]));
+  if (new Set(deepPaths.values()).size !== deepPaths.size) throw new DossierRenderError('page-path-collision');
+  const quotable = input.sources.filter(source => !source.exclusion.excluded && source.classificationBasis === 'body' && source.spans.length > 0);
+  const sourcePaths = new Map(quotable.map(source => [source.sourceId, sourceRoute(source)]));
+
+  // --- shared fragments, each bound to the page it is rendered on
+  const label = (blockId: string): EpistemicMarking => support.get(blockId) === 'supported' ? 'inferred' : 'unknown';
+  const marking = (m: EpistemicMarking): string => `<span class="marking ${m}">[${MARKING_LABEL[m]}]</span>`;
+  const refs = (from: string, ids: readonly string[]): string => `<span class="sources">${ids.map(id => {
+    const source = sources.get(id);
+    if (source === undefined) throw new DossierRenderError('unknown-source');
+    const target = sourcePaths.get(id);
+    if (target === undefined) throw new DossierRenderError('unquotable-source');
+    return `<a href="${escape(href(from, target, 'exact-text'))}" aria-label="Read source ${escape(id)}">[${escape(id)}]</a>`;
+  }).join(' ')}</span>`;
+  const claim = (tag: string, id: string, m: EpistemicMarking, body: string): string =>
+    `<${tag} data-claim-id="${escape(id)}" data-epistemic="${m}">${body}</${tag}>`;
+  const paragraph = (from: string, p: ProviderParagraph, tag: string): string =>
+    claim(tag, p.id, label(p.id), `${escape(p.text)} ${marking(label(p.id))} ${refs(from, p.sourceIds)}`);
+  const block = (from: string, b: ProviderBlock): string => {
+    const parent = paragraph(from, b, 'p');
+    return b.children.length === 0 ? parent : `${parent}<ul class="block-children">${b.children.map(child => paragraph(from, child, 'li')).join('')}</ul>`;
+  };
+  const notice = (id: string, disposition: { kind: string; reason?: string; references?: string[] }): string =>
+    `<aside class="unresolved-asset" data-asset-disposition="${escape(disposition.kind)}"><strong>${escape(id)}</strong>: ${escape(disposition.reason ?? '')} <span class="asset-references">(${escape((disposition.references ?? []).join(', '))})</span></aside>`;
+  const diagram = (from: string, d: ProviderDiagram, index: number): string => {
+    if (d.disposition.kind !== 'produced') return notice(d.id, d.disposition);
+    const nodes = new Map(d.nodes.map(node => [node.id, node]));
+    const nodeList = d.nodes.map(n => claim('li', n.id, n.epistemic, `${escape(n.label)} ${marking(n.epistemic)} ${refs(from, n.sourceIds)}`)).join('');
+    const edgeList = d.edges.map(e => claim('li', e.id, e.epistemic, `${escape(nodes.get(e.from)!.label)} → ${escape(nodes.get(e.to)!.label)}: ${escape(e.label)} ${marking(e.epistemic)} ${refs(from, e.sourceIds)}`)).join('');
+    let svg: string;
+    try {
+      svg = renderDiagramSvg(d, index, escape);
+      assertInertSvg(svg);
+    } catch {
+      return notice(d.id, { kind: 'unresolved', reason: 'diagram could not be rendered inertly', references: [...new Set([...d.nodes, ...d.edges].flatMap(element => element.sourceIds))] });
+    }
+    const legend = '<ul class="diagram-legend" aria-label="Line styles"><li><span class="legend-line observed" aria-hidden="true"></span>Solid: observed</li><li><span class="legend-line inferred" aria-hidden="true"></span>Dashed: inferred</li><li><span class="legend-line unknown" aria-hidden="true"></span>Dotted: unknown (label ends “?”)</li></ul>';
+    return `<figure><figcaption>${escape(d.title)}</figcaption><p class="diagram-relationship"><span class="eyebrow">${escape(d.kind)}</span> ${escape(d.relationship)}</p><div class="diagram-scroll">${svg}</div>${legend}<details><summary>Read every component and relationship</summary><ul>${nodeList}</ul><ol>${edgeList}</ol><details class="diagram-source"><summary>Declarative source (Mermaid)</summary><pre>${escape(diagramToMermaid(d))}</pre></details></details></figure>`;
+  };
+  const topicAttr = (id: string): string => ` data-topics="${escape((topics[id] ?? []).join(' '))}"`;
+  const nav = (from: string): string => `<span class="eyebrow">${escape(draft.title)}</span><ol><li><a href="${href(from, 'index.html')}">Overview</a></li><li><a href="${href(from, 'contents.html')}">Contents</a></li>${deepDives.map(dive => `<li><a href="${escape(href(from, deepPaths.get(dive.id)!))}">${escape(dive.title)}</a></li>`).join('')}<li><a href="${href(from, 'glossary.html')}">Glossary</a></li><li><a href="${href(from, 'sources/index.html')}">Sources</a></li></ol>`;
+
+  const files = new Map<string, string>();
+  const pages: { path: string; depth: number }[] = [];
+  const add = (path: string, depth: number, title: string, main: string): void => {
+    files.set(path, page(`${title} — ${draft.title}`, path, nav(path), main));
+    pages.push({ path, depth });
+  };
+
+  // --- entry page
+  const from = 'index.html';
+  const unresolved = draft.unresolved.map((item, index) => claim('aside', `unresolved-${index + 1}`, 'unknown',
+    `<strong>${escape(item.question)}</strong>: ${escape(item.reason)} ${marking('unknown')} <span class="asset-references">(${escape(item.references.join(', '))})</span>`)).join('');
+  const sections = draft.sections.map((section, index) => {
+    const head = `<span class="eyebrow">${String(index + 1).padStart(2, '0')}</span><h2>${escape(section.title)}</h2>`;
+    if (section.disposition.kind !== 'produced') return `<section id="section-${escape(section.id)}" data-reading-level="1"${topicAttr(section.id)}>${head}${notice(section.id, section.disposition)}</section>`;
+    const figures = draft.diagrams.map((d, i) => d.sectionId === section.id ? diagram(from, d, i) : '').join('');
+    const dives = draft.deepDives.filter(dive => dive.sectionId === section.id).map(dive => dive.disposition.kind === 'produced'
+      ? `<li><a href="${escape(deepPaths.get(dive.id)!)}">Explore: ${escape(dive.title)}</a></li>` : `<li>${notice(dive.id, dive.disposition)}</li>`).join('');
+    return `<section id="section-${escape(section.id)}" data-reading-level="1"${topicAttr(section.id)}>${head}${section.paragraphs.map(b => block(from, b)).join('')}${figures}${dives ? `<ul class="deep-links">${dives}</ul>` : ''}</section>`;
+  }).join('');
+  add(from, 0, 'Overview', `<header data-reading-level="0"><span class="eyebrow">Polaris · Editorial draft</span><h1>${escape(draft.title)}</h1>${paragraph(from, draft.introduction, 'p')}${unresolved}</header>${sections}`);
+
+  // --- deep dives
+  for (const dive of deepDives) {
+    const path = deepPaths.get(dive.id)!;
+    const parent = draft.sections.find(section => section.id === dive.sectionId)!;
+    add(path, 1, dive.title, `<section id="deep-dive-${escape(dive.id)}" data-reading-level="2"${topicAttr(dive.id)}><span class="eyebrow">Deep dive · <a href="${escape(href(path, 'index.html', `section-${parent.id}`))}">${escape(parent.title)}</a></span><h1>${escape(dive.title)}</h1>${dive.paragraphs.map(b => block(path, b)).join('')}</section>`);
+  }
+
+  // --- contents
+  const contents = `<ol>${draft.sections.map(section => `<li><a href="${escape(href('contents.html', 'index.html', `section-${section.id}`))}">${escape(section.title)}</a>${draft.deepDives.some(dive => dive.sectionId === section.id && deepPaths.has(dive.id))
+    ? `<ol>${draft.deepDives.filter(dive => dive.sectionId === section.id && deepPaths.has(dive.id)).map(dive => `<li><a href="${escape(href('contents.html', deepPaths.get(dive.id)!))}">${escape(dive.title)}</a></li>`).join('')}</ol>` : ''}</li>`).join('')}<li><a href="glossary.html">Glossary</a></li><li><a href="sources/index.html">Sources</a></li></ol>`;
+  add('contents.html', 1, 'Contents', `<section id="contents"><h1>Contents</h1>${contents}</section>`);
+
+  // --- glossary: inventory terms, each an Inferred claim
+  const entries = (input.result.inventory as { entries?: unknown } | null)?.entries;
+  if (!Array.isArray(entries)) throw new DossierRenderError('invalid-inventory');
+  const terms = (entries as { id: string; kind: string; statement: string; sourceIds: string[] }[]).filter(entry => entry.kind === 'term');
+  const glossary = terms.length === 0
+    ? '<p>The inventory recorded no terms, so this glossary is empty.</p>'
+    : `<dl class="glossary">${terms.map(term => `<dt id="term-${escape(term.id)}">${escape(term.id)}</dt>${claim('dd', `glossary:${term.id}`, 'inferred', `${escape(term.statement)} ${marking('inferred')} ${refs('glossary.html', term.sourceIds)}`)}`).join('')}</dl>`;
+  add('glossary.html', 1, 'Glossary', `<section id="glossary"><h1>Glossary</h1>${glossary}</section>`);
+
+  // --- sources: the whole population as a denominator, then one page per quotable source
+  const list = input.sources.map(source => {
+    const target = sourcePaths.get(source.sourceId);
+    const reason = source.exclusion.excluded ? source.exclusion.reason : source.classificationBasis === 'path-only' ? 'path-only; body not read' : 'body unavailable for citation';
+    return target === undefined
+      ? `<li>${escape(source.path)} [${escape(source.sourceId)}] — counted; exact text unavailable: ${escape(reason)}.</li>`
+      : `<li><a href="${escape(href('sources/index.html', target))}">${escape(source.path)}</a> [${escape(source.sourceId)}]</li>`;
+  }).join('');
+  add('sources/index.html', 1, 'Sources', `<section id="sources"><h1>Sources</h1><p>${input.sources.length} sources counted, ${quotable.length} with admitted text.</p><ul>${list}</ul></section>`);
+  for (const source of quotable) {
+    const path = sourcePaths.get(source.sourceId)!;
+    const span = source.spans[0]!;
+    add(path, 2, source.path, `<section id="exact-text" data-reading-level="3"><h1 class="source-path">${escape(source.path)}</h1><p class="source-anchor">${escape(source.sourceId)} · bytes ${span.start}–${span.end} · <code>${escape(span.anchorId)}</code></p><blockquote class="exact-source" data-quote-source="${escape(source.sourceId)}" data-quote-start="${span.start}" data-quote-end="${span.end}">${escape(span.text)}</blockquote></section>`);
+  }
+
+  const manifest = parseDossierManifest(JSON.stringify({ format: DOSSIER_FORMAT, title: draft.title, entryPage: 'index.html', pages }));
+  files.set('dossier.json', `${JSON.stringify(manifest, null, 2)}\n`);
+  const scanned = new Map(pages.map(p => [p.path, scanDossierPage(files.get(p.path)!)]));
+  files.set('size-report.json', `${JSON.stringify({ format: 'polaris-dossier-size-report-v1', ...readerCost(manifest, scanned) }, null, 2)}\n`);
+  return { files, manifest };
+}
