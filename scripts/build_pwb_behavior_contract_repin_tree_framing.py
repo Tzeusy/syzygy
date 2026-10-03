@@ -509,6 +509,24 @@ def selftest() -> int:
             "not valid JSON" in f for f in structure_findings(
                 clean, policy, (clean / policy.path).read_bytes(), b"{"))))
 
+        # A second contract object nested elsewhere (round-1 finding 2).
+        doubled = json.loads((clean / policy.path).read_bytes())
+        doubled["accessBoundary"]["governingBehaviorContract"] = {}
+        results.append(("fails: a second governingBehaviorContract object", any(
+            "objects, not one" in f for f in structure_findings(
+                clean, policy, (clean / policy.path).read_bytes(),
+                json.dumps(doubled).encode()))))
+
+        # --apply refuses a package that does not verify (round-1 finding 2).
+        tree = pathlib.Path(tmp) / "apply-refuses"
+        shutil.copytree(clean, tree)
+        manifest_flip(tree)
+        before = (tree / policy.path).read_bytes()
+        with contextlib.redirect_stdout(io.StringIO()):
+            code = apply(True, ("policy",), tree)
+        results.append(("--apply refuses a package that does not verify",
+                        code == 1 and (tree / policy.path).read_bytes() == before))
+
         # Post-act mode: apply both, add both records, and the check passes;
         # then drift the applied subject and it fails.
         tree = pathlib.Path(tmp) / "performed"

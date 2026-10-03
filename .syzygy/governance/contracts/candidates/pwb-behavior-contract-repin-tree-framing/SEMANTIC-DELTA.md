@@ -66,13 +66,13 @@ The pinned digest is the `spec.md` row of the signed package
 The builder derives it from that row and refuses a package whose pin is
 not the current `spec.md`.
 
-Why Normative rather than Clarifying: the field names which behaviour the
-entry and the policy serve. Moving it from the readability-successor
-specification to the tree-framing one changes what a reader may take each
-artifact to govern (PWB-REQ-014 with its seven tree-framing scenarios, as
-signed now). No reader is put out of compliance by it, but the governed
-object changes. Hence Normative, the class the 2026-10-02 re-pin took for
-the same move.
+Why Normative rather than Clarifying: the template's test is whether
+someone who complied before may not comply now. The field names which
+behaviour the entry and the policy serve, and the newly pinned `spec.md`
+adds seven PWB-REQ-014 tree-framing scenarios. An observer that conformed
+to the readability-successor `spec.md` the artifacts declared until now
+may not conform to the one they would declare. Hence Normative, the class
+the 2026-10-02 re-pin took for the same move.
 
 ## What explicitly does NOT change
 

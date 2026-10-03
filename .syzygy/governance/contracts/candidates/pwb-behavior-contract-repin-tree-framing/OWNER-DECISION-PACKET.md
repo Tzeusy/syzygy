@@ -1,5 +1,15 @@
 # Owner decision packet — PWB behaviour-contract re-pin to the tree-framing sign-off
 
+> **Review status, 2026-10-03.** Round 1 returned `REVISE`
+> (`docs/reviews/R-PWB-BEHAVIOR-CONTRACT-REPIN-TREE-FRAMING-RAW.md`): one
+> revise finding and six notes. All seven were repaired once in this
+> package's prose and builder selftest (`ROUND-1-DISPOSITIONS.md`); the
+> patches and the manifest, and so both act arguments, did not change.
+> Under the stopping rule set for this bead no second round was
+> dispatched, so the repaired bytes carry **no confirmation**. The owner
+> decides whether to take them as they stand or to order a round 2 first.
+> The banner below is the one the package was drafted with.
+
 > **Candidate — binds nothing.** Drafted 2026-10-03 for bead `syzygy-2g0d`.
 > Effect would come from two separate superseding owner acts and one plain
 > continuation direction, and from nothing else. Silence, a commit, a
@@ -68,16 +78,27 @@ record bound to the artifact's exact digest.
 `body-read-authority.ts` implements RFC3-16(a) and RFC3-16(b) item 3, and
 accepted RFC 0003 `governance-homes-and-owner-acts.md` says "Such an
 artifact is honored only through an **effective owner act**", and defines
-that act as one "bound to the artifact's exact digest under RFC3-16(b)". A
-version-tagged sign-off record carries no digest. [Inferred] If the
-registry were signed by tag, no lawful re-point would exist: the gate would
-stay closed until the owner decided whether a tag on a commit satisfies
-RFC3-16(b) item 3, and the implementation learned to read such a record.
-The Scope A direction's own "What this does not do" section also says the
-existing phrase-and-digest acts "remain the only way to perform the queued
-packages" until that contract change lands. Keeping the registry on the
-digest path keeps all three PWB-REQ-005 authorities in one evaluable form,
-and makes direction C a pointer change only.
+that act as one "bound to the artifact's exact digest under RFC3-16(b)". RFC3-16(b)
+item 3 asks for "the **exact content or revision digest** of the artifact
+as acted on". A version-tagged sign-off record carries no digest of the
+artifact. [Inferred] If the registry were signed by tag, no lawful
+re-point would exist: the gate would stay closed until the owner decided
+whether a tag on a commit is a "revision digest" under item 3, and the
+implementation learned to read such a record.
+
+The Scope A direction's "What this does not do" section says: "The
+replacement mechanism and the removal of the digest machinery for the
+covered artifacts travel as one governed change after this record. Until
+that change lands, the existing phrase-and-digest acts remain the only way
+to perform the queued packages." [Observed] Part of that change has
+landed: commit `842b624f` (2026-10-02) added
+`scripts/record_versioned_signoff.py`, which recorded the very sign-off
+this package pins to. [Observed] The part the registry would need has not:
+the gate still evaluates the registry role only from an exact-digest act
+record. So the tag path is open in principle, as the next paragraph says,
+but not yet evaluable by the gate. Keeping the registry on the digest path
+keeps all three PWB-REQ-005 authorities in one evaluable form, and makes
+direction C a pointer change only.
 
 The Scope A path stays open to the owner: say "sign the registry entry by
 version tag instead", and B becomes a version-tagged sign-off of this
@@ -183,9 +204,14 @@ and re-reviewed. A `--write` alone would not move the pin.
    path")? Drafted: digest act.
 2. **Version labels.** As drafted, both labels stay where they are. A bump
    to, say, `1.2.1-candidate.1` and `1.1.1-candidate.1` would change both
-   arguments, the gate's scope anchors and two tests that read
-   `policyVersion` from the file. Direction C would then also cover the
-   anchors. Drafted: no bump.
+   arguments, the gate's scope anchors and its `policyVersion`
+   expectation (`governance-inputs.ts`), the core constants
+   `policyVersion` in `git-object-reader.ts` and `observerVersion` in
+   `project-shape-observation.ts`, two tests that read `policyVersion`
+   from the file, and the hard-coded labels in four test files (`git grep
+   -l -F` for either label over the `*.test.ts` files under `packages/`
+   and `apps/`). Direction C would then have to cover all of these, not only
+   the anchors. Drafted: no bump.
 3. **The pin will go stale again.** This is the second re-pin in two days,
    and the 2026-10-02 packet predicted it. Every PWB outcome that moves
    `spec.md` reopens R6 for both artifacts and costs two acts, a direction
