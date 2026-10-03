@@ -1,8 +1,8 @@
-# Review brief — public-admission registry entries (round 2)
+# Review brief — public-admission registry entries (round 3)
 
 > **Candidate — binds nothing.** This brief says what an independent reviewer
 > is given and what they decide. It is not a review and carries no verdict.
-> Round 1 returned REVISE; this is the round-2 brief over the repaired bytes.
+> Rounds 1 and 2 returned REVISE; this is the round-3 brief over the repaired bytes.
 
 ## What the reviewer is given, and nothing else
 
@@ -35,6 +35,24 @@ registration in `scripts/check_governance.py` (`PUBLIC_REGISTRY_DIR`, `PUBLIC_RE
 - `decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md` and
   `decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md` (Ceremony).
 - `packages/polaris-generation-core/src/pipeline.ts` (`PipelinePorts`).
+
+## Round 2 and the repair
+
+The round-2 raw is `reviews/R-PUBLIC-ADMISSION-REGISTRY-ENTRIES-2-RAW.md`
+(REVISE: finding 1 blocking, findings 2 to 10 notes). Repairs, to be checked
+against each finding rather than taken on trust:
+
+- F1: the runtime-fixed bytes, the pinned model, empty tools, effort, thinking
+  and a max_tokens ceiling are inline in the provider entry (`requestBytes`);
+  the acceptance check admits only the generator's parts and `requestBytes`;
+  `PROVIDER-EGRESS-BYTES.md` is provenance with a blob and commit named.
+- F2: max_tokens and cache_control re-attributed; the pin note is [Inferred].
+- F3, F10: the packet's limit list and review statement corrected.
+- F4: the packet and delta say accepting O4 needs an egress record version.
+- F5: the egress record is to be pinned by digest at the offering.
+- F6: scalar determinism explained. F7: per-class RFC2-1 mapping incl. item 11.
+- F8: exact fetch string; egress source, acceptance and pinned-field mutants.
+- F9: usage reason argued (reason 2); adapter failure, cancellation, deadline.
 
 ## Round 1 and the repair
 
@@ -98,7 +116,7 @@ Each is a yes/no question with the evidence that settles it.
     selftest covers with no mutant must be named.
 11. **Is each proposed resource limit labelled as a proposal rather than a
     measurement, and does each declared limit have semantics?**
-12. **Does each round-1 repair hold against its finding, and did any repair
+12. **Does each round-1 and round-2 repair hold against its finding, and did any repair
     introduce a new defect?** Re-derive counts and quotes from the bytes.
 13. **Does the provider entry's account of the request match
     `PROVIDER-EGRESS-BYTES.md` for the pinned versions, with nothing the
@@ -115,7 +133,7 @@ Each is a yes/no question with the evidence that settles it.
 ## Recording
 
 Store the raw output verbatim in this package's `reviews/` directory as
-`R-PUBLIC-ADMISSION-REGISTRY-ENTRIES-2-RAW.md` (a re-issue is a further
+`R-PUBLIC-ADMISSION-REGISTRY-ENTRIES-3-RAW.md` (a re-issue is a further
 `-RAW.md`). **The raw's head is a predicate a recorder will enforce.** The
 first four non-blank lines must be the title and exactly:
 

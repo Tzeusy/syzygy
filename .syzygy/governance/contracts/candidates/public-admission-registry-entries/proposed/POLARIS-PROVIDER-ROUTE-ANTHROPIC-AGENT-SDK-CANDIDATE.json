@@ -101,7 +101,7 @@
         "questions": [
           "What did the provider return for this exact request?"
         ],
-        "readAuthority": "none: the route reads no source. It transmits the request the generator built (the stage system prompt and the stage input envelope, each after the single egress check, RFC5-15) together with the bytes the pinned runtime adds itself, and receives the reply. [Observed, capture endpoint, no provider contacted] the runtime-fixed additions are listed in PROVIDER-EGRESS-BYTES.md (PR #258): a fixed system prefix, an empty system message carrying an effort setting, metadata.user_id with a random per-run-directory device id and session id, max_tokens, stream, cache_control, platform headers that identify the machine's OS, CPU architecture and Node runtime version, and, after some failures, a body-less HEAD /api/hello probe",
+        "readAuthority": "none: the route reads no source. It transmits the request the generator built (the stage system prompt and the stage input envelope, each after the single egress check, RFC5-15) together with the bytes the pinned runtime adds itself, and receives the reply. [Observed, capture endpoint, no provider contacted] the additions are listed in full in requestBytes: a fixed system prefix, an empty system message carrying the pinned effort, metadata.user_id with a random per-run-directory device id and session id, stream, cache_control on the generator's parts, the pinned model, the max_tokens ceiling, the headers listed there (including the platform headers that identify the machine's OS, CPU architecture and Node runtime version) and, after some failures, a body-less HEAD /api/hello probe",
         "writeSurface": [],
         "runDirectoryWrites": "provider requests, replies, run records and the runtime's own state, including any session transcript, are written inside the run directory under project:syzygy's state directory, outside git, from the start of the run (the egress record's retention line). [Unknown] whether a signed-in runtime refreshes or writes its credential outside that directory; the entry cannot be offered until that is checked",
         "databaseAccess": [],
@@ -111,17 +111,17 @@
         "executeObservedCode": false,
         "workingTreeRead": false,
         "toolInvocation": [],
-        "generatorBuiltContent": "exactly two request parts are generator content: the stage system prompt and the stage input envelope (the user text block). Everything else in the request is runtime-fixed or profile-set and carries no source span; the model identifier is profile-set",
+        "generatorBuiltContent": "exactly two request parts are generator content: the stage system prompt and the stage input envelope (the user text block), each carrying the cache_control the runtime attaches. Everything else in the request is listed in requestBytes as runtime-fixed or pinned by this entry and carries no source span",
         "writeSurfaceArgument": "writeSurface is empty because nothing is written to the observed repository, its forks, its tracker or any Anthropic-hosted object the owner could later edit. The dispatch itself is an effect (the pipeline rechecks effect permission immediately before it); the egress consent is the explicit authority for that effect and for the provider's retention under the account's terms, which this entry does not widen",
         "toolInvocationNote": "the empty list holds in the default text mode. The opt-in schema mode adds exactly one tool, StructuredOutput, which contradicts no-tools; it is off by default and enabling it is a different route condition that the egress record must name first"
       },
       "routeConditions": {
-        "source": "record PUBLIC-EGRESS-anthropic of the public-repo admission package (PR #215), version 0.1.0-candidate.7 at drafting; the offering step re-pins the version in force. The egress record is the authority, this block only declares what the implementation will enforce and cannot widen it",
+        "source": "record PUBLIC-EGRESS-anthropic of the public-repo admission package (PR #215), version 0.1.0-candidate.7 at drafting. A version string does not identify bytes (the record kept that version across edits), so the offering step pins the record by the digest of its own manifest row. The egress record is the authority; this block only declares what the implementation will enforce and cannot widen it",
         "tools": "tools is [] in the request; no tool of the runtime or the provider's side is offered or invoked; the opt-in StructuredOutput schema mode is off by default (see toolInvocationNote)",
-        "ambientContext": "the runtime loads no instruction or memory files, user or project settings, MCP servers, hooks, environment summary or safeguards block; its working directory is an empty directory inside the run directory. The runtime-fixed system prefix and empty system message are model-visible context the generator did not build; they are listed, not hidden, in PROVIDER-EGRESS-BYTES.md",
+        "ambientContext": "the runtime loads no instruction or memory files, user or project settings, MCP servers, hooks, environment summary or safeguards block; its working directory is an empty directory inside the run directory. The runtime-fixed system prefix and empty system message are model-visible context the generator did not build; they are listed in requestBytes. The egress record's Conditions say the route adds no context of its own, so accepting this envelope needs an egress record version that admits the listed runtime-fixed bytes (packet O4)",
         "telemetry": "telemetry, error reporting and update checks are disabled; a run whose runtime cannot disable them does not start",
         "stateLocation": "a run whose runtime cannot keep its state and transcript inside the run directory does not start",
-        "acceptanceCheck": "the adapter is accepted only when a request captured at a local endpoint, before any real call, shows the generator-built parts byte for byte equal to what the generator built, and every other byte inside the runtime-fixed or profile-set lists of PROVIDER-EGRESS-BYTES.md for the pinned versions; any byte in neither list fails. This separates runtime envelope from content, and states that the runtime envelope is not the generator's request",
+        "acceptanceCheck": "the adapter is accepted only when a request captured at a local endpoint, before any real call, shows (1) the generator-built parts byte for byte equal to what the generator built and (2) every other byte equal to requestBytes: the runtimeFixed list, the routeFixedByThisEntry values, the headers list and the probe, for the pinned SDK and CLI versions. Any byte, header or field in neither fails. The check separates runtime envelope from content and admits no profile-set byte beyond the values this entry pins",
         "fallback": "none: a failure never routes to another provider, to the direct API or to a tool"
       },
       "portMapping": {
@@ -164,11 +164,17 @@
         },
         "usageUncertain": {
           "degradationState": "Missing quantity",
-          "unknownReason": "source-uncaptured-or-unreachable",
-          "note": "the pipeline stops with usage-uncertain; absent tokens or cost are Unknown, never zero (RFC2-23)"
+          "unknownReason": "missing-evidence",
+          "note": "the pipeline stops with usage-uncertain; absent tokens or cost are Unknown, never zero (RFC2-23). RFC2-23 names no reason for Missing quantity: unreported usage is an absent evidence quantity for a cost claim, which is reason 2 rather than an uncaptured deterministic input (reason 10) [Inferred]"
         },
         "dispatchUncertain": "not a degradation state: an execution fact (the pipeline stops with effect-uncertain and a lease expiry never replays the request), routed through the existing claim-reason predicate like budget exhaustion (ADAPTER-DECLARATIONS.md, failure behaviour)",
-        "budgetExhaustedOrRejectedOutput": "not a degradation state: distinct execution facts (ADAPTER-DECLARATIONS.md, failure behaviour), mapped to the existing claim-reason predicate"
+        "budgetExhaustedOrRejectedOutput": "not a degradation state: distinct execution facts (ADAPTER-DECLARATIONS.md, failure behaviour), mapped to the existing claim-reason predicate",
+        "adapterFailureAtReachableEndpoint": {
+          "degradationState": "Observer failed",
+          "unknownReason": "source-uncaptured-or-unreachable",
+          "note": "a malformed stream or a 5xx from a reachable endpoint is an adapter error (RFC4-4), distinct from routeUnreachable"
+        },
+        "cancelledOrDeadline": "not a degradation state: execution facts like budget exhaustion (the pipeline stops with cancelled or deadline), routed through the existing claim-reason predicate"
       },
       "admissionFailureMapping": {
         "missingConsent": "unconsented-source-or-provider (a refused effect under the permission predicate; no withdrawal event is invented)",
@@ -183,16 +189,86 @@
         "package": "@anthropic-ai/claude-agent-sdk",
         "version": "0.3.288",
         "bundledCli": "2.1.288",
-        "note": "[Observed] per PROVIDER-EGRESS-BYTES.md (PR #258): the adapter refuses construction on another SDK version and fails a call whose CLI announces another; a bump is a new entry version"
+        "note": "[Inferred] per PROVIDER-EGRESS-BYTES.md (PR #258): the adapter is designed to refuse construction on another SDK version and to fail a call whose CLI announces another; the adapter is unmerged and a bump is a new entry version"
       },
-      "snapshotInputMapping": "[Inferred] RFC2-1 items: the request inputs are item 8 (deterministic configuration affecting classification: stage prompt, schema, run profile) and item 7 (adapter and runtime versions, policy versions); replies are item 6 (captured execution evidence). The installed Butlers entry carries no such mapping either, so this is an inherited gap; the mapping is the drafter's and the reviewer should test it",
+      "snapshotInputMapping": {
+        "label": "[Inferred] RFC2-1 items; the installed Butlers entry carries no mapping, so the gap is inherited and this mapping is the drafter's",
+        "admitted-source-bundle": "item 8 (deterministic configuration affecting classification) and item 1 for the admitted revisions it was drawn from",
+        "stage-prompt": "item 8",
+        "response-schema": "item 8",
+        "egress-consent": "item 11 (owner-act record establishing effective status)",
+        "content-classification-policy": "items 7 and 11",
+        "provider-route-registry-entry": "items 7 and 11",
+        "run-and-attempt-identity": "item 6 (captured execution evidence)",
+        "run-budget": "item 8",
+        "runtime-version-and-configuration": "item 7",
+        "owner-sign-in-credential": "none: never recorded (its presence is a precondition, not a snapshot input)",
+        "outputs": "provider-reply-capture, usage-record, dispatch-evidence and model-identity are item 6"
+      },
       "determinismByOutputClass": {
         "provider-reply-capture": "capture",
         "usage-record": "capture",
         "dispatch-evidence": "capture",
         "model-identity": "capture",
         "unknown": "derivation-deterministic"
-      }
+      },
+      "requestBytes": {
+        "status": "the exact request the route may carry for the pinned versions, inline so the bytes an act binds are these bytes; PROVIDER-EGRESS-BYTES.md is cited as provenance only and its later edits change nothing here",
+        "provenance": "[Observed, capture endpoint, no provider contacted] PROVIDER-EGRESS-BYTES.md on the branch of PR #258, blob 2e7d176e668417bf9842be8b11703f5fe2cc39ca at commit 420c60f91a7122cc0224a29ec41d4e9bb29d5ec8; that adapter is unmerged",
+        "pinnedVersions": {
+          "package": "@anthropic-ai/claude-agent-sdk",
+          "version": "0.3.288",
+          "bundledCli": "2.1.288"
+        },
+        "endpoint": "POST /v1/messages?beta=true (text mode)",
+        "generatorBuilt": [
+          "system[1]: exactly the stage system prompt, with cache_control ephemeral attached to it",
+          "messages[0]: one user text block, exactly the stage input envelope, with cache_control ephemeral attached to it"
+        ],
+        "runtimeFixed": [
+          "system[0]: You are a Claude agent, built on Anthropic's Claude Agent SDK. (cache_control ephemeral)",
+          "messages[1]: {\"role\":\"system\",\"content\":[],\"output_config\":{\"effort\":\"<the pinned effort>\"}}",
+          "metadata.user_id: {\"device_id\":\"<hex64>\",\"account_uuid\":\"\",\"session_id\":\"<uuid>\"}, both ids random per run directory",
+          "stream: true"
+        ],
+        "routeFixedByThisEntry": {
+          "model": "claude-opus-5-5",
+          "tools": [],
+          "effort": "medium",
+          "thinking": "absent (CLAUDE_CODE_DISABLE_THINKING=1); enabling it adds thinking and context_management and is not a permitted configuration",
+          "maxTokensCeiling": "[Inferred proposal] 32000; the sent max_tokens is the minimum of this ceiling, the profile's maxOutputTokens and the dispatch permit's output and usage allowances, so the permit may only lower it",
+          "note": "model, tools, effort and max_tokens are profile-set in the measurement; this entry pins them so they are bytes it lists as fixed, the form the egress record admits"
+        },
+        "headers": [
+          "user-agent: claude-cli/2.1.288 (external, sdk-ts, agent-sdk/0.3.288)",
+          "x-claude-code-session-id (the same uuid)",
+          "x-stainless-os",
+          "x-stainless-arch",
+          "x-stainless-runtime",
+          "x-stainless-runtime-version",
+          "x-stainless-package-version",
+          "x-stainless-lang",
+          "x-stainless-retry-count",
+          "x-stainless-timeout",
+          "x-app: cli",
+          "anthropic-version",
+          "anthropic-beta (CLI feature betas)",
+          "anthropic-dangerous-direct-browser-access",
+          "x-api-key",
+          "transport headers"
+        ],
+        "headerNote": "the x-stainless platform headers identify the machine's OS, CPU architecture and Node runtime version",
+        "probe": "after some failures the CLI sends HEAD /api/hello with user-agent Bun/1.4.3 and no body to the API host; it carries no generator bytes and is the only non-message request allowed",
+        "absentByConstruction": [
+          "the # Environment message (cwd, OS, date)",
+          "the billing-header system block",
+          "thinking and context_management",
+          "the safeguards block (permissionMode auto only)",
+          "any tool, including StructuredOutput (schema mode is off by default)"
+        ],
+        "unlistedBytes": "any byte, header or field not listed above fails the acceptance check"
+      },
+      "determinismClassNote": "the scalar form is kept for the shape precedent's key and names the primary class; determinismByOutputClass is the machine form and governs"
     }
   ]
 }

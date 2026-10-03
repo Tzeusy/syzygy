@@ -48,6 +48,13 @@ REASONS = {"missing-declaration", "missing-evidence", "no-currency-bound-declare
            "execution-blocked"}
 CLASSES = {"capture", "derivation-deterministic"}
 FETCH = "git fetch --depth=1 --no-tags --no-recurse-submodules <upstream> <commit>"
+FETCH_FULL = (FETCH + ": one shallow fetch of exactly one admitted commit object id per fetch from the "
+              "upstream locator named in the observation consent; a fetch of any other object, ref, tag "
+              "or history is refused")
+EGRESS_SOURCE = re.compile(r"record PUBLIC-EGRESS-anthropic .*version \d+\.\d+\.\d+-candidate\.\d+")
+ACCEPTANCE = ("byte for byte", "requestBytes", "in neither fails")
+#: Request fields the entry must pin itself, so the acceptance admits no profile-set byte.
+PINNED = ("model", "tools", "effort", "thinking", "maxTokensCeiling")
 RUNTIME_PIN = ("0.3.288", "2.1.288")
 
 
@@ -96,6 +103,14 @@ def findings_for(name, doc, butlers_contract):
             out.append(f"{name}: failure state {key} names neither a degradation state nor an execution fact")
         if state.get("unknownReason") not in REASONS:
             out.append(f"{name}: failure state {key} names a reason outside RFC2-24")
+    if "determinismClassNote" not in e:
+        out.append(f"{name}: scalar determinismClass is unexplained")
+    if not isinstance(e.get("snapshotInputMapping"), dict):
+        out.append(f"{name}: snapshotInputMapping is not a per-class mapping")
+    else:
+        unmapped = {c.get("class") for c in e.get("inputClasses", [])} - set(e["snapshotInputMapping"])
+        if unmapped:
+            out.append(f"{name}: snapshotInputMapping omits input classes {sorted(unmapped)}")
     if e.get("supersession") is None:
         out.append(f"{name}: supersession statement missing")
     if e.get("snapshotInputMapping") is None:
@@ -111,8 +126,21 @@ def findings_for(name, doc, butlers_contract):
         if (pin.get("version"), pin.get("bundledCli")) != RUNTIME_PIN:
             out.append(f"{name}: runtimePin is not the measured SDK and CLI versions")
         rc = e.get("routeConditions", {})
-        if "PUBLIC-EGRESS-anthropic" not in rc.get("source", "") or "version" not in rc.get("source", ""):
+        if not EGRESS_SOURCE.search(rc.get("source", "")):
             out.append(f"{name}: routeConditions.source names no egress record ID and version")
+        if not all(w in rc.get("acceptanceCheck", "") for w in ACCEPTANCE):
+            out.append(f"{name}: acceptanceCheck does not require generator parts byte for byte and the listed bytes")
+        rb = e.get("requestBytes", {})
+        for k in ("pinnedVersions", "generatorBuilt", "runtimeFixed", "routeFixedByThisEntry", "headers", "probe", "absentByConstruction", "unlistedBytes"):
+            if k not in rb:
+                out.append(f"{name}: requestBytes lacks {k}")
+        for k in PINNED:
+            if k not in rb.get("routeFixedByThisEntry", {}):
+                out.append(f"{name}: routeFixedByThisEntry does not pin {k}")
+        if (rb.get("pinnedVersions", {}).get("version"), rb.get("pinnedVersions", {}).get("bundledCli")) != RUNTIME_PIN:
+            out.append(f"{name}: requestBytes pins other versions than runtimePin")
+        if "requestBytes" not in ta.get("readAuthority", ""):
+            out.append(f"{name}: readAuthority does not point at requestBytes")
         if not rc.get("fallback", "").startswith("none"):
             out.append(f"{name}: fallback must be none")
         if len(ta.get("networkAccess", [])) != 1:
@@ -128,7 +156,7 @@ def findings_for(name, doc, butlers_contract):
             out.append(f"{name}: unknowns lists no Unknown")
     else:
         fetch = e.get("typedAuthority", {}).get("fetch", "")
-        if not fetch.startswith(FETCH + ":") or "exactly one admitted commit" not in fetch:
+        if fetch != FETCH_FULL:
             out.append(f"{name}: fetch is not the declared shallow single-commit form")
         ta = e.get("typedAuthority", {})
         if len(ta.get("networkAccess", [])) != 1:
@@ -225,11 +253,24 @@ def selftest():
     mut("runtime version input dropped", prov, lambda e, d: e["inputClasses"].pop(-2), "runtime-version")
     mut("write surface unargued", prov, lambda e, d: e["typedAuthority"].pop("writeSurfaceArgument"), "not argued")
     mut("unknowns emptied", prov, lambda e, d: e.update(unknowns=[]), "lists no Unknown")
+    mut("acceptance admits any byte", prov, lambda e, d: e["routeConditions"].update(acceptanceCheck="any byte passes"), "acceptanceCheck")
+    mut("egress version dropped", prov, lambda e, d: e["routeConditions"].update(source="record PUBLIC-EGRESS-anthropic, any version"), "egress record")
+    mut("profile-set model unpinned", prov, lambda e, d: e["requestBytes"]["routeFixedByThisEntry"].pop("model"), "does not pin")
+    mut("max_tokens ceiling unpinned", prov, lambda e, d: e["requestBytes"]["routeFixedByThisEntry"].pop("maxTokensCeiling"), "does not pin")
+    mut("runtime-fixed list dropped", prov, lambda e, d: e["requestBytes"].pop("runtimeFixed"), "requestBytes lacks")
+    mut("headers list dropped", prov, lambda e, d: e["requestBytes"].pop("headers"), "requestBytes lacks")
+    mut("request bytes pin other versions", prov, lambda e, d: e["requestBytes"]["pinnedVersions"].update(version="0.3.289"), "other versions")
+    mut("readAuthority stops pointing at requestBytes", prov,
+        lambda e, d: e["typedAuthority"].update(readAuthority="none"), "readAuthority")
+    mut("scalar determinism unexplained", src, lambda e, d: e.pop("determinismClassNote"), "unexplained")
+    mut("input class unmapped", prov, lambda e, d: e["snapshotInputMapping"].pop("run-budget"), "omits input classes")
     mut("full-history fetch", src, lambda e, d: e["typedAuthority"].update(fetch="git clone <upstream>"), "fetch")
     mut("fetch loses --no-tags", src,
         lambda e, d: e["typedAuthority"].update(fetch=e["typedAuthority"]["fetch"].replace("--no-tags ", "")), "fetch")
     mut("fetch adds all tags", src,
         lambda e, d: e["typedAuthority"].update(fetch=e["typedAuthority"]["fetch"].replace(": one", " --tags: one")), "fetch")
+    mut("fetch widened after the colon", src,
+        lambda e, d: e["typedAuthority"].update(fetch=e["typedAuthority"]["fetch"] + " and all tags and full history"), "fetch")
     mut("limit without semantics", src, lambda e, d: e["resourceLimits"].update(maxIndexDepth=16), "no semantics")
     with tempfile.TemporaryDirectory() as t:
         root = pathlib.Path(t) / "pkg"

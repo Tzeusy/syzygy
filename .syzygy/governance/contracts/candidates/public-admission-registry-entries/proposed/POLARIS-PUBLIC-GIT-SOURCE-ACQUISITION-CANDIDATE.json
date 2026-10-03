@@ -159,7 +159,18 @@
       },
       "adoptionStatus": "candidate-entry-unadopted",
       "supersession": "signing these bytes would register the acquisition boundary and enable nothing; a usable entry is a later observerVersion that fills implementationVersion and governingBehaviorContract.version, is reviewed afresh and is signed by its own act (rule 10: any byte change retires this row)",
-      "snapshotInputMapping": "[Inferred] RFC2-1 items: the admitted revision and its object database are item 1 (observed repository and its state; working-tree state is declared absent), screening scope and registry entry are items 7 and 8, resource limits are item 8. The installed Butlers entry carries no such mapping either, so this is an inherited gap; the mapping is the drafter's and the reviewer should test it",
+      "snapshotInputMapping": {
+        "label": "[Inferred] RFC2-1 items; the installed Butlers entry carries no mapping, so the gap is inherited and this mapping is the drafter's",
+        "observation-consent": "item 11 (owner-act record establishing effective status)",
+        "admitted-revision": "item 1 (observed repository and its state; working-tree state is declared absent)",
+        "public-source-screening-scope": "items 7 and 11",
+        "source-acquisition-registry-entry": "items 7 and 11",
+        "git-object-database": "item 1",
+        "git-tree-entry": "item 1",
+        "git-blob": "item 1",
+        "resource-limits": "item 8",
+        "outputs": "acquisition-capture-record, source-reference, source-span and content-exclusion derive from item 1; unknown is a render fact"
+      },
       "determinism": "the fetch is a capture: a recording of what the hosting service returned for the named commit at the capture instant. Everything derived from the captured objects is derivation-deterministic over the identified capture; the per-class field below is the machine form",
       "determinismByOutputClass": {
         "acquisition-capture-record": "capture",
@@ -167,7 +178,8 @@
         "source-span": "derivation-deterministic",
         "content-exclusion": "derivation-deterministic",
         "unknown": "derivation-deterministic"
-      }
+      },
+      "determinismClassNote": "the scalar form is kept for the shape precedent's key and names the primary class (the fetch); determinismByOutputClass is the machine form and governs where they differ"
     }
   ]
 }

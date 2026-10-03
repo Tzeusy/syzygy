@@ -3,5 +3,5 @@
 # 2 artifacts; rows sorted by codepoint path; each row hashes the
 # proposed file's exact bytes and is the argument of one separate owner act.
 # Each row requires its own act; neither row binds the other.
-5ad28e806c8a16b4d6dd6737a7f9366024baafa379023e3cb4595a1dfdb7c565  .syzygy/governance/contracts/candidates/public-admission-registry-entries/proposed/POLARIS-PROVIDER-ROUTE-ANTHROPIC-AGENT-SDK-CANDIDATE.json
-13884dc8e61ca7173565b76cf773816c861afc9876f91d060a8b4c1062159e11  .syzygy/governance/contracts/candidates/public-admission-registry-entries/proposed/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-CANDIDATE.json
+0e9154df129874449e140e7e36f35bc71ff859099a26dcf523f1a3fdde04c2ba  .syzygy/governance/contracts/candidates/public-admission-registry-entries/proposed/POLARIS-PROVIDER-ROUTE-ANTHROPIC-AGENT-SDK-CANDIDATE.json
+e50036e266f5147b95ec5a5d9f466c9068033aa357f46486e670f775c5483240  .syzygy/governance/contracts/candidates/public-admission-registry-entries/proposed/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-CANDIDATE.json
