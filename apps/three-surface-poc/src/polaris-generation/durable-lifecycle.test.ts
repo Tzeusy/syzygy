@@ -15,7 +15,7 @@ const request = (): PipelineRequest => ({
   requestId: 'run-one', projectId: 'project-one', snapshotId: 'snapshot-one', startedAt: Date.now(),
   routes: { inventory: 'route-inventory', plan: 'route-plan', author: 'route-author', edit: 'route-edit', fidelity: 'route-fidelity', repair: 'route-repair' },
   sources: [syntheticGenerationSource('project-one', 'a'.repeat(40), 'purpose', 'The declared purpose.')],
-  readerQuestions: ['Why does it exist?'], requestedAssets: [],
+  readerQuestions: [{ id: 'why', topics: [], text: 'Why does it exist?' }], requestedAssets: [],
   budget: { maxCalls: 7, maxInputBytes: 100_000, maxOutputBytes: 100_000, maxUsageUnits: 100,
     maxElapsedMs: 30_000, maxRepairCycles: 1, accountingPolicy: 'synthetic-units' },
 });

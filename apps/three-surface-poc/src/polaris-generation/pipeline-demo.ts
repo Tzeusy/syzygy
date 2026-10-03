@@ -78,7 +78,7 @@ export async function runSyntheticProject(project: SyntheticProject) {
     requestId: `synthetic-${project.id}-${snapshotDigest}`, projectId: project.id, snapshotId: snapshotDigest,
     routes: { inventory: 'synthetic-fixture', plan: 'synthetic-fixture', author: 'synthetic-fixture', edit: 'synthetic-fixture', fidelity: 'synthetic-fixture', repair: 'synthetic-fixture' },
     startedAt: Date.now(),
-    sources, readerQuestions: ['Why does it exist?', 'How do the main pieces connect?', 'What remains a human judgment?'],
+    sources, readerQuestions: [{ id: 'why', topics: [], text: 'Why does it exist?' }, { id: 'connect', topics: [], text: 'How do the main pieces connect?' }, { id: 'judgment', topics: [], text: 'What remains a human judgment?' }],
     requestedAssets: [
       { id: 'how', kind: 'section', required: true },
       { id: 'architecture', kind: 'diagram', required: true },

@@ -3,6 +3,7 @@ import { CanonicalJsonError, digestCanonicalJson, encodeCanonicalJson, type Cano
 import { parseBoundedJson } from './parse-json.js';
 import { promptForStage, type GenerationStage } from './prompts.js';
 import { validateRequestedAssets, type RequestedAsset } from './provider-draft.js';
+import { validateReaderQuestions } from './reader-questions.js';
 
 export interface GenerationBudget {
   readonly maxCalls: number;
@@ -189,6 +190,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
     if (Object.keys(request.routes ?? {}).sort().join(',') !== 'author,edit,fidelity,inventory,plan,repair'
       || Object.values(request.routes).some(route => typeof route !== 'string' || route.length === 0)) stop('invalid-request');
     try { validateRequestedAssets(request.requestedAssets); } catch { stop('invalid-request'); }
+    try { validateReaderQuestions(request.readerQuestions); } catch { stop('invalid-request'); }
     // Canonicalize before inspecting nested caller-owned records: this rejects
     // getters/proxies and detaches them before the first asynchronous boundary.
     let detached: PipelineRequest;

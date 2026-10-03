@@ -125,7 +125,7 @@ async function runScripted(corpus: SelfCorpus, maxInputBytes: number): Promise<S
     const request: PipelineRequest = {
       requestId: `self-${corpus.identityDigest}`, projectId: 'project:syzygy', snapshotId: corpus.identityDigest,
       routes: { inventory: 'scripted-inventory', plan: 'scripted-plan', author: 'scripted-author', edit: 'scripted-edit', fidelity: 'scripted-independent-review', repair: 'scripted-repair' },
-      startedAt: Date.now(), sources: corpus.sources, readerQuestions: ['What purpose is supported?', 'Which boundaries remain?'],
+      startedAt: Date.now(), sources: corpus.sources, readerQuestions: [{ id: 'purpose', topics: [], text: 'What purpose is supported?' }, { id: 'boundaries', topics: [], text: 'Which boundaries remain?' }],
       requestedAssets: [{ id: 'account', kind: 'section', required: true }],
       budget: { maxCalls: 7, maxInputBytes, maxOutputBytes: 1_000_000, maxUsageUnits: 100, maxElapsedMs: 30_000, maxRepairCycles: 1, accountingPolicy: 'scripted-units-v1' },
     };
