@@ -1,17 +1,17 @@
 {
   "subject": {
-    "commit": "361224470befd3632b015428adeea5a8f410d899",
+    "commit": "8ea9133ca41c7759212d8ca0dae93473ae436927",
     "branch": "agent/dossier-engine-6",
     "fileSha256": {
       "apps/three-surface-poc/src/polaris-generation/dossier-main.ts": "724861f7b17be0f70ad4bded975869eda3854b6675b73280fdc5e1092fc3501d",
       "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts": "97603e5cce386536dbc1d614c86431172cbf2a1f58ee0429759911abf852941c",
-      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "f49b71fc02fccc9400230e22a2ae59ec14d954ed87a5d58721c359993810915a",
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "f9998351a3e14ec1254efb69ad45fb3bb96d243236fe4cae4d26769e5b49e5b2",
       "apps/three-surface-poc/src/polaris-generation/isolated-git.ts": "1a8867e9038746d4515c09877c5b768bac964dc4b8e409647fcfaa3ed1d713b7"
     }
   },
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/three-surface-poc-app",
-  "ranAt": "2026-10-03T18:35:21+00:00",
+  "ranAt": "2026-10-03T19:41:54+00:00",
   "mutants": [
     {
       "id": "materialize-env-inherits",
@@ -24,7 +24,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "lsremote-env-inherits",
@@ -37,7 +37,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "materialize-not-bare",
@@ -50,7 +50,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "materialize-template",
@@ -63,7 +63,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "materialize-isolation-flags",
@@ -76,7 +76,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25,
+      "totalTests": 26,
       "note": "killed by the spy test: init must carry the isolation flags"
     },
     {
@@ -90,7 +90,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "default-out-cleanup",
@@ -103,7 +103,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "permitted-always",
@@ -116,7 +116,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "permitted-never",
@@ -129,7 +129,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "permitted-wrong-record",
@@ -142,7 +142,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "collision",
@@ -155,7 +155,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "no-renderer-record",
@@ -168,7 +168,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "exit-unavailable",
@@ -181,7 +181,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "exit-stopped",
@@ -194,7 +194,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "exit-complete",
@@ -207,7 +207,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "out-ignored",
@@ -220,7 +220,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "question-text",
@@ -233,7 +233,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "receipts-in-record",
@@ -246,7 +246,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "network-home",
@@ -259,7 +259,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "network-protocol",
@@ -272,7 +272,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "network-builds-on-allowlist",
@@ -284,8 +284,8 @@
         "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 4,
-      "totalTests": 25
+      "failedTests": 3,
+      "totalTests": 26
     },
     {
       "id": "discovery-spreads-ports",
@@ -297,8 +297,8 @@
         "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 25
+      "failedTests": 1,
+      "totalTests": 26
     },
     {
       "id": "discovery-receipt-defaulted",
@@ -311,7 +311,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "main-default-render",
@@ -324,7 +324,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "read-env-inherits",
@@ -337,7 +337,7 @@
       ],
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "read-env-config-global",
@@ -350,7 +350,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "write-through-writedossierrun",
@@ -363,7 +363,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 25
+      "totalTests": 26
     },
     {
       "id": "missing-truthy-count",
@@ -375,7 +375,7 @@
       ],
       "outcome": "survived",
       "failedTests": 0,
-      "totalTests": 24,
+      "totalTests": 25,
       "note": "equivalent: every answer reaches this count through soundAnswer, which returns satisfied as the literal true or false, so !satisfied and satisfied !== true agree; the strict form is defence in depth, and the sound-answer-bypass mutant (which removes soundAnswer) is the one that kills"
     },
     {
@@ -388,7 +388,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 24
+      "totalTests": 25
     },
     {
       "id": "sound-answer-true-strict",
@@ -400,31 +400,31 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 24
+      "totalTests": 25
     },
     {
       "id": "sound-answer-record-required",
       "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
-      "old": "return typeof a.record === 'string' && a.record.length > 0 ? ",
+      "old": "return typeof a.record === 'string' && a.record.trim().length > 0 ? ",
       "new": "return true ? ",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 24
+      "totalTests": 25
     },
     {
       "id": "sound-answer-record-nonempty",
       "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
-      "old": "typeof a.record === 'string' && a.record.length > 0",
-      "new": "typeof a.record === 'string'",
+      "old": "typeof a.record === 'string' && a.record.trim().length > 0",
+      "new": "typeof a.record === 'string' && a.record.length > 0",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 24
+      "totalTests": 25
     },
     {
       "id": "permitted-unsound",
@@ -436,7 +436,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 24
+      "totalTests": 25
     },
     {
       "id": "preflight-dropped",
@@ -448,7 +448,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 24
+      "totalTests": 25
     },
     {
       "id": "preflight-absence-dropped",
@@ -460,7 +460,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 24
+      "totalTests": 25
     },
     {
       "id": "repo-id-dot-collides",
@@ -472,7 +472,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 24
+      "totalTests": 25
     },
     {
       "id": "repo-id-underscore-collides",
@@ -484,7 +484,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 24
+      "totalTests": 25
     },
     {
       "id": "discovery-refusal-rethrown",
@@ -496,7 +496,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 24
+      "totalTests": 25
     },
     {
       "id": "discovery-refusal-all-swallowed",
@@ -508,7 +508,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 24
+      "totalTests": 25
     },
     {
       "id": "discovery-refusal-no-record",
@@ -520,7 +520,67 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 24
+      "totalTests": 25
+    },
+    {
+      "id": "identity-derived",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "  target = { ...target, repositoryId: ids[0]! };\n",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 25
+    },
+    {
+      "id": "identity-ambiguous-accepted",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "if (ids.length !== 1) {",
+      "new": "if (ids.length === 0) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "identity-zero-accepted",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "if (ids.length !== 1) {",
+      "new": "if (ids.length > 1) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "identity-no-dedupe",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "[...new Set((await records.repositoryIdsFor(target.url)).filter(",
+      "new": "[...((await records.repositoryIdsFor(target.url)).filter(",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
+    },
+    {
+      "id": "identity-pattern-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "typeof id === 'string' && idPattern.test(id)",
+      "new": "typeof id === 'string'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 25
     }
   ]
 }
