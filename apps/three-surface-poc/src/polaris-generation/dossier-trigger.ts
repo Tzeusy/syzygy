@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { clarify, DEFAULT_DISCOVERY_BUDGET, discoverAndSelect, DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS,
-  type ClarificationRecord, type DiscoveryPorts, type DiscoveryReport, type GenerationBudget, type PipelineRequest, type ProviderDraft } from '@syzygy/polaris-generation-core';
+  type ClarificationRecord, type DiscoveryPorts, type DiscoveryReceipt, type DiscoveryReport, type GenerationBudget, type PipelineRequest, type ProviderDraft } from '@syzygy/polaris-generation-core';
 
 import { buildPipelineRequest, readRepoCorpus, type CorpusAdmissionPort, type ReaderConfig, type RepoCorpus } from './repo-corpus.js';
 import { renderDossierSite, writeDossierSite } from './dossier-site.js';
@@ -66,7 +66,9 @@ export interface TriggerPorts {
   readonly records?: AdmissionRecordsPort;
   /** Fetches exactly the pinned commit into `dir`; only called once every record is satisfied. */
   readonly materialize?: (target: { readonly url: string; readonly revision: string; readonly dir: string }) => Promise<string>;
-  readonly discovery?: Omit<DiscoveryPorts, 'permitted'>;
+  readonly discovery?: Omit<DiscoveryPorts, 'permitted' | 'receipt'>;
+  /** Durable sink for per-call discovery receipts; the run record also keeps them. */
+  readonly discoveryReceipt?: (receipt: DiscoveryReceipt) => Promise<void>;
   /** Runs the six-stage pipeline; absent until a real generate port exists. */
   readonly runPipeline?: (request: PipelineRequest) => Promise<{ readonly status: 'draft'; readonly draft: ProviderDraft } | { readonly status: 'stopped'; readonly reason: string }>;
   readonly now?: () => number;
@@ -103,10 +105,10 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
   const config: ReaderConfig = { repositoryId: target.repositoryId, revision: pinned.revision, include: ports.include ?? ['**'], exclude: ports.exclude ?? [],
     readerQuestions: DOSSIER_READER_QUESTIONS, requestedAssets: DOSSIER_REQUESTED_ASSETS, budget: BUDGET, oversize: 'split' };
   const corpus: RepoCorpus = await readRepoCorpus(checkout, config, { admission });
-  const discovery = await discoverAndSelect(corpus.sources, config.readerQuestions, DEFAULT_DISCOVERY_BUDGET, { permitted: async () => true, ...ports.discovery });
+  const discovery = await discoverAndSelect(corpus.sources, config.readerQuestions, DEFAULT_DISCOVERY_BUDGET, { permitted: async () => true, receipt: ports.discoveryReceipt ?? (async () => undefined), ...ports.discovery });
   const clarification: ClarificationRecord = await clarify({ sources: discovery.sources, mode: 'zero-interaction' });
   const record = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, permissionIdentity, corpusCount: corpus.count,
-    discovery: discovery.report as DiscoveryReport, clarification };
+    discovery: discovery.report as DiscoveryReport, discoveryReceipts: discovery.receipts, clarification };
   const recordPage = { path: 'run-record.json', kind: 'run-record' as const, content: `${JSON.stringify(record, null, 2)}\n` };
   if (ports.runPipeline === undefined) {
     writeDossierSite(runDir, { pages: [recordPage] });
