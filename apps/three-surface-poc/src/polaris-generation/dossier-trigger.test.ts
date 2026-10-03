@@ -21,7 +21,10 @@ describe('github url and revision pinning', () => {
     expect(parseGithubUrl('https://github.com/redis/redis')).toEqual({ owner: 'redis', repo: 'redis', url: 'https://github.com/redis/redis', repositoryId: 'github:redis:redis' });
     expect(parseGithubUrl('https://github.com/psf/requests.git/')).toMatchObject({ repo: 'requests', repositoryId: 'github:psf:requests' });
     expect(parseGithubUrl('https://github.com/redis/redis/tree/8.0.0')).toMatchObject({ ref: '8.0.0' });
-    expect(parseGithubUrl('https://github.com/a/b.js').repositoryId).toBe('github:a:b_js');
+    expect(parseGithubUrl('https://github.com/a/b.js').repositoryId).toBe('github:a:b_djs');
+    expect(parseGithubUrl('https://github.com/a/b_js').repositoryId).toBe('github:a:b__js');
+    const ids = ['b.c', 'b_c', 'b__c', 'b._c', 'b_.c', 'b_dc', 'b-c', 'b'].map(repo => parseGithubUrl(`https://github.com/a/${repo}`).repositoryId);
+    expect(new Set(ids).size).toBe(ids.length);
     for (const bad of ['http://github.com/a/b', 'https://gitlab.com/a/b', 'https://user:pw@github.com/a/b', 'https://github.com/a', 'https://github.com/a/b/issues',
       'https://github.com/a/b/tree/../x', 'git@github.com:a/b.git', 'https://www.github.com/a/b', 'file:///tmp/x', 'https://github.com/a/b?x=1', 'https://github.com/-a/b', 'https://github.com/a/..']) {
       expect(() => parseGithubUrl(bad), bad).toThrow('invalid-github-url');
@@ -182,12 +185,43 @@ describe('with every record satisfied', () => {
 
   it('wants a receipt sink whenever model discovery is wired, and lets no discovery port override the permission check', async () => {
     const map = async (input: { readonly items: readonly { readonly blobId: string }[] }) => ({ usageUnits: 1, claims: input.items.map(i => ({ blobId: i.blobId, claim: 'c', relevance: 5 })) });
-    await expect(runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), discovery: { map } }))).rejects.toThrow('model-ports-need-a-receipt-port');
+    const refusedDir = join(scratch(), 'run');
+    expect(await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: refusedDir, discovery: { map } })))
+      .toMatchObject({ state: 'generation-stopped', detail: 'discovery-refused: model-ports-need-a-receipt-port', runDir: refusedDir });
+    expect(readdirSync(refusedDir)).toEqual(['run-record.json']);
+    expect(JSON.parse(readFileSync(join(refusedDir, 'run-record.json'), 'utf8'))).toMatchObject({ discoveryRefusal: 'model-ports-need-a-receipt-port', corpusCount: expect.anything() });
     const called = vi.fn(map);
     const withheld: AdmissionRecordsPort = { source: 's', check: (() => { let n = 0; return async (r: { kind: string }) => (r.kind === 'egress-consent' && ++n > 1 ? { satisfied: false as const, why: 'withdrawn' } : { satisfied: true as const, record: `r/${r.kind}` }); })() };
     await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), records: withheld, discoveryReceipt: async () => undefined,
       discovery: { map: called, permitted: async () => true } as never }));
     expect(called).not.toHaveBeenCalled();
+  });
+
+  it('treats only satisfied === true with a record as satisfied, at the gate and at every later permission check', async () => {
+    const odd: unknown[] = [{ satisfied: 'false', why: 'x' }, { satisfied: 1, record: 'r' }, { satisfied: 'true', record: 'r' }, {}, null, 'yes', { satisfied: true }, { satisfied: true, record: '' }, { satisfied: true, record: 7 }];
+    for (const answer of odd) {
+      const materialize = vi.fn(async () => repo);
+      const outcome = await runDossierTrigger('https://github.com/fixture/repo', base({ materialize, records: { source: 's', check: async () => answer as never } }));
+      expect(outcome, JSON.stringify(answer)).toMatchObject({ state: 'admission-missing', missing: 3 });
+      expect(materialize).not.toHaveBeenCalled();
+      expect(formatOutcome(outcome)).not.toContain('undefined');
+    }
+    const map = vi.fn(async (input: { readonly items: readonly { readonly blobId: string }[] }) => ({ usageUnits: 1, claims: input.items.map(i => ({ blobId: i.blobId, claim: 'c', relevance: 5 })) }));
+    let n = 0;
+    const flaky: AdmissionRecordsPort = { source: 's', check: async r => (r.kind === 'egress-consent' && ++n > 1 ? { satisfied: 'false' } as never : { satisfied: true, record: `r/${r.kind}` }) };
+    await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), records: flaky, discoveryReceipt: async () => undefined, discovery: { map } }));
+    expect(map).not.toHaveBeenCalled();
+  });
+
+  it('refuses a misplaced or existing run directory before the checkout, so nothing is fetched or called', async () => {
+    const materialize = vi.fn(async () => repo), runPipeline = vi.fn();
+    const taken = join(scratch(), 'run');
+    mkdirSync(taken);
+    await expect(runDossierTrigger('https://github.com/fixture/repo', base({ outDir: taken, materialize, runPipeline }))).rejects.toThrow('run-directory-exists');
+    await expect(runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(repo, 'run'), materialize, runPipeline }))).rejects.toThrow('run-directory-inside-git-work-tree');
+    await expect(runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'missing-parent', 'run'), materialize, runPipeline }))).rejects.toThrow();
+    expect(materialize).not.toHaveBeenCalled();
+    expect(runPipeline).not.toHaveBeenCalled();
   });
 
   it('refuses to write the run into a git work tree', async () => {
