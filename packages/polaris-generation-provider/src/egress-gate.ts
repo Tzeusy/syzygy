@@ -60,6 +60,16 @@ export function parseRetryAfterMs(value: string | string[] | undefined | null, n
   return Number.isNaN(date) ? null : Math.max(0, date - now);
 }
 
+/** Node TLS, certificate-store, proxy and preload variables of the process that forwards. Any of them
+ * can redirect the connection or change who is trusted, so the gate refuses to start or forward while one is set. */
+export const AMBIENT_NODE_NETWORK_ENV: readonly string[] = [
+  'NODE_TLS_REJECT_UNAUTHORIZED', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'NODE_USE_SYSTEM_CA', 'NODE_OPTIONS',
+  'SSL_CERT_FILE', 'SSL_CERT_DIR', 'HTTPS_PROXY', 'HTTP_PROXY', 'ALL_PROXY', 'https_proxy', 'http_proxy', 'all_proxy',
+];
+export function ambientNetworkEnvironment(env: NodeJS.ProcessEnv = process.env): readonly string[] {
+  return Object.keys(env).filter(name => AMBIENT_NODE_NETWORK_ENV.includes(name));
+}
+
 /** The only remote destination bytes may ever be forwarded to. */
 export const PROVIDER_ORIGIN = 'https://api.anthropic.com';
 
@@ -76,7 +86,11 @@ export function assertAllowedUpstream(url: string, loopbackToken?: typeof LOOPBA
 
 export async function startEgressGate(options: EgressGateOptions): Promise<EgressGate> {
   if (options.upstream !== undefined) assertAllowedUpstream(options.upstream.url, options.upstream.loopbackForTests);
+  if (ambientNetworkEnvironment().length > 0) throw new Error('egress gate: ambient Node network environment is set');
   let spent = false;
+  let armGeneration = 0;
+  // Pinned for every upstream request: verified certificates, modern TLS, no connection reuse, and no proxy (Node reads none unless NODE_USE_ENV_PROXY, refused above).
+  const upstreamAgent = new https.Agent({ rejectUnauthorized: true, minVersion: 'TLSv1.2', keepAlive: false });
   const decisions: GateDecision[] = [];
   let armed: ((captured: CapturedRequest) => RequestAcceptance) | null = null;
   let retryAfter: number | null = null;
@@ -91,6 +105,8 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
     req.on('data', c => chunks.push(c as Buffer));
     req.on('end', () => {
       void (async () => {
+        let clientGone = req.socket.destroyed;
+        req.socket.once('close', () => { clientGone = true; });   // attached before any await
         const body = Buffer.concat(chunks);
         const captured: CapturedRequest = { method: req.method ?? '', url: req.url ?? '', headers: req.headers, body: body.toString('utf8') };
         const base = { method: captured.method, url: captured.url };
@@ -104,16 +120,20 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
         if (!verdict.accepted) { refuse(res, { ...base, reasons: verdict.violations }); return; }
         if (spent) { refuse(res, { ...base, reasons: ['try already forwarded one request'] }); return; }
         spent = true;   // one forward per try, claimed before any await
+        const mine = armGeneration;
         let allowed = false;
         try { allowed = (await options.permitted()) === true; } catch { allowed = false; }
         if (!allowed) { refuse(res, { ...base, reasons: ['consent not permitted'] }); return; }
+        // Consent was answered a moment ago; the try must still be the same arming and the caller still connected.
+        if (armed === null || armGeneration !== mine || clientGone || req.socket.destroyed) { refuse(res, { ...base, reasons: ['try ended while consent was being asked'] }); return; }
+        if (ambientNetworkEnvironment().length > 0) { refuse(res, { ...base, reasons: ['ambient Node network environment is set'] }); return; }
         if (options.upstream === undefined) { refuse(res, { ...base, reasons: ['no upstream configured'] }); return; }
         const target = new URL(options.upstream.url);
         const headers = { ...req.headers };
         delete headers.host; delete headers.connection;
         if (options.stripFingerprint === true) for (const name of FINGERPRINT_HEADERS) delete headers[name];
         const transport = target.protocol === 'https:' ? https : http;
-        const out = transport.request({ protocol: target.protocol, hostname: target.hostname, port: target.port, method: captured.method, path: captured.url, headers }, upstreamRes => {
+        const out = transport.request({ protocol: target.protocol, hostname: target.hostname, port: target.port, method: captured.method, path: captured.url, headers, ...(target.protocol === 'https:' ? { agent: upstreamAgent } : {}) }, upstreamRes => {
           const status = upstreamRes.statusCode ?? 502;
           if (status >= 300 && status < 400) {
             upstreamRes.resume();
@@ -136,6 +156,8 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
               entry.rejectedUnbilled = unbilled;
             });
           }
+          upstreamRes.on('error', () => res.destroy());
+          upstreamRes.on('close', () => { if (!upstreamRes.complete) res.destroy(); });   // upstream dropped mid-body: the caller sees an error, never a hang
           upstreamRes.pipe(res);
         });
         out.on('error', () => { if (!res.headersSent) { decisions.push({ ...base, decision: 'forwarded', reasons: ['upstream unreachable'], upstreamStatus: null }); res.writeHead(502); } res.end(); });
@@ -148,10 +170,10 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
   const port = (server.address() as AddressInfo).port;
   return {
     url: `http://127.0.0.1:${port}`, boundAddress: (server.address() as AddressInfo).address, decisions,
-    arm: accept => { if (armed !== null) return false; armed = accept; spent = false; return true; },
-    disarm: () => { armed = null; },
+    arm: accept => { if (armed !== null) return false; armed = accept; spent = false; armGeneration++; return true; },
+    disarm: () => { armed = null; armGeneration++; },
     takeRetryAfterMs: () => { const v = retryAfter; retryAfter = null; return v; },
     takeRejectedUnbilled: () => { const v = unbilled; unbilled = false; return v; },
-    close: () => new Promise<void>(resolve => { server.closeAllConnections(); server.close(() => resolve()); }),
+    close: () => new Promise<void>(resolve => { upstreamAgent.destroy(); server.closeAllConnections(); server.close(() => resolve()); }),
   };
 }

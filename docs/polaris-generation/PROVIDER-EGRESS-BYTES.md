@@ -129,3 +129,12 @@ zero usage is not evidence. Without that evidence the try's usage is unknown
 - Any 3xx from the upstream is answered 502 and never followed; `Location` is not passed on.
 - The gate's own `Host` header is not forwarded. The listener binds 127.0.0.1.
 - `x-stainless-timeout` must equal `600` and `connection` must equal `keep-alive` (values, not just names).
+
+### Gate hardening after the second review
+
+- After `permitted()` answers, the gate forwards only if the same arming is still current and the caller is still connected (the close handler is attached before the await); otherwise the request is refused with `try ended while consent was being asked`.
+- The gate refuses to start, and refuses to forward, while any of `NODE_TLS_REJECT_UNAUTHORIZED`, `NODE_EXTRA_CA_CERTS`, `NODE_USE_ENV_PROXY`, `NODE_USE_SYSTEM_CA`, `NODE_OPTIONS`, `SSL_CERT_FILE`, `SSL_CERT_DIR`, `HTTPS_PROXY`, `HTTP_PROXY`, `ALL_PROXY` or their lower-case forms is set in the forwarding process. `ANTHROPIC_*` is not a gate variable (the gate sends the request's own key header); the Messages route still refuses it when it builds its client.
+- Upstream requests use a pinned `https.Agent` (`rejectUnauthorized: true`, TLS 1.2 minimum, no keep-alive). A self-signed upstream is not reached.
+- If the upstream drops mid-body, the caller's response is destroyed (an error), not left hanging.
+- `createAgentSdkGenerate` validates `upstream` at construction.
+- `LOOPBACK_FOR_TESTS` may appear only in the gate module, tests and testkits; a test scans `packages/`, `apps/` and `scripts/` for it.

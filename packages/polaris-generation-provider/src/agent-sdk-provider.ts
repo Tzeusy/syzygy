@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 import { dirname, isAbsolute, join } from 'node:path';
 import { query as sdkQuery, type Options } from '@anthropic-ai/claude-agent-sdk';
 import type { DispatchPermit, PipelinePorts, ProviderReply } from '@syzygy/polaris-generation-core';
-import { startEgressGate, type EgressGate, type EgressGateOptions } from './egress-gate.js';
+import { assertAllowedUpstream, startEgressGate, type EgressGate, type EgressGateOptions } from './egress-gate.js';
 import { PINNED_AGENT_SDK_VERSION, PINNED_CLAUDE_CODE_VERSION, acceptCapturedRequest, type ExpectedRequest } from './request-acceptance.js';
 
 export { PINNED_AGENT_SDK_VERSION, PINNED_CLAUDE_CODE_VERSION };
@@ -140,6 +140,7 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
   if (installed !== pin.sdk) throw new AgentSdkProviderError('unpinned-version', 0);
   if (config.maxOutputTokens !== undefined && !(Number.isSafeInteger(config.maxOutputTokens) && config.maxOutputTokens > 0)) throw new AgentSdkProviderError('invalid-config', 0);
   agentSdkEnvironment(config, 'http://127.0.0.1:1', 1);   // validates diagnosticEnv at construction
+  if (config.upstream !== undefined) { try { assertAllowedUpstream(config.upstream.url, config.upstream.loopbackForTests); } catch { throw new AgentSdkProviderError('invalid-config', 0); } }
   const query = config.query ?? sdkQuery;
   const sleep = config.sleep ?? abortableSleep;
   const now = config.now ?? Date.now;

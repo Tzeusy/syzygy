@@ -292,9 +292,10 @@ describe('runtime gate in the adapter', () => {
     await expect(call(h, envelope())).rejects.toMatchObject({ code: 'egress-refused' });
     expect(endpoint.requests).toEqual([]);
   });
-  it('refuses a loopback upstream when the test-only token is absent (production wiring)', async () => {
-    const h = make(config({ upstream: { url: endpoint.url } }));
-    await expect(call(h, envelope())).rejects.toThrow();
+  it('refuses, at construction, a loopback upstream without the test-only token and any other non-provider upstream (production wiring)', async () => {
+    for (const url of [endpoint.url, 'https://evil.test', 'http://api.anthropic.com']) {
+      expect(() => make(config({ upstream: { url } })), url).toThrow(AgentSdkProviderError);
+    }
     expect(endpoint.requests).toEqual([]);
   });
   it('answers the connectivity probe locally and never forwards it', async () => {
