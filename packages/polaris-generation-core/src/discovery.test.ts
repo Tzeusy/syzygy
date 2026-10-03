@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, discoverAndSelect, DiscoveryRefusal, partitionSubsystems, reportFromReceipts, type DiscoveryPorts, type DiscoveryReceipt } from './discovery.js';
+import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, MAP_CLAIMS_PER_ITEM, discoverAndSelect, DiscoveryRefusal, partitionSubsystems, reportFromReceipts, type DiscoveryPorts, type DiscoveryReceipt } from './discovery.js';
 import { generationSourcesForBody, gitBlobObjectId, quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
 
 const make = (path: string, body: string, sourceId?: string): readonly GenerationSource[] =>
@@ -129,6 +129,11 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
       expect(quotableGenerationSources(out).map(q => q.sourceId)).toEqual([target.sourceId]);
       expect(ports.receipts.at(-1)).toMatchObject({ kind: 'reduce', outcome: 'failed' });
     }
+    for (const ranked of ['abc', [1, 2], null, undefined]) {
+      const ports = model({ map: mapOf(() => 5), reduce: (async () => ({ ranked, usageUnits: 1 })) as never });
+      await discoverAndSelect(sources, Q, { ...budget, maxSelected: 1, maxMapCalls: 10 }, ports);
+      expect(ports.receipts.at(-1), String(ranked)).toMatchObject({ kind: 'reduce', outcome: 'failed', detail: 'invalid-reduce-reply' });
+    }
   });
 
   it('keeps the pieces of an oversize file together and bills each piece', async () => {
@@ -209,6 +214,77 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
     expect(live.report.mapFailures).toBeGreaterThan(0);
     expect(live.report.refusedCalls).toBeGreaterThan(0);
     expect(live.report.droppedUnknownIds).toBeGreaterThan(0);
+  });
+
+  const liveRun = async (ports: DiscoveryPorts & { receipts: DiscoveryReceipt[] }, sources = population(120, 6), questions = Q) => {
+    const budgetHere = { ...budget, maxSelected: 10, maxMapCalls: 6, maxGroupBlobs: 10 };
+    const live = await discoverAndSelect(sources, questions, budgetHere, ports);
+    return { live, budgetHere, sources, saved: JSON.parse(JSON.stringify(ports.receipts)) as DiscoveryReceipt[] };
+  };
+
+  it('replays a map-only run and a no-port run to the live report, installing only the port kinds the receipts hold', async () => {
+    const mapOnly = await liveRun(model({ map: mapOf(item => (item.path.endsWith('3.c') ? 8 : 2)) }));
+    expect(mapOnly.live.report).toMatchObject({ rankingBasis: 'model-map', reduceCalls: 0, reduceFailures: 0 });
+    const replayMap = await reportFromReceipts(mapOnly.sources, Q, mapOnly.budgetHere, mapOnly.saved);
+    expect(replayMap.report).toEqual(mapOnly.live.report);
+    expect(replayMap.sources).toEqual(mapOnly.live.sources);
+    const none = await liveRun(model());
+    expect(none.saved).toEqual([]);
+    const replayNone = await reportFromReceipts(none.sources, Q, none.budgetHere, none.saved);
+    expect(replayNone.report).toEqual(none.live.report);
+    expect(replayNone.sources).toEqual(none.live.sources);
+    expect(none.live.report).toMatchObject({ rankingBasis: 'heuristic', mapCalls: 0, reduceCalls: 0, refusedCalls: 0 });
+  });
+
+  it('fails a replay whose population or reader question differs from the recorded run', async () => {
+    const run = await liveRun(model({ map: mapOf(() => 5), reduce: async () => ({ ranked: [], usageUnits: 1 }) }));
+    await expect(reportFromReceipts(run.sources, Q, run.budgetHere, run.saved)).resolves.toBeDefined();
+    await expect(reportFromReceipts(run.sources, ['A different question?'], run.budgetHere, run.saved)).rejects.toThrow('receipt-request-mismatch');
+    const changed = [...run.sources.slice(1), ...make('src/mod0/changed.c', 'int changed(void) { return 1; }\n')];
+    await expect(reportFromReceipts(changed, Q, run.budgetHere, run.saved)).rejects.toThrow('receipt-request-mismatch');
+    await expect(reportFromReceipts(run.sources, Q, run.budgetHere, run.saved.filter(receipt => receipt.kind !== 'map' || receipt.ordinal !== 0))).rejects.toThrow('receipt-missing-for-call');
+    const itemCountOnly = run.saved.map(receipt => (receipt.ordinal === 0 ? { ...receipt, itemCount: receipt.itemCount + 1 } : receipt));
+    await expect(reportFromReceipts(run.sources, Q, run.budgetHere, itemCountOnly)).rejects.toThrow('receipt-request-mismatch');
+  });
+
+  it('keeps only a non-negative safe integer as usage, ignores a live reply\'s own dropped count, and cuts an overlong reply', async () => {
+    const sources = population(6, 1);
+    const usages = [-1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, 2 ** 60, '3', null, undefined, 0, 7];
+    const seen: (number | null)[] = [];
+    for (const usageUnits of usages) {
+      const ports = model({ map: async input => ({ ...(await mapOf(() => 5)(input)), usageUnits }) as never });
+      await discoverAndSelect(sources, Q, { ...budget, maxMapCalls: 5, maxSelected: 2 }, ports);
+      seen.push(ports.receipts.find(receipt => receipt.outcome === 'accepted')!.usageUnits);
+    }
+    expect(seen).toEqual([null, null, null, null, null, null, null, null, 0, 7]);
+    const lying = model({ map: async input => ({ ...(await mapOf(() => 5)(input)), dropped: 999 }) as never, reduce: async () => ({ ranked: [], usageUnits: 1, dropped: 500 }) as never });
+    const { report } = await discoverAndSelect(sources, Q, { ...budget, maxMapCalls: 5, maxSelected: 2 }, lying);
+    expect(report.droppedUnknownIds).toBe(0);
+    expect(lying.receipts.every(receipt => receipt.dropped === 0)).toBe(true);
+    const flood = model({ map: async input => ({ usageUnits: 1, claims: Array.from({ length: 40 }, (_, i) => ({ blobId: input.items[i % input.items.length]!.blobId, claim: 'c', relevance: 5 })) }) });
+    const cut = await discoverAndSelect(sources, Q, { ...budget, maxMapCalls: 5, maxSelected: 2 }, flood);
+    expect(cut.report.droppedUnknownIds).toBe(40 - 6 * MAP_CLAIMS_PER_ITEM);
+    expect((flood.receipts.find(receipt => receipt.outcome === 'accepted')!.reply as { claims: unknown[] }).claims).toHaveLength(6 * MAP_CLAIMS_PER_ITEM);
+    const floodRank = model({ map: mapOf(() => 5), reduce: async () => ({ ranked: Array.from({ length: 60 }, () => sources[0]!.sourceId), usageUnits: 1 }) });
+    const ranked = await discoverAndSelect(sources, Q, { ...budget, maxMapCalls: 5, maxSelected: 2 }, floodRank);
+    expect((floodRank.receipts.find(receipt => receipt.kind === 'reduce' && receipt.outcome === 'accepted')!.reply as { ranked: string[] }).ranked).toEqual([sources[0]!.sourceId]);
+    expect(ranked.report.droppedUnknownIds).toBe(59);
+    // A replay does honour the recorded drop count.
+    const replay = await reportFromReceipts(sources, Q, { ...budget, maxMapCalls: 5, maxSelected: 2 }, JSON.parse(JSON.stringify(floodRank.receipts)));
+    expect(replay.report).toEqual(ranked.report);
+  });
+
+  it('hands every port call the abort signal of the run', async () => {
+    const controller = new AbortController();
+    const signals: AbortSignal[] = [];
+    const ports = model({ map: async (input, signal) => { signals.push(signal); return mapOf(() => 5)(input); }, reduce: async (_input, signal) => { signals.push(signal); return { ranked: [], usageUnits: 1 }; } });
+    await discoverAndSelect(population(6, 1), Q, { ...budget, maxMapCalls: 5 }, ports, controller.signal);
+    expect(signals).toHaveLength(2);
+    expect(signals.every(signal => signal === controller.signal)).toBe(true);
+    const mid = new AbortController();
+    let observed = false;
+    await expect(discoverAndSelect(population(6, 1), Q, budget, model({ map: async (input, signal) => { mid.abort(); observed = signal.aborted; return mapOf(() => 5)(input); } }), mid.signal)).rejects.toThrow('cancelled');
+    expect(observed).toBe(true);
   });
 
   it('cancels between and during calls, including before the reduce', async () => {
