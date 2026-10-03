@@ -94,6 +94,8 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
     }
     const sources = [...make('src/builder/README.md', 'readme\n'), ...make('src/depsx/a.c', 'a\n')];
     expect(sources.map(source => heuristicScore(source.path, [source])).every(score => score > -900)).toBe(true);
+    // The file's own name is not a directory: a script called `build` or `deps` is first-party.
+    for (const name of ['build', 'src/dist', 'deps']) { const [file] = make(name, 'x\n'); expect(heuristicScore(name, [file!]), name).toBeGreaterThan(-900); }
   });
 
   it('scores size by doublings of 1 KiB of quotable text, capped, and breaks a path tie by size rather than path order', () => {
@@ -107,6 +109,7 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
     expect(score('src/a.c', 99_000)).toBe(flat + 6);
     expect(heuristicScore('src/a.c', make('src/a.c', 'x'.repeat(100_001)))).toBe(flat + 6 - 1);
     expect(heuristicScore('src/a.c', make('src/a.c', 'x'.repeat(300_000)))).toBe(flat + 8 - 2);
+    expect(heuristicScore('src/a.c', make('src/a.c', 'x'.repeat(600_000)))).toBe(flat + 8 - 5);
     expect(score('deps/a/b.c', 500)).toBe(flat - 1002);
   });
 
