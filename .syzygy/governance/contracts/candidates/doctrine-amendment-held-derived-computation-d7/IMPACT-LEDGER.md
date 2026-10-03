@@ -4,7 +4,9 @@
 > `SEMANTIC-DELTA.md` (this directory), drafted 2026-10-03 for
 > `syzygy-u05.14`. Every figure below was computed at `origin/main`
 > `66d42d09`, before this package existed; the package's own files are
-> outside every population.
+> outside every population. Round 1 (`REVISE`) found three coverage gaps
+> in this ledger; §1a, §1b, the two RFC2 rows in §3 and the widened §4 are
+> their repairs (`ROUND-1-DISPOSITIONS.md`), unconfirmed.
 
 ## 1. The trigger sweep
 
@@ -47,6 +49,43 @@ a `/reviews/` segment or a `-RAW.md` suffix → raw review; a `/round-`,
 The last three lanes are a stated limitation, not an absence claim: a
 sentence in them that D7 makes false would stay false and is not routed.
 
+### 1a. Wrapped matches
+
+These pages are hard-wrapped, so a two-word literal split across a line
+break escapes the predicate. **Re-run:** the same alternation with every
+space replaced by `\s+`, over the same 1,536 files: **95** files, **348**
+occurrences — two more than §1, both wraps of "not autonomous":
+`doctrine/vision.md` lines 86–87 ("…not an outward enforcer, and not" /
+"autonomous.", the section intro directly above D7's anchor; row added in
+§3) and one raw review in a historical round (`round-2026-08b/reviews/`,
+not edited).
+
+### 1b. "Autonomous behavior" exclusions
+
+Many acts exclude "autonomous behavior", a form the §1 predicate does not
+reach. **Predicate:** Python `re`, case-insensitive,
+`autonomous\s+behaviou?r`. **Population:** tracked `.md` files at
+`66d42d09` under `.syzygy/governance/decisions/`,
+`.syzygy/governance/doctrine/`, `.syzygy/governance/contracts/rfcs/` and
+`openspec/`, excluding `-RAW.md` files and `/reviews/` paths: **212
+files.** **Result:** **10** files, one occurrence each — seven acts in
+`decisions/` (`POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md`,
+`PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md`,
+`PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md`,
+`PWB-MACHINE-VIEW-AMENDMENT-ACT.md`, `PWB-OPENING-BAND-SCENARIO-ACT.md`,
+`PWB-STATE1-AMENDMENT-ACT.md`, `PWB-TRUTH-READINESS-AMENDMENT-ACT.md`) and
+three specification files
+(`openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md`
+and `proposal.md`, `openspec/changes/three-surface-poc-experience/proposal.md`).
+**Disposition:** none is made false — each excludes autonomous behaviour
+from what it authorizes, and D7 authorizes nothing. But D7's heading
+("delegates no decision … inside VIS-4's stated bounds") narrows what a
+reader may count as "autonomous behavior" under them. The guard is that
+each act confines new behaviour to its own signed scope, so no D7
+behaviour ships under any of them without its own implementation
+authority (packet §4). Every file in this population is act-bound or a
+signed specification and is not edited on any arm.
+
 ## 2. The notification sweep
 
 `OWNER-DECISION-PACKET.md` §3 says notification has no licence anywhere.
@@ -65,10 +104,11 @@ file, the same one.
 
 | File | Line(s) | What it says | Disposition |
 |---|---|---|---|
-| `doctrine/vision.md` | 45; 105 (2 hits) | the thesis diagram's "human-triggered work" edge; the "Not autonomous" bullet | 105 is D7's anchor; 45 consistent |
+| `doctrine/vision.md` | 45; 86–87 (wrapped, §1a); 105 (2 hits) | the thesis diagram's "human-triggered work" edge; the section intro "…and not autonomous."; the "Not autonomous" bullet | 105 is D7's anchor; 45 consistent; 86–87 consistent: it summarizes the bullet below, and D7 places its class inside VIS-4's stated bounds, so "not autonomous" stays true of Syzygy — on a Q1 "inside" ruling, which section 1's text requires anyway |
 | `doctrine/architecture.md` | 332 | the loop is human-triggered | D7's anchor |
 | `doctrine/v1.md` | 89 | "Human-triggered propagation at full breadth" | consistent: D7 forbids unprompted dispatch |
-| `contracts/rfcs/RFC-0002/reconciliation-chain.md` | 26 (sources list); 245, 247 | RFC2-19, "never autonomously on merge events" | **stays stricter; binds the hook option** (packet §4, §6) |
+| `contracts/rfcs/RFC-0002/reconciliation-chain.md` | 26 (sources list); 245, 247 | RFC2-19, "never autonomously on merge events" | **stays stricter, and binds every D7 trigger whose evaluation captures a merge fact**, not only the hook (packet §4, §6 item 1) |
+| `contracts/rfcs/RFC-0002/reconciliation-chain.md` (no predicate match; found by round 1) | 155–157 | reconciliation-pending attaches "at the first evaluation that captures the merge fact (inside RFC2-19's deliberately triggered passes — never on a live merge event)" | **binds D7's headline example**: an unprompted evaluation capturing a merge fact contradicts it. D7's text "relaxes no contract that requires a deliberately triggered pass", so arm A leaves the clause true and the example unlawful until RFC2 is amended (packet §4) |
 | `contracts/rfcs/RFC-0004/named-adapters.md` | 26, 420, 433, 435, 492, 526 | RFC4-16, "never an autonomous trigger"; observation passes are human-triggered | consistent: no clock trigger |
 | `contracts/rfcs/RFC-0004/fidelity-joins-and-mappings.md` | 26 | cites the human-triggered loop as a source | consistent |
 | `contracts/rfcs/RFC-0005/admission-and-boundary.md` | 323, 590 | RFC5-11 and its q6: revocation forces an evaluation | D7's precedent (packet §3) |
@@ -100,13 +140,27 @@ file, the same one.
 | `docs/design/POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL.md` | 8 hits | the second evaluation is human-triggered | consistent; D7 would let the second evaluation also run on an unrequesting human act, which M12 does not need |
 
 No authority-lane sentence is made false by arm A [Inferred: from reading
-every line listed; the reviewer is asked to test it].
+every line listed]. The RFC2 rows are the reason that holds: D7 is drafted
+to yield to them rather than to amend them, at the cost of its headline
+example. A sentence elsewhere that confines computation to a deliberate
+pass without using a §1 literal would be missed by this sweep; round 1
+found one (RFC2 line 157), and the predicate is not claimed complete.
 
 ## 4. Derived artifacts that read doctrine bytes
 
 Found by a sweep for the two doctrine digests (`git grep -F`, every tracked
-file) and for the paths `doctrine/vision.md` and `doctrine/architecture.md`
-under `scripts/` and in YAML files.
+file), and by a reader sweep: Python `re`
+`governance/doctrine|doctrine/(vision|architecture)\.md` over every tracked
+file at `66d42d09` under `apps/`, `packages/` and `scripts/` ending `.ts`,
+`.py`, `.js`, `.mjs`, `.json`, `.yaml` or `.yml` — **417 files, 11
+readers** — plus the generated YAML index below. Of the 11: the two
+generators and the two scripts in the table; `scripts/check_governance.py`
+(CG messages naming `doctrine/vision.md` as a rule's home, no bytes read);
+five tests and one script using a doctrine path as a fixture path
+(`apps/three-surface-poc/src/git-blob-batch.test.ts`,
+`packages/cap1-conformance/src/req-023`, `req-061` and
+`req-integration` conformance tests, `scripts/polaris_generator_approval.py`),
+none reading today's bytes; and the self-corpus row below.
 
 | Artifact | Reads | On application of arm A |
 |---|---|---|
@@ -115,6 +169,7 @@ under `scripts/` and in YAML files.
 | `scripts/check_polaris_response_ceiling_reading.py` | quotes "No evidence means Unknown, not success" from `vision.md` | unaffected: the quoted bytes do not move |
 | `scripts/record_polaris_understanding_adoption.py` | `vision.md` in its frozen-path set, read at the C1 commit | unaffected: it reads history, not today's bytes |
 | `docs/evidence/polaris-understanding-reconciliation-2026-09-28/` (3 files) | the `vision.md` digest as reviewed on 2026-09-28 | unaffected: a record of the bytes reviewed then |
+| `apps/three-surface-poc/src/polaris-generation/self-corpus.ts` (and its test) | doctrine Markdown as part of the self-governance corpus, read "at the pinned commit" only | unaffected: a run pinned to a later commit gets a new corpus identity digest, which is a fact of that run, not a break |
 
 Neither doctrine digest occurs in any performed act's manifest [Observed:
 the only digest citers are the three evidence files above].

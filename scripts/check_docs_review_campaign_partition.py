@@ -273,6 +273,11 @@ CAMPAIGNS = (
         "PWB opening-index and accessible-name gate",
         r"R-PWB-(?:OPENING-INDEX|ACCESSIBLE-NAME)-AMENDMENT-.*\.md",
     ),
+    campaign(
+        "doctrine-amendment-d7",
+        "D7 doctrine amendment gate",
+        r"R-DOCTRINE-AMENDMENT-D7-.*\.md",
+    ),
 )
 
 
