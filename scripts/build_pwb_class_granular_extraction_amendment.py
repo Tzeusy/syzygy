@@ -114,9 +114,14 @@ DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
 #: but both add design decision 12 and capability row 34, so whichever is
 #: signed second is regenerated over the first's applied bytes and re-reviewed.
 #: The anchor-resolution amendment (N9, ``syzygy-u05.9``) touches only
-#: PWB-REQ-014 and the generated dependency declaration.
+#: PWB-REQ-014 and the generated dependency declaration. The opening-index
+#: (PWB-REQ-010) and accessible-name (PWB-REQ-016) amendments
+#: (``syzygy-u05.12``) each touch one other requirement and the generated
+#: declaration only; their spec patches compose with this one.
 PENDING_SIBLINGS = frozenset({
+    "pwb-accessible-name-amendment",
     "pwb-anchor-resolution-amendment",
+    "pwb-opening-index-amendment",
     "pwb-release-label-amendment",
 })
 
