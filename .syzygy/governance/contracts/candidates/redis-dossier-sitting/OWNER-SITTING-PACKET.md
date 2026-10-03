@@ -48,9 +48,11 @@ Who depends on it:
   dossier-consent branch that carries the admission-record reader, no module of
   the generation path (the polaris-generation app files and packages) imports
   the pin modules, and nothing reads `publicSourceScope`. The run does not read
-  that pin today. [Unknown] Whether the screening code for public targets, not
-  yet written, will load the policy file and how; if it does, it should load
-  it by the approved act and not through the Butlers pin.
+  that pin today. [Observed] It also has no screening of public-target bodies
+  at all yet (tracked as syzygy-vjqd, in progress). [Inferred from the lead's
+  direction] That loader will read the policy only through row 1's act record,
+  not the Butlers pin, so the Redis path depends on row 1 but not on the
+  pin.
 - **Butlers and the Three-Surface POC.** [Observed in the package's
   simulation] The act alone makes the existing Butlers read path refuse the
   policy on its digest, so the POC's Butlers pages would stop reading until the
