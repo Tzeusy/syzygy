@@ -15,7 +15,10 @@ six-artifact subject after those patches. Applying them is a sign-off-time
 operation.
 
     --check      verify patches, structure, regeneration and the manifest
-    --selftest   one rule-6 mutation per predicate
+    --selftest   rule-6 mutants for the structure predicates (a sample of
+                 the required phrases, not each one), patch drift, manifest
+                 order and subject drift; check()'s two subject-change
+                 predicates have no mutant
     --write      regenerate the manifest over the proposed bytes
     --diff       print the proposed patches
     --apply --at-adoption   write the proposed bytes (sign-off change only)
@@ -92,8 +95,9 @@ REQUIRED_PHRASES: dict[str, tuple[tuple[str, str], ...]] = {
     "POC-REQ-054": (
         ("cross-cutting group", "Group: Cross-cutting experience. Form: **invariant**."),
         ("one identity, by no other", "name that subject by that identity and by no other"),
-        ("no surface-local handle", "No surface-local handle"),
-        ("exactly one element per link", "to exactly one element for the same subject"),
+        ("held, never minted", "the shared model holds that identity and mints none of its own"),
+        ("exactly one link target per link", "to exactly one link target on that surface, and that target SHALL carry the same identity"),
+        ("reasoned-Unknown slot decides", "zero unfilled slots lacking the Unknown label, a reason, a route or the declared Unknown encoding"),
         ("slot filled only by a joined subject", "filled only from a subject joined to that claim by its identity"),
         ("unfilled slot is a reasoned Unknown", "SHALL render Unknown with its reason and its resolution route"),
         ("slot never absent, scored or positive", "never absent, blank, a score, a verdict or styled as a positive state"),
@@ -105,9 +109,11 @@ REQUIRED_PHRASES: dict[str, tuple[tuple[str, str], ...]] = {
         ("cross-cutting group", "Group: Cross-cutting experience. Form: **invariant**."),
         ("closed-table name in its roles", "a relation name from RFC1-25's closed table, emitted with its source and target in the roles that table assigns the relation"),
         ("outside flag with a reason", "carry an explicit outside-closed-vocabulary flag with a stated reason"),
-        ("flag carried and rendered", "carried in the machine answer and rendered wherever the kind is rendered"),
-        ("flag never widens the vocabulary", "it never adds the kind to that vocabulary"),
-        ("reversed roles falsify", "emitted with source and target reversed"),
+        ("declared kind-to-class correspondence", "read through a checked-in declaration that maps each shared-model entity kind to the RFC 0001 class it corresponds to, or to none"),
+        ("flag carried and rendered", "carried in the machine answer and rendered wherever the relationship is rendered"),
+        ("flag never widens the vocabulary", "it never adds a kind or a role pair to that vocabulary"),
+        ("unassigned role pairs decide", "zero unflagged relationships whose mapped role pair the table does not assign that relation"),
+        ("reversed roles falsify", "(reversed roles included)"),
         ("disclosure scenario", "#### Scenario: A kind outside the closed table is disclosed"),
     ),
     "POC-REQ-060": (
@@ -381,6 +387,8 @@ def coverage_findings(
             )
     if "**Amendment disclosure — the RFC1-26 closure row (ruling P-75 Q3).**" not in new:
         findings.append("the amendment disclosure for the preserved RFC1-26 row is missing")
+    if "**Amendment disclosure — the RFC6-14 fold note.**" not in new:
+        findings.append("the amendment disclosure for the signed RFC6-14 fold note is missing")
     closure = [row for row in new_parts["A"] if row.startswith(CLOSURE_ROW_PREFIX)]
     if len(closure) != 1 or not _disposition(closure[0]).startswith("**Unknown**"):
         findings.append("closure itself is not disclosed as one Unknown RFC1-26 row")
@@ -510,7 +518,7 @@ def selftest() -> int:
         ),
         "flag widens the vocabulary": (
             SPEC,
-            _replace(proposed[SPEC], "it\nnever adds the kind to that vocabulary.", "it\nadds the kind to that vocabulary."),
+            _replace(proposed[SPEC], "it never adds a kind or a role pair to that vocabulary.", "it adds the kind to that vocabulary."),
             "POC-REQ-055 lacks flag never widens the vocabulary",
         ),
         "Inferred counted as Observed": (
@@ -527,6 +535,21 @@ def selftest() -> int:
             SPEC,
             _replace(proposed[SPEC], "`POC-DIR-2026-09-21`\n  names", "`POC-DIR-2026-09-22`\n  names"),
             "reader notes do not define the POC-DIR-2026-09-21 decision key",
+        ),
+        "warrants drop the ruling key": (
+            SPEC,
+            _replace(proposed[SPEC], "  contracts: [RFC1-25, RFC1-26]\n  policies: []\n  decisions: [POC-DIR-2026-09-21]", "  contracts: [RFC1-25, RFC1-26]\n  policies: []\n  decisions: [POC-DIR-2026-08-30]"),
+            "POC-REQ-055 warrants do not cite ruling P-75's decision key",
+        ),
+        "Purpose changed": (
+            SPEC,
+            _replace(proposed[SPEC], "three honest, visually distinct surface experiences", "three honest surface experiences"),
+            "the specification's title, banner or Purpose changed",
+        ),
+        "RFC6-14 disclosure dropped": (
+            COVERAGE,
+            _replace(proposed[COVERAGE], "**Amendment disclosure — the RFC6-14 fold note.**", "**Note.**"),
+            "the amendment disclosure for the signed RFC6-14 fold note is missing",
         ),
         "Part A union drift": (
             COVERAGE,

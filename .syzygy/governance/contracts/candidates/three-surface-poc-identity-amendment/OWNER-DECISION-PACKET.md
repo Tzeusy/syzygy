@@ -19,10 +19,12 @@ ruled. Read `SEMANTIC-DELTA.md` for the full account. In short:
   it. Where a surface shows one claim's desired, execution and observed states
   together (the "ribbon"), a slot nothing fills says Unknown with a reason and
   a route; it is never blank and never a score.
-- **POC-REQ-055 (new).** Every relation kind the POC emits is either a name
-  from RFC1-25's closed table, in the right direction, or carries a flag
-  saying it is outside that table. Seven of today's eight are outside. The
-  signed coverage row that mapped this to POC-REQ-052 stays as it is. Beside
+- **POC-REQ-055 (new).** Every relationship the POC emits either carries a
+  name from RFC1-25's closed table, in a role pair the table assigns it, or
+  carries a flag saying it is outside that table. **None of today's nine
+  relationships complies.** Seven kinds are outside the table. The eighth,
+  `contains`, joins a project to a capability, a pair its row does not
+  assign. The signed coverage row that mapped this to POC-REQ-052 stays as it is. Beside
   it, an added row and a disclosure say that the flag is the repair you
   ruled. Closure itself — no outside kind emitted at all — stays Unknown.
 - **POC-REQ-060 (amended).** The one-encoding rule now names all three labels,
@@ -44,8 +46,13 @@ implementation slice.
 - **If you would rather settle the form in the specification,** answer
   "Revise" below and name it.
 
-**What signing does not do.** It starts no implementation. M9 slices 4–8
-become eligible to start under your ruling only after this sign-off.
+**What signing does not do.**
+
+- It starts no implementation. M9 slices 4–8 become eligible to start under
+  your ruling only after this sign-off.
+- It does not make the Inferred arm constructible in production. Under your
+  ruling (P-75 Q4) the arm stays a typed landing zone with no production
+  constructor, and a production constructor needs its own act.
 
 ## Question 1 — sign this version?
 

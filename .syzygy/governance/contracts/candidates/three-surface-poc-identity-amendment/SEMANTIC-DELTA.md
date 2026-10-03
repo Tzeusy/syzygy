@@ -77,13 +77,13 @@ belief is not a reviewed N/A".
 **Proposed meaning.** Every subject carries one identity, held once in the
 shared model, and every surface and the machine answer name it by that
 identity alone. Where a source authority owns the identity (a work item's
-tracker, a code region's observed revision), the model holds that identity
-and mints none of its own. This keeps the requirement consistent with
+tracker, a code region's source adapter), the model holds that identity and
+mints none of its own. This keeps the requirement consistent with
 RFC1-9's "the kernel **never mints an identity it does not own**" (bold in
 the source), which the signed matrix already maps to POC-REQ-010 and
-POC-REQ-012. A link between surfaces resolves, by that identity, to exactly one
-element for the same subject. No surface-local handle crosses a boundary as
-the identity.
+POC-REQ-012. A link between surfaces resolves, by that identity, to exactly
+one link target on the other surface, and that target carries the same
+identity.
 
 A second paragraph carries the **ribbon**: where a surface renders one claim's
 desired, execution and observed states together, each slot is filled only by
@@ -107,20 +107,27 @@ The requirement has two scenarios:
   object id — is ever a selection identity". Its second bullet (lines
   116–118) reads: "every handle must resolve to a selection reference
   before it crosses a surface boundary, a URL, or an endpoint." The
-  surface-handle limb is covered. Two limbs are added as Unknown rows: the
-  tuple limb (a reference is RFC 0001's (entity kind, durable entity
-  identity), and the POC's entity kinds are not RFC1-5's) and the
-  qualifiers limb.
+  covered consequence is narrower: one identity per subject, equal to the
+  identity its owning source authority gives it. The requirement states no
+  procedure that classifies an identity value as a surface-local handle,
+  so that limb is an Unknown row rather than a claim. Two further limbs
+  are added as Unknown rows:
+  - the tuple limb: a reference is RFC 0001's (entity kind, durable entity
+    identity), and the POC's entity kinds are not RFC1-5's;
+  - the qualifiers limb.
 - **RFC6-3**, line 135: "One selection reference resolves **identically in all
   three surfaces**". Only "same entity" is covered. Two limbs are added as
   Unknown rows: same evaluation, same scenario context and same drawer fact
   set; and the skew limb ("must render the skew explicitly — naming both
   evaluation identities").
 - **RFC6-12**, line 263: "Every URL-pinned selection is openable in any
-  surface". The covered consequence is narrower — the same identity opens the
-  subject on every surface that renders it. Two limbs are added as Unknown
-  rows: the URL-hint and bookmark limb, and the clause's "subject to
-  `not-applicable` per RFC6-5" limb.
+  surface". The covered consequence is narrower: every link between
+  surfaces *that exists* opens its subject on the target surface by its
+  identity. Three limbs are added as Unknown rows:
+  - that every subject rendered on more than one surface is openable on
+    each of them, since the requirement makes no link mandatory;
+  - the URL-hint and bookmark limb;
+  - the clause's "subject to `not-applicable` per RFC6-5" limb.
 - **RFC1-26**, at
   `.syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md`
   line 736: "Every rendered internal edge must resolve to its identified
@@ -136,13 +143,13 @@ further act, where the design expected the form to be in the signed text.
 `proposal.md` states it as an open question.
 
 **Why the identity is not spelled out.** The M9 packet's slice 6b proposes a
-concrete key. The requirement deliberately names "the identity the shared
-model mints". It does not name a string form such as a repository path plus
+concrete key. The requirement deliberately requires only one identity per
+subject, held in the shared model. It does not name a string form such as a repository path plus
 object id, because RFC6-1 bars a file path from being a selection identity.
 The form is left to slice 6, where it can be tested against that clause.
 [Inferred]
 
-## 2. POC-REQ-055 — every relation kind is named in or flagged outside the closed vocabulary (new)
+## 2. POC-REQ-055 — every relationship is named in or flagged outside the closed vocabulary (new)
 
 **Current meaning.** [Observed] The signed matrix's Part A carries the row
 `RFC1-26 | Relations outside the closed table don't exist; no prose-widening
@@ -158,16 +165,35 @@ one of the thirty backticked relation tokens in the first column of RFC1-25's
 table. That table has 26 data rows, at lines 596–621 of the RFC-0001 module;
 the count was taken by script this session.
 
-**Proposed meaning.** Every emitted kind is either an RFC1-25 relation name,
-emitted with source and target in the roles the table assigns, or carries an
-explicit outside-closed-vocabulary flag with a reason. The flag is carried in
-the machine answer and rendered wherever the kind is. A flag discloses and
+**`contains` does not comply either.** [Observed] The one `contains`
+relationship runs from `project:butlers` to a capability
+(`packages/three-surface-poc-core/src/poc-seeds.ts` lines 194–199). The
+`contains`/`part_of` row (line 596) assigns six role pairs, none of them
+Project→Capability, and its rule reads "cross-authority nesting must use a
+typed relation". So **none of the nine relationships emitted at drafting
+complies with POC-REQ-055**. Seven fail by kind and one by role pair. Each
+must be flagged, renamed or re-typed when slice 8 lands.
+
+**Proposed meaning.** Every emitted relationship either carries an RFC1-25
+relation name with its source and target in a role pair the table assigns,
+or carries an explicit outside-closed-vocabulary flag with a reason. The
+flag is carried in the machine answer and rendered wherever the relationship
+is.
+
+RFC1-25's Domain → Range column is written in RFC 0001's classes, and the
+POC's entity kinds are not those classes. The role-pair check therefore
+reads through a **checked-in declaration** that maps each shared-model
+entity kind to the RFC 0001 class it corresponds to, or to none. A
+relationship whose endpoints map to none cannot carry a closed name, and so
+it carries the flag. That declaration is an implementation artifact of slice
+8, in the same way that POC-REQ-060's token table is an implementation
+artifact. A flag discloses and
 never widens; RFC1-26 reads "no drafter, reviewer, adapter, or profile may
 widen the core vocabulary by prose", and this requirement adds no relation to
 the table.
 
 **The repair, not at the bound site.** The signed row is kept byte for byte.
-The proposed matrix adds two things:
+The proposed matrix adds three things:
 
 - an amendment row beneath it that maps the *disclosure* the ruling chose to
   POC-REQ-055;
@@ -179,8 +205,11 @@ The proposed matrix adds two things:
   a reader which rows to read.
 
 The RFC1-25 amendment row likewise claims only what the oracle observes:
-closed names are emitted in a role pair the table assigns them, and every
-other kind is flagged. The table assigns several role pairs to some
+closed names are emitted in a role pair the table assigns them, read through
+the declared correspondence, and every other relationship is flagged. The
+decision rule counts each falsifier limb: unflagged outside kinds,
+unflagged unassigned role pairs (reversed roles included), flags on fully
+admitted relationships, and flagged relationships missing their reason. The table assigns several role pairs to some
 relations, such as `contains`/`part_of`, so the requirement checks against
 the set.
 
@@ -220,10 +249,30 @@ Inferred".
 the Inferred limbs are exercised by a fixture record injected at the model
 seam." No production constructor is required, so the requirement is
 satisfiable today with zero Inferred records. This follows Q4: "`Inferred`
-added as a typed landing zone with no production constructor". Doctrine's
+added as a typed landing zone with no production constructor". Signing this
+amendment does not make the arm constructible in production. The proposed
+`proposal.md` and `OWNER-DECISION-PACKET.md` both say that a production
+constructor needs its own owner act. Doctrine's
 rule, at `.syzygy/governance/doctrine/trust-and-evidence.md` line 25, is "An
 LLM assertion is Inferred, never Observed". RFC2-25's `asserted-by-worker`
 row is "Visible, never green, challengeable, never a status input".
+
+**A narrowing of doctrine's Inferred, stated.** Doctrine defines Inferred
+more widely: "the output of a declared inference process, carrying its
+inference provenance" (`.syzygy/governance/doctrine/trust-and-evidence.md`
+lines 84–85). It asks the inferred layer to record "the model, version, and
+inputs that produced it" (lines 115–116). POC-REQ-060 is narrower on two
+counts:
+
+- **Source.** It admits only an agent's assertion.
+- **Provenance.** It requires only that the record name the assertion it
+  arises from.
+
+This follows the adopted design's Q4 framing, which is about agent
+assertions. The lighter provenance limb is deliberate: no production
+constructor exists, so there is nothing to record a model or version for
+yet. When a constructor's own act is drafted, that act is the place to add
+doctrine's full provenance. [Inferred]
 
 **Q2's plane boundary.** The record shape is set here and not by reference to
 PWB-REQ-007, because Q2 ruled that "PWB-REQ-007 reaches only the
@@ -247,7 +296,7 @@ checked by `--check`]
 | | Signed | Proposed |
 |---|---:|---:|
 | Part A clauses (= `contracts[]` union) | 74 | 78 |
-| Part A rows: covered / Unknown | 92 / 15 | 102 / 28 |
+| Part A rows: covered / Unknown | 92 / 15 | 102 / 30 |
 | Part B1 clauses (rows) | 27 (28) | 27 (28) |
 | Part B2 clauses | 223 | 219 |
 

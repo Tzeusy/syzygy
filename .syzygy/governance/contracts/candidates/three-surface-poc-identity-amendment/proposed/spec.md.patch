@@ -1,5 +1,5 @@
 diff --git a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
-index 092711e..7ebdf4c 100644
+index 092711e..fb2ba2d 100644
 --- a/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
 +++ b/openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md
 @@ -29,16 +29,20 @@ Reader notes, binding on how this file is read:
@@ -29,7 +29,7 @@ index 092711e..7ebdf4c 100644
    from the CC-SPEC-8 sweep recorded in this change's
    `CONTRACT-COVERAGE.md`: a clause is listed exactly where the sweep
    found the requirement's oracle observes one of that clause's
-@@ -937,27 +941,193 @@ warrants:
+@@ -937,27 +941,203 @@ warrants:
    parent_requirements: []
  ```
  
@@ -44,14 +44,11 @@ index 092711e..7ebdf4c 100644
 +**Required behavior.** Every subject the shared model holds SHALL carry one
 +identity, held once in the shared model, and every surface and the machine
 +answer SHALL name that subject by that identity and by no other. Where a
-+subject's identity is owned by a source authority (a work item's by its
-+tracker, a code region's by its observed revision), the shared model holds
-+that identity and mints none of its own. An element on
-+one surface that names a subject another surface also renders SHALL resolve,
-+by that identity, to exactly one element for the same subject on that surface.
-+No surface-local handle — a file path, a row position, a layout coordinate, a
-+scene object — SHALL stand in for the identity where it crosses a surface
-+boundary, a link or the machine answer.
++source authority owns a subject's identity (a work item's tracker, a code
++region's source adapter), the shared model holds that identity and mints none
++of its own. A link on one surface to a subject another surface renders SHALL
++resolve, by that identity, to exactly one link target on that surface, and
++that target SHALL carry the same identity.
 +
 +Where a surface renders one claim's standing in the desired, execution and
 +observed states together, each state's slot SHALL be filled only from a subject
@@ -60,35 +57,39 @@ index 092711e..7ebdf4c 100644
 +a score, a verdict or styled as a positive state — and the machine answer SHALL
 +carry the same three slots for the same identity.
 +
-+- **Scope.** every element on any surface that names a subject present on
-+  another surface or in the machine answer, every link between surfaces, and
-+  every slot of every three-state view.
++- **Scope.** every element on any surface that carries a subject identity,
++  every link between surfaces, and every slot of every three-state view.
 +
 +- **Case (sweep)**: a checker enumerates, over the union of the served
 +  surfaces, every element carrying a subject identity — the denominators
 +  are that element population and the number of identities rendered on
-+  more than one surface — groups the elements by identity, follows every
-+  link between surfaces, and compares every three-state slot with the
-+  machine answer.
-+- **Observable**: one identity value per subject on every surface and in
-+  the machine answer; each link between surfaces resolves to exactly one
-+  element carrying the same identity; each slot is a joined subject or an
-+  Unknown with its reason and route, on the surface and in the machine
-+  answer alike.
++  more than one surface — follows every link between surfaces, and
++  enumerates every three-state slot on the surfaces and in the machine
++  answer.
++- **Observable**: each element's identity equals the expected identity of
++  its subject; each link between surfaces resolves to exactly one target
++  carrying the same identity; each slot is a joined subject, or an
++  Unknown carrying a reason, a route and the declared Unknown encoding,
++  identically on the surface and in the machine answer.
 +- **Oracle**: per-element identity equality with an independently
-+  derived subject set, HTTP/anchor resolution per link, and per-slot
-+  comparison with independently derived joins, over the exhausted
-+  populations; zero mismatched identities, zero dangling or
-+  mis-resolving links and zero absent or unjoined slots decide.
++  derived expected identity, HTTP/anchor resolution per link with a count
++  of link targets defined more than once, and per-slot comparison with
++  independently derived joins, over the exhausted populations. Zero
++  mismatched identities, zero dangling, mis-resolving or duplicated link
++  targets, zero absent or unjoined slots, zero unfilled slots lacking the
++  Unknown label, a reason, a route or the declared Unknown encoding, and
++  zero slot differences between surface and machine answer decide.
 +- **Oracle independence**: the checker derives each subject's expected
 +  identity and each slot's expected join from the source records the
 +  shared model reads — each subject's owning source record, and a work
 +  item's or code region's own reference to the claim it names — never
 +  from the machine answer or a surface's renderer.
-+- **Falsifier**: one subject named by two identity values, a link between
-+  surfaces resolving to no element or to a different subject, a
-+  surface-local handle used as a crossing identity, or a three-state slot
-+  rendered absent or filled from a subject not joined by the identity.
++- **Falsifier**: one element whose identity differs from its subject's
++  expected identity, a link between surfaces resolving to no target, to a
++  duplicated target or to a different subject, or a three-state slot
++  rendered absent, filled from a subject not joined by the identity,
++  rendered as Unknown without its reason or route, styled as a positive
++  state, or differing from the machine answer.
 +
 +#### Scenario: One subject, one identity on every surface
 +
@@ -96,8 +97,9 @@ index 092711e..7ebdf4c 100644
 +  the machine answer, and one of those surfaces links to the subject on
 +  the other
 +- **THEN** all three name it by the same identity value, the link
-+  resolves to exactly one element carrying that identity, and the check reports the number of identities rendered on
-+  more than one surface as its denominator
++  resolves to exactly one target carrying that identity, and the check
++  reports the number of identities rendered on more than one surface as
++  its denominator
 +
 +#### Scenario: A three-state view with nothing joined
 +
@@ -119,49 +121,57 @@ index 092711e..7ebdf4c 100644
 +  parent_requirements: []
 +```
 +
-+### Requirement: POC-REQ-055 — Every relation kind is a closed-vocabulary name or flagged outside it
++### Requirement: POC-REQ-055 — Every relationship is named in or flagged outside the closed vocabulary
 +
 +Group: Cross-cutting experience. Form: **invariant**.
 +
-+**Required behavior.** Every relationship kind the shared model emits SHALL
-+either be a relation name from RFC1-25's closed table, emitted with its source
-+and target in the roles that table assigns the relation, or carry an explicit
++**Required behavior.** Every relationship the shared model emits SHALL either
++carry a relation name from RFC1-25's closed table, emitted with its source and
++target in the roles that table assigns the relation — read through a
++checked-in declaration that maps each shared-model entity kind to the RFC 0001
++class it corresponds to, or to none — or carry an explicit
 +outside-closed-vocabulary flag with a stated reason. The flag and its reason
-+SHALL be carried in the machine answer and rendered wherever the kind is
-+rendered. A flag discloses that a kind is outside the closed vocabulary; it
-+never adds the kind to that vocabulary.
++SHALL be carried in the machine answer and rendered wherever the relationship
++is rendered. A flag discloses that a relationship is outside the closed
++vocabulary; it never adds a kind or a role pair to that vocabulary.
 +
-+- **Scope.** every relationship kind in the machine answer and every
-+  rendering of a kind on any surface.
++- **Scope.** every relationship in the machine answer and every rendering
++  of a relationship on any surface.
 +
-+- **Case (sweep)**: a checker enumerates the distinct relationship kinds
-+  in the machine answer — the denominator is that population — and every
-+  relationship carrying each; it checks each kind against a copy of
-+  RFC1-25's relation names, each named relationship's source and target
-+  against the set of role pairs the table assigns that relation, and each
-+  flagged kind
-+  for a non-empty reason in the machine answer and beside every rendering.
-+- **Observable**: every kind is a closed relation name with its source and
-+  target in their assigned roles, or is flagged with a reason everywhere
-+  it appears.
-+- **Oracle**: per-kind membership-or-flag over the exhausted population;
-+  zero unflagged out-of-vocabulary kinds, zero flagged in-vocabulary kinds
-+  and zero reversed roles decide.
++- **Case (sweep)**: a checker enumerates every relationship in the
++  machine answer — the denominators are that population and its distinct
++  kinds — and, for each, checks its kind against a copy of RFC1-25's
++  relation names and its source and target kinds, mapped through the
++  declared correspondence, against the set of role pairs the table
++  assigns that relation; it checks every flagged relationship for a
++  non-empty reason in the machine answer and beside every rendering.
++- **Observable**: every relationship is a closed relation name in a role
++  pair the table assigns it, or is flagged with a reason everywhere it
++  appears.
++- **Oracle**: per-relationship membership-or-flag over the exhausted
++  population. Zero unflagged relationships whose kind is outside the
++  table, zero unflagged relationships whose mapped role pair the table
++  does not assign that relation, zero flagged relationships whose kind
++  and mapped role pair the table assigns, and zero flagged relationships
++  rendered or answered without their reason decide.
 +- **Oracle independence**: the relation names and each relation's set of
-+  role pairs are literals transcribed from RFC1-25's table, never
++  role pairs are literals transcribed from RFC1-25's table, and the
++  kind-to-class correspondence is a checked-in declaration; none is
 +  imported from the model.
-+- **Falsifier**: one emitted kind outside RFC1-25's table without a flag,
-+  a flag on a kind that is in the table, a flagged kind rendered without
-+  its reason, or a closed relation name emitted with source and target
-+  reversed.
++- **Falsifier**: an unflagged relationship whose kind is outside
++  RFC1-25's table, an unflagged closed name in a role pair the table does
++  not assign it (reversed roles included), a flag on a relationship the
++  table fully admits, or a flagged relationship rendered without its
++  reason.
 +
 +#### Scenario: A kind outside the closed table is disclosed
 +
 +- **WHEN** the shared model emits a relationship whose kind has no
 +  counterpart in RFC1-25's closed table
 +- **THEN** the machine answer and every surface that renders it carry the
-+  kind's outside-closed-vocabulary flag and reason, and the check reports
-+  the number of distinct kinds as its denominator
++  relationship's outside-closed-vocabulary flag and reason, and the check
++  reports the number of relationships and of distinct kinds as its
++  denominators
 +
 +```yaml
 +warrants:
@@ -236,7 +246,7 @@ index 092711e..7ebdf4c 100644
  
  #### Scenario: Unknown looks the same everywhere
  
-@@ -966,13 +1136,22 @@ reasons) identically wherever they appear.
+@@ -966,13 +1146,22 @@ reasons) identically wherever they appear.
  - **THEN** all three render it with the declared Unknown encoding from
    the shared token set
  
@@ -244,10 +254,10 @@ index 092711e..7ebdf4c 100644
 +
 +- **WHEN** an agent-asserted record is present in the shared model
 +  beside Observed records of the same kind
-+- **THEN** it carries the label Inferred with the tier
-+  `asserted-by-worker`, appears in no Observed count, leaves any Unknown
-+  it addresses Unknown, and renders with the declared Inferred encoding
-+  on every surface where it appears
++- **THEN** it carries the label Inferred and names the agent assertion
++  it arises from, appears in no Observed count, leaves any Unknown it
++  addresses Unknown, and renders with the declared Inferred encoding on
++  every surface where it appears
 +
  ```yaml
  warrants:
