@@ -167,21 +167,22 @@ function parseInstance(text: string, act: Act, inForceAt: number | null): Admiss
     one(text, /^(\| Label \| Commit object id \|)$/gm);
     const lines = outsideFences(text).split('\n'), head = lines.indexOf('| Label | Commit object id |');
     if (lines[head + 1] !== '|---|---|') refuse();
-    const revisions: string[] = [];
+    const revisions: string[] = [], labels: string[] = [];
     for (const line of lines.slice(head + 2)) {
-      const row = /^\| `[^`\n]+` \| `([0-9a-f]+)` \|$/.exec(line);
+      const row = /^\| `([^`\n]+)` \| `([0-9a-f]+)` \|$/.exec(line);
       if (row === null) break;
-      revisions.push(row[1]!);
+      labels.push(row[1]!); revisions.push(row[2]!);
     }
-    if (revisions.length === 0 || !revisions.every(id => COMMIT_OBJECT_ID.test(id))) refuse();
-    return Object.freeze({ ...base, class: 'observation', repositoryId: m![1]!, providerId: null, admittedRevisions: Object.freeze(revisions), admittedRepositories: Object.freeze([]), contentClasses: Object.freeze([]) });
+    // A label names one commit and a commit has one label: a duplicate of either is ambiguous, so the table is unreadable.
+    if (revisions.length === 0 || !revisions.every(id => COMMIT_OBJECT_ID.test(id)) || new Set(labels).size !== labels.length || new Set(revisions).size !== revisions.length) refuse();
+    return Object.freeze({ ...base, class: 'observation', repositoryId: m![1]!, providerId: null, admittedRevisions: Object.freeze(revisions), revisionLabels: Object.freeze(labels), admittedRepositories: Object.freeze([]), contentClasses: Object.freeze([]) });
   }
   const m = /^\(project:syzygy, provider:([a-z0-9][a-z0-9-]*)\)$/.exec(subject) ?? refuse();
   // Only the Scope section lists admitted repositories: a bullet naming one elsewhere ("not admitted", an example) is not a grant.
   const repositories = section(text, '## Scope').map(line => /^- `\(project:syzygy, repository:([a-z0-9][a-z0-9-]*)\)`$/.exec(line)?.[1]).filter((id): id is string => id !== undefined);
   const classes = bullets(text, /^Permitted content classes/m).map(line => /^`([a-z-]+)`$/.exec(line)?.[1] ?? refuse());
   if (repositories.length === 0 || classes.length === 0 || new Set(repositories).size !== repositories.length) refuse();
-  return Object.freeze({ ...base, class: 'egress', repositoryId: null, providerId: m![1]!, admittedRevisions: Object.freeze([]), admittedRepositories: Object.freeze(repositories), contentClasses: Object.freeze(classes) });
+  return Object.freeze({ ...base, class: 'egress', repositoryId: null, providerId: m![1]!, admittedRevisions: Object.freeze([]), revisionLabels: Object.freeze([]), admittedRepositories: Object.freeze(repositories), contentClasses: Object.freeze(classes) });
 }
 
 /** The RFC5-14 content-class amendment that version 2's `project-documentation` class depends on (scripts/record_rfc5_project_documentation_act.py):
@@ -425,10 +426,14 @@ export function readInForceEgress(options: StrictReadOptions & { readonly now: n
 
 /** Structurally the poc:dossier trigger's `AdmissionRecordsPort`. */
 export interface AdmissionRequirementLike { readonly kind: 'observation-consent' | 'public-source-policy' | 'egress-consent'; readonly repositoryId: string; readonly revision: string }
+export interface ConsentedRevision { readonly label: string; readonly commitId: string }
 export type AdmissionAnswerLike = { readonly satisfied: true; readonly record: string } | { readonly satisfied: false; readonly why: string };
 export interface AdmissionRecordsPortLike {
   readonly source: string;
   readonly check: (requirement: AdmissionRequirementLike & Record<string, unknown>) => Promise<AdmissionAnswerLike>;
+  /** The owner's consented revisions for a repository id: label and full commit id, from the observation records in force now. Fails closed to
+   * an empty list when records cannot be read, or when labels and commits are not one-to-one across the records in force. */
+  readonly consentedRevisionsFor: (repositoryId: string) => Promise<readonly ConsentedRevision[]>;
 }
 
 /** Answers each requirement from the reader, fresh on every call, with the same
@@ -443,6 +448,20 @@ export function createPackageAdmissionRecordsPort(options: { readonly root: stri
 export function createAdmissionRecordsPort(options: { readonly reader: AdmissionRecordReader; readonly policy?: PolicyActReader; readonly now: () => number }): AdmissionRecordsPortLike {
   return {
     source: 'public-repo-admission act records (owner acts over the instance records)',
+    consentedRevisionsFor: async repositoryId => {
+      let live: readonly AdmissionRecord[];
+      try { live = inForceRecords(await options.reader.read(), options.now()); } catch { return []; }
+      const byLabel = new Map<string, string>(), byCommit = new Map<string, string>();
+      for (const r of live) {
+        if (r.class !== 'observation' || r.repositoryId !== repositoryId) continue;
+        for (const [i, commitId] of r.admittedRevisions.entries()) {
+          const label = r.revisionLabels[i]!;
+          if ((byLabel.get(label) ?? commitId) !== commitId || (byCommit.get(commitId) ?? label) !== label) return [];   // one label, two commits (or the reverse) across records
+          byLabel.set(label, commitId); byCommit.set(commitId, label);
+        }
+      }
+      return Object.freeze([...byLabel].map(([label, commitId]) => Object.freeze({ label, commitId })));
+    },
     check: async requirement => {
       if (requirement.kind === 'public-source-policy') {
         if (options.policy === undefined) return { satisfied: false, why: 'no record found: no policy act reader is wired' };

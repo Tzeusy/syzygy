@@ -21,11 +21,11 @@ const source = (repositoryId: string, revision: string, id: string, excluded = f
 const withSupersession = (r: Omit<AdmissionRecord, 'supersessionAt'>, over: Partial<AdmissionRecord>): AdmissionRecord => ({ ...r, supersessionAt: r.supersedes === null ? null : r.inForceAt, ...over });
 const obs = (over: Partial<AdmissionRecord> = {}): AdmissionRecord => withSupersession({
   recordId: 'PUBLIC-OBS-REDIS-2026-10-03', version: '1', class: 'observation', project: 'project:syzygy', repositoryId: 'redis-redis', providerId: null, digest: hex('1'),
-  inForceAt: NOW - 1000, withdrawnAt: null, supersedes: null, admittedRevisions: [REDIS_REV], admittedRepositories: [], contentClasses: [], ...over,
+  inForceAt: NOW - 1000, withdrawnAt: null, supersedes: null, admittedRevisions: [REDIS_REV], revisionLabels: ['8.10.2'], admittedRepositories: [], contentClasses: [], ...over,
 }, over);
 const egress = (over: Partial<AdmissionRecord> = {}): AdmissionRecord => withSupersession({
   recordId: 'PUBLIC-EGRESS-anthropic', version: '2', class: 'egress', project: 'project:syzygy', repositoryId: null, providerId: 'anthropic', digest: hex('2'),
-  inForceAt: NOW - 1000, withdrawnAt: null, supersedes: null, admittedRevisions: [], admittedRepositories: ['redis-redis'], contentClasses: ['code-content', 'governance-text'], ...over,
+  inForceAt: NOW - 1000, withdrawnAt: null, supersedes: null, admittedRevisions: [], revisionLabels: [], admittedRepositories: ['redis-redis'], contentClasses: ['code-content', 'governance-text'], ...over,
 }, over);
 
 function rig(records: AdmissionRecord[], extra: Partial<ConsentPortsOptions> = {}) {
@@ -258,7 +258,7 @@ describe('parseAdmissionRecords', () => {
     const bad: [string, (r: Record<string, unknown>) => void][] = [
       ['unknown key', r => { r.extra = 1; }], ['missing key', r => { delete r.digest; }], ['short digest', r => { r.digest = 'abc'; }],
       ['bad class', r => { r.class = 'other'; }], ['non-integer instant', r => { r.inForceAt = 1.5; }], ['string instant', r => { r.withdrawnAt = '2026'; }],
-      ['supersession instant without a predecessor', r => { r.supersessionAt = 5; }], ['observation with provider', r => { r.providerId = 'anthropic'; }], ['observation without repository', r => { r.repositoryId = null; }],
+      ['label count differs from revision count', r => { r.revisionLabels = []; }], ['duplicate label', r => { r.admittedRevisions = [REDIS_REV, REQ_REV]; r.revisionLabels = ['x', 'x']; }], ['duplicate commit', r => { r.admittedRevisions = [REDIS_REV, REDIS_REV]; r.revisionLabels = ['x', 'y']; }], ['extra label', r => { r.revisionLabels = ['a', 'b']; }], ['supersession instant without a predecessor', r => { r.supersessionAt = 5; }], ['observation with provider', r => { r.providerId = 'anthropic'; }], ['observation without repository', r => { r.repositoryId = null; }],
     ];
     for (const [name, edit] of bad) {
       const list = good() as Record<string, unknown>[];

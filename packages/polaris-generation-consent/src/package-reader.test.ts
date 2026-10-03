@@ -91,7 +91,8 @@ describe('package admission reader', () => {
     const obs = records.find(r => r.class === 'observation')!;
     expect(obs).toMatchObject({ recordId: 'PUBLIC-OBS-REDIS-2026-10-03', version: '0.1.0-candidate.7', project: 'project:syzygy', withdrawnAt: null, supersedes: null, inForceAt: AT, admittedRevisions: [REDIS_REV, OTHER_REV], digest: sha(obsText()) });
     expect(records.find(r => r.class === 'egress')).toMatchObject({ admittedRepositories: ['psf-requests', 'redis-redis'], contentClasses: ['governance-text', 'code-structure'] });
-    expect(Object.isFrozen(obs) && Object.isFrozen(obs.admittedRevisions)).toBe(true);
+    expect(obs.revisionLabels).toEqual(['8.10.2', '7.2.4']);
+    expect(Object.isFrozen(obs) && Object.isFrozen(obs.admittedRevisions) && Object.isFrozen(obs.revisionLabels)).toBe(true);
   });
   it('returns nothing when no act record exists: a candidate instance binds nothing', async () => {
     const files = world();
@@ -116,6 +117,8 @@ describe('package admission reader', () => {
       ['bad date', { [act]: actText('consent-observation', REDIS_PATH, obsText(), '2026-13-45') }],
       ['artifact missing', { [act]: actText('consent-observation', `${INSTANCES_DIR}/gone/OBSERVATION-CONSENT.md`, obsText()) }],
       ['successor form not parsed', (() => { const t = obsText({ revocation: 'active; supersedes PUBLIC-OBS-REDIS-2026-09-01@1' }); return { [REDIS_PATH]: t, [act]: actText('consent-observation', REDIS_PATH, t) }; })()],
+      ['duplicate revision label', (() => { const t = obsText({ rows: `| \`8.10.2\` | \`${REDIS_REV}\` |\n| \`8.10.2\` | \`${OTHER_REV}\` |` }); return { [REDIS_PATH]: t, [act]: actText('consent-observation', REDIS_PATH, t) }; })()],
+      ['one commit under two labels', (() => { const t = obsText({ rows: `| \`8.10.2\` | \`${REDIS_REV}\` |\n| \`latest\` | \`${REDIS_REV}\` |` }); return { [REDIS_PATH]: t, [act]: actText('consent-observation', REDIS_PATH, t) }; })()],
       ['branch name as revision', (() => { const t = obsText({ rows: '| `short` | `abc123` |' }); return { [REDIS_PATH]: t, [act]: actText('consent-observation', REDIS_PATH, t) }; })()],
       ['subject not a pair', (() => { const t = obsText({ subject: '(project:syzygy, repository:*)' }); return { [REDIS_PATH]: t, [act]: actText('consent-observation', REDIS_PATH, t) }; })()],
     ];
@@ -156,6 +159,29 @@ describe('admission records port', () => {
     expect((await p.check(requirement('egress-consent'))).satisfied).toBe(true);
     files[`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-WITHDRAWAL.md`] = 'withdrawn';
     expect((await p.check(requirement('egress-consent'))).satisfied).toBe(false);
+  });
+});
+
+describe('consented revisions for a repository', () => {
+  const port = (files: Record<string, string>, now: number) => createAdmissionRecordsPort({ reader: reader(files), now: () => now });
+  it('returns the owner\'s label and full commit id for each revision of the repository, in force now', async () => {
+    expect(await port(world(), AT).consentedRevisionsFor('redis-redis')).toEqual([{ label: '8.10.2', commitId: REDIS_REV }, { label: '7.2.4', commitId: OTHER_REV }]);
+  });
+  it('is empty before the act, for another repository, for stale bytes, with no act, and when the records cannot be read', async () => {
+    expect(await port(world(), AT - 1).consentedRevisionsFor('redis-redis')).toEqual([]);
+    expect(await port(world(), AT).consentedRevisionsFor('psf-requests')).toEqual([]);
+    expect(await port(world({ [REDIS_PATH]: obsText() + 'x' }), AT).consentedRevisionsFor('redis-redis')).toEqual([]);
+    const none = world(); for (const key of Object.keys(none)) if (key.endsWith('-ACT.md')) delete none[key];
+    expect(await port(none, AT).consentedRevisionsFor('redis-redis')).toEqual([]);
+    expect(await port(world({ [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-X-WITHDRAWAL.md`]: 'x' }), AT).consentedRevisionsFor('redis-redis')).toEqual([]);
+  });
+  it('is empty when records in force disagree: one label for two commits, or one commit under two labels', async () => {
+    const records = (rows: Array<{ label: string; id: string }>) => rows.map((r, i) => ({ recordId: `R${i}`, version: '1', class: 'observation' as const, project: 'project:syzygy', repositoryId: 'redis-redis', providerId: null, digest: '1'.repeat(64), inForceAt: 1, withdrawnAt: null, supersedes: null, supersessionAt: null, admittedRevisions: [r.id], revisionLabels: [r.label], admittedRepositories: [], contentClasses: [] }));
+    const of = (rows: Array<{ label: string; id: string }>) => createAdmissionRecordsPort({ reader: { read: async () => records(rows) }, now: () => 5 });
+    expect(await of([{ label: 'a', id: REDIS_REV }, { label: 'b', id: OTHER_REV }]).consentedRevisionsFor('redis-redis')).toHaveLength(2);
+    expect(await of([{ label: 'a', id: REDIS_REV }, { label: 'a', id: OTHER_REV }]).consentedRevisionsFor('redis-redis')).toEqual([]);
+    expect(await of([{ label: 'a', id: REDIS_REV }, { label: 'b', id: REDIS_REV }]).consentedRevisionsFor('redis-redis')).toEqual([]);
+    expect(await of([{ label: 'a', id: REDIS_REV }, { label: 'a', id: REDIS_REV }]).consentedRevisionsFor('redis-redis')).toEqual([{ label: 'a', commitId: REDIS_REV }]);   // the same pair twice is not a conflict
   });
 });
 

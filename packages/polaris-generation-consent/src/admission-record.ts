@@ -28,6 +28,8 @@ export interface AdmissionRecord {
   readonly supersessionAt: number | null;
   /** Observation: full commit object ids; a tag or branch name never counts. */
   readonly admittedRevisions: readonly string[];
+  /** Observation: the owner's label for each admitted revision, in the same order (the Label column of the consent's table); egress: empty. */
+  readonly revisionLabels: readonly string[];
   /** Egress: repository ids whose content may be sent. */
   readonly admittedRepositories: readonly string[];
   /** Egress: the closed RFC5-14 content-class vocabulary admitted. */
@@ -43,7 +45,7 @@ export class AdmissionRecordError extends Error {
   constructor(readonly code: 'invalid-records') { super(code); this.name = 'AdmissionRecordError'; }
 }
 
-const KEYS = ['recordId', 'version', 'class', 'project', 'repositoryId', 'providerId', 'digest', 'inForceAt', 'withdrawnAt', 'supersedes', 'supersessionAt', 'admittedRevisions', 'admittedRepositories', 'contentClasses'];
+const KEYS = ['recordId', 'version', 'class', 'project', 'repositoryId', 'providerId', 'digest', 'inForceAt', 'withdrawnAt', 'supersedes', 'supersessionAt', 'admittedRevisions', 'revisionLabels', 'admittedRepositories', 'contentClasses'];
 const isText = (v: unknown): v is string => typeof v === 'string' && v.length > 0 && v.length <= 256;
 const isNullableText = (v: unknown): v is string | null => v === null || isText(v);
 const isInstant = (v: unknown): v is number | null => v === null || (typeof v === 'number' && Number.isSafeInteger(v) && v >= 0);
@@ -62,14 +64,15 @@ export function parseAdmissionRecords(value: unknown): readonly AdmissionRecord[
     const ok = isText(r.recordId) && isText(r.version) && (r.class === 'observation' || r.class === 'egress') && isText(r.project)
       && isNullableText(r.repositoryId) && isNullableText(r.providerId) && typeof r.digest === 'string' && /^[0-9a-f]{64}$/.test(r.digest)
       && isInstant(r.inForceAt) && isInstant(r.withdrawnAt) && isNullableText(r.supersedes) && isInstant(r.supersessionAt) && (r.supersedes !== null || r.supersessionAt === null)
-      && isTextList(r.admittedRevisions) && isTextList(r.admittedRepositories) && isTextList(r.contentClasses);
+      && isTextList(r.admittedRevisions) && isTextList(r.revisionLabels) && isTextList(r.admittedRepositories) && isTextList(r.contentClasses);
     if (!ok) throw new AdmissionRecordError('invalid-records');
     const record = r as unknown as AdmissionRecord;
     const observation = record.class === 'observation';
     const shapeOk = observation
       ? record.repositoryId !== null && record.providerId === null && record.admittedRepositories.length === 0 && record.contentClasses.length === 0
-      : record.providerId !== null && record.repositoryId === null && record.admittedRevisions.length === 0;
+        && record.revisionLabels.length === record.admittedRevisions.length && new Set(record.revisionLabels).size === record.revisionLabels.length && new Set(record.admittedRevisions).size === record.admittedRevisions.length
+      : record.providerId !== null && record.repositoryId === null && record.admittedRevisions.length === 0 && record.revisionLabels.length === 0;
     if (!shapeOk) throw new AdmissionRecordError('invalid-records');
-    return Object.freeze({ ...record, admittedRevisions: Object.freeze([...record.admittedRevisions]), admittedRepositories: Object.freeze([...record.admittedRepositories]), contentClasses: Object.freeze([...record.contentClasses]) });
+    return Object.freeze({ ...record, admittedRevisions: Object.freeze([...record.admittedRevisions]), revisionLabels: Object.freeze([...record.revisionLabels]), admittedRepositories: Object.freeze([...record.admittedRepositories]), contentClasses: Object.freeze([...record.contentClasses]) });
   });
 }
