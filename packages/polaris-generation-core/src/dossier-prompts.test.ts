@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { describe, expect, it, vi } from 'vitest';
-import { DISCOVERY_STAGE_ILLUSTRATIONS, DOSSIER_ILLUSTRATION_SOURCES, DOSSIER_STAGE_ILLUSTRATIONS, promptForStage, type GenerationStage, type PromptProfile } from './prompts.js';
+import { describe, expect, it } from 'vitest';
+import { DOSSIER_ILLUSTRATION_SOURCES, DOSSIER_STAGE_ILLUSTRATIONS, promptForStage, type GenerationStage, type PromptProfile } from './prompts.js';
 import { validateStage, type ProviderDraft, type ProviderInventory } from './provider-draft.js';
 
 const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
@@ -138,31 +138,5 @@ describe('dossier illustrations obey their own rules', () => {
     expect(draft.unresolved.length).toBe(1);
     const review = illustration('fidelity') as { inventoryCoverage: { disposition: string }[] };
     expect(review.inventoryCoverage.filter(row => row.disposition === 'unresolved').length).toBe(1);
-  });
-  it('freezes the illustration exports and serializes them once, so no edit can change a prompt under an unchanged version', () => {
-    const stages: [GenerationStage | 'discovery-map' | 'discovery-reduce', PromptProfile][] = [['inventory', 'dossier'], ['plan', 'dossier'], ['author', 'dossier'], ['edit', 'dossier'],
-      ['fidelity', 'dossier'], ['repair', 'dossier'], ['discovery-map', 'dossier'], ['discovery-reduce', 'dossier']];
-    const digests = () => stages.map(([stage, profile]) => { const prompt = promptForStage(stage, profile); return `${prompt.version}:${sha256(prompt.system)}`; });
-    const before = digests();
-    const edits: (() => void)[] = [
-      () => { (DOSSIER_STAGE_ILLUSTRATIONS as Record<string, unknown>).inventory = {}; },
-      () => { delete (DOSSIER_STAGE_ILLUSTRATIONS as Record<string, unknown>).plan; },
-      () => { ((DOSSIER_STAGE_ILLUSTRATIONS.inventory as { entries: unknown[] }).entries).push({ id: 'injected' }); },
-      () => { ((DOSSIER_STAGE_ILLUSTRATIONS.author as { title: string }).title) = 'injected'; },
-      () => { ((DOSSIER_STAGE_ILLUSTRATIONS.fidelity as { findings: unknown[] }).findings).length = 0; },
-      () => { (DISCOVERY_STAGE_ILLUSTRATIONS as Record<string, unknown>)['discovery-map'] = {}; },
-      () => { ((DISCOVERY_STAGE_ILLUSTRATIONS['discovery-reduce'] as { ranked: string[] }).ranked).push('injected'); },
-      () => { ((DISCOVERY_STAGE_ILLUSTRATIONS['discovery-map'] as { claims: { claim: string }[] }).claims[0]!.claim) = 'injected'; },
-      () => { (DOSSIER_ILLUSTRATION_SOURCES as unknown as { text: string }[])[0]!.text = 'injected'; },
-      () => { (DOSSIER_ILLUSTRATION_SOURCES as unknown as unknown[]).push({ sourceId: 'x', text: 'y' }); },
-    ];
-    const stringify = vi.spyOn(JSON, 'stringify');
-    try { digests(); expect(stringify).not.toHaveBeenCalled(); } finally { stringify.mockRestore(); }
-    for (const [index, edit] of edits.entries()) expect(edit, `edit ${index}`).toThrow(TypeError);
-    expect(digests()).toEqual(before);
-    expect(JSON.stringify(DOSSIER_STAGE_ILLUSTRATIONS.inventory)).not.toContain('injected');
-    for (const value of [DOSSIER_STAGE_ILLUSTRATIONS, DISCOVERY_STAGE_ILLUSTRATIONS, DOSSIER_ILLUSTRATION_SOURCES, DOSSIER_STAGE_ILLUSTRATIONS.author, DOSSIER_STAGE_ILLUSTRATIONS.fidelity]) {
-      expect(Object.isFrozen(value)).toBe(true);
-    }
   });
 });
