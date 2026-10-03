@@ -222,6 +222,12 @@ D7's step-21 draft is
 (register row P-84). Its fourth review is `REVISE`, so it reaches the sitting
 with findings open and a drafter's recommendation to answer Revise.
 
+Step 22's draft is
+`.syzygy/governance/contracts/candidates/pwb-release-label-amendment/`
+(register row P-85). Its one review round was `REVISE`; the findings are
+repaired but the repaired bytes are unreviewed, and the label needs a
+registry read the packet puts to the owner.
+
 D1 and D4 matter most for the example. D3's default — never demonstrated —
 costs the example nothing once step 5 renders the write as foreclosed.
 

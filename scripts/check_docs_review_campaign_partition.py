@@ -248,6 +248,11 @@ CAMPAIGNS = (
         "M9 POC identity amendment gate",
         r"R-M9-POC-IDENTITY-AMENDMENT-.*\.md",
     ),
+    campaign(
+        "pwb-release-label",
+        "PWB release-label gate",
+        r"R-PWB-RELEASE-LABEL-.*\.md",
+    ),
 )
 
 
