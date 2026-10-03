@@ -169,3 +169,50 @@ npm run poc:generator-demo -- --out /tmp/polaris-generator-demo-new
 - full authored bundle and owner workflow;
 - independent real-source and rendered quality judgments;
 - unchanged-engine proof on two real admitted projects.
+
+## Dossier evaluation
+
+`evaluateDossier` measures a generated static dossier against frozen reader
+questions (TRACKER G5, gap #10). It records; it never grades an answer,
+awards acceptance or calls a model. Absent evidence is Unknown, never a pass.
+
+**Input (`polaris-dossier-v1`).** A run directory holds `dossier.json`
+(`format`, `title`, `entryPage`, `pages: [{ path, depth }]`, the entry page
+alone at depth 0) and the pages. The evaluator reads markup from the page
+bytes, never from the manifest:
+
+- `data-reading-level="n"` marks reading levels; 0 is the first;
+- `<section id data-topics="…">` names the owner topics a section claims;
+- `data-claim-id` must carry `data-epistemic="observed|inferred|unknown"`;
+- `data-quote-source`, `data-quote-start` and `data-quote-end` give UTF-8 byte
+  offsets into an admitted source body, and the element's decoded text must
+  equal those bytes exactly.
+
+**Report.** Four parts, plus the subject's digests (manifest, each page, the
+questions file):
+
+- **Reader cost:** bytes and words to the first reading level, per page
+  depth and per reading level, and each page against an optional budget.
+  An undeclared bound is Unknown (`no-budget-declared`).
+- **Fidelity:** each quote's outcome (`exact`, `text-mismatch`,
+  `out-of-range`, `not-utf8-boundary`, `unknown-source`,
+  `unquotable-source`, `invalid-offsets`) and each claim's label. With no
+  quotes or no claims the outcome is `unknown`.
+- **Reader test:** a fresh `ReaderAnswerPort` call per question, given only
+  the question's id and text and the page bytes. Answers, citations and
+  attempted paths are recorded with `accuracy: "not-evaluated"`.
+  `scriptedAnswers` is the only implementation.
+- **Coverage:** per owner topic, `reader-cited` (a reader's resolving
+  citation), `declared-only` (a section's own `data-topics`) or `unknown`.
+
+The questions file (`polaris-reader-questions-v1`) is frozen by digest:
+`expectedQuestionsSha256` refuses a file that no longer hashes to it.
+
+```sh
+npm run poc:dossier-evaluation -- --dossier <run-dir> --sources <sources.json> \
+  --questions <questions.json> [--expect-questions-sha256 <hex>] \
+  [--budget <budget.json>] [--answers <scripted-answers.json>] [--out <new-report.json>]
+```
+
+The command refuses a page that is a symlink or resolves outside the run
+directory.
