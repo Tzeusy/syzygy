@@ -1,12 +1,17 @@
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { promisify } from 'node:util';
 import { describe, expect, it } from 'vitest';
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 const POISON = 'throw new Error("poisoned ignored POC output");\n';
+// Long child processes run async (syzygy-w90k): a synchronous block over
+// 60s starves vitest's worker RPC, which then fails the run with "Timeout
+// calling onTaskUpdate" even though every test passed.
+const run = promisify(execFile);
 
 // The build runs in a private copy, never in this checkout's dist/
 // (syzygy-gb4l). Poisoning the shared dist/main.js let a second test run in
@@ -15,7 +20,7 @@ const POISON = 'throw new Error("poisoned ignored POC output");\n';
 // takes the working-tree bytes (uncommitted edits included) of the root files
 // and the workspaces, so the build script and project configuration under
 // test are the ones this checkout would run.
-function privateCheckout(): string {
+async function privateCheckout(): Promise<string> {
   const root = mkdtempSync(join(tmpdir(), 'syzygy-build-output-'));
   const listed = execFileSync('git', ['-C', REPO_ROOT, 'ls-files', '-z', '--cached', '--others', '--exclude-standard'], { encoding: 'utf8' });
   for (const path of listed.split('\0')) {
@@ -25,27 +30,24 @@ function privateCheckout(): string {
     mkdirSync(dirname(join(root, path)), { recursive: true });
     copyFileSync(source, join(root, path));
   }
-  execFileSync('npm', ['ci', '--silent'], { cwd: root, stdio: ['ignore', 'ignore', 'pipe'] });
+  await run('npm', ['ci', '--silent'], { cwd: root });
   return root;
 }
 
-function buildPoc(root: string): void {
-  execFileSync('npm', ['run', 'build:poc', '--silent'], {
-    cwd: root,
-    stdio: ['ignore', 'ignore', 'pipe'],
-  });
+async function buildPoc(root: string): Promise<void> {
+  await run('npm', ['run', 'build:poc', '--silent'], { cwd: root });
 }
 
 describe('POC build output integrity', () => {
   it(
     're-emits ignored JavaScript before the launcher executes it',
-    () => {
-      const root = privateCheckout();
+    async () => {
+      const root = await privateCheckout();
       try {
         const mainOutput = join(root, 'apps/three-surface-poc/dist/main.js');
-        buildPoc(root);
+        await buildPoc(root);
         writeFileSync(mainOutput, POISON, 'utf8');
-        buildPoc(root);
+        await buildPoc(root);
         expect(readFileSync(mainOutput, 'utf8')).not.toContain(POISON.trim());
       } finally {
         rmSync(root, { recursive: true, force: true });
