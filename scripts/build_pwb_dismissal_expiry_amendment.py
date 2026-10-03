@@ -316,7 +316,7 @@ FORBIDDEN = {
 }
 # The selftest's total, fixed so that a rule removed from any table above
 # fails the selftest instead of lowering its count.
-EXPECTED_KILLED = 154
+EXPECTED_KILLED = 166
 REQUIRED_WARRANTS = (
     "VIS-4", "VIS-6", "RFC1-12", "RFC1-20", "RFC1-25", "RFC2-1", "RFC2-15"
 )
@@ -846,6 +846,7 @@ def _fail(name: str) -> int:
 
 
 def selftest() -> int:
+    global MANIFEST_OUT, patch_files, proposed_bytes
     if len(BEHAVIOR_SUBJECTS) != 11 or len(set(BEHAVIOR_SUBJECTS)) != 11:
         return _fail("behavior subject is not eleven unique paths")
     proposed = proposed_bytes()
@@ -1266,6 +1267,113 @@ def selftest() -> int:
             return _fail("patch drift passed")
     killed += 1
 
+    # check() itself: every predicate is wired in, not only correct as a
+    # function. Each case changes one input of check() and requires its own
+    # finding; the proposed bytes check() builds are edited through
+    # proposed_bytes (population_findings passes patches and is left alone).
+    kept = (MANIFEST_OUT, patch_files, proposed_bytes)
+
+    def through_check(edit=None, patches=None, manifest=None) -> list[str]:
+        global MANIFEST_OUT, patch_files, proposed_bytes
+        if patches is not None:
+            patch_files = lambda: patches  # noqa: E731
+        if manifest is not None:
+            MANIFEST_OUT = manifest
+        if edit is not None:
+            def edited(overrides=None, patches=None):
+                built = kept[2](overrides, patches)
+                return built if patches is not None else edit(dict(built))
+            proposed_bytes = edited
+        try:
+            return check()
+        finally:
+            MANIFEST_OUT, patch_files, proposed_bytes = kept
+
+    def edit_of(rel, old, new):
+        def edit(built):
+            if old not in built[rel]:
+                raise AssertionError(f"check() fixture matched nothing: {rel}")
+            built[rel] = built[rel].replace(old, new, 1)
+            return built
+        return edit
+
+    spec_text = proposed[SPEC]
+    all_patches = kept[1]()
+    with tempfile.TemporaryDirectory() as scratch:
+        scratch_dir = pathlib.Path(scratch)
+        stale = scratch_dir / "stale.txt"
+        stale.write_text(baseline.replace(rows[0][0], "0" * 64, 1))
+        swapped = scratch_dir / "swapped.txt"
+        swapped.write_text(
+            baseline.replace(
+                f"{rows[0][0]}  {rows[0][1]}\n{rows[1][0]}  {rows[1][1]}",
+                f"{rows[1][0]}  {rows[1][1]}\n{rows[0][0]}  {rows[0][1]}",
+            )
+        )
+        extra_lines = current[first].decode("utf-8").splitlines()
+        extra = scratch_dir / f"{first.name}.patch"
+        extra.write_text(
+            f"diff --git a/{first.as_posix()} b/{first.as_posix()}\n"
+            f"--- a/{first.as_posix()}\n+++ b/{first.as_posix()}\n"
+            f"@@ -{len(extra_lines)} +{len(extra_lines)},2 @@\n {extra_lines[-1]}\n+undeclared drift\n"
+        )
+        check_cases = {
+            "check() clean": (dict(), None),
+            "check() manifest content": (
+                dict(manifest=stale),
+                "manifest differs from exact regeneration over proposed bytes",
+            ),
+            "check() manifest order": (
+                dict(manifest=swapped),
+                "manifest path population or order differs",
+            ),
+            "check() manifest missing": (
+                dict(manifest=scratch_dir / "absent.txt"),
+                "manifest missing: ",
+            ),
+            "check() patch population": (
+                dict(patches=[p for p in all_patches if p.name != "proposal.md.patch"]),
+                "proposed patch population differs from declared subjects",
+            ),
+            "check() undeclared subject": (
+                dict(patches=sorted(all_patches + [extra], key=lambda p: p.name)),
+                f"undeclared subject change: {first}",
+            ),
+            "check() requirement pin": (
+                dict(edit=edit_of(SPEC, b"### Requirement: PWB-REQ-004", b"### Requirement: PWB-REQ-004\n\nA dismissal MAY apply here.")),
+                "proposed spec differs from the pinned text",
+            ),
+            "check() pin leading edge": (
+                dict(edit=edit_of(SPEC, spec_text[:12], b"~" + spec_text[:12])),
+                "proposed spec differs from the pinned text at line 1",
+            ),
+            "check() dependencies": (
+                dict(edit=edit_of(DEPENDENCIES, proposed[DEPENDENCIES][:20], b"~" + proposed[DEPENDENCIES][:20])),
+                "proposed GOVERNING-DEPENDENCIES.md differs from regeneration",
+            ),
+            "check() proposal token": (
+                dict(edit=edit_of(PROPOSAL, b"recorded, attributed", b"recorded, ~attributed")),
+                "proposal does not carry the dismissal obligation",
+            ),
+            "check() capability population": (
+                dict(edit=edit_of(CAPABILITY_COVERAGE, b"Population: 32 positive", b"Population: 31 positive")),
+                "capability coverage population or totals are not 32",
+            ),
+            "check() contract coverage": (
+                dict(edit=edit_of(CONTRACT_COVERAGE, proposed[CONTRACT_COVERAGE][:20], b"~" + proposed[CONTRACT_COVERAGE][:20])),
+                "proposed CONTRACT-COVERAGE.md differs from regeneration",
+            ),
+        }
+        for name, (arguments, expected) in check_cases.items():
+            found = through_check(**arguments)
+            if expected is None:
+                if found:
+                    return _fail(f"{name} does not pass: {found}")
+            elif not any(expected in finding for finding in found):
+                return _fail(f"{name} passed")
+            killed += 1
+    MANIFEST_OUT, patch_files, proposed_bytes = kept
+
     # The mutant tables above are also the rules they test, so a rule deleted
     # from a table deletes its own mutant. Pin the once-only population and
     # the total here, as literals, so a deletion fails this selftest.
@@ -1292,6 +1400,9 @@ def selftest() -> int:
         f"{len(REQUIRED_WARRANTS)} warrants, "
         "dependency and contract-coverage drift, proposal, capability row and "
         f"totals, {len(REPAIR_DISPOSITIONS)} repair rows, patch drift, "
+        "12 check() cases (manifest content/order/missing, patch population, "
+        "undeclared subject, pin edges, dependencies, proposal, capability, "
+        "contract coverage), "
         "all fail closed"
     )
     return 0
