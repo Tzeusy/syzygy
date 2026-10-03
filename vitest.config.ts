@@ -17,6 +17,7 @@ export default defineConfig({
     },
   },
   test: {
+    setupFiles: [fileURLToPath(new URL('./vitest.setup.ts', import.meta.url))],
     projects: [
       {
         extends: true,
