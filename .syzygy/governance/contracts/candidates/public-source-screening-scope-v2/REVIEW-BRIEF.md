@@ -1,6 +1,8 @@
-# Review brief — public-source screening scope, version 2 (round 1)
+# Review brief — public-source screening scope, version 2 (round 2)
 
-> **Candidate — binds nothing.** Not a review; carries no verdict.
+> **Candidate — binds nothing.** Not a review; carries no verdict. Round 1
+> returned REVISE (`reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-1-RAW.md`); the
+> repairs are in `ROUND-1-DISPOSITIONS.md`.
 
 ## What the reviewer is given
 
@@ -33,20 +35,29 @@ own `activeContentClassification`, `rawBodyHandling` and
    file by declared path only; it does not let a name or a file's own claim
    place it; a file it cannot place is indeterminate. Is the rule closed and
    literal? Do the three path rules overlap, and does any file match two? Is
-   there a case-folding or Unicode hazard (the fixtures include dotted-capital-I
-   and Kelvin-sign names that must not match)?
+   there a case-folding or Unicode hazard (the fixtures include long s, the Kelvin
+   sign and Arabic-Indic digits, each of which kills a lower, casefold or
+   Unicode-digit mutant)?
 4. **Is the screening unchanged?** Diff every key outside `contentClassification`
    and `prerequisite` against version 1; confirm detectors and active content
    still apply to these bodies.
 5. **Is the prerequisite real?** Confirm the scope carries the condition as
    data, `--ready` checks the installed RFC-0005 text and the version-1 act, and
    a consent without the class still permits no egress.
-6. **Is `design/` rightly left out?** Check against RFC5-14 that design and
-   specification text is `governance-text`, and that nothing here maps it.
+6. **Is governance-shaped text kept out?** Check the root names, the docs-tree
+   excluded segments and the opt-ins against the RFC5-14 class text; the packet's
+   lists are generated from the constants, check that they hold.
 7. **Are the claims in the owner packet true?** For each sendable and withheld
    example, run the reference reader in the builder (the fixtures).
 8. **Authority.** No file may label anything accepted or approved; no 64-hex
    digest may appear in Markdown outside `reviews/`.
+
+9. **Do the round-1 repairs hold, and did one introduce a defect?** Findings 1
+   to 4 blocking, 5 to 8 notes. Re-derive each from the bytes: the policy text
+   and packet agree (F1); governance-shaped names and subtrees are withheld and
+   the opt-ins are off (F2); the prefix is literal ASCII (F3); `--ready` reads
+   the real installed path and its selftest covers met and unmet (F4); the
+   supersession state is specified and `--check` survives the act (F7).
 
 ## Out of scope
 
@@ -56,7 +67,7 @@ RFC-0005 amendment itself.
 ## Recording
 
 Store the raw verbatim in this package's `reviews/` directory as
-`R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-1-RAW.md` (a re-issue is a further
+`R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-2-RAW.md` (a re-issue is a further
 `-RAW.md`). **The raw's head is a predicate a recorder will enforce:** the first
 four non-blank lines are the title and exactly
 
