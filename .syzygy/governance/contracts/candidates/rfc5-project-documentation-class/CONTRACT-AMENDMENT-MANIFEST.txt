@@ -1,0 +1,10 @@
+# RFC-0005 PROJECT-DOCUMENTATION CONTENT-CLASS AMENDMENT MANIFEST
+# One accepted RFC 0001-0009 module (RFC5-14); the row is sorted by path.
+# Paths are relative to .syzygy/governance/contracts/.
+# These rows bind only by the owner act that names this file's digest in
+# ACCEPTANCE-ACT-RECORD.md; until that act is performed they bind nothing.
+# Rows hash the PROPOSED bytes: both identical mirrors with
+# proposed/<path under rfcs/>.patch applied. They match the tree only
+# after adoption. Installed and candidate-mirror bytes are required to
+# match exactly.
+1b9f32dd8a726f8d25234b33cf576768e8e3bef453164bd44e6d0603b8093ff6  rfcs/RFC-0005/consent-egress-secrets.md
