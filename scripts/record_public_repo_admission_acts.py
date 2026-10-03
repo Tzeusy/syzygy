@@ -485,6 +485,20 @@ def selftest() -> int:
         print(f"  (exact-argument failure: {exc})")
         ok = False
     results.append(("exact argument validates", ok))
+    # the confirmed bytes verify with no git object present: a bare directory copy
+    # of the package (no .git, so 7704b4a5 cannot be read) still hashes to the table
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        bare = pathlib.Path(d)
+        ok = bool(FROZEN_FILE_DIGESTS)
+        for rel, want in FROZEN_FILE_DIGESTS.items():
+            src = ROOT / rel
+            (bare / rel).parent.mkdir(parents=True, exist_ok=True)
+            (bare / rel).write_bytes(src.read_bytes())
+            cur = (bare / rel).read_bytes()
+            cur = cur if rel != PACKET_REL else PERFORMED_HEAD_RE.sub(rb"\1", cur, count=1)
+            ok = ok and digest(cur) == want
+        results.append(("frozen files verify from a copy with no git object", ok and not (bare / ".git").exists()))
     results.append(("unset FROZEN_SUBJECT refused",
                     refused("FROZEN_SUBJECT is unset", act, arg, make(subject=subj, frozen=None))))
     results.append(("non-hex argument refused",
