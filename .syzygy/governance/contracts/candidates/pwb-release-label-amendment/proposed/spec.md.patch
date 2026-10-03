@@ -1,0 +1,140 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+index 6077e4a..8276eb9 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -287,24 +287,87 @@ readers SHALL receive those identities, the capture instant and the same source
+ population. Every emitted project-shape fact SHALL carry its source identity,
+ scope, capture instant and observer identity/version.
+ 
++- **Release label.** Wherever Polaris names the observed revision, it SHALL
++  lead with that revision's release label, and SHALL show the revision's full
++  Git object id beneath the label, on the same surface and without further
++  disclosure.
++  - The object id stays the revision's identity: every claim, evaluation
++    identity, link and comparison binds to it. A label is a name for the
++    revision, and nothing binds to a tag name.
++- **Captured tag set.** The captured tag set is every ref under `refs/tags/`
++  in the observed repository's object database at the capture instant, each
++  paired with the commit it peels to.
++  - It is a deterministic evaluation input with an identity of its own, so
++    two evaluations of one revision whose captured tag sets differ are two
++    evaluations.
++  - Only ref names and object ids are taken from it; no tag message or
++    signature is read into the model or rendered.
++  - A tag reaches the revision when the commit it peels to is the revision or
++    an ancestor of it. Its distance is the number of commits in the
++    revision's history that are not in the history of that commit.
++- **Label forms.** The label takes exactly one of four forms, tested in this
++  order; the first whose condition holds applies.
++  - **Not read**, when the tag set was not captured, because its input is not
++    admitted or reading it failed. Polaris names the revision by its first
++    twelve hexadecimal digits beside the statement that release tags were not
++    read, the reason `source-uncaptured-or-unreachable` and its route. It
++    never states that the revision is untagged.
++  - **Tagged**, when a captured tag reaches the revision at distance zero.
++    The label is the project's name followed by that tag's name.
++  - **Described**, when some captured tag reaches the revision. The label is
++    the project's name, the name of the reaching tag with the least distance,
++    and that distance stated as a count of later commits.
++  - **Untagged**, otherwise. The label is the project's name and the
++    revision's first twelve hexadecimal digits, beside the statement that no
++    release tag reaches this revision.
++  - Where tags tie for the least distance, the label names the first of them
++    in codepoint order of tag name, and every tied name is carried in the
++    machine answer and expandable on the surface.
++- **Moved tags.** A tag name that an earlier identified evaluation of the same
++  repository, held by the observer, bound to a different commit SHALL be
++  disclosed as moved wherever a label names that tag, naming both commits and
++  both evaluations.
++  - Nothing presents a tag as unmoved. Where the observer holds no earlier
++    evaluation, no stability is stated.
++- **Machine answer.** The machine answer SHALL carry the label's form, tag
++  name, distance, tied names and moved-tag disclosures, the captured tag set's
++  identity and the full object id, so every label value Polaris presents is
++  recoverable from it.
++
+ **Verification.**
+ 
+ - **Case**: observe a repository at a known revision whose five-pillar index
+   and roster population are known independently, including a source-claimed
+   instant distinct from the capture instant.
++  - For the release label, observe fixture repositories whose tags are known
++    independently: a tag at the revision, an annotated tag at the revision, a
++    tag on an ancestor at a known distance, two tags tied at the least
++    distance, no reaching tag, a tag set whose read fails or is not admitted,
++    and a tag name an earlier held evaluation bound to a different commit.
+ - **Observable**: the machine answer and Polaris expose the revision, source
+   paths, source count, capture instant and every deterministic input and
+-  per-emission identity.
++  per-emission identity, and every label's form, values and full object id.
+ - **Oracle**: compare the exposed paths and revision to an independent Git tree
+   listing and the closed discovery rules; exhaust every emitted fact's source,
+   scope, capture-instant and observer-version stamp; verify capture time remains
+   distinct from source-claimed time. Exact set, stamp and input-identity
+   equality decides.
++  - For each fixture, the checker computes the expected label form and values
++    by applying the four-form rule above to its own listing of the fixture's
++    tags and peeled commits and its own count of commits between each tag and
++    the revision. Exact equality of form, tag name, distance, tied names and
++    moved-tag disclosure on Polaris and in the machine answer, the full object
++    id on the same surface as each label, and zero labels stating untagged for
++    an uncaptured tag set decide.
+ - **Oracle independence**: the expected set comes from Git and the Butlers
+-  indexes, not from the POC model.
++  indexes, not from the POC model. Expected labels come from the checker's own
++  Git listing of each fixture, never from the observer's captured tag set.
+ - **Falsifier**: one source is absent, one arbitrary source is included, one
+   deterministic input identity is missing, or exposed sources use different
+-  revisions.
++  revisions. For the release label: a label in a form other than the first
++  whose condition holds, a label with no full object id on its surface, a
++  claim or link bound to a tag name, an uncaptured tag set stated as untagged,
++  a moved tag not disclosed, or a tag message rendered.
+ 
+ #### Scenario: Source population is complete at one revision
+ 
+@@ -312,11 +375,42 @@ scope, capture instant and observer identity/version.
+ - **THEN** every admitted project-shape source resolves at R
+ - **AND** the human and machine views expose the same complete source set
+ 
++#### Scenario: A tagged revision leads with its release label
++
++- **WHEN** Butlers is observed at revision R and a captured tag `v1.0.23`
++  peels to R
++- **THEN** Polaris names the revision "Butlers v1.0.23" with R's full object
++  id beneath it, and the machine answer carries the form tagged, the tag name
++  and R
++
++#### Scenario: A revision no tag reaches is labelled honestly
++
++- **WHEN** the captured tag set holds no tag that reaches revision R
++- **THEN** Polaris names the revision by the project's name and R's first
++  twelve hexadecimal digits, states that no release tag reaches it, and shows
++  R's full object id beneath
++
++#### Scenario: Unread tags are never shown as untagged
++
++- **WHEN** the tag set for revision R was not captured
++- **THEN** Polaris names R by its first twelve hexadecimal digits and states
++  that release tags were not read, with the reason
++  `source-uncaptured-or-unreachable` and its route
++- **AND** neither Polaris nor the machine answer states that R is untagged
++
++#### Scenario: A moved tag is disclosed, not trusted
++
++- **WHEN** an earlier evaluation held by the observer bound tag `v1.0.23` to
++  commit A, and the current evaluation's captured tag set binds it to commit B
++- **THEN** wherever a label names `v1.0.23`, Polaris and the machine answer
++  disclose the tag as moved, naming A, B and both evaluations
++- **AND** every claim still binds to the current revision's full object id
++
+ ```yaml
+ warrants:
+   primary: VIS-7
+-  doctrine: [VIS-1, VIS-7, SEC-3]
+-  contracts: [RFC2-1, RFC4-1, RFC4-2, RFC4-3, RFC4-11, RFC6-15, RFC7-10]
++  doctrine: [VIS-1, VIS-2, VIS-7, SEC-3]
++  contracts: [RFC2-1, RFC2-2, RFC2-24, RFC4-1, RFC4-2, RFC4-3, RFC4-11, RFC6-15, RFC7-10]
+   policies: [CC-SPEC-4, CC-TEST-3]
+   decisions: [POLARIS-DIR-2026-08-31]
+   topology: []
