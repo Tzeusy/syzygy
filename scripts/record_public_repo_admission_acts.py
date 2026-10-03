@@ -66,6 +66,18 @@ ANSWERS_REL = DECISIONS / "PUBLIC-REPO-ADMISSION-OWNER-ANSWERS-2026-10-03.md"
 #: round's two paths above, never hand-edited again. While None, every
 #: `--record` is refused: an unreviewed package cannot be recorded.
 FROZEN_SUBJECT: str | None = "7704b4a575acf29de93e3872ff549a856e6395ec"
+#: SHA-256 of each file the confirming review read, taken from that commit by
+#: script. The commit is provenance only: a rebase-merge leaves it unreachable
+#: from main, so validation compares the presented bytes with these digests and
+#: never reads the commit (AGENTS.md: bind by digest, not by commit).
+FROZEN_FILE_DIGESTS: dict[pathlib.Path, str] = {
+    PKG / "PUBLIC-REPO-ADMISSION-MANIFEST.txt": "51f70c07ed1bb5ea081c08fc2c06dd61b865f0c6888ae3f0faf17e8bf50bc649",
+    PKG / "OWNER-DECISION-PACKET.md": "3f7b16224ca534d97c87dda2f6859b053158764a90b2cad06a4c8399b3ee5dc0",
+    PKG / "REVIEW-BRIEF.md": "e99d068c398ce7c15ea08b1c7e4885be458a1761e68a531ef406ef8a4e3b2af7",
+    PKG / "instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md": "cbae0a845b1086e1371906536f8b96d742317ad87fb3967362687b083adaf073",
+    PKG / "instances/redis/OBSERVATION-CONSENT.md": "a733220dcbc4276d396e32f51c39dcc4665e07579ecca3f0074e7e6e5a1916a4",
+    PKG / "instances/requests/OBSERVATION-CONSENT.md": "d154165cc4c4e0d995644f1d764bfacddf070a9aa301ee2c9fc62dff4ba06d41",
+}
 VERDICTS = ("CONFIRM", "CONFIRM WITH EXCEPTIONS")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 SHA_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -143,15 +155,6 @@ def identity_for(act: Act, date: str) -> str:
     return f"{act.identity_stem}-{date}"
 
 
-def git_blob(root: pathlib.Path, commit: str, rel: pathlib.Path) -> bytes:
-    done = subprocess.run(["git", "-C", str(root), "show", f"{commit}:{rel.as_posix()}"],
-                          capture_output=True)
-    if done.returncode != 0:
-        raise ValueError(f"cannot read {rel.as_posix()} at {commit}: "
-                         f"{done.stderr.decode().strip() or 'git show failed'}")
-    return done.stdout
-
-
 @dataclass
 class Inputs:
     """Everything validation reads, injectable for the selftest."""
@@ -162,7 +165,7 @@ class Inputs:
     produced_paths: list[str]
     stale: list[str]
     frozen: str | None
-    frozen_blob: Callable[[pathlib.Path], bytes]
+    frozen_digest: Callable[[pathlib.Path], str]
     frozen_files: dict[pathlib.Path, bytes]
     disposition_check: Callable[[dict[int, str]], None]
 
@@ -182,7 +185,7 @@ def live_inputs(root: pathlib.Path) -> Inputs:
         packet=(root / PACKET_REL).read_bytes() if (root / PACKET_REL).is_file() else b"",
         review=review_path.read_text() if review_path.is_file() else "",
         produced_paths=produced, stale=stale, frozen=FROZEN_SUBJECT,
-        frozen_blob=lambda rel: git_blob(root, FROZEN_SUBJECT or "", rel),
+        frozen_digest=lambda rel: FROZEN_FILE_DIGESTS.get(rel, ""),
         frozen_files=files,
         disposition_check=lambda findings: vs.validate_disposition(
             root, CONFIRMATION_REVIEW_REL.as_posix(), DISPOSITION_REL.as_posix(), findings),
@@ -231,7 +234,7 @@ def validate(act: Act, argument: str, inp: Inputs) -> tuple[str, str, str]:
         raise ValueError(f"{act.key} record hashes to {digest(inp.subject)}, not the owner argument")
     for rel, current in inp.frozen_files.items():
         expected = current if rel != PACKET_REL else PERFORMED_HEAD_RE.sub(rb"\1", current, count=1)
-        if inp.frozen_blob(rel) != expected:
+        if digest(expected) != inp.frozen_digest(rel):
             raise ValueError(f"frozen subject does not carry the presented bytes of {rel.as_posix()}")
     if HEX64_RE.search(inp.packet.decode()):
         raise ValueError("owner packet carries a 64-hex token; arguments come only "
@@ -457,7 +460,7 @@ def selftest() -> int:
     def make(**over) -> Inputs:
         base = dict(manifest=manifest, subject=b"", packet=pkt, review=review,
                     produced_paths=[p for p, _ in rows], stale=[], frozen="f" * 40,
-                    frozen_blob=lambda rel: blobs[rel], frozen_files=dict(blobs),
+                    frozen_digest=lambda rel: digest(blobs[rel]), frozen_files=dict(blobs),
                     disposition_check=lambda findings: None)
         base.update(over)
         return Inputs(**base)
@@ -500,7 +503,7 @@ def selftest() -> int:
     drift[PACKET_REL] = pkt + b"x"
     results.append(("frozen commit lacking the presented packet refused",
                     refused("frozen subject does not carry", act, arg,
-                            make(subject=subj, frozen_blob=lambda rel: drift[rel]))))
+                            make(subject=subj, frozen_digest=lambda rel: digest(drift[rel])))))
     performed = pkt.replace(b"\n\n", b"\n\n> **PERFORMED 2026-10-04.** Recorded.\n\n", 1)
     perf_files = dict(blobs)
     perf_files[PACKET_REL] = performed
