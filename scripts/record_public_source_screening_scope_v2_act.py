@@ -176,6 +176,20 @@ class Inputs:
     disposition_check: Callable[[dict[int, str]], None]
 
 
+CLASS_NOT_INSTALLED = "not defined in the installed RFC-0005 text"
+
+
+def readiness_after_row7(root: pathlib.Path) -> list[str]:
+    """The builder's readiness, except that the row-7 act itself puts the class in force: at the
+    sitting the amendment's text is installed by the install change that follows every recorder,
+    so the recorder asks for the row-7 record (checked separately) and not for the installed text.
+    Until row 7 is recorded the builder's finding stands."""
+    found = build.readiness(root)
+    if (root / CLASS_ACT_REL).is_file():
+        found = [f for f in found if CLASS_NOT_INSTALLED not in f]
+    return found
+
+
 def live_inputs(root: pathlib.Path) -> Inputs:
     manifest = (root / MANIFEST_REL).read_bytes() if (root / MANIFEST_REL).is_file() else b""
     policy = (root / POLICY_REL).read_bytes() if (root / POLICY_REL).is_file() else b""
@@ -187,7 +201,7 @@ def live_inputs(root: pathlib.Path) -> Inputs:
     proposed: dict[str, bytes] = {}
     if applied is None:
         stale = build.check(root)
-        not_ready = build.readiness(root)
+        not_ready = readiness_after_row7(root)
         try:
             proposed = {v: build.propose(policy.decode(), v).encode() for v in build.VARIANTS}
         except ValueError as exc:
@@ -705,8 +719,7 @@ def selftest() -> int:
             (root / V1_ACT_REL).parent.mkdir(parents=True, exist_ok=True)
             (root / V1_ACT_REL).write_text(f"# v1\n\nExact digest (SHA-256): `{digest(v1text.encode())}`\n")
             (root / CLASS_ACT_REL).write_text("# row 7\n")
-            (root / build.RFC5_INSTALLED).parent.mkdir(parents=True, exist_ok=True)
-            (root / build.RFC5_INSTALLED).write_text("# RFC-0005\n" + build.RFC5_CLASS_ROW + " defined |\n")
+            # the sitting state: the row-7 record exists, the amendment text is not installed yet
             (root / AGGREGATE_REL).write_text("# Acceptance record\n")
             mf = (root / MANIFEST_REL).read_bytes()
             review_path = root / CONFIRMATION_REVIEW_REL
@@ -733,6 +746,12 @@ def selftest() -> int:
                 (root / act.record).write_text((root / act.record).read_text().replace(INSTANT_OK, "2026-10-04T09:31:00Z"))
                 tampered = do_check(root, act, rowmap["manifesto"], "2026-10-04", sel)
             results.append(("recording is refused while the row-7 record is absent", no_class == 1))
+            results.append(("the row-7 record stands in for the installed RFC-0005 text at recording time",
+                            not (root / build.RFC5_INSTALLED).exists() and wrote == 0))
+            results.append(("without the row-7 record the builder's installed-text finding stands",
+                            any(CLASS_NOT_INSTALLED in f for f in (lambda r: (r.joinpath(CLASS_ACT_REL).unlink(),
+                                                                              readiness_after_row7(r))[1])(root))))
+            (root / CLASS_ACT_REL).write_text("# row 7\n")
             results.append(("record then check in a bare copy applies the variant and passes",
                             wrote == 0 and checked == 0 and again == 1
                             and digest((root / POLICY_REL).read_bytes()) == rowmap["manifesto"]
