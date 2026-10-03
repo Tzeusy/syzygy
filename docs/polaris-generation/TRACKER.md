@@ -170,6 +170,21 @@ Authorized implementation work (generator implementation authorization,
         selected, selected plus deferred equals the candidates. Evidence
         `docs/evidence/redis-shaped-discovery-2026-10-04.json`;
         `npm run poc:redis-shaped-discovery`.
+  - [x] **Byte-capped selection (`maxSelectedBytes`).** Discovery also stops
+        at a cap on the UTF-8 bytes of quotable text; the dossier budget
+        (`DOSSIER_DISCOVERY_BUDGET`) sets `DOSSIER_MAX_SELECTED_BYTES` =
+        400,000, so the first narrative call fits the inventory ceiling.
+        Rank order until a cap is hit; a file that does not fit is skipped
+        and smaller ones below it are tried, each skip a `deferred-by-budget`
+        row whose detail gives its bytes, the room left and the cap. A split
+        file is selected or deferred whole (one deferred row, pieces counted).
+        The report adds `bytes: {selected, deferred, cap}`. [Observed] on the
+        synthetic fixture the prior alone keeps 5 of the 18 core files in
+        400 KB (it ranks by path and size, not by role), and with a model
+        ranking that names them 15 of 18 fit: `server.c` and
+        `cluster_legacy.c` are 130,000 bytes each and `t_string.c`, `t_zset.c`
+        and `t_stream.c` are deferred. A real `server.c` is larger than the
+        whole cap.
   - [x] **Map excerpts that show the mechanism (syzygy-qyez).** The map call
         saw only a file's first 1,500 characters, which for a C file is its
         licence header. `buildExcerpt` (`excerpt.ts`) now skips a leading

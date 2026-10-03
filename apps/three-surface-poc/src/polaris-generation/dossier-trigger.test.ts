@@ -134,6 +134,14 @@ describe('with every record satisfied', () => {
     expect(record.discovery).toMatchObject({ mapCalls: 1, rankingBasis: 'model-map' });
   });
 
+  it('runs discovery under the 400,000-byte dossier cap and records the bytes kept and deferred', async () => {
+    const out = join(scratch(), 'run');
+    await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out }));
+    const { discovery } = JSON.parse(readFileSync(join(out, 'run-record.json'), 'utf8'));
+    expect(discovery.bytes).toMatchObject({ cap: 400_000, deferred: 0 });
+    expect(discovery.bytes.selected).toBeGreaterThan(0);
+  });
+
   it('records the corpus and stops honestly when no generate port exists or the pipeline stops', async () => {
     const out = join(scratch(), 'run');
     const unavailable = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out }));

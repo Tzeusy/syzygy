@@ -24,6 +24,8 @@ export const PIPELINE_QUOTABLE_CAP = 200;
 export interface DiscoveryBudget {
   /** Quotable GenerationSources (pieces count one each) to keep; at most 200. */
   readonly maxSelected: number;
+  /** UTF-8 bytes of quotable text to keep, all selected files together. Absent means no byte cap. A file is selected whole or deferred whole (its pieces travel together). */
+  readonly maxSelectedBytes?: number;
   readonly maxMapCalls: number;
   readonly maxExcerptChars: number;
   readonly maxGroupBlobs: number;
@@ -37,6 +39,10 @@ export interface DiscoveryBudget {
 export const DEFAULT_DISCOVERY_BUDGET: DiscoveryBudget = {
   maxSelected: PIPELINE_QUOTABLE_CAP, maxMapCalls: 40, maxExcerptChars: 1500, maxGroupBlobs: 40, claimsPerGroup: 8, maxReduceClaims: 400, maxClaimChars: 400,
 };
+
+/** The dossier run's byte cap on selected quotable text: about 400 KB fits a ~200k-token context with room for the output even at 2 to 3 bytes per token. */
+export const DOSSIER_MAX_SELECTED_BYTES = 400_000;
+export const DOSSIER_DISCOVERY_BUDGET: DiscoveryBudget = { ...DEFAULT_DISCOVERY_BUDGET, maxSelectedBytes: DOSSIER_MAX_SELECTED_BYTES };
 
 export interface DiscoveryClaim { readonly blobId: string; readonly claim: string; readonly relevance: number }
 export interface MapInput {
@@ -102,6 +108,8 @@ export interface DiscoveryReport {
   readonly basisNote: string;
   readonly droppedUnknownIds: number;
   readonly selected: { readonly blobs: number; readonly sources: number };
+  /** UTF-8 bytes of quotable text: kept, deferred (every candidate not kept), and the cap that applied (null when none). */
+  readonly bytes: { readonly selected: number; readonly deferred: number; readonly cap: number | null };
   readonly deferred: readonly { readonly blobId: string; readonly path: string; readonly detail: string }[];
   readonly ledger: readonly (DiscoveryClaim & { readonly path: string })[];
 }
@@ -111,10 +119,14 @@ export class DiscoveryRefusal extends Error {
   constructor(readonly reason: string) { super(`Discovery refused: ${reason}`); this.name = 'DiscoveryRefusal'; }
 }
 
-interface Blob { readonly blobId: string; readonly path: string; readonly pieces: readonly GenerationSource[]; heuristic: number }
+interface Blob { readonly blobId: string; readonly path: string; readonly pieces: readonly GenerationSource[]; readonly bytes: number; heuristic: number }
 
 const pieceBase = (source: GenerationSource): string =>
   source.segment === undefined ? source.sourceId : source.sourceId.replace(/-p[0-9]+$/u, '');
+
+/** UTF-8 bytes of the quotable text of these pieces. */
+const quotableBytes = (pieces: readonly GenerationSource[]): number =>
+  pieces.reduce((total, piece) => total + piece.spans.reduce((n, span) => n + Buffer.byteLength(span.text, 'utf8'), 0), 0);
 
 /** Quotable pieces of one file travel together: a partial set would break
  * contiguity, and the whole file is the unit a reader cites. */
@@ -125,7 +137,7 @@ function candidateBlobs(sources: readonly GenerationSource[]): Blob[] {
     const id = pieceBase(source);
     byId.set(id, [...(byId.get(id) ?? []), source]);
   }
-  return [...byId].map(([blobId, pieces]) => ({ blobId, path: pieces[0]!.path, pieces, heuristic: heuristicScore(pieces[0]!.path, pieces) }));
+  return [...byId].map(([blobId, pieces]) => ({ blobId, path: pieces[0]!.path, pieces, bytes: quotableBytes(pieces), heuristic: heuristicScore(pieces[0]!.path, pieces) }));
 }
 
 /** A directory segment that marks vendored or generated code. A file under one ranks below every file that is not: the tier is strict, so
@@ -196,7 +208,8 @@ async function discover(
 ): Promise<DiscoveryResult> {
   if (!Number.isSafeInteger(budget.maxSelected) || budget.maxSelected < 1 || budget.maxSelected > PIPELINE_QUOTABLE_CAP
     || [budget.maxMapCalls, budget.maxExcerptChars, budget.claimsPerGroup, budget.maxReduceClaims].some(n => !Number.isSafeInteger(n) || n < 0)
-    || !Number.isSafeInteger(budget.maxClaimChars) || budget.maxClaimChars < 1) throw new DiscoveryRefusal('invalid-budget');
+    || !Number.isSafeInteger(budget.maxClaimChars) || budget.maxClaimChars < 1
+    || (budget.maxSelectedBytes !== undefined && (!Number.isSafeInteger(budget.maxSelectedBytes) || budget.maxSelectedBytes < 1))) throw new DiscoveryRefusal('invalid-budget');
   if ((ports.map !== undefined || ports.reduce !== undefined) && ports.receipt === undefined) throw new DiscoveryRefusal('model-ports-need-a-receipt-port');
   const blobs = candidateBlobs(sources);
   const groups = partitionSubsystems(blobs, budget.maxGroupBlobs);
@@ -309,13 +322,21 @@ async function discover(
     (claims.get(b.blobId)?.relevance ?? -1) - (claims.get(a.blobId)?.relevance ?? -1) || compareBlobs(a, b));
   const order = [...rankedIds.map(id => byId.get(id)!), ...rest];
 
-  const chosen = new Set<string>(), noFit = new Set<string>();
-  let used = 0;
+  // Rank order until a cap is hit. A file that does not fit is skipped and the next, smaller one is tried; every skip is recorded with its reason.
+  const chosen = new Set<string>(), noFit = new Set<string>(), byteSkip = new Map<string, string>();
+  const byteCap = budget.maxSelectedBytes;
+  let used = 0, usedBytes = 0;
   for (const blob of order) {
     if (used + blob.pieces.length > budget.maxSelected) { noFit.add(blob.blobId); continue; }
+    if (byteCap !== undefined && usedBytes + blob.bytes > byteCap) {
+      byteSkip.set(blob.blobId, `${blob.bytes} bytes of quotable text${blob.pieces.length > 1 ? ` in ${blob.pieces.length} pieces` : ''} did not fit the remaining ${byteCap - usedBytes} of the ${byteCap}-byte selection cap`);
+      continue;
+    }
     chosen.add(blob.blobId);
     used += blob.pieces.length;
+    usedBytes += blob.bytes;
   }
+  const deferredBytes = blobs.reduce((total, blob) => total + (chosen.has(blob.blobId) ? 0 : blob.bytes), 0);
   const runKey = ports.runKey ?? newGenerationRunKey();
   const deferred: DiscoveryReport['deferred'][number][] = [];
   const emitted = new Set<string>();
@@ -329,9 +350,9 @@ async function discover(
     const { body: _body, segment: _segment, spans: _spans, ...bound } = source;
     out.push({ ...bound, sourceId: excludedSourceId(runKey, id), exclusion: { excluded: true, reason: DEFERRED_BY_BUDGET }, spans: [] });
     const pieces = byId.get(id)!.pieces.length;
-    deferred.push({ blobId: id, path: source.path, detail: noFit.has(id) && pieces > 1 && used + pieces > budget.maxSelected
+    deferred.push({ blobId: id, path: source.path, detail: byteSkip.get(id) ?? (noFit.has(id) && pieces > 1 && used + pieces > budget.maxSelected
       ? `${pieces} quotable sources did not fit the remaining selection cap of ${budget.maxSelected}`
-      : `ranked below the selection cut for a cap of ${budget.maxSelected} quotable sources` });
+      : `ranked below the selection cut for a cap of ${budget.maxSelected} quotable sources`) });
   }
   const alreadyExcluded = sources.filter(s => s.exclusion.excluded || s.spans.length === 0).length;
   return { receipts, sources: out, report: {
@@ -340,7 +361,7 @@ async function discover(
     unmappedSubsystems: unmapped.sort(), reduceCalls, reduceFailures, rankingBasis: basis,
     basisNote: basis === 'heuristic' ? 'Ordered by a path-and-size prior only; no model reply was accepted.'
       : 'A model ranking is an Inferred claim. Blobs with no accepted map claim rank below every blob that has one.',
-    droppedUnknownIds: dropped, selected: { blobs: chosen.size, sources: used }, deferred,
+    droppedUnknownIds: dropped, selected: { blobs: chosen.size, sources: used }, bytes: { selected: usedBytes, deferred: deferredBytes, cap: byteCap ?? null }, deferred,
     ledger: order.filter(blob => chosen.has(blob.blobId)).map(ledgerFor).filter((c): c is DiscoveryClaim & { path: string } => c !== undefined) } };
 }
 
