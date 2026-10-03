@@ -1,0 +1,128 @@
+{
+  "subject": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+  "subjectSha256": "4fbbcc9f8a2033e5a390bbc4866ab27ebbf5102cd1be69d014e8fdc5e526fc01",
+  "bead": "syzygy-ty1x",
+  "commit": "2f1da95343a1af9bc9bd49d2fe7b41b80be8b5f7",
+  "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+  "mutants": [
+    {
+      "id": "M1-direct-rebind-never-reported",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "      if (!insideBinding(match.index ?? 0)) calls.push({ line: lineOf(source, match.index ?? 0), command: `<${name} re-bound>` });",
+      "new": "      if (false) calls.push({ line: lineOf(source, match.index ?? 0), command: `<${name} re-bound>` });",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 4 passed (5)",
+      "failedTests": [
+        "suite child processes and the vitest worker RPC > fails closed when a sync function is re-bound to a name the scan does not follow (syzygy-ty1x) 16ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M2-bare-namespace-reference-allowed",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "      if (member === undefined || (SYNC_FUNCTIONS.includes(member) && match[2] === undefined)) {",
+      "new": "      if (false || (SYNC_FUNCTIONS.includes(member!) && match[2] === undefined)) {",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 4 passed (5)",
+      "failedTests": [
+        "suite child processes and the vitest worker RPC > fails closed when a sync function is re-bound to a name the scan does not follow (syzygy-ty1x) 41ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M3-uncalled-sync-member-allowed",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "      if (member === undefined || (SYNC_FUNCTIONS.includes(member) && match[2] === undefined)) {",
+      "new": "      if (member === undefined || (SYNC_FUNCTIONS.includes(member) && false)) {",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 4 passed (5)",
+      "failedTests": [
+        "suite child processes and the vitest worker RPC > fails closed when a sync function is re-bound to a name the scan does not follow (syzygy-ty1x) 20ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M4-any-uncalled-member-flagged",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "      if (member === undefined || (SYNC_FUNCTIONS.includes(member) && match[2] === undefined)) {",
+      "new": "      if (member === undefined || (true && match[2] === undefined)) {",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 4 passed (5)",
+      "failedTests": [
+        "suite child processes and the vitest worker RPC > fails closed when a sync function is re-bound to a name the scan does not follow (syzygy-ty1x) 120ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M5-binding-span-exempts-everything",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "bindingSpans.some(([start, end]) => index >= start && index < end);",
+      "new": "bindingSpans.some(([start, end]) => true);",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 4 passed (5)",
+      "failedTests": [
+        "suite child processes and the vitest worker RPC > fails closed when a sync function is re-bound to a name the scan does not follow (syzygy-ty1x) 83ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M6-binding-span-exempts-nothing",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "bindingSpans.some(([start, end]) => index >= start && index < end);",
+      "new": "bindingSpans.some(([start, end]) => false);",
+      "exitCode": 1,
+      "testsLine": "Tests  5 failed (5)",
+      "failedTests": [
+        "suite child processes and the vitest worker RPC > fails closed when a sync function is re-bound to a name the scan does not follow (syzygy-ty1x) 2ms",
+        "suite child processes and the vitest worker RPC > flags an install, a build or a computed command and leaves async and short tools alone 9ms",
+        "suite child processes and the vitest worker RPC > follows every way of binding the synchronous calls, and fails closed on a binding it does not recognize 2ms",
+        "suite child processes and the vitest worker RPC > runs only short local tools synchronously in a suite test file or any module it imports 485ms",
+        "suite child processes and the vitest worker RPC > scans a helper module a test imports, through relative and workspace imports 12ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M7-direct-calls-also-flagged",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "(?<![\\\\w.$])${escape(name)}(?![\\\\w$])(?!\\\\s*\\\\()`",
+      "new": "(?<![\\\\w.$])${escape(name)}(?![\\\\w$])`",
+      "exitCode": 1,
+      "testsLine": "Tests  5 failed (5)",
+      "failedTests": [
+        "suite child processes and the vitest worker RPC > fails closed when a sync function is re-bound to a name the scan does not follow (syzygy-ty1x) 3ms",
+        "suite child processes and the vitest worker RPC > flags an install, a build or a computed command and leaves async and short tools alone 6ms",
+        "suite child processes and the vitest worker RPC > follows every way of binding the synchronous calls, and fails closed on a binding it does not recognize 15ms",
+        "suite child processes and the vitest worker RPC > runs only short local tools synchronously in a suite test file or any module it imports 547ms",
+        "suite child processes and the vitest worker RPC > scans a helper module a test imports, through relative and workspace imports 9ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M8-direct-member-lookbehind-dropped",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "new RegExp(`(?<![\\\\w.$])${escape(name)}(?![\\\\w$])(?!",
+      "new": "new RegExp(`${escape(name)}(?![\\\\w$])(?!",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 4 passed (5)",
+      "failedTests": [
+        "suite child processes and the vitest worker RPC > fails closed when a sync function is re-bound to a name the scan does not follow (syzygy-ty1x) 122ms"
+      ],
+      "outcome": "killed"
+    },
+    {
+      "id": "M9-namespace-lookbehind-dropped",
+      "file": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+      "old": "new RegExp(`(?<![\\\\w.$])${escape(name)}(?![\\\\w$])(?:",
+      "new": "new RegExp(`${escape(name)}(?![\\\\w$])(?:",
+      "exitCode": 1,
+      "testsLine": "Tests  1 failed | 4 passed (5)",
+      "failedTests": [
+        "suite child processes and the vitest worker RPC > fails closed when a sync function is re-bound to a name the scan does not follow (syzygy-ty1x) 172ms"
+      ],
+      "outcome": "killed"
+    }
+  ],
+  "killed": 9,
+  "total": 9,
+  "priorRun": "At 615a34a5 (subject sha256 8bc3d4c650e3c133f1e437f20f20c425127dda122b925d9a281aff5b4ed05f54) M8 survived 8/9: the clean control called actual.execFileSync, so the direct-name lookbehind was never exercised. 2f1da953 added an uncalled `const passed = actual.execFileSync;` to the control; this record is the full re-run at that commit."
+}
