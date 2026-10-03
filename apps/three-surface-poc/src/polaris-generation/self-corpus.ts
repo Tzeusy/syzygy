@@ -144,13 +144,16 @@ async function runScripted(corpus: SelfCorpus, maxInputBytes: number): Promise<S
 
 /** The perturbation is synthetic in memory, never a claimed Git commit. */
 function perturbed(corpus: SelfCorpus): SelfCorpus {
-  const first = corpus.sources[0]!;
+  // A piece of an oversize blob cannot be re-hashed alone: perturb a whole source.
+  const at = corpus.sources.findIndex(source => source.segment === undefined && source.body !== undefined);
+  if (at < 0) throw new Error('no-whole-source-to-perturb');
+  const first = corpus.sources[at]!;
   const body = `Synthetic successor qualification.\n${first.body!}`;
   const revision = 'f'.repeat(40);
   const base = { repositoryId: first.repositoryId, revision, path: first.path, objectId: gitBlobObjectId(body) };
   const next: GenerationSource = { ...first, ...base, evaluationId: `synthetic-successor:${revision}`, body,
     spans: [{ anchorId: generationAnchorId(base, 0, Buffer.byteLength(body)), start: 0, end: Buffer.byteLength(body), text: body }] };
-  const sources = [next, ...corpus.sources.slice(1)];
+  const sources = corpus.sources.map((source, i) => i === at ? next : source);
   validateGenerationSources(sources);
   return { ...corpus, sources, identityDigest: sha256(sources.map(source => `${source.path}\0${source.objectId}`).join('\n')) };
 }

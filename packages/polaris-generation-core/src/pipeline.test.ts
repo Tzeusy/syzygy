@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { runGenerationPipeline, type AttemptInput, type AttemptOutcome, type PipelinePorts, type PipelineRequest, type ProviderReply } from './pipeline.js';
-import { generationAnchorId, gitBlobObjectId, type GenerationSource } from './generation-source.js';
+import { generationAnchorId, generationSourcesForBody, gitBlobObjectId, type GenerationSource } from './generation-source.js';
 
 const fixtureSource = (): GenerationSource => {
   const body = 'Reduce recurring mental labor.';
@@ -133,6 +133,26 @@ describe('source to editorial draft pipeline', () => {
         spans: [{ ...first.spans[0]!, anchorId: generationAnchorId(base, 0, Buffer.byteLength(first.body!)) }] };
     });
     expect(await runGenerationPipeline({ ...request(), sources, budget: { ...request().budget, maxInputBytes: 1_000_000 } }, h.ports, signal()))
+      .toMatchObject({ status: 'stopped', reason: 'source-refused' });
+    expect(h.sends).toHaveLength(0);
+  });
+
+  it('refuses a population that segmentation tips over the 200 cap', async () => {
+    const h = harness();
+    const whole = Array.from({ length: 199 }, (_, i): GenerationSource => {
+      const first = fixtureSource();
+      const base = { repositoryId: first.repositoryId, revision: first.revision, path: `synthetic/source-${i}.md`, objectId: first.objectId as string };
+      return { ...first, ...base, sourceId: `source-${i}`, spans: [{ ...first.spans[0]!, anchorId: generationAnchorId(base, 0, Buffer.byteLength(first.body!)) }] };
+    });
+    const first = fixtureSource();
+    const big = `${'a long line of source text\n'.repeat(4000)}`;
+    const pieces = generationSourcesForBody({ sourceId: 'big', repositoryId: first.repositoryId, revision: first.revision, path: 'synthetic/big.c',
+      objectId: gitBlobObjectId(big), evaluationId: first.evaluationId, body: big });
+    expect(pieces.length).toBeGreaterThan(1);
+    const sources = [...whole, ...pieces];
+    expect(whole.length + 1).toBeLessThanOrEqual(200);
+    expect(sources.length).toBeGreaterThan(200);
+    expect(await runGenerationPipeline({ ...request(), sources, budget: { ...request().budget, maxInputBytes: 4_000_000 } }, h.ports, signal()))
       .toMatchObject({ status: 'stopped', reason: 'source-refused' });
     expect(h.sends).toHaveLength(0);
   });
