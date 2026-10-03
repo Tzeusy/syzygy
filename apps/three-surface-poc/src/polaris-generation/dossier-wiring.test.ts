@@ -10,7 +10,7 @@ import { createMessagesApiGenerate } from '@syzygy/polaris-generation-provider';
 import { LOOPBACK_FOR_TESTS, startCaptureEndpoint, type CaptureEndpoint } from '@syzygy/polaris-generation-provider/testing';
 
 import { GenerationUnavailable, openGeneration, type ProviderFactory } from './dossier-generation.js';
-import { DOSSIER_RUN_PROFILE, stageCeilingUnits } from './dossier-run-profile.js';
+import { DOSSIER_RUN_PROFILE, discoveryBudgetFor, stageCeilingUnits } from './dossier-run-profile.js';
 import { EGRESS_STAGE_AUTHORITY, EGRESS_V1_DIGEST, EGRESS_V2_DIGEST, NARRATIVE_STAGES, stageAuthorisedBy, stagesAuthorisedBy } from './dossier-stage-authority.js';
 import { createWiredRecordsPort, type WiredRecordsPort } from './dossier-records.js';
 import type { GenerationOpenContext, GenerationSession } from './dossier-trigger.js';
@@ -136,7 +136,7 @@ describe('openGeneration against a loopback provider', () => {
     expect(await session.discoveryPermitted({ kind: 'map', itemCount: 1, requestDigest: 'x' })).toBe(false);
   });
 
-  it('unknown usage counts at the full call ceiling', async () => {
+  it('unknown usage counts at the full call ceiling: 25 calls of 40 units fill the share exactly', async () => {
     upstream = await startCaptureEndpoint({ kind: 'text', text: '{"claims":[]}', noUsage: true });
     const { session } = await open(EGRESS_V2_DIGEST);
     const signal = new AbortController().signal;
@@ -145,9 +145,30 @@ describe('openGeneration against a loopback provider', () => {
       if (!(await session.discoveryPermitted({ kind: 'map', itemCount: 1, requestDigest: String(n) }))) break;
       await session.discovery.map!(mapInput(n), signal).catch(() => undefined); sent++;
     }
-    expect(sent).toBeLessThanOrEqual(25);
-    const record = session.record() as { spend: { discoveryCountedUnits: number } };
-    expect(record.spend.discoveryCountedUnits).toBeLessThanOrEqual(1000);
+    expect(sent).toBe(25);
+    const record = session.record() as { spend: { discoveryCountedUnits: number }; calls: { usageUnknown: boolean; countedUnits: number }[] };
+    expect(record.spend.discoveryCountedUnits).toBe(1000);
+    expect(record.calls.every(c => c.countedUnits === 40)).toBe(true);
+  });
+
+  it('a call that throws without saying what it cost counts at the full ceiling', async () => {
+    const parent = mkdtempSync(path.join(tmpdir(), 'wiring-')); dirs.push(parent);
+    const factory: ProviderFactory = () => ({ generate: async () => { throw new Error('boom'); }, attempts: () => [], gateDecisions: () => [], close: async () => undefined });
+    const context: GenerationOpenContext = { target: { owner: 'redis', repo: 'redis' } as never, revision: 'a'.repeat(40), runDir: path.join(parent, 'run'), egress: requirement, records: recordsFor(EGRESS_V2_DIGEST) };
+    const session = await openGeneration({ route: 'messages-api', apiKey: SECRET, root: REPO_ROOT, providerFactory: factory })(context);
+    sessions.push(session);
+    await expect(session.discovery.map!(mapInput(0), new AbortController().signal)).rejects.toThrow('boom');
+    const record = session.record() as { spend: { discoveryCountedUnits: number }; calls: { usageUnknown: boolean }[] };
+    expect(record.spend.discoveryCountedUnits).toBe(40);
+    expect(record.calls).toMatchObject([{ usageUnknown: true }]);
+  });
+
+  it('the derived discovery budget leaves room for the reduce call, and the state directory is private', async () => {
+    const budget = discoveryBudgetFor(DOSSIER_RUN_PROFILE);
+    expect((budget.maxMapCalls + 1) * DOSSIER_RUN_PROFILE.owner.discoveryCallUnits).toBeLessThanOrEqual(DOSSIER_RUN_PROFILE.owner.discoveryUnits);
+    expect(budget.maxMapCalls).toBe(24);
+    const { runDir } = await open(EGRESS_V2_DIGEST);
+    expect(statSync(`${runDir}.state`).mode & 0o077).toBe(0);
   });
 
   it('the credential reaches the adapter only: it is in no state file and not in the record', async () => {

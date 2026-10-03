@@ -177,4 +177,34 @@ describe('a whole run through the wiring against the loopback stub', () => {
     // the output cap the adapter sent never let one call past its ceiling
     for (const q of stub.requests) expect(q.maxTokens).toBeLessThanOrEqual(units(q.system) * 1000);
   }, 60_000);
+
+  it('a route with no act in force refuses before anything is fetched, read or sent', async () => {
+    const stub = await startStubProvider(() => ({ text: '{}' }));
+    const fetched: string[] = [];
+    const out: string[] = [];
+    const runDir = path.join(mkdtempSync(path.join(tmpdir(), 'syzygy-pipeline-out-')), 'run');
+    const code = await main(['https://github.com/redis/redis', '--route', 'messages-api', '--out', runDir], { lsRemote: () => { fetched.push('ls'); return `${commit}\tHEAD\n`; }, materialize: async () => { fetched.push('checkout'); return repo; }, policyAct: fixturePolicyActPort() },
+      { root: fixtureRouteRoot('messages-api', { skipAct: true }), env: { SYZYGY_POLARIS_PROVIDER_API_KEY: KEY }, providerFactory: loopback(stub.url), stdout: t => out.push(t), stderr: t => out.push(t) });
+    await stub.close();
+    expect(code).toBe(5);
+    expect(out.join('')).toContain('provider route is not in force');
+    expect(fetched).toEqual([]);
+    expect(stub.requests).toHaveLength(0);
+    expect(existsSync(runDir)).toBe(false);
+  });
+
+  it('withdrawing the observation consent mid-run stops the next stage: it is never requested', async () => {
+    const root = admissionRoot('messages-api');
+    const instance = path.join(root, INSTANCES_DIR, 'redis/OBSERVATION-CONSENT.md');
+    const stub = await startStubProvider((request, n) => {
+      if (stageOf(request.system) === 'inventory') writeFileSync(instance, `${readFileSync(instance, 'utf8')}\nedited after the act\n`);   // the act no longer binds these bytes
+      return { text: replyFor(request.system, request.input) };
+    });
+    const runDir = path.join(mkdtempSync(path.join(tmpdir(), 'syzygy-pipeline-out-')), 'run');
+    const code = await main(['https://github.com/redis/redis', '--route', 'messages-api', '--out', runDir, '--json'], { lsRemote: () => `${commit}\tHEAD\n`, materialize: async () => repo, policyAct: fixturePolicyActPort() },
+      { root, env: { SYZYGY_POLARIS_PROVIDER_API_KEY: KEY }, providerFactory: loopback(stub.url), stdout: () => undefined, stderr: () => undefined });
+    await stub.close();
+    expect(stub.requests.map(q => stageOf(q.system))).toEqual(['discovery-map', 'discovery-reduce', 'inventory']);
+    expect(code).toBe(7);
+  }, 60_000);
 });
