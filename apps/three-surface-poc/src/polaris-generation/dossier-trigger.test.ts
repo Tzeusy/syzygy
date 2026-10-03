@@ -3,8 +3,9 @@ import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSyn
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { quotableGenerationSources, type PipelineRequest, type PipelineResult, type ProviderDraft } from '@syzygy/polaris-generation-core';
+import { DOSSIER_REQUESTED_ASSETS, quotableGenerationSources, runGenerationPipeline, type PipelineRequest, type PipelineResult, type ProviderDraft } from '@syzygy/polaris-generation-core';
 
+import { createDurableScriptedLifecycle } from './durable-lifecycle.js';
 import { main } from './dossier-main.js';
 import { admissionRequirements, formatOutcome, gitLsRemote, gitMaterialize, noAdmissionRecords, parseGithubUrl, pinRevision, runDossierTrigger,
   type AdmissionRecordsPort, type TriggerPorts } from './dossier-trigger.js';
@@ -363,6 +364,29 @@ describe('command', () => {
     return { status: 'awaiting-rendered-review', draft: { title: 't', introduction: p, sections: [], diagrams: [], deepDives: [], unresolved: [] }, inventory: null, review: null, receipts: [], artifacts: [] };
   };
   const wired = (extra: TriggerPorts = {}): TriggerPorts => ({ lsRemote: () => `${commit}\tHEAD\n`, records: all, materialize: async () => repo, ...extra });
+
+  it('renders a page from a pipeline that exhausts its usage budget mid-run: completed stages show, every other requested asset is Unknown deferred-by-budget, exit 7', async () => {
+    const out = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    try {
+      const dest = join(scratch(), 'site');
+      const sent: string[] = [];
+      const runPipeline = async (request: PipelineRequest): Promise<PipelineResult> => runGenerationPipeline({ ...request, budget: { ...request.budget, maxUsageUnits: 6 } },
+        createDurableScriptedLifecycle({ stateDir: join(scratch(), 'state'), permissionIdentity: async () => 'p', verifySources: async () => true, permitted: async () => true,
+          responseSchema: stage => ({ version: 'v1', schema: { stage } }),
+          validate: (stage, value) => { if ((value as { stage?: unknown }).stage !== stage) throw new Error('schema'); return value; }, fidelity: () => ({ blocking: false, findings: [] }),
+          scriptedGenerate: async input => { sent.push(input.stage);
+            const body = input.stage === 'inventory' ? { stage: 'inventory', entries: [] } : { stage: 'plan', sections: [{ id: 'core-ideas', title: 'Core ideas' }] };
+            return { body: JSON.stringify(body), model: 'scripted-v1', usageUnits: 1 }; } }), new AbortController().signal);
+      expect(await main(['https://github.com/a/b', '--out', dest, '--json'], wired({ runPipeline }))).toBe(7);
+      expect(JSON.parse(String(out.mock.calls.at(-1)![0]))).toMatchObject({ state: 'generation-stopped-partial', runDir: dest, detail: expect.stringContaining('budget-exhausted') });
+      expect(sent).toEqual(['inventory', 'plan']);
+      expect(readdirSync(dest)).toContain('run-record.json');
+      const entry = readFileSync(join(dest, 'index.html'), 'utf8');
+      expect(entry).toContain('class="run-stopped" data-stop-reason="deferred-by-budget"');
+      for (const asset of DOSSIER_REQUESTED_ASSETS) expect(entry).toContain(`data-claim-id="not-generated:${asset.id}"`);
+      expect(entry).not.toContain('data-epistemic="observed"');
+    } finally { out.mockRestore(); }
+  });
 
   it('renders with the polaris-dossier-v1 renderer by default: a malformed finished result is refused by it, not written', async () => {
     const out = vi.spyOn(process.stdout, 'write').mockReturnValue(true);

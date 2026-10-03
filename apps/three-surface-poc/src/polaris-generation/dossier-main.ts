@@ -1,6 +1,8 @@
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { DOSSIER_REQUESTED_ASSETS } from '@syzygy/polaris-generation-core';
+
 import { renderDossier } from './dossier-render.js';
 import { formatOutcome, gitMaterialize, runDossierTrigger, type TriggerPorts } from './dossier-trigger.js';
 
@@ -15,7 +17,7 @@ export async function main(argv: readonly string[], ports: TriggerPorts = {}): P
   const out = outAt >= 0 ? flagless[outAt + 1] : undefined;
   const positional = flagless.filter((arg, i) => !(outAt >= 0 && (i === outAt || i === outAt + 1)));
   if (positional.length !== 1 || (outAt >= 0 && !out)) { process.stderr.write('Usage: poc:dossier -- <https://github.com/owner/repo[/tree/ref]> [--out <dir>] [--json]\n'); return 2; }
-  const outcome = await runDossierTrigger(positional[0]!, { materialize: gitMaterialize, render: ({ result, sources }) => renderDossier({ result, sources }), ...ports, ...(out ? { outDir: resolve(out) } : {}) });
+  const outcome = await runDossierTrigger(positional[0]!, { materialize: gitMaterialize, render: ({ result, sources }) => renderDossier({ result, sources, requestedAssets: DOSSIER_REQUESTED_ASSETS }), ...ports, ...(out ? { outDir: resolve(out) } : {}) });
   process.stdout.write(json ? `${JSON.stringify(outcome, null, 2)}\n` : formatOutcome(outcome));
   return EXIT[outcome.state] ?? 1;
 }
