@@ -245,6 +245,6 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
   return {
     generate, attempts: () => attempts, cwd, gateUrl: () => gateRef?.url,
     gateDecisions: () => (gateRef === undefined ? [] : [...gateRef.decisions]),
-    close: async () => { if (gatePromise !== undefined) await (await gatePromise).gate.close(); },
+    close: async () => { if (gateRef !== undefined) await gateRef.close(); },
   };
 }
