@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, discoverAndSelect, DiscoveryRefusal, partitionSubsystems, type DiscoveryPorts } from './discovery.js';
+import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, discoverAndSelect, DiscoveryRefusal, partitionSubsystems, reportFromReceipts, type DiscoveryPorts, type DiscoveryReceipt } from './discovery.js';
 import { generationSourcesForBody, gitBlobObjectId, quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
 
 const make = (path: string, body: string, sourceId?: string): readonly GenerationSource[] =>
@@ -13,52 +13,55 @@ const population = (files: number, subsystems = 25): GenerationSource[] => {
 };
 const budget = DEFAULT_DISCOVERY_BUDGET;
 const allow = async () => true;
+type Item = { readonly blobId: string; readonly path: string; readonly excerpt: string };
+const mapOf = (relevance: (item: Item) => number) => async (input: { items: readonly Item[] }) => ({
+  claims: input.items.map(item => ({ blobId: item.blobId, claim: `claim ${item.path}`, relevance: relevance(item) })), usageUnits: 1 });
+const model = (extra: Partial<DiscoveryPorts> = {}): DiscoveryPorts & { receipts: DiscoveryReceipt[] } => {
+  const receipts: DiscoveryReceipt[] = [];
+  return { permitted: allow, receipt: async r => { receipts.push(r); }, ...extra, receipts };
+};
 const Q = ['What are the core ideas?'];
 
 describe('REQ-030 hierarchical budgeted discovery', () => {
   it('narrows 1,000 files under the 200 cap and keeps every file in the denominator', async () => {
     const sources = population(1000);
-    const { sources: out, report } = await discoverAndSelect(sources, Q, budget, { permitted: allow });
+    const { sources: out, report, receipts } = await discoverAndSelect(sources, Q, budget, { permitted: allow });
     expect(out).toHaveLength(1000);
     expect(quotableGenerationSources(out).length).toBe(200);
     expect(out.filter(s => s.exclusion.excluded && s.exclusion.reason === DEFERRED_BY_BUDGET)).toHaveLength(800);
     expect(report).toMatchObject({ selected: { blobs: 200, sources: 200 }, rankingBasis: 'heuristic', mapCalls: 0 });
     expect(report.deferred).toHaveLength(800);
+    expect(report.deferred[0]!.detail).toContain('ranked below the selection cut');
     expect(report.boundary).toContain('does not claim whole-repository coverage');
+    expect(report.basisNote).toContain('prior only');
+    expect(receipts).toEqual([]);
     expect(new Set(out.map(s => s.path)).size).toBe(1000);
     expect(validateGenerationSources(out)).toBe(out);
   });
 
+  it('says every candidate blob was selected only when none was deferred', async () => {
+    expect((await discoverAndSelect(population(3), Q, budget, { permitted: allow })).report.boundary).toBe('every candidate blob was selected');
+  });
+
   it('maps subsystems, reduces across them and selects by the model ranking', async () => {
     const sources = population(300, 6);
-    const map = vi.fn(async (input: { items: readonly { blobId: string; path: string }[] }) => input.items.map(item => ({ blobId: item.blobId, claim: `claim ${item.path}`, relevance: item.path.endsWith('file7.c') ? 10 : 1 })));
+    const map = vi.fn(mapOf(item => item.path.endsWith('file7.c') ? 10 : 1));
     const target = sources.find(s => s.path.endsWith('/file7.c'))!;
-    const reduce = vi.fn(async () => [target.sourceId, 'not-a-blob', target.sourceId]);
-    const { sources: out, report } = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 1, maxGroupBlobs: 20, maxMapCalls: 100 }, { permitted: allow, map, reduce });
-    expect(report).toMatchObject({ rankingBasis: 'model-reduce', reduceCalls: 1, droppedUnknownIds: 2, mapFailures: 0 });
+    const reduce = vi.fn(async () => ({ ranked: [target.sourceId, 'not-a-blob', target.sourceId], usageUnits: 3 }));
+    const ports = model({ map, reduce });
+    const { sources: out, report } = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 1, maxGroupBlobs: 20, maxMapCalls: 100 }, ports);
+    expect(report).toMatchObject({ rankingBasis: 'model-reduce', reduceCalls: 1, droppedUnknownIds: 2, mapFailures: 0, reduceFailures: 0 });
+    expect(report.basisNote).toContain('Inferred');
     expect(report.mapCalls).toBe(report.subsystems);
     expect(quotableGenerationSources(out).map(q => q.sourceId)).toEqual([target.sourceId]);
     expect(report.ledger.find(entry => entry.blobId === target.sourceId)).toMatchObject({ relevance: 10, claim: 'claim src/mod1/file7.c' });
     for (const call of map.mock.calls) expect(call[0].items.length).toBeLessThanOrEqual(20);
   });
 
-  it('drops malformed or foreign claims instead of ranking on them', async () => {
-    const sources = population(6, 1);
-    const [first, second, third, fourth] = sources;
-    const map = async () => [
-      { blobId: 'foreign-blob', claim: 'c', relevance: 5 }, { blobId: first!.sourceId, claim: 'c', relevance: 99 },
-      { blobId: second!.sourceId, claim: '', relevance: 5 }, { blobId: third!.sourceId, claim: 'c', relevance: Number.NaN },
-      { blobId: fourth!.sourceId, claim: 'fine', relevance: 3 }];
-    const { report } = await discoverAndSelect(sources, Q, { ...budget, maxMapCalls: 5, maxSelected: 1 }, { permitted: allow, map });
-    expect(report.droppedUnknownIds).toBe(4);
-    expect(report.ledger.map(entry => entry.blobId)).toEqual([fourth!.sourceId]);
-  });
-
   it('finds relevant material outside the conventional entry points', async () => {
     const sources = [...population(250, 5), ...make('internal/zz/q/r/s/obscure_notes.c', 'The real design lives here.\n')];
-    const map = async (input: { items: readonly { blobId: string; path: string }[] }) => input.items.map(item => ({ blobId: item.blobId, claim: 'c', relevance: item.path.includes('obscure') ? 9 : 0 }));
     const without = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 3 }, { permitted: allow });
-    const withMap = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 3, maxMapCalls: 100 }, { permitted: allow, map });
+    const withMap = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 3, maxMapCalls: 100 }, model({ map: mapOf(item => item.path.includes('obscure') ? 9 : 0) }));
     expect(quotableGenerationSources(without.sources).map(q => q.sourceId)).not.toContain(sources.at(-1)!.sourceId);
     expect(quotableGenerationSources(withMap.sources).map(q => q.sourceId)).toContain(sources.at(-1)!.sourceId);
     expect(withMap.report.rankingBasis).toBe('model-map');
@@ -71,26 +74,61 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
   });
 
   it('records subsystems it had no map call for and counts failed calls without hiding them', async () => {
-    const sources = population(120, 12);
     const map = vi.fn(async () => { throw new Error('boom'); });
-    const { report } = await discoverAndSelect(sources, Q, { ...budget, maxMapCalls: 2, maxGroupBlobs: 10 }, { permitted: allow, map });
-    expect(report.mapCalls).toBe(2);
-    expect(report.mapFailures).toBe(2);
+    const ports = model({ map });
+    const { report } = await discoverAndSelect(population(120, 12), Q, { ...budget, maxMapCalls: 2, maxGroupBlobs: 10 }, ports);
+    expect(report).toMatchObject({ mapCalls: 2, mapFailures: 2, rankingBasis: 'heuristic' });
     expect(report.unmappedSubsystems.length).toBe(report.subsystems);
-    expect(report.rankingBasis).toBe('heuristic');
+    expect(ports.receipts.filter(r => r.outcome === 'failed').map(r => r.detail)).toEqual(['boom', 'boom']);
+  });
+
+  it('drops malformed or foreign claims instead of ranking on them, and keeps none of a rejected reply', async () => {
+    const sources = population(6, 1);
+    const [first, second, third, fourth] = sources;
+    const map = async () => ({ usageUnits: 1, claims: [
+      { blobId: 'foreign-blob', claim: 'c', relevance: 5 }, { blobId: first!.sourceId, claim: 'c', relevance: 99 }, null as never, { blobId: 7 as never, claim: 'c', relevance: 1 },
+      { blobId: second!.sourceId, claim: '', relevance: 5 }, { blobId: third!.sourceId, claim: 'c', relevance: Number.NaN },
+      { blobId: fourth!.sourceId, claim: 'fine', relevance: 3 }] });
+    const { report } = await discoverAndSelect(sources, Q, { ...budget, maxMapCalls: 5, maxSelected: 1 }, model({ map }));
+    expect(report.droppedUnknownIds).toBe(6);
+    expect(report.ledger.map(entry => entry.blobId)).toEqual([fourth!.sourceId]);
+    const rejected = model({ map: async () => ({ claims: 'nope' }) as never });
+    const result = await discoverAndSelect(sources, Q, { ...budget, maxMapCalls: 5, maxSelected: 1 }, rejected);
+    expect(result.report).toMatchObject({ mapFailures: 1, rankingBasis: 'heuristic', ledger: [] });
+    expect(rejected.receipts.at(-1)).toMatchObject({ outcome: 'failed', detail: 'invalid-map-reply' });
+  });
+
+  it('truncates a claim to maxClaimChars', async () => {
+    const sources = population(2, 1);
+    const long = 'x'.repeat(5000);
+    const { report } = await discoverAndSelect(sources, Q, { ...budget, maxMapCalls: 5, maxClaimChars: 40 }, model({
+      map: async input => ({ usageUnits: null, claims: input.items.map(i => ({ blobId: i.blobId, claim: long, relevance: 5 })) }) }));
+    expect(report.ledger.every(entry => entry.claim.length === 40)).toBe(true);
+    expect(report.ledger.length).toBe(2);
   });
 
   it('bounds excerpts and the claims handed to the reduce call', async () => {
-    const long = 'x'.repeat(5000);
-    const sources = [...make('a/one.md', long), ...population(200, 20)];
+    const sources = [...make('a/one.md', 'x'.repeat(5000)), ...population(200, 20)];
     const seen: number[] = [];
-    const map = async (input: { items: readonly { blobId: string; excerpt: string }[] }) => { seen.push(...input.items.map(i => i.excerpt.length)); return input.items.map(i => ({ blobId: i.blobId, claim: 'c', relevance: 5 })); };
     let reduceClaims = 0;
-    await discoverAndSelect(sources, Q, { ...budget, maxExcerptChars: 100, maxMapCalls: 100, maxReduceClaims: 30, maxGroupBlobs: 10 },
-      { permitted: allow, map, reduce: async input => { reduceClaims = input.subsystems.reduce((n, s) => n + s.claims.length, 0); return []; } });
+    await discoverAndSelect(sources, Q, { ...budget, maxExcerptChars: 100, maxMapCalls: 100, maxReduceClaims: 30, maxGroupBlobs: 10 }, model({
+      map: async input => { seen.push(...input.items.map(i => i.excerpt.length)); return mapOf(() => 5)(input); },
+      reduce: async input => { reduceClaims = input.subsystems.reduce((n, s) => n + s.claims.length, 0); return { ranked: [], usageUnits: null }; } }));
     expect(Math.max(...seen)).toBe(100);
     expect(reduceClaims).toBeLessThanOrEqual(30);
     expect(reduceClaims).toBeGreaterThan(0);
+  });
+
+  it('falls back to map relevance when the reduce throws, returns null, or returns a string, and counts it', async () => {
+    const sources = population(40, 4);
+    const target = sources.find(s => s.path.endsWith('file9.c'))!;
+    for (const reduce of [async () => { throw new Error('reduce down'); }, async () => null, async () => ({ ranked: 'abc', usageUnits: 1 }), async () => ({ ranked: [1, 2], usageUnits: 1 })]) {
+      const ports = model({ map: mapOf(item => item.path.endsWith('file9.c') ? 9 : 1), reduce: reduce as never });
+      const { report, sources: out } = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 1, maxMapCalls: 10 }, ports);
+      expect(report).toMatchObject({ reduceCalls: 1, reduceFailures: 1, rankingBasis: 'model-map' });
+      expect(quotableGenerationSources(out).map(q => q.sourceId)).toEqual([target.sourceId]);
+      expect(ports.receipts.at(-1)).toMatchObject({ kind: 'reduce', outcome: 'failed' });
+    }
   });
 
   it('keeps the pieces of an oversize file together and bills each piece', async () => {
@@ -102,21 +140,110 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
     expect(tight.sources.filter(s => s.path === 'src/big.c')).toHaveLength(1);
     expect(tight.sources.find(s => s.path === 'src/big.c')).toMatchObject({ exclusion: { excluded: true, reason: DEFERRED_BY_BUDGET } });
     expect(tight.sources.find(s => s.path === 'src/big.c')!.segment).toBeUndefined();
+    expect(tight.report.selected).toEqual({ blobs: 2, sources: 2 });
     expect(validateGenerationSources(tight.sources)).toHaveLength(3);
     const roomy = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 200 }, { permitted: allow });
     expect(roomy.sources).toEqual(sources);
     expect(roomy.report.deferred).toEqual([]);
+    expect(roomy.report.selected).toEqual({ blobs: 3, sources: bigPieces.length + 2 });
   });
 
-  it('refuses model calls without egress permission and an out-of-range cap', async () => {
-    const map = vi.fn(async () => []);
-    await expect(discoverAndSelect(population(5), Q, budget, { permitted: async () => false, map })).rejects.toThrow(DiscoveryRefusal);
+  it('says "did not fit" only for a multi-piece blob skipped for the remaining cap', async () => {
+    const big = `${'int line_of_code = 42; /* padding */!\n'.repeat(3000)}end\n`;
+    const sources = [...make('README.md', 'r\n'), ...make('src/big.c', big), ...make('docs/z.md', 'z\n')];
+    const { report } = await discoverAndSelect(sources, Q, { ...budget, maxSelected: 2 }, { permitted: allow });
+    const bigRow = report.deferred.find(d => d.path === 'src/big.c')!;
+    expect(bigRow.detail).toContain('did not fit');
+    expect(report.deferred.every(d => d.path === 'src/big.c' || d.detail.includes('ranked below'))).toBe(true);
+  });
+
+  it('asks permission per provider call with a request digest, and a refused call is not made', async () => {
+    const asked: string[] = [];
+    const map = vi.fn(mapOf(() => 5));
+    const ports = model({ map, permitted: async call => { asked.push(`${call.kind}:${call.subsystem ?? ''}:${call.itemCount}:${call.requestDigest.length}`); return call.subsystem !== 'src/mod0'; } });
+    const { report } = await discoverAndSelect(population(40, 2), Q, { ...budget, maxMapCalls: 10, maxGroupBlobs: 20 }, ports);
+    expect(asked.length).toBe(2);
+    expect(asked.every(entry => entry.endsWith(':64'))).toBe(true);
+    expect(map).toHaveBeenCalledTimes(1);
+    expect(report.refusedCalls).toBe(1);
+    expect(ports.receipts.filter(r => r.outcome === 'refused')).toHaveLength(1);
+    expect(report.unmappedSubsystems).toEqual(['src/mod0']);
+  });
+
+  it('treats any permission answer other than true as a refusal', async () => {
+    for (const answer of [1, 'yes', {}, undefined]) {
+      const map = vi.fn(mapOf(() => 5));
+      await discoverAndSelect(population(5), Q, budget, model({ map, permitted: (async () => answer) as never }));
+      expect(map).not.toHaveBeenCalled();
+    }
+  });
+
+  it('writes a dispatching receipt before each call and an outcome after, with digests that differ per request', async () => {
+    const order: string[] = [];
+    const ports = model({ map: async input => { order.push('call'); return mapOf(() => 5)(input); }, receipt: async r => { order.push(r.outcome); } });
+    const { receipts } = await discoverAndSelect(population(40, 4), Q, { ...budget, maxMapCalls: 10, maxGroupBlobs: 20 }, ports);
+    expect(order.slice(0, 3)).toEqual(['dispatching', 'call', 'accepted']);
+    expect(new Set(receipts.filter(r => r.outcome === 'accepted').map(r => r.requestDigest)).size).toBe(receipts.filter(r => r.outcome === 'accepted').length);
+    expect(receipts.filter(r => r.outcome === 'dispatching')).toHaveLength(receipts.filter(r => r.outcome === 'accepted').length);
+  });
+
+  it('stops when a receipt cannot be written, and when model ports have no receipt port', async () => {
+    await expect(discoverAndSelect(population(5), Q, budget, { permitted: allow, map: mapOf(() => 1), receipt: async () => { throw new Error('disk'); } })).rejects.toThrow('receipt-write-failed');
+    await expect(discoverAndSelect(population(5), Q, budget, { permitted: allow, map: mapOf(() => 1) })).rejects.toThrow('model-ports-need-a-receipt-port');
+  });
+
+  it('truncates failure detail and rebuilds an identical report from receipts alone', async () => {
+    const sources = population(120, 6);
+    let n = 0, asks = 0;
+    const map = async (input: { items: readonly Item[] }) => {
+      if (n++ === 1) throw new Error('x'.repeat(900));
+      return { usageUnits: 2, claims: [...input.items.map(item => ({ blobId: item.blobId, claim: 'c', relevance: item.path.endsWith('3.c') ? 8 : 2 })), { blobId: 'foreign', claim: 'c', relevance: 1 }] };
+    };
+    const ports = model({ map, reduce: async () => ({ ranked: ['foreign', ...sources.slice(5, 9).map(s => s.sourceId)], usageUnits: 4 }), permitted: async () => ++asks !== 3 });
+    const budgetHere = { ...budget, maxSelected: 10, maxMapCalls: 6, maxGroupBlobs: 10 };
+    const live = await discoverAndSelect(sources, Q, budgetHere, ports);
+    expect(live.receipts.find(r => r.outcome === 'failed')!.detail).toHaveLength(200);
+    const replay = await reportFromReceipts(sources, Q, budgetHere, JSON.parse(JSON.stringify(live.receipts)));
+    expect(replay.report).toEqual(live.report);
+    expect(replay.sources).toEqual(live.sources);
+    expect(live.report.mapFailures).toBeGreaterThan(0);
+    expect(live.report.refusedCalls).toBeGreaterThan(0);
+    expect(live.report.droppedUnknownIds).toBeGreaterThan(0);
+  });
+
+  it('cancels between and during calls, including before the reduce', async () => {
+    const sources = population(40, 4);
+    const controller = new AbortController();
+    let calls = 0;
+    const map = async (input: { items: readonly Item[] }) => { if (++calls === 2) controller.abort(); return mapOf(() => 5)(input); };
+    await expect(discoverAndSelect(sources, Q, { ...budget, maxMapCalls: 10, maxGroupBlobs: 10 }, model({ map }), controller.signal)).rejects.toThrow('cancelled');
+    const late = new AbortController();
+    const reduce = vi.fn(async () => ({ ranked: [], usageUnits: null }));
+    await expect(discoverAndSelect(sources, Q, { ...budget, maxMapCalls: 1, maxGroupBlobs: 100 }, model({ map: async input => { late.abort(); return mapOf(() => 5)(input); }, reduce }), late.signal)).rejects.toThrow('cancelled');
+    expect(reduce).not.toHaveBeenCalled();
+    const hang = new AbortController();
+    const pending = discoverAndSelect(sources, Q, budget, model({ map: () => new Promise<never>(() => undefined) }), hang.signal);
+    setTimeout(() => hang.abort(), 20);
+    await expect(pending).rejects.toThrow('cancelled');
+  });
+
+  it('never calls a port once the signal is already aborted', async () => {
+    const done = new AbortController(); done.abort();
+    const map = vi.fn(mapOf(() => 1)), permitted = vi.fn(async () => true);
+    await expect(discoverAndSelect(population(10), Q, budget, model({ map, permitted }), done.signal)).rejects.toThrow('cancelled');
     expect(map).not.toHaveBeenCalled();
+    expect(permitted).not.toHaveBeenCalled();
+  });
+
+  it('rejects an out-of-range budget', async () => {
     await expect(discoverAndSelect(population(5), Q, { ...budget, maxSelected: 201 }, { permitted: allow })).rejects.toThrow('invalid-budget');
     await expect(discoverAndSelect(population(5), Q, { ...budget, maxSelected: 0 }, { permitted: allow })).rejects.toThrow('invalid-budget');
+    await expect(discoverAndSelect(population(5), Q, { ...budget, maxClaimChars: 0 }, { permitted: allow })).rejects.toThrow('invalid-budget');
+    await expect(discoverAndSelect(population(5), Q, budget, { permitted: allow })).resolves.toBeDefined();
+    expect(DiscoveryRefusal.name).toBe('DiscoveryRefusal');
   });
 
-  it('passes through already-excluded rows untouched and partitions deterministically', async () => {
+  it('passes already-excluded rows through untouched and partitions deterministically', async () => {
     const excluded: GenerationSource = { ...make('a/x.bin', 'b\n')[0]!, exclusion: { excluded: true, reason: 'binary-or-non-utf8' }, spans: [] };
     delete (excluded as { body?: string }).body;
     const sources = [excluded, ...population(10, 2)];
