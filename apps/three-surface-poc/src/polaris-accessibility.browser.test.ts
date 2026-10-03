@@ -75,10 +75,19 @@ const executable = findBrowserExecutable();
 describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and contrast checks in a real browser', () => {
   let browser: Browser;
   let pages: string;
+  const rendered = new Map<string, { readonly url: string; readonly expectedTargets: readonly string[] }>();
 
   beforeAll(async () => {
     browser = await launchBrowser(executable as string);
     pages = mkdtempSync(join(tmpdir(), 'syzygy-poc-a11y-'));
+    // A fresh Chrome's first render of the page carries cold costs (model
+    // build, first renderer and layout) that the first test used to pay
+    // inside its 5 s budget: over 203 CI attempts that test ran at p50
+    // 1003 ms against 467-623 ms for its siblings, and once timed out at
+    // 5011 ms (syzygy-c46a). Pay them here, under this hook's budget.
+    const warm = await browser.newPage();
+    try { await warm.navigate(pageUrl(ACCESSIBILITY_VARIANTS[0] as AccessibilityVariant).url); }
+    finally { await warm.close(); }
   }, 60_000);
 
   afterAll(async () => {
@@ -87,10 +96,14 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
   });
 
   function pageUrl(variant: AccessibilityVariant): { readonly url: string; readonly expectedTargets: readonly string[] } {
-    const rendered = renderVariant(variant, cleanups);
+    const cached = rendered.get(variant.id);
+    if (cached !== undefined) return cached;
+    const page = renderVariant(variant, cleanups);
     const file = join(pages, `${variant.id}.html`);
-    writeFileSync(file, rendered.html);
-    return { url: pathToFileURL(file).href, expectedTargets: rendered.expectedTargets };
+    writeFileSync(file, page.html);
+    const result = { url: pathToFileURL(file).href, expectedTargets: page.expectedTargets };
+    rendered.set(variant.id, result);
+    return result;
   }
 
   it('keeps a separate desktop section rail and an in-flow mobile drawer', async () => {
