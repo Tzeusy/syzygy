@@ -30,9 +30,16 @@ it already read the status pages and the governance checker, at C1.
     - The recorder runs the tool only when its sha256 equals the digest pinned
       in the recorder (`SUCCESSOR_TOOL_SHA`), and executes the very bytes it
       hashed. A tool change needs a recorder change and a new history review.
-    - A package that is unperformed, drifted, malformed (a deeply nested or
-      wrongly typed config included) or fails to check grants nothing and
-      blocks no other package.
+    - A package that is unperformed or malformed (a deeply nested or
+      wrongly typed config included), or whose act record or
+      acceptance-record block does not verify, grants nothing and blocks no
+      other package.
+    - A package whose act record and block verify but whose tool check
+      fails (drifted) grants nothing and **contests every file it names**
+      (since round 16, `syzygy-t69g`). The recorder refuses those files
+      rather than compose the other packages' pairs around it, so it can no
+      longer accept a tree the tool refuses (round 15's N1). Before round 16
+      such a package was skipped like a malformed one.
     - Paths are normalized before they are compared, so `./x` and `x` are
       one path.
     - **The chain** (since round 14). A later successor of a file names the
@@ -122,7 +129,18 @@ it already read the status pages and the governance checker, at C1.
   step filter, the last digest, the use of the composition and the
   walk's stop. The tool rows run its own selftest,
   except the path-key row, which runs the recorder's selftest with the tool
-  pin moved to the mutant. Two of the tool's guards are equivalent and have
+  pin moved to the mutant. Nine more (round 16, at `bec7a87c`, rows 112 to
+  120) pin the contested marking of a refused performed package: the
+  pre-fix composition under both new fixtures, and again under the tie
+  fixture alone; a refused package contesting nothing; the contested set
+  not applied, or applied only to unclaimed paths; an unperformed package,
+  or one whose act does not verify, contesting its paths; the contested
+  paths' normalization; and the tool's strict later-instant test, which
+  the tie fixture needs (recorder selftest, tool pin moved to the mutant).
+  Rows with more than one edit carry the rest under `further_edits`. One
+  round-16 guard is equivalent and has no row: requiring `check()` to
+  return `performed-exact`, since past `performed_rows()` it either
+  returns that or raises. Two of the tool's guards are equivalent and have
   no row:
   - Normalizing a later package's path: an aliased later claim can only
     keep its bytes (a changed subject's proposed file has the normal name),
@@ -219,13 +237,13 @@ it already read the status pages and the governance checker, at C1.
     - N2: a failure in the package search itself, or a symlinked tool, fails
       the whole check rather than one package. That is fail-closed.
     - N3 stands as round 9's N4.
-  - Round 13 (`HISTORY-REVIEW-13-RAW.md`, CONFIRM WITH EXCEPTIONS) binds
-    the current recorder. A simulated adoption of the understanding successor
-    had shown the recorder's own selftest refusing the installed restyle,
-    because its fixture granted no successor rows. The fixture now starts from
-    today's performed successors and builds its successor cases from the
-    adopted bytes, so the selftest passes before and after the successor is
-    performed. Its notes:
+  - Round 13 (`HISTORY-REVIEW-13-RAW.md`, CONFIRM WITH EXCEPTIONS) bound
+    the recorder as it stood then. A simulated adoption of the understanding
+    successor had shown the recorder's own selftest refusing the installed
+    restyle, because its fixture granted no successor rows. The fixture now
+    starts from today's performed successors and builds its successor cases
+    from the adopted bytes, so the selftest passes before and after the
+    successor is performed. Its notes:
     - N1: once the successor is performed, row 68 (the drift branch forced
       on) survives, since every subject then has a successor row. That
       mutation only makes the check stricter; the row reproduces before
@@ -245,8 +263,8 @@ it already read the status pages and the governance checker, at C1.
     N2 is answered by the docstring; N3 by the act-instant ordering; N4
     needed no change.
   - Round 15 (`HISTORY-REVIEW-15-RAW.md`, CONFIRM WITH EXCEPTIONS, notes
-    only) binds the current recorder. Under the 2026-09-26 stopping rule its
-    notes are answered here, not in the reviewed bytes:
+    only) bound the recorder as it stood then. Under the 2026-09-26 stopping
+    rule its notes are answered here, not in the reviewed bytes:
     - N1: after A→B, B→C, C→B at increasing instants and a no-act edit
       back to C, the tool refuses the C→B package, and the recorder, which
       skips any package the tool fails, composes (A, C) from the other two
@@ -255,11 +273,13 @@ it already read the status pages and the governance checker, at C1.
       also runs `readability_successor.py --all --check`, so the battery,
       never the recorder alone, is the claim. The repair (a package whose
       act verifies but whose check fails contests its paths) is tracked as
-      `syzygy-t69g`, for the tool's next change.
+      `syzygy-t69g`, for the tool's next change. Answered in round 16 by
+      that repair and its fixture.
     - N2: two acts recorded within one second leave the earlier package
       refused, since a tie extends no chain. That fails closed; the remedy
       is a successor recorded at a later instant.
-    - N3: a two-package tie fixture joins N1's follow-up.
+    - N3: a two-package tie fixture joins N1's follow-up. Answered in
+      round 16 by that fixture.
     - N4 and N5 describe the review's own probes and need no change.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
