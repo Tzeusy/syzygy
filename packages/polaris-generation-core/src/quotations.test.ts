@@ -81,7 +81,7 @@ describe('validateDossierStage', () => {
   });
 
   const placements: [string, (draft: ProviderDraft) => void][] = [
-    ['the introduction', draft => { draft.introduction.text = misquote; draft.introduction.sourceIds = ['src-readme']; }],
+    ['the introduction', draft => { draft.introduction.text = misquote; }],
     ['a section block', draft => { draft.sections[3]!.paragraphs[0]!.text = misquote; }],
     ['a child block', draft => { draft.sections[1]!.paragraphs[0]!.children[0]!.text = misquote; }],
     ['a deep-dive block', draft => { draft.deepDives[0]!.paragraphs[0]!.text = misquote; }],

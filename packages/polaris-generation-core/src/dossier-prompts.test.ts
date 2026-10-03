@@ -10,12 +10,12 @@ const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8
 // Recipe replay, as in prompts.test.ts: an intentional edit needs a version
 // decision and a new reviewed digest. These pin bytes; they are not LLM evals.
 const recipes: [GenerationStage, string, string][] = [
-  ['inventory', 'polaris-inventory-dossier-v2', '4f7545be152d6e0ff400c6f01a6c98b80545926069564019e700f3b584cb4fde'],
-  ['plan', 'polaris-plan-dossier-v2', 'af42468b33f9369ac5c0b5e9b99cfe244573f7bb8b122f9363c8ff2b01dc9cc2'],
-  ['author', 'polaris-author-dossier-v2', '9d06cdb7fbc421e0b242bdb1cd2c50dd035c160fe2db5dce691d739c50b0e7c0'],
-  ['edit', 'polaris-edit-dossier-v2', '4ca9b8e146605785b4221b815130c016070e8ae43902e36be2bf06210bf59bdf'],
-  ['fidelity', 'polaris-fidelity-dossier-v2', 'cf287a42fa24e14d29f8913dcfb51a939d8bb0481bc36df691547c0710520322'],
-  ['repair', 'polaris-repair-dossier-v2', 'a751d6cedb1549151f59c47cdff18bc204c011d515c6cf5b53ebf02c0aa85d52'],
+  ['inventory', 'polaris-inventory-dossier-v2', '7b059d24a9c5d5a91b4abe9b78c1b131c30f234c7fdac69709e5a94498163e58'],
+  ['plan', 'polaris-plan-dossier-v2', 'c55af59b45a0a6f8aa62ef26d29702273c266f024ebe2e3528235537285cb026'],
+  ['author', 'polaris-author-dossier-v2', 'dc5e0e39c85a3114f7d537c944811365437010e6ad0079da9660c54ab03689e0'],
+  ['edit', 'polaris-edit-dossier-v2', '2c030ad076f6a45d090016c6e82ffbf6a60575142dbff302d9819791fb217a6f'],
+  ['fidelity', 'polaris-fidelity-dossier-v2', 'c11198c947be8d4710c9b0ca3285236a2686c6592b17d773b31965c570b9f63b'],
+  ['repair', 'polaris-repair-dossier-v2', 'fdd25466c4c2d118053ebe75d0f54a9784371abb729c19870a3dcb3a4f15621a'],
 ];
 
 // The dossier profile's requested assets (dossier-profile.ts on the profile
@@ -51,21 +51,21 @@ describe('dossier stage prompts', () => {
     ['You are producing one stage of a project-neutral Polaris manifesto pipeline.', 'You are producing one stage of a project-neutral Polaris dossier pipeline.'],
     [' Generated content is editorial draft, not adopted intent.', ' Generated content is an editorial draft.'],
   ];
-  const stageSubstitutions: Partial<Record<GenerationStage, [string, string]>> = {
-    inventory: ['Do not draft or plan the manifesto,', 'Do not draft or plan the dossier,'],
-    author: ['Write a coherent, concise manifesto following', 'Write a coherent, concise dossier following'],
-    fidelity: [", accept the author's self-assessment as evidence, or grant owner approval.", " or accept the author's self-assessment as evidence."],
+  const stageSubstitutions: Partial<Record<GenerationStage, [string, string][]>> = {
+    inventory: [['Do not draft or plan the manifesto,', 'Do not draft or plan the dossier,'], ['thesis, motives, capabilities', 'thesis, capabilities']],
+    author: [['Write a coherent, concise manifesto following', 'Write a coherent, concise dossier following']],
+    fidelity: [[", accept the author's self-assessment as evidence, or grant owner approval.", " or accept the author's self-assessment as evidence."]],
   };
 
   it.each(recipes)('derives the %s dossier base from the reviewed manifesto prompt by named substitutions only', (stage) => {
     let base = promptForStage(stage).system;
-    for (const [from, to] of [...substitutions, ...(stageSubstitutions[stage] === undefined ? [] : [stageSubstitutions[stage]!])]) {
+    for (const [from, to] of [...substitutions, ...(stageSubstitutions[stage] ?? [])]) {
       expect(base.split(from).length, from).toBe(2);
       base = base.replace(from, () => to);
     }
     const prompt = promptForStage(stage, 'dossier').system;
     expect(prompt.startsWith(`${base}\n\n`)).toBe(true);
-    for (const phrase of ['manifesto', 'adopted intent', 'owner approval']) expect(prompt, phrase).not.toContain(phrase);
+    for (const phrase of ['manifesto', 'adopted intent', 'owner approval', 'motives']) expect(prompt, phrase).not.toContain(phrase);
   });
 
   it.each(recipes)('ends the %s prompt with the illustration it was tested with', (stage) => {
@@ -82,6 +82,45 @@ describe('dossier stage prompts', () => {
     expect(prompt).toContain(' Where these dossier rules and the instructions above differ, the dossier rules govern. ');
     // The asset id maintainer-stated-advantages is the profile's; only the illustration line carries it.
     expect(prompt.split('\n').slice(0, -1).join('\n')).not.toContain('maintainer');
+  });
+
+  // Semantic pins: each clause below is load-bearing, so a mutant that drops or
+  // weakens one fails here by name, not only through a digest.
+  const ruleClauses = [
+    'is reported only as a quotation: The project states: followed, in double quotes, by one contiguous span of a cited source, at most two sentences or one list item.',
+    'Quote that span exactly: never elide, splice or add ellipses, and keep the source\'s own characters inside the quotes, identifiers included, without adding backticks.',
+    'markdown emphasis and link syntax are dropped, keeping the link text; no other change is allowed.',
+    'Double quotes are used only for such a quotation; everywhere else put commands, identifiers, configuration keys and values in backticks and use no quotation marks.',
+    'Quote a stated advantage once: child blocks may explain its mechanism in your own words, citing their sources, but never restate the claim unquoted.',
+    'An advantage no source states is never written, not even as Inferred:.',
+    'may be written as one Inferred: sentence citing the sources of the mechanism it reasons from, and it must agree with every cited source; otherwise it is unresolved',
+    'Never present an inferred cost or benefit as stated.',
+    'Never extend or generalize it, and never add an alternative of your own.',
+    'A faithful restatement or summary of cited sources and child blocks is not inference and carries no prefix.',
+    'Outside a quotation, name each function, type, file, command or configuration key in backticks',
+  ];
+  it.each(recipes)('states every rule-4, 5 and 6 clause in the %s prompt', (stage) => {
+    const prompt = promptForStage(stage, 'dossier').system;
+    for (const clause of ruleClauses) expect(prompt, clause).toContain(clause);
+  });
+
+  const guidanceClauses: [GenerationStage, string][] = [
+    ['inventory', 'each project-specific or domain term a newcomer would need explained as a term entry'],
+    ['inventory', 'a mechanism-level cost no source states as a qualification entry whose statement begins Inferred: and cites the mechanism\'s sources'],
+    ['plan', 'core ideas first, then the end-to-end workflows, then the mechanisms beneath them, then advantages and trade-offs'],
+    ['author', 'open with a two- or three-sentence introduction that says what the project is and how its central workflow runs, never a copy of the first section\'s block'],
+    ['author', 'Explain each term a newcomer may not know at its first use'],
+    ['author', 'Double quotes appear only around a verbatim span of a cited source after The project states:; identifiers, commands, configuration keys and values go in backticks, and there are no scare quotes.'],
+    ['author', 'not the canned refusals section the instructions above rule out: beside any advantage a trade-off qualifies, keep a one-clause pointer to it.'],
+    ['edit', 'shorten it with an ellipsis, add double quotes around anything but a verbatim span of a cited source'],
+    ['fidelity', 'every quotation is one contiguous span of a cited source, matching it under rule 4\'s normalization, with no ellipsis or splice; that double quotes appear nowhere else;'],
+    ['fidelity', 'that a stated advantage is quoted once and never restated unquoted, and that no advantage is written that no source states;'],
+    ['fidelity', 'that no trade-off half is presented as stated unless a cited source states it, and that an Inferred: half cites the sources it reasons from and agrees with every one of them;'],
+    ['fidelity', 'a block with no failure needs no finding.'],
+    ['repair', 'for a quotation that does not match its source, quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred: (an advantage no source states is removed instead).'],
+  ];
+  it.each(guidanceClauses)('states the %s guidance clause: %s', (stage, clause) => {
+    expect(promptForStage(stage, 'dossier').system).toContain(clause);
   });
 
   it('gives every stage its own dossier guidance', () => {
@@ -196,10 +235,54 @@ describe('dossier illustrations obey their own rules', () => {
     expect(stated!.text.startsWith(QUOTATION_LEAD)).toBe(true);
     expect(inferred!.text.startsWith('Inferred: ')).toBe(true);
     expect(inferred!.text).not.toContain(QUOTATION_LEAD);
-    expect(inferred!.sourceIds).toEqual(['src-cache']);
+    expect(inferred!.sourceIds).toEqual(['src-build', 'src-cache']);
     const inventory = illustration('inventory') as ProviderInventory;
     const entries = inventory.entries.filter(entry => entry.statement.startsWith('Inferred: '));
-    expect(entries.map(entry => [entry.id, entry.kind, entry.sourceIds])).toEqual([['e-cost-inferred', 'qualification', ['src-cache']]]);
+    expect(entries.map(entry => [entry.id, entry.kind, entry.sourceIds])).toEqual([['e-cost-inferred', 'qualification', ['src-build', 'src-cache']]]);
+  });
+
+  const claimTexts = (): string[] => [...blocks.map(block => block.text), ...(illustration('inventory') as ProviderInventory).entries.map(entry => entry.statement)];
+
+  it('uses double quotes only for the quotation after the lead, and never elides', () => {
+    for (const text of claimTexts()) {
+      const at = text.indexOf(QUOTATION_LEAD);
+      const outside = at < 0 ? text : text.slice(0, at) + text.slice(text.lastIndexOf('"') + 1);
+      expect(outside, text).not.toContain('"');
+      expect(text, text).not.toMatch(/\.\.\.|\u2026/u);
+    }
+  });
+
+  it('quotes a stated advantage once and restates it nowhere', () => {
+    const quotedAdvantage = blocks.filter(block => block.text.startsWith(QUOTATION_LEAD) && block.text.includes('worker threads'));
+    expect(quotedAdvantage.map(block => block.id)).toEqual(['b-adv']);
+    expect(blocks.filter(block => block.text.includes('build faster')).map(block => block.id)).toEqual(['b-adv']);
+  });
+
+  it('opens with a two- or three-sentence introduction that is not the first block', () => {
+    const sentences = draft.introduction.text.split(/(?<=\.) /u);
+    expect(sentences.length).toBeGreaterThanOrEqual(2);
+    expect(sentences.length).toBeLessThanOrEqual(3);
+    expect(draft.introduction.text).not.toBe(draft.sections[0]!.paragraphs[0]!.text);
+  });
+
+  it('records a newcomer term and orders workflows before mechanisms', () => {
+    const inventory = illustration('inventory') as ProviderInventory;
+    expect(inventory.entries.filter(entry => entry.kind === 'term').map(entry => entry.id)).toEqual(['e-term']);
+    const order = draft.sections.map(section => section.id);
+    expect(order.indexOf('end-to-end-workflows')).toBeLessThan(order.indexOf('mechanisms'));
+    const plan = illustration('plan') as { sections: { id: string }[] };
+    expect(plan.sections.map(section => section.id)).toEqual(order);
+  });
+
+  it('infers a cost that agrees with every cited source and gives the review no finding to praise it', () => {
+    const inferred = draft.sections.find(candidate => candidate.id === 'trade-offs')!.paragraphs.find(block => block.text.startsWith('Inferred: '))!;
+    // The README says a shared-layout change rebuilds every page that uses it: a cost
+    // claiming unchanged pages go stale would contradict it.
+    expect(inferred.text).not.toMatch(/stale|not rendered again/u);
+    expect(inferred.sourceIds).toEqual(['src-build', 'src-cache']);
+    for (const name of ['`buildSite`', '`renderPage`']) expect(inferred.text).toContain(name);
+    const review = illustration('fidelity') as { findings: unknown[] };
+    expect(review.findings).toEqual([]);
   });
 
   it('traces the workflow one hop per child block and draws only those hops', () => {
