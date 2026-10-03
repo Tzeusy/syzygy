@@ -56,7 +56,7 @@ that affects every target.
 
 **O2. Resource limits for the acquisition adapter.** The entry proposes 4,096
 sources, 1 MiB per source, 128 MiB total, 256 MiB per shallow fetch, 65,536
-tree entries and index depth 16. [Inferred] None is measured; the sources for
+tree entries (the index-depth limit of the first draft was removed: a generic Git acquisition has no index traversal). [Inferred] None is measured; the sources for
 Redis are unread. *Recommended:* accept as the ceiling for the first target,
 and treat the first run's measurement as the input to a later entry version.
 A breach leaves dependent claims Unknown and never fails silently.
@@ -76,7 +76,7 @@ platform headers naming the OS, CPU architecture and Node version, and
 sometimes a body-less HEAD probe. The entry lists these by reference to
 `PROVIDER-EGRESS-BYTES.md` (PR #258) and accepts the adapter only when
 generator-built parts match byte for byte and nothing falls outside the lists.
-*Recommended:* accept the listed envelope for this route. If the owner will not
+*Recommended:* accept the listed envelope for this route. Accepting it also needs a version of the egress record whose Conditions no longer say the route "adds no context of its own" and shows "nothing else" than the generator's parts; otherwise the two signed records contradict each other. The entry pins model `claude-opus-5-5`, no tools, effort `medium` and a max_tokens ceiling (an [Inferred] proposal of 32000) as bytes it lists, and carries the runtime-fixed byte list inline. If the owner will not
 send those bytes, the answer is a different route (PR #264), which replaces
 this entry under RFC4-1.
 
@@ -89,4 +89,4 @@ consent. It does not touch the Butlers entry.
 ## Review
 
 A fresh-context review precedes any offering; `REVIEW-BRIEF.md` names the
-artifacts, references and criteria. None has run.
+artifacts, references and criteria. Round 1 returned REVISE and round 2 REVISE; the raws are retained under `reviews/`.

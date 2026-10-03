@@ -45,14 +45,17 @@ Two entries, each a separate registry event.
    second route beside it. The entry pins the Agent SDK 0.3.288 and bundled
    CLI 2.1.288 and states that the request is the generator's two parts
    (stage system prompt, stage input envelope) plus bytes the runtime adds,
-   which `PROVIDER-EGRESS-BYTES.md` (PR #258) lists as [Observed] against a
-   capture endpoint. Write surface empty, argued: the dispatch is an effect
-   and the egress consent is its explicit authority. Its `routeConditions`
-   restate the egress record's conditions and name the record ID and version.
-   The acceptance check separates envelope from content: generator-built
-   parts byte for byte, everything else inside the two lists, any other byte
-   fails. The egress record, not this entry, is the authority; the entry
-   cannot widen it.
+   which the entry lists inline in `requestBytes` (runtime-fixed bytes, the
+   pinned model, no tools, effort and a max_tokens ceiling, headers, the probe);
+   `PROVIDER-EGRESS-BYTES.md` (PR #258) is provenance only. Write surface empty,
+   argued: the dispatch is an effect and the egress consent is its explicit
+   authority. Its `routeConditions` restate the egress record's conditions and
+   name the record, with one divergence: the record says the route "adds no
+   context of its own", and the runtime envelope does, so accepting it (packet
+   O4) needs an egress record version that admits the listed bytes. The
+   acceptance check is generator-built parts byte for byte plus `requestBytes`
+   for everything else; any byte in neither fails. The egress record, not this
+   entry, is the authority; the entry cannot widen it.
 2. **Public Git-hosting source acquisition**
    (`polaris-public-git-source-acquisition`). One shared adapter for every
    `(project:syzygy, repository)` pair that has its own in-force observation
