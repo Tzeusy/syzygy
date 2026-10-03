@@ -168,6 +168,7 @@ class Inputs:
     stale: list[str]         # builder.check findings (pre-state only)
     not_ready: list[str]     # builder.readiness findings (pre-state only)
     predecessor: str         # digest the version-1 act names ("" when the record is absent)
+    predecessor_date: str    # the version-1 act's date, as the gate's supersession form needs it
     class_act: bool          # the row-7 record exists
     applied: str | None      # the variant whose row the policy on disk already is
     frozen: str | None
@@ -208,6 +209,7 @@ def live_inputs(root: pathlib.Path) -> Inputs:
             stale.append(str(exc))
     pred = (root / V1_ACT_REL).read_text() if (root / V1_ACT_REL).is_file() else ""
     m = EXACT_DIGEST_RE.search(pred)
+    d = re.search(r"^Date: (\d{4}-\d{2}-\d{2})$", pred, re.MULTILINE)
     files = {rel: (root / rel).read_bytes() for rel in FROZEN_FILE_DIGESTS if (root / rel).is_file()}
     review_path = root / CONFIRMATION_REVIEW_REL
     return Inputs(
@@ -215,6 +217,7 @@ def live_inputs(root: pathlib.Path) -> Inputs:
         packet=(root / PACKET_REL).read_bytes() if (root / PACKET_REL).is_file() else b"",
         review=review_path.read_text() if review_path.is_file() else "",
         stale=stale, not_ready=not_ready, predecessor=m.group(1) if m else "",
+        predecessor_date=d.group(1) if d else "",
         class_act=(root / CLASS_ACT_REL).is_file(), applied=applied,
         frozen=FROZEN_SUBJECT, frozen_digest=lambda rel: FROZEN_FILE_DIGESTS.get(rel, ""),
         frozen_files=files,
@@ -250,8 +253,8 @@ def validate(act: Act, argument: str, inp: Inputs) -> tuple[str, str, str, str]:
         if not inp.class_act:
             raise ValueError("the row-7 act record (RFC5-14 project-documentation) is absent; the class "
                              "is outside the closed vocabulary until it exists")
-        if not SHA_RE.fullmatch(inp.predecessor):
-            raise ValueError("the version-1 act record (row 1) is absent or names no exact digest")
+        if not SHA_RE.fullmatch(inp.predecessor) or not DATE_RE.fullmatch(inp.predecessor_date):
+            raise ValueError("the version-1 act record (row 1) is absent or names no exact digest and date")
         if inp.stale:
             raise ValueError("builder reports findings: " + "; ".join(inp.stale))
         if inp.not_ready:
@@ -313,7 +316,9 @@ def version_of(policy: bytes) -> str:
 
 def render_act(act: Act, argument: str, variant: str, date: str, manifest_sha: str, reviewed: str,
                verdict: str, sel: Selection, frozen: str, instant: str,
-               superseded: str, version: str) -> str:
+               superseded: str, superseded_date: str, version: str) -> str:
+    notes = (f" notes are dispositioned in `{DISPOSITION_REL.as_posix()}`;"
+             if verdict == "CONFIRM WITH EXCEPTIONS" else " it carries no notes;")
     adds = ", ".join(w.upper() for w in build.VARIANTS[variant]) or "neither MANIFESTO nor ARCHITECTURE"
     return f"""# Owner act — {act.title}
 
@@ -336,8 +341,7 @@ Exact digest (SHA-256): `{argument}`
 Provenance state: `owner-adopted (bootstrap, uncorrelated)` — state (1),
 explicitly selected by the owner's option selection recorded below
 
-Supersession / revocation: this act supersedes, for the `{act.act_type}` role only,
-the version-1 screening-scope act recorded at `{V1_ACT_REL.as_posix()}`. Its argument
+Supersession / revocation: this act supersedes, for the `{act.act_type}` role only, the {superseded_date} act recorded at `{V1_ACT_REL.as_posix()}`. That is the version-1 screening-scope act. Its argument
 `{superseded}` was the policy's exact digest until this act's patch was
 applied. That record, its digest, its tag and the bytes it bound remain
 immutable history. This act is revoked only by a later exact owner act naming
@@ -378,8 +382,7 @@ Frozen provenance:
 - frozen subject (package bytes): `{frozen}`;
 - manifest SHA-256: `{manifest_sha}`;
 - confirmation review: `{CONFIRMATION_REVIEW_REL.as_posix()}`, verdict
-  `{verdict}`, its head bound to the manifest file's SHA-256 above; notes, if
-  any, are dispositioned in `{DISPOSITION_REL.as_posix()}`; the raw names
+  `{verdict}`, its head bound to the manifest file's SHA-256 above;{notes} the raw names
   reviewed commit `{reviewed}` [Observed — the raw's own line; binding is by
   digest]; and
 - recording tag: `{tag_for(act, date)}`, on the commit carrying this act record.
@@ -418,13 +421,20 @@ package.
 """
 
 
+#: Section markers: the contract successor link's order check stops reading an earlier act's
+#: section at the next marker, so this block's phrase cannot be read as part of it.
+BLOCK_BEGIN = "<!-- PWB-POLICY-SCOPE-V2:BEGIN -->"
+BLOCK_END = "<!-- PWB-POLICY-SCOPE-V2:END -->"
+
+
 def aggregate_heading(act: Act, date: str) -> str:
     return f"## Public-source screening scope version 2 act — {act.act_type} — performed {date}"
 
 
 def render_aggregate_block(act: Act, argument: str, variant: str, date: str, manifest_sha: str,
                            verdict: str, frozen: str, instant: str) -> str:
-    return f"""{aggregate_heading(act, date)}
+    return f"""{BLOCK_BEGIN}
+{aggregate_heading(act, date)}
 
 **Phrase the act takes (given {date} by option selection, not typed; see the
 dedicated record):**
@@ -449,6 +459,7 @@ dedicated record):**
 Effective status: this one record is **effective owner authority —
 owner-adopted (bootstrap, uncorrelated)** for its own role only. It grants no
 consent, read or egress, and the read gate is re-pointed by a separate change.
+{BLOCK_END}
 """
 
 
@@ -462,7 +473,7 @@ def expected(act: Act, argument: str, date: str, sel: Selection, inp: Inputs, in
     frozen = inp.frozen or ""
     version = version_of(inp.proposed[variant] if inp.applied is None else inp.policy)
     return (render_act(act, argument, variant, date, manifest_sha, reviewed, verdict, sel, frozen,
-                       instant, inp.predecessor, version),
+                       instant, inp.predecessor, inp.predecessor_date, version),
             render_aggregate_block(act, argument, variant, date, manifest_sha, verdict, frozen, instant))
 
 
@@ -575,7 +586,7 @@ def selftest() -> int:
 
     def make(**over) -> Inputs:
         values = dict(manifest=manifest, policy=base, proposed=dict(proposed), packet=pkt, review=review,
-                      stale=[], not_ready=[], predecessor=digest(base), class_act=True, applied=None,
+                      stale=[], not_ready=[], predecessor=digest(base), predecessor_date="2026-10-04", class_act=True, applied=None,
                       frozen="f" * 40, frozen_digest=lambda rel: digest(blobs[rel]),
                       frozen_files=dict(blobs), disposition_check=lambda findings: None)
         values.update(over)
@@ -684,6 +695,17 @@ def selftest() -> int:
         results.append(("record names the policy version it approves",
                         "1.3.0-public-source-candidate.1.none" in record))
         results.append(("record names the chosen variant", "Chosen variant: `none`." in record))
+        results.append(("the supersession line has the read gate's amendment form, naming the version-1 record",
+                        re.search(r"^Supersession / revocation: this act supersedes, for the `approve-policy` role only, "
+                                  r"the \d{4}-\d{2}-\d{2} act recorded at `" + re.escape(V1_ACT_REL.as_posix()) + r"`\.",
+                                  record, re.MULTILINE) is not None))
+        results.append(("a CONFIRM record cites no dispositions file", DISPOSITION_REL.as_posix() not in record))
+        notes_inp = make(review=notes)
+        r3, _b3 = expected(act, arg, "2026-10-04", ok_sel, notes_inp, INSTANT_OK)
+        results.append(("a notes-only CONFIRM WITH EXCEPTIONS record cites its dispositions file",
+                        DISPOSITION_REL.as_posix() in r3))
+        results.append(("the aggregate block is bracketed by section markers",
+                        block.count(BLOCK_BEGIN) == 1 and block.count(BLOCK_END) == 1))
         r2, _b2 = expected(act, rows["both"], "2026-10-04", ok_sel, make(), INSTANT_OK)
         results.append(("a different variant renders a different record", r2 != record and "Chosen variant: `both`." in r2))
     except ValueError as exc:
@@ -717,7 +739,7 @@ def selftest() -> int:
             (root / POLICY_REL).parent.mkdir(parents=True, exist_ok=True)
             (root / POLICY_REL).write_text(v1text)
             (root / V1_ACT_REL).parent.mkdir(parents=True, exist_ok=True)
-            (root / V1_ACT_REL).write_text(f"# v1\n\nExact digest (SHA-256): `{digest(v1text.encode())}`\n")
+            (root / V1_ACT_REL).write_text(f"# v1\n\nDate: 2026-10-03\n\nExact digest (SHA-256): `{digest(v1text.encode())}`\n")
             (root / CLASS_ACT_REL).write_text("# row 7\n")
             # the sitting state: the row-7 record exists, the amendment text is not installed yet
             (root / AGGREGATE_REL).write_text("# Acceptance record\n")
