@@ -1657,6 +1657,18 @@ PWB_EFFECT_ACTS = (
      f"{DECISIONS}/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md"),
 )
 PWB_EFFECT_ACT_LABELS = tuple(label for label, _s, _a in PWB_EFFECT_ACTS)
+#: The public-admission registry entries (`syzygy-mea`): two separate state-(1)
+#: acts over whole proposed files, each given by an option selection at that
+#: file's manifest row. Candidate registration only (labels, subjects, manifest
+#: copy), no chain link; the performed records arrive with the acts.
+PUBLIC_REGISTRY_DIR = f"{CANDIDATES}/public-admission-registry-entries"
+PUBLIC_REGISTRY_MANIFEST = f"{PUBLIC_REGISTRY_DIR}/PUBLIC-ADMISSION-REGISTRY-MANIFEST.txt"
+PUBLIC_REGISTRY_ACTS = (
+    ("ADOPT POLARIS PROVIDER EXECUTION ROUTE REGISTRY ENTRY",
+     f"{PUBLIC_REGISTRY_DIR}/proposed/POLARIS-PROVIDER-ROUTE-ANTHROPIC-AGENT-SDK-CANDIDATE.json"),
+    ("ADOPT POLARIS PUBLIC GIT SOURCE-ACQUISITION REGISTRY ENTRY",
+     f"{PUBLIC_REGISTRY_DIR}/proposed/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-CANDIDATE.json"),
+)
 #: Decisions 2 and 3 of the truth-and-readiness packet re-perform the policy
 #: and registry acts over amended artifact bytes. Each amended act gets its own
 #: new dedicated record (`record_pwb_effect_amendment_acts.py`); the
@@ -2408,6 +2420,11 @@ def _act_subjects():
             if not any(l == label for l, _rel, _pat in out):
                 out.append((label, subject, re.compile(
                     re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
+    if os.path.isfile(os.path.join(ROOT, PUBLIC_REGISTRY_MANIFEST)):
+        for label, subject in PUBLIC_REGISTRY_ACTS:
+            if not any(l == label for l, _rel, _pat in out):
+                out.append((label, subject, re.compile(
+                    re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
     return tuple(out)
 
 
@@ -3130,6 +3147,20 @@ def _activate_public_admission_manifest_copy_registry():
 
 
 _activate_public_admission_manifest_copy_registry()
+
+
+def _activate_public_registry_manifest_copy_registry():
+    """The registry-entries manifest carries both current arguments as rows.
+
+    Existence-gated candidate registration; the chain link and performed
+    records arrive with the acts.
+    """
+    if os.path.isfile(os.path.join(ROOT, PUBLIC_REGISTRY_MANIFEST)):
+        ACT_DIGEST_COPY_FILES[PUBLIC_REGISTRY_MANIFEST] = tuple(
+            label for label, _subject in PUBLIC_REGISTRY_ACTS)
+
+
+_activate_public_registry_manifest_copy_registry()
 
 
 #: The act-time digests the specification-policy restyle supersedes as the

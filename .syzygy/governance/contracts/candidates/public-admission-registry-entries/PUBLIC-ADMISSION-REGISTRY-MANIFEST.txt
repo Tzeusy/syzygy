@@ -1,0 +1,7 @@
+# PUBLIC ADMISSION REGISTRY ENTRIES MANIFEST
+# Candidate; this file and its rows bind nothing by themselves.
+# 2 artifacts; rows sorted by codepoint path; each row hashes the
+# proposed file's exact bytes and is the argument of one separate owner act.
+# Each row requires its own act; neither row binds the other.
+9d524b582f6aef374b24566e0567c0e7f09aa7fc5725b57c11420833d6746fea  .syzygy/governance/contracts/candidates/public-admission-registry-entries/proposed/POLARIS-PROVIDER-ROUTE-ANTHROPIC-AGENT-SDK-CANDIDATE.json
+f5865cddec5e035d2acbc092062010416e0f53472626c8ec3f810e038522f2a3  .syzygy/governance/contracts/candidates/public-admission-registry-entries/proposed/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-CANDIDATE.json
