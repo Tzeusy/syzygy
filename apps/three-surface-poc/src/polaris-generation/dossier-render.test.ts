@@ -286,6 +286,20 @@ describe('run directory', () => {
     expect(readdirSync(join(repo, 'docs'))).toEqual([]);
   });
 
+  it('ignores the caller\'s GIT_* variables: GIT_DIR cannot make a work tree read as outside Git', async () => {
+    const repo = mkdtempSync(join(tmpdir(), 'syzygy-dossier-gitdir-'));
+    cleanups.push(repo);
+    execFileSync('git', ['init', '-q', repo]);
+    const saved = process.env.GIT_DIR;
+    process.env.GIT_DIR = join(repo, 'not-a-git-dir');
+    try {
+      await expect(writeDossierRun(join(repo, 'run'), renderDossier(run).files)).rejects.toThrow('run-directory-inside-git-work-tree');
+    } finally {
+      if (saved === undefined) delete process.env.GIT_DIR; else process.env.GIT_DIR = saved;
+    }
+    expect(readdirSync(repo)).toEqual(['.git']);
+  });
+
   it('refuses when Git cannot be run, rather than assuming no work tree', async () => {
     const parent = mkdtempSync(join(tmpdir(), 'syzygy-dossier-nogit-'));
     cleanups.push(parent);
