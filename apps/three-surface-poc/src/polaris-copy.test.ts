@@ -330,7 +330,9 @@ describe('Polaris copy roles (PWB-REQ-012)', () => {
     const summaries = controls.filter(control => control.tag === 'summary');
     const anchors = controls.filter(control => control.tag === 'a');
     expect(summaries).toHaveLength(39);
-    expect(anchors).toHaveLength(144);
+    // 144, plus the opening gloss's glossary link and the proof strip's four
+    // segments (syzygy-u05.4).
+    expect(anchors).toHaveLength(149);
     const byName = new Map<string, Set<string>>();
     for (const control of controls) {
       expect(control.name).not.toBe('');
