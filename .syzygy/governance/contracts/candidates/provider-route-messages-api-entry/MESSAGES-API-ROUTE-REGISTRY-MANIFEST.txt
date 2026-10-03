@@ -1,0 +1,6 @@
+# MESSAGES API PROVIDER ROUTE REGISTRY ENTRY MANIFEST
+# Candidate; this file and its row bind nothing by themselves.
+# 1 artifact; each row hashes the proposed file's exact bytes and is
+# the argument of one owner act. A substitute for the Agent SDK entry; the
+# two are never both adopted (RFC4-1).
+576445d641ebb801e6980c6c4193ff605ef3473e0d995e338c271ff732c12308  .syzygy/governance/contracts/candidates/provider-route-messages-api-entry/proposed/POLARIS-PROVIDER-ROUTE-ANTHROPIC-MESSAGES-API-CANDIDATE.json

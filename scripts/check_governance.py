@@ -1709,6 +1709,16 @@ PUBLIC_REGISTRY_ACTS = (
     ("ADOPT POLARIS PUBLIC GIT SOURCE-ACQUISITION REGISTRY ENTRY",
      f"{PUBLIC_REGISTRY_DIR}/proposed/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-CANDIDATE.json"),
 )
+#: The Messages API provider route entry (route B): one state-(1) act over a
+#: whole proposed file, given at its manifest row. It substitutes for the Agent
+#: SDK provider entry (RFC4-1) and registers no chain link; the performed
+#: record arrives with the act.
+MESSAGES_API_DIR = f"{CANDIDATES}/provider-route-messages-api-entry"
+MESSAGES_API_MANIFEST = f"{MESSAGES_API_DIR}/MESSAGES-API-ROUTE-REGISTRY-MANIFEST.txt"
+MESSAGES_API_ACTS = (
+    ("ADOPT POLARIS MESSAGES API PROVIDER EXECUTION ROUTE REGISTRY ENTRY",
+     f"{MESSAGES_API_DIR}/proposed/POLARIS-PROVIDER-ROUTE-ANTHROPIC-MESSAGES-API-CANDIDATE.json"),
+)
 #: Decisions 2 and 3 of the truth-and-readiness packet re-perform the policy
 #: and registry acts over amended artifact bytes. Each amended act gets its own
 #: new dedicated record (`record_pwb_effect_amendment_acts.py`); the
@@ -2465,6 +2475,11 @@ def _act_subjects():
             if not any(l == label for l, _rel, _pat in out):
                 out.append((label, subject, re.compile(
                     re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
+    if os.path.isfile(os.path.join(ROOT, MESSAGES_API_MANIFEST)):
+        for label, subject in MESSAGES_API_ACTS:
+            if not any(l == label for l, _rel, _pat in out):
+                out.append((label, subject, re.compile(
+                    re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")))
     return tuple(out)
 
 
@@ -3205,6 +3220,18 @@ def _activate_public_registry_manifest_copy_registry():
 
 
 _activate_public_registry_manifest_copy_registry()
+def _activate_messages_api_manifest_copy_registry():
+    """The Messages API route manifest carries its one current argument as a row.
+
+    Existence-gated candidate registration; the performed record arrives with
+    the act.
+    """
+    if os.path.isfile(os.path.join(ROOT, MESSAGES_API_MANIFEST)):
+        ACT_DIGEST_COPY_FILES[MESSAGES_API_MANIFEST] = tuple(
+            label for label, _subject in MESSAGES_API_ACTS)
+
+
+_activate_messages_api_manifest_copy_registry()
 
 
 #: The act-time digests the specification-policy restyle supersedes as the
