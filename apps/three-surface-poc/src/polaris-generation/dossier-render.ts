@@ -23,8 +23,18 @@ import { assertInertSvg } from './svg-inert.js';
  * - `deep-dives/<id>.html` (depth 1): one per produced deep dive, level 2.
  * - `sources/<anchor-digest>.html` (depth 2): one per quotable source, its
  *   exact admitted text as one quote with byte offsets, level 3.
- * - `dossier.json` and `size-report.json` (reader cost, measured from the
- *   rendered bytes by the harness's own scanner).
+ * - `dossier.json`, and `size-report.json` with `size-report.html` (reader
+ *   cost, measured from the rendered bytes by the harness's own scanner; the
+ *   report pages are linked but are not manifest pages, so they do not count
+ *   themselves).
+ *
+ * Quote offsets are blob-absolute, as anchors are: a piece of a split blob
+ * quotes from `segment.start + span.start`. A source CR is written `&#13;`,
+ * since an HTML parser turns a raw CR into LF.
+ *
+ * Topics. Without a `topics` map, a section or deep dive declares the owner
+ * topics among its own produced asset ids (the dossier profile's assets are
+ * named by owner topic); an unresolved one declares none.
  *
  * Labels. A generated sentence is an LLM assertion, so a block the fidelity
  * review judged `supported` is Inferred and any other block is Unknown;
@@ -41,12 +51,13 @@ export interface DossierRenderInput {
   /** The pipeline's final output; only `awaiting-rendered-review` renders. */
   readonly result: PipelineResult;
   readonly sources: readonly GenerationSource[];
-  /** Owner topics a section or deep dive answers, by draft id (the run profile's mapping). */
+  /** Owner topics a section or deep dive answers, by draft id. Absent: each
+   * produced item's asset ids that are owner topics. */
   readonly topics?: Readonly<Record<string, readonly OwnerTopic[]>>;
 }
 
 export interface RenderedDossier {
-  /** Every file of the run directory by relative path, `dossier.json` and `size-report.json` included. */
+  /** Every file of the run directory by relative path, `dossier.json` and the size report included. */
   readonly files: ReadonlyMap<string, string>;
   readonly manifest: DossierManifest;
 }
@@ -89,7 +100,9 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   const support = new Map((input.result.review as { blockSupport: { blockId: string; verdict: string }[] }).blockSupport.map(row => [row.blockId, row.verdict]));
   validateGenerationSources(input.sources);
   const sources = new Map(input.sources.map(source => [source.sourceId, source]));
-  const topics = input.topics ?? {};
+  const owned = (ids: readonly string[]): OwnerTopic[] => ids.filter((id): id is OwnerTopic => (OWNER_TOPICS as readonly string[]).includes(id));
+  const topics: Readonly<Record<string, readonly OwnerTopic[]>> = input.topics
+    ?? Object.fromEntries([...draft.sections, ...draft.deepDives].map(item => [item.id, item.disposition.kind === 'produced' ? owned(item.disposition.assetIds) : []]));
   for (const list of Object.values(topics)) if (list.some(topic => !(OWNER_TOPICS as readonly string[]).includes(topic))) throw new DossierRenderError('unknown-topic');
   const sectionIds = new Set(draft.sections.map(section => section.id));
   for (const item of [...draft.diagrams, ...draft.deepDives]) if (!sectionIds.has(item.sectionId)) throw new DossierRenderError('unknown-section');
@@ -136,7 +149,7 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
     return `<figure><figcaption>${escape(d.title)}</figcaption><p class="diagram-relationship"><span class="eyebrow">${escape(d.kind)}</span> ${escape(d.relationship)}</p><div class="diagram-scroll">${svg}</div>${legend}<details><summary>Read every component and relationship</summary><ul>${nodeList}</ul><ol>${edgeList}</ol><details class="diagram-source"><summary>Declarative source (Mermaid)</summary><pre>${escape(diagramToMermaid(d))}</pre></details></details></figure>`;
   };
   const topicAttr = (id: string): string => ` data-topics="${escape((topics[id] ?? []).join(' '))}"`;
-  const nav = (from: string): string => `<span class="eyebrow">${escape(draft.title)}</span><ol><li><a href="${href(from, 'index.html')}">Overview</a></li><li><a href="${href(from, 'contents.html')}">Contents</a></li>${deepDives.map(dive => `<li><a href="${escape(href(from, deepPaths.get(dive.id)!))}">${escape(dive.title)}</a></li>`).join('')}<li><a href="${href(from, 'glossary.html')}">Glossary</a></li><li><a href="${href(from, 'sources/index.html')}">Sources</a></li></ol>`;
+  const nav = (from: string): string => `<span class="eyebrow">${escape(draft.title)}</span><ol><li><a href="${href(from, 'index.html')}">Overview</a></li><li><a href="${href(from, 'contents.html')}">Contents</a></li>${deepDives.map(dive => `<li><a href="${escape(href(from, deepPaths.get(dive.id)!))}">${escape(dive.title)}</a></li>`).join('')}<li><a href="${href(from, 'glossary.html')}">Glossary</a></li><li><a href="${href(from, 'sources/index.html')}">Sources</a></li><li><a href="${href(from, 'size-report.html')}">Size report</a></li></ol>`;
 
   const files = new Map<string, string>();
   const pages: { path: string; depth: number }[] = [];
@@ -168,7 +181,7 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
 
   // --- contents
   const contents = `<ol>${draft.sections.map(section => `<li><a href="${escape(href('contents.html', 'index.html', `section-${section.id}`))}">${escape(section.title)}</a>${draft.deepDives.some(dive => dive.sectionId === section.id && deepPaths.has(dive.id))
-    ? `<ol>${draft.deepDives.filter(dive => dive.sectionId === section.id && deepPaths.has(dive.id)).map(dive => `<li><a href="${escape(href('contents.html', deepPaths.get(dive.id)!))}">${escape(dive.title)}</a></li>`).join('')}</ol>` : ''}</li>`).join('')}<li><a href="glossary.html">Glossary</a></li><li><a href="sources/index.html">Sources</a></li></ol>`;
+    ? `<ol>${draft.deepDives.filter(dive => dive.sectionId === section.id && deepPaths.has(dive.id)).map(dive => `<li><a href="${escape(href('contents.html', deepPaths.get(dive.id)!))}">${escape(dive.title)}</a></li>`).join('')}</ol>` : ''}</li>`).join('')}<li><a href="glossary.html">Glossary</a></li><li><a href="sources/index.html">Sources</a></li><li><a href="size-report.html">Size report</a></li></ol>`;
   add('contents.html', 1, 'Contents', `<section id="contents"><h1>Contents</h1>${contents}</section>`);
 
   // --- glossary: inventory terms, each an Inferred claim
@@ -192,12 +205,22 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   for (const source of quotable) {
     const path = sourcePaths.get(source.sourceId)!;
     const span = source.spans[0]!;
-    add(path, 2, source.path, `<section id="exact-text" data-reading-level="3"><h1 class="source-path">${escape(source.path)}</h1><p class="source-anchor">${escape(source.sourceId)} · bytes ${span.start}–${span.end} · <code>${escape(span.anchorId)}</code></p><blockquote class="exact-source" data-quote-source="${escape(source.sourceId)}" data-quote-start="${span.start}" data-quote-end="${span.end}">${escape(span.text)}</blockquote></section>`);
+    const base = source.segment?.start ?? 0;
+    const [start, end] = [base + span.start, base + span.end];
+    add(path, 2, source.path, `<section id="exact-text" data-reading-level="3"><h1 class="source-path">${escape(source.path)}</h1><p class="source-anchor">${escape(source.sourceId)} · bytes ${start}–${end} of the file · <code>${escape(span.anchorId)}</code></p><blockquote class="exact-source" data-quote-source="${escape(source.sourceId)}" data-quote-start="${start}" data-quote-end="${end}">${escape(span.text).replace(/\r/gu, '&#13;')}</blockquote></section>`);
   }
 
   const manifest = parseDossierManifest(JSON.stringify({ format: DOSSIER_FORMAT, title: draft.title, entryPage: 'index.html', pages }));
   files.set('dossier.json', `${JSON.stringify(manifest, null, 2)}\n`);
   const scanned = new Map(pages.map(p => [p.path, scanDossierPage(files.get(p.path)!)]));
-  files.set('size-report.json', `${JSON.stringify({ format: 'polaris-dossier-size-report-v1', ...readerCost(manifest, scanned) }, null, 2)}\n`);
+  const cost = readerCost(manifest, scanned);
+  files.set('size-report.json', `${JSON.stringify({ format: 'polaris-dossier-size-report-v1', ...cost }, null, 2)}\n`);
+  const first = cost.firstReadingLevel;
+  const count = (value: number | null): string => value === null ? 'Unknown' : String(value);
+  files.set('size-report.html', page(`Size report — ${draft.title}`, 'size-report.html', nav('size-report.html'), `<section id="size-report"><h1>Size report</h1>`
+    + `<p>What a reader loads before choosing where to go: the first reading level of <a href="index.html">the overview</a>, ${count(first.bytesThroughFirstLevel)} bytes and ${count(first.words)} words, of an entry page of ${first.entryPageBytes} bytes. All ${cost.pages.length} pages: ${cost.pages.reduce((n, p) => n + p.bytes, 0)} bytes. No budget is declared, so nothing here is within or over one.</p>`
+    + `<table><thead><tr><th>Link depth</th><th>Pages</th><th>Bytes</th><th>Words</th></tr></thead><tbody>${cost.perPageDepth.map(row => `<tr><td>${row.depth}</td><td>${row.pages}</td><td>${row.bytes}</td><td>${row.words}</td></tr>`).join('')}</tbody></table>`
+    + `<table><thead><tr><th>Page</th><th>Depth</th><th>Bytes</th><th>Words</th></tr></thead><tbody>${cost.pages.map(row => `<tr><td><a href="${escape(row.path)}">${escape(row.path)}</a></td><td>${row.depth}</td><td>${row.bytes}</td><td>${Object.values(row.wordsByReadingLevel).reduce((n, w) => n + w, 0) + row.unlabelledWords}</td></tr>`).join('')}</tbody></table>`
+    + `<p>Measured from the rendered bytes by the evaluation harness's scanner. This page and size-report.json are not counted.</p></section>`));
   return { files, manifest };
 }
