@@ -52,12 +52,21 @@ const guidance: Record<GenerationStage, string> = {
   repair: `Dossier repair: a repair keeps every attribution, verbatim identifier and per-hop citation, and resolves an unsupported claim by removing it or marking it unresolved, never by rewording it to sound supported.`,
 };
 
+/** Freezes a value and everything reachable from it, so an exported illustration cannot be edited after load. */
+function deepFreeze<T>(value: T): T {
+  if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const child of Object.values(value)) deepFreeze(child);
+  }
+  return value;
+}
+
 /** The fictional sources every illustration cites. */
-export const DOSSIER_ILLUSTRATION_SOURCES = [
+export const DOSSIER_ILLUSTRATION_SOURCES = deepFreeze([
   { sourceId: 'src-readme', text: 'Tidemark is an in-memory cache for session data. We chose a single-threaded event loop because it avoids lock contention. Eviction is approximate LRU, which costs some precision.' },
   { sourceId: 'src-server', text: 'handleSet parses the SET command, writes the key to the keyspace and calls maybeEvict when maxmemory is exceeded.' },
   { sourceId: 'src-evict', text: 'maybeEvict samples 5 keys and evicts the least recently used key in the sample.' },
-] as const;
+] as const);
 
 const produced = (...assetIds: string[]) => ({ kind: 'produced' as const, assetIds });
 
@@ -123,9 +132,12 @@ const reviewIllustration = {
 };
 
 /** One illustration per stage; edit and repair return the author's shape. */
-export const DOSSIER_STAGE_ILLUSTRATIONS: Readonly<Record<GenerationStage, unknown>> = {
+export const DOSSIER_STAGE_ILLUSTRATIONS: Readonly<Record<GenerationStage, unknown>> = deepFreeze({
   inventory: inventoryIllustration, plan: planIllustration, author: draftIllustration, edit: draftIllustration, fidelity: reviewIllustration, repair: draftIllustration,
-};
+});
+/** Serialized once at load: the prompt (and so its digest) is a function of these bytes, never of the live exports. */
+const SERIALIZED_DOSSIER_ILLUSTRATIONS: Readonly<Record<GenerationStage, string>> = Object.freeze(Object.fromEntries(
+  Object.entries(DOSSIER_STAGE_ILLUSTRATIONS).map(([stage, illustration]) => [stage, JSON.stringify(illustration)])) as Record<GenerationStage, string>);
 
 export const ILLUSTRATION_HEADING = 'Shape illustration for a fictional project. Copy its structure, never its content, handles or claims; your output follows the supplied schema and sources:';
 
@@ -140,16 +152,19 @@ const discoveryMapIllustration = { claims: [
   { blobId: 'blob-server', claim: 'Shows the SET workflow entry point `handleSet` and its hand-off to `maybeEvict` when `maxmemory` is exceeded.', relevance: 8 },
 ] } as const;
 const discoveryReduceIllustration = { ranked: ['blob-readme', 'blob-server', 'blob-evict'] } as const;
-export const DISCOVERY_STAGE_ILLUSTRATIONS: Readonly<Record<DiscoveryStage, unknown>> = {
+export const DISCOVERY_STAGE_ILLUSTRATIONS: Readonly<Record<DiscoveryStage, unknown>> = deepFreeze({
   'discovery-map': discoveryMapIllustration, 'discovery-reduce': discoveryReduceIllustration,
-};
+});
+const SERIALIZED_DISCOVERY_ILLUSTRATIONS: Readonly<Record<DiscoveryStage, string>> = Object.freeze({
+  'discovery-map': JSON.stringify(discoveryMapIllustration), 'discovery-reduce': JSON.stringify(discoveryReduceIllustration),
+});
 const discoveryInstructions: Record<DiscoveryStage, string> = { 'discovery-map': mapInstructions, 'discovery-reduce': reduceInstructions };
 
 export function promptForStage(stage: PromptStage, profile: PromptProfile = 'manifesto'): { version: string; system: string } {
   if (profile !== 'manifesto' && profile !== 'dossier') throw new Error('unknown-prompt-profile');
   if (Object.hasOwn(discoveryInstructions, stage)) {
     const step = stage as DiscoveryStage;
-    return { version: `polaris-${step}-v1`, system: `${discoveryCommon}\n\n${discoveryInstructions[step]}\n\n${ILLUSTRATION_HEADING}\n${JSON.stringify(DISCOVERY_STAGE_ILLUSTRATIONS[step])}` };
+    return { version: `polaris-${step}-v1`, system: `${discoveryCommon}\n\n${discoveryInstructions[step]}\n\n${ILLUSTRATION_HEADING}\n${SERIALIZED_DISCOVERY_ILLUSTRATIONS[step]}` };
   }
   if (!Object.hasOwn(instructions, stage)) throw new Error('unknown-generation-stage');
   const generation = stage as GenerationStage;
@@ -157,6 +172,6 @@ export function promptForStage(stage: PromptStage, profile: PromptProfile = 'man
   if (profile === 'manifesto') return { version: `polaris-${generation}-${promptVersions[generation]}`, system: manifesto };
   return {
     version: `polaris-${generation}-dossier-v1`,
-    system: `${manifesto}\n\n${dossierRules}\n\n${guidance[generation]}\n\n${ILLUSTRATION_HEADING}\n${JSON.stringify(DOSSIER_STAGE_ILLUSTRATIONS[generation])}`,
+    system: `${manifesto}\n\n${dossierRules}\n\n${guidance[generation]}\n\n${ILLUSTRATION_HEADING}\n${SERIALIZED_DOSSIER_ILLUSTRATIONS[generation]}`,
   };
 }
