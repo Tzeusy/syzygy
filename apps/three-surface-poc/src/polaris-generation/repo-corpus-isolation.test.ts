@@ -141,4 +141,15 @@ describe('measured accounting and identity', () => {
     expect(corpus.sources.map(source => source.path)).toEqual(['ok.txt']);
     expect(corpus.unrepresentable).toHaveLength(1);
   });
+
+  it('counts tree entries named . and .. as unquotable, not as sources', async () => {
+    const repo = makeRepo({ 'ok.txt': 'ok\n' });
+    const blob = realExecFileSync('git', ['-C', repo.dir, 'hash-object', '-w', '--stdin'], { input: 'dot\n', encoding: 'utf8' }).trim();
+    const okBlob = repo.run('rev-parse', 'HEAD:ok.txt');
+    const tree = realExecFileSync('git', ['-C', repo.dir, 'mktree'], { input: `100644 blob ${blob}\t.\n100644 blob ${blob}\t..\n100644 blob ${okBlob}\tok.txt\n`, encoding: 'utf8' }).trim();
+    const commit = repo.run('commit-tree', tree, '-m', 'dot entries');
+    const corpus = await readRepoCorpus(repo.dir, cfg(commit), { admission: allow });
+    expect(corpus.count).toMatchObject({ listed: 3, unquotablePath: 2, selected: 1 });
+    expect(corpus.sources.map(source => source.path)).toEqual(['ok.txt']);
+  });
 });
