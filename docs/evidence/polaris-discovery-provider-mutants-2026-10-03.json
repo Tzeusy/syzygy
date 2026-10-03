@@ -1,4 +1,9 @@
 {
+  "supersededBy": {
+    "path": "docs/evidence/polaris-discovery-provider-mutants-2026-10-04.json",
+    "date": "2026-10-04",
+    "reason": "Contaminated runs: mutants after the first change of file ran with the previous file's last mutant still applied. See the successor's supersedes.defect. Nothing below was edited."
+  },
   "record": "rule-6 mutation evidence (AGENTS.md verification rule 6)",
   "date": "2026-10-03",
   "ranAt": "0d30074f437cf04bda4f536ed0a80323cb78180a",

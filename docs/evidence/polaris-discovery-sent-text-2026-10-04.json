@@ -1,0 +1,900 @@
+{
+  "record": "sent-text derivation for the discovery stages and the dossier profile",
+  "date": "2026-10-04",
+  "ranAt": "dfb6f8148e92626396412231f4d586f28d71aec6",
+  "script": {
+    "path": "scripts/derive_generator_sent_text.mjs",
+    "sha256": "28db90c9d6832034036c0017b21883df81502deef01b3b0e92c4b1b13f156dec"
+  },
+  "subjects": [
+    {
+      "path": "packages/polaris-generation-core/src/prompts.ts",
+      "sha256": "66a8c575a5b5a0339da1aa493e6f9c39e0544c7c7ec09be75020a896cda7d259"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/provider-draft.ts",
+      "sha256": "910b01c8919610026a0568a7f936a3194bbcc0721bec6cdfc22eb2142bd0ba6b"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "sha256": "1b90b6ca2430099ab223edbdace7e5bbfe27057a72c78b01c625fd6b9a3b7cda"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/pipeline.ts",
+      "sha256": "9403125dcdb378caa2e0b10a193801577a55a560b24e6beda5105dd51a73035f"
+    }
+  ],
+  "runs": [
+    {
+      "args": [],
+      "exit": 0,
+      "finding": "Equal, as parsed JSON, to the 2026-10-03 record's default output: the manifesto prompts and every schema are unchanged, so the embedded egress table is unchanged.",
+      "output": {
+        "generateInputFields": [
+          "input",
+          "permit",
+          "responseSchema",
+          "signal",
+          "stage",
+          "system"
+        ],
+        "envelopeKeys": [
+          "inputs",
+          "promptVersion",
+          "responseSchema",
+          "responseSchemaVersion",
+          "system"
+        ],
+        "inputKeysAcrossFirstStage": [
+          "readerQuestions",
+          "requestedAssets",
+          "sourcePopulation",
+          "sources"
+        ],
+        "authored": [
+          {
+            "stage": "inventory",
+            "promptVersion": "polaris-inventory-v1",
+            "systemBytes": 1971,
+            "systemSha256": "ea6c06ff89668f4914859b4c1133f9def4db51f2456f28b2cf86ba89fb1411af",
+            "schemaVersion": "polaris-provider-inventory-v1",
+            "schemaBytes": 1959,
+            "schemaSha256": "23e6b3fffb567ab84b11eb067c198bfa1269a6dbbdd0023456b71f2ca7cbc486"
+          },
+          {
+            "stage": "plan",
+            "promptVersion": "polaris-plan-v2",
+            "systemBytes": 2450,
+            "systemSha256": "e632eada2e46aac167345b95fa5911e04ebf6b183d1fb19e1564ede4da7db344",
+            "schemaVersion": "polaris-provider-plan-v1",
+            "schemaBytes": 1850,
+            "schemaSha256": "2f94e72c79feca922f424a8df013435ef6b06142d94f54c3d8e4b5521d8353b6"
+          },
+          {
+            "stage": "author",
+            "promptVersion": "polaris-author-v2",
+            "systemBytes": 3190,
+            "systemSha256": "5ff6d41c45e7fe9cf28d5e957d0c85ff3c714aa9f3f2de17523a4c2e554c9743",
+            "schemaVersion": "polaris-provider-author-v2",
+            "schemaBytes": 9514,
+            "schemaSha256": "bcd5705233d198831d01faad29aba8aeeb625882e06b42f4c71d9cb559c43077"
+          },
+          {
+            "stage": "edit",
+            "promptVersion": "polaris-edit-v2",
+            "systemBytes": 2205,
+            "systemSha256": "d0af06409f066c42c7a1f69f60b0c2f60b097926ea3508fd8322e6f11413e6de",
+            "schemaVersion": "polaris-provider-edit-v2",
+            "schemaBytes": 9514,
+            "schemaSha256": "bcd5705233d198831d01faad29aba8aeeb625882e06b42f4c71d9cb559c43077"
+          },
+          {
+            "stage": "fidelity",
+            "promptVersion": "polaris-fidelity-v1",
+            "systemBytes": 2515,
+            "systemSha256": "ea3d5f99f5ac1520ae46a1a3f9c0fca7e0180427ca92a2aaf85a0c975f97377c",
+            "schemaVersion": "polaris-provider-fidelity-v1",
+            "schemaBytes": 1796,
+            "schemaSha256": "719f471697a70a55d8d973d1de0c910145a0304f8d1e8d231ad76bac069db121"
+          },
+          {
+            "stage": "repair",
+            "promptVersion": "polaris-repair-v2",
+            "systemBytes": 2096,
+            "systemSha256": "0ad55710dc4c7dabc4586aa04861880533b6c88749acbc3ca2f1c9183b50b34b",
+            "schemaVersion": "polaris-provider-repair-v2",
+            "schemaBytes": 9514,
+            "schemaSha256": "bcd5705233d198831d01faad29aba8aeeb625882e06b42f4c71d9cb559c43077"
+          }
+        ],
+        "inputKeys": {
+          "inventory": [
+            "sources",
+            "sourcePopulation",
+            "readerQuestions",
+            "requestedAssets"
+          ],
+          "plan": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "requestedAssets"
+          ],
+          "author": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "plan",
+            "requestedAssets"
+          ],
+          "edit": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "plan",
+            "draft",
+            "requestedAssets"
+          ],
+          "fidelity": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "draft",
+            "requestedAssets"
+          ],
+          "repair": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "draft",
+            "findings",
+            "requestedAssets"
+          ]
+        },
+        "classified": [
+          {
+            "where": "envelope",
+            "field": "promptVersion",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ],
+            "cls": "envelope-control"
+          },
+          {
+            "where": "envelope",
+            "field": "responseSchema",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ],
+            "cls": "instruction-text"
+          },
+          {
+            "where": "envelope",
+            "field": "responseSchemaVersion",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ],
+            "cls": "envelope-control"
+          },
+          {
+            "where": "envelope",
+            "field": "system",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ],
+            "cls": "instruction-text"
+          },
+          {
+            "where": "inputs",
+            "field": "sources",
+            "cls": "target-content",
+            "stages": [
+              "inventory",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "sourcePopulation",
+            "cls": "target-metadata",
+            "stages": [
+              "inventory"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "readerQuestions",
+            "cls": "run-profile",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "requestedAssets",
+            "cls": "run-profile",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "sources",
+            "cls": "target-metadata",
+            "stages": [
+              "plan"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "inventory",
+            "cls": "composite",
+            "stages": [
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "plan",
+            "cls": "composite",
+            "stages": [
+              "author",
+              "edit"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "draft",
+            "cls": "composite",
+            "stages": [
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "findings",
+            "cls": "composite",
+            "stages": [
+              "repair"
+            ]
+          }
+        ],
+        "portRows": [
+          {
+            "where": "generate port",
+            "field": "input",
+            "cls": "the envelope",
+            "note": "sent as the user message"
+          },
+          {
+            "where": "generate port",
+            "field": "permit",
+            "cls": "dispatch permit",
+            "note": "never sent"
+          },
+          {
+            "where": "generate port",
+            "field": "responseSchema",
+            "cls": "instruction-text",
+            "note": "a copy of the envelope field; not sent separately"
+          },
+          {
+            "where": "generate port",
+            "field": "signal",
+            "cls": "abort signal",
+            "note": "never sent"
+          },
+          {
+            "where": "generate port",
+            "field": "stage",
+            "cls": "envelope-control",
+            "note": "never sent"
+          },
+          {
+            "where": "generate port",
+            "field": "system",
+            "cls": "instruction-text",
+            "note": "sent as the system prompt"
+          }
+        ],
+        "authoredBySource": {
+          "packages/polaris-generation-core/src/prompts.ts": "promptForStage",
+          "packages/polaris-generation-core/src/provider-draft.ts": "stageSchema"
+        }
+      }
+    },
+    {
+      "args": [
+        "--discovery"
+      ],
+      "exit": 0,
+      "finding": "Every discovery envelope field and inputs leaf classified, the classification equal to the 2026-10-03 record's; no new class. Each discovery envelope's system, promptVersion, responseSchema and responseSchemaVersion equal promptForStage/stageSchema output. Only the discovery-map prompt moved (v2); discovery-reduce and both schemas are unchanged.",
+      "output": {
+        "generateInputFields": [
+          "input",
+          "permit",
+          "responseSchema",
+          "signal",
+          "stage",
+          "system"
+        ],
+        "envelopeKeys": [
+          "inputs",
+          "promptVersion",
+          "responseSchema",
+          "responseSchemaVersion",
+          "system"
+        ],
+        "inputKeysAcrossFirstStage": [
+          "readerQuestions",
+          "requestedAssets",
+          "sourcePopulation",
+          "sources"
+        ],
+        "authored": [
+          {
+            "stage": "inventory",
+            "promptVersion": "polaris-inventory-v1",
+            "systemBytes": 1971,
+            "systemSha256": "ea6c06ff89668f4914859b4c1133f9def4db51f2456f28b2cf86ba89fb1411af",
+            "schemaVersion": "polaris-provider-inventory-v1",
+            "schemaBytes": 1959,
+            "schemaSha256": "23e6b3fffb567ab84b11eb067c198bfa1269a6dbbdd0023456b71f2ca7cbc486"
+          },
+          {
+            "stage": "plan",
+            "promptVersion": "polaris-plan-v2",
+            "systemBytes": 2450,
+            "systemSha256": "e632eada2e46aac167345b95fa5911e04ebf6b183d1fb19e1564ede4da7db344",
+            "schemaVersion": "polaris-provider-plan-v1",
+            "schemaBytes": 1850,
+            "schemaSha256": "2f94e72c79feca922f424a8df013435ef6b06142d94f54c3d8e4b5521d8353b6"
+          },
+          {
+            "stage": "author",
+            "promptVersion": "polaris-author-v2",
+            "systemBytes": 3190,
+            "systemSha256": "5ff6d41c45e7fe9cf28d5e957d0c85ff3c714aa9f3f2de17523a4c2e554c9743",
+            "schemaVersion": "polaris-provider-author-v2",
+            "schemaBytes": 9514,
+            "schemaSha256": "bcd5705233d198831d01faad29aba8aeeb625882e06b42f4c71d9cb559c43077"
+          },
+          {
+            "stage": "edit",
+            "promptVersion": "polaris-edit-v2",
+            "systemBytes": 2205,
+            "systemSha256": "d0af06409f066c42c7a1f69f60b0c2f60b097926ea3508fd8322e6f11413e6de",
+            "schemaVersion": "polaris-provider-edit-v2",
+            "schemaBytes": 9514,
+            "schemaSha256": "bcd5705233d198831d01faad29aba8aeeb625882e06b42f4c71d9cb559c43077"
+          },
+          {
+            "stage": "fidelity",
+            "promptVersion": "polaris-fidelity-v1",
+            "systemBytes": 2515,
+            "systemSha256": "ea3d5f99f5ac1520ae46a1a3f9c0fca7e0180427ca92a2aaf85a0c975f97377c",
+            "schemaVersion": "polaris-provider-fidelity-v1",
+            "schemaBytes": 1796,
+            "schemaSha256": "719f471697a70a55d8d973d1de0c910145a0304f8d1e8d231ad76bac069db121"
+          },
+          {
+            "stage": "repair",
+            "promptVersion": "polaris-repair-v2",
+            "systemBytes": 2096,
+            "systemSha256": "0ad55710dc4c7dabc4586aa04861880533b6c88749acbc3ca2f1c9183b50b34b",
+            "schemaVersion": "polaris-provider-repair-v2",
+            "schemaBytes": 9514,
+            "schemaSha256": "bcd5705233d198831d01faad29aba8aeeb625882e06b42f4c71d9cb559c43077"
+          }
+        ],
+        "inputKeys": {
+          "inventory": [
+            "sources",
+            "sourcePopulation",
+            "readerQuestions",
+            "requestedAssets"
+          ],
+          "plan": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "requestedAssets"
+          ],
+          "author": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "plan",
+            "requestedAssets"
+          ],
+          "edit": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "plan",
+            "draft",
+            "requestedAssets"
+          ],
+          "fidelity": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "draft",
+            "requestedAssets"
+          ],
+          "repair": [
+            "sources",
+            "readerQuestions",
+            "inventory",
+            "draft",
+            "findings",
+            "requestedAssets"
+          ]
+        },
+        "classified": [
+          {
+            "where": "envelope",
+            "field": "promptVersion",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ],
+            "cls": "envelope-control"
+          },
+          {
+            "where": "envelope",
+            "field": "responseSchema",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ],
+            "cls": "instruction-text"
+          },
+          {
+            "where": "envelope",
+            "field": "responseSchemaVersion",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ],
+            "cls": "envelope-control"
+          },
+          {
+            "where": "envelope",
+            "field": "system",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ],
+            "cls": "instruction-text"
+          },
+          {
+            "where": "inputs",
+            "field": "sources",
+            "cls": "target-content",
+            "stages": [
+              "inventory",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "sourcePopulation",
+            "cls": "target-metadata",
+            "stages": [
+              "inventory"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "readerQuestions",
+            "cls": "run-profile",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "requestedAssets",
+            "cls": "run-profile",
+            "stages": [
+              "inventory",
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "sources",
+            "cls": "target-metadata",
+            "stages": [
+              "plan"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "inventory",
+            "cls": "composite",
+            "stages": [
+              "plan",
+              "author",
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "plan",
+            "cls": "composite",
+            "stages": [
+              "author",
+              "edit"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "draft",
+            "cls": "composite",
+            "stages": [
+              "edit",
+              "fidelity",
+              "repair"
+            ]
+          },
+          {
+            "where": "inputs",
+            "field": "findings",
+            "cls": "composite",
+            "stages": [
+              "repair"
+            ]
+          }
+        ],
+        "portRows": [
+          {
+            "where": "generate port",
+            "field": "input",
+            "cls": "the envelope",
+            "note": "sent as the user message"
+          },
+          {
+            "where": "generate port",
+            "field": "permit",
+            "cls": "dispatch permit",
+            "note": "never sent"
+          },
+          {
+            "where": "generate port",
+            "field": "responseSchema",
+            "cls": "instruction-text",
+            "note": "a copy of the envelope field; not sent separately"
+          },
+          {
+            "where": "generate port",
+            "field": "signal",
+            "cls": "abort signal",
+            "note": "never sent"
+          },
+          {
+            "where": "generate port",
+            "field": "stage",
+            "cls": "envelope-control",
+            "note": "never sent"
+          },
+          {
+            "where": "generate port",
+            "field": "system",
+            "cls": "instruction-text",
+            "note": "sent as the system prompt"
+          }
+        ],
+        "authoredBySource": {
+          "packages/polaris-generation-core/src/prompts.ts": "promptForStage",
+          "packages/polaris-generation-core/src/provider-draft.ts": "stageSchema"
+        },
+        "discovery": {
+          "authored": [
+            {
+              "stage": "discovery-map",
+              "promptVersion": "polaris-discovery-map-v2",
+              "systemBytes": 1856,
+              "systemSha256": "27c19c2a7d5e97d06912f27dde813183619252f217de55e8426730d64f433762",
+              "schemaVersion": "polaris-provider-discovery-map-v1",
+              "schemaBytes": 459,
+              "schemaSha256": "cf4dd39aa3eb3c1bc3805f4de902c8e679cb8956f74d853ee80ab599496ed894"
+            },
+            {
+              "stage": "discovery-reduce",
+              "promptVersion": "polaris-discovery-reduce-v1",
+              "systemBytes": 1247,
+              "systemSha256": "300cf688c755779ab28cdcbaf4a9cd7ed0fba0831483145ce3a54fb9c1169da3",
+              "schemaVersion": "polaris-provider-discovery-reduce-v1",
+              "schemaBytes": 254,
+              "schemaSha256": "fd1deb4230c7892e05a05dfe07f5cc6221f817fe46142541d57f1783c321a14d"
+            }
+          ],
+          "classified": [
+            {
+              "where": "envelope",
+              "field": "promptVersion",
+              "stages": [
+                "discovery-map"
+              ],
+              "cls": "envelope-control"
+            },
+            {
+              "where": "envelope",
+              "field": "system",
+              "stages": [
+                "discovery-map"
+              ],
+              "cls": "instruction-text"
+            },
+            {
+              "where": "envelope",
+              "field": "responseSchemaVersion",
+              "stages": [
+                "discovery-map"
+              ],
+              "cls": "envelope-control"
+            },
+            {
+              "where": "envelope",
+              "field": "responseSchema",
+              "stages": [
+                "discovery-map"
+              ],
+              "cls": "instruction-text"
+            },
+            {
+              "where": "inputs",
+              "field": "items[].blobId",
+              "stages": [
+                "discovery-map"
+              ],
+              "cls": "target-metadata"
+            },
+            {
+              "where": "inputs",
+              "field": "items[].excerpt",
+              "stages": [
+                "discovery-map"
+              ],
+              "cls": "target-content"
+            },
+            {
+              "where": "inputs",
+              "field": "items[].path",
+              "stages": [
+                "discovery-map"
+              ],
+              "cls": "target-metadata"
+            },
+            {
+              "where": "inputs",
+              "field": "readerQuestions[]",
+              "stages": [
+                "discovery-map"
+              ],
+              "cls": "run-profile"
+            },
+            {
+              "where": "inputs",
+              "field": "subsystem",
+              "stages": [
+                "discovery-map"
+              ],
+              "cls": "target-metadata"
+            },
+            {
+              "where": "envelope",
+              "field": "promptVersion",
+              "stages": [
+                "discovery-reduce"
+              ],
+              "cls": "envelope-control"
+            },
+            {
+              "where": "envelope",
+              "field": "system",
+              "stages": [
+                "discovery-reduce"
+              ],
+              "cls": "instruction-text"
+            },
+            {
+              "where": "envelope",
+              "field": "responseSchemaVersion",
+              "stages": [
+                "discovery-reduce"
+              ],
+              "cls": "envelope-control"
+            },
+            {
+              "where": "envelope",
+              "field": "responseSchema",
+              "stages": [
+                "discovery-reduce"
+              ],
+              "cls": "instruction-text"
+            },
+            {
+              "where": "inputs",
+              "field": "maxSelected",
+              "stages": [
+                "discovery-reduce"
+              ],
+              "cls": "envelope-control"
+            },
+            {
+              "where": "inputs",
+              "field": "readerQuestions[]",
+              "stages": [
+                "discovery-reduce"
+              ],
+              "cls": "run-profile"
+            },
+            {
+              "where": "inputs",
+              "field": "subsystems[].blobs",
+              "stages": [
+                "discovery-reduce"
+              ],
+              "cls": "target-metadata"
+            },
+            {
+              "where": "inputs",
+              "field": "subsystems[].claims[].blobId",
+              "stages": [
+                "discovery-reduce"
+              ],
+              "cls": "target-metadata"
+            },
+            {
+              "where": "inputs",
+              "field": "subsystems[].claims[].claim",
+              "stages": [
+                "discovery-reduce"
+              ],
+              "cls": "composite"
+            },
+            {
+              "where": "inputs",
+              "field": "subsystems[].claims[].path",
+              "stages": [
+                "discovery-reduce"
+              ],
+              "cls": "target-metadata"
+            },
+            {
+              "where": "inputs",
+              "field": "subsystems[].claims[].relevance",
+              "stages": [
+                "discovery-reduce"
+              ],
+              "cls": "composite"
+            },
+            {
+              "where": "inputs",
+              "field": "subsystems[].subsystem",
+              "stages": [
+                "discovery-reduce"
+              ],
+              "cls": "target-metadata"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "args": [
+        "--table",
+        "--discovery"
+      ],
+      "exit": 0,
+      "output": "| Where | Field | Stages | Class |\n|---|---|---|---|\n| envelope | `promptVersion` | all | envelope-control |\n| envelope | `responseSchema` | all | instruction-text |\n| envelope | `responseSchemaVersion` | all | envelope-control |\n| envelope | `system` | all | instruction-text |\n| inputs | `sources` | inventory, author, edit, fidelity, repair | target-content |\n| inputs | `sourcePopulation` | inventory | target-metadata |\n| inputs | `readerQuestions` | all | run-profile |\n| inputs | `requestedAssets` | all | run-profile |\n| inputs | `sources` | plan | target-metadata |\n| inputs | `inventory` | plan, author, edit, fidelity, repair | composite |\n| inputs | `plan` | author, edit | composite |\n| inputs | `draft` | edit, fidelity, repair | composite |\n| inputs | `findings` | repair | composite |\n| generate port | `input` | all | the envelope; sent as the user message |\n| generate port | `permit` | all | dispatch permit; never sent |\n| generate port | `responseSchema` | all | instruction-text; a copy of the envelope field; not sent separately |\n| generate port | `signal` | all | abort signal; never sent |\n| generate port | `stage` | all | envelope-control; never sent |\n| generate port | `system` | all | instruction-text; sent as the system prompt |\n| discovery envelope | `promptVersion` | discovery-map | envelope-control |\n| discovery envelope | `system` | discovery-map | instruction-text |\n| discovery envelope | `responseSchemaVersion` | discovery-map | envelope-control |\n| discovery envelope | `responseSchema` | discovery-map | instruction-text |\n| discovery inputs | `items[].blobId` | discovery-map | target-metadata |\n| discovery inputs | `items[].excerpt` | discovery-map | target-content |\n| discovery inputs | `items[].path` | discovery-map | target-metadata |\n| discovery inputs | `readerQuestions[]` | discovery-map | run-profile |\n| discovery inputs | `subsystem` | discovery-map | target-metadata |\n| discovery envelope | `promptVersion` | discovery-reduce | envelope-control |\n| discovery envelope | `system` | discovery-reduce | instruction-text |\n| discovery envelope | `responseSchemaVersion` | discovery-reduce | envelope-control |\n| discovery envelope | `responseSchema` | discovery-reduce | instruction-text |\n| discovery inputs | `maxSelected` | discovery-reduce | envelope-control |\n| discovery inputs | `readerQuestions[]` | discovery-reduce | run-profile |\n| discovery inputs | `subsystems[].blobs` | discovery-reduce | target-metadata |\n| discovery inputs | `subsystems[].claims[].blobId` | discovery-reduce | target-metadata |\n| discovery inputs | `subsystems[].claims[].claim` | discovery-reduce | composite |\n| discovery inputs | `subsystems[].claims[].path` | discovery-reduce | target-metadata |\n| discovery inputs | `subsystems[].claims[].relevance` | discovery-reduce | composite |\n| discovery inputs | `subsystems[].subsystem` | discovery-reduce | target-metadata |\n"
+    }
+  ],
+  "selftest": {
+    "method": "Each mutant rewrites one fragment of the script into a temporary copy, runs it with --table --discovery, and must exit 2.",
+    "mutants": [
+      {
+        "old": "  'items[].blobId': 'target-metadata', ",
+        "new": "  ",
+        "expected": "exit 2 naming items[].blobId",
+        "exit": 2,
+        "stderr": "UNCLASSIFIED:\ndiscovery-map: inputs field items[].blobId has no class"
+      },
+      {
+        "old": "'subsystems[].claims[].claim': 'composite', ",
+        "new": "",
+        "expected": "exit 2 naming subsystems[].claims[].claim",
+        "exit": 2,
+        "stderr": "UNCLASSIFIED:\ndiscovery-reduce: inputs field subsystems[].claims[].claim has no class"
+      },
+      {
+        "old": "    const prompt = promptForStage(stage);\n    const schema = stageSchema(stage);\n    // The instruction",
+        "new": "    const prompt = promptForStage(stage === 'discovery-map' ? 'discovery-reduce' : 'discovery-map');\n    const schema = stageSchema(stage);\n    // The instruction",
+        "expected": "exit 2: envelope instruction text is not promptForStage/stageSchema output",
+        "exit": 2,
+        "stderr": "UNCLASSIFIED:\ndiscovery-map: envelope instruction text is not promptForStage/stageSchema output\ndiscovery-reduce: envelope instruction text is not promptForStage/stageSchema output"
+      },
+      {
+        "old": "    const schema = stageSchema(stage);\n    // The instruction",
+        "new": "    const schema = stageSchema('inventory');\n    // The instruction",
+        "expected": "exit 2: schema mismatch",
+        "exit": 2,
+        "stderr": "UNCLASSIFIED:\ndiscovery-map: envelope instruction text is not promptForStage/stageSchema output\ndiscovery-reduce: envelope instruction text is not promptForStage/stageSchema output"
+      }
+    ]
+  },
+  "dossierProfile": "The derivation reads the manifesto profile, which is what the pipeline sends today; the dossier profile's six prompts are pinned by dossier-prompts.test.ts (versions polaris-<stage>-dossier-v2).",
+  "admissionBuilder": "python3 scripts/build_public_repo_admission.py --check printed \"public-repo admission instances: current\"; --selftest printed 16 of 16 checks held."
+}
