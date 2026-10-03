@@ -41,7 +41,7 @@ builder, and its check fails if they differ from the policy bytes.
 - Root files named DESIGN, GOVERNANCE, SECURITY, CODE_OF_CONDUCT, CODE-OF-CONDUCT, and ARCHITECTURE and MANIFESTO unless the variant you pick adds them.
 - Under a docs, doc or licenses folder, any path where a directory name (after the first) or the file name (without its extension) contains one of these as a whole word: adr, adrs, decision, decisions, rfc, rfcs, spec, specs, specification, specifications, design, designs, governance, policy, policies, security, conduct, doctrine, doctrines, principle, principles; and, unless the variant adds them, architecture, architectures, manifesto, manifestos. Names are split into words at each of '-' '_' '.' ' ' and compared after folding A-Z to a-z; so a policy-shaped document is withheld by name, and a governance document whose path carries none of these words is NOT withheld (the rule decides by name alone).
 - Under a docs or doc folder, .txt files named cmakelists.txt, robots.txt or starting requirements.
-- READMEs and the other root names when they sit below the root outside docs, doc and licenses (vendored libraries carry their own); a file directly inside a top-level licenses folder is mapped whatever its stem unless a word above withholds it.
+- READMEs and the other root names when they sit below the root outside docs, doc and licenses (vendored libraries carry their own); a file directly inside a top-level licenses folder and ending .md or .txt is mapped whatever its stem unless a word above withholds it.
 - Any other path: it is not named by the rule, so it is indeterminate and withheld.
 - Any file that fails a secret detector or the active-content rule: those screens are unchanged and apply to this prose in full.
 - Everything, while the RFC-0005 amendment of PR #257 is not in force.
@@ -54,8 +54,8 @@ None of this gives consent: a repository consent that does not list
 
 An `approve-policy` act over one proposed policy bytes, at one row of the
 package manifest, in the form of the version-1 act: the manifest has four rows,
-one per variant, and you pick exactly one at the sitting. A recorder is written
-after the review and takes the chosen row.
+one per variant, and you pick exactly one at the sitting. A recorder, frozen only after a
+confirming review, takes the chosen row.
 
 ## Order, as fact
 
@@ -88,9 +88,8 @@ explanation, but RFC5-14 says that for an architecture overview the declared
 policy decides, and it may be design authority. *Recommended:* none, unless you
 have seen the file; or manifesto if you accept the risk that it is doctrine.
 Signing a variant is the whole decision: no regeneration or review follows, and
-the recorder, when written, must refuse a second variant act over this
-manifest unless it is a declared superseding version (the bytes do not enforce
-this).
+the recorder refuses a second variant act over this manifest unless it is a
+declared superseding version (the policy bytes themselves do not enforce this).
 
 **Q2. Sign the chosen variant? Default: yes, after a confirming review,** once
 the order above is met.

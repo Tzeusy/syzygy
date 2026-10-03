@@ -207,6 +207,7 @@ FIXTURES = [
     ("licenses/doctrine.txt", False), ("licenses/SecurityPolicy.md", True), ("licenses/README.md", True),
     ("licenses/LICENSE.txt", True), ("licenses/CHANGELOG.md", True), ("licenses/NEWS.md", True), ("src/NEWS.md", False),
     ("licenses/ADR0001.md", True),
+    ("licenses/LICENSE", False), ("licenses/COPYING", False), ("licenses/README", False), ("licenses/README.rst", False),
     # policy and governance text by ordinary content: withheld at the root (and as directories under docs)
     ("SECURITY.md", False), ("SECURITY", False), ("DESIGN.md", False), ("GOVERNANCE.txt", False),
     ("CODE_OF_CONDUCT.md", False), ("Code-Of-Conduct.md", False),
@@ -550,10 +551,11 @@ def scope_sentence() -> str:
             f"({', '.join(SENTENCE_EXAMPLES)}) or split by a character outside the separator list.")
 
 
-def examples_hold(examples: list[str], rule: dict) -> bool:
+def examples_hold(examples: list[str], rule: dict, roots: list[str] | None = None) -> bool:
     """Every example the sentence offers as sendable is mapped, in both trees that take the word list."""
+    roots = roots or [DOC_TREE_ROOTS[0], LICENSE_TREE_ROOTS[0]]
     return bool(examples) and all(classify_documentation(f"{root}/{n}.md", rule)
-                                  for n in examples for root in (DOC_TREE_ROOTS[0], LICENSE_TREE_ROOTS[0]))
+                                  for n in examples for root in roots)
 
 
 def packet_block() -> str:
@@ -594,7 +596,8 @@ def packet_block() -> str:
         f"{words(r['docTxtExcludedPrefixes'])}.",
         f"- READMEs and the other root names when they sit below the root outside {', '.join(DOC_TREE_ROOTS)} "
         f"and {' or '.join(LICENSE_TREE_ROOTS)} (vendored libraries carry their own); a file directly "
-        f"inside a top-level {' or '.join(LICENSE_TREE_ROOTS)} folder is mapped whatever its stem unless a "
+        f"inside a top-level {' or '.join(LICENSE_TREE_ROOTS)} folder and ending {' or '.join(LICENSE_TREE_SUFFIXES)} "
+        "is mapped whatever its stem unless a "
         "word above withholds it.",
         "- Any other path: it is not named by the rule, so it is indeterminate and withheld.",
         "- Any file that fails a secret detector or the active-content rule: those screens are unchanged "
@@ -799,14 +802,19 @@ def selftest() -> int:
                         and all(f"{n}" in sentence for n in SENTENCE_EXAMPLES)))
         results.append(("a falsified sentence example (Security) is caught", not examples_hold(["Security", "ADR0001"], rule)))
         results.append(("an example that is mapped in docs but withheld in licenses is caught",
-                        not examples_hold(["Guide", "licenses-policy"], rule)))
+                        examples_hold(["sub/Guide"], rule, roots=[DOC_TREE_ROOTS[0]])
+                        and not examples_hold(["sub/Guide"], rule)))
         wl = [l for l in packet_block().splitlines() if l.startswith("- READMEs and the other root names")]
         results.append(("the below-the-root withheld line names every tree that maps what it excludes",
-                        len(wl) == 1 and all(r_ in wl[0] for r_ in DOC_TREE_ROOTS + LICENSE_TREE_ROOTS)
+                        len(wl) == 1 and all(re.search(rf"(?<![A-Za-z]){re.escape(r_)}(?![A-Za-z])", wl[0])
+                                for r_ in DOC_TREE_ROOTS + LICENSE_TREE_ROOTS)
+                        and "ending " + " or ".join(LICENSE_TREE_SUFFIXES) in wl[0]
                         and all(classify_documentation(f, rule) == w for f, w in (
                             ("licenses/README.md", True), ("licenses/LICENSE.txt", True),
                             ("licenses/CHANGELOG.md", True), ("licenses/NEWS.md", True),
-                            ("docs/README.md", True), ("src/README.md", False), ("src/NEWS.md", False)))))
+                            ("docs/README.md", True), ("src/README.md", False), ("src/NEWS.md", False),
+                            ("licenses/LICENSE", False), ("licenses/COPYING", False),
+                            ("licenses/README", False), ("licenses/README.rst", False)))))
         mn = documentation_rule()["notMapped"]
         results.append(("notMapped and indeterminate name the licenses tree and the vendored example",
                         "licenses-tree" in mn and "src/README.md" in INDETERMINATE
