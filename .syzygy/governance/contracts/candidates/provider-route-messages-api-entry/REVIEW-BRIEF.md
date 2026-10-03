@@ -1,9 +1,11 @@
-# Review brief — Messages API provider route registry entry (round 2)
+# Review brief — Messages API provider route registry entry (round 3)
 
 > **Candidate — binds nothing.** This brief says what an independent reviewer
-> is given and what they decide. It is not a review and carries no verdict. Round 1 (REVISE) is retained in
-> `reviews/` with `reviews/ROUND-1-DISPOSITIONS.md`; this brief is for round 2
-> over the repaired bytes.
+> is given and what they decide. It is not a review and carries no verdict.
+> Rounds 1 and 2 (both REVISE) are retained in `reviews/` with
+> `reviews/ROUND-1-DISPOSITIONS.md` and `reviews/ROUND-2-DISPOSITIONS.md`; this
+> brief is for round 3 over the repaired bytes. The raw's head must carry the
+> SHA-256 of the manifest FILE (`--manifest-digest` prints it), not a row.
 
 ## What the reviewer is given, and nothing else
 
@@ -22,7 +24,7 @@ registration in `scripts/check_governance.py` (`MESSAGES_API_DIR`,
 
 **Governing references.**
 
-- RFC4-1, RFC4-2, RFC4-3, RFC4-7 in
+- RFC4-1, RFC4-2, RFC4-3, RFC4-7, RFC4-9 in
   `.syzygy/governance/contracts/rfcs/RFC-0004/general-contract.md`, each
   quoted at its defining clause; RFC2-23, RFC2-24; RFC3-16(a); RFC5-15, 16.
 - REQ-polaris-generation-017 in
