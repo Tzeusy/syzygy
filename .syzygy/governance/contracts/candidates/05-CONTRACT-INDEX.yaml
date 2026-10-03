@@ -2,8 +2,10 @@
 # Authoritative metadata lives in the active contract files' front matter.
 #
 # NOT AUTHORITY. This candidate-lane projection binds nothing and states no
-# contract's acceptance: a contract's effective standing is whatever the
-# owner act record its `status_source` names says, never this file (RFC11-7).
+# contract's acceptance. A generated index is a rebuildable projection,
+# never a second truth store (RFC11-7); a contract's effective status lies
+# outside its content, in the owner act record its `status_source` names
+# (RFC3-16), and never in this file.
 # `status_source` is read from each module's front matter; a contract whose
 # modules omit it or disagree shows [Unknown] here and fails --check.
 #
@@ -13,7 +15,7 @@
 # open-question; any other section normative.
 contracts:
   - id: RFC-0001
-    title: Project Graph, Identity and State Planes
+    title: "Project Graph, Identity and State Planes"
     status_source: owner-act-record
     governs: [entities, relations, identities, state-planes, evaluation-identity, claims, gaps, contradictions, proposals, lifecycles]
     applies_to: [kernel, all-surfaces]
@@ -65,7 +67,7 @@ contracts:
       - {id: RFC1-32, module: RFC-0001-project-graph-identity-state-planes.md, kind: normative}
       - {id: RFC1-33, module: RFC-0001-project-graph-identity-state-planes.md, kind: phase-rule}
   - id: RFC-0002
-    title: Observation, Evaluation and Reconciliation — contract package index
+    title: "Observation, Evaluation and Reconciliation — contract package index"
     status_source: owner-act-record
     governs: [source-snapshot, evaluation-identity, observation-record, inference-overlay, currency, staleness, challenge, contradiction, gap, aligned, converged, reconciliation-chain, failure-states, unknown-reason, rendering-tier]
     applies_to: [kernel, all-surfaces]
@@ -110,7 +112,7 @@ contracts:
       - {id: RFC2-10, module: RFC-0002/snapshot-and-evaluation-core.md, kind: normative}
       - {id: RFC2-11, module: RFC-0002/snapshot-and-evaluation-core.md, kind: normative}
   - id: RFC-0003
-    title: Project, Workspace and .syzygy/** Manifests — contract package index
+    title: "Project, Workspace and .syzygy/** Manifests — contract package index"
     status_source: owner-act-record
     governs: [manifests, governance-homes, lifecycles, owner-acts, workspace]
     applies_to: [kernel, workspace, all-surfaces]
@@ -123,7 +125,7 @@ contracts:
     modules: [RFC-0003/README.md, RFC-0003/governance-homes-and-owner-acts.md, RFC-0003/manifests-and-namespace.md]
     module_ranges:
       - {file: RFC-0003/governance-homes-and-owner-acts.md, clauses: "RFC3-15, RFC3-15(a), RFC3-16, RFC3-16(a), RFC3-16(b), RFC3-16(c), RFC3-17, RFC3-17(a) (every other RFC3-n lives in manifests-and-namespace.md)"}
-      - {file: RFC-0003/manifests-and-namespace.md, clauses: "RFC3-1..RFC3-14 and RFC3-18..RFC3-33 (no retired or merged numbers; RFC3-15..RFC3-17 and all lettered sub-clauses live in governance-homes-and-owner-acts.md)"}
+      - {file: RFC-0003/manifests-and-namespace.md, clauses: RFC3-1..RFC3-14 and RFC3-18..RFC3-33 (no retired or merged numbers; RFC3-15..RFC3-17 and all lettered sub-clauses live in governance-homes-and-owner-acts.md)}
     clauses:
       - {id: RFC3-15, module: RFC-0003/governance-homes-and-owner-acts.md, kind: normative}
       - {id: RFC3-15(a), module: RFC-0003/governance-homes-and-owner-acts.md, kind: normative}
@@ -164,7 +166,7 @@ contracts:
       - {id: RFC3-32, module: RFC-0003/manifests-and-namespace.md, kind: normative}
       - {id: RFC3-33, module: RFC-0003/manifests-and-namespace.md, kind: phase-rule}
   - id: RFC-0004
-    title: Observation Sources, Evidence, Execution Records and Adapters — contract package index
+    title: "Observation Sources, Evidence, Execution Records and Adapters — contract package index"
     status_source: owner-act-record
     governs: [observation-sources, observers, adapters, evidence, execution-records, trusted-external-oracles, governed-checkers, fidelity-labels, provenance-joins, code-mappings]
     applies_to: [kernel, trajectory, orrery]
@@ -214,7 +216,7 @@ contracts:
       - {id: RFC4-16, module: RFC-0004/named-adapters.md, kind: normative}
       - {id: RFC4-17, module: RFC-0004/named-adapters.md, kind: normative}
   - id: RFC-0005
-    title: Authentication, Consent and Execution Profiles — contract package index
+    title: "Authentication, Consent and Execution Profiles — contract package index"
     status_source: owner-act-record
     governs: [principals, sessions, machine-credentials, client-classes, exposure-modes, consent, egress, secrets, execution-profiles, adapter-credentials, audit, revocation]
     applies_to: [kernel, all-surfaces, machine-clients]
@@ -260,7 +262,7 @@ contracts:
       - {id: RFC5-22, module: RFC-0005/execution-profiles.md, kind: normative}
       - {id: RFC5-23, module: RFC-0005/execution-profiles.md, kind: normative}
   - id: RFC-0006
-    title: Cross-Surface Selection, Query and Evidence Drawer
+    title: "Cross-Surface Selection, Query and Evidence Drawer"
     status_source: owner-act-record
     governs: [selection-reference, url-identity, resolution-outcome, evidence-drawer, query-answer, label-parity, scenario-context]
     applies_to: [all-surfaces, kernel, machine-clients]
@@ -422,7 +424,7 @@ contracts:
     modules: [RFC-0009/README.md, RFC-0009/interaction-parity-and-release.md, RFC-0009/semantic-geography.md, RFC-0009/visual-grammar-and-lenses.md]
     module_ranges:
       - {file: RFC-0009/interaction-parity-and-release.md, clauses: "RFC9-46..RFC9-52 (sub-clause RFC9-47(a); no gaps, no retirements)"}
-      - {file: RFC-0009/semantic-geography.md, clauses: "RFC9-1..RFC9-23 (sub-clauses RFC9-8(a), RFC9-9(a), RFC9-9(b), RFC9-13(a), RFC9-14(a), RFC9-15(b), RFC9-16(d); no gaps, no retirements. RFC9-15(b) has no lettered sibling before it — no earlier letter was ever minted for RFC9-15, and none is retired — and it is defined after RFC9-16(d) in file order: both are deliberate. The "no gaps" claim is over the integer range; sub-clause letters are minted as needed and are not a series)"}
+      - {file: RFC-0009/semantic-geography.md, clauses: "RFC9-1..RFC9-23 (sub-clauses RFC9-8(a), RFC9-9(a), RFC9-9(b), RFC9-13(a), RFC9-14(a), RFC9-15(b), RFC9-16(d); no gaps, no retirements. RFC9-15(b) has no lettered sibling before it — no earlier letter was ever minted for RFC9-15, and none is retired — and it is defined after RFC9-16(d) in file order: both are deliberate. The \"no gaps\" claim is over the integer range; sub-clause letters are minted as needed and are not a series)"}
       - {file: RFC-0009/visual-grammar-and-lenses.md, clauses: "RFC9-24..RFC9-45 (no lettered sub-clauses; no gaps, no retirements)"}
     clauses:
       - {id: RFC9-46, module: RFC-0009/interaction-parity-and-release.md, kind: normative}
@@ -498,7 +500,7 @@ contracts:
       declared_in: RFC-0010/README.md
     modules: [RFC-0010/README.md, RFC-0010/budget-reservation.md, RFC-0010/effects-recovery-and-stop.md, RFC-0010/mission-identity-approval-and-lifecycle.md, RFC-0010/portfolio-and-cross-project-consent.md, RFC-0010/prevention-envelope-and-attention.md]
     module_ranges:
-      - {file: RFC-0010/budget-reservation.md, clauses: "RFC10-17 with sub-clause RFC10-17(a) (see the package clause map)"}
+      - {file: RFC-0010/budget-reservation.md, clauses: RFC10-17 with sub-clause RFC10-17(a) (see the package clause map)}
       - {file: RFC-0010/effects-recovery-and-stop.md, clauses: "RFC10-18..RFC10-20, RFC10-23, with sub-clauses RFC10-18(a), RFC10-19(a) (see the package clause map)"}
       - {file: RFC-0010/mission-identity-approval-and-lifecycle.md, clauses: "RFC10-1..RFC10-6, RFC10-14, RFC10-16, RFC10-24 (non-contiguous — see the package clause map)"}
       - {file: RFC-0010/portfolio-and-cross-project-consent.md, clauses: "RFC10-15, RFC10-21 (non-contiguous — see the package clause map)"}

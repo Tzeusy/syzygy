@@ -11,6 +11,7 @@ Usage: build_contract_index.py [--root DIR] [--check] [--selftest]
   --selftest: mutate a copy per predicate class and confirm --check fails.
 """
 import argparse
+import json
 import re
 import sys
 import textwrap
@@ -79,6 +80,35 @@ NESTED_BLOCKS = ("implementation_boundary",)
 NESTED_KEY = re.compile(r"^\s+([A-Za-z_][\w-]*):\s*(.*)$")
 
 
+#: A value is emitted bare only when it reads back as the same string in both
+#: block and flow context: no flow indicator or quote anywhere, no `: ` or
+#: ` #`, no indicator as its first character, and nothing YAML would resolve
+#: to a bool, null or number. Everything else is emitted as a JSON string,
+#: which is a valid YAML double-quoted scalar. Review of PR 294 found the
+#: index failing `yaml.safe_load`: a module range carrying its own `"`, and
+#: every `[Unknown] — …` value opening a flow sequence (syzygy-ejm3).
+PLAIN_FIRST = re.compile(r"[^-?:,\[\]{}#&*!|>'\"%@`\s]")
+PLAIN_FORBIDDEN = re.compile(r"[,\[\]{}\"']|: |:$| #|\n|\t")
+YAML_RESERVED = re.compile(
+    r"(?i:y|n|yes|no|on|off|true|false|null|~)$"
+    r"|[-+]?(\d[\d_]*(\.\d*)?|\.\d+)([eE][-+]?\d+)?$"
+    r"|[-+]?\.(inf|nan)$|0[xob][0-9a-fA-F_]+$|\d+(:[0-5]?\d)+$", re.I)
+
+
+def scalar(value):
+    """`value` as a YAML scalar that loads back as exactly this string."""
+    value = str(value)
+    if (value and value == value.strip() and PLAIN_FIRST.match(value)
+            and not PLAIN_FORBIDDEN.search(value)
+            and not YAML_RESERVED.match(value)):
+        return value
+    return json.dumps(value, ensure_ascii=False)
+
+
+def flow_list(values):
+    return "[" + ", ".join(scalar(v) for v in values) + "]"
+
+
 def parse_front_matter(text):
     if not text.startswith("---\n"):
         return {}
@@ -124,8 +154,10 @@ def header():
         "# Authoritative metadata lives in the active contract files' front matter.",
         "#",
         "# NOT AUTHORITY. This candidate-lane projection binds nothing and states no",
-        "# contract's acceptance: a contract's effective standing is whatever the",
-        "# owner act record its `status_source` names says, never this file (RFC11-7).",
+        "# contract's acceptance. A generated index is a rebuildable projection,",
+        "# never a second truth store (RFC11-7); a contract's effective status lies",
+        "# outside its content, in the owner act record its `status_source` names",
+        "# (RFC3-16), and never in this file.",
         f"# `{STATUS_KEY}` is read from each module's front matter; a contract whose",
         "# modules omit it or disagree shows [Unknown] here and fails --check.",
         "#",
@@ -198,10 +230,10 @@ def emit(root):
     for cid in sorted(by_id):
         e = by_id[cid]
         fm = e["fm"]
-        lines.append(f"  - id: {cid}")
+        lines.append(f"  - id: {scalar(cid)}")
         if isinstance(fm.get("title"), str):
-            lines.append(f"    title: {fm['title']}")
-        lines.append(f"    {STATUS_KEY}: {status_projection(e['status'])}")
+            lines.append(f"    title: {scalar(fm['title'])}")
+        lines.append(f"    {STATUS_KEY}: {scalar(status_projection(e['status']))}")
         # `provides_to` is gone from every module's front matter (it is derived
         # by reversal in build_dependency_index.py) and is kept in this loop's
         # key list only so that a module re-introducing it by hand is still
@@ -213,36 +245,38 @@ def emit(root):
                     "tags"):
             val = fm.get(key)
             if isinstance(val, list):
-                lines.append(f"    {key}: [{', '.join(val)}]")
+                lines.append(f"    {key}: {flow_list(val)}")
         if e["constrains"]:
-            lines.append(f"    constrains: [{', '.join(e['constrains'])}]")
+            lines.append(f"    constrains: {flow_list(e['constrains'])}")
         if e["constrains_source"]:
-            lines.append(f"    constrains_source: {e['constrains_source']}")
+            lines.append(f"    constrains_source: {scalar(e['constrains_source'])}")
         if e["boundary"]:
             b = e["boundary"]
             lines.append("    implementation_boundary:")
             for k in sorted(b):
-                lines.append(f"      {k}: {b[k]}")
-            lines.append(f"      declared_in: {e['boundary_file']}")
+                lines.append(f"      {k}: {scalar(b[k])}")
+            lines.append(f"      declared_in: {scalar(e['boundary_file'])}")
         else:
             # Absence is projected, not omitted: a contract that lost the
             # declaration RFC11-4 depends on must be visible here as
             # Unknown, never as a row that simply has one fewer key.
-            lines.append("    implementation_boundary: "
-                         "[Unknown] — no declaration found in this "
-                         "contract's front matter")
-        lines.append(f"    modules: [{', '.join(e['modules'])}]")
+            lines.append("    implementation_boundary: " + scalar(
+                "[Unknown] — no declaration found in this contract's front "
+                "matter"))
+        lines.append(f"    modules: {flow_list(e['modules'])}")
         if e.get("module_meta"):
             lines.append("    module_ranges:")
             for mm in e["module_meta"]:
-                lines.append(f"      - {{file: {mm['file']}, clauses: \"{mm['clauses']}\"}}")
+                lines.append(f"      - {{file: {scalar(mm['file'])}, "
+                             f"clauses: {scalar(mm['clauses'])}}}")
         lines.append("    clauses:")
         seen = set()
         for cl, mod, kind in e["clauses"]:
             if cl in seen:
                 continue
             seen.add(cl)
-            lines.append(f"      - {{id: {cl}, module: {mod}, kind: {kind}}}")
+            lines.append(f"      - {{id: {scalar(cl)}, module: {scalar(mod)}, "
+                         f"kind: {scalar(kind)}}}")
     lines.append("# Non-contract governance sources (read from the canonical homes;")
     lines.append("# selection metadata only — the canonical homes stay authoritative):")
     lines.append("governance_sources:")
@@ -255,8 +289,9 @@ def emit(root):
             ids = sorted(set(RULE_ID.findall(text)),
                          key=lambda s: (s.rsplit("-", 1)[0], int(s.rsplit("-", 1)[1])))
             words = len(text.split())
-            lines.append(f"  - {{file: {dirname}/{f.name}, role: {role}, words: {words}"
-                         + (f", rule_ids: [{', '.join(ids)}]" if ids else "") + "}")
+            lines.append(f"  - {{file: {scalar(f'{dirname}/{f.name}')}, "
+                         f"role: {scalar(role)}, words: {words}"
+                         + (f", rule_ids: {flow_list(ids)}" if ids else "") + "}")
     return "\n".join(lines) + "\n"
 
 
@@ -277,7 +312,7 @@ def status_projection(per_module):
 
 def status_mismatches(generated):
     return [ln.strip() for ln in generated.splitlines()
-            if ln.startswith(f"    {STATUS_KEY}: [Unknown]")]
+            if ln.startswith(f"    {STATUS_KEY}: ") and "[Unknown]" in ln]
 
 
 def check_findings(current, generated):
@@ -415,12 +450,86 @@ def selftest(root):
     # 7. The banner and the clause-kind convention are in the generated header,
     #    and the convention line is derived from SECTION_KINDS and PHASE_RULES.
     head = base.split("\ncontracts:\n", 1)[0]
+    # syzygy-ejm3: RFC11-7 supports "rebuildable projection, never a second
+    # truth store"; effective status outside content is RFC3-16's.
+    cases.append(("the header cites RFC11-7 for the projection and RFC3-16 "
+                  "for effective status",
+                  "second truth store (RFC11-7)" in " ".join(
+                      ln.lstrip("# ") for ln in head.splitlines())
+                  and "(RFC3-16)" in head))
     cases.append(("the header carries the non-authority banner",
                   "NOT AUTHORITY." in head and "binds nothing" in head))
     cases.append(("the header states every section-kind and phase rule it applies",
                   all(f"§{sec}" in head for sec in SECTION_KINDS)
                   and all(kind in head for kind in SECTION_KINDS.values())
                   and all(rule in head for rule in PHASE_RULE_CLAUSES)))
+
+    # 8. syzygy-ejm3: the output is YAML, and every value reads back as the
+    #    string the generator projected. PyYAML is a test-only dependency; its
+    #    absence fails the case rather than skipping it, because a validity
+    #    claim nobody could test is Unknown, never a pass.
+    try:
+        import yaml
+    except ImportError:
+        yaml = None
+        cases.append(("[Unknown] PyYAML is not importable, so YAML validity "
+                      "was not verified", False))
+    if yaml is not None:
+        def loads(text):
+            try:
+                return yaml.safe_load(text)
+            except yaml.YAMLError:
+                return None
+
+        parsed = loads(base)
+        cases.append(("the generated index parses with yaml.safe_load",
+                      isinstance(parsed, dict)
+                      and len(parsed.get("contracts") or [])
+                      == sum(1 for ln in base.splitlines() if ln.startswith("  - id: "))))
+        sources = {}
+        rfcs = root / "rfcs"
+        for f in sorted(rfcs.glob("RFC-00*.md")) + sorted(rfcs.glob("RFC-00*/*.md")):
+            fm = parse_front_matter(f.read_text(encoding="utf-8"))
+            if fm.get("id"):
+                sources.setdefault(fm["id"], []).append((str(f.relative_to(rfcs)), fm))
+        trips = []
+        for c in (parsed or {}).get("contracts") or []:
+            fms = sources.get(c.get("id"), [])
+            first = fms[0][1] if fms else {}
+            trips.append(c.get("title") == first.get("title"))
+            trips.append(c.get(STATUS_KEY) == status_projection(
+                {rel: fm.get(STATUS_KEY) or None for rel, fm in fms}))
+            ranges = {r["file"]: r["clauses"] for r in c.get("module_ranges") or []}
+            trips += [ranges.get(rel) == fm.get("clauses", "")
+                      for rel, fm in fms if fm.get("module")]
+            trips.append(c.get("modules") == [rel for rel, _ in fms])
+        cases.append(("every title, status_source, module range and module list "
+                      "reads back as projected", bool(trips) and all(trips)))
+        # Hostile values: each must survive the round trip as a string.
+        hostile = ["[Bracket] lead: a, b {c} #d", "yes", "1.0", "- dash",
+                   "key: value", "plain # comment", "it's", "null", "0x1F"]
+        survived = []
+        for value in hostile:
+            after = copied(readme, lambda t, v=value: re.sub(
+                r"(?m)^title:.*$", lambda _m: f"title: {v}", t, count=1))
+            doc = loads(after) or {}
+            survived.append(any(c.get("title") == value
+                                for c in doc.get("contracts") or []))
+        cases.append(("hostile titles load back as the same strings",
+                      all(survived)))
+        # A hostile list member: flow sequences quote their items too.
+        doc = loads(copied(readme, lambda t: re.sub(
+            r"(?m)^(id:.*)$", r"\1\ntags: [key: value, yes, [x]]",
+            re.sub(r"(?m)^tags:.*\n", "", t), count=1))) or {}
+        cases.append(("hostile list items load back as the same strings",
+                      any(c.get("tags") == ["key: value", "yes", "[x]"]
+                          for c in doc.get("contracts") or [])))
+        doc = loads(copied(readme, lambda t: t.replace(
+            f"\n{STATUS_KEY}: owner-act-record",
+            f"\n{STATUS_KEY}: self-declared", 1))) or {}
+        cases.append(("an [Unknown] status_source row still parses, as a string",
+                      any(str(c.get(STATUS_KEY, "")).startswith("[Unknown]")
+                          for c in doc.get("contracts") or [])))
 
     ok = True
     for label, passed in cases:
