@@ -1,5 +1,7 @@
 export {
   AGENT_SDK_BUILTIN_TOOLS,
+  PINNED_AGENT_SDK_VERSION,
+  PINNED_CLAUDE_CODE_VERSION,
   AgentSdkProviderError,
   agentSdkEnvironment,
   createAgentSdkGenerate,

@@ -1,5 +1,6 @@
-import { mkdirSync, readdirSync } from 'node:fs';
-import { isAbsolute, join } from 'node:path';
+import { mkdirSync, readFileSync, readdirSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { dirname, isAbsolute, join } from 'node:path';
 import { query as sdkQuery, type Options } from '@anthropic-ai/claude-agent-sdk';
 import type { PipelinePorts, ProviderReply } from '@syzygy/polaris-generation-core';
 
@@ -14,7 +15,11 @@ export const AGENT_SDK_BUILTIN_TOOLS: readonly string[] = [
   'ListMcpResourcesTool', 'ReadMcpResourceTool', 'GetTask',
 ];
 
-export type AgentSdkProviderFailure = 'invalid-config' | 'cwd-not-empty' | 'aborted' | 'rate-limited' | 'provider-error' | 'no-output' | 'transport-failed';
+/** Versions the capture test was run against. A bump must re-run it and update PROVIDER-EGRESS-BYTES.md. */
+export const PINNED_AGENT_SDK_VERSION = '0.3.288';
+export const PINNED_CLAUDE_CODE_VERSION = '2.1.288';
+
+export type AgentSdkProviderFailure = 'unpinned-version' | 'invalid-config' | 'cwd-not-empty' | 'aborted' | 'rate-limited' | 'provider-error' | 'no-output' | 'transport-failed';
 
 /** Messages are code-only: they never carry the request, the reply or a credential. */
 export class AgentSdkProviderError extends Error {
@@ -35,7 +40,12 @@ export interface AgentSdkProviderConfig {
   /** Absolute, existing directory outside git. All runtime state of the CLI lives under it. */
   readonly runDir: string;
   readonly model: string;
+  /** Profile-set: the run profile's Opus effort level. */
   readonly effort?: 'low' | 'medium' | 'high' | 'xhigh' | 'max';
+  /** Profile-set: output token cap; the permit's allowances can only lower it. */
+  readonly maxOutputTokens?: number;
+  /** Test seam for the version check; production uses the pinned constants. */
+  readonly pin?: { readonly sdk: string; readonly cli: string };
   /** The only credential admitted; no subscription login or inherited environment. */
   readonly auth: { readonly apiKey: string };
   /** Test and acceptance runs point this at a local capture endpoint. */
@@ -102,6 +112,10 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
   if (!isAbsolute(config.runDir) || config.model.length === 0 || config.auth.apiKey.length === 0) throw new AgentSdkProviderError('invalid-config', 0);
   const retry = config.retry ?? DEFAULT_RETRY;
   if (![retry.maxAttempts, retry.baseDelayMs, retry.maxDelayMs, retry.budgetMs].every(x => Number.isSafeInteger(x) && x >= 0) || retry.maxAttempts < 1) throw new AgentSdkProviderError('invalid-config', 0);
+  const pin = config.pin ?? { sdk: PINNED_AGENT_SDK_VERSION, cli: PINNED_CLAUDE_CODE_VERSION };
+  const installed = (JSON.parse(readFileSync(join(dirname(createRequire(import.meta.url).resolve('@anthropic-ai/claude-agent-sdk')), 'package.json'), 'utf8')) as { version?: string }).version;
+  if (installed !== pin.sdk) throw new AgentSdkProviderError('unpinned-version', 0);
+  if (config.maxOutputTokens !== undefined && !(Number.isSafeInteger(config.maxOutputTokens) && config.maxOutputTokens > 0)) throw new AgentSdkProviderError('invalid-config', 0);
   const query = config.query ?? sdkQuery;
   const sleep = config.sleep ?? abortableSleep;
   const now = config.now ?? Date.now;
@@ -115,7 +129,7 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
   const generate: PipelinePorts['generate'] = async (input: GenerateInput): Promise<ProviderReply> => {
     // A non-empty working directory means something other than this adapter wrote there.
     if (readdirSync(cwd).length !== 0) throw new AgentSdkProviderError('cwd-not-empty', 0);
-    const maxTokens = Math.max(1, Math.min(input.permit.maxOutputBytes, input.permit.maxUsageUnits));
+    const maxTokens = Math.max(1, Math.min(input.permit.maxOutputBytes, input.permit.maxUsageUnits, config.maxOutputTokens ?? Infinity));
     const started = now();
     let totalUnits: number | null = 0;
     for (let n = 1; ; n++) {
@@ -125,6 +139,7 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
       input.signal.addEventListener('abort', forward, { once: true });
       let result: ResultLike | undefined;
       let model: string | null = null;
+      let versionMismatch = false;
       const options: Options = {
         systemPrompt: input.system, settingSources: [], mcpServers: {}, strictMcpConfig: true, tools: [], allowedTools: [],
         disallowedTools: [...AGENT_SDK_BUILTIN_TOOLS], cwd, env: agentSdkEnvironment(config, maxTokens), model: config.model, effort,
@@ -135,11 +150,13 @@ export function createAgentSdkGenerate(config: AgentSdkProviderConfig): AgentSdk
       try {
         for await (const message of q) {
           const m = message as { type?: string; message?: { model?: unknown } };
+          if (m.type === 'system' && (message as { subtype?: string }).subtype === 'init' && (message as { claude_code_version?: string }).claude_code_version !== pin.cli) { versionMismatch = true; controller.abort(); }
           if (m.type === 'assistant' && typeof m.message?.model === 'string' && m.message.model !== '<synthetic>') model = m.message.model;
           if (m.type === 'result') result = message as unknown as ResultLike;
         }
       } catch { /* the result message, if any, was already read; absence is handled below */ }
       finally { input.signal.removeEventListener('abort', forward); q.close(); }
+      if (versionMismatch) { record({ attemptId: input.permit.attemptId, try: n, outcome: 'failed', httpStatus: null, usageUnits: null, backoffMs: 0 }); throw new AgentSdkProviderError('unpinned-version', n); }
       const units = result === undefined ? null : tokenUnits(result.usage);
       if (input.signal.aborted) { record({ attemptId: input.permit.attemptId, try: n, outcome: 'aborted', httpStatus: null, usageUnits: units, backoffMs: 0 }); throw new AgentSdkProviderError('aborted', n); }
       totalUnits = totalUnits === null || units === null ? null : totalUnits + units;
