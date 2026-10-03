@@ -8,7 +8,7 @@
  },
  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
  "project": "@syzygy/polaris-generation-consent",
- "ranAt": "2026-10-03T17:54:58+00:00",
+ "ranAt": "2026-10-03T20:29:24Z",
  "mutants": [
   {
    "id": "R1-stale-digest-still-in-force",
@@ -20,7 +20,7 @@
    ],
    "outcome": "killed",
    "failedTests": 2,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "R3-unknown-package-file-ignored",
@@ -32,7 +32,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "R4-artifact-outside-instances-allowed",
@@ -44,7 +44,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "R5-traversal-allowed",
@@ -56,7 +56,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "R6-successor-form-ignored",
@@ -68,7 +68,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "R7-branch-name-revision-allowed",
@@ -80,7 +80,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "R8-duplicate-field-allowed",
@@ -92,7 +92,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "R9-project-identity-unchecked",
@@ -103,8 +103,8 @@
     "package-reader"
    ],
    "outcome": "killed",
-   "failedTests": 1,
-   "totalTests": 26
+   "failedTests": 2,
+   "totalTests": 79
   },
   {
    "id": "P1-policy-requirement-satisfiable",
@@ -116,7 +116,7 @@
    ],
    "outcome": "killed",
    "failedTests": 2,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "P2-revision-not-checked",
@@ -128,7 +128,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "P3-egress-repository-not-checked",
@@ -140,7 +140,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "P4-not-in-force-filter-skipped",
@@ -152,7 +152,7 @@
    ],
    "outcome": "killed",
    "failedTests": 2,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "P5-egress-any-provider",
@@ -164,7 +164,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "P6-read-error-satisfied",
@@ -176,7 +176,7 @@
    ],
    "outcome": "killed",
    "failedTests": 2,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "I3-instant-day-unchecked",
@@ -188,7 +188,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "I4-instant-roundtrip-unchecked",
@@ -200,7 +200,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "Q4-policy-future-act-counts",
@@ -212,7 +212,7 @@
    ],
    "outcome": "killed",
    "failedTests": 2,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "Q5-policy-read-error-satisfied",
@@ -224,31 +224,31 @@
    ],
    "outcome": "killed",
    "failedTests": 2,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "R2-in-force-from-start-of-act-day",
    "file": "packages/polaris-generation-consent/src/package-reader.ts",
-   "old": "if (loose.length === 0) return startOfDay + DAY_MS;",
-   "new": "if (loose.length === 0) return startOfDay;",
+   "old": "if (loose.length === 0) return /^\\s*recorded at\\b/im.test(text) ? refuse() : startOfDay + DAY_MS;",
+   "new": "if (loose.length === 0) return /^\\s*recorded at\\b/im.test(text) ? refuse() : startOfDay;",
    "tests": [
     "package-reader"
    ],
    "outcome": "killed",
    "failedTests": 4,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "I1-recorded-at-ignored",
    "file": "packages/polaris-generation-consent/src/package-reader.ts",
-   "old": "if (loose.length === 0) return startOfDay + DAY_MS;\n  const lines",
+   "old": "if (loose.length === 0) return /^\\s*recorded at\\b/im.test(text) ? refuse() : startOfDay + DAY_MS;\n  const lines",
    "new": "return startOfDay + DAY_MS;\n  const lines",
    "tests": [
     "package-reader"
    ],
    "outcome": "killed",
-   "failedTests": 6,
-   "totalTests": 26
+   "failedTests": 7,
+   "totalTests": 79
   },
   {
    "id": "I2-repeated-or-loose-instant-allowed",
@@ -260,19 +260,19 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "I5-loose-collection-strict",
    "file": "packages/polaris-generation-consent/src/package-reader.ts",
-   "old": "const loose = [...text.matchAll(/^\\s*recorded at\\b/gim)];",
-   "new": "const loose = [...text.matchAll(/^Recorded at \\(UTC\\):/gm)];",
+   "old": "const loose = [...prose.matchAll(/^\\s*recorded at\\b/gim)];",
+   "new": "const loose = [...prose.matchAll(/^Recorded at \\(UTC\\):/gm)];",
    "tests": [
     "package-reader"
    ],
    "outcome": "killed",
-   "failedTests": 2,
-   "totalTests": 26
+   "failedTests": 1,
+   "totalTests": 79
   },
   {
    "id": "A1-owner-answers-digest-unchecked",
@@ -284,7 +284,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "A2-owner-answers-any-name",
@@ -296,7 +296,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "Q1-policy-scope-unchecked",
@@ -308,7 +308,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "Q2-policy-digest-unchecked",
@@ -320,31 +320,31 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "Q3-policy-act-type-unchecked",
    "file": "packages/polaris-generation-consent/src/package-reader.ts",
-   "old": "act.type !== 'approve-policy' || act.identity !== `pwb-approve-policy-public-source-scope-signed-${act.date}`",
-   "new": "act.identity !== `pwb-approve-policy-public-source-scope-signed-${act.date}`",
+   "old": "act.type !== 'approve-policy' || act.identity !== form.identity(act.date)",
+   "new": "act.identity !== form.identity(act.date)",
    "tests": [
     "package-reader"
    ],
    "outcome": "killed",
-   "failedTests": 1,
-   "totalTests": 26
+   "failedTests": 2,
+   "totalTests": 79
   },
   {
    "id": "Q3b-policy-identity-unchecked",
    "file": "packages/polaris-generation-consent/src/package-reader.ts",
-   "old": "act.type !== 'approve-policy' || act.identity !== `pwb-approve-policy-public-source-scope-signed-${act.date}`",
+   "old": "act.type !== 'approve-policy' || act.identity !== form.identity(act.date)",
    "new": "act.type !== 'approve-policy'",
    "tests": [
     "package-reader"
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "Q6-policy-project-unchecked",
@@ -356,19 +356,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
-  },
-  {
-   "id": "Q8-unknown-record-naming-policy-ignored",
-   "file": "packages/polaris-generation-consent/src/package-reader.ts",
-   "old": "if (names_it && !HISTORICAL_POLICY_ACTS.has(name)) refuse();",
-   "new": "void 0;",
-   "tests": [
-    "package-reader"
-   ],
-   "outcome": "killed",
-   "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "Q9-amendment-act-not-allowlisted",
@@ -380,19 +368,19 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "Q10-title-unchecked",
    "file": "packages/polaris-generation-consent/src/package-reader.ts",
-   "old": "if (!text.startsWith(`${POLICY_ACT_TITLE}\\n`) || !names_it) refuse();",
+   "old": "if (!text.startsWith(`${form.title}\\n`) || !names_it) refuse();",
    "new": "if (!names_it) refuse();",
    "tests": [
     "package-reader"
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "Q11-provenance-unchecked",
@@ -404,19 +392,19 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "Q12-any-file-name-for-policy-act",
    "file": "packages/polaris-generation-consent/src/package-reader.ts",
-   "old": "if (name !== POLICY_ACT_FILE) {",
-   "new": "if (!names_it) {",
+   "old": "const form = POLICY_ACT_FORMS.find(f => f.file === name);",
+   "new": "const form = POLICY_ACT_FORMS.find(() => names_it);",
    "tests": [
     "package-reader"
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 26
+   "totalTests": 79
   },
   {
    "id": "X-noop-control",
@@ -426,11 +414,71 @@
    "tests": [
     "package-reader"
    ],
-   "outcome": "survived",
+   "outcome": "SURVIVED",
    "failedTests": 0,
-   "totalTests": 26,
-   "note": "equivalent control"
+   "totalTests": 79
+  },
+  {
+   "id": "R6-fence-not-stripped",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "const prose = outsideFences(text);",
+   "new": "const prose = text;",
+   "tests": [
+    "package-reader"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 79
+  },
+  {
+   "id": "R6-fenced-only-instant-falls-back-to-next-day",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "return /^\\s*recorded at\\b/im.test(text) ? refuse() : startOfDay + DAY_MS;",
+   "new": "return startOfDay + DAY_MS;",
+   "tests": [
+    "package-reader"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 79
+  },
+  {
+   "id": "R6-historical-act-not-pinned",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (pinned !== undefined) { if (sha256(text) !== pinned) refuse(); continue; }",
+   "new": "if (pinned !== undefined) { continue; }",
+   "tests": [
+    "package-reader"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 79
+  },
+  {
+   "id": "R6-identity-form-tag",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "identity: (date: string) => `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-${date}`",
+   "new": "identity: (date: string) => `pwb-approve-policy-public-source-scope-signed-${date}`",
+   "tests": [
+    "package-reader"
+   ],
+   "outcome": "killed",
+   "failedTests": 3,
+   "totalTests": 79
+  },
+  {
+   "id": "R6-unknown-policy-naming-record-skipped",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (names_it) refuse();\n          continue;",
+   "new": "continue;",
+   "tests": [
+    "package-reader"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 79
   }
  ],
- "summary": "35 mutants run in one pass at one commit; not killed: ['X-noop-control'] (no-op control only)."
+ "summary": "38 of 38 mutants killed; the no-op control survived, as it must; re-run at 1c8bd41c0535fb80a54fc69684f1078d9cedfd0c after the review-3 repairs (real act form, digest-pinned historical acts, fenced instants)",
+ "ranAtCommit": "1c8bd41c0535fb80a54fc69684f1078d9cedfd0c"
 }
