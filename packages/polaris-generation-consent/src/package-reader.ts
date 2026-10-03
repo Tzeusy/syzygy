@@ -410,15 +410,16 @@ export function readClassActState(options: StrictReadOptions): Promise<ActState<
   });
 }
 
-/** The in-force egress record to Anthropic at `now` (version 2 replaces version 1 from its act's instant), with its listed content classes. */
-export type InForceEgress = { readonly recordId: string; readonly version: string; readonly digest: string; readonly contentClasses: readonly string[] };
+/** The in-force egress record to Anthropic at `now` (version 2 replaces version 1 from its act's instant), with its listed content classes
+ * and the repositories its Scope section admits. */
+export type InForceEgress = { readonly recordId: string; readonly version: string; readonly digest: string; readonly contentClasses: readonly string[]; readonly admittedRepositories: readonly string[] };
 export function readInForceEgress(options: StrictReadOptions & { readonly now: number }): Promise<ActState<InForceEgress>> {
   return strict<InForceEgress>(async () => {
     const live = inForceRecords(await createPackageAdmissionReader(options).read(), options.now).filter(r => r.class === 'egress' && r.providerId === 'anthropic');
     if (live.length === 0) return { state: 'absent', why: 'no egress record is in force' };
     if (live.length > 1) return { state: 'refused', why: 'more than one egress record is in force' };
     const [r] = live;
-    return { state: 'ok', recordId: r!.recordId, version: r!.version, digest: r!.digest, contentClasses: r!.contentClasses };
+    return { state: 'ok', recordId: r!.recordId, version: r!.version, digest: r!.digest, contentClasses: r!.contentClasses, admittedRepositories: r!.admittedRepositories };
   });
 }
 

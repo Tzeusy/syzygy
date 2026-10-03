@@ -582,7 +582,7 @@ describe('strict act reads', () => {
     });
     const at = (now: number, f = files) => readInForceEgress({ root: '/r', fs: memoryFs(f), now });
     const later = await at(AT);
-    expect(later).toMatchObject({ state: 'ok', version: '0.2.0-candidate.1', digest: sha(v2Text) });
+    expect(later).toMatchObject({ state: 'ok', version: '0.2.0-candidate.1', digest: sha(v2Text), admittedRepositories: ['psf-requests', 'redis-redis'] });
     if (later.state === 'ok') expect(later.contentClasses).toContain('project-documentation');
     const before = await at(AT - 1);
     expect(before).toMatchObject({ state: 'ok', version: '0.1.0-candidate.7' });
