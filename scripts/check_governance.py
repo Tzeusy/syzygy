@@ -1663,6 +1663,7 @@ PWB_EFFECT_ACT_LABELS = tuple(label for label, _s, _a in PWB_EFFECT_ACTS)
 #: copy), no chain link; the performed records arrive with the acts.
 PUBLIC_REGISTRY_DIR = f"{CANDIDATES}/public-admission-registry-entries"
 PUBLIC_REGISTRY_MANIFEST = f"{PUBLIC_REGISTRY_DIR}/PUBLIC-ADMISSION-REGISTRY-MANIFEST.txt"
+PUBLIC_REGISTRY_DISPOSITIONS = f"{PUBLIC_REGISTRY_DIR}/ROUND-4-DISPOSITIONS.md"
 PUBLIC_REGISTRY_ACTS = (
     ("ADOPT POLARIS PROVIDER EXECUTION ROUTE REGISTRY ENTRY",
      f"{PUBLIC_REGISTRY_DIR}/proposed/POLARIS-PROVIDER-ROUTE-ANTHROPIC-AGENT-SDK-CANDIDATE.json"),
@@ -3157,6 +3158,10 @@ def _activate_public_registry_manifest_copy_registry():
     """
     if os.path.isfile(os.path.join(ROOT, PUBLIC_REGISTRY_MANIFEST)):
         ACT_DIGEST_COPY_FILES[PUBLIC_REGISTRY_MANIFEST] = tuple(
+            label for label, _subject in PUBLIC_REGISTRY_ACTS)
+    # The round-4 notes record sits beside the package (2026-09-26 ruling).
+    if os.path.isfile(os.path.join(ROOT, PUBLIC_REGISTRY_DISPOSITIONS)):
+        ACT_DIGEST_COPY_FILES[PUBLIC_REGISTRY_DISPOSITIONS] = tuple(
             label for label, _subject in PUBLIC_REGISTRY_ACTS)
 
 

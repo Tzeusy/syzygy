@@ -269,13 +269,33 @@ def findings_for(name, doc, butlers_contract):
 
 
 def manifest_text(root=PKG):
-    rows = sorted((f"{root.as_posix()}/proposed/{p.name}", sha(p.read_bytes())) for p in proposed(root))
+    rows = sorted((f"{PKG.as_posix()}/proposed/{p.name}", sha(p.read_bytes())) for p in proposed(root))
     return ("# PUBLIC ADMISSION REGISTRY ENTRIES MANIFEST\n"
             "# Candidate; this file and its rows bind nothing by themselves.\n"
             f"# {len(rows)} artifacts; rows sorted by codepoint path; each row hashes the\n"
             "# proposed file's exact bytes and is the argument of one separate owner act.\n"
             "# Each row requires its own act; neither row binds the other.\n"
             + "".join(f"{s}  {p}\n" for p, s in rows))
+
+
+#: The dedicated act record that makes an installed copy lawful, by entry file.
+ACT_RECORDS = {
+    "POLARIS-PROVIDER-ROUTE-ANTHROPIC-AGENT-SDK-CANDIDATE.json": "PUBLIC-ADMISSION-REGISTRY-PROVIDER-ROUTE-ACT.md",
+    "POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-CANDIDATE.json": "PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-ACT.md",
+}
+
+
+def performed_record(root, name):
+    """decisions/<act record> for an entry, found from the package root, or None."""
+    rec = ACT_RECORDS.get(name)
+    if rec is None:
+        return None
+    base = pathlib.Path(root)
+    for up in (base.parents[0], *base.parents):
+        cand = up / "decisions" / rec
+        if cand.is_file():
+            return cand
+    return None
 
 
 def check(root=PKG, butlers=BUTLERS, installed=INSTALLED):
@@ -292,8 +312,13 @@ def check(root=PKG, butlers=BUTLERS, installed=INSTALLED):
             continue
         out += findings_for(p.name, doc, contract)
         if (installed / p.name).exists():
-            out.append(f"{p.name}: candidate bytes already sit in the installed home")
+            record = performed_record(root, p.name)
+            if not (record is not None and record.is_file()
+                    and (installed / p.name).read_bytes() == p.read_bytes()):
+                out.append(f"{p.name}: candidate bytes already sit in the installed home")
     for md in sorted(root.glob("*.md")):
+        if md.name.startswith("ROUND-") and md.name.endswith("-DISPOSITIONS.md"):
+            continue   # a notes record beside the package, registered for digest-copy checks
         if HEX64.search(md.read_text()):
             out.append(f"{md.name}: carries a 64-hex token")
     m = root / MANIFEST
