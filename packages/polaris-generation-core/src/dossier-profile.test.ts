@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { clarify, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, dossierQuestionsFile, openQuestions, type ClarificationQuestion, type OwnerAnswer } from './dossier-profile.js';
+import { OWNER_TOPICS, parseReaderQuestions } from './dossier-evaluation.js';
+import { clarify, DOSSIER_READER_QUESTIONS, OWNER_ANSWER_MAX_CHARS, DOSSIER_REQUESTED_ASSETS, dossierQuestionsFile, openQuestions, type ClarificationQuestion, type OwnerAnswer } from './dossier-profile.js';
 import { generationSourcesForBody, gitBlobObjectId, type GenerationSource } from './generation-source.js';
 import { validateRequestedAssets } from './provider-draft.js';
 import { READER_QUESTION_TOPICS, validateReaderQuestions } from './reader-questions.js';
@@ -19,6 +20,11 @@ describe('dossier profile', () => {
     const file = JSON.parse(dossierQuestionsFile());
     expect(file.format).toBe('polaris-reader-questions-v1');
     expect(validateReaderQuestions(file.questions)).toEqual(DOSSIER_READER_QUESTIONS);
+    expect(parseReaderQuestions(dossierQuestionsFile())).toEqual(DOSSIER_READER_QUESTIONS);
+  });
+
+  it('takes its topic list from the evaluator, not a copy', () => {
+    expect(READER_QUESTION_TOPICS).toBe(OWNER_TOPICS);
   });
 
   it('requests one required section per question, with ids matching the topics', () => {
@@ -87,6 +93,41 @@ describe('REQ-031 clarification', () => {
     expect(record.answers[0]).toMatchObject({ id: 'purpose', answer: 'cache', reused: true, adopted: false });
     expect(record.limitations).toEqual([]);
     expect(record.dispositions.map(d => `${d.id}:${d.disposition}`)).toEqual(['purpose:answered', 'audience:answered']);
+  });
+
+  it('does not reuse a prior answered disposition that would fail a live reply: it is asked again or carried as a limitation', async () => {
+    const [purpose] = openQuestions(mechanicsOnly);
+    const good = { id: 'purpose' as const, contentDigest: purpose!.contentDigest, disposition: 'answered' as const, answer: 'cache', attribution: 'owner', revision: 'r0' };
+    const bad: Record<string, unknown>[] = [{ answer: '' }, { answer: '   ' }, { answer: 'unknown' }, { answer: 'UNKNOWN' }, { answer: ' Unknown \n' }, { answer: 42 }, { answer: undefined },
+      { attribution: '' }, { attribution: '  ' }, { attribution: undefined }, { revision: '' }, { revision: '\t' }, { revision: undefined }, { answer: 'x'.repeat(OWNER_ANSWER_MAX_CHARS + 1) }];
+    for (const change of bad) {
+      const record = await clarify({ sources: mechanicsOnly, mode: 'zero-interaction', prior: [{ ...good, ...change } as never] });
+      expect(record.answers, JSON.stringify(change).slice(0, 50)).toEqual([]);
+      expect(record.wouldHaveAsked.map(q => q.id)).toContain('purpose');
+      expect(record.limitations.some(text => text.includes('no mission is asserted'))).toBe(true);
+    }
+    const ok = await clarify({ sources: mechanicsOnly, mode: 'zero-interaction', prior: [{ ...good, answer: '  cache  ', attribution: ' owner ', revision: ' r0 ' }] });
+    expect(ok.answers[0]).toMatchObject({ id: 'purpose', answer: 'cache', attribution: 'owner', revision: 'r0', reused: true });
+    const edge = await clarify({ sources: mechanicsOnly, mode: 'zero-interaction', prior: [{ ...good, answer: 'x'.repeat(OWNER_ANSWER_MAX_CHARS) }] });
+    expect(edge.answers).toHaveLength(1);
+  });
+
+  it('treats unknown in any case as unknown, trims attribution and revision, rejects blank ones and bounds the answer', async () => {
+    for (const text of ['Unknown', 'UNKNOWN', '  uNkNoWn  ']) {
+      const record = await clarify({ sources: [...mechanicsOnly, file('README.md')], mode: 'interactive', maxQuestions: 1, ask: async q => ({ ...answer(q.id), answer: text }) });
+      expect(record.answers[0], text).toMatchObject({ disposition: 'unknown', answer: null });
+    }
+    for (const change of [{ attribution: '' }, { attribution: '  ' }, { revision: '' }, { revision: ' \t' }, { attribution: 7 }, { revision: null }]) {
+      const record = await clarify({ sources: mechanicsOnly, mode: 'interactive', ask: async q => ({ ...answer(q.id), ...change }) as never });
+      expect(record.aborted, JSON.stringify(change)).toEqual({ id: 'purpose', reason: 'invalid-owner-answer' });
+      expect(record.answers).toEqual([]);
+    }
+    const trimmed = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1, ask: async q => ({ ...answer(q.id), attribution: ' owner ', revision: ' r1 ' }) });
+    expect(trimmed.answers[0]).toMatchObject({ attribution: 'owner', revision: 'r1' });
+    const long = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1, ask: async q => answer(q.id, 'x'.repeat(OWNER_ANSWER_MAX_CHARS + 1)) });
+    expect(long.aborted).toEqual({ id: 'purpose', reason: 'invalid-owner-answer' });
+    const exact = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1, ask: async q => answer(q.id, 'x'.repeat(OWNER_ANSWER_MAX_CHARS)) });
+    expect(exact.answers[0]).toMatchObject({ disposition: 'answered' });
   });
 
   it('records an owner answer with attribution without adopting it, and keeps a declined one as a limitation', async () => {
