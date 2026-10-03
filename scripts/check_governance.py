@@ -3201,8 +3201,12 @@ _activate_readability_successor_copies()
 #: the label's performed digests but not the file's current argument, so
 #: until it was registered here the near-miss pass had nothing to measure a
 #: corrupted copy against. Rows are (label, digest, text before, text
-#: after); the pin is that exact line text, anchored at line start, so the
-#: digest is allowed only in the file and at the line that carries it.
+#: after); the pin is that exact line text, anchored at line start. A pin
+#: proves the quoting line is still present in that file; it does not scope
+#: the digest to that line. The near-miss pass allows the digest wherever it
+#: sits in the file, so a second copy, identical or not, passes. Refusing
+#: off-pin copies would fail 16 of the 46 history and retired pins, whose
+#: digests also occur off the pinned line, so it is not done here.
 SUPERSEDED_ACT_ARGUMENT_COPIES = {
     f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md": (
         (CC_SPEC_LABEL, CC_SPEC_ACT_6_DIGEST, f"{CC_SPEC_LABEL}@", "$"),
