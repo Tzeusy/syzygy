@@ -131,6 +131,8 @@ is stable; reviews cite rules by number.
    not the clause.
 9. A claim of absence needs a sweep with a denominator.
 10. Freeze the bytes a review is bound to; any later edit retires the review.
+11. An evidence record names its subject and the subject's digest; a record
+    that names neither cannot be re-checked against the bytes it describes.
 
 A generator that quotes prose has re-opened the door it closed.
 
@@ -238,7 +240,8 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   hash; `<summary>` needs its own `:focus-visible` rule. Chrome's IPC
   flooding protection silently drops same-document navigations past 200
   per ten seconds, so a fast keyboard sweep reads as a stuck hash from
-  activation 201 on: `launchBrowser` passes
+  the first activation past the budget (index 200 on a tight loop; 600 on
+  the live `/polaris` sweep, where pacing and re-navigations also count): `launchBrowser` passes
   `--disable-ipc-flooding-protection` (`syzygy-1z3.30`, 218 false
   violations).
 - Never put a fragment target (an `id` some `href="#…"` names) inside a
@@ -596,15 +599,20 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
 ### Known gaps
 
 - syzygy-ydr: non-blocking S2/S5 review findings outstanding.
-- Butlers data quirks (as of `13d269b`): `v1.md` is whole-source Unknown
-  (five colon forms and four duplicate labels outside the signed dash
-  grammar); Spec and Spine's home `openspec/` has no index, so the
-  whole-shape claim is Unknown; `components.md` fails the table grammar
-  (seven code-span first cells); `frontend.md` and 7 of 13 `butler.toml`
-  are withheld as active content (TOML has no inert context). Repairs for
-  the first three were ruled 2026-09-07 (P-60/P-61/P-62) and sit on
-  Butlers PR #4066, cleared to merge once the P-63 trim is on main. Do not
-  relax the grammar or policy without an owner gate.
+- Butlers data quirks, as of 2026-10-03: [Observed] a private-daemon run of
+  the Three-Surface POC at Butlers `32f38feb` (Syzygy `b5c2bcdb`; record
+  `docs/evidence/smooth-example-live-run-2026-10-03.json`) reads 285
+  sources, 392 items, 416 facts, 0 contradicted and 9 withheld (8
+  `active-content`, 1 `excluded-artifact`), and the 9 sources with an
+  unknown item denominator are those withheld ones, so no source is Unknown
+  for a grammar failure. The whole-shape claim is still Unknown, now for
+  `excluded-content`. Earlier text here (as of `13d269b`, retired
+  2026-10-03) named `v1.md`, the missing `openspec/` index and
+  `components.md` as grammar Unknowns; Butlers PR #4066 carried those
+  repairs (P-60/P-61/P-62) and merged 2026-09-07 [Inferred: from the bead
+  record, not re-read from Butlers]. `frontend.md` and `butler.toml` files
+  stay withheld as active content (TOML has no inert context). Do not relax
+  the grammar or policy without an owner gate.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
 ### Governance recorders (digest-bound acts)

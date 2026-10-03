@@ -20,6 +20,24 @@ npm ci && npm run poc -- --repo /home/tze/GitHub/butlers
 - **Options:** `--port 0` for an ephemeral port; `--state-dir <path>` for an
   explicit local credential directory.
 
+## Check a fresh checkout end to end
+
+```sh
+npm run poc:fresh-checkout-demo -- --repo /home/tze/GitHub/butlers
+```
+
+It clones Syzygy at the current head, installs, builds and tests, serves the
+POC on a private daemon, probes every human and machine route, checks
+PWB-REQ-020 parity and a browser pass, and writes a JSON record under
+`docs/evidence/`. Pass a suffixed `--date` when a same-day record exists; the
+file is overwritten silently.
+
+- **Green** means the command exited 0: every invariant in
+  `fresh-checkout-verdict.ts` held, and the record lists none as failed.
+- It is mechanical readiness only. It is not an owner walkthrough verdict, a
+  PWB-REQ-021 run record (`no-run-record` is the expected pre-walk state), or
+  a claim about Butlers beyond the one observed revision the record names.
+
 ## Restart one local POC listener
 
 `poc:restart` replaces exactly one verified listener with one identical
@@ -149,13 +167,17 @@ keeps its exact-table link as well.
    is not deployment evidence.
 3. In Trajectory, review the materialize panel's preview of the exact Bead a
    human-triggered action would create.
-   - Optionally click "Materialize this work item" (or, if already
-     materialized, "Re-run materialize (idempotent)") to actually create — or,
-     on a repeat run, reuse — that Bead in the configured Butlers repository.
-   - This is the one state-changing, human-only action in the POC; Syzygy
-     never triggers it on its own.
-4. After materializing, Trajectory's board shows two separately honest fields
-   for that item, not one:
+   - The packet preview always renders, read-only.
+   - The write is foreclosed: the panel shows "Foreclosed by owner ruling
+     P-71-Q5" with its citation
+     (`.syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md`),
+     and the "Materialize this work item" button is disabled.
+   - A direct POST to the action is refused with HTTP 403; Beads is not run
+     and nothing is written to the configured Butlers repository.
+   - Lifting it needs a dated owner act naming the write, then a
+     registry-entry amendment, then a fresh implementation authorization.
+4. Trajectory's board shows two separately honest fields for a work item, not
+   one:
    - the worker-change observer's state ("External worker: Planned / Active /
      Changed / merged", tracking real git activity against it);
    - its independent Bead status.
