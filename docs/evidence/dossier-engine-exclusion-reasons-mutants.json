@@ -1,19 +1,19 @@
 {
   "subject": {
-    "commit": "d97fb889a0b75b19b6e9b8cab0d0b275742847b7",
+    "commit": "71af9aa87881cb435ee5e9c7592a89ffc97e885e",
     "branch": "agent/dossier-engine-7",
     "fileSha256": {
       "apps/three-surface-poc/src/polaris-generation/source-adapter.ts": "980d0b5baa40fef01923bbce72219e9e326156379ad4a459f6d804d8e9b59d85",
       "packages/polaris-generation-core/src/generation-source.ts": "f9a1b9229b4ec717199addc5c0b80ef8655dbb1a3d351fd5716233e9a3fb1ede",
       "apps/three-surface-poc/src/polaris-generation/run-key.ts": "089f3401e707131c0f8bb348c0901f95d676ff25831d75f30d13a832c444a390",
-      "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts": "988a00d03c2e02691563c441ba09a92e4e853c8081ca37e6b4b2669412dfb941",
+      "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts": "15f60b045bacfa2cc52e2a11f88cef97cc087178f33c724645b8d9947f2bc6ab",
       "packages/polaris-generation-core/src/discovery.ts": "9620757222005a88e5a0daaaa2174c08f7251dc571bd17787ae517e2b7b97561",
       "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts": "c6946c8a51df230b00ad391726bade32579dd554069f5ebb46b13fb82dfb10d4"
     }
   },
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/polaris-generation-core",
-  "ranAt": "2026-10-03T18:00:25+00:00",
+  "ranAt": "2026-10-03T18:36:35+00:00",
   "mutants": [
     {
       "id": "validator-reason",
@@ -195,7 +195,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 21
+      "totalTests": 22
     },
     {
       "id": "corpus-oversize-unkeyed-id",
@@ -207,7 +207,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 21
+      "totalTests": 22
     },
     {
       "id": "corpus-digest-keyed-id",
@@ -219,7 +219,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 21
+      "totalTests": 22
     },
     {
       "id": "corpus-unrepresentable-plain",
@@ -231,7 +231,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 21
+      "totalTests": 22
     },
     {
       "id": "discovery-deferred-unkeyed-id",
