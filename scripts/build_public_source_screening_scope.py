@@ -78,8 +78,34 @@ INSTRUCTION_SYMBOLS = [
 
 
 PIPELINE = pathlib.Path("packages/polaris-generation-core/src/pipeline.ts")
-#: The emitted exclusion classes of the base policy (`redactionClasses.emitted`).
-EXCLUSION_REASONS = ["excluded-artifact", "unclassifiable-excluded"]
+GENERATION_SOURCE = pathlib.Path("packages/polaris-generation-core/src/generation-source.ts")
+#: [Inferred] the closed set of exclusion reasons is the value of this exported
+#: constant, which is not yet in code (requested of the generator's lane). The
+#: rule names the symbol and lists no reason, so the set cannot go stale in the
+#: policy; the builder reads it and fails closed while it is absent.
+EXCLUSION_REASON_SYMBOL = {"path": GENERATION_SOURCE.as_posix(), "symbol": "GENERATION_EXCLUSION_REASONS"}
+
+
+def exclusion_reasons(root: pathlib.Path = ROOT) -> list[str]:
+    """The closed exclusion-reason set, read from the exported constant in
+    generation-source.ts. Fails closed: an absent symbol, a shape other than a
+    literal array of quoted strings, or an empty set is an error."""
+    sym = EXCLUSION_REASON_SYMBOL["symbol"]
+    path = root / GENERATION_SOURCE
+    if not path.is_file():
+        raise ValueError(f"{GENERATION_SOURCE.as_posix()} is absent")
+    text = path.read_text()
+    if not re.search(rf"export\s+const\s+{sym}\b", text):
+        raise ValueError(f"{sym} is not exported from {GENERATION_SOURCE.as_posix()}")
+    m = re.search(rf"export\s+const\s+{sym}\s*(?::[^=]+)?=\s*\[([^\]]*)\]\s*(?:as\s+const)?\s*;", text)
+    if not m:
+        raise ValueError(f"cannot read {sym} as a literal array of strings")
+    body = m.group(1)
+    reasons = re.findall(r"'([a-z][a-z0-9-]*)'", body)
+    leftover = re.sub(r"'[a-z][a-z0-9-]*'|[\s,]|//[^\n]*", "", body)
+    if not reasons or leftover or len(set(reasons)) != len(reasons):
+        raise ValueError(f"{sym} is empty, repeats a reason or holds more than string literals")
+    return reasons
 
 
 def source_population_fields(root: pathlib.Path = ROOT) -> list[str]:
@@ -139,9 +165,9 @@ def public_scope() -> dict:
             "class": "code-structure",
             "fields": source_population_fields(),
             "fieldsDerivedFrom": "the sourcePopulation entry in packages/polaris-generation-core/src/pipeline.ts, read by this builder; the confirmed admission egress record's generated table classes the field sourcePopulation as target-metadata",
-            "rule": "the metadata the generator carries for each admitted-snapshot source, admitted or excluded alike, is exactly the fields listed and nothing else; reason is carried only for an excluded source and only as one of exclusionReasons. No body, no content digest and no policy detail is carried under this rule. A path of an excluded source is not in the list and is not carried",
-            "exclusionReasons": EXCLUSION_REASONS,
-            "reasonNote": "[Observed] the generator also emits the reason oversize-source-excluded (generation-source.ts); no class of this policy lists it, so a source excluded for size would carry a reason this rule refuses until the owner adds it (packet question)",
+            "rule": "the metadata the generator carries for each admitted-snapshot source, admitted or excluded alike, is exactly the fields listed and nothing else; reason is carried only for an excluded source and only as a member of the closed set that exclusionReasonSymbol names. No body, no content digest and no policy detail is carried under this rule. A path of an excluded source is not in the list and is not carried",
+            "exclusionReasonSymbol": EXCLUSION_REASON_SYMBOL,
+            "reasonRule": "the closed set of exclusion reasons is exactly the values of the exported constant named by exclusionReasonSymbol, read from code at the commit a run names; this policy lists no reason, so the set cannot differ from what the generator emits. A reason outside that constant is not carried, and the generator's validator refuses it before a request. [Inferred] the constant and the validator are requested of the generator's lane and are not in code at this package's base; the package is not ready for an act until the constant exists (the builder fails closed while it is absent)",
         },
         "runProfileRule": {
             "class": "code-content",
@@ -267,8 +293,10 @@ def semantic_findings(base_text: str, proposed_text: str) -> list[str]:
     tm = scope.get("targetMetadataRule", {})
     if tm.get("fields") != source_population_fields():
         bad.append("targetMetadataRule fields differ from the pipeline's sourcePopulation")
-    if tm.get("exclusionReasons") != EXCLUSION_REASONS or tm.get("class") != "code-structure":
-        bad.append("targetMetadataRule reasons or class differ from the declared ones")
+    if tm.get("exclusionReasonSymbol") != EXCLUSION_REASON_SYMBOL or tm.get("class") != "code-structure":
+        bad.append("targetMetadataRule reason symbol or class differ from the declared ones")
+    if "exclusionReasons" in tm:
+        bad.append("targetMetadataRule hand-lists exclusion reasons instead of naming the code symbol")
     if "exclusionMetadata" in scope:
         bad.append("exclusionMetadata (digest and policy fields the pipeline does not send) is back")
     if "the other way round" not in scope["inheritedRules"]:
@@ -321,6 +349,16 @@ def check(root: pathlib.Path = ROOT) -> list[str]:
         findings.append(f"proposed/ holds {present}, not exactly the declared patch")
     findings += semantic_findings(base_text, proposed)
     return findings
+
+
+def readiness(root: pathlib.Path = ROOT) -> list[str]:
+    """Act-readiness, separate from byte currency: the closed reason set must be
+    readable from code. The proposed bytes do not depend on its values."""
+    try:
+        exclusion_reasons(root)
+    except ValueError as exc:
+        return [f"not ready for an act: {exc}"]
+    return []
 
 
 def write(root: pathlib.Path = ROOT) -> None:
@@ -392,6 +430,8 @@ def selftest() -> int:
         sem("content digest added to target metadata is caught", lambda x: x[SCOPE_KEY]["targetMetadataRule"]["fields"].append("contentDigest"), "targetMetadataRule")
         sem("old exclusionMetadata returns is caught", lambda x: x[SCOPE_KEY].update(exclusionMetadata="digest"), "exclusionMetadata")
         sem("one-way sibling separation is caught", lambda x: x[SCOPE_KEY].update(inheritedRules=x[SCOPE_KEY]["inheritedRules"].replace("the other way round", "")), "one direction")
+        sem("a hand-listed reason set is caught", lambda x: x[SCOPE_KEY]["targetMetadataRule"].update(exclusionReasons=["excluded-artifact"]), "hand-lists")
+        sem("a changed reason symbol is caught", lambda x: x[SCOPE_KEY]["targetMetadataRule"]["exclusionReasonSymbol"].update(symbol="OTHER"), "reason symbol")
         sem("logging opened is caught", lambda x: x[SCOPE_KEY]["rawBodyHandling"].update(logging="run-directory-only"), "logging")
         sem("workingTree opened is caught", lambda x: x[SCOPE_KEY]["accessBoundary"].update(workingTree=True), "accessBoundary")
         sem("a third egress route is caught", lambda x: x[SCOPE_KEY]["accessBoundary"]["networkEgressRoutes"].append("z"), "exactly two")
@@ -416,6 +456,28 @@ def selftest() -> int:
             results.append(("an unreadable sourcePopulation shape is refused", False))
         except ValueError:
             results.append(("an unreadable sourcePopulation shape is refused", True))
+    # the reason set is read from code: present, absent, unreadable shapes
+    with tempfile.TemporaryDirectory() as d:
+        root = pathlib.Path(d)
+        gs = root / GENERATION_SOURCE
+        gs.parent.mkdir(parents=True)
+        sym = EXCLUSION_REASON_SYMBOL["symbol"]
+
+        def reasons_of(src):
+            gs.write_text(src)
+            try:
+                return exclusion_reasons(root)
+            except ValueError:
+                return None
+        results.append(("a readable constant yields its set", reasons_of(f"export const {sym} = [\n  'a-b', // x\n  'c',\n] as const;\n") == ["a-b", "c"]))
+        results.append(("an added reason moves the set", reasons_of(f"export const {sym} = ['a-b', 'c', 'd'] as const;") == ["a-b", "c", "d"]))
+        results.append(("a missing file is refused", (gs.unlink(), readiness(root) != [])[1]))
+        results.append(("an absent symbol is refused", reasons_of("export const OTHER = ['a'] as const;") is None))
+        results.append(("an unexported symbol is refused", reasons_of(f"const {sym} = ['a'] as const;") is None))
+        results.append(("a computed set is refused", reasons_of(f"export const {sym} = Object.keys(x);") is None))
+        results.append(("a non-literal member is refused", reasons_of(f"export const {sym} = ['a', REASON_B] as const;") is None))
+        results.append(("an empty set is refused", reasons_of(f"export const {sym} = [] as const;") is None))
+        results.append(("a repeated reason is refused", reasons_of(f"export const {sym} = ['a', 'a'] as const;") is None))
     failed = [n for n, ok in results if not ok]
     for n, ok in results:
         print(("ok   " if ok else "FAIL ") + n)
@@ -431,9 +493,13 @@ def main(argv: list[str]) -> int:
         write()
         print("wrote", PATCH.as_posix(), "and", MANIFEST.as_posix())
         return 0
+    pending = "--pending-symbol" in argv[2:]
     if mode == "--manifest-digest":
         if check():
             print("refusing: package is stale; run --check", file=sys.stderr)
+            return 1
+        if readiness() and not pending:
+            print("refusing:", readiness()[0], "(--pending-symbol prints the digest of a package that is not act-ready)", file=sys.stderr)
             return 1
         print(hashlib.sha256((ROOT / MANIFEST).read_bytes()).hexdigest())
         return 0
@@ -442,7 +508,12 @@ def main(argv: list[str]) -> int:
         for f in findings:
             print("FINDING", f)
         print("public-source screening scope:", "STALE" if findings else "current")
-        return 1 if findings else 0
+        ready = readiness()
+        for f in ready:
+            print("NOTE" if pending else "FINDING", f)
+        if not ready:
+            print("exclusion reasons read from code:", ", ".join(exclusion_reasons()))
+        return 1 if findings or (ready and not pending) else 0
     print(f"unknown mode {mode}", file=sys.stderr)
     return 2
 
