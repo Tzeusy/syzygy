@@ -21,7 +21,7 @@ export {
   type SourcePopulationFailure,
 } from './admitted-input.js';
 export {
-  promptForStage, DOSSIER_STAGE_ILLUSTRATIONS, DOSSIER_ILLUSTRATION_SOURCES, DISCOVERY_STAGE_ILLUSTRATIONS, ILLUSTRATION_HEADING,
+  promptForStage, ILLUSTRATION_HEADING,
   type GenerationStage, type DiscoveryStage, type PromptStage, type PromptProfile,
 } from './prompts.js';
 export {

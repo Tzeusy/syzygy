@@ -99,7 +99,8 @@ function check(schema: Schema, value: unknown): void {
     return;
   }
   if (schema.type === 'number') {
-    if (typeof value !== 'number' || !Number.isFinite(value) || value < schema.minimum || value > schema.maximum) throw new Error('invalid-number');
+    // Written as an inclusion so NaN, which fails every comparison, is refused with the infinities.
+    if (typeof value !== 'number' || !(value >= schema.minimum && value <= schema.maximum)) throw new Error('invalid-number');
     return;
   }
   if (typeof value !== 'object' || value === null || types.isProxy(value)) throw new Error('invalid-structure');
