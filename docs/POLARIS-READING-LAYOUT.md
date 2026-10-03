@@ -102,4 +102,5 @@ on the two pseudo-elements of one empty `<i>` after it. That is the only
 mark markup, about 7 bytes a tuple, and each field keeps its own token.
 The words carry the value, so a mark's symbol has an empty alternative
 text. The claim-state glossary rows are generated from the same tables and
-carry the value classes. An undeclared value refuses to render. The full proposal legend is later work.
+carry the value classes. An undeclared value refuses to render. The full
+proposal legend is later work.
