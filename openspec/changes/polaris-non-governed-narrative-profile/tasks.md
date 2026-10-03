@@ -13,22 +13,26 @@ behavior.
       from `proposed/` to `specs/polaris-generation/spec.md`; generalize
       `scripts/count_polaris_effective_scenarios.py` and the R-check that
       classifies base and overlay files; update `PROJECT-STATUS.md`'s count
-      (31 requirements and 182 scenarios today; 32 and 190 with this
-      requirement); regenerate `DIRECTIVE-REGISTER.md` and the dependency
+      (31 requirements and 182 scenarios today; 32 and 194 with this
+      requirement's twelve); regenerate `DIRECTIVE-REGISTER.md` and the dependency
       union.
 
 ## Required implementation and proof after applicable authorization
 
-- [ ] Run profile: a frozen declaration-form list, written before discovery.
+- [ ] Run profile: a frozen declaration-form list with path classes and
+      generated-file markers, fixed outside the producer before discovery.
 - [ ] Catalog: declared, unadopted-draft and Unknown entries kept distinct,
       each declared entry carrying path, revision and span.
 - [ ] Deep-dive composition: argument band, contract-class band from
       admitted reference spans, one absence line, machine-readable band and
       class declarations.
-- [ ] Terminus renderer: byte-exact span with repository, revision, path,
-      span and digest, never labelled a specification.
+- [ ] Anchor renderer and leaf-altitude line: byte-exact span with
+      repository, revision, path, span and digest, never labelled a
+      specification or leaf; one honest `missing-declaration` line at the
+      leaf altitude.
 - [ ] Evaluation cases under requirement 014: a non-governed snapshot with
-      thin declarations, a late-found declaration, and a governed snapshot
-      that must refuse the profile.
+      thin declarations, a late-found declaration, a generated reference, a
+      partly governed snapshot and a governed snapshot that must refuse the
+      profile.
 - [ ] Verify the complete adopted generator specification together with this
       change; this checklist does not replace unfinished requirements.
