@@ -11,7 +11,7 @@
       "role": "adapter",
       "implementationId": "polaris-generation/provider-agent-sdk",
       "implementationVersion": null,
-      "implementationStatus": "not-yet-implemented: the adapter is gap G2 of docs/polaris-generation/TRACKER.md; no provider SDK is imported anywhere in apps, packages or scripts. Until an implementation exists and its version is recorded in the snapshot, RFC4-3 admits no output from this entry. implementationVersion stays null (Unknown), never a placeholder",
+      "implementationStatus": "not-yet-implemented as a registered adapter: the adapter is gap G2 of docs/polaris-generation/TRACKER.md and sits on an unmerged branch (PR #258 at the time of drafting). This version is a candidate for the owner to read, not a usable entry: RFC4-3 admits no output from an entry whose implementationVersion is Unknown, so a later version carrying the implementation version and the pinned governing contract version replaces this one through its own review and act. implementationVersion stays null (Unknown), never a placeholder",
       "contractId": "RFC-0004/general-contract",
       "contractVersion": "sha256:b21fc950103964c34e2f9b2d78c97ac8e03720f311738e0e6323afb29b8d6f0e",
       "contractVersionSource": "the value the adopted Butlers observer entry declares for the same contract; re-derive by script before the offering",
@@ -61,6 +61,14 @@
         {
           "class": "run-budget",
           "identityScheme": "canonical-json-sha256"
+        },
+        {
+          "class": "runtime-version-and-configuration",
+          "identityScheme": "sdk-version-plus-cli-version-plus-canonical-json-sha256-of-run-profile"
+        },
+        {
+          "class": "owner-sign-in-credential",
+          "identityScheme": "not-recorded: the credential's presence is a precondition, its value and identity are never written to a record"
         }
       ],
       "outputFactClasses": [
@@ -77,6 +85,10 @@
           "identityScheme": "attempt-id-plus-captured-request-sha256"
         },
         {
+          "class": "model-identity",
+          "identityScheme": "attempt-id-plus-model-id-reported-or-unknown"
+        },
+        {
           "class": "unknown",
           "identityScheme": "claim-identity-plus-closed-reason"
         }
@@ -86,62 +98,101 @@
       "typedAuthority": {
         "authorityType": "model-provider",
         "authorityTypeLabel": "[Inferred] a provider is an external authority of project:syzygy under RFC4-1; the typed-authority list in the RFC names version control, hosting, the scheduler and the OpenSpec CLI as examples, so this type name is the drafter's",
-        "questions": ["What did the provider return for this exact request?"],
-        "readAuthority": "none: the route reads no source. It transmits only the request the generator built, after the single egress check (RFC5-15), and receives one reply",
+        "questions": [
+          "What did the provider return for this exact request?"
+        ],
+        "readAuthority": "none: the route reads no source. It transmits the request the generator built (the stage system prompt and the stage input envelope, each after the single egress check, RFC5-15) together with the bytes the pinned runtime adds itself, and receives the reply. [Observed, capture endpoint, no provider contacted] the runtime-fixed additions are listed in PROVIDER-EGRESS-BYTES.md (PR #258): a fixed system prefix, an empty system message carrying an effort setting, metadata.user_id with a random per-run-directory device id and session id, max_tokens, stream, cache_control, platform headers that identify the machine's OS, CPU architecture and Node runtime version, and, after some failures, a body-less HEAD /api/hello probe",
         "writeSurface": [],
-        "runDirectoryWrites": "provider requests, replies, run records and the runtime's own state, including any session transcript, are written only inside the run directory under project:syzygy's state directory, outside git, from the start of the run; this is the egress record's retention line and the only local write",
+        "runDirectoryWrites": "provider requests, replies, run records and the runtime's own state, including any session transcript, are written inside the run directory under project:syzygy's state directory, outside git, from the start of the run (the egress record's retention line). [Unknown] whether a signed-in runtime refreshes or writes its credential outside that directory; the entry cannot be offered until that is checked",
         "databaseAccess": [],
-        "networkAccess": ["the Anthropic API, through the Claude Agent SDK runtime, signed in with the owner's account; no other destination"],
+        "networkAccess": [
+          "the Anthropic API host, through the Claude Agent SDK runtime, signed in with the owner's account or key; the connectivity probe HEAD /api/hello goes to the same host and carries no generator bytes; no other destination"
+        ],
         "executeObservedCode": false,
         "workingTreeRead": false,
-        "toolInvocation": []
+        "toolInvocation": [],
+        "generatorBuiltContent": "exactly two request parts are generator content: the stage system prompt and the stage input envelope (the user text block). Everything else in the request is runtime-fixed or profile-set and carries no source span; the model identifier is profile-set",
+        "writeSurfaceArgument": "writeSurface is empty because nothing is written to the observed repository, its forks, its tracker or any Anthropic-hosted object the owner could later edit. The dispatch itself is an effect (the pipeline rechecks effect permission immediately before it); the egress consent is the explicit authority for that effect and for the provider's retention under the account's terms, which this entry does not widen",
+        "toolInvocationNote": "the empty list holds in the default text mode. The opt-in schema mode adds exactly one tool, StructuredOutput, which contradicts no-tools; it is off by default and enabling it is a different route condition that the egress record must name first"
       },
       "routeConditions": {
-        "source": "instances/egress-anthropic of the public-repo admission package; the egress record is the authority, this block only declares that the implementation will enforce it",
-        "tools": "every tool the runtime offers is disabled; the model sees only the request carries",
-        "ambientContext": "no instruction or memory files, user or project settings, MCP servers, hooks or environment summary; the working directory is an empty directory inside the run directory",
+        "source": "record PUBLIC-EGRESS-anthropic of the public-repo admission package (PR #215), version 0.1.0-candidate.7 at drafting; the offering step re-pins the version in force. The egress record is the authority, this block only declares what the implementation will enforce and cannot widen it",
+        "tools": "tools is [] in the request; no tool of the runtime or the provider's side is offered or invoked; the opt-in StructuredOutput schema mode is off by default (see toolInvocationNote)",
+        "ambientContext": "the runtime loads no instruction or memory files, user or project settings, MCP servers, hooks, environment summary or safeguards block; its working directory is an empty directory inside the run directory. The runtime-fixed system prefix and empty system message are model-visible context the generator did not build; they are listed, not hidden, in PROVIDER-EGRESS-BYTES.md",
         "telemetry": "telemetry, error reporting and update checks are disabled; a run whose runtime cannot disable them does not start",
         "stateLocation": "a run whose runtime cannot keep its state and transcript inside the run directory does not start",
-        "acceptanceCheck": "the adapter is accepted only when a captured request shows the system prompt and messages the generator built and nothing else; the acceptance test runs against a local capture endpoint before any real call",
-        "fallback": "none: a failure never routes to another provider, to the direct API or to a tool; a different route is a new registry event"
+        "acceptanceCheck": "the adapter is accepted only when a request captured at a local endpoint, before any real call, shows the generator-built parts byte for byte equal to what the generator built, and every other byte inside the runtime-fixed or profile-set lists of PROVIDER-EGRESS-BYTES.md for the pinned versions; any byte in neither list fails. This separates runtime envelope from content, and states that the runtime envelope is not the generator's request",
+        "fallback": "none: a failure never routes to another provider, to the direct API or to a tool"
       },
       "portMapping": {
         "implements": "PipelinePorts.generate in packages/polaris-generation-core/src/pipeline.ts",
-        "consumes": ["permissionIdentity", "admit", "permitted", "releaseUnsent", "record", "lateReceipt"],
-        "note": "[Observed] the ports exist; [Unknown] how the runtime reports usage, a model identifier and late receipts, so usage fields are Unknown rather than zero when unreported"
+        "consumes": [
+          "permissionIdentity",
+          "admit",
+          "permitted",
+          "releaseUnsent",
+          "record",
+          "lateReceipt"
+        ],
+        "note": "[Observed] the ports exist; [Unknown] how the runtime reports usage, a model identifier and late receipts, so usage fields are Unknown (Missing quantity) rather than zero when unreported"
       },
       "unknowns": [
-        "whether the Agent SDK on a subscription login can disable tools, ambient context and telemetry and can keep its transcript in the run directory (gap #21); the entry cannot be offered for the first real call until this is checked",
+        "whether the Agent SDK on a subscription login can meet the route conditions (gap #21); with an API key it is [Unknown] too; the entry cannot be offered for the first real call until this is checked",
+        "[Unknown] whether the real API accepts the empty system message with the effort setting: only a capture endpoint has seen it",
+        "[Unknown] traffic on paths the capture did not take: error handling beyond 429 and 529, long runs and login flows",
+        "whether a signed-in runtime writes or refreshes its credential outside the run directory",
         "the runtime's context window and rate limits",
-        "the provider's own retention under the signed-in account's terms, which the egress record discloses and does not promise"
+        "the provider's own retention under the terms and settings of the account or key used, which the egress record discloses and does not promise"
       ],
       "failureStates": {
-        "consentMissingOrWithdrawn": {
+        "consentWithdrawn": {
           "degradationState": "Consent withdrawn",
           "unknownReason": "unconsented-source-or-provider"
         },
-        "routeUnreachableOrRuntimeRefusesConfiguration": {
+        "routeUnreachable": {
           "degradationState": "Observer failed",
           "unknownReason": "source-uncaptured-or-unreachable"
+        },
+        "runtimeCannotMeetRouteConditions": {
+          "executionFact": "the run does not start",
+          "unknownReason": "execution-blocked",
+          "note": "an environment the profile could not satisfy (RFC2-24 reason 12); not an observer error, and no degradation state is invented"
         },
         "classificationIndeterminate": {
           "degradationState": "Excluded content",
           "unknownReason": "excluded-content"
         },
-        "usageOrDispatchUncertain": {
-          "degradationState": "Partial snapshot",
+        "usageUncertain": {
+          "degradationState": "Missing quantity",
           "unknownReason": "source-uncaptured-or-unreachable",
-          "note": "the pipeline stops with effect-uncertain or usage-uncertain; a lease expiry never replays the request"
+          "note": "the pipeline stops with usage-uncertain; absent tokens or cost are Unknown, never zero (RFC2-23)"
         },
+        "dispatchUncertain": "not a degradation state: an execution fact (the pipeline stops with effect-uncertain and a lease expiry never replays the request), routed through the existing claim-reason predicate like budget exhaustion (ADAPTER-DECLARATIONS.md, failure behaviour)",
         "budgetExhaustedOrRejectedOutput": "not a degradation state: distinct execution facts (ADAPTER-DECLARATIONS.md, failure behaviour), mapped to the existing claim-reason predicate"
       },
       "admissionFailureMapping": {
-        "missingConsent": "unconsented-source-or-provider",
+        "missingConsent": "unconsented-source-or-provider (a refused effect under the permission predicate; no withdrawal event is invented)",
         "mismatchedStaleRevokedOrUnattributedConsent": "unconsented-source-or-provider",
         "missingRegistryEntry": "source-uncaptured-or-unreachable",
         "mismatchedStaleRevokedOrUnattributedRegistryEntry": "source-uncaptured-or-unreachable"
       },
-      "adoptionStatus": "candidate-entry-unadopted"
+      "adoptionStatus": "candidate-entry-unadopted",
+      "supersession": "signing these bytes would register the route's declared boundary and enable nothing; a usable entry is a later observerVersion that fills implementationVersion and governingBehaviorContract.version, is reviewed afresh and is signed by its own act (rule 10: any byte change retires this row)",
+      "routeSubstitution": "RFC4-1 allows exactly one registered adapter per external authority per project. A different route to Anthropic (for example the Messages API route, PR #264) is a substitute that replaces this entry by a successor version or entry under a new act; it never runs beside this one and this entry never falls back to it",
+      "runtimePin": {
+        "package": "@anthropic-ai/claude-agent-sdk",
+        "version": "0.3.288",
+        "bundledCli": "2.1.288",
+        "note": "[Observed] per PROVIDER-EGRESS-BYTES.md (PR #258): the adapter refuses construction on another SDK version and fails a call whose CLI announces another; a bump is a new entry version"
+      },
+      "snapshotInputMapping": "[Inferred] RFC2-1 items: the request inputs are item 8 (deterministic configuration affecting classification: stage prompt, schema, run profile) and item 7 (adapter and runtime versions, policy versions); replies are item 6 (captured execution evidence). The installed Butlers entry carries no such mapping either, so this is an inherited gap; the mapping is the drafter's and the reviewer should test it",
+      "determinismByOutputClass": {
+        "provider-reply-capture": "capture",
+        "usage-record": "capture",
+        "dispatch-evidence": "capture",
+        "model-identity": "capture",
+        "unknown": "derivation-deterministic"
+      }
     }
   ]
 }

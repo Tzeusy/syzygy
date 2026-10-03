@@ -15,9 +15,13 @@ read or a model call can be lawful (REQ-polaris-generation-017; RFC4-1):
 2. one **shared public Git-hosting source-acquisition adapter**
    (`proposed/POLARIS-PUBLIC-GIT-SOURCE-ACQUISITION-CANDIDATE.json`).
 
-Each is its own record with its own act. Signing either enables nothing by
-itself: the implementation does not exist, and the egress consent, the
-observation consents and the public-source screening scope are separate acts.
+Each is its own record with its own act. These rows are candidates for the
+owner to read, not usable entries: both leave `implementationVersion` null and
+the governing contract version Unknown, so RFC4-3 admits no output from them.
+Signing one registers its declared boundary and enables nothing; each usable
+entry is a later version needing its own review and act, and the egress
+consent, the observation consents and the public-source screening scope are
+separate acts.
 
 ## How the acts would be given
 
@@ -57,11 +61,24 @@ Redis are unread. *Recommended:* accept as the ceiling for the first target,
 and treat the first run's measurement as the input to a later entry version.
 A breach leaves dependent claims Unknown and never fails silently.
 
-**O3. Route unknowns.** The provider entry lists what is [Unknown] today,
-chiefly whether the Agent SDK on the owner's login can disable tools,
-ambient context and telemetry and keep its transcript in the run directory.
-*Recommended:* sign the entry only after that check, since the egress record
-makes a runtime that cannot be so configured a run that does not start.
+**O3. Route unknowns.** The provider entry lists what is [Unknown] today:
+whether the Agent SDK on the owner's login or key can disable telemetry and keep
+its state in the run directory, whether the real API accepts the runtime's
+empty system message, traffic beyond the captured paths and credential writes
+outside the run directory. *Recommended:* sign the entry only after that
+check, since the egress record makes a runtime that cannot be so configured a
+run that does not start.
+
+**O4. The route's request is not only the generator's.** [Observed, capture
+endpoint] The pinned runtime (SDK 0.3.288, CLI 2.1.288) adds a fixed system
+prefix, an empty system message, a per-run-directory device and session id,
+platform headers naming the OS, CPU architecture and Node version, and
+sometimes a body-less HEAD probe. The entry lists these by reference to
+`PROVIDER-EGRESS-BYTES.md` (PR #258) and accepts the adapter only when
+generator-built parts match byte for byte and nothing falls outside the lists.
+*Recommended:* accept the listed envelope for this route. If the owner will not
+send those bytes, the answer is a different route (PR #264), which replaces
+this entry under RFC4-1.
 
 ## What it does not do
 

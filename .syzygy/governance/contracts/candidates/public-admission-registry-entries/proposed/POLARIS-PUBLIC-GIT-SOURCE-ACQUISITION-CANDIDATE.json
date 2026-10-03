@@ -11,7 +11,7 @@
       "role": "adapter",
       "implementationId": "polaris-generation/public-git-source-acquisition",
       "implementationVersion": null,
-      "implementationStatus": "not-yet-implemented: the any-repo reader is gap G1 of docs/polaris-generation/TRACKER.md; the only real-input reader today is the Syzygy self-corpus. implementationVersion stays null (Unknown), never a placeholder",
+      "implementationStatus": "not-yet-implemented: the any-repo reader is gap G1 of docs/polaris-generation/TRACKER.md; the only real-input reader today is the Syzygy self-corpus. This version is a candidate for the owner to read, not a usable entry: RFC4-3 admits no output from an entry whose implementationVersion is Unknown, so a later version carrying the implementation version and the pinned governing contract version replaces this one through its own review and act. implementationVersion stays null (Unknown), never a placeholder",
       "contractId": "RFC-0004/general-contract",
       "contractVersion": "sha256:b21fc950103964c34e2f9b2d78c97ac8e03720f311738e0e6323afb29b8d6f0e",
       "contractVersionSource": "the value the adopted Butlers observer entry declares for the same contract; re-derive by script before the offering",
@@ -86,19 +86,23 @@
         }
       ],
       "determinismClass": "capture",
-      "determinism": "the fetch is a capture: a recording of what the hosting service returned for the named commit at the capture instant. Tree listing, blob reads and span derivation from those captured objects are derivation-deterministic over the identified capture",
       "typedAuthority": {
         "authorityType": "hosting-and-version-control",
-        "questions": ["What does this exact commit contain?"],
+        "questions": [
+          "What does this exact commit contain?"
+        ],
         "readAuthority": "the snapshot objects of each admitted commit only: the commit, its root tree and the trees and blobs reachable from it. Reads go through Git object access in the run-directory repository, never a checked-out working tree; no ancestor commit, issue, pull request, CI log or release asset is requested",
-        "fetch": "one shallow fetch of exactly one admitted commit object id per fetch from the upstream locator named in the observation consent (git fetch --depth=1 <upstream> <commit>); a fetch of any other object, ref or history is refused",
+        "fetch": "git fetch --depth=1 --no-tags --no-recurse-submodules <upstream> <commit>: one shallow fetch of exactly one admitted commit object id per fetch from the upstream locator named in the observation consent; a fetch of any other object, ref, tag or history is refused",
         "writeSurface": [],
         "runDirectoryWrites": "the local repository created for the run inside the run directory under project:syzygy's state directory, outside git, and the acquisition capture records; nothing is written to the observed repository, its forks or its tracker",
         "databaseAccess": [],
-        "networkAccess": ["the upstream Git hosting service named by the pair's observation consent, for the fetch only; no other destination"],
+        "networkAccess": [
+          "the upstream Git hosting service named by the pair's observation consent, for the fetch only; no other destination"
+        ],
         "executeObservedCode": false,
         "workingTreeRead": false,
-        "submodules": "not fetched; a submodule not vendored at the admitted revision is outside the grant"
+        "submodules": "not fetched (--no-recurse-submodules); a submodule not vendored at the admitted revision is outside the grant",
+        "tags": "not fetched (--no-tags); an annotated tag object is outside the consent's object set of commit, trees and blobs"
       },
       "screening": "every blob passes the effective public-source screening scope of project:syzygy before ingest (RFC5-16, RFC3-30); an observed repository's own policy files supply no policy; excluded or unclassifiable content yields a hash-not-body exclusion record",
       "resourceLimits": {
@@ -107,23 +111,19 @@
         "maxBytesPerSource": 1048576,
         "maxTotalBytes": 134217728,
         "maxFetchBytesPerCommit": 268435456,
-        "maxTreeEntries": 65536,
-        "maxIndexDepth": 16
+        "maxTreeEntries": 65536
       },
       "resourceLimitSemantics": {
         "maxSources": "the complete tree-known source population; an excess preserves every tree-known identity but admits no body beyond the limit and makes dependent claims Unknown, recorded as deferred-by-budget",
-        "maxBytesPerSource": "the exact blob before classification; a larger blob is excluded with a recorded reason, or chunked into spans by the reader, and never fails the run",
+        "maxBytesPerSource": "the exact blob size before classification; a larger blob is excluded with a recorded reason (content-exclusion, hash-not-body) and never chunked into spans or admitted in part; the run does not fail",
         "maxTotalBytes": "one cumulative counter across the run; each path plus object id body counted once",
         "maxFetchBytesPerCommit": "the transfer for one shallow fetch; an excess aborts that fetch and the revision is Unknown with source-uncaptured-or-unreachable",
-        "breachResult": "input breaches retain the complete population and make dependent facts Unknown; nothing success-shaped is emitted"
+        "breachResult": "input breaches retain the complete population and make dependent facts Unknown; nothing success-shaped is emitted",
+        "maxTreeEntries": "the number of tree entries listed across the admitted commit's trees; an excess keeps the entries already listed, lists no more, and makes dependent claims Unknown, recorded as deferred-by-budget"
       },
       "failureStates": {
         "fetchFailed": {
           "degradationState": "Observer failed",
-          "unknownReason": "source-uncaptured-or-unreachable"
-        },
-        "revisionMissingOrNotAdmitted": {
-          "degradationState": "Source unreachable",
           "unknownReason": "source-uncaptured-or-unreachable"
         },
         "someSourcesUncapturedOrOverLimit": {
@@ -136,7 +136,17 @@
         },
         "consentWithdrawn": {
           "degradationState": "Consent withdrawn",
-          "unknownReason": "unconsented-source-or-provider"
+          "unknownReason": "unconsented-source-or-provider",
+          "note": "applies to a consent that existed and was withdrawn; an absent consent is the missingConsent admission refusal below"
+        },
+        "revisionMissingAtUpstream": {
+          "degradationState": "Source unreachable",
+          "unknownReason": "source-uncaptured-or-unreachable"
+        },
+        "revisionNotAdmitted": {
+          "executionFact": "refused before any fetch",
+          "unknownReason": "unconsented-source-or-provider",
+          "note": "a revision the observation consent does not list is outside the grant; the remedy is a consent version (RFC2-24 reason 6), not a repaired fetch, and no degradation state or withdrawal event is invented"
         }
       },
       "admissionFailureMapping": {
@@ -147,7 +157,17 @@
         "missingRegistryEntry": "source-uncaptured-or-unreachable",
         "mismatchedStaleRevokedOrUnattributedRegistryEntry": "source-uncaptured-or-unreachable"
       },
-      "adoptionStatus": "candidate-entry-unadopted"
+      "adoptionStatus": "candidate-entry-unadopted",
+      "supersession": "signing these bytes would register the acquisition boundary and enable nothing; a usable entry is a later observerVersion that fills implementationVersion and governingBehaviorContract.version, is reviewed afresh and is signed by its own act (rule 10: any byte change retires this row)",
+      "snapshotInputMapping": "[Inferred] RFC2-1 items: the admitted revision and its object database are item 1 (observed repository and its state; working-tree state is declared absent), screening scope and registry entry are items 7 and 8, resource limits are item 8. The installed Butlers entry carries no such mapping either, so this is an inherited gap; the mapping is the drafter's and the reviewer should test it",
+      "determinism": "the fetch is a capture: a recording of what the hosting service returned for the named commit at the capture instant. Everything derived from the captured objects is derivation-deterministic over the identified capture; the per-class field below is the machine form",
+      "determinismByOutputClass": {
+        "acquisition-capture-record": "capture",
+        "source-reference": "derivation-deterministic",
+        "source-span": "derivation-deterministic",
+        "content-exclusion": "derivation-deterministic",
+        "unknown": "derivation-deterministic"
+      }
     }
   ]
 }

@@ -2,7 +2,8 @@
 
 > **Candidate — binds nothing.** Drafted by an agent for bead `syzygy-mea`.
 > Effect over either entry would come only from that entry's own owner act.
-> No review has been run against these bytes.
+> Round 1 returned REVISE (raw retained under `reviews/`); this is the
+> round-2 repair. No review has run against these bytes.
 
 **Artifact(s):** two new whole files under `proposed/` in this directory:
 `POLARIS-PROVIDER-ROUTE-ANTHROPIC-AGENT-SDK-CANDIDATE.json` and
@@ -11,8 +12,8 @@ installed home `.syzygy/governance/declarations/adapter-registry/`, and this
 package installs nothing there.
 
 **Stable IDs affected:** none minted, renamed or retired. The entries answer
-REQ-polaris-generation-017 and 018 (Source: RFC4-2) and cite RFC4-1, RFC4-2,
-RFC4-3, RFC3-16(a), RFC5-15 and RFC5-16.
+REQ-polaris-generation-017 (Source: RFC4-2) and 018 (Source: RFC4-19) and
+cite RFC4-1, RFC4-2, RFC4-3, RFC3-16(a), RFC5-15 and RFC5-16.
 
 **Change class:** Normative (it creates registry entries; an entry is honored
 only under an owner act, RFC4-7).
@@ -39,12 +40,19 @@ Two entries, each a separate registry event.
    provider Anthropic, via the Claude Agent SDK runtime (RFC4-1: one adapter
    per external authority per project; the packet's item 2). Determinism
    class `capture`. Typed question: "What did the provider return for this
-   exact request?" Write surface empty; the only local write is the run
-   directory. Its `routeConditions` restate the egress record's conditions
-   (no tools, no ambient context, telemetry off, state inside the run
-   directory, acceptance by captured request, no fallback) as declarations
-   the implementation must enforce. The egress record, not this entry, is the
-   authority for them; the entry cannot widen them.
+   exact request?" It is one entry for one route; PR #264's Messages API route
+   would be a substitute that replaces it under a new act (RFC4-1), never a
+   second route beside it. The entry pins the Agent SDK 0.3.288 and bundled
+   CLI 2.1.288 and states that the request is the generator's two parts
+   (stage system prompt, stage input envelope) plus bytes the runtime adds,
+   which `PROVIDER-EGRESS-BYTES.md` (PR #258) lists as [Observed] against a
+   capture endpoint. Write surface empty, argued: the dispatch is an effect
+   and the egress consent is its explicit authority. Its `routeConditions`
+   restate the egress record's conditions and name the record ID and version.
+   The acceptance check separates envelope from content: generator-built
+   parts byte for byte, everything else inside the two lists, any other byte
+   fails. The egress record, not this entry, is the authority; the entry
+   cannot widen it.
 2. **Public Git-hosting source acquisition**
    (`polaris-public-git-source-acquisition`). One shared adapter for every
    `(project:syzygy, repository)` pair that has its own in-force observation
@@ -60,11 +68,15 @@ Two entries, each a separate registry event.
    [Inferred] proposals for the owner (question O2), because no target body
    has been read to measure them.
 
-Both entries set `implementationVersion` to `null`: [Unknown] until the
-implementation exists (RFC4-3 admits no output from an entry whose
-implementation identity and version are not in the snapshot). A signed entry
-therefore enables nothing until code lands and the generator's consent-backed
-ports (gap G3) consult it.
+Both entries set `implementationVersion` to `null` and leave the governing
+contract version Unknown. RFC4-3 admits no output from such an entry, and
+filling either field changes the bytes, the manifest row and the act argument
+(rule 10). So these rows are not the bytes that could ever admit output: signing
+them would register the declared boundary and nothing more, and each usable
+entry is a later observer version that carries the implementation version,
+is reviewed afresh and is signed by its own act. Code landing alone does
+not enable anything, and the generator's consent-backed ports (gap G3) must
+consult the later entry.
 
 ## What the entries do not do
 
@@ -83,8 +95,15 @@ read.
   copy against the live file.
 - [Inferred] The authority type names `model-provider` and
   `hosting-and-version-control` are the drafter's; RFC4-1 lists examples only.
-- [Inferred] The degradation-state mappings reuse the Butlers entry's
-  five states; `usageOrDispatchUncertain` mapped to Partial snapshot is a
-  judgement the reviewer should test.
-- [Unknown] Whether the Agent SDK on the owner's login can meet the route
-  conditions (gap #21); the entry says so in its own `unknowns` list.
+- [Inferred] The degradation-state mappings use RFC2-23's six states.
+  Round 1 found uncertain usage mis-mapped to Partial snapshot: absent tokens
+  are Missing quantity, uncertain dispatch is an execution fact routed by the
+  claim-reason predicate, a non-admitted revision is refused before fetch with
+  reason 6, and a runtime that cannot meet the route conditions is reason 12
+  `execution-blocked`. Absent consent is a refused effect, never a withdrawal.
+- [Unknown] Whether the Agent SDK on the owner's login or key can meet the route
+  conditions (gap #21), whether the real API accepts the runtime's empty system
+  message, traffic beyond the captured paths, and credential writes outside the
+  run directory; the entry says so in its own `unknowns` list.
+- [Inferred] The RFC2-1 snapshot-input mapping is stated in each entry as the
+  drafter's; the installed Butlers entry has none, so that gap is inherited.
