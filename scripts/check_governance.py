@@ -210,7 +210,9 @@ CHECK_OWNERS = {
               "`STATUS_QUALIFIERS` stays a list here rather than being "
               "derived, because the registry names its dimensions in prose "
               "forms (\"Claim epistemic label\") a reader never writes, and "
-              "the list carries three synonyms the registry does not state; "
+              "three entries are not §1 dimension-row names (the registry "
+              "states each elsewhere: T-16's alias, the chain-state alias "
+              "and the §1 rule); "
               "CG-22c checks the list against the registry's table instead "
               "(RD-6 F-3 row 1)"),
     "CG-23": ("report-only — the term registry's own two-tier bound, "
@@ -4636,7 +4638,9 @@ def cg8_budgets(paths, res, measure=None):
         if not (900 <= authored <= 1200):
             lines.append(f"AGENTS.md — {authored} authored words, outside the "
                          f"900–1,200 target band (this checker's own "
-                         f"figure, stated in no governing artifact)")
+                         f"figure, stated in no governing artifact; the "
+                         f"nearest written one is the historical round "
+                         f"charter §8.2's 'roughly 800–1,500 words')")
 
     modules = sorted(p for p in paths
                      if p.startswith(f"{CANDIDATES}/rfcs/") and p.endswith(".md"))
@@ -10332,7 +10336,8 @@ STATUS_SHAPES = (
 #: A second copy of the registry's §1 dimension set (review RD-6 F-3 row 1),
 #: kept rather than derived because the registry's table names dimensions in
 #: forms a writer does not use ("Claim epistemic label") and the last three
-#: entries are synonyms it never states. CG-22c holds the copy to the
+#: entries are not §1 dimension-row names (the registry states them as an
+#: alias or in its §1 rule instead). CG-22c holds the copy to the
 #: registry: every dimension the table names must end in one of these.
 #: CG-22c's and CG-17's rule-6 mutants, with old/new fragments:
 #: `docs/evidence/syzygy-eexf-check-owners-rule6-2026-10-03.json`.
@@ -10413,7 +10418,7 @@ def cg22c_qualifier_coverage(res, registry=None):
            if not any(d.endswith(q) for d in dims)]
     res.add("FAIL" if findings else "OK", label, len(dims), len(findings),
             "dimension",
-            note=(f"this file's own synonyms, stated in no registry table: "
+            note=(f"qualifiers that are not §1 dimension-row names: "
                   f"{', '.join(own)}" if own else None),
             details=findings)
 
