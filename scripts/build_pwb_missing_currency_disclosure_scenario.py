@@ -8,21 +8,22 @@ The signed PWB bytes are never edited while this package is a candidate.
 Proposed bytes live as patches, and the manifest hashes the eleven-artifact
 subject after those patches. Applying them is an adoption-time operation.
 
-**After sign-off, ``--check`` and ``--selftest`` fail by design**
-(syzygy-gv2f, 2026-10-03). The owner signed this package off as v1.0 on
-2026-10-02
+**After sign-off, ``--check`` fails by design** (syzygy-gv2f, 2026-10-03). The
+owner signed this package off as v1.0 on 2026-10-02
 (``decisions/PWB-MISSING-CURRENCY-DISCLOSURE-SCENARIO-SIGNOFF-v1.0.md``), and
 the recorder applied its patches. They are deltas *to* the signed bytes, so
 the first one applied (``CAPABILITY-COVERAGE.md.patch``) cannot apply a second
 time (``spec.md.patch`` is a pure append that git would re-apply at an offset
 as a duplicate; the builder stops before reaching it), and this builder has no
-mode that recognises the applied state. Both modes therefore stop at "patch
-does not apply" from the sign-off commit onward. That is not a defect. The
-dismissal-expiry, container-shape, item-depth, readability-successor and
-tree-framing sign-offs then rewrote seven of the eleven subjects. This
-manifest now matches 4 of 11 and describes superseded bytes, so an
-applied-state mode would never fire here. To check the bytes in force, run the
-builder of the latest sign-off in the chain
+mode that recognises the applied state. ``--check`` therefore stops at "patch
+does not apply" from the sign-off commit onward. That is not a defect.
+``--selftest`` does not stop there: since syzygy-tmkb it re-runs itself
+against the pre-adoption tree through ``scripts/pwb_signed_selftest.py``
+(``rerun_before_signoff``) and passes. The dismissal-expiry, container-shape,
+item-depth, readability-successor and tree-framing sign-offs then rewrote
+seven of the eleven subjects. This manifest now matches 4 of 11 and describes
+superseded bytes, so an applied-state mode would never fire here. To check the
+bytes in force, run the builder of the latest sign-off in the chain
 (``build_pwb_tree_framing_amendment.py --check`` as of 2026-10-03).
 """
 
