@@ -86,25 +86,71 @@ GENERATION_SOURCE = pathlib.Path("packages/polaris-generation-core/src/generatio
 EXCLUSION_REASON_SYMBOL = {"path": GENERATION_SOURCE.as_posix(), "symbol": "GENERATION_EXCLUSION_REASONS"}
 
 
-def exclusion_reasons(root: pathlib.Path = ROOT) -> list[str]:
+def mask_source(text: str, comments: bool = True, quoted: bool = True) -> str:
+    """Same-length copy of TypeScript source with comments blanked and string
+    bodies replaced by placeholders (\x01 inside single quotes, \x02 inside
+    other quotes), so a declaration or member inside a comment or string cannot
+    be matched. A small scanner, not a parser: regex literals are not
+    recognised, and a source it cannot scan to the end is refused. (`comments`
+    and `quoted` switch a step off for the selftest's mutants.)"""
+    out: list[str] = []
+    i, n = 0, len(text)
+    while i < n:
+        c = text[i]
+        if comments and text.startswith("//", i):
+            j = text.find("\n", i)
+            j = n if j < 0 else j
+            out.append(" " * (j - i)); i = j
+        elif comments and text.startswith("/*", i):
+            j = text.find("*/", i + 2)
+            if j < 0:
+                raise ValueError("unterminated block comment")
+            out.append("".join(ch if ch == "\n" else " " for ch in text[i:j + 2])); i = j + 2
+        elif c == "'" or (quoted and c in "\"`"):
+            j = i + 1
+            while j < n and text[j] != c:
+                if text[j] == "\\":
+                    j += 1
+                if j < n and text[j] == "\n" and c != "`":
+                    raise ValueError("unterminated string literal")
+                j += 1
+            if j >= n:
+                raise ValueError("unterminated string literal")
+            out.append(c + ("\x01" if c == "'" else "\x02") * (j - i - 1) + c); i = j + 1
+        else:
+            out.append(c); i += 1
+    return "".join(out)
+
+
+def exclusion_reasons(root: pathlib.Path = ROOT, mask=None) -> list[str]:
     """The closed exclusion-reason set, read from the exported constant in
-    generation-source.ts. Fails closed: an absent symbol, a shape other than a
-    literal array of quoted strings, or an empty set is an error."""
+    generation-source.ts. Fails closed: an absent file, a declaration that is
+    absent, unexported or repeated once comments and strings are set aside, a
+    shape other than a literal array of single-quoted strings, or an empty or
+    repeating set is an error. (`mask` is for the selftest's mutants.)"""
     sym = EXCLUSION_REASON_SYMBOL["symbol"]
     path = root / GENERATION_SOURCE
     if not path.is_file():
         raise ValueError(f"{GENERATION_SOURCE.as_posix()} is absent")
     text = path.read_text()
-    if not re.search(rf"export\s+const\s+{sym}\b", text):
+    live = (mask or mask_source)(text)
+    decls = list(re.finditer(rf"(?<![\w$.])(export\s+)?(?:const|let|var)\s+{sym}\b", live))
+    if not decls:
+        raise ValueError(f"{sym} is not declared in {GENERATION_SOURCE.as_posix()}")
+    if len(decls) > 1:
+        raise ValueError(f"{sym} is declared more than once in {GENERATION_SOURCE.as_posix()}")
+    if not decls[0].group(1):
         raise ValueError(f"{sym} is not exported from {GENERATION_SOURCE.as_posix()}")
-    m = re.search(rf"export\s+const\s+{sym}\s*(?::[^=]+)?=\s*\[([^\]]*)\]\s*(?:as\s+const)?\s*;", text)
+    m = re.compile(r"\s*(?::[^=;]*)?=\s*\[([^\]]*)\]\s*(?:as\s+const)?\s*;").match(live, decls[0].end())
     if not m:
         raise ValueError(f"cannot read {sym} as a literal array of strings")
-    body = m.group(1)
-    reasons = re.findall(r"'([a-z][a-z0-9-]*)'", body)
-    leftover = re.sub(r"'[a-z][a-z0-9-]*'|[\s,]|//[^\n]*", "", body)
-    if not reasons or leftover or len(set(reasons)) != len(reasons):
-        raise ValueError(f"{sym} is empty, repeats a reason or holds more than string literals")
+    body = live[m.start(1):m.end(1)]
+    spans = [(m.start(1) + s.start(), m.start(1) + s.end()) for s in re.finditer(r"'\x01*'", body)]
+    reasons = [text[a + 1:b - 1] for a, b in spans]
+    leftover = re.sub(r"'\x01*'|[\s,]", "", body)
+    if not reasons or leftover or any(not re.fullmatch(r"[a-z][a-z0-9-]*", r) for r in reasons) \
+            or len(set(reasons)) != len(reasons):
+        raise ValueError(f"{sym} is empty, repeats a reason or holds more than kebab-case string literals")
     return reasons
 
 
@@ -165,9 +211,9 @@ def public_scope() -> dict:
             "class": "code-structure",
             "fields": source_population_fields(),
             "fieldsDerivedFrom": "the sourcePopulation entry in packages/polaris-generation-core/src/pipeline.ts, read by this builder; the confirmed admission egress record's generated table classes the field sourcePopulation as target-metadata",
-            "rule": "the metadata the generator carries for each admitted-snapshot source, admitted or excluded alike, is exactly the fields listed and nothing else; reason is carried only for an excluded source and only as a member of the closed set that exclusionReasonSymbol names. No body, no content digest and no policy detail is carried under this rule. A path of an excluded source is not in the list and is not carried",
+            "rule": "the metadata the generator carries for each admitted-snapshot source, admitted or excluded alike, is exactly the fields listed and nothing else; reason is carried only for an excluded source and only as a member of the closed set that exclusionReasonSymbol names. No body, no content digest and no policy detail is carried under this rule. A path of an excluded source is not in the list and is not carried: the sourceId of an excluded source is an opaque identifier not derived from its path or body. [Inferred] this bytes-level rule is enforced only by the reader implementation, which the generator's lane is asked to write that way; nothing else in these bytes checks it",
             "exclusionReasonSymbol": EXCLUSION_REASON_SYMBOL,
-            "reasonRule": "the closed set of exclusion reasons is exactly the values of the exported constant named by exclusionReasonSymbol, read from code at the commit a run names; this policy lists no reason, so the set cannot differ from what the generator emits. A reason outside that constant is not carried, and the generator's validator refuses it before a request. [Inferred] the constant and the validator are requested of the generator's lane and are not in code at this package's base; the package is not ready for an act until the constant exists (the builder fails closed while it is absent)",
+            "reasonRule": "the closed set of exclusion reasons is exactly the values of the exported constant named by exclusionReasonSymbol, read from code at the commit a run names; this policy lists no reason, so the set cannot differ from the values the constant declares. A reason outside that constant is not carried, and the generator's validator refuses it before a request. [Inferred] the constant and the validator are requested of the generator's lane and are not in code at this package's base; the package is not ready for an act until the constant exists (the builder fails closed while it is absent)",
         },
         "runProfileRule": {
             "class": "code-content",
@@ -463,21 +509,51 @@ def selftest() -> int:
         gs.parent.mkdir(parents=True)
         sym = EXCLUSION_REASON_SYMBOL["symbol"]
 
-        def reasons_of(src):
+        def read(src, mask=None):
+            gs.parent.mkdir(parents=True, exist_ok=True)
             gs.write_text(src)
             try:
-                return exclusion_reasons(root)
-            except ValueError:
-                return None
-        results.append(("a readable constant yields its set", reasons_of(f"export const {sym} = [\n  'a-b', // x\n  'c',\n] as const;\n") == ["a-b", "c"]))
-        results.append(("an added reason moves the set", reasons_of(f"export const {sym} = ['a-b', 'c', 'd'] as const;") == ["a-b", "c", "d"]))
-        results.append(("a missing file is refused", (gs.unlink(), readiness(root) != [])[1]))
-        results.append(("an absent symbol is refused", reasons_of("export const OTHER = ['a'] as const;") is None))
-        results.append(("an unexported symbol is refused", reasons_of(f"const {sym} = ['a'] as const;") is None))
-        results.append(("a computed set is refused", reasons_of(f"export const {sym} = Object.keys(x);") is None))
-        results.append(("a non-literal member is refused", reasons_of(f"export const {sym} = ['a', REASON_B] as const;") is None))
-        results.append(("an empty set is refused", reasons_of(f"export const {sym} = [] as const;") is None))
-        results.append(("a repeated reason is refused", reasons_of(f"export const {sym} = ['a', 'a'] as const;") is None))
+                return exclusion_reasons(root, mask), ""
+            except ValueError as exc:
+                return None, str(exc)
+
+        def reasons_of(src, mask=None):
+            return read(src, mask)[0]
+        decl = f"export const {sym} = ['a-b', 'c'] as const;"
+        fixtures = {   # name -> (source, expected set or None for refused)
+            "a readable constant yields its set": (f"export const {sym} = [\n  'a-b', // x\n  'c',\n] as const;\n", ["a-b", "c"]),
+            "an added reason moves the set": (f"export const {sym} = ['a-b', 'c', 'd'] as const;", ["a-b", "c", "d"]),
+            "an absent symbol is refused": ("export const OTHER = ['a'] as const;", None),
+            "an unexported symbol is refused": (f"const {sym} = ['a'] as const;", None),
+            "a computed set is refused": (f"export const {sym} = Object.keys(x);", None),
+            "a non-literal member is refused": (f"export const {sym} = ['a', REASON_B] as const;", None),
+            "an empty set is refused": (f"export const {sym} = [] as const;", None),
+            "a repeated reason is refused": (f"export const {sym} = ['a', 'a'] as const;", None),
+            "a commented-out declaration is not a declaration": (f"// {decl}\n", None),
+            "a block-commented declaration is not a declaration": (f"/* {decl} */\n", None),
+            "a string-embedded declaration is not a declaration": (f"const s = \"{decl}\";\nconst t = '{decl}';\n", None),
+            "a commented member is not a member": (f"export const {sym} = [\n  'a',\n  // 'retired',\n  /* 'old', */\n] as const;", ["a"]),
+            "a commented old declaration before the live one is ignored": (f"// export const {sym} = ['old'] as const;\n{decl}\n", ["a-b", "c"]),
+            "a second live declaration is refused": (f"{decl}\nexport const {sym} = ['z'] as const;\n", None),
+            "an unterminated comment is refused": (f"{decl}\n/* open", None),
+        }
+        for name, (src, want) in fixtures.items():
+            results.append((name, reasons_of(src) == want))
+        # rule 6: with the comment/string masking removed, the fixtures that depend on it must fail
+        no_comments = lambda s: mask_source(s, comments=False)
+        no_quoted = lambda s: mask_source(s, quoted=False)
+        for name in ("a commented-out declaration is not a declaration", "a block-commented declaration is not a declaration",
+                     "a commented member is not a member", "a commented old declaration before the live one is ignored"):
+            src, want = fixtures[name]
+            results.append((f"mutant: comments left in is caught by '{name}'", reasons_of(src, no_comments) != want))
+        src, want = fixtures["a string-embedded declaration is not a declaration"]
+        results.append(("mutant: double-quoted strings left in is caught by the string-embedded fixture", reasons_of(src, no_quoted) != want))
+        # distinct messages (the unexported and the uncovered shapes are different refusals)
+        results.append(("an unexported symbol says so", "is not exported" in read(f"const {sym} = ['a'] as const;")[1]))
+        results.append(("an absent symbol says so", "is not declared" in read("export const OTHER = [];")[1]))
+        results.append(("a repeated declaration says so", "more than once" in read(f"{decl}\n{decl}\n")[1]))
+        gs.unlink()
+        results.append(("a missing file is refused", readiness(root) != []))
     failed = [n for n, ok in results if not ok]
     for n, ok in results:
         print(("ok   " if ok else "FAIL ") + n)

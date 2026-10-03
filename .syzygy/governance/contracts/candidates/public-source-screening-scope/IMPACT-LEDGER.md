@@ -50,8 +50,15 @@ edits nothing in this checkout. Output of the run for this round:
 | Vitest `project-shape-model.test.ts` | passes: its version literals are fixtures, not pins |
 
 Literal sweep of the clone, files under `apps/`, `packages/`, `scripts/`,
-`.github/` and `PROJECT-STATUS.md` (the sweep also finds 59 governance records
-that cite the old bytes; they bind and are not edited):
+`.github/` and `PROJECT-STATUS.md` (the sweep also finds 61 governance records
+that cite the old bytes, six of which are this package's own candidate files
+and bind nothing; the other 55 bind and are not edited. Predicate: a tracked,
+strictly UTF-8 file of the scratch clone with the proposed bytes committed,
+outside `apps/`, `packages/`, `scripts/`, `.github/` and `PROJECT-STATUS.md`,
+with a `str.count` above zero of the old policy file's SHA-256 or of
+`1.1.0-candidate.1`. The five are the ledger, the semantic delta, the patch and
+the round-1, round-2 and round-3 raws; each retained raw adds one, so the figure moves
+with the package and must be re-derived):
 
 | Pin | Where | Kind |
 |---|---|---|
@@ -59,7 +66,7 @@ that cite the old bytes; they bind and are not edited):
 | Act identity, recording tag, act-record pointer and the superseded-record pointer of the policy act | `governance-inputs.ts` (policy entry of the act table and `PWB_SUPERSEDED_ACT_RECORDS`) | run time |
 | `PWB_POLICY_IDENTITY.policyVersion` | `git-object-reader.ts` (1 hit); `content-classification.ts` takes its version from it | run time |
 | The same identity, tag and version, asserted | `governance-inputs.test.ts`, `content-classification.test.ts` (5), `git-object-reader.test.ts` | tests |
-| The re-pin act's `--check policy` line with the policy digest | `PROJECT-STATUS.md` battery (1 hit) | status page |
+| The re-pin builder's `--check` line (no digest literal) and the re-pin act's `--check policy` line with the policy digest | `PROJECT-STATUS.md` battery (builder line: 0 literal hits, fails with the tree; recorder line: 1 hit) | status page |
 | The same two CI steps (`build_pwb_behavior_contract_repin.py --check`, `record_pwb_behavior_contract_repin_acts.py --check policy`) | `.github/workflows/governance-docs.yml` (digest, 1 hit) | workflow |
 | Act-subject chain and `ACT_DIGEST_COPY_FILES` rows for the policy act | `check_governance.py` (the CG-7e findings above) | governance tooling |
 | Version literal restated as performed history | `record_pwb_behavior_contract_repin_acts.py`, `record_pwb_effect_amendment_acts.py` | not pins: superseded recorders fail `--check` by design |

@@ -33,7 +33,7 @@ different base only needs `--write` to regenerate; it is never hand-edited.
 | Instruction text | one closed rule: the text produced by exactly `promptForStage` and `stageSchema` is `code-content` of `project:syzygy`; nothing else of Syzygy's repository is classified |
 | Classification basis | a class is decided at the runtime check from the origin of the content, never from a field name; the field-level table in a public-target egress record gates which fields may be carried and confers no class (carried from the admission package's round-7 notes 2 and 4) |
 | Run profile | classified only as the values of the code-declared `DOSSIER_READER_QUESTIONS` and `DOSSIER_REQUESTED_ASSETS` in `dossier-profile.ts` (PR #259), selected by a profile id a request carries (the id and its carrier are an open owner question); any other origin is unclassified and not carried. [Observed] the base pipeline types `readerQuestions` as unknown and validates only `requestedAssets`; the typed validation is not in code and is not assumed |
-| Target metadata | `code-structure`, exactly the fields of the pipeline's `sourcePopulation` entry (source id, classification basis, exclusion flag and, for an excluded source only, a reason that is a member of the closed set held by the exported constant `GENERATION_EXCLUSION_REASONS`, which the rule names and does not list), which the confirmed admission egress record's generated table sends as `target-metadata`. The field list is read from `pipeline.ts` and the reason set from that constant by the builder, not typed, and the builder fails closed while the constant is absent; no body, content digest or policy detail, and no path of an excluded source |
+| Target metadata | `code-structure`, exactly the fields of the pipeline's `sourcePopulation` entry (source id, classification basis, exclusion flag and, for an excluded source only, a reason that is a member of the closed set held by the exported constant `GENERATION_EXCLUSION_REASONS`, which the rule names and does not list), which the confirmed admission egress record's generated table sends as `target-metadata`. The field list is read from `pipeline.ts` and the reason set from that constant by the builder, not typed, and the builder fails closed while the constant is absent; no body, content digest or policy detail, and no path of an excluded source; an excluded source's `sourceId` is an opaque identifier not derived from its path or body ([Inferred]: enforced only by the reader implementation, which the generator's lane is asked to write that way, not by these bytes) |
 | Detectors and matches | every base detector applies unchanged, including inside inert code contexts; a match excludes the whole artifact with hash-not-body provenance |
 | Active content | no loosening: the base rule and the active-content condition of `classificationSuccess` apply unchanged to every admitted body. [Inferred] A source file embedding markup-like bytes outside a valid inert code context is withheld; the first run measures how many |
 | Access boundary | the base boundary; the `networkEgress` boolean stays false as the base reads it, and exactly two routes (the shallow by-commit fetch and the registered provider route) are carried beside it |
@@ -53,8 +53,10 @@ indeterminate until a later policy version maps it.
 The admission package's egress template relies on "the generator-authored
 request-text rule of the public-source screening scope". No rule is named that
 here; the rules are `instructionTextRule`, `runProfileRule` and
-`targetMetadataRule`, one per population the generated carried-content table
-names, and `classificationBasis` says the table gates fields and confers no class.
+`targetMetadataRule`: three rules for the four populations the generated
+carried-content table names, because the envelope-control labels (prompt and
+response-schema versions) are produced by the two `instructionTextRule`
+symbols. `classificationBasis` says the table gates fields and confers no class.
 
 ## Narrowing of the owner's answers (Q2, Q7)
 
