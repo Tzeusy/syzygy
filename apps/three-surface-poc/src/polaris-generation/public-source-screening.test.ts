@@ -126,7 +126,7 @@ describe('synthetic secrets of each detector class', () => {
 describe('excluded bodies never leave the process', () => {
   it('no secret, path or body reaches the provider port, its receipts, the run record or a rendered page', async () => {
     const corpus = await readScreenedRepoCorpus(root, cfg(), { admission: allow, policyAct: goodPort });
-    const config: ReaderConfig = { ...cfg(), readerQuestions: ['What is it?'], requestedAssets: [{ id: 'overview', kind: 'section', required: true }], budget };
+    const config: ReaderConfig = { ...cfg(), readerQuestions: [{ id: 'core-ideas', topics: ['core-ideas'], text: 'What is it?' }], requestedAssets: [{ id: 'overview', kind: 'section', required: true }], budget };
     const request = buildPipelineRequest(corpus, config, 1_000);
     const sent: string[] = [], receipts: unknown[] = [];
     let ordinal = 0;
@@ -215,7 +215,7 @@ describe('an empty corpus', () => {
     const only = fixtureRepo({ 'src/secret-token.js': FILES['src/secret-token.js']!, 'docs/active-script.md': FILES['docs/active-script.md']! });
     const corpus = await readScreenedRepoCorpus(only.root, cfg(only.commit), { admission: allow, policyAct: goodPort });
     expect(corpus.count).toMatchObject({ selected: 2, secretDetectorMatches: 1, activeContent: 1, sourceRows: 2 });
-    const request = buildPipelineRequest(corpus, { ...cfg(only.commit), readerQuestions: ['What is it?'], requestedAssets: [{ id: 'overview', kind: 'section', required: true }], budget }, 1_000);
+    const request = buildPipelineRequest(corpus, { ...cfg(only.commit), readerQuestions: [{ id: 'core-ideas', topics: ['core-ideas'], text: 'What is it?' }], requestedAssets: [{ id: 'overview', kind: 'section', required: true }], budget }, 1_000);
     let calls = 0;
     const refuseAll = async (): Promise<never> => { calls++; throw new Error('unreachable'); };
     const result = await runGenerationPipeline(request, { now: () => 1_000, verifySources: async () => true, permissionIdentity: refuseAll, admit: refuseAll, permitted: refuseAll,
