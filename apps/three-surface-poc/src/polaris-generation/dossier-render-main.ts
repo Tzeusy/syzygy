@@ -33,6 +33,9 @@ function assertOutsideGit(directory: string, path: string | undefined): void {
  * sibling temporary directory, which is renamed into place only when all of
  * them are written, so a refused or failed write leaves no run directory.
  * Returns the real path written, which is the path that was checked.
+ * Limit: `git rev-parse` stops searching at a filesystem boundary (the
+ * cleared environment leaves GIT_DISCOVERY_ACROSS_FILESYSTEM unset), so a
+ * parent on a separate mount inside a work tree reads as outside Git.
  */
 export async function writeDossierRun(destination: string, files: ReadonlyMap<string, string>, env: { readonly PATH?: string } = process.env): Promise<string> {
   for (const path of files.keys()) if (!isDossierPagePath(path)) throw new Error('invalid-output-path');
