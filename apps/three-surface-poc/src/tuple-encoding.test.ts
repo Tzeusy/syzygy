@@ -2,7 +2,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
 import type { PocModel } from '@syzygy/three-surface-poc-core';
@@ -15,7 +15,7 @@ import { copyText } from './polaris-copy.js';
 import { POLARIS_HUMAN_PATH, renderPolarisPage } from './polaris.js';
 import { POC_HUMAN_PATH, pocRoutes } from './routes.js';
 import { fetchWithHost } from './test-http-client.js';
-import { buildFixtureModel } from './test-model-fixture.js';
+import { SHARED_FIXTURE_TIMEOUT_MS, buildFixtureModel, sharedFixtureModels } from './test-model-fixture.js';
 import {
   ADMITTING_AUTHORITY,
   PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET,
@@ -79,16 +79,23 @@ function attribute(tag: string, name: string): string | undefined {
   return new RegExp(`\\s${name}="([^"]*)"`).exec(tag)?.[1];
 }
 
-function variants(): readonly { readonly name: string; readonly model: PocModel }[] {
+const VARIANT_NAMES = ['unevaluated', 'rejected', 'observed', 'secret', 'degraded', 'missing-freshness'] as const;
+const shared = sharedFixtureModels<(typeof VARIANT_NAMES)[number]>((cleanups) => {
   const base = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
-  return [
-    { name: 'unevaluated', model: buildFixtureModel(cleanups) },
-    { name: 'rejected', model: buildFixtureModel(cleanups, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } }) },
-    { name: 'observed', model: base },
-    { name: 'secret', model: buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET) } }) },
-    { name: 'degraded', model: buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE) } }) },
-    { name: 'missing-freshness', model: withoutFreshness(projectShapeItemStateFixture(base, 'unknown')) },
-  ];
+  return {
+    unevaluated: buildFixtureModel(cleanups),
+    rejected: buildFixtureModel(cleanups, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } }),
+    observed: base,
+    secret: buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET) } }),
+    degraded: buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE) } }),
+    'missing-freshness': withoutFreshness(projectShapeItemStateFixture(base, 'unknown')),
+  };
+});
+beforeAll(shared.prepare, SHARED_FIXTURE_TIMEOUT_MS);
+afterAll(shared.remove);
+
+function variants(): readonly { readonly name: string; readonly model: PocModel }[] {
+  return VARIANT_NAMES.map((name) => ({ name, model: shared.get(name) }));
 }
 
 /** One Unknown item with no freshness: the absence the slot must not hold. */
