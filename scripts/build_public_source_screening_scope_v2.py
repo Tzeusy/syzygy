@@ -147,7 +147,7 @@ def tokens(segment: str, separators: str) -> list[str]:
     return out + [cur]
 
 
-def classify_documentation(path: str, rule: dict | None = None) -> bool:
+def classify_documentation(path: str, rule: dict | None = None, license_denylist: bool = True) -> bool:
     """Reference reading of the rule, used by the fixtures and the mutants. The
     policy carries the rule as data; this is the oracle a consumer's code is
     checked against, not code the policy ships. Characters are compared as code
@@ -181,6 +181,10 @@ def classify_documentation(path: str, rule: dict | None = None) -> bool:
         return True
     if len(parts) == 2 and parts[0] in r["licenseTreeRoots"] and \
             any(name.endswith(e) and len(name) > len(e) for e in r["licenseTreeSuffixes"]):
+        ext = next(e for e in r["licenseTreeSuffixes"] if name.endswith(e) and len(name) > len(e))
+        if license_denylist and any(t in r["docExcludedTokens"]
+                                    for t in tokens(name[:len(name) - len(ext)], r["docTokenSeparators"])):
+            return False
         return True
     return False
 
@@ -197,6 +201,8 @@ FIXTURES = [
     ("docs/guide.md", True), ("docs/a/b/intro.rst", True), ("Docs/Guide.MD", True), ("doc/usage.txt", True),
     ("docs/notes.txt", True),
     ("licenses/agpl-3.0.txt", True), ("LICENSES/rsal.TXT", True),
+    ("licenses/SECURITY.md", False), ("licenses/governance-policy.md", False), ("licenses/CODE_OF_CONDUCT.md", False),
+    ("licenses/doctrine.txt", False), ("licenses/SecurityPolicy.md", True), ("licenses/README.md", True),
     # policy and governance text by ordinary content: withheld at the root (and as directories under docs)
     ("SECURITY.md", False), ("SECURITY", False), ("DESIGN.md", False), ("GOVERNANCE.txt", False),
     ("CODE_OF_CONDUCT.md", False), ("Code-Of-Conduct.md", False),
@@ -235,6 +241,7 @@ FIXTURES = [
 OPT_IN_FIXTURES = [("ARCHITECTURE.md", "architecture"), ("Architecture", "architecture"),
                    ("docs/ARCHITECTURE.md", "architecture"), ("docs/architecture/overview.md", "architecture"),
                    ("docs/MANIFESTO.md", "manifesto"), ("docs/manifestos/x.md", "manifesto"), ("docs/architectures.md", "architecture"), ("doc/manifesto/why.txt", "manifesto"),
+                   ("licenses/MANIFESTO.md", "manifesto"), ("LICENSES/Architecture.txt", "architecture"),
                    ("MANIFESTO", "manifesto"), ("MANIFESTO.rst", "manifesto"), ("00-MANIFESTO.txt", "manifesto")]
 
 
@@ -264,7 +271,9 @@ def documentation_rule(variant: str = DEFAULT_VARIANT) -> dict:
                      "docTxtExcludedPrefixes"},
             {"id": "licenses-tree",
              "rule": "a path of exactly two segments whose first segment is one of licenseTreeRoots and "
-                     "whose name ends with one of licenseTreeSuffixes and is longer than it"},
+                     "whose name ends with one of licenseTreeSuffixes and is longer than it, and in which "
+                     "no word of the file name without its extension is in docExcludedTokens (split as "
+                     "for docs-tree)"},
         ],
         "rootStemNumericPrefix": {"digitCount": PREFIX_DIGIT_COUNT, "digits": PREFIX_DIGITS,
                                   "separator": PREFIX_SEPARATOR, "optional": True,
@@ -525,6 +534,18 @@ BEGIN, END = "<!-- BEGIN GENERATED: lists -->", "<!-- END GENERATED: lists -->"
 NONE_FIXTURES = FIXTURES + [(n, False) for n, _k in OPT_IN_FIXTURES]
 
 
+def scope_sentence() -> str:
+    """The one-sentence scope claim, built from the rule's constants and nothing else."""
+    return ("**In one sentence:** the rule withholds policy and governance text by name only: a path under "
+            f"{' or '.join(DOC_TREE_ROOTS)} or {' or '.join(LICENSE_TREE_ROOTS)} with one of the words "
+            f"{', '.join(DOC_EXCLUDED_TOKENS)} (and, unless the variant adds them, "
+            f"{', '.join(w for ws in OPT_IN_DOC_WORDS.values() for w in ws)}) as a whole word in a directory "
+            "or file name, and the root files named "
+            f"{', '.join(n.upper() for n in WITHHELD_ROOT_NAMES)}; such text under any other name is "
+            "sendable, including names written without a separator (SecurityPolicy, ADR0001) or split by a "
+            "character outside the separator list.")
+
+
 def packet_block() -> str:
     """The sendable and withheld lists, generated from the rule's constants so neither the packet
     nor the delta can drift from the policy bytes. Every line is derived; none states a claim the
@@ -536,9 +557,7 @@ def packet_block() -> str:
     opt = [w for ws in OPT_IN_DOC_WORDS.values() for w in ws]
     sep = " ".join(repr(c) for c in r["docTokenSeparators"])
     return "\n".join([
-        "**In one sentence:** the rule withholds policy and governance text by name only, using the "
-        "listed words; such text under any other name is sendable, including names written without a "
-        "separator (SecurityPolicy, ADR0001) or split by a character outside the separator list.",
+        scope_sentence(),
         "",
         "**Becomes readable** (and, under a consent that lists the class and a separate egress consent, sendable):",
         "",
@@ -546,7 +565,8 @@ def packet_block() -> str:
         f"hyphen, so 00-RELEASENOTES counts; no extension or one of {words(r['documentSuffixes'][1:])}).",
         f"- Files ending {words(r['docTreeExtensions'])} under a top-level {' or '.join(r['docTreeRoots'])} folder, at any "
         f"depth, unless the path is withheld below.",
-        f"- Files ending {words(r['licenseTreeSuffixes'])} directly inside a top-level {' or '.join(r['licenseTreeRoots'])} folder.",
+        f"- Files ending {words(r['licenseTreeSuffixes'])} directly inside a top-level {' or '.join(r['licenseTreeRoots'])} folder, "
+        f"unless the file name is withheld below.",
         "- Only in the variant you pick: " + "; ".join(
             f"variant {v} adds the root name{'s' if len(VARIANTS[v]) > 1 else ''} {up(VARIANTS[v])}, and lifts the same "
             f"word{'s' if len(VARIANTS[v]) > 1 else ''} from the docs withholding" if VARIANTS[v]
@@ -555,7 +575,7 @@ def packet_block() -> str:
         "**Stays withheld** (excluded from reading and from egress, hash-not-body):",
         "",
         f"- Root files named {up(WITHHELD_ROOT_NAMES)}, and ARCHITECTURE and MANIFESTO unless the variant you pick adds them.",
-        f"- Under a docs or doc folder, any path where a directory name (after the first) or the file name "
+        f"- Under a docs, doc or licenses folder, any path where a directory name (after the first) or the file name "
         f"(without its extension) contains one of these as a whole word: {words(base_tokens)}; and, unless the "
         f"variant adds them, {words(opt)}. Names are split into words at each of {sep} and compared after "
         f"folding A-Z to a-z; so a policy-shaped document is withheld by name, and a governance document "
@@ -753,6 +773,23 @@ def selftest() -> int:
             else:
                 caught = any(classify_documentation(p, bad_rule) != w for p, w in NONE_FIXTURES)
             results.append((label, caught))
+
+        results.append(("a licenses tree without the token denylist is caught",
+                        any(classify_documentation(p, rule, license_denylist=False) != w for p, w in NONE_FIXTURES)))
+        sentence = scope_sentence()
+        results.append(("the scope sentence names every denylist word, opt-in word and withheld root name",
+                        all(t in sentence for t in rule["docExcludedTokens"])
+                        and all(n.upper() in sentence for n in WITHHELD_ROOT_NAMES)
+                        and all(r_ in sentence for r_ in DOC_TREE_ROOTS + LICENSE_TREE_ROOTS)))
+        results.append(("the scope sentence is in the generated block", sentence in packet_block()))
+        results.append(("every example the sentence gives is mapped by the rule",
+                        all(classify_documentation(f"docs/{n}.md", rule) for n in ("SecurityPolicy", "ADR0001"))))
+        saved_tokens = list(DOC_EXCLUDED_TOKENS)
+        try:
+            DOC_EXCLUDED_TOKENS.remove("doctrine")
+            results.append(("a sentence missing a denylist word is caught", "doctrine," not in scope_sentence()))
+        finally:
+            DOC_EXCLUDED_TOKENS[:] = saved_tokens
 
         for group, words_ in DOC_TOKEN_GROUPS.items():
             kept = rule["docExcludedTokens"]

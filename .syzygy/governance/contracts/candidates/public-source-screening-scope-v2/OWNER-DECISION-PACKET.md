@@ -18,19 +18,19 @@ The lists below are generated from the rule's own constants by the package
 builder, and its check fails if they differ from the policy bytes.
 
 <!-- BEGIN GENERATED: lists -->
-**In one sentence:** the rule withholds policy and governance text by name only, using the listed words; such text under any other name is sendable, including names written without a separator (SecurityPolicy, ADR0001) or split by a character outside the separator list.
+**In one sentence:** the rule withholds policy and governance text by name only: a path under docs or doc or licenses with one of the words adr, adrs, decision, decisions, rfc, rfcs, spec, specs, specification, specifications, design, designs, governance, policy, policies, security, conduct, doctrine, doctrines, principle, principles (and, unless the variant adds them, architecture, architectures, manifesto, manifestos) as a whole word in a directory or file name, and the root files named DESIGN, GOVERNANCE, SECURITY, CODE_OF_CONDUCT, CODE-OF-CONDUCT; such text under any other name is sendable, including names written without a separator (SecurityPolicy, ADR0001) or split by a character outside the separator list.
 
 **Becomes readable** (and, under a consent that lists the class and a separate egress consent, sendable):
 
 - Root-level files named README, CHANGELOG, CHANGES, RELEASE-NOTES, RELEASE_NOTES, RELEASENOTES, CONTRIBUTING, LICENSE, LICENCE, COPYING, NOTICE, NOTICES, NEWS, HISTORY, AUTHORS, FAQ (any letter case; an optional prefix of two ASCII digits and a hyphen, so 00-RELEASENOTES counts; no extension or one of .md, .rst, .txt).
 - Files ending .md, .rst, .txt under a top-level docs or doc folder, at any depth, unless the path is withheld below.
-- Files ending .md, .txt directly inside a top-level licenses folder.
+- Files ending .md, .txt directly inside a top-level licenses folder, unless the file name is withheld below.
 - Only in the variant you pick: variant none adds nothing; variant manifesto adds the root name MANIFESTO, and lifts the same word from the docs withholding; variant architecture adds the root name ARCHITECTURE, and lifts the same word from the docs withholding; variant both adds the root names ARCHITECTURE, MANIFESTO, and lifts the same words from the docs withholding.
 
 **Stays withheld** (excluded from reading and from egress, hash-not-body):
 
 - Root files named DESIGN, GOVERNANCE, SECURITY, CODE_OF_CONDUCT, CODE-OF-CONDUCT, and ARCHITECTURE and MANIFESTO unless the variant you pick adds them.
-- Under a docs or doc folder, any path where a directory name (after the first) or the file name (without its extension) contains one of these as a whole word: adr, adrs, decision, decisions, rfc, rfcs, spec, specs, specification, specifications, design, designs, governance, policy, policies, security, conduct, doctrine, doctrines, principle, principles; and, unless the variant adds them, architecture, architectures, manifesto, manifestos. Names are split into words at each of '-' '_' '.' ' ' and compared after folding A-Z to a-z; so a policy-shaped document is withheld by name, and a governance document whose path carries none of these words is NOT withheld (the rule decides by name alone).
+- Under a docs, doc or licenses folder, any path where a directory name (after the first) or the file name (without its extension) contains one of these as a whole word: adr, adrs, decision, decisions, rfc, rfcs, spec, specs, specification, specifications, design, designs, governance, policy, policies, security, conduct, doctrine, doctrines, principle, principles; and, unless the variant adds them, architecture, architectures, manifesto, manifestos. Names are split into words at each of '-' '_' '.' ' ' and compared after folding A-Z to a-z; so a policy-shaped document is withheld by name, and a governance document whose path carries none of these words is NOT withheld (the rule decides by name alone).
 - Under a docs or doc folder, .txt files named cmakelists.txt, robots.txt or starting requirements.
 - READMEs and the other root names when they sit below the root outside docs or doc (vendored libraries carry their own).
 - Any other path: it is not named by the rule, so it is indeterminate and withheld.
@@ -60,8 +60,9 @@ made once, against the chosen row's bytes.
 
 **Q1. Which variant? Default: none.** The four variants differ only in whether
 two names, MANIFESTO and ARCHITECTURE, are mapped, and they are mapped (or
-withheld) everywhere the rule looks: as a root file and inside the docs folder
-(as a file or directory name). Everything else in the four is the same.
+withheld) everywhere the rule looks: as a root file, inside the docs folder
+(as a file or directory name) and as a file name directly under the licenses
+folder. Everything else in the four is the same.
 
 - **none**: neither word is mapped anywhere.
 - **manifesto**: MANIFESTO is mapped.
@@ -89,8 +90,9 @@ the order above is met.
 rule cannot read a file's content, so it withholds by name: root files named
 DESIGN, GOVERNANCE, SECURITY and CODE_OF_CONDUCT, and any docs path where a
 directory or file name contains, as a whole word, decision, specification,
-design, governance, policy, security, conduct, adr or rfc (or the MANIFESTO and
-ARCHITECTURE words unless you pick them). The lists above show the exact words.
+design, governance, policy, security, conduct, doctrine, principle, adr or rfc
+(or the MANIFESTO and ARCHITECTURE words unless you pick them); the same words
+withhold a file name directly under the licenses folder. The lists above show the exact words.
 The cost runs both ways: a tutorial named "design-patterns" is withheld, and a
 governance document whose name carries none of the words is sendable: an
 unremarkable name (a protocol write-up called "wire-format"), a name written
@@ -101,8 +103,10 @@ Build and tooling files under docs (CMakeLists.txt, requirements*.txt,
 robots.txt) are withheld because they are not prose. *Recommended:* accept; the
 alternative is a separate closed rule for `governance-text` with its own review.
 
-**Q4. Nested READMEs. Default: root README only.** Only the root README is mapped, because a README below
-the root outside docs is often a vendored library's. *Recommended:* accept; for
+**Q4. Nested READMEs. Default: the root README, and a README under the docs
+or doc folder or directly under the licenses folder.** A README anywhere else
+(for example src/README.md) is withheld, because a README below the root
+outside docs is often a vendored library's. *Recommended:* accept; for
 a project that bundles libraries, those READMEs stay withheld, which is the
 safer side.
 

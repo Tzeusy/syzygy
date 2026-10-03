@@ -4,7 +4,7 @@
 # the PROPOSED bytes (the version-1 policy with that variant's
 # proposed/<name>.<variant>.patch applied). The owner picks exactly one row at
 # the sitting; that row is the argument of one superseding approve-policy act.
-c38275e08f4f0dbe0a96d8001cb16d2742298002c4af050689fc236935878a6e  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json  [variant: none]
-f48e0d9fbf30a279017414a493120fb0637b19cce130414fe035a74b9071ef87  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json  [variant: manifesto]
-442391a27393caedb3f4d4f50cc98ef0824c54ce92b78848ac6716c82a38588a  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json  [variant: architecture]
-a12059f606afdc37834e1f8704bd6de239c0686ccce973f5293e9d4bc76eedbd  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json  [variant: both]
+e6a2ef4ff44924ef48f3b6bbd71eb0b716a94cd6a2df527bef2691dd8b566a6e  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json  [variant: none]
+16a1b3f109d88c057b1b879529907095430d633281b3e315fd907cf74afffdb8  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json  [variant: manifesto]
+84505c0a6404026b2e0dec48de7d07d018a7e341292c8413b10ca7775a1770ff  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json  [variant: architecture]
+a39823edebb9ab755696c964fccec0480c1df7977184b9c5e7da3d487655fb36  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json  [variant: both]
