@@ -2,18 +2,23 @@
 """Regenerate the second Anthropic egress record (sitting row 8) from the
 admission package's own template and first-version parameters.
 
-The record is the first version's record with exactly three differences, all
-derived here and none hand-written:
+The record is the first version's record with these differences, all derived
+here and none hand-written:
 
   * the record version (``version`` in ``v2.json``);
   * the permitted classes gain ``project-documentation`` (RFC5-14, once the
     amendment of the rfc5-project-documentation-class package is performed);
   * the carried-content table is the one ``derive_generator_sent_text.mjs
-    --table --discovery`` prints from the code at the time, so it carries the discovery
-    stages and fields once they are on main.
+    --table --discovery`` prints from the code at the time, so it carries the
+    discovery stages and fields;
+  * the record is route-neutral: it names the provider and the request and
+    refers to the route only through the registered route entry. That is this
+    package's own template (``templates/``, a copy of the first version's with
+    the lines that name the Agent SDK route reworded) and ``fieldOverrides`` in
+    ``v2.json`` (provider, retention, route context, telemetry).
 
-Everything else (provider, retention, route context, admitted repositories)
-is read from ``public-repo-admission/instances/egress-anthropic/params.json``
+Everything else (the admitted repositories, the content-class list and the
+rest of the first version's parameters) is read from ``public-repo-admission/instances/egress-anthropic/params.json``
 at its current bytes, so the two versions cannot drift apart silently.
 
   --write            regenerate the record and the manifest
@@ -45,6 +50,7 @@ V1 = CANDIDATES / "public-repo-admission"
 MANIFEST_NAME = "PUBLIC-EGRESS-V2-MANIFEST.txt"
 RECORD = "instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md"
 NEW_CLASS = "project-documentation"
+TEMPLATE = "EGRESS-CONSENT-TEMPLATE-V2.md"
 
 
 def _v1_builder():
@@ -98,6 +104,10 @@ def fields(root=None, v1=None, table_fn=None):
     if NEW_CLASS in base["CONTENT_CLASSES"]:
         raise ValueError("the first version already lists the class; v2 would add nothing")
     out = dict(base)
+    for key, value in cfg.get("fieldOverrides", {}).items():
+        if key not in base:
+            raise ValueError(f"fieldOverrides names {key}, which the first version does not fill")
+        out[key] = value
     out["VERSION"] = cfg["version"]
     out["CONTENT_CLASSES"] = base["CONTENT_CLASSES"] + f"\n- `{NEW_CLASS}`"
     out["SUPERSEDES"] = (f"supersedes version {base['VERSION']} of this record, if an act over that "
@@ -109,15 +119,12 @@ def fields(root=None, v1=None, table_fn=None):
 
 def record_text(root=None, v1=None, table_fn=None):
     b = _v1_builder()
-    v1 = V1 if v1 is None else v1
-    _, tpl_name = v1_fields(v1)
-    text = b.render((v1 / "templates" / tpl_name).read_text(), fields(root, v1, table_fn), tpl_name)
-    old = f"`../../templates/{tpl_name}`"
-    if old not in text:
+    root = PKG if root is None else root
+    tpl_name = TEMPLATE
+    text = b.render((root / "templates" / tpl_name).read_text(), fields(root, v1, table_fn), tpl_name)
+    if f"`../../templates/{tpl_name}`" not in text:
         raise ValueError("instance header does not name the template as expected")
-    # the template lives in the first package, two directories further out
-    return text.replace(old, f"`../../../public-repo-admission/templates/{tpl_name}`", 1) \
-               .replace("`scripts/build_public_repo_admission.py`", "`scripts/build_public_egress_v2.py`", 1)
+    return text.replace("`scripts/build_public_repo_admission.py`", "`scripts/build_public_egress_v2.py`", 1)
 
 
 def stages_in(table):
@@ -182,14 +189,15 @@ def selftest():
         v1 = base / "v1"
         (v1 / "templates").mkdir(parents=True)
         (v1 / "instances/egress-anthropic").mkdir(parents=True)
-        (v1 / "templates/EGRESS-CONSENT-TEMPLATE.md").write_text(
-            "# E {{PROVIDER}}\n\n> Template. x\n\nv `{{VERSION}}`\n{{CONTENT_CLASSES}}\n{{SUPERSEDES}}\n{{CARRIED_TABLE}}\n")
         (v1 / "instances/egress-anthropic/params.json").write_text(json.dumps({
             "E.md": {"template": "EGRESS-CONSENT-TEMPLATE.md", "fields": {
                 "PROVIDER": "P", "CONTENT_CLASSES": "- `code-content`", "SUPERSEDES": "none"}},
             "common": {"VERSION": "0.1.0-candidate.7"}}))
         root = base / "v2"
         (root / "instances/egress-anthropic").mkdir(parents=True)
+        (root / "templates").mkdir()
+        (root / "templates" / TEMPLATE).write_text(
+            "# E {{PROVIDER}}\n\n> Template. x\n\nv `{{VERSION}}`\n{{CONTENT_CLASSES}}\n{{SUPERSEDES}}\n{{CARRIED_TABLE}}\n")
 
         def setup(cfg):
             (root / "v2.json").write_text(json.dumps(cfg))
@@ -207,7 +215,7 @@ def selftest():
         text = (root / RECORD).read_text()
         assert stale(root, v1, lambda: table) == []
         assert "`code-content`" in text and f"`{NEW_CLASS}`" in text and "0.2.0-candidate.1" in text
-        assert "0.1.0-candidate.7 of this record" in text and "../../../public-repo-admission/templates/" in text
+        assert "0.1.0-candidate.7 of this record" in text and f"`../../templates/{TEMPLATE}`" in text
         caught += 1  # positive render: class appended, version set, supersession names v1
         (root / RECORD).write_text(text + "x")
         assert stale(root, v1, lambda: table) == [root / RECORD], "stale record not caught"
@@ -252,6 +260,15 @@ def selftest():
         caught += expect(ValueError, lambda: record_text(
             _with(root, {"version": "0.2.0-candidate.1", "requiredStages": ["map"]}), v1, lambda: "{{LEFT}}"),
             "placeholder left after fill not caught")
+        text0 = record_text(root, v1, lambda: table)
+        over = _with(root, {"version": "0.2.0-candidate.1", "requiredStages": ["map"],
+                            "fieldOverrides": {"PROVIDER": "Q-route-neutral"}})
+        assert "Q-route-neutral" in record_text(over, v1, lambda: table) and "Q-route-neutral" not in text0
+        caught += 1  # an override reaches the record
+        caught += expect(ValueError, lambda: fields(
+            root=_with(root, {"version": "0.2.0-candidate.1", "requiredStages": ["map"],
+                              "fieldOverrides": {"NOT_A_FIELD": "x"}}), v1=v1, table_fn=lambda: table),
+            "an override of a field the first version does not fill not refused")
         # digest modes refuse while not ready, silently on stdout
         global PKG, V1
         saved_pkg, saved_v1 = PKG, V1
@@ -286,6 +303,8 @@ def _with(root, cfg):
     alt = root.parent / ("alt-" + hashlib.sha256(json.dumps(cfg).encode()).hexdigest()[:8])
     alt.mkdir(exist_ok=True)
     (alt / "v2.json").write_text(json.dumps(cfg))
+    if not (alt / "templates").exists():
+        (alt / "templates").symlink_to(root / "templates")
     return alt
 
 

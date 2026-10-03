@@ -13,20 +13,34 @@
 [Observed] `instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md` here is the
 first version's egress record
 (`../public-repo-admission/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md`)
-with exactly three differences, all produced by the builder and none
-hand-written (compare the two files):
+with these differences, all produced by the builder from this package's own
+template and parameters (compare the two files):
 
 1. the record version (`v2.json`);
 2. the permitted content classes gain `project-documentation`;
 3. the carried-content table is the one
-   `scripts/derive_generator_sent_text.mjs --table` prints from the code at
-   regeneration time. Today it equals the first version's table. Once the
-   discovery stages and fields are on main it carries them, each with its one
-   class; the derivation fails on a field with no class.
+   `scripts/derive_generator_sent_text.mjs --table --discovery` prints from the
+   code at regeneration time: the first version's rows plus the discovery
+   stages and fields, each with its one class;
+4. the record is **route-neutral**. It names the provider and the request, and
+   refers to the route only through the registered route entry, so it follows
+   whichever entry is in force: the Agent SDK entry (PR #255) or the Messages
+   API entry (PR #273). The first version names the Agent SDK route, says the
+   route "adds no context of its own" and admits only bytes "fixed by the
+   runtime"; this version says the route adds only the bytes the registered
+   entry lists, whether the runtime fixes them or the entry pins them (model,
+   effort, tool list, thinking, output ceiling), and that approving a route entry
+   is a separate act. Retention, route-context and telemetry wording are made
+   route-neutral the same way; the admitted repositories and content-class
+   list are the first version's.
 
-Provider, route, retention, route context and the admitted repositories
-(`psf-requests`, `redis-redis`) are read from the first version's parameters,
-so the two versions cannot drift apart.
+**Route choice and this record are independent.** Signing this version does not
+choose a route, and choosing a route does not require signing it. The route is
+the registry entry the owner puts in force (row 2a); this record only says the
+requests may carry that entry's listed bytes. [Inferred] Both route packets say
+the first version's wording would need a version like this one if the owner
+reads it restrictively; if the owner reads it descriptively, this version is
+still needed for the class and the discovery stages.
 
 ## Why it exists
 
