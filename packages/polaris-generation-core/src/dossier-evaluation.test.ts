@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 
 import {
   DossierEvaluationError, evaluateDossier, parseDossierManifest, parseReaderQuestions, readerCost, scanDossierPage,
-  scriptedAnswers, type ReaderAnswerPort,
+  scriptedAnswers, type ReaderAnswerPort, type ReaderPortFactory,
 } from './dossier-evaluation.js';
-import { generationAnchorId, gitBlobObjectId, type GenerationSource } from './generation-source.js';
+import { generationAnchorId, generationSourcesForBody, gitBlobObjectId, type GenerationSource } from './generation-source.js';
 
 // Synthetic dossier: a two-page "Kv" store. Every expected value below is a
 // hand-counted literal, never derived from the module under test.
@@ -140,7 +140,9 @@ describe('(b) fidelity', () => {
   it('resolves every quote exactly, including multibyte offsets and decoded entities, and finds every claim labelled', async () => {
     const report = await evaluateDossier(input(), signal);
     expect(report.fidelity.quotes).toEqual({ denominator: 2, exact: 2, failures: [], outcome: 'all-resolved' });
-    expect(report.fidelity.claims).toMatchObject({ denominator: 5, labelled: 5, byLabel: { observed: 3, inferred: 1, unknown: 1 }, unlabelled: [], duplicateClaimIds: [], outcome: 'all-resolved' });
+    expect(report.fidelity.claims).toMatchObject({ denominator: 5, labelled: 5, byLabel: { observed: 3, inferred: 1, unknown: 1 }, unlabelled: [], duplicateClaimIds: [], outcome: 'all-labelled' });
+    // thesis and trade-1 carry their own quotes; storage-1 is Observed with none.
+    expect(report.fidelity.claims.observedWithoutQuote).toEqual([{ page: 'deep-dives/storage.html', claimId: 'storage-1' }]);
   });
 
   it.each([
@@ -186,8 +188,14 @@ describe('(c) reader test scaffolding', () => {
 
   it('gives each fresh reader only the question and the pages, and records answers ungraded', async () => {
     const seen: unknown[] = [];
-    const recording: ReaderAnswerPort = { async answer(question, s) { seen.push(question); return answers.answer(question, s); } };
-    const report = await evaluateDossier({ ...input(), answer: recording }, signal);
+    const instances = new Set<ReaderAnswerPort>();
+    const recording: ReaderPortFactory = { kind: 'scripted', subjectSha256: answers.subjectSha256, create() {
+      const inner = answers.create();
+      const port: ReaderAnswerPort = { async answer(question, s) { expect(instances.has(port)).toBe(false); instances.add(port); seen.push(question); return inner.answer(question, s); } };
+      return port;
+    } };
+    const report = await evaluateDossier({ ...input(), readers: recording }, signal);
+    expect(instances.size).toBe(3);
     expect(seen).toHaveLength(3);
     for (const call of seen as { question: object; pages: { path: string; html: string }[] }[]) {
       expect(Object.keys(call).sort()).toEqual(['pages', 'question']);
@@ -197,8 +205,8 @@ describe('(c) reader test scaffolding', () => {
     }
     expect(report.readerTest.run).toBe(true);
     const results = report.readerTest.run ? report.readerTest.results : [];
-    expect(results.map(result => [result.questionId, result.kind, result.accuracy])).toEqual([
-      ['q-ideas', 'answered', 'not-evaluated'], ['q-trade', 'answered', 'not-evaluated'], ['q-purpose', 'cannot-answer', 'not-evaluated'],
+    expect(results.map(result => [result.questionId, result.kind, result.readerPort, result.accuracy])).toEqual([
+      ['q-ideas', 'answered', 'scripted', 'not-evaluated'], ['q-trade', 'answered', 'scripted', 'not-evaluated'], ['q-purpose', 'cannot-answer', 'scripted', 'not-evaluated'],
     ]);
     expect(results[1]!.citations).toEqual([{ page: 'index.html', sectionId: 'missing-section', resolves: false }]);
     expect(results[1]!.attemptedPaths).toEqual([{ path: 'index.html', known: true }, { path: 'nowhere.html', known: false }]);
@@ -208,39 +216,119 @@ describe('(c) reader test scaffolding', () => {
   it('does not run without an answer port, and refuses a malformed answer', async () => {
     const report = await evaluateDossier(input(), signal);
     expect(report.readerTest).toEqual({ run: false, reason: 'no answer port supplied' });
-    const malformed: ReaderAnswerPort = { async answer() { return { kind: 'answered', text: 'x', citations: [{ page: 'index.html' }], attemptedPaths: [] } as never; } };
-    await expect(evaluateDossier({ ...input(), answer: malformed }, signal)).rejects.toThrow('invalid-answer');
+    const malformed: ReaderPortFactory = { kind: 'scripted', subjectSha256: '0'.repeat(64), create: () => ({ async answer() { return { kind: 'answered', text: 'x', citations: [{ page: 'index.html' }], attemptedPaths: [] } as never; } }) };
+    await expect(evaluateDossier({ ...input(), readers: malformed }, signal)).rejects.toThrow('invalid-answer');
   });
 
   it('stops before the next question once aborted', async () => {
     const controller = new AbortController();
     let calls = 0;
-    const aborting: ReaderAnswerPort = { async answer() { calls++; controller.abort(); return { kind: 'cannot-answer', reason: 'x', attemptedPaths: [] }; } };
-    await expect(evaluateDossier({ ...input(), answer: aborting }, controller.signal)).rejects.toThrow();
+    const aborting: ReaderPortFactory = { kind: 'scripted', subjectSha256: '0'.repeat(64), create: () => ({ async answer() { calls++; controller.abort(); return { kind: 'cannot-answer', reason: 'x', attemptedPaths: [] }; } }) };
+    await expect(evaluateDossier({ ...input(), readers: aborting }, controller.signal)).rejects.toThrow();
     expect(calls).toBe(1);
   });
 });
 
 describe('(d) coverage per owner topic', () => {
-  it('separates reader-cited topics from page-declared ones and leaves the rest Unknown', async () => {
+  it('separates scripted-answer-cited topics from page-declared ones and leaves the rest Unknown', async () => {
     const answers = scriptedAnswers({
       'q-ideas': { kind: 'answered', text: 'Memory.', citations: [{ page: 'index.html', sectionId: 'ideas' }], attemptedPaths: ['index.html'] },
       'q-trade': { kind: 'answered', text: 'Durability.', citations: [{ page: 'index.html', sectionId: 'missing-section' }], attemptedPaths: ['index.html'] },
     });
-    const report = await evaluateDossier({ ...input(), answer: answers }, signal);
+    const report = await evaluateDossier({ ...input(), readers: answers }, signal);
     expect(report.coverage.map(row => [row.topic, row.status])).toEqual([
-      ['core-ideas', 'reader-cited'],
+      ['core-ideas', 'scripted-answer-cited'],
       ['end-to-end-workflows', 'unknown'],
       ['mechanisms', 'declared-only'],
       ['maintainer-stated-advantages', 'unknown'],
       ['trade-offs', 'declared-only'],
     ]);
     expect(report.coverage[2]!.declaredBy).toEqual([{ page: 'index.html', sectionId: 'trade' }, { page: 'deep-dives/storage.html', sectionId: 'storage' }]);
-    expect(report.coverage[0]!.readerCitations).toEqual([{ questionId: 'q-ideas', page: 'index.html', sectionId: 'ideas' }]);
+    expect(report.coverage[0]).toMatchObject({ readerPort: 'scripted', accuracy: 'not-evaluated', answerCitations: [{ questionId: 'q-ideas', page: 'index.html', sectionId: 'ideas' }] });
+    expect(report.coverage[2]).not.toHaveProperty('readerPort');
   });
 
-  it('never upgrades a declaration to reader-cited without a reader run', async () => {
+  it('never upgrades a declaration to answer-cited without a reader run', async () => {
     const report = await evaluateDossier(input(), signal);
-    expect(report.coverage.filter(row => row.status === 'reader-cited')).toEqual([]);
+    expect(report.coverage.filter(row => row.status === 'scripted-answer-cited')).toEqual([]);
+  });
+});
+
+describe('blob-absolute quote offsets', () => {
+  const withQuotes = (markup: string): string => INDEX.replace('</main>', `<section id="extra">${markup}</section></main>`);
+  const report = (markup: string, extra: readonly GenerationSource[]) => evaluateDossier(input({ index: withQuotes(markup), sources: [...SOURCES, ...extra] }), signal);
+  const outcomes = async (markup: string, extra: readonly GenerationSource[]) =>
+    (await report(markup, extra)).fidelity.quotes.failures.map(failure => failure.outcome);
+
+  // 2,400 numbered lines of 50 characters: 120,000 characters, so the blob
+  // splits into two pieces at a line break.
+  const line = (n: number): string => `line ${String(n).padStart(5, '0')} ${'x'.repeat(38)}\n`;
+  const BIG = Array.from({ length: 2400 }, (_, n) => line(n)).join('');
+  const pieces = generationSourcesForBody({ sourceId: 'big', repositoryId: 'project:kv', revision: REVISION, path: 'src/big.txt', objectId: gitBlobObjectId(BIG), evaluationId: 'eval-1', body: BIG });
+  const second = pieces[1]!;
+  const boundary = second.segment!.start;
+
+  it('splits the fixture into two pieces, the second starting mid-blob', () => {
+    expect(pieces.map(piece => piece.sourceId)).toEqual(['big-p1', 'big-p2']);
+    expect(boundary).toBeGreaterThan(0);
+  });
+
+  it('resolves a quote in a later piece by its blob offsets and refuses its piece-relative offsets', async () => {
+    const text = line(2300);
+    const start = BIG.indexOf(text);
+    expect(start).toBeGreaterThan(boundary);
+    const absolute = `<q data-quote-source="big-p2" data-quote-start="${start}" data-quote-end="${start + text.length}">${text}</q>`;
+    expect((await report(absolute, pieces)).fidelity.quotes).toMatchObject({ denominator: 3, exact: 3, outcome: 'all-resolved' });
+    const relative = `<q data-quote-source="big-p2" data-quote-start="${start - boundary}" data-quote-end="${start - boundary + text.length}">${text}</q>`;
+    expect(await outcomes(relative, pieces)).toEqual(['out-of-range']);
+  });
+
+  it('refuses a quote that crosses a piece boundary, whichever piece it names', async () => {
+    const start = boundary - 10;
+    const text = BIG.slice(start, boundary + 10);
+    for (const piece of ['big-p1', 'big-p2']) {
+      expect(await outcomes(`<q data-quote-source="${piece}" data-quote-start="${start}" data-quote-end="${boundary + 10}">${text}</q>`, pieces)).toEqual(['crosses-piece-boundary']);
+    }
+  });
+
+  it('resolves a 4-byte emoji only on its code-point boundaries', async () => {
+    // "Grow " is 5 bytes; U+1F331 occupies bytes 5-9.
+    const emoji = bodySource('emoji', 'docs/emoji.md', 'Grow \u{1F331} slowly.');
+    expect(await outcomes('<q data-quote-source="emoji" data-quote-start="5" data-quote-end="9">\u{1F331}</q>', [emoji])).toEqual([]);
+    for (const [start, end] of [[6, 9], [5, 8], [7, 9]]) {
+      expect(await outcomes(`<q data-quote-source="emoji" data-quote-start="${start}" data-quote-end="${end}">\u{1F331}</q>`, [emoji])).toEqual(['not-utf8-boundary']);
+    }
+  });
+
+  it('reads a CRLF quote as a browser would: a raw CR is normalized away, a character reference survives', async () => {
+    const crlf = bodySource('crlf', 'docs/crlf.txt', 'one\r\ntwo');
+    expect(await outcomes('<q data-quote-source="crlf" data-quote-start="0" data-quote-end="8">one\r\ntwo</q>', [crlf])).toEqual(['text-mismatch']);
+    expect(await outcomes('<q data-quote-source="crlf" data-quote-start="0" data-quote-end="8">one&#13;\ntwo</q>', [crlf])).toEqual([]);
+  });
+});
+
+describe('report subject (rule 11)', () => {
+  it('binds the admitted sources by a canonical digest that ignores order and follows the bytes', async () => {
+    const base = (await evaluateDossier(input(), signal)).subject;
+    const reordered = (await evaluateDossier(input({ sources: [...SOURCES].reverse() }), signal)).subject;
+    expect(reordered.sources).toEqual(base.sources);
+    expect(base.sources.count).toBe(3);
+    const changed = bodySource('durability', 'docs/durability.md', 'Use "fsync" & <wait>!');
+    const other = (await evaluateDossier(input({ index: INDEX.replace('&lt;wait&gt;.', '&lt;wait&gt;!'), sources: [README, changed, SECRET] }), signal)).subject;
+    expect(other.sources.sha256).not.toBe(base.sources.sha256);
+  });
+
+  it('binds the budget and the scripted answers, and records neither when absent', async () => {
+    const none = (await evaluateDossier(input(), signal)).subject;
+    expect(none.budgetSha256).toBeNull();
+    expect(none.readers).toBeNull();
+    const a = scriptedAnswers({ 'q-ideas': { kind: 'cannot-answer', reason: 'a', attemptedPaths: [] } });
+    const b = scriptedAnswers({ 'q-ideas': { kind: 'cannot-answer', reason: 'b', attemptedPaths: [] } });
+    const withA = (await evaluateDossier({ ...input(), budget: { maxTotalBytes: 10 }, readers: a }, signal)).subject;
+    const withB = (await evaluateDossier({ ...input(), budget: { maxTotalBytes: 11 }, readers: b }, signal)).subject;
+    expect(withA.readers).toEqual({ kind: 'scripted', subjectSha256: a.subjectSha256 });
+    expect(withA.readers!.subjectSha256).not.toBe(withB.readers!.subjectSha256);
+    expect(withA.budgetSha256).toMatch(/^[0-9a-f]{64}$/u);
+    expect(withA.budgetSha256).not.toBe(withB.budgetSha256);
   });
 });

@@ -1,4 +1,4 @@
-import { lstat, readFile, realpath, writeFile } from 'node:fs/promises';
+import { lstat, readFile, realpath, stat, writeFile } from 'node:fs/promises';
 import { resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -22,12 +22,14 @@ export interface DossierEvaluationArgs {
   readonly answers?: string;
 }
 
-/** Reads one page, refusing a symlink or any path that resolves outside the run directory. */
+/** Reads one page, refusing a symlink, a non-regular file (a FIFO would block
+ * the read) or any path that resolves outside the run directory. */
 async function readContained(root: string, relative: string): Promise<Uint8Array> {
   const path = resolve(root, relative);
   if ((await lstat(path)).isSymbolicLink()) throw new Error('page-is-symlink');
   const real = await realpath(path);
   if (!real.startsWith(root + sep)) throw new Error('page-outside-run-directory');
+  if (!(await stat(real)).isFile()) throw new Error('page-not-a-file');
   const bytes = await readFile(real);
   if (bytes.length > MAX_PAGE_BYTES) throw new Error('page-too-large');
   return bytes;
@@ -41,11 +43,11 @@ export async function evaluateDossierDirectory(args: DossierEvaluationArgs, sign
   for (const page of manifest.pages) pages.set(page.path, await readContained(root, page.path));
   const sources = parseBoundedJson(await readFile(resolve(args.sources), 'utf8'), SOURCES_LIMITS) as GenerationSource[];
   if (!Array.isArray(sources)) throw new Error('sources-not-an-array');
-  let answer;
+  let readers;
   if (args.answers !== undefined) {
     const script = parseBoundedJson(await readFile(resolve(args.answers), 'utf8'), ANSWERS_LIMITS) as { format?: unknown; answers?: Record<string, ReaderAnswer> };
     if (script?.format !== 'polaris-scripted-answers-v1' || script.answers === null || typeof script.answers !== 'object') throw new Error('invalid-scripted-answers');
-    answer = scriptedAnswers(script.answers);
+    readers = scriptedAnswers(script.answers);
   }
   return evaluateDossier({
     manifestText,
@@ -54,7 +56,7 @@ export async function evaluateDossierDirectory(args: DossierEvaluationArgs, sign
     questionsText: await readFile(resolve(args.questions), 'utf8'),
     ...(args.expectQuestionsSha256 === undefined ? {} : { expectedQuestionsSha256: args.expectQuestionsSha256 }),
     ...(args.budget === undefined ? {} : { budget: parsePageBudget(await readFile(resolve(args.budget), 'utf8')) }),
-    ...(answer === undefined ? {} : { answer }),
+    ...(readers === undefined ? {} : { readers }),
   }, signal);
 }
 

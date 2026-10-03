@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 
+import { digestCanonicalJson } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
 import { validateGenerationSources, type GenerationSource } from './generation-source.js';
 
@@ -123,7 +124,7 @@ function attributes(source: string): Map<string, string> {
 }
 
 export interface ScannedSection { readonly id: string | null; readonly topics: readonly string[] }
-export interface ScannedClaim { readonly id: string; readonly epistemic: string | null }
+export interface ScannedClaim { readonly id: string; readonly epistemic: string | null; readonly hasQuote: boolean }
 export interface ScannedQuote { readonly sourceId: string | null; readonly start: string | null; readonly end: string | null; readonly text: string }
 export interface ScannedPage {
   readonly bytes: number;
@@ -138,7 +139,7 @@ export interface ScannedPage {
   readonly findings: readonly string[];
 }
 
-interface Open { readonly name: string; readonly level: string | null; readonly quote: { text: string } | null }
+interface Open { readonly name: string; readonly level: string | null; readonly quote: { text: string } | null; readonly claim: { hasQuote: boolean } | null }
 
 export function scanDossierPage(html: string): ScannedPage {
   const byLevel: Record<string, number> = {};
@@ -146,7 +147,7 @@ export function scanDossierPage(html: string): ScannedPage {
   let lastLevelZeroClose: number | null = null;
   const sections: ScannedSection[] = [];
   const ids = new Set<string>();
-  const claims: ScannedClaim[] = [];
+  const claims: { id: string; epistemic: string | null; hasQuote: boolean }[] = [];
   const quotes: (ScannedQuote & { text: string })[] = [];
   const findings: string[] = [];
   const stack: Open[] = [];
@@ -155,7 +156,9 @@ export function scanDossierPage(html: string): ScannedPage {
     return null;
   };
   const text = (raw: string): void => {
-    const decoded = decodeHtmlText(raw);
+    // HTML input-stream preprocessing: a reader's DOM has LF where the bytes have
+    // CRLF or a lone CR, so a source CR survives only as a character reference.
+    const decoded = decodeHtmlText(raw.replace(/\r\n?/gu, '\n'));
     for (const open of stack) if (open.quote !== null) open.quote.text += decoded;
     const words = countWords(decoded);
     if (words === 0) return;
@@ -194,9 +197,15 @@ export function scanDossierPage(html: string): ScannedPage {
       if (id === undefined) findings.push('section-without-id');
     }
     const claimId = attrs.get('data-claim-id');
-    if (claimId !== undefined) claims.push({ id: claimId, epistemic: attrs.has('data-epistemic') ? attrs.get('data-epistemic')! : null });
+    let claim: { id: string; epistemic: string | null; hasQuote: boolean } | null = null;
+    if (claimId !== undefined) {
+      claim = { id: claimId, epistemic: attrs.has('data-epistemic') ? attrs.get('data-epistemic')! : null, hasQuote: false };
+      claims.push(claim);
+    }
     let quote: { text: string } | null = null;
     if (attrs.has('data-quote-source') || attrs.has('data-quote-start') || attrs.has('data-quote-end')) {
+      for (const open of stack) if (open.claim !== null) open.claim.hasQuote = true;
+      if (claim !== null) claim.hasQuote = true;
       const record = { sourceId: attrs.get('data-quote-source') ?? null, start: attrs.get('data-quote-start') ?? null, end: attrs.get('data-quote-end') ?? null, text: '' };
       quotes.push(record);
       quote = record;
@@ -215,13 +224,13 @@ export function scanDossierPage(html: string): ScannedPage {
       const end = close.exec(html);
       const body = html.slice(cursor, end === null ? html.length : end.index);
       // Script, style and title text is not page reading; a textarea's is.
-      if (name === 'textarea') { stack.push({ name, level: readingLevel, quote }); text(body); stack.pop(); }
+      if (name === 'textarea') { stack.push({ name, level: readingLevel, quote, claim }); text(body); stack.pop(); }
       cursor = end === null ? html.length : close.lastIndex;
       token.lastIndex = cursor;
       if (end === null) findings.push(`unclosed:${name}`);
       continue;
     }
-    stack.push({ name, level: readingLevel, quote });
+    stack.push({ name, level: readingLevel, quote, claim });
   }
   text(html.slice(cursor));
   if (stack.some(open => open.name !== 'html' && open.name !== 'body')) findings.push(`unclosed:${stack.map(open => open.name).join(',')}`);
@@ -297,7 +306,7 @@ export function readerCost(manifest: DossierManifest, scanned: ReadonlyMap<strin
 // ---------------------------------------------------------------------------
 // (b) Fidelity: quotes resolve exactly to admitted bytes; every claim is labelled.
 
-export type QuoteOutcome = 'exact' | 'text-mismatch' | 'unknown-source' | 'unquotable-source' | 'invalid-offsets' | 'out-of-range' | 'not-utf8-boundary';
+export type QuoteOutcome = 'exact' | 'text-mismatch' | 'unknown-source' | 'unquotable-source' | 'invalid-offsets' | 'out-of-range' | 'crosses-piece-boundary' | 'not-utf8-boundary';
 
 function admittedBody(source: GenerationSource): string | null {
   if (source.exclusion.excluded || source.classificationBasis !== 'body') return null;
@@ -306,6 +315,9 @@ function admittedBody(source: GenerationSource): string | null {
   return only !== undefined && only.start === 0 ? only.text : null;
 }
 
+/** Quote offsets are blob-absolute UTF-8 byte offsets, the same base as the
+ * anchors: a piece of a segmented blob resolves them by subtracting its
+ * `segment.start`, and a quote must lie wholly inside the named piece. */
 export function resolveQuote(quote: ScannedQuote, sources: ReadonlyMap<string, GenerationSource>): QuoteOutcome {
   const source = quote.sourceId === null ? undefined : sources.get(quote.sourceId);
   if (source === undefined) return 'unknown-source';
@@ -316,9 +328,13 @@ export function resolveQuote(quote: ScannedQuote, sources: ReadonlyMap<string, G
   const end = Number(quote.end);
   const bytes = Buffer.from(body, 'utf8');
   if (end <= start) return 'invalid-offsets';
-  if (end > bytes.length) return 'out-of-range';
+  const base = source.segment?.start ?? 0;
+  if (source.segment !== undefined && (start < base || end > source.segment.end)) {
+    return start < source.segment.end && end > base ? 'crosses-piece-boundary' : 'out-of-range';
+  }
+  if (end - base > bytes.length) return 'out-of-range';
   let decoded: string;
-  try { decoded = new TextDecoder('utf-8', { fatal: true }).decode(bytes.subarray(start, end)); }
+  try { decoded = new TextDecoder('utf-8', { fatal: true }).decode(bytes.subarray(start - base, end - base)); }
   catch { return 'not-utf8-boundary'; }
   return decoded === quote.text ? 'exact' : 'text-mismatch';
 }
@@ -334,22 +350,25 @@ export function fidelity(manifest: DossierManifest, scanned: ReadonlyMap<string,
     claimIds.set(claim.id, (claimIds.get(claim.id) ?? 0) + 1);
     const label = claim.epistemic === null ? 'missing-label' as const
       : (EPISTEMIC as readonly string[]).includes(claim.epistemic) ? claim.epistemic as Epistemic : 'invalid-label' as const;
-    return { page: page.path, claimId: claim.id, label };
+    return { page: page.path, claimId: claim.id, label, hasQuote: claim.hasQuote };
   }));
   const failedQuotes = quotes.filter(quote => quote.outcome !== 'exact');
   const unlabelled = claims.filter(claim => claim.label === 'missing-label' || claim.label === 'invalid-label');
   const duplicateClaimIds = [...claimIds].filter(([, count]) => count > 1).map(([id]) => id).sort();
-  const outcome = (population: number, failures: number): 'all-resolved' | 'failures' | 'unknown' =>
-    failures > 0 ? 'failures' : population === 0 ? 'unknown' : 'all-resolved';
+  const outcome = <T extends string>(population: number, failures: number, pass: T): T | 'failures' | 'unknown' =>
+    failures > 0 ? 'failures' : population === 0 ? 'unknown' : pass;
   return {
-    quotes: { denominator: quotes.length, exact: quotes.length - failedQuotes.length, failures: failedQuotes, outcome: outcome(quotes.length, failedQuotes.length) },
+    quotes: { denominator: quotes.length, exact: quotes.length - failedQuotes.length, failures: failedQuotes.map(({ page, sourceId, start, end, outcome: result }) => ({ page, sourceId, start, end, outcome: result })), outcome: outcome(quotes.length, failedQuotes.length, 'all-resolved') },
     claims: {
       denominator: claims.length,
       labelled: claims.length - unlabelled.length,
       byLabel: Object.fromEntries(EPISTEMIC.map(label => [label, claims.filter(claim => claim.label === label).length])),
-      unlabelled,
+      // A label is checked for presence and vocabulary only. An Observed claim
+      // carrying no quote of its own has no exact-source check behind it here.
+      observedWithoutQuote: claims.filter(claim => claim.label === 'observed' && !claim.hasQuote).map(({ page, claimId }) => ({ page, claimId })),
+      unlabelled: unlabelled.map(({ page, claimId, label }) => ({ page, claimId, label })),
       duplicateClaimIds,
-      outcome: outcome(claims.length, unlabelled.length + duplicateClaimIds.length),
+      outcome: outcome(claims.length, unlabelled.length + duplicateClaimIds.length, 'all-labelled'),
     },
   };
 }
@@ -366,13 +385,26 @@ export interface ReaderAnswerPort {
   answer(input: { readonly question: { readonly id: string; readonly text: string }; readonly pages: readonly { readonly path: string; readonly html: string }[] }, signal: AbortSignal): Promise<ReaderAnswer>;
 }
 
+/** Creates one fresh reader per question. `kind` and `subjectSha256` bind the
+ * report to what answered: a scripted citation never reads as reader evidence. */
+export interface ReaderPortFactory {
+  readonly kind: 'scripted';
+  readonly subjectSha256: string;
+  create(): ReaderAnswerPort;
+}
+
 /** The only answer implementation: answers fixed in advance, keyed by question id. */
-export function scriptedAnswers(script: Readonly<Record<string, ReaderAnswer>>): ReaderAnswerPort {
+export function scriptedAnswers(script: Readonly<Record<string, ReaderAnswer>>): ReaderPortFactory {
+  const frozen = structuredClone(script);
   return {
-    async answer({ question }) {
-      const scripted = script[question.id];
-      return scripted ?? { kind: 'cannot-answer', reason: 'no scripted answer', attemptedPaths: [] };
-    },
+    kind: 'scripted',
+    subjectSha256: digestCanonicalJson(frozen, JSON_LIMITS).digest,
+    create: () => ({
+      async answer({ question }) {
+        const scripted = frozen[question.id];
+        return scripted === undefined ? { kind: 'cannot-answer', reason: 'no scripted answer', attemptedPaths: [] } : structuredClone(scripted);
+      },
+    }),
   };
 }
 
@@ -390,12 +422,12 @@ function checkAnswer(value: unknown): ReaderAnswer {
 }
 
 export async function runReaderTest(questions: readonly ReaderQuestion[], manifest: DossierManifest, pages: ReadonlyMap<string, string>,
-  scanned: ReadonlyMap<string, ScannedPage>, port: ReaderAnswerPort, signal: AbortSignal) {
+  scanned: ReadonlyMap<string, ScannedPage>, readers: ReaderPortFactory, signal: AbortSignal) {
   const pageInput = manifest.pages.map(page => ({ path: page.path, html: pages.get(page.path)! }));
   const results = [];
   for (const question of questions) {
     signal.throwIfAborted();
-    const answer = checkAnswer(await port.answer({ question: { id: question.id, text: question.text }, pages: pageInput.map(page => ({ ...page })) }, signal));
+    const answer = checkAnswer(await readers.create().answer({ question: { id: question.id, text: question.text }, pages: pageInput.map(page => ({ ...page })) }, signal));
     const citations = answer.kind === 'answered' ? answer.citations.map(citation => ({
       ...citation,
       resolves: scanned.get(citation.page)?.sections.some(section => section.id === citation.sectionId) ?? false,
@@ -403,6 +435,7 @@ export async function runReaderTest(questions: readonly ReaderQuestion[], manife
     results.push({
       questionId: question.id,
       topics: question.topics,
+      readerPort: readers.kind,
       kind: answer.kind,
       ...(answer.kind === 'answered' ? { text: answer.text } : { reason: answer.reason }),
       citations,
@@ -428,10 +461,11 @@ export function topicCoverage(manifest: DossierManifest, scanned: ReadonlyMap<st
     const answeredFrom = reader === null ? [] : reader
       .filter(result => result.topics.includes(topic) && result.kind === 'answered')
       .flatMap(result => result.citations.filter(citation => citation.resolves).map(citation => ({ questionId: result.questionId, page: citation.page, sectionId: citation.sectionId })));
-    // A page's own declaration is the generator's assertion; only a reader's
-    // resolved citation is evidence that the pages answer the topic.
-    const status = answeredFrom.length > 0 ? 'reader-cited' as const : declared.length > 0 ? 'declared-only' as const : 'unknown' as const;
-    return { topic, status, declaredBy: declared, questions: asked, readerCitations: answeredFrom };
+    // A page's own declaration is the generator's assertion. A resolved answer
+    // citation names where an answer was found; from a scripted port it is a
+    // fixture, never reader evidence, and no citation is graded here.
+    const status = answeredFrom.length > 0 ? 'scripted-answer-cited' as const : declared.length > 0 ? 'declared-only' as const : 'unknown' as const;
+    return { topic, status, ...(answeredFrom.length > 0 ? { readerPort: 'scripted' as const, accuracy: 'not-evaluated' as const } : {}), declaredBy: declared, questions: asked, answerCitations: answeredFrom };
   });
 }
 
@@ -448,10 +482,21 @@ export interface DossierEvaluationInput {
   readonly expectedQuestionsSha256?: string;
   readonly budget?: PageBudget;
   /** Absent: the reader test is not run and every topic stays declared-only or Unknown. */
-  readonly answer?: ReaderAnswerPort;
+  readonly readers?: ReaderPortFactory;
 }
 
 const sha256 = (bytes: Uint8Array | string): string => createHash('sha256').update(bytes).digest('hex');
+
+/** Canonical digest over the admitted population: each source's identity,
+ * segment, exclusion and a SHA-256 of its body, in source-id order. */
+export function admittedSourcesDigest(sources: readonly GenerationSource[]): { readonly count: number; readonly sha256: string } {
+  const rows = [...sources].sort((a, b) => (a.sourceId < b.sourceId ? -1 : a.sourceId > b.sourceId ? 1 : 0)).map(source => ({
+    sourceId: source.sourceId, repositoryId: source.repositoryId, revision: source.revision, path: source.path, objectId: source.objectId,
+    segment: source.segment === undefined ? null : { ...source.segment }, exclusion: { ...source.exclusion },
+    bodySha256: source.body === undefined ? null : sha256(source.body),
+  }));
+  return { count: rows.length, sha256: digestCanonicalJson(rows, { maxBytes: 64_000_000, maxNodes: 4_000_000, maxDepth: 8 }).digest };
+}
 
 export async function evaluateDossier(input: DossierEvaluationInput, signal: AbortSignal) {
   const manifest = parseDossierManifest(input.manifestText);
@@ -467,20 +512,22 @@ export async function evaluateDossier(input: DossierEvaluationInput, signal: Abo
     html.set(page.path, text);
     scanned.set(page.path, scanDossierPage(text));
   }
-  const reader = input.answer === undefined ? null : await runReaderTest(questions, manifest, html, scanned, input.answer, signal);
+  const reader = input.readers === undefined ? null : await runReaderTest(questions, manifest, html, scanned, input.readers, signal);
   return {
     format: 'polaris-dossier-evaluation-v1',
     subject: {
       manifestSha256: sha256(input.manifestText),
       pages: manifest.pages.map(page => ({ path: page.path, sha256: sha256(input.pages.get(page.path)!) })),
       questionsSha256,
-      sourceIds: input.sources.map(source => source.sourceId),
+      sources: admittedSourcesDigest(input.sources),
+      budgetSha256: input.budget === undefined ? null : digestCanonicalJson({ ...input.budget }, JSON_LIMITS).digest,
+      readers: input.readers === undefined ? null : { kind: input.readers.kind, subjectSha256: input.readers.subjectSha256 },
     },
     title: manifest.title,
     scanFindings: manifest.pages.flatMap(page => scanned.get(page.path)!.findings.map(finding => ({ page: page.path, finding }))),
     readerCost: readerCost(manifest, scanned, input.budget),
     fidelity: fidelity(manifest, scanned, input.sources),
-    readerTest: reader === null ? { run: false as const, reason: 'no answer port supplied' } : { run: true as const, answerPort: 'injected', results: reader },
+    readerTest: reader === null ? { run: false as const, reason: 'no answer port supplied' } : { run: true as const, readerPort: input.readers!.kind, results: reader },
     coverage: topicCoverage(manifest, scanned, questions, reader),
     providerCallPerformed: false,
   };
