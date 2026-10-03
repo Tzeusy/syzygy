@@ -1,244 +1,257 @@
 {
-  "subject": {
-    "commit": "b1c04e80e4992118b15dc7681c1387ee4c491d02",
-    "branch": "agent/dossier-consent",
-    "fileSha256": {
-      "packages/polaris-generation-consent/src/admission-record.ts": "69541d694de8c3b7f088977110eaf6bd2d230ea9c7d5d605197d8eb8224f6890",
-      "packages/polaris-generation-consent/src/consent-ports.ts": "bc82da6aea47d138265b0b7b674500eef86ff360001beec4e58d0232779d5cbe"
-    }
+ "subject": {
+  "commit": "17c62b0cd81381d0a6ae04e8647e63f47b15e91c",
+  "branch": "agent/dossier-consent",
+  "fileSha256": {
+   "packages/polaris-generation-consent/src/admission-record.ts": "69541d694de8c3b7f088977110eaf6bd2d230ea9c7d5d605197d8eb8224f6890",
+   "packages/polaris-generation-consent/src/consent-ports.ts": "72920e6314d103441f10e6de4035ca6d553771e6204120c4a7f65808380b545f"
+  }
+ },
+ "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+ "project": "@syzygy/polaris-generation-consent",
+ "ranAt": "2026-10-03T17:59:24+00:00",
+ "mutants": [
+  {
+   "id": "C1-future-dated-withdrawal-ignored",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "r.withdrawnAt !== null ? 'withdrawn'",
+   "new": "r.withdrawnAt !== null && r.withdrawnAt <= now ? 'withdrawn'",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 52
   },
-  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
-  "project": "@syzygy/polaris-generation-consent",
-  "ranAt": "2026-10-03T08:56:14+00:00",
-  "mutants": [
-    {
-      "id": "C1-future-dated-withdrawal-ignored",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "r.withdrawnAt !== null ? 'withdrawn'",
-      "new": "r.withdrawnAt !== null && r.withdrawnAt <= now ? 'withdrawn'",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 51
-    },
-    {
-      "id": "C2-future-dated-evidence-accepted",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "r.inForceAt > now ? 'future-dated'",
-      "new": "r.inForceAt > now + 5 ? 'future-dated'",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 51
-    },
-    {
-      "id": "C3-candidate-accepted",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "r.inForceAt === null ? 'not-in-force'",
-      "new": "r.inForceAt === null && false ? 'not-in-force'",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 51
-    },
-    {
-      "id": "C4-excluded-skip-removed",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "if (s.exclusion.excluded) continue;",
-      "new": "",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 51
-    },
-    {
-      "id": "C5-tag-label-accepted",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "COMMIT_OBJECT_ID.test(s.revision) ?",
-      "new": "true ?",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 51
-    },
-    {
-      "id": "C6-admit-identity-not-rechecked",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "if (identityOf(e, input) !== input.permissionDigest) { await emit(input, 'admit'",
-      "new": "if (false) { await emit(input, 'admit'",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 51
-    },
-    {
-      "id": "C7-dispatch-identity-not-rechecked",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "if (identityOf(e, input) !== input.permissionDigest) { await emit(input, 'dispatch'",
-      "new": "if (false) { await emit(input, 'dispatch'",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 51
-    },
-    {
-      "id": "C8-reader-failure-permits",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "catch { return { ok: false, reasons: ['reader-failed'], relied: [] }; }",
-      "new": "catch { return { ok: true, relied: [] }; }",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 51
-    },
-    {
-      "id": "C9-index-not-parsed",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "records = parseAdmissionRecords(raw);",
-      "new": "records = raw;",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 7,
-      "totalTests": 51
-    },
-    {
-      "id": "C10-clock-unchecked",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "if (!Number.isSafeInteger(now)) return",
-      "new": "if (false) return",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 51
-    },
-    {
-      "id": "C11-empty-population-allowed",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "if (options.sources.length === 0) return",
-      "new": "if (false) return",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 51
-    },
-    {
-      "id": "C12-body-not-bound",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "bodyDigest: effective === undefined ? null : sha256(effective),",
-      "new": "bodyDigest: null,",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 51
-    },
-    {
-      "id": "C13-span-text-not-bound",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "spans: s.spans.map(span => ({ ...span, text: sha256(span.text) }))",
-      "new": "spans: s.spans.map(span => ({ ...span, text: '' }))",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 51
-    },
-    {
-      "id": "C14-withConsent-skips-population",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "consent.matches(request) && await base.verifySources(request)",
-      "new": "await base.verifySources(request)",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 51
-    },
-    {
-      "id": "C15-audit-failure-after-reserve-permits",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "? decision : { kind: 'refused', reason: 'uncertain' }",
-      "new": "? decision : decision",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 51
-    },
-    {
-      "id": "C16-withdrawn-successor-resurrects",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "r.inForceAt === null || r.inForceAt > now ? [] : [r.supersedes]",
-      "new": "r.inForceAt === null || r.inForceAt > now || r.withdrawnAt !== null ? [] : [r.supersedes]",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 51
-    },
-    {
-      "id": "C17-mapper-throw-permits",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "catch { cls = null; }",
-      "new": "catch { cls = 'governance-text'; }",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 51
-    },
-    {
-      "id": "C18-record-lists-not-frozen",
-      "file": "packages/polaris-generation-consent/src/admission-record.ts",
-      "old": "admittedRevisions: Object.freeze([...record.admittedRevisions])",
-      "new": "admittedRevisions: [...record.admittedRevisions]",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 51
-    },
-    {
-      "id": "C19-noop-control",
-      "file": "packages/polaris-generation-consent/src/consent-ports.ts",
-      "old": "const LIMITS = { maxBytes: 4_000_000,",
-      "new": "const LIMITS = { maxBytes: 4_000_001,",
-      "tests": [
-        "consent-ports"
-      ],
-      "outcome": "survived",
-      "failedTests": 0,
-      "totalTests": 51,
-      "note": "equivalent control: a no-op change that must survive"
-    }
-  ]
+  {
+   "id": "C2-future-dated-evidence-accepted",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "r.inForceAt > now ? 'future-dated'",
+   "new": "r.inForceAt > now + 5 ? 'future-dated'",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 52
+  },
+  {
+   "id": "C3-candidate-accepted",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "r.inForceAt === null ? 'not-in-force'",
+   "new": "r.inForceAt === null && false ? 'not-in-force'",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 52
+  },
+  {
+   "id": "C4-excluded-skip-removed",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "if (s.exclusion.excluded) continue;",
+   "new": "",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 52
+  },
+  {
+   "id": "C5-tag-label-accepted",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "COMMIT_OBJECT_ID.test(s.revision) ?",
+   "new": "true ?",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 52
+  },
+  {
+   "id": "C6-admit-identity-not-rechecked",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "if (identityOf(e, input) !== input.permissionDigest) { await emit(input, 'admit'",
+   "new": "if (false) { await emit(input, 'admit'",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 52
+  },
+  {
+   "id": "C7-dispatch-identity-not-rechecked",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "if (identityOf(e, input) !== input.permissionDigest) { await emit(input, 'dispatch'",
+   "new": "if (false) { await emit(input, 'dispatch'",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 52
+  },
+  {
+   "id": "C8-reader-failure-permits",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "catch { return { ok: false, reasons: ['reader-failed'], relied: [] }; }",
+   "new": "catch { return { ok: true, relied: [] }; }",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 52
+  },
+  {
+   "id": "C9-index-not-parsed",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "records = parseAdmissionRecords(raw);",
+   "new": "records = raw;",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 7,
+   "totalTests": 52
+  },
+  {
+   "id": "C10-clock-unchecked",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "if (!Number.isSafeInteger(now)) return",
+   "new": "if (false) return",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 52
+  },
+  {
+   "id": "C11-empty-population-allowed",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "if (options.sources.length === 0) return",
+   "new": "if (false) return",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 52
+  },
+  {
+   "id": "C12-body-not-bound",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "bodyDigest: effective === undefined ? null : sha256(effective),",
+   "new": "bodyDigest: null,",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 52
+  },
+  {
+   "id": "C13-span-text-not-bound",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "spans: s.spans.map(span => ({ ...span, text: sha256(span.text) }))",
+   "new": "spans: s.spans.map(span => ({ ...span, text: '' }))",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 52
+  },
+  {
+   "id": "C14-withConsent-skips-population",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "consent.matches(request) && await base.verifySources(request)",
+   "new": "await base.verifySources(request)",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 52
+  },
+  {
+   "id": "C15-audit-failure-after-reserve-permits",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "? decision : { kind: 'refused', reason: 'uncertain' }",
+   "new": "? decision : decision",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 52
+  },
+  {
+   "id": "C16-withdrawn-successor-resurrects",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "r.inForceAt === null || r.inForceAt > now ? [] : [r.supersedes]",
+   "new": "r.inForceAt === null || r.inForceAt > now || r.withdrawnAt !== null ? [] : [r.supersedes]",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 52
+  },
+  {
+   "id": "C17-mapper-throw-permits",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "catch { cls = null; }",
+   "new": "catch { cls = 'governance-text'; }",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 52
+  },
+  {
+   "id": "C18-record-lists-not-frozen",
+   "file": "packages/polaris-generation-consent/src/admission-record.ts",
+   "old": "admittedRevisions: Object.freeze([...record.admittedRevisions])",
+   "new": "admittedRevisions: [...record.admittedRevisions]",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 52
+  },
+  {
+   "id": "C19-noop-control",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "const LIMITS = { maxBytes: 4_000_000,",
+   "new": "const LIMITS = { maxBytes: 4_000_001,",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "survived",
+   "failedTests": 0,
+   "totalTests": 52,
+   "note": "equivalent control: a no-op change that must survive"
+  },
+  {
+   "id": "S1-ambiguous-successor-does-not-void",
+   "file": "packages/polaris-generation-consent/src/consent-ports.ts",
+   "old": "r.supersedes === null || r.inForceAt === null || r.inForceAt > now ? [] : [r.supersedes]",
+   "new": "r.supersedes === null || ambiguous.has(ref(r)) || r.inForceAt === null || r.inForceAt > now ? [] : [r.supersedes]",
+   "tests": [
+    "consent-ports"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 52
+  }
+ ],
+ "summary": "20 mutants run in one pass at one commit; not killed: ['C19-noop-control'] (no-op control only)."
 }
