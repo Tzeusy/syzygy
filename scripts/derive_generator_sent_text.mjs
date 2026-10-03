@@ -15,7 +15,7 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import ts from 'typescript';
-import { runGenerationPipeline, promptForStage, stageSchema, generationAnchorId, gitBlobObjectId, READER_QUESTION_TOPICS, discoveryMapEnvelope, discoveryReduceEnvelope } from '../packages/polaris-generation-core/dist/index.js';
+import { runGenerationPipeline, promptForStage, stageSchema, generationAnchorId, gitBlobObjectId, READER_QUESTION_TOPICS, discoveryMapEnvelope, discoveryReduceEnvelope, discoverAndSelect, generationSourcesForBody, DEFAULT_DISCOVERY_BUDGET } from '../packages/polaris-generation-core/dist/index.js';
 
 const STAGES = ['inventory', 'plan', 'author', 'edit', 'fidelity', 'repair'];
 const sha = text => createHash('sha256').update(text).digest('hex');
@@ -161,12 +161,29 @@ const discoveryAuthored = [];
 if (DISCOVERY) {
   const leaves = (value, path = '') => Array.isArray(value) ? value.flatMap(item => leaves(item, `${path}[]`))
     : value !== null && typeof value === 'object' ? Object.entries(value).flatMap(([key, child]) => leaves(child, path ? `${path}.${key}` : key)) : [path];
-  const built = {
-    'discovery-map': discoveryMapEnvelope({ subsystem: 'derive', readerQuestions: ['q'], items: [{ blobId: 'b1', path: 'derive/a.md', excerpt: 'fixture excerpt' }] }).envelope,
-    'discovery-reduce': discoveryReduceEnvelope({ readerQuestions: ['q'], maxSelected: 1,
-      subsystems: [{ subsystem: 'derive', blobs: 1, claims: [{ blobId: 'b1', path: 'derive/a.md', claim: 'fixture claim', relevance: 5 }] }] }).envelope,
+  // The requests are the ones discoverAndSelect itself builds, captured at the
+  // map and reduce ports, so a field the producer adds appears here and must be
+  // classed: a hand-written item hides it (the #340 excerpt fields did, until
+  // the table was run with them). Two files in one subsystem give the reduce
+  // call claims to carry.
+  const capturedDiscovery = {};
+  const fixtureBodies = ['# a\n\nfixture prose.\n', 'int f(void) { return 1; }\n'];
+  const discoverySources = fixtureBodies.flatMap((text, i) => generationSourcesForBody({
+    sourceId: `derive-d${i}`, repositoryId: 'derive:fixture', revision: 'a'.repeat(40), path: `derive/d${i}.${i ? 'c' : 'md'}`,
+    objectId: gitBlobObjectId(text), evaluationId: 'derive:evaluation', body: text }));
+  await discoverAndSelect(discoverySources, ['q'], { ...DEFAULT_DISCOVERY_BUDGET, maxSelected: 1 }, {
+    permitted: async () => true,
+    receipt: async () => {},
+    map: async input => { capturedDiscovery['discovery-map'] ??= input;
+      return { claims: input.items.map(item => ({ blobId: item.blobId, claim: 'fixture claim', relevance: 5 })), usageUnits: 1 }; },
+    reduce: async input => { capturedDiscovery['discovery-reduce'] ??= input; return { ranked: [], usageUnits: 1 }; },
+  });
+  if (!capturedDiscovery['discovery-map'] || !capturedDiscovery['discovery-reduce']) failures.push('discovery fixture did not reach both ports');
+  const built = failures.length ? {} : {
+    'discovery-map': discoveryMapEnvelope(capturedDiscovery['discovery-map']).envelope,
+    'discovery-reduce': discoveryReduceEnvelope(capturedDiscovery['discovery-reduce']).envelope,
   };
-  for (const stage of DISCOVERY_STAGES) {
+  for (const stage of failures.length ? [] : DISCOVERY_STAGES) {
     const envelope = built[stage];
     const prompt = promptForStage(stage);
     const schema = stageSchema(stage);
