@@ -33,9 +33,12 @@ agree.
    verifies (so a stale manifest or another digest is refused);
 2. the subject bytes (the patched module, or the installed module once the
    patch is applied) hash to the argument;
-3. the frozen commit carries the manifest, the patch, the packet, the brief,
-   the delta and the ledger exactly as presented (the packet may gain one
-   PERFORMED head), and the packet carries no 64-hex token;
+3. the manifest on disk is the one the review bound (item 4) and the packet
+   carries no 64-hex token; where the frozen commit is present in the object
+   store it also carries the manifest, the patch, the packet, the brief, the
+   delta and the ledger exactly as presented (the packet may gain one
+   PERFORMED head), but a fresh clone after a rebase-merge does not have that
+   commit, so its absence is accepted and the commit is provenance only;
 4. the confirming raw's first four non-blank lines carry
    `Reviewed commit: <40 hex>`, `Manifest SHA-256: <SHA-256 of the manifest
    FILE>` and a verdict of `CONFIRM` or `CONFIRM WITH EXCEPTIONS`; the latter
@@ -82,8 +85,9 @@ DISPOSITION_REL = PKG / "reviews/ROUND-2-DISPOSITIONS.md"
 PRESENTED = (MANIFEST_REL, PATCH_REL, PACKET_REL, BRIEF_REL, DELTA_REL, LEDGER_REL)
 #: The commit the confirming review read (round 2, CONFIRM WITH EXCEPTIONS,
 #: notes only; the 2026-09-26 owner ruling clears those bytes). Provenance:
-#: the commit is unreachable from main after a rebase-merge, so the recorder
-#: reads blobs from the object store and binds by digest, never by ancestry.
+#: the commit is unreachable from main after a rebase-merge and its branch is
+#: deleted, so the recorder verifies bytes on disk and binds by digest, never
+#: by ancestry or by reading the object store.
 FROZEN_SUBJECT: str | None = "dff2f0dc5cf6b8a876c4d4233cb0bef8e3e7dce4"
 VERDICTS = ("CONFIRM", "CONFIRM WITH EXCEPTIONS")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -129,7 +133,17 @@ def identity_for(date: str) -> str:
     return f"RFC5-PROJECT-DOCUMENTATION-AMEND-{date}"
 
 
-def git_blob(root: pathlib.Path, commit: str, rel: pathlib.Path) -> bytes:
+def git_blob(root: pathlib.Path, commit: str, rel: pathlib.Path) -> bytes | None:
+    """The file at the frozen commit, or None when the commit is not in the store.
+
+    A rebase-merge leaves the frozen commit unreachable and a deleted branch
+    is never fetched, so a fresh clone does not have it. Absence is not an
+    error: the subject is verified from bytes on disk (see `validate`).
+    """
+    have = subprocess.run(["git", "-C", str(root), "cat-file", "-e", f"{commit}^{{commit}}"],
+                          capture_output=True)
+    if have.returncode != 0:
+        return None
     done = subprocess.run(["git", "-C", str(root), "show", f"{commit}:{rel.as_posix()}"],
                           capture_output=True)
     if done.returncode != 0:
@@ -148,7 +162,7 @@ class Inputs:
     module_paths: list[str]
     builder_findings: list[str]
     frozen: str | None
-    frozen_blob: Callable[[pathlib.Path], bytes]
+    frozen_blob: Callable[[pathlib.Path], bytes | None]
     frozen_files: dict[pathlib.Path, bytes]
     disposition_check: Callable[[dict[int, str]], None]
 
@@ -197,7 +211,12 @@ def validate(argument: str, inp: Inputs) -> tuple[str, str, str]:
                          "not the owner argument")
     for rel, current in inp.frozen_files.items():
         expected = current if rel != PACKET_REL else PERFORMED_HEAD_RE.sub(rb"\1", current, count=1)
-        if inp.frozen_blob(rel) != expected:
+        blob = inp.frozen_blob(rel)
+        # Provenance cross-check only: where the frozen commit is in the object
+        # store it must carry the presented bytes; where it is not (a fresh
+        # clone after a rebase-merge) the binding rests on the bytes on disk,
+        # the manifest row and the raw head's manifest-file digest below.
+        if blob is not None and blob != expected:
             raise ValueError(f"frozen subject does not carry the presented bytes of {rel.as_posix()}")
     if HEX64_RE.search(inp.packet.decode()):
         raise ValueError("owner packet carries a 64-hex token; the argument comes only "
@@ -288,8 +307,8 @@ manifest row". The label and description, verbatim:
 |---|---|
 | "{sel.label}" | "{sel.description}" |
 
-The argument was read from the row of `{MANIFEST_REL.as_posix()}` at the frozen
-commit and matched the patched module at recording. A swapped argument would
+The argument was read from the row of `{MANIFEST_REL.as_posix()}` on disk at recording
+and matched the patched module there. A swapped argument would
 have been refused. The manifest header's sentence that rows bind "by the owner
 act that names this file's digest" describes the typed-phrase form; this act
 binds the row, as the packet's option 1 says.
@@ -460,6 +479,17 @@ def selftest() -> int:
     results.append(("frozen commit lacking the presented patch refused",
                     refused("frozen subject does not carry", row,
                             make(frozen_blob=lambda rel: drift[rel]))))
+    results.append(("frozen commit absent from the object store accepted",
+                    accepts(row, make(frozen_blob=lambda rel: None))))
+    results.append(("absent frozen commit still refuses a module that does not hash to the argument",
+                    refused("proposed module hashes", row,
+                            make(frozen_blob=lambda rel: None, subject=module + b"x"))))
+    results.append(("absent frozen commit still refuses a review binding another manifest",
+                    refused("manifest file's SHA-256", row,
+                            make(frozen_blob=lambda rel: None,
+                                 review=review.replace(msha, "0" * 64)))))
+    results.append(("git_blob returns None for a commit the store lacks",
+                    git_blob(ROOT, "f" * 40, MANIFEST_REL) is None))
     performed = b"> **PERFORMED 2026-10-04.** Recorded.\n\n" + pkt
     perf_files = dict(blobs)
     perf_files[PACKET_REL] = performed
