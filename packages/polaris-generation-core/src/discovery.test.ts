@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 
 import { DEFAULT_DISCOVERY_BUDGET, DEFERRED_BY_BUDGET, MAP_CLAIMS_PER_ITEM, discoverAndSelect, DiscoveryRefusal, partitionSubsystems, reportFromReceipts, type DiscoveryPorts, type DiscoveryReceipt } from './discovery.js';
@@ -12,13 +13,15 @@ const population = (files: number, subsystems = 25): GenerationSource[] => {
   return out;
 };
 const budget = DEFAULT_DISCOVERY_BUDGET;
+/** One key for a live run and its replay, so the keyed deferred ids compare equal. */
+const RUN_KEY = randomBytes(32);
 const allow = async () => true;
 type Item = { readonly blobId: string; readonly path: string; readonly excerpt: string };
 const mapOf = (relevance: (item: Item) => number) => async (input: { items: readonly Item[] }) => ({
   claims: input.items.map(item => ({ blobId: item.blobId, claim: `claim ${item.path}`, relevance: relevance(item) })), usageUnits: 1 });
 const model = (extra: Partial<DiscoveryPorts> = {}): DiscoveryPorts & { receipts: DiscoveryReceipt[] } => {
   const receipts: DiscoveryReceipt[] = [];
-  return { permitted: allow, receipt: async r => { receipts.push(r); }, ...extra, receipts };
+  return { permitted: allow, receipt: async r => { receipts.push(r); }, runKey: RUN_KEY, ...extra, receipts };
 };
 const Q = ['What are the core ideas?'];
 
@@ -208,7 +211,7 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
     const budgetHere = { ...budget, maxSelected: 10, maxMapCalls: 6, maxGroupBlobs: 10 };
     const live = await discoverAndSelect(sources, Q, budgetHere, ports);
     expect(live.receipts.find(r => r.outcome === 'failed')!.detail).toHaveLength(200);
-    const replay = await reportFromReceipts(sources, Q, budgetHere, JSON.parse(JSON.stringify(live.receipts)));
+    const replay = await reportFromReceipts(sources, Q, budgetHere, JSON.parse(JSON.stringify(live.receipts)), RUN_KEY);
     expect(replay.report).toEqual(live.report);
     expect(replay.sources).toEqual(live.sources);
     expect(live.report.mapFailures).toBeGreaterThan(0);
@@ -225,12 +228,12 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
   it('replays a map-only run and a no-port run to the live report, installing only the port kinds the receipts hold', async () => {
     const mapOnly = await liveRun(model({ map: mapOf(item => (item.path.endsWith('3.c') ? 8 : 2)) }));
     expect(mapOnly.live.report).toMatchObject({ rankingBasis: 'model-map', reduceCalls: 0, reduceFailures: 0 });
-    const replayMap = await reportFromReceipts(mapOnly.sources, Q, mapOnly.budgetHere, mapOnly.saved);
+    const replayMap = await reportFromReceipts(mapOnly.sources, Q, mapOnly.budgetHere, mapOnly.saved, RUN_KEY);
     expect(replayMap.report).toEqual(mapOnly.live.report);
     expect(replayMap.sources).toEqual(mapOnly.live.sources);
     const none = await liveRun(model());
     expect(none.saved).toEqual([]);
-    const replayNone = await reportFromReceipts(none.sources, Q, none.budgetHere, none.saved);
+    const replayNone = await reportFromReceipts(none.sources, Q, none.budgetHere, none.saved, RUN_KEY);
     expect(replayNone.report).toEqual(none.live.report);
     expect(replayNone.sources).toEqual(none.live.sources);
     expect(none.live.report).toMatchObject({ rankingBasis: 'heuristic', mapCalls: 0, reduceCalls: 0, refusedCalls: 0 });
@@ -270,7 +273,7 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
     expect((floodRank.receipts.find(receipt => receipt.kind === 'reduce' && receipt.outcome === 'accepted')!.reply as { ranked: string[] }).ranked).toEqual([sources[0]!.sourceId]);
     expect(ranked.report.droppedUnknownIds).toBe(59);
     // A replay does honour the recorded drop count.
-    const replay = await reportFromReceipts(sources, Q, { ...budget, maxMapCalls: 5, maxSelected: 2 }, JSON.parse(JSON.stringify(floodRank.receipts)));
+    const replay = await reportFromReceipts(sources, Q, { ...budget, maxMapCalls: 5, maxSelected: 2 }, JSON.parse(JSON.stringify(floodRank.receipts)), RUN_KEY);
     expect(replay.report).toEqual(ranked.report);
   });
 
@@ -330,5 +333,20 @@ describe('REQ-030 hierarchical budgeted discovery', () => {
     expect(groups(30)).toEqual(groups(30));
     expect(groups(30).every(([, n]) => (n as number) <= 4)).toBe(true);
     expect(groups(30).reduce((n, [, c]) => n + (c as number), 0)).toBe(30);
+  });
+});
+
+describe('deferred-by-budget ids (syzygy-75ds)', () => {
+  const deferredIds = async (runKey?: Buffer) => {
+    const out = (await discoverAndSelect(population(5), Q, { ...budget, maxSelected: 2 }, { permitted: allow, ...(runKey === undefined ? {} : { runKey }) })).sources;
+    return out.filter(source => source.exclusion.excluded && (source.exclusion as { reason: string }).reason === DEFERRED_BY_BUDGET).map(source => source.sourceId);
+  };
+  it('carry a keyed opaque id: valid, stable within a key, different across keys', async () => {
+    const key = randomBytes(32);
+    const a = await deferredIds(key);
+    expect(a.length).toBeGreaterThan(0);
+    for (const id of a) expect(id).toMatch(/^s-[0-9a-f]{24}$/u);
+    expect(await deferredIds(key)).toEqual(a);
+    expect(await deferredIds(randomBytes(32))).not.toEqual(a);
   });
 });

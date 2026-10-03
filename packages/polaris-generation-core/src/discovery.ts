@@ -15,7 +15,7 @@
  */
 
 import { digestCanonicalJson } from './canonical-json.js';
-import type { GenerationSource } from './generation-source.js';
+import { excludedSourceId, newGenerationRunKey, type GenerationSource } from './generation-source.js';
 
 export const DEFERRED_BY_BUDGET = 'deferred-by-budget';
 export const PIPELINE_QUOTABLE_CAP = 200;
@@ -79,6 +79,8 @@ export interface DiscoveryPorts {
   readonly reduce?: (input: ReduceInput, signal: AbortSignal) => Promise<ReduceReply>;
   /** Required with `map` or `reduce`; a rejection stops discovery. */
   readonly receipt?: (receipt: DiscoveryReceipt) => Promise<void>;
+  /** Keys the id of every row deferred by budget (syzygy-75ds); a fresh key per call when absent, never serialised. */
+  readonly runKey?: Buffer;
 }
 
 export interface DiscoveryReport {
@@ -295,6 +297,7 @@ async function discover(
     chosen.add(blob.blobId);
     used += blob.pieces.length;
   }
+  const runKey = ports.runKey ?? newGenerationRunKey();
   const deferred: DiscoveryReport['deferred'][number][] = [];
   const emitted = new Set<string>();
   const out: GenerationSource[] = [];
@@ -305,7 +308,7 @@ async function discover(
     if (emitted.has(id)) continue;
     emitted.add(id);
     const { body: _body, segment: _segment, spans: _spans, ...bound } = source;
-    out.push({ ...bound, sourceId: id, exclusion: { excluded: true, reason: DEFERRED_BY_BUDGET }, spans: [] });
+    out.push({ ...bound, sourceId: excludedSourceId(runKey, id), exclusion: { excluded: true, reason: DEFERRED_BY_BUDGET }, spans: [] });
     const pieces = byId.get(id)!.pieces.length;
     deferred.push({ blobId: id, path: source.path, detail: noFit.has(id) && pieces > 1 && used + pieces > budget.maxSelected
       ? `${pieces} quotable sources did not fit the remaining selection cap of ${budget.maxSelected}`
@@ -329,7 +332,7 @@ async function discover(
  * count; a changed population or reader question fails the replay rather than
  * rendering another run's report as this one's. */
 export async function reportFromReceipts(
-  sources: readonly GenerationSource[], readerQuestions: readonly string[], budget: DiscoveryBudget, receipts: readonly DiscoveryReceipt[],
+  sources: readonly GenerationSource[], readerQuestions: readonly string[], budget: DiscoveryBudget, receipts: readonly DiscoveryReceipt[], runKey?: Buffer,
 ): Promise<DiscoveryResult> {
   const last = new Map<string, DiscoveryReceipt>();
   for (const receipt of receipts) last.set(`${receipt.kind}:${receipt.subsystem ?? ''}`, receipt);
@@ -355,5 +358,6 @@ export async function reportFromReceipts(
       return { ranked: (receipt.reply as { ranked: string[] }).ranked, usageUnits: receipt.usageUnits, dropped: receipt.dropped };
     } } : {}),
     receipt: async () => undefined,
+    ...(runKey === undefined ? {} : { runKey }),
   }, new AbortController().signal, true);
 }
