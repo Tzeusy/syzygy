@@ -1,6 +1,6 @@
 {
   "subject": {
-    "commit": "c260dc17b300f8593bdaa40a272ad8577c1b7c95",
+    "commit": "31da87560880dbc1b49281b483ea2dc2e49995dd",
     "branch": "agent/dossier-engine-2",
     "fileSha256": {
       "apps/three-surface-poc/src/git-blob-batch.ts": "5e6e63ef2d56667113f921a7775658ead100e8e1f3f580b1e40fc34c2eaf9714",
@@ -10,7 +10,7 @@
   },
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/three-surface-poc-app",
-  "ranAt": "2026-10-03T09:56:21+00:00",
+  "ranAt": "2026-10-03T10:34:18+00:00",
   "mutants": [
     {
       "id": "gate-strict-true",
@@ -23,7 +23,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "include-filter",
@@ -36,7 +36,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "exclude-filter",
@@ -49,7 +49,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "symlink-skip",
@@ -62,7 +62,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "gitlink-type-check",
@@ -75,7 +75,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "nul-check",
@@ -88,7 +88,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "ignoreBOM",
@@ -101,7 +101,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "empty-file",
@@ -114,7 +114,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "unquotable-path",
@@ -127,7 +127,7 @@
       ],
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "hash-check",
@@ -140,7 +140,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "commit-guard",
@@ -153,7 +153,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "permission-identity",
@@ -166,7 +166,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "git-isolation-fsmonitor",
@@ -179,7 +179,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "git-isolation-hooks",
@@ -192,7 +192,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "sum-invariant-count",
@@ -205,7 +205,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "bypass-repo-corpus",
@@ -218,7 +218,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "bypass-git-blob-batch",
@@ -231,7 +231,7 @@
       ],
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "env-inherits-process",
@@ -244,7 +244,7 @@
       ],
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "no-replace-env",
@@ -257,7 +257,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "no-replace-flag",
@@ -270,7 +270,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "ufffd-path-check",
@@ -283,7 +283,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "sha256-choice",
@@ -296,7 +296,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "raw-bytes",
@@ -309,7 +309,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "blob-batch-one",
@@ -322,7 +322,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "identity-path-term",
@@ -335,7 +335,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "identity-object-term",
@@ -348,7 +348,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     },
     {
       "id": "dotdot-path-check",
@@ -361,7 +361,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26,
+      "totalTests": 27,
       "note": "killed by the mktree fixture with `.` and `..` entries"
     },
     {
@@ -373,10 +373,10 @@
         "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts",
         "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts"
       ],
-      "outcome": "survived",
-      "failedTests": 0,
-      "totalTests": 26,
-      "note": "survives; recorded as equivalent for the tested population: git ls-tree already lists entries in byte order and the comparator orders by UTF-16 code unit. The two orders differ only for paths mixing astral characters with U+E000-U+FFFF characters, which no fixture here exercises (not proven equivalent in general)."
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 27,
+      "note": "killed by the a.txt / U+1F600 / U+FF5E fixture: git byte order and UTF-16 order differ, and the reader deliberately uses UTF-16 code-unit order"
     },
     {
       "id": "dot-path-check",
@@ -389,7 +389,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 26
+      "totalTests": 27
     }
   ]
 }
