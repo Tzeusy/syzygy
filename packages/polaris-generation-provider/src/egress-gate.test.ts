@@ -40,6 +40,27 @@ describe('egress gate', () => {
     expect(upstream.requests).toHaveLength(1);
     expect(gate.arm(accepting)).toBe(false);   // one try at a time
   });
+  it('forwards the SDK platform fingerprint headers unless stripFingerprint is set, and no others are touched', async () => {
+    upstream = await startCaptureEndpoint();
+    const fingerprint = { 'x-stainless-os': 'Linux', 'x-stainless-arch': 'x64', 'x-stainless-runtime-version': 'v24.0.0', 'x-stainless-lang': 'js' };
+    const post = (url: string): Promise<number> => new Promise((resolve, reject) => {
+      const u = new URL(url);
+      const req = http.request({ hostname: u.hostname, port: u.port, method: 'POST', path: '/v1/messages', headers: { 'content-type': 'application/json', ...fingerprint } }, res => { res.resume(); res.on('end', () => resolve(res.statusCode ?? 0)); });
+      req.on('error', reject); req.end('{}');
+    });
+    for (const strip of [false, true]) {
+      gate = await startEgressGate({ upstream: { url: upstream.url }, permitted: async () => true, stripFingerprint: strip });
+      gate.arm(accepting);
+      expect(await post(gate.url)).toBe(200);
+      await gate.close(); gate = undefined;
+    }
+    const [kept, stripped] = upstream.requests;
+    for (const name of ['x-stainless-os', 'x-stainless-arch', 'x-stainless-runtime-version']) {
+      expect(kept!.headers[name]).toBe(fingerprint[name as keyof typeof fingerprint]);
+      expect(stripped!.headers[name]).toBeUndefined();
+    }
+    expect(stripped!.headers['x-stainless-lang']).toBe('js');
+  });
   it('refuses when consent is anything but true, throws, or no upstream is configured', async () => {
     upstream = await startCaptureEndpoint();
     for (const permitted of [async () => false, async () => 1 as unknown as boolean, async () => { throw new Error('x'); }]) {
