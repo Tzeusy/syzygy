@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { DESIGN_TOKENS_CSS } from '../design-tokens.js';
 
 import {
-  DOSSIER_FORMAT, OWNER_TOPICS, diagramToMermaid, parseDossierManifest, readerCost, reviewVerdict, scanDossierPage,
+  DOSSIER_FORMAT, OWNER_TOPICS, checkDraftQuotes, diagramToMermaid, parseDossierManifest, readerCost, reviewVerdict, scanDossierPage, sourceTextById,
   validateDraftRecord, validateGenerationSources, validateRequestedAssets,
   type DossierManifest, type EpistemicMarking, type GenerationSource, type OwnerTopic, type PipelineResult,
   type ProviderBlock, type ProviderDiagram, type ProviderDraft, type ProviderParagraph, type RequestedAsset,
@@ -184,6 +184,11 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   const support = new Map(view.review === null ? [] : (view.review as { blockSupport: { blockId: string; verdict: string }[] }).blockSupport.map(row => [row.blockId, row.verdict]));
   validateGenerationSources(input.sources);
   const sources = new Map(input.sources.map(source => [source.sourceId, source]));
+  // A block whose quotation is not in a cited source is Unknown whatever the reviewer said: the pipeline's own record and a fresh deterministic check over the draft are both honoured.
+  const quoteFlags = new Map<string, Set<string>>();
+  for (const finding of [...(input.result.status === 'awaiting-rendered-review' && Array.isArray(input.result.quoteFindings) ? input.result.quoteFindings : []), ...checkDraftQuotes(draft, sourceTextById(input.sources))]) {
+    quoteFlags.set(finding.blockId, (quoteFlags.get(finding.blockId) ?? new Set()).add(finding.kind));
+  }
   const owned = (ids: readonly string[]): OwnerTopic[] => ids.filter((id): id is OwnerTopic => (OWNER_TOPICS as readonly string[]).includes(id));
   const topics: Readonly<Record<string, readonly OwnerTopic[]>> = input.topics
     ?? Object.fromEntries([...draft.sections, ...draft.deepDives].map(item => [item.id, item.disposition.kind === 'produced' ? owned(item.disposition.assetIds) : []]));
@@ -198,7 +203,9 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   const sourcePaths = new Map(quotable.map(source => [source.sourceId, sourceRoute(source)]));
 
   // --- shared fragments, each bound to the page it is rendered on
-  const label = (blockId: string): EpistemicMarking => support.get(blockId) === 'supported' ? 'inferred' : 'unknown';
+  const label = (blockId: string): EpistemicMarking => support.get(blockId) === 'supported' && !quoteFlags.has(blockId) ? 'inferred' : 'unknown';
+  const quoteNote = (blockId: string): string => quoteFlags.has(blockId)
+    ? ` <span class="quote-unverified">Quotation not verified against the cited sources (${escape([...quoteFlags.get(blockId)!].join(', '))}).</span>` : '';
   const marking = (m: EpistemicMarking): string => `<span class="marking ${m}">[${MARKING_LABEL[m]}]</span>`;
   const refs = (from: string, ids: readonly string[]): string => `<span class="sources">${ids.map(id => {
     const source = sources.get(id);
@@ -211,7 +218,7 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   const claim = (tag: string, id: string, m: EpistemicMarking, body: string, attributes = ''): string =>
     `<${tag}${attributes} data-claim-id="${escape(id)}" data-epistemic="${m}">${body}</${tag}>`;
   const paragraph = (from: string, p: ProviderParagraph, tag: string): string =>
-    claim(tag, p.id, label(p.id), `${escape(p.text)} ${marking(label(p.id))} ${refs(from, p.sourceIds)}`);
+    claim(tag, p.id, label(p.id), `${escape(p.text)} ${marking(label(p.id))}${quoteNote(p.id)} ${refs(from, p.sourceIds)}`);
   const block = (from: string, b: ProviderBlock): string => {
     const parent = paragraph(from, b, 'p');
     return b.children.length === 0 ? parent : `${parent}<ul class="block-children">${b.children.map(child => paragraph(from, child, 'li')).join('')}</ul>`;

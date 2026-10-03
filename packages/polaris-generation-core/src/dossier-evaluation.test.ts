@@ -335,4 +335,13 @@ describe('report subject (rule 11)', () => {
     expect(withA.budgetSha256).toMatch(/^[0-9a-f]{64}$/u);
     expect(withA.budgetSha256).not.toBe(withB.budgetSha256);
   });
+  it('scans each claim\'s reader-visible text and the sources its anchors name, entities decoded, and no others', () => {
+    const html = '<main><p data-claim-id="c1" data-epistemic="inferred">He said &quot;a &amp; b&quot; <span class="marking">[Inferred]</span> <span class="sources"><a href="x" aria-label="Read source src-a">[src-a]</a> <a href="y" aria-label="Read source src-b">[src-b]</a></span></p>'
+      + '<p data-claim-id="c2" data-epistemic="unknown">No links here. <a href="z" aria-label="Open the glossary">[g]</a></p><p>outside <a aria-label="Read source src-c">[c]</a></p></main>';
+    const scan = scanDossierPage(html);
+    expect(scan.claims).toEqual([
+      { id: 'c1', epistemic: 'inferred', hasQuote: false, text: 'He said "a & b" [Inferred] [src-a] [src-b]', citedSourceIds: ['src-a', 'src-b'] },
+      { id: 'c2', epistemic: 'unknown', hasQuote: false, text: 'No links here. [g]', citedSourceIds: [] },
+    ]);
+  });
 });

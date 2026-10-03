@@ -30,8 +30,6 @@ export {
 } from './discovery-provider.js';
 export { runGenerationPipeline, type PipelineRequest, type PipelinePorts, type PipelineResult, type GenerationBudget, type AdmissionDecision, type DispatchPermit, type AttemptInput, type AttemptOutcome, type InvalidOutputReason, type ProviderReply, type StageReceipt } from './pipeline.js';
 export { SOURCE_TEXT_MAX_LENGTH, stageSchema, validateStage, validateDiscoveryReply, DISCOVERY_CLAIM_MAX_LENGTH, DISCOVERY_RELEVANCE_MAX, validateDraftRecord, validateRequestedAssets, reviewVerdict, diagramToMermaid, DIAGRAM_KINDS } from './provider-draft.js';
-export { QUOTATION_LEAD, normalizeQuotation, quotationsMatch } from './quotations.js';
-export { validateDossierStage } from './dossier-validation.js';
 export type { ProviderDraft, ProviderParagraph, ProviderBlock, ProviderDiagram, ProviderDiagramNode, ProviderDiagramEdge, DiagramKind, EpistemicMarking, RequestedAsset } from './provider-draft.js';
 export { renderedDesignVerdict, renderedDesignSubjectDigest } from './rendered-design.js';
 export type { RenderedDesignReview, RenderedDesignRelationship, RenderedDesignFinding, RenderedDesignRule, RenderedDesignVerdict, RelationshipJudgment, RelationshipSupport } from './rendered-design.js';
@@ -49,3 +47,4 @@ export type { DiscoveryBudget, DiscoveryCall, DiscoveryReceipt, MapReply, Reduce
 export { DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, clarify, openQuestions } from './dossier-profile.js';
 export type { ClarificationInput, ClarificationQuestion, ClarificationRecord, OwnerAnswer } from './dossier-profile.js';
 export { validateReaderQuestions, ReaderQuestionsError, READER_QUESTION_TOPICS, READER_QUESTIONS_MAX, READER_QUESTION_TEXT_MAX, type ReaderQuestionTopic } from './reader-questions.js';
+export { QUOTE_LEAD_IN, checkBlockQuotes, checkDraftQuotes, draftBlocks, inspectBlockQuotes, normaliseForQuote, quoteFindingAsReviewFinding, sourceTextById, type QuoteBlock, type QuoteFinding, type QuoteFindingKind } from './quote-fidelity.js';

@@ -1,9 +1,12 @@
 import { quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
 import { CanonicalJsonError, digestCanonicalJson, encodeCanonicalJson, type CanonicalJsonLimits } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
-import { promptForStage, type GenerationStage } from './prompts.js';
+import { createHash } from 'node:crypto';
+
+import { promptForStage, type GenerationStage, type PromptProfile } from './prompts.js';
 import { validateRequestedAssets, type RequestedAsset } from './provider-draft.js';
 import { validateReaderQuestions } from './reader-questions.js';
+import { checkDraftQuotes, quoteFindingAsReviewFinding, sourceTextById, type QuoteFinding } from './quote-fidelity.js';
 
 export interface GenerationBudget {
   readonly maxCalls: number;
@@ -28,6 +31,8 @@ export interface PipelineRequest {
   readonly readerQuestions: unknown;
   /** Trusted operator request identities and requiredness, never model-supplied. */
   readonly requestedAssets: readonly RequestedAsset[];
+  /** Which stage prompts the run sends; absent means `manifesto`. A dossier run sets `dossier`. */
+  readonly promptProfile?: PromptProfile;
 }
 
 export interface AttemptInput {
@@ -141,6 +146,9 @@ export interface StageReceipt {
   readonly inputDigest: string;
   readonly outputDigest: string;
   readonly promptVersion: string;
+  /** The profile and the sha256 of the exact system text sent, so the record names which prompt a stage ran. */
+  readonly promptProfile: PromptProfile;
+  readonly promptDigest: string;
 }
 
 export interface ValidatedStageOutput {
@@ -153,6 +161,8 @@ export type PipelineResult = {
   readonly draft: unknown;
   readonly inventory: unknown;
   readonly review: unknown;
+  /** Quotations still not found in a cited source after the last repair; each block named here is Unknown, whatever the reviewer said. */
+  readonly quoteFindings: readonly QuoteFinding[];
   readonly receipts: readonly StageReceipt[];
   readonly artifacts: readonly ValidatedStageOutput[];
 } | {
@@ -191,6 +201,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
       || Object.values(request.routes).some(route => typeof route !== 'string' || route.length === 0)) stop('invalid-request');
     try { validateRequestedAssets(request.requestedAssets); } catch { stop('invalid-request'); }
     try { validateReaderQuestions(request.readerQuestions); } catch { stop('invalid-request'); }
+    if (request.promptProfile !== undefined && request.promptProfile !== 'manifesto' && request.promptProfile !== 'dossier') stop('invalid-request');
     // Canonicalize before inspecting nested caller-owned records: this rejects
     // getters/proxies and detaches them before the first asynchronous boundary.
     let detached: PipelineRequest;
@@ -209,6 +220,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
     try { frozen = JSON.parse(encodeCanonicalJson(compact, dataLimits(b.maxInputBytes))) as PipelineRequest; }
     catch (error) { stop(error instanceof CanonicalJsonError && error.code === 'byte-limit' ? 'budget-exhausted' : 'invalid-request'); }
     const budget = frozen.budget;
+    const promptProfile: PromptProfile = frozen.promptProfile ?? 'manifesto';
     const deadline = frozen.startedAt + budget.maxElapsedMs;
     const check = (): void => {
       if (signal.aborted) stop('cancelled');
@@ -255,7 +267,8 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
     const stage = async (name: GenerationStage, inputs: Readonly<Record<string, unknown>>): Promise<unknown> => {
       check();
       if (calls >= budget.maxCalls) stop('budget-exhausted');
-      const prompt = promptForStage(name);
+      const prompt = promptForStage(name, promptProfile);
+      const promptDigest = createHash('sha256').update(prompt.system).digest('hex');
       const schema = ports.responseSchema(name);
       const envelope = { promptVersion: prompt.version, system: prompt.system, responseSchemaVersion: schema.version, responseSchema: schema.schema, inputs };
       let encoded: string;
@@ -293,7 +306,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
         usage += admission.usageUnits;
         outputBytes += admission.outputBytes;
         receipts.push({ stage: name, attemptId: permit.attemptId, reused: true, providerRoute: input.providerRoute, model: admission.model,
-          inputDigest: input.inputDigest, outputDigest: admission.outputDigest, promptVersion: prompt.version });
+          inputDigest: input.inputDigest, outputDigest: admission.outputDigest, promptVersion: prompt.version, promptProfile, promptDigest });
         artifacts.push({ stage: name, value: restored });
         check();
         return restored;
@@ -387,7 +400,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
       }
       await bounded(() => ports.record(permit, { kind: 'validated', outputDigest: digest, model: reply.model,
         usageUnits: actualUsage, outputBytes: Buffer.byteLength(reply.body, 'utf8'), value: validated }), true);
-      receipts.push({ stage: name, attemptId: permit.attemptId, reused: false, providerRoute: input.providerRoute, model: reply.model, inputDigest: input.inputDigest, outputDigest: digest, promptVersion: prompt.version });
+      receipts.push({ stage: name, attemptId: permit.attemptId, reused: false, providerRoute: input.providerRoute, model: reply.model, inputDigest: input.inputDigest, outputDigest: digest, promptVersion: prompt.version, promptProfile, promptDigest });
       artifacts.push({ stage: name, value: validated });
       check();
       return validated;
@@ -397,15 +410,27 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
     context.draft = await stage('author', { sources: citedSpans(context.plan), readerQuestions: context.readerQuestions, inventory: context.inventory, plan: context.plan, requestedAssets: context.requestedAssets });
     context.draft = await stage('edit', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, plan: context.plan, draft: context.draft, requestedAssets: context.requestedAssets });
     let review = await stage('fidelity', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, draft: context.draft, requestedAssets: context.requestedAssets });
-    let verdict = ports.fidelity(review);
+    // A deterministic quote check the model cannot waive runs beside the reviewer. It earns the draft a repair, but only the reviewer's own blocking verdict ends the run: quote findings that survive the last repair are returned per block, and the renderer shows those blocks as Unknown.
+    const quoteTexts = sourceTextById(frozen.sources);
+    const judge = (reviewed: unknown): { readonly blocking: boolean; readonly findings: unknown; readonly reviewerBlocking: boolean; readonly quoteFindings: readonly QuoteFinding[] } => {
+      const verdict = ports.fidelity(reviewed);
+      const quoteFindings = checkDraftQuotes(context.draft, quoteTexts);
+      if (quoteFindings.length === 0) return { ...verdict, reviewerBlocking: verdict.blocking, quoteFindings };
+      const prior = verdict.findings === undefined ? [] : Array.isArray(verdict.findings) ? verdict.findings : [verdict.findings];
+      return { blocking: true, findings: [...prior, ...quoteFindings.map(quoteFindingAsReviewFinding)], reviewerBlocking: verdict.blocking, quoteFindings };
+    };
+    let verdict = judge(review);
     for (let repairs = 0; verdict.blocking; repairs++) {
-      if (repairs >= budget.maxRepairCycles) stop('repair-exhausted');
+      if (repairs >= budget.maxRepairCycles) {
+        if (verdict.reviewerBlocking) stop('repair-exhausted');
+        break;
+      }
       context.draft = await stage('repair', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, draft: context.draft, findings: verdict.findings, requestedAssets: context.requestedAssets });
       review = await stage('fidelity', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, draft: context.draft, requestedAssets: context.requestedAssets });
-      verdict = ports.fidelity(review);
+      verdict = judge(review);
     }
     check();
-    return { status: 'awaiting-rendered-review', draft: context.draft, inventory: context.inventory, review, receipts, artifacts };
+    return { status: 'awaiting-rendered-review', draft: context.draft, inventory: context.inventory, review, quoteFindings: verdict.quoteFindings, receipts, artifacts };
   } catch (error) {
     return { status: 'stopped', reason: error instanceof PipelineStop ? error.reason : 'adapter-failure', receipts, artifacts };
   }
