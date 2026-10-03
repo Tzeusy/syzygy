@@ -1,21 +1,25 @@
 {
   "record": "rule-6 mutation evidence (AGENTS.md verification rule 6)",
   "date": "2026-10-03",
-  "ranAt": "587fec09d2bc76182da981d6b323e8a8ff5f8773",
+  "ranAt": "0d30074f437cf04bda4f536ed0a80323cb78180a",
   "subjects": [
     {
       "path": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "sha256": "f0ce5556b163b50a2c2f01ac375290cc0c790d9649f4f8a17c0b088f37a95ac8"
+      "sha256": "8eb726017ac7c77ef191d00a718b330d66839fcb293e7b67dc4e7d1bdb202a85"
     },
     {
-      "path": "packages/polaris-generation-core/src/dossier-prompts.ts",
-      "sha256": "af15de6def02b12c4fbec7ec8693f1b0bb20b145cf82e8d65837eba6e388d946"
+      "path": "packages/polaris-generation-core/src/prompts.ts",
+      "sha256": "795712dd616a838d733351f206280f06bf2408695450f3f80056088748d34078"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/provider-draft.ts",
+      "sha256": "9c4b3fd6826d9db819d65f0b7d2d504c1f859f78fe81cbb917f3e78cbc98f215"
     }
   ],
   "tests": [
     {
       "path": "packages/polaris-generation-core/src/dossier-prompts.test.ts",
-      "sha256": "59b499d9d58eb141ecef0b3b6f2ed268638f52faa87717e164a8db976653e5d0"
+      "sha256": "ba9ff12ff4a84788b325705ddceca720c8880c37f4efc9463199248d17f728e1"
     },
     {
       "path": "packages/polaris-generation-core/src/prompts.test.ts",
@@ -23,11 +27,15 @@
     },
     {
       "path": "packages/polaris-generation-core/src/discovery-provider.test.ts",
-      "sha256": "549dec6fb08b938037e7419eab1fc2a087ddf3dd7ac9941f3a31b8c0c1628ba8"
+      "sha256": "5015e713c50fdbd06bc96d6ae9c4b95a92a63f5fc735eaf58161289309c70383"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/provider-draft.test.ts",
+      "sha256": "5e49d02c6b2c44810e037bea5c45875ee6fb42aa7679540cecb96c528cacc9a3"
     }
   ],
-  "supersedes": "docs/evidence/polaris-dossier-prompts-mutants-2026-10-03.json covers dossier-prompts.ts before the discovery text moved out; this sweep re-runs its dossier mutants against the current bytes.",
-  "method": "Each mutant replaces exactly one occurrence of `old` with `new` in its `file` (applied only when `old` occurs exactly once), runs `npx vitest run` over the three test files, and restores every subject. Killed means the run exited non-zero with at least one failed test.",
+  "note": "Covers all instruction text routed through promptForStage (prompts.ts) and stageSchema (provider-draft.ts), and the discovery envelope and parsers (discovery-provider.ts). Earlier sweeps on this branch ran over dossier-prompts.ts, which no longer exists; they were dropped with it.",
+  "method": "Each mutant replaces exactly one occurrence of `old` with `new` in its `file` (applied only when `old` occurs exactly once), runs `npx vitest run` over the four test files, and restores every subject. Killed means the run exited non-zero with at least one failed test.",
   "summary": {
     "mutants": 62,
     "killed": 62,
@@ -35,13 +43,13 @@
   },
   "mutants": [
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "rule-5-dropped",
       "old": "\n5. Thin evidence stays Unknown. Where",
       "new": "\nThin evidence. Where",
       "outcome": "killed",
       "failedTests": 12,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
@@ -52,13 +60,13 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "rule-text-word",
       "old": "never as your own comparison or judgment",
       "new": "never as your own judgment",
       "outcome": "killed",
       "failedTests": 6,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
@@ -69,25 +77,25 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "guidance-word",
       "old": "never by rewording it to sound supported",
       "new": "never by rewording it",
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier stage prompts > pins the repair dossier prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "adv-unattributed",
       "old": "'b-adv', 'The maintainers state that the single-threaded",
       "new": "'b-adv', 'The single-threaded",
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier illustrations obey their own rules > attributes every advantage and trade-off to the maintainers",
         "dossier stage prompts > pins the author dossier prompt bytes",
@@ -96,13 +104,13 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "cost-half-supplied",
       "old": "what it buys in return is not stated in the sources.",
       "new": "in return it evicts quickly.",
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier illustrations obey their own rules > states which half of a trade-off no source states",
         "dossier stage prompts > pins the author dossier prompt bytes",
@@ -111,13 +119,13 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "hop-merged",
       "old": "\n      leaf('b-flow-2', 'When `maxmemory` is exceeded, `handleSet` calls `maybeEvict`.', 'src-server'),",
       "new": "",
       "outcome": "killed",
       "failedTests": 8,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier illustrations obey their own rules > traces the workflow one hop per child block and draws only those hops",
         "dossier stage illustrations pass the stage validators > validates the author illustration",
@@ -128,13 +136,13 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "identifier-respelled",
       "old": "'b-mech', '`maybeEvict` samples",
       "new": "'b-mech', '`maybe_evict` samples",
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier illustrations obey their own rules > spells every backticked identifier as a cited source spells it",
         "dossier stage prompts > pins the author dossier prompt bytes",
@@ -143,39 +151,39 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "inventory-identifier-respelled",
       "old": "hands off to `maybeEvict` when `maxmemory`",
       "new": "hands off to `maybeEvict` when `max_memory`",
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier illustrations obey their own rules > spells every backticked identifier as a cited source spells it",
         "dossier stage prompts > pins the inventory dossier prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "gap-filled-inventory",
       "old": "disposition: { kind: 'unresolved', reason: 'No admitted source shows the read path.', references: ['src-server'] } },",
       "new": "disposition: produced('end-to-end-workflows') },",
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier illustrations obey their own rules > keeps thin evidence unresolved in the inventory, the draft and the review",
         "dossier stage prompts > pins the inventory dossier prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "gap-dropped-draft",
       "old": "unresolved: [{ question: 'How is a read request served?', reason: 'No admitted source shows the read path.', references: ['src-server'] }],",
       "new": "unresolved: [],",
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier illustrations obey their own rules > keeps thin evidence unresolved in the inventory, the draft and the review",
         "dossier stage prompts > pins the author dossier prompt bytes",
@@ -184,13 +192,13 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "edge-label-not-in-text",
       "old": "label: 'calls', sourceIds",
       "new": "label: 'invokes', sourceIds",
       "outcome": "killed",
       "failedTests": 7,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier stage illustrations pass the stage validators > validates the author illustration",
         "dossier stage illustrations pass the stage validators > validates the edit illustration",
@@ -201,13 +209,13 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "edge-cited-outside-flow",
       "old": "label: 'calls', sourceIds: ['src-server']",
       "new": "label: 'calls', sourceIds: ['src-evict']",
       "outcome": "killed",
       "failedTests": 5,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier illustrations obey their own rules > traces the workflow one hop per child block and draws only those hops",
         "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
@@ -217,13 +225,13 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "diagram-kind",
       "old": "kind: 'flow', relationship",
       "new": "kind: 'dependency', relationship",
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier illustrations obey their own rules > traces the workflow one hop per child block and draws only those hops",
         "dossier stage prompts > pins the author dossier prompt bytes",
@@ -232,13 +240,13 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "plan-required-section-dropped",
       "old": "  sectionPlan('mechanisms', 'Sampled eviction', 'Answers the mechanisms question from e-evict; a deep dive answers why eviction samples instead of ordering every key.', ['src-evict']),\n",
       "new": "",
       "outcome": "killed",
       "failedTests": 6,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier stage illustrations pass the stage validators > validates the author illustration",
         "dossier stage illustrations pass the stage validators > validates the edit illustration",
@@ -249,39 +257,39 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "review-coverage-row-dropped",
       "old": "represented('e-adv', 'b-adv'), ",
       "new": "",
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
         "dossier stage prompts > pins the fidelity dossier prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "review-gap-represented",
       "old": "{ entryId: 'e-read', disposition: 'unresolved', blockIds: [], reason:",
       "new": "{ entryId: 'e-read', disposition: 'justified-omission', blockIds: [], reason:",
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier illustrations obey their own rules > keeps thin evidence unresolved in the inventory, the draft and the review",
         "dossier stage prompts > pins the fidelity dossier prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "edit-illustration-swapped",
       "old": "edit: draftIllustration,",
       "new": "edit: planIllustration,",
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier stage illustrations pass the stage validators > shares one draft illustration across author, edit and repair",
         "dossier stage illustrations pass the stage validators > validates the edit illustration",
@@ -289,25 +297,25 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "repair-illustration-cloned",
       "old": "repair: draftIllustration,",
       "new": "repair: structuredClone(draftIllustration),",
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier stage illustrations pass the stage validators > shares one draft illustration across author, edit and repair"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "version-bumped",
-      "old": "version: `polaris-${stage}-dossier-v1`",
-      "new": "version: `polaris-${stage}-dossier-v2`",
+      "old": "version: `polaris-${generation}-dossier-v1`",
+      "new": "version: `polaris-${generation}-dossier-v2`",
       "outcome": "killed",
       "failedTests": 6,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier stage prompts > pins the author dossier prompt bytes",
         "dossier stage prompts > pins the edit dossier prompt bytes",
@@ -318,13 +326,13 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "base-prefix-dropped",
-      "old": "system: `${base.system}\\n\\n${dossierRules}",
+      "old": "system: `${manifesto}\\n\\n${dossierRules}",
       "new": "system: `${dossierRules}",
       "outcome": "killed",
       "failedTests": 12,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier stage prompts > extends the reviewed author manifesto prompt without changing it",
         "dossier stage prompts > extends the reviewed edit manifesto prompt without changing it",
@@ -335,30 +343,30 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "illustration-heading",
       "old": "Copy its structure, never its content, handles or claims;",
       "new": "Copy its structure;",
       "outcome": "killed",
       "failedTests": 16,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
         "discovery envelopes > pins the reduce envelope encoding",
-        "discovery instruction text > pins the map prompt bytes",
-        "discovery instruction text > pins the reduce prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
         "dossier stage prompts > ends the author prompt with the illustration it was tested with",
         "dossier stage prompts > ends the edit prompt with the illustration it was tested with"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "illustration-wrong-stage",
-      "old": "JSON.stringify(DOSSIER_STAGE_ILLUSTRATIONS[stage])",
+      "old": "JSON.stringify(DOSSIER_STAGE_ILLUSTRATIONS[generation])",
       "new": "JSON.stringify(DOSSIER_STAGE_ILLUSTRATIONS.author)",
       "outcome": "killed",
       "failedTests": 6,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier stage prompts > ends the fidelity prompt with the illustration it was tested with",
         "dossier stage prompts > ends the inventory prompt with the illustration it was tested with",
@@ -369,414 +377,461 @@
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/dossier-prompts.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "guidance-shared",
       "old": "  edit: `Dossier edit: never soften",
       "new": "  edit: `Dossier repair: never soften",
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
         "dossier stage prompts > pins the edit dossier prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "profile-guard-removed",
+      "old": "  if (profile !== 'manifesto' && profile !== 'dossier') throw new Error('unknown-prompt-profile');\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 123,
+      "killedBy": [
+        "dossier stage prompts > refuses unsupported profile Dossier",
+        "dossier stage prompts > refuses unsupported profile __proto__",
+        "dossier stage prompts > refuses unsupported profile constructor",
+        "dossier stage prompts > refuses unsupported profile unknown"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "default-profile-dossier",
+      "old": "profile: PromptProfile = 'manifesto'",
+      "new": "profile: PromptProfile = 'dossier'",
+      "outcome": "killed",
+      "failedTests": 13,
+      "totalTests": 123,
+      "killedBy": [
+        "dossier stage prompts > extends the reviewed author manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed edit manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed fidelity manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed inventory manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed plan manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed repair manifesto prompt without changing it"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "map-relevance-out-of-range",
       "old": "relevance: 9 },",
       "new": "relevance: 11 },",
       "outcome": "killed",
-      "failedTests": 4,
-      "totalTests": 94,
+      "failedTests": 3,
+      "totalTests": 123,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
-        "discovery instruction text > ends each prompt with an illustration its own parser accepts",
-        "discovery instruction text > pins the map prompt bytes",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery instruction text comes from promptForStage and stageSchema > ends each prompt with an illustration its own parser accepts",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "map-unknown-blob",
       "old": "{ blobId: 'blob-server', claim:",
       "new": "{ blobId: 'blob-other', claim:",
       "outcome": "killed",
-      "failedTests": 4,
-      "totalTests": 94,
+      "failedTests": 3,
+      "totalTests": 123,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
-        "discovery instruction text > ends each prompt with an illustration its own parser accepts",
-        "discovery instruction text > pins the map prompt bytes",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery instruction text comes from promptForStage and stageSchema > ends each prompt with an illustration its own parser accepts",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "map-duplicate-blob",
       "old": "{ blobId: 'blob-server', claim:",
       "new": "{ blobId: 'blob-readme', claim:",
       "outcome": "killed",
-      "failedTests": 4,
-      "totalTests": 94,
+      "failedTests": 3,
+      "totalTests": 123,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
-        "discovery instruction text > ends each prompt with an illustration its own parser accepts",
-        "discovery instruction text > pins the map prompt bytes",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery instruction text comes from promptForStage and stageSchema > ends each prompt with an illustration its own parser accepts",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "reduce-illustration-duplicate",
       "old": "ranked: ['blob-readme', 'blob-server', 'blob-evict']",
       "new": "ranked: ['blob-readme', 'blob-server', 'blob-readme']",
       "outcome": "killed",
-      "failedTests": 4,
-      "totalTests": 94,
+      "failedTests": 3,
+      "totalTests": 123,
       "killedBy": [
         "discovery envelopes > pins the reduce envelope encoding",
-        "discovery instruction text > ends each prompt with an illustration its own parser accepts",
-        "discovery instruction text > pins the reduce prompt bytes",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery instruction text comes from promptForStage and stageSchema > ends each prompt with an illustration its own parser accepts",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "map-instruction-word",
       "old": "Claim only what the excerpt shows, never what the rest of the file might hold.",
       "new": "Claim what the file holds.",
       "outcome": "killed",
-      "failedTests": 3,
-      "totalTests": 94,
+      "failedTests": 2,
+      "totalTests": 123,
       "killedBy": [
         "discovery envelopes > pins the map envelope encoding",
-        "discovery instruction text > pins the map prompt bytes",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
       "id": "reduce-instruction-word",
       "old": ", choosing only among the blobIds the claims name.",
       "new": ".",
       "outcome": "killed",
-      "failedTests": 3,
-      "totalTests": 94,
-      "killedBy": [
-        "discovery envelopes > pins the reduce envelope encoding",
-        "discovery instruction text > pins the reduce prompt bytes",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "map-prompt-version",
-      "old": "'polaris-discovery-map-v1'",
-      "new": "'polaris-discovery-map-v2'",
-      "outcome": "killed",
-      "failedTests": 3,
-      "totalTests": 94,
-      "killedBy": [
-        "discovery envelopes > builds the map envelope with the stage envelope fields and the request rebuilt field by field",
-        "discovery envelopes > pins the map envelope encoding",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "reduce-schema-version",
-      "old": "'polaris-discovery-reduce-reply-v1'",
-      "new": "'polaris-discovery-reduce-reply-v2'",
-      "outcome": "killed",
-      "failedTests": 3,
-      "totalTests": 94,
-      "killedBy": [
-        "discovery envelopes > builds the reduce envelope the same way",
-        "discovery envelopes > pins the reduce envelope encoding",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "map-system-swapped",
-      "old": "promptVersion: DISCOVERY_MAP_PROMPT_VERSION, system: DISCOVERY_MAP_SYSTEM,",
-      "new": "promptVersion: DISCOVERY_MAP_PROMPT_VERSION, system: DISCOVERY_REDUCE_SYSTEM,",
-      "outcome": "killed",
-      "failedTests": 3,
-      "totalTests": 94,
-      "killedBy": [
-        "discovery envelopes > builds the map envelope with the stage envelope fields and the request rebuilt field by field",
-        "discovery envelopes > pins the map envelope encoding",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "schema-blob-enum-dropped",
-      "old": "blobId: { type: 'string', enum: ids },",
-      "new": "blobId: { type: 'string' },",
-      "outcome": "killed",
-      "failedTests": 3,
-      "totalTests": 94,
-      "killedBy": [
-        "discovery envelopes > closes the map reply schema over the request's own blob ids",
-        "discovery envelopes > pins the map envelope encoding",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "schema-map-maxitems-dropped",
-      "old": "type: 'array', maxItems: ids.length, items: {",
-      "new": "type: 'array', items: {",
-      "outcome": "killed",
-      "failedTests": 3,
-      "totalTests": 94,
-      "killedBy": [
-        "discovery envelopes > closes the map reply schema over the request's own blob ids",
-        "discovery envelopes > pins the map envelope encoding",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "schema-reduce-maxitems-uncapped",
-      "old": "maxItems: Math.min(request.maxSelected, ids.length)",
-      "new": "maxItems: request.maxSelected",
-      "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
-        "discovery envelopes > closes the reduce reply schema over the claims' blob ids and maxSelected",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "schema-map-open",
-      "old": "type: 'object', additionalProperties: false, required: ['claims'],",
-      "new": "type: 'object', additionalProperties: true, required: ['claims'],",
-      "outcome": "killed",
-      "failedTests": 3,
-      "totalTests": 94,
-      "killedBy": [
-        "discovery envelopes > closes the map reply schema over the request's own blob ids",
-        "discovery envelopes > pins the map envelope encoding",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "schema-reduce-unique-dropped",
-      "old": "type: 'array', uniqueItems: true, maxItems",
-      "new": "type: 'array', maxItems",
-      "outcome": "killed",
-      "failedTests": 3,
-      "totalTests": 94,
-      "killedBy": [
-        "discovery envelopes > closes the reduce reply schema over the claims' blob ids and maxSelected",
         "discovery envelopes > pins the reduce envelope encoding",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "claim-max-raised",
-      "old": "DISCOVERY_CLAIM_MAX_CHARS = 400;",
-      "new": "DISCOVERY_CLAIM_MAX_CHARS = 4000;",
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "discovery-version",
+      "old": "version: `polaris-${step}-v1`",
+      "new": "version: `polaris-${step}-v2`",
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 123,
+      "killedBy": [
+        "discovery envelopes > builds the map envelope with the stage envelope fields and the request rebuilt field by field",
+        "discovery envelopes > builds the reduce envelope the same way",
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/prompts.ts",
+      "id": "discovery-instructions-swapped",
+      "old": "{ 'discovery-map': mapInstructions, 'discovery-reduce': reduceInstructions }",
+      "new": "{ 'discovery-map': reduceInstructions, 'discovery-reduce': mapInstructions }",
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
-        "discovery envelopes > closes the map reply schema over the request's own blob ids",
         "discovery envelopes > pins the map envelope encoding",
-        "discovery reply parsers > counts a claim's length in code points, as discovery truncates it",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "reduce-schema-version",
+      "old": "'discovery-map': 'v1', 'discovery-reduce': 'v1' };",
+      "new": "'discovery-map': 'v1', 'discovery-reduce': 'v2' };",
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 123,
+      "killedBy": [
+        "discovery envelopes > builds the reduce envelope the same way",
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce reply schema bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "schema-map-blob-unpatterned",
+      "old": "  blobId: handle, claim: { type: 'string', minLength: 1, maxLength: DISCOVERY_CLAIM_MAX_LENGTH },",
+      "new": "  blobId: text, claim: { type: 'string', minLength: 1, maxLength: DISCOVERY_CLAIM_MAX_LENGTH },",
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 123,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map reply schema bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "schema-map-maxitems",
+      "old": "}), 0, 200) });\nconst discoveryReduce",
+      "new": "}), 0, 2000) });\nconst discoveryReduce",
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 123,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map reply schema bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "schema-reduce-unique-dropped",
+      "old": "const discoveryReduce = object({ ranked: { ...list(handle, 0, 200), uniqueItems: true } });",
+      "new": "const discoveryReduce = object({ ranked: list(handle, 0, 200) });",
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 123,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > closes the reduce reply schema: exactly a unique ranked list of handles",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce reply schema bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "claim-max-raised",
+      "old": "DISCOVERY_CLAIM_MAX_LENGTH = 400;",
+      "new": "DISCOVERY_CLAIM_MAX_LENGTH = 4000;",
+      "outcome": "killed",
+      "failedTests": 7,
+      "totalTests": 123,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map reply schema bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
       "id": "relevance-max-raised",
       "old": "DISCOVERY_RELEVANCE_MAX = 10;",
       "new": "DISCOVERY_RELEVANCE_MAX = 11;",
       "outcome": "killed",
-      "failedTests": 4,
-      "totalTests": 94,
+      "failedTests": 7,
+      "totalTests": 123,
       "killedBy": [
-        "discovery envelopes > closes the map reply schema over the request's own blob ids",
         "discovery envelopes > pins the map envelope encoding",
-        "discovery reply parsers > refuses a map reply with relevance above 10",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map reply schema bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
       "id": "relevance-min-lowered",
-      "old": "DISCOVERY_RELEVANCE_MIN = 0;",
-      "new": "DISCOVERY_RELEVANCE_MIN = -1;",
+      "old": "relevance: { type: 'number', minimum: 0, maximum",
+      "new": "relevance: { type: 'number', minimum: -1, maximum",
+      "outcome": "killed",
+      "failedTests": 7,
+      "totalTests": 123,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > closes the map reply schema: exactly claims of blobId, claim (1..400) and relevance (0..10)",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map reply schema bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "number-min-unchecked",
+      "old": "!Number.isFinite(value) || value < schema.minimum || value > schema.maximum",
+      "new": "!Number.isFinite(value) || value > schema.maximum",
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 123,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a map reply with relevance below 0"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "number-type-unchecked",
+      "old": "if (typeof value !== 'number' || !Number.isFinite(value)",
+      "new": "if (!Number.isFinite(value)",
       "outcome": "killed",
       "failedTests": 4,
-      "totalTests": 94,
+      "totalTests": 123,
       "killedBy": [
-        "discovery envelopes > closes the map reply schema over the request's own blob ids",
         "discovery envelopes > pins the map envelope encoding",
-        "discovery reply parsers > refuses a map reply with relevance below 0",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "map-parse-unknown-blob",
-      "old": "|| typeof claim.blobId !== 'string' || !known.has(claim.blobId)",
-      "new": "|| typeof claim.blobId !== 'string'",
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "reply-stage-guard",
+      "old": "  if (stage !== 'discovery-map' && stage !== 'discovery-reduce') throw new Error('invalid-stage');\n  check(schemas[stage], value);",
+      "new": "  check(schemas[stage], value);",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 5,
+      "totalTests": 123,
       "killedBy": [
-        "discovery reply parsers > refuses a map reply with a blob id outside the request",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > refuses a generation-stage name in validateDiscoveryReply"
       ]
     },
     {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "map-parse-duplicates",
-      "old": "  if (!distinct(claims.map(claim => claim.blobId))) fail();\n",
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "reply-duplicates",
+      "old": "  unique(ids);\n  if (ids.some",
+      "new": "  if (ids.some",
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 123,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a map reply with a repeated blob id",
+        "discovery reply parsers > refuses a map reply with more claims than items"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "reply-unknown-blob",
+      "old": "  if (ids.some(id => !candidates.has(id))) throw new Error('unknown-blob');\n",
       "new": "",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 6,
+      "totalTests": 123,
       "killedBy": [
-        "discovery reply parsers > refuses a map reply with a repeated blob id",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a map reply with a blob id outside the request",
+        "discovery reply parsers > refuses a reduce reply with an id no claim names"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/provider-draft.ts",
+      "id": "reply-over-selection",
+      "old": "ids.length > call.maxSelected!)) throw new Error('over-selection');",
+      "new": "ids.length > call.maxSelected! + 1)) throw new Error('over-selection');",
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 123,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
       ]
     },
     {
       "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "map-parse-count",
-      "old": " || value.claims.length > known.size) fail();",
-      "new": ") fail();",
+      "id": "envelope-wrong-prompt",
+      "old": "  const prompt = promptForStage(stage);\n  const schema = stageSchema(stage);",
+      "new": "  const prompt = promptForStage('discovery-map');\n  const schema = stageSchema(stage);",
       "outcome": "killed",
-      "failedTests": 1,
-      "totalTests": 94,
+      "failedTests": 7,
+      "totalTests": 123,
       "killedBy": [
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery envelopes > builds the reduce envelope the same way",
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > sends exactly those two symbols' output as the instruction text, whatever the request"
       ]
     },
     {
       "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "map-parse-claim-open",
-      "old": "!isRecord(claim) || !hasExactly(claim, ['blobId', 'claim', 'relevance'])",
-      "new": "!isRecord(claim)",
+      "id": "envelope-wrong-schema",
+      "old": "  const prompt = promptForStage(stage);\n  const schema = stageSchema(stage);",
+      "new": "  const prompt = promptForStage(stage);\n  const schema = stageSchema('discovery-map');",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 7,
+      "totalTests": 123,
       "killedBy": [
-        "discovery reply parsers > refuses a map reply with an extra claim field",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery envelopes > builds the reduce envelope the same way",
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > sends exactly those two symbols' output as the instruction text, whatever the request"
       ]
     },
     {
       "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "map-parse-top-open",
-      "old": "!isRecord(value) || !hasExactly(value, ['claims'])",
-      "new": "!isRecord(value)",
+      "id": "map-candidates-widened",
+      "old": "{ candidateIds: mapCandidates(request) }",
+      "new": "{ candidateIds: [...mapCandidates(request), 'blob-other'] }",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 6,
+      "totalTests": 123,
       "killedBy": [
-        "discovery reply parsers > refuses a map reply with an extra top-level field",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a map reply with a blob id outside the request",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
       ]
     },
     {
       "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "map-parse-utf16-length",
-      "old": "codePoints(claim.claim) > DISCOVERY_CLAIM_MAX_CHARS",
-      "new": "claim.claim.length > DISCOVERY_CLAIM_MAX_CHARS",
+      "id": "reduce-candidates-widened",
+      "old": "{ candidateIds: reduceCandidates(request), maxSelected",
+      "new": "{ candidateIds: [...reduceCandidates(request), 'blob-unclaimed'], maxSelected",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 6,
+      "totalTests": 123,
       "killedBy": [
-        "discovery reply parsers > counts a claim's length in code points, as discovery truncates it",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "map-parse-relevance-type",
-      "old": "|| typeof claim.relevance !== 'number' || !(claim.relevance",
-      "new": "|| !(claim.relevance",
-      "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
-      "killedBy": [
-        "discovery reply parsers > refuses a map reply with a string relevance",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "map-parse-empty-claim",
-      "old": "|| !isText(claim.claim) || codePoints",
-      "new": "|| typeof claim.claim !== 'string' || codePoints",
-      "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
-      "killedBy": [
-        "discovery reply parsers > refuses a map reply with an empty claim",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "reduce-parse-cap",
-      "old": "if (ranked.length > request.maxSelected || ranked.some",
-      "new": "if (ranked.some",
-      "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
-      "killedBy": [
-        "discovery reply parsers > refuses a reduce reply with more than maxSelected",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "reduce-parse-candidates",
-      "old": "typeof id !== 'string' || !candidates.has(id)",
-      "new": "typeof id !== 'string'",
-      "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
-      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
         "discovery reply parsers > refuses a reduce reply with an id no claim names",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
       ]
     },
     {
       "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "reduce-parse-duplicates",
-      "old": " || !distinct(ranked as string[])) fail();",
-      "new": ") fail();",
+      "id": "reduce-cap-widened",
+      "old": "maxSelected: request.maxSelected }, 'invalid-reduce-reply')",
+      "new": "maxSelected: request.maxSelected + 1 }, 'invalid-reduce-reply')",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 5,
+      "totalTests": 123,
       "killedBy": [
-        "discovery reply parsers > refuses a reduce reply with a repeated id",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "reduce-parse-open",
-      "old": "!isRecord(value) || !hasExactly(value, ['ranked'])",
-      "new": "!isRecord(value)",
-      "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
-      "killedBy": [
-        "discovery reply parsers > refuses a reduce reply with an extra field",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
       ]
     },
     {
@@ -785,11 +840,15 @@
       "old": "items: request.items.map(item => ({ blobId: item.blobId, path: item.path, excerpt: item.excerpt })),",
       "new": "items: request.items.map(item => ({ ...item })),",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 6,
+      "totalTests": 123,
       "killedBy": [
         "discovery envelopes > builds the map envelope with the stage envelope fields and the request rebuilt field by field",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
       ]
     },
     {
@@ -798,11 +857,49 @@
       "old": "readerQuestions: [...request.readerQuestions], maxSelected: request.maxSelected,\n",
       "new": "...request, readerQuestions: [...request.readerQuestions],\n",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 6,
+      "totalTests": 123,
       "killedBy": [
         "discovery envelopes > builds the reduce envelope the same way",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "map-envelope-unvalidated",
+      "old": "  mapCandidates(request);\n  return envelopeFor",
+      "new": "  return envelopeFor",
+      "outcome": "killed",
+      "failedTests": 10,
+      "totalTests": 123,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery envelopes > refuses a map request with an empty subsystem name",
+        "discovery envelopes > refuses a map request with an item without a path",
+        "discovery envelopes > refuses a map request with duplicate item ids",
+        "discovery envelopes > refuses a map request with no items"
+      ]
+    },
+    {
+      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
+      "id": "reduce-envelope-unvalidated",
+      "old": "  reduceCandidates(request);\n  return envelopeFor",
+      "new": "  return envelopeFor",
+      "outcome": "killed",
+      "failedTests": 10,
+      "totalTests": 123,
+      "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
+        "discovery envelopes > refuses a reduce request with a blob claimed twice",
+        "discovery envelopes > refuses a reduce request with a fractional maxSelected",
+        "discovery envelopes > refuses a reduce request with a non-finite relevance",
+        "discovery envelopes > refuses a reduce request with maxSelected 0"
       ]
     },
     {
@@ -811,11 +908,15 @@
       "old": "  if (!distinct(ids)) fail();\n  return ids;\n}\n\nfunction reduceCandidates",
       "new": "  return ids;\n}\n\nfunction reduceCandidates",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 6,
+      "totalTests": 123,
       "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
         "discovery envelopes > refuses a map request with duplicate item ids",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
       ]
     },
     {
@@ -824,11 +925,15 @@
       "old": " || !Array.isArray(request.items) || request.items.length === 0) fail();",
       "new": " || !Array.isArray(request.items)) fail();",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 6,
+      "totalTests": 123,
       "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
         "discovery envelopes > refuses a map request with no items",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
       ]
     },
     {
@@ -837,11 +942,15 @@
       "old": "!isRecord(request) || !isText(request.subsystem)",
       "new": "!isRecord(request) || typeof request.subsystem !== 'string'",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 6,
+      "totalTests": 123,
       "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
         "discovery envelopes > refuses a map request with an empty subsystem name",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
       ]
     },
     {
@@ -850,11 +959,15 @@
       "old": "request.maxSelected < 1",
       "new": "request.maxSelected < 0",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 6,
+      "totalTests": 123,
       "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
         "discovery envelopes > refuses a reduce request with maxSelected 0",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
       ]
     },
     {
@@ -863,11 +976,15 @@
       "old": "if (ids.length === 0 || !distinct(ids)) fail();",
       "new": "if (!distinct(ids)) fail();",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 6,
+      "totalTests": 123,
       "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
         "discovery envelopes > refuses a reduce request with no claims",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
       ]
     },
     {
@@ -876,11 +993,15 @@
       "old": "if (ids.length === 0 || !distinct(ids)) fail();",
       "new": "if (ids.length === 0) fail();",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 6,
+      "totalTests": 123,
       "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
         "discovery envelopes > refuses a reduce request with a blob claimed twice",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
       ]
     },
     {
@@ -889,27 +1010,15 @@
       "old": "|| typeof claim.relevance !== 'number' || !Number.isFinite(claim.relevance)) fail();",
       "new": "|| typeof claim.relevance !== 'number') fail();",
       "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 94,
+      "failedTests": 6,
+      "totalTests": 123,
       "killedBy": [
+        "discovery envelopes > pins the map envelope encoding",
+        "discovery envelopes > pins the reduce envelope encoding",
         "discovery envelopes > refuses a reduce request with a non-finite relevance",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
-      ]
-    },
-    {
-      "file": "packages/polaris-generation-core/src/discovery-provider.ts",
-      "id": "null-prototype-refused",
-      "old": "[Object.prototype, null].includes",
-      "new": "[Object.prototype].includes",
-      "outcome": "killed",
-      "failedTests": 5,
-      "totalTests": 94,
-      "killedBy": [
-        "discovery instruction text > ends each prompt with an illustration its own parser accepts",
-        "discovery reply parsers > accepts a map reply naming only the request's blob ids, including no claims at all",
-        "discovery reply parsers > accepts a reduce reply ranking claimed blob ids, up to maxSelected",
-        "discovery reply parsers > counts a claim's length in code points, as discovery truncates it",
-        "dossier stage prompts > pins the edit dossier prompt bytes"
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-map prompt bytes",
+        "discovery instruction text comes from promptForStage and stageSchema > pins the discovery-reduce prompt bytes",
+        "discovery reply parsers > refuses a reduce reply with more than maxSelected"
       ]
     }
   ]
