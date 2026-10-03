@@ -2,7 +2,7 @@
   "EGRESS-CONSENT-ANTHROPIC.md": {
     "template": "EGRESS-CONSENT-TEMPLATE.md",
     "fields": {
-      "PROVIDER": "Anthropic, through the Claude Agent SDK (Claude Code runtime), signed in with the owner's existing Claude account",
+      "PROVIDER": "Anthropic, through the Claude Agent SDK (Claude Code runtime)",
       "PROVIDER_ID": "anthropic",
       "CONTENT_CLASSES": "- `governance-text`\n- `code-structure`\n- `code-content`\n- `evidence-content`\n- `derived-composites`",
       "RETENTION": "provider requests, provider replies, run records and the Agent SDK runtime's own state, including any session transcript, are written only inside a run directory under `project:syzygy`'s state directory, outside git, from the start of the run. A run whose runtime cannot be configured to keep its state and transcript inside that directory does not start. The run directory holds the source spans sent for as long as the run is retained; nothing is retained in git, logs or machine responses. Anthropic's own retention follows the terms and settings of the account or key used for the run; the owner discloses the terms document and the training-use setting at the offering, and this record promises neither.",
