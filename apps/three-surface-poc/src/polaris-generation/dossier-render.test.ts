@@ -489,7 +489,7 @@ describe('a stopped run still renders (syzygy-k4t2)', () => {
 
   it('mints every id with a slash, so draft handles named like the renderer\'s own ids never repeat a claim id', async () => {
     const stopped = await stopAfter({ maxCalls: 4 });
-    const draftAt = stopped.result.artifacts.findLastIndex(artifact => artifact.stage === 'edit');
+    const draftAt = stopped.result.artifacts.map(artifact => artifact.stage).lastIndexOf('edit');
     const inventory = structuredClone(stopped.result.artifacts.find(artifact => artifact.stage === 'inventory')!.value) as { entries: unknown[] };
     const term = 'seasonal-term';
     inventory.entries.push({ id: term, kind: 'term', statement: 'A term the glossary lists.', sourceIds: [stopped.sources[0]!.sourceId] });
@@ -521,7 +521,7 @@ describe('a stopped run still renders (syzygy-k4t2)', () => {
 
   it('refuses a draft handle that carries the slash the renderer reserves', async () => {
     const stopped = await stopAfter({ maxCalls: 4 });
-    const draftAt = stopped.result.artifacts.findLastIndex(artifact => artifact.stage === 'edit');
+    const draftAt = stopped.result.artifacts.map(artifact => artifact.stage).lastIndexOf('edit');
     const draft = structuredClone(stopped.result.artifacts[draftAt]!.value) as { introduction: { id: string } };
     draft.introduction.id = 'run-stopped/x';
     const artifacts = stopped.result.artifacts.map((artifact, index) => index === draftAt ? { ...artifact, value: draft } : artifact);

@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { DISCOVERY_STAGE_ILLUSTRATIONS, DOSSIER_ILLUSTRATION_SOURCES, DOSSIER_STAGE_ILLUSTRATIONS, promptForStage, type GenerationStage, type PromptProfile } from './prompts.js';
 import { validateStage, type ProviderDraft, type ProviderInventory } from './provider-draft.js';
 
@@ -156,6 +156,8 @@ describe('dossier illustrations obey their own rules', () => {
       () => { (DOSSIER_ILLUSTRATION_SOURCES as unknown as { text: string }[])[0]!.text = 'injected'; },
       () => { (DOSSIER_ILLUSTRATION_SOURCES as unknown as unknown[]).push({ sourceId: 'x', text: 'y' }); },
     ];
+    const stringify = vi.spyOn(JSON, 'stringify');
+    try { digests(); expect(stringify).not.toHaveBeenCalled(); } finally { stringify.mockRestore(); }
     for (const [index, edit] of edits.entries()) expect(edit, `edit ${index}`).toThrow(TypeError);
     expect(digests()).toEqual(before);
     expect(JSON.stringify(DOSSIER_STAGE_ILLUSTRATIONS.inventory)).not.toContain('injected');
