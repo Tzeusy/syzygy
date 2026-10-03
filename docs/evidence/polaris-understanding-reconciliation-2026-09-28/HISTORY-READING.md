@@ -30,22 +30,33 @@ it already read the status pages and the governance checker, at C1.
     - The recorder runs the tool only when its sha256 equals the digest pinned
       in the recorder (`SUCCESSOR_TOOL_SHA`), and executes the very bytes it
       hashed. A tool change needs a recorder change and a new history review.
-    - A package that is unperformed or malformed (a deeply nested or
-      wrongly typed config included), or whose act record or
-      acceptance-record block does not verify, grants nothing and blocks no
-      other package.
-    - A package whose act record and block verify but whose tool check
-      fails (drifted) grants nothing and **contests every file it names**
-      (since round 16, `syzygy-t69g`). The recorder refuses those files
-      rather than compose the other packages' pairs around it, so it no
-      longer composes around a package whose act verifies but whose check
-      fails (round 15's N1). Before round 16 such a package was skipped like
-      a malformed one. Two trees the tool refuses still pass the recorder
-      alone (round 16's N1): the same tree after the refused package's act
-      record is edited, so the package no longer verifies and is skipped;
-      and a file written back to its adopted bytes, where the recorder
-      never consults the row (round 14's N1). The battery, which runs the
-      tool, refuses both.
+    - A package that is unperformed, or whose config does not load (a
+      malformed, deeply nested or wrongly typed config included), grants
+      nothing and blocks no other package.
+    - Any other package whose tool check fails grants nothing and
+      **contests every file it names**: a drifted package whose act record
+      and block verify (since round 16, `syzygy-t69g`), and, since round 17
+      (`syzygy-lmjg`), one whose act record or block does not verify. The
+      recorder refuses those files rather than compose the other packages'
+      pairs around them (round 15's N1). Before round 16 a drifted package
+      was skipped like a malformed one; before round 17 an act that did not
+      verify was skipped too, so editing a refused package's act record
+      turned it back into a skipped one (round 16's N1, tree P5). A copy of
+      a performed package that names that package's act and fails its check
+      contests too, as the tool refuses it.
+    - **A file written back to its adopted bytes** is refused when a
+      performed successor names it (round 16's N1, tree P10; round 14's N1).
+      The row is consulted whenever one exists, not only when the bytes
+      differ from the adopted ones, and a written-back file passes only when
+      the row keeps the adopted bytes. Before round 17 such a file was
+      never compared with its row.
+    - **What the recorder alone still accepts** [Inferred, from the code
+      at `d9f14202`]: a refused package whose config is then made unloadable
+      or whose directory is removed. It is skipped, so the others compose
+      around it. Isolating a malformed sibling is the round-7 design (N1),
+      so this is not closed here. The tool refuses an unloadable config; a
+      removed directory is outside both. The battery, never the recorder
+      alone, is the claim.
     - Paths are normalized before they are compared, so `./x` and `x` are
       one path.
     - **The chain** (since round 14). A later successor of a file names the
@@ -143,11 +154,18 @@ it already read the status pages and the governance checker, at C1.
   or one whose act does not verify, contesting its paths; the contested
   paths' normalization; and the tool's strict later-instant test, which
   the tie fixture needs (recorder selftest, tool pin moved to the mutant).
-  Rows with more than one edit carry the rest under `further_edits`. One
-  round-16 guard is equivalent and has no row: requiring `check()` to
-  return `performed-exact`, since past `performed_rows()` it either
-  returns that or raises. Two of the tool's guards are equivalent and have
-  no row:
+  Six more (round 17, at `d9f14202`, rows 121 to 126) pin the two
+  residuals of round 16's N1: the pre-fix load scope that skipped an
+  unverified act (P5) and an unperformed package contesting its paths; the
+  pre-fix row consultation (P10), the written-back test dropped, the same
+  test refusing a row that keeps the adopted bytes, and the contested test
+  skipped for written-back bytes. Row 123 fails by the fixture's own
+  assertion; row 125 fails on the real tree's first kept row, before the
+  fixture. Rows with more than one edit carry the rest under
+  `further_edits`. One round-16 guard is equivalent and has no row:
+  requiring `check()` to return `performed-exact`, since past
+  `performed_rows()` it either returns that or raises. Two of the tool's
+  guards are equivalent and have no row:
   - Normalizing a later package's path: an aliased later claim can only
     keep its bytes (a changed subject's proposed file has the normal name),
     and a kept claim adds no digest to the chain.
@@ -294,7 +312,8 @@ it already read the status pages and the governance checker, at C1.
     the reviewed bytes:
     - N1: this page claimed the recorder could no longer accept any tree
       the tool refuses. The claim is narrowed above, naming both residuals;
-      the battery, never the recorder alone, is the claim.
+      the battery, never the recorder alone, is the claim. Both residuals
+      are closed in round 17's change (`syzygy-lmjg`).
     - N2: row 120's refusal is not byte-reproducible; noted at the
       rule-6 rows above.
     - N3: a refused package contests every path it names, so drift on a
