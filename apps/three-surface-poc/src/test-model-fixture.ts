@@ -202,7 +202,12 @@ export function frozenFixture<T>(value: T): T {
  * rebuilding the same five models in every test pushed single tests past the
  * 5 s default under full-suite load. The repositories live until `remove`.
  */
-/** Budget for building a file's shared fixture models once (see below). */
+/**
+ * Budget for building a file's shared fixture models once. Five or six
+ * builds took 4.1-10.9 s across five full-suite runs under eight CPU burners
+ * (docs/evidence/shared-fixture-models-k66p-2026-10-03.json), past the 10 s
+ * hook default at the top.
+ */
 export const SHARED_FIXTURE_TIMEOUT_MS = 60_000;
 
 export function sharedFixtureModels<K extends string>(
