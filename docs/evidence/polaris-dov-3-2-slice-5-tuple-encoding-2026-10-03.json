@@ -1,0 +1,813 @@
+{
+  "bead": "syzygy-dov.3.2",
+  "slice": 5,
+  "date": "2026-10-03",
+  "subject": "P-70 M3 slice 5: declared tier (six), tier-absence (unstated), freshness (four) and challenge (one) encodings beside EPISTEMIC_ENCODING, driving one empty mark per tuple field, the generated treatment CSS and the generated claim-state glossary rows",
+  "subjectFiles": {
+    "apps/three-surface-poc/src/design-tokens.ts": {
+      "sha256": "15c1a2b06bd3128ee4addda936bb5d96ae49a98985284e2eaad62bbb6023983e"
+    },
+    "apps/three-surface-poc/src/polaris.ts": {
+      "sha256": "2325140ff916fd2f04143c6790f0052014833659fb188d63b6994e73e58c8174"
+    },
+    "apps/three-surface-poc/src/tuple-encoding.test.ts": {
+      "sha256": "b44a27b4fe2fdd0f743f907b3e62d1a0d2fbe13b5ee0b54a4f69307d6363c591"
+    },
+    "apps/three-surface-poc/src/polaris-narrative.test.ts": {
+      "sha256": "8fb5415a7486278f2cb3b2fd9cb401dda943bcd357aa8344df3e2c0a7688b026"
+    },
+    "docs/POLARIS-READING-LAYOUT.md": {
+      "sha256": "5f0fa508524bf51bd1af3d664a4ff4305c5cb90e3f02834b7f7ca70a60b392b7"
+    }
+  },
+  "authority": ".syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md P-70 (A: slices 5-6 after slices 1-4) under .syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md. No PocModel, machine, schema, route, read, egress or governed change.",
+  "design": {
+    "marks": "Each claim tuple stays one text node (the PWB-REQ-020 sweep's leaf rule); after it, one empty <span> per present field takes the declared class of the tuple's own attribute value (local resolution) and renders the declared symbol, with empty alternative text, in the declared token. Missing freshness emits no freshness mark; the existing currency disclosure follows the marks.",
+    "tokens": "Field treatments use --ink and --muted only, never --observed, --unknown, --proposed or --focus, so the M3.1 token-exclusivity sweep and the Observed/Unknown semantics are untouched.",
+    "glossary": "claimStatesBlock's tier, freshness and challenge lists are generated from the declarations; each row carries the declared class. Freshness reachability notes moved verbatim from polaris.ts into the declaration.",
+    "refusal": "tupleFieldEncoding throws on an undeclared value. polaris-narrative.test.ts's freeze case mutated a source to an undeclared tier ('derived-fact') and now mutates to a declared one ('reduced-fidelity')."
+  },
+  "measurement": {
+    "method": "Clean detached checkouts in the dov.3.2 worktree, npm run build:poc, node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir <scratch>; GET /, /polaris, /trajectory, /orrery direct and with Host: tzeusy.parrot-hen.ts.net; base and slice captured 12 s apart. Server census: Python over the body with <style>/<script> removed. Browser census: the test's selector + TreeWalker census in headless Chrome over the saved bodies (file URL), after scripts.",
+    "butlersRevision": "32f38feb51d86e33bfec00b78777cce5ec280198",
+    "base": {
+      "commit": "37c5da93a8926131b68c18623584109dcd510995",
+      "capturedAt": "2026-10-03T05:54:58Z"
+    },
+    "slice5": {
+      "commit": "038e11541b010cbf5486bbd413c66da0eec8c1a7",
+      "capturedAt": "2026-10-03T05:55:10Z"
+    },
+    "pages": {
+      "base": {
+        "home": {
+          "direct": {
+            "bytes": 43577,
+            "sha256": "d83f2c35643a247a779a033122a65561ab8cb070d8ae5e374efac9ae387422e4",
+            "serverTuples": 0,
+            "serverHistogram": {
+              "label": {},
+              "tier": {},
+              "freshness": {},
+              "challenge": {}
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 0,
+              "walked": 0,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {},
+                "tier": {},
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          },
+          "tailnet": {
+            "bytes": 43637,
+            "sha256": "3279c793cb81b49cf74b20a73aa2f9eecb3bc6ece52a5e0d83f458902832f0c0",
+            "serverTuples": 0,
+            "serverHistogram": {
+              "label": {},
+              "tier": {},
+              "freshness": {},
+              "challenge": {}
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 0,
+              "walked": 0,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {},
+                "tier": {},
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          }
+        },
+        "polaris": {
+          "direct": {
+            "bytes": 1470273,
+            "sha256": "2e44932c7911cabb23ddf2580a9a71a4fa226ad7cb3701263c18d3c8b3f42d4c",
+            "serverTuples": 699,
+            "serverHistogram": {
+              "label": {
+                "Observed": 686,
+                "Unknown": 13
+              },
+              "tier": {
+                "report-fact": 686,
+                "unstated": 13
+              },
+              "freshness": {
+                "fresh": 699
+              },
+              "challenge": {
+                "unchallenged": 699
+              }
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 699,
+              "walked": 699,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {
+                  "Observed": 686,
+                  "Unknown": 13
+                },
+                "tier": {
+                  "report-fact": 686,
+                  "unstated": 13
+                },
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 699,
+              "firstFailures": [
+                "claim:project-account:purpose: no tier mark",
+                "claim:project-account:promises: no tier mark",
+                "claim:class:project-account-section: no tier mark"
+              ]
+            }
+          },
+          "tailnet": {
+            "bytes": 1476378,
+            "sha256": "bbb47eacf7df1bb7e92b46448bc8f79e55faf5e1f96667ba91255f85fd024f10",
+            "serverTuples": 699,
+            "serverHistogram": {
+              "label": {
+                "Observed": 686,
+                "Unknown": 13
+              },
+              "tier": {
+                "report-fact": 686,
+                "unstated": 13
+              },
+              "freshness": {
+                "fresh": 699
+              },
+              "challenge": {
+                "unchallenged": 699
+              }
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 699,
+              "walked": 699,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {
+                  "Observed": 686,
+                  "Unknown": 13
+                },
+                "tier": {
+                  "report-fact": 686,
+                  "unstated": 13
+                },
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 699,
+              "firstFailures": [
+                "claim:project-account:purpose: no tier mark",
+                "claim:project-account:promises: no tier mark",
+                "claim:class:project-account-section: no tier mark"
+              ]
+            }
+          }
+        },
+        "trajectory": {
+          "direct": {
+            "bytes": 330379,
+            "sha256": "c08824bfa4692411655fe90fb74ae1ac16faac81470472f14e729c8097fb403d",
+            "serverTuples": 0,
+            "serverHistogram": {
+              "label": {},
+              "tier": {},
+              "freshness": {},
+              "challenge": {}
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 0,
+              "walked": 0,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {},
+                "tier": {},
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          },
+          "tailnet": {
+            "bytes": 330469,
+            "sha256": "54cad05ff029d41137785f75c93fbcf3168836502f1d47ecab2e1a892b4765b6",
+            "serverTuples": 0,
+            "serverHistogram": {
+              "label": {},
+              "tier": {},
+              "freshness": {},
+              "challenge": {}
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 0,
+              "walked": 0,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {},
+                "tier": {},
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          }
+        },
+        "orrery": {
+          "direct": {
+            "bytes": 43120,
+            "sha256": "84a67a4b3ec546b076578c6f7d99a59c75f45c67785e57bd39f437e1654219e6",
+            "serverTuples": 0,
+            "serverHistogram": {
+              "label": {},
+              "tier": {},
+              "freshness": {},
+              "challenge": {}
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 0,
+              "walked": 0,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {},
+                "tier": {},
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          },
+          "tailnet": {
+            "bytes": 43195,
+            "sha256": "6a88af6cf6b7558dd86da9d2037a3d17de25d441d0cbb6cf2c58e741b7533d69",
+            "serverTuples": 0,
+            "serverHistogram": {
+              "label": {},
+              "tier": {},
+              "freshness": {},
+              "challenge": {}
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 0,
+              "walked": 0,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {},
+                "tier": {},
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          }
+        }
+      },
+      "slice5": {
+        "home": {
+          "direct": {
+            "bytes": 43577,
+            "sha256": "e1432d993996295f32a595368500be4fa4f9749079ea0be0466a198b2d2d6a0d",
+            "serverTuples": 0,
+            "serverHistogram": {
+              "label": {},
+              "tier": {},
+              "freshness": {},
+              "challenge": {}
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 0,
+              "walked": 0,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {},
+                "tier": {},
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          },
+          "tailnet": {
+            "bytes": 43637,
+            "sha256": "23f05f8be8dc7f350bc53c309f94df224ba4c11f0f0d2475ec8100dd52c15346",
+            "serverTuples": 0,
+            "serverHistogram": {
+              "label": {},
+              "tier": {},
+              "freshness": {},
+              "challenge": {}
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 0,
+              "walked": 0,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {},
+                "tier": {},
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          }
+        },
+        "polaris": {
+          "direct": {
+            "bytes": 1543678,
+            "sha256": "66986d950cde6511c0ca3d6292d27b4e9401986581a91d40dac405b516a32c01",
+            "serverTuples": 699,
+            "serverHistogram": {
+              "label": {
+                "Observed": 686,
+                "Unknown": 13
+              },
+              "tier": {
+                "report-fact": 686,
+                "unstated": 13
+              },
+              "freshness": {
+                "fresh": 699
+              },
+              "challenge": {
+                "unchallenged": 699
+              }
+            },
+            "serverMarks": {
+              "tt-report-fact": 686,
+              "tt-fresh": 699,
+              "tt-unchallenged": 699,
+              "tt-unstated": 13
+            },
+            "glossaryRows": 12,
+            "browser": {
+              "queried": 699,
+              "walked": 699,
+              "glossaryRows": 12,
+              "histogram": {
+                "label": {
+                  "Observed": 686,
+                  "Unknown": 13
+                },
+                "tier": {
+                  "report-fact": 686,
+                  "unstated": 13
+                },
+                "freshness": {
+                  "fresh": 699
+                },
+                "challenge": {
+                  "unchallenged": 699
+                }
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          },
+          "tailnet": {
+            "bytes": 1549783,
+            "sha256": "288bdd59fc486e8b713c24ef7a9cb1b580f4e65bf6a189d533c36a941f9699e3",
+            "serverTuples": 699,
+            "serverHistogram": {
+              "label": {
+                "Observed": 686,
+                "Unknown": 13
+              },
+              "tier": {
+                "report-fact": 686,
+                "unstated": 13
+              },
+              "freshness": {
+                "fresh": 699
+              },
+              "challenge": {
+                "unchallenged": 699
+              }
+            },
+            "serverMarks": {
+              "tt-report-fact": 686,
+              "tt-fresh": 699,
+              "tt-unchallenged": 699,
+              "tt-unstated": 13
+            },
+            "glossaryRows": 12,
+            "browser": {
+              "queried": 699,
+              "walked": 699,
+              "glossaryRows": 12,
+              "histogram": {
+                "label": {
+                  "Observed": 686,
+                  "Unknown": 13
+                },
+                "tier": {
+                  "report-fact": 686,
+                  "unstated": 13
+                },
+                "freshness": {
+                  "fresh": 699
+                },
+                "challenge": {
+                  "unchallenged": 699
+                }
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          }
+        },
+        "trajectory": {
+          "direct": {
+            "bytes": 330379,
+            "sha256": "4c3927d0feddbb58c7f88e5134996db265a0e52e3b18d0c28c5f83a31a61af6d",
+            "serverTuples": 0,
+            "serverHistogram": {
+              "label": {},
+              "tier": {},
+              "freshness": {},
+              "challenge": {}
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 0,
+              "walked": 0,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {},
+                "tier": {},
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          },
+          "tailnet": {
+            "bytes": 330469,
+            "sha256": "3e74208cbc5af1afcb202429dd6c5069465b9d4283d114b3cbd12b869f44f08a",
+            "serverTuples": 0,
+            "serverHistogram": {
+              "label": {},
+              "tier": {},
+              "freshness": {},
+              "challenge": {}
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 0,
+              "walked": 0,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {},
+                "tier": {},
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          }
+        },
+        "orrery": {
+          "direct": {
+            "bytes": 43120,
+            "sha256": "31cbcdec17f2e5dd318bd372f53321f4e108040ebd5ff8d1dfee96a27148249d",
+            "serverTuples": 0,
+            "serverHistogram": {
+              "label": {},
+              "tier": {},
+              "freshness": {},
+              "challenge": {}
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 0,
+              "walked": 0,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {},
+                "tier": {},
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          },
+          "tailnet": {
+            "bytes": 43195,
+            "sha256": "0f869c341ae70b8ceec7b4998f3fbdaef1ecca76532a425a5a07601a28ae08b1",
+            "serverTuples": 0,
+            "serverHistogram": {
+              "label": {},
+              "tier": {},
+              "freshness": {},
+              "challenge": {}
+            },
+            "serverMarks": {},
+            "glossaryRows": 0,
+            "browser": {
+              "queried": 0,
+              "walked": 0,
+              "glossaryRows": 0,
+              "histogram": {
+                "label": {},
+                "tier": {},
+                "freshness": {},
+                "challenge": {}
+              },
+              "failureCount": 0,
+              "firstFailures": []
+            }
+          }
+        }
+      }
+    },
+    "polarisDeltaBytes": {
+      "direct": 73405,
+      "tailnet": 73405
+    },
+    "otherPagesDeltaBytes": {
+      "home": {
+        "direct": 0,
+        "tailnet": 0
+      },
+      "trajectory": {
+        "direct": 0,
+        "tailnet": 0
+      },
+      "orrery": {
+        "direct": 0,
+        "tailnet": 0
+      }
+    },
+    "ceilingMargin": {
+      "direct": 553474,
+      "tailnet": 547369
+    },
+    "workingTargetGap": {
+      "direct": 143678,
+      "tailnet": 149783
+    },
+    "notes": "2 MiB response ceiling = 2,097,152 bytes; 1.4 MB working target = 1,400,000 bytes. Polaris was already over the working target at base (direct 70,273 over); slice 5 adds 73,405 bytes on both forms (699 tuples x 3 marks ~ 105 B per tuple plus 12 generated rule pairs). Tuple denominator 699 by both methods on both forms; Home, Trajectory and Orrery carry 0 tuples. Base captures fail the browser census by design (no marks)."
+  },
+  "rule6": [
+    {
+      "id": "S5-M1",
+      "predicate": "seventh tier",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "038e11541b010cbf5486bbd413c66da0eec8c1a7",
+      "edits": [
+        {
+          "old": "  { field: 'tier', value: 'suspended', className: 'tt-suspended', symbol: '‖', token: '--muted', description: 'states.tier.suspended' },\n",
+          "new": "  { field: 'tier', value: 'suspended', className: 'tt-suspended', symbol: '‖', token: '--muted', description: 'states.tier.suspended' },\n  { field: 'tier', value: 'derived-fact', className: 'tt-derived-fact', symbol: '◎', token: '--muted', description: 'states.tier.unstated' },\n"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > closes six tiers, four freshness values and one challenge value, with unstated outside the tier registry",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates one treatment rule pair per declared value and no other tuple-field rule 2297ms",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates the glossary rows from the declaration: every value once, in its class, with freshness reachab"
+      ]
+    },
+    {
+      "id": "S5-M2",
+      "predicate": "dropped freshness value",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "038e11541b010cbf5486bbd413c66da0eec8c1a7",
+      "edits": [
+        {
+          "old": "  { field: 'freshness', value: 'superseded', className: 'tt-superseded', symbol: '»', token: '--muted', description: 'states.freshness.superseded',\n    unreachable: 'Not reachable at this evaluation: no claim from an earlier evaluation is carried. Route: capture a new evaluation that carries the replacement.' },\n",
+          "new": ""
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris copy roles (PWB-REQ-012) > marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices 186ms",
+        "× Polaris copy roles (PWB-REQ-012) > keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in so",
+        "× Polaris first reading (PWB-REQ-010 as amended; PWB-LIVE-06) > explains every tuple field once, in place: each label, tier, freshness and challenge value the page uses h"
+      ]
+    },
+    {
+      "id": "S5-M3",
+      "predicate": "reversed reachability",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "038e11541b010cbf5486bbd413c66da0eec8c1a7",
+      "edits": [
+        {
+          "old": "entry.unreachable === undefined || used(entry) ? '' :",
+          "new": "entry.unreachable === undefined || !used(entry) ? '' :"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris copy roles (PWB-REQ-012) > marks exactly the zero-denominator freshness values across observed and unobserved fixture matrices 58ms",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates the glossary rows from the declaration: every value once, in its class, with freshness reachab"
+      ]
+    },
+    {
+      "id": "S5-M4",
+      "predicate": "duplicate treatment (symbol)",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "038e11541b010cbf5486bbd413c66da0eec8c1a7",
+      "edits": [
+        {
+          "old": "symbol: '△'",
+          "new": "symbol: '▲'"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > closes six tiers, four freshness values and one challenge value, with unstated outside the tier registry",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates one treatment rule pair per declared value and no other tuple-field rule 976ms",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > sweeps the post-JavaScript DOM of the three surfaces, Home apart: every tuple field and glossary row ren"
+      ]
+    },
+    {
+      "id": "S5-M5",
+      "predicate": "fifth served freshness",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "038e11541b010cbf5486bbd413c66da0eec8c1a7",
+      "edits": [
+        {
+          "old": "const freshnessAttribute = freshness === undefined ? '' :",
+          "new": "const freshnessAttribute = freshness === undefined ? ' data-epistemic-freshness=\"unrecorded\"' :"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× first-reading and item-level Unknown counterexamples (M3) > keeps missing freshness outside the four-value slot, discloses absence and refuses a positive claim 43ms",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > follows every served tuple with marks that resolve its declared values, keeps the freshness slot closed ",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a "
+      ]
+    },
+    {
+      "id": "S5-M6",
+      "predicate": "positive claim with missing freshness renders",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "038e11541b010cbf5486bbd413c66da0eec8c1a7",
+      "edits": [
+        {
+          "old": "if (freshness === undefined && epistemic.label !== 'Unknown') {",
+          "new": "if (false) {"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× first-reading and item-level Unknown counterexamples (M3) > keeps missing freshness outside the four-value slot, discloses absence and refuses a positive claim 29ms"
+      ]
+    },
+    {
+      "id": "S5-M7",
+      "predicate": "dropped strengthen sentence",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "038e11541b010cbf5486bbd413c66da0eec8c1a7",
+      "edits": [
+        {
+          "old": "    ${sentence('states.strengthen')}\n",
+          "new": ""
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris copy roles (PWB-REQ-012) > keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in so",
+        "× Polaris first reading (PWB-REQ-010 as amended; PWB-LIVE-06) > explains every tuple field once, in place: each label, tier, freshness and challenge value the page uses h",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates the glossary rows from the declaration: every value once, in its class, with freshness reachab"
+      ]
+    },
+    {
+      "id": "S5-M8",
+      "predicate": "dropped unstated row",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "038e11541b010cbf5486bbd413c66da0eec8c1a7",
+      "edits": [
+        {
+          "old": "${group('states.tier', [...TIER_ENCODING, TIER_ABSENCE_ENCODING])}",
+          "new": "${group('states.tier', TIER_ENCODING)}"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris first reading (PWB-REQ-010 as amended; PWB-LIVE-06) > explains every tuple field once, in place: each label, tier, freshness and challenge value the page uses h",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates the glossary rows from the declaration: every value once, in its class, with freshness reachab",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > sweeps the post-JavaScript DOM of the three surfaces, Home apart: every tuple field and glossary row ren"
+      ]
+    },
+    {
+      "id": "S5-M9",
+      "predicate": "omitted family (challenge mark)",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "038e11541b010cbf5486bbd413c66da0eec8c1a7",
+      "edits": [
+        {
+          "old": ", ['challenge', challenge]];",
+          "new": "];"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > follows every served tuple with marks that resolve its declared values, keeps the freshness slot closed ",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > rejects a census that drops a family, a fifth freshness value, a positive claim with no freshness, or a ",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > sweeps the post-JavaScript DOM of the three surfaces, Home apart: every tuple field and glossary row ren"
+      ]
+    },
+    {
+      "id": "S5-M10",
+      "predicate": "omitted page in the census denominator",
+      "file": "apps/three-surface-poc/src/tuple-encoding.test.ts",
+      "commit": "038e11541b010cbf5486bbd413c66da0eec8c1a7",
+      "edits": [
+        {
+          "old": "for (const path of [POC_HUMAN_PATH, POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH]) {",
+          "new": "for (const path of [POC_HUMAN_PATH, POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH]) {"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > sweeps the post-JavaScript DOM of the three surfaces, Home apart: every tuple field and glossary row ren"
+      ]
+    },
+    {
+      "id": "S5-M11",
+      "predicate": "generated CSS ignores the declared token",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "038e11541b010cbf5486bbd413c66da0eec8c1a7",
+      "edits": [
+        {
+          "old": "`.${entry.className} { color: var(${entry.token}); }",
+          "new": "`.${entry.className} { color: var(--ink); }"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/polaris-first-reading.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > generates one treatment rule pair per declared value and no other tuple-field rule 5268ms",
+        "× tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5) > sweeps the post-JavaScript DOM of the three surfaces, Home apart: every tuple field and glossary row ren"
+      ]
+    }
+  ]
+}
