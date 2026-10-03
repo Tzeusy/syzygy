@@ -107,9 +107,9 @@ describe('Messages API route', () => {
     await expect(call(make(config()), done.signal)).rejects.toBeInstanceOf(MessagesApiProviderError);
   });
 
-  it('refuses a tool-use or empty reply as no-output', async () => {
+  it('refuses a tool-use reply (stop reason tool_use) as incomplete', async () => {
     endpoint.script({ kind: 'tool', name: 'x', input: {} });
-    await expect(call(make(config()))).rejects.toMatchObject({ code: 'no-output' });
+    await expect(call(make(config()))).rejects.toMatchObject({ code: 'incomplete' });
   });
 
   it('rejects invalid configuration', () => {
@@ -177,5 +177,57 @@ describe('thinking profile', () => {
     }
     expect(() => createMessagesApiGenerate(config({ thinking: { budgetTokens: 4000 } }))).toThrow(MessagesApiProviderError);   // must be below max_tokens
     expect(() => createMessagesApiGenerate(config({ thinking: { budgetTokens: 100 } }))).toThrow(MessagesApiProviderError);
+  });
+});
+
+describe('ambient environment and pins', () => {
+  const canaries = ['ANTHROPIC_BASE_URL', 'ANTHROPIC_AUTH_TOKEN', 'ANTHROPIC_CUSTOM_HEADERS', 'ANTHROPIC_API_KEY', 'ANTHROPIC_PROFILE'];
+  afterEach(() => { for (const name of canaries) delete process.env[name]; });
+  it('refuses construction while any ANTHROPIC_* variable is set, and refuses a later start the same way', async () => {
+    for (const name of canaries) {
+      process.env[name] = 'canary';
+      expect(() => createMessagesApiGenerate(config()), name).toThrow(MessagesApiProviderError);
+      delete process.env[name];
+    }
+    const h = make(config());
+    process.env.ANTHROPIC_AUTH_TOKEN = 'canary';
+    await expect(call(h)).rejects.toMatchObject({ code: 'ambient-environment' });
+    expect(endpoint.requests).toEqual([]);
+  });
+  it('sends no Authorization header and no custom header, and refuses an unpinned SDK', async () => {
+    await call(make(config()));
+    expect(Object.keys(endpoint.requests[0]!.headers)).not.toContain('authorization');
+    expect(() => createMessagesApiGenerate(config({ pinnedVersion: '0.0.1' }))).toThrow(MessagesApiProviderError);
+  });
+});
+
+describe('completion and billing evidence', () => {
+  it('treats any stop reason but end_turn as a failure', async () => {
+    endpoint.script({ kind: 'text', text: '{"partial":', stopReason: 'max_tokens' });
+    await expect(call(make(config()))).rejects.toMatchObject({ code: 'incomplete' });
+  });
+  it('reports unknown usage when the reply carries none', async () => {
+    endpoint.script({ kind: 'text', text: '{}', noUsage: true });
+    const reply = await call(make(config()));
+    expect(reply.usageUnits).toBeNull();
+  });
+  it('refuses a reply that mixes text with a tool call', async () => {
+    endpoint.script({ kind: 'mixed', text: '{}' });
+    await expect(call(make(config()))).rejects.toMatchObject({ code: 'no-output' });
+  });
+  it('counts a rejected try as unbilled only on the provider\'s documented error body', async () => {
+    endpoint.script({ kind: 'status', status: 429, body: '{"oops":1}' }, { kind: 'text', text: '{}' });
+    const h = make(config());
+    expect((await call(h)).usageUnits).toBeNull();
+    expect(h.attempts()[0]!.usageUnits).toBeNull();
+  });
+  it('strips the OS, architecture and runtime-version headers only when the profile says so', async () => {
+    await call(make(config({ stripFingerprint: true })));
+    await call(make(config()));
+    const [stripped, kept] = endpoint.requests;
+    for (const name of ['x-stainless-os', 'x-stainless-arch', 'x-stainless-runtime-version']) {
+      expect(stripped!.headers[name]).toBeUndefined();
+      expect(kept!.headers[name]).toBeDefined();
+    }
   });
 });
