@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import { SOURCE_TEXT_MAX_LENGTH, generationSourcesForBody, gitBlobObjectId, validateGenerationSources, validateRequestedAssets,
+import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, SOURCE_TEXT_MAX_LENGTH, generationSourcesForBody, gitBlobObjectId, validateGenerationSources, validateRequestedAssets,
   type GenerationBudget, type GenerationSource, type GenerationStage, type PipelineRequest, type RequestedAsset } from '@syzygy/polaris-generation-core';
 
 import { isolatedGit } from './isolated-git.js';
@@ -41,20 +41,23 @@ export interface ReaderConfig {
   readonly routes?: Readonly<Record<GenerationStage, string>>;
 }
 
-const CONFIG_KEYS = new Set(['repositoryId', 'revision', 'include', 'exclude', 'readerQuestions', 'requestedAssets', 'budget', 'oversize', 'routes']);
+const CONFIG_KEYS = new Set(['repositoryId', 'revision', 'include', 'exclude', 'readerQuestions', 'requestedAssets', 'budget', 'oversize', 'routes', 'profile']);
 const BUDGET_KEYS = ['maxCalls', 'maxInputBytes', 'maxOutputBytes', 'maxUsageUnits', 'maxElapsedMs', 'maxRepairCycles', 'accountingPolicy'] as const;
 const strings = (value: unknown, what: string): string[] => {
   if (!Array.isArray(value) || value.some(item => typeof item !== 'string' || item.length === 0)) throw new Error(`config-invalid: ${what}`);
   return value as string[];
 };
 
-/** Strict parse: unknown keys, wrong types and an unset revision are refused. */
+/** `profile: "dossier"` supplies the dossier reader questions and assets unless the config sets its own.
+ * Strict parse: unknown keys, wrong types and an unset revision are refused. */
 export function parseReaderConfig(text: string, overrides: Partial<Pick<ReaderConfig, 'repositoryId' | 'revision'>> & { include?: readonly string[]; exclude?: readonly string[] } = {}): ReaderConfig {
   const raw = JSON.parse(text) as Record<string, unknown>;
   if (raw === null || typeof raw !== 'object' || Array.isArray(raw) || Object.keys(raw).some(key => !CONFIG_KEYS.has(key))) throw new Error('config-invalid: keys');
   const budget = raw.budget as Record<string, unknown>;
   if (budget === null || typeof budget !== 'object' || Object.keys(budget).length !== BUDGET_KEYS.length
     || BUDGET_KEYS.some(key => key === 'accountingPolicy' ? typeof budget[key] !== 'string' : !Number.isSafeInteger(budget[key]) || (budget[key] as number) < 0)) throw new Error('config-invalid: budget');
+  if (raw.profile !== undefined && raw.profile !== 'dossier') throw new Error('config-invalid: profile');
+  const dossier = raw.profile === 'dossier';
   const oversize = raw.oversize ?? 'split';
   if (oversize !== 'split' && oversize !== 'exclude') throw new Error('config-invalid: oversize');
   const routes = raw.routes as Record<string, unknown> | undefined;
@@ -64,8 +67,8 @@ export function parseReaderConfig(text: string, overrides: Partial<Pick<ReaderCo
     revision: overrides.revision ?? String(raw.revision ?? ''),
     include: overrides.include?.length ? overrides.include : strings(raw.include ?? ['**'], 'include'),
     exclude: overrides.exclude?.length ? overrides.exclude : strings(raw.exclude ?? [], 'exclude'),
-    readerQuestions: strings(raw.readerQuestions, 'readerQuestions'),
-    requestedAssets: raw.requestedAssets as RequestedAsset[], budget: budget as unknown as GenerationBudget,
+    readerQuestions: dossier && raw.readerQuestions === undefined ? DOSSIER_READER_QUESTIONS : strings(raw.readerQuestions, 'readerQuestions'),
+    requestedAssets: dossier && raw.requestedAssets === undefined ? DOSSIER_REQUESTED_ASSETS : raw.requestedAssets as RequestedAsset[], budget: budget as unknown as GenerationBudget,
     oversize, ...(routes === undefined ? {} : { routes: routes as unknown as Record<GenerationStage, string> }),
   };
   assertIdentity(config.repositoryId, config.revision);

@@ -68,9 +68,17 @@ Authorized implementation work (generator implementation authorization,
   - [ ] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.
-- [ ] REQ-030 accounted discovery: walk an unfamiliar tree within a budget
-      and say what was and was not read
-- [ ] REQ-031 owner clarification: the consequential-questions step
+- [~] REQ-030 accounted discovery: walk an unfamiliar tree within a budget
+      and say what was and was not read (engine built and tested on synthetic
+      trees; no real tree walked)
+- [~] REQ-031 owner clarification: the consequential-questions step
+      (`dossier-profile.ts`: question budget, no repeats, attributed
+      non-adopting answers, zero-interaction mode that records the questions
+      it would have asked; synthetic only)
+- [x] Dossier run profile `dossier-v1`: five reader questions (core ideas,
+      end-to-end workflows, underlying mechanisms, maintainer-claimed
+      advantages, trade-offs) and their requested assets;
+      `profile: "dossier"` in the reader config
 - [ ] Real provider adapter behind the single egress check (refuses without
       consent; no call happens until admission)
 - [ ] Evaluation runner: frozen reader questions, fresh-reader answers,
