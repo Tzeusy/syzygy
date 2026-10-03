@@ -1,7 +1,8 @@
-# Review brief — public-source screening scope (round 3)
+# Review brief — public-source screening scope (round 5)
 
 > **Candidate — binds nothing.** Not a review; carries no verdict. Rounds 1
-> and 2 returned REVISE; this is the round-3 brief.
+> to 3 returned REVISE and round 4 CONFIRM WITH EXCEPTIONS (notes only); this
+> is the round-5 brief.
 
 ## What the reviewer is given
 
@@ -79,7 +80,7 @@ labelling; PR #120's contents.
 ## Recording
 
 Store the raw verbatim in this package's `reviews/` directory as
-`R-PUBLIC-SOURCE-SCREENING-SCOPE-3-RAW.md` (a re-issue is a further
+`R-PUBLIC-SOURCE-SCREENING-SCOPE-5-RAW.md` (a re-issue is a further
 `-RAW.md`). **The raw's head is a predicate the recorder enforces:** the first
 four non-blank lines are the title and exactly
 
@@ -118,3 +119,14 @@ finding is a note, dispositioned in a sibling `ROUND-<n>-DISPOSITIONS.md`.
     its predicate and own-package count (F5); the delta's rule count (F6); the
     opaque `sourceId` sentence in the rule (F7). Re-derive the record count
     and the manifest digest yourself.
+
+13. **Do the round-4 note repairs hold?** The raw is
+    `reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-4-RAW.md` (CONFIRM WITH
+    EXCEPTIONS: findings 1 to 5 notes) and the repairs are in
+    `ROUND-4-DISPOSITIONS.md`. The manifest digest must equal the one the
+    round-4 raw reviewed: no bound byte moved. The reader is now
+    `scripts/read_ts_exported_string_array.mjs`, which parses with the
+    TypeScript compiler API; check its guards and the selftest's mutants
+    against the shapes in the round-4 raw (nested template, regex holding a
+    quote, `export let`, escapes and newlines), and that the builder refuses
+    when node or `typescript` is missing.

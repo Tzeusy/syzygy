@@ -50,15 +50,19 @@ edits nothing in this checkout. Output of the run for this round:
 | Vitest `project-shape-model.test.ts` | passes: its version literals are fixtures, not pins |
 
 Literal sweep of the clone, files under `apps/`, `packages/`, `scripts/`,
-`.github/` and `PROJECT-STATUS.md` (the sweep also finds 61 governance records
-that cite the old bytes, six of which are this package's own candidate files
+`.github/` and `PROJECT-STATUS.md` (the sweep also finds 62 governance records
+that cite the old bytes, seven of which are this package's own candidate files
 and bind nothing; the other 55 bind and are not edited. Predicate: a tracked,
 strictly UTF-8 file of the scratch clone with the proposed bytes committed,
 outside `apps/`, `packages/`, `scripts/`, `.github/` and `PROJECT-STATUS.md`,
-with a `str.count` above zero of the old policy file's SHA-256 or of
-`1.1.0-candidate.1`. The five are the ledger, the semantic delta, the patch and
-the round-1, round-2 and round-3 raws; each retained raw adds one, so the figure moves
-with the package and must be re-derived):
+with a `str.count` above zero of any of six literals: the old policy file's
+SHA-256, its `policyVersion` (`1.1.0-candidate.1`), the performed policy act's
+`actIdentity` and `recordingTag` as the gate's policy entry carries them, and
+the two act-record pointers the gate lists for the policy (the simulator's
+`literals`, read from `governance-inputs.ts`). Two literals alone give 49. The
+seven own-package files are the ledger, the semantic delta, the patch and the
+round-1 to round-4 raws; each retained raw adds one, so the figure
+moves with the package and must be re-derived):
 
 | Pin | Where | Kind |
 |---|---|---|

@@ -26,6 +26,14 @@ differs from the pipeline's `sourcePopulation` in `pipeline.ts`.
   --manifest-digest  print the SHA-256 of the manifest FILE
   --selftest         mutate each predicate; each must fail
 
+`--check` also reports act-readiness: the closed exclusion-reason set must be
+readable from the exported constant `GENERATION_EXCLUSION_REASONS` in
+generation-source.ts. It is read through the TypeScript compiler API by
+`scripts/read_ts_exported_string_array.mjs` (node and the repo's `typescript`
+dependency; if either is missing the reader refuses). A package that is not
+act-ready exits 1 unless `--pending-symbol` is passed; the proposed bytes and
+the manifest do not depend on the constant's values.
+
 Review-head contract for the recorder written after the review: the raw's
 first four non-blank lines carry `Reviewed commit: <40 hex>`,
 `Manifest SHA-256: <SHA-256 of the manifest FILE>` and a `Verdict:` line
@@ -86,72 +94,42 @@ GENERATION_SOURCE = pathlib.Path("packages/polaris-generation-core/src/generatio
 EXCLUSION_REASON_SYMBOL = {"path": GENERATION_SOURCE.as_posix(), "symbol": "GENERATION_EXCLUSION_REASONS"}
 
 
-def mask_source(text: str, comments: bool = True, quoted: bool = True) -> str:
-    """Same-length copy of TypeScript source with comments blanked and string
-    bodies replaced by placeholders (\x01 inside single quotes, \x02 inside
-    other quotes), so a declaration or member inside a comment or string cannot
-    be matched. A small scanner, not a parser: regex literals are not
-    recognised, and a source it cannot scan to the end is refused. (`comments`
-    and `quoted` switch a step off for the selftest's mutants.)"""
-    out: list[str] = []
-    i, n = 0, len(text)
-    while i < n:
-        c = text[i]
-        if comments and text.startswith("//", i):
-            j = text.find("\n", i)
-            j = n if j < 0 else j
-            out.append(" " * (j - i)); i = j
-        elif comments and text.startswith("/*", i):
-            j = text.find("*/", i + 2)
-            if j < 0:
-                raise ValueError("unterminated block comment")
-            out.append("".join(ch if ch == "\n" else " " for ch in text[i:j + 2])); i = j + 2
-        elif c == "'" or (quoted and c in "\"`"):
-            j = i + 1
-            while j < n and text[j] != c:
-                if text[j] == "\\":
-                    j += 1
-                if j < n and text[j] == "\n" and c != "`":
-                    raise ValueError("unterminated string literal")
-                j += 1
-            if j >= n:
-                raise ValueError("unterminated string literal")
-            out.append(c + ("\x01" if c == "'" else "\x02") * (j - i - 1) + c); i = j + 1
-        else:
-            out.append(c); i += 1
-    return "".join(out)
+READER = pathlib.Path("scripts/read_ts_exported_string_array.mjs")
 
 
-def exclusion_reasons(root: pathlib.Path = ROOT, mask=None) -> list[str]:
+def exclusion_reasons(root: pathlib.Path = ROOT, script: pathlib.Path | None = None) -> list[str]:
     """The closed exclusion-reason set, read from the exported constant in
-    generation-source.ts. Fails closed: an absent file, a declaration that is
-    absent, unexported or repeated once comments and strings are set aside, a
-    shape other than a literal array of single-quoted strings, or an empty or
-    repeating set is an error. (`mask` is for the selftest's mutants.)"""
-    sym = EXCLUSION_REASON_SYMBOL["symbol"]
+    generation-source.ts through the TypeScript compiler API (a node script,
+    never a text scan). Fails closed: no node, no `typescript`, a file with
+    syntax errors, a symbol not bound exactly once at the top level, not
+    exported, not `const`, not a literal array of string literals `as const`, or
+    an empty, repeating or non-kebab-case set is an error. (`script` is for the
+    selftest's mutants.)"""
     path = root / GENERATION_SOURCE
     if not path.is_file():
         raise ValueError(f"{GENERATION_SOURCE.as_posix()} is absent")
-    text = path.read_text()
-    live = (mask or mask_source)(text)
-    decls = list(re.finditer(rf"(?<![\w$.])(export\s+)?(?:const|let|var)\s+{sym}\b", live))
-    if not decls:
-        raise ValueError(f"{sym} is not declared in {GENERATION_SOURCE.as_posix()}")
-    if len(decls) > 1:
-        raise ValueError(f"{sym} is declared more than once in {GENERATION_SOURCE.as_posix()}")
-    if not decls[0].group(1):
-        raise ValueError(f"{sym} is not exported from {GENERATION_SOURCE.as_posix()}")
-    m = re.compile(r"\s*(?::[^=;]*)?=\s*\[([^\]]*)\]\s*(?:as\s+const)?\s*;").match(live, decls[0].end())
-    if not m:
-        raise ValueError(f"cannot read {sym} as a literal array of strings")
-    body = live[m.start(1):m.end(1)]
-    spans = [(m.start(1) + s.start(), m.start(1) + s.end()) for s in re.finditer(r"'\x01*'", body)]
-    reasons = [text[a + 1:b - 1] for a, b in spans]
-    leftover = re.sub(r"'\x01*'|[\s,]", "", body)
-    if not reasons or leftover or any(not re.fullmatch(r"[a-z][a-z0-9-]*", r) for r in reasons) \
+    if shutil.which("node") is None:
+        raise ValueError("node is unavailable, so the reason set cannot be read")
+    done = subprocess.run(["node", str(script or ROOT / READER), str(path), EXCLUSION_REASON_SYMBOL["symbol"]],
+                          capture_output=True, text=True, timeout=60)
+    if done.returncode != 0:
+        why = done.stderr.strip().splitlines()
+        raise ValueError(why[-1] if why else "the reader failed")
+    try:
+        reasons = json.loads(done.stdout)
+    except ValueError:
+        raise ValueError("the reader printed something other than a JSON array")
+    sym = EXCLUSION_REASON_SYMBOL["symbol"]
+    if not isinstance(reasons, list) or not reasons or any(not isinstance(r, str) or not re.fullmatch(r"[a-z][a-z0-9-]*", r) for r in reasons) \
             or len(set(reasons)) != len(reasons):
         raise ValueError(f"{sym} is empty, repeats a reason or holds more than kebab-case string literals")
     return reasons
+
+
+def check_exit(findings: list[str], ready: list[str], pending: bool) -> int:
+    """Exit status of `--check`: stale bytes always fail; a package that is not
+    act-ready fails unless `--pending-symbol` was passed."""
+    return 1 if findings or (ready and not pending) else 0
 
 
 def source_population_fields(root: pathlib.Path = ROOT) -> list[str]:
@@ -502,58 +480,96 @@ def selftest() -> int:
             results.append(("an unreadable sourcePopulation shape is refused", False))
         except ValueError:
             results.append(("an unreadable sourcePopulation shape is refused", True))
-    # the reason set is read from code: present, absent, unreadable shapes
+    # the reason set is read from code through the compiler API
+    SYM = EXCLUSION_REASON_SYMBOL["symbol"]
+    results.append(("--check exits 1 when not act-ready", check_exit([], ["x"], False) == 1))
+    results.append(("--pending-symbol lets a not-ready package exit 0", check_exit([], ["x"], True) == 0))
+    results.append(("stale bytes exit 1 even with --pending-symbol", check_exit(["stale"], [], True) == 1))
+    decl = f"export const {SYM} = ['a-b', 'c'] as const;"
+    ok_ab = ["a-b", "c"]
+    fixtures = {   # name -> (source, expected set, or None for refused)
+        "a readable constant yields its set": (f"export const {SYM} = [\n  'a-b', // x\n  'c',\n] as const;\n", ok_ab),
+        "an added reason moves the set": (f"export const {SYM} = ['a-b', 'c', 'd'] as const;", ok_ab + ["d"]),
+        "an absent symbol is refused": ("export const OTHER = ['a'] as const;", None),
+        "an unexported symbol is refused": (f"const {SYM} = ['a'] as const;", None),
+        "export let is refused": (f"export let {SYM} = ['a-b'] as const;", None),
+        "a type-annotated constant is refused": (f"export const {SYM}: readonly string[] = ['a-b'] as const;", None),
+        "a re-export is a second binding": (f"{decl}\nconst X = 1;\nexport {{ X as {SYM} }};\n", None),
+        "an export list alone is refused": (f"const {SYM} = ['a'] as const;\nexport {{ {SYM} }};\n", None),
+        "a declaration inside a function is not a declaration": (f"export function f() {{ {decl} }}\n", None),
+        "a computed set is refused": (f"export const {SYM} = Object.keys(x);", None),
+        "a satisfies form is refused": (f"export const {SYM} = ['a'] as const satisfies readonly string[];", None),
+        "an as-other-type form is refused": (f"export const {SYM} = ['a'] as Foo;", None),
+        "a non-literal member is refused": (f"export const {SYM} = ['a', b] as const;", None),
+        "a template member is refused": (f"export const {SYM} = [`a`] as const;", None),
+        "an uppercase member is refused": (f"export const {SYM} = ['A'] as const;", None),
+        "an empty set is refused": (f"export const {SYM} = [] as const;", None),
+        "a repeated reason is refused": (f"export const {SYM} = ['a', 'a'] as const;", None),
+        "a commented-out declaration is not a declaration": (f"// {decl}\n", None),
+        "a block-commented declaration is not a declaration": (f"/* {decl} */\n", None),
+        "a string-embedded declaration is not a declaration": (f"const s = \"{decl}\";\nconst t = '{decl.replace(chr(39), chr(92) + chr(39))}';\n", None),
+        "a commented member is not a member": (f"export const {SYM} = [\n  'a',\n  // 'retired',\n  /* 'old', */\n] as const;", ["a"]),
+        "a commented old declaration before the live one is ignored": (f"// export const {SYM} = ['old'] as const;\n{decl}\n", ok_ab),
+        "a second live declaration is refused": (f"{decl}\nexport const {SYM} = ['z'] as const;\n", None),
+        "an unterminated comment is refused": (f"{decl}\n/* open", None),
+        "a nested template holding the declaration is not a declaration": (f"const x = `${{`; {decl} `}}`;\n", None),
+        "a regex holding a quote before a commented declaration is not a declaration": (f"const r = /'/; // '; {decl}\n", None),
+        "a regex with slashes before a live declaration still reads": (f"const r = /[//]/;\n{decl}\n", ok_ab),
+        "a quoted comment opener before a live declaration still reads": (f"const s = '/*';\n{decl}\nconst t = '*/';\n", ok_ab),
+        "a regex with an escaped slash and star still reads": (f"const w = /\\/*x*\\//;\n{decl}\n", ok_ab),
+        "a template with nested quotes before a live declaration still reads": (f"const u = `${{a ? 'x' : \"y\"}}`;\n{decl}\n", ok_ab),
+        "an escaped quote before a live declaration still reads": (f"const s = 'it\\'s';\n{decl}\n", ok_ab),
+        "a string running over a newline is a syntax error and is refused": (f"const s = 'abc\n{decl}\n", None),
+    }
     with tempfile.TemporaryDirectory() as d:
         root = pathlib.Path(d)
         gs = root / GENERATION_SOURCE
         gs.parent.mkdir(parents=True)
-        sym = EXCLUSION_REASON_SYMBOL["symbol"]
 
-        def read(src, mask=None):
-            gs.parent.mkdir(parents=True, exist_ok=True)
+        def read(src, script=None):
             gs.write_text(src)
             try:
-                return exclusion_reasons(root, mask), ""
+                return exclusion_reasons(root, script), ""
             except ValueError as exc:
                 return None, str(exc)
 
-        def reasons_of(src, mask=None):
-            return read(src, mask)[0]
-        decl = f"export const {sym} = ['a-b', 'c'] as const;"
-        fixtures = {   # name -> (source, expected set or None for refused)
-            "a readable constant yields its set": (f"export const {sym} = [\n  'a-b', // x\n  'c',\n] as const;\n", ["a-b", "c"]),
-            "an added reason moves the set": (f"export const {sym} = ['a-b', 'c', 'd'] as const;", ["a-b", "c", "d"]),
-            "an absent symbol is refused": ("export const OTHER = ['a'] as const;", None),
-            "an unexported symbol is refused": (f"const {sym} = ['a'] as const;", None),
-            "a computed set is refused": (f"export const {sym} = Object.keys(x);", None),
-            "a non-literal member is refused": (f"export const {sym} = ['a', REASON_B] as const;", None),
-            "an empty set is refused": (f"export const {sym} = [] as const;", None),
-            "a repeated reason is refused": (f"export const {sym} = ['a', 'a'] as const;", None),
-            "a commented-out declaration is not a declaration": (f"// {decl}\n", None),
-            "a block-commented declaration is not a declaration": (f"/* {decl} */\n", None),
-            "a string-embedded declaration is not a declaration": (f"const s = \"{decl}\";\nconst t = '{decl}';\n", None),
-            "a commented member is not a member": (f"export const {sym} = [\n  'a',\n  // 'retired',\n  /* 'old', */\n] as const;", ["a"]),
-            "a commented old declaration before the live one is ignored": (f"// export const {sym} = ['old'] as const;\n{decl}\n", ["a-b", "c"]),
-            "a second live declaration is refused": (f"{decl}\nexport const {sym} = ['z'] as const;\n", None),
-            "an unterminated comment is refused": (f"{decl}\n/* open", None),
-        }
         for name, (src, want) in fixtures.items():
-            results.append((name, reasons_of(src) == want))
-        # rule 6: with the comment/string masking removed, the fixtures that depend on it must fail
-        no_comments = lambda s: mask_source(s, comments=False)
-        no_quoted = lambda s: mask_source(s, quoted=False)
-        for name in ("a commented-out declaration is not a declaration", "a block-commented declaration is not a declaration",
-                     "a commented member is not a member", "a commented old declaration before the live one is ignored"):
-            src, want = fixtures[name]
-            results.append((f"mutant: comments left in is caught by '{name}'", reasons_of(src, no_comments) != want))
-        src, want = fixtures["a string-embedded declaration is not a declaration"]
-        results.append(("mutant: double-quoted strings left in is caught by the string-embedded fixture", reasons_of(src, no_quoted) != want))
-        # distinct messages (the unexported and the uncovered shapes are different refusals)
-        results.append(("an unexported symbol says so", "is not exported" in read(f"const {sym} = ['a'] as const;")[1]))
-        results.append(("an absent symbol says so", "is not declared" in read("export const OTHER = [];")[1]))
-        results.append(("a repeated declaration says so", "more than once" in read(f"{decl}\n{decl}\n")[1]))
-        gs.unlink()
-        results.append(("a missing file is refused", readiness(root) != []))
+            results.append((name, read(src)[0] == want))
+        # distinct refusals
+        results.append(("an unexported symbol says so", "not exported" in read(f"const {SYM} = ['a'] as const;")[1]))
+        results.append(("an absent symbol says so", "not declared" in read("export const OTHER = [];")[1]))
+        results.append(("a repeated declaration says so", "more than one" in read(f"{decl}\n{decl}\n")[1]))
+        # rule 6: each guard of the reader, removed in a copy, is caught by a fixture that needs it
+        ts_dir = subprocess.run(["node", "-e", "console.log(require('path').dirname(require.resolve('typescript/package.json')))"],
+                                capture_output=True, text=True, cwd=ROOT).stdout.strip()
+        source = (ROOT / READER).read_text()
+        mutants = [
+            ("syntax errors tolerated", "if (sf.parseDiagnostics.length > 0) refuse(", "if (false) refuse(",
+             ["a string running over a newline is a syntax error and is refused"]),
+            ("a second binding tolerated", "if (bindings.length > 1) refuse(", "if (false) refuse(",
+             ["a second live declaration is refused", "a re-export is a second binding"]),
+            ("an unexported symbol tolerated", "if (!exported(st)) refuse(", "if (false) refuse(",
+             ["an unexported symbol is refused"]),
+            ("let tolerated", "if (!(st.declarationList.flags & ts.NodeFlags.Const)) refuse(", "if (false) refuse(",
+             ["export let is refused"]),
+            ("any `as` type tolerated", "init.type.typeName.getText(sf) !== 'const')", "false)",
+             ["an as-other-type form is refused"]),
+            ("non-string members tolerated", "if (!ts.isStringLiteral(el)) refuse(", "if (false) refuse(",
+             ["a non-literal member is refused"]),
+            ("a type annotation tolerated", "if (d.type) refuse(", "if (false) refuse(",
+             ["a type-annotated constant is refused"]),
+        ]
+        scratch = pathlib.Path(tempfile.mkdtemp(prefix="reader-mutant-", dir=d))
+        (scratch / "node_modules").mkdir()
+        (scratch / "node_modules" / "typescript").symlink_to(ts_dir)
+        for label, old, new, needs in mutants:
+            if source.count(old) != 1:
+                results.append((f"mutant: {label} (fragment not found exactly once)", False))
+                continue
+            mjs = scratch / "mutant.mjs"
+            mjs.write_text(source.replace(old, new))
+            caught = any(read(fixtures[n][0], mjs)[0] != fixtures[n][1] for n in needs)
+            results.append((f"mutant: {label} is caught", caught))
     failed = [n for n, ok in results if not ok]
     for n, ok in results:
         print(("ok   " if ok else "FAIL ") + n)
@@ -589,7 +605,7 @@ def main(argv: list[str]) -> int:
             print("NOTE" if pending else "FINDING", f)
         if not ready:
             print("exclusion reasons read from code:", ", ".join(exclusion_reasons()))
-        return 1 if findings or (ready and not pending) else 0
+        return check_exit(findings, ready, pending)
     print(f"unknown mode {mode}", file=sys.stderr)
     return 2
 
