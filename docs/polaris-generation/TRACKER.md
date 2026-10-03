@@ -198,7 +198,7 @@ Authorized implementation work (generator implementation authorization,
         occur in a source the block cites, after one normalisation applied to
         both sides (comment leaders and closes, link syntax, entities,
         backslash escapes, backticks and emphasis dropped; curly quotes
-        folded; whitespace collapsed). The lead-in is `The project states:`;
+        folded; the ellipsis character folded to three periods; whitespace collapsed). The lead-in is `The project states:`;
         a quotation runs from it to the last straight quote before the next
         lead-in, so it may contain quotes, an unverified tail or a stray
         quote in the prose after it fails, and elision is not allowed. A

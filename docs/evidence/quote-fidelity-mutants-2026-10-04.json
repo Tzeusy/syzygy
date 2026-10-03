@@ -1,0 +1,1113 @@
+{
+  "subject": {
+    "commit": "6f8f0e40731cacff0175f5d4dbe8927d9602fab9",
+    "branch": "agent/quote-fidelity",
+    "fileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-render.ts": "9b6dd601b83eb11ab1baac93565f07f6ef603f9e7ab596d6f0f0cccb49fbf046",
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "79368002ba98f3cdd31983293c28cf9bd92c0167444c1997cb160a196068cd51",
+      "packages/polaris-generation-core/src/dossier-evaluation.ts": "04ab4fe712ac3bc579d558fe32d6997107a510597d99558930defa6a041b30e5",
+      "packages/polaris-generation-core/src/pipeline.ts": "c9feaa161c83bfb590855a37210d95fee8b6b8a4fe5ab46206557a34084b6b06",
+      "packages/polaris-generation-core/src/quote-fidelity.ts": "32c686b07aec91975382ffc5ac30e88041cfd9d297b6a24640c2c885c313350c"
+    },
+    "testFileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts": "1211ff8a46bb86402862d96b4f477608b678cd2caf3d8b73989ea61b39a3a179",
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts": "f3a2d3dfd7ee972352f94a8f11a0714ac58661abe2c8841387e0cc8509a82459",
+      "packages/polaris-generation-core/src/dossier-evaluation.test.ts": "7221f3ac696ba586f9200109def1cd9c03f1dee242e56870c3a101760a39f2d4",
+      "packages/polaris-generation-core/src/pipeline.test.ts": "d821a9533c6f884ba28967853092a123fe848017c1e25fdaa88babae21a7759f",
+      "packages/polaris-generation-core/src/quote-fidelity.test.ts": "88d073ebbf0c4ce51c5c1f0ab078c0c9b0381252e10fa5da58096400b9b03f3e"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-core",
+  "ranAt": "2026-10-03T23:05:10+00:00",
+  "mutants": [
+    {
+      "id": "norm-leader-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "line => line.replace(LEADER, '')",
+      "new": "line => line",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 45
+    },
+    {
+      "id": "norm-leader-slashes",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "|\\/\\/+|#+)[ \\t]?/u",
+      "new": "|#+)[ \\t]?/u",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "norm-leader-hash",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "|\\/\\/+|#+)[ \\t]?/u",
+      "new": "|\\/\\/+)[ \\t]?/u",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "norm-leader-star",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "|\\*+(?=[ \\t]|$)|",
+      "new": "|",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 45
+    },
+    {
+      "id": "norm-leader-open",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "(?:\\/\\*+|",
+      "new": "(?:",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 45
+    },
+    {
+      "id": "norm-leader-close",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "|\\*+\\/|",
+      "new": "|",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "norm-link-inline-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": ".replace(/!?\\[([^\\]\\n]*)\\]\\([^)\\n]*\\)/gu, '$1')",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 45
+    },
+    {
+      "id": "norm-link-ref-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": ".replace(/!?\\[([^\\]\\n]*)\\]\\[[^\\]\\n]*\\]/gu, '$1')",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "norm-link-image-bang",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "/!?\\[([^\\]\\n]*)\\]\\([^)\\n]*\\)/gu",
+      "new": "/\\[([^\\]\\n]*)\\]\\([^)\\n]*\\)/gu",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "norm-emphasis-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "    .replace(EMPHASIS, '$2').replace(EMPHASIS, '$2')\n",
+      "new": "\n",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 45
+    },
+    {
+      "id": "norm-emphasis-no-underscore",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "(\\*\\*|__|\\*|_)([^\\n]*?[^\\s])\\1",
+      "new": "(\\*\\*|\\*)([^\\n]*?[^\\s])\\1",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 45
+    },
+    {
+      "id": "norm-emphasis-no-star",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "(\\*\\*|__|\\*|_)([^\\n]*?[^\\s])\\1",
+      "new": "(__|_)([^\\n]*?[^\\s])\\1",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 45
+    },
+    {
+      "id": "norm-whitespace-newlines",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": ".replace(/\\s+/gu, ' ')",
+      "new": ".replace(/[ \\t]+/gu, ' ')",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 45
+    },
+    {
+      "id": "norm-trim-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": ".replace(/\\s+/gu, ' ').trim()",
+      "new": ".replace(/\\s+/gu, ' ')",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 45
+    },
+    {
+      "id": "verifies-empty-allowed",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "return wanted.length > 0 && cited.some",
+      "new": "return cited.some",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 45,
+      "note": "Equivalent: an empty-normalising candidate is always the shortest candidate, so it is only chosen when no longer reading verifies, and the empty-quote finding is emitted from the normalised inner text before the verification flag is read; dropping the wanted.length guard cannot change a finding."
+    },
+    {
+      "id": "verifies-every",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "cited.some(source => occursIn(source, wanted))",
+      "new": "cited.every(source => occursIn(source, wanted))",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 45
+    },
+    {
+      "id": "verifies-reversed",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "wanted.length > 0 && cited.some",
+      "new": "wanted.length === 0 && cited.some",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 24,
+      "totalTests": 45
+    },
+    {
+      "id": "candidates-shortest-first",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "  return out.reverse();",
+      "new": "  return out;",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 45
+    },
+    {
+      "id": "candidates-any-quote",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "    if (BOUNDARY_AFTER.test(text.slice(j + 1, j + 2))) out.push(",
+      "new": "    out.push(",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "curly-depth-flat",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "if (text[j] === OPEN_CURLY) depth++;",
+      "new": "if (text[j] === OPEN_CURLY) depth += 0;",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 45
+    },
+    {
+      "id": "unverified-picks-longest",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "verified ?? candidates[candidates.length - 1]!",
+      "new": "verified ?? candidates[0]!",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 45
+    },
+    {
+      "id": "empty-quote-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "else if (normaliseForQuote(span.inner).length === 0) findings.push({ blockId: block.id, kind: 'empty-quote', quote: clip(span.inner) });",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 45
+    },
+    {
+      "id": "unterminated-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "if (!span.terminated) findings.push({ blockId: block.id, kind: 'unterminated-quote', quote: clip(span.inner) });\n    else if",
+      "new": "if (false) findings.push({ blockId: block.id, kind: 'unterminated-quote', quote: clip(span.inner) });\n    else if",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 45
+    },
+    {
+      "id": "uncited-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "else if (cited.length === 0) findings.push({ blockId: block.id, kind: 'quote-without-cited-source', quote: clip(span.inner) });",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "not-in-source-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "else if (!span.ok) findings.push(",
+      "new": "else if (false) findings.push(",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 23,
+      "totalTests": 45
+    },
+    {
+      "id": "lead-in-curly",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "/^\\s*[\"\u201c]/u",
+      "new": "/^\\s*[\"]/u",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "lead-in-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "if (!/^\\s*[\"\u201c]/u.test(rest)) findings.push({ blockId: block.id, kind: 'lead-in-without-quote', quote: '' });",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 45
+    },
+    {
+      "id": "lead-in-first-only",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "for (let at = block.text.indexOf(leadIn); at !== -1; at = block.text.indexOf(leadIn, at + leadIn.length)) {",
+      "new": "for (let at = block.text.indexOf(leadIn); at !== -1; at = -1) {",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "clip-wider",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "text.slice(0, 200)",
+      "new": "text.slice(0, 500)",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "cited-dedupe-unknown",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": ".filter((text): text is string => text !== undefined)",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "pipeline-always-blocks",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "if (quoteFindings.length === 0) return { ...verdict, reviewerBlocking: verdict.blocking, quoteFindings };",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 33
+    },
+    {
+      "id": "pipeline-blocking-follows-reviewer",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "return { blocking: true, findings: [...prior,",
+      "new": "return { blocking: verdict.blocking, findings: [...prior,",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 33
+    },
+    {
+      "id": "pipeline-drops-reviewer-findings",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "findings: [...prior, ...quoteFindings.map(quoteFindingAsReviewFinding)]",
+      "new": "findings: [...quoteFindings.map(quoteFindingAsReviewFinding)]",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 33
+    },
+    {
+      "id": "pipeline-initial-unchecked",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "let verdict = judge(review);",
+      "new": "let verdict = ports.fidelity(review);",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 33
+    },
+    {
+      "id": "pipeline-repair-unchecked",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "      verdict = judge(review);",
+      "new": "      verdict = ports.fidelity(review);",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 33
+    },
+    {
+      "id": "pipeline-scalar-finding-lost",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "Array.isArray(verdict.findings) ? verdict.findings : [verdict.findings]",
+      "new": "Array.isArray(verdict.findings) ? verdict.findings : []",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 33
+    },
+    {
+      "id": "eval-claim-text-dropped",
+      "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "old": "if (open.claim !== null) open.claim.text += decoded; }",
+      "new": "}",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-evaluation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 33
+    },
+    {
+      "id": "eval-cited-dropped",
+      "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "old": "if (cited !== null) for (const open of stack) if (open.claim !== null) open.claim.citedSourceIds.push(cited[1]!);",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-evaluation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 33
+    },
+    {
+      "id": "eval-cited-label",
+      "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "old": "/^Read source (.+)$/u",
+      "new": "/^(.+)$/u",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-evaluation.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 33
+    },
+    {
+      "id": "eval-uncited-claims-checked",
+      "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "old": "claim.citedSourceIds.length > 0)",
+      "new": "true)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 9
+    },
+    {
+      "id": "eval-outcome-unknown-lost",
+      "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "old": "checkedBlocks.length === 0 ? 'unknown' as const : quotesChecked === 0 ?",
+      "new": "quotesChecked === 0 ?",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 9
+    },
+    {
+      "id": "eval-failures-not-reported",
+      "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "old": "outcome: quoteFailures.length > 0 ? 'failures' as const :",
+      "new": "outcome: false ? 'failures' as const :",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 9
+    },
+    {
+      "id": "fold-backtick-kept",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": ".replace(/`/gu, '')\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "fold-entities-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": ".replace(/&(#[0-9]+|#[xX][0-9a-fA-F]+|[a-zA-Z]+);/gu, decodeEntity)\n",
+      "new": "\n",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 45
+    },
+    {
+      "id": "fold-entity-numeric-hex",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "body[1] === 'x' || body[1] === 'X' ? Number.parseInt(body.slice(2), 16)",
+      "new": "body[1] === 'x' || body[1] === 'X' ? Number.parseInt(body.slice(2), 10)",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "fold-escape-kept",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": ".replace(/\\\\([!-/:-@[-`{-~])/gu, '$1')\n",
+      "new": "\n",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "fold-apostrophe-kept",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": ".replace(/[\\u2018\\u2019]/gu, \"'\")",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 45
+    },
+    {
+      "id": "fold-curly-double-kept",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": ".replace(/[\\u201c\\u201d]/gu, '\"')",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "fold-trailing-close-kept",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": ".replace(TRAILING_CLOSE, '')",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "boundary-start-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "if (startsWord && at > 0 && WORD.test(source[at - 1]!)) continue;",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 45
+    },
+    {
+      "id": "boundary-end-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "if (endsWord && after !== undefined && WORD.test(after)) continue;",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 45
+    },
+    {
+      "id": "boundary-letters-only",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "const WORD = /[\\p{L}\\p{N}]/u;",
+      "new": "const WORD = /[\\p{L}]/u;",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "whole-blob-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "for (const piece of ordered) out.set(piece.sourceId, whole);",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 45
+    },
+    {
+      "id": "whole-blob-unordered",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "a.segment!.index - b.segment!.index",
+      "new": "b.segment!.index - a.segment!.index",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 45
+    },
+    {
+      "id": "whole-blob-key-path",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "source.path, source.objectId, source.segment.count",
+      "new": "source.objectId, source.segment.count",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "inspect-count-zero",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "return { quotes: spans.length, findings };",
+      "new": "return { quotes: 0, findings };",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "repair-text-reworded",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred.",
+      "new": "Quote only text the cited sources contain, or state the point in your own words without quotation marks.",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "pipeline-quote-stops-run",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "if (verdict.reviewerBlocking) stop('repair-exhausted');",
+      "new": "stop('repair-exhausted');",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 33
+    },
+    {
+      "id": "pipeline-reviewer-exhaust-lost",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "if (verdict.reviewerBlocking) stop('repair-exhausted');",
+      "new": "if (false) stop('repair-exhausted');",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 33
+    },
+    {
+      "id": "pipeline-quote-findings-dropped",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "quoteFindings: verdict.quoteFindings, receipts",
+      "new": "quoteFindings: [], receipts",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 33
+    },
+    {
+      "id": "eval-count-lost",
+      "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "old": "quotesChecked === 0 ? 'no-quotes' as const : 'all-verbatim' as const",
+      "new": "'all-verbatim' as const",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 9
+    },
+    {
+      "id": "eval-whole-blob-dropped",
+      "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "old": "const sourceText = sourceTextById(sources);",
+      "new": "const sourceText = new Map(sources.filter(s => s.spans.length === 1).map(s => [s.sourceId, s.spans[0]!.text] as const));",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 9
+    },
+    {
+      "id": "render-flag-ignored",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "support.get(blockId) === 'supported' && !quoteFlags.has(blockId)",
+      "new": "support.get(blockId) === 'supported'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 9
+    },
+    {
+      "id": "render-recorded-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "input.result.status === 'awaiting-rendered-review' && Array.isArray(input.result.quoteFindings) ? input.result.quoteFindings : []",
+      "new": "[]",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 9
+    },
+    {
+      "id": "render-recompute-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": ", ...checkDraftQuotes(draft, sourceTextById(input.sources))]",
+      "new": "]",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 9
+    },
+    {
+      "id": "render-note-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "${marking(label(p.id))}${quoteNote(p.id)} ${refs",
+      "new": "${marking(label(p.id))} ${refs",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 9
+    },
+    {
+      "id": "lead-span-to-first-quote",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "const last = text.lastIndexOf('\"', limit - 1);",
+      "new": "const last = text.indexOf('\"', start + 1);",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "lead-span-ignores-next-lead-in",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "const limit = next === -1 ? text.length : next;",
+      "new": "const limit = text.length;",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 45
+    },
+    {
+      "id": "lead-span-unterminated-ok",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "if (last <= start) {",
+      "new": "if (last < start) {",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "lead-span-unverified-ok",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "out.push({ inner, ok: verifies(inner), terminated: true, end: last });",
+      "new": "out.push({ inner, ok: true, terminated: true, end: last });",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 12,
+      "totalTests": 45
+    },
+    {
+      "id": "lead-in-skip-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "      i += leadIn.length - 1;\n      continue;\n",
+      "new": "      i += 0;\n",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 45,
+      "note": "Equivalent: the skipped text is the lead-in itself, which contains no quotation mark, so scanning it character by character in the generic loop finds nothing to open a span."
+    },
+    {
+      "id": "ellipsis-split-back",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "return wanted.length > 0 && findPiece(source, wanted, 0) !== -1;",
+      "new": "return wanted.length > 0 && wanted.split('...').every(piece => piece.trim().length === 0 || findPiece(source, piece.trim(), 0) !== -1);",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "profile-ignored",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "promptForStage(name, promptProfile)",
+      "new": "promptForStage(name)",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 33
+    },
+    {
+      "id": "profile-default-dossier",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "frozen.promptProfile ?? 'manifesto'",
+      "new": "frozen.promptProfile ?? 'dossier'",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 33
+    },
+    {
+      "id": "profile-unknown-accepted",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "if (request.promptProfile !== undefined && request.promptProfile !== 'manifesto' && request.promptProfile !== 'dossier') stop('invalid-request');",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 33
+    },
+    {
+      "id": "receipt-profile-dropped",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "promptVersion: prompt.version, promptProfile, promptDigest });\n      artifacts.push",
+      "new": "promptVersion: prompt.version, promptProfile: 'manifesto', promptDigest });\n      artifacts.push",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 33
+    },
+    {
+      "id": "receipt-digest-wrong",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "createHash('sha256').update(prompt.system).digest('hex')",
+      "new": "createHash('sha256').update(prompt.version).digest('hex')",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 33
+    },
+    {
+      "id": "trigger-profile-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": ", promptProfile: 'dossier' as const }",
+      "new": "}",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 27
+    },
+    {
+      "id": "emphasis-intraword-stripped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "(?<![\\p{L}\\p{N}])(\\*\\*",
+      "new": "(\\*\\*",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "emphasis-trailing-edge-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "\\1(?![\\p{L}\\p{N}])/gu",
+      "new": "\\1/gu",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "emphasis-single-pass",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": ".replace(EMPHASIS, '$2').replace(EMPHASIS, '$2')",
+      "new": ".replace(EMPHASIS, '$2')",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "emphasis-multiline",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "([^\\n]*?[^\\s])\\1",
+      "new": "([\\s\\S]*?[^\\s])\\1",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "elided-kind-lost",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "ELLIPSIS.test(span.inner) ? 'elided-quote' : 'quote-not-in-cited-sources'",
+      "new": "'quote-not-in-cited-sources'",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "elided-always",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "ELLIPSIS.test(span.inner) ? 'elided-quote' : 'quote-not-in-cited-sources'",
+      "new": "'elided-quote'",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 14,
+      "totalTests": 45
+    },
+    {
+      "id": "elided-unicode-lost",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "const ELLIPSIS = /\\.{3}|\\u2026/u;",
+      "new": "const ELLIPSIS = /\\.{3}/u;",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "elided-dots-lost",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "const ELLIPSIS = /\\.{3}|\\u2026/u;",
+      "new": "const ELLIPSIS = /\\u2026/u;",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "elided-message-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "    'elided-quote': 'elides text with an ellipsis, which is not allowed (the ellipsis is not in the source at that spot)',\n",
+      "new": "    'elided-quote': 'is not found',\n",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "pipeline-repair-profile-manifesto",
+      "file": "packages/polaris-generation-core/src/pipeline.ts",
+      "old": "promptForStage(name, promptProfile)",
+      "new": "promptForStage(name, name === 'repair' ? 'manifesto' : promptProfile)",
+      "tests": [
+        "packages/polaris-generation-core/src/pipeline.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 33
+    },
+    {
+      "id": "ellipsis-char-not-folded",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "    .replace(/\\u2026/gu, '...')\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    },
+    {
+      "id": "repair-finding-one-quotation-dropped",
+      "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "old": "Give one quotation per lead-in, and quote it",
+      "new": "Quote it",
+      "tests": [
+        "packages/polaris-generation-core/src/quote-fidelity.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 45
+    }
+  ],
+  "notes": [
+    "scripts/polaris_prompt_mutants.py lost the mutants for the deleted quotations.ts and dossier-validation.ts and had its docstring corrected in this change, so its sha256 no longer equals the runner digest recorded in docs/evidence/polaris-prompt-mutants-2026-10-04-rev2.json; that record is left unedited and still describes the bytes it ran against.",
+    "This record supersedes the 87-mutant record taken at ade91260 (85 killed, 2 equivalent), which is removed; it adds pipeline-repair-profile-manifesto, ellipsis-char-not-folded and repair-finding-one-quotation-dropped (all killed)."
+  ]
+}
