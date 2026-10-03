@@ -13,7 +13,7 @@ const source = (repositoryId: string, revision: string, id: string, excluded = f
   const base = { repositoryId, revision, path: `${id}.md`, objectId: gitBlobObjectId(body) };
   const end = Buffer.byteLength(body);
   return excluded
-    ? { ...base, sourceId: id, evaluationId: 'evaluation:fixture', classificationBasis: 'path-only', exclusion: { excluded: true, reason: 'secret' }, spans: [] }
+    ? { ...base, sourceId: `s-${Buffer.from(id).toString('hex').padEnd(24, '0').slice(0, 24)}`, evaluationId: 'evaluation:fixture', classificationBasis: 'path-only', exclusion: { excluded: true, reason: 'secret-detector-match' }, spans: [] }
     : { ...base, sourceId: id, evaluationId: 'evaluation:fixture', classificationBasis: 'body', exclusion: { excluded: false }, body, spans: [{ anchorId: generationAnchorId(base, 0, end), start: 0, end, text: body }] };
 };
 
