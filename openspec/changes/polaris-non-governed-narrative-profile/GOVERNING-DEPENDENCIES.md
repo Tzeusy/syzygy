@@ -21,7 +21,7 @@ SEC-2, VIS-1, VIS-2, VIS-3, VIS-4
 
 ## contracts
 
-RFC1-14, RFC7-13, RFC7-14, RFC7-15, RFC7-17, RFC7-18, RFC7-19, RFC7-2, RFC7-20, RFC7-33, RFC7-6
+RFC1-14, RFC7-10, RFC7-13, RFC7-14, RFC7-15, RFC7-17, RFC7-18, RFC7-19, RFC7-2, RFC7-20, RFC7-33, RFC7-6
 
 ## policies
 
@@ -37,4 +37,4 @@ None declared in the requirement warrants.
 
 ## parent_requirements
 
-REQ-polaris-generation-001, REQ-polaris-generation-002, REQ-polaris-generation-004, REQ-polaris-generation-020, REQ-polaris-generation-025, REQ-polaris-generation-030
+REQ-polaris-generation-001, REQ-polaris-generation-002, REQ-polaris-generation-004, REQ-polaris-generation-019, REQ-polaris-generation-020, REQ-polaris-generation-025, REQ-polaris-generation-030

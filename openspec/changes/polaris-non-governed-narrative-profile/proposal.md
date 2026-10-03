@@ -31,8 +31,8 @@ needs a defined reading, not a silent reinterpretation by the generator.
   repository, (b) how deep-dive bands report absence, and (c) what the leaf
   altitude and the exact-source terminus are when no specification exists.
 - **Modified:** no requirement's bytes. For a non-governed subject the profile
-  displaces three readings of requirement 004, so 004's effective meaning
-  changes for that class of subject; requirements 001 to 031 keep their bytes,
+  displaces the text of requirement 004 that the requirement lists (and the
+  delta quotes), so 004's effective meaning changes for that class of subject; requirements 001 to 031 keep their bytes,
   meaning and scenarios for governed projects.
 - **Not decided here:** the altitude order for a dossier, the reading of
   "advantages", and the reader-facing page budget. Those are owner rulings

@@ -25,11 +25,13 @@ this replaces that defined outcome with a fuller one.
   it, a reference entry, a manifest). Code alone only yields a labelled draft
   or Unknown.
 - **Deep dives.** Argument and reference material appear. No reality band
-  appears, because Syzygy has no evidence drawer for that project. One line
-  says what is absent and why, never that nothing exists.
+  appears, because Syzygy has no evidence drawer for that project. A line for
+  each band not rendered (at most two) says what is absent and why, never
+  that nothing exists.
 - **Exact source.** The reader reaches the maintainers' own words, quoted
-  byte for byte with repository, revision, path and span, as an anchor one
-  step from the claim. The leaf altitude is one honest line saying no
+  byte for byte, as an anchor one step from the claim (an object identifier,
+  a byte range and a revision, with repository and path shown beside it as
+  labels). The leaf altitude is one honest line saying no
   specification exists; the maintainers' text is never presented as one.
 
 ## Questions for the owner
@@ -50,11 +52,11 @@ that making the span a substitute for the leaf without an amendment was not
 lawful; the reviewer's reading is the one adopted here.
 
 **O2. Does the reality-band omission stand?** The profile renders no reality
-band for a non-governed subject. *Recommended:* yes. *Alternative:* require
-the reality band to appear as a single Unknown line only, which is what the
-package already does for the absent bands; no further option is needed
-unless you want a populated reality band, which would need an evidence source
-Syzygy does not have.
+band for a non-governed subject. *Recommended:* yes. *Alternative:* let the profile
+populate a reality-class band from non-kernel sources, labelled Inferred. That
+contradicts RFC7-18 (every reality-band fact comes from the kernel's single
+evidence drawer), so it needs an RFC7-18 amendment first and an evidence
+source Syzygy does not have.
 
 **O3. Sign-off form.** The version-tagged sign-off of
 `decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md` names the
@@ -100,6 +102,32 @@ form fixed outside the producer), because for a project with no Syzygy
 declarations those are the only artifacts in which its maintainers assert what
 exists [Inferred]. *Alternative:* rule that RFC1-14 needs a specification, and
 amend RFC1-14 to widen it first; then (a) waits on that act.
+
+**O7. Is a source object of an observed repository an "evidence artifact" for
+RFC7-10?** RFC7-10 allows five anchor target classes and says anchors embed
+"durable identifiers, never labels, paths, or coordinates"; adopted
+REQ-polaris-generation-019 refuses "a label/path in place of a durable target
+and fragment". (c) uses the last class, an evidence artifact identifier with
+integrity digest: the source's content-addressed object identifier, a byte-range
+fragment and the admission revision as target state, with repository and path
+beside it as labels. The generator's own anchor string embeds the path and so
+is not that anchor [Observed]. *Recommended:* yes, bounded as drafted, because a
+content-addressed object identifier is an integrity digest and no other class
+fits a non-governed source [Inferred]. *Alternative:* rule the class narrow, so
+that observed-repository sources need a new target class; RFC7-10 is amended
+first and (c) waits on that act.
+
+**Related to O6, not a separate question.** The scenario "Partly governed
+subject" makes an outside repository's `openspec/**` text the verbatim leaf,
+which RFC7-14 calls "the one place Polaris tells a reader the text before them
+*is* operative". That rests on the same reading of RFC1-14 as O6 (a project's
+own spec counts): rule O6 the other way and the scenario changes with it.
+
+**Implementation note, not a question.** The selection predicate needs the
+admitted project input to state whether an evidence drawer exists, and the
+frozen profile is a new run-control record. Whether the interchange records of
+REQ-polaris-generation-019 can carry them is Unknown; if not, a schema change
+is needed that no act authorizes here (as for O5). `tasks.md` lists it.
 
 ### Rulings this package deliberately leaves open
 

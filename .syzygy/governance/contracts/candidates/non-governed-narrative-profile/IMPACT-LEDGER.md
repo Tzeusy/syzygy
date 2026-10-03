@@ -22,6 +22,7 @@ every count below is identical. Python `re`, never `grep` (verification rule
 | D: the phrases | `declared capabilit`, `verbatim (?:specification )?leaf` or `honest absence line`, case-insensitive | 92 |
 | E: the prose short form | `\b[Rr]equirements? (?:\d{3}(?:,\| and\|,? and\| to)\s*)*004\b`, case-sensitive | 7 |
 | F: the title form | `Understandable reading depths`, case-sensitive | 15 |
+| G: the hyphen and dash range | `(?:REQ-polaris-generation-\|[Rr]equirements? )(\d{3})\s*(?:\.\.\.?\|–\|—\|-\| to \| through )\s*(?:REQ-polaris-generation-)?(\d{3})\b`, case-sensitive, keeping only matches whose first number is below 4 and whose second is at least 4 | 9 |
 
 Citers of requirement 004 by identifier or continuation are A together with B:
 A and B overlap in 6 files, B has 5 files not in A, so A or B is 52 files
@@ -32,7 +33,19 @@ are not in A (the understanding-specification adoption act,
 `docs/design/POLARIS-M7-GENERATION-LOOP-FUNNEL.md` and the two M7 funnel
 raws). The short-form and title-form sweeps (E, F) add 8 files outside A or B
 (E: 4, F: 4; no file is in both lists outside A or B), for 60 files
-citing 004 in any of the four forms. The eight are
+citing 004 in any of the four forms. Sweep G, the range form, hits 9 files, 5
+of them already in A, B, E or F and 4 outside. Three of the four range over
+this capability's requirement numbers ("Requirements 001-012, 014-019 and
+025", at `EXECUTION-PHASES.md` line 18 and in the two M6 funnel raws,
+`R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-RAW.md` line 128 and
+`R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-2-RAW.md` line 122); the fourth ("requirements
+001–006", line 830 of the Capability 1 specification) numbers that
+specification's own requirements and is not a citer of 004. The citer
+population over all five forms is therefore 63 files (60 + 3), 64 hits before
+reading the fourth; the 3 are one OpenSpec file and two retained raws, all
+bound or raw, so the disposition below does not change. Round 2 of the review
+found this form missed (finding 9); this ledger's own script re-derived the
+counts below at `9a6e8e31` (1,988 paths, 4 skipped, 1,984 searched). The eight are
 `docs/reviews/R-POLARIS-GENERATOR-FRESH-PRODUCT-2026-09-12-RAW.md`,
 `docs/reviews/R-POLARIS-GENERATOR-PRODUCT-READINESS-2026-09-12-RAW.md`,
 `openspec/README.md`,
@@ -47,7 +60,9 @@ files, equal to sweep A. For D, `git grep -l -F -i "declared capabilit"` alone
 returns 73, a different predicate that is a subset of D's three alternations,
 so it confirms D's first alternative only. C and D carry no second method and
 are reported as sweeps, not as a proof of completeness. A citation of a
-requirement by a name other than these six forms is not covered [Unknown].
+requirement by a name other than these seven forms is not covered [Unknown];
+a range such as "001 to 012" written with other separators than G's is not
+covered either.
 
 ## The sets (CC-IMPACT-3)
 
@@ -66,7 +81,7 @@ is a path ending `-RAW.md` or containing `/reviews/`; then `docs/evidence/`;
 then `.syzygy/governance/decisions/`; then the rest of `.syzygy/`; then
 `openspec/`; then `apps/`, `packages/` and `scripts/`; then the rest. A raw
 review under `decisions/` is therefore a raw. A file counts once per sweep.
-Totals per sweep are 47, 11, 70, 92, 7 and 15, summing the column.
+Totals per sweep are 47, 11, 70, 92, 7 and 15, summing the column. Sweep G (9) is not tabulated by class: its three citers outside A to F are one OpenSpec file and two retained raws.
 
 ## Disposition by class
 

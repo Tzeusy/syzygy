@@ -1,8 +1,8 @@
 # Amendment acceptance and verification obligations
 
-Candidate checklist; unchecked obligations are unperformed. This is not a
-dispatch plan, an adoption record or permission to implement the proposed
-behavior.
+Candidate — binds nothing. Candidate checklist; unchecked obligations are
+unperformed. This is not a dispatch plan, an adoption record or permission to
+implement the proposed behavior.
 
 ## Specification acceptance
 
@@ -20,14 +20,22 @@ behavior.
 ## Required implementation and proof after applicable authorization
 
 - [ ] Run profile: a frozen declaration-form list with path classes and
-      generated-file markers, fixed outside the producer before discovery.
+      generated-file markers, fixed outside the producer before discovery; the
+      project input states whether an evidence drawer exists, and a run that
+      lacks the statement does not select the profile. Decide first whether
+      the REQ-polaris-generation-019 records carry the profile and the
+      statement or need a schema change that its own act must authorize.
 - [ ] Catalog: declared, unadopted-draft and Unknown entries kept distinct,
-      each declared entry carrying path, revision and span.
+      each declared entry carrying its RFC7-10 anchor, with repository and path
+      shown beside it as labels.
 - [ ] Deep-dive composition: argument band, contract-class band from
-      admitted reference spans, one absence line, machine-readable band and
-      class declarations.
-- [ ] Anchor renderer and leaf-altitude line: byte-exact span with
-      repository, revision, path, span and digest, never labelled a
+      admitted reference spans, one collapsed absence block per band not
+      rendered (at most two), each declaring its band and authority class
+      machine-readably.
+- [ ] Anchor renderer and leaf-altitude line: byte-exact span with an
+      RFC7-10 anchor (object identifier and algorithm, byte range, admission
+      revision; no path or label inside it) projected from the generator's
+      source fields, not its `generationAnchorId` string, never labelled a
       specification or leaf; one honest `missing-declaration` line at the
       leaf altitude.
 - [ ] Evaluation cases under requirement 014: a non-governed snapshot with
