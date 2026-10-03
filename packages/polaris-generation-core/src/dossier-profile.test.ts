@@ -132,6 +132,12 @@ describe('REQ-031 clarification', () => {
     expect(thrown.unaccountedQuestions).toBe(0);
   });
 
+  it('rejects a reply whose permittedDraftUse is not a boolean', async () => {
+    const record = await clarify({ sources: mechanicsOnly, mode: 'interactive', ask: async q => ({ ...answer(q.id), permittedDraftUse: 'yes' as unknown as boolean }) });
+    expect(record.answers).toEqual([]);
+    expect(record.aborted).toEqual({ id: 'purpose', reason: 'invalid-owner-answer' });
+  });
+
   it('refuses interactive mode without a port, a mismatched id and a bad budget', async () => {
     await expect(clarify({ sources: mechanicsOnly, mode: 'interactive' })).rejects.toThrow('owner-port');
     const mismatch = await clarify({ sources: mechanicsOnly, mode: 'interactive', ask: async () => answer('scope') });
