@@ -21,10 +21,14 @@ export {
   type SourcePopulationFailure,
 } from './admitted-input.js';
 export { promptForStage, type GenerationStage } from './prompts.js';
+export { dossierPromptForStage, DOSSIER_STAGE_ILLUSTRATIONS, DOSSIER_ILLUSTRATION_SOURCES, ILLUSTRATION_HEADING } from './dossier-prompts.js';
 export {
-  dossierPromptForStage, discoveryPrompt, DOSSIER_STAGE_ILLUSTRATIONS, DOSSIER_ILLUSTRATION_SOURCES,
-  DISCOVERY_MAP_ILLUSTRATION, DISCOVERY_REDUCE_ILLUSTRATION, DISCOVERY_MAP_RESPONSE_SCHEMA, DISCOVERY_REDUCE_RESPONSE_SCHEMA,
-} from './dossier-prompts.js';
+  discoveryMapEnvelope, discoveryReduceEnvelope, discoveryMapReplySchema, discoveryReduceReplySchema, parseDiscoveryMapReply, parseDiscoveryReduceReply,
+  DiscoveryProviderError, DISCOVERY_MAP_SYSTEM, DISCOVERY_REDUCE_SYSTEM, DISCOVERY_MAP_PROMPT_VERSION, DISCOVERY_REDUCE_PROMPT_VERSION,
+  DISCOVERY_MAP_REPLY_SCHEMA_VERSION, DISCOVERY_REDUCE_REPLY_SCHEMA_VERSION, DISCOVERY_MAP_ILLUSTRATION, DISCOVERY_REDUCE_ILLUSTRATION,
+  DISCOVERY_CLAIM_MAX_CHARS, DISCOVERY_RELEVANCE_MIN, DISCOVERY_RELEVANCE_MAX, DISCOVERY_JSON_LIMITS,
+  type DiscoveryMapRequest, type DiscoveryReduceRequest, type DiscoveryReplyClaim, type DiscoveryEnvelope, type DiscoveryProviderFailure,
+} from './discovery-provider.js';
 export { runGenerationPipeline, type PipelineRequest, type PipelinePorts, type PipelineResult, type GenerationBudget, type AdmissionDecision, type DispatchPermit, type AttemptInput, type AttemptOutcome, type InvalidOutputReason, type ProviderReply, type StageReceipt } from './pipeline.js';
 export { SOURCE_TEXT_MAX_LENGTH, stageSchema, validateStage, validateDraftRecord, validateRequestedAssets, reviewVerdict, diagramToMermaid, DIAGRAM_KINDS } from './provider-draft.js';
 export type { ProviderDraft, ProviderParagraph, ProviderBlock, ProviderDiagram, ProviderDiagramNode, ProviderDiagramEdge, DiagramKind, EpistemicMarking, RequestedAsset } from './provider-draft.js';

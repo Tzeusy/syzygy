@@ -1,9 +1,6 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import {
-  DISCOVERY_MAP_ILLUSTRATION, DISCOVERY_MAP_RESPONSE_SCHEMA, DISCOVERY_REDUCE_ILLUSTRATION, DISCOVERY_REDUCE_RESPONSE_SCHEMA,
-  DOSSIER_ILLUSTRATION_SOURCES, DOSSIER_STAGE_ILLUSTRATIONS, discoveryPrompt, dossierPromptForStage,
-} from './dossier-prompts.js';
+import { DOSSIER_ILLUSTRATION_SOURCES, DOSSIER_STAGE_ILLUSTRATIONS, dossierPromptForStage } from './dossier-prompts.js';
 import { promptForStage, type GenerationStage } from './prompts.js';
 import { validateStage, type ProviderDraft, type ProviderInventory } from './provider-draft.js';
 
@@ -18,10 +15,6 @@ const recipes: [GenerationStage, string, string][] = [
   ['edit', 'polaris-edit-dossier-v1', '241cecfd0a88db18eeb0da68a63ca78d0b3b5ba3a006c6bddbf99853f3cba57b'],
   ['fidelity', 'polaris-fidelity-dossier-v1', '3b2d01b54e1d22256ca4a49e2ed932cc4878be8eb9c406a908c4660ade2e2ec9'],
   ['repair', 'polaris-repair-dossier-v1', '53d35431424e19925d4be9d93624753f53545d83ec3de63369ad3458e6e3a67c'],
-];
-const discoveryRecipes: ['map' | 'reduce', string, string][] = [
-  ['map', 'polaris-discovery-map-v1', 'b522e91ae2c99e659d1f9e39114698f5b0c2ae98e2fdffd473cb78638620dcef'],
-  ['reduce', 'polaris-discovery-reduce-v1', '2064163878b2548c8c59047d45af0058f8159b9e055f8b5130b4ecbe52c2f330'],
 ];
 
 // The dossier profile's requested assets (dossier-profile.ts on the profile
@@ -138,56 +131,5 @@ describe('dossier illustrations obey their own rules', () => {
     expect(draft.unresolved.length).toBe(1);
     const review = illustration('fidelity') as { inventoryCoverage: { disposition: string }[] };
     expect(review.inventoryCoverage.filter(row => row.disposition === 'unresolved').length).toBe(1);
-  });
-});
-
-describe('discovery map and reduce prompts', () => {
-  it.each(discoveryRecipes)('pins the %s prompt bytes', (step, version, digest) => {
-    const prompt = discoveryPrompt(step);
-    expect(prompt.version).toBe(version);
-    expect(sha256(prompt.system)).toBe(digest);
-    expect(Buffer.byteLength(prompt.system, 'utf8')).toBeLessThan(4096);
-  });
-
-  it.each(['unknown', 'constructor'])('refuses unsupported step %s', (step) => {
-    expect(() => discoveryPrompt(step as 'map')).toThrow('unknown-discovery-step');
-  });
-
-  it('ends each prompt with its illustration', () => {
-    expect(JSON.parse(discoveryPrompt('map').system.split('\n').at(-1)!)).toEqual(DISCOVERY_MAP_ILLUSTRATION);
-    expect(JSON.parse(discoveryPrompt('reduce').system.split('\n').at(-1)!)).toEqual(DISCOVERY_REDUCE_ILLUSTRATION);
-  });
-
-  // The discovery module's acceptance rules (discovery.ts, profile branch):
-  // a claim needs a supplied blobId, a non-empty claim and relevance in 0..10;
-  // a ranked id is supplied and used once. Restated here as literals.
-  const known = new Set(['blob-readme', 'blob-server', 'blob-evict']);
-  it('illustrates a map reply every claim of which discovery would accept', () => {
-    expect(Object.keys(DISCOVERY_MAP_ILLUSTRATION)).toEqual(['claims']);
-    for (const claim of DISCOVERY_MAP_ILLUSTRATION.claims) {
-      expect(Object.keys(claim).sort()).toEqual(['blobId', 'claim', 'relevance']);
-      expect(known.has(claim.blobId)).toBe(true);
-      expect(claim.claim.length).toBeGreaterThan(0);
-      expect(claim.claim.length).toBeLessThanOrEqual(400);
-      expect(claim.relevance >= 0 && claim.relevance <= 10).toBe(true);
-    }
-    expect(new Set(DISCOVERY_MAP_ILLUSTRATION.claims.map(claim => claim.blobId)).size).toBe(DISCOVERY_MAP_ILLUSTRATION.claims.length);
-  });
-
-  it('illustrates a reduce reply discovery would accept whole', () => {
-    expect(Object.keys(DISCOVERY_REDUCE_ILLUSTRATION)).toEqual(['ranked']);
-    expect(DISCOVERY_REDUCE_ILLUSTRATION.ranked.every(id => known.has(id))).toBe(true);
-    expect(new Set(DISCOVERY_REDUCE_ILLUSTRATION.ranked).size).toBe(DISCOVERY_REDUCE_ILLUSTRATION.ranked.length);
-  });
-
-  it('publishes closed reply schemas matching those rules', () => {
-    expect(DISCOVERY_MAP_RESPONSE_SCHEMA.additionalProperties).toBe(false);
-    const claim = DISCOVERY_MAP_RESPONSE_SCHEMA.properties.claims.items;
-    expect(claim.additionalProperties).toBe(false);
-    expect([...claim.required].sort()).toEqual(['blobId', 'claim', 'relevance']);
-    expect([claim.properties.relevance.minimum, claim.properties.relevance.maximum]).toEqual([0, 10]);
-    expect(claim.properties.claim.minLength).toBe(1);
-    expect(DISCOVERY_REDUCE_RESPONSE_SCHEMA.additionalProperties).toBe(false);
-    expect(DISCOVERY_REDUCE_RESPONSE_SCHEMA.properties.ranked.uniqueItems).toBe(true);
   });
 });
