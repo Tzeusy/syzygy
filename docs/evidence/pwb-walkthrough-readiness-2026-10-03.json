@@ -1,0 +1,142 @@
+{
+  "kind": "PWB owner-walkthrough invitation readiness (agent-side, pre-invitation)",
+  "task": "syzygy-1z3.32 (roadmap A10; the pre-invitation gate of syzygy-1z3.22)",
+  "capturedOn": "2026-10-03",
+  "notAnOwnerAct": "Mechanical readiness only. No invitation, execution record, PWB-REQ-021 answer, met/not-met judgment or act is written or inferred here; those are the owner's.",
+  "authority": [
+    "decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md (task 4.6 preparation) and its 2026-09-05 continuation",
+    "decisions/OWNER-DIRECTION-2026-10-03-OVERNIGHT-BEADS-LOOP.md"
+  ],
+  "pins": {
+    "syzygyHead": "9d4b027f9aaf56ad4e1b7420d9312704f9fd04c1",
+    "butlersRevision": "32f38feb51d86e33bfec00b78777cce5ec280198",
+    "evaluationIdentity": "pwb-eval-a47bdef56a371f21ea5e3535",
+    "surfaceVersion": "polaris@d0facef97bd3",
+    "ingress": {
+      "direct": "private loopback daemon, GET /polaris with the daemon's own Host (127.0.0.1:<ephemeral port>)",
+      "tailnet": "the same daemon, GET /polaris with Host: tzeusy.parrot-hen.ts.net (the mount form tailscale serve forwards)"
+    }
+  },
+  "preflight": {
+    "ready": true,
+    "findings": [],
+    "observed": {
+      "accountStatementsBacked": 6,
+      "populations": {
+        "principle": {
+          "modeled": 7,
+          "denominator": 7,
+          "rows": 7
+        },
+        "success-criterion": {
+          "modeled": 13,
+          "denominator": 13,
+          "rows": 13
+        },
+        "catalog-entry": {
+          "modeled": 64,
+          "denominator": 64,
+          "rows": 64
+        },
+        "topology-component": {
+          "modeled": 57,
+          "denominator": 57,
+          "rows": 57
+        }
+      },
+      "exactRequirement": {
+        "identity": "repository:butlers-configured-poc@32f38feb51d86e33bfec00b78777cce5ec280198:openspec/specs/switchboard-identity/spec.md#c034dd87a3ab65d62c72f1bdf0a4d5fb3edf6c2a",
+        "requirements": 6
+      },
+      "unknownsVisible": 11,
+      "unknownsMachine": 11,
+      "sourceRoutesLinked": 195,
+      "fragmentLinks": 714,
+      "claimTuples": 699
+    },
+    "from": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-10-03-walkthrough-ready.json"
+  },
+  "readinessChecks": {
+    "sourceBackedAnswers": {
+      "required": 6,
+      "observed": 6
+    },
+    "populationsNonEmpty": {
+      "principle": 7,
+      "success-criterion": 13,
+      "catalog-entry": 64,
+      "topology-component": 57
+    },
+    "reachableVerbatimRequirement": {
+      "identity": "repository:butlers-configured-poc@32f38feb51d86e33bfec00b78777cce5ec280198:openspec/specs/switchboard-identity/spec.md#c034dd87a3ab65d62c72f1bdf0a4d5fb3edf6c2a",
+      "requirementsOnRoute": 6
+    },
+    "visibleUnknownMatchesMachine": {
+      "visible": 11,
+      "machine": 11,
+      "equal": true
+    }
+  },
+  "freshCheckoutDemo": {
+    "record": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-10-03-walkthrough-ready.json",
+    "sha256": "9bbecd5a2805c5b4f36c708674e16b409a4a1c29f25891e529c8d0ac53ac2774",
+    "exit": 0,
+    "healthy": true,
+    "failedInvariants": [],
+    "invariants": 19,
+    "tests": {
+      "seconds": 163.9,
+      "exitCode": 0,
+      "junit": {
+        "name": "vitest tests",
+        "tests": "2224",
+        "failures": "0",
+        "errors": "0",
+        "time": "565.593088417"
+      },
+      "junitSha256": "9265c23174561109c02dfef09454ef3cfcd15efca9e0aea28e81cddfebdbe97b"
+    }
+  },
+  "keyboardSweep": {
+    "record": "docs/evidence/polaris-keyboard-sweep-2026-10-03-walkthrough-ready.json",
+    "sha256": "5c11d01a78eb44c13e0bc3226383aff1cc3dcb01c2b42bffc0d91187891892fd",
+    "exit": 0,
+    "mounts": [
+      {
+        "mount": "direct",
+        "bytes": 1485395,
+        "sha256": "5519c05a45f3c6db761c1a96a1f463c0c105dbb2334df519e74cbdf5537e6e17",
+        "population": 1193,
+        "reached": 1193,
+        "activations": 714,
+        "violations": 0
+      },
+      {
+        "mount": "tailnet",
+        "bytes": 1491515,
+        "sha256": "2e768d774cdb59a36e5a91e34f2c1579c029689f7f29323ab03f6e3f82987b18",
+        "population": 1193,
+        "reached": 1193,
+        "activations": 714,
+        "violations": 0
+      }
+    ]
+  },
+  "polarisBytes": {
+    "measuredOn": "committed clean tree at the pinned head (git status empty), private daemon --port 0 with a scratch --state-dir; port 7478 not used",
+    "direct": 1485395,
+    "tailnet": 1491515,
+    "workingPageTarget": 1650000,
+    "maxHumanResponseBytes": 2097152,
+    "withinTarget": true
+  },
+  "ownerServing": {
+    "commands": [
+      "git checkout 9d4b027f9aaf56ad4e1b7420d9312704f9fd04c1",
+      "npm ci",
+      "npm run poc -- --repo /home/tze/GitHub/butlers"
+    ],
+    "note": "Serve from the pinned head on a clean tree. If the observed Butlers revision, evaluation identity or surface version printed at startup differs from the pins above, this record no longer describes the page served."
+  },
+  "boundaries": "Butlers read only through the daemon's authority gate; no Butlers write, no egress, no Butlers code run."
+}
