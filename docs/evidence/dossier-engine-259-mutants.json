@@ -1,16 +1,16 @@
 {
   "subject": {
-    "commit": "ff6fd1e8ec256081586c505af0318d5c020bee3e",
-    "branch": "agent/dossier-engine-4",
+    "commit": "2bef56d5f852e64eb44d93f1e51b704d86188fad",
+    "branch": "HEAD",
     "fileSha256": {
-      "packages/polaris-generation-core/src/dossier-profile.ts": "f482ead14927c27adc064e46a0aa550038d5b7f4eb1d2f7ab8f91225203407d2",
+      "packages/polaris-generation-core/src/dossier-profile.ts": "17d978723bca1c8f533e810d26a42f4b978159e12d577bbeb8874dc678c49807",
       "packages/polaris-generation-core/src/pipeline.ts": "9403125dcdb378caa2e0b10a193801577a55a560b24e6beda5105dd51a73035f",
       "packages/polaris-generation-core/src/reader-questions.ts": "ec59bad9104019f373b70d082091c6dcbf6590089f9b79f00a737aebb769d516"
     }
   },
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/polaris-generation-core",
-  "ranAt": "2026-10-03T17:52:38+00:00",
+  "ranAt": "2026-10-03T19:31:15+00:00",
   "mutants": [
     {
       "id": "rq-extra-keys",
@@ -166,7 +166,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "id-mismatch",
@@ -178,7 +178,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "reask-record",
@@ -190,7 +190,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "budget-carry",
@@ -202,7 +202,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "abort-carry",
@@ -214,7 +214,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "unresolved-unanswered",
@@ -226,7 +226,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "unaccounted-measured",
@@ -238,7 +238,7 @@
       ],
       "outcome": "survived",
       "failedTests": 0,
-      "totalTests": 18,
+      "totalTests": 19,
       "note": "equivalent: every open question is answered (answeredIds) or carried (unresolved), so the measured count is structurally 0; the expression is a guard that would report any future leak, not a reachable branch"
     },
     {
@@ -251,7 +251,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "budget-validate",
@@ -263,7 +263,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "scope-count",
@@ -275,7 +275,7 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "purpose-doc",
@@ -286,8 +286,8 @@
         "packages/polaris-generation-core/src/dossier-profile.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 11,
-      "totalTests": 18
+      "failedTests": 12,
+      "totalTests": 19
     },
     {
       "id": "present-blank",
@@ -298,8 +298,8 @@
         "packages/polaris-generation-core/src/dossier-profile.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 5,
-      "totalTests": 18
+      "failedTests": 6,
+      "totalTests": 19
     },
     {
       "id": "present-type",
@@ -311,31 +311,31 @@
       ],
       "outcome": "killed",
       "failedTests": 3,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "unknown-literal",
       "file": "packages/polaris-generation-core/src/dossier-profile.ts",
-      "old": "&& edge(answer).toLowerCase() !== 'unknown'",
+      "old": "&& edge(answer).replace(INVISIBLE_ANYWHERE, '').toLowerCase() !== 'unknown'",
       "new": "",
       "tests": [
         "packages/polaris-generation-core/src/dossier-profile.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 5,
-      "totalTests": 18
+      "failedTests": 6,
+      "totalTests": 19
     },
     {
       "id": "unknown-case",
       "file": "packages/polaris-generation-core/src/dossier-profile.ts",
-      "old": "edge(answer).toLowerCase() !== 'unknown'",
-      "new": "edge(answer) !== 'unknown'",
+      "old": "edge(answer).replace(INVISIBLE_ANYWHERE, '').toLowerCase() !== 'unknown'",
+      "new": "edge(answer).replace(INVISIBLE_ANYWHERE, '') !== 'unknown'",
       "tests": [
         "packages/polaris-generation-core/src/dossier-profile.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 3,
-      "totalTests": 18
+      "failedTests": 4,
+      "totalTests": 19
     },
     {
       "id": "answer-bound",
@@ -347,7 +347,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "answer-bound-edge",
@@ -359,7 +359,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "live-attribution",
@@ -370,8 +370,8 @@
         "packages/polaris-generation-core/src/dossier-profile.test.ts"
       ],
       "outcome": "killed",
-      "failedTests": 3,
-      "totalTests": 18
+      "failedTests": 4,
+      "totalTests": 19
     },
     {
       "id": "live-revision",
@@ -383,7 +383,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "live-bound",
@@ -395,7 +395,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "permitted-type",
@@ -407,7 +407,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "trim-attribution",
@@ -419,7 +419,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "digest-reuse",
@@ -431,7 +431,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "prior-normalise",
@@ -443,7 +443,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "prior-bound",
@@ -455,7 +455,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "prior-attribution",
@@ -467,7 +467,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "prior-revision",
@@ -479,7 +479,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "prior-reuse",
@@ -491,7 +491,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "prior-fresh",
@@ -503,43 +503,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
-    },
-    {
-      "id": "edge-invisible-leading",
-      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
-      "old": "/^[\\p{Cf}\\p{Z}\\s]+|[\\p{Cf}\\p{Z}\\s]+$/gu",
-      "new": "/^[\\p{Z}\\s]+|[\\p{Z}\\s]+$/gu",
-      "tests": [
-        "packages/polaris-generation-core/src/dossier-profile.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 18
-    },
-    {
-      "id": "edge-whitespace",
-      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
-      "old": "/^[\\p{Cf}\\p{Z}\\s]+|[\\p{Cf}\\p{Z}\\s]+$/gu",
-      "new": "/^[\\p{Cf}\\p{Z}]+|[\\p{Cf}\\p{Z}]+$/gu",
-      "tests": [
-        "packages/polaris-generation-core/src/dossier-profile.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 2,
-      "totalTests": 18
-    },
-    {
-      "id": "edge-trailing-only",
-      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
-      "old": "/^[\\p{Cf}\\p{Z}\\s]+|[\\p{Cf}\\p{Z}\\s]+$/gu",
-      "new": "/^[\\p{Cf}\\p{Z}\\s]+/gu",
-      "tests": [
-        "packages/polaris-generation-core/src/dossier-profile.test.ts"
-      ],
-      "outcome": "killed",
-      "failedTests": 4,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "provenance-bound",
@@ -551,7 +515,7 @@
       ],
       "outcome": "killed",
       "failedTests": 2,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "provenance-off-by-one",
@@ -563,7 +527,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "prior-array",
@@ -575,7 +539,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "prior-entry-object",
@@ -587,7 +551,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "prior-disposition",
@@ -599,7 +563,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "prior-duplicate",
@@ -611,7 +575,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "prior-provenance-type",
@@ -623,7 +587,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "prior-id-type",
@@ -635,7 +599,7 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
     },
     {
       "id": "prior-unchecked",
@@ -647,7 +611,115 @@
       ],
       "outcome": "killed",
       "failedTests": 1,
-      "totalTests": 18
+      "totalTests": 19
+    },
+    {
+      "id": "invisible-no-cf",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "[\\p{Cf}\\p{Z}\\s\\p{Default_Ignorable_Code_Point}\\u2800]$/u",
+      "new": "[\\p{Z}\\s\\p{Default_Ignorable_Code_Point}\\u2800]$/u",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 19
+    },
+    {
+      "id": "invisible-no-whitespace",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "[\\p{Cf}\\p{Z}\\s\\p{Default_Ignorable_Code_Point}\\u2800]$/u",
+      "new": "[\\p{Cf}\\p{Z}\\p{Default_Ignorable_Code_Point}\\u2800]$/u",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 19
+    },
+    {
+      "id": "invisible-no-default-ignorable",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "[\\p{Cf}\\p{Z}\\s\\p{Default_Ignorable_Code_Point}\\u2800]$/u",
+      "new": "[\\p{Cf}\\p{Z}\\s\\u2800]$/u",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 19
+    },
+    {
+      "id": "invisible-no-braille",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "[\\p{Cf}\\p{Z}\\s\\p{Default_Ignorable_Code_Point}\\u2800]$/u",
+      "new": "[\\p{Cf}\\p{Z}\\s\\p{Default_Ignorable_Code_Point}]$/u",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 19
+    },
+    {
+      "id": "edge-leading-only",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "  while (end > start && INVISIBLE.test(chars[end - 1]!)) end--;\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 19
+    },
+    {
+      "id": "edge-trailing-only",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "  while (start < end && INVISIBLE.test(chars[start]!)) start++;\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 19
+    },
+    {
+      "id": "unknown-inner-invisible",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "edge(answer).replace(INVISIBLE_ANYWHERE, '')",
+      "new": "edge(answer)",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 19
+    },
+    {
+      "id": "inner-invisible-no-dicp",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "/[\\p{Cf}\\p{Default_Ignorable_Code_Point}]/gu",
+      "new": "/[\\p{Cf}]/gu",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 19
+    },
+    {
+      "id": "edge-quadratic",
+      "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "old": "const edge = (value: string): string => {\n  const chars = [...value];",
+      "new": "const edge = (value: string): string => value.replace(/^[\\p{Cf}\\p{Z}\\s]+|[\\p{Cf}\\p{Z}\\s]+$/gu, '');\nconst edgeLinear = (value: string): string => {\n  const chars = [...value];",
+      "tests": [
+        "packages/polaris-generation-core/src/dossier-profile.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 19
     }
   ]
 }
