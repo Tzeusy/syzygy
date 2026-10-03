@@ -237,7 +237,7 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
       const written = await writeDossierRun(runDir, new Map([recordFile()]));
       return { state: 'generation-stopped', target, revision: pinned.revision, runDir: written, detail: 'wall-clock-exhausted: discovery used the whole run allowance' };
     }
-    const request = buildPipelineRequest({ ...corpus, sources: discovery.sources }, { ...config, budget }, startedAt);
+    const request = { ...buildPipelineRequest({ ...corpus, sources: discovery.sources }, { ...config, budget }, startedAt), promptProfile: 'dossier' as const };
     const result = await runPipeline(request);
     if (result.status === 'stopped') {
       // Render what the completed stages support; a renderer that cannot (no usable artifact) leaves the record alone.
