@@ -1,11 +1,11 @@
 import { rmSync } from 'node:fs';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import type { PocModel, ProjectShape, ProjectShapeClaim } from '@syzygy/three-surface-poc-core';
 
 import { NarrativeRegistry } from './polaris-narrative.js';
 import { renderPolarisPage, renderPolarisPresentation } from './polaris.js';
-import { buildFixtureModel } from './test-model-fixture.js';
+import { SHARED_FIXTURE_TIMEOUT_MS, buildFixtureModel, sharedFixtureModels } from './test-model-fixture.js';
 import {
   ADMITTING_AUTHORITY,
   PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC,
@@ -38,20 +38,26 @@ const PROVENANCE_CLASS: Record<string, string> = {
 type Variant = 'unevaluated' | 'rejected' | 'observed' | 'observed-with-secret' | 'observed-with-baseline';
 const VARIANTS: readonly Variant[] = ['unevaluated', 'rejected', 'observed', 'observed-with-secret', 'observed-with-baseline'];
 
-function modelFor(variant: Variant): PocModel {
+/** A fresh model, for a test that changes it. */
+function modelFor(variant: Variant, cleanupList: string[] = cleanups): PocModel {
   switch (variant) {
     case 'unevaluated':
-      return buildFixtureModel(cleanups);
+      return buildFixtureModel(cleanupList);
     case 'rejected':
-      return buildFixtureModel(cleanups, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
+      return buildFixtureModel(cleanupList, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
     case 'observed':
-      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
+      return buildFixtureModel(cleanupList, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
     case 'observed-with-secret':
-      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET) } });
+      return buildFixtureModel(cleanupList, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET) } });
     case 'observed-with-baseline':
-      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC) } });
+      return buildFixtureModel(cleanupList, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC) } });
   }
 }
+
+/** Each variant built once for the file and frozen, for tests that only read it. */
+const shared = sharedFixtureModels<Variant>((cleanupList) => Object.fromEntries(VARIANTS.map((variant) => [variant, modelFor(variant, cleanupList)])) as Record<Variant, PocModel>);
+beforeAll(shared.prepare, SHARED_FIXTURE_TIMEOUT_MS);
+afterAll(shared.remove);
 
 interface Unit { readonly tag: string; readonly attrs: string; readonly inner: string }
 
@@ -133,7 +139,7 @@ describe('Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9)',
   it('classifies every narrative unit with exactly one role and marks it a non-citable presentation artifact', () => {
     let anchored = 0;
     for (const variant of VARIANTS) {
-      const html = renderPolarisPage(modelFor(variant));
+      const html = renderPolarisPage(shared.get(variant));
       const units = narrativeUnits(html);
       expect(units.length).toBeGreaterThan(40);
       for (const unit of units) {
@@ -174,7 +180,7 @@ describe('Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9)',
   it('gives every anchored block a typed, revision-bound anchor set that exactly covers its claims (no uncovered claim, no surplus anchor) and captures target state', () => {
     let blocks = 0;
     for (const variant of VARIANTS) {
-      const model = modelFor(variant);
+      const model = shared.get(variant);
       const { html, narrative } = renderPolarisPresentation(model);
       const machine = JSON.parse(JSON.stringify(model)) as PocModel;
       // The human page carries no copy of the machine form (it is served at

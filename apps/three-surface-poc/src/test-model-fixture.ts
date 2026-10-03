@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -182,5 +182,43 @@ function fixtureEvidence(revision: string): PocEvaluationEvidence {
       addedSources: 0,
     },
     currencyBounds: [],
+  };
+}
+
+/**
+ * Freezes a fixture model shared by several tests in a file, so a test that
+ * mutates it throws instead of leaking its change into the next test.
+ * Byte arrays stay as they are: a typed array with elements cannot be frozen.
+ */
+export function frozenFixture<T>(value: T): T {
+  if (typeof value !== 'object' || value === null || Object.isFrozen(value) || ArrayBuffer.isView(value)) return value;
+  for (const key of Reflect.ownKeys(value)) frozenFixture((value as Record<PropertyKey, unknown>)[key]);
+  return Object.freeze(value);
+}
+
+/**
+ * Builds each named fixture model once per file and freezes it (syzygy-k66p).
+ * A model build makes and observes a fixture repository (~0.5 s unloaded);
+ * rebuilding the same five models in every test pushed single tests past the
+ * 5 s default under full-suite load. The repositories live until `remove`.
+ */
+/** Budget for building a file's shared fixture models once (see below). */
+export const SHARED_FIXTURE_TIMEOUT_MS = 60_000;
+
+export function sharedFixtureModels<K extends string>(
+  build: (cleanups: string[]) => Readonly<Record<K, PocModel>>,
+): { readonly prepare: () => void; readonly get: (name: K) => PocModel; readonly remove: () => void } {
+  const cleanups: string[] = [];
+  let models: Readonly<Record<K, PocModel>> | undefined;
+  return {
+    prepare: () => { models ??= frozenFixture(build(cleanups)); },
+    get: (name) => {
+      if (models === undefined) throw new Error('shared fixture models used before prepare');
+      return models[name];
+    },
+    remove: () => {
+      models = undefined;
+      for (const directory of cleanups.splice(0)) rmSync(directory, { recursive: true, force: true });
+    },
   };
 }

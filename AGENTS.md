@@ -279,9 +279,10 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   the record by path. Never backtick a Butlers path in a packet (CG-1b).
 - `authorizeWrite` uses raw `startsWith` for containment; callers must
   normalize paths first (tracked, unfixed).
-- App typecheck (`tsc --noEmit -p apps/three-surface-poc`) resolves core
-  through `dist` declarations: run `tsc -b packages/three-surface-poc-core`
-  first after a core type change, or the app reports phantom errors.
+- App typecheck (`tsc --noEmit -p apps/three-surface-poc`) resolves both
+  `packages/three-surface-poc-core` and `packages/polaris-generation-core`
+  through `dist` declarations: run `tsc -b` on each (or `npm run build:poc`)
+  first after either changes, or a stale `dist` reports phantom errors.
 - Ledger semantics: a refused read is not a counted pass; phase-B breaches
   are typed findings and do not set the degradation state; catalog
   extraction keys off the basename `v1.md`. The tailnet mount is detected

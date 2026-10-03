@@ -7,12 +7,12 @@
 // Bead syzygy-1z3.24.5 (PWB-LIVE-06, PWB-LIVE-11, PWB-LIVE-13).
 
 import { rmSync } from 'node:fs';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { UNKNOWN_REASON_ROUTES, type PocModel, type ProjectShape } from '@syzygy/three-surface-poc-core';
 
 import { renderPolarisPage } from './polaris.js';
-import { buildFixtureModel } from './test-model-fixture.js';
+import { SHARED_FIXTURE_TIMEOUT_MS, buildFixtureModel, sharedFixtureModels } from './test-model-fixture.js';
 import {
   ADMITTING_AUTHORITY,
   PROJECT_SHAPE_FIXTURE_TEXTS,
@@ -37,8 +37,27 @@ const TEXTS_WITH_ACTIVE_CONTENT: Readonly<Record<string, string>> = {
   'about/craft-and-care/README.md': `${PROJECT_SHAPE_FIXTURE_TEXTS['about/craft-and-care/README.md'] as string}\n<script>${ACTIVE_SENTINEL}</script>\n`,
 };
 
+/** The fixture models several tests read, built once for the file and frozen. */
+const SHARED_TEXTS = new Map<Readonly<Record<string, string>> | undefined, 'observed' | 'secret' | 'active' | 'baseline'>([
+  [undefined, 'observed'],
+  [PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET, 'secret'],
+  [TEXTS_WITH_ACTIVE_CONTENT, 'active'],
+  [PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC, 'baseline'],
+]);
+const shared = sharedFixtureModels<'observed' | 'secret' | 'active' | 'baseline' | 'unevaluated' | 'rejected'>((cleanupList) => ({
+  ...Object.fromEntries([...SHARED_TEXTS].map(([texts, name]) => [name, buildFixtureModel(cleanupList, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(texts) } })])) as Record<'observed' | 'secret' | 'active' | 'baseline', PocModel>,
+  unevaluated: buildFixtureModel(cleanupList),
+  rejected: buildFixtureModel(cleanupList, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } }),
+}));
+beforeAll(shared.prepare, SHARED_FIXTURE_TIMEOUT_MS);
+afterAll(shared.remove);
+
+/** The admitted model over `texts`: shared when several tests read it, otherwise built for the one test. */
 function observed(texts?: Readonly<Record<string, string>>): { model: PocModel; shape: Observed; html: string } {
-  const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(texts) } });
+  const name = SHARED_TEXTS.get(texts);
+  const model = name === undefined
+    ? buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(texts) } })
+    : shared.get(name);
   if (model.projectShape.kind !== 'observed') throw new Error(`fixture shape is ${model.projectShape.kind}`);
   return { model, shape: model.projectShape, html: renderPolarisPage(model) };
 }
@@ -58,7 +77,7 @@ function detailsOf(html: string): { tag: string; inner: string }[] {
 
 describe('Polaris first reading (PWB-REQ-010 as amended; PWB-LIVE-06)', () => {
   it('opens on Butlers: the heading names the project, the compact contents precede the overview and the state explanation follows it, and no headline status appears', () => {
-    for (const variant of [observed().html, observed(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET).html, renderPolarisPage(buildFixtureModel(cleanups)), renderPolarisPage(buildFixtureModel(cleanups, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } }))]) {
+    for (const variant of [observed().html, observed(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET).html, renderPolarisPage(shared.get('unevaluated')), renderPolarisPage(shared.get('rejected'))]) {
       expect(variant).toMatch(/<h1[^>]*>Butlers<\/h1>/);
       expect(variant).toContain('Less to remember. More room to live.');
       const overview = variant.indexOf('data-polaris-group="overview"');
@@ -327,8 +346,8 @@ describe('Polaris opening gloss, proof strip and gap entries (syzygy-u05.4)', ()
   const variants = (): readonly { name: string; html: string }[] => [
     { name: 'observed', html: observed().html },
     { name: 'secret', html: observed(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET).html },
-    { name: 'unevaluated', html: renderPolarisPage(buildFixtureModel(cleanups)) },
-    { name: 'rejected', html: renderPolarisPage(buildFixtureModel(cleanups, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } })) },
+    { name: 'unevaluated', html: renderPolarisPage(shared.get('unevaluated')) },
+    { name: 'rejected', html: renderPolarisPage(shared.get('rejected')) },
   ];
 
   it('glosses every value of the first claim tuple before that tuple renders', () => {
