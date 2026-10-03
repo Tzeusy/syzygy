@@ -4,9 +4,9 @@
 > could act on. It performs no act, infers none and carries no digest by
 > design: the argument of an act is derived from the manifest by script
 > (`python3 scripts/build_public_egress_v2.py --digests`), never transcribed.
-> The record is **not ready**: the discovery stage list has not been
-> delivered (see "What is open"), and the script refuses to print a digest
-> until it has been.
+> The record is **not ready** while the generator code that adds the
+> discovery stages (PR #281) is not on main: the script refuses to print a
+> digest until the table it derives from main's code carries them.
 
 ## What the record is
 
@@ -63,9 +63,13 @@ so the two versions cannot drift apart.
 
 ## What is open
 
-- The stage list from the discovery work, as `requiredStages` in `v2.json`.
-  The record is **not ready** while it is empty or names a stage the derived
-  table lacks (`python3 scripts/build_public_egress_v2.py --ready`).
+- PR #281 on main. [Observed] Its author delivered the stages
+  (`discovery-map`, `discovery-reduce`), now `requiredStages` in `v2.json`, and
+  the table with 21 discovery rows; `--table --discovery` was run at its local
+  head and the committed record was generated from that output. The record
+  is **not ready** until #281 is on main and `--check` and `--ready` pass
+  there; any change to #281 means regenerating (`--write`), which changes the
+  digest.
 - The recorder for the row-8 act and its registration in
   `scripts/check_governance.py` (act subject and digest-copy rows) are not
   drafted: their frozen digest depends on the delivered table, and a recorder

@@ -9,7 +9,7 @@ derived here and none hand-written:
   * the permitted classes gain ``project-documentation`` (RFC5-14, once the
     amendment of the rfc5-project-documentation-class package is performed);
   * the carried-content table is the one ``derive_generator_sent_text.mjs
-    --table`` prints from the code at the time, so it carries the discovery
+    --table --discovery`` prints from the code at the time, so it carries the discovery
     stages and fields once they are on main.
 
 Everything else (provider, retention, route context, admitted repositories)
@@ -55,8 +55,24 @@ def _v1_builder():
     return mod
 
 
-def derive_table():
-    return _v1_builder().derive_table()
+def derive_table(root=None):
+    """The carried-content table with the discovery rows (``--table
+    --discovery``), derived from the code at REPO. Refuses while the
+    generator's code has no ``--discovery`` mode: the record is not
+    producible, and so not ready, until it is on main."""
+    import subprocess
+    root = PKG if root is None else root
+    args = settings(root).get("tableArgs", ["--table", "--discovery"])
+    build = subprocess.run(["npx", "tsc", "-b", "packages/polaris-generation-core"],
+                           cwd=REPO, capture_output=True, text=True)
+    if build.returncode != 0:
+        raise RuntimeError("cannot build polaris-generation-core: " + build.stdout[-300:])
+    done = subprocess.run(["node", "scripts/derive_generator_sent_text.mjs", *args],
+                          cwd=REPO, capture_output=True, text=True)
+    if done.returncode != 0:
+        raise RuntimeError("derivation failed (a field has no class, or the code has no "
+                           "--discovery mode yet?): " + done.stderr.strip()[-400:])
+    return done.stdout.strip()
 
 
 def v1_fields(v1=None):

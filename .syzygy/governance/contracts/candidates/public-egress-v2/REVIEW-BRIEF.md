@@ -2,7 +2,7 @@
 
 > **Candidate — binds nothing.** This brief says what an independent reviewer
 > is given and what they decide. It carries no verdict. Dispatch it only after
-> the discovery stage list is delivered (`python3 scripts/build_public_egress_v2.py --ready`
+> PR #281 is on main and `python3 scripts/build_public_egress_v2.py --ready`
 > exits 0); a review over a not-ready record is wasted by the next edit
 > (rule 10).
 

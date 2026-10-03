@@ -91,6 +91,27 @@ fail. Each field has exactly one class.
 | generate port | `signal` | all | abort signal; never sent |
 | generate port | `stage` | all | envelope-control; never sent |
 | generate port | `system` | all | instruction-text; sent as the system prompt |
+| discovery envelope | `promptVersion` | discovery-map | envelope-control |
+| discovery envelope | `system` | discovery-map | instruction-text |
+| discovery envelope | `responseSchemaVersion` | discovery-map | envelope-control |
+| discovery envelope | `responseSchema` | discovery-map | instruction-text |
+| discovery inputs | `items[].blobId` | discovery-map | target-metadata |
+| discovery inputs | `items[].excerpt` | discovery-map | target-content |
+| discovery inputs | `items[].path` | discovery-map | target-metadata |
+| discovery inputs | `readerQuestions[]` | discovery-map | run-profile |
+| discovery inputs | `subsystem` | discovery-map | target-metadata |
+| discovery envelope | `promptVersion` | discovery-reduce | envelope-control |
+| discovery envelope | `system` | discovery-reduce | instruction-text |
+| discovery envelope | `responseSchemaVersion` | discovery-reduce | envelope-control |
+| discovery envelope | `responseSchema` | discovery-reduce | instruction-text |
+| discovery inputs | `maxSelected` | discovery-reduce | envelope-control |
+| discovery inputs | `readerQuestions[]` | discovery-reduce | run-profile |
+| discovery inputs | `subsystems[].blobs` | discovery-reduce | target-metadata |
+| discovery inputs | `subsystems[].claims[].blobId` | discovery-reduce | target-metadata |
+| discovery inputs | `subsystems[].claims[].claim` | discovery-reduce | composite |
+| discovery inputs | `subsystems[].claims[].path` | discovery-reduce | target-metadata |
+| discovery inputs | `subsystems[].claims[].relevance` | discovery-reduce | composite |
+| discovery inputs | `subsystems[].subsystem` | discovery-reduce | target-metadata |
 
 The `generate` port receives the six fields in the last block of rows. Of
 them the route sends `system` as the system prompt and `input` as the user
