@@ -180,6 +180,20 @@ export const POLARIS_COPY = [
   { id: 'table.rule-and-pillar', role: 'project-fact', kind: 'label', text: 'Rule and pillar' },
   { id: 'table.outcome-anchor-digest', role: 'project-fact', kind: 'label', text: 'Outcome, anchor and digest' },
   { id: 'table.items', role: 'project-fact', kind: 'label', text: 'Items' },
+  // M14 slice 3 (P-81 Q3): the one key to the source-identity grammar. Its
+  // drift oracle in `polaris-reconciliation.test.ts` holds it to the five
+  // rules, the anchor union and the outcomes the table renders.
+  { id: 'legend.sources', role: 'scope-instruction', kind: 'sentence', text: 'Reading a source row: its identity joins the repository, the evaluated revision, the repository-relative path and the Git object id; Rule says how the source was found (root-index, pillar-index, pillar-named-file, baseline-spec-tree or roster-tree); Anchor says what the path held at that revision (a blob with its object id, a tree or commit, or missing at revision); Outcome is body-classified, path-only, excluded or unavailable; Digest is the truncated SHA-256 of the body bytes the observer read, shown only where it read one, and it is neither permission to read those bytes nor a verification of them.' },
+  // M14 slice 4 (P-81 Q4): the catalog reconciliation. Machine figures are
+  // Observed, arithmetic over them Inferred, the marker remainder Unknown.
+  { id: 'reconciliation.label', role: 'scope-instruction', kind: 'label', text: 'Catalog reconciliation.' },
+  { id: 'figure.observed', role: 'epistemic-disclosure', kind: 'label', text: 'Observed in the machine answer:' },
+  { id: 'figure.inferred', role: 'epistemic-disclosure', kind: 'label', text: 'Inferred by arithmetic over those counts:' },
+  { id: 'figure.markers', role: 'epistemic-disclosure', kind: 'label', text: 'Inferred from this page’s own markup:' },
+  { id: 'figure.marker-predicate', role: 'scope-instruction', kind: 'sentence', text: 'counted as every occurrence of the data-polaris-item attribute in the final HTML, so an item rendered twice counts twice.' },
+  { id: 'figure.unknown', role: 'epistemic-disclosure', kind: 'label', text: 'Unknown from these counts alone:' },
+  { id: 'figure.remainder-route', role: 'epistemic-disclosure', kind: 'sentence', text: 'match each marker’s claim identity to exactly one machine item.' },
+  { id: 'sentence.reconciliation-unobserved', role: 'epistemic-disclosure', kind: 'sentence', text: 'No project shape was observed, so no source, item or item marker is counted.' },
 
   { id: 'sentence.no-items', role: 'project-fact', kind: 'sentence', text: 'No items of this class were declared by any admitted source.' },
   { id: 'sentence.no-exclusions', role: 'project-fact', kind: 'sentence', text: 'No source body was excluded by the secret policy or a limit.' },

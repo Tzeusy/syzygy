@@ -71,6 +71,7 @@ import {
   type NarrativeAnchor,
   type PolarisViewState,
 } from './polaris-narrative.js';
+import { catalogReconciliation, renderCatalogReconciliation, RECONCILIATION_PLACEHOLDER, substituteCatalogReconciliation } from './polaris-reconciliation.js';
 import { sourceRouteHref, sourceSlug } from './polaris-source.js';
 import { crossSurfaceLink } from './surface-links.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
@@ -1204,7 +1205,8 @@ function shapeEvidence(shape: ProjectShape): string {
   <section class="claim-section wide" data-polaris-section="shape:sources">
     ${heading(3, 'polaris-shape-sources', 'evidence.sources')}
     <p${copyAttr('label.browse-source-records')}>${copy('label.browse-source-records')}</p>
-    ${tableRegion('polaris-shape-sources', `<table><thead><tr>${(['table.index', 'table.source', 'table.source-identity', 'table.rule-and-pillar', 'table.outcome-anchor-digest', 'table.items'] as const).map((id) => `<th scope="col"${copyAttr(id)}>${copy(id)}</th>`).join('')}</tr></thead><tbody>${shape.sources.map((source, index) => sourceRow(source, index, shape.identity.revision)).join('')}</tbody></table>`, ' data-source-index')}
+    <p id="polaris-source-legend" class="source-legend"${copyAttr('legend.sources')}>${copy('legend.sources')}</p>
+    ${tableRegion('polaris-shape-sources', `<table><thead><tr>${(['table.index', 'table.source', 'table.source-identity', 'table.rule-and-pillar', 'table.outcome-anchor-digest', 'table.items'] as const).map((id) => `<th scope="col"${copyAttr(id)}>${copy(id)}</th>`).join('')}</tr></thead><tbody>${shape.sources.map((source, index) => sourceRow(source, index, shape.identity.revision)).join('')}</tbody></table>`, ' data-source-index aria-describedby="polaris-source-legend"')}
   </section>
   <section class="claim-section" data-polaris-section="shape:exclusions">
     ${heading(3, 'polaris-shape-exclusions', 'evidence.exclusions')}
@@ -1841,6 +1843,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     ${projectGroupBody(shape, 'architecture')}
     ${openingUnknownBand(shape)}
     ${groupHeader('catalog')}
+    ${RECONCILIATION_PLACEHOLDER}
     ${projectGroupBody(shape, 'catalog')}
     ${groupHeader('capability-detail')}
     <p class="scope-instruction" data-polaris-capability-scope data-scope="poc-bound"${copyAttr('capability.scope')}>${copy('capability.scope')}</p>
@@ -1855,7 +1858,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
   // authenticated presentation route serves it from the same render
   // (renderPolarisPresentation), so the human page carries each fact once.
 
-  return pageShell({
+  const page = pageShell({
     title: 'Polaris · Syzygy three-surface POC',
     current: 'polaris',
     eyebrow: 'Polaris · Project manifesto',
@@ -1872,4 +1875,10 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     escapeHtml,
     mountPrefix,
   });
+  // The marker count is a fact about the final HTML, so the reconciliation
+  // line is substituted last (M14 slice 4).
+  return substituteCatalogReconciliation(page, (markers) => renderCatalogReconciliation(catalogReconciliation(shape, markers, (claim) => {
+    const reason = 'reasons' in claim.epistemic ? claim.epistemic.reasons.primary : 'deferred';
+    return { reason, route: routeOf(claim, reason) };
+  })));
 }
