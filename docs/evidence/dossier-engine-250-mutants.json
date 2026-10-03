@@ -1,60 +1,67 @@
 {
   "subject": "packages/polaris-generation-core/src/generation-source.ts",
-  "subjectSha256": "f2689091cae9918096dfb5e8d2a5695f8416e35758861d0d9bd131608dcf7f0d",
-  "ranAtCommit": "652a0d4c7bda57095209b0d87c41233da1fa1e35",
+  "subjectSha256": "d810ecb4a6a6034a0b96976fbd2bf87b58d779b48a921a8ad89986d1fd8ceebe",
+  "ranAtCommit": "40d3f4d2c1097411d35c2cc22d63d60e5992452d",
   "worktreeClean": true,
   "tests": [
     "packages/polaris-generation-core/src/generation-source.test.ts"
   ],
-  "baseline": "12 passed (12)",
+  "baseline": "13 passed (13)",
   "mutants": [
     {
       "id": "contiguity",
       "old": "|| piece.start !== (i === 0 ? 0 : pieces[i - 1]!.end)",
       "new": "|| false",
-      "result": "1 failed | 11 passed (12)",
+      "result": "1 failed | 12 passed (13)",
       "outcome": "killed"
     },
     {
       "id": "limit-plus-one",
       "old": "if ([...body].length <= SOURCE_TEXT_MAX_LENGTH) {",
       "new": "if ([...body].length <= SOURCE_TEXT_MAX_LENGTH + 1) {",
-      "result": "1 failed | 11 passed (12)",
+      "result": "1 failed | 12 passed (13)",
       "outcome": "killed"
     },
     {
       "id": "line-align",
       "old": "chars[i - 1] === '\\n'",
       "new": "false",
-      "result": "1 failed | 11 passed (12)",
+      "result": "1 failed | 12 passed (13)",
       "outcome": "killed"
     },
     {
       "id": "anchor-base",
       "old": "anchorBase + span.start, anchorBase + span.end",
       "new": "span.start, span.end",
-      "result": "6 failed | 6 passed (12)",
+      "result": "6 failed | 7 passed (13)",
       "outcome": "killed"
     },
     {
       "id": "whole-beside-pieces",
       "old": "if (blob.whole || pieces.some",
       "new": "if (pieces.some",
-      "result": "1 failed | 11 passed (12)",
+      "result": "1 failed | 12 passed (13)",
       "outcome": "killed"
     },
     {
       "id": "truncated-tail",
       "old": "|| pieces.at(-1)!.end !== pieces[0]!.blobBytes) fail",
       "new": "|| false) fail",
-      "result": "1 failed | 11 passed (12)",
+      "result": "1 failed | 12 passed (13)",
       "outcome": "killed"
     },
     {
       "id": "blobBytes-equal",
       "old": " || piece.blobBytes !== pieces[0]!.blobBytes",
       "new": "",
-      "result": "1 failed | 11 passed (12)",
+      "result": "1 failed | 12 passed (13)",
+      "outcome": "killed"
+    },
+    {
+      "id": "span-ignoreBOM",
+      "old": "{ fatal: true, ignoreBOM: true }).decode(slice)",
+      "new": "{ fatal: true }).decode(slice)",
+      "result": "1 failed | 12 passed (13)",
       "outcome": "killed"
     }
   ]
