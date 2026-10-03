@@ -15,21 +15,25 @@ non-governed, observed repository.
 The adopted narrative obligations assume a governed subject. Catalog
 membership comes from "declared capabilities", capability deep dives carry
 argument, contract and reality bands, and the exact-source terminus is
-verbatim text from `openspec/**`. An observed public repository such as
-`redis/redis` has none of these. Applied literally, the catalog would be
+verbatim text from `openspec/**`. [Inferred: from the repository's public
+description; no body was read in drafting] An observed public repository such
+as `redis/redis` has none of these. Applied literally, the catalog would be
 nearly all Unknown, each deep dive would carry empty bands, and the
-terminus would have nothing to quote. All three results are honest and
-useless. The proving-ground work in `docs/polaris-generation/TARGETS.md`
+terminus would have nothing to quote. RFC7-6 and RFC7-15 define the first as
+correct, thin output, so each result is honest by the current text; the
+proposal is that all three are also useless for a proving-ground dossier. The proving-ground work in `docs/polaris-generation/TARGETS.md`
 needs a defined reading, not a silent reinterpretation by the generator.
 
 ## What changes
 
-- **Added:** requirement 032, "Non-governed narrative profile", with eight
+- **Added:** requirement 032, "Non-governed narrative profile", with twelve
   scenarios. It defines (a) what a declared capability is for such a
-  repository, (b) how deep-dive bands report absence, and (c) what the
-  exact-source terminus is.
-- **Modified:** nothing. Requirements 001 to 031 keep their bytes, meaning
-  and scenarios for governed projects.
+  repository, (b) how deep-dive bands report absence, and (c) what the leaf
+  altitude and the exact-source terminus are when no specification exists.
+- **Modified:** no requirement's bytes. For a non-governed subject the profile
+  displaces three readings of requirement 004, so 004's effective meaning
+  changes for that class of subject; requirements 001 to 031 keep their bytes,
+  meaning and scenarios for governed projects.
 - **Not decided here:** the altitude order for a dossier, the reading of
   "advantages", and the reader-facing page budget. Those are owner rulings
   (see the owner packet) and need no amendment to be put.
@@ -55,9 +59,9 @@ needs a defined reading, not a silent reinterpretation by the generator.
 
 ## Scope and preserved boundaries
 
-- **Admission comes first.** The profile is chosen from the admitted
-  observation record; the generator never reads a repository to decide how
-  to compose it (requirements 020, 025, 030).
+- **Admission comes first.** The profile is chosen from the admitted project
+  input and the source classes discovery exposes; the generator never reads a
+  repository to decide how to compose it (requirements 001, 020, 025, 030).
 - **Declared means the maintainers said so.** A declaration is the
   maintainers' statement, not verified behavior, not adopted Syzygy intent,
   and not an endorsement.
