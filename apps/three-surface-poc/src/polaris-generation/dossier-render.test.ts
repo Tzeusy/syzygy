@@ -376,9 +376,9 @@ describe('a stopped run still renders (syzygy-k4t2)', () => {
     expect(files.has('deep-dives/component-depth.html')).toBe(true);
     expect(asides(index, 'unresolved-asset')).toEqual([]);
     const report = await evaluate(files, stopped.sources);
-    // run-stopped, opening, mechanism-text, mechanism-detail-0, qualification-text, depth-text: Unknown;
-    // the diagram's two nodes and edge keep their own Observed marking.
-    expect(report.fidelity.claims).toMatchObject({ denominator: 9, labelled: 9, byLabel: { observed: 3, inferred: 0, unknown: 6 }, outcome: 'all-labelled' });
+    // run-stopped (on the entry page and the deep-dive page), opening, mechanism-text, mechanism-detail-0,
+    // qualification-text, depth-text: Unknown; the diagram's two nodes and edge keep their own Observed marking.
+    expect(report.fidelity.claims).toMatchObject({ denominator: 10, labelled: 10, byLabel: { observed: 3, inferred: 0, unknown: 7 }, outcome: 'all-labelled' });
     expect(report.fidelity.quotes).toMatchObject({ outcome: 'all-resolved' });
     expect(report.scanFindings).toEqual([]);
   });
@@ -433,6 +433,40 @@ describe('a stopped run still renders (syzygy-k4t2)', () => {
       expect(asides(index, 'run-stopped')[0]).toContain(`data-stop-reason="${reason}"`);
       expect(asides(index, 'unresolved-asset').every(tag => tag.includes(`data-stop-reason="${reason}"`))).toBe(true);
     }
+  });
+
+  it('renders every pipeline stop reason and refuses any other, so no reason reaches the markup unchecked', async () => {
+    const stopped = await stopAfter({ maxCalls: 2 });
+    const reasons = ['invalid-request', 'source-refused', 'admission-refused', 'budget-exhausted', 'cancelled', 'deadline',
+      'effect-uncertain', 'invalid-output', 'usage-uncertain', 'repair-exhausted', 'adapter-failure'] as const;
+    for (const reason of reasons) {
+      const shown = reason === 'budget-exhausted' ? 'deferred-by-budget' : reason;
+      const index = renderDossier({ ...stopped, result: { ...stopped.result, reason } }).files.get('index.html')!;
+      expect(asides(index, 'run-stopped')).toEqual([`<aside class="run-stopped" data-stop-reason="${shown}" data-claim-id="run-stopped" data-epistemic="unknown">`]);
+    }
+    for (const reason of ["$'", '$&', 'budget', 'Deadline', '']) {
+      expect(() => renderDossier({ ...stopped, result: { ...stopped.result, reason: reason as Stopped['reason'] } })).toThrow('unknown-stop-reason');
+    }
+  });
+
+  it('counts a requested asset as present only when a drafted item has its id and its kind', async () => {
+    const stopped = await stopAfter({ maxCalls: 4 });
+    const index = renderDossier(stopped).files.get('index.html')!;
+    expect(index).toContain('<section id="section-judgment"');
+    // A requested diagram named like a drafted section is still missing.
+    const requestedAssets = [...stopped.requestedAssets.filter(asset => asset.id !== 'judgment'), { id: 'judgment', kind: 'diagram' as const, required: false }];
+    const notices = asides(renderDossier({ ...stopped, requestedAssets }).files.get('index.html')!, 'unresolved-asset');
+    expect(notices).toEqual(['<aside class="unresolved-asset" data-asset-disposition="not-generated" data-stop-reason="deferred-by-budget" data-claim-id="not-generated:judgment" data-epistemic="unknown">']);
+  });
+
+  it('carries the run-stopped banner onto every deep-dive page', async () => {
+    const stopped = await stopAfter({ maxCalls: 4 });
+    const { files } = renderDossier(stopped);
+    const dives = [...files.keys()].filter(path => path.startsWith('deep-dives/'));
+    expect(dives).toEqual(['deep-dives/component-depth.html']);
+    expect(asides(files.get(dives[0]!)!, 'run-stopped')).toEqual(['<aside class="run-stopped" data-stop-reason="deferred-by-budget" data-claim-id="run-stopped:component-depth" data-epistemic="unknown">']);
+    expect(files.get(dives[0]!)).toContain('after the edit stage; no fidelity review covers this draft');
+    expect([...renderDossier(run).files.entries()].filter(([path, html]) => path.startsWith('deep-dives/') && html.includes('run-stopped'))).toEqual([]);
   });
 
   it('labels a stopped draft Inferred only where a review later than it says supported', async () => {

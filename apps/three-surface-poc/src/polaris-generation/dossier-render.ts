@@ -76,7 +76,7 @@ export interface RenderedDossier {
 }
 
 export class DossierRenderError extends Error {
-  constructor(readonly code: 'not-renderable' | 'missing-requested-assets' | 'unknown-source' | 'unquotable-source' | 'ambiguous-source-anchor' | 'unknown-section' | 'unknown-topic' | 'page-path-collision' | 'invalid-inventory') {
+  constructor(readonly code: 'not-renderable' | 'missing-requested-assets' | 'unknown-source' | 'unquotable-source' | 'ambiguous-source-anchor' | 'unknown-section' | 'unknown-topic' | 'page-path-collision' | 'invalid-inventory' | 'unknown-stop-reason') {
     super(`Dossier render refused: ${code}`);
     this.name = 'DossierRenderError';
   }
@@ -106,8 +106,16 @@ ${DRAFT_PREVIEW_CSS}${DOSSIER_CSS}
 </style></head><body><a class="skip" href="#content">Skip to content</a><div class="pipeline-notice">Generated dossier draft — not reviewed or adopted</div><div class="layout"><nav class="contents desktop-contents" aria-label="Dossier">${nav}</nav><details class="contents mobile-contents"><summary>In this dossier</summary><nav aria-label="Dossier">${nav}</nav></details><main id="content" data-page="${escape(path)}">${main}</main></div></body></html>`;
 }
 
-/** What a stopped run shows for an asset it never produced. */
+type StopReason = Extract<PipelineResult, { status: 'stopped' }>['reason'];
+/** Every reason a stopped pipeline result may carry; the type check below fails if pipeline.ts adds one. */
+const STOP_REASONS = ['invalid-request', 'source-refused', 'admission-refused', 'budget-exhausted', 'cancelled', 'deadline',
+  'effect-uncertain', 'invalid-output', 'usage-uncertain', 'repair-exhausted', 'adapter-failure'] as const satisfies readonly StopReason[];
+const everyStopReasonListed: [Exclude<StopReason, (typeof STOP_REASONS)[number]>] extends [never] ? true : never = true;
+void everyStopReasonListed;
+
+/** What a stopped run shows for an asset it never produced. A reason outside the pipeline's set is refused. */
 export function stopReasonLabel(reason: string): string {
+  if (!(STOP_REASONS as readonly string[]).includes(reason)) throw new DossierRenderError('unknown-stop-reason');
   return reason === 'budget-exhausted' ? 'deferred-by-budget' : reason;
 }
 
@@ -153,9 +161,12 @@ function viewOf(input: DossierRenderInput): View {
     draft = { title: 'Dossier draft (incomplete)', introduction: { id: 'introduction', text: '', sourceIds: [] },
       sections: sections.map(section => ({ ...section, paragraphs: [], disposition: { kind: 'unresolved', reason: '', references: [] } })), diagrams: [], deepDives: [], unresolved: [] };
   }
-  const rendered = new Set([...draft.sections, ...draft.diagrams, ...draft.deepDives].map(item => item.id));
+  // An asset is present only as its own kind: a section `how` never stands in for a diagram `how`.
+  const assetKey = (kind: string, id: string): string => `${kind}\u0000${id}`;
+  const rendered = new Set([...draft.sections.map(item => assetKey('section', item.id)), ...draft.diagrams.map(item => assetKey('diagram', item.id)),
+    ...draft.deepDives.map(item => assetKey('deep-dive', item.id))]);
   const deferredSections = new Set(draftAt >= 0 ? [] : draft.sections.map(section => section.id));
-  const notGenerated = requested.filter(asset => !rendered.has(asset.id)).map(asset => ({ id: asset.id, kind: asset.kind }));
+  const notGenerated = requested.filter(asset => !rendered.has(assetKey(asset.kind, asset.id))).map(asset => ({ id: asset.id, kind: asset.kind }));
   return { draft, drafted: draftAt >= 0, review, inventory, stop, deferredSections, notGenerated };
 }
 
@@ -189,8 +200,9 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
     if (target === undefined) throw new DossierRenderError('unquotable-source');
     return `<a href="${escape(href(from, target, 'exact-text'))}" aria-label="Read source ${escape(id)}">[${escape(id)}]</a>`;
   }).join(' ')}</span>`;
-  const claim = (tag: string, id: string, m: EpistemicMarking, body: string): string =>
-    `<${tag} data-claim-id="${escape(id)}" data-epistemic="${m}">${body}</${tag}>`;
+  // `attributes` is markup the caller built with escape(); nothing is spliced in afterwards.
+  const claim = (tag: string, id: string, m: EpistemicMarking, body: string, attributes = ''): string =>
+    `<${tag}${attributes} data-claim-id="${escape(id)}" data-epistemic="${m}">${body}</${tag}>`;
   const paragraph = (from: string, p: ProviderParagraph, tag: string): string =>
     claim(tag, p.id, label(p.id), `${escape(p.text)} ${marking(label(p.id))} ${refs(from, p.sourceIds)}`);
   const block = (from: string, b: ProviderBlock): string => {
@@ -229,8 +241,8 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   const unresolved = draft.unresolved.map((item, index) => claim('aside', `unresolved-${index + 1}`, 'unknown',
     `<strong>${escape(item.question)}</strong>: ${escape(item.reason)} ${marking('unknown')} <span class="asset-references">(${escape(item.references.join(', '))})</span>`)).join('');
   const notGenerated = (id: string, kind: string): string => claim('aside', `not-generated:${id}`, 'unknown',
-    `<strong>${escape(id)}</strong> (${escape(kind)}): not generated; the run stopped before it was written (${escape(stop!.shown)}). ${marking('unknown')}`)
-    .replace('<aside ', `<aside class="unresolved-asset" data-asset-disposition="not-generated" data-stop-reason="${escape(stop!.shown)}" `);
+    `<strong>${escape(id)}</strong> (${escape(kind)}): not generated; the run stopped before it was written (${escape(stop!.shown)}). ${marking('unknown')}`,
+    ` class="unresolved-asset" data-asset-disposition="not-generated" data-stop-reason="${escape(stop!.shown)}"`);
   const sections = draft.sections.map((section, index) => {
     const head = `<span class="eyebrow">${String(index + 1).padStart(2, '0')}</span><h2>${escape(section.title)}</h2>`;
     if (view.deferredSections.has(section.id)) return `<section id="section-${escape(section.id)}" data-reading-level="1" data-topics="">${head}${notGenerated(section.id, 'section')}</section>`;
@@ -240,9 +252,11 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
       ? `<li><a href="${escape(deepPaths.get(dive.id)!)}">Explore: ${escape(dive.title)}</a></li>` : `<li>${notice(dive.id, dive.disposition)}</li>`).join('');
     return `<section id="section-${escape(section.id)}" data-reading-level="1"${topicAttr(section.id)}>${head}${section.paragraphs.map(b => block(from, b)).join('')}${figures}${dives ? `<ul class="deep-links">${dives}</ul>` : ''}</section>`;
   }).join('');
-  const banner = stop === null ? '' : claim('aside', 'run-stopped', 'unknown',
-    `<strong>Incomplete dossier.</strong> The run stopped (${escape(stop.shown)}) ${stop.lastStage === null ? 'before any stage completed' : `after the ${escape(stop.lastStage)} stage`}${view.drafted && view.review === null ? '; no fidelity review covers this draft, so every generated sentence is Unknown' : ''}. ${marking('unknown')}`)
-    .replace('<aside ', `<aside class="run-stopped" data-stop-reason="${escape(stop.shown)}" `);
+  // Claim ids are unique across the dossier, so each page's banner carries its own.
+  const bannerFor = (claimId: string): string => stop === null ? '' : claim('aside', claimId, 'unknown',
+    `<strong>Incomplete dossier.</strong> The run stopped (${escape(stop.shown)}) ${stop.lastStage === null ? 'before any stage completed' : `after the ${escape(stop.lastStage)} stage`}${view.drafted && view.review === null ? '; no fidelity review covers this draft, so every generated sentence is Unknown' : ''}. ${marking('unknown')}`,
+    ` class="run-stopped" data-stop-reason="${escape(stop.shown)}"`);
+  const banner = bannerFor('run-stopped');
   const introduction = view.drafted ? paragraph(from, draft.introduction, 'p') : '';
   const missingList = view.notGenerated.length === 0 ? '' : `<section id="not-generated" data-reading-level="1" data-topics=""><h2>Not generated</h2>${view.notGenerated.map(item => notGenerated(item.id, item.kind)).join('')}</section>`;
   add(from, 0, 'Overview', `<header data-reading-level="0"><span class="eyebrow">Polaris · Editorial draft</span><h1>${escape(draft.title)}</h1>${banner}${introduction}${unresolved}</header>${sections}${missingList}`);
@@ -251,7 +265,7 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   for (const dive of deepDives) {
     const path = deepPaths.get(dive.id)!;
     const parent = draft.sections.find(section => section.id === dive.sectionId)!;
-    add(path, 1, dive.title, `<section id="deep-dive-${escape(dive.id)}" data-reading-level="2"${topicAttr(dive.id)}><span class="eyebrow">Deep dive · <a href="${escape(href(path, 'index.html', `section-${parent.id}`))}">${escape(parent.title)}</a></span><h1>${escape(dive.title)}</h1>${dive.paragraphs.map(b => block(path, b)).join('')}</section>`);
+    add(path, 1, dive.title, `<section id="deep-dive-${escape(dive.id)}" data-reading-level="2"${topicAttr(dive.id)}><span class="eyebrow">Deep dive · <a href="${escape(href(path, 'index.html', `section-${parent.id}`))}">${escape(parent.title)}</a></span><h1>${escape(dive.title)}</h1>${bannerFor(`run-stopped:${dive.id}`)}${dive.paragraphs.map(b => block(path, b)).join('')}</section>`);
   }
 
   // --- contents
