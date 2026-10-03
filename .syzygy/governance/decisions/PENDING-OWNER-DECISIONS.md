@@ -946,10 +946,11 @@
 > (`docs/reviews/R-PWB-OPENING-INDEX-AMENDMENT-1-RAW.md` line 4 and
 > `docs/reviews/R-PWB-ACCESSIBLE-NAME-AMENDMENT-1-RAW.md` line 4). Both were
 > repaired once and no round 2 was dispatched, so the bytes are unconfirmed
-> and the owner decides. The N9 note above counted 25 and 30. Now **27**
-> rows under the open heading below (the resolved P-53 row included) and
-> **5** acceptance-act rows, **32** in all [Observed — counted 2026-10-03 by
-> `^| P-[0-9]+[^ |]*` rows per `##` section].
+> and the owner decides. The N9 note above counted 25 and 30; P-100 then
+> landed with no count note. Now **28** rows under the open heading below
+> (the resolved P-53 row included) and **5** acceptance-act rows, **33** in
+> all [Observed — counted 2026-10-03 by `^| P-[0-9]+[^ |]*` rows per `##`
+> section].
 
 ## The acceptance acts (four performed; the rest open)
 
