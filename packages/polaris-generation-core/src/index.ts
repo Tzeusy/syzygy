@@ -26,5 +26,5 @@ export { SOURCE_TEXT_MAX_LENGTH, stageSchema, validateStage, validateRequestedAs
 export type { ProviderDraft, ProviderParagraph, ProviderBlock, ProviderDiagram, ProviderDiagramNode, ProviderDiagramEdge, DiagramKind, EpistemicMarking, RequestedAsset } from './provider-draft.js';
 export { renderedDesignVerdict, renderedDesignSubjectDigest } from './rendered-design.js';
 export type { RenderedDesignReview, RenderedDesignRelationship, RenderedDesignFinding, RenderedDesignRule, RenderedDesignVerdict, RelationshipJudgment, RelationshipSupport } from './rendered-design.js';
-export { discoverAndSelect, partitionSubsystems, heuristicScore, DiscoveryRefusal, DEFERRED_BY_BUDGET, PIPELINE_QUOTABLE_CAP, DEFAULT_DISCOVERY_BUDGET } from './discovery.js';
-export type { DiscoveryBudget, DiscoveryClaim, DiscoveryPorts, DiscoveryReport, DiscoveryResult, MapInput, ReduceInput } from './discovery.js';
+export { discoverAndSelect, reportFromReceipts, partitionSubsystems, heuristicScore, DiscoveryRefusal, DEFERRED_BY_BUDGET, PIPELINE_QUOTABLE_CAP, DEFAULT_DISCOVERY_BUDGET } from './discovery.js';
+export type { DiscoveryBudget, DiscoveryCall, DiscoveryReceipt, MapReply, ReduceReply, DiscoveryClaim, DiscoveryPorts, DiscoveryReport, DiscoveryResult, MapInput, ReduceInput } from './discovery.js';
