@@ -19,7 +19,10 @@ import { inForceRecords } from './consent-ports.js';
 export const DECISIONS_DIR = '.syzygy/governance/decisions';
 export const INSTANCES_DIR = '.syzygy/governance/contracts/candidates/public-repo-admission/instances';
 const ACT_FILE = /^PUBLIC-REPO-ADMISSION-[A-Z0-9-]+-ACT\.md$/;
-const OWNER_ANSWERS = /^PUBLIC-REPO-ADMISSION-OWNER-ANSWERS-\d{4}-\d{2}-\d{2}\.md$/;
+/** The one plain owner direction in the package's name space, pinned by name and digest: it performs no act. Any other
+ * file (or these bytes edited) is an unknown form and refuses the whole read. */
+const OWNER_ANSWERS_FILE = 'PUBLIC-REPO-ADMISSION-OWNER-ANSWERS-2026-10-03.md';
+const OWNER_ANSWERS_SHA256 = '549a746e108d06581ac7e0a653023692f7f7664075c81e5502918322feb5145c';
 const DAY_MS = 86_400_000;
 
 export interface PackageReaderFs {
@@ -48,9 +51,10 @@ function parseAct(text: string): Act {
 /** The act's effective instant: the `Recorded at (UTC)` line when the record has exactly one (whole seconds, same
  * calendar day as `Date:`), else the start of the next UTC day (a date alone is not an instant: fail-closed). */
 function actInstant(text: string, date: string, startOfDay: number): number {
+  const loose = [...text.matchAll(/^\s*recorded at\b/gim)];
+  if (loose.length === 0) return startOfDay + DAY_MS;
   const lines = [...text.matchAll(/^Recorded at \(UTC\): (\S+)$/gm)];
-  if (lines.length === 0) return startOfDay + DAY_MS;
-  if (lines.length > 1) return refuse();
+  if (loose.length !== 1 || lines.length !== 1) return refuse();   // any other spelling, indentation or repeat is not an instant
   const m = /^(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}:\d{2}Z$/.exec(lines[0]![1]!);
   const at = m === null ? NaN : Date.parse(lines[0]![1]!);
   if (m === null || m[1] !== date || !Number.isSafeInteger(at) || new Date(at).toISOString().slice(0, 19) + 'Z' !== lines[0]![1]) return refuse();
@@ -97,7 +101,12 @@ export function createPackageAdmissionReader(options: { readonly root: string; r
       const records: AdmissionRecord[] = [];
       for (const name of [...names].sort()) {
         if (!name.startsWith('PUBLIC-REPO-ADMISSION-')) continue;
-        if (OWNER_ANSWERS.test(name)) continue;
+        if (name === OWNER_ANSWERS_FILE) {
+          let direction: string;
+          try { direction = await fs.readFile(path.join(options.root, DECISIONS_DIR, name)); } catch { return refuse(); }
+          if (sha256(direction) !== OWNER_ANSWERS_SHA256) refuse();
+          continue;
+        }
         if (!ACT_FILE.test(name)) refuse();
         let act: Act;
         try { act = parseAct(await fs.readFile(path.join(options.root, DECISIONS_DIR, name))); } catch { return refuse(); }
@@ -122,6 +131,14 @@ export const POLICY_PATH = '.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-C
 export interface PolicyActRecord { readonly actIdentity: string; readonly digest: string; readonly inForceAt: number }
 export interface PolicyActReader { readonly read: () => Promise<readonly PolicyActRecord[]> }
 
+/** The only record file the #266 recorder writes (`scripts/record_public_source_screening_scope_act.py`). */
+export const POLICY_ACT_FILE = 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md';
+/** Earlier acts that name the same policy file for its Butlers-only content. They bind other bytes and count for nothing here. */
+const HISTORICAL_POLICY_ACTS: ReadonlySet<string> = new Set([
+  'PWB-SECRET-CLASSIFICATION-POLICY-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md',
+]);
+const POLICY_ACT_TITLE = '# Owner act — Polaris Butlers secret-classification policy approval (public-source screening scope)';
+
 export function createPackagePolicyReader(options: { readonly root: string; readonly fs?: PackageReaderFs }): PolicyActReader {
   const fs = options.fs ?? nodeFs;
   return {
@@ -131,20 +148,29 @@ export function createPackagePolicyReader(options: { readonly root: string; read
       try { policy = await fs.readFile(path.join(options.root, POLICY_PATH)); names = await fs.readdir(path.join(options.root, DECISIONS_DIR)); } catch { return refuse(); }
       let scope: unknown;
       try { scope = (JSON.parse(policy) as { publicSourceScope?: unknown }).publicSourceScope; } catch { return refuse(); }
-      if (scope === null || typeof scope !== 'object' || Array.isArray(scope)) return [];
-      const digest = sha256(policy);
+      const naming = `Artifact identity: \`${POLICY_PATH}\``;
       const records: PolicyActRecord[] = [];
       for (const name of [...names].sort()) {
         if (!name.endsWith('.md')) continue;
         let text: string;
         try { text = await fs.readFile(path.join(options.root, DECISIONS_DIR, name)); } catch { return refuse(); }
-        if (!text.includes(`Artifact identity: \`${POLICY_PATH}\``)) continue;
+        const names_it = text.split('\n').some(line => line === naming);
+        if (name !== POLICY_ACT_FILE) {
+          // Another record that names the policy as its artifact is either a known historical act or an unknown form: refuse the unknown.
+          if (names_it && !HISTORICAL_POLICY_ACTS.has(name)) refuse();
+          continue;
+        }
+        if (!text.startsWith(`${POLICY_ACT_TITLE}\n`) || !names_it) refuse();
         const act = { type: one(text, /^Act type: `([a-z-]+)`$/gm), identity: one(text, /^Act identity: `([^`\n]+)`$/gm), digest: one(text, /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/gm), date: one(text, /^Date: (\d{4}-\d{2}-\d{2})$/gm) };
         one(text, /^Project identity: `(project:syzygy)`$/gm);
+        one(text, /^Provenance state: `(owner-adopted \(bootstrap, uncorrelated\))`/gm);
+        if (act.type !== 'approve-policy' || act.identity !== `pwb-approve-policy-public-source-scope-signed-${act.date}`) refuse();
         const at = Date.parse(`${act.date}T00:00:00Z`);
         if (!Number.isSafeInteger(at)) refuse();
-        if (act.type !== 'approve-policy' || act.digest !== digest) continue;
-        records.push(Object.freeze({ actIdentity: act.identity, digest, inForceAt: actInstant(text, act.date, at) }));
+        const inForceAt = actInstant(text, act.date, at);
+        // The act binds the policy bytes it names: stale bytes or a policy that declares no public-source scope do not count.
+        if (act.digest !== sha256(policy) || scope === null || typeof scope !== 'object' || Array.isArray(scope)) continue;
+        records.push(Object.freeze({ actIdentity: act.identity, digest: act.digest, inForceAt }));
       }
       return Object.freeze(records);
     },

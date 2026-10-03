@@ -116,6 +116,21 @@ describe('consent-backed ports', () => {
     expect(await rig([old, futureNext, egress()]).ports.permissionIdentity(attempt())).not.toBe('');
   });
 
+  it('an ambiguous or withdrawn successor still voids its predecessor (no resurrection)', async () => {
+    const old = obs({ version: '1' });
+    const claim = (digest: string, over: Partial<ReturnType<typeof obs>> = {}) => obs({ version: '2', supersedes: 'PUBLIC-OBS-REDIS-2026-10-03@1', digest, ...over });
+    // Q1: two byte-different claims of version 2 are ambiguous (void), and version 1 stays replaced.
+    expect(await rig([old, claim(hex('4')), claim(hex('5')), egress()]).ports.permissionIdentity(attempt())).toBe('');
+    // Q2: the same ambiguity with one claim also withdrawn.
+    expect(await rig([old, claim(hex('4'), { withdrawnAt: NOW - 1 }), claim(hex('5')), egress()]).ports.permissionIdentity(attempt())).toBe('');
+    // A chain: version 3 in force replaces version 2, which had replaced version 1; no earlier version stands, even with v3 withdrawn.
+    const v2 = claim(hex('4'));
+    const v3 = obs({ version: '3', supersedes: 'PUBLIC-OBS-REDIS-2026-10-03@2', digest: hex('6'), withdrawnAt: NOW - 1 });
+    expect(await rig([old, v2, v3, egress()]).ports.permissionIdentity(attempt())).toBe('');
+    // An ambiguous successor that never took effect (candidate) replaces nothing.
+    expect(await rig([old, claim(hex('4'), { inForceAt: null }), claim(hex('5'), { inForceAt: null }), egress()]).ports.permissionIdentity(attempt())).not.toBe('');
+  });
+
   it('does not accept a tag label as a revision even when the record lists the same label', async () => {
     const { options } = rig([obs({ admittedRevisions: ['8.10.2'] }), egress()]);
     const tagged = createConsentPorts({ ...options, sources: [source('redis-redis', '8.10.2', 'readme')] });
@@ -198,7 +213,7 @@ function harness(records: AdmissionRecord[]) {
     requestId: 'r1', projectId: 'redis', snapshotId: 's1', startedAt: NOW,
     routes: { inventory: 'agent-sdk', plan: 'agent-sdk', author: 'agent-sdk', edit: 'agent-sdk', fidelity: 'agent-sdk', repair: 'agent-sdk' },
     budget: { maxCalls: 10, maxInputBytes: 200_000, maxOutputBytes: 20_000, maxUsageUnits: 100, maxElapsedMs: 10_000, maxRepairCycles: 0, accountingPolicy: 'p' },
-    sources: r.sources, readerQuestions: ['Why?'], requestedAssets: [],
+    sources: r.sources, readerQuestions: [{ id: 'why', topics: [], text: 'Why?' }], requestedAssets: [],
   };
   return { r, ports, base, rest, request, sent };
 }
