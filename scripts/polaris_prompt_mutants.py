@@ -114,7 +114,7 @@ M=[
  (P,'map-comparison-dropped',"purpose, advantage, comparison or trade-off","purpose, advantage or trade-off"),
  (P,'reduce-instruction-word',", choosing only among the blobIds the claims name.","."),
  (P,'reduce-comparisons-dropped',"For advantages, comparisons and trade-offs prefer","For advantages and trade-offs prefer"),
- (P,'map-version-unbumped',"'discovery-map': 'polaris-discovery-map-v2'","'discovery-map': 'polaris-discovery-map-v1'"),
+ (P,'map-version-unbumped',"'discovery-map': 'polaris-discovery-map-v3'","'discovery-map': 'polaris-discovery-map-v2'"),
  (P,'reduce-version-unbumped',"'discovery-reduce': 'polaris-discovery-reduce-v2' }","'discovery-reduce': 'polaris-discovery-reduce-v1' }"),
  (P,'discovery-instructions-swapped',"{ 'discovery-map': mapInstructions, 'discovery-reduce': reduceInstructions }","{ 'discovery-map': reduceInstructions, 'discovery-reduce': mapInstructions }"),
  # The quotation check in code.

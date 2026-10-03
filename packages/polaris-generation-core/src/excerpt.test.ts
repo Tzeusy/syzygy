@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { DECLARATION_LINE_MAX, DOC_COMMENT_SHARE_PERCENT, EXCERPT_KINDS, LICENCE_MARKERS, MAX_EXCERPT_RANGES, buildExcerpt } from './excerpt.js';
+import { DECLARATION_LINE_MAX, DOC_COMMENT_SHARE_PERCENT, EXCERPT_KINDS, LICENCE_MARKERS, MAX_EXCERPT_RANGES, PATTERN_PREFIX_MAX, buildExcerpt } from './excerpt.js';
 
 const BUDGET = 1500;
 const LICENCE = `/*
@@ -218,5 +218,54 @@ describe('excerpt: ranges are exact UTF-8 byte ranges of the text it was handed'
   it('merge neighbouring lines into one range', () => {
     const ex = buildExcerpt('a.c', '#define A 1\n#define B 2\n#define C 3\n', 0, BUDGET);
     expect(ex.ranges).toEqual([[0, 35]]);
+  });
+});
+
+describe('excerpt: line endings and hostile lines', () => {
+  const crlf = (text: string): string => text.replace(/\n/gu, '\r\n');
+  const mixed = (text: string): string => text.split('\n').map((line, i) => (i % 2 === 0 ? `${line}\r` : line)).join('\n');
+  const forms: [string, string][] = [['LF', BODY], ['CRLF', crlf(BODY)], ['mixed', mixed(BODY)]];
+
+  for (const [name, body] of forms) {
+    it(`${name}: the bytes at the recorded ranges, joined by one newline, are the excerpt text`, () => {
+      const ex = buildExcerpt('src/widget.c', body, 0, BUDGET);
+      expect(ex.kind).toBe('code-declarations');
+      expect(quoted(body, ex.ranges).join('\n')).toBe(ex.text);
+      for (const [a, b] of ex.ranges) expect(b).toBeGreaterThan(a);
+      const [from, to] = ex.licenceSkipped!;
+      expect(bytes(body).subarray(from, to).toString('utf8')).toContain('Copyright');
+    });
+
+    it(`${name}: the after-licence fallback quotes exact bytes too`, () => {
+      const plain = `${LICENCE}\nstatic const char *banner = "hello";\n\nstatic int counter = 3;\n`;
+      const text = name === 'LF' ? plain : name === 'CRLF' ? crlf(plain) : mixed(plain);
+      const ex = buildExcerpt('src/data.c', text, 0, BUDGET);
+      expect(ex.kind).toBe('code-after-licence');
+      expect(ex.text).toBe('static const char *banner = "hello";\nstatic int counter = 3;');
+      expect(quoted(text, ex.ranges).join('\n')).toBe(ex.text);
+    });
+  }
+
+  it('a blank line inside a CRLF doc comment leaves no empty range', () => {
+    const body = crlf('/* first line\n\n   second line */\nint f(int x) {\n}\n');
+    const ex = buildExcerpt('a.c', body, 0, BUDGET);
+    expect(ex.ranges.every(([a, b]) => b > a)).toBe(true);
+    expect(ex.text).toBe('/* first line\n   second line */\nint f(int x) {');
+    expect(quoted(body, ex.ranges).join('\n')).toBe(ex.text);
+  });
+
+  for (const [name, lead] of [['a tag keyword', 'struct'], ['an identifier', 'a']] as const) {
+    it(`stays linear on one 100k line of spaces after ${name}`, () => {
+      const hostile = `${lead}${' '.repeat(100_000)}x\nint f(int a) {\n}\n`;
+      const started = Date.now();
+      const ex = buildExcerpt('a.c', hostile, 0, BUDGET);
+      expect(Date.now() - started).toBeLessThan(500);
+      expect(ex.text).toBe('int f(int a) {');
+    });
+  }
+
+  it('never takes a line longer than the pattern prefix as a declaration', () => {
+    const long = `#define LONG ${'x'.repeat(PATTERN_PREFIX_MAX)}\n#define SHORT 1\n`;
+    expect(buildExcerpt('a.c', long, 0, BUDGET).text).toBe('#define SHORT 1');
   });
 });

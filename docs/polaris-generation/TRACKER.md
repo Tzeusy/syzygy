@@ -182,6 +182,11 @@ Authorized implementation work (generator implementation authorization,
         provider envelope are unchanged and egress version 2 needs no repair;
         the excerpt kind, the UTF-8 byte ranges it quotes and the skipped
         licence range live in the receipt (`excerpts`), never in the request.
+        Every pattern sees at most 512 characters and a longer line is never
+        a declaration (target-controlled bytes stay linear); blank lines are
+        not quoted, so no range is empty; ranges are exact bytes under LF,
+        CRLF and mixed endings. The map prompt describes the excerpt and is
+        `polaris-discovery-map-v3`.
         Measured on the synthetic fixture (header text written from general
         knowledge): all 190 C files had no code line in the old excerpt; none
         do now (mean 17 code lines), none repeats the licence comment, and

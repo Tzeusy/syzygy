@@ -25,6 +25,8 @@ export const DOC_COMMENT_SHARE_PERCENT = 40;
 /** A declaration line longer than this is cut. */
 export const DECLARATION_LINE_MAX = 160;
 export const MAX_EXCERPT_RANGES = 512;
+/** The line patterns see at most this many characters, and a longer line is never a declaration: the patterns stay linear on target-controlled bytes. */
+export const PATTERN_PREFIX_MAX = 512;
 
 /** A leading comment is a licence block when it holds one of these, matched literally and case-sensitively. */
 export const LICENCE_MARKERS = ['Copyright', 'SPDX-License-Identifier', 'Permission is hereby granted', 'Licensed under'] as const;
@@ -32,7 +34,7 @@ const C_FAMILY = ['.c', '.h', '.cc', '.cpp', '.cxx', '.hpp', '.hh', '.cu'] as co
 const HEADER_EXTENSIONS = ['.h', '.hpp', '.hh'] as const;
 
 const DEFINE_LINE = /^#[ \t]*define[ \t]+[A-Za-z_][A-Za-z0-9_]*/u;
-const TAG_LINE = /^(?:typedef[ \t]+)?(?:struct|enum|union)\b[^;()]*\{?[ \t]*$/u;
+const TAG_LINE = /^(?:typedef[ \t]+)?(?:struct|enum|union)\b[^;()]*$/u;
 const FUNCTION_LINE = /^[A-Za-z_][A-Za-z0-9_ \t*]*[A-Za-z0-9_*][ \t]*\(/u;
 const NOT_A_FUNCTION = /^(?:if|for|while|switch|return|else|do|case|goto|typedef|sizeof|define|include|extern)\b/u;
 
@@ -91,6 +93,7 @@ function skipLicence(lines: readonly Line[]): { readonly next: number; readonly 
 function mergeRanges(ranges: ExcerptRange[]): ExcerptRange[] {
   const out: [number, number][] = [];
   for (const [start, end] of ranges) {
+    if (end <= start) continue;
     const last = out.at(-1);
     if (last !== undefined && start - last[1] <= 1) last[1] = end; else out.push([start, end]);
   }
@@ -105,6 +108,7 @@ function codeExcerpt(path: string, body: string, base: number, maxChars: number)
   /** Adds one whole source line (cut at the line limit) if it fits with its separator. */
   const add = (line: Line, limit: number = maxChars): boolean => {
     const text = cut(line.text, DECLARATION_LINE_MAX);
+    if (text === '') return true; // a blank line has no bytes to quote
     const cost = text.length + (segments.length > 0 ? 1 : 0);
     if (used + cost > limit) return false;
     segments.push({ text, start: line.start, end: line.start + Buffer.byteLength(text, 'utf8') });
@@ -128,7 +132,7 @@ function codeExcerpt(path: string, body: string, base: number, maxChars: number)
       }
     }
     const t = line.text;
-    if (t === '') continue; // every pattern below is anchored at column zero, so indented lines, braces and comments never match
+    if (t === '' || t.length > PATTERN_PREFIX_MAX) continue; // every pattern below is anchored at column zero, so indented lines, braces and comments never match
     const before = t.split('(')[0] ?? '';
     const isFunction = FUNCTION_LINE.test(t) && !NOT_A_FUNCTION.test(t)
       && /\s/u.test(before.trim()) && (isHeaderFile || !t.trimEnd().endsWith(';'));
