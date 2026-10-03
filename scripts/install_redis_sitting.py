@@ -60,7 +60,6 @@ CG = "scripts/check_governance.py"
 REQUIRED_RECORDS = (
     f"{DECISIONS}/PUBLIC-REPO-ADMISSION-REQUESTS-OBSERVATION-ACT.md",
     f"{DECISIONS}/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md",
-    f"{DECISIONS}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md",
     f"{DECISIONS}/PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-ACT.md",
     f"{DECISIONS}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md",
     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md",
@@ -74,9 +73,19 @@ ROUTE_B = ("MESSAGES_API_ACTS[0][0]", "PUBLIC-ADMISSION-REGISTRY-MESSAGES-API-RO
 PERFORMED_COMMON = (
     ("PUBLIC_ADMISSION_ACTS[0][0]", "PUBLIC-REPO-ADMISSION-REQUESTS-OBSERVATION-ACT.md", "PUBLIC_ADMISSION_MANIFEST"),
     ("PUBLIC_ADMISSION_ACTS[1][0]", "PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md", "PUBLIC_ADMISSION_MANIFEST"),
-    ("PUBLIC_ADMISSION_ACTS[2][0]", "PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md", "PUBLIC_ADMISSION_MANIFEST"),
     ("PUBLIC_REGISTRY_ACTS[1][0]", "PUBLIC-ADMISSION-REGISTRY-GIT-SOURCE-ACT.md", "PUBLIC_REGISTRY_MANIFEST"),
 )
+
+
+#: The egress consent is one of two versions; the sitting offers version 2 in place of version 1
+#: (packet row 8 against row 6), so version 1 may stay unperformed. At least one must exist, and each
+#: that exists is registered.
+EGRESS_V1 = ("PUBLIC_ADMISSION_ACTS[2][0]", "PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md", "PUBLIC_ADMISSION_MANIFEST")
+EGRESS_V2 = ("PUBLIC_EGRESS_V2_ACTS[0][0]", "PUBLIC-EGRESS-V2-ANTHROPIC-ACT.md", "PUBLIC_EGRESS_V2_MANIFEST")
+
+
+def egress_records(root: pathlib.Path) -> list[tuple[str, str, str]]:
+    return [e for e in (EGRESS_V1, EGRESS_V2) if (root / DECISIONS / e[1]).is_file()]
 
 
 def provider_routes(root: pathlib.Path) -> list[tuple[str, str, str]]:
@@ -88,7 +97,10 @@ def performed(root: pathlib.Path) -> tuple[tuple[str, str, str], ...]:
     if len(routes) != 1:
         raise Refusal(f"exactly one provider route record must exist (the two routes are substitutes, "
                       f"RFC4-1); found {[r[1] for r in routes]}")
-    return PERFORMED_COMMON + (routes[0],)
+    egress = egress_records(root)
+    if not egress:
+        raise Refusal("no egress consent record exists (version 2, or version 1)")
+    return PERFORMED_COMMON + (routes[0],) + tuple(egress)
 
 
 RFC5_PKG = f"{CAND}/rfc5-project-documentation-class"
@@ -255,7 +267,40 @@ def missing_records(root: pathlib.Path) -> list[str]:
     missing = [r for r in REQUIRED_RECORDS if not (root / r).is_file()]
     if not provider_routes(root):
         missing.append(f"{DECISIONS}/{ROUTE_A[1]}  (route A)  or  {DECISIONS}/{ROUTE_B[1]}  (route B)")
+    if not egress_records(root):
+        missing.append(f"{DECISIONS}/{EGRESS_V2[1]}  (egress version 2, row 8)  or  {DECISIONS}/{EGRESS_V1[1]}  (version 1, row 6)")
     return missing
+
+
+STAGE_MAP_TS = "apps/three-surface-poc/src/polaris-generation/dossier-stage-authority.ts"
+STAGE_MAP_ROWS = (("EGRESS_V1_DIGEST", EGRESS_V1, "[...NARRATIVE_STAGES]"),
+                  ("EGRESS_V2_DIGEST", EGRESS_V2, "[...NARRATIVE_STAGES, ...DISCOVERY_STAGES]"))
+
+
+def check_stage_map(root: pathlib.Path) -> str:
+    """The wiring's per-digest stage map must name the digest of each performed egress record (the
+    act's argument) and give version 2 the narrative and the two discovery stages, version 1 the
+    narrative stages only. Read-only. Returns a note; refuses on a mismatch. A tree without the
+    wiring (its pull request unmerged) is reported, not refused: nothing there reads the map."""
+    path = root / STAGE_MAP_TS
+    if not path.is_file():
+        return "stage map: not in this tree (the wiring pull request is unmerged); not checked [Unknown]"
+    text = path.read_text()
+    checked = []
+    for const, (_label, record, _m), stages in STAGE_MAP_ROWS:
+        rec = root / DECISIONS / record
+        if not rec.is_file():
+            continue
+        args = re.findall(r"^Exact digest \(SHA-256\): `([0-9a-f]{64})`", rec.read_text(), re.M)
+        decl = re.findall(rf"export const {const} = '([0-9a-f]{{64}})'", text)
+        if len(args) != 1 or len(decl) != 1:
+            raise Refusal(f"stage map: {record} carries {len(args)} argument lines and the map declares {const} {len(decl)} times, expected one each")
+        if args[0] != decl[0]:
+            raise Refusal(f"stage map: {const} is not the digest {record} bound; the gate would authorise no stage for the record in force")
+        if f"[{const}, Object.freeze({stages})]" not in text:
+            raise Refusal(f"stage map: {const} does not map to the stages {stages}")
+        checked.append(const)
+    return f"stage map: {', '.join(checked)} equal the recorded act arguments"
 
 
 def rfc5_precondition(root: pathlib.Path) -> None:
@@ -792,6 +837,7 @@ def run(root: pathlib.Path, write: bool) -> int:
         return 2
     try:
         rfc5_precondition(root)
+        print(check_stage_map(root))
         pending = []
         for name, fn in STEPS:
             if fn(root, write):
@@ -936,9 +982,57 @@ def policy_selftests() -> list[tuple[str, bool]]:
     return ok
 
 
+def egress_selftests() -> list[tuple[str, bool]]:
+    """Which egress version is recorded, and the stage map against the recorded arguments."""
+    ok: list[tuple[str, bool]] = []
+
+    def refused(fn) -> bool:
+        try:
+            fn()
+        except Refusal:
+            return True
+        return False
+
+    d1, d2 = "1" * 64, "2" * 64
+
+    def act(arg):
+        return f"# act\n\nExact digest (SHA-256): `{arg}`\n"
+
+    def stage_map(c1, c2, v1_stages="[...NARRATIVE_STAGES]", v2_stages="[...NARRATIVE_STAGES, ...DISCOVERY_STAGES]"):
+        return (f"export const EGRESS_V1_DIGEST = '{c1}';\nexport const EGRESS_V2_DIGEST = '{c2}';\n"
+                f"new Map([[EGRESS_V1_DIGEST, Object.freeze({v1_stages})],\n  [EGRESS_V2_DIGEST, Object.freeze({v2_stages})]]);\n")
+
+    with tempfile.TemporaryDirectory() as t:
+        root = pathlib.Path(t)
+        (root / DECISIONS).mkdir(parents=True)
+        ok.append(("egress: none recorded is refused as missing", egress_records(root) == []
+                   and any("egress" in m for m in missing_records(root))))
+        (root / DECISIONS / EGRESS_V2[1]).write_text(act(d2))
+        ok.append(("egress: version 2 alone is enough and v1 stays unregistered", egress_records(root) == [EGRESS_V2]))
+        (root / DECISIONS / EGRESS_V1[1]).write_text(act(d1))
+        ok.append(("egress: both versions are registered when both exist", egress_records(root) == [EGRESS_V1, EGRESS_V2]))
+        ok.append(("stage map: absent file is reported, not refused", "not checked" in check_stage_map(root)))
+        ts = root / STAGE_MAP_TS
+        ts.parent.mkdir(parents=True)
+        ts.write_text(stage_map(d1, d2))
+        ok.append(("stage map: constants equal the recorded arguments", "equal the recorded" in check_stage_map(root)))
+        ts.write_text(stage_map(d1, "3" * 64))
+        ok.append(("stage map: a constant that is not the bound argument is refused", refused(lambda: check_stage_map(root))))
+        ts.write_text(stage_map(d1, d2, v2_stages="[...NARRATIVE_STAGES]"))
+        ok.append(("stage map: version 2 without the discovery stages is refused", refused(lambda: check_stage_map(root))))
+        ts.write_text(stage_map(d1, d2, v1_stages="[...NARRATIVE_STAGES, ...DISCOVERY_STAGES]"))
+        ok.append(("stage map: version 1 with the discovery stages is refused", refused(lambda: check_stage_map(root))))
+        ts.write_text(stage_map(d1, d2).replace("export const EGRESS_V2_DIGEST", "const EGRESS_V2_DIGEST"))
+        ok.append(("stage map: an undeclared constant is refused", refused(lambda: check_stage_map(root))))
+        (root / DECISIONS / EGRESS_V1[1]).unlink()
+        ts.write_text(stage_map("9" * 64, d2))
+        ok.append(("stage map: an unperformed version's constant is not checked", "EGRESS_V2_DIGEST" in check_stage_map(root)))
+    return ok
+
+
 def selftest() -> int:
     ok: list[tuple[str, bool]] = []
-    both = {"a": PERFORMED_COMMON + (ROUTE_A,), "b": PERFORMED_COMMON + (ROUTE_B,)}
+    both = {"a": PERFORMED_COMMON + (ROUTE_A, EGRESS_V2), "b": PERFORMED_COMMON + (ROUTE_B, EGRESS_V2, EGRESS_V1)}
     ok.append(("registrations code defines and calls its function",
                registrations_code(both["a"]).count(REGISTRATIONS_MARK) == 2))
     for route, perf in both.items():
@@ -1014,7 +1108,7 @@ def selftest() -> int:
         root = pathlib.Path(t)
         ok.append(("an empty tree is refused for every record and for the provider route",
                    missing_records(root)[:len(REQUIRED_RECORDS)] == list(REQUIRED_RECORDS)
-                   and len(missing_records(root)) == len(REQUIRED_RECORDS) + 1))
+                   and len(missing_records(root)) == len(REQUIRED_RECORDS) + 2))
         ok.append(("refusal writes nothing", run(root, True) == 2 and not any(root.iterdir())))
         act = root / RFC5_ACT
         act.parent.mkdir(parents=True)
@@ -1063,6 +1157,7 @@ def selftest() -> int:
             ok.append(("a missing mirror is refused", False))
         except Refusal:
             ok.append(("a missing mirror is refused", True))
+    ok.extend(egress_selftests())
     failed = [n for n, g in ok if not g]
     for n, g in ok:
         print(("ok   " if g else "FAIL ") + n)
