@@ -1,0 +1,86 @@
+{
+  "subject": {
+    "commit": "6b54e594e03a4e1d14343e65cab458e7b0c5cc1f",
+    "branch": "agent/dossier-render-followup-e",
+    "fileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-render.ts": "9bf694520151a4bc0e87da2e87235aa6443ae78319df9ec0aa83aaa8bec73078"
+    }
+  },
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/three-surface-poc-app",
+  "ranAt": "2026-10-03T20:38:30+00:00",
+  "mutants": [
+    {
+      "id": "id-entry-banner-plain",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "bannerFor('run-stopped/entry')",
+      "new": "bannerFor('run-stopped')",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 52
+    },
+    {
+      "id": "id-dive-banner-colon",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "bannerFor(`run-stopped/dive/${dive.id}`)",
+      "new": "bannerFor(`run-stopped:${dive.id}`)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 52
+    },
+    {
+      "id": "id-not-generated-colon",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "claim('aside', `not-generated/${id}`",
+      "new": "claim('aside', `not-generated:${id}`",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 52
+    },
+    {
+      "id": "id-unresolved-dash",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "`unresolved/${index + 1}`",
+      "new": "`unresolved-${index + 1}`",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "id-glossary-term-colon",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "claim('dd', `glossary/${term.id}`",
+      "new": "claim('dd', `glossary:${term.id}`",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 52
+    },
+    {
+      "id": "id-glossary-empty-colon",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "old": "claim('p', 'glossary/not-generated'",
+      "new": "claim('p', 'glossary:not-generated'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    }
+  ]
+}
