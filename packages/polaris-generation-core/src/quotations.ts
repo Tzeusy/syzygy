@@ -25,22 +25,24 @@ export function normalizeQuotation(text: string): string {
 
 /**
  * True when every quotation in `text` matches one of `sourceTexts`. A
- * quotation starts after QUOTATION_LEAD; since it may itself contain double
- * quotes, every later `"` is a candidate end, and the quotation matches when
- * some candidate's normalized text is a non-empty substring of a normalized
- * source: any contiguous span of one source, never words joined from two.
- * Text without the lead has nothing to check.
+ * quotation starts after QUOTATION_LEAD and, since it may itself contain
+ * double quotes, ends at the last `"` before the next lead (or the end of the
+ * text): the whole span must match, so a matching opening cannot carry an
+ * unverified tail, and a `"` in prose after a quotation fails the check rather
+ * than shortening it. A span matches when its normalized text is non-empty and
+ * a substring of one normalized source: any contiguous span of one source,
+ * never words joined from two. Text without the lead has nothing to check.
  */
 export function quotationsMatch(text: string, sourceTexts: readonly string[]): boolean {
   const sources = sourceTexts.map(normalizeQuotation);
-  for (let at = text.indexOf(QUOTATION_LEAD); at >= 0; at = text.indexOf(QUOTATION_LEAD, at + 1)) {
+  for (let at = text.indexOf(QUOTATION_LEAD); at >= 0;) {
     const start = at + QUOTATION_LEAD.length;
-    let matched = false;
-    for (let end = text.lastIndexOf('"'); end >= start && !matched; end = text.lastIndexOf('"', end - 1)) {
-      const quoted = normalizeQuotation(text.slice(start, end));
-      matched = quoted.length > 0 && sources.some(source => source.includes(quoted));
-    }
-    if (!matched) return false;
+    const next = text.indexOf(QUOTATION_LEAD, start);
+    const end = text.lastIndexOf('"', (next < 0 ? text.length : next) - 1);
+    if (end < start) return false;
+    const quoted = normalizeQuotation(text.slice(start, end));
+    if (quoted.length === 0 || !sources.some(source => source.includes(quoted))) return false;
+    at = next;
   }
   return true;
 }
