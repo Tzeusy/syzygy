@@ -58,4 +58,22 @@ describe('PWB-to-generator projection', () => {
       expect(source.sourceId).not.toContain(source.path);
     }
   });
+
+  it('projects each record outcome with a listed reason through the population projection', () => {
+    const unknown = { failureState: 'secretMatchedOrUnclassifiable', degradationState: 'd', unknownReason: 'A free sentence the classifier wrote.' };
+    const row = (path: string, record: object, anchor: object = { kind: 'blob', objectId: 'a'.repeat(40) }) => ({ identity: `id:${path}`, path, anchor, claim: { evaluationId: 'e' }, record: { path, ...record } });
+    const model = { projectShape: { kind: 'observed', identity: { repositoryId: 'repository:fixture', revision: 'b'.repeat(40) }, sources: [
+      row('a.md', { outcome: 'excluded', exclusion: { exclusionReason: 'active-content' }, unknown }),
+      row('b.md', { outcome: 'excluded', exclusion: {}, unknown }),
+      row('c.md', { outcome: 'unavailable', reason: 'not-in-tree', unknown }, { kind: 'none' }),
+      row('d.md', { outcome: 'classified', basis: 'body' }),
+      row('e.md', { outcome: 'classified', basis: 'path-only' }),
+    ] } } as unknown as Parameters<typeof generationSourcesFromPocModel>[0];
+    const byPath = new Map(generationSourcesFromPocModel(model).map(source => [source.path, source.exclusion]));
+    expect(byPath.get('a.md')).toEqual({ excluded: true, reason: 'active-content' });
+    expect(byPath.get('b.md')).toEqual({ excluded: true, reason: 'policy-excluded' });
+    expect(byPath.get('c.md')).toEqual({ excluded: true, reason: 'not-in-tree' });
+    expect(byPath.get('d.md')).toEqual({ excluded: true, reason: 'body-not-retained-for-generation' });
+    expect(byPath.get('e.md')).toEqual({ excluded: false });
+  });
 });
