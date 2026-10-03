@@ -26,10 +26,13 @@ In plain words, if you give this act and a run follows:
   trigger supplies, which the owner sets and which this act does not (the
   `dossier-units-v1` proposal under "Proposed run budget" in the sitting packet).
 - **README files, guides, tutorials and design documents** of those
-  repositories become sendable under the new `project-documentation` class.
-  Today the screening scope treats such prose as indeterminate and withholds
-  it. This is the one widening of what kinds of content may leave, and it takes
-  effect only after sitting row 7 is performed.
+  repositories become *egress-eligible* under the new `project-documentation`
+  class (RFC5-14), once sitting row 7 is performed. Eligible is not read: under
+  the screening scope in force (row 1) such prose stays indeterminate and is
+  withheld at the read, and it is actually read and sent only once a later
+  screening scope that maps `project-documentation` is in force. That successor
+  scope is a separate owner act, not part of this one; until it is, signing this
+  record sends none of these files.
 - **Nothing about the route changes.** Which route carries the requests (Agent
   SDK or Messages API) is the separate choice in row 2a; this record only says
   the requests may carry that route's listed bytes, and only while that route's
@@ -48,7 +51,9 @@ template and parameters (compare the two files):
 
 1. the record version (`v2.json`);
 2. the permitted content classes gain `project-documentation`, a declared and
-   intended widening (the class list is otherwise the first version's);
+   intended widening of what is egress-eligible (the class list is otherwise
+   the first version's); what is read still waits on a screening scope that
+   maps the class;
 3. the carried-content table is the one
    `scripts/derive_generator_sent_text.mjs --table --discovery` prints from the
    code at regeneration time: the first version's rows plus the discovery

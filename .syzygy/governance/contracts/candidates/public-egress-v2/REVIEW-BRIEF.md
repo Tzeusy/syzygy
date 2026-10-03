@@ -92,8 +92,10 @@ findings). Findings as `**Finding N — title** (blocking|revise|note)`.
     while its entry is in force, and does it leave stripping to the owner?
 12. **What the owner is told.** Does the packet say in plain words what signing
     lets leave the machine (excerpts of files of the two named repositories for
-    discovery ranking, and README and guide files under the new class), with the
-    caps, and that nothing about the route changes? Check the caps against
+    discovery ranking, and that README and guide files become egress-eligible
+    under the new class but are read only once a screening scope that maps the
+    class is in force), that the record sets no volume cap, and that nothing
+    about the route changes? Check the stated defaults against
     `packages/polaris-generation-core/src/discovery.ts`.
 13. **Per-route parameters.** For each route, are the pinned parameters (model,
     effort, tools, thinking, output ceiling) and the endpoint stated as that
