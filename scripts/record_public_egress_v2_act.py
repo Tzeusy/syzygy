@@ -33,7 +33,8 @@ written:
    packet may gain one PERFORMED head), and the packet carries no 64-hex token;
 5. the confirming raw's first four non-blank lines carry
    `Reviewed commit: <40 hex>`, `Manifest SHA-256: <SHA-256 of the manifest
-   FILE>` and a verdict of `CONFIRM` or `CONFIRM WITH EXCEPTIONS`; the latter
+   FILE, the value `--manifest-digest` prints, not the record digest
+   `--digests` prints>` and a verdict of `CONFIRM` or `CONFIRM WITH EXCEPTIONS`; the latter
    clears the bytes only when every finding is a `note` and the sibling
    `ROUND-<n>-DISPOSITIONS.md` names the raw and dispositions every finding;
 6. the owner's selection (opening, label, description) is non-empty, one line
@@ -76,8 +77,8 @@ RECORD_REL = PKG / build.RECORD
 #: is outside RFC5-14's closed vocabulary, so this act is refused.
 CLASS_ACT_REL = DECISIONS / "RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md"
 #: Provisional until a round returns: the confirming raw and its notes record.
-CONFIRMATION_REVIEW_REL = PKG / "reviews/R-EGRESS-V2-2-RAW.md"
-DISPOSITION_REL = PKG / "ROUND-2-DISPOSITIONS.md"
+CONFIRMATION_REVIEW_REL = PKG / "reviews/R-EGRESS-V2-3-RAW.md"
+DISPOSITION_REL = PKG / "ROUND-3-DISPOSITIONS.md"
 #: The commit the confirming review read. None until a round returns CONFIRM
 #: or notes-only CONFIRM WITH EXCEPTIONS; then set to that commit and the
 #: round's two paths above, never hand-edited again. While None, every
@@ -638,6 +639,9 @@ def selftest() -> int:
         results.append((f"{name} refused", _raises(lambda bad=bad: expected(
             act, arg, "2026-10-04", ok_sel, make(), bad))))
     results.append(("record, check and a repeat --record on a scratch tree with no git", _end_to_end()))
+    import record_public_repo_admission_acts as v1rec
+    results.append(("the first version's recorder refuses on exactly this act's record path",
+                    v1rec.EGRESS_V2_ACT_REL == ACTS[0].record))
     failed = [name for name, ok in results if not ok]
     for name, ok in results:
         print(("ok   " if ok else "FAIL ") + name)
