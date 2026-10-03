@@ -30,9 +30,13 @@ A blank line after the title breaks the head.
 
 Each is yes or no with the evidence that settles it.
 
-1. **Three differences only.** Diff the record against the first version's.
-   Are the version, the added class and the table the only differences, other
-   than the instance header and the revocation line? Quote each differing line.
+1. **The differences are exactly the listed ones.** Diff the record against the
+   first version's. Are the version, the added class, the table, and the
+   route-neutral wording (provider line, retention, the "beyond these fields"
+   paragraph, the model-sees-only condition, route context and telemetry) the
+   only differences, other than the instance header, the title and the
+   revocation line? Quote each differing line. Does the template differ from
+   the first version's template only in the lines that make this so?
 2. **Is the supersession sentence right?** Quote RFC5-13. Does "prospective"
    hold, and is signing this version alone coherent with REQ-polaris-generation-025
    (consents separately revocable)?
@@ -56,3 +60,18 @@ Each is yes or no with the evidence that settles it.
 
 One of CONFIRM, CONFIRM WITH EXCEPTIONS (notes only), REVISE (blocking
 findings). Findings as `**Finding N — title** (blocking|revise|note)`.
+
+## Added criteria for the route-neutral wording
+
+8. **Neutral and sufficient.** Read the record against both registry entries
+   (PR #255 and PR #273): does it permit exactly the bytes each entry lists
+   and no other, with neither route hard-coded? Quote the clause for the
+   entry-pinned fields (model, effort, tools, thinking, output ceiling). Does
+   it still refuse a field outside the table?
+9. **Independence.** Does anything in the record make signing it choose a
+   route, or make a route entry depend on signing it? The packet says they are
+   independent; is that true of the bytes?
+10. **No weakening.** Is any first-version condition (tools off, no context of
+    its own beyond the listed bytes, telemetry off, run-directory retention)
+    weaker here than there? Name each change and say whether it is a
+    restatement or a loosening.
