@@ -21,17 +21,21 @@ uses a Claude login or subscription; the run is billed to the API account.
 (sitting packet rows in brackets):
 
 - Screening scope for public sources [row 1]. [Row 12, version 2, is what lets
-  the repository's README and guides be read; without it the dossier is built
+  the repository's README and guides be read, and it is one pick of four variant
+  rows (none, manifesto, architecture, both): MANIFESTO and ARCHITECTURE files
+  are read only under the matching variant. Its last repair is unreviewed, so
+  it is not yet offered as confirmed. Without it the dossier is built
   from code, tree and specification text only.]
 - One provider route [row 2a], and your decision to supply an API key and accept
   API-account billing [row 2b, a direction, not an act].
 - The Git-hosting source-acquisition adapter [row 3] and the Redis observation
   consent [row 5].
-- Egress consent that lists Redis [row 8; row 6 is the alternative]. Only the
+- Egress consent that lists Redis [row 8; row 6 alone does not authorise discovery]. Only the
   second egress version authorises the two discovery stages; the first
   authorises the six narrative stages only [Observed in
   `dossier-stage-authority.ts`: an unknown record digest opens no stage].
-  What a run does when its discovery calls are refused is [Unknown].
+  The sitting packet's consequence is that discovery cannot run without row 8;
+  what the command does when its discovery calls are refused is [Unknown].
 - The RFC5-14 class [row 7] before row 8, and the narrative profile [row 9] if
   you want the page to have a specification basis.
 
@@ -131,7 +135,8 @@ npm run poc:dossier -- https://github.com/redis/redis/tree/8.10.2 --route agent-
    calls.
 5. Render the pages and write the run directory.
 
-Budget [Observed in `dossier-run-profile.ts` at `d6601785`; [Inferred] every
+Budget [Observed in `dossier-run-profile.ts` at `d6601785`, #334's unmerged head (the
+sitting packet says the budget is "not yet in code", true on main today); [Inferred] every
 figure is a proposal from code caps, unmeasured]: one run profile
 (`DOSSIER_RUN_PROFILE`) holds the run total, the discovery share, the cost cap
 of one discovery call and the wall clock (2 hours, discovery included). Units
@@ -221,8 +226,10 @@ the narrative journal).
   partial pages (exit 7) are real output of completed stages. A new run is a
   fresh run: it needs a new `--out` and spends again; the earlier state
   directory is kept as evidence and is never reused.
-- [Inferred] Do not raise the budget without telling the owner: the figures are
-  what the egress record's packet tells you bounds what leaves the machine.
+- The budget is your own limit, not a term of the consent: the sitting packet
+  says it binds nothing and the egress v2 packet says that record caps no
+  volume. Change it knowingly, in the run profile, and expect the run record to
+  show the profile it ran under.
 - A provider 429 or 529 is retried with backoff inside the run budget [Observed
   in the provider README]; any other provider failure is recorded as uncertain
   and stops the run.
