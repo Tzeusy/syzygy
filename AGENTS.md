@@ -241,7 +241,8 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   flooding protection silently drops same-document navigations past 200
   per ten seconds, so a fast keyboard sweep reads as a stuck hash from
   the first activation past the budget (index 200 on a tight loop; 600 on
-  the live `/polaris` sweep, where pacing and re-navigations also count): `launchBrowser` passes
+  the live `/polaris` sweep, where pacing and re-navigations also
+  count): `launchBrowser` passes
   `--disable-ipc-flooding-protection` (`syzygy-1z3.30`, 218 false
   violations).
 - Never put a fragment target (an `id` some `href="#…"` names) inside a
