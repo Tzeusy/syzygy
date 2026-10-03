@@ -36,7 +36,7 @@ import { quotableGenerationSources, type GenerationSource } from './generation-s
 /** The lead-in the dossier prompts ask for before a verbatim quotation: `The project states: "..."`. */
 export const QUOTE_LEAD_IN = 'The project states:';
 
-export type QuoteFindingKind = 'quote-not-in-cited-sources' | 'unterminated-quote' | 'empty-quote' | 'quote-without-cited-source' | 'lead-in-without-quote';
+export type QuoteFindingKind = 'quote-not-in-cited-sources' | 'unterminated-quote' | 'empty-quote' | 'quote-without-cited-source' | 'lead-in-without-quote' | 'elided-quote';
 export interface QuoteFinding {
   readonly blockId: string;
   readonly kind: QuoteFindingKind;
@@ -63,11 +63,13 @@ export function normaliseForQuote(text: string): string {
     .replace(/&(#[0-9]+|#[xX][0-9a-fA-F]+|[a-zA-Z]+);/gu, decodeEntity)
     .replace(/\\([!-/:-@[-`{-~])/gu, '$1')
     .replace(/`/gu, '')
-    .replace(/[*_]/gu, '')
+    .replace(EMPHASIS, '$2').replace(EMPHASIS, '$2')
     .replace(/[\u2018\u2019]/gu, "'").replace(/[\u201c\u201d]/gu, '"')
     .replace(/\s+/gu, ' ').trim();
 }
 
+/** Emphasis only as a pair at word edges (`*x*`, `_x_`, `**x**`, `__x__`) on one line: an unpaired or intraword `*` or `_` (`active_expire`, `*p`) is the source's own character. */
+const EMPHASIS = /(?<![\p{L}\p{N}])(\*\*|__|\*|_)([^\n]*?[^\s])\1(?![\p{L}\p{N}])/gu;
 const NORMALISED = new Map<string, string>();
 /** `normaliseForQuote` of a source, memoised: one draft checks many blocks against the same few texts. */
 function normaliseSource(text: string): string {
@@ -80,6 +82,8 @@ function normaliseSource(text: string): string {
   return out;
 }
 
+/** An ellipsis or a bracketed one inside a quotation that is not in the source verbatim: an elision, which can splice a meaning together. */
+const ELLIPSIS = /\.{3}|\u2026/u;
 const WORD = /[\p{L}\p{N}]/u;
 
 /** First index at or after `from` where `piece` occurs on word boundaries, or -1. */
@@ -180,7 +184,7 @@ export function inspectBlockQuotes(block: QuoteBlock, sourceText: ReadonlyMap<st
     if (!span.terminated) findings.push({ blockId: block.id, kind: 'unterminated-quote', quote: clip(span.inner) });
     else if (normaliseForQuote(span.inner).length === 0) findings.push({ blockId: block.id, kind: 'empty-quote', quote: clip(span.inner) });
     else if (cited.length === 0) findings.push({ blockId: block.id, kind: 'quote-without-cited-source', quote: clip(span.inner) });
-    else if (!span.ok) findings.push({ blockId: block.id, kind: 'quote-not-in-cited-sources', quote: clip(span.inner) });
+    else if (!span.ok) findings.push({ blockId: block.id, kind: ELLIPSIS.test(span.inner) ? 'elided-quote' : 'quote-not-in-cited-sources', quote: clip(span.inner) });
   }
   // A lead-in promises a verbatim quotation; one with no quote after it promises bytes it does not show.
   for (let at = block.text.indexOf(leadIn); at !== -1; at = block.text.indexOf(leadIn, at + leadIn.length)) {
@@ -237,6 +241,7 @@ export function quoteFindingAsReviewFinding(finding: QuoteFinding): { severity: 
     'unterminated-quote': 'opens a quotation that is never closed',
     'empty-quote': 'is an empty quotation',
     'quote-without-cited-source': 'quotes text but cites no source',
+    'elided-quote': 'elides text with an ellipsis, which is not allowed (the ellipsis is not in the source at that spot)',
     'lead-in-without-quote': 'announces a verbatim quotation and gives none',
   };
   return { severity: 'blocking', message: `Quotation ${finding.quote === '' ? '' : `"${finding.quote}" `}${what[finding.kind]} (${finding.kind}). Quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred.`, target: finding.blockId };

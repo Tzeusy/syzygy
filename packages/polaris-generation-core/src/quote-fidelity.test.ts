@@ -87,6 +87,7 @@ describe('folding forms of a true quotation', () => {
   const FOLD = sourceTextById(files([
     ['src-fold', 'Use `maxmemory` to bound it; it’s “every key” &amp; more. The &lt;b&gt; tag, &#65; and &#x42; and\\_snake\\_case\\*.\n/* one-line comment */\nint SET = 1; // the SET command\n'],
     ['src-close', 'first line\n */ second after the close\n'],
+    ['src-under', 'Call active_expire_cycle, then *p = *q, and 2*3*4 and foobar.'],
     ['src-dots', 'He paused and said: wait... what is that?'],
     ['src-digits', 'The default port is 6379 for Redis.'],
     ['src-ellipsis', 'Redis evicts keys when memory is full, using an approximate LRU that samples a few keys, and then removes the best candidate.'],
@@ -116,15 +117,28 @@ describe('folding forms of a true quotation', () => {
     expect(run('It says "one-line comment"', 'src-fold')).toEqual([]);
     expect(run('It says "the SET command"', 'src-fold')).toEqual([]);
   });
-  it('does not allow elision: an ellipsis must be in the source at that spot', () => {
-    expect(run('"Redis evicts keys ... removes the best candidate"', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
-    expect(run('"Redis evicts keys [\u2026] samples a few keys"', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
-    expect(run('"Redis evicts keys, \u2026 samples"', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
+  it('does not allow elision: an ellipsis, bracketed or not, is an elided-quote unless the source has it at that spot', () => {
+    expect(run('"Redis evicts keys ... removes the best candidate"', 'src-ellipsis')).toEqual(['elided-quote']);
+    expect(run('"Redis evicts keys [...] samples a few keys"', 'src-ellipsis')).toEqual(['elided-quote']);
+    expect(run('"Redis evicts keys [\u2026] samples a few keys"', 'src-ellipsis')).toEqual(['elided-quote']);
+    expect(run('"Redis evicts keys, \u2026 samples"', 'src-ellipsis')).toEqual(['elided-quote']);
     expect(run('"wait... what"', 'src-dots')).toEqual([]);
-    expect(run('"wait \u2026 what"', 'src-dots')).toEqual(['quote-not-in-cited-sources']);
+    expect(run('"wait \u2026 what"', 'src-dots')).toEqual(['elided-quote']);
+    expect(run('"invented words ..."', 'src-dots')).toEqual(['elided-quote']);
+    expect(run('"invented words"', 'src-dots')).toEqual(['quote-not-in-cited-sources']);
   });
   it('never joins two sources into one quotation', () => {
     expect(run('"The default port is 6379 for Redis. Redis evicts keys"', 'src-digits', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
+  });
+  it('drops * and _ only as paired emphasis at word edges, never inside an identifier or an unpaired pointer', () => {
+    expect(normaliseForQuote('a **bold** and __b__ and _em_ and *x* and ***both***')).toBe('a bold and b and em and x and both');
+    expect(normaliseForQuote('active_expire_cycle and *p = *q and 2*3*4')).toBe('active_expire_cycle and *p = *q and 2*3*4');
+    expect(run('"active_expire_cycle"', 'src-under')).toEqual([]);
+    expect(run('"active expire cycle"', 'src-under')).toEqual(['quote-not-in-cited-sources']);
+    expect(run('"activeexpirecycle"', 'src-under')).toEqual(['quote-not-in-cited-sources']);
+    expect(run('"foo_bar"', 'src-under')).toEqual(['quote-not-in-cited-sources']);
+    expect(run('"then *p = *q, and 2*3*4"', 'src-under')).toEqual([]);
+    expect(run('"then p = q, and 234"', 'src-under')).toEqual(['quote-not-in-cited-sources']);
   });
   it('matches only on word boundaries', () => {
     expect(run('The term "ed" appears', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
@@ -172,6 +186,7 @@ describe('the repair finding', () => {
     const { message } = quoteFindingAsReviewFinding({ blockId: 'b', kind: 'quote-not-in-cited-sources', quote: 'x' });
     expect(message).toContain('Quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred.');
     expect(message).not.toContain('own words');
+    expect(quoteFindingAsReviewFinding({ blockId: 'b', kind: 'elided-quote', quote: 'a ... b' }).message).toContain('elides text with an ellipsis, which is not allowed');
   });
 });
 
