@@ -117,13 +117,19 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
   catch (error) { return { state: 'unresolved-revision', reason: error instanceof Error ? error.message : 'ls-remote-failed' }; }
   const records = ports.records ?? noAdmissionRecords;
   const idPattern = /^[A-Za-z0-9:_-]+$/u;
-  const ids = [...new Set((await records.repositoryIdsFor(target.url)).filter((id): id is string => typeof id === 'string' && idPattern.test(id)))];
-  if (ids.length !== 1) {
-    const why = ids.length === 0 ? `no observation record names ${target.url} as its Upstream` : `${ids.length} observation records name ${target.url} as their Upstream (${ids.join(', ')}); the repository identity is ambiguous`;
+  // The port must answer an array of exactly one valid id; anything else (none, several, duplicates, a malformed element, a non-array, a throw) is an unmet gate.
+  let answer: unknown;
+  try { answer = await records.repositoryIdsFor(target.url); } catch { answer = undefined; }
+  const sole = Array.isArray(answer) && answer.length === 1 && typeof answer[0] === 'string' && idPattern.test(answer[0]) ? answer[0] : undefined;
+  if (sole === undefined) {
+    const why = !Array.isArray(answer) ? `the record store gave a malformed answer for ${target.url}`
+      : answer.length === 0 ? `no observation record names ${target.url} as its Upstream`
+      : answer.length > 1 ? `${answer.length} observation records name ${target.url} as their Upstream; the repository identity is ambiguous`
+      : `the record store gave a malformed repository id for ${target.url}`;
     const requirements = admissionRequirements(target, pinned.revision).map(requirement => ({ ...requirement, answer: { satisfied: false as const, why } }));
     return { state: 'admission-missing', target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, source: records.source, requirements, missing: requirements.length };
   }
-  target = { ...target, repositoryId: ids[0]! };
+  target = { ...target, repositoryId: sole };
   const requirements = admissionRequirements(target, pinned.revision);
   const checked = await Promise.all(requirements.map(async requirement => ({ ...requirement, answer: soundAnswer(await records.check(requirement)) })));
   const missing = checked.filter(entry => entry.answer.satisfied !== true).length;
