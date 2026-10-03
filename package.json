@@ -18,6 +18,7 @@
     "poc:capture-test-artifact": "npm run build:poc --silent && node apps/three-surface-poc/dist/capture-test-artifact-main.js",
     "poc:pwb-mutation-run": "npm run build:poc --silent && node apps/three-surface-poc/dist/pwb-mutation-run-main.js",
     "poc:accessibility-check": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-accessibility-main.js",
+    "poc:redis-shaped-discovery": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/redis-shaped-measure-main.js",
     "poc:fresh-checkout-demo": "npm run build:poc --silent && node apps/three-surface-poc/dist/fresh-checkout-demo-main.js",
     "poc:keyboard-sweep": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-keyboard-sweep-main.js",
     "poc:pwb-mutation-sweep": "npm run build:poc --silent && node apps/three-surface-poc/dist/pwb-mutation-sweep-main.js",

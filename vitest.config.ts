@@ -7,6 +7,7 @@ export default defineConfig({
       '@syzygy/polaris-generation-core': fileURLToPath(new URL('./packages/polaris-generation-core/src/index.ts', import.meta.url)),
       '@syzygy/polaris-generation-provider/testing': fileURLToPath(new URL('./packages/polaris-generation-provider/src/testing.ts', import.meta.url)),
       '@syzygy/polaris-generation-provider': fileURLToPath(new URL('./packages/polaris-generation-provider/src/index.ts', import.meta.url)),
+      '@syzygy/polaris-generation-consent/testing': fileURLToPath(new URL('./packages/polaris-generation-consent/src/testing.ts', import.meta.url)),
       '@syzygy/polaris-generation-consent': fileURLToPath(new URL('./packages/polaris-generation-consent/src/index.ts', import.meta.url)),
       '@syzygy/cap1-core': fileURLToPath(
         new URL('./packages/cap1-core/src/index.ts', import.meta.url),

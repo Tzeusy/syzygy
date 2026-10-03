@@ -1,0 +1,254 @@
+{
+  "subject": {
+    "commit": "ad19da4eb8a09fc2a975627dcd5fbb78dc56ba0c",
+    "branch": "agent/redis-shaped-discovery",
+    "fileSha256": {
+      "packages/polaris-generation-core/src/discovery.ts": "232f35eeecab2cc26c642fdef73d54e649bb9acab8667fac69dae26654693a87"
+    }
+  },
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-core",
+  "ranAt": "2026-10-03T20:25:53+00:00",
+  "mutants": [
+    {
+      "id": "vendored-tier-weak",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "export const VENDORED_TIER = -1000;",
+      "new": "export const VENDORED_TIER = -40;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 30
+    },
+    {
+      "id": "vendored-tier-removed",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "(vendored ? VENDORED_TIER : 0) + score",
+      "new": "score",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 30
+    },
+    {
+      "id": "vendored-segment-deps",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "/^(vendor|third_party|deps|node_modules|dist|build)$/iu",
+      "new": "/^(vendor|third_party|node_modules|dist|build)$/iu",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 30
+    },
+    {
+      "id": "vendored-segment-vendor",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "/^(vendor|third_party|deps|node_modules|dist|build)$/iu",
+      "new": "/^(third_party|deps|node_modules|dist|build)$/iu",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 30
+    },
+    {
+      "id": "vendored-segment-third-party",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "/^(vendor|third_party|deps|node_modules|dist|build)$/iu",
+      "new": "/^(vendor|deps|node_modules|dist|build)$/iu",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 30
+    },
+    {
+      "id": "vendored-segment-node-modules",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "/^(vendor|third_party|deps|node_modules|dist|build)$/iu",
+      "new": "/^(vendor|third_party|deps|dist|build)$/iu",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 30
+    },
+    {
+      "id": "vendored-segment-dist",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "/^(vendor|third_party|deps|node_modules|dist|build)$/iu",
+      "new": "/^(vendor|third_party|deps|node_modules|build)$/iu",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 30
+    },
+    {
+      "id": "vendored-segment-build",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "/^(vendor|third_party|deps|node_modules|dist|build)$/iu",
+      "new": "/^(vendor|third_party|deps|node_modules|dist)$/iu",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 30
+    },
+    {
+      "id": "vendored-segment-unanchored",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "/^(vendor|third_party|deps|node_modules|dist|build)$/iu",
+      "new": "/(vendor|third_party|deps|node_modules|dist|build)/iu",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 30
+    },
+    {
+      "id": "vendored-segment-case",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "/^(vendor|third_party|deps|node_modules|dist|build)$/iu",
+      "new": "/^(vendor|third_party|deps|node_modules|dist|build)$/u",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 30
+    },
+    {
+      "id": "vendored-includes-filename",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "parts.slice(0, -1).some(part => VENDORED_SEGMENT.test(part))",
+      "new": "parts.some(part => VENDORED_SEGMENT.test(part))",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 30
+    },
+    {
+      "id": "size-bonus-removed",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "score += Math.min(SIZE_BONUS_MAX, Math.floor(Math.log2(Math.max(1, chars / 1024))));",
+      "new": "",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 30
+    },
+    {
+      "id": "size-bonus-uncapped",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "Math.min(SIZE_BONUS_MAX, Math.floor(",
+      "new": "Math.min(99, Math.floor(",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 30
+    },
+    {
+      "id": "size-bonus-cap-off",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "export const SIZE_BONUS_MAX = 8;",
+      "new": "export const SIZE_BONUS_MAX = 7;",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 30
+    },
+    {
+      "id": "size-bonus-ceil",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "Math.floor(Math.log2(Math.max(1, chars / 1024)))",
+      "new": "Math.ceil(Math.log2(Math.max(1, chars / 1024)))",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 30
+    },
+    {
+      "id": "size-bonus-unit",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "chars / 1024",
+      "new": "chars / 1000",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 30
+    },
+    {
+      "id": "size-bonus-floor-at-one",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "Math.max(1, chars / 1024)",
+      "new": "Math.max(0.5, chars / 1024)",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 30
+    },
+    {
+      "id": "size-first-piece-only",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "pieces.reduce((total, piece) => total + piece.spans.reduce((n, span) => n + span.text.length, 0), 0)",
+      "new": "pieces[0]!.spans.reduce((n, span) => n + span.text.length, 0)",
+      "tests": [
+        "packages/polaris-generation-core/src/discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 30
+    },
+    {
+      "id": "size-bonus-in-app-removed",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "score += Math.min(SIZE_BONUS_MAX, Math.floor(Math.log2(Math.max(1, chars / 1024))));",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 7
+    },
+    {
+      "id": "vendored-tier-removed-in-app",
+      "file": "packages/polaris-generation-core/src/discovery.ts",
+      "old": "(vendored ? VENDORED_TIER : 0) + score",
+      "new": "score",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 7
+    }
+  ]
+}
