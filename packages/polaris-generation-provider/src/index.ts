@@ -22,3 +22,13 @@ export {
   type RequestAcceptance,
 } from './request-acceptance.js';
 export { parseRetryAfterMs, startEgressGate, type EgressGate, type EgressGateOptions, type GateDecision } from './egress-gate.js';
+export {
+  PINNED_MESSAGES_SDK_VERSION,
+  MessagesApiProviderError,
+  acceptMessagesApiRequest,
+  createMessagesApiGenerate,
+  messagesApiBody,
+  type MessagesApiAttemptRecord,
+  type MessagesApiProviderConfig,
+  type MessagesApiProviderHandle,
+} from './messages-api-provider.js';
