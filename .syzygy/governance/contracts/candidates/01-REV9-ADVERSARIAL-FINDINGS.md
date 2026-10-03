@@ -1,5 +1,13 @@
 # Rev9 adversarial findings
 
+> **Historical working record of the rev10 run (first tracked 2026-08-05), not
+> authority.** These are the lead's findings against the rev9 package that
+> drove the rev10 rework; the closing paragraph routes each one to where that
+> rework took it. Nothing here states the current contracts or what binds
+> today: read the contract modules for the clauses and
+> `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` for the acts. Banner
+> added 2026-10-03 (RD-6 C-2); the text below it is unchanged.
+
 Findings against the rev9 package as it stands at the open gate. F1 was
 identified by the owner (directive §2) and verified against the artifact text;
 the rest are the lead's adversarial pass informed by the directive. Each names

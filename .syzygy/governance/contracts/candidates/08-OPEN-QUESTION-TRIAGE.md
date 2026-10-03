@@ -1,5 +1,14 @@
 # Open-question triage — rev10 (directive §9)
 
+> **Historical triage of the rev10 run (first tracked 2026-08-05), not
+> authority.** It classifies the open §8 questions as they stood at the rev10
+> gate, as cited by `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md` §5.
+> Answers and reclassifications since then live in the contract modules' own
+> §8 sections and in
+> `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`; read those for
+> any question's current standing. Banner added 2026-10-03 (RD-6 C-2); the
+> text below it is unchanged.
+
 Scope: the 21 open §8 questions carried at the rev9 gate (record §6 — this
 set is identical to the "21 unanswered Tier C register items"; [Observed]
 RFC 0002 q3/q4 already carry ANSWERED annotations, so the Tier C register

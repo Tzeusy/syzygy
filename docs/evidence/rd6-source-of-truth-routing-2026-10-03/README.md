@@ -92,5 +92,8 @@ Sent to the coordinator; none is created by this page.
   approximation, drop machine-local state and derive the rev9 baseline
   (A-3, D-3/E-2, D-4, F-3 rows 3 and 5).
 - **B4.** Banner-mark `01`, `02` and `08` at the candidates root (C-2).
+  *Done 2026-10-03 (`syzygy-afuy`): each now opens with a dated historical
+  banner. The decision that the rest of the root stays outside CG-4a is
+  recorded beside `FRONT_DOOR` in `scripts/check_governance.py`.*
 - **B5.** Owner-gated: carry RFC9-8(a)'s RFC3-21 citation correction into
   the next RFC-0009 successor (G-1).
