@@ -1,74 +1,75 @@
 {
   "bead": "syzygy-swzk",
   "date": "2026-10-03",
-  "subject": "Polaris reason-counts and gap entries: two or more cause routes render as an ordered list after the paragraph",
+  "subject": "Polaris reason-counts details: two or more cause routes render as an ordered list after the paragraph (gap entry keeps main's list from syzygy-u05.4)",
   "measuredOn": {
     "butlersRevision": "32f38feb51d86e33bfec00b78777cce5ec280198",
-    "baseCommit": "0a10977bfa82c1aea20f5d06c34470701c7bb8de",
-    "changeCommit": "581674e08fda70d3c1496d1efca85d1ac31df714"
+    "baseCommit": "ef5d5f0303c55d3f2050434bc4f2c2da48c516fa",
+    "changeCommit": "73c0e30c6b6a1b4b7a0ae75de0e15b54562ffbd3"
   },
-  "method": "npm run build:poc at each commit on a detached clean worktree; node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir <scratch>; GET /polaris direct and with Host: tzeusy.parrot-hen.ts.net; one private daemon per commit; the loopback daemon on 7478 was not contacted.",
+  "method": "npm run build:poc at each commit on a clean committed worktree (base: detached worktree after npm ci); node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir <scratch>; GET /polaris direct and with Host: tzeusy.parrot-hen.ts.net; one private daemon per commit; the loopback daemon on 7478 was not contacted.",
   "served": {
     "base": {
       "direct": {
-        "bytes": 1467261,
-        "sha256": "91ae4df72c22dad890d1f70b39e4e9ce3dc76db31ef74cb206ded1f022b772fe"
+        "bytes": 1478592,
+        "sha256": "df491260b5bc18b6807c70a7f827ce8c4094a1633a3ea921b7a2c01a9beed511"
       },
       "tailnet": {
-        "bytes": 1473366,
-        "sha256": "5f8f75840dbe8d9b45e6aec7ce413b8853e3fc449d56548b2ce272b315be6158"
+        "bytes": 1484697,
+        "sha256": "84bc3a77329481f3be9c54f8f3c6bcaacb469c8249802323b5e820b684808227"
       },
       "causeRoutesLists": 0
     },
     "change": {
       "direct": {
-        "bytes": 1467582,
-        "sha256": "69f8b7a0d1cb1edd1c9f059fac76a30dc1da88df4427ec74c93dc6c7975ecbad"
+        "bytes": 1478811,
+        "sha256": "bee87504d36bc5cf001e9ab1f17989ba66872d071ea9972cbb8bb0639dacfc7e"
       },
       "tailnet": {
-        "bytes": 1473687,
-        "sha256": "8ce406e1f8b81b6408eb99e16feab4029003dc564b4e2e99e2e21f43a587a6e7"
+        "bytes": 1484916,
+        "sha256": "ce01336caf30ccf8697b9801f8b9899df681061a245f278648721875632b6ec8"
       },
-      "causeRoutesMentions": 4
+      "causeRoutesLists": 2
     },
     "deltaBytes": {
-      "direct": 321,
-      "tailnet": 321
+      "direct": 219,
+      "tailnet": 219
     },
     "ceilingBytes": 2097152
   },
   "designNote": "The list follows the paragraph as a sibling instead of replacing the paragraph with a div: the epistemic-tuples oracle ends a reason-counts block at its first </div>, and the ul/first-</ul> oracles forbid a nested ul. Single-cause and no-cause rows are byte-identical to before.",
   "rule6": {
     "file": "apps/three-surface-poc/src/polaris-first-reading.test.ts",
-    "test": "lists two or more causes as separate items after the paragraph...",
-    "runOver": "polaris-first-reading, polaris-epistemic-tuples, polaris-parity-sweep (66 tests)",
+    "test": "lists two or more causes as separate items after the paragraph... (ordered list in reason-counts details, unordered list in the gap entry)",
+    "runOver": "polaris-first-reading, polaris-epistemic-tuples, polaris-parity-sweep (70 tests)",
     "mutants": [
       {
         "id": "M1",
         "old": "if (causes.length === 1) return",
         "new": "if (causes.length >= 1) return",
-        "result": "Tests  1 failed | 65 passed (66)"
+        "result": "Tests  1 failed | 69 passed (70)"
       },
       {
         "id": "M2",
         "old": "<ol class=\"cause-routes\">...</ol>",
         "new": "<ul class=\"cause-routes\">...</ul>",
-        "result": "Tests  1 failed | 65 passed (66)"
+        "result": "Tests  1 failed | 69 passed (70)"
       },
       {
         "id": "M3",
         "old": "return `<p>${copy('label.route')} ${lead}</p>${list}`;",
         "new": "return `<p>${copy('label.route')} ${lead}${list}</p>`;",
-        "result": "Tests  1 failed | 65 passed (66)"
+        "result": "Tests  1 failed | 69 passed (70)"
       },
       {
         "id": "M4",
         "old": "causes.map((cause) => `<li>",
         "new": "causes.slice(1).map((cause) => `<li>",
-        "result": "Tests  1 failed | 65 passed (66)"
+        "result": "Tests  1 failed | 69 passed (70)"
       }
     ],
-    "commit": "581674e08fda70d3c1496d1efca85d1ac31df714",
+    "commit": "73c0e30c6b6a1b4b7a0ae75de0e15b54562ffbd3",
     "allKilled": true
-  }
+  },
+  "rebaseNote": "Re-measured and the mutants re-run after rebasing onto ef5d5f03 (the earlier base was 0a10977b). polaris.ts conflicted with syzygy-u05.4, which made the gaps entry a <ul data-polaris-gap-causes> list through reasonRouteHtml; that form is kept, and only the reason-counts details use the split lead/list (reasonRouteParts, <ol class=\"cause-routes\">). The changeCommit tree is byte-identical in implementation files to this record's commit."
 }
