@@ -10,7 +10,8 @@ option in a structured question that names the records "at the manifest rows"
 (packet Q5; the 2026-10-02 policy re-pin is the precedent). No phrase is typed
 and no digest appears in any Markdown file of the package. This script
 performs nothing by itself, and it refuses to record anything until the
-package has a confirming review: `FROZEN_SUBJECT` is None until then.
+package has a confirming review: `FROZEN_SUBJECT` names the commit round 7
+read (notes-only CONFIRM WITH EXCEPTIONS, 2026-10-03).
 
 `--record KEY ARGUMENT --date D --question-opening Q --selection-label L
 --selection-description S` requires, before anything is written:
@@ -64,7 +65,7 @@ ANSWERS_REL = DECISIONS / "PUBLIC-REPO-ADMISSION-OWNER-ANSWERS-2026-10-03.md"
 #: or notes-only CONFIRM WITH EXCEPTIONS; then set to that commit and the
 #: round's two paths above, never hand-edited again. While None, every
 #: `--record` is refused: an unreviewed package cannot be recorded.
-FROZEN_SUBJECT: str | None = None
+FROZEN_SUBJECT: str | None = "7704b4a575acf29de93e3872ff549a856e6395ec"
 VERDICTS = ("CONFIRM", "CONFIRM WITH EXCEPTIONS")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 SHA_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -188,6 +189,26 @@ def live_inputs(root: pathlib.Path) -> Inputs:
     )
 
 
+#: The shared severity form is `(note)` exactly. Round 7's raw, retained
+#: verbatim (CC-REV-6), qualifies two notes as `(note — an open owner ruling…)`;
+#: the first word is the severity, so this recorder reads that form too and
+#: still refuses a qualified `(revise — …)` or `(blocking — …)`.
+QUALIFIED_SEVERITY_RE = re.compile(
+    r"^\*\*Finding (\d+) [—–-] [^\n]*?\*\*\s*\((blocking|revise|note)(?: [—–-][^)\n]*)?\)",
+    re.MULTILINE)
+
+
+def review_findings(review: str) -> dict[int, str]:
+    section = vs.beh._raw_findings_section(review, vs.FINDINGS_HEADING)
+    numbers = vs.beh._finding_number_set(
+        section, label="review findings", forms=vs.beh.RAW_FINDING_FORMS)
+    severities = {int(n): sev for n, sev in QUALIFIED_SEVERITY_RE.findall(section)}
+    missing = sorted(numbers - set(severities))
+    if missing:
+        raise ValueError(f"review findings {missing} carry no (blocking|revise|note) severity")
+    return {n: severities[n] for n in numbers}
+
+
 def validate(act: Act, argument: str, inp: Inputs) -> tuple[str, str, str]:
     """Return (manifest file sha, reviewed commit, verdict) or raise ValueError."""
     if inp.frozen is None:
@@ -227,7 +248,7 @@ def validate(act: Act, argument: str, inp: Inputs) -> tuple[str, str, str]:
     if not reviewed:
         raise ValueError("confirmation review head does not name its reviewed commit")
     if verdicts[0] == "CONFIRM WITH EXCEPTIONS":
-        findings = vs.review_findings(inp.review)
+        findings = review_findings(inp.review)
         if not findings:
             raise ValueError("CONFIRM WITH EXCEPTIONS carries no countable finding")
         bad = {n: s for n, s in findings.items() if s != "note"}
@@ -509,6 +530,12 @@ def selftest() -> int:
     results.append(("notes-only CONFIRM WITH EXCEPTIONS accepted",
                     _accepts(act, arg, make(subject=subj, review=notes))))
 
+    results.append(("a qualified note severity is read as note",
+                    _accepts(act, arg, make(subject=subj, review=notes.replace(
+                        "(note)", "(note \u2014 an open owner ruling)")))))
+    results.append(("a qualified revise severity is still refused",
+                    refused("non-note", act, arg, make(subject=subj, review=exc_review.replace(
+                        "(revise)", "(revise \u2014 note)")))))
     def bad_disposition(findings):
         raise ValueError("disposition record does not name the reviewed raw")
     results.append(("missing disposition refused",

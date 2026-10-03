@@ -194,6 +194,28 @@ def selftest():
         caught += 1
     finally:
         mutant.unlink(missing_ok=True)
+    # call-site forms the derivation must refuse, never drop (round-7 note 1)
+    real = (REPO / "packages/polaris-generation-core/src/pipeline.ts").read_text()
+    plan_call = next(l for l in real.splitlines() if "stage('plan'," in l)
+    author_call = next(l for l in real.splitlines() if "stage('author'," in l)
+    mutants = {
+        "a stage called through a variable": real.replace(
+            plan_call, "    const planInputs = { sources: sourcePopulation, operatorNote: frozen.requestId };\n"
+            "    context.plan = await stage('plan', planInputs);", 1),
+        "a stage named by a template string": real.replace("stage('plan',", "stage(`plan`,", 1)
+            .replace("await stage(`plan`, {", "await stage(`plan`, { ...context,", 1),
+        "a double-quoted stage with a new key": real.replace(
+            author_call, author_call.replace("stage('author', {", 'stage("author", { projectId: frozen.projectId,', 1), 1),
+    }
+    with tempfile.TemporaryDirectory() as d:
+        for name, text in mutants.items():
+            assert text != real, f"mutant {name} did not change the source"
+            copy = pathlib.Path(d) / "pipeline.ts"
+            copy.write_text(text)
+            done = subprocess.run(["node", "scripts/derive_generator_sent_text.mjs", "--table", "--pipeline", str(copy)],
+                                  cwd=REPO, capture_output=True, text=True)
+            assert done.returncode == 2 and done.stdout == "", f"{name}: derivation did not refuse (exit {done.returncode})"
+            caught += 1
     # refusals while stale: both digest modes exit 1 and print nothing on stdout
     global PKG
     saved = PKG
@@ -216,12 +238,13 @@ def selftest():
             caught += 1
         finally:
             PKG = saved
-    print(f"selftest: {caught} of 13 checks held: one positive render check "
-          "(banner replaced) and twelve mutants: unfilled field, placeholder in value, "
+    print(f"selftest: {caught} of 16 checks held: one positive render check "
+          "(banner replaced) and fifteen mutants: unfilled field, placeholder in value, "
           "missing banner, stale instance, orphan record, record in a "
           "directory with no params.json, stale manifest, refusals of "
           "--digests and --manifest-digest while stale, unknown mode, a carried-content"
-          " table that differs from a fresh derivation, a field with no class")
+          " table that differs from a fresh derivation, a field with no class, and three call-site forms the"
+          " derivation refuses: a variable, a template string, a double-quoted stage with a new key")
 
 
 def stale(root=None):

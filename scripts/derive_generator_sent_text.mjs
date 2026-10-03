@@ -9,6 +9,7 @@
 // public-repo admission package (CG-15). Observed over the checked-out tree.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import ts from 'typescript';
 import { runGenerationPipeline, promptForStage, stageSchema, generationAnchorId, gitBlobObjectId } from '../packages/polaris-generation-core/dist/index.js';
 
 const STAGES = ['inventory', 'plan', 'author', 'edit', 'fidelity', 'repair'];
@@ -47,12 +48,41 @@ const authored = STAGES.map(stage => {
     schemaVersion: schema.version, schemaBytes: Buffer.byteLength(JSON.stringify(schema.schema)), schemaSha256: sha(JSON.stringify(schema.schema)) };
 });
 
-// 3. The `inputs` keys per stage, read from the pipeline's own call sites.
-const text = readFileSync(new URL('../packages/polaris-generation-core/src/pipeline.ts', import.meta.url), 'utf8');
+// 3. The `inputs` keys per stage, read from the pipeline's own call sites with
+//    the TypeScript parser, not a text pattern. Every call of `stage(...)` must
+//    name a literal stage in STAGES and pass an object literal of plain
+//    properties; anything else (a variable, a spread, a computed key, a
+//    template string) fails the run, and so does a stage in STAGES that no
+//    call site names. A call the derivation cannot read is never dropped.
+const pipelineArg = process.argv.indexOf('--pipeline');   // a mutated copy, for the builder's selftest only
+const pipelinePath = pipelineArg > 0 ? process.argv[pipelineArg + 1] : new URL('../packages/polaris-generation-core/src/pipeline.ts', import.meta.url);
+const sourceFile = ts.createSourceFile('pipeline.ts', readFileSync(pipelinePath, 'utf8'), ts.ScriptTarget.Latest, true);
 const inputKeys = {};
-for (const m of text.matchAll(/await stage\('(\w+)', \{([^}]*)\}\)/g)) {
-  inputKeys[m[1]] = [...new Set([...inputKeys[m[1]] ?? [], ...m[2].split(',').map(p => p.trim().split(':')[0].trim()).filter(Boolean)])];
-}
+const sourceExpr = {};
+const callFailures = [];
+const visit = node => {
+  if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === 'stage') {
+    const [name, inputs] = node.arguments;
+    const where = `pipeline.ts:${sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1}`;
+    if (!name || !ts.isStringLiteral(name) || !STAGES.includes(name.text)) { callFailures.push(`${where}: stage name is not a literal in STAGES`); }
+    else if (!inputs || !ts.isObjectLiteralExpression(inputs)) { callFailures.push(`${where}: inputs of ${name.text} is not an object literal`); }
+    else {
+      const keys = [];
+      for (const prop of inputs.properties) {
+        if (ts.isShorthandPropertyAssignment(prop)) keys.push(prop.name.text);
+        else if (ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name)) {
+          keys.push(prop.name.text);
+          if (prop.name.text === 'sources') sourceExpr[name.text] = prop.initializer.getText(sourceFile);
+        } else callFailures.push(`${where}: inputs of ${name.text} has a property the derivation cannot read`);
+      }
+      inputKeys[name.text] = [...new Set([...inputKeys[name.text] ?? [], ...keys])];
+    }
+  }
+  ts.forEachChild(node, visit);
+};
+visit(sourceFile);
+for (const stage of STAGES) if (!inputKeys[stage]) callFailures.push(`stage ${stage} has no readable call site`);
+if (callFailures.length) { console.error('UNREADABLE CALL SITES:\n' + callFailures.join('\n')); process.exit(2); }
 
 // 4. One closed class per field. Classes: target-content (spans, under an
 //    observation consent), target-metadata (source ids, bases, exclusion
@@ -73,12 +103,7 @@ const PORT_FIELD = {
   signal: ['abort signal', 'never sent'],
 };
 const failures = [];
-// `sources` is classed by the expression the call site assigns it.
-const sourceExpr = {};
-for (const m of text.matchAll(/await stage\('(\w+)', \{([^}]*)\}\)/g)) {
-  const mm = /sources:\s*([A-Za-z.]+(?:\([^)]*\))?)/.exec(m[2]);
-  if (mm) sourceExpr[m[1]] = mm[1];
-}
+// `sources` is classed by the expression the call site assigns it (above).
 const sourcesClass = stage => {
   const expr = sourceExpr[stage] ?? '';
   if (expr === 'sourcePopulation') return 'target-metadata';

@@ -1538,6 +1538,7 @@ PWB_BEHAVIOR_REPIN_MANIFEST = f"{PWB_BEHAVIOR_REPIN_DIR}/PWB-EFFECT-REPIN-MANIFE
 #: subjects.
 PUBLIC_ADMISSION_DIR = f"{CANDIDATES}/public-repo-admission"
 PUBLIC_ADMISSION_MANIFEST = f"{PUBLIC_ADMISSION_DIR}/PUBLIC-REPO-ADMISSION-MANIFEST.txt"
+PUBLIC_ADMISSION_DISPOSITIONS = f"{PUBLIC_ADMISSION_DIR}/ROUND-7-DISPOSITIONS.md"
 PUBLIC_ADMISSION_ACTS = (
     ("CONSENT TO PUBLIC OBSERVATION OF PSF-REQUESTS",
      f"{PUBLIC_ADMISSION_DIR}/instances/requests/OBSERVATION-CONSENT.md"),
@@ -3120,6 +3121,11 @@ def _activate_public_admission_manifest_copy_registry():
     """
     if os.path.isfile(os.path.join(ROOT, PUBLIC_ADMISSION_MANIFEST)):
         ACT_DIGEST_COPY_FILES[PUBLIC_ADMISSION_MANIFEST] = tuple(
+            label for label, _subject in PUBLIC_ADMISSION_ACTS)
+    # The round-7 notes record sits beside the package; registered per the
+    # 2026-09-26 owner ruling so a digest ever quoted there is checked.
+    if os.path.isfile(os.path.join(ROOT, PUBLIC_ADMISSION_DISPOSITIONS)):
+        ACT_DIGEST_COPY_FILES[PUBLIC_ADMISSION_DISPOSITIONS] = tuple(
             label for label, _subject in PUBLIC_ADMISSION_ACTS)
 
 
