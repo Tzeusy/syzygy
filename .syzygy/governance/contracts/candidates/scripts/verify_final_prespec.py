@@ -51,9 +51,15 @@ JUSTIFIED_OVERSIZE = {
         "without a semantic delta to reviewed text",
 }
 
-# Rev9 baseline: authoritative numbered-clause ends per RFC (frozen facts;
-# see FOUNDATIONAL-RFC-ACCEPTANCE-RECORD.md §3 of the rev9 package).
+# Rev9 baseline: numbered-clause ends per RFC. **Asserted, not trusted.**
+# This comment used to source them to the rev9 acceptance record §3 — a
+# git-excluded `_bootstrap/` artifact no clone can open (review RD-6 F-3 row
+# 3, B3). The tracked frozen corpus `history/rev9-rfcs/` is byte-identical to
+# the digests that record lists, so `main()` recomputes each end as the
+# largest line-start clause definition there (`rev9_ends()`) and fails if
+# this table and the corpus disagree, or if the corpus is missing.
 REV9_ENDS = {1: 32, 2: 25, 3: 32, 4: 29, 5: 26, 6: 28, 7: 38, 8: 32, 9: 52}
+REV9_CORPUS = Path("history") / "rev9-rfcs"
 # Rev10 new contracts and their expected ends. RFC-0010 extended to 22 at
 # rev11: the correction plane (RFC10-17..22) closing the post-failure seams
 # an adversarial safety review found open. Nothing was renumbered or retired,
@@ -126,6 +132,16 @@ def active_files(root):
     return files
 
 
+def rev9_ends(root):
+    """RFC number -> the largest clause number a rev9 file defines at line start."""
+    ends = {}
+    for f in sorted((root / REV9_CORPUS).glob("RFC-00*.md")):
+        for m in CLAUSE_DEF.finditer(f.read_text(encoding="utf-8")):
+            rfc_n, num = int(m.group(2)), int(m.group(3))
+            ends[rfc_n] = max(ends.get(rfc_n, 0), num)
+    return ends
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent)
@@ -148,12 +164,14 @@ def main():
         words = len(text.split())
         module_words[str(rel)] = words
         total_words += words
+        # The charter's ceiling is ~7,000 (approximate); 7,000 is only the
+        # number the comparison needs, and no message prints it as exact.
         if words > 7000:
             if str(rel) in JUSTIFIED_OVERSIZE:
-                note(f"{rel}: {words} words over the 7,000 ceiling — "
+                note(f"{rel}: {words} words over the ~7,000 ceiling — "
                      f"JUSTIFIED: {JUSTIFIED_OVERSIZE[str(rel)]}")
             else:
-                fail(f"{rel}: {words} words exceeds the 7,000-word module ceiling")
+                fail(f"{rel}: {words} words exceeds the ~7,000-word module ceiling")
         fm = parse_front_matter(text, rel)
         for key in ("id", "status_source"):
             if key not in fm:
@@ -177,6 +195,17 @@ def main():
     matrix_text = matrix.read_text(encoding="utf-8") if matrix.exists() else ""
     if not matrix_text:
         fail("04-CLAUSE-MIGRATION-MATRIX.md missing or empty")
+
+    derived = rev9_ends(root)
+    if not derived:
+        fail(f"{REV9_CORPUS}: no rev9 clause definitions found; REV9_ENDS "
+             f"cannot be checked against the frozen corpus")
+    elif derived != REV9_ENDS:
+        fail(f"REV9_ENDS disagrees with the line-start clause maxima in "
+             f"{REV9_CORPUS}: table {REV9_ENDS}, corpus {derived}")
+    else:
+        note(f"REV9_ENDS equals the line-start clause maxima of "
+             f"{len(derived)} RFC(s) in {REV9_CORPUS}")
 
     for rfc_n, end in ENDS.items():
         nums = per_rfc_nums.get(rfc_n, set())
@@ -363,7 +392,7 @@ def selftest(root):
             rc = main_with_root(Path(d))
         return rc, buf.getvalue()
 
-    def case(label, rel, fn, want_fail=True):
+    def case(label, rel, fn, want_fail=True, want_output=None):
         d = tempfile.mkdtemp(prefix="prespec-selftest-")
         try:
             shutil.copytree(root / "rfcs", Path(d) / "rfcs")
@@ -372,14 +401,17 @@ def selftest(root):
                     shutil.copy(root / extra, Path(d) / extra)
             if (root / "fixtures").is_dir():
                 shutil.copytree(root / "fixtures", Path(d) / "fixtures")
+            if (root / REV9_CORPUS).is_dir():
+                shutil.copytree(root / REV9_CORPUS, Path(d) / REV9_CORPUS)
             if rel is not None:
                 p = Path(d) / rel
                 p.write_text(fn(p.read_text(encoding="utf-8")),
                              encoding="utf-8")
             elif fn is not None:
                 fn(Path(d))
-            rc, _out = run(d)
-            cases.append((label, (rc != 0) == want_fail))
+            rc, out = run(d)
+            cases.append((label, (rc != 0) == want_fail
+                          and (want_output is None or want_output in out)))
         finally:
             shutil.rmtree(d, ignore_errors=True)
 
@@ -411,6 +443,35 @@ def selftest(root):
              lambda t: _re.sub(r"Omitted", "Left out", t, flags=_re.I))
     else:
         cases.append(("fixture missing a required section detected", False))
+
+    # 6. Review RD-6 B3 / A-3: an unjustified module over the ceiling fails,
+    #    and the message states the ceiling as the sources do, approximately.
+    small = next((f for f in files
+                  if str(f.relative_to(root)) not in JUSTIFIED_OVERSIZE), None)
+    if small is not None:
+        case("oversize module fails, naming the ~7,000-word ceiling",
+             str(small.relative_to(root)),
+             lambda t: t + "\n" + "padding " * 7001 + "\n",
+             want_output="exceeds the ~7,000-word module ceiling")
+    else:
+        cases.append(("oversize module fails, naming the ~7,000-word ceiling",
+                      False))
+    # 7. Review RD-6 B3: REV9_ENDS is asserted against the tracked rev9
+    #    corpus. A rev9 file defining one clause past its recorded end, and a
+    #    missing corpus, must each fail.
+    rev9 = sorted((root / REV9_CORPUS).glob("RFC-00*.md"))
+    if rev9:
+        case("rev9 corpus maxima disagreeing with REV9_ENDS detected",
+             f"{REV9_CORPUS}/{rev9[0].name}",
+             lambda t: t + f"\n**RFC{int(rev9[0].name.split('-')[1])}-99.** "
+                           f"An appended rev9 clause.\n",
+             want_output="REV9_ENDS disagrees with the line-start clause maxima")
+    else:
+        cases.append(("rev9 corpus maxima disagreeing with REV9_ENDS detected",
+                      False))
+    case("missing rev9 corpus detected", None,
+         lambda d: shutil.rmtree(d / REV9_CORPUS, ignore_errors=True),
+         want_output="no rev9 clause definitions found")
 
     ok = True
     for label, passed in cases:
