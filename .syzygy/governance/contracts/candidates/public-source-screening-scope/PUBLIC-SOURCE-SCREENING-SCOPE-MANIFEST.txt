@@ -1,0 +1,6 @@
+# PUBLIC-SOURCE SCREENING SCOPE MANIFEST
+# Candidate; this file and its row bind nothing by themselves.
+# 1 artifact; the row hashes the PROPOSED bytes (the policy with
+# proposed/<name>.patch applied) and is the argument of one superseding
+# approve-policy act over that subject.
+7903c3a1153e4c749b5c9b48a82f241a84fdd1bbda91a8a3e4045eeae8822977  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json
