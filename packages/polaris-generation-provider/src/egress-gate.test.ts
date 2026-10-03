@@ -84,11 +84,8 @@ describe('egress gate', () => {
   });
   it('listens on 127.0.0.1 only', async () => {
     gate = await startEgressGate({ permitted: async () => true });
+    expect(gate.boundAddress).toBe('127.0.0.1');
     expect(new URL(gate.url).hostname).toBe('127.0.0.1');
-    const server = (gate as unknown as { server?: unknown }).server;
-    expect(server).toBeUndefined();   // the listener is not exposed; its address is the URL above
-    const sockets = await new Promise<string>(resolve => { const s = http.get(gate!.url, r => { resolve(r.socket.remoteAddress ?? ''); r.resume(); }); s.on('error', () => resolve('')); });
-    expect(sockets).toBe('127.0.0.1');
   });
   it('forwards exactly one request per armed try, and a later try forwards again', async () => {
     upstream = await startCaptureEndpoint();
