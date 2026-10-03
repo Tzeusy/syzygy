@@ -35,6 +35,8 @@ export interface GateDecision {
 
 export interface EgressGate {
   readonly url: string;
+  /** The address the listener is bound to (always 127.0.0.1). */
+  readonly boundAddress: string;
   readonly decisions: readonly GateDecision[];
   /** Arms one try; the try may forward exactly one request.  Returns false (and arms nothing) when a try is already armed. */
   readonly arm: (accept: (captured: CapturedRequest) => RequestAcceptance) => boolean;
@@ -141,7 +143,7 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
   await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
   const port = (server.address() as AddressInfo).port;
   return {
-    url: `http://127.0.0.1:${port}`, decisions,
+    url: `http://127.0.0.1:${port}`, boundAddress: (server.address() as AddressInfo).address, decisions,
     arm: accept => { if (armed !== null) return false; armed = accept; spent = false; return true; },
     disarm: () => { armed = null; },
     takeRetryAfterMs: () => { const v = retryAfter; retryAfter = null; return v; },

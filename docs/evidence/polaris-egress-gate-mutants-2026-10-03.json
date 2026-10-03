@@ -1,0 +1,356 @@
+{
+  "subject": {
+    "commit": "032dc96963a5e05458392e5e7536adcc895bf464",
+    "branch": "agent/dossier-provider",
+    "fileSha256": {
+      "packages/polaris-generation-provider/src/agent-sdk-provider.ts": "2c5edc63295889f6b9a8c42b63b9924c4fecbeca71b7ce8c43d6e4d0d58e83e7",
+      "packages/polaris-generation-provider/src/egress-gate.ts": "63deb7f8947be3e1dcb39cf20b7cbfe1e6a0b011a9d08a4571cc19d96d726479",
+      "packages/polaris-generation-provider/src/request-acceptance.ts": "2bb689f12aed7597d163d1ef3b99f8c445e9b363b8751a6837f63e058cca0db4"
+    }
+  },
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-provider",
+  "ranAt": "2026-10-03T10:10:43+00:00",
+  "mutants": [
+    {
+      "id": "G1-consent-not-required",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "allowed = (await options.permitted()) === true;",
+      "new": "allowed = true;",
+      "tests": [
+        "egress-gate"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 12
+    },
+    {
+      "id": "G2-consent-truthy-accepted",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "(await options.permitted()) === true",
+      "new": "!!(await options.permitted())",
+      "tests": [
+        "egress-gate"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 12
+    },
+    {
+      "id": "G3-predicate-skipped",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (!verdict.accepted) {",
+      "new": "if (false) {",
+      "tests": [
+        "egress-gate"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 12
+    },
+    {
+      "id": "G4-upstream-check-removed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (options.upstream === undefined) {",
+      "new": "if (false) {",
+      "tests": [
+        "egress-gate"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 12
+    },
+    {
+      "id": "G5-strip-ignored",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (options.stripFingerprint === true) for",
+      "new": "if (false) for",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 43
+    },
+    {
+      "id": "G6-unbilled-evidence-ignored",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "unbilled = false; }",
+      "new": "}",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 43,
+      "note": "equivalent: the response end handler always assigns unbilled, so the reset is redundant unless the body stream is aborted before end"
+    },
+    {
+      "id": "A1-diagnostic-env-unrestricted",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "!DIAGNOSTIC_ENV_KEYS.has(key) || key in base",
+      "new": "false",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 31
+    },
+    {
+      "id": "A2-retry-after-ignored",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "gate.takeRetryAfterMs() ?? 0)",
+      "new": "0)",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "A3-try-deadline-removed",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "setTimeout(() => { timedOut = true; controller.abort(); }, remaining)",
+      "new": "setTimeout(() => undefined, remaining)",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "A4-thinking-ignored",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "thinking === 'adaptive' ? { type: 'adaptive' } : { type: 'disabled' }",
+      "new": "{ type: 'disabled' }",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 31
+    },
+    {
+      "id": "A5-api-key-unchecked",
+      "file": "packages/polaris-generation-provider/src/request-acceptance.ts",
+      "old": "expected.apiKey !== undefined && key !== expected.apiKey",
+      "new": "false",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "A6-session-id-unchecked",
+      "file": "packages/polaris-generation-provider/src/request-acceptance.ts",
+      "old": "(sessionId !== undefined && header !== sessionId)",
+      "new": "false",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 31
+    },
+    {
+      "id": "A7-version-mismatch-ignored",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "!== pin.cli) { versionMismatch = true;",
+      "new": "!== pin.cli) { versionMismatch = false;",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 31
+    },
+    {
+      "id": "A8-rejected-unbilled-assumed",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "(gate.takeRejectedUnbilled() ? 0 : null)",
+      "new": "0",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 31
+    },
+    {
+      "id": "G7-bind-all-interfaces",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "server.listen(0, '127.0.0.1', resolve)",
+      "new": "server.listen(0, resolve)",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 43
+    },
+    {
+      "id": "G8-host-header-forwarded",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "delete headers.host; delete headers.connection;",
+      "new": "delete headers.connection;",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 43
+    },
+    {
+      "id": "G9-probe-not-answered-locally",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (isConnectivityProbe(captured)) {",
+      "new": "if (false) {",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 16,
+      "totalTests": 43
+    },
+    {
+      "id": "G10-spent-check-removed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (spent) {",
+      "new": "if (false) {",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 43
+    },
+    {
+      "id": "G11-spent-never-set",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "spent = true;   // one forward",
+      "new": "void 0;   // one forward",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 43
+    },
+    {
+      "id": "G12-redirect-followed-through",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (status >= 300 && status < 400) {",
+      "new": "if (false) {",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 43
+    },
+    {
+      "id": "G13-upstream-not-validated",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "if (options.upstream !== undefined) assertAllowedUpstream(options.upstream.url);",
+      "new": "void 0;",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 43
+    },
+    {
+      "id": "G14-plain-http-remote-allowed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "parsed.origin === PROVIDER_ORIGIN &&",
+      "new": "parsed.hostname === 'api.anthropic.com' &&",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 43
+    },
+    {
+      "id": "G15-loopback-any-host",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "parsed.hostname === '127.0.0.1' ||",
+      "new": "true ||",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 43
+    },
+    {
+      "id": "G16-credentials-in-upstream-allowed",
+      "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+      "old": "parsed.username === '' && parsed.password === ''",
+      "new": "true",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 43
+    },
+    {
+      "id": "V1-timeout-value-unpinned",
+      "file": "packages/polaris-generation-provider/src/request-acceptance.ts",
+      "old": "literal('x-stainless-timeout', '600');",
+      "new": "one('x-stainless-timeout');",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 43
+    },
+    {
+      "id": "V2-connection-value-unpinned",
+      "file": "packages/polaris-generation-provider/src/request-acceptance.ts",
+      "old": "literal('connection', 'keep-alive');",
+      "new": "one('connection');",
+      "tests": [
+        "egress-gate",
+        "agent-sdk-provider"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 43
+    },
+    {
+      "id": "A9-noop-control",
+      "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+      "old": "retry.baseDelayMs * 2 ** (n - 1)",
+      "new": "retry.baseDelayMs * 2 ** (n - 1) * 1",
+      "tests": [
+        "agent-sdk-provider"
+      ],
+      "outcome": "survived",
+      "failedTests": 0,
+      "totalTests": 31,
+      "note": "equivalent control"
+    }
+  ]
+}
