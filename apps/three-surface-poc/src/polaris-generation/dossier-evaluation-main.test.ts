@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -48,8 +49,10 @@ describe('dossier evaluation over a run directory', () => {
     const ok = await evaluateDossierDirectory({ ...run, budget: join(run.root, 'budget.json'), answers: join(run.root, 'answers.json') }, signal);
     expect(ok.readerCost.firstReadingLevel).toMatchObject({ words: 8, wordBudget: { bound: 10, observed: 8, outcome: 'within' } });
     expect(ok.fidelity.quotes.outcome).toBe('all-resolved');
-    expect(ok.fidelity.claims.outcome).toBe('all-resolved');
-    expect(ok.coverage.find(row => row.topic === 'core-ideas')?.status).toBe('reader-cited');
+    expect(ok.fidelity.claims.outcome).toBe('all-labelled');
+    expect(ok.coverage.find(row => row.topic === 'core-ideas')?.status).toBe('scripted-answer-cited');
+    expect(ok.subject.readers?.kind).toBe('scripted');
+    expect(ok.subject.budgetSha256).toMatch(/^[0-9a-f]{64}$/u);
     expect(ok.coverage.find(row => row.topic === 'mechanisms')?.status).toBe('declared-only');
     expect(ok.subject.pages.map(page => page.path)).toEqual(['index.html', 'deep-dives/adapters.html']);
     expect(ok.providerCallPerformed).toBe(false);
@@ -70,6 +73,13 @@ describe('dossier evaluation over a run directory', () => {
     rmSync(join(run.dossier, 'deep-dives'), { recursive: true });
     symlinkSync(join(run.root, 'elsewhere'), join(run.dossier, 'deep-dives'));
     await expect(evaluateDossierDirectory(run, signal)).rejects.toThrow('page-outside-run-directory');
+  });
+
+  it('refuses a page that is a FIFO rather than a regular file, without blocking on it', async () => {
+    const run = runDirectory();
+    rmSync(join(run.dossier, 'deep-dives', 'adapters.html'));
+    execFileSync('mkfifo', [join(run.dossier, 'deep-dives', 'adapters.html')]);
+    await expect(evaluateDossierDirectory(run, signal)).rejects.toThrow('page-not-a-file');
   });
 
   it('refuses scripted answers in the wrong format', async () => {

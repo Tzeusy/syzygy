@@ -184,26 +184,36 @@ bytes, never from the manifest:
 - `data-reading-level="n"` marks reading levels; 0 is the first;
 - `<section id data-topics="…">` names the owner topics a section claims;
 - `data-claim-id` must carry `data-epistemic="observed|inferred|unknown"`;
-- `data-quote-source`, `data-quote-start` and `data-quote-end` give UTF-8 byte
-  offsets into an admitted source body, and the element's decoded text must
-  equal those bytes exactly.
+- `data-quote-source`, `data-quote-start` and `data-quote-end` give
+  **blob-absolute** UTF-8 byte offsets, the same base as the anchors. For a
+  piece of a segmented blob the evaluator subtracts `segment.start`, and a
+  quote must lie wholly inside the named piece (`crosses-piece-boundary`).
+  The element's text, as a browser parses it (CRLF and lone CR become LF; a
+  source CR survives only as `&#13;`), must equal those bytes exactly.
 
-**Report.** Four parts, plus the subject's digests (manifest, each page, the
-questions file):
+**Report.** Four parts, plus the subject's digests: the manifest, each page,
+the questions file, a canonical digest of the admitted sources (ids,
+identities, segments, exclusions and body hashes, in id order), the budget,
+and the reader factory's kind and script digest.
 
 - **Reader cost:** bytes and words to the first reading level, per page
   depth and per reading level, and each page against an optional budget.
   An undeclared bound is Unknown (`no-budget-declared`).
 - **Fidelity:** each quote's outcome (`exact`, `text-mismatch`,
-  `out-of-range`, `not-utf8-boundary`, `unknown-source`,
-  `unquotable-source`, `invalid-offsets`) and each claim's label. With no
-  quotes or no claims the outcome is `unknown`.
-- **Reader test:** a fresh `ReaderAnswerPort` call per question, given only
-  the question's id and text and the page bytes. Answers, citations and
-  attempted paths are recorded with `accuracy: "not-evaluated"`.
-  `scriptedAnswers` is the only implementation.
-- **Coverage:** per owner topic, `reader-cited` (a reader's resolving
-  citation), `declared-only` (a section's own `data-topics`) or `unknown`.
+  `out-of-range`, `crosses-piece-boundary`, `not-utf8-boundary`,
+  `unknown-source`, `unquotable-source`, `invalid-offsets`); quotes pass as
+  `all-resolved`. Claims pass as `all-labelled`, which checks a label's
+  presence and vocabulary only; `observedWithoutQuote` lists Observed claims
+  with no quote of their own. With no quotes or no claims the outcome is
+  `unknown`.
+- **Reader test:** a `ReaderPortFactory` creates a fresh `ReaderAnswerPort`
+  per question, given only the question's id and text and the page bytes.
+  Answers, citations and attempted paths are recorded with the port kind and
+  `accuracy: "not-evaluated"`. `scriptedAnswers` is the only implementation.
+- **Coverage:** per owner topic, `scripted-answer-cited` (a scripted answer's
+  resolving citation, carrying `readerPort` and `accuracy: "not-evaluated"`;
+  a fixture, never reader evidence), `declared-only` (a section's own
+  `data-topics`) or `unknown`.
 
 The questions file (`polaris-reader-questions-v1`) is frozen by digest:
 `expectedQuestionsSha256` refuses a file that no longer hashes to it.
@@ -214,5 +224,5 @@ npm run poc:dossier-evaluation -- --dossier <run-dir> --sources <sources.json> \
   [--budget <budget.json>] [--answers <scripted-answers.json>] [--out <new-report.json>]
 ```
 
-The command refuses a page that is a symlink or resolves outside the run
-directory.
+The command refuses a page that is a symlink, is not a regular file, or
+resolves outside the run directory.
