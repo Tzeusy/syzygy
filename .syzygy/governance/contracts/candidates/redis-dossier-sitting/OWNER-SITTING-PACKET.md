@@ -143,7 +143,10 @@ digest-copy rows in `check_governance.py`. The list is the one produced by
 `scripts/simulate_public_source_screening_scope_act.py --tests`; the sitting
 installer is to parse the performed record for its values. If row 12 is given in the same sitting, the re-pin is made once, against the
 final policy bytes (row 12's), after both policy recorders have run, and not
-after each policy act. Without this step
+after each policy act. The installer takes one or two policy acts in that order (row 1's, then row 12's),
+refuses the wrong order and a row-12 act without row 1's, and does the one re-pin.
+The row-12 recorder is on lane-d2's local branch and is unfrozen until #326's
+round-4 verdict; nothing here relies on it before then. Without this step
 the Butlers path stays refused; the Redis path is unaffected [Observed, see the
 section above].
 
