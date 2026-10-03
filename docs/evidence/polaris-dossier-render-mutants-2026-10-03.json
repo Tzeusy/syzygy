@@ -1,59 +1,280 @@
 {
- "subject": "Polaris multi-page dossier renderer (gap #8): renderDossier and poc:dossier-render",
+ "subject": "Polaris multi-page dossier renderer (#269, gap #8): renderDossier, writeDossierRun and poc:dossier-render, after the #269 review fixes",
  "date": "2026-10-03",
- "commit": "c8729542efc2a40d54b76b9d993982df7cf6bf7e",
+ "commit": "2717d10a401094109197bac851d68a32b8f25cbc",
  "subjectFiles": [
   {
    "path": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
-   "sha256": "9ea208016a93ac0c3f92c3a800a91889595a4c4095a9cda89b978bee06c88fb3"
+   "sha256": "3ae67deeac4b6b248c08cb98a8b829c33dd3b30c17e233577becf3955b7fbb06"
   },
   {
    "path": "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts",
-   "sha256": "4e9f39c65f1c7f6247af2a9191edf51ca4df2190f765818308dfe739180743a9"
+   "sha256": "23342fb3b671f527d417a73b34515cafdfbbe8b6df7175912d2798fd7f14eb9d"
   },
   {
    "path": "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts",
-   "sha256": "552312eb63864e8f9232e20faf69d8be11b9eb3a06833c9691e590022bfda77c"
+   "sha256": "b0fcade94768936f2a8828d830cf753cd3cd2d47ffd79b06ff6733d271cff44b"
+  },
+  {
+   "path": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+   "sha256": "bbdbf77b0a0e723e3cb887fe9458a9411ad6c7feca976854116e505c33fa4f85"
   },
   {
    "path": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
    "sha256": "0f364d648d0f9510083829894a12a365b642d17d118d8d991a73bde4eeffce79"
   }
  ],
- "method": "Each mutant replaced exactly one fragment (asserted to occur once) in the named file, ran apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts (15 tests, synthetic pipeline runs only), and restored the file; the worktree was clean afterwards. Killed means at least one test failed.",
+ "subjectSha256": "bd045748e1bd88456a22a1ecd67b55ba25e902f9f8f3d466b808a15a670996cd",
+ "subjectSha256Method": "sha256 of subjectFiles serialized as compact JSON with sorted keys, in the listed order",
+ "method": "Each mutant replaced exactly one fragment (asserted to occur once) in the named file, ran the renderer test file (npx vitest run dossier-render.test.ts), and restored the file; the worktree was clean after each sweep. A mutant is killed when at least one test fails or the suite errors. Two sweeps make up this record. The full sweep of all 50 mutants ran at fullSweepCommit. Between that commit and the record commit, only dossier-render.test.ts changed: one strengthened case and three added cases, with no case removed or weakened, and every source subject is byte-identical. The subset sweep re-ran at the record commit the mutants that survived the full sweep, plus every mutant a changed case had killed. Each mutant's ranAt says which sweep its row comes from. dossier-evaluation.ts and draft-preview.ts are unmutated inputs.",
+ "fullSweepCommit": "f82dfe638aff27bf6c2d3df78f704181f248b69d",
+ "fullSweepTests": 35,
+ "subsetSweepTests": 38,
  "result": {
-  "mutants": 16,
-  "killed": 16,
+  "mutants": 50,
+  "killed": 50,
   "survived": []
  },
+ "history": [
+  "At c8729542 the first record held 16 mutants, all killed; its subject files are superseded.",
+  "At 12d7f388 (pre-rebase), a sweep after the review fixes had two genuine survivors among the writer mutants, git-fail-open and realpath-skipped. A third, exists-check-noop, was a false survival, because the sweep was interrupted by a worktree restore mid-run; run alone, it was killed. d783dc5b added a test for a parent inside .git and made writeDossierRun return the real path it checked.",
+  "The full sweep at f82dfe63 killed 46 of 50. The survivors were escape-edge-target-label (only an edge's source node carried the payload), escape-open-item-question-1 and escape-open-item-reason-1 (no test), and escape-Mermaid-diagramToMermaid-1 (Mermaid's own encoding neutralises markup, so only the byte-level escape of its quotes and arrows shows the site). 2717d10a fixes the tests."
+ ],
  "previewUnchanged": "renderDraftPreview output was compared byte for byte, before and after extracting its CSP, stylesheet, escape and marking labels for reuse, on both synthetic projects (garden, archive): identical, sha256 9309b8c7075e86fc103e0e2371975a90dfdf291d9213c4aa0c1c25b288909042 and 04994409f9de72e3e994f96bf796c7d2e78e17e9e3757f02e216d79150fecbf3 on both sides. The comparison used a temporary copy of the pre-change file and was not committed.",
  "mutants": [
   {
    "id": "quote-offset-shift",
    "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
    "description": "quote start offset off by one byte",
-   "old": "data-quote-start=\"${span.start}\"",
-   "new": "data-quote-start=\"${span.start + 1}\"",
-   "tests": 15,
-   "failed": 2,
+   "old": "data-quote-start=\"${start}\"",
+   "new": "data-quote-start=\"${start + 1}\"",
+   "tests": 35,
+   "failed": 3,
    "killedBy": [
     "multi-page dossier render round-trips through the evaluation harness with every quote exact and every claim labelled",
-    "multi-page dossier render escapes markup-bearing and multibyte source text and still resolves every quote exactly"
+    "multi-page dossier render escapes markup-bearing and multibyte source text and still resolves every quote exactly",
+    "multi-page dossier render quotes a piece of a split blob, a CRLF body and a four-byte character at blob-absolute offsets"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
    "id": "quote-unescaped",
    "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
    "description": "quoted source text emitted unescaped",
-   "old": "${escape(span.text)}</blockquote>",
+   "old": "${escape(span.text).replace(/\\r/gu, '&#13;')}</blockquote>",
    "new": "${span.text}</blockquote>",
-   "tests": 15,
+   "tests": 35,
+   "failed": 2,
+   "killedBy": [
+    "multi-page dossier render escapes markup-bearing and multibyte source text and still resolves every quote exactly",
+    "multi-page dossier render quotes a piece of a split blob, a CRLF body and a four-byte character at blob-absolute offsets"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "cr-raw",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "a source CR written raw, which the parser turns into LF",
+   "old": "${escape(span.text).replace(/\\r/gu, '&#13;')}</blockquote>",
+   "new": "${escape(span.text)}</blockquote>",
+   "tests": 35,
    "failed": 1,
    "killedBy": [
-    "multi-page dossier render escapes markup-bearing and multibyte source text and still resolves every quote exactly"
+    "multi-page dossier render quotes a piece of a split blob, a CRLF body and a four-byte character at blob-absolute offsets"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "segment-base-ignored",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "a piece quote written with piece-relative offsets",
+   "old": "const base = source.segment?.start ?? 0;",
+   "new": "const base = 0;",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "multi-page dossier render quotes a piece of a split blob, a CRLF body and a four-byte character at blob-absolute offsets"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "default-topics-none",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "no topics declared without a topics map",
+   "old": "    ?? Object.fromEntries(",
+   "new": "    ?? {} ?? Object.fromEntries(",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "multi-page dossier render defaults topics to the produced asset ids that are owner topics, so a profile run needs no topics file"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "default-topics-unfiltered",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "every produced asset id declared as a topic",
+   "old": "ids.filter((id): id is OwnerTopic => (OWNER_TOPICS as readonly string[]).includes(id))",
+   "new": "ids as OwnerTopic[]",
+   "tests": 38,
+   "failed": 35,
+   "killedBy": [
+    "multi-page dossier render round-trips through the evaluation harness with every quote exact and every claim labelled",
+    "multi-page dossier render writes the entry, deep-dive, contents, glossary and per-source pages, each under the preview CSP and script-free",
+    "multi-page dossier render resolves every internal link to a written page and an id on it",
+    "multi-page dossier render labels a block the review did not judge supported as Unknown",
+    "multi-page dossier render renders inventory terms as Inferred glossary claims and an empty glossary as such",
+    "multi-page dossier render refuses a stopped run and a citation of a source with no admitted text",
+    "multi-page dossier render escapes markup-bearing and multibyte source text and still resolves every quote exactly",
+    "multi-page dossier render refuses two deep dives whose page paths would collide",
+    "multi-page dossier render defaults topics to the produced asset ids that are owner topics, so a profile run needs no topics file",
+    "multi-page dossier render quotes a piece of a split blob, a CRLF body and a four-byte character at blob-absolute offsets",
+    "multi-page dossier render writes the size report from the rendered bytes",
+    "escaping every rendered draft field escapes the title wherever it is rendered",
+    "escaping every rendered draft field escapes the introduction wherever it is rendered",
+    "escaping every rendered draft field escapes the section title wherever it is rendered",
+    "escaping every rendered draft field escapes the paragraph wherever it is rendered",
+    "escaping every rendered draft field escapes the deep-dive title wherever it is rendered",
+    "escaping every rendered draft field escapes the deep-dive paragraph wherever it is rendered",
+    "escaping every rendered draft field escapes the diagram title wherever it is rendered",
+    "escaping every rendered draft field escapes the diagram relationship wherever it is rendered",
+    "escaping every rendered draft field escapes the node label wherever it is rendered",
+    "escaping every rendered draft field escapes the edge label wherever it is rendered",
+    "escaping every rendered draft field escapes the open question wherever it is rendered",
+    "escaping every rendered draft field escapes the open-question reason wherever it is rendered",
+    "escaping every rendered draft field escapes the declarative Mermaid source as text, like every other field",
+    "escaping every rendered draft field escapes the glossary id",
+    "escaping every rendered draft field escapes the glossary statement",
+    "source routes keeps a route stable under reordering and moves it when the bytes change",
+    "run directory writes every file into a new directory outside Git and refuses to reuse one",
+    "run directory refuses an existing empty run directory",
+    "run directory refuses a run directory whose parent is a symlink into a Git work tree, and writes nothing there",
+    "run directory ignores the caller's GIT_* variables: GIT_DIR cannot make a work tree read as outside Git",
+    "run directory refuses a parent inside a .git directory, where Git answers \"false\" rather than \"not a git repository\"",
+    "run directory writes through a symlinked parent outside Git to the real path, and returns that path",
+    "run directory refuses when Git cannot be run, rather than assuming no work tree",
+    "run directory refuses a run directory inside a Git work tree"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "2717d10a401094109197bac851d68a32b8f25cbc"
+  },
+  {
+   "id": "size-report-html-dropped",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "the readable size report not written where it is linked",
+   "old": "files.set('size-report.html', ",
+   "new": "files.set('size-report-unlinked.html', ",
+   "tests": 35,
+   "failed": 3,
+   "killedBy": [
+    "multi-page dossier render writes the entry, deep-dive, contents, glossary and per-source pages, each under the preview CSP and script-free",
+    "multi-page dossier render resolves every internal link to a written page and an id on it",
+    "multi-page dossier render writes the size report from the rendered bytes"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "git-fail-open",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts",
+   "description": "only an explicit \"true\" refuses: any Git error passes",
+   "old": "  if (result.status === 128 && /^fatal: not a git repository/mu.test(result.stderr)) return;\n  throw new Error('run-directory-inside-git-work-tree');",
+   "new": "  if (result.stdout.trim() === 'true') throw new Error('run-directory-inside-git-work-tree');",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "run directory refuses a parent inside a .git directory, where Git answers \"false\" rather than \"not a git repository\""
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "git-unavailable-passes",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts",
+   "description": "Git missing reads as outside a work tree",
+   "old": "  if (result.error !== undefined) throw new Error('git-unavailable');\n",
+   "new": "  if (result.error !== undefined) return;\n",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "run directory refuses when Git cannot be run, rather than assuming no work tree"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "git-env-inherited",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts",
+   "description": "the caller's GIT_* variables reach the check",
+   "old": "env: { PATH: path ?? '', LC_ALL: 'C',",
+   "new": "env: { ...process.env, PATH: path ?? '', LC_ALL: 'C',",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "run directory ignores the caller's GIT_* variables: GIT_DIR cannot make a work tree read as outside Git"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "realpath-skipped",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts",
+   "description": "the parent checked without resolving symlinks",
+   "old": "const parent = await realpath(dirname(resolve(destination)));",
+   "new": "const parent = dirname(resolve(destination));",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "run directory writes through a symlinked parent outside Git to the real path, and returns that path"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "exists-check-noop",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts",
+   "description": "an existing run directory not refused before the rename",
+   "old": "throw new Error('run-directory-exists');",
+   "new": "return;",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "run directory refuses an existing empty run directory"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "staging-left",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts",
+   "description": "a failed write leaves its staging directory",
+   "old": "    await rm(staging, { recursive: true, force: true });\n",
+   "new": "",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "run directory leaves no run directory and no staging directory when a write fails part-way"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
    "id": "supported-observed",
@@ -61,13 +282,15 @@
    "description": "a supported generated block labelled Observed",
    "old": "support.get(blockId) === 'supported' ? 'inferred' : 'unknown'",
    "new": "support.get(blockId) === 'supported' ? 'observed' : 'unknown'",
-   "tests": 15,
+   "tests": 35,
    "failed": 2,
    "killedBy": [
     "multi-page dossier render round-trips through the evaluation harness with every quote exact and every claim labelled",
     "multi-page dossier render labels a block the review did not judge supported as Unknown"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
    "id": "unsupported-inferred",
@@ -75,12 +298,14 @@
    "description": "an unsupported block labelled Inferred",
    "old": "support.get(blockId) === 'supported' ? 'inferred' : 'unknown'",
    "new": "support.get(blockId) === 'supported' ? 'inferred' : 'inferred'",
-   "tests": 15,
+   "tests": 35,
    "failed": 1,
    "killedBy": [
     "multi-page dossier render labels a block the review did not judge supported as Unknown"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
    "id": "route-by-blob-identity",
@@ -88,13 +313,16 @@
    "description": "source route from blob identity without the byte range",
    "old": "return `sources/${digest(source.spans[0]!.anchorId).slice(0, 24)}.html`;",
    "new": "return `sources/${digest(source.spans[0]!.anchorId.replace(/:\\d+-\\d+$/u, '')).slice(0, 24)}.html`;",
-   "tests": 15,
-   "failed": 2,
+   "tests": 35,
+   "failed": 3,
    "killedBy": [
+    "multi-page dossier render quotes a piece of a split blob, a CRLF body and a four-byte character at blob-absolute offsets",
     "source routes gives two pieces of one blob two routes, though they share a source identity",
     "source routes keeps a route stable under reordering and moves it when the bytes change"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
    "id": "diagram-nodes-unclaimed",
@@ -102,14 +330,16 @@
    "description": "diagram nodes rendered without claim markup",
    "old": "const nodeList = d.nodes.map(n => claim('li', n.id, n.epistemic, `${escape(n.label)} ${marking(n.epistemic)} ${refs(from, n.sourceIds)}`)).join('');",
    "new": "const nodeList = d.nodes.map(n => `<li>${escape(n.label)} ${marking(n.epistemic)} ${refs(from, n.sourceIds)}</li>`).join('');",
-   "tests": 15,
+   "tests": 35,
    "failed": 3,
    "killedBy": [
     "multi-page dossier render round-trips through the evaluation harness with every quote exact and every claim labelled",
     "multi-page dossier render labels a block the review did not judge supported as Unknown",
     "multi-page dossier render renders inventory terms as Inferred glossary claims and an empty glossary as such"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
    "id": "csp-dropped",
@@ -117,12 +347,14 @@
    "description": "pages emitted without the preview CSP",
    "old": "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">${DRAFT_PREVIEW_CSP_META}<title>",
    "new": "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>",
-   "tests": 15,
+   "tests": 35,
    "failed": 1,
    "killedBy": [
     "multi-page dossier render writes the entry, deep-dive, contents, glossary and per-source pages, each under the preview CSP and script-free"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
    "id": "topics-ignored",
@@ -130,12 +362,15 @@
    "description": "run-profile topics not emitted",
    "old": "const topicAttr = (id: string): string => ` data-topics=\"${escape((topics[id] ?? []).join(' '))}\"`;",
    "new": "const topicAttr = (_id: string): string => ' data-topics=\"\"';",
-   "tests": 15,
-   "failed": 1,
+   "tests": 35,
+   "failed": 2,
    "killedBy": [
-    "multi-page dossier render declares owner topics only where the run profile maps them, and refuses an unknown topic"
+    "multi-page dossier render declares owner topics only where a caller map names them, and refuses an unknown topic",
+    "multi-page dossier render defaults topics to the produced asset ids that are owner topics, so a profile run needs no topics file"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
    "id": "unknown-topic-accepted",
@@ -143,12 +378,14 @@
    "description": "an unknown owner topic accepted",
    "old": "for (const list of Object.values(topics)) if (list.some(topic => !(OWNER_TOPICS as readonly string[]).includes(topic))) throw new DossierRenderError('unknown-topic');",
    "new": "",
-   "tests": 15,
+   "tests": 35,
    "failed": 1,
    "killedBy": [
-    "multi-page dossier render declares owner topics only where the run profile maps them, and refuses an unknown topic"
+    "multi-page dossier render declares owner topics only where a caller map names them, and refuses an unknown topic"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
    "id": "unquotable-cited",
@@ -156,12 +393,14 @@
    "description": "a citation of an unquotable source silently dropped",
    "old": "if (target === undefined) throw new DossierRenderError('unquotable-source');",
    "new": "if (target === undefined) return '';",
-   "tests": 15,
+   "tests": 35,
    "failed": 1,
    "killedBy": [
     "multi-page dossier render refuses a stopped run and a citation of a source with no admitted text"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
    "id": "glossary-all-entries",
@@ -169,14 +408,16 @@
    "description": "every inventory entry rendered as a glossary term",
    "old": "filter(entry => entry.kind === 'term')",
    "new": "filter(() => true)",
-   "tests": 15,
+   "tests": 35,
    "failed": 3,
    "killedBy": [
     "multi-page dossier render round-trips through the evaluation harness with every quote exact and every claim labelled",
     "multi-page dossier render labels a block the review did not judge supported as Unknown",
     "multi-page dossier render renders inventory terms as Inferred glossary claims and an empty glossary as such"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
    "id": "no-first-level",
@@ -184,12 +425,14 @@
    "description": "the entry header not marked as the first reading level",
    "old": "<header data-reading-level=\"0\">",
    "new": "<header data-reading-level=\"1\">",
-   "tests": 15,
+   "tests": 35,
    "failed": 1,
    "killedBy": [
     "multi-page dossier render writes the size report from the rendered bytes"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
    "id": "collision-unchecked",
@@ -197,12 +440,14 @@
    "description": "colliding deep-dive page paths accepted",
    "old": "if (new Set(deepPaths.values()).size !== deepPaths.size) throw new DossierRenderError('page-path-collision');",
    "new": "",
-   "tests": 15,
+   "tests": 35,
    "failed": 1,
    "killedBy": [
     "multi-page dossier render refuses two deep dives whose page paths would collide"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
    "id": "stopped-rendered",
@@ -210,38 +455,393 @@
    "description": "a stopped pipeline run rendered",
    "old": "if (input.result.status !== 'awaiting-rendered-review') throw new DossierRenderError('not-renderable');",
    "new": "if ((input.result.status as string) === 'never') throw new DossierRenderError('not-renderable');",
-   "tests": 15,
+   "tests": 35,
    "failed": 1,
    "killedBy": [
     "multi-page dossier render refuses a stopped run and a citation of a source with no admitted text"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
-   "id": "git-guard-removed",
-   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts",
-   "description": "a run directory inside a Git work tree accepted",
-   "old": "if (insideGitWorkTree(dirname(target))) throw new Error('run-directory-inside-git-work-tree');",
-   "new": "",
-   "tests": 15,
-   "failed": 1,
+   "id": "escape-page-title-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped page <title> (site 1 of 1)",
+   "old": "escape(title)",
+   "new": "title",
+   "tests": 35,
+   "failed": 2,
    "killedBy": [
-    "run directory refuses a run directory inside a Git work tree"
+    "escaping every rendered draft field escapes the title wherever it is rendered",
+    "escaping every rendered draft field escapes the deep-dive title wherever it is rendered"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   },
   {
-   "id": "existing-dir-reused",
-   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts",
-   "description": "an existing run directory reused",
-   "old": "  await mkdir(target);\n",
-   "new": "  await mkdir(target, { recursive: true });\n",
-   "tests": 15,
+   "id": "escape-dossier-draft-title-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped dossier title (site 1 of 2)",
+   "old": "\">${escape(draft.title)}</s",
+   "new": "\">${draft.title}</s",
+   "tests": 35,
    "failed": 1,
    "killedBy": [
-    "run directory refuses an existing empty run directory"
+    "escaping every rendered draft field escapes the title wherever it is rendered"
    ],
-   "outcome": "killed"
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-dossier-draft-title-2",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped dossier title (site 2 of 2)",
+   "old": "1>${escape(draft.title)}</h",
+   "new": "1>${draft.title}</h",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the title wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-paragraph-text",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped paragraph, introduction and deep-dive paragraph text (site 1 of 1)",
+   "old": "escape(p.text)",
+   "new": "p.text",
+   "tests": 35,
+   "failed": 3,
+   "killedBy": [
+    "escaping every rendered draft field escapes the introduction wherever it is rendered",
+    "escaping every rendered draft field escapes the paragraph wherever it is rendered",
+    "escaping every rendered draft field escapes the deep-dive paragraph wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-section-section-title-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped section title (site 1 of 2)",
+   "old": "2>${escape(section.title)}</h",
+   "new": "2>${section.title}</h",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the section title wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-section-section-title-2",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped section title (site 2 of 2)",
+   "old": "\">${escape(section.title)}</a",
+   "new": "\">${section.title}</a",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the section title wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-deep-dive-dive-title-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped deep-dive title (site 1 of 4)",
+   "old": "ths.get(dive.id)!))}\">${escape(dive.title)}</a></li>`).join('')}<l",
+   "new": "ths.get(dive.id)!))}\">${dive.title}</a></li>`).join('')}<l",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the deep-dive title wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-deep-dive-dive-title-2",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped deep-dive title (site 2 of 4)",
+   "old": ": ${escape(dive.title)}</a",
+   "new": ": ${dive.title}</a",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the deep-dive title wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-deep-dive-dive-title-3",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped deep-dive title (site 3 of 4)",
+   "old": "1>${escape(dive.title)}</h",
+   "new": "1>${dive.title}</h",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the deep-dive title wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-deep-dive-dive-title-4",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped deep-dive title (site 4 of 4)",
+   "old": "ths.get(dive.id)!))}\">${escape(dive.title)}</a></li>`).join('')}</",
+   "new": "ths.get(dive.id)!))}\">${dive.title}</a></li>`).join('')}</",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the deep-dive title wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-parent-parent-title-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped parent section title on a deep dive (site 1 of 1)",
+   "old": "escape(parent.title)",
+   "new": "parent.title",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the section title wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-diagram-d-title-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped diagram title (site 1 of 1)",
+   "old": "escape(d.title)",
+   "new": "d.title",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the diagram title wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-diagram-d-relationship-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped diagram relationship (site 1 of 1)",
+   "old": "escape(d.relationship)",
+   "new": "d.relationship",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the diagram relationship wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-node-n-label-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped node label in the node list (site 1 of 1)",
+   "old": "escape(n.label)",
+   "new": "n.label",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the node label wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "2717d10a401094109197bac851d68a32b8f25cbc"
+  },
+  {
+   "id": "escape-edge-e-label-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped edge label (site 1 of 1)",
+   "old": "escape(e.label)",
+   "new": "e.label",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the edge label wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-edge-source-label",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped edge source label (site 1 of 1)",
+   "old": "escape(nodes.get(e.from)!.label)",
+   "new": "nodes.get(e.from)!.label",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the node label wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "2717d10a401094109197bac851d68a32b8f25cbc"
+  },
+  {
+   "id": "escape-edge-target-label",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped edge target label (site 1 of 1)",
+   "old": "escape(nodes.get(e.to)!.label)",
+   "new": "nodes.get(e.to)!.label",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the node label wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "2717d10a401094109197bac851d68a32b8f25cbc"
+  },
+  {
+   "id": "escape-Mermaid-diagramToMermaid-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped Mermaid source (site 1 of 1)",
+   "old": "escape(diagramToMermaid(d))",
+   "new": "diagramToMermaid(d)",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the declarative Mermaid source as text, like every other field"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "2717d10a401094109197bac851d68a32b8f25cbc"
+  },
+  {
+   "id": "escape-glossary-term-id-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped glossary id (site 1 of 2)",
+   "old": "m-${escape(term.id)}\">$",
+   "new": "m-${term.id}\">$",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the glossary id"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-glossary-term-id-2",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped glossary id (site 2 of 2)",
+   "old": "\">${escape(term.id)}</d",
+   "new": "\">${term.id}</d",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the glossary id"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-glossary-term-statement-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped glossary statement (site 1 of 1)",
+   "old": "escape(term.statement)",
+   "new": "term.statement",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the glossary statement"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
+  },
+  {
+   "id": "escape-open-item-question-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped open question (site 1 of 1)",
+   "old": "escape(item.question)",
+   "new": "item.question",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the open question wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "2717d10a401094109197bac851d68a32b8f25cbc"
+  },
+  {
+   "id": "escape-open-item-reason-1",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "unescaped open question reason (site 1 of 1)",
+   "old": "escape(item.reason)",
+   "new": "item.reason",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the open-question reason wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "2717d10a401094109197bac851d68a32b8f25cbc"
+  },
+  {
+   "id": "escape-svg-labels",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "diagram SVG labels unescaped",
+   "old": "renderDiagramSvg(d, index, escape)",
+   "new": "renderDiagramSvg(d, index, (value: string) => value)",
+   "tests": 38,
+   "failed": 2,
+   "killedBy": [
+    "escaping every rendered draft field escapes the node label wherever it is rendered",
+    "escaping every rendered draft field escapes the edge label wherever it is rendered"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "2717d10a401094109197bac851d68a32b8f25cbc"
+  },
+  {
+   "id": "escape-claim-id",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "a claim id (the glossary id) unescaped in its attribute",
+   "old": "`<${tag} data-claim-id=\"${escape(id)}\"",
+   "new": "`<${tag} data-claim-id=\"${id}\"",
+   "tests": 35,
+   "failed": 1,
+   "killedBy": [
+    "escaping every rendered draft field escapes the glossary id"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed",
+   "ranAt": "f82dfe638aff27bf6c2d3df78f704181f248b69d"
   }
  ]
 }
