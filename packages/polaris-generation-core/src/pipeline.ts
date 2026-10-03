@@ -1,7 +1,9 @@
 import { quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
 import { CanonicalJsonError, digestCanonicalJson, encodeCanonicalJson, type CanonicalJsonLimits } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
-import { promptForStage, type GenerationStage } from './prompts.js';
+import { createHash } from 'node:crypto';
+
+import { promptForStage, type GenerationStage, type PromptProfile } from './prompts.js';
 import { validateRequestedAssets, type RequestedAsset } from './provider-draft.js';
 import { validateReaderQuestions } from './reader-questions.js';
 import { checkDraftQuotes, quoteFindingAsReviewFinding, sourceTextById, type QuoteFinding } from './quote-fidelity.js';
@@ -29,6 +31,8 @@ export interface PipelineRequest {
   readonly readerQuestions: unknown;
   /** Trusted operator request identities and requiredness, never model-supplied. */
   readonly requestedAssets: readonly RequestedAsset[];
+  /** Which stage prompts the run sends; absent means `manifesto`. A dossier run sets `dossier`. */
+  readonly promptProfile?: PromptProfile;
 }
 
 export interface AttemptInput {
@@ -142,6 +146,9 @@ export interface StageReceipt {
   readonly inputDigest: string;
   readonly outputDigest: string;
   readonly promptVersion: string;
+  /** The profile and the sha256 of the exact system text sent, so the record names which prompt a stage ran. */
+  readonly promptProfile: PromptProfile;
+  readonly promptDigest: string;
 }
 
 export interface ValidatedStageOutput {
@@ -194,6 +201,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
       || Object.values(request.routes).some(route => typeof route !== 'string' || route.length === 0)) stop('invalid-request');
     try { validateRequestedAssets(request.requestedAssets); } catch { stop('invalid-request'); }
     try { validateReaderQuestions(request.readerQuestions); } catch { stop('invalid-request'); }
+    if (request.promptProfile !== undefined && request.promptProfile !== 'manifesto' && request.promptProfile !== 'dossier') stop('invalid-request');
     // Canonicalize before inspecting nested caller-owned records: this rejects
     // getters/proxies and detaches them before the first asynchronous boundary.
     let detached: PipelineRequest;
@@ -212,6 +220,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
     try { frozen = JSON.parse(encodeCanonicalJson(compact, dataLimits(b.maxInputBytes))) as PipelineRequest; }
     catch (error) { stop(error instanceof CanonicalJsonError && error.code === 'byte-limit' ? 'budget-exhausted' : 'invalid-request'); }
     const budget = frozen.budget;
+    const promptProfile: PromptProfile = frozen.promptProfile ?? 'manifesto';
     const deadline = frozen.startedAt + budget.maxElapsedMs;
     const check = (): void => {
       if (signal.aborted) stop('cancelled');
@@ -258,7 +267,8 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
     const stage = async (name: GenerationStage, inputs: Readonly<Record<string, unknown>>): Promise<unknown> => {
       check();
       if (calls >= budget.maxCalls) stop('budget-exhausted');
-      const prompt = promptForStage(name);
+      const prompt = promptForStage(name, promptProfile);
+      const promptDigest = createHash('sha256').update(prompt.system).digest('hex');
       const schema = ports.responseSchema(name);
       const envelope = { promptVersion: prompt.version, system: prompt.system, responseSchemaVersion: schema.version, responseSchema: schema.schema, inputs };
       let encoded: string;
@@ -296,7 +306,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
         usage += admission.usageUnits;
         outputBytes += admission.outputBytes;
         receipts.push({ stage: name, attemptId: permit.attemptId, reused: true, providerRoute: input.providerRoute, model: admission.model,
-          inputDigest: input.inputDigest, outputDigest: admission.outputDigest, promptVersion: prompt.version });
+          inputDigest: input.inputDigest, outputDigest: admission.outputDigest, promptVersion: prompt.version, promptProfile, promptDigest });
         artifacts.push({ stage: name, value: restored });
         check();
         return restored;
@@ -390,7 +400,7 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
       }
       await bounded(() => ports.record(permit, { kind: 'validated', outputDigest: digest, model: reply.model,
         usageUnits: actualUsage, outputBytes: Buffer.byteLength(reply.body, 'utf8'), value: validated }), true);
-      receipts.push({ stage: name, attemptId: permit.attemptId, reused: false, providerRoute: input.providerRoute, model: reply.model, inputDigest: input.inputDigest, outputDigest: digest, promptVersion: prompt.version });
+      receipts.push({ stage: name, attemptId: permit.attemptId, reused: false, providerRoute: input.providerRoute, model: reply.model, inputDigest: input.inputDigest, outputDigest: digest, promptVersion: prompt.version, promptProfile, promptDigest });
       artifacts.push({ stage: name, value: validated });
       check();
       return validated;

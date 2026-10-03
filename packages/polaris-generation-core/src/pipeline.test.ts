@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { runGenerationPipeline, type AttemptInput, type AttemptOutcome, type PipelinePorts, type PipelineRequest, type ProviderReply } from './pipeline.js';
+import { createHash } from 'node:crypto';
+import { promptForStage } from './prompts.js';
 import { generationAnchorId, generationSourcesForBody, gitBlobObjectId, type GenerationSource } from './generation-source.js';
 
 const fixtureSource = (): GenerationSource => {
@@ -304,7 +306,7 @@ describe('source to editorial draft pipeline', () => {
     expect(h.late).toEqual([{ model: 'late-model', usageUnits: 2 }]);
   });
   describe('deterministic quote fidelity joins the reviewer verdict', () => {
-    const draftWith = (quote: string) => ({ introduction: { id: 'intro', text: `The project\'s sources state: "${quote}"`, sourceIds: ['purpose'], children: [] } });
+    const draftWith = (quote: string) => ({ introduction: { id: 'intro', text: `The project states: "${quote}"`, sourceIds: ['purpose'], children: [] } });
     const quoting = (quotes: () => string) => {
       const h = harness();
       const ports: PipelinePorts = { ...h.ports, validate: (_stage, data) => data,
@@ -357,6 +359,44 @@ describe('source to editorial draft pipeline', () => {
       const repair = JSON.parse(h.sends.find(x => x.stage === 'repair')!.input).inputs;
       expect(repair.findings[0]).toBe('single note');
       expect(repair.findings[1]).toMatchObject({ target: 'intro' });
+    });
+  });
+
+  describe('prompt profile', () => {
+    const stages = ['inventory', 'plan', 'author', 'edit', 'fidelity'] as const;
+    const run = async (promptProfile?: 'manifesto' | 'dossier' | 'other') => {
+      const h = harness();
+      const result = await runGenerationPipeline({ ...request(), ...(promptProfile === undefined ? {} : { promptProfile: promptProfile as 'dossier' }) }, { ...h.ports, validate: (_stage, data) => data }, signal());
+      return { h, result };
+    };
+    const digest = (text: string) => createHash('sha256').update(text).digest('hex');
+
+    it('sends the dossier prompts for a dossier request, and records the profile, version and digest of each stage', async () => {
+      const { h, result } = await run('dossier');
+      expect(result.status).toBe('awaiting-rendered-review');
+      for (const [index, stage] of stages.entries()) {
+        const sent = JSON.parse(h.sends[index]!.input);
+        const expected = promptForStage(stage, 'dossier');
+        expect(h.sends[index]!.stage).toBe(stage);
+        expect(sent.system).toBe(expected.system);
+        expect(sent.promptVersion).toBe(expected.version);
+        expect(sent.system).not.toBe(promptForStage(stage, 'manifesto').system);
+        expect(result.receipts[index]).toMatchObject({ stage, promptProfile: 'dossier', promptVersion: expected.version, promptDigest: digest(expected.system) });
+      }
+    });
+
+    it('sends the manifesto prompts when no profile is named', async () => {
+      const { h, result } = await run();
+      for (const [index, stage] of stages.entries()) {
+        expect(JSON.parse(h.sends[index]!.input).system).toBe(promptForStage(stage, 'manifesto').system);
+        expect(result.receipts[index]).toMatchObject({ promptProfile: 'manifesto', promptDigest: digest(promptForStage(stage, 'manifesto').system) });
+      }
+    });
+
+    it('refuses an unknown profile before any call', async () => {
+      const { h, result } = await run('other');
+      expect(result).toMatchObject({ status: 'stopped', reason: 'invalid-request' });
+      expect(h.sends).toEqual([]);
     });
   });
 });

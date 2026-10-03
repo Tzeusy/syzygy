@@ -175,14 +175,20 @@ Authorized implementation work (generator implementation authorization,
         occur in a source the block cites, after one normalisation applied to
         both sides (comment leaders and closes, link syntax, entities,
         backslash escapes, backticks and emphasis dropped; curly quotes
-        folded; whitespace collapsed). An elided quote matches its pieces in
-        order in one source; a piece matches on word boundaries; a block
-        citing a piece of a split file is checked against the whole file.
+        folded; whitespace collapsed). The lead-in is `The project states:`;
+        a quotation runs from it to the last straight quote before the next
+        lead-in, so it may contain quotes, an unverified tail or a stray
+        quote in the prose after it fails, and elision is not allowed. A
+        quote is one contiguous run of one source on word boundaries; a
+        block citing a piece of a split file is checked against the whole
+        file.
         An unterminated, empty, uncited or lead-in-without-quote case fails
         too. A failure earns a repair; one that survives the last repair does
         not stop the run: the pipeline returns `quoteFindings` per block and
         `renderDossier` shows each such block as Unknown with the reason,
-        whatever the reviewer said. `evaluateDossier` reports
+        whatever the reviewer said. The pipeline also takes a `promptProfile`
+        (default `manifesto`; the dossier trigger sets `dossier`) and records
+        the profile, prompt version and system-text digest on every receipt. `evaluateDossier` reports
         `fidelity.inBlockQuotes` (checked blocks, quotes checked, failures,
         outcome `all-verbatim` / `no-quotes` / `failures` / `unknown`).
   - [x] **Closed exclusion reasons.** `GENERATION_EXCLUSION_REASONS`

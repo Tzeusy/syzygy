@@ -15,22 +15,26 @@
  *   4. backticks (code spans) and the emphasis characters `*` and `_` are dropped;
  *   5. curly quotes and apostrophes become straight;
  *   6. every whitespace run, line breaks included, becomes one space; ends trimmed.
- * A quote may elide with an ellipsis (three dots, the ellipsis character, or
- * either in brackets): the pieces must occur in order in the same source.
- * A piece matches only on word boundaries, so a quote of "ed" does not match
- * inside "Redis". For a file split into pieces, a block that cites any piece
+ * A quote is one contiguous run of one source (never two sources joined) and
+ * matches only on word boundaries, so a quote of "ed" does not match inside
+ * "Redis". Elision is not allowed: an ellipsis is ordinary text and must be
+ * in the source at that spot. For a file split into pieces, a block that cites any piece
  * is checked against the whole file's text.
- * Straight (`"`) and curly (`“ ”`) double quotes delimit a quote. A straight-
- * quoted span that itself contains straight quotes is resolved by taking the
- * longest reading, from its opening quote to a later quote that ends a word
- * or sentence, whose normalised text occurs in a cited source; curly quotes
- * nest by depth. A quote that has no verifying reading is a failure.
+ * A quotation opens with the lead-in and a straight quote and runs to the
+ * last straight quote before the next lead-in (or the end of the block), so
+ * it may contain quotes and cannot carry an unverified tail; a stray quote in
+ * prose after it is part of the span and fails the check. Outside a lead-in,
+ * straight and curly (`“ ”`) double quotes still delimit a span to check: a
+ * straight span containing straight quotes takes the longest reading, from
+ * its opening quote to a later quote that ends a word or sentence, whose
+ * normalised text occurs in a cited source; curly quotes nest by depth. A
+ * span with no verifying reading is a failure.
  */
 
 import { quotableGenerationSources, type GenerationSource } from './generation-source.js';
 
-/** The lead-in lane-p's prompt rule asks for before a verbatim quotation. */
-export const QUOTE_LEAD_IN = "The project's sources state:";
+/** The lead-in the dossier prompts ask for before a verbatim quotation: `The project states: "..."`. */
+export const QUOTE_LEAD_IN = 'The project states:';
 
 export type QuoteFindingKind = 'quote-not-in-cited-sources' | 'unterminated-quote' | 'empty-quote' | 'quote-without-cited-source' | 'lead-in-without-quote';
 export interface QuoteFinding {
@@ -76,7 +80,6 @@ function normaliseSource(text: string): string {
   return out;
 }
 
-const ELISION = /\s*(?:\[\s*(?:\.{3}|\u2026)\s*\]|\.{3}|\u2026)\s*/u;
 const WORD = /[\p{L}\p{N}]/u;
 
 /** First index at or after `from` where `piece` occurs on word boundaries, or -1. */
@@ -91,17 +94,9 @@ function findPiece(source: string, piece: string, from: number): number {
   return -1;
 }
 
-/** Whether the normalised `wanted` occurs in the normalised `source`, its elided pieces in order. */
+/** Whether the normalised `wanted` is one contiguous run of the normalised `source`, on word boundaries. An ellipsis is ordinary text: it matches only where the source has it. */
 function occursIn(source: string, wanted: string): boolean {
-  const pieces = wanted.split(ELISION).map(piece => piece.trim());
-  if (pieces.some(piece => piece.length === 0)) return false;
-  let cursor = 0;
-  for (const piece of pieces) {
-    const at = findPiece(source, piece, cursor);
-    if (at === -1) return false;
-    cursor = at + piece.length;
-  }
-  return true;
+  return wanted.length > 0 && findPiece(source, wanted, 0) !== -1;
 }
 
 const OPEN_CURLY = '“', CLOSE_CURLY = '”';
@@ -129,11 +124,27 @@ function curlySpan(text: string, open: number): { inner: string; end: number } |
   return undefined;
 }
 
-/** Every quoted span of `text`, with the reading that verifies against `haystacks` when one exists. */
-function quotedSpans(text: string, verifies: (inner: string) => boolean): { inner: string; ok: boolean; terminated: boolean; end: number }[] {
+/** Every quoted span of `text`: a lead-in quotation runs to the last straight quote before the next lead-in, any other span takes the reading that verifies when one exists. */
+function quotedSpans(text: string, leadIn: string, verifies: (inner: string) => boolean): { inner: string; ok: boolean; terminated: boolean; end: number }[] {
   const out: { inner: string; ok: boolean; terminated: boolean; end: number }[] = [];
   for (let i = 0; i < text.length; i++) {
     const c = text[i]!;
+    if (leadIn.length > 0 && text.startsWith(leadIn, i)) {
+      const open = /^\s*"/u.exec(text.slice(i + leadIn.length));
+      if (open !== null) {
+        const start = i + leadIn.length + open[0].length - 1;
+        const next = text.indexOf(leadIn, start);
+        const limit = next === -1 ? text.length : next;
+        const last = text.lastIndexOf('"', limit - 1);
+        if (last <= start) { out.push({ inner: text.slice(start + 1, limit), ok: false, terminated: false, end: limit }); i = limit - 1; continue; }
+        const inner = text.slice(start + 1, last);
+        out.push({ inner, ok: verifies(inner), terminated: true, end: last });
+        i = last;
+        continue;
+      }
+      i += leadIn.length - 1;
+      continue;
+    }
     if (c === OPEN_CURLY) {
       const span = curlySpan(text, i);
       if (span === undefined) { out.push({ inner: text.slice(i + 1), ok: false, terminated: false, end: text.length }); break; }
@@ -164,7 +175,7 @@ export function inspectBlockQuotes(block: QuoteBlock, sourceText: ReadonlyMap<st
     const wanted = normaliseForQuote(inner);
     return wanted.length > 0 && cited.some(source => occursIn(source, wanted));
   };
-  const spans = quotedSpans(block.text, verifies);
+  const spans = quotedSpans(block.text, leadIn, verifies);
   for (const span of spans) {
     if (!span.terminated) findings.push({ blockId: block.id, kind: 'unterminated-quote', quote: clip(span.inner) });
     else if (normaliseForQuote(span.inner).length === 0) findings.push({ blockId: block.id, kind: 'empty-quote', quote: clip(span.inner) });

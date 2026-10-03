@@ -115,7 +115,7 @@ describe('with every record satisfied', () => {
     expect(outcome).toMatchObject({ state: 'complete', revision: commit, detail: '2 files' });
     expect(readdirSync(out).sort()).toEqual(['index.html', 'pages', 'run-record.json']);
     expect(readFileSync(join(out, 'pages/core.html'), 'utf8')).toBe('<p>core</p>');
-    expect(seen).toMatchObject({ projectId: 'fixture-record-id', readerQuestions: expect.arrayContaining([expect.objectContaining({ id: 'core-ideas', topics: ['core-ideas'] })]) });
+    expect(seen).toMatchObject({ promptProfile: 'dossier', projectId: 'fixture-record-id', readerQuestions: expect.arrayContaining([expect.objectContaining({ id: 'core-ideas', topics: ['core-ideas'] })]) });
     const record = JSON.parse(readFileSync(join(out, 'run-record.json'), 'utf8'));
     expect(record).toMatchObject({ profile: 'dossier-v1', revision: commit, permissionIdentity: 'fixture/observation-consent+fixture/public-source-policy+fixture/egress-consent',
       corpusCount: { selected: 3 }, clarification: { mode: 'zero-interaction', unaccountedQuestions: 0 } });

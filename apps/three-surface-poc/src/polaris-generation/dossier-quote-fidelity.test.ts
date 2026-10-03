@@ -30,18 +30,18 @@ describe('quotation marks inside a cited block (deterministic fidelity)', () => 
     const plain = await evaluateWithIntro(() => 'A plain sentence with no quotation marks.');
     expect(plain.fidelity.inBlockQuotes).toMatchObject({ failures: [], quotesChecked: 0, outcome: 'no-quotes' });
     expect(plain.fidelity.inBlockQuotes.denominator).toBeGreaterThan(3);
-    const quoted = await evaluateWithIntro(cited => `The project's sources state: "${cited.slice(0, 30).replace(/"/gu, '')}"`);
+    const quoted = await evaluateWithIntro(cited => `The project states: "${cited.slice(0, 30).replace(/"/gu, '')}"`);
     expect(quoted.fidelity.inBlockQuotes).toMatchObject({ failures: [], quotesChecked: 1, outcome: 'all-verbatim' });
   });
 
   it('reports a quotation absent from the cited source as a failure on that claim, never silently', async () => {
-    const report = await evaluateWithIntro(() => 'The project\'s sources state: "words no source contains anywhere"');
+    const report = await evaluateWithIntro(() => 'The project states: "words no source contains anywhere"');
     expect(report.fidelity.inBlockQuotes.outcome).toBe('failures');
     expect(report.fidelity.inBlockQuotes.failures).toEqual([{ page: 'index.html', claimId: 'opening', kind: 'quote-not-in-cited-sources', quote: 'words no source contains anywhere' }]);
   });
 
   it('reports a lead-in with no quotation, an unterminated one, and a different cited source holding the text', async () => {
-    const lead = await evaluateWithIntro(() => 'The project\'s sources state: that it is fast.');
+    const lead = await evaluateWithIntro(() => 'The project states: that it is fast.');
     expect(lead.fidelity.inBlockQuotes.failures.map(f => f.kind)).toEqual(['lead-in-without-quote']);
     const open = await evaluateWithIntro(() => 'The text says "never closed');
     expect(open.fidelity.inBlockQuotes.failures.map(f => f.kind)).toEqual(['unterminated-quote']);
@@ -64,7 +64,7 @@ describe('quotation marks inside a cited block (deterministic fidelity)', () => 
 
   it('renders a misquoting block as Unknown with the reason even though the reviewer called it supported', () => {
     const draft = structuredClone(run.result.draft) as { introduction: Intro };
-    draft.introduction.text = 'The project\'s sources state: "words no source contains anywhere"';
+    draft.introduction.text = 'The project states: "words no source contains anywhere"';
     const supported = (run.result.review as { blockSupport: { blockId: string; verdict: string }[] }).blockSupport.find(row => row.blockId === 'opening');
     expect(supported?.verdict).toBe('supported');
     const html = renderDossier({ sources: run.sources, result: { ...run.result, draft, quoteFindings: [{ blockId: 'opening', kind: 'quote-not-in-cited-sources', quote: 'words no source contains anywhere' }] } }).files.get('index.html')!;
@@ -77,7 +77,7 @@ describe('quotation marks inside a cited block (deterministic fidelity)', () => 
 
   it('flags the same block when the result carries no record of the finding, by checking the draft itself', () => {
     const draft = structuredClone(run.result.draft) as { introduction: Intro };
-    draft.introduction.text = 'The project\'s sources state: "words no source contains anywhere"';
+    draft.introduction.text = 'The project states: "words no source contains anywhere"';
     const html = renderDossier({ sources: run.sources, result: { ...run.result, draft, quoteFindings: [] } }).files.get('index.html')!;
     expect(html.match(/<p data-claim-id="opening"[^>]*>/u)![0]).toContain('data-epistemic="unknown"');
   });
@@ -103,7 +103,7 @@ describe('quotation marks inside a cited block (deterministic fidelity)', () => 
     expect(cut.length).toBeGreaterThan(1);
     const crossing = body.slice(cut[0]!.text.length - 12, cut[0]!.text.length + 12).replace(/\s+/gu, ' ').trim().split(' ').slice(1, -1).join(' ');
     expect(crossing.length).toBeGreaterThan(3);
-    draft.introduction.text = `The project's sources state: "${crossing.replace(/"/gu, '')}"`;
+    draft.introduction.text = `The project states: "${crossing.replace(/"/gu, '')}"`;
     const { files } = renderDossier({ sources: run.sources, result: { ...run.result, draft } });
     const pieces = cut.map((piece, index) => ({ ...original, sourceId: `${id}-p${index + 1}`, body: piece.text,
       segment: { index, count: cut.length, start: piece.start, end: piece.end, blobBytes: Buffer.byteLength(body) },

@@ -24,7 +24,7 @@ describe('normaliseForQuote', () => {
 
 describe('checkBlockQuotes', () => {
   it('passes a quote that is a substring of a cited source, whatever the whitespace, emphasis or link syntax', () => {
-    expect(kinds('The project\'s sources state: "We chose a single-threaded event loop because it avoids lock contention."', 'src-readme')).toEqual([]);
+    expect(kinds('The project states: "We chose a single-threaded event loop because it avoids lock contention."', 'src-readme')).toEqual([]);
     expect(kinds('It says "See the design notes for why."', 'src-readme')).toEqual([]);
     expect(kinds('The code says "maybeEvict samples 5 keys and evicts the least recently used key." and "Never block the loop."', 'src-code')).toEqual([]);
     expect(kinds('A comment: "Setting: maxmemory".', 'src-code')).toEqual([]);
@@ -52,7 +52,7 @@ describe('checkBlockQuotes', () => {
 
   it('handles quotes that contain quotes, straight or curly', () => {
     expect(kinds('The docs say: "The docs say "never block" and then "stop" loudly".', 'src-nested')).toEqual([]);
-    expect(kinds('The project\'s sources state: "The docs say "never block" and then "stop" loudly; he said “quiet “inner” words” too."', 'src-nested')).toEqual([]);
+    expect(kinds('The project states: "The docs say "never block" and then "stop" loudly; he said “quiet “inner” words” too."', 'src-nested')).toEqual([]);
     expect(kinds('He said “quiet “inner” words”.', 'src-nested')).toEqual([]);
     expect(kinds('He said “quiet “invented” words”.', 'src-nested')).toEqual(['quote-not-in-cited-sources']);
     expect(kinds('"never block" and "stop" loudly', 'src-nested')).toEqual([]);
@@ -87,6 +87,7 @@ describe('folding forms of a true quotation', () => {
   const FOLD = sourceTextById(files([
     ['src-fold', 'Use `maxmemory` to bound it; it’s “every key” &amp; more. The &lt;b&gt; tag, &#65; and &#x42; and\\_snake\\_case\\*.\n/* one-line comment */\nint SET = 1; // the SET command\n'],
     ['src-close', 'first line\n */ second after the close\n'],
+    ['src-dots', 'He paused and said: wait... what is that?'],
     ['src-digits', 'The default port is 6379 for Redis.'],
     ['src-ellipsis', 'Redis evicts keys when memory is full, using an approximate LRU that samples a few keys, and then removes the best candidate.'],
   ]));
@@ -115,12 +116,15 @@ describe('folding forms of a true quotation', () => {
     expect(run('It says "one-line comment"', 'src-fold')).toEqual([]);
     expect(run('It says "the SET command"', 'src-fold')).toEqual([]);
   });
-  it('matches an elided quote only when its pieces occur in order in one source', () => {
-    expect(run('"Redis evicts keys ... removes the best candidate"', 'src-ellipsis')).toEqual([]);
-    expect(run('"Redis evicts keys […] samples a few keys"', 'src-ellipsis')).toEqual([]);
-    expect(run('"removes the best candidate ... Redis evicts keys"', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
-    expect(run('"Redis evicts keys ... removes the best candidate"', 'src-fold')).toEqual(['quote-not-in-cited-sources']);
-    expect(run('"... ..."', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
+  it('does not allow elision: an ellipsis must be in the source at that spot', () => {
+    expect(run('"Redis evicts keys ... removes the best candidate"', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
+    expect(run('"Redis evicts keys [\u2026] samples a few keys"', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
+    expect(run('"Redis evicts keys, \u2026 samples"', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
+    expect(run('"wait... what"', 'src-dots')).toEqual([]);
+    expect(run('"wait \u2026 what"', 'src-dots')).toEqual(['quote-not-in-cited-sources']);
+  });
+  it('never joins two sources into one quotation', () => {
+    expect(run('"The default port is 6379 for Redis. Redis evicts keys"', 'src-digits', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
   });
   it('matches only on word boundaries', () => {
     expect(run('The term "ed" appears', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
@@ -168,5 +172,35 @@ describe('the repair finding', () => {
     const { message } = quoteFindingAsReviewFinding({ blockId: 'b', kind: 'quote-not-in-cited-sources', quote: 'x' });
     expect(message).toContain('Quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred.');
     expect(message).not.toContain('own words');
+  });
+});
+
+describe('a quotation after the lead-in', () => {
+  const lead = (rest: string, ...ids: string[]) => checkBlockQuotes(block(`${QUOTE_LEAD_IN} ${rest}`, ...ids), SOURCES).map(f => f.kind);
+  it('is the exact lead-in the dossier prompts use', () => {
+    expect(QUOTE_LEAD_IN).toBe('The project states:');
+    expect(QUOTE_LEAD_IN.includes("'")).toBe(false);
+  });
+  it('runs to the last straight quote before the next lead-in, so it may contain quotes', () => {
+    expect(lead('"The docs say "never block" and then "stop" loudly"', 'src-nested')).toEqual([]);
+    expect(lead('"The docs say "never block" and then "stop" loudly". ' + QUOTE_LEAD_IN + ' "in-memory cache"', 'src-nested', 'src-readme')).toEqual([]);
+    expect(lead('"The docs say "never block" and then "stop" loudly". ' + QUOTE_LEAD_IN + ' "not in any source"', 'src-nested', 'src-readme')).toEqual(['quote-not-in-cited-sources']);
+    expect(checkBlockQuotes(block(`${QUOTE_LEAD_IN} "in-memory cache" ${QUOTE_LEAD_IN} "event loop"`, 'src-readme'), SOURCES)).toEqual([]);
+  });
+  it('refuses a matching opening with an unverified tail', () => {
+    expect(lead('"The docs say "never block" and then "stop" loudly; he said "bogus tail"', 'src-nested')).toEqual(['quote-not-in-cited-sources']);
+    expect(lead('"in-memory cache and then some invented words"', 'src-readme')).toEqual(['quote-not-in-cited-sources']);
+  });
+  it('refuses a stray double quote in the prose after the quotation, and a second quoted term after it', () => {
+    expect(lead('"in-memory cache" and a stray " in prose', 'src-readme')).toEqual(['quote-not-in-cited-sources']);
+    expect(lead('"in-memory cache". It uses "event loop" too.', 'src-readme')).toEqual(['quote-not-in-cited-sources']);
+  });
+  it('fails a lead-in with no quotation mark, an unterminated one, and an empty one', () => {
+    expect(lead('that it is fast', 'src-readme')).toEqual(['lead-in-without-quote']);
+    expect(lead('"in-memory cache', 'src-readme')).toEqual(['unterminated-quote']);
+    expect(lead('""', 'src-readme')).toEqual(['empty-quote']);
+  });
+  it('still checks quotes outside a lead-in quotation', () => {
+    expect(checkBlockQuotes(block(`He wrote "bogus" first. ${QUOTE_LEAD_IN} "in-memory cache"`, 'src-readme'), SOURCES).map(f => f.quote)).toEqual(['bogus']);
   });
 });
