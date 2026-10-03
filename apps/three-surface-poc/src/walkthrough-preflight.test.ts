@@ -277,7 +277,12 @@ describe('walkthrough preflight: one counterexample per limb', () => {
     {
       name: 'the glossary does not explain a tier the page uses',
       limb: 'claim-strength-unexplained',
-      mutate: (b) => ({ ...b, polarisHtml: replaceOnce(b.polarisHtml, 'report-fact —', 'report-fact:') }),
+      // The opening gloss repeats the first tuple's sentences; mutate the
+      // glossary's own (syzygy-u05.4).
+      mutate: (b) => {
+        const at = b.polarisHtml.indexOf('<details id="polaris-claim-states"');
+        return { ...b, polarisHtml: b.polarisHtml.slice(0, at) + replaceOnce(b.polarisHtml.slice(at), 'report-fact —', 'report-fact:') };
+      },
     },
     {
       name: 'a linked exact-source route that was unreachable',

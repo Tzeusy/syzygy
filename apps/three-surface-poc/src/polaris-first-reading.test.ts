@@ -288,3 +288,90 @@ describe('Polaris legend precedes the first claim tuple (syzygy-u05.4)', () => {
     expect(footer).not.toContain('data-surface-state-legend');
   });
 });
+
+// Bead syzygy-u05.4 slice 2 (pursuit 2026-09-22 N4; S1-F1, S1-M3, S4-F4,
+// S4-F5). Expected counts and claim ids are typed from the fixture, beside
+// the model figures they must also equal.
+describe('Polaris opening gloss, proof strip and gap entries (syzygy-u05.4)', () => {
+  const variants = (): readonly { name: string; html: string }[] => [
+    { name: 'observed', html: observed().html },
+    { name: 'secret', html: observed(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET).html },
+    { name: 'unevaluated', html: renderPolarisPage(buildFixtureModel(cleanups)) },
+    { name: 'rejected', html: renderPolarisPage(buildFixtureModel(cleanups, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } })) },
+  ];
+
+  it('glosses every value of the first claim tuple before that tuple renders', () => {
+    for (const { name, html } of variants()) {
+      const tuple = /<span class="claim-tuple"([^>]*)>/.exec(html);
+      expect(tuple, name).not.toBeNull();
+      const attrs = (tuple as RegExpExecArray)[1] as string;
+      const value = (attribute: string): string | undefined => new RegExp(`\\s${attribute}="([^"]*)"`).exec(attrs)?.[1];
+      const gloss = /<div class="tuple-gloss" data-polaris-tuple-gloss="([^"]+)"[^>]*>([\s\S]*?)<\/div>/.exec(html);
+      expect(gloss, name).not.toBeNull();
+      const [whole, claimId, inner] = gloss as RegExpExecArray;
+      expect(html.indexOf(whole), name).toBeLessThan((tuple as RegExpExecArray).index);
+      expect(claimId, name).toBe(value('data-claim-id'));
+      const text = textOf(inner as string);
+      const used = [value('data-epistemic-label'), value('data-epistemic-tier'), value('data-epistemic-freshness'), value('data-challenge-state')].filter((entry): entry is string => entry !== undefined);
+      expect(used.length, name).toBeGreaterThanOrEqual(3);
+      for (const entry of used) expect(text, `${name}: ${entry}`).toContain(`${entry} —`);
+      expect(inner, name).toContain('href="#polaris-claim-states"');
+    }
+  });
+
+  it('puts the proof strip between Purpose and Promises with counts equal to the model and the rendered sources, and routes Unknown without a number', () => {
+    for (const [texts, expected] of [[undefined, { sources: 15, items: 20, facts: 44 }], [PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET, { sources: 14, items: 19, facts: 43 }]] as const) {
+      const { shape, html } = observed(texts);
+      const strip = /<p class="proof-strip"[^>]*>([\s\S]*?)<\/p>/.exec(html);
+      expect(strip).not.toBeNull();
+      const at = (strip as RegExpExecArray).index;
+      expect(at).toBeGreaterThan(html.indexOf('data-polaris-section="claim:project-account:purpose"'));
+      expect(at).toBeLessThan(html.indexOf('data-polaris-section="claim:project-account:promises"'));
+      const counts = Object.fromEntries([...(strip as RegExpExecArray)[0].matchAll(/data-proof-count="([a-z]+)" data-count="(\d+)">(\d+) /g)].map((match) => {
+        expect(match[2]).toBe(match[3]);
+        return [match[1], Number(match[2])];
+      }));
+      expect(counts).toEqual(expected);
+      expect(counts).toEqual({ sources: shape.sources.length, items: shape.items.length, facts: shape.facts.length });
+      expect(counts['sources']).toBe([...html.matchAll(/\sdata-polaris-source="/g)].length);
+      expect(counts).toEqual({ sources: shape.counts.sources, items: shape.counts.items, facts: shape.counts.facts });
+      const route = /<a href="#([^"]+)" data-proof-unknown-route[^>]*>([^<]*)<\/a>/.exec((strip as RegExpExecArray)[1] as string);
+      expect(route).not.toBeNull();
+      expect(html).toContain(`id="${(route as RegExpExecArray)[1]}"`);
+      expect((route as RegExpExecArray)[2]).not.toMatch(/\d/);
+      for (const target of (strip as RegExpExecArray)[1]?.matchAll(/href="#([^"]+)"/g) ?? []) expect(html).toContain(`id="${target[1]}"`);
+    }
+  });
+
+  it('makes every claim a gap entry counts findable: its tuples on the page plus the folded members it names', () => {
+    const { html } = observed(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET);
+    // A gap entry runs to the next entry or the end of its section; its
+    // cause list nests <li>s, so no lazy </li> match bounds it.
+    const section = /data-polaris-section="shape:gaps"[\s\S]*?<\/section>/.exec(html)?.[0] as string;
+    expect([...section.matchAll(/data-polaris-gap="([^"]+)"/g)].map((gap) => gap[1])).toEqual(['excluded-content']);
+    const inner = section.slice(section.indexOf('data-polaris-gap="excluded-content"'));
+    const stated = Number(/: (\d+) claim\(s\)/.exec(inner)?.[1]);
+    expect(stated).toBe(4);
+    const shown = new Set([...html.matchAll(/<span class="claim-tuple" data-claim-id="([^"]+)"[^>]*data-epistemic-primary-reason="excluded-content"/g)].map((match) => match[1]));
+    const folded = [...(/<span data-polaris-gap-folded="(\d+)">([\s\S]*?)<\/span>/.exec(inner)?.[2] ?? '').matchAll(/<code>([^<]+)<\/code>/g)].map((match) => match[1]);
+    expect(folded).toEqual(['claim:fact:count:craft-policy']);
+    for (const id of folded) expect(shown.has(id)).toBe(false);
+    expect(shown.size + folded.length).toBe(stated);
+  });
+
+  it('lists each recorded cause of a gap as its own item', () => {
+    const texts = {
+      ...PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET,
+      'about/legends-and-lore/0001.md': '# RFC 0001\n<script>x</script>\n',
+    };
+    const { shape, html } = observed(texts);
+    const entry = /<li id="[^"]*" data-polaris-gap="excluded-content">([\s\S]*?)<\/ul>/.exec(html)?.[1] as string;
+    expect(entry).toContain('>By cause:</span><ul data-polaris-gap-causes="2">');
+    const items = [...entry.split('data-polaris-gap-causes')[1]?.matchAll(/<li>([\s\S]*?)<\/li>/g) ?? []].map((match) => decode(match[1] as string));
+    expect(items.length).toBe(2);
+    expect(shape.exclusions.length).toBe(2);
+    for (const path of ['about/craft-and-care/README.md', 'about/legends-and-lore/0001.md']) {
+      expect(items.filter((item) => item.startsWith(`${path} `)).length, path).toBe(1);
+    }
+  });
+});

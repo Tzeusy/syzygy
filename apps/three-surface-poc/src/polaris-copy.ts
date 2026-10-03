@@ -27,6 +27,11 @@ export const POLARIS_COPY = [
   { id: 'shell.lede', role: 'scope-instruction', kind: 'lede', text: 'Less to remember. More room to live.' },
   { id: 'notice', role: 'epistemic-disclosure', kind: 'notice', text: 'Every positive claim cites its source. Where evidence is absent, Unknown is stated in place with its route to resolution.' },
   { id: 'label.claim-states', role: 'action-label', kind: 'label', text: 'What the claim states mean' },
+  { id: 'gloss.tuple', role: 'epistemic-disclosure', kind: 'sentence', text: 'Each claim carries one line: label · tier · freshness · challenge. The first one reads:' },
+  { id: 'proof.sources', role: 'project-fact', kind: 'label', text: 'sources' },
+  { id: 'proof.items', role: 'project-fact', kind: 'label', text: 'declared items' },
+  { id: 'proof.facts', role: 'project-fact', kind: 'label', text: 'facts' },
+  { id: 'proof.unknown', role: 'action-label', kind: 'label', text: 'Where the Unknown claims are' },
   // The claim-state glossary (RFC2-25 tiers; PWB-REQ-007): every field of
   // the tuple beside each claim, in ordinary words, and the only routes
   // that strengthen a claim. Nothing here rounds a state up.
@@ -134,6 +139,7 @@ export const POLARIS_COPY = [
   { id: 'label.show-exclusions', role: 'action-label', kind: 'label', text: 'Show exclusions' },
   { id: 'label.exact-text', role: 'action-label', kind: 'label', text: 'Exact text' },
   { id: 'label.by-cause', role: 'epistemic-disclosure', kind: 'label', text: 'By cause:' },
+  { id: 'label.folded-claims', role: 'epistemic-disclosure', kind: 'label', text: 'Counted here without a line of their own:' },
   { id: 'label.primary-reasons', role: 'epistemic-disclosure', kind: 'label', text: 'Primary Unknown reasons among members:' },
   { id: 'label.secondary-reasons', role: 'epistemic-disclosure', kind: 'label', text: 'Secondary Unknown reasons among members:' },
   { id: 'sentence.no-member-unknowns', role: 'epistemic-disclosure', kind: 'sentence', text: 'No member claim carries an Unknown reason.' },
@@ -248,6 +254,10 @@ export function copyRow(id: PolarisCopyId): PolarisCopyRow {
   const row = BY_ID.get(id);
   if (row === undefined) throw new Error(`no Polaris copy row ${id}`);
   return row;
+}
+
+export function hasCopyRow(id: string): id is PolarisCopyId {
+  return BY_ID.has(id);
 }
 
 export function copyText(id: PolarisCopyId): string {

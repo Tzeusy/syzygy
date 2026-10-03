@@ -46,7 +46,7 @@ import {
   type VerbatimResolution,
 } from './capability-detail.js';
 import { pageShell, type HumanOperabilityStatus } from './page-shell.js';
-import { copyAttr, copyText, roleAttr, type PolarisCopyId } from './polaris-copy.js';
+import { copyAttr, copyText, hasCopyRow, roleAttr, type PolarisCopyId } from './polaris-copy.js';
 import {
   NarrativeRegistry,
   artifactAnchor,
@@ -386,6 +386,28 @@ function claimStatesBlock(model: PocModel): string {
   </details>`;
 }
 
+/** The tuple vocabulary glossed where it first appears (syzygy-u05.4;
+ * S1-F1): each value of the first claim's tuple with its sentence from the
+ * complete explanation, which still follows the overview. A value with no
+ * sentence is left out here, as it is there. */
+function tupleGloss(claim: ProjectShapeClaim): string {
+  const epistemic = claim.epistemic;
+  const ids = [
+    `states.${epistemic.label.toLowerCase()}`,
+    `states.tier.${epistemic.tier ?? 'unstated'}`,
+    ...(epistemic.freshness === undefined ? [] : [`states.freshness.${epistemic.freshness}`]),
+    `states.challenge.${claim.challenge}`,
+  ].filter(hasCopyRow);
+  return `<div class="tuple-gloss" data-polaris-tuple-gloss="${escapeHtml(claim.claimId)}"${DISCLOSURE}><p${copyAttr('gloss.tuple')}>${copy('gloss.tuple')}</p><ul>${ids.map((id) => `<li${copyAttr(id)}>${copy(id)}</li>`).join('')}</ul><p><a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p></div>`;
+}
+
+/** The claim whose tuple the page renders first: Purpose's, else the whole
+ * shape's. */
+function firstTupleClaim(shape: ProjectShape): ProjectShapeClaim {
+  if (shape.kind !== 'observed') return shape.claim;
+  return shape.projectAccount.find((entry) => entry.key === 'purpose')?.claim ?? shape.claim;
+}
+
 function currencyProbeBand(model: PocModel): string {
   const evidence = model.evaluation.evidence;
   const probe = evidence.probe;
@@ -509,11 +531,14 @@ function routeOf(claim: ProjectShapeClaim, reason: string): string {
 /** The route text of one reason in a list keyed by reason (gaps, reason
  * counts): the generic route, then the evaluation's causes when it records
  * any, so the reader reaches the actual cause without leaving the list. */
-function reasonRouteHtml(reason: string): string {
+function reasonRouteHtml(reason: string, causeList = false): string {
   const generic = UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route');
   const causes = causeRoutes(reason, undefined);
-  return causes === undefined
-    ? `${escapeHtml(generic)}.`
+  if (causes === undefined) return `${escapeHtml(generic)}.`;
+  // The gaps entry lists one cause per item (syzygy-u05.4; S4-F5); the
+  // reason counts keep the run-on form, since a list cannot sit in their <p>.
+  return causeList
+    ? `${escapeHtml(generic)}. <span${copyAttr('label.by-cause')}>${copy('label.by-cause')}</span><ul data-polaris-gap-causes="${causes.length}">${causes.map((cause) => `<li>${escapeHtml(cause)}.</li>`).join('')}</ul>`
     : `${escapeHtml(generic)}. <span${copyAttr('label.by-cause')}>${copy('label.by-cause')}</span> ${escapeHtml(causes.join('; '))}.`;
 }
 
@@ -979,8 +1004,17 @@ function gapReasonCounts(claims: readonly ProjectShapeClaim[]): ReadonlyMap<stri
   return counts;
 }
 
-function gapsList(claims: readonly ProjectShapeClaim[]): string {
+/** Each reason's count covers every shape claim, the machine answer's
+ * population; the members with no tuple line of their own (reconciled facts,
+ * account-section items) are named in the entry, so every counted claim can
+ * be found (syzygy-u05.4; S4-F4). */
+function gapsList(claims: readonly ProjectShapeClaim[], presented: readonly ProjectShapeClaim[]): string {
   const counts = gapReasonCounts(claims);
+  const shown = new Set(presented.map((claim) => claim.claimId));
+  const folded = (reason: string): string => {
+    const ids = claims.filter((claim) => !shown.has(claim.claimId) && 'reasons' in claim.epistemic && claim.epistemic.reasons.primary === reason).map((claim) => claim.claimId);
+    return ids.length === 0 ? '' : ` <span${copyAttr('label.folded-claims')}>${copy('label.folded-claims')}</span> <span data-polaris-gap-folded="${ids.length}">${ids.map((id) => `<code>${escapeHtml(id)}</code>`).join(', ')}</span>.`;
+  };
   if (counts.size === 0) {
     return `<p data-polaris-gaps="none"${copyAttr('sentence.no-gaps')}>${copy('sentence.no-gaps')}</p>`;
   }
@@ -992,7 +1026,7 @@ function gapsList(claims: readonly ProjectShapeClaim[]): string {
     return b[1] - a[1] || a[0].localeCompare(b[0]);
   });
   return `<ul data-polaris-gaps="${counts.size}"${DISCLOSURE}>${ordered
-    .map(([reason, count]) => `<li id="${gapId(reason)}" data-polaris-gap="${escapeHtml(reason)}"><span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>: ${count} claim(s). ${copy('label.route')} ${reasonRouteHtml(reason)}</li>`)
+    .map(([reason, count]) => `<li id="${gapId(reason)}" data-polaris-gap="${escapeHtml(reason)}"><span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>: ${count} claim(s). ${copy('label.route')} ${reasonRouteHtml(reason, true)}${folded(reason)}</li>`)
     .join('')}</ul>`;
 }
 
@@ -1019,14 +1053,50 @@ function shapeClaims(shape: ProjectShape): readonly ProjectShapeClaim[] {
   ];
 }
 
-function openingUnknownBand(shape: ProjectShape): string {
+/** The shape claims the page renders as their own tuples (syzygy-u05.4;
+ * S4-F4), the rule the walkthrough preflight states: reconciled facts fold into their
+ * account statements and project-account-section items into the account
+ * itself; only contradictions render as fact claims. */
+function presentedClaims(shape: ProjectShape): readonly ProjectShapeClaim[] {
+  if (shape.kind !== 'observed') return [shape.claim];
+  return [
+    shape.claim,
+    ...shape.projectAccount.map((entry) => entry.claim),
+    ...shape.sources.map((entry) => entry.claim),
+    ...shape.items.filter((entry) => entry.class !== 'project-account-section').map((entry) => entry.claim),
+    ...EXTRACTION_CLASSES.map((cls) => shape.classes[cls].claim),
+    ...shape.contradictions.map((entry) => entry.claim),
+  ];
+}
+
+function openingUnknowns(shape: ProjectShape): readonly { readonly subject: string; readonly claim: ProjectShapeClaim; readonly target: string }[] {
   const featured: readonly { readonly subject: string; readonly claim: ProjectShapeClaim; readonly target: string }[] = shape.kind === 'observed'
     ? [
         { subject: 'Whole project shape', claim: shape.claim, target: 'polaris-shape-sources' },
         { subject: 'Roster identity', claim: shape.classes['roster-identity'].claim, target: 'polaris-class-roster-identity' },
       ]
     : [{ subject: 'Whole project shape', claim: shape.claim, target: 'polaris-shape-sources' }];
-  const unknowns = featured.filter(({ claim }) => claim.epistemic.label === 'Unknown');
+  return featured.filter(({ claim }) => claim.epistemic.label === 'Unknown');
+}
+
+/** Scale before the first diagram (syzygy-u05.4; S1-M3): three populations
+ * counted from the model, each linked to where it is listed or counted. The
+ * Unknown claims get a route, not a number: PWB-REQ-010 allows exactly one
+ * Unknown aggregate before the catalog, and the opening band is it. */
+function proofStrip(shape: Extract<ProjectShape, { kind: 'observed' }>): string {
+  const segment = (key: string, count: number, id: PolarisCopyId, target: string): string =>
+    `<a href="#${target}" data-proof-count="${key}" data-count="${count}">${count} <span${copyAttr(id)}>${copy(id)}</span></a>`;
+  const unknownTarget = openingUnknowns(shape).length > 0 ? 'polaris-opening-unknowns' : 'polaris-shape-gaps';
+  return `<p class="proof-strip" data-polaris-proof-strip${FACT}>${[
+    segment('sources', shape.sources.length, 'proof.sources', 'polaris-shape-sources'),
+    segment('items', shape.items.length, 'proof.items', 'polaris-shape-identity'),
+    segment('facts', shape.facts.length, 'proof.facts', 'polaris-shape-identity'),
+    `<a href="#${unknownTarget}" data-proof-unknown-route${copyAttr('proof.unknown')}>${copy('proof.unknown')}</a>`,
+  ].join(' · ')}</p>`;
+}
+
+function openingUnknownBand(shape: ProjectShape): string {
+  const unknowns = openingUnknowns(shape);
   if (unknowns.length === 0) return '';
   const total = shapeClaims(shape).filter((claim) => claim.epistemic.label === 'Unknown').length;
   const entries = unknowns.map(({ subject, claim, target }) => {
@@ -1045,7 +1115,7 @@ function shapeEvidence(shape: ProjectShape): string {
     </section>
     <section class="claim-section" data-polaris-section="shape:gaps">
       ${heading(3, 'polaris-shape-gaps', 'evidence.gaps')}
-      ${gapsList(shapeClaims(shape))}
+      ${gapsList(shapeClaims(shape), presentedClaims(shape))}
     </section>`;
   }
   const identity = shape.identity;
@@ -1091,7 +1161,7 @@ function shapeEvidence(shape: ProjectShape): string {
   </section>
   <section class="claim-section" data-polaris-section="shape:gaps">
     ${heading(3, 'polaris-shape-gaps', 'evidence.gaps')}
-    ${gapsList(shapeClaims(shape))}
+    ${gapsList(shapeClaims(shape), presentedClaims(shape))}
   </section>`;
 }
 
@@ -1283,7 +1353,7 @@ function projectGroupBody(shape: ProjectShape, group: Exclude<PolarisGroup, 'cap
   }
   switch (group) {
     case 'overview':
-      return `${accountByKey(shape, 'purpose')}${introductoryDiagram(shape)}${accountByKey(shape, 'promises')}${classBlock(shape, 'project-account-section', false)}`;
+      return `${accountByKey(shape, 'purpose')}${proofStrip(shape)}${introductoryDiagram(shape)}${accountByKey(shape, 'promises')}${classBlock(shape, 'project-account-section', false)}`;
     case 'boundaries':
       return `${accountByKey(shape, 'refusals')}${classBlock(shape, 'principle', true)}`;
     case 'architecture':
@@ -1409,6 +1479,9 @@ const POLARIS_STYLE = `
   header h1 { font-size: clamp(3.5rem, 7vw, 5.5rem); line-height: 1; margin-block: .7rem 1.4rem; }
   header .lede { max-width: 48ch; font-size: 1.25rem; line-height: 1.6; }
   main > .legend { max-width: 74ch; margin: 1.25rem auto 2rem; gap: .5rem 1rem; }
+  .tuple-gloss { max-width: 74ch; margin: 0 auto 1.5rem; font-size: .9rem; color: var(--muted); }
+  .tuple-gloss ul { margin: .25rem 0; }
+  .proof-strip { font-size: .95rem; }
   main > .notice { max-width: 74ch; margin: 0 auto 2rem; background: transparent; border-left: 1px solid var(--line); font-size: .9rem; color: var(--muted); }
   .group { margin-top: 4rem; padding: 1.5rem 0 0; border-top: 1px solid var(--line); }
   .group h2 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.15; letter-spacing: -.025em; }
@@ -1696,6 +1769,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
 
   const body = `
     ${groupHeader('overview')}
+    ${tupleGloss(firstTupleClaim(shape))}
     ${projectGroupBody(shape, 'overview')}
     <p class="notice"${copyAttr('notice')}>${copy('notice')} <a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p>
     ${claimStatesBlock(model)}
