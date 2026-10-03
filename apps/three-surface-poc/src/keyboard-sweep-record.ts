@@ -1,8 +1,11 @@
 // Pure pieces of `polaris-keyboard-sweep-main.ts` (syzygy-buzg): its
 // arguments, and the evaluation a swept page names. A sweep record names its
 // subject's digest (each mount's sha256) and, read back from the same served
-// bytes, the Butlers revision and the evaluation identity that page renders
-// (verification rule 11), so a reader can tell which evaluation was swept.
+// bytes, the Butlers revision, the evaluation identity that page renders and
+// the walkthrough evaluation identity PWB-REQ-021 records bind to (verification
+// rule 11), so a reader can tell which evaluation was swept.
+
+import { dirname, join } from 'node:path';
 
 import type { AccessibilityReport } from './polaris-accessibility.js';
 
@@ -35,15 +38,26 @@ export function parseKeyboardSweepArguments(argv: readonly string[]): KeyboardSw
   return { task, baseUrl, files, date: valueOf('--date'), out: valueOf('--out') };
 }
 
+/** Where the record is written, and the one directory the sweep may create: `--out`'s own, else `docs/evidence` for the dated default. */
+export function keyboardSweepOutput(parsed: Pick<KeyboardSweepArguments, 'date' | 'out'>, today: string): { readonly file: string; readonly directory: string } {
+  const file = parsed.out ?? join('docs', 'evidence', `polaris-keyboard-sweep-${parsed.date ?? today}.json`);
+  return { file, directory: dirname(file) };
+}
+
 export interface ServedEvaluationBinding {
   /** The Butlers revision the page says it was evaluated at (the currency probe's pinned revision). */
   readonly butlersRevision: string;
   /** `<snapshot>|observed:<asOf>`, the form `evaluationIdentity(model)` gives, from the page footer. */
   readonly evaluationIdentity: string;
+  /** The identity a PWB-WALKTHROUGH-001 record binds to, `pwb-eval-…` — what the daemon prints as "Walkthrough evaluation identity", read from the readiness section's expected binding. */
+  readonly walkthroughEvaluationIdentity: string;
 }
 
 const PINNED_REVISION = /\sdata-currency-probe-pinned="([^"]*)"/g;
 const FOOTER = /<footer\b[^>]*>Evaluation <code>([^<]*)<\/code> as of <code>([^<]*)<\/code>/g;
+const EXPECTED_WALKTHROUGH = /<code\b[^>]*\sdata-polaris-readiness-expected-evaluation(?:="[^"]*")?[^>]*>([^<]*)<\/code>/g;
+/** The walkthrough judgment's identifier grammar (`walkthrough-judgment.ts`). */
+const WALKTHROUGH_IDENTITY = /^[a-z0-9][a-z0-9-]*$/;
 
 function unescapeHtml(text: string): string {
   return text.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
@@ -60,7 +74,11 @@ export function servedEvaluationBinding(html: string): ServedEvaluationBinding |
   const snapshot = unescapeHtml(footers[0]![1]!);
   const asOf = unescapeHtml(footers[0]![2]!);
   if (snapshot === '' || asOf === '') return { refused: 'the evaluation footer names no snapshot or instant' };
-  return { butlersRevision, evaluationIdentity: `${snapshot}|observed:${asOf}` };
+  const walkthrough = [...html.matchAll(EXPECTED_WALKTHROUGH)];
+  if (walkthrough.length !== 1) return { refused: `expected one walkthrough evaluation identity, found ${walkthrough.length}` };
+  const walkthroughEvaluationIdentity = unescapeHtml(walkthrough[0]![1]!);
+  if (!WALKTHROUGH_IDENTITY.test(walkthroughEvaluationIdentity)) return { refused: `walkthrough evaluation identity ${JSON.stringify(walkthroughEvaluationIdentity)} is not an identifier` };
+  return { butlersRevision, evaluationIdentity: `${snapshot}|observed:${asOf}`, walkthroughEvaluationIdentity };
 }
 
 /** The one evaluation every swept page renders, or why the sweep refuses: a page naming none, or two pages disagreeing. */
@@ -72,6 +90,8 @@ export function sweptEvaluation(pages: readonly { readonly mount: string; readon
     if (first === undefined) first = { mount, binding };
     else if (binding.butlersRevision !== first.binding.butlersRevision || binding.evaluationIdentity !== first.binding.evaluationIdentity) {
       return { refused: `${mount} renders evaluation ${binding.evaluationIdentity} at ${binding.butlersRevision}, not ${first.mount}'s ${first.binding.evaluationIdentity} at ${first.binding.butlersRevision}` };
+    } else if (binding.walkthroughEvaluationIdentity !== first.binding.walkthroughEvaluationIdentity) {
+      return { refused: `${mount} renders walkthrough evaluation ${binding.walkthroughEvaluationIdentity}, not ${first.mount}'s ${first.binding.walkthroughEvaluationIdentity}` };
     }
   }
   return first === undefined ? { refused: 'no page to sweep' } : first.binding;
@@ -106,7 +126,8 @@ export function keyboardSweepEvidence(input: {
     requirement: ['PWB-REQ-016'],
     butlersRevision: input.evaluation.butlersRevision,
     evaluationIdentity: input.evaluation.evaluationIdentity,
-    evaluationReadFrom: "each swept page: the currency probe's pinned revision and the footer's snapshot and as-of instant, equal on every mount (keyboard-sweep-record.ts)",
+    walkthroughEvaluationIdentity: input.evaluation.walkthroughEvaluationIdentity,
+    evaluationReadFrom: "each swept page: the currency probe's pinned revision, the footer's snapshot and as-of instant, and the walkthrough readiness section's expected evaluation identity, equal on every mount (keyboard-sweep-record.ts)",
     capturedAt: input.capturedAt,
     syzygyHead: input.syzygyHead,
     surfaceVersion: input.surfaceVersion,
