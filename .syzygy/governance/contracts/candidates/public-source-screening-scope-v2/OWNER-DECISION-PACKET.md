@@ -4,14 +4,14 @@
 > decision, and no act is performed by reading it. It is offered only after a
 > confirming review.
 
-> **Review state.** Round 4 returned REVISE and was repaired (commit 33b15a65);
-> round 5, which read that repair at commit fd4e2509, also returned REVISE. The
-> round-5 repairs, 77 insertions and 37 deletions in 9 files (commit 39d83718
-> over fd4e2509: this packet, the semantic delta, the review brief, the
-> manifest, four patches and the builder; it excludes the retained round-5 raw,
-> the round-5 dispositions and this statement), are unreviewed until round 6
-> reads them. If round 6 does not confirm them, the recorder stays unfrozen and
-> the owner chooses what to do next; nothing here is signed on unreviewed bytes.
+> **Review state.** Round 6 found one false sentence in the generated list,
+> which overstated what is sendable; the policy bytes were confirmed correct.
+> The repair (commit e7ad7934, 3 files, +20/-13 over the round-6 reviewed
+> commit 8a0bb2a1: this packet, the semantic delta and the builder; it excludes
+> the retained round-6 raw, the round-6 dispositions and this statement) is
+> unreviewed. The recorder records only a confirming review, so to sign this row
+> the owner either asks for one more narrow review (about 5 minutes) or leaves
+> row 12 for a later sitting.
 
 ## What this is, in plain words
 
