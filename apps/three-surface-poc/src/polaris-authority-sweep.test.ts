@@ -1,4 +1,5 @@
-import { readFileSync, readdirSync, rmSync, statSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync, readdirSync, rmSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -42,6 +43,28 @@ function walk(directory: string, accept: (path: string) => boolean, out: string[
   return out;
 }
 
+/**
+ * Every tracked file under the roots that `accept` admits, read from git
+ * independently of {@link walk} (syzygy-jsyi). The walk also reads untracked
+ * files, so it must contain this population; a faster or narrower walk that
+ * drops a tracked file fails here, not silently.
+ */
+function trackedPopulation(roots: readonly string[], accept: (path: string) => boolean): string[] {
+  return execFileSync('git', ['-C', REPO_ROOT, 'ls-files', '-z', '--', ...roots], { encoding: 'utf8' })
+    .split('\0')
+    .filter((path) => path !== '' && !path.split('/').some((part) => part === 'node_modules' || part === 'dist' || part === '.git'))
+    .map((path) => join(REPO_ROOT, path))
+    // A tracked file deleted in the working tree is not there to sweep.
+    .filter((path) => accept(path) && existsSync(path));
+}
+
+function expectPopulationCovered(walked: readonly string[], roots: readonly string[], accept: (path: string) => boolean): void {
+  const tracked = trackedPopulation(roots, accept);
+  const walkedSet = new Set(walked);
+  expect(tracked.length).toBeGreaterThan(0);
+  expect(tracked.filter((path) => !walkedSet.has(path)).map((path) => relative(REPO_ROOT, path)), `tracked files the walk missed, of ${tracked.length} tracked and ${walked.length} walked`).toEqual([]);
+}
+
 function machineReferences(model: PocModel, narrative: PolarisNarrative): string[] {
   const refs: string[] = [];
   for (const entity of model.entities) for (const item of entity.provenance) refs.push(item.source, item.revision);
@@ -72,7 +95,9 @@ describe('Zero downstream citations of Polaris as authority (PWB-REQ-014)', () =
   });
 
   it('every OpenSpec warrant entry belongs to a known id family and none targets Polaris (POLARIS-DIR-* ids are owner decisions)', () => {
-    const specs = walk(join(REPO_ROOT, 'openspec'), (path) => path.endsWith('.md'));
+    const isSpec = (path: string): boolean => path.endsWith('.md');
+    const specs = walk(join(REPO_ROOT, 'openspec'), isSpec);
+    expectPopulationCovered(specs, ['openspec'], isSpec);
     const entries: { file: string; key: string; value: string }[] = [];
     const declaredGeneratorRequirements = new Set<string>();
     for (const file of specs) {
@@ -116,8 +141,10 @@ describe('Zero downstream citations of Polaris as authority (PWB-REQ-014)', () =
 
   it('no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface', () => {
     const roots = ['.syzygy/governance', 'openspec', 'packages', 'apps', 'docs'];
-    const files = roots.flatMap((root) => walk(join(REPO_ROOT, root), (path) => /\.(md|json|ya?ml|ts)$/.test(path)));
+    const isSwept = (path: string): boolean => /\.(md|json|ya?ml|ts)$/.test(path);
+    const files = roots.flatMap((root) => walk(join(REPO_ROOT, root), isSwept));
     expect(files.length).toBeGreaterThan(500);
+    expectPopulationCovered(files, roots, isSwept);
     const hits: string[] = [];
     for (const file of files) {
       if (file.endsWith('polaris-authority-sweep.test.ts')) continue;
