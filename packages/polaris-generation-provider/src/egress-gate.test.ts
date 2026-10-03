@@ -1,15 +1,15 @@
 import http from 'node:http';
 import { afterEach, describe, expect, it } from 'vitest';
-import { parseRetryAfterMs, startEgressGate, type EgressGate } from './egress-gate.js';
+import { assertAllowedUpstream, parseRetryAfterMs, startEgressGate, type EgressGate } from './egress-gate.js';
 import { startCaptureEndpoint, type CaptureEndpoint } from './capture-endpoint.testkit.js';
 
 let upstream: CaptureEndpoint | undefined;
 let gate: EgressGate | undefined;
 afterEach(async () => { await gate?.close(); await upstream?.close(); gate = undefined; upstream = undefined; });
 
-const send = (url: string, method: string, path: string, body = ''): Promise<{ status: number; text: string }> => new Promise((resolve, reject) => {
+const send = (url: string, method: string, path: string, body = '', extra: Record<string, string> = {}): Promise<{ status: number; text: string }> => new Promise((resolve, reject) => {
   const u = new URL(url);
-  const req = http.request({ hostname: u.hostname, port: u.port, method, path, headers: { 'content-type': 'application/json' } }, res => {
+  const req = http.request({ hostname: u.hostname, port: u.port, method, path, headers: { ...(method === 'HEAD' ? {} : { 'content-type': 'application/json' }), ...extra } }, res => {
     const chunks: Buffer[] = [];
     res.on('data', c => chunks.push(c as Buffer));
     res.on('end', () => resolve({ status: res.statusCode ?? 0, text: Buffer.concat(chunks).toString('utf8') }));
@@ -81,6 +81,74 @@ describe('egress gate', () => {
     gate.arm(c => ({ accepted: c.method === 'POST', violations: ['not a message request'] }));
     expect((await send(gate.url, 'HEAD', '/other')).status).toBe(403);
     expect(upstream.requests).toEqual([]);
+  });
+  it('listens on 127.0.0.1 only', async () => {
+    gate = await startEgressGate({ permitted: async () => true });
+    expect(new URL(gate.url).hostname).toBe('127.0.0.1');
+    const server = (gate as unknown as { server?: unknown }).server;
+    expect(server).toBeUndefined();   // the listener is not exposed; its address is the URL above
+    const sockets = await new Promise<string>(resolve => { const s = http.get(gate!.url, r => { resolve(r.socket.remoteAddress ?? ''); r.resume(); }); s.on('error', () => resolve('')); });
+    expect(sockets).toBe('127.0.0.1');
+  });
+  it('forwards exactly one request per armed try, and a later try forwards again', async () => {
+    upstream = await startCaptureEndpoint();
+    gate = await startEgressGate({ upstream: { url: upstream.url }, permitted: async () => true });
+    gate.arm(accepting);
+    expect((await send(gate.url, 'POST', '/v1/messages', '{}')).status).toBe(200);
+    expect((await send(gate.url, 'POST', '/v1/messages', '{}')).status).toBe(403);
+    expect(upstream.requests).toHaveLength(1);
+    expect(gate.decisions.at(-1)).toMatchObject({ decision: 'refused', reasons: ['try already forwarded one request'] });
+    gate.disarm(); gate.arm(accepting);
+    expect((await send(gate.url, 'POST', '/v1/messages', '{}')).status).toBe(200);
+    expect(upstream.requests).toHaveLength(2);
+  });
+  it('two simultaneous requests in one try forward at most one', async () => {
+    upstream = await startCaptureEndpoint();
+    gate = await startEgressGate({ upstream: { url: upstream.url }, permitted: async () => true });
+    gate.arm(accepting);
+    const results = await Promise.all([send(gate.url, 'POST', '/v1/messages', '{}'), send(gate.url, 'POST', '/v1/messages', '{}')]);
+    expect(results.map(r => r.status).sort()).toEqual([200, 403]);
+    expect(upstream.requests).toHaveLength(1);
+  });
+  it('does not forward the gate\'s own Host header', async () => {
+    upstream = await startCaptureEndpoint();
+    gate = await startEgressGate({ upstream: { url: upstream.url }, permitted: async () => true });
+    gate.arm(accepting);
+    await send(gate.url, 'POST', '/v1/messages', '{}');
+    expect(upstream.requests[0]!.headers.host).toBe(new URL(upstream.url).host);
+    expect(upstream.requests[0]!.headers.host).not.toBe(new URL(gate.url).host);
+  });
+  it('answers an armed, accepted HEAD /api/hello locally with no upstream hit and does not spend the try', async () => {
+    upstream = await startCaptureEndpoint();
+    gate = await startEgressGate({ upstream: { url: upstream.url }, permitted: async () => true });
+    gate.arm(accepting);
+    expect((await send(gate.url, 'HEAD', '/api/hello', '', { 'user-agent': 'Bun/1.4.3', accept: '*/*' })).status).toBe(200);
+    expect(upstream.requests).toEqual([]);
+    expect(gate.decisions.at(-1)).toMatchObject({ decision: 'answered-locally' });
+    expect((await send(gate.url, 'POST', '/v1/messages', '{}')).status).toBe(200);
+    expect(upstream.requests).toHaveLength(1);
+  });
+  it('turns any upstream redirect into a 502 and never follows it', async () => {
+    const hits: string[] = [];
+    const target = http.createServer((req, res) => { hits.push(req.url ?? ''); res.writeHead(200); res.end('x'); });
+    await new Promise<void>(r => target.listen(0, '127.0.0.1', r));
+    const targetUrl = `http://127.0.0.1:${(target.address() as { port: number }).port}`;
+    const redirector = http.createServer((_req, res) => { res.writeHead(307, { location: `${targetUrl}/elsewhere` }); res.end(); });
+    await new Promise<void>(r => redirector.listen(0, '127.0.0.1', r));
+    try {
+      gate = await startEgressGate({ upstream: { url: `http://127.0.0.1:${(redirector.address() as { port: number }).port}` }, permitted: async () => true });
+      gate.arm(accepting);
+      const answer = await send(gate.url, 'POST', '/v1/messages', '{}');
+      expect(answer.status).toBe(502);
+      expect(answer.text).not.toContain('elsewhere');
+      expect(hits).toEqual([]);
+    } finally { redirector.close(); target.close(); }
+  });
+  it('accepts only the provider origin or a loopback address as upstream', async () => {
+    for (const ok of ['https://api.anthropic.com', 'https://api.anthropic.com/', 'http://127.0.0.1:9', 'http://localhost:9']) expect(() => assertAllowedUpstream(ok), ok).not.toThrow();
+    for (const bad of ['http://api.anthropic.com', 'https://api.anthropic.com.evil.test', 'https://evil.test', 'https://user:pw@api.anthropic.com', 'https://api.anthropic.com:8443', 'http://10.0.0.5:80', 'not a url', 'file:///etc/passwd'])
+      expect(() => assertAllowedUpstream(bad), bad).toThrow();
+    await expect(startEgressGate({ upstream: { url: 'https://evil.test' }, permitted: async () => true })).rejects.toThrow('upstream must be');
   });
   it('parses retry-after seconds and dates, and nothing else', () => {
     expect(parseRetryAfterMs('3', 0)).toBe(3000);

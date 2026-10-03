@@ -101,6 +101,8 @@ describe('captured request (text mode)', () => {
       ['model drift', mutate(b => { b.model = 'other'; }), 'model'],
       ['unlisted header', { ...good, headers: { ...good.headers, 'x-extra': '1' } }, 'unlisted header x-extra'],
       ['wrong endpoint', { ...good, url: '/v1/complete' }, 'endpoint'],
+      ['timeout value drift', { ...good, headers: { ...good.headers, 'x-stainless-timeout': '601' } }, 'header x-stainless-timeout'],
+      ['connection value drift', { ...good, headers: { ...good.headers, connection: 'close' } }, 'header connection'],
     ];
     for (const [name, mutant, expected] of mutants) {
       const verdict = acceptCapturedRequest(mutant, expectation(e));
