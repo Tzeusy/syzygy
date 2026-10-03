@@ -323,10 +323,12 @@ class Evidence:
         """{path: (predecessor, successor)} over every performed readability successor.
 
         Only a package that checks as performed-exact contributes. A package
-        that fails to load, or whose act records do not verify, contributes
-        nothing and blocks no other. A package whose act records verify but
-        whose check fails contests every path it names: composing the other
-        packages around it would accept a tree the tool refuses.
+        that fails to load, or that the tool reads as unperformed, contributes
+        nothing and blocks no other. Any other package whose check fails
+        contests every path it names, whether its act records verify or not:
+        composing the other packages around it would accept a tree the tool
+        refuses, and editing a refused package's act record must not turn it
+        back into one that is skipped.
         Paths are normalized. The pairs every package records for one path,
         whatever their order or spelling, compose into one pair (`chain`):
         a later successor whose predecessor is an earlier one's row extends
@@ -343,15 +345,15 @@ class Evidence:
                 try:
                     package = module.Package(self.root, config.parent.relative_to(self.root).as_posix())
                     keys = {posixpath.normpath(path) for path in package.subjects}
-                    if package.performed_rows() is None:
-                        continue
-                except Exception:  # noqa: BLE001 - an unverified act grants and contests nothing
+                except Exception:  # noqa: BLE001 - a package that does not load grants and contests nothing
                     continue
                 try:
+                    if package.performed_rows() is None:
+                        continue
                     require(package.check() == 'performed-exact', 'not performed-exact')
                     installed = package.manifest_rows()
                     pairs = [(path, package.predecessor[path], installed[path]) for path in package.subjects]
-                except Exception:  # noqa: BLE001 - a performed act whose check fails contests its paths
+                except Exception:  # noqa: BLE001 - a claimed act that fails, verified or not, contests its paths
                     contested |= keys
                     continue
                 for path, predecessor, successor in pairs:
@@ -485,12 +487,16 @@ def baseline_proof(evidence):
         expected = NEW_SHA if path == SPEC else row['sha256']
         require(digest(adopted) == expected, 'adoption blob mismatch: ' + path)
         current = evidence.current(path)
-        if current != adopted:
+        row = evidence.successor_rows().get(path)
+        if current != adopted or row is not None:
             # A performed readability successor may replace adopted bytes, but
-            # only one whose recorded predecessor is exactly these bytes.
-            row = evidence.successor_rows().get(path)
+            # only one whose recorded predecessor is exactly these bytes. Its
+            # row is consulted even when the bytes equal the adopted ones, so a
+            # file written back over a performed successor is refused.
             require(row != CONTESTED, 'two performed successors claim ' + path
                     + ' (contested: their pairs form no single chain, or a performed successor fails its check)')
+            require(current != adopted or row == (digest(adopted), digest(adopted)),
+                    'subject written back over its performed successor row: ' + path)
             require(row == (digest(adopted), digest(current)), 'current subject drift: ' + path)
         rows.append({'path': path, 'historical_sha256': digest(old),
                      'adopted_sha256': digest(adopted), 'changed': old != adopted})
@@ -855,6 +861,26 @@ def reconciliation_selftest():
                           'old': None, 'new': None, 'refusal': str(exc)})
     else:
         raise AssertionError('contested successor accepted')
+    # History review 16 N1 (P10): a file written back to its adopted bytes
+    # while a performed successor's row stands, whether that row is the
+    # restyle or contested because the tool now refuses the package.
+    fixture.files[proposal] = adopted_proposal
+    for row, refusal, operation in (
+            ((digest(adopted_proposal), digest(restyled)), 'subject written back over its performed successor row',
+             'successor-written-back'),
+            (CONTESTED, 'two performed successors claim', 'successor-written-back-contested')):
+        fixture.successors = {**installed, proposal: row}
+        try:
+            check_evidence(fixture)
+        except ValueError as exc:
+            require(refusal in str(exc), 'written-back refusal: ' + str(exc))
+            witnesses.append({'commit': commit, 'path': proposal, 'operation': operation,
+                              'old': None, 'new': None, 'refusal': str(exc)})
+        else:
+            raise AssertionError('a file written back over its performed successor accepted')
+    # A package that names the file and keeps its adopted bytes still passes.
+    fixture.successors = {**installed, proposal: (digest(adopted_proposal), digest(adopted_proposal))}
+    check_evidence(fixture)
     fixture.files[proposal] = today
     fixture.successors = installed
     mutate(DIRECTION, 'owner evidence changed')
@@ -1147,6 +1173,21 @@ def successor_rows_selftest():
             require(rows.get(proposal) == CONTESTED,
                     'a performed successor the tool refuses was composed around: ' + label + ' '
                     + repr(rows.get(proposal)))
+            # History review 16 N1 (P5): editing the refused package's act
+            # record must not turn it into a skipped package.
+            refused = [each for each, state in zip(module.packages(root), states) if state == 'refused']
+            with (root / refused[0].act).open('a', encoding='utf-8') as stream:
+                stream.write('\nedited after the act\n')
+            try:
+                refused[0].performed_rows()
+            except ValueError:
+                pass
+            else:
+                raise AssertionError('fixture: the edited act record still verifies: ' + label)
+            rows = Evidence(root).successor_rows()
+            require(rows.get(proposal) == CONTESTED,
+                    'a refused package was skipped after its act record was edited: ' + label + ' '
+                    + repr(rows.get(proposal)))
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
         require(Evidence(root).successor_rows() == {}, 'successor rows without the successor tool')
@@ -1173,11 +1214,20 @@ def successor_rows_selftest():
         broken.write_text('[' * 100000)
         require(Evidence(root).successor_rows() == rows, 'deeply nested sibling package changed the rows')
         # A full sibling copy whose pins are a list fails inside the tool's check.
+        # Under its own act, never recorded, it is unperformed and changes nothing.
         shutil.copytree(root / package.dir, broken.parent, dirs_exist_ok=True)
+        wrong = json.loads((root / package.dir / module.CONFIG).read_text())
+        wrong.update(pins=['manifest_sha', 'review', 'review_sha'], label='SIGN OFF BROKEN COPY',
+                     marker='BROKEN-COPY', act='.syzygy/governance/decisions/BROKEN-COPY-ACT.md')
+        broken.write_text(json.dumps(wrong))
+        require(Evidence(root).successor_rows() == rows, 'sibling with listed pins changed the rows')
+        # Under the performed package's own act, it claims that act and fails
+        # its check, so it contests the paths it names, as the tool refuses it.
         wrong = json.loads((root / package.dir / module.CONFIG).read_text())
         wrong['pins'] = ['manifest_sha', 'review', 'review_sha']
         broken.write_text(json.dumps(wrong))
-        require(Evidence(root).successor_rows() == rows, 'sibling with listed pins changed the rows')
+        require(Evidence(root).successor_rows() == dict.fromkeys(rows, CONTESTED),
+                'a copy claiming a performed act and failing its check contested nothing')
         for field in ('label', 'predecessor', 'pins'):
             wrong = json.loads((root / package.dir / module.CONFIG).read_text())
             wrong[field] = 5 if field != 'pins' else []
@@ -1275,7 +1325,7 @@ def successor_rows_selftest():
             ([(a, b), (b, c), (c, b), (d, e), (e, d)], CONTESTED, 'a step back beside a cycle'),
             ([(a, b), (c, d), (d, c)], CONTESTED, 'a chain beside a cycle')):
         require(chain(pairs) == expected, 'chain composition: ' + label)
-    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed, deeply nested and wrongly typed siblings, edited tool, chained, forked and drifted packages; a refused performed package contests its paths after a step back and at an instant tie; 15 composition cases')
+    print('PASS successor rows selftest: absent tool, unperformed, performed, malformed, deeply nested and wrongly typed siblings, edited tool, chained, forked and drifted packages; a refused performed package contests its paths after a step back and at an instant tie, and still does after its act record is edited; a copy claiming a performed act contests; 15 composition cases')
 
 
 def main():

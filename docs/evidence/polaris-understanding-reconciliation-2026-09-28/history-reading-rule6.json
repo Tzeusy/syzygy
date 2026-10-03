@@ -1021,6 +1021,66 @@
       "old": "                    keys = {posixpath.normpath(path) for path in package.subjects}\n",
       "predicate": "contested paths not normalized",
       "refusal": "FAIL exact digest reconciliation unresolved: drifted successor granted rows: {'openspec/changes/example/./proposal.md': ('contested', 'contested'), 'openspec/changes/example/proposal.md': ('contested', 'contested'), 'openspec/changes/example/spec.md': ('contested', 'contested'), 'openspec/changes/example/design.md': ('contested', 'contested')}"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "d9f14202ed8f52642bc7a191bcb57a22f3400b99",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "                    if package.performed_rows() is None:\n                        continue\n                except Exception:  # noqa: BLE001 - a package that does not load grants and contests nothing\n                    continue\n                try:\n                    require(",
+      "old": "                except Exception:  # noqa: BLE001 - a package that does not load grants and contests nothing\n                    continue\n                try:\n                    if package.performed_rows() is None:\n                        continue\n                    require(",
+      "predicate": "pre-fix act-unverified skip restored (P5): performed_rows() back in the load scope",
+      "refusal": "FAIL exact digest reconciliation unresolved: a refused package was skipped after its act record was edited: step back then edited ('e05fb1d26a126a910c50e3491c49243153fb2e04a21443613c6fb7361c84b154', '4ccde0dba94ea285448fc95f135dec2ac2a8e5cb7a54ffcf401a0bfeefad4036')"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "d9f14202ed8f52642bc7a191bcb57a22f3400b99",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "                    if package.performed_rows() is None:\n                        pass\n                    require(",
+      "old": "                    if package.performed_rows() is None:\n                        continue\n                    require(",
+      "predicate": "an unperformed package contests its paths",
+      "refusal": "FAIL exact digest reconciliation unresolved: unperformed successor granted rows"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "d9f14202ed8f52642bc7a191bcb57a22f3400b99",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "        if current != adopted:\n",
+      "old": "        if current != adopted or row is not None:\n",
+      "predicate": "pre-fix row consultation restored (P10): the row read only when the bytes differ",
+      "refusal": "AssertionError: a file written back over its performed successor accepted"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "d9f14202ed8f52642bc7a191bcb57a22f3400b99",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "",
+      "old": "            require(current != adopted or row == (digest(adopted), digest(adopted)),\n                    'subject written back over its performed successor row: ' + path)\n",
+      "predicate": "written-back test dropped (the row is consulted but only the drift test runs)",
+      "refusal": "FAIL exact digest reconciliation unresolved: written-back refusal: current subject drift: openspec/changes/polaris-manifesto-understanding-amendment/proposal.md"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "d9f14202ed8f52642bc7a191bcb57a22f3400b99",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "            require(current != adopted,\n",
+      "old": "            require(current != adopted or row == (digest(adopted), digest(adopted)),\n",
+      "predicate": "written-back test refuses a row that keeps the adopted bytes",
+      "refusal": "FAIL exact digest reconciliation unresolved: subject written back over its performed successor row: openspec/changes/polaris-manifesto-understanding-amendment/.openspec.yaml"
+    },
+    {
+      "command": "python3 scripts/record_polaris_understanding_adoption.py --selftest",
+      "commit": "d9f14202ed8f52642bc7a191bcb57a22f3400b99",
+      "file": "scripts/record_polaris_understanding_adoption.py",
+      "killed": true,
+      "new": "            require(current == adopted or row != CONTESTED, 'two performed successors claim ' + path\n",
+      "old": "            require(row != CONTESTED, 'two performed successors claim ' + path\n",
+      "predicate": "contested test skipped for written-back bytes",
+      "refusal": "FAIL exact digest reconciliation unresolved: written-back refusal: subject written back over its performed successor row: openspec/changes/polaris-manifesto-understanding-amendment/proposal.md"
     }
   ],
   "version": 1
