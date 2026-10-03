@@ -1,0 +1,15 @@
+diff --git a/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json b/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+index d0008d74eee93ae7464c89256f3d52fd083c8014..b6cf2710627ef3177e2987dac1ef6753b630b44b 100644
+--- a/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
++++ b/.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+@@ -17,8 +17,8 @@
+       "contractVersionSource": "accepted RFC-0004/general-contract.md as amended by the 2026-09-01 general trusted-bootstrap transaction (CONTRACT-AMENDMENT-MANIFEST.txt row)",
+       "governingBehaviorContract": {
+         "id": "polaris-project-wide-butlers-model",
+-        "version": "sha256:0d50f8f496aada5e89a0ab2d7de29e487fc2d4f4ce66435f7a2abdab7a7a5bc1",
+-        "signedBy": "version-tagged sign-off pwb-readability-successor-v1.0, recorded at .syzygy/governance/decisions/PWB-READABILITY-SUCCESSOR-SIGNOFF-v1.0.md"
++        "version": "sha256:d0ac6ba20501798e715aae42e16fbc7555fc8d4d60f9f16e01f376fb75349c4a",
++        "signedBy": "version-tagged sign-off pwb-tree-framing-amendment-v1.0, recorded at .syzygy/governance/decisions/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.md"
+       },
+       "subject": {
+         "observingProject": "project:syzygy",

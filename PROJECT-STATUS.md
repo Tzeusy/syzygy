@@ -295,6 +295,7 @@ These gates remain open; none of them is on the launch path.
 | Doctrine amendment D3 (bounded missions) | Proposed — adopt, amend, or decline. **D4 was ruled 2026-08-18** (inside VIS-4's bounds; reviewer's §1.2 wording designated) — a D3 rev2 and its VIS-3 fresh-reader review precede act 5 | `contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1); `decisions/D4-RULING-DECISION.md` |
 | Knowledge-hygiene craft policy | Candidate — own craft act (P-12) | `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
 | Decision-record convention (P-43) | Open — not launch-gating; earliest gate is a deferral-bearing administration | `decisions/PENDING-OWNER-DECISIONS.md` row P-43 |
+| PWB behaviour-contract re-pin to the tree-framing sign-off, registry entry and secret policy (`syzygy-2g0d`, P-95) | Candidate, drafted 2026-10-03; binds nothing. Review round 1 was `REVISE`; repaired once, no round 2 dispatched, so unconfirmed. It offers two separate superseding acts (`approve-policy`, `adopt-registry-entry`) re-pinning `governingBehaviorContract` to the `spec.md` signed as `pwb-tree-framing-amendment-v1.0`, superseding the 2026-10-02 re-pin acts, plus one plain continuation direction. Either act makes the body-read gate refuse every Butlers read until that direction re-points it | `contracts/candidates/pwb-behavior-contract-repin-tree-framing/OWNER-DECISION-PACKET.md` |
 
 ## Next lawful step
 
