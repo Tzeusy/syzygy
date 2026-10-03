@@ -1,0 +1,616 @@
+{
+  "subject": {
+    "commit": "7fe00d96d5d6e753561bb2da338ac9018581acaf",
+    "branch": "agent/dossier-rehearsal",
+    "fileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts": "57285c8de17e9b79c14db1a3cca1a8168a8751f063f56bbb1e97fa4d30f8e9f7",
+      "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal-main.testkit.ts": "bd872dd1c1ccaf13ad41ef96f8d9332c1f87b5cc9ba743bb696f3089d8038567",
+      "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts": "fbf68d4122f30923bfca033de3d5b52723f04239b70783c611a3b4c65462c293"
+    }
+  },
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/three-surface-poc-app",
+  "ranAt": "2026-10-03T22:36:48+00:00",
+  "mutants": [
+    {
+      "id": "site-index-not-required",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "if (!files.includes('index.html')) return",
+      "new": "if (false) return",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "site-doctype-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "!/^<!doctype html>/iu.test(html) || ",
+      "new": "false || ",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "site-main-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "|| !/<main[\\s>]/u.test(html) ",
+      "new": "|| false ",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "site-title-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "|| !/<title>[^<]+<\\/title>/u.test(html)) problems",
+      "new": "|| false) problems",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "site-csp-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "if (!/<meta http-equiv=\"Content-Security-Policy\"/u.test(html)) problems.push",
+      "new": "if (false) problems.push",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "site-script-allowed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "if (/<script[\\s>]/iu.test(html)) problems.push",
+      "new": "if (false) problems.push",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "site-external-allowed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "if (/^[a-z][a-z0-9+.-]*:/iu.test(target) || target.startsWith('//')) {",
+      "new": "if (false) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 52
+    },
+    {
+      "id": "site-protocol-relative-allowed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "|| target.startsWith('//')) {",
+      "new": "|| false) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "site-broken-link-allowed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "if (!existsSync(path.join(runDir, resolved))) problems.push",
+      "new": "if (false) problems.push",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "site-anchor-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "else if (fragment !== undefined && fragment !== '' && targetHtml !== undefined && !targetHtml.includes(`id=\"${fragment}\"`))",
+      "new": "else if (false)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "site-src-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "/\\s(?:href|src)=\"([^\"]*)\"/gu",
+      "new": "/\\s(?:href)=\"([^\"]*)\"/gu",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "eval-failures-ignored",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "const failing = Object.entries(outcomes).filter(([, outcome]) => outcome === 'failures')",
+      "new": "const failing = Object.entries(outcomes).filter(([, outcome]) => outcome === 'never')",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "eval-claims-labelled-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "f.claims.denominator > 0 && f.claims.labelled === f.claims.denominator",
+      "new": "true",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "record-profile-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "check('record-profile', rec.profile === 'dossier-v1',",
+      "new": "check('record-profile', true,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "record-prompt-profile-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "g.promptProfile === 'dossier', `prompt profile",
+      "new": "true, `prompt profile",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "record-digest-compare-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "calls.length > 0 && stale.length === 0 && calls.every(call => wireDigests.has(call.promptDigest))",
+      "new": "true",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 52
+    },
+    {
+      "id": "record-digest-wire-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "calls.length > 0 && stale.length === 0 && calls.every(call => wireDigests.has(call.promptDigest))",
+      "new": "calls.length > 0 && stale.length === 0",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "record-digest-empty-allowed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "calls.length > 0 && stale.length === 0 && calls.every",
+      "new": "stale.length === 0 && calls.every",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "record-budget-discovery-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "spend.discoveryCountedUnits <= budget.discoveryUnits && spend.narrativeCountedUnits",
+      "new": "spend.narrativeCountedUnits",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "record-budget-narrative-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "spend.narrativeCountedUnits <= budget.narrativeUnits\n      && spend.discoveryCountedUnits +",
+      "new": "spend.discoveryCountedUnits +",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "record-budget-total-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "\n      && spend.discoveryCountedUnits + spend.narrativeCountedUnits <= budget.runTotalUnits,",
+      "new": ",",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "record-usage-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "calls.every(call => call.usageUnknown === false)",
+      "new": "true",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "record-ceiling-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "calls.every(call => call.countedUnits <= (CEILING[call.stage] ?? 0)) && ",
+      "new": "true && ",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "record-generation-missing-ok",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "if (rec === null || rec.generation === undefined) return [check('record-present', false,",
+      "new": "if (rec === null || rec.generation === undefined) return [check('record-present', true,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "stage-of-system-accepts-manifesto",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "promptForStage(stage, 'dossier').system === system",
+      "new": "promptForStage(stage, 'manifesto').system === system",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 11,
+      "totalTests": 52
+    },
+    {
+      "id": "scenario-exit-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "check('exit-code', exit === def.expectExit,",
+      "new": "check('exit-code', true,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "scenario-passed-ignores-checks",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "passed: checks.every(c => c.passed) };",
+      "new": "passed: true };",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 52
+    },
+    {
+      "id": "report-passed-any",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "reports.length > 0 && reports.every(r => r.passed)",
+      "new": "reports.length > 0 && reports.some(r => r.passed)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 52
+    },
+    {
+      "id": "report-passed-empty-ok",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "reports.length > 0 && reports.every",
+      "new": "reports.every",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "no-checkout-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "check('no-checkout', !r.fetched.includes('checkout'),",
+      "new": "check('no-checkout', true,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "nothing-sent-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "check('nothing-sent', r.requests.length === 0,",
+      "new": "check('nothing-sent', true,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "no-run-dir-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "check('no-run-directory', !existsSync(r.runDir),",
+      "new": "check('no-run-directory', true,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "credential-left-in-env",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "!(CREDENTIAL in r.envAfter) && ",
+      "new": "true && ",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "stage-order-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "JSON.stringify(r.stages.filter(s => !s.startsWith('discovery'))) === JSON.stringify(['inventory', 'plan', 'author', 'edit', 'fidelity']) && ",
+      "new": "true && ",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "ceiling-cost-off",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "def.costAtCeiling === true\n      ?",
+      "new": "false\n      ?",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "clock-no-jump",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "start + (calls++ === 0 ? 0 : 8_000_000)",
+      "new": "start + (calls++ === 0 ? 0 : 0)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 52
+    },
+    {
+      "id": "selection-fit-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "r.sources !== null && minimumUsageUnits(quotableBytes(r.sources)) <= (CEILING.inventory ?? 0),",
+      "new": "true,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 52
+    },
+    {
+      "id": "observation-always-written",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "if (withObservation) {",
+      "new": "if (true) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 7,
+      "totalTests": 52
+    },
+    {
+      "id": "observation-never-written",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "if (withObservation) {",
+      "new": "if (false) {",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 14,
+      "totalTests": 52
+    },
+    {
+      "id": "fixture-commit-unpinned",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "`| \\`${label}\\` | \\`${commit}\\` |`",
+      "new": "`| \\`${label}\\` | \\`${'0'.repeat(40)}\\` |`",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 14,
+      "totalTests": 52
+    },
+    {
+      "id": "partial-render-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "existsSync(path.join(r.runDir, 'index.html')) && existsSync(path.join(r.runDir, 'run-record.json')), 'a partial page",
+      "new": "true, 'a partial page",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "wall-clock-narrative-allowed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "check('no-narrative-stage', !r.stages.some(s => !s.startsWith('discovery')),",
+      "new": "check('no-narrative-stage', true,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "cli-usage-exit",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal-main.testkit.ts",
+      "old": "{ err(USAGE); return 2; }\n  const result",
+      "new": "{ err(USAGE); return 1; }\n  const result",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "cli-fail-exit",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal-main.testkit.ts",
+      "old": "return result.passed ? 0 : 1;",
+      "new": "return 0;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "cli-report-unwritten",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal-main.testkit.ts",
+      "old": "if (report !== undefined) writeFileSync",
+      "new": "if (false) writeFileSync",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "cli-keep-ignored",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal-main.testkit.ts",
+      "old": "...(keep ? { keepScratch:",
+      "new": "...(false ? { keepScratch:",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "rehearse-scratch-kept",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.testkit.ts",
+      "old": "if (options.keepScratch === undefined) rmSync(scratch, { recursive: true, force: true });",
+      "new": "if (options.keepScratch === undefined) { /* kept */ }",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "record-prompt-digest-wrong",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+      "old": "promptDigest: digest(input.system) });",
+      "new": "promptDigest: digest(input.input) });",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 10,
+      "totalTests": 52
+    },
+    {
+      "id": "record-prompt-profile-default",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+      "old": "promptProfile = request.promptProfile ?? 'manifesto';",
+      "new": "promptProfile = request.promptProfile ?? 'dossier';",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 52
+    },
+    {
+      "id": "record-prompt-profile-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-generation.ts",
+      "old": "        promptProfile, calls, attempts: handle.attempts(),",
+      "new": "        calls, attempts: handle.attempts(),",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-rehearsal.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 13,
+      "totalTests": 52
+    }
+  ]
+}
