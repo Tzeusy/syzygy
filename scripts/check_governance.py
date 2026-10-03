@@ -3271,6 +3271,33 @@ def _activate_public_egress_v2_manifest_copy_registry():
 _activate_public_egress_v2_manifest_copy_registry()
 
 
+#: The public-source screening scope, version 2 (sitting row 12): one state-(1)
+#: `approve-policy` act over ONE of four manifest rows (the variants). It reuses
+#: the policy's existing phrase label, supersedes the version-1 act for that
+#: role, depends on rows 1 and 7 and registers no chain link; the install change
+#: adds the supersession row. Registration is gated on the performed record.
+PUBLIC_SOURCE_SCOPE_V2_DIR = f"{CANDIDATES}/public-source-screening-scope-v2"
+PUBLIC_SOURCE_SCOPE_V2_MANIFEST = f"{PUBLIC_SOURCE_SCOPE_V2_DIR}/PUBLIC-SOURCE-SCREENING-SCOPE-V2-MANIFEST.txt"
+PUBLIC_SOURCE_SCOPE_V2_ACT = f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md"
+PUBLIC_SOURCE_SCOPE_V2_LABEL = "APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY"
+
+
+def _activate_public_source_scope_v2_copy_registry():
+    """The version-2 manifest is a current copy of the policy argument once the act exists.
+
+    Before the act the manifest holds four proposed rows, none yet the policy's
+    digest, so registering it would fail CG-7e by design; the registration is
+    therefore gated on the performed record, at which point the chosen row is
+    the current argument.
+    """
+    if (os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V2_ACT))
+            and os.path.isfile(os.path.join(ROOT, PUBLIC_SOURCE_SCOPE_V2_MANIFEST))):
+        ACT_DIGEST_COPY_FILES[PUBLIC_SOURCE_SCOPE_V2_MANIFEST] = (PUBLIC_SOURCE_SCOPE_V2_LABEL,)
+
+
+_activate_public_source_scope_v2_copy_registry()
+
+
 #: The act-time digests the specification-policy restyle supersedes as the
 #: current policy state: act 7's CC-IMPACT argument and the bootstrap
 #: transaction's CC-SPEC row (row 5 of its act, line 11 of its manifest).

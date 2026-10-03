@@ -1,0 +1,196 @@
+{
+  "record": "rule-6 mutation evidence (AGENTS.md verification rule 6)",
+  "date": "2026-10-04",
+  "ranAt": "fa4e12b0e1370769ced9e79b40ffe1cb8dbfeaa5",
+  "subjects": [
+    {
+      "path": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "sha256": "d0222e79dc8fc4782ea6d301f0241be03169876023dff1cd003b6eaaaf6709b5"
+    }
+  ],
+  "tests": [
+    {
+      "path": "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts",
+      "sha256": "d975c949c2eb4487337817f3600465fe639e2c8aad20d3be9667bb99fdbfaa0c"
+    }
+  ],
+  "scope": "The #314 review notes: stop reasons checked against the pipeline set and never spliced into markup; requested assets matched by id and kind; the run-stopped banner on deep-dive pages.",
+  "method": "Before every mutant the runner rewrites every subject from its committed bytes, checks its sha256 against the commit, and runs the unmutated test file, which must pass. It then replaces exactly one occurrence of `old` with `new` in `file`, runs the test file, and restores and re-checks the subject. Killed means the run exited non-zero with at least one failed test.",
+  "priorRun": {
+    "ranAt": "fe567b8d2cf942cedd9b04859c34d86d51800336",
+    "finding": "At that commit the two attribute insertions still used String.replace with a function replacement. Switching either back to a replacement string survived, because the stop-reason check already keeps `$` out of every reason. The insertions were then rebuilt as escaped attributes passed to the claim builder, so no replace call remains. Its mutants are not-generated-attributes-dropped, banner-attributes-dropped and claim-attributes-ignored."
+  },
+  "summary": {
+    "mutants": 11,
+    "killed": 11,
+    "survived": 0
+  },
+  "mutants": [
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "reason-guard-dropped",
+      "old": "  if (!(STOP_REASONS as readonly string[]).includes(reason)) throw new DossierRenderError('unknown-stop-reason');\n",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 50,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > renders every pipeline stop reason and refuses any other, so no reason reaches the markup unchecked"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "reason-list-short",
+      "old": "'usage-uncertain', 'repair-exhausted'",
+      "new": "'repair-exhausted'",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 50,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > renders every pipeline stop reason and refuses any other, so no reason reaches the markup unchecked"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "not-generated-attributes-dropped",
+      "old": "    ` class=\"unresolved-asset\" data-asset-disposition=\"not-generated\" data-stop-reason=\"${escape(stop!.shown)}\"`);",
+      "new": "    '');",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 50,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > counts a requested asset as present only when a drafted item has its id and its kind",
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran",
+        "a stopped run still renders (syzygy-k4t2) > keeps the glossary from an inventory that did complete",
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "banner-attributes-dropped",
+      "old": "    ` class=\"run-stopped\" data-stop-reason=\"${escape(stop.shown)}\"`);",
+      "new": "    '');",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 4,
+      "totalTests": 50,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > carries the run-stopped banner onto every deep-dive page",
+        "a stopped run still renders (syzygy-k4t2) > renders every pipeline stop reason and refuses any other, so no reason reaches the markup unchecked",
+        "a stopped run still renders (syzygy-k4t2) > renders the latest draft when the budget runs out before review, every generated sentence Unknown",
+        "a stopped run still renders (syzygy-k4t2) > shows any stop reason other than the budget verbatim"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "claim-attributes-ignored",
+      "old": "`<${tag}${attributes} data-claim-id=",
+      "new": "`<${tag} data-claim-id=",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 8,
+      "totalTests": 50,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > carries the run-stopped banner onto every deep-dive page",
+        "a stopped run still renders (syzygy-k4t2) > counts a requested asset as present only when a drafted item has its id and its kind",
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran",
+        "a stopped run still renders (syzygy-k4t2) > keeps the glossary from an inventory that did complete",
+        "a stopped run still renders (syzygy-k4t2) > renders every pipeline stop reason and refuses any other, so no reason reaches the markup unchecked",
+        "a stopped run still renders (syzygy-k4t2) > renders the latest draft when the budget runs out before review, every generated sentence Unknown"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "kind-ignored",
+      "old": "const assetKey = (kind: string, id: string): string => `${kind}\\u0000${id}`;",
+      "new": "const assetKey = (kind: string, id: string): string => id;",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 1,
+      "totalTests": 50,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > counts a requested asset as present only when a drafted item has its id and its kind"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "section-keyed-as-diagram",
+      "old": "...draft.sections.map(item => assetKey('section', item.id))",
+      "new": "...draft.sections.map(item => assetKey('diagram', item.id))",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 5,
+      "totalTests": 50,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > counts a requested asset as present only when a drafted item has its id and its kind",
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran",
+        "a stopped run still renders (syzygy-k4t2) > keeps the glossary from an inventory that did complete",
+        "a stopped run still renders (syzygy-k4t2) > renders the latest draft when the budget runs out before review, every generated sentence Unknown",
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "deep-dive-keyed-as-section",
+      "old": "...draft.deepDives.map(item => assetKey('deep-dive', item.id))",
+      "new": "...draft.deepDives.map(item => assetKey('section', item.id))",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 50,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > counts a requested asset as present only when a drafted item has its id and its kind",
+        "a stopped run still renders (syzygy-k4t2) > renders the latest draft when the budget runs out before review, every generated sentence Unknown"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "deep-dive-banner-dropped",
+      "old": "${bannerFor(`run-stopped:${dive.id}`)}",
+      "new": "",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 50,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > carries the run-stopped banner onto every deep-dive page",
+        "a stopped run still renders (syzygy-k4t2) > renders the latest draft when the budget runs out before review, every generated sentence Unknown"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "deep-dive-banner-shared-id",
+      "old": "bannerFor(`run-stopped:${dive.id}`)",
+      "new": "bannerFor('run-stopped')",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 2,
+      "totalTests": 50,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > carries the run-stopped banner onto every deep-dive page",
+        "a stopped run still renders (syzygy-k4t2) > renders the latest draft when the budget runs out before review, every generated sentence Unknown"
+      ]
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "id": "budget-label-dropped",
+      "old": "return reason === 'budget-exhausted' ? 'deferred-by-budget' : reason;",
+      "new": "return reason;",
+      "outcome": "killed",
+      "baselineGreen": true,
+      "failedTests": 6,
+      "totalTests": 50,
+      "killedBy": [
+        "a stopped run still renders (syzygy-k4t2) > carries the run-stopped banner onto every deep-dive page",
+        "a stopped run still renders (syzygy-k4t2) > counts a requested asset as present only when a drafted item has its id and its kind",
+        "a stopped run still renders (syzygy-k4t2) > falls back to the requested assets, and an Unknown glossary, when nothing ran",
+        "a stopped run still renders (syzygy-k4t2) > renders every pipeline stop reason and refuses any other, so no reason reaches the markup unchecked",
+        "a stopped run still renders (syzygy-k4t2) > renders the latest draft when the budget runs out before review, every generated sentence Unknown",
+        "a stopped run still renders (syzygy-k4t2) > turns every planned section and every requested asset into an Unknown not-generated notice when no draft exists"
+      ]
+    }
+  ]
+}
