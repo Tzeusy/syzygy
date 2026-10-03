@@ -492,8 +492,8 @@ def do_check(root: pathlib.Path, act: Act, argument: str, date: str, sel: Select
 
 
 def selftest() -> int:
-    import tempfile
     """One mutant per predicate; each must be refused for the stated reason."""
+    import tempfile
     manifest_files = {a.subject.as_posix(): f"record {a.key}\n".encode() for a in ACTS}
     pkt = b"# Packet\n\n> Candidate - binds nothing.\n\nbody\n"
     rows = sorted((p, digest(b)) for p, b in manifest_files.items())
@@ -642,6 +642,16 @@ def selftest() -> int:
         results.append(("first-version egress refused once the second version's act exists, other acts unaffected",
                         not before and superseded_by_later_version(stub, egress)
                         and not superseded_by_later_version(stub, ACTS[0])))
+        # the call site: do_record itself must refuse, with that reason, and write nothing
+        import contextlib
+        import io
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            rc = do_record(stub, egress, "0" * 64, "2026-10-04",
+                           Selection("q", "l", "d"), "2026-10-04T09:30:00Z")
+        results.append(("do_record refuses the first version's egress act at the call site, writing nothing",
+                        rc == 1 and "second egress version's act" in out.getvalue()
+                        and not (stub / egress.record).exists()))
     failed = [name for name, ok in results if not ok]
     for name, ok in results:
         print(("ok   " if ok else "FAIL ") + name)

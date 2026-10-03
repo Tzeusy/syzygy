@@ -15,11 +15,16 @@ In plain words, if you give this act and a run follows:
 - **Excerpts of files** from the two named public repositories (psf/requests at
   its pinned commit and redis/redis at its four pinned commits) are sent to
   Anthropic, before the pipeline chooses what to read, so the model can rank
-  which files matter. Each excerpt is capped at 1,500 characters; one map call
-  covers up to 40 files; up to 40 map calls run. A second call sends the
-  model's own short claims about those files back to it for the final ranking.
-  The subsystem names, file paths, blob counts and blob ids that go with them
-  are sent too.
+  which files matter. A second call sends the model's own claims about those
+  files back to it for the final ranking. The subsystem names, file paths,
+  blob counts and blob ids that go with them are sent too.
+- **This record caps no volume.** The numbers in today's code (excerpts of 1,500
+  characters, up to 40 files per map call, up to 40 map calls, and up to 400
+  claims of up to 400 characters each in the second call) are defaults of the
+  discovery code, not terms of this consent: a run given a larger discovery
+  budget stays inside it. How much leaves is bounded by the run budget the
+  trigger supplies, which the owner sets and which this act does not (the
+  `dossier-units-v1` proposal under "Proposed run budget" in the sitting packet).
 - **README files, guides, tutorials and design documents** of those
   repositories become sendable under the new `project-documentation` class.
   Today the screening scope treats such prose as indeterminate and withholds
@@ -120,6 +125,16 @@ the class and the discovery stages.
   order.
 - **No new observation consent.** [Observed] The observation records name no
   content classes, so the class does not touch them.
+
+## A known limitation: successor route entries
+
+The record refers to the route through the registered entry, by kind (the Agent
+SDK entry or the Messages API entry), not by a pinned version or digest. A later
+owner-approved successor entry in the same role therefore flows into this
+consent without a new egress version, bounded only by the record's absolute ban
+(memory files, settings, MCP servers, hooks, environment summary) and its
+refusal of any field outside the table. That successor entry needs its own owner
+act; this consent does not approve it.
 
 ## What is open
 

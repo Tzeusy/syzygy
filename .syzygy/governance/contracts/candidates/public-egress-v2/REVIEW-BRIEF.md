@@ -27,6 +27,11 @@ manifest FILE digest (the output of `--manifest-digest`, not the digest of the
 row inside it): the title, `Reviewed commit:`, `Manifest SHA-256:`, `Verdict:`.
 A blank line after the title breaks the head.
 
+**Which digest.** `--manifest-digest` prints the manifest FILE's digest, the one
+the head carries; `--digests` prints the record's digest (the manifest's row, the
+act argument), which is a different value and is not the head's. The dispatch
+message must name them by those commands, not by prefix.
+
 ## Acceptance criteria
 
 Each is yes or no with the evidence that settles it.

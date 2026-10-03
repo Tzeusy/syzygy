@@ -103,8 +103,8 @@ the two routes differ. The entries govern if this summary and an entry differ.
   endpoint `POST /v1/messages?beta=true`, streamed; the runtime's additions to
   the generator's request: a fixed system prefix and an empty system message,
   `metadata.user_id` carrying a random per-run device id, a random session id
-  and an empty account id, and `cache_control` on the generator's system prompt
-  and input; a closed header set that includes `x-stainless-os`,
+  and an empty account id, and `cache_control` on the fixed system prefix and
+  on the generator's system prompt and input; a closed header set that includes `x-stainless-os`,
   `x-stainless-arch` and `x-stainless-runtime-version` (which identify the
   machine); and sometimes a body-less probe that the entry's gate answers
   locally and never forwards. The environment message, the billing header

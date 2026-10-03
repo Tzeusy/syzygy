@@ -17,6 +17,7 @@
   "templateDelta": {
     "hunks": 8,
     "removedLines": 13,
-    "addedLines": 60
+    "addedLines": 60,
+    "diffSha256": "050340fa73eb7a3919f5703dd0945dcdc13ccae95b7f1988195848302c7a5ac3"
   }
 }
