@@ -78,7 +78,7 @@ function headerValueProblems(captured: CapturedRequest, expected: ExpectedReques
   literal('anthropic-dangerous-direct-browser-access', 'true'); literal('x-app', 'cli');
   literal('user-agent', `claude-cli/${PINNED_CLAUDE_CODE_VERSION} (external, sdk-ts, agent-sdk/${PINNED_AGENT_SDK_VERSION})`);
   literal('anthropic-beta', expected.thinking === 'adaptive' ? AGENT_SDK_BETA_ADAPTIVE : AGENT_SDK_BETA_OFF);
-  literal('x-stainless-lang', 'js'); literal('x-stainless-retry-count', '0'); literal('x-stainless-timeout', '600');
+  literal('x-stainless-lang', 'js'); literal('x-stainless-retry-count', '0'); literal('x-stainless-timeout', '600'); literal('connection', 'keep-alive');
   literal('x-stainless-package-version', '0.128.0'); literal('x-stainless-runtime', 'node');
   pattern('x-stainless-os', /^[A-Za-z]{1,16}$/); pattern('x-stainless-arch', /^[a-z0-9_]{1,16}$/); pattern('x-stainless-runtime-version', /^v\d{1,3}\.\d{1,3}\.\d{1,3}$/);
   pattern('accept-encoding', /^[a-z, ]{1,40}$/); pattern('host', /^127\.0\.0\.1:\d{1,5}$/);

@@ -36,7 +36,7 @@ export interface GateDecision {
 export interface EgressGate {
   readonly url: string;
   readonly decisions: readonly GateDecision[];
-  /** Arms one try. Returns false (and arms nothing) when a try is already armed. */
+  /** Arms one try; the try may forward exactly one request.  Returns false (and arms nothing) when a try is already armed. */
   readonly arm: (accept: (captured: CapturedRequest) => RequestAcceptance) => boolean;
   readonly disarm: () => void;
   /** Retry-After from the last 429/529 the upstream returned, in ms, consumed once. */
@@ -55,7 +55,22 @@ export function parseRetryAfterMs(value: string | string[] | undefined | null, n
   return Number.isNaN(date) ? null : Math.max(0, date - now);
 }
 
+/** The only remote destination bytes may ever be forwarded to. */
+export const PROVIDER_ORIGIN = 'https://api.anthropic.com';
+
+/** Throws unless the upstream is exactly the provider origin, or a loopback
+ * address (a local capture endpoint: no byte leaves the machine). */
+export function assertAllowedUpstream(url: string): void {
+  let parsed: URL;
+  try { parsed = new URL(url); } catch { throw new Error('egress gate: upstream is not a URL'); }
+  const loopback = (parsed.protocol === 'http:' || parsed.protocol === 'https:') && (parsed.hostname === '127.0.0.1' || parsed.hostname === 'localhost' || parsed.hostname === '[::1]');
+  const provider = parsed.origin === PROVIDER_ORIGIN && parsed.username === '' && parsed.password === '';
+  if (!loopback && !provider) throw new Error(`egress gate: upstream must be ${PROVIDER_ORIGIN} or a loopback address`);
+}
+
 export async function startEgressGate(options: EgressGateOptions): Promise<EgressGate> {
+  if (options.upstream !== undefined) assertAllowedUpstream(options.upstream.url);
+  let spent = false;
   const decisions: GateDecision[] = [];
   let armed: ((captured: CapturedRequest) => RequestAcceptance) | null = null;
   let retryAfter: number | null = null;
@@ -81,6 +96,8 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
         let verdict: RequestAcceptance;
         try { verdict = armed(captured); } catch { verdict = { accepted: false, violations: ['acceptance predicate failed'] }; }
         if (!verdict.accepted) { refuse(res, { ...base, reasons: verdict.violations }); return; }
+        if (spent) { refuse(res, { ...base, reasons: ['try already forwarded one request'] }); return; }
+        spent = true;   // one forward per try, claimed before any await
         let allowed = false;
         try { allowed = (await options.permitted()) === true; } catch { allowed = false; }
         if (!allowed) { refuse(res, { ...base, reasons: ['consent not permitted'] }); return; }
@@ -92,6 +109,13 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
         const transport = target.protocol === 'https:' ? https : http;
         const out = transport.request({ protocol: target.protocol, hostname: target.hostname, port: target.port, method: captured.method, path: captured.url, headers }, upstreamRes => {
           const status = upstreamRes.statusCode ?? 502;
+          if (status >= 300 && status < 400) {
+            upstreamRes.resume();
+            decisions.push({ ...base, decision: 'forwarded', reasons: ['upstream redirect not followed'], upstreamStatus: status });
+            res.writeHead(502, { 'content-type': 'application/json' });
+            res.end(JSON.stringify({ type: 'error', error: { type: 'api_error', message: 'upstream-redirect-refused' } }));
+            return;
+          }
           const rejected = status === 429 || status === 529;
           if (rejected) { retryAfter = parseRetryAfterMs(upstreamRes.headers['retry-after'], Date.now()); unbilled = false; }
           const entry: { -readonly [K in keyof GateDecision]: GateDecision[K] } = { ...base, decision: 'forwarded', reasons: [], upstreamStatus: status };
@@ -118,7 +142,7 @@ export async function startEgressGate(options: EgressGateOptions): Promise<Egres
   const port = (server.address() as AddressInfo).port;
   return {
     url: `http://127.0.0.1:${port}`, decisions,
-    arm: accept => { if (armed !== null) return false; armed = accept; return true; },
+    arm: accept => { if (armed !== null) return false; armed = accept; spent = false; return true; },
     disarm: () => { armed = null; },
     takeRetryAfterMs: () => { const v = retryAfter; retryAfter = null; return v; },
     takeRejectedUnbilled: () => { const v = unbilled; unbilled = false; return v; },
