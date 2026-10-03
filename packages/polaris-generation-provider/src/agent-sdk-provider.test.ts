@@ -26,7 +26,7 @@ afterEach(async () => { for (const h of handles.splice(0)) await h.close(); awai
 
 const config = (extra: Partial<AgentSdkProviderConfig> = {}): AgentSdkProviderConfig => ({
   runDir, model: 'claude-opus-5-5', auth: { apiKey: DUMMY_KEY }, upstream: { url: endpoint.url }, permitted: async () => true,
-  retry: { maxAttempts: 3, baseDelayMs: 1, maxDelayMs: 2, budgetMs: 10_000 }, ...extra,
+  retry: { maxAttempts: 3, baseDelayMs: 1, maxDelayMs: 2, budgetMs: 60_000 }, ...extra,
 });
 const expectation = (e: { system: string; input: string }, over: Partial<ExpectedRequest> = {}): ExpectedRequest => ({
   model: 'claude-opus-5-5', system: e.system, input: e.input, effort: 'medium', maxTokens: Math.min(permit.maxOutputBytes, permit.maxUsageUnits), ...over,
