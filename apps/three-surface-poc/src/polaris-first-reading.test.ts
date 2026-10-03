@@ -185,6 +185,37 @@ describe('Polaris cause-correct routes (PWB-REQ-020 as amended; PWB-LIVE-11)', (
     expect(craft).not.toContain('detector');
   });
 
+  it('lists two or more causes as separate items after the paragraph, never inside it, in the gap entry and every reason-counts detail', () => {
+    const second = 'about/heart-and-soul/vision.md';
+    const texts = {
+      ...TEXTS_WITH_ACTIVE_CONTENT,
+      [second]: `${PROJECT_SHAPE_FIXTURE_TEXTS[second] as string}\n<script>${ACTIVE_SENTINEL}</script>\n`,
+    };
+    const { shape, html } = observed(texts);
+    const paths = shape.exclusions.filter((entry) => entry.exclusionReason === 'active-content').map((entry) => entry.repositoryRelativePath);
+    expect(paths).toEqual(expect.arrayContaining(['about/craft-and-care/README.md', second]));
+    const lists = [...html.matchAll(/<ol class="cause-routes">([\s\S]*?)<\/ol>/g)];
+    expect(lists.length).toBeGreaterThan(0);
+    for (const list of lists) {
+      const items = [...(list[1] as string).matchAll(/<li>([\s\S]*?)<\/li>/g)].map((item) => decode(item[1] as string));
+      expect(items.length).toBe(2);
+      expect(items.some((item) => item.startsWith(`${second} carries active content`))).toBe(true);
+      expect(items.some((item) => item.startsWith('about/craft-and-care/README.md carries active content'))).toBe(true);
+    }
+    const gap = /data-polaris-gap="excluded-content">([\s\S]*?)(?=<li id=|<\/ul>)/.exec(html)?.[1] ?? '';
+    expect(gap).toContain('>By cause:</span><ol class="cause-routes">');
+    expect(gap.split('<li>').length - 1).toBe(2);
+    const details = [...html.matchAll(/<details class="reason-remedies">([\s\S]*?)<\/details>/g)].map((match) => match[1] as string);
+    const withCauses = details.filter((detail) => detail.includes('cause-routes'));
+    expect(withCauses.length).toBeGreaterThan(0);
+    for (const detail of withCauses) {
+      // The paragraph closes before the list: no block element sits inside a <p>.
+      expect(detail).toMatch(/<p>Route: [^<]*(?:<span[^>]*>By cause:<\/span>)<\/p><ol class="cause-routes">/);
+    }
+    for (const paragraph of html.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/g)) expect(paragraph[1]).not.toMatch(/<(?:ol|ul|div|details)\b/);
+    expect(html).not.toContain(ACTIVE_SENTINEL);
+  });
+
   it('keeps the generic route where no cause is recorded: a clean tree routes each reason by the shared table alone', () => {
     const { shape, html } = observed();
     expect(shape.exclusions.length).toBe(0);
