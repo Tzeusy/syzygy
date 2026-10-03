@@ -128,6 +128,9 @@ export interface RepoCorpusCount {
   readonly secretDetectorMatches: number;
   readonly activeContent: number;
   readonly indeterminate: number;
+  /** Unquotable paths (never selected, never read) whose path a detector matched; counted apart from
+   * `secretDetectorMatches`, which counts selected sources only. Zero without a screen. */
+  readonly unquotablePathSecretMatches: number;
 }
 export interface RepoCorpus {
   readonly repositoryId: string;
@@ -173,6 +176,7 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
     if (!match) throw new Error('invalid-git-tree-record');
     return { mode: match[1]!, type: match[2]!, objectId: match[3]!, path: match[4]! };
   });
+  let unquotablePathSecretMatches = 0;
   let notBlob = 0, outsideInclude = 0, excludedByGlob = 0, unquotablePath = 0, binaryOrNonUtf8 = 0, emptyFiles = 0, oversizeFiles = 0, oversizeExcluded = 0, rawBytes = 0;
   const screened: Record<CorpusScreenReason, number> = { 'denied-path': 0, 'secret-detector-match': 0, 'active-content': 0, 'unknown-extraction-class': 0 };
   const unrepresentable: { readonly pathHmac: string; readonly objectId: string; readonly reason: 'unquotable-path' }[] = [];
@@ -185,7 +189,7 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
     if (!representablePath(record.path)) {
       unquotablePath++;
       if (ports.screen === undefined) unrepresentable.push({ pathHmac: keyedDigest(runKey, record.path), objectId: record.objectId, reason: 'unquotable-path' });
-      else if (ports.screen.screenPath(record.path) === 'secret-detector-match') screened['secret-detector-match']++;
+      else if (ports.screen.screenPath(record.path) === 'secret-detector-match') unquotablePathSecretMatches++;
       return false;
     }
     return true;
@@ -230,7 +234,7 @@ export async function readRepoCorpus(repoRoot: string, config: Pick<ReaderConfig
   validateGenerationSources(sources);
   return { repositoryId: config.repositoryId, revision: config.revision, permissionIdentity: decision.permissionIdentity, sources,
     count: { listed: records.length, notBlob, outsideInclude, excludedByGlob, unquotablePath, selected: chosen.length, binaryOrNonUtf8, emptyFiles, oversizeFiles, oversizeExcluded, sourceRows: sources.length,
-      deniedPath: screened['denied-path'], secretDetectorMatches: screened['secret-detector-match'], activeContent: screened['active-content'], indeterminate: screened['unknown-extraction-class'] },
+      deniedPath: screened['denied-path'], secretDetectorMatches: screened['secret-detector-match'], activeContent: screened['active-content'], indeterminate: screened['unknown-extraction-class'], unquotablePathSecretMatches },
     unrepresentable,
     rawBytes, // The digest binds the population across runs, so a path-bearing excluded row contributes its unkeyed id, never its keyed one.
     // A withheld row (objectId null) carries only the screen's own keyed id, as before.
