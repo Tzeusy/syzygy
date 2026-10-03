@@ -1,0 +1,68 @@
+{
+ "subject": "surface-render-fractions.test.ts (syzygy-g9l8): rendered fraction of /api/poc workItems and codeStructure on the human surfaces",
+ "date": "2026-10-03",
+ "commit": "ce1286dfbe9e367a247883c546b73819f16505fa",
+ "subjectFiles": [
+  {
+   "path": "apps/three-surface-poc/src/surface-render-fractions.test.ts",
+   "sha256": "70188c9a730063e71009c5b35877813b95734fc82e4d36989010100905b9ddc9"
+  },
+  {
+   "path": "apps/three-surface-poc/src/test-model-fixture.ts",
+   "sha256": "8558be346f2fd414175ba5d22f8b03fb5b249c4b43c3dfcfe50f664b21a01166"
+  },
+  {
+   "path": "apps/three-surface-poc/src/trajectory.ts",
+   "sha256": "1edaba63043657c6f913a6ba5a69c1af206d97e99d01abbb8b4581742701473b"
+  },
+  {
+   "path": "apps/three-surface-poc/src/orrery.ts",
+   "sha256": "a59839eeac26070655add493a93b34e5d166de8fd14c711eb7086142e42799db"
+  }
+ ],
+ "command": "npx vitest run apps/three-surface-poc/src/surface-render-fractions.test.ts --testTimeout 120000 (one run per mutant; source restored after each)",
+ "mutants": [
+  {
+   "id": "trajectory-one-fewer-card",
+   "file": "apps/three-surface-poc/src/trajectory.ts",
+   "old": "for (const item of trajectory.rendered) {",
+   "new": "for (const item of trajectory.rendered.slice(1)) {",
+   "killed": true,
+   "exit": 1
+  },
+  {
+   "id": "trajectory-one-more-card",
+   "file": "apps/three-surface-poc/src/trajectory.ts",
+   "old": "for (const item of trajectory.rendered) {",
+   "new": "for (const item of [...trajectory.rendered, ...trajectory.rendered.slice(0, 1)]) {",
+   "killed": true,
+   "exit": 1
+  },
+  {
+   "id": "orrery-one-fewer-district",
+   "file": "apps/three-surface-poc/src/orrery.ts",
+   "old": "      districts: orrery.districts,",
+   "new": "      districts: orrery.districts.slice(1),",
+   "killed": true,
+   "exit": 1
+  },
+  {
+   "id": "orrery-one-more-district",
+   "file": "apps/three-surface-poc/src/orrery.ts",
+   "old": "      districts: orrery.districts,",
+   "new": "      districts: [...orrery.districts, ...orrery.districts.slice(0, 1)],",
+   "killed": true,
+   "exit": 1
+  },
+  {
+   "id": "orrery-per-file-row",
+   "file": "apps/three-surface-poc/src/orrery.ts",
+   "old": "      <p class=\"orrery-height-legend\">",
+   "new": "      ${model.codeStructure.kind === 'observed' ? `<p data-file=\"${escapeHtml(model.codeStructure.files[0]!.path)}\"></p>` : ''}<p class=\"orrery-height-legend\">",
+   "killed": true,
+   "exit": 1
+  }
+ ],
+ "killed": 5,
+ "total": 5
+}
