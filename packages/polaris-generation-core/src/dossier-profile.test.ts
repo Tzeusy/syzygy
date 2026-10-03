@@ -153,7 +153,7 @@ describe('REQ-031 clarification', () => {
   });
 
   it('counts default-ignorable and zero-width-split text as blank or unknown, and trims a long run of spaces in linear time', async () => {
-    for (const text of ['\u3164', '\u2800', '\u034f', '\u115f', '\u200b\u3164\u2800', 'un\u200bknown', 'UN\u2060KNOWN', 'unk\u034fnown\u3164']) {
+    for (const text of ['\u0600', '\u3164', '\u2800', '\u034f', '\u115f', '\u200b\u3164\u2800', 'un\u200bknown', 'UN\u2060KNOWN', 'unk\u034fnown\u3164']) {
       const record = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1, ask: async q => ({ ...answer(q.id), answer: text }) });
       expect(record.answers[0], JSON.stringify(text)).toMatchObject({ disposition: 'unknown', answer: null });
     }
