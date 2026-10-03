@@ -550,6 +550,7 @@ round, raw retained verbatim.
 **Reviewer:** a fresh-context agent that did not draft this package.
 **Verdict:** round 1 `REVISE`, copied from
 `docs/reviews/R-PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-1-RAW.md` line 4 and
-dispositioned in `ROUND-1-DISPOSITIONS.md` beside this file. Under the
-stopping rule set before the round, the findings were repaired and no round 2
-was dispatched: the repaired bytes are unreviewed.
+dispositioned in `ROUND-1-DISPOSITIONS.md` beside this file. Findings 1–9
+were repaired; finding 10 changed nothing. A confirmation round over the
+repaired bytes (round 2, bead `syzygy-418x`) is recorded in
+`ROUND-2-DISPOSITIONS.md`, which says whether the bytes are cleared.

@@ -5,11 +5,12 @@
 > owner's answer binds anything (VIS-4).
 
 **Status:** drafted 2026-10-03 under your ruling P-82 (A) of 2026-09-21, on
-bead `syzygy-dov.15.1`. Its one review round returned `REVISE`; the findings
-were repaired and, under the stopping rule set before the round, no second
-round was dispatched. **These bytes are unreviewed and not ready to sign as
-v1.0.** `ROUND-1-DISPOSITIONS.md` beside this file says what each finding
-changed.
+bead `syzygy-dov.15.1`. Round 1 returned `REVISE`: findings 1–9 were
+repaired and finding 10, which named residual risks, changed nothing
+(`ROUND-1-DISPOSITIONS.md`). A confirmation round over the repaired bytes
+followed on bead `syzygy-418x`. **Whether these bytes are cleared to sign is
+stated in `ROUND-2-DISPOSITIONS.md` beside this file**: a notes-only round
+clears them, any other verdict does not.
 
 ## What you would be signing
 
@@ -56,10 +57,9 @@ dependency file. No other requirement, no contract-coverage row, no warrant.
 
 | Option | Meaning |
 |---|---|
-| **Sign v1.0** (not recommended yet: the repaired bytes are unreviewed; recommended after a clearing round) | The patches are applied in the sign-off change by version tag (Scope A covers PWB specification deltas). PWB-REQ-002 gains three scenarios. |
+| **Sign v1.0** (recommended only if `ROUND-2-DISPOSITIONS.md` records the bytes cleared) | The patches are applied in the sign-off change by version tag (Scope A covers PWB specification deltas). PWB-REQ-002 gains three scenarios. |
 | Decline | PWB-REQ-002 stays as signed: one failing class keeps making its whole source Unknown. |
 | Revise | Name what to change, and a new version gets a new review round. |
-| **Order a confirmation round on these bytes** (recommended) | One fresh-context round over the repaired bytes; a notes-only verdict clears them for signing. |
 
 ## Question 2 — how an unenumerated heading is counted
 
