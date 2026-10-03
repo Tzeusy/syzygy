@@ -1,6 +1,6 @@
-import { execFileSync } from 'node:child_process';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { lstat, mkdir, mkdtemp, readFile, realpath, rename, rm, writeFile } from 'node:fs/promises';
+import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { isDossierPagePath, parseBoundedJson, type GenerationSource, type OwnerTopic, type PipelineResult } from '@syzygy/polaris-generation-core';
@@ -8,30 +8,53 @@ import { renderDossier } from './dossier-render.js';
 
 const RUN_LIMITS = { maxBytes: 64_000_000, maxNodes: 2_000_000, maxDepth: 64 } as const;
 
-/** True when `directory` lies inside a Git work tree. */
-function insideGitWorkTree(directory: string): boolean {
-  try {
-    return execFileSync('git', ['-C', directory, 'rev-parse', '--is-inside-work-tree'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() === 'true';
-  } catch {
-    return false;
-  }
+/**
+ * Passes only when Git itself says `directory` is not in a repository. Any
+ * other result — inside a work tree, inside a `.git` directory, Git missing,
+ * a dubious-ownership refusal, any other error — refuses (fail closed). Git
+ * runs with no user or system configuration and none of the caller's `GIT_*`
+ * variables, so neither can point it elsewhere.
+ */
+function assertOutsideGit(directory: string, path: string | undefined): void {
+  const result = spawnSync('git', ['-C', directory, 'rev-parse', '--is-inside-work-tree'], {
+    encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+    env: { PATH: path ?? '', LC_ALL: 'C', GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_NOSYSTEM: '1' },
+  });
+  if (result.error !== undefined) throw new Error('git-unavailable');
+  if (result.status === 128 && /^fatal: not a git repository/mu.test(result.stderr)) return;
+  throw new Error('run-directory-inside-git-work-tree');
 }
 
 /**
- * Writes a rendered dossier into a new run directory. The parent must exist and
- * lie outside every Git work tree (generated drafts are run output, never
- * tracked files); the directory itself must not exist, and no file is
- * overwritten.
+ * Writes a rendered dossier into a new run directory. The parent must exist;
+ * it is resolved through every symlink, and the real parent must lie outside
+ * every Git work tree (generated drafts are run output, never tracked files).
+ * The directory itself must not exist. Every file is written into a fresh
+ * sibling temporary directory, which is renamed into place only when all of
+ * them are written, so a refused or failed write leaves no run directory.
  */
-export async function writeDossierRun(destination: string, files: ReadonlyMap<string, string>): Promise<void> {
-  const target = resolve(destination);
-  if (insideGitWorkTree(dirname(target))) throw new Error('run-directory-inside-git-work-tree');
-  await mkdir(target);
-  for (const [path, content] of files) {
-    if (!isDossierPagePath(path)) throw new Error('invalid-output-path');
-    const file = join(target, path);
-    await mkdir(dirname(file), { recursive: true });
-    await writeFile(file, content, { flag: 'wx' });
+export async function writeDossierRun(destination: string, files: ReadonlyMap<string, string>, env: { readonly PATH?: string } = process.env): Promise<void> {
+  for (const path of files.keys()) if (!isDossierPagePath(path)) throw new Error('invalid-output-path');
+  const parent = await realpath(dirname(resolve(destination)));
+  assertOutsideGit(parent, env.PATH);
+  const target = join(parent, basename(resolve(destination)));
+  const absent = async (): Promise<void> => {
+    if (await lstat(target).then(() => true, (error: NodeJS.ErrnoException) => { if (error.code === 'ENOENT') return false; throw error; })) throw new Error('run-directory-exists');
+  };
+  await absent();
+  const staging = await mkdtemp(join(parent, `.${basename(target)}.partial-`));
+  try {
+    for (const [path, content] of files) {
+      const file = join(staging, path);
+      await mkdir(dirname(file), { recursive: true });
+      await writeFile(file, content, { flag: 'wx' });
+    }
+    // rename() would replace an empty directory created since the first check.
+    await absent();
+    await rename(staging, target);
+  } catch (error) {
+    await rm(staging, { recursive: true, force: true });
+    throw error;
   }
 }
 

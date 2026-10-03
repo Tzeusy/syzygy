@@ -232,4 +232,8 @@ The renderer that emits this format from a pipeline run is
 (`npm run poc:dossier-render -- --run <run.json> --out <new-dir>`).
 Generated prose is labelled Inferred when the fidelity review judged its
 block supported and Unknown otherwise; diagram elements keep their own
-marking.
+marking. Quote offsets are blob-absolute. Without `--topics`, a section or deep
+dive declares the owner topics among its produced asset ids. The run
+directory gets `size-report.html` beside `size-report.json`. It is written
+whole or not at all, through a sibling staging directory, and only under a
+real parent that Git reports as outside any repository.
