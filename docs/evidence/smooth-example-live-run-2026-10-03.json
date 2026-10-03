@@ -197,5 +197,57 @@
     "api-poc.json": "1db0f27c927b80058569bd5b97dc77dd13d2bf2c316ba22a329ae45b36a0ea88",
     "api-poc-polaris.json": "9bde9e5942f1ba3b80727a5ef4ca43e6b780ead2e1fdc5652a529a3a6afebc89"
   },
-  "retention": "exact capture bytes retained outside the repository (session scratchpad); Butlers text is not copied into this record"
+  "retention": "exact capture bytes retained outside the repository (session scratchpad); Butlers text is not copied into this record",
+  "unknownDenominatorWithheldComparison": {
+    "measuredOn": {
+      "capture": "api-poc.json",
+      "sha256": "1db0f27c927b80058569bd5b97dc77dd13d2bf2c316ba22a329ae45b36a0ea88"
+    },
+    "script": "scripts/compare_unknown_denominator_withheld.py",
+    "identityScheme": "sha256 of the repository-relative path",
+    "unknownDenominatorCount": 9,
+    "withheldCount": 9,
+    "onlyInUnknownDenominator": [],
+    "onlyInWithheld": [],
+    "contentDigestsEqualPerSource": true,
+    "equal": true,
+    "members": [
+      {
+        "pathSha256": "4b6eaa3abe4b1a647ec958f4a18fc4e8849318b06003f9171a44d2efdb3cf3a3",
+        "contentDigest": "sha256:e6c7a0cd5a9584bc3401c5a841b43de770b538664c82747c5703bcba460c3879"
+      },
+      {
+        "pathSha256": "8616d3745a587c40da1126dbeea6fcea7a2fe55855a5f1692aabc3758e0fe258",
+        "contentDigest": "sha256:341226e964c775a0d6aad86788d2b5079b311d3fd93ca132c92bba34228027cb"
+      },
+      {
+        "pathSha256": "bacc0cd68fd0fbaf427f048b98f507a3b11b09f4a84f3610ddb2b949104fd723",
+        "contentDigest": "sha256:dc458ea63d4540452ac12d2395a4a93a2c3ca685a36f03abb28b3e9db62117c8"
+      },
+      {
+        "pathSha256": "c9891377bab092b42f1cd0d4fde36c1193211cc898d4cadcb08e0e490cabd70b",
+        "contentDigest": "sha256:5f2375658443c1accd999dbc2b9a0296b18ad5585a51b06129f32f201feeff48"
+      },
+      {
+        "pathSha256": "e1fab962a866fdd0592d45b8d2e32dc24135f850c330269b6260c8c39f71e33c",
+        "contentDigest": "sha256:f54670ba470848370f785cc3d0ef29cc3466e19ebb0a50cff6c2a7519b1fec15"
+      },
+      {
+        "pathSha256": "e22b93b35b37dd4820a3bb619f2fd8c6327c239d017fded6c6f60930db7df60c",
+        "contentDigest": "sha256:a6a35f62bdc01789e7d89ed503ce3d6e5dc5225321266781f7ebd14e4d20f1ae"
+      },
+      {
+        "pathSha256": "e3e60cb1ec300b4e7fd0675428b4137843dc7c625d24b08c11e53b60d14958b9",
+        "contentDigest": "sha256:49b9697e3a0209b9d3ba76b48455027973e54ce6563f796675805e85bf1f505e"
+      },
+      {
+        "pathSha256": "eb56757c81e603123d2c2d08edeb9cdb4f1653821b1ade359a3928f4690eed75",
+        "contentDigest": "sha256:0caef824c503c647ce28afbedc52ee1b497324bb535261f256052bd6d1a0fbb2"
+      },
+      {
+        "pathSha256": "f12e891d2824056b27da434f673e54c5b7b80c5bccae12d46b4fde31cc83cded",
+        "contentDigest": "sha256:e331bca6045453ed0ed177c483b44b37df7977ef9edc9e82f0f2d93b677523e0"
+      }
+    ]
+  }
 }

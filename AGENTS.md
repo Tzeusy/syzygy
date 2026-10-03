@@ -604,7 +604,9 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   `docs/evidence/smooth-example-live-run-2026-10-03.json`) reads 285
   sources, 392 items, 416 facts, 0 contradicted and 9 withheld (8
   `active-content`, 1 `excluded-artifact`), and the 9 sources with an
-  unknown item denominator are those withheld ones, so no source is Unknown
+  unknown item denominator are those withheld ones (equal per source by path
+  hash and content digest, `unknownDenominatorWithheldComparison` in that
+  record), so no source is Unknown
   for a grammar failure. The whole-shape claim is still Unknown, now for
   `excluded-content`. Earlier text here (as of `13d269b`, retired
   2026-10-03) named `v1.md`, the missing `openspec/` index and
