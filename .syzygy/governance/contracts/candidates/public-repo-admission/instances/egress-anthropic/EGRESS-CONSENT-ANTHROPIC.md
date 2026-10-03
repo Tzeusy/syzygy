@@ -10,7 +10,7 @@ Owner: Tzeusy
 
 Record ID: `PUBLIC-EGRESS-anthropic`
 
-Record version: `0.1.0-candidate.6`
+Record version: `0.1.0-candidate.7`
 
 Consent class: egress — one record per (project, provider) pair (RFC5-12)
 
@@ -41,6 +41,7 @@ Only content read under an in-force observation consent for one of these
 `(project:syzygy, repository)` pairs:
 
 - `(project:syzygy, repository:psf-requests)`
+- `(project:syzygy, repository:redis-redis)`
 
 together with the generator's own instruction text — its stage prompts
 and response schemas, authored in Syzygy's repository at

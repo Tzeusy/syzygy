@@ -84,8 +84,15 @@ revocable/renderable and SHALL NOT imply one another"); the policy and the
 registry entries are each honored only under their own RFC3-16(a) act (Q5).
 Several acts may be given in one sitting.
 
-`instances/requests/` fills items 3 and 4 for the first target, T1, using the
-owner's 2026-10-03 answers. Only bytes that pass a confirming review are
+`instances/requests/` and `instances/redis/` fill item 4 for T1 (psf/requests
+at `v2.34.2`) and T2 (redis/redis at `8.10.2` plus the licence-history trio
+`7.2.4`, `7.4.0`, `8.0.0`; the pins are in
+`docs/polaris-generation/TARGETS.md`), and `instances/egress-anthropic/`
+fills item 3 once, listing both repositories as the next version of the single
+`(project:syzygy, provider:anthropic)` record. All three use the owner's
+2026-10-03 answers. The egress version lists the five content classes in
+force, so it does not yet carry Q7's `project-documentation` class; adding it
+is a further version after that amendment is in force. Only bytes that pass a confirming review are
 offered for an act. Fields that depend on an
 answer: the provider and subject (Q1), the content classes (Q2 and Q7), the
 retention line (Q3), the subject and scope (Q4).
@@ -156,11 +163,18 @@ the option states the provenance state it selects, state (1),
 `owner-adopted (bootstrap, uncorrelated)`, A1 audit-record identity
 explicitly absent. `scripts/build_public_repo_admission.py` regenerates the
 instances (`--write`, `--check`) and prints each record's digest (`--digests`,
-which refuses while any instance is stale). Before the first offering: a
-package manifest whose rows are those digests, a recorder that binds each act
-to its row, and the act phrases and packet copies registered in
-`scripts/check_governance.py`, following the repository's recorder
-convention. Registry entries are signed the same way when they are drafted.
+which refuses while any instance is stale). `--write` also writes the
+package manifest, `PUBLIC-REPO-ADMISSION-MANIFEST.txt`, whose rows are those
+digests, one per record. The version-tagged sign-off of
+`decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md` is not
+used: it names the PWB specification deltas, the observer registry entry and
+the contract successors queued behind them, and these are consents, which
+that direction does not mention [Inferred]. Before the first offering: a
+recorder that binds each act to its manifest row and the act labels and
+packet copies registered in `scripts/check_governance.py`, following the
+repository's recorder convention; both are prepared after the confirming
+review, against the confirmed commit. Registry entries are signed the same way
+when they are drafted.
 
 **Q6. Where generated pages may be served.** *Recommended:* only on the local
 daemon's generated editorial draft view, `GET /polaris/draft/<runId>` — named
@@ -257,3 +271,8 @@ dispatching a fifth round unasked.
 | 4 Runtime may add its own context or telemetry | The record requires the runtime's own instruction, memory, settings, MCP and environment context off, an empty working directory, telemetry and error reporting off, and an adapter acceptance check on the captured request |
 | 5 Which provider terms | The record names the owner's signed-in Claude account and its terms |
 | 6 Direction says the packet "remains the question" | No change; the packet edits only point to the answers |
+
+Round 5 is to run over the whole package after the Redis instances and the
+egress version above are added (`REVIEW-BRIEF.md` in this directory names the
+artifacts, the references and the acceptance criteria). The round-4 repair and
+these additions are unreviewed until it returns.

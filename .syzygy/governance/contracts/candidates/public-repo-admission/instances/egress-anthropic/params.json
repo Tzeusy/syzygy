@@ -1,0 +1,20 @@
+{
+  "EGRESS-CONSENT-ANTHROPIC.md": {
+    "template": "EGRESS-CONSENT-TEMPLATE.md",
+    "fields": {
+      "PROVIDER": "Anthropic, through the Claude Agent SDK (Claude Code runtime), signed in with the owner's existing Claude account",
+      "PROVIDER_ID": "anthropic",
+      "CONTENT_CLASSES": "- `governance-text`\n- `code-structure`\n- `code-content`\n- `evidence-content`\n- `derived-composites`",
+      "RETENTION": "provider requests, provider replies, run records and the Agent SDK runtime's own state, including any session transcript, are written only inside a run directory under `project:syzygy`'s state directory, outside git, from the start of the run. A run whose runtime cannot be configured to keep its state and transcript inside that directory does not start. The run directory holds the source spans sent for as long as the run is retained; nothing is retained in git, logs or machine responses. Anthropic's own retention is as the terms of the signed-in account state, disclosed rather than promised.",
+      "SUPERSEDES": "supersedes no earlier consent",
+      "ADMITTED_REPOSITORIES": "- `(project:syzygy, repository:psf-requests)`\n- `(project:syzygy, repository:redis-redis)`",
+      "ROUTE_CONTEXT": "the runtime loads no instruction or memory files, user or project settings,\n  MCP servers, hooks or environment summary (working directory, Git status);\n  its working directory is an empty directory inside the run directory. The\n  adapter is accepted only when a captured request shows the system prompt\n  and messages the generator built and nothing else.",
+      "ROUTE_TELEMETRY": "the runtime's telemetry, error reporting and update checks are disabled; a\n  run whose runtime cannot disable them does not start."
+    }
+  },
+  "common": {
+    "DRAFT_DATE": "2026-10-03",
+    "OWNER": "Tzeusy",
+    "VERSION": "0.1.0-candidate.7"
+  }
+}
