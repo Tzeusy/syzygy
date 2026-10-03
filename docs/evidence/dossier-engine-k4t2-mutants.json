@@ -1,0 +1,87 @@
+{
+  "subject": {
+    "commit": "5b1b7ee91a2eb4d0571356a71304aa829779b386",
+    "branch": "agent/partial-render-on-stop",
+    "fileSha256": {
+      "apps/three-surface-poc/src/polaris-generation/dossier-main.ts": "03124d8c25b1f36a84001c006e0f1dc9565f64da2680003eb8fb6ae0927cca4d",
+      "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": "f115d1cb325b0fa492551e31c60ff5f5950cb49012257d67859391f959be86ca"
+    }
+  },
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/three-surface-poc-app",
+  "ranAt": "2026-10-03T15:31:53+00:00",
+  "mutants": [
+    {
+      "id": "stopped-not-rendered",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "if (ports.render !== undefined) {\n        try { partial",
+      "new": "if (false as boolean) {\n        try { partial",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 22
+    },
+    {
+      "id": "render-error-swallows-all",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "if (!(error instanceof Error) || error.name !== 'DossierRenderError') throw error;",
+      "new": "void error;",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 22
+    },
+    {
+      "id": "partial-record-collision-unchecked",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "if (partial !== undefined && partial.has(recordFile[0])) throw new Error('renderer-collides-with-run-record');",
+      "new": "",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 22
+    },
+    {
+      "id": "partial-state-collapsed",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "? { state: 'generation-stopped', target, revision: pinned.revision, runDir: written, detail: result.reason }\n        : { state: 'generation-stopped-partial'",
+      "new": "? { state: 'generation-stopped-partial', target, revision: pinned.revision, runDir: written, detail: result.reason }\n        : { state: 'generation-stopped'",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 22
+    },
+    {
+      "id": "partial-exit-code-reused",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-main.ts",
+      "old": "'generation-stopped-partial': 7",
+      "new": "'generation-stopped-partial': 6",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 22
+    },
+    {
+      "id": "partial-record-dropped",
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts",
+      "old": "new Map([...(partial ?? []), recordFile]));\n      return partial",
+      "new": "new Map(partial ?? [recordFile]));\n      return partial",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 22
+    }
+  ]
+}
