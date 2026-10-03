@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -28,10 +28,27 @@ export interface FixtureRepo {
  * A committed fixture repository carrying the five artifacts the intent
  * graph requires, plus enough extra tree shape for code-structure and
  * work-item projections to have something real to group.
+ *
+ * Each call gets its own copy of one repository committed once per test
+ * file (syzygy-jsyi). Committing it took six git processes, 0.2-0.7 s
+ * under load, and the Polaris suites build a model, and so a repository,
+ * in nearly every test: 30 in polaris-reachability alone. The commit
+ * instants are pinned, so every copy carries the revision a fresh commit
+ * would, and a test that writes to its copy cannot reach another's.
  */
 export function fixtureRepoWithGit(cleanups: string[]): FixtureRepo {
+  template ??= committedFixtureRepo();
   const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-surface-fixture-'));
   cleanups.push(root);
+  cpSync(template.repoRoot, root, { recursive: true });
+  return { repoRoot: root, revision: template.revision };
+}
+
+let template: FixtureRepo | undefined;
+
+function committedFixtureRepo(): FixtureRepo {
+  const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-surface-fixture-template-'));
+  process.once('exit', () => rmSync(root, { recursive: true, force: true }));
   const files: Readonly<Record<string, string>> = {
     'docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md':
       '# design\nStatus: Approved for implementation\n',

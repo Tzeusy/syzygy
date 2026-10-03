@@ -1,10 +1,38 @@
-import { existsSync, mkdtempSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
-import { frozenFixture, sharedFixtureModels } from './test-model-fixture.js';
+import { fixtureRepoWithGit, frozenFixture, sharedFixtureModels } from './test-model-fixture.js';
+
+describe('fixture repositories (syzygy-jsyi)', () => {
+  const git = (root: string, args: readonly string[]): string => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8' }).trim();
+
+  it('gives each call its own clean copy at the revision a fresh pinned commit mints, and keeps a write in its own copy', () => {
+    const cleanups: string[] = [];
+    try {
+      const first = fixtureRepoWithGit(cleanups);
+      const second = fixtureRepoWithGit(cleanups);
+      expect(first.repoRoot).not.toBe(second.repoRoot);
+      expect(cleanups).toEqual([first.repoRoot, second.repoRoot]);
+      // Committed by hand from the same eight files, author and pinned instants.
+      expect([first.revision, second.revision]).toEqual(['1f892687d53c829f9c2a4ee99bccccb23d6158df', '1f892687d53c829f9c2a4ee99bccccb23d6158df']);
+      expect(git(first.repoRoot, ['rev-parse', 'HEAD'])).toBe(first.revision);
+      expect(git(first.repoRoot, ['status', '--porcelain'])).toBe('');
+      writeFileSync(join(first.repoRoot, 'README.md'), 'changed\n');
+      expect(git(first.repoRoot, ['status', '--porcelain'])).toBe('M README.md');
+      expect(git(second.repoRoot, ['status', '--porcelain'])).toBe('');
+      rmSync(first.repoRoot, { recursive: true, force: true });
+      const third = fixtureRepoWithGit(cleanups);
+      expect(git(third.repoRoot, ['rev-parse', 'HEAD'])).toBe(third.revision);
+      expect(git(third.repoRoot, ['status', '--porcelain'])).toBe('');
+    } finally {
+      for (const directory of cleanups) rmSync(directory, { recursive: true, force: true });
+    }
+  });
+});
 
 describe('shared fixture models (syzygy-k66p)', () => {
   it('freezes every nested object and array, so a test that writes to a shared model throws', () => {
