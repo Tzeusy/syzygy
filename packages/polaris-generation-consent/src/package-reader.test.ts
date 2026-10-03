@@ -295,7 +295,9 @@ describe('egress version 2 record', () => {
   const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
   const v2Text = (): string => readFileSync(path.join(repoRoot, EGRESS_V2_INSTANCE), 'utf8');   // the real candidate bytes
   const V2_ACT = `${DECISIONS_DIR}/PUBLIC-EGRESS-V2-ANTHROPIC-ACT.md`;
-  const v2World = (over: Record<string, string> = {}): Record<string, string> => world({ [EGRESS_V2_INSTANCE]: v2Text(), [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, v2Text()), ...over });
+  const V1_ACT = `${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`;
+  /** Version 1 took effect the day before version 2: version 2 supersedes it only by being strictly later. */
+  const v2World = (over: Record<string, string> = {}): Record<string, string> => world({ [V1_ACT]: actText('consent-egress', EGRESS_PATH, egressText(), '2026-10-03'), [EGRESS_V2_INSTANCE]: v2Text(), [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, v2Text()), ...over });
   const port = (files: Record<string, string>, now: number) => createAdmissionRecordsPort({ reader: reader(files), now: () => now });
 
   it('is read from the recorder\'s act: version 2 supersedes version 1 once in force', async () => {
@@ -307,11 +309,16 @@ describe('egress version 2 record', () => {
     expect(await port(v2World(), DAY).check(requirement('egress-consent'))).toEqual({ satisfied: true, record: 'PUBLIC-EGRESS-anthropic@0.2.0-candidate.1' });
   });
   it('leaves version 1 standing before the version 2 act takes effect, and with no version 1 act at all', async () => {
-    expect(inForceRecords(await reader(v2World()).read(), DAY - 1).filter(r => r.class === 'egress')).toEqual([]);   // neither is in force yet
+    expect(inForceRecords(await reader(v2World()).read(), DAY - 1).filter(r => r.class === 'egress').map(r => r.version)).toEqual(['0.1.0-candidate.7']);   // version 2 is not in force yet
     const later = v2World({ [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, v2Text(), '2026-10-09') });
     expect(inForceRecords(await reader(later).read(), DAY).filter(r => r.class === 'egress').map(r => r.version)).toEqual(['0.1.0-candidate.7']);
-    const only = v2World(); delete only[`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`];
+    const only = v2World(); delete only[V1_ACT];
     expect(inForceRecords(await reader(only).read(), DAY).filter(r => r.class === 'egress').map(r => r.version)).toEqual(['0.2.0-candidate.1']);
+  });
+  it('refuses when version 2 did not take effect strictly after version 1: the same instant, or earlier', async () => {
+    await expect(reader(v2World({ [V1_ACT]: actText('consent-egress', EGRESS_PATH, egressText(), '2026-10-04') })).read()).rejects.toBeInstanceOf(AdmissionRecordError);   // same day, both date-only
+    await expect(reader(v2World({ [V1_ACT]: actText('consent-egress', EGRESS_PATH, egressText(), '2026-10-05') })).read()).rejects.toBeInstanceOf(AdmissionRecordError);   // version 1 later
+    expect((await reader(v2World()).read()).length).toBe(3);
   });
   it('binds the exact bytes: an edited record is not in force', async () => {
     const edited = await reader(v2World({ [EGRESS_V2_INSTANCE]: `${v2Text()}\nedited\n` })).read();

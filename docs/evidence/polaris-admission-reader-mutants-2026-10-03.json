@@ -538,8 +538,32 @@
    "outcome": "killed",
    "failedTests": 5,
    "totalTests": 84
+  },
+  {
+   "id": "V2-instant-order-unchecked",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "v2.inForceAt <= v1.inForceAt) return refuse();",
+   "new": "false) return refuse();",
+   "tests": [
+    "package-reader"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 85
+  },
+  {
+   "id": "V2-instant-equal-allowed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "v2.inForceAt <= v1.inForceAt) return refuse();",
+   "new": "v2.inForceAt < v1.inForceAt) return refuse();",
+   "tests": [
+    "package-reader"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 85
   }
  ],
- "summary": "42 of 44 mutants killed at 0c05efb541fa6ab0fcb64a540b7cdaa45462a846; not killed: ['X-noop-control', 'V2-act-type-unchecked'] (X-noop-control is the control; V2-act-type-unchecked is an equivalent mutant, see its note). R3, R4, R5 and R6 of the earlier set were replaced by the V2-* mutants of the closed act-form list.",
+ "summary": "42 of 44 mutants killed at 0c05efb541fa6ab0fcb64a540b7cdaa45462a846; not killed: ['X-noop-control', 'V2-act-type-unchecked'] (X-noop-control is the control; V2-act-type-unchecked is an equivalent mutant, see its note). R3, R4, R5 and R6 of the earlier set were replaced by the V2-* mutants of the closed act-form list. Two further mutants of the version 2 instant-order rule (added in the commit after the one named above) were killed.",
  "ranAtCommit": "0c05efb541fa6ab0fcb64a540b7cdaa45462a846"
 }
