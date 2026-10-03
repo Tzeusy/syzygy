@@ -48,7 +48,7 @@ export interface ReduceInput {
   readonly maxSelected: number;
   readonly subsystems: readonly { readonly subsystem: string; readonly blobs: number; readonly claims: readonly (DiscoveryClaim & { readonly path: string })[] }[];
 }
-/** `dropped` is only for replay: a count the recording run already discarded. */
+/** `dropped` is read only when replaying receipts: a count the recording run already discarded. A live reply's own `dropped` is ignored. */
 export interface MapReply { readonly claims: readonly DiscoveryClaim[]; readonly usageUnits: number | null; readonly dropped?: number }
 export interface ReduceReply { readonly ranked: readonly string[]; readonly usageUnits: number | null; readonly dropped?: number }
 
@@ -74,9 +74,9 @@ export interface DiscoveryReceipt {
 export interface DiscoveryPorts {
   /** Asked once per provider call; anything but `true` means the call is not made. */
   readonly permitted: (call: DiscoveryCall) => Promise<boolean>;
-  readonly map?: (input: MapInput) => Promise<MapReply>;
+  readonly map?: (input: MapInput, signal: AbortSignal) => Promise<MapReply>;
   /** Blob ids in priority order; unknown ids are dropped and counted. */
-  readonly reduce?: (input: ReduceInput) => Promise<ReduceReply>;
+  readonly reduce?: (input: ReduceInput, signal: AbortSignal) => Promise<ReduceReply>;
   /** Required with `map` or `reduce`; a rejection stops discovery. */
   readonly receipt?: (receipt: DiscoveryReceipt) => Promise<void>;
 }
@@ -165,8 +165,17 @@ const compareBlobs = (a: Blob, b: Blob): number => b.heuristic - a.heuristic || 
 const DIGEST_LIMITS = { maxBytes: 50_000_000, maxNodes: 2_000_000, maxDepth: 16 } as const;
 const isObject = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value);
 
+export const MAP_CLAIMS_PER_ITEM = 2;
+const usage = (value: unknown): number | null => (typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : null);
+
 export async function discoverAndSelect(
   sources: readonly GenerationSource[], readerQuestions: readonly string[], budget: DiscoveryBudget, ports: DiscoveryPorts, signal: AbortSignal = new AbortController().signal,
+): Promise<DiscoveryResult> {
+  return discover(sources, readerQuestions, budget, ports, signal, false);
+}
+
+async function discover(
+  sources: readonly GenerationSource[], readerQuestions: readonly string[], budget: DiscoveryBudget, ports: DiscoveryPorts, signal: AbortSignal, replay: boolean,
 ): Promise<DiscoveryResult> {
   if (!Number.isSafeInteger(budget.maxSelected) || budget.maxSelected < 1 || budget.maxSelected > PIPELINE_QUOTABLE_CAP
     || [budget.maxMapCalls, budget.maxExcerptChars, budget.claimsPerGroup, budget.maxReduceClaims].some(n => !Number.isSafeInteger(n) || n < 0)
@@ -194,7 +203,7 @@ export async function discoverAndSelect(
 
   /** One provider call: ask, write a dispatching receipt, call, validate, write the outcome. */
   const providerCall = async <In, Raw, Valid extends { readonly usageUnits: number | null; readonly dropped: number; readonly reply: NonNullable<DiscoveryReceipt['reply']> }>(
-    kind: 'map' | 'reduce', subsystem: string | undefined, input: In, itemCount: number, invoke: (input: In) => Promise<Raw>, validate: (raw: Raw) => Valid,
+    kind: 'map' | 'reduce', subsystem: string | undefined, input: In, itemCount: number, invoke: (input: In, signal: AbortSignal) => Promise<Raw>, validate: (raw: Raw) => Valid,
   ): Promise<Valid | undefined> => {
     if (signal.aborted) throw new DiscoveryRefusal('cancelled');
     const call: DiscoveryCall = { kind, ...(subsystem === undefined ? {} : { subsystem }), itemCount, requestDigest: digestCanonicalJson(input, DIGEST_LIMITS).digest };
@@ -204,7 +213,7 @@ export async function discoverAndSelect(
     if (!allowed) { refusedCalls++; await emit({ ...shared, outcome: 'refused', usageUnits: null, dropped: 0 }); return undefined; }
     await emit({ ...shared, outcome: 'dispatching', usageUnits: null, dropped: 0 });
     try {
-      const valid = validate(await raced(invoke(input)));
+      const valid = validate(await raced(invoke(input, signal)));
       await emit({ ...shared, outcome: 'accepted', usageUnits: valid.usageUnits, dropped: valid.dropped, reply: valid.reply });
       return valid;
     } catch (error) {
@@ -228,13 +237,16 @@ export async function discoverAndSelect(
     const outcome = await providerCall('map', group.name, input, input.items.length, ports.map, (raw: unknown) => {
       if (!isObject(raw) || !Array.isArray(raw.claims)) throw new Error('invalid-map-reply');
       const accepted: DiscoveryClaim[] = [];
-      let discarded = typeof raw.dropped === 'number' && Number.isSafeInteger(raw.dropped) && raw.dropped > 0 ? raw.dropped : 0;
-      for (const claim of raw.claims as unknown[]) {
+      let discarded = replay && typeof raw.dropped === 'number' && Number.isSafeInteger(raw.dropped) && raw.dropped > 0 ? raw.dropped : 0;
+      // A reply is read up to MAP_CLAIMS_PER_ITEM claims per file; a longer one is cut and the cut is counted.
+      const offered = raw.claims as unknown[], cap = input.items.length * MAP_CLAIMS_PER_ITEM;
+      discarded += Math.max(0, offered.length - cap);
+      for (const claim of offered.slice(0, cap)) {
         if (!isObject(claim) || typeof claim.blobId !== 'string' || !known.has(claim.blobId) || typeof claim.relevance !== 'number' || !Number.isFinite(claim.relevance)
           || claim.relevance < 0 || claim.relevance > 10 || typeof claim.claim !== 'string' || claim.claim.length === 0) { discarded++; continue; }
         accepted.push({ blobId: claim.blobId, relevance: claim.relevance, claim: [...claim.claim].slice(0, budget.maxClaimChars).join('') });
       }
-      return { usageUnits: typeof raw.usageUnits === 'number' ? raw.usageUnits : null, dropped: discarded, reply: { claims: accepted } };
+      return { usageUnits: usage(raw.usageUnits), dropped: discarded, reply: { claims: accepted } };
     });
     if (outcome === undefined) { mapFailures++; unmapped.push(group.name); continue; }
     dropped += outcome.dropped;
@@ -257,9 +269,11 @@ export async function discoverAndSelect(
     const outcome = await providerCall('reduce', undefined, input, subsystems.reduce((n, s) => n + s.claims.length, 0), ports.reduce, (raw: unknown) => {
       if (!isObject(raw) || !Array.isArray(raw.ranked) || raw.ranked.some(id => typeof id !== 'string')) throw new Error('invalid-reduce-reply');
       const ranked: string[] = [], seen = new Set<string>();
-      let discarded = typeof raw.dropped === 'number' && Number.isSafeInteger(raw.dropped) && raw.dropped > 0 ? raw.dropped : 0;
-      for (const id of raw.ranked as string[]) { if (!byId.has(id) || seen.has(id)) { discarded++; continue; } seen.add(id); ranked.push(id); }
-      return { usageUnits: typeof raw.usageUnits === 'number' ? raw.usageUnits : null, dropped: discarded, reply: { ranked } };
+      let discarded = replay && typeof raw.dropped === 'number' && Number.isSafeInteger(raw.dropped) && raw.dropped > 0 ? raw.dropped : 0;
+      const offered = raw.ranked as string[];
+      discarded += Math.max(0, offered.length - byId.size);
+      for (const id of offered.slice(0, byId.size)) { if (!byId.has(id) || seen.has(id)) { discarded++; continue; } seen.add(id); ranked.push(id); }
+      return { usageUnits: usage(raw.usageUnits), dropped: discarded, reply: { ranked } };
     });
     if (outcome === undefined) reduceFailures++;
     else {
@@ -309,26 +323,37 @@ export async function discoverAndSelect(
 }
 
 /** Rebuilds a report from the population and the receipts alone, by replaying
- * each recorded reply. A call without an accepted receipt replays as a refusal
- * or a failure, exactly as it was recorded. */
+ * each recorded reply. A port is installed only for a kind the receipts hold,
+ * so a run that had no map (or no reduce) port replays to the same report. A
+ * call the replay makes must find a receipt of the same request digest and item
+ * count; a changed population or reader question fails the replay rather than
+ * rendering another run's report as this one's. */
 export async function reportFromReceipts(
   sources: readonly GenerationSource[], readerQuestions: readonly string[], budget: DiscoveryBudget, receipts: readonly DiscoveryReceipt[],
 ): Promise<DiscoveryResult> {
   const last = new Map<string, DiscoveryReceipt>();
   for (const receipt of receipts) last.set(`${receipt.kind}:${receipt.subsystem ?? ''}`, receipt);
   const find = (kind: 'map' | 'reduce', subsystem?: string): DiscoveryReceipt | undefined => last.get(`${kind}:${subsystem ?? ''}`);
-  return discoverAndSelect(sources, readerQuestions, budget, {
-    permitted: async call => find(call.kind, call.subsystem)?.outcome !== 'refused' && find(call.kind, call.subsystem) !== undefined,
-    map: async input => {
-      const receipt = find('map', input.subsystem);
-      if (receipt?.outcome !== 'accepted') throw new Error(`recorded ${receipt?.outcome ?? 'missing'}`);
+  const hasKind = (kind: 'map' | 'reduce'): boolean => receipts.some(receipt => receipt.kind === kind);
+  const recorded = (receipt: DiscoveryReceipt | undefined): DiscoveryReceipt => {
+    if (receipt?.outcome !== 'accepted') throw new Error(`recorded ${receipt?.outcome ?? 'missing'}`);
+    return receipt;
+  };
+  return discover(sources, readerQuestions, budget, {
+    permitted: async call => {
+      const receipt = find(call.kind, call.subsystem);
+      if (receipt === undefined) throw new DiscoveryRefusal('receipt-missing-for-call');
+      if (receipt.requestDigest !== call.requestDigest || receipt.itemCount !== call.itemCount) throw new DiscoveryRefusal('receipt-request-mismatch');
+      return receipt.outcome !== 'refused';
+    },
+    ...(hasKind('map') ? { map: async (input: MapInput) => {
+      const receipt = recorded(find('map', input.subsystem));
       return { claims: (receipt.reply as { claims: DiscoveryClaim[] }).claims, usageUnits: receipt.usageUnits, dropped: receipt.dropped };
-    },
-    reduce: async () => {
-      const receipt = find('reduce');
-      if (receipt?.outcome !== 'accepted') throw new Error(`recorded ${receipt?.outcome ?? 'missing'}`);
+    } } : {}),
+    ...(hasKind('reduce') ? { reduce: async () => {
+      const receipt = recorded(find('reduce'));
       return { ranked: (receipt.reply as { ranked: string[] }).ranked, usageUnits: receipt.usageUnits, dropped: receipt.dropped };
-    },
+    } } : {}),
     receipt: async () => undefined,
-  });
+  }, new AbortController().signal, true);
 }
