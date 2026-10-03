@@ -565,8 +565,9 @@ function routeOf(claim: ProjectShapeClaim, reason: string): string {
   return route ?? UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route');
 }
 
-/** The route text of one reason in the gaps list: the generic route, then the evaluation's causes when it records
- * any, so the reader reaches the actual cause without leaving the list. */
+/** The route text of one reason in the gaps list: the generic route, then
+ * the evaluation's causes when it records any, so the reader reaches the
+ * actual cause without leaving the list. */
 function reasonRouteHtml(reason: string): string {
   const generic = UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route');
   const causes = causeRoutes(reason, undefined);

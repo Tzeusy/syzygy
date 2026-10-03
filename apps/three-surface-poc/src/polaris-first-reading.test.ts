@@ -185,7 +185,7 @@ describe('Polaris cause-correct routes (PWB-REQ-020 as amended; PWB-LIVE-11)', (
     expect(craft).not.toContain('detector');
   });
 
-  it('lists two or more causes as separate items after the paragraph, never inside it, in the gap entry and every reason-counts detail', () => {
+  it('lists two or more causes as separate items after the paragraph, never inside it, (an unordered list in the gap entry, an ordered list in every reason-counts detail)', () => {
     const second = 'about/heart-and-soul/vision.md';
     const texts = {
       ...TEXTS_WITH_ACTIVE_CONTENT,
@@ -203,7 +203,7 @@ describe('Polaris cause-correct routes (PWB-REQ-020 as amended; PWB-LIVE-11)', (
       expect(items.some((item) => item.startsWith('about/craft-and-care/README.md carries active content'))).toBe(true);
     }
     const gap = /data-polaris-gap="excluded-content">([\s\S]*?)(?=<li id=|<\/ul>)/.exec(html)?.[1] ?? '';
-    expect(gap).toContain('>By cause:</span><ol class="cause-routes">');
+    expect(gap).toContain('>By cause:</span><ul data-polaris-gap-causes="2">');
     expect(gap.split('<li>').length - 1).toBe(2);
     const details = [...html.matchAll(/<details class="reason-remedies">([\s\S]*?)<\/details>/g)].map((match) => match[1] as string);
     const withCauses = details.filter((detail) => detail.includes('cause-routes'));
