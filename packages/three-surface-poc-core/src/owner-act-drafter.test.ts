@@ -51,10 +51,17 @@ describe('owner-act drafter (M4 slice 7)', () => {
 
   it('is pure: it imports no filesystem, network or process module and names no write', () => {
     const source = readFileSync(new URL('./owner-act-drafter.ts', import.meta.url), 'utf8');
-    const imports = [...source.matchAll(/^import\s[^;]*?from\s+'([^']+)';/gm)].map((match) => match[1]);
-    expect(imports).toEqual(['node:crypto', '@syzygy/cap1-core']);
+    // Every module specifier, whatever the quote: imports and re-exports
+    // with `from`, and side-effect imports. Comment lines are prose.
+    const code = source.split('\n').filter((line) => !line.trimStart().startsWith('//')).join('\n');
+    const specifiers = new Set([
+      ...[...code.matchAll(/\b(?:import|export)\b[^;]*?\bfrom\s*['"`]([^'"`]+)['"`]/g)].map((match) => match[1]),
+      ...[...code.matchAll(/^\s*import\s*['"`]([^'"`]+)['"`]/gm)].map((match) => match[1]),
+      ...[...code.matchAll(/\b(?:import|require)\s*\(\s*['"`]([^'"`]+)['"`]/g)].map((match) => match[1]),
+    ]);
+    expect([...specifiers].sort()).toEqual(['@syzygy/cap1-core', 'node:crypto']);
     expect(/^import type .* from '@syzygy\/cap1-core';$/m.test(source)).toBe(true);
-    for (const forbidden of [/\brequire\(/, /\bimport\(/, /\bfetch\(/, /\bwriteFile/, /\bappendFile/, /\bmkdir/, /\bprocess\./, /\bDate\b/, /node:(?:fs|net|http|https|child_process|os)/]) {
+    for (const forbidden of [/\brequire\(/, /\bimport\(/, /\bfetch\(/, /\bwriteFile/, /\bappendFile/, /\bmkdir/, /\bprocess\./, /\bDate\b/, /\b(?:node:)?(?:fs|net|http|https|child_process|os)['"`]/]) {
       expect(source, String(forbidden)).not.toMatch(forbidden);
     }
   });
