@@ -1,0 +1,280 @@
+{
+  "bead": "syzygy-dov.3.2",
+  "slice": 6,
+  "date": "2026-10-03",
+  "subject": "P-70 M3 slice 6: proposed-not-authority as one declared disclosure row (PROPOSAL_DISCLOSURE) apart from the claim-state tables, with generated section/label treatment and a generated glossary row that counts the served proposals and states its reachability note exactly when there are none",
+  "subjectFiles": {
+    "apps/three-surface-poc/src/design-tokens.ts": {
+      "sha256": "baef01294ad8baf1bde5cc911d0838c2794fd29d23aaa5f29553e2959dd451a4"
+    },
+    "apps/three-surface-poc/src/polaris.ts": {
+      "sha256": "14bfe02e2787d2d97e36c7e164c09ee56dcdd1f9209203513b4ea42dd451d930"
+    },
+    "apps/three-surface-poc/src/polaris-copy.ts": {
+      "sha256": "06a05a3f4255d86cfa7daf9499ab2266f104f8bc866c2e98778589cdd0bc0c3b"
+    },
+    "apps/three-surface-poc/src/proposal-disclosure.test.ts": {
+      "sha256": "f5afa4e74405cee547ad1eff41b8efc664565dc7a589622a263025cc09a15f05"
+    },
+    "apps/three-surface-poc/src/tuple-encoding.test.ts": {
+      "sha256": "ecfa3a0c0fe707ea473313888bced7163186ece2c3f3482feed66f5e4aa9f678"
+    },
+    "docs/POLARIS-READING-LAYOUT.md": {
+      "sha256": "ea04a8d52954b931e2e576fbda372caad56318ef68eb4b9b6d080859cb6058dc"
+    }
+  },
+  "authority": ".syzygy/governance/decisions/POLARIS-PURSUIT-OWNER-RULINGS-P68-P83-DECISION.md P-70 under .syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md. No PocModel, machine, schema, route, read, egress or governed change; --proposed (#aa90ee) and its M3.1 contrast evidence unchanged.",
+  "finding": "[Observed] Before this slice the proposal section's --proposed left border did not render on the reading layout: polaris.ts's later '.claim-section { border: 0 }' (same specificity) overrode '.proposal { border-left: ... }'. The browser sweep of the live slice-5 capture computes the section's border-left-color as rgb(223, 233, 231) (--ink, the currentColor of a zero-width border) and finds no label symbol. The generated rule now selects '.claim-section.proposal'; the colour token is unchanged, so this restores the declared treatment rather than recolouring it.",
+  "measurement": {
+    "method": "As slice 5: clean detached checkout, npm run build:poc, private daemon on port 0 with a scratch state dir, four pages direct and with Host: tzeusy.parrot-hen.ts.net. Browser: the test's browserProposals census in headless Chrome over the saved Polaris bodies.",
+    "butlersRevision": "32f38feb51d86e33bfec00b78777cce5ec280198",
+    "base": {
+      "commit": "46918bec (slice 5 head; capture of its code commit 038e1154, identical renderer bytes)",
+      "capturedAt": "2026-10-03T05:55:10Z",
+      "polaris": {
+        "direct": {
+          "bytes": 1543678,
+          "sha256": "66986d950cde6511c0ca3d6292d27b4e9401986581a91d40dac405b516a32c01"
+        },
+        "tailnet": {
+          "bytes": 1549783,
+          "sha256": "288bdd59fc486e8b713c24ef7a9cb1b580f4e65bf6a189d533c36a941f9699e3"
+        }
+      }
+    },
+    "slice6": {
+      "commit": "0f5e77c1ccf7def28f4b56aeafabe0c122a7f5a0",
+      "capturedAt": "2026-10-03T06:07:06Z",
+      "polaris": {
+        "direct": {
+          "bytes": 1544325,
+          "sha256": "1c2181f46bf9b7a2f21480c215fbffd6681de21641cea3312712bbf01a6fefe5"
+        },
+        "tailnet": {
+          "bytes": 1550430,
+          "sha256": "5bacc34b59c197bc0b516cf5ab52a2fd7880ad2435e60ae9b89a276e2f21fff4"
+        }
+      },
+      "otherPages": {
+        "home": {
+          "direct": {
+            "bytes": 43577,
+            "sha256": "75ef14ab155aa4d1b65e26a2d7f144b29fd3d79f5f0bb0f3bc2c6bc331045758"
+          },
+          "tailnet": {
+            "bytes": 43637,
+            "sha256": "0b6c2ae2f43d53870d2e68f7bf670d3dc36754d6782c7da056d2a17c466f4762"
+          }
+        },
+        "trajectory": {
+          "direct": {
+            "bytes": 330379,
+            "sha256": "cacbe4a35849952de1d40d1b4914e714e16e4a17660a8ff08ee88566e26a9996"
+          },
+          "tailnet": {
+            "bytes": 330469,
+            "sha256": "fe07cee6a5bb5520585f76d58da42446595eb9ecdd41e777fac0ca7c737d1c52"
+          }
+        },
+        "orrery": {
+          "direct": {
+            "bytes": 43120,
+            "sha256": "eec95e44b5d384ebfa72ff9f86c033bbe198ce1f5c540d0d733eba1c6298ab7f"
+          },
+          "tailnet": {
+            "bytes": 43195,
+            "sha256": "b1172deb7f164db907d4dce2ab1347ec603fcb2a519b5f3772ea7f34473e9243"
+          }
+        }
+      }
+    },
+    "polarisDeltaBytes": {
+      "direct": 647,
+      "tailnet": 647
+    },
+    "ceilingMargin": {
+      "direct": 552827,
+      "tailnet": 546722
+    },
+    "workingTargetGap": {
+      "direct": 144325,
+      "tailnet": 150430
+    },
+    "servedProposals": 1,
+    "legendServedAttribute": 1,
+    "legendReachabilityNote": false,
+    "claimTuples": 699,
+    "browser": {
+      "slice5/direct": {
+        "sections": 1,
+        "walkedSections": 1,
+        "legendRows": 0,
+        "failures": [
+          "section border rgb(223, 233, 231)",
+          "label symbol"
+        ]
+      },
+      "slice5/tailnet": {
+        "sections": 1,
+        "walkedSections": 1,
+        "legendRows": 0,
+        "failures": [
+          "section border rgb(223, 233, 231)",
+          "label symbol"
+        ]
+      },
+      "slice6/direct": {
+        "sections": 1,
+        "walkedSections": 1,
+        "legendRows": 1,
+        "failures": []
+      },
+      "slice6/tailnet": {
+        "sections": 1,
+        "walkedSections": 1,
+        "legendRows": 1,
+        "failures": []
+      }
+    }
+  },
+  "rule6": [
+    {
+      "id": "S6-M1",
+      "predicate": "proposal token swapped for the Unknown token",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "0f5e77c1ccf7def28f4b56aeafabe0c122a7f5a0",
+      "edits": [
+        {
+          "old": "  token: '--proposed',\n  description: 'states.proposed',",
+          "new": "  token: '--unknown',\n  description: 'states.proposed',"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/proposal-disclosure.test.ts apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-proposed-work.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/design-tokens.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > declares proposed-not-authority apart from every claim state, on the unchanged --proposed token 38ms",
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > generates the proposal treatment from the declaration and spends --proposed nowhere else 665ms",
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > renders every served proposal and the legend row in the declared token and symbol after scripts 3504ms"
+      ]
+    },
+    {
+      "id": "S6-M2",
+      "predicate": "proposal legend row dropped",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "0f5e77c1ccf7def28f4b56aeafabe0c122a7f5a0",
+      "edits": [
+        {
+          "old": "    ${proposalLegend(model)}\n",
+          "new": ""
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/proposal-disclosure.test.ts apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-proposed-work.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/design-tokens.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > agrees with the served proposal population in zero and populated fixtures, and sits outside the claim-state ",
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > rejects a legend that disagrees with the page, a proposal without its marker, or a proposal carrying an epis",
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > renders every served proposal and the legend row in the declared token and symbol after scripts 2938ms"
+      ]
+    },
+    {
+      "id": "S6-M3",
+      "predicate": "legend reachability reversed",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "0f5e77c1ccf7def28f4b56aeafabe0c122a7f5a0",
+      "edits": [
+        {
+          "old": "const marker = served > 0 ? '' : ` ${entry.unreachable}`;",
+          "new": "const marker = served === 0 ? '' : ` ${entry.unreachable}`;"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/proposal-disclosure.test.ts apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-proposed-work.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/design-tokens.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > agrees with the served proposal population in zero and populated fixtures, and sits outside the claim-state ",
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > rejects a legend that disagrees with the page, a proposal without its marker, or a proposal carrying an epis"
+      ]
+    },
+    {
+      "id": "S6-M4",
+      "predicate": "served proposal loses its text marker",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "0f5e77c1ccf7def28f4b56aeafabe0c122a7f5a0",
+      "edits": [
+        {
+          "old": "      <p class=\"${PROPOSAL_DISCLOSURE.labelClassName}\" data-proposal-label${copyAttr('label.proposed')}>${copy('label.proposed')}</p>\n",
+          "new": ""
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/proposal-disclosure.test.ts apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-proposed-work.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/design-tokens.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× Polaris proposed work stays subordinate to current truth (PWB-REQ-013) > renders the proposal exactly once, inside capability detail, labeled, with the current authorit",
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > agrees with the served proposal population in zero and populated fixtures, and sits outside the claim-state ",
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > rejects a legend that disagrees with the page, a proposal without its marker, or a proposal carrying an epis"
+      ]
+    },
+    {
+      "id": "S6-M5",
+      "predicate": "--proposed recoloured",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "0f5e77c1ccf7def28f4b56aeafabe0c122a7f5a0",
+      "edits": [
+        {
+          "old": "--proposed: #aa90ee;",
+          "new": "--proposed: #f3c56f;"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/proposal-disclosure.test.ts apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-proposed-work.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/design-tokens.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× design tokens (N4 S11-F2, S11-F3) > keeps proposal treatment distinct from epistemic Unknown and notice amber, with readable foreground contrast 6ms",
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > declares proposed-not-authority apart from every claim state, on the unchanged --proposed token 20ms",
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > renders every served proposal and the legend row in the declared token and symbol after scripts 2069ms"
+      ]
+    },
+    {
+      "id": "S6-M6",
+      "predicate": "proposal border loses its specificity",
+      "file": "apps/three-surface-poc/src/design-tokens.ts",
+      "commit": "0f5e77c1ccf7def28f4b56aeafabe0c122a7f5a0",
+      "edits": [
+        {
+          "old": "export const PROPOSAL_TREATMENT_CSS = `.claim-section.${PROPOSAL_DISCLOSURE.className} {",
+          "new": "export const PROPOSAL_TREATMENT_CSS = `.${PROPOSAL_DISCLOSURE.className} {"
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/proposal-disclosure.test.ts apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-proposed-work.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/design-tokens.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > generates the proposal treatment from the declaration and spends --proposed nowhere else 238ms",
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > renders every served proposal and the legend row in the declared token and symbol after scripts 2129ms"
+      ]
+    },
+    {
+      "id": "S6-M7",
+      "predicate": "legend miscounts the served population",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "commit": "0f5e77c1ccf7def28f4b56aeafabe0c122a7f5a0",
+      "edits": [
+        {
+          "old": "data-disclosure-served=\"${served}\"",
+          "new": "data-disclosure-served=\"${served + 1}\""
+        }
+      ],
+      "command": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/proposal-disclosure.test.ts apps/three-surface-poc/src/tuple-encoding.test.ts apps/three-surface-poc/src/polaris-proposed-work.test.ts apps/three-surface-poc/src/polaris-copy.test.ts apps/three-surface-poc/src/design-tokens.test.ts",
+      "expected": "killed",
+      "outcome": "killed",
+      "failedTests": [
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > agrees with the served proposal population in zero and populated fixtures, and sits outside the claim-state ",
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > rejects a legend that disagrees with the page, a proposal without its marker, or a proposal carrying an epis",
+        "× proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6) > renders every served proposal and the legend row in the declared token and symbol after scripts 1879ms"
+      ]
+    }
+  ]
+}
