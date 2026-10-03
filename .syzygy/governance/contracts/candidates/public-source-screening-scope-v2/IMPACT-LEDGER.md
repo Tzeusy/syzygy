@@ -8,7 +8,7 @@ Same set as version 1, because both acts replace the policy digest and
 version: the Butlers read gate pins the policy by digest and then version and
 refuses on any byte change. The version-1 package's ledger and its simulation
 script list the set; this act re-points the same files a second time. Order
-with version 1 is packet Q2. [Unknown] Whether the set changed between the
+with version 1 is the packet's order section. [Unknown] Whether the set changed between the
 version-1 ledger and the act; the installer derives it from the recorded act
 at the sitting rather than from this page.
 
