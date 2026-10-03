@@ -1,0 +1,201 @@
+{
+ "subject": {
+  "commit": "e825e9bde6db100d799aec9372028b0651f4d2b1",
+  "branch": "agent/dossier-provider",
+  "fileSha256": {
+   "packages/polaris-generation-provider/src/agent-sdk-provider.ts": "2c5edc63295889f6b9a8c42b63b9924c4fecbeca71b7ce8c43d6e4d0d58e83e7",
+   "packages/polaris-generation-provider/src/egress-gate.ts": "45d2dd09e68782a8cb9b8826e418e0bd5c83ac8498c24b2df31c5462371b7c03",
+   "packages/polaris-generation-provider/src/request-acceptance.ts": "9ec4983c0f20c5f5b61c2d703ad02acf435e858afe9c109a6c4cf955224fbe3a"
+  }
+ },
+ "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+ "project": "@syzygy/polaris-generation-provider",
+ "ranAt": "2026-10-03T09:26:03+00:00",
+ "mutants": [
+  {
+   "id": "G1-consent-not-required",
+   "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+   "old": "allowed = (await options.permitted()) === true;",
+   "new": "allowed = true;",
+   "tests": [
+    "egress-gate"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 5
+  },
+  {
+   "id": "G2-consent-truthy-accepted",
+   "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+   "old": "(await options.permitted()) === true",
+   "new": "!!(await options.permitted())",
+   "tests": [
+    "egress-gate"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 5
+  },
+  {
+   "id": "G3-predicate-skipped",
+   "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+   "old": "if (!verdict.accepted) {",
+   "new": "if (false) {",
+   "tests": [
+    "egress-gate"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 5
+  },
+  {
+   "id": "G4-upstream-check-removed",
+   "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+   "old": "if (options.upstream === undefined) {",
+   "new": "if (false) {",
+   "tests": [
+    "egress-gate"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 5
+  },
+  {
+   "id": "G5-strip-ignored",
+   "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+   "old": "if (options.stripFingerprint === true) for",
+   "new": "if (false) for",
+   "tests": [
+    "egress-gate",
+    "agent-sdk-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 3,
+   "totalTests": 36
+  },
+  {
+   "id": "G6-unbilled-evidence-ignored",
+   "file": "packages/polaris-generation-provider/src/egress-gate.ts",
+   "old": "unbilled = false; }",
+   "new": "}",
+   "tests": [
+    "egress-gate",
+    "agent-sdk-provider"
+   ],
+   "outcome": "survived",
+   "failedTests": 0,
+   "totalTests": 36,
+   "note": "equivalent: the response end handler always assigns unbilled, so the reset is redundant unless the body stream is aborted before end"
+  },
+  {
+   "id": "A1-diagnostic-env-unrestricted",
+   "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+   "old": "!DIAGNOSTIC_ENV_KEYS.has(key) || key in base",
+   "new": "false",
+   "tests": [
+    "agent-sdk-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 31
+  },
+  {
+   "id": "A2-retry-after-ignored",
+   "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+   "old": "gate.takeRetryAfterMs() ?? 0)",
+   "new": "0)",
+   "tests": [
+    "agent-sdk-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 31
+  },
+  {
+   "id": "A3-try-deadline-removed",
+   "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+   "old": "setTimeout(() => { timedOut = true; controller.abort(); }, remaining)",
+   "new": "setTimeout(() => undefined, remaining)",
+   "tests": [
+    "agent-sdk-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 31
+  },
+  {
+   "id": "A4-thinking-ignored",
+   "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+   "old": "thinking === 'adaptive' ? { type: 'adaptive' } : { type: 'disabled' }",
+   "new": "{ type: 'disabled' }",
+   "tests": [
+    "agent-sdk-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 31
+  },
+  {
+   "id": "A5-api-key-unchecked",
+   "file": "packages/polaris-generation-provider/src/request-acceptance.ts",
+   "old": "expected.apiKey !== undefined && key !== expected.apiKey",
+   "new": "false",
+   "tests": [
+    "agent-sdk-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 31
+  },
+  {
+   "id": "A6-session-id-unchecked",
+   "file": "packages/polaris-generation-provider/src/request-acceptance.ts",
+   "old": "(sessionId !== undefined && header !== sessionId)",
+   "new": "false",
+   "tests": [
+    "agent-sdk-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 31
+  },
+  {
+   "id": "A7-version-mismatch-ignored",
+   "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+   "old": "!== pin.cli) { versionMismatch = true;",
+   "new": "!== pin.cli) { versionMismatch = false;",
+   "tests": [
+    "agent-sdk-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 2,
+   "totalTests": 31
+  },
+  {
+   "id": "A8-rejected-unbilled-assumed",
+   "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+   "old": "(gate.takeRejectedUnbilled() ? 0 : null)",
+   "new": "0",
+   "tests": [
+    "agent-sdk-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 3,
+   "totalTests": 31
+  },
+  {
+   "id": "A9-noop-control",
+   "file": "packages/polaris-generation-provider/src/agent-sdk-provider.ts",
+   "old": "retry.baseDelayMs * 2 ** (n - 1)",
+   "new": "retry.baseDelayMs * 2 ** (n - 1) * 1",
+   "tests": [
+    "agent-sdk-provider"
+   ],
+   "outcome": "killed",
+   "failedTests": 1,
+   "totalTests": 31,
+   "note": "equivalent control (x*1). Recorded outcome killed: 1 of 31 tests failed with the host load average at 50-75; the unmutated file passed 31/31 on three consecutive runs afterwards. A timing-sensitive test flaked under load, not a behavioural kill."
+  }
+ ],
+ "summary": "15 mutants: 13 killed by behaviour, G6 survives as equivalent (redundant reset), A9 control killed by load flake (see note)"
+}
