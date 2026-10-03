@@ -1,0 +1,287 @@
+{
+  "record": "Classification of the two historical PWB manifest builders' --check failures",
+  "bead": "syzygy-fclp",
+  "date": "2026-10-04",
+  "commit": "fd72c2fb03514a7fa4b89af887f463265e52b37d",
+  "method": "For each manifest row: compare the row digest with sha256 of the current subject; for a drifting row walk the commits touching the subject oldest first and report the last commit whose bytes hash to the row and the first commit after it that does not; name every decisions/*.md (except the aggregate ACCEPTANCE-ACT-RECORD.md, reported separately) that contains the row digest and the current digest. Digests are compared, never quoted.",
+  "builders": [
+    {
+      "script": "scripts/build_pwb_effect_acts_packet.py",
+      "scriptSha256": "027ec44d2daf66f713f5b4a2f8fd32f0d3206e2a5ec13c27a7cbe62a45dcb0d7",
+      "manifest": ".syzygy/governance/contracts/candidates/pwb-effect-acts/PWB-EFFECT-ACTS-MANIFEST.txt",
+      "manifestLastChanged": "48e0f5db 2026-09-02",
+      "manifestDigestCitedByDecisionRecords": [],
+      "manifestDigestInAcceptanceActRecord": false,
+      "manifestDigestCitedByFiles": [
+        ".syzygy/governance/contracts/candidates/pwb-effect-acts/CANDIDATE-REPORT.md",
+        ".syzygy/governance/contracts/candidates/pwb-effect-acts/OWNER-SIGNOFF-PACKET.md",
+        "docs/evidence/polaris-generator-approval-offer-2026-09-12.json",
+        "docs/reviews/R-PWB-EFFECT-ACTS-OWNER-PACKET-RAW.md",
+        "docs/reviews/R-PWB-EFFECT-ACTS-SECURITY-CONFIRMATION-RAW.md"
+      ],
+      "checkExit": 1,
+      "checkFindingLines": 3,
+      "checkFindingKinds": [
+        "CHECK FAILED: committed manifest differs from exact regeneration",
+        "CHECK FAILED: manifest digest mismatch: <path> <digest> != <digest>"
+      ],
+      "selftestExit": 0,
+      "selftestLastLine": "SELFTEST OK: 3 rows; byte, digest, path, dropped-row, stray-line and review-binding mutations rejected",
+      "rows": [
+        {
+          "path": ".syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md",
+          "matches": true,
+          "rowDigestCitedBy": [
+            "PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md"
+          ],
+          "currentDigestCitedBy": [
+            "PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md"
+          ],
+          "currentEqualsTreeFramingV1Row": false
+        },
+        {
+          "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+          "matches": false,
+          "rowDigestCitedBy": [
+            "PWB-OBSERVER-REGISTRY-ENTRY-ACT.md"
+          ],
+          "currentDigestCitedBy": [
+            "PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md"
+          ],
+          "currentEqualsTreeFramingV1Row": false,
+          "lastMatchingCommit": "2fda7c44 2026-09-02",
+          "firstDivergingCommit": "305500dc 2026-09-05",
+          "firstDivergingSubject": "docs: prepare PWB truth policy amendment [syzygy-1z3.24.3]"
+        },
+        {
+          "path": ".syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json",
+          "matches": false,
+          "rowDigestCitedBy": [
+            "PWB-SECRET-CLASSIFICATION-POLICY-ACT.md"
+          ],
+          "currentDigestCitedBy": [
+            "PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md"
+          ],
+          "currentEqualsTreeFramingV1Row": false,
+          "lastMatchingCommit": "48e0f5db 2026-09-02",
+          "firstDivergingCommit": "305500dc 2026-09-05",
+          "firstDivergingSubject": "docs: prepare PWB truth policy amendment [syzygy-1z3.24.3]"
+        }
+      ],
+      "driftingRows": 2,
+      "totalRows": 3
+    },
+    {
+      "script": "scripts/build_pwb_state1_amendment_manifest.py",
+      "scriptSha256": "cd38d14a6428ae8ca2de16d8d60d27ae75891305bbba8afef019b739eb257a6c",
+      "manifest": ".syzygy/governance/contracts/candidates/pwb-state1-amendment/PWB-AMENDMENT-MANIFEST.txt",
+      "manifestLastChanged": "8847feef 2026-09-02",
+      "manifestDigestCitedByDecisionRecords": [
+        "PWB-STATE1-AMENDMENT-ACT.md"
+      ],
+      "manifestDigestInAcceptanceActRecord": true,
+      "manifestDigestCitedByFiles": [
+        ".syzygy/governance/contracts/candidates/pwb-state1-amendment/CANDIDATE-REPORT.md",
+        ".syzygy/governance/contracts/candidates/pwb-state1-amendment/OWNER-SIGNOFF-PACKET.md",
+        ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+        ".syzygy/governance/decisions/PWB-STATE1-AMENDMENT-ACT.md",
+        "docs/evidence/polaris-generator-approval-offer-2026-09-12.json",
+        "docs/reviews/R-PWB-STATE1-ACT-CURRENT-STATE-RAW.md",
+        "docs/reviews/R-PWB-STATE1-ACT-SECURITY-RAW.md",
+        "docs/reviews/R-PWB-STATE1-ACT-TRANSACTION-RAW.md",
+        "docs/reviews/R-PWB-STATE1-FINAL-ORACLES-RAW.md",
+        "docs/reviews/R-PWB-STATE1-FINAL-SECURITY-RAW.md",
+        "docs/reviews/R-PWB-STATE1-FINAL-TRANSACTION-RAW.md",
+        "docs/reviews/R-PWB-STATE1-OWNER-PACKET-CONFIRMATION-RAW.md",
+        "docs/reviews/R-PWB-STATE1-OWNER-PACKET-FINAL-RAW.md"
+      ],
+      "checkExit": 1,
+      "checkFindingLines": 1,
+      "checkFindingKinds": [
+        "PWB amendment manifest differs from regeneration"
+      ],
+      "selftestExit": 0,
+      "selftestLastLine": "selftest: 11-row population, determinism, byte/path/uncontrolled-line mutations and exact review binding hold",
+      "rows": [
+        {
+          "path": "openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml",
+          "matches": true,
+          "rowDigestCitedBy": [
+            "POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md",
+            "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md",
+            "PWB-MACHINE-VIEW-AMENDMENT-ACT.md",
+            "PWB-OPENING-BAND-SCENARIO-ACT.md",
+            "PWB-STATE1-AMENDMENT-ACT.md",
+            "PWB-TRUTH-READINESS-AMENDMENT-ACT.md"
+          ],
+          "currentDigestCitedBy": [
+            "POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md",
+            "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md",
+            "PWB-MACHINE-VIEW-AMENDMENT-ACT.md",
+            "PWB-OPENING-BAND-SCENARIO-ACT.md",
+            "PWB-STATE1-AMENDMENT-ACT.md",
+            "PWB-TRUTH-READINESS-AMENDMENT-ACT.md"
+          ],
+          "currentEqualsTreeFramingV1Row": true
+        },
+        {
+          "path": "openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md",
+          "matches": false,
+          "rowDigestCitedBy": [
+            "PWB-STATE1-AMENDMENT-ACT.md"
+          ],
+          "currentDigestCitedBy": [],
+          "currentEqualsTreeFramingV1Row": true,
+          "lastMatchingCommit": "8847feef 2026-09-02",
+          "firstDivergingCommit": "305500dc 2026-09-05",
+          "firstDivergingSubject": "docs: prepare PWB truth policy amendment [syzygy-1z3.24.3]"
+        },
+        {
+          "path": "openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md",
+          "matches": false,
+          "rowDigestCitedBy": [
+            "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md",
+            "PWB-MACHINE-VIEW-AMENDMENT-ACT.md",
+            "PWB-OPENING-BAND-SCENARIO-ACT.md",
+            "PWB-STATE1-AMENDMENT-ACT.md",
+            "PWB-TRUTH-READINESS-AMENDMENT-ACT.md"
+          ],
+          "currentDigestCitedBy": [],
+          "currentEqualsTreeFramingV1Row": true,
+          "lastMatchingCommit": "f31f8315 2026-09-02",
+          "firstDivergingCommit": "92387584 2026-10-02",
+          "firstDivergingSubject": "governance: the missing-currency disclosure scenario is signed off at v1.0 [syzygy-dov.31]"
+        },
+        {
+          "path": "openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md",
+          "matches": false,
+          "rowDigestCitedBy": [
+            "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md",
+            "PWB-MACHINE-VIEW-AMENDMENT-ACT.md",
+            "PWB-OPENING-BAND-SCENARIO-ACT.md",
+            "PWB-STATE1-AMENDMENT-ACT.md",
+            "PWB-TRUTH-READINESS-AMENDMENT-ACT.md"
+          ],
+          "currentDigestCitedBy": [],
+          "currentEqualsTreeFramingV1Row": true,
+          "lastMatchingCommit": "f31f8315 2026-09-02",
+          "firstDivergingCommit": "92387584 2026-10-02",
+          "firstDivergingSubject": "governance: the missing-currency disclosure scenario is signed off at v1.0 [syzygy-dov.31]"
+        },
+        {
+          "path": "openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md",
+          "matches": false,
+          "rowDigestCitedBy": [
+            "PWB-STATE1-AMENDMENT-ACT.md"
+          ],
+          "currentDigestCitedBy": [],
+          "currentEqualsTreeFramingV1Row": true,
+          "lastMatchingCommit": "8847feef 2026-09-02",
+          "firstDivergingCommit": "305500dc 2026-09-05",
+          "firstDivergingSubject": "docs: prepare PWB truth policy amendment [syzygy-1z3.24.3]"
+        },
+        {
+          "path": "openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0001-0003.md",
+          "matches": true,
+          "rowDigestCitedBy": [
+            "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md",
+            "PWB-MACHINE-VIEW-AMENDMENT-ACT.md",
+            "PWB-OPENING-BAND-SCENARIO-ACT.md",
+            "PWB-STATE1-AMENDMENT-ACT.md",
+            "PWB-TRUTH-READINESS-AMENDMENT-ACT.md"
+          ],
+          "currentDigestCitedBy": [
+            "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md",
+            "PWB-MACHINE-VIEW-AMENDMENT-ACT.md",
+            "PWB-OPENING-BAND-SCENARIO-ACT.md",
+            "PWB-STATE1-AMENDMENT-ACT.md",
+            "PWB-TRUTH-READINESS-AMENDMENT-ACT.md"
+          ],
+          "currentEqualsTreeFramingV1Row": true
+        },
+        {
+          "path": "openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md",
+          "matches": true,
+          "rowDigestCitedBy": [
+            "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md",
+            "PWB-MACHINE-VIEW-AMENDMENT-ACT.md",
+            "PWB-OPENING-BAND-SCENARIO-ACT.md",
+            "PWB-STATE1-AMENDMENT-ACT.md",
+            "PWB-TRUTH-READINESS-AMENDMENT-ACT.md"
+          ],
+          "currentDigestCitedBy": [
+            "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md",
+            "PWB-MACHINE-VIEW-AMENDMENT-ACT.md",
+            "PWB-OPENING-BAND-SCENARIO-ACT.md",
+            "PWB-STATE1-AMENDMENT-ACT.md",
+            "PWB-TRUTH-READINESS-AMENDMENT-ACT.md"
+          ],
+          "currentEqualsTreeFramingV1Row": true
+        },
+        {
+          "path": "openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md",
+          "matches": true,
+          "rowDigestCitedBy": [
+            "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md",
+            "PWB-MACHINE-VIEW-AMENDMENT-ACT.md",
+            "PWB-OPENING-BAND-SCENARIO-ACT.md",
+            "PWB-STATE1-AMENDMENT-ACT.md",
+            "PWB-TRUTH-READINESS-AMENDMENT-ACT.md"
+          ],
+          "currentDigestCitedBy": [
+            "PWB-EXACT-SOURCE-RENDER-MODE-AMENDMENT-ACT.md",
+            "PWB-MACHINE-VIEW-AMENDMENT-ACT.md",
+            "PWB-OPENING-BAND-SCENARIO-ACT.md",
+            "PWB-STATE1-AMENDMENT-ACT.md",
+            "PWB-TRUTH-READINESS-AMENDMENT-ACT.md"
+          ],
+          "currentEqualsTreeFramingV1Row": true
+        },
+        {
+          "path": "openspec/changes/polaris-project-wide-butlers-model/design.md",
+          "matches": false,
+          "rowDigestCitedBy": [
+            "PWB-STATE1-AMENDMENT-ACT.md"
+          ],
+          "currentDigestCitedBy": [],
+          "currentEqualsTreeFramingV1Row": true,
+          "lastMatchingCommit": "8847feef 2026-09-02",
+          "firstDivergingCommit": "305500dc 2026-09-05",
+          "firstDivergingSubject": "docs: prepare PWB truth policy amendment [syzygy-1z3.24.3]"
+        },
+        {
+          "path": "openspec/changes/polaris-project-wide-butlers-model/proposal.md",
+          "matches": false,
+          "rowDigestCitedBy": [
+            "PWB-STATE1-AMENDMENT-ACT.md"
+          ],
+          "currentDigestCitedBy": [],
+          "currentEqualsTreeFramingV1Row": true,
+          "lastMatchingCommit": "f31f8315 2026-09-02",
+          "firstDivergingCommit": "305500dc 2026-09-05",
+          "firstDivergingSubject": "docs: prepare PWB truth policy amendment [syzygy-1z3.24.3]"
+        },
+        {
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "matches": false,
+          "rowDigestCitedBy": [
+            "BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md",
+            "PWB-STATE1-AMENDMENT-ACT.md"
+          ],
+          "currentDigestCitedBy": [],
+          "currentEqualsTreeFramingV1Row": true,
+          "lastMatchingCommit": "8847feef 2026-09-02",
+          "firstDivergingCommit": "305500dc 2026-09-05",
+          "firstDivergingSubject": "docs: prepare PWB truth policy amendment [syzygy-1z3.24.3]"
+        }
+      ],
+      "driftingRows": 7,
+      "totalRows": 11
+    }
+  ],
+  "classification": {
+    "scripts/build_pwb_effect_acts_packet.py": "expected after performed acts, not a defect: the manifest is quoted by the packet, report and retained reviews (immutable history); its consent row still equals the consent act's argument; the policy and registry rows were superseded by the 2026-09-05 amendment acts and the current bytes equal the arguments of the 2026-10-02 behaviour-contract re-pin acts",
+    "scripts/build_pwb_state1_amendment_manifest.py": "expected after performed acts, not a defect: the manifest digest is the argument of decisions/PWB-STATE1-AMENDMENT-ACT.md; its subjects were superseded by the 2026-09-05 truth-and-readiness act and later version-tagged sign-offs; every current subject equals its tree-framing v1.0 manifest row"
+  },
+  "remedy": "docstring states the by-design failure precisely (option 2 of the bead); no applied-state recognition, because the bytes in force are verified by the latest act's own checker (tree-framing --check; the two re-pin recorders' --check), and a recogniser here would have to track every successor act. No manifest, packet or act-bound byte edited."
+}
