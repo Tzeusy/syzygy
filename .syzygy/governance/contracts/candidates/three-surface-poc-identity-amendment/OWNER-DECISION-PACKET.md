@@ -27,6 +27,10 @@ ruled. Read `SEMANTIC-DELTA.md` for the full account. In short:
   assign. The signed coverage row that mapped this to POC-REQ-052 stays as it is. Beside
   it, an added row and a disclosure say that the flag is the repair you
   ruled. Closure itself — no outside kind emitted at all — stays Unknown.
+  The role-pair check reads each POC kind through a declared mapping to
+  RFC 0001's classes. Whether that mapping is true is not decided by any
+  check, so it stays Unknown too, as does whether a named relationship
+  honours its row's semantic class and rule.
 - **POC-REQ-060 (amended).** The one-encoding rule now names all three labels,
   Observed, Inferred and Unknown, and one record shape. Inferred is allowed
   only for an agent's assertion and never counts as Observed. Nothing

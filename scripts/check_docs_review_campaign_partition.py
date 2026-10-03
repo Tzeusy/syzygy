@@ -243,6 +243,11 @@ CAMPAIGNS = (
         "PWB tree-framing gate",
         r"R-PWB-TREE-FRAMING-.*\.md",
     ),
+    campaign(
+        "m9-poc-identity-amendment",
+        "M9 POC identity amendment gate",
+        r"R-M9-POC-IDENTITY-AMENDMENT-.*\.md",
+    ),
 )
 
 

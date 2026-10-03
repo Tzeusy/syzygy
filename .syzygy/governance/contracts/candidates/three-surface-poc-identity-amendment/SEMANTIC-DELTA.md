@@ -57,8 +57,9 @@ and in its consequences column:
 > at catalog fan-out without re-measurement. The bound coverage-matrix row is
 > edited on no arm.
 
-[Observed] Lane B's manifest is disposed of. `scripts/check_governance.py`
-line 1780 records: "Lane B was declined 2026-10-02 and never performed". The content list — POC-REQ-054, the
+[Observed] Lane B's manifest is disposed of. The owner direction
+`.syzygy/governance/decisions/POLARIS-LANE-B-DECLINED-AND-TARGET-REVISED-DIRECTION.md`
+line 36 reads "1. **Lane B is declined.**". The content list — POC-REQ-054, the
 POC-REQ-060 amendment, POC-REQ-055 and a ribbon scenario — is the slice-3
 design in `docs/design/POLARIS-M9-ONE-IDENTITY-FUNNEL.md` §"Slice 3 — One
 amendment package", which the ruling adopted.
@@ -186,8 +187,14 @@ reads through a **checked-in declaration** that maps each shared-model
 entity kind to the RFC 0001 class it corresponds to, or to none. A
 relationship whose endpoints map to none cannot carry a closed name, and so
 it carries the flag. That declaration is an implementation artifact of slice
-8, in the same way that POC-REQ-060's token table is an implementation
-artifact. A flag discloses and
+8, and unlike POC-REQ-060's token table it makes a truth claim: that a kind
+corresponds to a class. No stated procedure decides that claim, and the slice
+that emits the relationships also writes the declaration. So the requirement
+decides role pairs only *as read through* the declaration, the RFC1-26
+disclosure row says so, and an Unknown amendment row carries "The declared
+kind-to-class correspondence matches RFC 0001's class definitions". A
+declaration mapping `project` to Capability would let the `contains` edge pass
+unflagged; that is the risk this Unknown row names. A flag discloses and
 never widens; RFC1-26 reads "no drafter, reviewer, adapter, or profile may
 widen the core vocabulary by prose", and this requirement adds no relation to
 the table.
@@ -208,8 +215,12 @@ The RFC1-25 amendment row likewise claims only what the oracle observes:
 closed names are emitted in a role pair the table assigns them, read through
 the declared correspondence, and every other relationship is flagged. The
 decision rule counts each falsifier limb: unflagged outside kinds,
-unflagged unassigned role pairs (reversed roles included), flags on fully
-admitted relationships, and flagged relationships missing their reason. The table assigns several role pairs to some
+unflagged unassigned role pairs (reversed roles included), flags on
+relationships whose kind and mapped role pair the table assigns, and flagged
+relationships missing their reason. RFC1-25's rows also carry a semantic class
+and a rule, and RFC1-26 forbids re-typing; POC-REQ-055 decides neither, so a
+second Unknown amendment row reads "A closed-name relationship honours its
+row's semantic class and rule, and no relation is re-typed". The table assigns several role pairs to some
 relations, such as `contains`/`part_of`, so the requirement checks against
 the set.
 
@@ -296,7 +307,7 @@ checked by `--check`]
 | | Signed | Proposed |
 |---|---:|---:|
 | Part A clauses (= `contracts[]` union) | 74 | 78 |
-| Part A rows: covered / Unknown | 92 / 15 | 102 / 30 |
+| Part A rows: covered / Unknown | 92 / 15 | 102 / 32 |
 | Part B1 clauses (rows) | 27 (28) | 27 (28) |
 | Part B2 clauses | 223 | 219 |
 

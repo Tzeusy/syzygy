@@ -7,8 +7,8 @@
 Ruling P-75 (2026-09-21) directed one CC-REV-2 amendment against the
 three-surface-poc-experience specification alone: POC-REQ-054 (one subject
 identity across the surfaces, with the per-claim three-state scenario),
-POC-REQ-055 (every relation kind is a closed-vocabulary name or flagged
-outside it), and an amendment to POC-REQ-060 (one epistemic record shape and
+POC-REQ-055 (every relationship is a closed-vocabulary name in a role pair
+the table assigns it, or flagged outside it), and an amendment to POC-REQ-060 (one epistemic record shape and
 the Inferred label). The signed bytes are never edited while this package is
 a candidate: proposed bytes live as patches, and the manifest hashes the
 six-artifact subject after those patches. Applying them is a sign-off-time
@@ -25,7 +25,10 @@ operation.
 
 The one signed coverage row the ruling names (P-75 Q3) must survive byte for
 byte; every other signed row may only move from Part B2 to Part A, and every
-added row says it is an amendment row.
+added row says it is an amendment row. Outside the rows, every other signed
+line of the matrix and of the proposal must survive, except the computed
+figures COMPUTED_LINES names, the family table that totals_findings checks and
+the clause rows that coverage_findings checks.
 """
 
 from __future__ import annotations
@@ -396,9 +399,46 @@ def coverage_findings(
     return findings
 
 
-def companion_findings(proposed: dict[pathlib.Path, bytes]) -> list[str]:
+# Signed matrix prose lines that carry a computed figure; totals_findings
+# checks their replacements.
+COMPUTED_LINES = (
+    'table"]`: **107 consequence rows over 74 clauses \u2014 92 covered,',
+    "15 Unknown.**",
+    "Part B2 total `[Observed, computed]`: **223 clauses.**",
+    "  return 324 for RFC1\u20139, and 74 + 27 + 223 = 324.",
+    "  `contracts[]` union (74 identifiers).",
+)
+TABLE_LINE = re.compile(r"^\| (?:RFC\d+[ -]|\*\*Total\*\* )")
+
+
+def _lost_lines(old: str, new: str, skip) -> list[str]:
+    remaining = collections.Counter(new.split("\n"))
+    lost = []
+    for line in old.split("\n"):
+        if skip(line):
+            continue
+        if remaining[line]:
+            remaining[line] -= 1
+        else:
+            lost.append(line)
+    return lost
+
+
+def companion_findings(
+    proposed: dict[pathlib.Path, bytes], current: dict[pathlib.Path, bytes]
+) -> list[str]:
     proposal = proposed[PROPOSAL].decode("utf-8")
     findings = []
+    lost = _lost_lines(current[PROPOSAL].decode("utf-8"), proposal, lambda line: False)
+    if lost:
+        findings.append(f"signed proposal line edited or removed: {lost[0]!r}")
+    lost = _lost_lines(
+        current[COVERAGE].decode("utf-8"),
+        proposed[COVERAGE].decode("utf-8"),
+        lambda line: line in COMPUTED_LINES or bool(TABLE_LINE.match(line)),
+    )
+    if lost:
+        findings.append(f"signed matrix prose edited or removed: {lost[0]!r}")
     if "## Amendment — one identity, one vocabulary, one epistemic shape" not in proposal:
         findings.append("proposal does not carry the amendment section")
     if "- Inferred mappings, edges or missing intent." not in proposal:
@@ -437,7 +477,7 @@ def structure_findings(
         spec_findings(proposed[SPEC], current[SPEC])
         + dependency_findings(proposed)
         + coverage_findings(proposed, current)
-        + companion_findings(proposed)
+        + companion_findings(proposed, current)
     )
 
 
@@ -604,6 +644,16 @@ def selftest() -> int:
             PROPOSAL,
             _replace(proposed[PROPOSAL], "- Inferred mappings, edges or missing intent.\n", ""),
             "proposal's non-goal against inferred mappings, edges or intent changed",
+        ),
+        "matrix banner edited": (
+            COVERAGE,
+            _replace(proposed[COVERAGE], "**No N/A is minted on the author's authority.**", "**N/A may be minted.**"),
+            "signed matrix prose edited or removed",
+        ),
+        "proposal heading renamed": (
+            PROPOSAL,
+            _replace(proposed[PROPOSAL], "## Acceptance inputs", "## Inputs"),
+            "signed proposal line edited or removed",
         ),
     }
     for name, (rel, mutated, expected) in mutants.items():
