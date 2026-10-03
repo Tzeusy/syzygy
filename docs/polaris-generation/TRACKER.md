@@ -158,6 +158,18 @@ Authorized implementation work (generator implementation authorization,
         basis. Every call is permitted per call and leaves a durable receipt;
         a report replays from receipts alone, bound to each call's request
         digest. Wiring to a real model is still G2/G3.
+  - [x] **Discovery on a large-C-server-shaped tree (syzygy-mea.1).** A
+        synthetic 510-file fixture (`redis-shaped-fixture.ts`; built from
+        public layout knowledge, no real repository read) measured heuristic
+        discovery at the default budget: before, a vendored README outranked
+        first-party code and ties fell to path order, deferring the data-type
+        files and `src/server.c`. `heuristicScore` now puts vendored and
+        generated directories in a strict tier below all first-party files
+        (still counted `deferred-by-budget`) and adds a capped size bonus.
+        After: no vendored file selected, all 18 core-mechanism files
+        selected, selected plus deferred equals the candidates. Evidence
+        `docs/evidence/redis-shaped-discovery-2026-10-04.json`;
+        `npm run poc:redis-shaped-discovery`.
   - [x] **Closed exclusion reasons.** `GENERATION_EXCLUSION_REASONS`
         (`generation-source.ts`, a plain literal array) lists every reason an
         excluded source may carry; `validateGenerationSources` refuses any

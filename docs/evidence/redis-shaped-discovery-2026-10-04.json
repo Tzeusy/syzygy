@@ -1,0 +1,168 @@
+{
+  "subject": {
+    "what": "heuristic discoverAndSelect over a SYNTHETIC tree shaped like a large C key-value server (no real repository read, no provider call)",
+    "fixtureSha256": "925a1790bd6ef30380dbadb62da96534191bba3005432158caf346133c93be77",
+    "discoveryTsBefore": "packages/polaris-generation-core/src/discovery.ts at origin/main e7b2c92a",
+    "discoveryTsAfterSha256": "232f35eeecab2cc26c642fdef73d54e649bb9acab8667fac69dae26654693a87",
+    "budget": "DEFAULT_DISCOVERY_BUDGET (maxSelected 200)",
+    "profile": "polaris-dossier-v1 reader questions",
+    "reproduce": "git show origin/main:<file> for the before run; npm run poc:redis-shaped-discovery -- --out <file>"
+  },
+  "fixture": {
+    "files": 510,
+    "oversizeFiles": [
+      "00-RELEASENOTES",
+      "deps/jemalloc/src/jemalloc.c",
+      "src/cluster_legacy.c",
+      "src/redis-cli.c",
+      "src/server.c"
+    ],
+    "sha256": "925a1790bd6ef30380dbadb62da96534191bba3005432158caf346133c93be77"
+  },
+  "corpus": {
+    "sourceRows": 515,
+    "quotableRows": 515,
+    "oversizeFiles": 5,
+    "oversizePieces": {
+      "00-RELEASENOTES": 2,
+      "deps/jemalloc/src/jemalloc.c": 2,
+      "src/cluster_legacy.c": 2,
+      "src/redis-cli.c": 2,
+      "src/server.c": 2
+    }
+  },
+  "before": {
+    "selection": {
+      "selectedBlobs": 199,
+      "selectedSources": 200,
+      "rankingBasis": "heuristic",
+      "byTopDirectory": {
+        "(root)": 5,
+        "deps": 1,
+        "modules": 5,
+        "src": 188
+      },
+      "vendored": 1,
+      "srcFiles": 188
+    },
+    "coreMechanisms": {
+      "eventLoop": {
+        "selected": [
+          "src/ae.c",
+          "src/ae_epoll.c",
+          "src/ae_kqueue.c",
+          "src/networking.c"
+        ],
+        "deferred": [
+          "src/server.c"
+        ]
+      },
+      "persistence": {
+        "selected": [
+          "src/aof.c",
+          "src/rdb.c",
+          "src/rio.c"
+        ],
+        "deferred": []
+      },
+      "replication": {
+        "selected": [
+          "src/replication.c",
+          "src/cluster.c",
+          "src/sentinel.c"
+        ],
+        "deferred": [
+          "src/cluster_legacy.c"
+        ]
+      },
+      "dataTypes": {
+        "selected": [],
+        "deferred": [
+          "src/t_string.c",
+          "src/t_list.c",
+          "src/t_hash.c",
+          "src/t_set.c",
+          "src/t_zset.c",
+          "src/t_stream.c"
+        ]
+      }
+    },
+    "accounting": {
+      "population": 515,
+      "candidateBlobs": 510,
+      "deferredBlobs": 311,
+      "deferredRows": 311,
+      "deferredVendored": 198,
+      "closes": true
+    }
+  },
+  "after": {
+    "selection": {
+      "selectedBlobs": 196,
+      "selectedSources": 200,
+      "rankingBasis": "heuristic",
+      "byTopDirectory": {
+        "(root)": 5,
+        "modules": 4,
+        "src": 187
+      },
+      "vendored": 0,
+      "srcFiles": 187
+    },
+    "coreMechanisms": {
+      "eventLoop": {
+        "selected": [
+          "src/ae.c",
+          "src/ae_epoll.c",
+          "src/ae_kqueue.c",
+          "src/networking.c",
+          "src/server.c"
+        ],
+        "deferred": []
+      },
+      "persistence": {
+        "selected": [
+          "src/aof.c",
+          "src/rdb.c",
+          "src/rio.c"
+        ],
+        "deferred": []
+      },
+      "replication": {
+        "selected": [
+          "src/replication.c",
+          "src/cluster.c",
+          "src/cluster_legacy.c",
+          "src/sentinel.c"
+        ],
+        "deferred": []
+      },
+      "dataTypes": {
+        "selected": [
+          "src/t_string.c",
+          "src/t_list.c",
+          "src/t_hash.c",
+          "src/t_set.c",
+          "src/t_zset.c",
+          "src/t_stream.c"
+        ],
+        "deferred": []
+      }
+    },
+    "accounting": {
+      "population": 515,
+      "candidateBlobs": 510,
+      "deferredBlobs": 314,
+      "deferredRows": 314,
+      "deferredVendored": 199,
+      "closes": true
+    }
+  },
+  "findings": [
+    "[Observed] before: deps/README.md (+60 documentation bonus, -40 vendored penalty) was selected ahead of first-party files.",
+    "[Observed] before: every src .c file scored the same except by piece count, so ties fell to path order; the six t_* data-type files and src/server.c were deferred.",
+    "[Observed] after: no vendored file is selected, all 18 core-mechanism files are selected, the 199 vendored candidates are counted deferred-by-budget; selected plus deferred equals the candidate count.",
+    "[Observed] a 130,000-character file splits into 2 pieces; a deferred oversize file is one excluded row, not one per piece.",
+    "[Inferred] the size bonus is a general substance prior, not tuned to this fixture; real repositories may need a model ranking (map/reduce) for the remaining order."
+  ]
+}
