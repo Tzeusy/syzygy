@@ -259,7 +259,7 @@ Provenance state: \`owner-adopted (bootstrap, uncorrelated)\` — state (1)
     expect(await policyReader(files).read()).toEqual([]);
   });
   it('refuses the recorder\'s file when its act type, identity, title or provenance is not the recorder\'s form', async () => {
-    for (const bad of [policyAct({ type: 'amend-policy' }), policyAct({ identity: 'something-else' }), policyAct().replace('(public-source screening scope)', ''), policyAct().replace('owner-adopted (bootstrap, uncorrelated)', 'owner-adopted'), policyAct({ date: '2026-10-05' }).replace('2026-10-05', '2026-10-04')])
+    for (const bad of [policyAct({ type: 'amend-policy' }), policyAct({ type: 'amend-policy', identity: 'pwb-approve-policy-public-source-scope-signed-2026-10-04' }), policyAct({ identity: 'something-else' }), policyAct().replace('(public-source screening scope)', ''), policyAct().replace('owner-adopted (bootstrap, uncorrelated)', 'owner-adopted'), policyAct({ date: '2026-10-05' }).replace('2026-10-05', '2026-10-04')])
       await expect(policyReader(policyWorld(policyText(), bad)).read(), bad).rejects.toBeInstanceOf(AdmissionRecordError);
   });
   it('refuses a malformed recorded-at line in the policy act', async () => {
