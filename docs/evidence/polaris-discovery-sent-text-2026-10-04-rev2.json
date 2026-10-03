@@ -1,12 +1,9 @@
 {
-  "supersededBy": {
-    "path": "docs/evidence/polaris-discovery-sent-text-2026-10-04-rev2.json",
-    "date": "2026-10-04",
-    "reason": "The discovery prompts changed after the #336 review. Nothing below was edited."
-  },
   "record": "sent-text derivation for the discovery stages and the dossier profile",
   "date": "2026-10-04",
-  "ranAt": "dfb6f8148e92626396412231f4d586f28d71aec6",
+  "ranAt": "de66147b30ffd8965309448bd79388b190c27309",
+  "subjectsUnchangedAt": "71b0ec3a70b19c55f29ab19cfd79c032f2ec17bb",
+  "ranIn": "a clean detached worktree of ranAt after npm ci and tsc -b packages/polaris-generation-core",
   "script": {
     "path": "scripts/derive_generator_sent_text.mjs",
     "sha256": "28db90c9d6832034036c0017b21883df81502deef01b3b0e92c4b1b13f156dec"
@@ -14,7 +11,7 @@
   "subjects": [
     {
       "path": "packages/polaris-generation-core/src/prompts.ts",
-      "sha256": "66a8c575a5b5a0339da1aa493e6f9c39e0544c7c7ec09be75020a896cda7d259"
+      "sha256": "887286615f2fec32145714582a0874bab09a081b1b52055dc070f5b9f498d758"
     },
     {
       "path": "packages/polaris-generation-core/src/provider-draft.ts",
@@ -29,11 +26,12 @@
       "sha256": "9403125dcdb378caa2e0b10a193801577a55a560b24e6beda5105dd51a73035f"
     }
   ],
+  "supersedes": "docs/evidence/polaris-discovery-sent-text-2026-10-04.json",
   "runs": [
     {
       "args": [],
       "exit": 0,
-      "finding": "Equal, as parsed JSON, to the 2026-10-03 record's default output: the manifesto prompts and every schema are unchanged, so the embedded egress table is unchanged.",
+      "finding": "Equal, as parsed JSON, to the predecessor record's default output: the manifesto prompts and every schema are unchanged, so the embedded egress table is unchanged.",
       "output": {
         "generateInputFields": [
           "input",
@@ -352,7 +350,7 @@
         "--discovery"
       ],
       "exit": 0,
-      "finding": "Every discovery envelope field and inputs leaf classified, the classification equal to the 2026-10-03 record's; no new class. Each discovery envelope's system, promptVersion, responseSchema and responseSchemaVersion equal promptForStage/stageSchema output. Only the discovery-map prompt moved (v2); discovery-reduce and both schemas are unchanged.",
+      "finding": "Every discovery envelope field and inputs leaf classified, the classification equal to the predecessor's; no new class. Against the predecessor only the two discovery prompts moved: discovery-map (illustration now a documentation builder; still v2) and discovery-reduce (now v2: it names comparisons). Both schemas are unchanged.",
       "output": {
         "generateInputFields": [
           "input",
@@ -669,17 +667,17 @@
             {
               "stage": "discovery-map",
               "promptVersion": "polaris-discovery-map-v2",
-              "systemBytes": 1856,
-              "systemSha256": "27c19c2a7d5e97d06912f27dde813183619252f217de55e8426730d64f433762",
+              "systemBytes": 1876,
+              "systemSha256": "1485dd779fff5fd45ed34bde2725e17481cae823c9b6366349a3f311a62b59e6",
               "schemaVersion": "polaris-provider-discovery-map-v1",
               "schemaBytes": 459,
               "schemaSha256": "cf4dd39aa3eb3c1bc3805f4de902c8e679cb8956f74d853ee80ab599496ed894"
             },
             {
               "stage": "discovery-reduce",
-              "promptVersion": "polaris-discovery-reduce-v1",
-              "systemBytes": 1247,
-              "systemSha256": "300cf688c755779ab28cdcbaf4a9cd7ed0fba0831483145ce3a54fb9c1169da3",
+              "promptVersion": "polaris-discovery-reduce-v2",
+              "systemBytes": 1256,
+              "systemSha256": "487a8d380c3e023ecda98f15fa99fd4620f0dd95588f8336af2868412b6b5e23",
               "schemaVersion": "polaris-provider-discovery-reduce-v1",
               "schemaBytes": 254,
               "schemaSha256": "fd1deb4230c7892e05a05dfe07f5cc6221f817fe46142541d57f1783c321a14d"
@@ -864,6 +862,7 @@
         "--discovery"
       ],
       "exit": 0,
+      "finding": "Byte-equal to the predecessor's table.",
       "output": "| Where | Field | Stages | Class |\n|---|---|---|---|\n| envelope | `promptVersion` | all | envelope-control |\n| envelope | `responseSchema` | all | instruction-text |\n| envelope | `responseSchemaVersion` | all | envelope-control |\n| envelope | `system` | all | instruction-text |\n| inputs | `sources` | inventory, author, edit, fidelity, repair | target-content |\n| inputs | `sourcePopulation` | inventory | target-metadata |\n| inputs | `readerQuestions` | all | run-profile |\n| inputs | `requestedAssets` | all | run-profile |\n| inputs | `sources` | plan | target-metadata |\n| inputs | `inventory` | plan, author, edit, fidelity, repair | composite |\n| inputs | `plan` | author, edit | composite |\n| inputs | `draft` | edit, fidelity, repair | composite |\n| inputs | `findings` | repair | composite |\n| generate port | `input` | all | the envelope; sent as the user message |\n| generate port | `permit` | all | dispatch permit; never sent |\n| generate port | `responseSchema` | all | instruction-text; a copy of the envelope field; not sent separately |\n| generate port | `signal` | all | abort signal; never sent |\n| generate port | `stage` | all | envelope-control; never sent |\n| generate port | `system` | all | instruction-text; sent as the system prompt |\n| discovery envelope | `promptVersion` | discovery-map | envelope-control |\n| discovery envelope | `system` | discovery-map | instruction-text |\n| discovery envelope | `responseSchemaVersion` | discovery-map | envelope-control |\n| discovery envelope | `responseSchema` | discovery-map | instruction-text |\n| discovery inputs | `items[].blobId` | discovery-map | target-metadata |\n| discovery inputs | `items[].excerpt` | discovery-map | target-content |\n| discovery inputs | `items[].path` | discovery-map | target-metadata |\n| discovery inputs | `readerQuestions[]` | discovery-map | run-profile |\n| discovery inputs | `subsystem` | discovery-map | target-metadata |\n| discovery envelope | `promptVersion` | discovery-reduce | envelope-control |\n| discovery envelope | `system` | discovery-reduce | instruction-text |\n| discovery envelope | `responseSchemaVersion` | discovery-reduce | envelope-control |\n| discovery envelope | `responseSchema` | discovery-reduce | instruction-text |\n| discovery inputs | `maxSelected` | discovery-reduce | envelope-control |\n| discovery inputs | `readerQuestions[]` | discovery-reduce | run-profile |\n| discovery inputs | `subsystems[].blobs` | discovery-reduce | target-metadata |\n| discovery inputs | `subsystems[].claims[].blobId` | discovery-reduce | target-metadata |\n| discovery inputs | `subsystems[].claims[].claim` | discovery-reduce | composite |\n| discovery inputs | `subsystems[].claims[].path` | discovery-reduce | target-metadata |\n| discovery inputs | `subsystems[].claims[].relevance` | discovery-reduce | composite |\n| discovery inputs | `subsystems[].subsystem` | discovery-reduce | target-metadata |\n"
     }
   ],
@@ -900,6 +899,6 @@
       }
     ]
   },
-  "dossierProfile": "The derivation reads the manifesto profile, which is what the pipeline sends today; the dossier profile's six prompts are pinned by dossier-prompts.test.ts (versions polaris-<stage>-dossier-v2).",
-  "admissionBuilder": "python3 scripts/build_public_repo_admission.py --check printed \"public-repo admission instances: current\"; --selftest printed 16 of 16 checks held."
+  "dossierProfile": "The derivation reads the manifesto profile, which is what the pipeline sends today; the dossier profile's six prompts are pinned by dossier-prompts.test.ts (versions polaris-<stage>-dossier-v2) and checked by validateDossierStage when a dossier run wires it.",
+  "egress": "In the same clean worktree: python3 scripts/build_public_egress_v2.py --check printed \"public egress v2: current\" (exit 0); --selftest printed \"selftest: 23 checks held\". python3 scripts/build_public_repo_admission.py --check printed \"public-repo admission instances: current\" (exit 0); --selftest printed 16 of 16 checks held."
 }
