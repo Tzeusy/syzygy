@@ -19,8 +19,9 @@ version-1 scope (package `public-source-screening-scope`). The builder
 when it already is the version-1 bytes, or derives those bytes with the
 version-1 builder when it is not yet signed, and checks them against the
 version-1 manifest row. Both give the same patch and the same manifest row.
-`policyVersion` moves to the next minor, with the label
-`public-source-candidate.1` kept.
+`policyVersion` moves to the next minor with the label
+`public-source-candidate.1` kept and the variant's name appended, so the version
+says which variant is in force.
 
 Inside `publicSourceScope` exactly these things change; the builder fails if
 anything else does:
@@ -37,37 +38,52 @@ anything else does:
 Matching folds the ASCII letters A to Z to a to z in a copy of the path and
 folds, normalizes and decodes nothing else. A path with an empty, "." or ".."
 segment, a backslash, or a leading or trailing slash matches nothing. A path is
-`project-documentation` when it matches one of three path rules; the body is
-admitted as whole-blob spans, no extractor runs.
+`project-documentation` when it matches exactly one of three path rules; the
+body is admitted as whole-blob spans, no extractor runs.
 
 1. **root-document.** One segment (a file at the repository root). Remove an
    optional prefix of exactly two ASCII digits 0-9 and a hyphen (literal code
    points; no Unicode digit counts), then one suffix from "none, .md, .rst,
-   .txt"; the rest must be one of: readme, changelog, changes, release-notes,
-   release_notes, releasenotes, contributing, license, licence, copying, notice,
-   notices, news, history, authors, faq. A top level often carries its stated
-   ideas in files such as 00-RELEASENOTES [Inferred, from general knowledge; no
-   body was read]. architecture and manifesto are added only by the variants
-   named for them (below).
-2. **docs-tree.** Two or more segments, the first being docs or doc, a file
-   name ending in .md, .rst or .txt with a non-empty stem, at any depth, with
-   two exclusions: no directory segment after the first may be adr, adrs,
-   decisions, rfc, rfcs, spec, specs, specification, design, governance, policy,
-   policies or security (exact, case-folded); and a .txt file whose name is
-   cmakelists.txt or robots.txt, or starts with requirements, is a build or
-   tooling file and not mapped.
+   .txt"; the rest must be one of the root names below.
+2. **docs-tree.** Two or more segments, the first being docs or doc, a file name
+   ending in .md, .rst or .txt with a non-empty stem, at any depth, in which no
+   directory name after the first and no file name without its extension has a
+   word of the denylist below, and which is not a build or tooling .txt file.
 3. **licenses-tree.** Exactly two segments, the first being licenses, a file
    name ending in .txt or .md with a non-empty stem.
 
-A TypeScript consumer must compare the listed ASCII digits, not a Unicode-aware
-class, and must fold only A-Z; the builder's reference reader is the oracle and
-its fixtures include a long s, the Kelvin sign and Arabic-Indic digits.
+The lists below are generated from the rule's constants by the package builder,
+and its check fails if they differ from the policy bytes. They are the only
+statement of what is sendable and what is withheld.
+
+<!-- BEGIN GENERATED: lists -->
+**Becomes readable** (and, under a consent that lists the class and a separate egress consent, sendable):
+
+- Root-level files named README, CHANGELOG, CHANGES, RELEASE-NOTES, RELEASE_NOTES, RELEASENOTES, CONTRIBUTING, LICENSE, LICENCE, COPYING, NOTICE, NOTICES, NEWS, HISTORY, AUTHORS, FAQ (any letter case; an optional prefix of two ASCII digits and a hyphen, so 00-RELEASENOTES counts; no extension or one of .md, .rst, .txt).
+- Files ending .md, .rst, .txt under a top-level docs or doc folder, at any depth, unless the path is withheld below.
+- Files ending .md, .txt directly inside a top-level licenses folder.
+- Only in the variant you pick: variant none adds nothing; variant manifesto adds the root name MANIFESTO, and lifts the same word from the docs withholding; variant architecture adds the root name ARCHITECTURE, and lifts the same word from the docs withholding; variant both adds the root names ARCHITECTURE, MANIFESTO, and lifts the same words from the docs withholding.
+
+**Stays withheld** (excluded from reading and from egress, hash-not-body):
+
+- Root files named DESIGN, GOVERNANCE, SECURITY, CODE_OF_CONDUCT, CODE-OF-CONDUCT, and ARCHITECTURE and MANIFESTO unless the variant you pick adds them.
+- Under a docs or doc folder, any path where a directory name (after the first) or the file name (without its extension) contains one of these as a whole word: adr, adrs, decision, decisions, rfc, rfcs, spec, specs, specification, specifications, design, designs, governance, policy, policies, security, conduct; and, unless the variant adds them, architecture, manifesto. Names are split into words at each of '-' '_' '.' ' ' and compared after folding A-Z to a-z; so a policy-shaped document is withheld by name, and a governance document whose path carries none of these words is NOT withheld (the rule decides by name alone).
+- Under a docs or doc folder, .txt files named cmakelists.txt, robots.txt or starting requirements.
+- READMEs and the other root names when they sit below the root outside docs or doc (vendored libraries carry their own).
+- Any other path: it is not named by the rule, so it is indeterminate and withheld.
+- Any file that fails a secret detector or the active-content rule: those screens are unchanged and apply to this prose in full.
+- Everything, while the RFC-0005 amendment of PR #257 is not in force.
+<!-- END GENERATED: lists -->
+
+A TypeScript consumer must reproduce the rule literally: compare the listed
+ASCII digits, not a Unicode-aware class; fold only A-Z, so a long s or the Kelvin
+sign is not folded (a file whose name uses the Kelvin sign for k is therefore
+not recognised as a build file, and is mapped; this is by design, the detectors
+and the active-content screen still apply); and split names at the listed
+separators into whole words.
 
 None of these extensions is in the `code-content` list, so no blob has two
-classes. Everything else stays indeterminate: a README below the root outside
-docs or doc (vendored libraries carry their own), security and conduct
-policies below the root, specification, design, decision and policy documents,
-and reports, and prose in any other directory.
+classes.
 
 ## Why these paths [Inferred]
 
@@ -80,18 +96,20 @@ file the policy cannot place in exactly one class fails closed. The three rules
 are the owner-reviewable proposal of that decision; the amendment does not list
 them.
 
-**Policy and governance text is deliberately not mapped.** RFC5-14 places
+**Policy and governance text is withheld by name, not by content.** RFC5-14 places
 doctrine, spec, decision and policy text in `governance-text`, and
 `governanceTextPaths` stays empty here. Root files named design, governance,
-security and code of conduct, and docs paths under the directories listed in
-rule 2, are withheld. Withholding design is this policy's choice: the amendment
-does not name design. See packet Q4.
+security and code of conduct, and docs paths whose names carry a word of the
+denylist, are withheld. A governance document under docs whose path carries none of those
+words is mapped: the rule cannot read content. Withholding design is this policy's choice: the amendment
+does not name design. See packet Q3.
 
 ## Variants
 
 The manifest carries four rows and the package four patches, one per variant:
 none (the default), manifesto, architecture, both. They differ only in
-`rootStems`; the owner picks exactly one row at the sitting (packet Q1) and
+`rootStems`, the docs denylist (the opt-in words are denied in the variants that do
+not add them) and the `policyVersion` suffix, which names the variant; the owner picks exactly one row at the sitting (packet Q1) and
 `--check` verifies all four, including that no two produce the same bytes.
 
 ## Prerequisite
@@ -121,3 +139,11 @@ act: the v2 recorder writes a new dedicated record and the version-1 record and
 recorder stay unedited, and the version-1 recorder's `--check` fails by design
 [Inferred from the earlier supersession; the recorder is written after the
 review].
+
+## One variant act only
+
+Nothing in the bytes stops a second `approve-policy` act over another row of the
+manifest. The recorder (written after the review) must refuse a second variant
+act over this manifest unless it is a declared superseding version; the
+`policyVersion` suffix (the variant's name) tells which variant is in force, and
+the digest decides.
