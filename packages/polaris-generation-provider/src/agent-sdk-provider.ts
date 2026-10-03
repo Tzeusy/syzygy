@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 import { dirname, isAbsolute, join } from 'node:path';
 import { query as sdkQuery, type Options } from '@anthropic-ai/claude-agent-sdk';
 import type { DispatchPermit, PipelinePorts, ProviderReply } from '@syzygy/polaris-generation-core';
-import { startEgressGate, type EgressGate } from './egress-gate.js';
+import { startEgressGate, type EgressGate, type EgressGateOptions } from './egress-gate.js';
 import { PINNED_AGENT_SDK_VERSION, PINNED_CLAUDE_CODE_VERSION, acceptCapturedRequest, type ExpectedRequest } from './request-acceptance.js';
 
 export { PINNED_AGENT_SDK_VERSION, PINNED_CLAUDE_CODE_VERSION };
@@ -56,7 +56,7 @@ export interface AgentSdkProviderConfig {
   /** The only credential admitted; no subscription login or inherited environment. */
   readonly auth: { readonly apiKey: string };
   /** The egress gate forwards here and nowhere else. Absent: every request is refused (tests that only probe the gate). */
-  readonly upstream?: { readonly url: string };
+  readonly upstream?: EgressGateOptions['upstream'];
   /** Consent switch, asked by the gate for every request. Only `true` permits. */
   readonly permitted: (permit: DispatchPermit, stage: GenerateInput['stage']) => Promise<boolean>;
   /** Gate option: drop the OS, architecture and runtime-version headers before forwarding (default false). */

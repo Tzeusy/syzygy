@@ -125,7 +125,7 @@ zero usage is not evidence. Without that evidence the try's usage is unknown
 ## Gate rules added after re-review of the first gate
 
 - One forward per armed try: the try is claimed before consent is awaited, so a second request in the same try, sequential or simultaneous, is refused with `try already forwarded one request`. The connectivity probe does not spend the try.
-- The upstream is pinned in code: exactly `https://api.anthropic.com` (no credentials, no port, no path override of the origin), or a loopback address for a local capture endpoint. Anything else makes `startEgressGate` throw. Plain http to a remote host is refused.
+- The upstream is pinned in code: exactly `https://api.anthropic.com` (no credentials, no port). Anything else makes `startEgressGate` throw, plain http to a remote host included. A loopback address (a local capture endpoint) is accepted only with the `LOOPBACK_FOR_TESTS` token, which is not exported from the package index, so production wiring cannot reach it: a local listener could otherwise forward anywhere.
 - Any 3xx from the upstream is answered 502 and never followed; `Location` is not passed on.
 - The gate's own `Host` header is not forwarded. The listener binds 127.0.0.1.
 - `x-stainless-timeout` must equal `600` and `connection` must equal `keep-alive` (values, not just names).

@@ -1,6 +1,6 @@
 import http from 'node:http';
 import { afterEach, describe, expect, it } from 'vitest';
-import { assertAllowedUpstream, parseRetryAfterMs, startEgressGate, type EgressGate } from './egress-gate.js';
+import { LOOPBACK_FOR_TESTS, assertAllowedUpstream, parseRetryAfterMs, startEgressGate, type EgressGate } from './egress-gate.js';
 import { startCaptureEndpoint, type CaptureEndpoint } from './capture-endpoint.testkit.js';
 
 let upstream: CaptureEndpoint | undefined;
@@ -22,7 +22,7 @@ const accepting = () => ({ accepted: true, violations: [] as string[] });
 describe('egress gate', () => {
   it('forwards only an armed, accepted, permitted request to the configured upstream', async () => {
     upstream = await startCaptureEndpoint();
-    gate = await startEgressGate({ upstream: { url: upstream.url }, permitted: async () => true });
+    gate = await startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true });
     // unarmed
     expect((await send(gate.url, 'POST', '/v1/messages', '{}')).status).toBe(403);
     expect(upstream.requests).toEqual([]);
@@ -49,7 +49,7 @@ describe('egress gate', () => {
       req.on('error', reject); req.end('{}');
     });
     for (const strip of [false, true]) {
-      gate = await startEgressGate({ upstream: { url: upstream.url }, permitted: async () => true, stripFingerprint: strip });
+      gate = await startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true, stripFingerprint: strip });
       gate.arm(accepting);
       expect(await post(gate.url)).toBe(200);
       await gate.close(); gate = undefined;
@@ -64,7 +64,7 @@ describe('egress gate', () => {
   it('refuses when consent is anything but true, throws, or no upstream is configured', async () => {
     upstream = await startCaptureEndpoint();
     for (const permitted of [async () => false, async () => 1 as unknown as boolean, async () => { throw new Error('x'); }]) {
-      gate = await startEgressGate({ upstream: { url: upstream.url }, permitted });
+      gate = await startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted });
       gate.arm(accepting);
       expect((await send(gate.url, 'POST', '/v1/messages', '{}')).status).toBe(403);
       await gate.close();
@@ -76,7 +76,7 @@ describe('egress gate', () => {
   });
   it('answers HEAD /api/hello itself, only while armed, and only with the probe shape', async () => {
     upstream = await startCaptureEndpoint();
-    gate = await startEgressGate({ upstream: { url: upstream.url }, permitted: async () => true });
+    gate = await startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true });
     expect((await send(gate.url, 'HEAD', '/api/hello')).status).toBe(403);
     gate.arm(c => ({ accepted: c.method === 'POST', violations: ['not a message request'] }));
     expect((await send(gate.url, 'HEAD', '/other')).status).toBe(403);
@@ -89,7 +89,7 @@ describe('egress gate', () => {
   });
   it('forwards exactly one request per armed try, and a later try forwards again', async () => {
     upstream = await startCaptureEndpoint();
-    gate = await startEgressGate({ upstream: { url: upstream.url }, permitted: async () => true });
+    gate = await startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true });
     gate.arm(accepting);
     expect((await send(gate.url, 'POST', '/v1/messages', '{}')).status).toBe(200);
     expect((await send(gate.url, 'POST', '/v1/messages', '{}')).status).toBe(403);
@@ -101,7 +101,7 @@ describe('egress gate', () => {
   });
   it('two simultaneous requests in one try forward at most one', async () => {
     upstream = await startCaptureEndpoint();
-    gate = await startEgressGate({ upstream: { url: upstream.url }, permitted: async () => true });
+    gate = await startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true });
     gate.arm(accepting);
     const results = await Promise.all([send(gate.url, 'POST', '/v1/messages', '{}'), send(gate.url, 'POST', '/v1/messages', '{}')]);
     expect(results.map(r => r.status).sort()).toEqual([200, 403]);
@@ -109,7 +109,7 @@ describe('egress gate', () => {
   });
   it('does not forward the gate\'s own Host header', async () => {
     upstream = await startCaptureEndpoint();
-    gate = await startEgressGate({ upstream: { url: upstream.url }, permitted: async () => true });
+    gate = await startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true });
     gate.arm(accepting);
     await send(gate.url, 'POST', '/v1/messages', '{}');
     expect(upstream.requests[0]!.headers.host).toBe(new URL(upstream.url).host);
@@ -117,7 +117,7 @@ describe('egress gate', () => {
   });
   it('answers an armed, accepted HEAD /api/hello locally with no upstream hit and does not spend the try', async () => {
     upstream = await startCaptureEndpoint();
-    gate = await startEgressGate({ upstream: { url: upstream.url }, permitted: async () => true });
+    gate = await startEgressGate({ upstream: { url: upstream.url, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true });
     gate.arm(accepting);
     expect((await send(gate.url, 'HEAD', '/api/hello', '', { 'user-agent': 'Bun/1.4.3', accept: '*/*' })).status).toBe(200);
     expect(upstream.requests).toEqual([]);
@@ -133,7 +133,7 @@ describe('egress gate', () => {
     const redirector = http.createServer((_req, res) => { res.writeHead(307, { location: `${targetUrl}/elsewhere` }); res.end(); });
     await new Promise<void>(r => redirector.listen(0, '127.0.0.1', r));
     try {
-      gate = await startEgressGate({ upstream: { url: `http://127.0.0.1:${(redirector.address() as { port: number }).port}` }, permitted: async () => true });
+      gate = await startEgressGate({ upstream: { url: `http://127.0.0.1:${(redirector.address() as { port: number }).port}`, loopbackForTests: LOOPBACK_FOR_TESTS }, permitted: async () => true });
       gate.arm(accepting);
       const answer = await send(gate.url, 'POST', '/v1/messages', '{}');
       expect(answer.status).toBe(502);
@@ -141,11 +141,22 @@ describe('egress gate', () => {
       expect(hits).toEqual([]);
     } finally { redirector.close(); target.close(); }
   });
-  it('accepts only the provider origin or a loopback address as upstream', async () => {
-    for (const ok of ['https://api.anthropic.com', 'https://api.anthropic.com/', 'http://127.0.0.1:9', 'http://localhost:9']) expect(() => assertAllowedUpstream(ok), ok).not.toThrow();
-    for (const bad of ['http://api.anthropic.com', 'https://api.anthropic.com.evil.test', 'https://evil.test', 'https://user:pw@api.anthropic.com', 'https://api.anthropic.com:8443', 'http://10.0.0.5:80', 'not a url', 'file:///etc/passwd'])
+  it('accepts only the provider origin as upstream; loopback only with the test-only token', async () => {
+    for (const ok of ['https://api.anthropic.com', 'https://api.anthropic.com/']) expect(() => assertAllowedUpstream(ok), ok).not.toThrow();
+    for (const local of ['http://127.0.0.1:9', 'http://localhost:9']) {
+      expect(() => assertAllowedUpstream(local), local).toThrow();
+      expect(() => assertAllowedUpstream(local, LOOPBACK_FOR_TESTS), local).not.toThrow();
+    }
+    for (const bad of ['http://api.anthropic.com', 'https://api.anthropic.com.evil.test', 'https://evil.test', 'https://user:pw@api.anthropic.com', 'https://api.anthropic.com:8443', 'http://10.0.0.5:80', 'not a url', 'file:///etc/passwd']) {
       expect(() => assertAllowedUpstream(bad), bad).toThrow();
+      expect(() => assertAllowedUpstream(bad, LOOPBACK_FOR_TESTS), bad).toThrow();   // the token never widens beyond loopback
+    }
     await expect(startEgressGate({ upstream: { url: 'https://evil.test' }, permitted: async () => true })).rejects.toThrow('upstream must be');
+    await expect(startEgressGate({ upstream: { url: 'http://127.0.0.1:9' }, permitted: async () => true })).rejects.toThrow('upstream must be');   // production wiring
+  });
+  it('does not export the loopback token from the package index', async () => {
+    const index = await import('./index.js');
+    expect(Object.keys(index)).not.toContain('LOOPBACK_FOR_TESTS');
   });
   it('parses retry-after seconds and dates, and nothing else', () => {
     expect(parseRetryAfterMs('3', 0)).toBe(3000);
