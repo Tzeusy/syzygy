@@ -4,7 +4,7 @@ import { parseBoundedJson } from './parse-json.js';
 import { promptForStage, type GenerationStage } from './prompts.js';
 import { validateRequestedAssets, type RequestedAsset } from './provider-draft.js';
 import { validateReaderQuestions } from './reader-questions.js';
-import { checkDraftQuotes, quoteFindingAsReviewFinding } from './quote-fidelity.js';
+import { checkDraftQuotes, quoteFindingAsReviewFinding, sourceTextById, type QuoteFinding } from './quote-fidelity.js';
 
 export interface GenerationBudget {
   readonly maxCalls: number;
@@ -154,6 +154,8 @@ export type PipelineResult = {
   readonly draft: unknown;
   readonly inventory: unknown;
   readonly review: unknown;
+  /** Quotations still not found in a cited source after the last repair; each block named here is Unknown, whatever the reviewer said. */
+  readonly quoteFindings: readonly QuoteFinding[];
   readonly receipts: readonly StageReceipt[];
   readonly artifacts: readonly ValidatedStageOutput[];
 } | {
@@ -398,23 +400,27 @@ export async function runGenerationPipeline(request: PipelineRequest, ports: Pip
     context.draft = await stage('author', { sources: citedSpans(context.plan), readerQuestions: context.readerQuestions, inventory: context.inventory, plan: context.plan, requestedAssets: context.requestedAssets });
     context.draft = await stage('edit', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, plan: context.plan, draft: context.draft, requestedAssets: context.requestedAssets });
     let review = await stage('fidelity', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, draft: context.draft, requestedAssets: context.requestedAssets });
-    // The reviewer's verdict is joined with a deterministic quote check the model cannot waive: a quotation that is not in a cited source blocks the draft.
-    const judge = (reviewed: unknown): { readonly blocking: boolean; readonly findings: unknown } => {
+    // A deterministic quote check the model cannot waive runs beside the reviewer. It earns the draft a repair, but only the reviewer's own blocking verdict ends the run: quote findings that survive the last repair are returned per block, and the renderer shows those blocks as Unknown.
+    const quoteTexts = sourceTextById(frozen.sources);
+    const judge = (reviewed: unknown): { readonly blocking: boolean; readonly findings: unknown; readonly reviewerBlocking: boolean; readonly quoteFindings: readonly QuoteFinding[] } => {
       const verdict = ports.fidelity(reviewed);
-      const quoteFindings = checkDraftQuotes(context.draft, admitted);
-      if (quoteFindings.length === 0) return verdict;
+      const quoteFindings = checkDraftQuotes(context.draft, quoteTexts);
+      if (quoteFindings.length === 0) return { ...verdict, reviewerBlocking: verdict.blocking, quoteFindings };
       const prior = verdict.findings === undefined ? [] : Array.isArray(verdict.findings) ? verdict.findings : [verdict.findings];
-      return { blocking: true, findings: [...prior, ...quoteFindings.map(quoteFindingAsReviewFinding)] };
+      return { blocking: true, findings: [...prior, ...quoteFindings.map(quoteFindingAsReviewFinding)], reviewerBlocking: verdict.blocking, quoteFindings };
     };
     let verdict = judge(review);
     for (let repairs = 0; verdict.blocking; repairs++) {
-      if (repairs >= budget.maxRepairCycles) stop('repair-exhausted');
+      if (repairs >= budget.maxRepairCycles) {
+        if (verdict.reviewerBlocking) stop('repair-exhausted');
+        break;
+      }
       context.draft = await stage('repair', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, draft: context.draft, findings: verdict.findings, requestedAssets: context.requestedAssets });
       review = await stage('fidelity', { sources: citedSpans(context.draft), readerQuestions: context.readerQuestions, inventory: context.inventory, draft: context.draft, requestedAssets: context.requestedAssets });
       verdict = judge(review);
     }
     check();
-    return { status: 'awaiting-rendered-review', draft: context.draft, inventory: context.inventory, review, receipts, artifacts };
+    return { status: 'awaiting-rendered-review', draft: context.draft, inventory: context.inventory, review, quoteFindings: verdict.quoteFindings, receipts, artifacts };
   } catch (error) {
     return { status: 'stopped', reason: error instanceof PipelineStop ? error.reason : 'adapter-failure', receipts, artifacts };
   }

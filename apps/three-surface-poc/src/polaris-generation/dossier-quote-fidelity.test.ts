@@ -28,10 +28,10 @@ const evaluateWithIntro = async (text: (cited: string) => string) => {
 describe('quotation marks inside a cited block (deterministic fidelity)', () => {
   it('reports every cited block as verbatim when the page quotes nothing, and when it quotes its source', async () => {
     const plain = await evaluateWithIntro(() => 'A plain sentence with no quotation marks.');
-    expect(plain.fidelity.inBlockQuotes).toMatchObject({ failures: [], outcome: 'all-verbatim' });
+    expect(plain.fidelity.inBlockQuotes).toMatchObject({ failures: [], quotesChecked: 0, outcome: 'no-quotes' });
     expect(plain.fidelity.inBlockQuotes.denominator).toBeGreaterThan(3);
     const quoted = await evaluateWithIntro(cited => `The project's sources state: "${cited.slice(0, 30).replace(/"/gu, '')}"`);
-    expect(quoted.fidelity.inBlockQuotes).toMatchObject({ failures: [], outcome: 'all-verbatim' });
+    expect(quoted.fidelity.inBlockQuotes).toMatchObject({ failures: [], quotesChecked: 1, outcome: 'all-verbatim' });
   });
 
   it('reports a quotation absent from the cited source as a failure on that claim, never silently', async () => {
@@ -57,8 +57,34 @@ describe('quotation marks inside a cited block (deterministic fidelity)', () => 
     const manifest = parseDossierManifest(files.get('dossier.json')!);
     const evaluate = (transform: (html: string) => string) => evaluateDossier({ manifestText: files.get('dossier.json')!,
       pages: new Map(manifest.pages.map(page => [page.path, new TextEncoder().encode(transform(files.get(page.path)!))])), sources: run.sources, questionsText: QUESTIONS }, signal);
-    expect((await evaluate(html => html)).fidelity.inBlockQuotes).toMatchObject({ failures: [], outcome: 'all-verbatim' });
+    expect((await evaluate(html => html)).fidelity.inBlockQuotes).toMatchObject({ failures: [], quotesChecked: 0, outcome: 'no-quotes' });
     const uncited = await evaluate(html => html.replaceAll('aria-label="Read source', 'aria-label="Source'));
-    expect(uncited.fidelity.inBlockQuotes).toEqual({ denominator: 0, failures: [], outcome: 'unknown' });
+    expect(uncited.fidelity.inBlockQuotes).toEqual({ denominator: 0, quotesChecked: 0, failures: [], outcome: 'unknown' });
+  });
+
+  it('renders a misquoting block as Unknown with the reason even though the reviewer called it supported', () => {
+    const draft = structuredClone(run.result.draft) as { introduction: Intro };
+    draft.introduction.text = 'The project\'s sources state: "words no source contains anywhere"';
+    const supported = (run.result.review as { blockSupport: { blockId: string; verdict: string }[] }).blockSupport.find(row => row.blockId === 'opening');
+    expect(supported?.verdict).toBe('supported');
+    const html = renderDossier({ sources: run.sources, result: { ...run.result, draft, quoteFindings: [{ blockId: 'opening', kind: 'quote-not-in-cited-sources', quote: 'words no source contains anywhere' }] } }).files.get('index.html')!;
+    const opening = html.match(/<p data-claim-id="opening"[^>]*>/u)![0];
+    expect(opening).toContain('data-epistemic="unknown"');
+    expect(html).toContain('Quotation not verified against the cited sources (quote-not-in-cited-sources).');
+    const untouched = html.match(/data-claim-id="(?!opening")[^"]*" data-epistemic="inferred"/u);
+    expect(untouched).not.toBeNull();
+  });
+
+  it('flags the same block when the result carries no record of the finding, by checking the draft itself', () => {
+    const draft = structuredClone(run.result.draft) as { introduction: Intro };
+    draft.introduction.text = 'The project\'s sources state: "words no source contains anywhere"';
+    const html = renderDossier({ sources: run.sources, result: { ...run.result, draft, quoteFindings: [] } }).files.get('index.html')!;
+    expect(html.match(/<p data-claim-id="opening"[^>]*>/u)![0]).toContain('data-epistemic="unknown"');
+  });
+
+  it('leaves a verbatim block as the reviewer judged it', () => {
+    const html = renderDossier({ sources: run.sources, result: run.result }).files.get('index.html')!;
+    expect(html.match(/<p data-claim-id="opening"[^>]*>/u)![0]).toContain('data-epistemic="inferred"');
+    expect(html).not.toContain('Quotation not verified');
   });
 });

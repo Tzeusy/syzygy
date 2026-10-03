@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { digestCanonicalJson } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
 import { validateGenerationSources, type GenerationSource } from './generation-source.js';
-import { checkBlockQuotes, sourceTextById } from './quote-fidelity.js';
+import { inspectBlockQuotes, sourceTextById } from './quote-fidelity.js';
 
 /**
  * Evaluation harness for a generated static Polaris dossier (TRACKER G5,
@@ -366,10 +366,11 @@ export function fidelity(manifest: DossierManifest, scanned: ReadonlyMap<string,
     return { page: page.path, claimId: claim.id, label, hasQuote: claim.hasQuote };
   }));
   // Quotation marks inside a cited block: every quoted span must occur, normalised, in a source that block cites. A claim naming no source is not a block.
-  const sourceText = sourceTextById(sources.filter(source => !source.exclusion.excluded && source.spans.length === 1).map(source => ({ sourceId: source.sourceId, text: source.spans[0]!.text })));
+  const sourceText = sourceTextById(sources);
   const checkedBlocks = manifest.pages.flatMap(page => scanned.get(page.path)!.claims.filter(claim => claim.citedSourceIds.length > 0).map(claim => ({ page: page.path, claim })));
-  const quoteFailures = checkedBlocks.flatMap(({ page, claim }) => checkBlockQuotes({ id: claim.id, text: claim.text, sourceIds: claim.citedSourceIds }, sourceText)
-    .map(finding => ({ page, claimId: finding.blockId, kind: finding.kind, quote: finding.quote })));
+  const inspected = checkedBlocks.map(({ page, claim }) => ({ page, ...inspectBlockQuotes({ id: claim.id, text: claim.text, sourceIds: claim.citedSourceIds }, sourceText) }));
+  const quotesChecked = inspected.reduce((total, row) => total + row.quotes, 0);
+  const quoteFailures = inspected.flatMap(row => row.findings.map(finding => ({ page: row.page, claimId: finding.blockId, kind: finding.kind, quote: finding.quote })));
   const failedQuotes = quotes.filter(quote => quote.outcome !== 'exact');
   const unlabelled = claims.filter(claim => claim.label === 'missing-label' || claim.label === 'invalid-label');
   const duplicateClaimIds = [...claimIds].filter(([, count]) => count > 1).map(([id]) => id).sort();
@@ -377,8 +378,8 @@ export function fidelity(manifest: DossierManifest, scanned: ReadonlyMap<string,
     failures > 0 ? 'failures' : population === 0 ? 'unknown' : pass;
   return {
     quotes: { denominator: quotes.length, exact: quotes.length - failedQuotes.length, failures: failedQuotes.map(({ page, sourceId, start, end, outcome: result }) => ({ page, sourceId, start, end, outcome: result })), outcome: outcome(quotes.length, failedQuotes.length, 'all-resolved') },
-    inBlockQuotes: { denominator: checkedBlocks.length, failures: quoteFailures,
-      outcome: quoteFailures.length > 0 ? 'failures' as const : checkedBlocks.length === 0 ? 'unknown' as const : 'all-verbatim' as const },
+    inBlockQuotes: { denominator: checkedBlocks.length, quotesChecked, failures: quoteFailures,
+      outcome: quoteFailures.length > 0 ? 'failures' as const : checkedBlocks.length === 0 ? 'unknown' as const : quotesChecked === 0 ? 'no-quotes' as const : 'all-verbatim' as const },
     claims: {
       denominator: claims.length,
       labelled: claims.length - unlabelled.length,

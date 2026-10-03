@@ -102,7 +102,7 @@ describe('with every record satisfied', () => {
     return { title: 'Fixture dossier', introduction: p('intro', [a]), sections: [{ id: 'core-ideas', title: 'Core ideas', paragraphs: [p('ci', [b])], disposition: { kind: 'produced', assetIds: ['core-ideas'] } }],
       diagrams: [], deepDives: [], unresolved: [] };
   };
-  const finished = (request: PipelineRequest): PipelineResult => ({ status: 'awaiting-rendered-review', draft: draftFor(request), inventory: null, review: null, receipts: [], artifacts: [] });
+  const finished = (request: PipelineRequest): PipelineResult => ({ status: 'awaiting-rendered-review', draft: draftFor(request), inventory: null, review: null, quoteFindings: [], receipts: [], artifacts: [] });
   const stoppedResult: PipelineResult = { status: 'stopped', reason: 'budget-exhausted', receipts: [], artifacts: [] };
   const render: NonNullable<TriggerPorts['render']> = ({ result, sources }) => ({ files: new Map([['index.html', `<p>${result.status} ${sources.length}</p>`], ['pages/core.html', '<p>core</p>']]) });
   const base = (extra: TriggerPorts = {}): TriggerPorts => ({ lsRemote: ls, records: all, materialize: async () => repo, ...extra });
@@ -361,7 +361,7 @@ describe('command', () => {
   const finishedFor = (request: PipelineRequest): PipelineResult => {
     const [first] = quotableGenerationSources(request.sources);
     const p = { id: 'intro', text: 'Claim.', sourceIds: [first!.sourceId], children: [] };
-    return { status: 'awaiting-rendered-review', draft: { title: 't', introduction: p, sections: [], diagrams: [], deepDives: [], unresolved: [] }, inventory: null, review: null, receipts: [], artifacts: [] };
+    return { status: 'awaiting-rendered-review', draft: { title: 't', introduction: p, sections: [], diagrams: [], deepDives: [], unresolved: [] }, inventory: null, review: null, quoteFindings: [], receipts: [], artifacts: [] };
   };
   const wired = (extra: TriggerPorts = {}): TriggerPorts => ({ lsRemote: () => `${commit}\tHEAD\n`, records: all, materialize: async () => repo, ...extra });
 
@@ -392,7 +392,7 @@ describe('command', () => {
     const out = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
     try {
       const dest = join(scratch(), 'site');
-      await expect(main(['https://github.com/a/b', '--out', dest], wired({ runPipeline: async () => ({ status: 'awaiting-rendered-review', draft: {}, inventory: null, review: null, receipts: [], artifacts: [] }) }))).rejects.toThrow();
+      await expect(main(['https://github.com/a/b', '--out', dest], wired({ runPipeline: async () => ({ status: 'awaiting-rendered-review', draft: {}, inventory: null, review: null, quoteFindings: [], receipts: [], artifacts: [] }) }))).rejects.toThrow();
       expect(existsSync(dest)).toBe(false);
     } finally { out.mockRestore(); }
   });

@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import { QUOTE_LEAD_IN, checkBlockQuotes, normaliseForQuote, sourceTextById } from './quote-fidelity.js';
+import { generationSourcesForBody, gitBlobObjectId } from './generation-source.js';
+import { QUOTE_LEAD_IN, checkBlockQuotes, inspectBlockQuotes, normaliseForQuote, quoteFindingAsReviewFinding, sourceTextById } from './quote-fidelity.js';
 
-const SOURCES = sourceTextById([
-  { sourceId: 'src-readme', text: 'Tidemark is an in-memory cache.\nWe chose a **single-threaded** event loop because it avoids\n  lock   contention. See [the design notes](docs/design.md) for _why_.\n' },
-  { sourceId: 'src-code', text: '/**\n * maybeEvict samples 5 keys\n * and evicts the least recently used key.\n */\n// Never block the loop.\n# Setting: maxmemory\nint x = 1;\n' },
-  { sourceId: 'src-nested', text: 'The docs say "never block" and then "stop" loudly; he said “quiet “inner” words” too.' },
-]);
+const files = (rows: readonly (readonly [string, string])[]) => rows.flatMap(([sourceId, body]) => generationSourcesForBody({ sourceId, repositoryId: 'repository:fixture', revision: 'a'.repeat(40), path: `${sourceId}.txt`, objectId: gitBlobObjectId(body), evaluationId: 'evaluation:fixture', body }));
+
+const SOURCES = sourceTextById(files([
+  ['src-readme', 'Tidemark is an in-memory cache.\nWe chose a **single-threaded** event loop because it avoids\n  lock   contention. See [the design notes](docs/design.md) for _why_.\n'],
+  ['src-code', '/**\n * maybeEvict samples 5 keys\n * and evicts the least recently used key.\n */\n// Never block the loop.\n# Setting: maxmemory\nint x = 1;\n'],
+  ['src-nested', 'The docs say "never block" and then "stop" loudly; he said “quiet “inner” words” too.'],
+]));
 const block = (text: string, ...sourceIds: string[]) => ({ id: 'b1', text, sourceIds });
 const kinds = (text: string, ...sourceIds: string[]): string[] => checkBlockQuotes(block(text, ...sourceIds), SOURCES).map(f => f.kind);
 
@@ -77,5 +80,70 @@ describe('checkBlockQuotes', () => {
     const [finding] = checkBlockQuotes({ id: 'long-block', text: `"${'x'.repeat(500)}"`, sourceIds: ['src-readme'] }, SOURCES);
     expect(finding).toMatchObject({ blockId: 'long-block', kind: 'quote-not-in-cited-sources' });
     expect(finding!.quote).toHaveLength(200);
+  });
+});
+
+describe('folding forms of a true quotation', () => {
+  const FOLD = sourceTextById(files([
+    ['src-fold', 'Use `maxmemory` to bound it; it’s “every key” &amp; more. The &lt;b&gt; tag, &#65; and &#x42; and\\_snake\\_case\\*.\n/* one-line comment */\nint SET = 1; // the SET command\n'],
+    ['src-ellipsis', 'Redis evicts keys when memory is full, using an approximate LRU that samples a few keys, and then removes the best candidate.'],
+  ]));
+  const run = (text: string, ...ids: string[]) => checkBlockQuotes(block(text, ...ids), FOLD).map(f => f.kind);
+  it('ignores backticks, curly apostrophes, entities and backslash escapes on both sides', () => {
+    expect(run('Use "maxmemory" to bound it', 'src-fold')).toEqual([]);
+    expect(run('Use "`maxmemory`" to bound it', 'src-fold')).toEqual([]);
+    expect(run('It says "it\'s “every key”" here', 'src-fold')).toEqual([]);
+    expect(run('It says "& more. The <b> tag"', 'src-fold')).toEqual([]);
+    expect(run('It says "The <b> tag, A and B"', 'src-fold')).toEqual([]);
+    expect(run('It says "and_snake_case*"', 'src-fold')).toEqual([]);
+  });
+  it('leaves no stray slash from a same-line block-comment close', () => {
+    expect(normaliseForQuote('/* one-line comment */')).toBe('one-line comment');
+    expect(run('It says "one-line comment"', 'src-fold')).toEqual([]);
+    expect(run('It says "the SET command"', 'src-fold')).toEqual([]);
+  });
+  it('matches an elided quote only when its pieces occur in order in one source', () => {
+    expect(run('"Redis evicts keys ... removes the best candidate"', 'src-ellipsis')).toEqual([]);
+    expect(run('"Redis evicts keys […] samples a few keys"', 'src-ellipsis')).toEqual([]);
+    expect(run('"removes the best candidate ... Redis evicts keys"', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
+    expect(run('"Redis evicts keys ... removes the best candidate"', 'src-fold')).toEqual(['quote-not-in-cited-sources']);
+    expect(run('"... ..."', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
+  });
+  it('matches only on word boundaries', () => {
+    expect(run('The term "ed" appears', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
+    expect(run('The term "Redis" appears', 'src-ellipsis')).toEqual([]);
+    expect(run('The term "LRU" appears', 'src-ellipsis')).toEqual([]);
+    expect(run('The term "RU" appears', 'src-ellipsis')).toEqual(['quote-not-in-cited-sources']);
+  });
+});
+
+describe('a file split into pieces', () => {
+  const lines = Array.from({ length: 6000 }, (_, i) => `line ${i} of the long file`).join('\n');
+  const body = `${lines}\nThe boundary quote crosses`;
+  const pieces = files([['long', `${body} the piece edge and continues.\n${'padding line\n'.repeat(5000)}`]]);
+  it('checks a block against the whole file, so a quote may cross a piece boundary', () => {
+    expect(pieces.length).toBeGreaterThan(1);
+    const texts = sourceTextById(pieces);
+    const edge = pieces[0]!.spans[0]!.text.length;
+    const whole = pieces.map(piece => piece.spans[0]!.text).join('');
+    const crossing = whole.slice(edge - 20, edge + 20).replace(/\s+/gu, ' ').trim();
+    expect(checkBlockQuotes({ id: 'b', text: `"${crossing.split(' ').slice(1, -1).join(' ')}"`, sourceIds: [pieces[0]!.sourceId] }, texts)).toEqual([]);
+    expect(checkBlockQuotes({ id: 'b', text: `"${crossing.split(' ').slice(1, -1).join(' ')}"`, sourceIds: [pieces[1]!.sourceId] }, texts)).toEqual([]);
+    expect(checkBlockQuotes({ id: 'b', text: '"not anywhere in the long file"', sourceIds: [pieces[0]!.sourceId] }, texts).map(f => f.kind)).toEqual(['quote-not-in-cited-sources']);
+  });
+});
+
+describe('inspectBlockQuotes', () => {
+  it('counts the quoted spans, so a block with no quotes is distinguishable from one whose quotes verified', () => {
+    expect(inspectBlockQuotes(block('No quotation marks here', 'src-readme'), SOURCES)).toEqual({ quotes: 0, findings: [] });
+    expect(inspectBlockQuotes(block('He said "in-memory cache" and "event loop"', 'src-readme'), SOURCES)).toEqual({ quotes: 2, findings: [] });
+  });
+});
+
+describe('the repair finding', () => {
+  it('asks for a verbatim quotation or an Inferred sentence, and never for rewording that contradicts the repair prompt', () => {
+    const { message } = quoteFindingAsReviewFinding({ blockId: 'b', kind: 'quote-not-in-cited-sources', quote: 'x' });
+    expect(message).toContain('Quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred.');
+    expect(message).not.toContain('own words');
   });
 });

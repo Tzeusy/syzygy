@@ -330,13 +330,24 @@ describe('source to editorial draft pipeline', () => {
       expect(repair.findings).toEqual([expect.objectContaining({ severity: 'blocking', target: 'intro', message: expect.stringContaining('quote-not-in-cited-sources') })]);
     });
 
-    it('stops as repair-exhausted when the repaired draft still misquotes, and keeps the reviewer\'s own findings first', async () => {
+    it('does not stop the run when a misquote survives the last repair: it returns the finding for that block, and keeps the reviewer\'s own findings first in the repair input', async () => {
       const { h, ports } = quoting(() => 'Remove recurring mental labor.');
-      const stopped = await runGenerationPipeline(request(), { ...ports, fidelity: () => ({ blocking: false, findings: ['reviewer note'] }) }, signal());
-      expect(stopped).toMatchObject({ status: 'stopped', reason: 'repair-exhausted' });
+      const result = await runGenerationPipeline(request(), { ...ports, fidelity: () => ({ blocking: false, findings: ['reviewer note'] }) }, signal());
+      expect(result).toMatchObject({ status: 'awaiting-rendered-review', quoteFindings: [{ blockId: 'intro', kind: 'quote-not-in-cited-sources', quote: 'Remove recurring mental labor.' }] });
       const repair = JSON.parse(h.sends.find(x => x.stage === 'repair')!.input).inputs;
       expect(repair.findings[0]).toBe('reviewer note');
       expect(repair.findings).toHaveLength(2);
+    });
+
+    it('returns no quote findings for a clean draft', async () => {
+      const { ports } = quoting(() => 'Reduce recurring mental labor.');
+      expect(await runGenerationPipeline(request(), ports, signal())).toMatchObject({ status: 'awaiting-rendered-review', quoteFindings: [] });
+    });
+
+    it('still stops as repair-exhausted when the reviewer\'s own verdict blocks after the last repair', async () => {
+      const { ports } = quoting(() => 'Remove recurring mental labor.');
+      const stopped = await runGenerationPipeline(request(), { ...ports, fidelity: () => ({ blocking: true, findings: ['reviewer blocks'] }) }, signal());
+      expect(stopped).toMatchObject({ status: 'stopped', reason: 'repair-exhausted' });
     });
 
     it('keeps a blocking reviewer verdict blocking, and a non-array reviewer finding is carried', async () => {

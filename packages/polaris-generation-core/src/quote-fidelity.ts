@@ -8,16 +8,26 @@
  *
  * Normalisation, in order, on both sides:
  *   1. comment leaders at line starts (block-comment open and close marks, a
- *      bare star, double slash, hash) are dropped;
+ *      bare star, double slash, hash) and a block-comment close at a line end
+ *      are dropped;
  *   2. markdown links and images keep their text and lose url and brackets;
- *   3. markdown emphasis characters `*` and `_` are dropped;
- *   4. every whitespace run, line breaks included, becomes one space; ends trimmed.
+ *   3. HTML entities are decoded and markdown backslash escapes removed;
+ *   4. backticks (code spans) and the emphasis characters `*` and `_` are dropped;
+ *   5. curly quotes and apostrophes become straight;
+ *   6. every whitespace run, line breaks included, becomes one space; ends trimmed.
+ * A quote may elide with an ellipsis (three dots, the ellipsis character, or
+ * either in brackets): the pieces must occur in order in the same source.
+ * A piece matches only on word boundaries, so a quote of "ed" does not match
+ * inside "Redis". For a file split into pieces, a block that cites any piece
+ * is checked against the whole file's text.
  * Straight (`"`) and curly (`“ ”`) double quotes delimit a quote. A straight-
  * quoted span that itself contains straight quotes is resolved by taking the
  * longest reading, from its opening quote to a later quote that ends a word
  * or sentence, whose normalised text occurs in a cited source; curly quotes
  * nest by depth. A quote that has no verifying reading is a failure.
  */
+
+import { quotableGenerationSources, type GenerationSource } from './generation-source.js';
 
 /** The lead-in lane-p's prompt rule asks for before a verbatim quotation. */
 export const QUOTE_LEAD_IN = "The project's sources state:";
@@ -32,12 +42,66 @@ export interface QuoteFinding {
 export interface QuoteBlock { readonly id: string; readonly text: string; readonly sourceIds: readonly string[] }
 
 const LEADER = /^[ \t]*(?:\/\*+|\*+\/|\*+(?=[ \t]|$)|\/\/+|#+)[ \t]?/u;
+const TRAILING_CLOSE = /[ \t]*\*+\/[ \t]*$/u;
+const NAMED_ENTITIES: Readonly<Record<string, string>> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: '\u00a0' };
+
+function decodeEntity(whole: string, body: string): string {
+  if (body[0] !== '#') return NAMED_ENTITIES[body] ?? whole;
+  const code = body[1] === 'x' || body[1] === 'X' ? Number.parseInt(body.slice(2), 16) : Number.parseInt(body.slice(1), 10);
+  return Number.isInteger(code) && code > 0 && code <= 0x10ffff && !(code >= 0xd800 && code <= 0xdfff) ? String.fromCodePoint(code) : whole;
+}
 
 /** The comparison form of a quote or a source; see the file comment. */
 export function normaliseForQuote(text: string): string {
-  const unleadered = text.split(/\r\n|\r|\n/u).map(line => line.replace(LEADER, '')).join('\n');
+  const unleadered = text.split(/\r\n|\r|\n/u).map(line => line.replace(LEADER, '').replace(TRAILING_CLOSE, '')).join('\n');
   const unlinked = unleadered.replace(/!?\[([^\]\n]*)\]\([^)\n]*\)/gu, '$1').replace(/!?\[([^\]\n]*)\]\[[^\]\n]*\]/gu, '$1');
-  return unlinked.replace(/[*_]/gu, '').replace(/\s+/gu, ' ').trim();
+  return unlinked
+    .replace(/&(#[0-9]+|#[xX][0-9a-fA-F]+|[a-zA-Z]+);/gu, decodeEntity)
+    .replace(/\\([!-/:-@[-`{-~])/gu, '$1')
+    .replace(/`/gu, '')
+    .replace(/[*_]/gu, '')
+    .replace(/[\u2018\u2019]/gu, "'").replace(/[\u201c\u201d]/gu, '"')
+    .replace(/\s+/gu, ' ').trim();
+}
+
+const NORMALISED = new Map<string, string>();
+/** `normaliseForQuote` of a source, memoised: one draft checks many blocks against the same few texts. */
+function normaliseSource(text: string): string {
+  let out = NORMALISED.get(text);
+  if (out === undefined) {
+    if (NORMALISED.size >= 64) NORMALISED.clear();
+    out = normaliseForQuote(text);
+    NORMALISED.set(text, out);
+  }
+  return out;
+}
+
+const ELISION = /\s*(?:\[\s*(?:\.{3}|\u2026)\s*\]|\.{3}|\u2026)\s*/u;
+const WORD = /[\p{L}\p{N}]/u;
+
+/** First index at or after `from` where `piece` occurs on word boundaries, or -1. */
+function findPiece(source: string, piece: string, from: number): number {
+  const startsWord = WORD.test(piece[0]!), endsWord = WORD.test(piece[piece.length - 1]!);
+  for (let at = source.indexOf(piece, from); at !== -1; at = source.indexOf(piece, at + 1)) {
+    if (startsWord && at > 0 && WORD.test(source[at - 1]!)) continue;
+    const after = source[at + piece.length];
+    if (endsWord && after !== undefined && WORD.test(after)) continue;
+    return at;
+  }
+  return -1;
+}
+
+/** Whether the normalised `wanted` occurs in the normalised `source`, its elided pieces in order. */
+function occursIn(source: string, wanted: string): boolean {
+  const pieces = wanted.split(ELISION).map(piece => piece.trim());
+  if (pieces.some(piece => piece.length === 0)) return false;
+  let cursor = 0;
+  for (const piece of pieces) {
+    const at = findPiece(source, piece, cursor);
+    if (at === -1) return false;
+    cursor = at + piece.length;
+  }
+  return true;
 }
 
 const OPEN_CURLY = '“', CLOSE_CURLY = '”';
@@ -89,11 +153,16 @@ function quotedSpans(text: string, verifies: (inner: string) => boolean): { inne
 
 /** Findings for one block: every quoted span must occur, normalised, in a source the block cites. */
 export function checkBlockQuotes(block: QuoteBlock, sourceText: ReadonlyMap<string, string>, leadIn: string = QUOTE_LEAD_IN): QuoteFinding[] {
+  return inspectBlockQuotes(block, sourceText, leadIn).findings;
+}
+
+/** Findings plus how many quoted spans the block carries, so a caller can tell a block with no quotes from one whose quotes all verified. */
+export function inspectBlockQuotes(block: QuoteBlock, sourceText: ReadonlyMap<string, string>, leadIn: string = QUOTE_LEAD_IN): { readonly quotes: number; readonly findings: QuoteFinding[] } {
   const findings: QuoteFinding[] = [];
-  const cited = [...new Set(block.sourceIds)].map(id => sourceText.get(id)).filter((text): text is string => text !== undefined).map(normaliseForQuote);
+  const cited = [...new Set(block.sourceIds)].map(id => sourceText.get(id)).filter((text): text is string => text !== undefined).map(normaliseSource);
   const verifies = (inner: string): boolean => {
     const wanted = normaliseForQuote(inner);
-    return wanted.length > 0 && cited.some(source => source.includes(wanted));
+    return wanted.length > 0 && cited.some(source => occursIn(source, wanted));
   };
   const spans = quotedSpans(block.text, verifies);
   for (const span of spans) {
@@ -107,12 +176,26 @@ export function checkBlockQuotes(block: QuoteBlock, sourceText: ReadonlyMap<stri
     const rest = block.text.slice(at + leadIn.length);
     if (!/^\s*["“]/u.test(rest)) findings.push({ blockId: block.id, kind: 'lead-in-without-quote', quote: '' });
   }
-  return findings;
+  return { quotes: spans.length, findings };
 }
 
-/** The text of every quotable source, by id, for `checkBlockQuotes`. */
-export function sourceTextById(sources: readonly { readonly sourceId: string; readonly text: string }[]): ReadonlyMap<string, string> {
-  return new Map(sources.map(source => [source.sourceId, source.text]));
+/** The text a block's quote may be checked against, by cited source id: a quotable source's own text, or for a piece of a split file the whole file's text (a quote may cross a piece boundary). The quotable rule is `quotableGenerationSources`: one whole-body span. */
+export function sourceTextById(sources: readonly GenerationSource[]): ReadonlyMap<string, string> {
+  const quotable = new Map(quotableGenerationSources(sources).map(source => [source.sourceId, source.text]));
+  const out = new Map(quotable);
+  const files = new Map<string, GenerationSource[]>();
+  for (const source of sources) {
+    if (source.segment === undefined || !quotable.has(source.sourceId)) continue;
+    const key = JSON.stringify([source.repositoryId, source.revision, source.path, source.objectId, source.segment.count]);
+    files.set(key, [...(files.get(key) ?? []), source]);
+  }
+  for (const pieces of files.values()) {
+    const ordered = [...pieces].sort((a, b) => a.segment!.index - b.segment!.index);
+    if (ordered.length !== ordered[0]!.segment!.count || ordered.some((piece, i) => piece.segment!.index !== i)) continue;
+    const whole = ordered.map(piece => quotable.get(piece.sourceId)!).join('');
+    for (const piece of ordered) out.set(piece.sourceId, whole);
+  }
+  return out;
 }
 
 /** Every block of a draft: any object with a string id, a string text and a sourceIds list (introduction, section and deep-dive blocks and their children). */
@@ -132,8 +215,7 @@ export function draftBlocks(draft: unknown): QuoteBlock[] {
 }
 
 /** Quote findings for a whole draft against the quotable sources. */
-export function checkDraftQuotes(draft: unknown, sources: readonly { readonly sourceId: string; readonly text: string }[]): QuoteFinding[] {
-  const byId = sourceTextById(sources);
+export function checkDraftQuotes(draft: unknown, byId: ReadonlyMap<string, string>): QuoteFinding[] {
   return draftBlocks(draft).flatMap(block => checkBlockQuotes(block, byId));
 }
 
@@ -146,5 +228,5 @@ export function quoteFindingAsReviewFinding(finding: QuoteFinding): { severity: 
     'quote-without-cited-source': 'quotes text but cites no source',
     'lead-in-without-quote': 'announces a verbatim quotation and gives none',
   };
-  return { severity: 'blocking', message: `Quotation ${finding.quote === '' ? '' : `"${finding.quote}" `}${what[finding.kind]} (${finding.kind}). Quote only text the cited sources contain, or state the point in your own words without quotation marks.`, target: finding.blockId };
+  return { severity: 'blocking', message: `Quotation ${finding.quote === '' ? '' : `"${finding.quote}" `}${what[finding.kind]} (${finding.kind}). Quote it verbatim from a cited source, or remove the quotation marks and mark the sentence Inferred.`, target: finding.blockId };
 }
