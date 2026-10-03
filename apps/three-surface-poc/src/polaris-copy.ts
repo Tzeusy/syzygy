@@ -56,6 +56,8 @@ export const POLARIS_COPY = [
   { id: 'evidence.currency-probe-disclosure', role: 'epistemic-disclosure', kind: 'sentence', text: 'This probe compares the current repository head with the pinned evaluation; it is a render disclosure, not a project claim or freshness value.' },
   { id: 'states.challenge', role: 'epistemic-disclosure', kind: 'label', text: 'Challenge — whether anyone disputed it:' },
   { id: 'states.challenge.unchallenged', role: 'epistemic-disclosure', kind: 'sentence', text: 'unchallenged — no challenge is recorded; a recorded challenge suspends the claim.' },
+  { id: 'states.disclosures', role: 'epistemic-disclosure', kind: 'label', text: 'Not a claim state — what a proposal marks:' },
+  { id: 'states.proposed', role: 'epistemic-disclosure', kind: 'sentence', text: 'Proposed change — not current authority: a candidate future beside the current requirement; it never changes any claim\'s label, tier, freshness or challenge.' },
   { id: 'states.strengthen', role: 'epistemic-disclosure', kind: 'sentence', text: 'To strengthen a claim: report-fact becomes gate-backed only through a retained gate artifact bound to the exact revision; an Unknown clears only by the route stated beside it. No summary rounds any state up.' },
 
   { id: 'depth.label', role: 'scope-instruction', kind: 'label', text: 'On this page' },

@@ -49,6 +49,8 @@ import { pageShell, type HumanOperabilityStatus } from './page-shell.js';
 import {
   CHALLENGE_ENCODING,
   FRESHNESS_ENCODING,
+  PROPOSAL_DISCLOSURE,
+  PROPOSAL_TREATMENT_CSS,
   TIER_ABSENCE_ENCODING,
   TIER_ENCODING,
   TUPLE_FIELD_TREATMENTS_CSS,
@@ -402,8 +404,19 @@ function claimStatesBlock(model: PocModel): string {
     ${group('states.tier', [...TIER_ENCODING, TIER_ABSENCE_ENCODING])}
     ${group('states.freshness', FRESHNESS_ENCODING)}
     ${group('states.challenge', CHALLENGE_ENCODING)}
+    ${proposalLegend(model)}
     ${sentence('states.strengthen')}
   </details>`;
+}
+
+/** The proposal disclosure's glossary row, generated from its declaration
+ * and kept apart from the claim states (syzygy-dov.3.2; P-70 M3 slice 6).
+ * It states its reachability note exactly when no proposal is served. */
+function proposalLegend(model: PocModel): string {
+  const served = deriveCapabilityDeepDives(model).reduce((sum, dive) => sum + dive.proposals.length, 0);
+  const entry = PROPOSAL_DISCLOSURE;
+  const marker = served > 0 ? '' : ` ${entry.unreachable}`;
+  return `<p${copyAttr('states.disclosures')}>${copy('states.disclosures')}</p><ul><li class="${entry.labelClassName}" data-disclosure-legend="${entry.value}" data-disclosure-served="${served}"${copyAttr(entry.description)}>${escapeHtml(copyText(entry.description) + marker)}</li></ul>`;
 }
 
 /** The tuple vocabulary glossed where it first appears (syzygy-u05.4;
@@ -1264,9 +1277,9 @@ function proposalPart(dive: CapabilityDeepDive, work: ProposedWork, ledger: Deep
     ? `<p${FACT}>${copy('label.candidate-future')} — ${copy(dive.exclusivityBasis === 'declared' ? 'sentence.no-competitor' : 'sentence.exclusivity-not-captured')}</p>`
     : `<p${FACT}>${copy('label.candidate-future')} — ${copy('label.exclusive-with')} ${exclusive.map((other) => `<code data-exclusive-change="${escapeHtml(other)}">${escapeHtml(other)}</code>`).join(', ')}. ${copy('sentence.separate-futures')}</p>`;
   const attrs = ledger.block('contract', `contract:${dive.capabilityId}/proposal:${work.changeId}`);
-  return `<section class="claim-section proposal" data-proposed-work-part="proposal" data-candidate-future="${escapeHtml(work.changeId)}" data-exclusive-with="${escapeHtml(exclusive.join('\t'))}" data-anchorable="false" data-status-bearing="false"${attrs}>
+  return `<section class="claim-section ${PROPOSAL_DISCLOSURE.className}" data-proposed-work-part="proposal" data-candidate-future="${escapeHtml(work.changeId)}" data-exclusive-with="${escapeHtml(exclusive.join('\t'))}" data-anchorable="false" data-status-bearing="false"${attrs}>
       ${heading(4, `polaris-proposed-${work.changeId}`, 'proposed.change')}
-      <p class="proposal-label" data-proposal-label${copyAttr('label.proposed')}>${copy('label.proposed')}</p>
+      <p class="${PROPOSAL_DISCLOSURE.labelClassName}" data-proposal-label${copyAttr('label.proposed')}>${copy('label.proposed')}</p>
       <p${FACT}><span data-proposal-identity="${escapeHtml(work.id)}"><code data-parity-field="proposal-change-id">${escapeHtml(work.changeId)}</code> ${copy('label.amends')} <code>openspec/specs/${escapeHtml(work.specKey)}/spec.md</code>.</span> <span class="citation">(${artifactCitation(work.proposal)}, ${artifactCitation(work.delta)})</span></p>
       ${lifecycle}
       ${futures}
@@ -1496,8 +1509,8 @@ const POLARIS_STYLE = `
   .relationships { max-width: 74ch; margin: 0 auto 3rem; }
   .relationships ul { padding-left: 1.2rem; }
   .relationships li { margin-bottom: .5rem; }
-  .proposal { border-left: 4px solid var(--proposed); padding-left: 1rem; }
-  .proposal-label { font-family: var(--font-mono); font-size: .85rem; letter-spacing: .04em; text-transform: uppercase; color: var(--proposed); }
+  ${PROPOSAL_TREATMENT_CSS}
+  [data-proposal-label] { font-family: var(--font-mono); font-size: .85rem; letter-spacing: .04em; text-transform: uppercase; }
   .proposal .adjacent { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); }
   .proposal h4 { margin: 0 0 .5rem; font-size: 1.05rem; }
 

@@ -102,5 +102,13 @@ on the two pseudo-elements of one empty `<i>` after it. That is the only
 mark markup, about 7 bytes a tuple, and each field keeps its own token.
 The words carry the value, so a mark's symbol has an empty alternative
 text. The claim-state glossary rows are generated from the same tables and
-carry the value classes. An undeclared value refuses to render. The full
-proposal legend is later work.
+carry the value classes. An undeclared value refuses to render.
+
+A proposal is not a claim state. Its treatment is one declared disclosure row
+(`PROPOSAL_DISCLOSURE`): the `proposal` section class with its `--proposed`
+border, the `proposal-label` text marker ("Proposed change — not current
+authority.") with its symbol, and one glossary row under "Not a claim state",
+after the challenge list. That row counts the proposals served on the page
+and states its reachability note exactly when there are none. The section
+rule names `.claim-section` as well: the reading layout's later
+`.claim-section { border: 0 }` otherwise removed the proposal border.
