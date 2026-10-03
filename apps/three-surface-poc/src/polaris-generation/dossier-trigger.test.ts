@@ -1,12 +1,12 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { quotableGenerationSources, type PipelineRequest, type ProviderDraft } from '@syzygy/polaris-generation-core';
+import { quotableGenerationSources, type PipelineRequest, type PipelineResult, type ProviderDraft } from '@syzygy/polaris-generation-core';
 
 import { main } from './dossier-main.js';
-import { admissionRequirements, formatOutcome, gitMaterialize, noAdmissionRecords, parseGithubUrl, pinRevision, runDossierTrigger,
+import { admissionRequirements, formatOutcome, gitLsRemote, gitMaterialize, noAdmissionRecords, parseGithubUrl, pinRevision, runDossierTrigger, writeRunFiles,
   type AdmissionRecordsPort, type TriggerPorts } from './dossier-trigger.js';
 
 const SHA_A = 'a'.repeat(40), SHA_B = 'b'.repeat(40), SHA_C = 'c'.repeat(40);
@@ -96,19 +96,23 @@ describe('with every record satisfied', () => {
     return { title: 'Fixture dossier', introduction: p('intro', [a]), sections: [{ id: 'core-ideas', title: 'Core ideas', paragraphs: [p('ci', [b])], disposition: { kind: 'produced', assetIds: ['core-ideas'] } }],
       diagrams: [], deepDives: [], unresolved: [] };
   };
+  const finished = (request: PipelineRequest): PipelineResult => ({ status: 'awaiting-rendered-review', draft: draftFor(request), inventory: null, review: null, receipts: [], artifacts: [] });
+  const stoppedResult: PipelineResult = { status: 'stopped', reason: 'budget-exhausted', receipts: [], artifacts: [] };
+  const render: NonNullable<TriggerPorts['render']> = ({ result, sources }) => ({ files: new Map([['index.html', `<p>${result.status} ${sources.length}</p>`], ['pages/core.html', '<p>core</p>']]) });
   const base = (extra: TriggerPorts = {}): TriggerPorts => ({ lsRemote: ls, records: all, materialize: async () => repo, ...extra });
 
 
   it('reads the pinned commit, discovers, clarifies and writes the site and a run record outside git', async () => {
     const out = join(scratch(), 'run');
     let seen: PipelineRequest | undefined;
-    const outcome = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out, runPipeline: async request => { seen = request; return { status: 'draft', draft: draftFor(request) }; } }));
-    expect(outcome).toMatchObject({ state: 'complete', revision: commit });
-    expect(readdirSync(out)).toEqual(expect.arrayContaining(['index.html', 'sources.html', 'size-report.json', 'run-record.json']));
-    expect(seen).toMatchObject({ projectId: 'github:fixture:repo', readerQuestions: expect.arrayContaining([expect.stringContaining('core ideas')]) });
+    const outcome = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out, render, runPipeline: async request => { seen = request; return finished(request); } }));
+    expect(outcome).toMatchObject({ state: 'complete', revision: commit, detail: '2 files' });
+    expect(readdirSync(out).sort()).toEqual(['index.html', 'pages', 'run-record.json']);
+    expect(readFileSync(join(out, 'pages/core.html'), 'utf8')).toBe('<p>core</p>');
+    expect(seen).toMatchObject({ projectId: 'github:fixture:repo', readerQuestions: expect.arrayContaining([expect.objectContaining({ id: 'core-ideas', topics: ['core-ideas'] })]) });
     const record = JSON.parse(readFileSync(join(out, 'run-record.json'), 'utf8'));
     expect(record).toMatchObject({ profile: 'dossier-v1', revision: commit, permissionIdentity: 'fixture/observation-consent+fixture/public-source-policy+fixture/egress-consent',
-      corpusCount: { selected: 3 }, clarification: { mode: 'zero-interaction', fabricatedDefaults: 0 } });
+      corpusCount: { selected: 3 }, clarification: { mode: 'zero-interaction', unaccountedQuestions: 0 } });
     expect(record.clarification.wouldHaveAsked.map((q: { id: string }) => q.id)).toEqual(['audience']);
   });
 
@@ -130,9 +134,49 @@ describe('with every record satisfied', () => {
     expect(unavailable).toMatchObject({ state: 'generation-unavailable', runDir: out });
     expect(readdirSync(out)).toEqual(['run-record.json']);
     const out2 = join(scratch(), 'run');
-    const stopped = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out2, runPipeline: async () => ({ status: 'stopped', reason: 'budget-exhausted' }) }));
+    const stopped = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out2, runPipeline: async () => stoppedResult }));
     expect(stopped).toMatchObject({ state: 'generation-stopped', detail: 'budget-exhausted' });
     expect(readdirSync(out2)).toEqual(['run-record.json']);
+  });
+
+  it('records an unrendered result when no renderer is wired, and refuses a renderer that collides with the run record', async () => {
+    const out = join(scratch(), 'run');
+    const outcome = await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out, runPipeline: async request => finished(request) }));
+    expect(outcome).toMatchObject({ state: 'generation-unavailable', detail: expect.stringContaining('no renderer') });
+    expect(readdirSync(out).sort()).toEqual(['pipeline-result.json', 'run-record.json']);
+    const clash = join(scratch(), 'run');
+    await expect(runDossierTrigger('https://github.com/fixture/repo', base({ outDir: clash, runPipeline: async request => finished(request),
+      render: () => ({ files: new Map([['run-record.json', '{}']]) }) }))).rejects.toThrow('renderer-collides-with-run-record');
+    expect(existsSync(clash)).toBe(false);
+  });
+
+  it('permits a discovery call only while the egress record still holds, and drops the calls otherwise', async () => {
+    const map = vi.fn(async (input: { readonly items: readonly { readonly blobId: string }[] }) => ({ usageUnits: 1, claims: input.items.map(i => ({ blobId: i.blobId, claim: 'c', relevance: 5 })) }));
+    let checks = 0;
+    const flipping: AdmissionRecordsPort = { source: 'flipping store', check: async r => (r.kind === 'egress-consent' && ++checks > 1 ? { satisfied: false, why: 'withdrawn' } : { satisfied: true, record: `fixture/${r.kind}` }) };
+    const out = join(scratch(), 'run');
+    await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: out, records: flipping, discovery: { map } }));
+    expect(map).not.toHaveBeenCalled();
+    expect(JSON.parse(readFileSync(join(out, 'run-record.json'), 'utf8')).discovery.refusedCalls).toBeGreaterThan(0);
+    const allowed = vi.fn(map);
+    await runDossierTrigger('https://github.com/fixture/repo', base({ outDir: join(scratch(), 'run'), discovery: { map: allowed } }));
+    expect(allowed).toHaveBeenCalled();
+  });
+
+  it('writes nothing outside the run directory and rejects unsafe output paths', () => {
+    const target = join(scratch(), 'run');
+    for (const bad of ['../x', '/abs', 'a//b', './a', 'a/../b', '', 'a\\b']) expect(() => writeRunFiles(join(scratch(), 'r'), new Map([[bad, 'x']])), bad).toThrow('invalid-output-path');
+    writeRunFiles(target, new Map([['a/b.txt', 'x']]));
+    expect(() => writeRunFiles(target, new Map([['c.txt', 'x']]))).toThrow();
+    expect(readFileSync(join(target, 'a/b.txt'), 'utf8')).toBe('x');
+  });
+
+  it('removes its scratch checkout and an unused default run directory, even when the run fails', async () => {
+    const before = () => readdirSync(tmpdir()).filter(name => name.startsWith('syzygy-dossier-'));
+    const baseline = new Set(before());
+    await expect(runDossierTrigger('https://github.com/fixture/repo', base({ materialize: async () => { throw new Error('fetch failed'); } }))).rejects.toThrow('fetch failed');
+    await runDossierTrigger('https://github.com/fixture/repo', { lsRemote: ls, records: all });
+    expect(before().filter(name => !baseline.has(name))).toEqual([]);
   });
 
   it('refuses to write the run into a git work tree', async () => {
@@ -141,15 +185,76 @@ describe('with every record satisfied', () => {
     expect(existsSync(inside)).toBe(false);
   });
 
-  it('fetches only the pinned commit objects, and refuses a non-https url by default', async () => {
+  it('fetches only the pinned commit objects into a bare, template-free repository, and refuses a non-https url by default', async () => {
     const dir = join(scratch(), 'src');
     expect(await gitMaterialize({ url: repo, revision: commit, dir }, 'file')).toBe(dir);
     expect(execFileSync('git', ['-C', dir, 'cat-file', '-t', commit], { encoding: 'utf8' }).trim()).toBe('commit');
+    expect(execFileSync('git', ['-C', dir, 'rev-parse', '--is-bare-repository'], { encoding: 'utf8' }).trim()).toBe('true');
+    expect(existsSync(join(dir, 'hooks'))).toBe(false);
     await expect(gitMaterialize({ url: repo, revision: commit, dir: join(scratch(), 'src2') })).rejects.toThrow();
+  });
+
+  describe('a poisoned caller environment', () => {
+    const saved = { ...process.env };
+    afterEach(() => { for (const key of Object.keys(process.env)) if (!(key in saved)) delete process.env[key]; Object.assign(process.env, saved); });
+    const poison = (): string => {
+      const dir = scratch(), marker = join(dir, 'ran');
+      for (const name of ['git-upload-pack', 'git-remote-https', 'askpass', 'ssh']) { writeFileSync(join(dir, name), `#!/bin/sh\necho ${name} >> ${marker}\nexit 1\n`); chmodSync(join(dir, name), 0o755); }
+      Object.assign(process.env, { GIT_EXEC_PATH: dir, GIT_SSH_COMMAND: join(dir, 'ssh'), GIT_ASKPASS: join(dir, 'askpass'), GIT_PROXY_COMMAND: join(dir, 'ssh'),
+        GIT_DIR: join(dir, 'nowhere'), GIT_WORK_TREE: dir, GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'core.sshCommand', GIT_CONFIG_VALUE_0: join(dir, 'ssh'), GIT_CONFIG_PARAMETERS: `'core.sshCommand=${join(dir, 'ssh')}'` });
+      return marker;
+    };
+
+    it('does not steer materialize: the fetch still succeeds and no poisoned program runs', async () => {
+      const marker = poison();
+      const dir = join(scratch(), 'src');
+      await gitMaterialize({ url: repo, revision: commit, dir }, 'file');
+      expect(execFileSync('git', ['-C', dir, 'cat-file', '-t', commit], { encoding: 'utf8', env: { PATH: process.env.PATH!, HOME: scratch() } }).trim()).toBe('commit');
+      expect(existsSync(marker)).toBe(false);
+    });
+
+    it('does not steer ls-remote', () => {
+      const marker = poison();
+      expect(gitLsRemote(repo, 'file')).toContain(commit);
+      expect(existsSync(marker)).toBe(false);
+    });
   });
 });
 
 describe('command', () => {
+  let repo = '', commit = '';
+  beforeAll(() => {
+    repo = mkdtempSync(join(tmpdir(), 'syzygy-trigger-cmd-'));
+    const run = (...a: string[]): string => execFileSync('git', ['-C', repo, ...a], { encoding: 'utf8' }).trim();
+    run('init', '-q'); run('config', 'user.email', 'f@example.invalid'); run('config', 'user.name', 'F');
+    writeFileSync(join(repo, 'README.md'), '# Fixture\nIt does a thing.\n'); writeFileSync(join(repo, 'a.c'), 'int a;\n');
+    run('add', '-A'); run('commit', '-qm', 'fixture'); commit = run('rev-parse', 'HEAD');
+  });
+  afterAll(() => rmSync(repo, { recursive: true, force: true }));
+  const finishedFor = (request: PipelineRequest): PipelineResult => {
+    const [first] = quotableGenerationSources(request.sources);
+    const p = { id: 'intro', text: 'Claim.', sourceIds: [first!.sourceId], children: [] };
+    return { status: 'awaiting-rendered-review', draft: { title: 't', introduction: p, sections: [], diagrams: [], deepDives: [], unresolved: [] }, inventory: null, review: null, receipts: [], artifacts: [] };
+  };
+  const wired = (extra: TriggerPorts = {}): TriggerPorts => ({ lsRemote: () => `${commit}\tHEAD\n`, records: all, materialize: async () => repo, ...extra });
+
+  it('exits 0 and writes to --out on a complete run, 5 when generation is unavailable, 6 when the pipeline stops', async () => {
+    const out = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    try {
+      const dest = join(scratch(), 'site');
+      const render: NonNullable<TriggerPorts['render']> = () => ({ files: new Map([['index.html', '<p>x</p>']]) });
+      expect(await main(['https://github.com/a/b', '--out', dest], wired({ render, runPipeline: async request => finishedFor(request) }))).toBe(0);
+      expect(readdirSync(dest).sort()).toEqual(['index.html', 'run-record.json']);
+      expect(String(out.mock.calls.at(-1)![0])).toContain(`Run directory: ${dest}`);
+      const dest5 = join(scratch(), 'site');
+      expect(await main(['https://github.com/a/b', '--out', dest5], wired())).toBe(5);
+      expect(readdirSync(dest5)).toEqual(['run-record.json']);
+      const dest6 = join(scratch(), 'site');
+      expect(await main(['https://github.com/a/b', '--out', dest6, '--json'], wired({ runPipeline: async () => ({ status: 'stopped', reason: 'cancelled', receipts: [], artifacts: [] }) }))).toBe(6);
+      expect(JSON.parse(String(out.mock.calls.at(-1)![0]))).toMatchObject({ state: 'generation-stopped', detail: 'cancelled', runDir: dest6 });
+    } finally { out.mockRestore(); }
+  });
+
   it('exits 2 on usage, 3 when records are missing (text and json), and prints what is missing', async () => {
     const out = vi.spyOn(process.stdout, 'write').mockReturnValue(true), err = vi.spyOn(process.stderr, 'write').mockReturnValue(true);
     try {

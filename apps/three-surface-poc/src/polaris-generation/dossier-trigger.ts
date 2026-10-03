@@ -1,13 +1,13 @@
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 import { clarify, DEFAULT_DISCOVERY_BUDGET, discoverAndSelect, DOSSIER_PROFILE_ID, DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS,
-  type ClarificationRecord, type DiscoveryPorts, type DiscoveryReceipt, type DiscoveryReport, type GenerationBudget, type PipelineRequest, type ProviderDraft } from '@syzygy/polaris-generation-core';
+  type ClarificationRecord, type DiscoveryPorts, type DiscoveryReceipt, type DiscoveryReport, type GenerationBudget, type GenerationSource, type PipelineRequest, type PipelineResult } from '@syzygy/polaris-generation-core';
 
 import { buildPipelineRequest, readRepoCorpus, type CorpusAdmissionPort, type ReaderConfig, type RepoCorpus } from './repo-corpus.js';
-import { renderDossierSite, writeDossierSite } from './dossier-site.js';
+import { ISOLATED_GIT_FLAGS, isolatedGit, minimalGitEnv } from './isolated-git.js';
 
 export interface GithubTarget { readonly owner: string; readonly repo: string; readonly ref?: string; readonly url: string; readonly repositoryId: string }
 
@@ -33,11 +33,16 @@ export function pinRevision(lsRemoteOutput: string, ref?: string): { readonly re
   throw new Error('revision-not-found');
 }
 
-/** Metadata only: ref names and commit ids, never a repository body. */
-export function gitLsRemote(url: string): string {
-  return execFileSync('git', ['ls-remote', '--', url], { encoding: 'utf8', timeout: 30_000, maxBuffer: 16_000_000,
-    env: { ...process.env, GIT_TERMINAL_PROMPT: '0', GIT_ALLOW_PROTOCOL: 'https' } });
+/** Metadata only: ref names and commit ids, never a repository body. Runs with a minimal environment. */
+export function gitLsRemote(url: string, allowProtocol = 'https'): string {
+  const home = mkdtempSync(join(tmpdir(), 'syzygy-lsremote-'));
+  try {
+    return execFileSync('git', [...ISOLATED_GIT_FLAGS, ...fileOverride(allowProtocol), 'ls-remote', '--', url], { encoding: 'utf8', timeout: 30_000, maxBuffer: 16_000_000,
+      env: minimalGitEnv(home, allowProtocol), cwd: home });
+  } finally { rmSync(home, { recursive: true, force: true }); }
 }
+
+const fileOverride = (allowProtocol: string): readonly string[] => (allowProtocol === 'file' ? ['-c', 'protocol.file.allow=always'] : []);
 
 export type AdmissionKind = 'observation-consent' | 'public-source-policy' | 'egress-consent';
 export interface AdmissionRequirement { readonly kind: AdmissionKind; readonly repositoryId: string; readonly revision: string; readonly url: string; readonly needs: string }
@@ -66,11 +71,14 @@ export interface TriggerPorts {
   readonly records?: AdmissionRecordsPort;
   /** Fetches exactly the pinned commit into `dir`; only called once every record is satisfied. */
   readonly materialize?: (target: { readonly url: string; readonly revision: string; readonly dir: string }) => Promise<string>;
-  readonly discovery?: Omit<DiscoveryPorts, 'permitted' | 'receipt'>;
+  /** Model-assisted discovery. Each call is permitted only while the egress-consent record is still satisfied; there is no override. */
+  readonly discovery?: Pick<DiscoveryPorts, 'map' | 'reduce'>;
   /** Durable sink for per-call discovery receipts; the run record also keeps them. */
   readonly discoveryReceipt?: (receipt: DiscoveryReceipt) => Promise<void>;
   /** Runs the six-stage pipeline; absent until a real generate port exists. */
-  readonly runPipeline?: (request: PipelineRequest) => Promise<{ readonly status: 'draft'; readonly draft: ProviderDraft } | { readonly status: 'stopped'; readonly reason: string }>;
+  readonly runPipeline?: (request: PipelineRequest) => Promise<PipelineResult>;
+  /** Turns a finished pipeline result into the dossier's files (path -> content); the polaris-dossier-v1 renderer is injected here. */
+  readonly render?: (input: { readonly result: PipelineResult; readonly sources: readonly GenerationSource[] }) => { readonly files: ReadonlyMap<string, string> };
   readonly now?: () => number;
   readonly outDir?: string;
   readonly include?: readonly string[];
@@ -85,6 +93,28 @@ export type TriggerOutcome =
 
 const BUDGET: GenerationBudget = { maxCalls: 7, maxInputBytes: 8_000_000, maxOutputBytes: 1_000_000, maxUsageUnits: 1000, maxElapsedMs: 3_600_000, maxRepairCycles: 1, accountingPolicy: 'dossier-units-v1' };
 
+/** A relative, normalised path with no empty, `.` or `..` segment. */
+const safeRelative = (path: string): boolean => path.length > 0 && !path.startsWith('/') && !path.includes('\\') && path.split('/').every(part => part !== '' && part !== '.' && part !== '..');
+
+function insideGitWorkTree(directory: string): boolean {
+  try { return isolatedGit(directory, ['rev-parse', '--is-inside-work-tree']).toString().trim() === 'true'; } catch { return false; }
+}
+
+/** Writes the run into a new directory outside every Git work tree; nothing is overwritten. */
+export function writeRunFiles(destination: string, files: ReadonlyMap<string, string>): void {
+  const target = resolve(destination);
+  const parent = dirname(target);
+  if (existsSync(parent) && insideGitWorkTree(parent)) throw new Error('run-directory-inside-git-work-tree');
+  for (const path of files.keys()) if (!safeRelative(path)) throw new Error('invalid-output-path');
+  mkdirSync(parent, { recursive: true });
+  mkdirSync(target);
+  for (const [path, content] of files) {
+    const file = join(target, path);
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, content, { flag: 'wx' });
+  }
+}
+
 /** Resolve, pin, check admission, and only then read. Stops at the first unmet gate. */
 export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}): Promise<TriggerOutcome> {
   let target: GithubTarget;
@@ -93,43 +123,64 @@ export async function runDossierTrigger(rawUrl: string, ports: TriggerPorts = {}
   try { pinned = pinRevision((ports.lsRemote ?? gitLsRemote)(target.url), target.ref); }
   catch (error) { return { state: 'unresolved-revision', reason: error instanceof Error ? error.message : 'ls-remote-failed' }; }
   const records = ports.records ?? noAdmissionRecords;
-  const checked = await Promise.all(admissionRequirements(target, pinned.revision).map(async requirement => ({ ...requirement, answer: await records.check(requirement) })));
+  const requirements = admissionRequirements(target, pinned.revision);
+  const checked = await Promise.all(requirements.map(async requirement => ({ ...requirement, answer: await records.check(requirement) })));
   const missing = checked.filter(entry => !entry.answer.satisfied).length;
   if (missing > 0) return { state: 'admission-missing', target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, source: records.source, requirements: checked, missing };
 
-  const runDir = ports.outDir ?? join(mkdtempSync(join(tmpdir(), 'syzygy-dossier-')), 'site');
-  if (ports.materialize === undefined) return { state: 'generation-unavailable', target, revision: pinned.revision, runDir, detail: 'admission is satisfied but no checkout port is wired' };
-  const checkout = await ports.materialize({ url: target.url, revision: pinned.revision, dir: mkdtempSync(join(tmpdir(), 'syzygy-dossier-src-')) });
-  const permissionIdentity = checked.map(entry => (entry.answer as { record: string }).record).join('+');
-  const admission: CorpusAdmissionPort = { decide: async () => ({ allowed: true, permissionIdentity }) };
-  const config: ReaderConfig = { repositoryId: target.repositoryId, revision: pinned.revision, include: ports.include ?? ['**'], exclude: ports.exclude ?? [],
-    readerQuestions: DOSSIER_READER_QUESTIONS, requestedAssets: DOSSIER_REQUESTED_ASSETS, budget: BUDGET, oversize: 'split' };
-  const corpus: RepoCorpus = await readRepoCorpus(checkout, config, { admission });
-  const discovery = await discoverAndSelect(corpus.sources, config.readerQuestions, DEFAULT_DISCOVERY_BUDGET, { permitted: async () => true, receipt: ports.discoveryReceipt ?? (async () => undefined), ...ports.discovery });
-  const clarification: ClarificationRecord = await clarify({ sources: discovery.sources, mode: 'zero-interaction' });
-  const record = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, permissionIdentity, corpusCount: corpus.count,
-    discovery: discovery.report as DiscoveryReport, discoveryReceipts: discovery.receipts, clarification };
-  const recordPage = { path: 'run-record.json', kind: 'run-record' as const, content: `${JSON.stringify(record, null, 2)}\n` };
-  if (ports.runPipeline === undefined) {
-    writeDossierSite(runDir, { pages: [recordPage] });
-    return { state: 'generation-unavailable', target, revision: pinned.revision, runDir, detail: 'corpus, discovery and clarification recorded; no generate port is wired' };
+  const defaultOut = ports.outDir === undefined ? mkdtempSync(join(tmpdir(), 'syzygy-dossier-')) : undefined;
+  const runDir = ports.outDir ?? join(defaultOut!, 'site');
+  const checkoutDir = join(mkdtempSync(join(tmpdir(), 'syzygy-dossier-src-')), 'repo');
+  try {
+    if (ports.materialize === undefined) return { state: 'generation-unavailable', target, revision: pinned.revision, runDir, detail: 'admission is satisfied but no checkout port is wired' };
+    const checkout = await ports.materialize({ url: target.url, revision: pinned.revision, dir: checkoutDir });
+    const permissionIdentity = checked.map(entry => (entry.answer as { record: string }).record).join('+');
+    const admission: CorpusAdmissionPort = { decide: async () => ({ allowed: true, permissionIdentity }) };
+    const config: ReaderConfig = { repositoryId: target.repositoryId, revision: pinned.revision, include: ports.include ?? ['**'], exclude: ports.exclude ?? [],
+      readerQuestions: DOSSIER_READER_QUESTIONS, requestedAssets: DOSSIER_REQUESTED_ASSETS, budget: BUDGET, oversize: 'split' };
+    const corpus: RepoCorpus = await readRepoCorpus(checkout, config, { admission });
+    // A provider call is permitted only while the egress record that admitted this run still holds.
+    const egress = requirements.find(requirement => requirement.kind === 'egress-consent')!;
+    const permitted = async (): Promise<boolean> => (await records.check(egress)).satisfied === true;
+    const discovery = await discoverAndSelect(corpus.sources, config.readerQuestions.map(question => question.text), DEFAULT_DISCOVERY_BUDGET,
+      { permitted, receipt: ports.discoveryReceipt ?? (async () => undefined), ...ports.discovery });
+    const clarification: ClarificationRecord = await clarify({ sources: discovery.sources, mode: 'zero-interaction' });
+    const record = { profile: DOSSIER_PROFILE_ID, target, revision: pinned.revision, resolvedRef: pinned.resolvedRef, permissionIdentity, corpusCount: corpus.count,
+      discovery: discovery.report as DiscoveryReport, discoveryReceipts: discovery.receipts, clarification };
+    const recordFile = ['run-record.json', `${JSON.stringify(record, null, 2)}\n`] as const;
+    if (ports.runPipeline === undefined) {
+      writeRunFiles(runDir, new Map([recordFile]));
+      return { state: 'generation-unavailable', target, revision: pinned.revision, runDir, detail: 'corpus, discovery and clarification recorded; no generate port is wired' };
+    }
+    const request = buildPipelineRequest({ ...corpus, sources: discovery.sources }, config, (ports.now ?? Date.now)());
+    const result = await ports.runPipeline(request);
+    if (result.status === 'stopped') {
+      writeRunFiles(runDir, new Map([recordFile]));
+      return { state: 'generation-stopped', target, revision: pinned.revision, runDir, detail: result.reason };
+    }
+    if (ports.render === undefined) {
+      writeRunFiles(runDir, new Map([recordFile, ['pipeline-result.json', `${JSON.stringify(result, null, 2)}\n`]]));
+      return { state: 'generation-unavailable', target, revision: pinned.revision, runDir, detail: 'the pipeline finished but no renderer is wired; the result is recorded unrendered' };
+    }
+    const rendered = ports.render({ result, sources: discovery.sources });
+    if (rendered.files.has(recordFile[0])) throw new Error('renderer-collides-with-run-record');
+    writeRunFiles(runDir, new Map([...rendered.files, recordFile]));
+    return { state: 'complete', target, revision: pinned.revision, runDir, detail: `${rendered.files.size} files` };
+  } finally {
+    rmSync(dirname(checkoutDir), { recursive: true, force: true });
+    if (defaultOut !== undefined && !existsSync(runDir)) rmSync(defaultOut, { recursive: true, force: true });
   }
-  const request = buildPipelineRequest({ ...corpus, sources: discovery.sources }, config, (ports.now ?? Date.now)());
-  const result = await ports.runPipeline(request);
-  if (result.status === 'stopped') {
-    writeDossierSite(runDir, { pages: [recordPage] });
-    return { state: 'generation-stopped', target, revision: pinned.revision, runDir, detail: result.reason };
-  }
-  const site = renderDossierSite(result.draft, discovery.sources);
-  writeDossierSite(runDir, { pages: [...site.pages, recordPage] });
-  return { state: 'complete', target, revision: pinned.revision, runDir, detail: `${site.pages.length} pages, ${site.sizeReport.totalBytes} bytes` };
 }
 
-/** Fetches only the pinned commit's objects into an empty repository. */
+/** Fetches only the pinned commit's objects into an empty bare repository (no work tree, no template hooks). */
 export async function gitMaterialize(target: { readonly url: string; readonly revision: string; readonly dir: string }, allowProtocol = 'https'): Promise<string> {
-  const env = { ...process.env, GIT_TERMINAL_PROMPT: '0', GIT_ALLOW_PROTOCOL: allowProtocol };
-  execFileSync('git', ['init', '-q', target.dir], { env });
-  execFileSync('git', ['-C', target.dir, 'fetch', '-q', '--depth', '1', '--no-tags', '--', target.url, target.revision], { env, timeout: 300_000 });
+  const home = mkdtempSync(join(tmpdir(), 'syzygy-materialize-home-'));
+  const env = minimalGitEnv(home, allowProtocol);
+  try {
+    mkdirSync(dirname(target.dir), { recursive: true });
+    execFileSync('git', [...ISOLATED_GIT_FLAGS, 'init', '-q', '--bare', '--template=', target.dir], { env, cwd: home });
+    execFileSync('git', [...ISOLATED_GIT_FLAGS, ...fileOverride(allowProtocol), '-C', target.dir, 'fetch', '-q', '--depth', '1', '--no-tags', '--', target.url, target.revision], { env, cwd: home, timeout: 300_000 });
+  } finally { rmSync(home, { recursive: true, force: true }); }
   return target.dir;
 }
 
