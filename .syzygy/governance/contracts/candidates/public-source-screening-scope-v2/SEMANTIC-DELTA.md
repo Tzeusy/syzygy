@@ -40,28 +40,34 @@ segment, a backslash, or a leading or trailing slash matches nothing. A path is
 `project-documentation` when it matches one of three path rules; the body is
 admitted as whole-blob spans, no extractor runs.
 
-1. **root-document.** One segment (a file at the repository root). Remove one
-   suffix from "none, .md, .rst, .txt" (the longest that fits); the rest must be
-   an optional two-digit-and-hyphen prefix followed by one of: readme,
-   changelog, changes, release-notes, release_notes, releasenotes,
-   contributing, license, licence, copying, notice, notices, news, history,
-   security, authors, manifesto, architecture, design, faq, governance,
-   code_of_conduct, code-of-conduct. The list is wide on purpose: a project's
-   top level carries its stated ideas and trade-offs in files such as
-   00-RELEASENOTES and MANIFESTO [Inferred, from general knowledge; no body
-   was read], and a narrow list would withhold exactly the sources a dossier
-   needs. The names design, governance and security are root *files*; see
-   Q3.
+1. **root-document.** One segment (a file at the repository root). Remove an
+   optional prefix of exactly two ASCII digits 0-9 and a hyphen (literal code
+   points; no Unicode digit counts), then one suffix from "none, .md, .rst,
+   .txt"; the rest must be one of: readme, changelog, changes, release-notes,
+   release_notes, releasenotes, contributing, license, licence, copying, notice,
+   notices, news, history, authors, faq. A top level often carries its stated
+   ideas in files such as 00-RELEASENOTES [Inferred, from general knowledge; no
+   body was read]. architecture and manifesto are owner opt-ins, off in these
+   bytes (packet Q2, Q3).
 2. **docs-tree.** Two or more segments, the first being docs or doc, a file
-   name ending in .md, .rst or .txt with a non-empty stem, at any depth.
+   name ending in .md, .rst or .txt with a non-empty stem, at any depth, with
+   two exclusions: no directory segment after the first may be adr, adrs,
+   decisions, rfc, rfcs, spec, specs, specification, design, governance, policy,
+   policies or security (exact, case-folded); and a .txt file whose name is
+   cmakelists.txt or robots.txt, or starts with requirements, is a build or
+   tooling file and not mapped.
 3. **licenses-tree.** Exactly two segments, the first being licenses, a file
    name ending in .txt or .md with a non-empty stem.
+
+A TypeScript consumer must compare the listed ASCII digits, not a Unicode-aware
+class, and must fold only A-Z; the builder's reference reader is the oracle and
+its fixtures include a long s, the Kelvin sign and Arabic-Indic digits.
 
 None of these extensions is in the `code-content` list, so no blob has two
 classes. Everything else stays indeterminate: a README below the root outside
 docs or doc (vendored libraries carry their own), security and conduct
-policies below the root, specification, design and decision documents, reports,
-and prose in any other directory.
+policies below the root, specification, design, decision and policy documents,
+and reports, and prose in any other directory.
 
 ## Why these paths [Inferred]
 
@@ -74,9 +80,12 @@ file the policy cannot place in exactly one class fails closed. The three rules
 are the owner-reviewable proposal of that decision; the amendment does not list
 them.
 
-**design/ is deliberately not mapped.** RFC5-14 puts specification, design,
-decision and policy text in `governance-text`, and `governanceTextPaths` stays
-empty here. See packet Q3.
+**Policy and governance text is deliberately not mapped.** RFC5-14 places
+doctrine, spec, decision and policy text in `governance-text`, and
+`governanceTextPaths` stays empty here. Root files named design, governance,
+security and code of conduct, and docs paths under the directories listed in
+rule 2, are withheld. Withholding design is this policy's choice: the amendment
+does not name design. See packet Q4.
 
 ## Prerequisite
 
@@ -93,3 +102,15 @@ too), the active-content rule, the access boundary, raw-body handling,
 `neverClassified` (`work-history`), the inherited rules, the Butlers scope, and
 every act already performed. It admits no repository and grants no read or
 egress.
+
+## Supersession and the state after the act
+
+This package's subject is the policy as version 1 leaves it. After the act, the
+policy on disk is these bytes; the package's `--check` recognises that state
+(the disk hash equals this manifest's row, and reversing the patch gives the
+version-1 row) and stays current. Version 1's row is then superseded for the
+`approve-policy` role, as the version-1 act superseded the 2026-10-02 re-pin
+act: the v2 recorder writes a new dedicated record and the version-1 record and
+recorder stay unedited, and the version-1 recorder's `--check` fails by design
+[Inferred from the earlier supersession; the recorder is written after the
+review].
