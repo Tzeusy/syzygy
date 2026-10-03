@@ -139,11 +139,18 @@ PACKAGE = engine.Package(
         "three-surface-poc-readability-successor": "THREE-SURFACE-POC-READABILITY-SUCCESSOR-ACT.md",
     },
     declined_siblings=frozenset(),
-    #: Unsigned; it touches the reader notes and POC-REQ-052…060, not 001 or
-    #: 010, so the spec patches compose in either order. The dependency
-    #: declaration's Source line is rewritten by both, so whichever is signed
-    #: later is regenerated with --write over the earlier one's applied bytes.
-    pending_siblings=frozenset({"three-surface-poc-identity-amendment"}),
+    #: Both unsigned. The identity amendment touches the reader notes and
+    #: POC-REQ-052…060; the governing-intent amendment (P-100) touches
+    #: POC-REQ-014. Neither touches 001 or 010, so each spec patch composes
+    #: with this one in either order (composition_findings proves it on every
+    #: --check). The dependency declaration's Source line is rewritten by all
+    #: three, so whichever is signed later is regenerated with --write over
+    #: the earlier one's applied bytes. The governing-intent package carries
+    #: no builder or manifest, so this classification has no reverse entry.
+    pending_siblings=frozenset({
+        "three-surface-poc-identity-amendment",
+        "three-surface-poc-governing-intent-amendment",
+    }),
 )
 
 

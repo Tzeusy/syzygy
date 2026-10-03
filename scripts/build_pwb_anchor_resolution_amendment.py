@@ -470,6 +470,15 @@ def run_selftest(
         if found != expected:
             print(f"SELFTEST FAILED: sibling classification gave {found}")
             failed += 1
+        # Each declared pending sibling, removed from the classification,
+        # is named as unclassified: the entry is what keeps --check green.
+        on_disk = sibling_patches(pkg)
+        for name in sorted(pkg.pending_siblings & set(on_disk)):
+            found = sibling_findings(
+                dataclasses.replace(pkg, pending_siblings=pkg.pending_siblings - {name}))
+            if f"unclassified sibling package patches the spec: {name}" not in found:
+                print(f"SELFTEST FAILED: removing pending sibling {name} gave {found}")
+                failed += 1
         # A pending sibling whose patch rewrites a line this patch also
         # rewrites must fail composition.
         spec_text = (ROOT / pkg.spec).read_text(encoding="utf-8")
@@ -490,8 +499,10 @@ def run_selftest(
         return 1
     print(
         f"selftest: {len(mutants)} structure mutants, patch drift, an unclassified "
-        "sibling, a vanished pending sibling, a clashing sibling, and divergent "
-        "and failing application orders all fail closed on their own predicates"
+        "sibling, a vanished pending sibling, each declared pending sibling "
+        f"removed ({len(pkg.pending_siblings & set(sibling_patches(pkg)))}), a "
+        "clashing sibling, and divergent and failing application orders all fail "
+        "closed on their own predicates"
     )
     return 0
 
