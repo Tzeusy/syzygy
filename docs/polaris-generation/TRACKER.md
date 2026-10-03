@@ -175,7 +175,11 @@ Authorized implementation work (generator implementation authorization,
         admission records (observation consent, public-source policy, egress
         consent) are missing, and stops (exit 3). It reads and generates only
         once an injected record store satisfies all three; none is wired yet,
-        and no generate port exists (exit 5 after recording the corpus).
+        and no generate port exists (exit 5 after recording the corpus). Git
+        runs with a minimal environment and a bare, template-free fetch;
+        discovery calls are permitted only while the egress record holds;
+        the polaris-dossier-v1 renderer is injected (`render` port) until
+        the renderer PR lands.
   - [~] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.
