@@ -386,8 +386,10 @@ class Sim:
         copied = []
         for rel in OVERLAY:
             src = ROOT / rel
-            if src.is_file():
-                dst = self.scratch / rel
+            dst = self.scratch / rel
+            # the installer is the tool under test; a recorder already in the scratch (main or a
+            # merged branch, possibly frozen to its confirmed package) is never overwritten
+            if src.is_file() and (rel.endswith("install_redis_sitting.py") or not dst.exists()):
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(src, dst)
                 copied.append(rel)
@@ -422,6 +424,9 @@ class Sim:
         pkg = self.scratch / PKG_MESSAGES
         manifest = pkg / "MESSAGES-API-ROUTE-REGISTRY-MANIFEST.txt"
         review = pkg / "reviews/R-PROVIDER-ROUTE-MESSAGES-API-ENTRY-3-RAW.md"
+        if review.is_file():   # the package has its real confirming round: nothing to simulate
+            self.step("freeze-route-B", note="real confirming raw present; recorder already frozen")
+            return
         review.write_text(f"# R3 (synthetic, scratch only)\nReviewed commit: {'a' * 40}\n"
                           f"Manifest SHA-256: {sha256(manifest)}\nVerdict: CONFIRM\n\n## Findings\n\nnone\n")
         files = [manifest, pkg / "OWNER-DECISION-PACKET.md", pkg / "REVIEW-BRIEF.md", pkg / "SEMANTIC-DELTA.md",

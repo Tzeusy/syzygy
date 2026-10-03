@@ -68,7 +68,14 @@ same arguments re-verifies a record afterwards.
 7. **Row 7, RFC5-14 class.**
    `python3 scripts/record_rfc5_project_documentation_act.py --record <ARGUMENT> ...`
    (PR 290, merged; finding F12).
-8. **Row 9, narrative profile.**
+8. **Row 8, egress v2** (PR 299, a draft waiting on the stage list; after
+   row 7). The instance is generated with
+   ```
+   python3 scripts/build_public_egress_v2.py --write
+   ```
+   Its recorder is pending: until it lands row 8 is not rehearsed and the
+   install does not cover it.
+9. **Row 9, narrative profile.**
    `python3 scripts/record_narrative_profile_adoption.py --record ...`
    (finding F7; no `ARGUMENT`, the adoption binds no digest). Between this
    step and the next, CG-1b reports one dangling path: the record cites the
@@ -77,7 +84,7 @@ same arguments re-verifies a record afterwards.
    is expected to fail on the real-tree case: the gate still pins the old
    policy digest and version and refuses the new bytes (packet Q2). After the
    install it passes. The simulator asserts both.
-9. **Install, one commit with every record.**
+10. **Install, one commit with every record.**
    `python3 scripts/install_redis_sitting.py`. It refuses (exit 2, tree
    restored) unless every required record exists, is idempotent, and
    `--check` reports what is not installed. Needs PR 278 merged first (F13). Steps, with the findings each answers:
@@ -93,10 +100,17 @@ same arguments re-verifies a record afterwards.
    - **profile** (F8, F11): the specification moves from `proposed/` to
      `specs/`; package prose naming the old path is rewritten; the status
      figure follows the recount tool.
-10. **Verify.** `python3 scripts/check_governance.py && python3 scripts/check_docs_review_campaign_partition.py && npx vitest run`
+11. **Verify.** `python3 scripts/check_governance.py && python3 scripts/check_docs_review_campaign_partition.py && npx vitest run`
 
 Row 8 (a second egress version) is not generatable before row 7 is performed
-and is out of this rehearsal. Rows 10 and 11 are rulings and directions with
+and is out of this rehearsal.
+
+After the sitting the order is: the recorders, then
+`install_redis_sitting.py`, then `poc:dossier`. Pending: the `poc:dossier`
+wiring PR will carry a map from each egress record digest to the stages it
+authorises (an unknown digest authorises none); the install must then check
+that the map's digests equal the recorded act arguments. That check does not
+exist yet and the rehearsal does not cover it [Unknown until the PR lands]. Rows 10 and 11 are rulings and directions with
 no bytes.
 
 ## Merge conflicts and install-change findings
