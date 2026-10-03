@@ -1,7 +1,7 @@
 {
  "subject": "Public-source screening review repairs (syzygy-vjqd): reviewer-6 B1-B4 on #292 and the #323 review (unrepresentable paths under a screen, control-character paths, sourceExtensions '..' and whitespace), on top of #278's keyed run key; and the #278 review's run-key guard in keyedDigest",
  "date": "2026-10-04",
- "ranAt": "2f313de7092ca5d7ee0825fcbaff6f522df43432",
+ "ranAt": "f1fee5865321ef22624e9c31a703095edc267f86",
  "predecessor": "docs/evidence/public-source-screening-mutants-2026-10-03.json (21 of 21 at the #292 bytes; retained unchanged)",
  "subjectFiles": [
   {
@@ -10,11 +10,11 @@
   },
   {
    "path": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
-   "fileSha256": "188964d9c7e5c0dc8e4328be80baafc5640d228858b2057cb04175481d71e84f"
+   "fileSha256": "1c93682da29cd58499602068611cd857caf360b2cc329181ca10de304b2c05a2"
   },
   {
    "path": "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
-   "fileSha256": "ccc48e6e4580cf5b9a94560d010329faa3aa9863b140c970ce81b2e089ffb14f"
+   "fileSha256": "549f2550a159968885f72b2e24970a738b69820fb138878161ccc21c13d4a703"
   },
   {
    "path": "packages/polaris-generation-core/src/generation-source.ts",
@@ -28,8 +28,8 @@
  "method": "Each mutant replaced exactly one fragment (asserted to occur once) in the named file, ran npx vitest run apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts packages/polaris-generation-core/src/generation-source.test.ts, and restored the file; the worktree was clean afterwards (asserted). A mutant is killed when at least one test fails.",
  "tests": "public-source-screening.test.ts (23) and generation-source.test.ts; all fixtures synthetic git repositories or literal strings built in the test, every secret assembled at runtime, no external repository read, no provider call",
  "result": {
-  "mutants": 40,
-  "killed": 40,
+  "mutants": 41,
+  "killed": 41,
   "survived": []
  },
  "notes": [
@@ -116,7 +116,7 @@
    "old": "secretDetectorMatches: screened['secret-detector-match']",
    "new": "secretDetectorMatches: 0",
    "killed": true,
-   "tests": "4 failed | 36 passed (40)"
+   "tests": "3 failed | 37 passed (40)"
   },
   {
    "id": "indeterminate-count-dropped",
@@ -329,8 +329,17 @@
    "id": "unrepresentable-secret-uncounted",
    "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
    "description": "a detector match in an unrepresentable path is not counted",
-   "old": "else if (ports.screen.screenPath(record.path) === 'secret-detector-match') screened['secret-detector-match']++;",
-   "new": "else if (false) screened['secret-detector-match']++;",
+   "old": "else if (ports.screen.screenPath(record.path) === 'secret-detector-match') unquotablePathSecretMatches++;",
+   "new": "else if (false) unquotablePathSecretMatches++;",
+   "killed": true,
+   "tests": "1 failed | 39 passed (40)"
+  },
+  {
+   "id": "unquotable-secret-mixed",
+   "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+   "description": "an unquotable path's detector match is counted with the source matches",
+   "old": "=== 'secret-detector-match') unquotablePathSecretMatches++;",
+   "new": "=== 'secret-detector-match') screened['secret-detector-match']++;",
    "killed": true,
    "tests": "1 failed | 39 passed (40)"
   },
@@ -401,6 +410,7 @@
  "history": [
   "At 89740a04 and again at d2a0ce6f (after a rebase onto main changed two test fixtures) 31 of 31 were killed over the B1-B4 repairs.",
   "The #323 review (CHANGES at 91b4254d) added the unrepresentable-path, control-character and extension-validation repairs and seven mutants; #278 (keyed run key) then merged, opaque-id-unkeyed and the screen-order fragments were re-pointed to its excludedSourceId and shared runKey, and this run is on main after #278, 38 of 38 killed.",
-  "The #278 review asked for a 32-byte guard inside keyedDigest; two mutants were added for it (removed, and lowered to 31 bytes). After rebasing onto main at 812d3a3f, this run is at 2f313de7: 40 of 40 killed."
+  "The #278 review asked for a 32-byte guard inside keyedDigest; two mutants were added for it (removed, and lowered to 31 bytes). After rebasing onto main at 812d3a3f, this run is at 2f313de7: 40 of 40 killed.",
+  "The #323 delta review (CHANGES at 2617f782) asked that unquotable-path detector matches be counted apart from source matches; unrepresentable-secret-uncounted was re-pointed to the new count and unquotable-secret-mixed added. After rebasing onto main this run is at f1fee586: 41 of 41 killed."
  ]
 }
