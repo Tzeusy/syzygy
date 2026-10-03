@@ -1,15 +1,15 @@
 {
  "subject": {
-  "commit": "2c96b608eb1096fc4c702831c3063cd2c133120a",
+  "commit": "a0645cfca73c056aa3712b26cfafb037ac59bc4d",
   "branch": "agent/dossier-messages-api",
   "fileSha256": {
-   "packages/polaris-generation-provider/src/egress-gate.ts": "7efc83aab66630fa1fca1ff3e694cbe0bb60ec9e20cfa07c1b98bfbb0706f5cc",
-   "packages/polaris-generation-provider/src/messages-api-provider.ts": "729c22605131435190ad9c0bb7eca8323219662116253597bd5b263b2403b181"
+   "packages/polaris-generation-provider/src/egress-gate.ts": "a064e086147ea2c0b053fd4773b22857f383ea92e1660c9235b8576f3620f8ec",
+   "packages/polaris-generation-provider/src/messages-api-provider.ts": "fe6b12899e72c8b2922fdbeb3de9c3caef49f5dc97a1d8f2cc986c57d6238980"
   }
  },
  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
  "project": "@syzygy/polaris-generation-provider",
- "ranAt": "2026-10-03T11:05:39+00:00",
+ "ranAt": "2026-10-03T11:57:10+00:00",
  "mutants": [
   {
    "id": "M1-tools-field-added",
@@ -21,7 +21,7 @@
    ],
    "outcome": "killed",
    "failedTests": 3,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M2-retry-on-500",
@@ -33,7 +33,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M3-abort-signal-not-passed",
@@ -45,7 +45,7 @@
    ],
    "outcome": "killed",
    "failedTests": 2,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M4-permit-cap-ignored",
@@ -57,7 +57,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M5-retry-after-ignored",
@@ -69,7 +69,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M6-unknown-billing-coerced",
@@ -81,7 +81,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M7-thinking-bytes-altered",
@@ -93,7 +93,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M8-try-deadline-removed",
@@ -105,7 +105,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M9-header-literal-dropped",
@@ -117,7 +117,7 @@
    ],
    "outcome": "killed",
    "failedTests": 17,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M10-ambient-env-guard-removed",
@@ -129,7 +129,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M11-version-pin-removed",
@@ -141,7 +141,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M12-stop-reason-unchecked",
@@ -153,7 +153,7 @@
    ],
    "outcome": "killed",
    "failedTests": 2,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M13-rejected-try-total-assumed-unbilled",
@@ -165,7 +165,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M14-rejected-try-usage-assumed-zero",
@@ -177,7 +177,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M15-null-usage-coerced",
@@ -189,7 +189,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M16-non-text-block-allowed",
@@ -201,7 +201,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M17-authToken-null-removed",
@@ -213,7 +213,7 @@
    ],
    "outcome": "survived",
    "failedTests": 0,
-   "totalTests": 20,
+   "totalTests": 21,
    "note": "equivalent while the ambient-environment guard holds: no ANTHROPIC_AUTH_TOKEN can reach the client"
   },
   {
@@ -226,7 +226,7 @@
    ],
    "outcome": "survived",
    "failedTests": 0,
-   "totalTests": 20,
+   "totalTests": 21,
    "note": "equivalent control"
   },
   {
@@ -239,7 +239,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M20-https-proxy-var-dropped",
@@ -251,7 +251,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M21-tls-reject-var-dropped",
@@ -263,7 +263,7 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M22-timeout-and-connection-unpinned",
@@ -275,7 +275,7 @@
    ],
    "outcome": "killed",
    "failedTests": 17,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
    "id": "M23-connection-value-unpinned",
@@ -287,10 +287,10 @@
    ],
    "outcome": "killed",
    "failedTests": 17,
-   "totalTests": 20
+   "totalTests": 21
   },
   {
-   "id": "M24-literal-values-unchecked",
+   "id": "M25-literal-values-unchecked",
    "file": "packages/polaris-generation-provider/src/messages-api-provider.ts",
    "old": "if (name in LITERALS) { if (value !== LITERALS[name])",
    "new": "if (name in LITERALS) { if (false)",
@@ -299,8 +299,8 @@
    ],
    "outcome": "killed",
    "failedTests": 1,
-   "totalTests": 20
+   "totalTests": 21
   }
  ],
- "summary": "24 mutants: 22 killed; M17 survives as equivalent while the ambient-environment guard holds; M18 is the no-op control."
+ "summary": "24 mutants: all killed except M17 (equivalent while the ambient-environment guard holds) and M18 (no-op control)."
 }
