@@ -10,13 +10,32 @@
 > patch is unchanged. The edits are to the builder, a new reader script, the
 > ledger, the brief and this record. No digest is copied here.
 
-| # | Finding | Disposition |
-|---|---|---|
-| 1 | The masking scanner failed open on a nested template literal and on a regex literal holding a quote; `export let` was accepted | Repaired by replacing the scanner. `scripts/read_ts_exported_string_array.mjs` parses the file with the TypeScript compiler API and requires: no syntax errors; exactly one top-level statement binding or exporting the symbol; an exported `const` variable statement with a single declaration, no type annotation, whose initializer is an array literal of string literals `as const`. Anything else is refused. The builder runs it with node and refuses when node, the `typescript` package or the file is missing; there is no text-scan fallback. The reviewer's fixtures A, B, C, D, E, G, H and I are in the selftest with their real-TypeScript verdicts (A and B refused, C, D, E and G read, H and I refused), plus a re-export, a function-body declaration and `satisfies`. |
-| 2 | Two scanner branches had no killing fixture (escape skip, newline refusal) | Superseded: those branches are gone with the scanner. The new fixtures include an escaped quote before a live declaration (reads) and a string running over a newline (a syntax error, refused). The selftest carries seven mutants of the reader script, each a removed guard (syntax errors, second binding, unexported, `let`, `as` type, non-string member, type annotation), each caught by a named fixture. |
-| 3 | The ledger's record-figure predicate yielded 49, not 61; "The five are" listed six | Repaired in the ledger: the predicate now lists the simulator's six literals (digest, version, the performed act's identity and tag, two act-record pointers) and says two alone give 49; the own-package count and its file list are restated. After retaining the round-4 raw the figure is 62 with seven own files. |
-| 4 | The brief still called itself the round-3 brief and named the round-3 raw file | Repaired: header and recording section name round 5 and the round-5 raw; criterion 13 added. |
-| 5 | The single-quoted half of the string-embedded fixture was not valid TypeScript | Repaired: the inner quotes are escaped so both halves parse, and the reader (not the scanner's accident) refuses them. |
+## Machine-readable binding
+
+Reviewed record: .syzygy/governance/contracts/candidates/public-source-screening-scope/reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-4-RAW.md
+Revise-severity findings: 0
+
+## Dispositions
+
+### 1 — The masking scanner failed open on a nested template literal and on a regex literal holding a quote; `export let` was accepted
+
+Repaired by replacing the scanner. `scripts/read_ts_exported_string_array.mjs` parses the file with the TypeScript compiler API and requires: no syntax errors; exactly one top-level statement binding or exporting the symbol; an exported `const` variable statement with a single declaration, no type annotation, whose initializer is an array literal of string literals `as const`. Anything else is refused. The builder runs it with node and refuses when node, the `typescript` package or the file is missing; there is no text-scan fallback. The reviewer's fixtures A, B, C, D, E, G, H and I are in the selftest with their real-TypeScript verdicts (A and B refused, C, D, E and G read, H and I refused), plus a re-export, a function-body declaration and `satisfies`.
+
+### 2 — Two scanner branches had no killing fixture (escape skip, newline refusal)
+
+Superseded: those branches are gone with the scanner. The new fixtures include an escaped quote before a live declaration (reads) and a string running over a newline (a syntax error, refused). The selftest carries seven mutants of the reader script, each a removed guard (syntax errors, second binding, unexported, `let`, `as` type, non-string member, type annotation), each caught by a named fixture.
+
+### 3 — The ledger's record-figure predicate yielded 49, not 61; "The five are" listed six
+
+Repaired in the ledger: the predicate now lists the simulator's six literals (digest, version, the performed act's identity and tag, two act-record pointers) and says two alone give 49; the own-package count and its file list are restated. After retaining the round-4 raw the figure is 62 with seven own files.
+
+### 4 — The brief still called itself the round-3 brief and named the round-3 raw file
+
+Repaired: header and recording section name round 5 and the round-5 raw; criterion 13 added.
+
+### 5 — The single-quoted half of the string-embedded fixture was not valid TypeScript
+
+Repaired: the inner quotes are escaped so both halves parse, and the reader (not the scanner's accident) refuses them.
 
 ## Also found
 
