@@ -2,16 +2,17 @@
  * The reader questions a run is built to answer. The pipeline's
  * `readerQuestions` is typed `unknown` at the request boundary, so this is
  * the closed shape every request must satisfy before anything dispatches.
- * Topics name the owner-level subjects a question serves; the list matches
- * the dossier evaluator's, kept here so generation does not depend on it.
+ * Topics name the owner-level subjects a question serves; the list and the
+ * question type are the dossier evaluator's (`OWNER_TOPICS`, `ReaderQuestion`),
+ * imported so there is one declaration.
  */
 
-export const READER_QUESTION_TOPICS = ['core-ideas', 'end-to-end-workflows', 'mechanisms', 'maintainer-stated-advantages', 'trade-offs'] as const;
-export type ReaderQuestionTopic = typeof READER_QUESTION_TOPICS[number];
+import { OWNER_TOPICS, type OwnerTopic, type ReaderQuestion } from './dossier-evaluation.js';
+
+export const READER_QUESTION_TOPICS = OWNER_TOPICS;
+export type ReaderQuestionTopic = OwnerTopic;
 export const READER_QUESTIONS_MAX = 20;
 export const READER_QUESTION_TEXT_MAX = 500;
-
-export interface ReaderQuestion { readonly id: string; readonly topics: readonly ReaderQuestionTopic[]; readonly text: string }
 
 export class ReaderQuestionsError extends Error {
   constructor() { super('Reader questions rejected'); this.name = 'ReaderQuestionsError'; }

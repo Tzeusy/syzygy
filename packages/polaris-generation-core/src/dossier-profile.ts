@@ -9,10 +9,9 @@ import { createHash } from 'node:crypto';
 
 import type { GenerationSource } from './generation-source.js';
 import type { RequestedAsset } from './provider-draft.js';
-import type { ReaderQuestion } from './reader-questions.js';
+import { READER_QUESTIONS_FORMAT, type ReaderQuestion } from './dossier-evaluation.js';
 
 export const DOSSIER_PROFILE_ID = 'dossier-v1';
-export const READER_QUESTIONS_FILE_FORMAT = 'polaris-reader-questions-v1';
 
 /** What a dossier reader must come away able to answer. The advantage
  * question is deliberately about the maintainers' own claims: a dossier
@@ -27,7 +26,7 @@ export const DOSSIER_READER_QUESTIONS: readonly ReaderQuestion[] = [
 
 /** The frozen questions file the dossier evaluator reads. */
 export const dossierQuestionsFile = (): string =>
-  `${JSON.stringify({ format: READER_QUESTIONS_FILE_FORMAT, questions: DOSSIER_READER_QUESTIONS }, null, 2)}\n`;
+  `${JSON.stringify({ format: READER_QUESTIONS_FORMAT, questions: DOSSIER_READER_QUESTIONS }, null, 2)}\n`;
 
 export const DOSSIER_REQUESTED_ASSETS: readonly RequestedAsset[] = [
   { id: 'core-ideas', kind: 'section', required: true },
@@ -101,7 +100,9 @@ export interface ClarificationRecord {
   readonly aborted?: { readonly id: string; readonly reason: string };
   /** Dispositions to hand to the next pass as `prior`. */
   readonly dispositions: readonly PriorDisposition[];
-  /** Open questions with neither an owner answer nor a carried limitation; measured, expected 0. */
+  /** A structural invariant, reported so a future change that leaks a question shows: every open question is
+   * either answered or carried as a limitation, so this is 0 by construction. It is a count over the same sets
+   * the record is built from, not an independent check. */
   readonly unaccountedQuestions: number;
 }
 
@@ -129,8 +130,13 @@ export function openQuestions(sources: readonly GenerationSource[], audienceDecl
   return out;
 }
 
+/** The longest owner answer kept, in characters; a longer one is a malformed reply, not a truncated one. */
+export const OWNER_ANSWER_MAX_CHARS = 4000;
+const present = (value: unknown): value is string => typeof value === 'string' && value.trim().length > 0;
+/** An answer that says something: non-blank after trim and not `unknown` in any case. Null otherwise, never a default. */
 const normalise = (answer: unknown): string | null =>
-  typeof answer === 'string' && answer.trim().length > 0 && answer.trim() !== 'unknown' ? answer.trim() : null;
+  present(answer) && answer.trim().toLowerCase() !== 'unknown' ? answer.trim() : null;
+const withinBound = (text: string): boolean => [...text].length <= OWNER_ANSWER_MAX_CHARS;
 
 /** Applies the declared question budget and the no-repeat rule, then either
  * records the questions (zero-interaction) or puts them to the owner. An
@@ -152,9 +158,13 @@ export async function clarify(input: ClarificationInput): Promise<ClarificationR
   for (const question of open) {
     const earlier = same(question);
     if (earlier === undefined) { if (prior.has(question.id)) reasked.push(question.id); fresh.push(question); continue; }
-    if (earlier.disposition === 'answered' && earlier.answer !== undefined && earlier.attribution && earlier.revision) {
-      answers.push({ id: question.id, disposition: 'answered', answer: earlier.answer, attribution: earlier.attribution, revision: earlier.revision,
-        permittedDraftUse: true, contentDigest: question.contentDigest, adopted: false, reused: true });
+    if (earlier.disposition === 'answered') {
+      // A prior is reused as an answer only if it would pass the same checks a live reply does.
+      const text = normalise(earlier.answer);
+      if (text !== null && withinBound(text) && present(earlier.attribution) && present(earlier.revision)) {
+        answers.push({ id: question.id, disposition: 'answered', answer: text, attribution: earlier.attribution.trim(), revision: earlier.revision.trim(),
+          permittedDraftUse: true, contentDigest: question.contentDigest, adopted: false, reused: true });
+      } else fresh.push(question);
     } else { repeats.push(question); unresolved.push(question); }
   }
   const asked = fresh.slice(0, max), overBudget = fresh.slice(max);
@@ -164,12 +174,13 @@ export async function clarify(input: ClarificationInput): Promise<ClarificationR
     for (const [index, question] of asked.entries()) {
       try {
         const reply = await input.ask!(question);
-        if (reply === null || typeof reply !== 'object' || reply.id !== question.id || typeof reply.attribution !== 'string' || !reply.attribution
-          || typeof reply.revision !== 'string' || !reply.revision || typeof reply.permittedDraftUse !== 'boolean') throw new Error('invalid-owner-answer');
+        if (reply === null || typeof reply !== 'object' || reply.id !== question.id || !present(reply.attribution) || !present(reply.revision)
+          || typeof reply.permittedDraftUse !== 'boolean') throw new Error('invalid-owner-answer');
         const text = normalise(reply.answer);
+        if (text !== null && !withinBound(text)) throw new Error('invalid-owner-answer');
         const permitted = reply.permittedDraftUse && text !== null;
         answers.push({ id: question.id, disposition: text === null ? 'unknown' : reply.permittedDraftUse ? 'answered' : 'redacted', answer: permitted ? text : null,
-          attribution: reply.attribution, revision: reply.revision, permittedDraftUse: reply.permittedDraftUse, contentDigest: question.contentDigest, adopted: false, reused: false });
+          attribution: reply.attribution.trim(), revision: reply.revision.trim(), permittedDraftUse: reply.permittedDraftUse, contentDigest: question.contentDigest, adopted: false, reused: false });
         if (!permitted) unresolved.push(question);
       } catch (error) {
         aborted = { id: question.id, reason: (error instanceof Error ? error.message : 'owner-port-failed').slice(0, 200) };
