@@ -22,7 +22,9 @@ branch. It is not on main yet. [Observed, same head] It stops by design unless
 every admission record exists, and as of that head it also stops after reading
 because no real model call is wired (exit 5, below). So "a single action after
 the sitting" is the target, not today's state; sections 2 and 4 say what is
-still missing.
+still missing. The end-to-end wiring (provider route, records port, screening
+and the credential variable) is tracked as bead syzygy-bc0g (P0); this page is
+refreshed when it lands.
 
 ## 1. What the sitting decides
 
@@ -61,7 +63,7 @@ acceptance record. Then one install step makes the code see those records.
   record store that is not wired yet ("no record store is wired into this
   command"). Until it is, the command always reports all three records
   missing, even after the acts are recorded [Unknown: which PR wires it; the
-  reader is on branch `agent/dossier-consent`].
+  reader is on branch `agent/dossier-consent`; tracked in syzygy-bc0g].
 
 ## 3. What you provide
 
@@ -70,13 +72,13 @@ acceptance record. Then one install step makes the code see those records.
   account. [Inferred] Whichever route wins, you need an API key with access to
   the model the entry pins (`claude-opus-5-5`, effort `high`).
 - **Route B (Messages API, PRs 264 and 273).** The proposed variable is
-  `SYZYGY_POLARIS_PROVIDER_API_KEY`. [Unknown] No code at any head I read
+  `SYZYGY_POLARIS_PROVIDER_API_KEY`. [Unknown, tracked in syzygy-bc0g] No code at any head I read
   reads that name: the Messages API adapter on PR 264's branch takes the key as
   a configuration value (`apiKey`), and PR 273's entry labels the variable name
   a proposal. Treat the name as the intended one until the wiring PR lands.
 - **If route A (Agent SDK, merged entry in PR 255) wins instead.**
   [Observed, PR 264's branch] The Agent SDK adapter also takes the key as a
-  configuration value and sets its own child environment from it. [Unknown]
+  configuration value and sets its own child environment from it. [Unknown, tracked in syzygy-bc0g]
   Which variable you export for route A is not defined in any code I read; the
   entry pins a bundled CLI and a runtime loopback egress gate, so the
   difference you will notice is a different runtime, not a different command.
@@ -110,7 +112,7 @@ only then fetches and reads. The exit code is the outcome:
 | 2 | `invalid-input`: not a supported URL, or wrong arguments | Fix the command. The usage line is printed |
 | 3 | `admission-missing`: one or more of the three records (observation consent, screening policy, egress consent) is missing. The report lists each as OK or MISSING with what is needed | Give or record the missing act. No repository body was read and no provider was called |
 | 4 | `unresolved-revision`: `git ls-remote` could not pin the revision | Check the network and the URL or tag. Nothing was read |
-| 5 | `generation-unavailable`: admission is satisfied, but a piece the run needs is not wired (no checkout, no generate port, or no renderer). The corpus, discovery and clarification record is saved | [Observed at PR 268's head] Today this is the end of the road: no real model call is wired (tracker items G2 and G3). Wait for the provider PRs; the saved run record shows what was read |
+| 5 | `generation-unavailable`: admission is satisfied, but a piece the run needs is not wired (no checkout, no generate port, or no renderer). The corpus, discovery and clarification record is saved | [Observed at PR 268's head] Today this is the end of the road: no real model call is wired (tracker items G2 and G3; syzygy-bc0g). Wait for the provider PRs; the saved run record shows what was read |
 | 6 | `generation-stopped`: the pipeline stopped (budget, deadline, repair exhausted, a provider failure and similar); the reason is in the detail line | Read the reason, then adjust the budget or retry; the run record is saved |
 
 The `--json` flag prints the same outcome as JSON.
