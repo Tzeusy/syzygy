@@ -1,14 +1,17 @@
 # Owner decision packet — PWB accessible-name amendment (PWB-REQ-016)
 
 > **Candidate — binds nothing.** Nothing here is signed, adopted or labelled
-> accepted. This packet puts five questions to the owner, and only the
+> accepted. This packet puts six questions to the owner, and only the
 > owner's answer binds anything (VIS-4).
 
-**Status:** drafted 2026-10-03 on bead `syzygy-u05.12` (pursuit move N12,
-slice C), register row P-99. One fresh-context review round covers this
-package and the opening-index package (P-98) together; its verdict and what
-it found are in `ROUND-1-DISPOSITIONS.md` beside this file once the round
-has run. Until then these bytes are unreviewed.
+**Status: round 1 `REVISE`, repaired once, unconfirmed; owner decides.**
+Drafted 2026-10-03 on bead `syzygy-u05.12` (pursuit move N12, slice C),
+register row P-99. One fresh-context round covered this package and the
+opening-index (P-98) package together and returned `REVISE`. Under the
+coordinator's direction the findings were repaired once and no round 2 was
+dispatched; `ROUND-1-DISPOSITIONS.md` beside this file says what each
+finding changed. These bytes are not offered as cleared: you decide whether
+to sign them, order a confirmation round first, or revise.
 
 ## What you would be signing
 
@@ -23,10 +26,14 @@ sight or a mouse. Read `SEMANTIC-DELTA.md` for the full account. In short:
 - **Headings do not skip levels.** One top heading, and no jump from a
   level-2 heading straight to a level-4 one, so the page's outline can be
   followed by ear.
-- **Checked over the whole page.** Both checks run over every link, toggle
-  and heading of a full Butlers page and say how many they checked. Today's
-  checker checks that names exist, not that they differ, and reads no
-  heading levels.
+- **Checked over every Polaris page.** Both checks run over every link,
+  toggle and heading of every Polaris page served for a full Butlers
+  evaluation, including each exact-source page, and say how many pages and
+  elements they checked. Today's checker checks that names exist, not that
+  they differ, and reads no heading levels.
+- **Butlers' own headings are left as written.** Where an exact-source page
+  shows a Butlers document verbatim, its headings are counted but not held
+  to the heading rule, because Polaris may not rewrite them.
 
 **What it touches besides PWB-REQ-016.** Only the regenerated dependency
 file, whose one changed line is the specification digest. No other
@@ -47,9 +54,10 @@ requirement, capability row, contract-coverage row or warrant moves.
 
 | Option | Meaning |
 |---|---|
-| **Sign v1.0** (recommended if the round clears it) | The patch is applied in the sign-off change by version tag (Scope A covers PWB specification deltas). PWB-REQ-016 gains the two checks, the population rule and two scenarios. |
+| Sign v1.0 (the repaired bytes are unconfirmed) | The patch is applied in the sign-off change by version tag (Scope A covers PWB specification deltas). PWB-REQ-016 gains the two checks, the population rule and two scenarios. |
 | Decline | PWB-REQ-016 stays as signed: same-named links to different places stay lawful. |
 | Revise | Name what to change; a new version gets a new review round. |
+| **Order one confirmation round** (recommended) | One fresh-context round over the repaired bytes; a notes-only verdict clears them for signing. |
 
 ## Question 2 — which elements must have distinct names
 
@@ -84,13 +92,20 @@ package and is put to you there (its question 6).
 ## Question 5 — order against the other pending packages
 
 The opening-index (P-98), class-granular (P-86) and release-label (P-85)
-packages are pending over the same signed specification. Their changes do
-not overlap and compose in any order, but each manifest is built over the
-current tree.
+packages are pending over the same signed specification. Their spec changes
+compose in any order (P-85 and P-86 also share a design decision and a
+capability row number), but each manifest is built over the current tree.
 
 | Option | Meaning |
 |---|---|
 | **Whichever is ready first lands first** (recommended) | The second is regenerated over the first's applied bytes and reviewed again before it is offered. |
 | Sign with the opening index | Both are signed in one change; the second manifest is regenerated in that change and reviewed first. |
+
+## Question 6 — which pages the checks cover
+
+| Option | Meaning |
+|---|---|
+| **Every Polaris page at one evaluation** (recommended; this version) | The entry page and each exact-source page. A reader reaches the exact-source pages through the same links, so they are part of what a nonvisual reader must navigate. |
+| The entry page only | A smaller build, but every other Polaris page stays unchecked. |
 
 **If unanswered,** nothing is signed and the package stays a candidate.

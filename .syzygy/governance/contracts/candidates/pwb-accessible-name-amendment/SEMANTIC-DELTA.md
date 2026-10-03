@@ -66,26 +66,37 @@ Three additions to PWB-REQ-016, plus verification limbs and two scenarios.
 1. **Distinct accessible names.** Two interactive elements on a Polaris
    page (links, buttons, `summary` disclosures and form controls) whose
    targets or controlled regions differ have different accessible names,
-   as the browser computes them. A visible label repeated once per item or
-   source is told apart in the accessible name by the item or source it
-   belongs to. Two elements with the same target may share a name.
+   as the browser computes them. A link's target is its resolved `href`, a
+   `summary`'s is its `details`, and a button's or form control's is the
+   element its `aria-controls` names, or the control itself. A visible
+   label repeated once per item or source is told apart in the accessible
+   name by the item or source it belongs to; the name begins with the
+   visible label, and the added words use the identity PWB-REQ-014 renders
+   for that item or source. Two elements with the same target may share a
+   name.
 2. **Heading order.** One level-1 heading per page, and in document order
-   no heading more than one level deeper than the heading before it.
-3. **Whole-page population.** Both checks run over every interactive
-   element and heading of a page rendered from a whole-project evaluation,
-   and each reports that population as its denominator. A smaller fixture
-   never stands in.
+   no heading more than one level deeper than the heading before it. The
+   population is every heading after load, including those in a closed
+   `details`, excluding hidden ones. Headings inside a verbatim Butlers body
+   rendered under PWB-REQ-011 are counted and reported but are outside both
+   rules, since Polaris renders them as written.
+3. **Whole-surface population.** Both checks run over every Polaris page
+   served at one whole-project evaluation, including the entry page and
+   each exact-source route response, and report the page count and, per
+   page, the element and heading populations. A smaller fixture never
+   stands in.
 
-The verification limbs add a separate Case running both checks over that
-page; Observable limbs for the two properties and the denominators; an
+The verification limbs add a separate Case running both checks over those
+pages; Observable limbs for the two properties and the denominators; an
 Oracle that groups interactive elements by computed name and compares each
-group's targets, reads heading levels in order, and requires each
-denominator to equal the population the browser enumerates; and Falsifier
-limbs for a shared name across different targets, a skipped level or second
-level-1 heading, and a check over a smaller population.
+group's targets, reads heading levels in order, and requires the page count
+to equal the pages served and each per-page denominator the population the
+browser enumerates; and Falsifier limbs for a shared name across different
+targets, a skipped level or second level-1 heading outside a verbatim body,
+and a check over fewer pages or a smaller population.
 
 New scenarios: "Repeated source links are told apart by name" and "Name and
-heading checks cover the whole page".
+heading checks cover every Polaris page".
 
 ## Why each part has the shape it has
 
@@ -94,11 +105,18 @@ heading checks cover the whole page".
   whether two links can be told apart without sight.
 - **Why the same target may share a name.** Two links to the same place
   are not a distinction a reader needs to recover.
-- **Why the whole page.** A fixture that covers part of the page cannot see
-  a shared name between an element inside it and one outside it, which is
-  how the pursuit's findings arose. A denominator equal to the page's own
-  population is the only one that makes "no shared names" mean anything
-  (verification rule 4).
+- **Why every page.** A fixture that covers part of a page cannot see a
+  shared name between an element inside it and one outside it, which is how
+  the pursuit's findings arose, and a check of one page says nothing about
+  the others the obligation binds. A page count and per-page denominators
+  equal to what the evaluation serves are the only ones that make "no
+  shared names" mean anything (verification rule 4).
+- **Why verbatim headings are exempt.** PWB-REQ-011 renders a Butlers body
+  as written; a skipped level there is Butlers' and cannot be repaired by
+  Polaris without breaking verbatim rendering. It is still counted, so it
+  stays visible.
+- **Why the name begins with the visible label.** Speech-input users
+  activate a control by saying what they see.
 - **Why only Polaris.** PWB-REQ-016 governs Polaris. The other surfaces
   belong to POC-REQ-061 in the Three-Surface POC specification, which is a
   separate signed change.
@@ -109,7 +127,8 @@ heading checks cover the whole page".
   requirements: byte-identical (the builder checks this).
 - PWB-REQ-016's existing text, scenario and warrants: every signed line
   survives except three limb-ending lines that the amendment extends, each
-  listed in the builder as `replaced`.
+  listed in the builder as `replaced`; the builder checks that each one's
+  signed text, less its full stop, still opens a proposed line.
 - The keyboard-only walkthrough and its mode flag: unchanged.
 - The capability table: row 19 already covers this ("Make every distinction
   and disclosure path nonvisual and keyboard-operable | covered —
@@ -121,7 +140,7 @@ heading checks cover the whole page".
 - **Accessible name**: the name the browser computes for the accessibility
   tree. Used, not newly defined; the amendment fixes that the computed name
   is the one checked.
-- **Whole-page population**: introduced, defined in the amended
+- **Whole-surface population**: introduced, defined in the amended
   requirement.
 - Nothing retired.
 
@@ -138,7 +157,9 @@ See `IMPACT-LEDGER.md`. Signing authorizes no build.
 - The opening-index amendment (P-98), the class-granular extraction
   amendment (P-86) and the release-label amendment (P-85) are pending over
   the same signed subject. The spec patches touch different requirements and
-  compose in either order (each builder checks this), but every manifest
+  compose in any order: each builder checks its package against each other
+  pending package, and all 24 orders of the four spec patches were applied
+  on 2026-10-03 to one identical result. But every manifest
   hashes post-apply bytes against the current tree, so whichever is signed
   second is regenerated with `--write` first and its new manifest is
   reviewed again.
@@ -148,5 +169,6 @@ See `IMPACT-LEDGER.md`. Signing authorizes no build.
 ## Review
 
 One fresh-context round over this package and the opening-index package
-together, under the stopping rule in
-`../pwb-opening-index-amendment/REVIEW-BRIEF.md`.
+together returned `REVISE`. Under the coordinator's direction after the
+round, the findings were repaired once and no round 2 was dispatched; see
+`ROUND-1-DISPOSITIONS.md`. These bytes are unconfirmed.

@@ -128,3 +128,11 @@ every finding a note, clears the bytes it read; its notes are dispositioned
 in a sibling `ROUND-1-DISPOSITIONS.md` and the package is not edited. Any
 other verdict leaves that package unedited: no second round is dispatched,
 and its findings go to the owner.
+
+**Applied after the round (2026-10-03).** Both packages returned `REVISE`.
+The coordinator then directed that a first-round `REVISE` on a new draft
+is repaired once, with each finding and its repair recorded, and no round
+2 is run; the rule above, which said the packages stay unedited, was
+written for a confirmation round and was not applied. Each package's
+`ROUND-1-DISPOSITIONS.md` records the repairs. The repaired bytes are
+unconfirmed.

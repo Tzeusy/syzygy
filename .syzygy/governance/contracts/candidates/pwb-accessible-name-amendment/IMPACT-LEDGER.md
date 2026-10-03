@@ -47,15 +47,18 @@ in run form (`PWB-REQ-011/016`, line 129).
 ## Packages this collides with
 
 - **Opening-index amendment** (P-98, `pwb-opening-index-amendment/`),
-  drafted in the same change. It changes PWB-REQ-010 only. If both are
-  signed, the index rows are links and fall under this package's
-  distinct-name check.
+  drafted in the same change. It changes PWB-REQ-010 only. Its index rows
+  are links, so they fall under this package's distinct-name check; that
+  package now says each row's accessible name names its question.
 - **Class-granular extraction amendment** (P-86) and **release-label
   amendment** (P-85), pending. They change the reader definitions,
   PWB-REQ-001 and PWB-REQ-002.
 
-All four spec patches touch different requirements and compose in either
-order; this package's builder checks each pair. All four rewrite the one
+All four spec patches touch different requirements and compose in any
+order: this package's builder checks it against each of the other three,
+and all 24 orders of the four were applied on 2026-10-03 to one identical
+result. P-85 and P-86 do overlap outside the spec (both add design decision
+12 and capability row 34). All four rewrite the one
 digest line of the generated dependency file and hash post-apply bytes
 against the current tree, so whichever is signed second is regenerated with
 `--write`, and its manifest reviewed again, before it is offered.

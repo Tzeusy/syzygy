@@ -71,28 +71,43 @@ Three additions to PWB-REQ-010, plus verification limbs and two scenarios.
    Unknown aggregate, the claim-strength legend, the architecture
    statements, and the V1 scope and success-criteria statements. No run,
    reader or model decides a target. If a target is not rendered, its row
-   says so and routes nowhere; it never routes to a substitute.
-2. **Reach offsets.** Each row shows the word offset at which its target
-   begins. One stopping line follows the last indexed target and gives the
-   largest offset and the page's word total. Words are counted one declared
-   way: maximal non-whitespace runs in rendered text nodes, in document
-   order, leaving out `script` and `style` content and the content of every
-   `details` element that is closed on first load.
+   says so and routes nowhere; it never routes to a substitute. A row
+   routes to its target's heading, or its first element when it has none,
+   and its accessible name names its question.
+2. **Reach offsets.** Each row shows its target's word offset: the number
+   of counted words before the target's first counted word. Exactly one
+   stopping line stands right after the first element of the
+   last-beginning target and gives that offset and the page's word total.
+   Words are counted one declared way, over the document as the browser
+   holds it after load: maximal non-whitespace runs in text nodes, in
+   document order. Left out: `script`, `style`, `template` and `noscript`
+   content; anything hidden (`hidden`, `aria-hidden="true"`,
+   `display: none`, `visibility: hidden`); the content of a `details`
+   closed on first load, except its `summary`, which a reader sees; and the
+   index and stopping line themselves.
 3. **Not a verdict.** The index, the offsets and the stopping line are
    presentation measurements. They carry no epistemic tuple, join no
    PWB-REQ-020 parity family, enter no PWB-REQ-021 record or readiness arm,
    and never say or imply that a prompt is, or can be, answered. Row names
-   are `action-label` strings and the offsets and stopping line
-   `scope-instruction` strings, all under PWB-REQ-012's copy rules.
+   are `action-label` strings, the offsets and stopping line
+   `scope-instruction` strings, and an unrendered row's text an
+   `epistemic-disclosure`, all under PWB-REQ-012's copy rules; that
+   requirement's one-instruction limit counts only the statement of the POC
+   bound. The index sits before the PWB-REQ-014 narrative tree and is not
+   one of its units.
 
 The verification limbs add: a Case with every target rendered and one with
 the opening Unknown aggregate absent; an Oracle in which an independent word
-counter recomputes every offset and the total from the served HTML and each
-row's target is compared with the requirement's table, never the renderer's
-mapping; and Falsifier limbs for a missing, duplicated, misordered or
-misrouted row, a routed unrendered row, an offset that differs from the
-independent count, a stopping line that claims an answer, and an offset
-presented as a claim, parity fact or walkthrough fact.
+counter recomputes every offset and the total from the document after load,
+each row's target is compared with the requirement's table (located by a
+recognizer whose selectors are published with the oracle), never the
+renderer's mapping, and exactly one stopping line must stand where the
+requirement places it; and Falsifier limbs for a missing, duplicated,
+misordered or misrouted row, a routed unrendered row, an offset that
+differs from the independent count, a missing, repeated or misplaced
+stopping line or one whose offset is not the largest, a stopping line that
+claims an answer, and an offset presented as a claim, parity fact or
+walkthrough fact.
 
 New scenarios: "The opening index shows where each project question's
 material begins" and "An unrendered index target is stated, not
@@ -115,8 +130,11 @@ substituted".
   may prefer the other (packet, question 2).
 - **Why closed `details` content is left out of the count.** It is not in
   the reader's flow until opened. Counting it would make the offsets
-  describe a page no reader sees on arrival. The total uses the same rule so
+  describe a page no reader sees on arrival. A closed disclosure's
+  `summary` is on screen, so it counts. The total uses the same rule so
   that the two numbers compare.
+- **Why the index does not count itself.** Its rows show the offsets; if
+  they were counted, every offset would depend on the digits of the others.
 - **Why the stopping line says only numbers.** "Everything you need ends
   here" would be the verdict RFC7-31 reserves to the owner. The line marks
   where the last declared target begins, and nothing about understanding.
@@ -127,7 +145,8 @@ substituted".
   requirements: byte-identical (the builder checks this).
 - PWB-REQ-010's existing text, scenarios and warrants: every signed line
   survives except five limb-ending lines that the amendment extends, each
-  listed in the builder as `replaced`.
+  listed in the builder as `replaced`; the builder checks that each one's
+  signed text, less its full stop, still opens a proposed line.
 - PWB-REQ-021: unchanged. The walkthrough record, its readiness arms and
   the owner's verdict are untouched.
 - The capability table: row 9 already covers this ("Present the whole
@@ -156,7 +175,9 @@ touch are named there for planning only; signing authorizes no build.
 - The accessible-name amendment (P-99), the class-granular extraction
   amendment (P-86) and the release-label amendment (P-85) are pending over
   the same signed subject. The spec patches touch different requirements and
-  compose in either order (each builder checks this), but every package's
+  compose in any order: each builder checks its package against each other
+  pending package, and all 24 orders of the four spec patches were applied
+  on 2026-10-03 to one identical result. But every package's
   manifest hashes post-apply bytes against the current tree, so whichever is
   signed second is regenerated with `--write` first and its new manifest is
   reviewed again.
@@ -167,4 +188,6 @@ touch are named there for planning only; signing authorizes no build.
 ## Review
 
 One fresh-context round over this package and the accessible-name package
-together, under the stopping rule in `REVIEW-BRIEF.md`.
+together returned `REVISE`. Under the coordinator's direction after the
+round, the findings were repaired once and no round 2 was dispatched; see
+`ROUND-1-DISPOSITIONS.md`. These bytes are unconfirmed.

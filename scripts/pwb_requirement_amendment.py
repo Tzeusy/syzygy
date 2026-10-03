@@ -124,7 +124,8 @@ class Amendment:
     #: Load-bearing fragments of the proposed block, each exactly once
     #: (whitespace-normalized).
     required_once: tuple[str, ...]
-    #: Signed lines of the block the amendment replaces, and nothing else.
+    #: Signed limb-ending lines of the block the amendment extends, and
+    #: nothing else; each must survive, less its full stop, as a line prefix.
     replaced: tuple[str, ...]
     kept_scenarios: tuple[str, ...]
     new_scenarios: tuple[str, ...]
@@ -283,6 +284,12 @@ def spec_findings(amendment: Amendment, proposed: bytes, current: bytes) -> list
     lost = [line for line in lost_lines(old[rid], block) if line not in amendment.replaced]
     if lost:
         findings.append(f"signed {rid} line edited or removed: {lost[0]!r}")
+    # A replaced line is a signed limb ending that the amendment extends: its
+    # signed text, less the closing full stop, must open a proposed line.
+    for line in amendment.replaced:
+        stem = line.rstrip(".")
+        if not any(new.startswith(stem) for new in block.split("\n")):
+            findings.append(f"signed {rid} replaced line lost its signed text: {line!r}")
     findings.extend(once_findings(rid, block, amendment.required_once))
     for phrase in amendment.kept_scenarios + amendment.new_scenarios:
         if block.count(phrase + "\n") != 1:
@@ -479,6 +486,9 @@ def selftest(amendment: Amendment) -> int:
          f"signed {rid} line edited or removed"),
         ("warrant dropped", "\nwarrants:\n  primary: ", "\nwarrants:\n  primary: X",
          f"{rid} warrants changed"),
+        ("replaced line truncated", amendment.replaced[0].rstrip("."),
+         amendment.replaced[0].rstrip(".")[:-6] + "zzzzzz",
+         f"signed {rid} replaced line lost its signed text"),
     )
     failed = 0
     for name, old, new, expected in common + amendment.mutants:

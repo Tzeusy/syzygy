@@ -4,11 +4,14 @@
 > accepted. This packet puts seven questions to the owner, and only the
 > owner's answer binds anything (VIS-4).
 
-**Status:** drafted 2026-10-03 on bead `syzygy-u05.12` (pursuit move N12,
-slice A), register row P-98. One fresh-context review round covers this
-package and the accessible-name package (P-99) together; its verdict and
-what it found are in `ROUND-1-DISPOSITIONS.md` beside this file once the
-round has run. Until then these bytes are unreviewed.
+**Status: round 1 `REVISE`, repaired once, unconfirmed; owner decides.**
+Drafted 2026-10-03 on bead `syzygy-u05.12` (pursuit move N12, slice A),
+register row P-98. One fresh-context round covered this package and the
+accessible-name (P-99) package together and returned `REVISE`. Under the coordinator's
+direction the findings were repaired once and no round 2 was dispatched;
+`ROUND-1-DISPOSITIONS.md` beside this file says what each finding changed.
+These bytes are not offered as cleared: you decide whether to sign them,
+order a confirmation round first, or revise.
 
 ## What you would be signing
 
@@ -46,9 +49,10 @@ requirement, capability row, contract-coverage row or warrant moves.
 
 | Option | Meaning |
 |---|---|
-| **Sign v1.0** (recommended if the round clears it) | The patch is applied in the sign-off change by version tag (Scope A covers PWB specification deltas). PWB-REQ-010 gains the index, the offsets and two scenarios. |
+| Sign v1.0 (the repaired bytes are unconfirmed) | The patch is applied in the sign-off change by version tag (Scope A covers PWB specification deltas). PWB-REQ-010 gains the index, the offsets and two scenarios. |
 | Decline | PWB-REQ-010 stays as signed: no index, and nothing tells a reader where the project material ends. |
 | Revise | Name what to change; a new version gets a new review round. |
+| **Order one confirmation round** (recommended) | One fresh-context round over the repaired bytes; a notes-only verdict clears them for signing. |
 
 ## Question 2 — what the rows are keyed to
 
@@ -57,11 +61,18 @@ requirement, capability row, contract-coverage row or warrant moves.
 | **The nine walkthrough identities of PWB-REQ-021** (recommended; this version) | The rows are the questions the cold-open walkthrough asks, in its order. |
 | The project categories PWB-REQ-010 lists | The rows follow the order the opening already uses (purpose, promises, non-goals, architecture, V1 scope, success criteria). Simpler, but "where exactness lives", "one Unknown" and "claim strength" would have no row. |
 
+Two targets in this version are narrower than their questions, and the
+review asked that you see them: the `gaps` row goes only to the opening
+Unknown aggregate, so a project with a contradiction and no Unknown shows
+that row as not rendered; and the non-goals row goes to the non-goal
+statements, while RFC7-30 also asks the reader to reach a non-goal's rule
+text. Widening either is a revision.
+
 ## Question 3 — how words are counted
 
 | Option | Meaning |
 |---|---|
-| **Words in the flow on arrival** (recommended; this version) | Text inside a collapsed disclosure is left out until opened. The numbers describe the page a reader actually sees first. |
+| **Words in the flow on arrival** (recommended; this version) | Text inside a collapsed disclosure is left out until opened, but its visible toggle label counts; hidden text and the index itself are left out. The numbers describe the page a reader actually sees first. |
 | Every word, collapsed or not | Larger numbers that describe a page nobody reads in one pass. |
 
 ## Question 4 — should the offsets also be machine-readable?
@@ -77,7 +88,7 @@ PWB-REQ-012 requires every Polaris string to carry exactly one of four roles.
 
 | Option | Meaning |
 |---|---|
-| **Row names are action labels; the offsets and the stopping line are scope instructions** (recommended; this version) | The numbers tell a reader how much there is to read, which is what a scope instruction does. |
+| **Row names are action labels; the offsets and the stopping line are scope instructions; an unrendered row's text is an epistemic disclosure** (recommended; this version) | The numbers tell a reader how much there is to read, which is what a scope instruction does. This version reads PWB-REQ-012's limit of one entry scope instruction as covering only the statement of the POC bound, and places the index before PWB-REQ-014's narrative tree, outside its units. Both readings are yours to confirm. |
 | A new role | Needs an amendment to PWB-REQ-012's closed set. |
 
 ## Question 6 — slice B: offsets in the walkthrough record (not drafted)
@@ -118,8 +129,9 @@ home page.
 ## Order against the other pending packages
 
 The accessible-name (P-99), class-granular (P-86) and release-label (P-85)
-packages are pending over the same signed specification. Their changes do
-not overlap and compose in any order, but each manifest is built over the
+packages are pending over the same signed specification. Their spec changes
+compose in any order (P-85 and P-86 also share a design decision and a
+capability row number), but each manifest is built over the
 current tree, so whichever is signed second is regenerated and reviewed
 again first.
 

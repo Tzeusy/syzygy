@@ -57,8 +57,11 @@ requirement only in run form (`PWB-REQ-001/002/…/010/…`, line 226).
   amendment** (P-85), pending. They change the reader definitions,
   PWB-REQ-001 and PWB-REQ-002.
 
-All four spec patches touch different requirements and compose in either
-order; this package's builder checks each pair. All four rewrite the one
+All four spec patches touch different requirements and compose in any
+order: this package's builder checks it against each of the other three,
+and all 24 orders of the four were applied on 2026-10-03 to one identical
+result. P-85 and P-86 do overlap outside the spec (both add design decision
+12 and capability row 34). All four rewrite the one
 digest line of the generated dependency file and hash post-apply bytes
 against the current tree, so whichever is signed second is regenerated with
 `--write`, and its manifest reviewed again, before it is offered.
