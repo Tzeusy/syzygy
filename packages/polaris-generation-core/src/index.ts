@@ -21,6 +21,10 @@ export {
   type SourcePopulationFailure,
 } from './admitted-input.js';
 export { promptForStage, type GenerationStage } from './prompts.js';
+export {
+  dossierPromptForStage, discoveryPrompt, DOSSIER_STAGE_ILLUSTRATIONS, DOSSIER_ILLUSTRATION_SOURCES,
+  DISCOVERY_MAP_ILLUSTRATION, DISCOVERY_REDUCE_ILLUSTRATION, DISCOVERY_MAP_RESPONSE_SCHEMA, DISCOVERY_REDUCE_RESPONSE_SCHEMA,
+} from './dossier-prompts.js';
 export { runGenerationPipeline, type PipelineRequest, type PipelinePorts, type PipelineResult, type GenerationBudget, type AdmissionDecision, type DispatchPermit, type AttemptInput, type AttemptOutcome, type InvalidOutputReason, type ProviderReply, type StageReceipt } from './pipeline.js';
 export { SOURCE_TEXT_MAX_LENGTH, stageSchema, validateStage, validateDraftRecord, validateRequestedAssets, reviewVerdict, diagramToMermaid, DIAGRAM_KINDS } from './provider-draft.js';
 export type { ProviderDraft, ProviderParagraph, ProviderBlock, ProviderDiagram, ProviderDiagramNode, ProviderDiagramEdge, DiagramKind, EpistemicMarking, RequestedAsset } from './provider-draft.js';
