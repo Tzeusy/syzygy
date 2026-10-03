@@ -16,10 +16,12 @@ off as v1.0 on 2026-10-03 (``decisions/PWB-TREE-FRAMING-AMENDMENT-SIGNOFF-v1.0.m
 ``--check`` reports the applied state when every signed subject carries its
 manifest row, as the readability successor's ``--check`` does. Until this
 branch existed, it failed with "patch does not apply" over bytes that matched
-its manifest exactly. ``--selftest`` and the candidate check build from the
-pre-adoption bytes, so after sign-off they still stop at "patch does not
-apply". When a later sign-off rewrites a subject, ``--check`` fails that same
-way, and the failure then means superseded, not broken.
+its manifest exactly. The candidate check builds from the pre-adoption
+bytes, so after sign-off it still stops at "patch does not apply". When a
+later sign-off rewrites a subject, ``--check`` fails that same way, and the
+failure then means superseded, not broken. ``--selftest`` does not fail there:
+since syzygy-tmkb it re-runs itself against the pre-adoption tree through
+``scripts/pwb_signed_selftest.py`` (``rerun_before_signoff``) and passes.
 """
 
 from __future__ import annotations
