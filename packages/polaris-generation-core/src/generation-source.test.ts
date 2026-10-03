@@ -56,6 +56,16 @@ describe('evaluation-bound generation sources', () => {
   });
 });
 
+describe('byte-order mark', () => {
+  it('keeps a leading U+FEFF in a span so a BOM file still validates against its blob', () => {
+    const text = '\uFEFFhello\n';
+    const [only] = generationSourcesForBody({ sourceId: 'bom', repositoryId: 'repository:fixture', revision: 'a'.repeat(40), path: 'bom.txt',
+      objectId: gitBlobObjectId(text), evaluationId: 'e', body: text });
+    expect(validateGenerationSources([only!])).toHaveLength(1);
+    expect(only!.spans[0]!.text.startsWith('\uFEFF')).toBe(true);
+  });
+});
+
 describe('oversize bodies', () => {
   const big = `${'line of ordinary text \u00e9\u4e2d!\n'.repeat(9000)}tail`;
   const ident = (text: string) => ({ repositoryId: 'repository:fixture', revision: 'a'.repeat(40), path: 'src/big.c', objectId: gitBlobObjectId(text),
