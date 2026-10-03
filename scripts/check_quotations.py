@@ -57,6 +57,9 @@ of a population rule is RD-6 F-3's defect), the eleven `round-*`
 directories, and `contracts/candidates/history/`. Their quotations are
 scanned and their not-found-now counts printed, so the exclusion is a
 reported denominator rather than a silence; their history is not searched.
+A `-RAW.md` name alone exempts nothing. Every run prints the `.md` files
+scanned and each excluded class's file count, which sum to the tracked
+`.md` population.
 
 **RESIDUAL LIMIT.** A quotation with no adjacent locator, a blockquote under
 a locator line, a paraphrase, and a quotation of a source outside the
@@ -138,7 +141,7 @@ RECORDED = (
 
 def excluded_class(rel):
     """Why `rel` is a verbatim record outside the failing population."""
-    if _is_raw_review(rel) or rel.endswith("-RAW.md"):
+    if _is_raw_review(rel):
         return "raw review"
     if ROUND_DIR.search(rel):
         return "round directory"
@@ -298,6 +301,9 @@ class Result:
     drift: list = dataclasses.field(default_factory=list)
     unresolved: int = 0
     citing_files: int = 0
+    scanned: int = 0
+    excluded_files: collections.Counter = dataclasses.field(
+        default_factory=collections.Counter)
     excluded: collections.Counter = dataclasses.field(
         default_factory=collections.Counter)
     excluded_misses: collections.Counter = dataclasses.field(
@@ -316,6 +322,10 @@ def check(corpus, tracked=None, revisions=None, recorded=RECORDED):
         if not rel.endswith(".md"):
             continue
         cls = excluded_class(rel)
+        if cls:
+            res.excluded_files[cls] += 1
+        else:
+            res.scanned += 1
         counted = False
         for q in quotations(rel, corpus[rel]):
             targets = resolve(rel, q.path, corpus, tracked)
@@ -393,7 +403,8 @@ def report(res, verbose=False):
     forms = ", ".join(f"{name} {res.examined[name]}" for name, _ in FORMS)
     print(f"{status:5} QC-1  a quotation beside a path:line locator was said "
           f"by that file — {total} quotations examined in "
-          f"{res.citing_files} files ({forms}), {len(res.findings)} findings")
+          f"{res.citing_files} of {res.scanned} .md files scanned ({forms}), "
+          f"{len(res.findings)} findings")
     for f in res.findings:
         print(f"        {f}")
     print(f"note  QC-1  {len(res.recorded)} recorded findings, printed every "
@@ -415,8 +426,9 @@ def report(res, verbose=False):
                 print(f"        {line}")
     print(f"note  QC-1  {res.unresolved} locators name no tracked file "
           f"(CG-1 owns dangling paths); not examined")
-    for cls in sorted(res.excluded):
+    for cls in sorted(res.excluded_files):
         print(f"note  QC-1  excluded verbatim records, {cls}: "
+              f"{res.excluded_files[cls]} .md files, "
               f"{res.excluded[cls]} quotations, {res.excluded_misses[cls]} "
               f"not in their source now; history not searched")
     return 1 if res.findings else 0
@@ -508,6 +520,18 @@ def selftest():
     expect("verbatim records are counted, never failed",
            not res.findings and dict(res.excluded_misses) == want,
            dict(res.excluded_misses))
+    files = (res.scanned, dict(res.excluded_files))
+    expect("every .md file is scanned or counted in one excluded class",
+           files == (3, {"raw review": 1, "round directory": 1}), files)
+
+    # The raw-review class is `_is_raw_review` and nothing wider: a `-RAW.md`
+    # name outside its homes is an ordinary file (syzygy-02ez).
+    corpus = dict(FIXTURE)
+    corpus["docs/evidence/x/REVIEW-RAW.md"] = '`a/SOURCE.md:5` ("not there")\n'
+    res = check(corpus, revisions=fake_revisions, recorded=())
+    got = (len(res.findings), dict(res.excluded_files))
+    expect("a -RAW.md name outside the raw-review homes is not exempt",
+           got == (1, {}), got)
 
     wrong = '`a/SOURCE.md:5` ("The modules lose to this file")\n'
     entry = ("docs/CITER.md", "The modules lose", "fixture")
