@@ -72,6 +72,23 @@ describe('Messages API route', () => {
     }
   });
 
+  it('refuses body fields and headers named like Object.prototype members', async () => {
+    await call(make(config()), undefined);
+    const good = endpoint.requests[0]!;
+    expect(good.body.endsWith('}')).toBe(true);
+    for (const key of ['constructor', 'toString', '__proto__', 'hasOwnProperty']) {
+      // Spliced into the JSON text: JSON.parse makes each one an own property, as a provider-bound body would carry it.
+      const body = `${good.body.slice(0, -1)},"${key}":{}}`;
+      const verdict = acceptMessagesApiRequest({ ...good, body, headers: { ...good.headers, 'content-length': String(Buffer.byteLength(body)) } }, expectation);
+      expect(verdict, key).toEqual({ accepted: false, violations: [`unlisted body field ${key}`] });
+    }
+    for (const name of ['constructor', '__proto__', 'tostring', 'hasownproperty']) {
+      const headers: Record<string, string | string[] | undefined> = { ...good.headers };
+      Object.defineProperty(headers, name, { value: 'x', enumerable: true, configurable: true, writable: true });
+      expect(acceptMessagesApiRequest({ ...good, headers }, expectation), name).toEqual({ accepted: false, violations: [`unlisted header ${name}`] });
+    }
+  });
+
   it('retries 429 then 529, reports every try, and stops on exhaustion or other statuses', async () => {
     endpoint.script({ kind: 'status', status: 429 }, { kind: 'status', status: 529 }, { kind: 'text', text: '{}', inputTokens: 5, outputTokens: 3 });
     const h = make(config());

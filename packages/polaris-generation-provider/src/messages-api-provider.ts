@@ -226,19 +226,20 @@ export function acceptMessagesApiRequest(captured: CapturedRequest, expected: { 
   const violations: string[] = [];
   if (captured.method !== 'POST' || captured.url !== '/v1/messages') violations.push(`unexpected endpoint ${captured.method} ${captured.url}`);
   for (const [name, value] of Object.entries(captured.headers)) {
-    if (name in LITERALS) { if (value !== LITERALS[name]) violations.push(`header ${name} is not the pinned literal`); }
-    else if (name in SHAPES) { if (typeof value !== 'string' || !SHAPES[name]!.test(value)) violations.push(`header ${name} is not a listed shape`); }
+    if (Object.hasOwn(LITERALS, name)) { if (value !== LITERALS[name]) violations.push(`header ${name} is not the pinned literal`); }
+    else if (Object.hasOwn(SHAPES, name)) { if (typeof value !== 'string' || !SHAPES[name]!.test(value)) violations.push(`header ${name} is not a listed shape`); }
     else if (name === 'content-length') { if (value !== String(Buffer.byteLength(captured.body))) violations.push('header content-length does not match the body'); }
     else if (name === 'x-api-key') { if (typeof value !== 'string' || value.length === 0 || (expected.apiKey !== undefined && value !== expected.apiKey)) violations.push('header x-api-key is not the configured credential'); }
     else if (!OPTIONAL_SHAPES.has(name)) violations.push(`unlisted header ${name}`);
   }
-  for (const name of Object.keys(LITERALS)) if (!(name in captured.headers)) violations.push(`header ${name} missing`);
+  for (const name of Object.keys(LITERALS)) if (!Object.hasOwn(captured.headers, name)) violations.push(`header ${name} missing`);
   let body: unknown;
   try { body = JSON.parse(captured.body); } catch { return { accepted: false, violations: [...violations, 'body is not JSON'] }; }
   const want = messagesApiBody({ model: expected.model, effort: expected.effort as MessagesApiProviderConfig['effort'], ...(expected.thinking === undefined ? {} : { thinking: expected.thinking }) }, expected.system, expected.input, expected.maxTokens);
   const got = body as Record<string, unknown>;
   if (got === null || typeof got !== 'object' || Array.isArray(got)) return { accepted: false, violations: [...violations, 'body is not an object'] };
-  for (const key of Object.keys(got)) if (!(key in want)) violations.push(`unlisted body field ${key}`);
+  // Own keys only: `in` would also admit constructor, toString, __proto__ and hasOwnProperty from the prototype chain.
+  for (const key of Object.keys(got)) if (!Object.hasOwn(want, key)) violations.push(`unlisted body field ${key}`);
   for (const key of Object.keys(want)) if (JSON.stringify(got[key]) !== JSON.stringify(want[key])) violations.push(`body field ${key} differs from the generator and profile`);
   return { accepted: violations.length === 0, violations };
 }
