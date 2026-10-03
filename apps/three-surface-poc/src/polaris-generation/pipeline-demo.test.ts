@@ -15,7 +15,7 @@ afterEach(() => { for (const directory of cleanups.splice(0)) rmSync(directory, 
 
 describe('concrete source-to-draft pipeline exercise', () => {
   it('runs the same engine and schemas over two synthetic domains with prose, diagrams and component depth', async () => {
-    const runs = await Promise.all(syntheticProjects.map(runSyntheticProject));
+    const runs = await Promise.all(syntheticProjects.map(project => runSyntheticProject(project)));
     for (const run of runs) {
       expect(run.result.status).toBe('awaiting-rendered-review');
       if (run.result.status !== 'awaiting-rendered-review') throw Error(run.result.reason);
