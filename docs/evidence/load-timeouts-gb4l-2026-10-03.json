@@ -1,0 +1,2023 @@
+{
+  "bead": "syzygy-gb4l",
+  "date": "2026-10-03",
+  "subject": "Load failures in build-output.test.ts, self-corpus.test.ts and durable-lifecycle.test.ts (apps/three-surface-poc); draft-preview.browser excluded (syzygy-za9v)",
+  "measuredAt": {
+    "commit": "c27fbf4761a147fa80ca8217621c07d2b67f00de",
+    "note": "Measured at c27fbf4 (rebased on ab22492). Mutants ran at an unpushed working commit with identical test-file blobs; any later rebase re-hashes the commit, so the blobs are the stable anchor.",
+    "testFileBlobs": {
+      "apps/three-surface-poc/src/build-output.test.ts": "d48938621218c95d43cc22db017013f45954cd46",
+      "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts": "a38595900dc1329257b166722e17628185d78564",
+      "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts": "24c84df04e8001f699740fa756d476679dd861d4"
+    }
+  },
+  "diagnosis": {
+    "build-output.test.ts": {
+      "classes": {
+        "timeout": 13,
+        "poisonedRead": 6,
+        "failedBuild": 1,
+        "over": "46 loaded reports (syzygy-4d15 before/after and syzygy-pln3 after, measured and companion)"
+      },
+      "timeoutCause": "Two sequential forced tsc -b builds of five projects: about 14-15 s alone, median 56 s and worst 69.9 s under the parallel-load protocol, against the 60 s limit set by syzygy-gk9.",
+      "interferenceCause": "The test poisoned the checkout's shared apps/three-surface-poc/dist/main.js between two builds. A second test run in the same checkout (the protocol's companion, or a second session) could read the other's poison after its own rebuild (poisoned read) or collide with its build (failed build). Not a timeout.",
+      "interferenceReproduction": {
+        "note": "Two concurrent runs of the build test, three trials each, with a cross-process lock (an intermediate design, since replaced) and without it.",
+        "runs": [
+          {
+            "variant": "locked",
+            "trial": 0,
+            "wallSeconds": 31,
+            "results": [
+              {
+                "status": "passed",
+                "durationMs": 13563,
+                "message": ""
+              },
+              {
+                "status": "passed",
+                "durationMs": 28985,
+                "message": ""
+              }
+            ]
+          },
+          {
+            "variant": "locked",
+            "trial": 1,
+            "wallSeconds": 46,
+            "results": [
+              {
+                "status": "passed",
+                "durationMs": 26317,
+                "message": ""
+              },
+              {
+                "status": "passed",
+                "durationMs": 43200,
+                "message": ""
+              }
+            ]
+          },
+          {
+            "variant": "locked",
+            "trial": 2,
+            "wallSeconds": 28,
+            "results": [
+              {
+                "status": "passed",
+                "durationMs": 13407,
+                "message": ""
+              },
+              {
+                "status": "passed",
+                "durationMs": 26894,
+                "message": ""
+              }
+            ]
+          },
+          {
+            "variant": "unlocked",
+            "trial": 0,
+            "wallSeconds": 16,
+            "results": [
+              {
+                "status": "passed",
+                "durationMs": 14484,
+                "message": ""
+              },
+              {
+                "status": "passed",
+                "durationMs": 14453,
+                "message": ""
+              }
+            ]
+          },
+          {
+            "variant": "unlocked",
+            "trial": 1,
+            "wallSeconds": 16,
+            "results": [
+              {
+                "status": "failed",
+                "durationMs": 14957,
+                "message": "AssertionError: expected 'throw new Error(\"poisoned ignored POC\u2026' not to contain 'throw new Error(\"poisoned ignored POC\u2026"
+              },
+              {
+                "status": "passed",
+                "durationMs": 14920,
+                "message": ""
+              }
+            ]
+          },
+          {
+            "variant": "unlocked",
+            "trial": 2,
+            "wallSeconds": 16,
+            "results": [
+              {
+                "status": "passed",
+                "durationMs": 15334,
+                "message": ""
+              },
+              {
+                "status": "passed",
+                "durationMs": 15116,
+                "message": ""
+              }
+            ]
+          }
+        ],
+        "mutant": {
+          "old": "      const release = await acquireLock(BUILD_LOCK, LOCK_WAIT_MS);\n",
+          "new": "      const release = (): void => undefined;\n"
+        }
+      },
+      "crashHazard": "[Observed] Killing a run of the intermediate lock version mid-test left dist/main.js containing the poison line and a stale lock. A lock serializes concurrent runs but cannot repair a crash between poison and rebuild; a later 'npm run poc' rebuilds first, but a direct 'node apps/three-surface-poc/dist/main.js' would run the poison. The checkout was rebuilt and the lock removed.",
+      "fix": "The test now copies the working-tree root files and apps/ and packages/ (git ls-files --cached --others --exclude-standard, so uncommitted edits are included) into a private temporary directory, runs npm ci there (2 s and 55 MB from a warm cache at load 33), and builds, poisons and rebuilds only that copy; the copy is removed in finally. The checkout's dist/main.js was byte- and mtime-identical across a run. Per-test timeout 240 s (two builds' measured worst 69.9 s plus copy and install; a cold npm cache costs more). No assertion changed."
+    },
+    "self-corpus.test.ts": {
+      "cause": "'reads only tracked blobs from the pinned commit' runs the production readSelfCorpus, which spawns one git cat-file per selected blob (over a hundred at the pinned commit; same pattern as syzygy-pln3 and the svoj follow-up). About 0.9-1.0 s alone in the after runs; median 4.6 s and worst 7.8 s under load, against the default 5 s.",
+      "fix": "Explicit per-test timeout PINNED_READ_TIMEOUT_MS = 60_000 with a comment; the read is the subject of the test, so it cannot be hoisted or replaced."
+    },
+    "durable-lifecycle.test.ts": {
+      "cause": "Fixed small workload (scripted pipeline over a journal that fsyncs every write: 10, 10, 2 and 20 fsync calls per test by strace; about 0.3 s alone). Under one concurrent full run at load 19-23, six strace runs measured 42 fsyncs totalling 0.50-0.89 s with the worst single fsync 50 ms, and test durations under 0.6 s. The 6.3 s outlier (2 of 46 executions of one test) is therefore [Inferred] a host stall rather than a cost in the test.",
+      "fix": "Explicit per-test timeout JOURNAL_TIMEOUT_MS = 30_000 on all four tests, with a comment."
+    }
+  },
+  "protocol": "As syzygy-4d15: each measured full app-project run ran concurrently with one companion full run in the same worktree, alongside the other lane's load; load1m sampled at each run's end. Timeout classifier: failure message starting 'Error: STACK_TRACE_ERROR' or containing 'timed out in'.",
+  "before": {
+    "note": "Test files and the two loaders had the same blobs at 0170bfc, fd8d1a2, bb6b893 and this branch's base.",
+    "reports": [
+      {
+        "source": "4d15/before run 1 full",
+        "load1mAtEnd": 35.88
+      },
+      {
+        "source": "4d15/before run 1 companion",
+        "load1mAtEnd": 35.88
+      },
+      {
+        "source": "4d15/before run 2 full",
+        "load1mAtEnd": 43.46
+      },
+      {
+        "source": "4d15/before run 2 companion",
+        "load1mAtEnd": 43.46
+      },
+      {
+        "source": "4d15/before run 3 full",
+        "load1mAtEnd": 43.49
+      },
+      {
+        "source": "4d15/before run 3 companion",
+        "load1mAtEnd": 43.49
+      },
+      {
+        "source": "4d15/after run 1 full",
+        "load1mAtEnd": 32.08
+      },
+      {
+        "source": "4d15/after run 1 companion",
+        "load1mAtEnd": 32.08
+      },
+      {
+        "source": "4d15/after run 2 full",
+        "load1mAtEnd": 31.2
+      },
+      {
+        "source": "4d15/after run 2 companion",
+        "load1mAtEnd": 31.2
+      },
+      {
+        "source": "4d15/after run 3 full",
+        "load1mAtEnd": 31.5
+      },
+      {
+        "source": "4d15/after run 3 companion",
+        "load1mAtEnd": 31.5
+      },
+      {
+        "source": "4d15/after run 4 full",
+        "load1mAtEnd": 35.12
+      },
+      {
+        "source": "4d15/after run 4 companion",
+        "load1mAtEnd": 35.12
+      },
+      {
+        "source": "4d15/after run 5 full",
+        "load1mAtEnd": 36.15
+      },
+      {
+        "source": "4d15/after run 5 companion",
+        "load1mAtEnd": 36.15
+      },
+      {
+        "source": "4d15/after run 6 full",
+        "load1mAtEnd": 34.32
+      },
+      {
+        "source": "4d15/after run 6 companion",
+        "load1mAtEnd": 34.32
+      },
+      {
+        "source": "4d15/after run 7 full",
+        "load1mAtEnd": 32.5
+      },
+      {
+        "source": "4d15/after run 7 companion",
+        "load1mAtEnd": 32.5
+      },
+      {
+        "source": "4d15/after run 8 full",
+        "load1mAtEnd": 30.46
+      },
+      {
+        "source": "4d15/after run 8 companion",
+        "load1mAtEnd": 30.46
+      },
+      {
+        "source": "4d15/after run 9 full",
+        "load1mAtEnd": 31.63
+      },
+      {
+        "source": "4d15/after run 9 companion",
+        "load1mAtEnd": 31.63
+      },
+      {
+        "source": "4d15/after run 10 full",
+        "load1mAtEnd": 31.35
+      },
+      {
+        "source": "4d15/after run 10 companion",
+        "load1mAtEnd": 31.35
+      },
+      {
+        "source": "pln3/after run 1 full",
+        "load1mAtEnd": 39.16
+      },
+      {
+        "source": "pln3/after run 1 companion",
+        "load1mAtEnd": 39.16
+      },
+      {
+        "source": "pln3/after run 2 full",
+        "load1mAtEnd": 38.44
+      },
+      {
+        "source": "pln3/after run 2 companion",
+        "load1mAtEnd": 38.44
+      },
+      {
+        "source": "pln3/after run 3 full",
+        "load1mAtEnd": 37.43
+      },
+      {
+        "source": "pln3/after run 3 companion",
+        "load1mAtEnd": 37.43
+      },
+      {
+        "source": "pln3/after run 4 full",
+        "load1mAtEnd": 35.41
+      },
+      {
+        "source": "pln3/after run 4 companion",
+        "load1mAtEnd": 35.41
+      },
+      {
+        "source": "pln3/after run 5 full",
+        "load1mAtEnd": 35.14
+      },
+      {
+        "source": "pln3/after run 5 companion",
+        "load1mAtEnd": 35.14
+      },
+      {
+        "source": "pln3/after run 6 full",
+        "load1mAtEnd": 35.44
+      },
+      {
+        "source": "pln3/after run 6 companion",
+        "load1mAtEnd": 35.44
+      },
+      {
+        "source": "pln3/after run 7 full",
+        "load1mAtEnd": 32.15
+      },
+      {
+        "source": "pln3/after run 7 companion",
+        "load1mAtEnd": 32.15
+      },
+      {
+        "source": "pln3/after run 8 full",
+        "load1mAtEnd": 30.0
+      },
+      {
+        "source": "pln3/after run 8 companion",
+        "load1mAtEnd": 30.0
+      },
+      {
+        "source": "pln3/after run 9 full",
+        "load1mAtEnd": 42.43
+      },
+      {
+        "source": "pln3/after run 9 companion",
+        "load1mAtEnd": 42.43
+      },
+      {
+        "source": "pln3/after run 10 full",
+        "load1mAtEnd": 36.26
+      },
+      {
+        "source": "pln3/after run 10 companion",
+        "load1mAtEnd": 36.26
+      }
+    ],
+    "perTest": {
+      "build-output.test.ts > re-emits ignored JavaScript before the launcher executes it": {
+        "executions": 46,
+        "outcomes": {
+          "passed": 26,
+          "timeout": 13,
+          "failed: AssertionError: expected 'throw new Error(\"poisoned ignored POC\u2026' not to contain 'throw new Error(\"poisoned ignored POC\u2026": 6,
+          "failed: Error: Command failed: npm run build:poc --silent": 1
+        },
+        "worstMs": 69926
+      },
+      "durable-lifecycle.test.ts > admits at most one concurrent dispatch and keeps distinct run artifacts separate": {
+        "executions": 46,
+        "outcomes": {
+          "passed": 46
+        },
+        "worstMs": 3871
+      },
+      "durable-lifecycle.test.ts > keeps uncertain maximum reserved despite missing receipts and an expired lease field": {
+        "executions": 46,
+        "outcomes": {
+          "passed": 46
+        },
+        "worstMs": 1045
+      },
+      "durable-lifecycle.test.ts > refuses changed request, route or current permission and a forged completed artifact": {
+        "executions": 46,
+        "outcomes": {
+          "passed": 46
+        },
+        "worstMs": 3557
+      },
+      "durable-lifecycle.test.ts > reuses four verified checkpoints and sends only the missing fidelity stage after restart": {
+        "executions": 46,
+        "outcomes": {
+          "passed": 44,
+          "timeout": 2
+        },
+        "worstMs": 6271
+      },
+      "self-corpus.test.ts > does not read a local or untracked file even when it lies in the allowed-looking path": {
+        "executions": 46,
+        "outcomes": {
+          "passed": 46
+        },
+        "worstMs": 1106
+      },
+      "self-corpus.test.ts > reads only tracked blobs from the pinned commit and independently recounts its denominator": {
+        "executions": 46,
+        "outcomes": {
+          "timeout": 14,
+          "passed": 32
+        },
+        "worstMs": 7797
+      },
+      "self-corpus.test.ts > refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation": {
+        "executions": 46,
+        "outcomes": {
+          "passed": 46
+        },
+        "worstMs": 12562
+      },
+      "self-corpus.test.ts > refuses a requested pinned commit that is unavailable rather than substituting HEAD": {
+        "executions": 46,
+        "outcomes": {
+          "passed": 46
+        },
+        "worstMs": 156
+      }
+    }
+  },
+  "after": {
+    "denominator": {
+      "fullRuns": 10,
+      "reportsCounted": 20,
+      "testsPerRun": 590,
+      "inScopeExecutions": 180,
+      "inScopeTimeouts": 0,
+      "inScopeFailures": 0,
+      "failuresAnyFileMeasured": 0,
+      "failuresAnyFileCompanion": 0
+    },
+    "statement": "10 consecutive full app-project runs, each with a concurrent companion (20 reports): 180 in-scope executions (9 tests x 20), 0 timeouts, 0 failures; every run and every companion exited with 0 failures across all 590 tests. Load at run end was 25.5-30.9, lower than the before runs' 30-43.",
+    "perTest": {
+      "build-output.test.ts > re-emits ignored JavaScript before the launcher executes it": {
+        "executions": 20,
+        "outcomes": {
+          "passed": 20
+        },
+        "worstMs": 50649
+      },
+      "durable-lifecycle.test.ts > admits at most one concurrent dispatch and keeps distinct run artifacts separate": {
+        "executions": 20,
+        "outcomes": {
+          "passed": 20
+        },
+        "worstMs": 846
+      },
+      "durable-lifecycle.test.ts > keeps uncertain maximum reserved despite missing receipts and an expired lease field": {
+        "executions": 20,
+        "outcomes": {
+          "passed": 20
+        },
+        "worstMs": 74
+      },
+      "durable-lifecycle.test.ts > refuses changed request, route or current permission and a forged completed artifact": {
+        "executions": 20,
+        "outcomes": {
+          "passed": 20
+        },
+        "worstMs": 471
+      },
+      "durable-lifecycle.test.ts > reuses four verified checkpoints and sends only the missing fidelity stage after restart": {
+        "executions": 20,
+        "outcomes": {
+          "passed": 20
+        },
+        "worstMs": 483
+      },
+      "self-corpus.test.ts > does not read a local or untracked file even when it lies in the allowed-looking path": {
+        "executions": 20,
+        "outcomes": {
+          "passed": 20
+        },
+        "worstMs": 928
+      },
+      "self-corpus.test.ts > reads only tracked blobs from the pinned commit and independently recounts its denominator": {
+        "executions": 20,
+        "outcomes": {
+          "passed": 20
+        },
+        "worstMs": 4894
+      },
+      "self-corpus.test.ts > refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation": {
+        "executions": 20,
+        "outcomes": {
+          "passed": 20
+        },
+        "worstMs": 8822
+      },
+      "self-corpus.test.ts > refuses a requested pinned commit that is unavailable rather than substituting HEAD": {
+        "executions": 20,
+        "outcomes": {
+          "passed": 20
+        },
+        "worstMs": 132
+      }
+    },
+    "aloneRuns": [
+      {
+        "file": "build-output",
+        "run": 1,
+        "load1m": 14.06,
+        "tests": [
+          {
+            "title": "re-emits ignored JavaScript before the launcher executes it",
+            "durationMs": 15036,
+            "outcome": "passed"
+          }
+        ]
+      },
+      {
+        "file": "build-output",
+        "run": 2,
+        "load1m": 11.27,
+        "tests": [
+          {
+            "title": "re-emits ignored JavaScript before the launcher executes it",
+            "durationMs": 14609,
+            "outcome": "passed"
+          }
+        ]
+      },
+      {
+        "file": "build-output",
+        "run": 3,
+        "load1m": 10.24,
+        "tests": [
+          {
+            "title": "re-emits ignored JavaScript before the launcher executes it",
+            "durationMs": 14389,
+            "outcome": "passed"
+          }
+        ]
+      },
+      {
+        "file": "durable-lifecycle",
+        "run": 1,
+        "load1m": 13.33,
+        "tests": [
+          {
+            "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+            "durationMs": 110,
+            "outcome": "passed"
+          },
+          {
+            "title": "refuses changed request, route or current permission and a forged completed artifact",
+            "durationMs": 106,
+            "outcome": "passed"
+          },
+          {
+            "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+            "durationMs": 11,
+            "outcome": "passed"
+          },
+          {
+            "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+            "durationMs": 237,
+            "outcome": "passed"
+          }
+        ]
+      },
+      {
+        "file": "durable-lifecycle",
+        "run": 2,
+        "load1m": 10.61,
+        "tests": [
+          {
+            "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+            "durationMs": 138,
+            "outcome": "passed"
+          },
+          {
+            "title": "refuses changed request, route or current permission and a forged completed artifact",
+            "durationMs": 112,
+            "outcome": "passed"
+          },
+          {
+            "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+            "durationMs": 38,
+            "outcome": "passed"
+          },
+          {
+            "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+            "durationMs": 198,
+            "outcome": "passed"
+          }
+        ]
+      },
+      {
+        "file": "durable-lifecycle",
+        "run": 3,
+        "load1m": 9.59,
+        "tests": [
+          {
+            "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+            "durationMs": 97,
+            "outcome": "passed"
+          },
+          {
+            "title": "refuses changed request, route or current permission and a forged completed artifact",
+            "durationMs": 144,
+            "outcome": "passed"
+          },
+          {
+            "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+            "durationMs": 37,
+            "outcome": "passed"
+          },
+          {
+            "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+            "durationMs": 176,
+            "outcome": "passed"
+          }
+        ]
+      },
+      {
+        "file": "self-corpus",
+        "run": 1,
+        "load1m": 13.33,
+        "tests": [
+          {
+            "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+            "durationMs": 865,
+            "outcome": "passed"
+          },
+          {
+            "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+            "durationMs": 2124,
+            "outcome": "passed"
+          },
+          {
+            "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+            "durationMs": 10,
+            "outcome": "passed"
+          },
+          {
+            "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+            "durationMs": 95,
+            "outcome": "passed"
+          }
+        ]
+      },
+      {
+        "file": "self-corpus",
+        "run": 2,
+        "load1m": 10.61,
+        "tests": [
+          {
+            "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+            "durationMs": 1000,
+            "outcome": "passed"
+          },
+          {
+            "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+            "durationMs": 2183,
+            "outcome": "passed"
+          },
+          {
+            "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+            "durationMs": 10,
+            "outcome": "passed"
+          },
+          {
+            "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+            "durationMs": 74,
+            "outcome": "passed"
+          }
+        ]
+      },
+      {
+        "file": "self-corpus",
+        "run": 3,
+        "load1m": 9.82,
+        "tests": [
+          {
+            "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+            "durationMs": 854,
+            "outcome": "passed"
+          },
+          {
+            "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+            "durationMs": 2192,
+            "outcome": "passed"
+          },
+          {
+            "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+            "durationMs": 13,
+            "outcome": "passed"
+          },
+          {
+            "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+            "durationMs": 76,
+            "outcome": "passed"
+          }
+        ]
+      }
+    ],
+    "fullRuns": [
+      {
+        "run": 1,
+        "rc": 0,
+        "wallSeconds": 72,
+        "load1mAtEnd": 25.51,
+        "measured": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 49216,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 220,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 157,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 64,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 387,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 4894,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 8567,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 98,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 422,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        },
+        "companion": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 48781,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 193,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 224,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 28,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 297,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 4727,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 8366,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 62,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 508,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        }
+      },
+      {
+        "run": 2,
+        "rc": 0,
+        "wallSeconds": 71,
+        "load1mAtEnd": 26.56,
+        "measured": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 47154,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 185,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 113,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 28,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 249,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2418,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 7763,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 32,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 529,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        },
+        "companion": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 47295,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 171,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 205,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 21,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 292,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2178,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 7685,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 40,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 533,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        }
+      },
+      {
+        "run": 3,
+        "rc": 0,
+        "wallSeconds": 73,
+        "load1mAtEnd": 26.61,
+        "measured": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 47302,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 177,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 171,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 48,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 331,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2277,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 7234,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 27,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 593,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        },
+        "companion": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 47409,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 181,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 155,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 42,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 298,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 3228,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 7946,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 28,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 588,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        }
+      },
+      {
+        "run": 4,
+        "rc": 0,
+        "wallSeconds": 75,
+        "load1mAtEnd": 28.45,
+        "measured": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 50649,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 213,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 133,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 33,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 263,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2902,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 8822,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 132,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 577,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        },
+        "companion": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 49404,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 183,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 138,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 47,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 276,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2130,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 8012,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 92,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 521,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        }
+      },
+      {
+        "run": 5,
+        "rc": 0,
+        "wallSeconds": 72,
+        "load1mAtEnd": 28.11,
+        "measured": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 49386,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 190,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 155,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 37,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 241,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2673,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 8096,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 23,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 554,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        },
+        "companion": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 49228,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 185,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 139,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 20,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 289,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2563,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 8680,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 45,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 533,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        }
+      },
+      {
+        "run": 6,
+        "rc": 0,
+        "wallSeconds": 71,
+        "load1mAtEnd": 28.55,
+        "measured": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 49180,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 483,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 471,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 29,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 322,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 3768,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 7908,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 62,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 448,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        },
+        "companion": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 46893,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 197,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 219,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 58,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 846,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 3262,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 8491,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 74,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 414,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        }
+      },
+      {
+        "run": 7,
+        "rc": 0,
+        "wallSeconds": 77,
+        "load1mAtEnd": 30.94,
+        "measured": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 46297,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 259,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 167,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 25,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 358,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2823,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 7754,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 114,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 859,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        },
+        "companion": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 48818,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 236,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 197,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 74,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 272,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2654,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 7389,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 73,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 928,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        }
+      },
+      {
+        "run": 8,
+        "rc": 0,
+        "wallSeconds": 71,
+        "load1mAtEnd": 28.32,
+        "measured": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 46649,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 154,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 191,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 34,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 347,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2872,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 8152,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 46,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 488,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        },
+        "companion": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 47482,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 263,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 249,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 26,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 280,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2651,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 7571,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 75,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 419,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        }
+      },
+      {
+        "run": 9,
+        "rc": 0,
+        "wallSeconds": 71,
+        "load1mAtEnd": 29.93,
+        "measured": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 48141,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 247,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 171,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 51,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 414,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2368,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 7507,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 49,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 483,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        },
+        "companion": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 49795,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 168,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 247,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 25,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 373,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2324,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 7729,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 82,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 833,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        }
+      },
+      {
+        "run": 10,
+        "rc": 0,
+        "wallSeconds": 71,
+        "load1mAtEnd": 29.76,
+        "measured": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 49195,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 240,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 143,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 15,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 298,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2613,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 8330,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 24,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 512,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        },
+        "companion": {
+          "totalTests": 590,
+          "failed": 0,
+          "inScope": {
+            "build-output.test.ts": [
+              {
+                "title": "re-emits ignored JavaScript before the launcher executes it",
+                "durationMs": 49070,
+                "outcome": "passed"
+              }
+            ],
+            "durable-lifecycle.test.ts": [
+              {
+                "title": "reuses four verified checkpoints and sends only the missing fidelity stage after restart",
+                "durationMs": 232,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses changed request, route or current permission and a forged completed artifact",
+                "durationMs": 159,
+                "outcome": "passed"
+              },
+              {
+                "title": "keeps uncertain maximum reserved despite missing receipts and an expired lease field",
+                "durationMs": 14,
+                "outcome": "passed"
+              },
+              {
+                "title": "admits at most one concurrent dispatch and keeps distinct run artifacts separate",
+                "durationMs": 325,
+                "outcome": "passed"
+              }
+            ],
+            "self-corpus.test.ts": [
+              {
+                "title": "reads only tracked blobs from the pinned commit and independently recounts its denominator",
+                "durationMs": 2572,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation",
+                "durationMs": 7320,
+                "outcome": "passed"
+              },
+              {
+                "title": "refuses a requested pinned commit that is unavailable rather than substituting HEAD",
+                "durationMs": 96,
+                "outcome": "passed"
+              },
+              {
+                "title": "does not read a local or untracked file even when it lies in the allowed-looking path",
+                "durationMs": 529,
+                "outcome": "passed"
+              }
+            ]
+          },
+          "otherFailures": []
+        }
+      }
+    ]
+  },
+  "abandoned": "A first after-measurement of the lock version was stopped after two of three alone rounds when the design changed to the private copy; its data is not used.",
+  "rule6": {
+    "note": "No assertion changed. B1 shows the private-copy test still guards the forced-rebuild trust boundary and reads the working-tree build script; B2 shows the copy carries uncommitted working-tree bytes; T1-T3 show each new timeout governs its tests. The lock and its six mutants (all killed) were removed with the lock.",
+    "mutants": [
+      {
+        "id": "B1",
+        "predicate": "the forced rebuild re-emits a poisoned ignored output (trust boundary), read from the working-tree build script",
+        "file": "package.json",
+        "commit": "fd6d7e0972defadbdc37b324a844f03240ce4809",
+        "edits": [
+          {
+            "old": "\"build:poc\": \"tsc -b --force ",
+            "new": "\"build:poc\": \"tsc -b ",
+            "firstOccurrenceOnly": false
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/build-output.test.ts -t re-emits",
+        "expected": "killed",
+        "outcome": "killed",
+        "evidence": [
+          "\u00d7 POC build output integrity > re-emits ignored JavaScript before the launcher executes it 11148ms",
+          "Tests  1 failed (1)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af",
+          "AssertionError: expected 'throw new Error(\"poisoned ignored POC\u2026' not to contain 'throw new Error(\"poisoned ignored POC\u2026'"
+        ]
+      },
+      {
+        "id": "B2",
+        "predicate": "the private copy carries working-tree bytes: an uncommitted break in an app source fails the copied build",
+        "file": "apps/three-surface-poc/src/main.ts",
+        "commit": "fd6d7e0972defadbdc37b324a844f03240ce4809",
+        "edits": [
+          {
+            "old": "\n",
+            "new": "\nconst syzygyGb4lTypeBreak: number = \"not a number\";\n",
+            "firstOccurrenceOnly": true
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/build-output.test.ts -t re-emits",
+        "expected": "killed",
+        "outcome": "killed",
+        "evidence": [
+          "\u00d7 POC build output integrity > re-emits ignored JavaScript before the launcher executes it 10925ms",
+          "\u2192 Command failed: npm run build:poc --silent",
+          "Tests  1 failed (1)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "T1",
+        "predicate": "build-output per-test timeout governs the build test",
+        "file": "apps/three-surface-poc/src/build-output.test.ts",
+        "commit": "fd6d7e0972defadbdc37b324a844f03240ce4809",
+        "edits": [
+          {
+            "old": "    240_000,\n  );",
+            "new": "    1_000,\n  );",
+            "firstOccurrenceOnly": false
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/build-output.test.ts -t re-emits",
+        "expected": "killed",
+        "outcome": "killed",
+        "evidence": [
+          "\u00d7 POC build output integrity > re-emits ignored JavaScript before the launcher executes it 28665ms",
+          "\u2192 Test timed out in 1000ms.",
+          "Tests  1 failed (1)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "T2",
+        "predicate": "self-corpus PINNED_READ_TIMEOUT_MS governs the pinned read test",
+        "file": "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts",
+        "commit": "fd6d7e0972defadbdc37b324a844f03240ce4809",
+        "edits": [
+          {
+            "old": "const PINNED_READ_TIMEOUT_MS = 60_000;",
+            "new": "const PINNED_READ_TIMEOUT_MS = 100;",
+            "firstOccurrenceOnly": false
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts -t reads only tracked",
+        "expected": "killed",
+        "outcome": "killed",
+        "evidence": [
+          "\u00d7 zero-egress Syzygy self-corpus proof > reads only tracked blobs from the pinned commit and independently recounts its denominator 1194ms",
+          "\u2192 Test timed out in 100ms.",
+          "Tests  1 failed | 3 skipped (4)",
+          "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af"
+        ]
+      },
+      {
+        "id": "T3",
+        "predicate": "durable-lifecycle JOURNAL_TIMEOUT_MS governs its tests",
+        "file": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "commit": "fd6d7e0972defadbdc37b324a844f03240ce4809",
+        "edits": [
+          {
+            "old": "const JOURNAL_TIMEOUT_MS = 30_000;",
+            "new": "const JOURNAL_TIMEOUT_MS = 1;",
+            "firstOccurrenceOnly": false
+          }
+        ],
+        "command": "npx vitest run apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+        "expected": "killed",
+        "outcome": "killed",
+        "evidence": [
+          "\u00d7 durable scripted lifecycle port > reuses four verified checkpoints and sends only the missing fidelity stage after restart 119ms",
+          "\u2192 Test timed out in 1ms.",
+          "\u00d7 durable scripted lifecycle port > refuses changed request, route or current permission and a forged completed artifact 92ms",
+          "\u2192 Test timed out in 1ms."
+        ]
+      }
+    ]
+  }
+}
