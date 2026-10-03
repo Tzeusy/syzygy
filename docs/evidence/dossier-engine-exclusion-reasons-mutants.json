@@ -1,15 +1,17 @@
 {
   "subject": {
-    "commit": "05b453134d3d08fc141af28c170230ed389b78b8",
+    "commit": "2ae510fa7466bdd8170d5506c354152c1cfa24ca",
     "branch": "agent/dossier-engine-7",
     "fileSha256": {
-      "apps/three-surface-poc/src/polaris-generation/source-adapter.ts": "bf065f884422bc63a0867d9986eb3fcad9be01e4ae690a4a380382d0cf70e6cc",
-      "packages/polaris-generation-core/src/generation-source.ts": "9d44c20519bf8b08cc725e27f988efb4d465b69a13a66cf323485529cb1f55f3"
+      "apps/three-surface-poc/src/polaris-generation/source-adapter.ts": "980d0b5baa40fef01923bbce72219e9e326156379ad4a459f6d804d8e9b59d85",
+      "packages/polaris-generation-core/src/generation-source.ts": "9d44c20519bf8b08cc725e27f988efb4d465b69a13a66cf323485529cb1f55f3",
+      "apps/three-surface-poc/src/polaris-generation/run-key.ts": "b39f832143a85d36ad3db0dd2f5e0dc60e08f88172fef11d4f838257924bc7c4",
+      "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts": "b34e8e8b98b8dd30295943bedda356c493c0e9d763140af51faca9f827cb3b21"
     }
   },
   "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
   "project": "@syzygy/polaris-generation-core",
-  "ranAt": "2026-10-03T10:32:56+00:00",
+  "ranAt": "2026-10-03T12:09:40+00:00",
   "mutants": [
     {
       "id": "validator-reason",
@@ -159,15 +161,75 @@
     },
     {
       "id": "excluded-id-plain-sha256",
-      "file": "apps/three-surface-poc/src/polaris-generation/source-adapter.ts",
-      "old": "createHmac('sha256', runKey).update(source.identity)",
-      "new": "createHash('sha256').update(source.identity)",
+      "file": "apps/three-surface-poc/src/polaris-generation/run-key.ts",
+      "old": "createHmac('sha256', runKey).update(input).digest('hex')",
+      "new": "globalThis.process.getBuiltinModule('node:crypto').createHash('sha256').update(input).digest('hex')",
       "tests": [
         "apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts"
       ],
       "outcome": "killed",
       "failedTests": 2,
       "totalTests": 9
+    },
+    {
+      "id": "excluded-id-constant-key",
+      "file": "apps/three-surface-poc/src/polaris-generation/run-key.ts",
+      "old": "createHmac('sha256', runKey)",
+      "new": "createHmac('sha256', Buffer.alloc(32))",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/source-adapter.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 9
+    },
+    {
+      "id": "corpus-row-unkeyed-id",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "sourceId: excludedSourceId(runKey, record.path),",
+      "new": "sourceId,",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 21
+    },
+    {
+      "id": "corpus-oversize-unkeyed-id",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "? { ...row, sourceId: excludedSourceId(runKey, record.path) } : row",
+      "new": "? row : row",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 21
+    },
+    {
+      "id": "corpus-digest-keyed-id",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "source.exclusion.excluded ? `s-${sha256(source.path).slice(0, 24)}` : source.sourceId",
+      "new": "source.sourceId",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 21
+    },
+    {
+      "id": "corpus-unrepresentable-plain",
+      "file": "apps/three-surface-poc/src/polaris-generation/repo-corpus.ts",
+      "old": "pathHmac: keyedDigest(runKey, record.path)",
+      "new": "pathHmac: sha256(record.path)",
+      "tests": [
+        "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 21
     }
   ]
 }
