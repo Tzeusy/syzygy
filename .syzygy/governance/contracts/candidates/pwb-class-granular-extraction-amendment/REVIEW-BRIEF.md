@@ -123,3 +123,35 @@ round, meaning `CONFIRM` or `CONFIRM WITH EXCEPTIONS` with every finding a
 note, clears the bytes it read. Any other verdict is repaired, no second
 round is dispatched, and the package goes to the owner with the repaired
 bytes unreviewed.
+
+## Round 2 (added 2026-10-03, bead `syzygy-418x`)
+
+Round 1 returned `REVISE`. Its findings were repaired without a review
+round over the repaired bytes, and a package is offered for sign-off only
+after a round that returns `CONFIRM`, or `CONFIRM WITH EXCEPTIONS` with
+notes only (Scope A item 3). Round 2 reviews the repaired bytes against the
+same seven criteria above, on their own merits. Do not read
+`ROUND-1-DISPOSITIONS.md` or anything under `docs/reviews/`.
+
+Two additions to the criteria, both arising from the repairs:
+
+- **Criterion 1** also covers the packet's question 6. P-82's Q3 named
+  root-summary and precedence headings as well as catalog headings. Does the
+  package put the narrower scope to the owner fairly, and name the open half
+  as a residual?
+- **Criterion 2** also covers the source-level rule. A source's own item
+  denominator is Unknown whenever any class it is assigned is Unknown in it.
+  Check that this rule has its SHALL, oracle, falsifier and scenario limbs,
+  and that rule provenance and the unenumerated-heading count each have an
+  oracle and a falsifier limb.
+
+**Raw head.** The output contract above stands: the first four non-blank
+lines are the title, `Reviewed commit:`, `Manifest SHA-256:` (the sha256 of
+the bytes of `PWB-CLASS-GRANULAR-EXTRACTION-AMENDMENT-MANIFEST.txt` at that
+commit, by script, never a manifest row) and `Verdict:`.
+
+**Stopping rule for round 2.** A notes-only round clears the bytes it read;
+its notes are answered in a sibling `ROUND-2-DISPOSITIONS.md`, and the
+package is not edited. Any other verdict leaves the bytes uncleared: the
+package is not edited, no round 3 is dispatched, and the findings go to the
+owner.
