@@ -133,6 +133,8 @@ describe('folding forms of a true quotation', () => {
   it('drops * and _ only as paired emphasis at word edges, never inside an identifier or an unpaired pointer', () => {
     expect(normaliseForQuote('a **bold** and __b__ and _em_ and *x* and ***both***')).toBe('a bold and b and em and x and both');
     expect(normaliseForQuote('active_expire_cycle and *p = *q and 2*3*4')).toBe('active_expire_cycle and *p = *q and 2*3*4');
+    expect(normaliseForQuote('snake_case_ and x_y_ z')).toBe('snake_case_ and x_y_ z');
+    expect(normaliseForQuote('x *p\nq* y')).toBe('x *p q* y');
     expect(run('"active_expire_cycle"', 'src-under')).toEqual([]);
     expect(run('"active expire cycle"', 'src-under')).toEqual(['quote-not-in-cited-sources']);
     expect(run('"activeexpirecycle"', 'src-under')).toEqual(['quote-not-in-cited-sources']);
