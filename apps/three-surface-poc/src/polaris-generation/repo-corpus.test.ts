@@ -118,7 +118,7 @@ describe('admission gate', () => {
   });
 
   it('refuses unless the port answers exactly allowed: true, and passes it the request', async () => {
-    const decide = vi.fn(async () => ({ allowed: 'yes' }) as never);
+    const decide = vi.fn(async () => ({ allowed: 'yes', permissionIdentity: 'id' }) as never);
     await expect(readRepoCorpus(root, cfg(), { admission: { decide } })).rejects.toThrow(CorpusRefusal);
     expect(decide).toHaveBeenCalledWith({ repositoryId: 'repository:fixture', revision: commit, include: ['**'], exclude: ['vendor/**'] });
   });
