@@ -113,7 +113,12 @@ DECLINED_SIBLINGS = frozenset({"pwb-scoped-attributes-amendment"})
 #: Unsigned packages over the same subject. Each touches other requirements,
 #: but both add design decision 12 and capability row 34, so whichever is
 #: signed second is regenerated over the first's applied bytes and re-reviewed.
-PENDING_SIBLINGS = frozenset({"pwb-release-label-amendment"})
+#: The anchor-resolution amendment (N9, ``syzygy-u05.9``) touches only
+#: PWB-REQ-014 and the generated dependency declaration.
+PENDING_SIBLINGS = frozenset({
+    "pwb-anchor-resolution-amendment",
+    "pwb-release-label-amendment",
+})
 
 REQ_002 = "PWB-REQ-002"
 READER_MARK = "\nReader definitions:\n"
