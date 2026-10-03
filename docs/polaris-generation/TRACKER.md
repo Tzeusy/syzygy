@@ -8,6 +8,75 @@ as the work. Lessons go in [LEARNING-LOG.md](LEARNING-LOG.md), not here.
 Legend: `[x]` done · `[ ]` open · `[~]` in progress · **(owner)** needs an
 owner decision or act.
 
+## Owner goal, 2026-10-03: "a Polaris dossier for redis/redis"
+
+The owner's target sentence: *"Please generate me a Polaris dossier for
+https://github.com/redis/redis"*. After 1–2 hours of Opus, a page should take
+a reader through the core ideas, end-to-end workflows, underlying mechanisms,
+competitive advantages and trade-offs.
+
+The gap analysis is [REDIS-DOSSIER-GAP-ANALYSIS.md](REDIS-DOSSIER-GAP-ANALYSIS.md)
+(research note, binds nothing). Its gap numbers (#1–#22) are cited below as
+`[gap #n]`.
+
+**The floor.** SEC-2 makes consent per project, so the sentence still needs one
+owner sitting for the first target. After that, each new repository needs one
+option-selection.
+
+**Phase 1 lanes.** None of these reads Redis or calls a model:
+
+- **Engine:** `[gap #2]` → G1 → G4 / `[gap #3]` → dossier profile → multi-page
+  output → one-line trigger.
+- **Provider:** G2, tested against a local capture endpoint, then G3.
+- **Governance drafting:** Phase 0 items, then Redis instances, screening scope,
+  registry entries, the RFC-0005 class and the non-governed narrative profile.
+
+Engine and provider items additional to Phase 1 below:
+
+- [ ] Oversize sources: chunk a body over 100,000 characters into spans, or
+      exclude it with a reason. One file must never fail the run `[gap #2]`
+- [ ] Hierarchical discovery: map calls over subsystems → claim ledger →
+      reduce, with ranked selection and `deferred-by-budget` accounting. This
+      is what makes a 1–2 hour budget useful `[gap #3]`
+- [ ] Dossier run profile:
+      - the owner's five reader questions (core ideas, end-to-end workflows,
+        mechanisms, advantages as the maintainers state them, trade-offs);
+      - requested assets (workflow diagrams, component deep dives);
+      - a zero-interaction REQ-031 mode `[gap #7]`
+- [ ] Multi-page static output: an entry page plus deep-dive pages, with
+      contents, glossary and a size report, written to the run directory
+      `[gap #8]`
+- [ ] One-line trigger: `poc:dossier <github-url>` pins the revision, builds
+      the per-target admission rows, names the one owner question, then runs
+      `[gap #9]`
+- [ ] External check: can the Agent SDK on the owner's login meet the
+      egress record's conditions (no tools, no context, telemetry off,
+      captured request), and what are the rate limits? Check this before
+      the egress bytes freeze `[gap #21]`
+
+Governance drafting for Redis. All of these bind nothing until the owner
+acts:
+
+- [ ] Redis instances for the admission package: observation consent for
+      redis/redis at `8.10.2` and the licence trio, and the next egress
+      version listing requests and Redis `[gap #11, #13, #14]`
+- [ ] Public-source screening scope instance, reconciled with PR #120
+      `[gap #12]`
+- [ ] Registry entries: the provider execution route and one shared
+      Git-hosting source-acquisition adapter `[gap #15]`
+- [ ] Non-governed narrative profile, one CC-REV-2 delta covering three
+      points `[gap #17 a–c]`:
+      - what a "declared capability" is for an observed public repository;
+      - empty deep-dive bands collapse;
+      - the exact-source leaf is the admitted span
+- [ ] **(owner)** Rulings:
+      - altitude order for a dossier `[gap #17d]`;
+      - advantages as maintainer-stated only, or with external comparison
+        sources `[gap #18]`;
+      - page budget, after the T1 measurement `[gap #19]`
+- [ ] **(owner)** One sitting: policy, two registry entries, egress, the
+      observation consents, the RFC-0005 class and the profile sign-off
+
 ## Phase 0 — Set up the proving ground
 
 - [x] Choose targets and pin revisions — requests, Redis, Sentry; Redis
