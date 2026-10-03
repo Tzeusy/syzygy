@@ -1,0 +1,102 @@
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -1089,16 +1089,72 @@
+ single capability's detail.
+
++- **Opening index.** The first reading level SHALL begin with an index of
++  exactly nine rows, one for each PWB-REQ-021 answer identity, in the order
++  and to the targets this table declares. No run, reader or model decides a
++  row's target.
++
++  | Identity | Row names | Target |
++  |---|---|---|
++  | `why` | purpose | the purpose statements |
++  | `promises` | promises | the promise statements |
++  | `refusals-and-rule` | non-goals | the non-goal statements |
++  | `capabilities-and-fit` | capabilities | the capability catalog |
++  | `exact-requirement` | exact requirements | the first link, in document order, to an exact requirement's text |
++  | `unknown-or-contradiction` | gaps | the opening Unknown aggregate |
++  | `claim-strength` | claim strength | the legend naming each epistemic label, tier and freshness state |
++  | `architecture-and-groups` | architecture | the architecture statements |
++  | `v1-success` | V1 success | the V1 scope and success-criteria statements |
++
++  - Each row is named by its project concept and routes to the first
++    element of its target. Row names are `action-label` strings; each
++    offset and the stopping line is a `scope-instruction` string; all of
++    them obey PWB-REQ-012.
++  - A row whose target is not rendered at that evaluation SHALL say so and
++    route nowhere; it SHALL NOT route to a substitute.
++
++- **Reach offsets.** Each row SHALL show the word offset at which its target
++  begins. One stopping line SHALL follow the last indexed target in document
++  order and give the largest row offset and the page's word total, and
++  nothing else about the index.
++  - Words are counted by one declared method: a word is a maximal run of
++    non-whitespace characters in a rendered text node, counted in document
++    order from the start of the body, excluding the content of `script` and
++    `style` elements and of every `details` element closed on first load.
++    The total counts the same population over the whole body.
++  - The index, its offsets and the stopping line are presentation
++    measurements. They carry no epistemic tuple, enter no PWB-REQ-020 parity
++    family and no PWB-REQ-021 record or readiness arm, and SHALL NOT state or
++    imply that any prompt is, or can be, answered: the walkthrough verdict
++    stays the owner's (RFC7-31).
++  - [Unknown] Which offsets and total Butlers' Polaris would show today: no
++    current figure is quoted here. They are measured on a fresh
++    private-daemon capture at a named commit when this is implemented.
++
+ **Verification.**
+
+ - **Case**: load Polaris with a model containing project statements and one or
+-  more capability deep dives.
++  more capability deep dives; separately, render the first reading level at
++  an evaluation where every indexed target renders and at one where the
++  opening Unknown aggregate is absent.
+ - **Observable**: the first reading level answers the project questions and
+-  routes to the catalogs; capability detail is subordinate.
++  routes to the catalogs; capability detail is subordinate; the nine index
++  rows appear in the declared order with their targets and offsets, followed
++  by one stopping line.
+ - **Oracle**: inspect the heading order and entity references against an
+-  independently enumerated project-level fact set.
++  independently enumerated project-level fact set. Separately, an independent
++  word counter applies the declared method to the served HTML and recomputes
++  every row offset and the total, and each row's target is compared with this
++  requirement's table, never with the renderer's own mapping.
+ - **Oracle independence**: expected facts and order come from RFC7-13 and the
+-  machine model, not the rendered page.
++  machine model, not the rendered page; expected index targets come from this
++  requirement's table, and expected offsets from a word counter that shares no
++  code with the renderer.
+ - **Falsifier**: the entry opens on one capability, omits a project-level
+-  category, or requires reading a capability deep dive to learn what Butlers is.
++  category, or requires reading a capability deep dive to learn what Butlers
++  is; an index row is missing, duplicated, out of order or routed to a target
++  other than the declared one; an unrendered target's row routes anywhere; an
++  offset or total differs from the independent count; the stopping line
++  states or implies that a prompt is answered; or an offset is presented as a
++  claim, a parity fact or a walkthrough fact.
+
+ #### Scenario: WhatsApp is a drill-down, not the project account
+@@ -1123,4 +1179,21 @@
+   stays separately disclosed at its own claim and reachable from the aggregate,
+   and the machine answer carries the same aggregate under PWB-REQ-020
++
++#### Scenario: The opening index shows where each project question's material begins
++
++- **WHEN** Polaris renders its first reading level at an evaluation where
++  every indexed target renders
++- **THEN** it begins with nine rows, one per PWB-REQ-021 answer identity, in
++  the declared order, each routing to its declared target and showing that
++  target's word offset by the declared method
++- **AND** one stopping line follows the last indexed target, giving the
++  largest row offset and the page's word total, and claims nothing about
++  whether any prompt is answered
++
++#### Scenario: An unrendered index target is stated, not substituted
++
++- **WHEN** the opening Unknown aggregate is absent at an evaluation
++- **THEN** the `gaps` row says its target is not rendered and routes nowhere
++- **AND** the other eight rows keep their declared targets and offsets
+
+ ```yaml

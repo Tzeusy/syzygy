@@ -1,0 +1,76 @@
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -1793,17 +1793,49 @@
+ narrative change, and its record SHALL identify that mode.
+
++- **Distinct accessible names.** On a Polaris page, two interactive elements
++  (links, buttons, `summary` disclosures and form controls) whose targets or
++  controlled regions differ SHALL have different accessible names, as the
++  browser computes them.
++  - A visible label repeated once per item or source SHALL be told apart in
++    the accessible name by the item or source it belongs to.
++  - Two elements with the same target may share a name.
++- **Heading order.** A Polaris page SHALL have exactly one level-1 heading,
++  and in document order no heading SHALL be more than one level deeper than
++  the heading before it.
++- **Whole-page population.** The checks in this requirement SHALL run over
++  the complete interactive and heading population of a page rendered from a
++  whole-project evaluation, and each SHALL report that population as its
++  denominator. A fixture smaller than that population SHALL NOT stand in for
++  it.
++  - [Unknown] How large these populations are on Butlers' Polaris today,
++    and how many names they share: no current figure is quoted here. They
++    are measured on a fresh private-daemon capture at a named commit when
++    this is implemented.
++
+ **Verification.**
+
+ - **Case (sweep)**: traverse every disclosure, catalog, capability, anchor and
+   exact-source path by keyboard and through the nonvisual representation, then
+-  perform the complete cold-open prompt set.
++  perform the complete cold-open prompt set; separately, run the
++  distinct-name and heading-order checks over a page rendered from a
++  whole-project evaluation.
+ - **Observable**: every distinction has text, focus order reaches every target,
+-  no pointer-only action exists, and the walkthrough record names its mode.
++  no pointer-only action exists, and the walkthrough record names its mode; no
++  two interactive elements with different targets share an accessible name,
++  no heading skips a level, there is one level-1 heading, and each sweep
++  reports its denominator.
+ - **Oracle**: compare the complete interactive/path population to keyboard and
+   accessibility-tree traces, then apply PWB-REQ-021's prompt oracle.
++  Separately, group the interactive elements by computed accessible name and
++  compare each group's targets, and read heading levels in document order;
++  each check's denominator must equal the population the browser enumerates
++  on that page.
+ - **Oracle independence**: DOM/accessibility-tree enumeration and input events
+   come from a browser driver outside the renderer.
+ - **Falsifier**: a color/layout-only distinction, unreachable target, pointer-
+-  only action, keyboard trap, missing mode flag or failed cold-open path.
++  only action, keyboard trap, missing mode flag or failed cold-open path; two
++  interactive elements with different targets sharing an accessible name; a
++  skipped heading level or a second level-1 heading; or a check run over a
++  population smaller than the rendered page's.
+
+ #### Scenario: Keyboard-only owner reaches exact intent
+@@ -1812,4 +1844,20 @@
+ - **THEN** every prompt and exact-source path remains operable and understandable
+ - **AND** the retained run record identifies keyboard-only mode
++
++#### Scenario: Repeated source links are told apart by name
++
++- **WHEN** a Polaris page renders the same visible label once for each of
++  several sources
++- **THEN** each of those links' accessible names names the source it routes
++  to
++- **AND** no two of them with different targets share an accessible name
++
++#### Scenario: Name and heading checks cover the whole page
++
++- **WHEN** the distinct-name and heading-order checks run
++- **THEN** they run over every interactive element and heading of a page
++  rendered from a whole-project evaluation and report those populations
++- **AND** a skipped heading level, a second level-1 heading or a shared name
++  across different targets fails the check
+
+ ```yaml

@@ -1,0 +1,17 @@
+# PWB OPENING-INDEX AMENDMENT MANIFEST
+# Candidate: binds nothing until the owner signs off a version of this
+# package (OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md).
+# 11 artifacts; rows sorted by codepoint path.
+# All rows take effect together or none do.
+# Rows hash PROPOSED bytes; signed openspec bytes remain unchanged.
+bd2504cb580ca73eeb2510481ca4665ee11e2127360fc0be12c104f347fb515f  openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml
+2697b6b33c6b34f485e8fb49b3f62fc18dc206b11f92e135c9ce51c86065249e  openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+1e4c0c80d5d120647fb616c50dbead8bc3047410771691fc19d154018beb22f6  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
+d54acd212916fb83047874484c9e47acd1fade453384403ba600a7b2a0244d9c  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
+6cef0690e47e894276de667b7c1301477e8b6711dc66593de922eabef23a3783  openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
+f28404be66a4241503f2214757d640361751934b2ab308dafeada5c6d2152e50  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0001-0003.md
+ec091e743cb95070b30980021f2b5bdf054128161a86f6f8a8bbdf7678ffbc29  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md
+6e480d6b94734abd41b15fbdcab1e6d7df9d60f68f0f3f5b0d66f98462728cd0  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md
+537a40c39a2989c008b681df8700d5d80f62aa195015759c46e3964a4dc9ede6  openspec/changes/polaris-project-wide-butlers-model/design.md
+84c8f8b1320dcd5c83ef28bf67a868a8cb4107f171128e201ea750b8f27e61de  openspec/changes/polaris-project-wide-butlers-model/proposal.md
+d5ea2aee8ca05d71f9220c8115882176db06fad306ea01f56546b39bec46c4ed  openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
