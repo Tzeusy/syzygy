@@ -46,8 +46,14 @@ const OPAQUE_SOURCE_ID = /^s-[0-9a-f]{24}$/u;
  * and differ between runs. */
 export const newGenerationRunKey = (): Buffer => randomBytes(32);
 
-/** HMAC-SHA256 of an identity input under the run key, as lowercase hex. */
-export const keyedDigest = (runKey: Uint8Array, input: string): string => createHmac('sha256', runKey).update(input).digest('hex');
+/** Below this a key is guessable, and an empty key makes every keyed id derivable from the path alone. */
+const GENERATION_RUN_KEY_MIN_BYTES = 32;
+
+/** HMAC-SHA256 of an identity input under the run key, as lowercase hex. Refuses a key shorter than 32 bytes. */
+export const keyedDigest = (runKey: Uint8Array, input: string): string => {
+  if (!(runKey instanceof Uint8Array) || runKey.byteLength < GENERATION_RUN_KEY_MIN_BYTES) throw new Error('generation run key shorter than 32 bytes');
+  return createHmac('sha256', runKey).update(input).digest('hex');
+};
 
 /** `s-` plus 24 hex digits of the keyed digest: stable within a key, opaque across keys. */
 export const excludedSourceId = (runKey: Uint8Array, input: string): string => `s-${keyedDigest(runKey, input).slice(0, 24)}`;
