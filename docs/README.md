@@ -116,7 +116,7 @@ table routes each campaign to its last verdict of record.
 | M9 POC identity amendment gate | 4 | 2026-10-03 | Three-Surface POC identity amendment candidate (P-75 (A): POC-REQ-054, POC-REQ-055, the POC-REQ-060 amendment), `syzygy-dov.26` (binds nothing) | Rounds 1–4 each `REVISE` (`R-M9-POC-IDENTITY-AMENDMENT-1-RAW.md:4`, `R-M9-POC-IDENTITY-AMENDMENT-2-RAW.md:4`, `R-M9-POC-IDENTITY-AMENDMENT-3-RAW.md:4`, `R-M9-POC-IDENTITY-AMENDMENT-4-RAW.md:4`), dispositioned in the package's `ROUND-1-DISPOSITIONS.md` to `ROUND-4-DISPOSITIONS.md`. Rounds 1–3 were repaired. Under the stopping rule set before round 3, round 4's three revise findings and four notes stay open and go to the owner with the unedited package (register row P-84). |
 | PWB release-label gate | 2 | 2026-10-03 | Release-label PWB-REQ-001 amendment candidate, `syzygy-l362` then `syzygy-zeaf` (binds nothing) | Round 1 `REVISE` (`R-PWB-RELEASE-LABEL-AMENDMENT-1-RAW.md:4`) over the bytes at `b7eb7f5`: six revise findings and five notes, all repaired and dispositioned in the package's `ROUND-1-DISPOSITIONS.md`. Round 2 `REVISE` (`R-PWB-RELEASE-LABEL-AMENDMENT-2-RAW.md:4`) over the repaired bytes at `f0ad565`: three revise findings and three notes, all open in `ROUND-2-DISPOSITIONS.md`. The bytes are not cleared; under the stopping rule nothing was edited and no round 3 was dispatched. Register row P-85. |
 
-The 65 rows partition the tracked directory at HEAD: 337 files, 337 assigned,
+The 65 rows partition the tracked directory at HEAD: 338 files, 338 assigned,
 no remainder [Observed — re-derived for HEAD dated 2026-10-03 by
 `scripts/check_docs_review_campaign_partition.py`; the helper evaluates every
 anchored predicate independently, reports overlaps and unmatched paths, and
