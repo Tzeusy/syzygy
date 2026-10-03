@@ -42,6 +42,12 @@ import { assertInertSvg } from './svg-inert.js';
  * questions are Unknown. Nothing here is Observed except what the draft's
  * diagram records say is.
  *
+ * Claim ids. Provider handles may contain `:` but never `/`, so every id this
+ * renderer mints carries a `/` (`run-stopped/entry`, `run-stopped/dive/<deep-dive id>`,
+ * `not-generated/<id>`, `unresolved/<n>`, `glossary/<term id>`) and can never
+ * equal a draft block, diagram or inventory id; `evaluateDossier` counts a
+ * repeated `data-claim-id` as a duplicate.
+ *
  * Source routes derive from each source's anchor (blob identity plus byte
  * range), never from `generationSourceIdentity`, which every piece of a
  * segmented blob shares: two pieces of one blob get two pages.
@@ -115,6 +121,7 @@ void everyStopReasonListed;
 
 /** What a stopped run shows for an asset it never produced. A reason outside the pipeline's set is refused. */
 export function stopReasonLabel(reason: string): string {
+  // Deliberate throw: the reason is a closed union, so only untyped input (a hand-edited run record) can reach this branch, and it must not render.
   if (!(STOP_REASONS as readonly string[]).includes(reason)) throw new DossierRenderError('unknown-stop-reason');
   return reason === 'budget-exhausted' ? 'deferred-by-budget' : reason;
 }
@@ -238,9 +245,9 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
 
   // --- entry page
   const from = 'index.html';
-  const unresolved = draft.unresolved.map((item, index) => claim('aside', `unresolved-${index + 1}`, 'unknown',
+  const unresolved = draft.unresolved.map((item, index) => claim('aside', `unresolved/${index + 1}`, 'unknown',
     `<strong>${escape(item.question)}</strong>: ${escape(item.reason)} ${marking('unknown')} <span class="asset-references">(${escape(item.references.join(', '))})</span>`)).join('');
-  const notGenerated = (id: string, kind: string): string => claim('aside', `not-generated:${id}`, 'unknown',
+  const notGenerated = (id: string, kind: string): string => claim('aside', `not-generated/${id}`, 'unknown',
     `<strong>${escape(id)}</strong> (${escape(kind)}): not generated; the run stopped before it was written (${escape(stop!.shown)}). ${marking('unknown')}`,
     ` class="unresolved-asset" data-asset-disposition="not-generated" data-stop-reason="${escape(stop!.shown)}"`);
   const sections = draft.sections.map((section, index) => {
@@ -256,7 +263,7 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   const bannerFor = (claimId: string): string => stop === null ? '' : claim('aside', claimId, 'unknown',
     `<strong>Incomplete dossier.</strong> The run stopped (${escape(stop.shown)}) ${stop.lastStage === null ? 'before any stage completed' : `after the ${escape(stop.lastStage)} stage`}${view.drafted && view.review === null ? '; no fidelity review covers this draft, so every generated sentence is Unknown' : ''}. ${marking('unknown')}`,
     ` class="run-stopped" data-stop-reason="${escape(stop.shown)}"`);
-  const banner = bannerFor('run-stopped');
+  const banner = bannerFor('run-stopped/entry');
   const introduction = view.drafted ? paragraph(from, draft.introduction, 'p') : '';
   const missingList = view.notGenerated.length === 0 ? '' : `<section id="not-generated" data-reading-level="1" data-topics=""><h2>Not generated</h2>${view.notGenerated.map(item => notGenerated(item.id, item.kind)).join('')}</section>`;
   add(from, 0, 'Overview', `<header data-reading-level="0"><span class="eyebrow">Polaris · Editorial draft</span><h1>${escape(draft.title)}</h1>${banner}${introduction}${unresolved}</header>${sections}${missingList}`);
@@ -265,7 +272,7 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   for (const dive of deepDives) {
     const path = deepPaths.get(dive.id)!;
     const parent = draft.sections.find(section => section.id === dive.sectionId)!;
-    add(path, 1, dive.title, `<section id="deep-dive-${escape(dive.id)}" data-reading-level="2"${topicAttr(dive.id)}><span class="eyebrow">Deep dive · <a href="${escape(href(path, 'index.html', `section-${parent.id}`))}">${escape(parent.title)}</a></span><h1>${escape(dive.title)}</h1>${bannerFor(`run-stopped:${dive.id}`)}${dive.paragraphs.map(b => block(path, b)).join('')}</section>`);
+    add(path, 1, dive.title, `<section id="deep-dive-${escape(dive.id)}" data-reading-level="2"${topicAttr(dive.id)}><span class="eyebrow">Deep dive · <a href="${escape(href(path, 'index.html', `section-${parent.id}`))}">${escape(parent.title)}</a></span><h1>${escape(dive.title)}</h1>${bannerFor(`run-stopped/dive/${dive.id}`)}${dive.paragraphs.map(b => block(path, b)).join('')}</section>`);
   }
 
   // --- contents
@@ -278,10 +285,10 @@ export function renderDossier(input: DossierRenderInput): RenderedDossier {
   if (!Array.isArray(entries) && !(stop !== null && view.inventory === null)) throw new DossierRenderError('invalid-inventory');
   const terms = Array.isArray(entries) ? (entries as { id: string; kind: string; statement: string; sourceIds: string[] }[]).filter(entry => entry.kind === 'term') : [];
   const glossary = !Array.isArray(entries)
-    ? claim('p', 'glossary:not-generated', 'unknown', `No inventory was produced before the run stopped (${escape(stop!.shown)}), so this glossary is empty. ${marking('unknown')}`)
+    ? claim('p', 'glossary/not-generated', 'unknown', `No inventory was produced before the run stopped (${escape(stop!.shown)}), so this glossary is empty. ${marking('unknown')}`)
     : terms.length === 0
     ? '<p>The inventory recorded no terms, so this glossary is empty.</p>'
-    : `<dl class="glossary">${terms.map(term => `<dt id="term-${escape(term.id)}">${escape(term.id)}</dt>${claim('dd', `glossary:${term.id}`, 'inferred', `${escape(term.statement)} ${marking('inferred')} ${refs('glossary.html', term.sourceIds)}`)}`).join('')}</dl>`;
+    : `<dl class="glossary">${terms.map(term => `<dt id="term-${escape(term.id)}">${escape(term.id)}</dt>${claim('dd', `glossary/${term.id}`, 'inferred', `${escape(term.statement)} ${marking('inferred')} ${refs('glossary.html', term.sourceIds)}`)}`).join('')}</dl>`;
   add('glossary.html', 1, 'Glossary', `<section id="glossary"><h1>Glossary</h1>${glossary}</section>`);
 
   // --- sources: the whole population as a denominator, then one page per quotable source
