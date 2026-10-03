@@ -64,11 +64,14 @@ describe('every git call of the reader is isolated', () => {
 
   it('builds the environment from the allowlist only', () => {
     const saved = { ...process.env };
+    const token = '/syzygy-poison-7f3a';
+    const poisoned = ['GIT_DIR', 'GIT_EXEC_PATH', 'GIT_SSH_COMMAND', 'GIT_ASKPASS', 'GIT_CONFIG_COUNT', 'HOME', 'SECRET_TOKEN'];
     try {
-      Object.assign(process.env, { GIT_DIR: '/x', GIT_EXEC_PATH: '/x', GIT_SSH_COMMAND: 'x', GIT_ASKPASS: 'x', GIT_CONFIG_COUNT: '1', HOME: '/x', SECRET_TOKEN: 'x' });
+      for (const key of poisoned) process.env[key] = `${token}-${key}`;
       const env = isolatedGitEnv();
       expect(Object.keys(env).sort()).toEqual([...ISOLATED_GIT_ENV_KEYS].sort());
-      expect(JSON.stringify(env)).not.toContain('/x');
+      for (const key of poisoned) expect(Object.hasOwn(env, key), key).toBe(false);
+      expect(Object.values(env).some(value => String(value).includes(token))).toBe(false);
     } finally { for (const key of Object.keys(process.env)) if (!(key in saved)) delete process.env[key]; Object.assign(process.env, saved); }
   });
 });
@@ -151,5 +154,12 @@ describe('measured accounting and identity', () => {
     const corpus = await readRepoCorpus(repo.dir, cfg(commit), { admission: allow });
     expect(corpus.count).toMatchObject({ listed: 3, unquotablePath: 2, selected: 1 });
     expect(corpus.sources.map(source => source.path)).toEqual(['ok.txt']);
+  });
+
+  it('lists sources in canonical UTF-16 code-unit order, which differs from git\'s byte order', async () => {
+    const repo = makeRepo({ 'a.txt': 'a\n', '\u{1F600}.txt': 'astral\n', '\uFF5E.txt': 'bmp\n' });
+    expect(repo.run('-c', 'core.quotepath=false', 'ls-tree', '--name-only', repo.commit).split('\n')).toEqual(['a.txt', '\uFF5E.txt', '\u{1F600}.txt']);
+    const corpus = await readRepoCorpus(repo.dir, cfg(repo.commit), { admission: allow });
+    expect(corpus.sources.map(source => source.path)).toEqual(['a.txt', '\u{1F600}.txt', '\uFF5E.txt']);
   });
 });
