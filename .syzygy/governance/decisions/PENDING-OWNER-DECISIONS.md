@@ -923,9 +923,9 @@
 > Its bytes are not cleared and its eight findings are open in
 > `ROUND-2-DISPOSITIONS.md` beside the packet. The row's earlier "every
 > finding was repaired" is corrected in place: round 1's finding 10 changed
-> nothing. No row was added: still **22** rows under the open heading below
-> (the resolved P-53 row included) and **5** acceptance-act rows, **27** in
-> all [Observed — counted 2026-10-03 by `^| P-[0-9]+[^ |]*` rows per `##`
+> nothing. No row was added: **23** rows under the open heading below (the
+> resolved P-53 row and P-95 included) and **5** acceptance-act rows, **28**
+> in all [Observed — counted 2026-10-03 by `^| P-[0-9]+[^ |]*` rows per `##`
 > section].
 
 ## The acceptance acts (four performed; the rest open)
