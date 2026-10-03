@@ -1,0 +1,247 @@
+{
+ "subject": "Polaris multi-page dossier renderer (gap #8): renderDossier and poc:dossier-render",
+ "date": "2026-10-03",
+ "commit": "c8729542efc2a40d54b76b9d993982df7cf6bf7e",
+ "subjectFiles": [
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "sha256": "9ea208016a93ac0c3f92c3a800a91889595a4c4095a9cda89b978bee06c88fb3"
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts",
+   "sha256": "4e9f39c65f1c7f6247af2a9191edf51ca4df2190f765818308dfe739180743a9"
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts",
+   "sha256": "552312eb63864e8f9232e20faf69d8be11b9eb3a06833c9691e590022bfda77c"
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+   "sha256": "0f364d648d0f9510083829894a12a365b642d17d118d8d991a73bde4eeffce79"
+  }
+ ],
+ "method": "Each mutant replaced exactly one fragment (asserted to occur once) in the named file, ran apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts (15 tests, synthetic pipeline runs only), and restored the file; the worktree was clean afterwards. Killed means at least one test failed.",
+ "result": {
+  "mutants": 16,
+  "killed": 16,
+  "survived": []
+ },
+ "previewUnchanged": "renderDraftPreview output was compared byte for byte, before and after extracting its CSP, stylesheet, escape and marking labels for reuse, on both synthetic projects (garden, archive): identical, sha256 9309b8c7075e86fc103e0e2371975a90dfdf291d9213c4aa0c1c25b288909042 and 04994409f9de72e3e994f96bf796c7d2e78e17e9e3757f02e216d79150fecbf3 on both sides. The comparison used a temporary copy of the pre-change file and was not committed.",
+ "mutants": [
+  {
+   "id": "quote-offset-shift",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "quote start offset off by one byte",
+   "old": "data-quote-start=\"${span.start}\"",
+   "new": "data-quote-start=\"${span.start + 1}\"",
+   "tests": 15,
+   "failed": 2,
+   "killedBy": [
+    "multi-page dossier render round-trips through the evaluation harness with every quote exact and every claim labelled",
+    "multi-page dossier render escapes markup-bearing and multibyte source text and still resolves every quote exactly"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "quote-unescaped",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "quoted source text emitted unescaped",
+   "old": "${escape(span.text)}</blockquote>",
+   "new": "${span.text}</blockquote>",
+   "tests": 15,
+   "failed": 1,
+   "killedBy": [
+    "multi-page dossier render escapes markup-bearing and multibyte source text and still resolves every quote exactly"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "supported-observed",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "a supported generated block labelled Observed",
+   "old": "support.get(blockId) === 'supported' ? 'inferred' : 'unknown'",
+   "new": "support.get(blockId) === 'supported' ? 'observed' : 'unknown'",
+   "tests": 15,
+   "failed": 2,
+   "killedBy": [
+    "multi-page dossier render round-trips through the evaluation harness with every quote exact and every claim labelled",
+    "multi-page dossier render labels a block the review did not judge supported as Unknown"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "unsupported-inferred",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "an unsupported block labelled Inferred",
+   "old": "support.get(blockId) === 'supported' ? 'inferred' : 'unknown'",
+   "new": "support.get(blockId) === 'supported' ? 'inferred' : 'inferred'",
+   "tests": 15,
+   "failed": 1,
+   "killedBy": [
+    "multi-page dossier render labels a block the review did not judge supported as Unknown"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "route-by-blob-identity",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "source route from blob identity without the byte range",
+   "old": "return `sources/${digest(source.spans[0]!.anchorId).slice(0, 24)}.html`;",
+   "new": "return `sources/${digest(source.spans[0]!.anchorId.replace(/:\\d+-\\d+$/u, '')).slice(0, 24)}.html`;",
+   "tests": 15,
+   "failed": 2,
+   "killedBy": [
+    "source routes gives two pieces of one blob two routes, though they share a source identity",
+    "source routes keeps a route stable under reordering and moves it when the bytes change"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "diagram-nodes-unclaimed",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "diagram nodes rendered without claim markup",
+   "old": "const nodeList = d.nodes.map(n => claim('li', n.id, n.epistemic, `${escape(n.label)} ${marking(n.epistemic)} ${refs(from, n.sourceIds)}`)).join('');",
+   "new": "const nodeList = d.nodes.map(n => `<li>${escape(n.label)} ${marking(n.epistemic)} ${refs(from, n.sourceIds)}</li>`).join('');",
+   "tests": 15,
+   "failed": 3,
+   "killedBy": [
+    "multi-page dossier render round-trips through the evaluation harness with every quote exact and every claim labelled",
+    "multi-page dossier render labels a block the review did not judge supported as Unknown",
+    "multi-page dossier render renders inventory terms as Inferred glossary claims and an empty glossary as such"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "csp-dropped",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "pages emitted without the preview CSP",
+   "old": "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">${DRAFT_PREVIEW_CSP_META}<title>",
+   "new": "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>",
+   "tests": 15,
+   "failed": 1,
+   "killedBy": [
+    "multi-page dossier render writes the entry, deep-dive, contents, glossary and per-source pages, each under the preview CSP and script-free"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "topics-ignored",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "run-profile topics not emitted",
+   "old": "const topicAttr = (id: string): string => ` data-topics=\"${escape((topics[id] ?? []).join(' '))}\"`;",
+   "new": "const topicAttr = (_id: string): string => ' data-topics=\"\"';",
+   "tests": 15,
+   "failed": 1,
+   "killedBy": [
+    "multi-page dossier render declares owner topics only where the run profile maps them, and refuses an unknown topic"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "unknown-topic-accepted",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "an unknown owner topic accepted",
+   "old": "for (const list of Object.values(topics)) if (list.some(topic => !(OWNER_TOPICS as readonly string[]).includes(topic))) throw new DossierRenderError('unknown-topic');",
+   "new": "",
+   "tests": 15,
+   "failed": 1,
+   "killedBy": [
+    "multi-page dossier render declares owner topics only where the run profile maps them, and refuses an unknown topic"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "unquotable-cited",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "a citation of an unquotable source silently dropped",
+   "old": "if (target === undefined) throw new DossierRenderError('unquotable-source');",
+   "new": "if (target === undefined) return '';",
+   "tests": 15,
+   "failed": 1,
+   "killedBy": [
+    "multi-page dossier render refuses a stopped run and a citation of a source with no admitted text"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "glossary-all-entries",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "every inventory entry rendered as a glossary term",
+   "old": "filter(entry => entry.kind === 'term')",
+   "new": "filter(() => true)",
+   "tests": 15,
+   "failed": 3,
+   "killedBy": [
+    "multi-page dossier render round-trips through the evaluation harness with every quote exact and every claim labelled",
+    "multi-page dossier render labels a block the review did not judge supported as Unknown",
+    "multi-page dossier render renders inventory terms as Inferred glossary claims and an empty glossary as such"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "no-first-level",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "the entry header not marked as the first reading level",
+   "old": "<header data-reading-level=\"0\">",
+   "new": "<header data-reading-level=\"1\">",
+   "tests": 15,
+   "failed": 1,
+   "killedBy": [
+    "multi-page dossier render writes the size report from the rendered bytes"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "collision-unchecked",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "colliding deep-dive page paths accepted",
+   "old": "if (new Set(deepPaths.values()).size !== deepPaths.size) throw new DossierRenderError('page-path-collision');",
+   "new": "",
+   "tests": 15,
+   "failed": 1,
+   "killedBy": [
+    "multi-page dossier render refuses two deep dives whose page paths would collide"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "stopped-rendered",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+   "description": "a stopped pipeline run rendered",
+   "old": "if (input.result.status !== 'awaiting-rendered-review') throw new DossierRenderError('not-renderable');",
+   "new": "if ((input.result.status as string) === 'never') throw new DossierRenderError('not-renderable');",
+   "tests": 15,
+   "failed": 1,
+   "killedBy": [
+    "multi-page dossier render refuses a stopped run and a citation of a source with no admitted text"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "git-guard-removed",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts",
+   "description": "a run directory inside a Git work tree accepted",
+   "old": "if (insideGitWorkTree(dirname(target))) throw new Error('run-directory-inside-git-work-tree');",
+   "new": "",
+   "tests": 15,
+   "failed": 1,
+   "killedBy": [
+    "run directory refuses a run directory inside a Git work tree"
+   ],
+   "outcome": "killed"
+  },
+  {
+   "id": "existing-dir-reused",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts",
+   "description": "an existing run directory reused",
+   "old": "  await mkdir(target);\n",
+   "new": "  await mkdir(target, { recursive: true });\n",
+   "tests": 15,
+   "failed": 1,
+   "killedBy": [
+    "run directory refuses an existing empty run directory"
+   ],
+   "outcome": "killed"
+  }
+ ]
+}
