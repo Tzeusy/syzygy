@@ -95,6 +95,7 @@ REMEDIES = {
     "merge-check-governance": "scripts/check_governance.py conflicts when two packages each register a phrase or a copy: keep both registrations. `git merge-file --union` is unsafe for Python (it interleaved a parenthesis); use the ast-validated candidate search in this script, then run `check_governance.py --selftest`.",
     "merge-stale-base": "The branch is based on a stale main and conflicts in docs/README.md, the partition checker and check_governance.py: ask its owner to rebase onto main before the sitting; do not resolve by hand.",
     "merge-semantic-278": "PR 278 closes GenerationSource exclusion reasons to GENERATION_EXCLUSION_REASONS, but main's repo-corpus.ts (PR 252) builds an excluded row from `reason: string`; the merge is textually clean and `npm run build:poc` then fails (TS2322 at repo-corpus.ts:167), which fails build-output.test.ts and pipeline-demo.test.ts. Fix on PR 278 (type the helper parameter GenerationExclusionReason); the simulation applies the same one-line change in the scratch so the rest of the run is meaningful.",
+    "gate-not-refusing": "The Butlers read gate should refuse the new policy bytes (digest and version) between the row-1 act and the install, and admit them after it; the named expectation did not hold.",
     "installer-refused": "scripts/install_redis_sitting.py refused: read its message; it names the record or anchor it needs and restores the tree.",
     "not-green": "The simulated end state is not green: the named check still fails after the install. The failing lines are in the report.",
 }
@@ -295,6 +296,17 @@ class Sim:
         out = p.stdout + p.stderr
         tail = [ln.strip() for ln in out.splitlines() if ln.strip().startswith("Tests ")]
         failing = failing_tests(out)
+        if failing:
+            # a case that fails under the full suite's load but passes alone is a timing flake
+            # (several timed out at 5000 ms on a loaded machine); the rerun decides
+            files = sorted({f.split(" > ")[0] for f in failing})
+            still = []
+            for f in files:   # one file per process, so the rerun is not itself loaded by the others
+                q = self.run(["npx", "vitest", "run", f], timeout=1800)
+                still += failing_tests(q.stdout + q.stderr)
+            self.step(name + ":vitest-rerun", files=len(files), passed_on_rerun=len(failing) - len(still),
+                      still_failing=still)
+            failing = still
         self.step(name + ":vitest", exit=p.returncode, summary=tail[-1:], failing=failing)
         return failing
 
@@ -447,6 +459,22 @@ class Sim:
         self.commit("sim: every recorder run")
         self.checks("after-acts")
 
+    GATE_TEST = "apps/three-surface-poc/src/governance-inputs.test.ts"
+    GATE_REAL = "evaluates the three real current PWB acts"
+
+    def gate(self, name, expect_refusal):
+        """Run the read gate's loader test on the scratch tree: before the install the pinned
+        digest and version must refuse the new policy (packet Q2); after it they must admit."""
+        self.npm_ci()
+        p = self.run(["npx", "vitest", "run", self.GATE_TEST], timeout=900)
+        failing = failing_tests(p.stdout + p.stderr)
+        real = [f for f in failing if self.GATE_REAL in f]
+        self.step(name, exit=p.returncode, failing=len(failing), real_tree_refused=bool(real))
+        ok = bool(real) if expect_refusal else (p.returncode == 0 and not failing)
+        if not ok:
+            self.finding(name, "gate-not-refusing", f"expect_refusal={expect_refusal}; failing={failing[:3]}")
+        return ok
+
     # -- step 4
     def install(self):
         results = []
@@ -576,7 +604,8 @@ def main(argv):
         sim.checks("baseline")
         sim.baseline_failing = set(sim.vitest_run("start") or [])
         sim.acts(a.route)
-        installed = sim.install()
+        refused = sim.gate("gate-before-install", True)
+        installed = sim.install() and sim.gate("gate-after-install", False) and refused
         sim.end(installed)
         sim.ordering_case()
     finally:
