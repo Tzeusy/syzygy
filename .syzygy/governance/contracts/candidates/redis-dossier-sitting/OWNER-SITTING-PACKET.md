@@ -19,7 +19,7 @@ owner direction. Status is as of 2026-10-03 and none of it is an act.
 
 | # | You give | Record and where | Form | Depends on | Status |
 |---|---|---|---|---|---|
-| 1 | Public-source screening scope | `public-source-screening-scope` (PR #266); the closed exclusion-reason set is whatever the code constant `GENERATION_EXCLUSION_REASONS` holds, which must exist before the act | option at the manifest row | nothing; blocks every read | under review: rounds 1 and 2 REVISE; round 3 pending |
+| 1 | Public-source screening scope | `public-source-screening-scope` (PR #266); the closed exclusion-reason set is whatever the code constant `GENERATION_EXCLUSION_REASONS` holds, which must exist before the act | option at the manifest row | nothing; blocks every read | under review: round 3 REVISE, repaired; round 4 pending |
 | 2 | Provider execution route: one of two entries, see "Row 2 is one choice" below | route A in `public-admission-registry-entries` (PR #255); route B in the Messages API entry (PR #273) | option at the manifest row | gap 21 check for route A | PR #255 confirmed at d08f4400 (CONFIRM WITH EXCEPTIONS, round 4, notes only); PR #273 round 1 REVISE (5 findings), repair by lane-d2, round 2 pending |
 | 3 | Git-hosting source-acquisition adapter | `public-admission-registry-entries` (PR #255); P-89 O1 shared or per-target, O2 the proposed limits | option at the manifest row | row 1 | confirmed at d08f4400, as row 2 |
 | 4 | Observation consent, psf/requests `v2.34.2` | `public-repo-admission` (PR #215) | option at the manifest row | rows 1, 3 | confirmed at 7704b4a5 (round 7) |
