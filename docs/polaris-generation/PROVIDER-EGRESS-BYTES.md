@@ -27,7 +27,7 @@ contacted. Ids are normalized below (`<hex64>`, `<uuid>`).
 | `max_tokens` | profile-set | min(profile `maxOutputTokens`, permit output allowance, permit usage allowance) |
 | `output_config.effort` | profile-set | the run profile's effort (`medium` by default) |
 | `stream` | **SDK-fixed** | `true` |
-| `thinking` | profile-set, fixed off | absent (`CLAUDE_CODE_DISABLE_THINKING=1`); enabling it adds `thinking` and `context_management` and is not supported |
+| `thinking`, `context_management` | profile-set: `off` or `adaptive` | `off`: both absent. `adaptive`: see "Thinking profile values" |
 
 Absent by construction (present with SDK defaults): the `# Environment` message
 (cwd, OS, date), the billing-header system block, `thinking`,
@@ -38,7 +38,22 @@ Schema-tool mode (opt-in) adds exactly one tool,
 `{"name":"StructuredOutput","description":"return the final response as structured JSON","input_schema":<stage schema>}`,
 which contradicts "no tools" in the consent template and needs the record to say so.
 
-## Headers (names enforced; values listed so a record can name them)
+## Thinking profile values
+
+The profile chooses `off` (default) or `adaptive`. The CLI maps any other
+request (`enabled` with a budget, `display: omitted`) to the same adaptive bytes,
+so only these two values are offered. [Observed] CLI 2.1.288, Opus 5.5.
+
+| Value | Body adds | `anthropic-beta` adds |
+|---|---|---|
+| `off` | nothing | nothing |
+| `adaptive` | `"thinking":{"type":"adaptive","display":"updates"}` and `"context_management":{"edits":[{"type":"clear_thinking_20251015","keep":"all"}]}` | `,thinking-display-updates-2026-08-18` |
+
+`anthropic-beta` with `off` is exactly
+`claude-code-20250219,interleaved-thinking-2025-05-14,thinking-token-count-2026-05-13,context-management-2025-06-27,prompt-caching-scope-2026-01-05,mid-conversation-system-2026-04-07,per-turn-control-2026-07-01,effort-2025-11-24`.
+Thinking tokens bill as output tokens and are inside `max_tokens`.
+
+## Headers (names and values enforced)
 
 `user-agent: claude-cli/2.1.288 (external, sdk-ts, agent-sdk/0.3.288)`,
 `x-claude-code-session-id` (same `<uuid>`), `x-stainless-os`, `x-stainless-arch`,
@@ -60,3 +75,27 @@ the only non-message request allowed.
 capture endpoint has seen it). [Unknown] traffic on paths this run did not take
 (error handling beyond 429/529, long runs, login flows). `egress-isolation.test.ts`
 shows one successful call names no socket address but the endpoint.
+
+## What is gated, and what is only version-scoped
+
+**Gated at runtime.** The adapter never points its client at a provider. It
+points at an in-process loopback egress gate (`egress-gate.ts`), which forwards a
+request only when all hold: the current try armed an acceptance predicate and the
+exact request satisfies it (body fields and header *values* against the literals
+and shapes above, including `x-api-key` equal to the configured credential and
+`x-claude-code-session-id` equal to `metadata.session_id`); the injected consent
+`permitted()` returns exactly `true` now (asked again for every request, retries
+included); and an explicit `upstream` is configured. Otherwise it answers 403 and
+no byte leaves. `HEAD /api/hello` is answered by the gate and never forwarded. One
+try is armed at a time. The upstream host is the only destination the gate
+connects to.
+
+**Version-scoped, not gated.** The literals (`anthropic-beta`, `user-agent`,
+`x-stainless-*`, `x-app`, the identity system block, the empty system envelope)
+were observed against SDK 0.3.288 and CLI 2.1.288 and are enforced as literals,
+so a CLI upgrade makes requests fail closed until this file and the predicate are
+re-derived. The gate sees only HTTP to its own port: anything the CLI process
+does outside that port (other sockets, files) is bounded by the environment, the
+run directory and the isolation test, not by the gate. Values that identify the
+machine (OS, architecture, Node runtime version) are checked by shape only, and
+they are sent.

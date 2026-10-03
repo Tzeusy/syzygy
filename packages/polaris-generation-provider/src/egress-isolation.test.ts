@@ -70,13 +70,15 @@ describe.skipIf(!available)('egress isolation (network namespace + strace)', () 
     try {
       const run = rig([process.execPath, helper, runDir]);
       expect(run.status, run.stdout).toBe(0);
-      const seen = JSON.parse(run.stdout.trim().split('\n').at(-1)!) as { port: number; requests: string[]; verdict: { accepted: boolean; violations: string[] }; replyBody: string };
+      const seen = JSON.parse(run.stdout.trim().split('\n').at(-1)!) as { port: number; gatePort: number; requests: string[]; verdict: { accepted: boolean; violations: string[] }; replyBody: string };
       expect(seen.verdict).toEqual({ accepted: true, violations: [] });
       const addresses = socketAddresses(run.trace);
       const inet = addresses.filter(a => a.kind === 'inet');
       // Denominator: the capture endpoint must appear, or the trace saw nothing.
+      const own = (a: Endpoint): boolean => a.address === '127.0.0.1' && (a.port === seen.port || a.port === seen.gatePort);
       expect(inet.some(a => a.address === '127.0.0.1' && a.port === seen.port)).toBe(true);
-      expect(inet.filter(a => !(a.address === '127.0.0.1' && a.port === seen.port))).toEqual([]);
+      expect(inet.some(a => a.port === seen.gatePort)).toBe(true);   // the CLI reached the gate, not the endpoint directly
+      expect(inet.filter(a => !own(a))).toEqual([]);
       // Unix sockets must live inside the run directory, apart from libc's local name-service cache socket (a lookup on this machine, not a network address).
       expect(addresses.filter(a => a.kind === 'unix' && !a.address.startsWith(runDir + '/') && a.address !== '/var/run/nscd/socket')).toEqual([]);
     } finally { rmSync(runDir, { recursive: true, force: true }); rmSync(cache, { recursive: true, force: true }); }
