@@ -131,16 +131,22 @@ Authorized implementation work (generator implementation authorization,
   - [ ] **G4 Discovery under budget (REQ-030).** The pipeline refuses more than
         200 quotable sources, and requests has more; needs ranked selection
         with `deferred-by-budget` exclusions.
-  - [ ] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
+  - [~] **G5 Evaluation harness.** Reader-test runner, reader-cost (bytes and
         words per depth), page budget, REQ-031 clarification questions. A
         first run can happen without it; it cannot be judged without it.
+        Landed (2026-10-03): `evaluateDossier` and `poc:dossier-evaluation`
+        over the `polaris-dossier-v1` input — reader cost against an optional
+        budget, quote and label fidelity, a scripted reader-test port, and
+        coverage per owner topic. Open: a real reader port, answer grading,
+        REQ-031 clarification questions.
 - [ ] REQ-030 accounted discovery: walk an unfamiliar tree within a budget
       and say what was and was not read
 - [ ] REQ-031 owner clarification: the consequential-questions step
 - [ ] Real provider adapter behind the single egress check (refuses without
       consent; no call happens until admission)
-- [ ] Evaluation runner: frozen reader questions, fresh-reader answers,
+- [~] Evaluation runner: frozen reader questions, fresh-reader answers,
       fidelity check, reader-cost measurement (bytes and words to first level)
+      — landed except a real fresh reader: scripted answers only (G5)
 - [ ] Apply L1–L3 to the plan and author prompts: thesis first, a show-don't-
       tell artifact, intent-labelled reading depths
 - [ ] Apply L6: epistemic label once per region, exceptions marked
