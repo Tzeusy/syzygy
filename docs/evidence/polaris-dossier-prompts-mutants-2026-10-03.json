@@ -1,0 +1,463 @@
+{
+  "record": "rule-6 mutation evidence (AGENTS.md verification rule 6)",
+  "date": "2026-10-03",
+  "subject": "packages/polaris-generation-core/src/dossier-prompts.ts",
+  "subjectSha256": "a1a1e68e12245d39755681c39cd053241af5824fd796292e486cf93f95121455",
+  "ranAt": "f30b34f2c01539525e0910c17ba352d1cb5a4ad3",
+  "tests": [
+    {
+      "path": "packages/polaris-generation-core/src/dossier-prompts.test.ts",
+      "sha256": "9e916a40b33abc0673d24be80a18611fc52386881c1f4f63d64ce7419c782601"
+    },
+    {
+      "path": "packages/polaris-generation-core/src/prompts.test.ts",
+      "sha256": "7db43a7ceb9e78509c9ecf39e39f5b4ba3442b0c4e9910809508e6780ec30253"
+    }
+  ],
+  "method": "Each mutant replaces exactly one occurrence of `old` with `new` in the subject (applied only when `old` occurs exactly once), runs `npx vitest run` over both test files, and restores the subject. Killed means the run exited non-zero with at least one failed test.",
+  "summary": {
+    "mutants": 33,
+    "killed": 33,
+    "survived": 0
+  },
+  "mutants": [
+    {
+      "id": "rule-5-dropped",
+      "old": "\n5. Thin evidence stays Unknown. Where",
+      "new": "\nThin evidence. Where",
+      "outcome": "killed",
+      "failedTests": 12,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "rule-text-word",
+      "old": "never as your own comparison or judgment",
+      "new": "never as your own judgment",
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "guidance-word",
+      "old": "never by rewording it to sound supported",
+      "new": "never by rewording it",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "adv-unattributed",
+      "old": "'b-adv', 'The maintainers state that the single-threaded",
+      "new": "'b-adv', 'The single-threaded",
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier illustrations obey their own rules > attributes every advantage and trade-off to the maintainers",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "cost-half-supplied",
+      "old": "what it buys in return is not stated in the sources.",
+      "new": "in return it evicts quickly.",
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier illustrations obey their own rules > states which half of a trade-off no source states",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "hop-merged",
+      "old": "\n      leaf('b-flow-2', 'When `maxmemory` is exceeded, `handleSet` calls `maybeEvict`.', 'src-server'),",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 8,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier illustrations obey their own rules > traces the workflow one hop per child block and draws only those hops",
+        "dossier stage illustrations pass the stage validators > validates the author illustration",
+        "dossier stage illustrations pass the stage validators > validates the edit illustration",
+        "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
+        "dossier stage illustrations pass the stage validators > validates the repair illustration",
+        "dossier stage prompts > pins the author dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "identifier-respelled",
+      "old": "'b-mech', '`maybeEvict` samples",
+      "new": "'b-mech', '`maybe_evict` samples",
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier illustrations obey their own rules > spells every backticked identifier as a cited source spells it",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "inventory-identifier-respelled",
+      "old": "hands off to `maybeEvict` when `maxmemory`",
+      "new": "hands off to `maybeEvict` when `max_memory`",
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier illustrations obey their own rules > spells every backticked identifier as a cited source spells it",
+        "dossier stage prompts > pins the inventory dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "gap-filled-inventory",
+      "old": "disposition: { kind: 'unresolved', reason: 'No admitted source shows the read path.', references: ['src-server'] } },",
+      "new": "disposition: produced('end-to-end-workflows') },",
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier illustrations obey their own rules > keeps thin evidence unresolved in the inventory, the draft and the review",
+        "dossier stage prompts > pins the inventory dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "gap-dropped-draft",
+      "old": "unresolved: [{ question: 'How is a read request served?', reason: 'No admitted source shows the read path.', references: ['src-server'] }],",
+      "new": "unresolved: [],",
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier illustrations obey their own rules > keeps thin evidence unresolved in the inventory, the draft and the review",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "edge-label-not-in-text",
+      "old": "label: 'calls', sourceIds",
+      "new": "label: 'invokes', sourceIds",
+      "outcome": "killed",
+      "failedTests": 7,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier stage illustrations pass the stage validators > validates the author illustration",
+        "dossier stage illustrations pass the stage validators > validates the edit illustration",
+        "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
+        "dossier stage illustrations pass the stage validators > validates the repair illustration",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "edge-cited-outside-flow",
+      "old": "label: 'calls', sourceIds: ['src-server']",
+      "new": "label: 'calls', sourceIds: ['src-evict']",
+      "outcome": "killed",
+      "failedTests": 5,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier illustrations obey their own rules > traces the workflow one hop per child block and draws only those hops",
+        "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "diagram-kind",
+      "old": "kind: 'flow', relationship",
+      "new": "kind: 'dependency', relationship",
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier illustrations obey their own rules > traces the workflow one hop per child block and draws only those hops",
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "plan-required-section-dropped",
+      "old": "  sectionPlan('mechanisms', 'Sampled eviction', 'Answers the mechanisms question from e-evict; a deep dive answers why eviction samples instead of ordering every key.', ['src-evict']),\n",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier stage illustrations pass the stage validators > validates the author illustration",
+        "dossier stage illustrations pass the stage validators > validates the edit illustration",
+        "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
+        "dossier stage illustrations pass the stage validators > validates the plan illustration",
+        "dossier stage illustrations pass the stage validators > validates the repair illustration",
+        "dossier stage prompts > pins the plan dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "review-coverage-row-dropped",
+      "old": "represented('e-adv', 'b-adv'), ",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier stage illustrations pass the stage validators > validates the fidelity illustration",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "review-gap-represented",
+      "old": "{ entryId: 'e-read', disposition: 'unresolved', blockIds: [], reason:",
+      "new": "{ entryId: 'e-read', disposition: 'justified-omission', blockIds: [], reason:",
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier illustrations obey their own rules > keeps thin evidence unresolved in the inventory, the draft and the review",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "edit-illustration-swapped",
+      "old": "edit: draftIllustration,",
+      "new": "edit: planIllustration,",
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier stage illustrations pass the stage validators > shares one draft illustration across author, edit and repair",
+        "dossier stage illustrations pass the stage validators > validates the edit illustration",
+        "dossier stage prompts > pins the edit dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "repair-illustration-cloned",
+      "old": "repair: draftIllustration,",
+      "new": "repair: structuredClone(draftIllustration),",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier stage illustrations pass the stage validators > shares one draft illustration across author, edit and repair"
+      ]
+    },
+    {
+      "id": "version-bumped",
+      "old": "version: `polaris-${stage}-dossier-v1`",
+      "new": "version: `polaris-${stage}-dossier-v2`",
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier stage prompts > pins the author dossier prompt bytes",
+        "dossier stage prompts > pins the edit dossier prompt bytes",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes",
+        "dossier stage prompts > pins the repair dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "base-prefix-dropped",
+      "old": "system: `${base.system}\\n\\n${dossierRules}",
+      "new": "system: `${dossierRules}",
+      "outcome": "killed",
+      "failedTests": 12,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier stage prompts > extends the reviewed author manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed edit manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed fidelity manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed inventory manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed plan manifesto prompt without changing it",
+        "dossier stage prompts > extends the reviewed repair manifesto prompt without changing it"
+      ]
+    },
+    {
+      "id": "illustration-heading",
+      "old": "Copy its structure, never its content, handles or claims;",
+      "new": "Copy its structure;",
+      "outcome": "killed",
+      "failedTests": 14,
+      "totalTests": 60,
+      "killedBy": [
+        "discovery map and reduce prompts > pins the map prompt bytes",
+        "discovery map and reduce prompts > pins the reduce prompt bytes",
+        "dossier stage prompts > ends the author prompt with the illustration it was tested with",
+        "dossier stage prompts > ends the edit prompt with the illustration it was tested with",
+        "dossier stage prompts > ends the fidelity prompt with the illustration it was tested with",
+        "dossier stage prompts > ends the inventory prompt with the illustration it was tested with"
+      ]
+    },
+    {
+      "id": "illustration-wrong-stage",
+      "old": "JSON.stringify(DOSSIER_STAGE_ILLUSTRATIONS[stage])",
+      "new": "JSON.stringify(DOSSIER_STAGE_ILLUSTRATIONS.author)",
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier stage prompts > ends the fidelity prompt with the illustration it was tested with",
+        "dossier stage prompts > ends the inventory prompt with the illustration it was tested with",
+        "dossier stage prompts > ends the plan prompt with the illustration it was tested with",
+        "dossier stage prompts > pins the fidelity dossier prompt bytes",
+        "dossier stage prompts > pins the inventory dossier prompt bytes",
+        "dossier stage prompts > pins the plan dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "guidance-shared",
+      "old": "  edit: `Dossier edit: never soften",
+      "new": "  edit: `Dossier repair: never soften",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "killedBy": [
+        "dossier stage prompts > pins the edit dossier prompt bytes"
+      ]
+    },
+    {
+      "id": "map-relevance-out-of-range",
+      "old": "relevance: 9 },",
+      "new": "relevance: 11 },",
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 60,
+      "killedBy": [
+        "discovery map and reduce prompts > illustrates a map reply every claim of which discovery would accept",
+        "discovery map and reduce prompts > pins the map prompt bytes"
+      ]
+    },
+    {
+      "id": "map-unknown-blob",
+      "old": "{ blobId: 'blob-server', claim:",
+      "new": "{ blobId: 'blob-other', claim:",
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 60,
+      "killedBy": [
+        "discovery map and reduce prompts > illustrates a map reply every claim of which discovery would accept",
+        "discovery map and reduce prompts > pins the map prompt bytes"
+      ]
+    },
+    {
+      "id": "map-duplicate-blob",
+      "old": "{ blobId: 'blob-server', claim:",
+      "new": "{ blobId: 'blob-readme', claim:",
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 60,
+      "killedBy": [
+        "discovery map and reduce prompts > illustrates a map reply every claim of which discovery would accept",
+        "discovery map and reduce prompts > pins the map prompt bytes"
+      ]
+    },
+    {
+      "id": "reduce-duplicate",
+      "old": "ranked: ['blob-readme', 'blob-server', 'blob-evict']",
+      "new": "ranked: ['blob-readme', 'blob-server', 'blob-readme']",
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 60,
+      "killedBy": [
+        "discovery map and reduce prompts > illustrates a reduce reply discovery would accept whole",
+        "discovery map and reduce prompts > pins the reduce prompt bytes"
+      ]
+    },
+    {
+      "id": "map-schema-max",
+      "old": "minimum: 0, maximum: 10 }",
+      "new": "minimum: 0, maximum: 100 }",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "killedBy": [
+        "discovery map and reduce prompts > publishes closed reply schemas matching those rules"
+      ]
+    },
+    {
+      "id": "map-schema-open",
+      "old": "type: 'object', additionalProperties: false, required: ['claims'],",
+      "new": "type: 'object', additionalProperties: true, required: ['claims'],",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "killedBy": [
+        "discovery map and reduce prompts > publishes closed reply schemas matching those rules"
+      ]
+    },
+    {
+      "id": "reduce-schema-unique",
+      "old": "ranked: { type: 'array', uniqueItems: true,",
+      "new": "ranked: { type: 'array', uniqueItems: false,",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "killedBy": [
+        "discovery map and reduce prompts > publishes closed reply schemas matching those rules"
+      ]
+    },
+    {
+      "id": "discovery-refusal-removed",
+      "old": "  if (step === 'reduce') return buildDiscoveryPrompt",
+      "new": "  return buildDiscoveryPrompt",
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 60,
+      "killedBy": [
+        "discovery map and reduce prompts > refuses unsupported step constructor",
+        "discovery map and reduce prompts > refuses unsupported step unknown"
+      ]
+    },
+    {
+      "id": "map-instruction-word",
+      "old": "Claim only what the excerpt shows, never what the rest of the file might hold.",
+      "new": "Claim what the file holds.",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "killedBy": [
+        "discovery map and reduce prompts > pins the map prompt bytes"
+      ]
+    },
+    {
+      "id": "reduce-instruction-word",
+      "old": "Cover every reader question before adding a second file for any one question.",
+      "new": "",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 60,
+      "killedBy": [
+        "discovery map and reduce prompts > pins the reduce prompt bytes"
+      ]
+    }
+  ]
+}
