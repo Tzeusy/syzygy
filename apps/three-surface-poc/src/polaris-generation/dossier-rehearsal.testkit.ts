@@ -32,8 +32,8 @@ import { startStubProvider, type StubRequest } from './stub-provider.testkit.js'
 
 export const REHEARSAL_FORMAT = 'polaris-dossier-rehearsal-v1';
 const REPO_ROOT = fileURLToPath(new URL('../../../../', import.meta.url));
-const CREDENTIAL = 'SYZYGY_POLARIS_PROVIDER_API_KEY';
-const STUB_KEY = 'sk-rehearsal-0123456789';
+export const CREDENTIAL = 'SYZYGY_POLARIS_PROVIDER_API_KEY';
+export const STUB_KEY = 'sk-rehearsal-0123456789';
 const TARGET = 'https://github.com/redis/redis';
 const STAGES = ['inventory', 'plan', 'author', 'edit', 'repair', 'fidelity', 'discovery-map', 'discovery-reduce'] as const;
 /** Stage ceilings of the dossier-units-v1 accounting policy, as the wiring enforces them. */
@@ -58,7 +58,7 @@ function buildSmallFixture(dir: string): RehearsalFixture {
   return { name: 'small', dir, commit: git('rev-parse', 'HEAD'), files: Object.keys(files).length, oversizeFiles: 0 };
 }
 
-function buildFixture(name: FixtureName, parent: string): RehearsalFixture {
+export function buildFixture(name: FixtureName, parent: string): RehearsalFixture {
   if (name === 'small') return buildSmallFixture(path.join(parent, 'small'));
   const built = buildRedisShapedFixture(path.join(parent, 'redis-shaped'));
   return { name, dir: path.join(parent, 'redis-shaped'), commit: built.commit, files: built.files.size, oversizeFiles: built.oversize.length };
@@ -165,6 +165,7 @@ const check = (id: string, passed: boolean, detail: string): RehearsalCheck => (
 
 /** "The rendered dossier opens": every page is a complete document, links nothing outside the run directory, and every internal link and fragment lands. */
 export function inspectSite(runDir: string): RehearsalCheck[] {
+  if (!existsSync(runDir)) return [check('site-opens', false, 'there is no run directory')];
   const files = walk(runDir).map(f => path.relative(runDir, f)).filter(f => f.endsWith('.html')).sort();
   if (!files.includes('index.html')) return [check('site-opens', false, 'index.html is missing')];
   const problems: string[] = [];
@@ -188,6 +189,11 @@ export function inspectSite(runDir: string): RehearsalCheck[] {
 
 /** Every dossier page through `evaluateDossier`: no fidelity failures of any kind, and the reader cost measured. */
 export async function evaluatePages(runDir: string, sources: readonly GenerationSource[]): Promise<RehearsalCheck[]> {
+  try { return await evaluateRun(runDir, sources); }
+  catch (error) { return [check('pages-evaluate', false, `the evaluator refused the run: ${error instanceof Error ? error.message : 'unknown'}`)]; }
+}
+
+async function evaluateRun(runDir: string, sources: readonly GenerationSource[]): Promise<RehearsalCheck[]> {
   const manifestText = readFileSync(path.join(runDir, 'dossier.json'), 'utf8');
   const manifest = parseDossierManifest(manifestText);
   const pages = new Map(manifest.pages.map(page => [page.path, new TextEncoder().encode(readFileSync(path.join(runDir, page.path), 'utf8'))]));
@@ -219,13 +225,13 @@ export interface Ran {
   readonly record: Json | null;
   readonly fixture: RehearsalFixture;
 }
-interface ScenarioDef {
+export interface ScenarioDef {
   readonly name: string;
   readonly fixture: FixtureName;
   readonly intent: string;
   readonly expectExit: number;
   /** The trigger's clock, to age a run past its wall-clock allowance without waiting. */
-  readonly clock?: () => number;
+  readonly clock?: () => () => number;
   readonly env?: Record<string, string>;
   readonly withObservation?: boolean;
   readonly args?: (runDir: string) => readonly string[];
@@ -241,9 +247,9 @@ const stateDetail = (r: Ran): string => `state ${String(r.outcome?.state)}${r.ou
 const stageSummary = (stages: readonly string[]): string => stages.reduce<[string, number][]>((acc, s) => { const last = acc[acc.length - 1]; if (last?.[0] === s) last[1]++; else acc.push([s, 1]); return acc; }, []).map(([s, n]) => (n > 1 ? `${s} x${n}` : s)).join(' > ');
 const quotableBytes = (sources: readonly GenerationSource[]): number => sources.reduce((sum, x) => sum + x.spans.reduce((n, span) => n + Buffer.byteLength(span.text), 0), 0);
 const recordOf = (runDir: string): Json | null => { try { return JSON.parse(readFileSync(path.join(runDir, 'run-record.json'), 'utf8')) as Json; } catch { return null; } };
-const noCheckout = (r: Ran): RehearsalCheck => check('no-checkout', !r.fetched.includes('checkout'), r.fetched.includes('checkout') ? 'the repository was checked out' : 'the repository content was never checked out (a metadata listing is allowed)');
-const nothingSent = (r: Ran): RehearsalCheck => check('nothing-sent', r.requests.length === 0, `${r.requests.length} requests reached the stub`);
-const noRunDir = (r: Ran): RehearsalCheck => check('no-run-directory', !existsSync(r.runDir), existsSync(r.runDir) ? 'a run directory was written' : 'no run directory');
+export const noCheckout = (r: Ran): RehearsalCheck => check('no-checkout', !r.fetched.includes('checkout'), r.fetched.includes('checkout') ? 'the repository was checked out' : 'the repository content was never checked out (a metadata listing is allowed)');
+export const nothingSent = (r: Ran): RehearsalCheck => check('nothing-sent', r.requests.length === 0, `${r.requests.length} requests reached the stub`);
+export const noRunDir = (r: Ran): RehearsalCheck => check('no-run-directory', !existsSync(r.runDir), existsSync(r.runDir) ? 'a run directory was written' : 'no run directory');
 
 /** The record names the profile the run was started under, the prompt digest of every call, and the budget it spent. */
 export function recordChecks(r: Ran, opts: { readonly expectCeilingSpend?: boolean } = {}): RehearsalCheck[] {
@@ -274,7 +280,7 @@ export function recordChecks(r: Ran, opts: { readonly expectCeilingSpend?: boole
   return out;
 }
 
-const completeChecks = async (r: Ran): Promise<RehearsalCheck[]> => [
+export const completeChecks = async (r: Ran): Promise<RehearsalCheck[]> => [
   check('state-complete', r.outcome?.state === 'complete', stateDetail(r)),
   check('stage-order', JSON.stringify(r.stages.filter(s => !s.startsWith('discovery'))) === JSON.stringify(['inventory', 'plan', 'author', 'edit', 'fidelity']) && r.stages.some(s => s === 'discovery-map'),
     `stages ${stageSummary(r.stages)}`),
@@ -284,7 +290,7 @@ const completeChecks = async (r: Ran): Promise<RehearsalCheck[]> => [
   ...recordChecks(r),
 ];
 
-const SCENARIOS: readonly ScenarioDef[] = [
+export const SCENARIOS: readonly ScenarioDef[] = [
   { name: 'complete-small', fixture: 'small', expectExit: 0, intent: 'A normal run on a four-file repository: discovery, the five narrative stages, a rendered dossier that opens, evaluates cleanly and is accounted for in the run record.', checks: completeChecks },
   {
     name: 'complete-redis-shaped', fixture: 'redis-shaped', expectExit: 0,
@@ -312,7 +318,7 @@ const SCENARIOS: readonly ScenarioDef[] = [
   },
   {
     name: 'wall-clock', fixture: 'small', expectExit: 6, intent: 'Discovery uses the whole two-hour allowance (the clock jumps): the narrative never starts, and the record alone is kept.',
-    clock: (() => { let calls = 0; const start = Date.now(); return () => start + (calls++ === 0 ? 0 : 8_000_000); })(),
+    clock: () => { let calls = 0; const start = Date.now(); return () => start + (calls++ === 0 ? 0 : 8_000_000); },
     checks: r => [
       check('state-stopped', r.outcome?.state === 'generation-stopped', stateDetail(r)),
       check('no-narrative-stage', !r.stages.some(s => !s.startsWith('discovery')), `stages ${stageSummary(r.stages)}`),
@@ -335,7 +341,7 @@ const SCENARIOS: readonly ScenarioDef[] = [
 
 export const SCENARIO_NAMES: readonly string[] = SCENARIOS.map(s => s.name);
 
-async function runScenario(def: ScenarioDef, fixture: RehearsalFixture, scratch: string): Promise<ScenarioReport> {
+export async function runScenario(def: ScenarioDef, fixture: RehearsalFixture, scratch: string, observe?: (ran: Ran) => void): Promise<ScenarioReport> {
   const fetched: string[] = [];
   let captured: readonly GenerationSource[] | null = null;
   const respond = def.respond ?? scriptedReply;
@@ -356,7 +362,7 @@ async function runScenario(def: ScenarioDef, fixture: RehearsalFixture, scratch:
         materialize: async () => { fetched.push('checkout'); return fixture.dir; },
         policyAct: fixturePolicyActPort(['.c', '.h', '.md', '.txt', '.tcl', '.sh']),
         render: ({ result, sources }) => { captured = sources; return renderDossier({ result, sources, requestedAssets: DOSSIER_REQUESTED_ASSETS }); },
-        ...(def.clock === undefined ? {} : { now: def.clock }),
+        ...(def.clock === undefined ? {} : { now: def.clock() }),
       },
       { root: admissionRoot(fixture.commit, def.withObservation !== false), env, providerFactory: loopback(stub.url), stdout: t => out.push(t), stderr: t => out.push(t) });
   } finally { await stub.close(); }
@@ -365,12 +371,13 @@ async function runScenario(def: ScenarioDef, fixture: RehearsalFixture, scratch:
   try { outcome = JSON.parse(text) as Ran['outcome']; } catch { /* a usage message or a plain-text refusal */ }
   const ran: Ran = { exit, outcome, text, runDir, stages: stub.requests.map(q => stageOfSystem(q.system)), requests: stub.requests, fetched, sources: captured, envAfter: env,
     record: existsSync(runDir) ? recordOf(runDir) : null, fixture };
+  observe?.(ran);
   const checks = [check('exit-code', exit === def.expectExit, `exit ${exit}, expected ${def.expectExit}`), ...await def.checks(ran)];
   return { scenario: def.name, fixture: def.fixture, intent: def.intent, expectedExit: def.expectExit, exit, state: outcome?.state ?? null, stagesRequested: ran.stages, checks, passed: checks.every(c => c.passed) };
 }
 
 /** Builds each needed synthetic repository once, runs every named scenario (default: all), and removes its scratch space. */
-export async function rehearse(options: { readonly scenarios?: readonly string[]; readonly keepScratch?: (directory: string) => void } = {}): Promise<RehearsalReport> {
+export async function rehearse(options: { readonly scenarios?: readonly string[]; readonly keepScratch?: (directory: string) => void; readonly observe?: (scenario: string, ran: Ran) => void } = {}): Promise<RehearsalReport> {
   const wanted = options.scenarios ?? SCENARIO_NAMES;
   const unknown = wanted.filter(name => !SCENARIO_NAMES.includes(name));
   if (unknown.length > 0) throw new Error(`unknown-scenario: ${unknown.join(', ')}`);
@@ -380,7 +387,7 @@ export async function rehearse(options: { readonly scenarios?: readonly string[]
     const fixtures = new Map<FixtureName, RehearsalFixture>();
     for (const def of selected) if (!fixtures.has(def.fixture)) fixtures.set(def.fixture, buildFixture(def.fixture, scratch));
     const reports: ScenarioReport[] = [];
-    for (const def of selected) reports.push(await runScenario(def, fixtures.get(def.fixture)!, scratch));
+    for (const def of selected) reports.push(await runScenario(def, fixtures.get(def.fixture)!, scratch, options.observe === undefined ? undefined : ran => options.observe!(def.name, ran)));
     return {
       format: REHEARSAL_FORMAT, providerCallPerformed: false, network: 'loopback stub only',
       fixtures: [...fixtures.values()].map(({ name, files, oversizeFiles, commit }) => ({ name, files, oversizeFiles, commit })),
