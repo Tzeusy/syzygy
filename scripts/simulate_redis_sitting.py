@@ -68,7 +68,7 @@ DECISIONS = ".syzygy/governance/decisions"
 BRANCHES = (
     (278, "agent/dossier-engine-7"),
     (273, "governance/provider-route-messages-api-entry"),
-    (326, "governance/screening-scope-v2-recorder"),
+    (326, "governance/screening-scope-v2"),
     (260, "governance/admission-sitting-packet"),
 )
 ORDERING_CASE = (120, "agent/tier4-dov25")
@@ -445,14 +445,15 @@ class Sim:
         self.step("freeze-route-B", note="synthetic confirming raw and synthetic freeze, scratch only")
 
     def freeze_v2_recorder(self):
-        """The version-2 package has no confirming review yet; give the scratch a synthetic one, with
-        the frozen table produced by the recorder's own --freeze-table."""
+        """Once the recorder is frozen it is used as it stands, on the package's real round-4 raw. A
+        recorder still unfrozen (an older branch) gets a synthetic confirming raw and a table from its
+        own --freeze-table, in the scratch only."""
         rec = self.scratch / V2_RECORDER
         pkg = self.scratch / PKG_SCOPE_V2
         review = pkg / "reviews/R-PUBLIC-SOURCE-SCREENING-SCOPE-V2-4-RAW.md"
         text = rec.read_text()
         if "FROZEN_SUBJECT: str | None = None" not in text:
-            self.step("freeze-v2", note="recorder already frozen to a real confirming round")
+            self.step("freeze-v2", note="recorder already frozen (the round-4 REVISE and its disclosed repairs); the real raw is used")
             return True
         review.parent.mkdir(parents=True, exist_ok=True)
         review.write_text(f"# R4 (synthetic, scratch only)\nReviewed commit: {'a' * 40}\n"
