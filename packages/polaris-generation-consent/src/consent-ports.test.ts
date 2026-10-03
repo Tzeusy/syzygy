@@ -17,14 +17,16 @@ const source = (repositoryId: string, revision: string, id: string, excluded = f
     : { ...base, sourceId: id, evaluationId: 'evaluation:fixture', classificationBasis: 'body', exclusion: { excluded: false }, body, spans: [{ anchorId: generationAnchorId(base, 0, end), start: 0, end, text: body }] };
 };
 
-const obs = (over: Partial<AdmissionRecord> = {}): AdmissionRecord => ({
+/** A successor's supersession takes effect at its own act instant unless a case says otherwise. */
+const withSupersession = (r: Omit<AdmissionRecord, 'supersessionAt'>, over: Partial<AdmissionRecord>): AdmissionRecord => ({ ...r, supersessionAt: r.supersedes === null ? null : r.inForceAt, ...over });
+const obs = (over: Partial<AdmissionRecord> = {}): AdmissionRecord => withSupersession({
   recordId: 'PUBLIC-OBS-REDIS-2026-10-03', version: '1', class: 'observation', project: 'project:syzygy', repositoryId: 'redis-redis', providerId: null, digest: hex('1'),
   inForceAt: NOW - 1000, withdrawnAt: null, supersedes: null, admittedRevisions: [REDIS_REV], admittedRepositories: [], contentClasses: [], ...over,
-});
-const egress = (over: Partial<AdmissionRecord> = {}): AdmissionRecord => ({
+}, over);
+const egress = (over: Partial<AdmissionRecord> = {}): AdmissionRecord => withSupersession({
   recordId: 'PUBLIC-EGRESS-anthropic', version: '2', class: 'egress', project: 'project:syzygy', repositoryId: null, providerId: 'anthropic', digest: hex('2'),
   inForceAt: NOW - 1000, withdrawnAt: null, supersedes: null, admittedRevisions: [], admittedRepositories: ['redis-redis'], contentClasses: ['code-content', 'governance-text'], ...over,
-});
+}, over);
 
 function rig(records: AdmissionRecord[], extra: Partial<ConsentPortsOptions> = {}) {
   const state = { records, now: NOW, reads: 0, reserved: [] as AttemptInput[], audits: [] as ConsentAudit[], failAudit: false, failRead: false };

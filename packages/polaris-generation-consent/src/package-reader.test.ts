@@ -1,12 +1,11 @@
 import { createHash } from 'node:crypto';
-import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { AdmissionRecordError } from './admission-record.js';
 import { inForceRecords } from './consent-ports.js';
-import { renderRecorderAct } from './recorder-fixtures.testkit.js';
+import { renderClassAct, renderPolicyAct, renderRecorderAct } from './recorder-fixtures.testkit.js';
 import { DECISIONS_DIR, EGRESS_V2_INSTANCE, INSTANCES_DIR, POLICY_ACT_FILE, POLICY_PATH, createAdmissionRecordsPort, createPackageAdmissionReader, createPackageAdmissionRecordsPort, createPackagePolicyReader, type PackageReaderFs } from './package-reader.js';
 
 const REDIS_REV = '498ecd0d6d007db11ddb3aea9428552598a78622';
@@ -53,19 +52,25 @@ const ownerAnswers = (): string => readFileSync(fileURLToPath(new URL(`../../../
 const sha = (t: string): string => createHash('sha256').update(t, 'utf8').digest('hex');
 const REDIS_PATH = `${INSTANCES_DIR}/redis/OBSERVATION-CONSENT.md`;
 const EGRESS_PATH = `${INSTANCES_DIR}/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md`;
-/** An act record as the real recorder renders it (see recorder-fixtures.testkit.ts), minus its instant line (a date-only act), with the
- * fields a case varies replaced. The artifact picks the recorder's form: the redis observation unless it is one of the egress instances. */
-const actText = (type: string, artifact: string, text: string, date = '2026-10-04', digest = sha(text)): string => {
+/** An act record as the real recorder renders it (see recorder-fixtures.testkit.ts), with the fields a case varies replaced.
+ * The artifact picks the recorder's form: the redis observation unless it is one of the egress instances. */
+const actText = (type: string, artifact: string, text: string, date = '2026-10-04', digest = sha(text), instant = `${date}T09:30:00Z`): string => {
   const key = artifact === EGRESS_PATH ? 'egress-anthropic' : artifact === EGRESS_V2_INSTANCE ? 'egress-anthropic-v2' : 'redis-observation';
-  return renderRecorderAct(key, '0'.repeat(64), date, `${date}T09:30:00Z`)
-    .replace(/Recorded at \(UTC\): \S+\n\n/, '').replace('0'.repeat(64), digest)
+  return renderRecorderAct(key, '0'.repeat(64), date, instant)
+    .replace('0'.repeat(64), digest)
     .replace(/^Act type: `[^`]+`/m, `Act type: \`${type}\``).replace(/^Artifact identity: `[^`]+`/m, `Artifact identity: \`${artifact}\``);
 };
-const DAY = Date.UTC(2026, 9, 5);   // the day after the act date: in force from here
+const AT = Date.UTC(2026, 9, 4, 9, 30, 0);   // the instant of an act dated 2026-10-04: in force from here
 
+/** A file system over a map of repository-relative paths: a directory is any proper prefix of a key. */
 function memoryFs(files: Record<string, string>): PackageReaderFs {
   return {
-    readdir: async dir => { const prefix = `/r/${DECISIONS_DIR}`; if (dir !== prefix) throw new Error('enoent'); return Object.keys(files).filter(f => f.startsWith(`${DECISIONS_DIR}/`)).map(f => f.slice(DECISIONS_DIR.length + 1)); },
+    readdir: async dir => {
+      const prefix = `${dir.slice(3)}/`;
+      const names = new Set(Object.keys(files).filter(f => f.startsWith(prefix)).map(f => f.slice(prefix.length).split('/')[0]!));
+      if (!dir.startsWith('/r/') || names.size === 0) throw new Error('enoent');
+      return [...names];
+    },
     readFile: async file => { const key = file.slice(3); if (!(key in files)) throw new Error('enoent'); return files[key]!; },
   };
 }
@@ -84,7 +89,7 @@ describe('package admission reader', () => {
     const records = await reader(world()).read();
     expect(records.map(r => `${r.class}:${r.repositoryId ?? r.providerId}`).sort()).toEqual(['egress:anthropic', 'observation:redis-redis']);
     const obs = records.find(r => r.class === 'observation')!;
-    expect(obs).toMatchObject({ recordId: 'PUBLIC-OBS-REDIS-2026-10-03', version: '0.1.0-candidate.7', project: 'project:syzygy', withdrawnAt: null, supersedes: null, inForceAt: DAY, admittedRevisions: [REDIS_REV, OTHER_REV], digest: sha(obsText()) });
+    expect(obs).toMatchObject({ recordId: 'PUBLIC-OBS-REDIS-2026-10-03', version: '0.1.0-candidate.7', project: 'project:syzygy', withdrawnAt: null, supersedes: null, inForceAt: AT, admittedRevisions: [REDIS_REV, OTHER_REV], digest: sha(obsText()) });
     expect(records.find(r => r.class === 'egress')).toMatchObject({ admittedRepositories: ['psf-requests', 'redis-redis'], contentClasses: ['governance-text', 'code-structure'] });
     expect(Object.isFrozen(obs) && Object.isFrozen(obs.admittedRevisions)).toBe(true);
   });
@@ -123,31 +128,31 @@ describe('package admission reader', () => {
 
 describe('admission records port', () => {
   const port = (files: Record<string, string>, now: number) => createAdmissionRecordsPort({ reader: reader(files), now: () => now });
-  it('satisfies observation and egress exactly when an act is in force, and not before the day after the act', async () => {
-    expect(await port(world(), DAY).check(requirement('observation-consent'))).toEqual({ satisfied: true, record: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7' });
-    expect(await port(world(), DAY).check(requirement('egress-consent'))).toEqual({ satisfied: true, record: 'PUBLIC-EGRESS-anthropic@0.1.0-candidate.7' });
-    expect((await port(world(), DAY - 1).check(requirement('observation-consent'))).satisfied).toBe(false);
+  it('satisfies observation and egress exactly when an act is in force, and not before the act\'s instant', async () => {
+    expect(await port(world(), AT).check(requirement('observation-consent'))).toEqual({ satisfied: true, record: 'PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7' });
+    expect(await port(world(), AT).check(requirement('egress-consent'))).toEqual({ satisfied: true, record: 'PUBLIC-EGRESS-anthropic@0.1.0-candidate.7' });
+    expect((await port(world(), AT - 1).check(requirement('observation-consent'))).satisfied).toBe(false);
   });
   it('is unsatisfied for an unadmitted revision, an unadmitted repository, a stale instance and the policy record', async () => {
-    const p = port(world(), DAY);
+    const p = port(world(), AT);
     expect(await p.check(requirement('observation-consent', 'redis-redis', 'f'.repeat(40)))).toMatchObject({ satisfied: false });
     expect(await p.check(requirement('observation-consent', 'psf-requests', REDIS_REV))).toMatchObject({ satisfied: false });
     expect(await p.check(requirement('egress-consent', 'butlers'))).toMatchObject({ satisfied: false });
     expect(await p.check(requirement('public-source-policy'))).toMatchObject({ satisfied: false });
-    expect(await port(world({ [REDIS_PATH]: obsText() + 'x' }), DAY).check(requirement('observation-consent'))).toMatchObject({ satisfied: false });
+    expect(await port(world({ [REDIS_PATH]: obsText() + 'x' }), AT).check(requirement('observation-consent'))).toMatchObject({ satisfied: false });
   });
   it('does not take another provider\'s egress record for the Anthropic requirement', async () => {
     const other = egressText().replace('provider:anthropic', 'provider:other');
-    expect(await port(world({ [EGRESS_PATH]: other, [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`]: actText('consent-egress', EGRESS_PATH, other) }), DAY).check(requirement('egress-consent'))).toMatchObject({ satisfied: false });
+    expect(await port(world({ [EGRESS_PATH]: other, [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`]: actText('consent-egress', EGRESS_PATH, other) }), AT).check(requirement('egress-consent'))).toMatchObject({ satisfied: false });
   });
   it('is unsatisfied, with a reason, when records cannot be read or none exist', async () => {
     const none = world(); for (const key of Object.keys(none)) if (key.endsWith('-ACT.md')) delete none[key];
-    expect(await port(none, DAY).check(requirement('observation-consent'))).toMatchObject({ satisfied: false, why: expect.stringContaining('no record found') });
-    expect(await port(world({ [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-X-WITHDRAWAL.md`]: 'x' }), DAY).check(requirement('egress-consent'))).toMatchObject({ satisfied: false, why: expect.stringContaining('could not be read') });
+    expect(await port(none, AT).check(requirement('observation-consent'))).toMatchObject({ satisfied: false, why: expect.stringContaining('no record found') });
+    expect(await port(world({ [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-X-WITHDRAWAL.md`]: 'x' }), AT).check(requirement('egress-consent'))).toMatchObject({ satisfied: false, why: expect.stringContaining('could not be read') });
   });
   it('reads fresh on every check: a later withdrawal-form file turns a satisfied answer into a refusal', async () => {
     const files = world();
-    const p = port(files, DAY);
+    const p = port(files, AT);
     expect((await p.check(requirement('egress-consent'))).satisfied).toBe(true);
     files[`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-WITHDRAWAL.md`] = 'withdrawn';
     expect((await p.check(requirement('egress-consent'))).satisfied).toBe(false);
@@ -155,11 +160,16 @@ describe('admission records port', () => {
 });
 
 describe('act instant', () => {
-  const withInstant = (instant: string, date = '2026-10-04'): string => actText('consent-observation', REDIS_PATH, obsText(), date).replace(`Date: ${date}\n`, `Date: ${date}\n\nRecorded at (UTC): ${instant}\n`);
+  const withInstant = (instant: string, date = '2026-10-04'): string => actText('consent-observation', REDIS_PATH, obsText(), date).replace(/Recorded at \(UTC\): \S+/, `Recorded at (UTC): ${instant}`);
   const actPath = `${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md`;
   it('uses the Recorded at (UTC) instant when the record carries exactly one', async () => {
-    const records = await reader(world({ [actPath]: withInstant('2026-10-04T09:30:00Z') })).read();
-    expect(records.find(r => r.class === 'observation')!.inForceAt).toBe(Date.UTC(2026, 9, 4, 9, 30, 0));
+    const records = await reader(world({ [actPath]: withInstant('2026-10-04T11:15:30Z') })).read();
+    expect(records.find(r => r.class === 'observation')!.inForceAt).toBe(Date.UTC(2026, 9, 4, 11, 15, 30));
+  });
+  it('refuses a record with no instant: there is no date-only reading', async () => {
+    const dateOnly = actText('consent-observation', REDIS_PATH, obsText()).replace(/Recorded at \(UTC\): \S+\n\n/, '');
+    expect(dateOnly).not.toContain('Recorded at');
+    await expect(reader(world({ [actPath]: dateOnly })).read()).rejects.toBeInstanceOf(AdmissionRecordError);
   });
   it('refuses a malformed, repeated, wrong-day or non-whole-second instant', async () => {
     for (const bad of ['2026-10-04T09:30:00', '2026-10-04T09:30:00.5Z', '2026-10-05T00:00:00Z', '2026-10-04T25:00:00Z', '2026-10-04T24:00:00Z', '2026-02-30T00:00:00Z', 'soon'])
@@ -169,7 +179,7 @@ describe('act instant', () => {
   });
   it('refuses any other spelling or placement of a recorded-at line instead of falling back', async () => {
     for (const loose of ['  Recorded at (UTC): 2026-10-04T09:30:00Z', 'recorded at (utc): 2026-10-04T09:30:00Z', 'Recorded at: 2026-10-04T09:30:00Z', 'Recorded At (UTC):  2026-10-04T09:30:00Z', 'RECORDED AT (UTC): 2026-10-04T09:30:00Z']) {
-      const text = actText('consent-observation', REDIS_PATH, obsText()).replace('Date: 2026-10-04\n', `Date: 2026-10-04\n\n${loose}\n`);
+      const text = actText('consent-observation', REDIS_PATH, obsText()).replace(/Recorded at \(UTC\): \S+/, loose);
       await expect(reader(world({ [actPath]: text })).read(), loose).rejects.toBeInstanceOf(AdmissionRecordError);
     }
     const strictAndLoose = withInstant('2026-10-04T09:30:00Z').replace('Owner: Tzeusy', 'Owner: Tzeusy\n\n  recorded at 2026-10-04T10:00:00Z');
@@ -181,30 +191,16 @@ describe('act instant', () => {
     await expect(reader(world({ [dir('PUBLIC-REPO-ADMISSION-OWNER-ANSWERS-2026-10-04.md')]: ownerAnswers() })).read()).rejects.toBeInstanceOf(AdmissionRecordError);   // another name, same bytes
     await expect(reader(world({ [dir('PUBLIC-REPO-ADMISSION-OWNER-ANSWERS-2026-10-04.md')]: 'direction, not an act' })).read()).rejects.toBeInstanceOf(AdmissionRecordError);
   });
-  it('keeps the next-UTC-day fallback for a record with only a date', async () => {
-    expect((await reader(world()).read()).find(r => r.class === 'observation')!.inForceAt).toBe(DAY);
-  });
 });
 
 describe('public-source policy act', () => {
   const policyText = (scope = true): string => JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.1', ...(scope ? { publicSourceScope: { rules: [] } } : {}) }, null, 1) + '\n';
-  // The act text is what the recorder itself renders (scripts/record_public_source_screening_scope_act.py), so the reader's expected
-  // forms cannot drift from the writer's. Only the fields a case varies are replaced afterwards.
-  const rendered = new Map<string, string>();
-  const render = (date: string): string => {
-    const hit = rendered.get(date);
-    if (hit !== undefined) return hit;
-    const py = `import sys; sys.path.insert(0, 'scripts'); import record_public_source_screening_scope_act as m
-sys.stdout.write(m.render_act(m.ACT, '0'*64, '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*64, '${date}T09:30:00Z', '1'*64, '1.2.0-public-source-candidate.1'))`;
-    const run = spawnSync('python3', ['-c', py], { cwd: path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..'), encoding: 'utf8' });
-    if (run.status !== 0) throw new Error(`recorder render failed: ${run.stderr}`);
-    rendered.set(date, run.stdout);
-    return run.stdout;
-  };
-  const policyAct = (over: { type?: string; digest?: string; instant?: string | null; project?: string; identity?: string; date?: string } = {}, text = policyText()): string => {
+  // The act text is what the recorder itself renders (scripts/record_public_source_screening_scope_act.py and its version 2), so the
+  // reader's expected forms cannot drift from the writer's. Only the fields a case varies are replaced afterwards.
+  const policyAct = (over: { type?: string; digest?: string; instant?: string | null; project?: string; identity?: string; date?: string; version?: 1 | 2 } = {}, text = policyText()): string => {
     const date = over.date ?? '2026-10-04';
-    let act = render(date).replace('0'.repeat(64), over.digest ?? sha(text));
-    act = over.instant === null || over.instant === undefined ? act.replace(/Recorded at \(UTC\): \S+\n\n/, '') : act.replace(/(Recorded at \(UTC\): )\S+/, `$1${over.instant}`);
+    let act = renderPolicyAct('0'.repeat(64), date, `${date}T09:30:00Z`, over.version ?? 1).replace('0'.repeat(64), over.digest ?? sha(text));
+    act = over.instant === null ? act.replace(/Recorded at \(UTC\): \S+\n\n/, '') : over.instant === undefined ? act : act.replace(/(Recorded at \(UTC\): )\S+/, `$1${over.instant}`);
     if (over.type !== undefined) act = act.replace(/^Act type: `[^`]+`/m, `Act type: \`${over.type}\``);
     if (over.identity !== undefined) act = act.replace(/^Act identity: `[^`]+`/m, `Act identity: \`${over.identity}\``);
     if (over.project !== undefined) act = act.replace(/^Project identity: `[^`]+`/m, `Project identity: \`${over.project}\``);
@@ -215,10 +211,10 @@ sys.stdout.write(m.render_act(m.ACT, '0'*64, '${date}', 'b'*64, 'c'*40, 'CONFIRM
   const policyReader = (files: Record<string, string>) => createPackagePolicyReader({ root: '/r', fs: memoryFs(files) });
   const check = (files: Record<string, string>, now: number) => createPackageAdmissionRecordsPort({ root: '/r', now: () => now, fs: memoryFs(files) }).check(requirement('public-source-policy'));
 
-  it('recognises the recorder\'s record by its exact path and format, in force from a date-only next day', async () => {
-    expect(await policyReader(policyWorld()).read()).toEqual([{ actIdentity: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04', digest: sha(policyText()), inForceAt: DAY }]);
-    expect(await check(policyWorld(), DAY)).toEqual({ satisfied: true, record: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04' });
-    expect(await check(policyWorld(), DAY - 1)).toMatchObject({ satisfied: false });
+  it('recognises the recorder\'s record by its exact path and format, in force from its instant', async () => {
+    expect(await policyReader(policyWorld()).read()).toEqual([{ actIdentity: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04', digest: sha(policyText()), inForceAt: AT }]);
+    expect(await check(policyWorld(), AT)).toEqual({ satisfied: true, record: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04' });
+    expect(await check(policyWorld(), AT - 1)).toMatchObject({ satisfied: false });
   });
   it('uses the act instant when present', async () => {
     const files = policyWorld(policyText(), policyAct({ instant: '2026-10-04T09:30:00Z' }));
@@ -227,20 +223,20 @@ sys.stdout.write(m.render_act(m.ACT, '0'*64, '${date}', 'b'*64, 'c'*40, 'CONFIRM
   });
   it('is unsatisfied when the policy declares no public-source scope, even under an act over those bytes', async () => {
     const old = policyText(false);
-    expect(await check(policyWorld(old, policyAct({}, old)), DAY)).toMatchObject({ satisfied: false });
+    expect(await check(policyWorld(old, policyAct({}, old)), AT)).toMatchObject({ satisfied: false });
   });
   it('is unsatisfied when the policy bytes changed after the act, or the act is another type', async () => {
-    expect(await check(policyWorld(policyText() + ' ', policyAct({}, policyText())), DAY)).toMatchObject({ satisfied: false });
-    expect(await check(policyWorld(policyText(), policyAct({ type: 'adopt-doctrine' })), DAY)).toMatchObject({ satisfied: false });
+    expect(await check(policyWorld(policyText() + ' ', policyAct({}, policyText())), AT)).toMatchObject({ satisfied: false });
+    expect(await check(policyWorld(policyText(), policyAct({ type: 'adopt-doctrine' })), AT)).toMatchObject({ satisfied: false });
   });
   it('is unsatisfied with no act record', async () => {
     const files = policyWorld(); delete files[POLICY_ACT];
-    expect(await check(files, DAY)).toMatchObject({ satisfied: false });
+    expect(await check(files, AT)).toMatchObject({ satisfied: false });
   });
   it('refuses the read on a record that names the policy without a readable act form, or for another project', async () => {
     for (const act of [policyAct({ digest: 'abc' }), policyAct({ project: 'project:butlers' }), policyAct({ instant: 'soon' }), policyAct().replace('Act identity:', 'Act ident:')])
       await expect(policyReader(policyWorld(policyText(), act)).read(), act).rejects.toBeInstanceOf(AdmissionRecordError);
-    expect(await check(policyWorld(policyText(), policyAct({ digest: 'abc' })), DAY)).toMatchObject({ satisfied: false, why: expect.stringContaining('could not be read') });
+    expect(await check(policyWorld(policyText(), policyAct({ digest: 'abc' })), AT)).toMatchObject({ satisfied: false, why: expect.stringContaining('could not be read') });
   });
   it('refuses when the policy file is missing or not JSON', async () => {
     const files = policyWorld(); delete files[POLICY_PATH];
@@ -266,15 +262,23 @@ sys.stdout.write(m.render_act(m.ACT, '0'*64, '${date}', 'b'*64, 'c'*40, 'CONFIRM
     for (const name of Object.keys(realBytes)) await expect(policyReader({ ...files, [name]: `${realBytes[name]}\nWithdrawn: this act is withdrawn.\n` }).read(), name).rejects.toBeInstanceOf(AdmissionRecordError);
   });
   it('does not count a Recorded-at line inside a code fence (both readers)', async () => {
-    const fenced = (act: string): string => act.replace(/Recorded at \(UTC\): \S+\n\n/, '').replace('Owner: Tzeusy', 'Owner: Tzeusy\n\n```text\nRecorded at (UTC): 2026-10-04T00:00:01Z\n```');
-    const act = fenced(policyAct({ instant: '2026-10-04T09:30:00Z' }));
-    await expect(policyReader(policyWorld(policyText(), act)).read()).rejects.toBeInstanceOf(AdmissionRecordError);
-    // a real line beside a fenced one is the instant
-    const both = policyAct({ instant: '2026-10-04T09:30:00Z' }).replace('Owner: Tzeusy', 'Owner: Tzeusy\n\n```text\nRecorded at (UTC): 2026-10-04T00:00:01Z\n```');
-    expect((await policyReader(policyWorld(policyText(), both)).read())[0]!.inForceAt).toBe(Date.UTC(2026, 9, 4, 9, 30, 0));
-    const obsFenced = world(); const key = Object.keys(obsFenced).find(k => k.endsWith('-ACT.md') && k.includes('OBSERVATION'))!;
-    obsFenced[key] = obsFenced[key]!.replace(/Recorded at \(UTC\): \S+\n\n?/, '') + '\n```text\nRecorded at (UTC): 2026-10-04T00:00:01Z\n```\n';
-    await expect(reader(obsFenced).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+    const fence = '\n```text\nRecorded at (UTC): 2026-10-04T00:00:01Z\n```\n';
+    // a real line beside a fenced one is a field that counts differently with and without fences: refused, not guessed
+    await expect(policyReader(policyWorld(policyText(), policyAct() + fence)).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+    await expect(policyReader(policyWorld(policyText(), policyAct({ instant: null }) + fence)).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+    const key = Object.keys(world()).find(k => k.endsWith('-ACT.md') && k.includes('OBSERVATION'))!;
+    await expect(reader(world({ [key]: world()[key]! + fence })).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+    await expect(reader(world({ [key]: world()[key]!.replace(/Recorded at \(UTC\): \S+\n\n/, '') + fence })).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+  });
+  it('counts a field only in prose: a fenced copy of any act or instance field refuses both readers', async () => {
+    const quote = (line: string): string => `\n\`\`\`text\n${line}\n\`\`\`\n`;
+    for (const line of ['Act type: `approve-policy`', 'Act identity: `PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04`', `Exact digest (SHA-256): \`${'a'.repeat(64)}\``, 'Date: 2026-10-04'])
+      await expect(policyReader(policyWorld(policyText(), policyAct() + quote(line))).read(), line).rejects.toBeInstanceOf(AdmissionRecordError);
+    const key = Object.keys(world()).find(k => k.endsWith('-ACT.md') && k.includes('OBSERVATION'))!;
+    for (const line of ['Act type: `consent-observation`', `Exact digest (SHA-256): \`${'a'.repeat(64)}\``, 'Project identity: `project:syzygy`'])
+      await expect(reader(world({ [key]: world()[key]! + quote(line) })).read(), line).rejects.toBeInstanceOf(AdmissionRecordError);
+    for (const line of ['Record ID: `OTHER`', 'Subject: `(project:syzygy, repository:other)`', 'Proposed revocation state: active; supersedes no earlier consent'])
+      await expect(reader(world({ [REDIS_PATH]: obsText() + quote(line), [key]: actText('consent-observation', REDIS_PATH, obsText() + quote(line)) })).read(), line).rejects.toBeInstanceOf(AdmissionRecordError);
   });
   it('refuses the recorder\'s file when its act type, identity, title or provenance is not the recorder\'s form', async () => {
     for (const bad of [policyAct({ type: 'amend-policy' }), policyAct({ type: 'amend-policy', identity: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04' }), policyAct({ identity: 'something-else' }), policyAct().replace('(public-source screening scope)', ''), policyAct().replace('owner-adopted (bootstrap, uncorrelated)', 'owner-adopted'), policyAct({ date: '2026-10-05' }).replace('2026-10-05', '2026-10-04')])
@@ -287,42 +291,65 @@ sys.stdout.write(m.render_act(m.ACT, '0'*64, '${date}', 'b'*64, 'c'*40, 'CONFIRM
     }
   });
   it('without a policy reader the requirement stays unsatisfied', async () => {
-    expect(await createAdmissionRecordsPort({ reader: reader(world()), now: () => DAY }).check(requirement('public-source-policy'))).toMatchObject({ satisfied: false });
+    expect(await createAdmissionRecordsPort({ reader: reader(world()), now: () => AT }).check(requirement('public-source-policy'))).toMatchObject({ satisfied: false });
   });
 });
 
 describe('egress version 2 record', () => {
   const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
   const v2Text = (): string => readFileSync(path.join(repoRoot, EGRESS_V2_INSTANCE), 'utf8');   // the real candidate bytes
+  const CLASS_MODULE = '.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md';
+  const moduleText = (): string => readFileSync(path.join(repoRoot, CLASS_MODULE), 'utf8');   // the real installed RFC-0005 module
   const V2_ACT = `${DECISIONS_DIR}/PUBLIC-EGRESS-V2-ANTHROPIC-ACT.md`;
   const V1_ACT = `${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`;
-  /** Version 1 took effect the day before version 2: version 2 supersedes it only by being strictly later. */
-  const v2World = (over: Record<string, string> = {}): Record<string, string> => world({ [V1_ACT]: actText('consent-egress', EGRESS_PATH, egressText(), '2026-10-03'), [EGRESS_V2_INSTANCE]: v2Text(), [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, v2Text()), ...over });
+  const CLASS_ACT = `${DECISIONS_DIR}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md`;
+  const classAct = (over: { digest?: string; date?: string; instant?: string } = {}): string => {
+    const date = over.date ?? '2026-10-03';
+    return renderClassAct(over.digest ?? sha(moduleText()), date, over.instant ?? `${date}T09:30:00Z`);
+  };
+  /** Version 1 took effect the day before version 2 (version 2 supersedes it only by being strictly later), and the RFC5-14 class
+   * amendment that version 2's project-documentation class depends on is recorded, before version 2. */
+  const v2World = (over: Record<string, string> = {}): Record<string, string> => world({
+    [V1_ACT]: actText('consent-egress', EGRESS_PATH, egressText(), '2026-10-03'), [EGRESS_V2_INSTANCE]: v2Text(), [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, v2Text()),
+    [CLASS_ACT]: classAct(), [CLASS_MODULE]: moduleText(), ...over,
+  });
+  const egressVersions = (records: Awaited<ReturnType<ReturnType<typeof reader>['read']>>, now: number): string[] => inForceRecords(records, now).filter(r => r.class === 'egress').map(r => r.version);
   const port = (files: Record<string, string>, now: number) => createAdmissionRecordsPort({ reader: reader(files), now: () => now });
+  const V1_AT = Date.UTC(2026, 9, 3, 9, 30, 0);
 
   it('is read from the recorder\'s act: version 2 supersedes version 1 once in force', async () => {
     const records = await reader(v2World()).read();
     const v2 = records.find(r => r.version === '0.2.0-candidate.1')!;
-    expect(v2).toMatchObject({ class: 'egress', providerId: 'anthropic', digest: sha(v2Text()), inForceAt: DAY, supersedes: 'PUBLIC-EGRESS-anthropic@0.1.0-candidate.7', admittedRepositories: ['psf-requests', 'redis-redis'] });
+    expect(v2).toMatchObject({ class: 'egress', providerId: 'anthropic', digest: sha(v2Text()), inForceAt: AT, supersedes: 'PUBLIC-EGRESS-anthropic@0.1.0-candidate.7', supersessionAt: AT, admittedRepositories: ['psf-requests', 'redis-redis'] });
     expect(v2.contentClasses).toContain('project-documentation');
-    expect(inForceRecords(records, DAY).filter(r => r.class === 'egress').map(r => r.version)).toEqual(['0.2.0-candidate.1']);
-    expect(await port(v2World(), DAY).check(requirement('egress-consent'))).toEqual({ satisfied: true, record: 'PUBLIC-EGRESS-anthropic@0.2.0-candidate.1' });
+    expect(egressVersions(records, AT)).toEqual(['0.2.0-candidate.1']);
+    expect(await port(v2World(), AT).check(requirement('egress-consent'))).toEqual({ satisfied: true, record: 'PUBLIC-EGRESS-anthropic@0.2.0-candidate.1' });
   });
   it('leaves version 1 standing before the version 2 act takes effect, and with no version 1 act at all', async () => {
-    expect(inForceRecords(await reader(v2World()).read(), DAY - 1).filter(r => r.class === 'egress').map(r => r.version)).toEqual(['0.1.0-candidate.7']);   // version 2 is not in force yet
+    expect(egressVersions(await reader(v2World()).read(), AT - 1)).toEqual(['0.1.0-candidate.7']);   // version 2 is not in force yet
     const later = v2World({ [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, v2Text(), '2026-10-09') });
-    expect(inForceRecords(await reader(later).read(), DAY).filter(r => r.class === 'egress').map(r => r.version)).toEqual(['0.1.0-candidate.7']);
+    expect(egressVersions(await reader(later).read(), AT)).toEqual(['0.1.0-candidate.7']);
     const only = v2World(); delete only[V1_ACT];
-    expect(inForceRecords(await reader(only).read(), DAY).filter(r => r.class === 'egress').map(r => r.version)).toEqual(['0.2.0-candidate.1']);
+    expect(egressVersions(await reader(only).read(), AT)).toEqual(['0.2.0-candidate.1']);
   });
   it('refuses when version 2 did not take effect strictly after version 1: the same instant, or earlier', async () => {
-    await expect(reader(v2World({ [V1_ACT]: actText('consent-egress', EGRESS_PATH, egressText(), '2026-10-04') })).read()).rejects.toBeInstanceOf(AdmissionRecordError);   // same day, both date-only
+    await expect(reader(v2World({ [V1_ACT]: actText('consent-egress', EGRESS_PATH, egressText(), '2026-10-04') })).read()).rejects.toBeInstanceOf(AdmissionRecordError);   // same instant
+    await expect(reader(v2World({ [V1_ACT]: actText('consent-egress', EGRESS_PATH, egressText(), '2026-10-04', undefined, '2026-10-04T09:30:01Z') })).read()).rejects.toBeInstanceOf(AdmissionRecordError);   // version 1 a second later
     await expect(reader(v2World({ [V1_ACT]: actText('consent-egress', EGRESS_PATH, egressText(), '2026-10-05') })).read()).rejects.toBeInstanceOf(AdmissionRecordError);   // version 1 later
-    expect((await reader(v2World()).read()).length).toBe(3);
+    expect((await reader(v2World({ [V1_ACT]: actText('consent-egress', EGRESS_PATH, egressText(), '2026-10-04', undefined, '2026-10-04T09:29:59Z') })).read()).length).toBe(3);   // one second earlier is enough
   });
   it('binds the exact bytes: an edited record is not in force', async () => {
     const edited = await reader(v2World({ [EGRESS_V2_INSTANCE]: `${v2Text()}\nedited\n` })).read();
     expect(edited.find(r => r.version === '0.2.0-candidate.1')!.inForceAt).toBeNull();
+  });
+  it('supersession follows the version 2 act\'s instant, not its current bytes: drifted version 2 leaves version 1 replaced and nothing granted', async () => {
+    const drifted = v2World({ [EGRESS_V2_INSTANCE]: `${v2Text()}\nedited\n` });
+    const records = await reader(drifted).read();
+    expect(egressVersions(records, AT)).toEqual([]);   // version 1 is replaced from the act's instant; version 2's bytes no longer match
+    expect(egressVersions(records, AT - 1)).toEqual(['0.1.0-candidate.7']);   // before the act, version 1 stands
+    expect(egressVersions(records, V1_AT)).toEqual(['0.1.0-candidate.7']);
+    expect(await port(drifted, AT).check(requirement('egress-consent'))).toMatchObject({ satisfied: false });
+    expect(await port(drifted, AT - 1).check(requirement('egress-consent'))).toMatchObject({ satisfied: true });
   });
   it('accepts the closed list only: other names, identities, artifacts, titles and revocation lines refuse the read', async () => {
     const cases: Array<[string, Record<string, string>]> = [
@@ -331,6 +358,7 @@ describe('egress version 2 record', () => {
       ['the version 1 identity on the version 2 act', { [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, v2Text()).replace(/^Act identity: `[^`]+`/m, 'Act identity: `PUBLIC-EGRESS-ANTHROPIC-2026-10-04`') }],
       ['the version 1 instance under the version 2 act', { [V2_ACT]: actText('consent-egress', EGRESS_PATH, egressText()) }],
       ['an observation type on the version 2 act', { [V2_ACT]: actText('consent-observation', EGRESS_V2_INSTANCE, v2Text()) }],
+      ['observation bytes at the egress instance path under an observation-typed act', { [EGRESS_V2_INSTANCE]: obsText(), [V2_ACT]: actText('consent-observation', EGRESS_V2_INSTANCE, obsText()) }],
       ['a title that is not the recorder\'s', { [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, v2Text()).replace(', version 2', '') }],
       ['version 1 revocation wording in the version 2 record', (() => { const t = v2Text().replace(/^Proposed revocation state: .*$/m, 'Proposed revocation state: active; supersedes no earlier consent'); return { [EGRESS_V2_INSTANCE]: t, [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, t) }; })()],
       ['an altered successor in the version 2 record', (() => { const t = v2Text().replace('0.1.0-candidate.7', '0.0.9'); return { [EGRESS_V2_INSTANCE]: t, [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, t) }; })()],
@@ -338,11 +366,151 @@ describe('egress version 2 record', () => {
     ];
     for (const [name, over] of cases) await expect(reader(v2World(over)).read(), name).rejects.toBeInstanceOf(AdmissionRecordError);
   });
-  it('ignores a Recorded-at line inside a code fence in the version 2 act, and refuses a fenced-only one', async () => {
+  it('refuses a version 1 act typed as an observation over observation bytes at the egress instance path', async () => {
+    // Without the act-type check this input is read as an observation consent for the egress instance's path.
+    const files = world({ [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`]: actText('consent-observation', EGRESS_PATH, obsText()), [EGRESS_PATH]: obsText() });
+    await expect(reader(files).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+    expect(await port(files, AT).check(requirement('observation-consent'))).toMatchObject({ satisfied: false });
+  });
+  it('ignores a Recorded-at line inside a code fence in the version 2 act, and refuses it', async () => {
     const fence = '\n```text\nRecorded at (UTC): 2026-10-04T00:00:01Z\n```\n';
-    const real = actText('consent-egress', EGRESS_V2_INSTANCE, v2Text()).replace('Date: 2026-10-04\n', 'Date: 2026-10-04\n\nRecorded at (UTC): 2026-10-04T09:30:00Z\n');
-    const both = (await reader(v2World({ [V2_ACT]: real + fence })).read()).find(r => r.version === '0.2.0-candidate.1')!;
-    expect(both.inForceAt).toBe(Date.UTC(2026, 9, 4, 9, 30, 0));
     await expect(reader(v2World({ [V2_ACT]: actText('consent-egress', EGRESS_V2_INSTANCE, v2Text()) + fence })).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+    const dateOnly = actText('consent-egress', EGRESS_V2_INSTANCE, v2Text()).replace(/Recorded at \(UTC\): \S+\n\n/, '');
+    await expect(reader(v2World({ [V2_ACT]: dateOnly + fence })).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+  });
+
+  describe('the RFC5-14 class amendment version 2 depends on', () => {
+    it('is required: no record, an edited module, a wrong form, or an amendment later than version 2 all refuse', async () => {
+      const cases: Array<[string, Record<string, string>]> = [
+        ['an installed module that no longer matches the act digest', { [CLASS_MODULE]: `${moduleText()}\nedited\n` }],
+        ['a digest of other bytes', { [CLASS_ACT]: classAct({ digest: 'a'.repeat(64) }) }],
+        ['an amendment taking effect after version 2', { [CLASS_ACT]: classAct({ date: '2026-10-04', instant: '2026-10-04T09:30:01Z' }) }],
+        ['another act type', { [CLASS_ACT]: classAct().replace(/^Act type: `[^`]+`/m, 'Act type: `adopt-doctrine`') }],
+        ['another artifact', { [CLASS_ACT]: classAct().replace(/^Artifact identity: `[^`]+`/m, 'Artifact identity: `.syzygy/governance/contracts/rfcs/RFC-0004/x.md`') }],
+        ['another project', { [CLASS_ACT]: classAct().replace('`project:syzygy`', '`project:butlers`') }],
+        ['an identity that is not the date\'s', { [CLASS_ACT]: classAct().replace(/^Act identity: `[^`]+`/m, 'Act identity: `RFC5-PROJECT-DOCUMENTATION-AMEND-2026-10-01`') }],
+        ['a fenced second instant', { [CLASS_ACT]: `${classAct()}\n\`\`\`text\nAct instant: 2026-10-03T00:00:01Z\n\`\`\`\n` }],
+      ];
+      for (const [name, over] of cases) await expect(reader(v2World(over)).read(), name).rejects.toBeInstanceOf(AdmissionRecordError);
+      const noRecord = v2World(); delete noRecord[CLASS_ACT];
+      const noModule = v2World(); delete noModule[CLASS_MODULE];
+      await expect(reader(noRecord).read(), 'no class act record').rejects.toBeInstanceOf(AdmissionRecordError);
+      await expect(reader(noModule).read(), 'no installed module').rejects.toBeInstanceOf(AdmissionRecordError);
+      expect((await reader(v2World({ [CLASS_ACT]: classAct({ date: '2026-10-04', instant: '2026-10-04T09:30:00Z' }) })).read()).length).toBe(3);   // the same instant as version 2 is allowed
+    });
+    it('is found only at the top of the decisions directory: a copy in a subdirectory is not the recorder\'s file', async () => {
+      const nested = v2World(); const moved = nested[CLASS_ACT]!; delete nested[CLASS_ACT]; nested[`${DECISIONS_DIR}/archive/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md`] = moved;
+      await expect(reader(nested).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+    });
+    it('is not asked of a world without version 2', async () => {
+      expect((await reader(world()).read()).length).toBe(2);
+    });
+  });
+
+  describe('withdrawal and forgery forms the reader does not define', () => {
+    const naming = (text: string): Record<string, string> => ({ [`${DECISIONS_DIR}/NOTES.md`]: text });
+    const sub = (name: string, text: string): Record<string, string> => ({ [`${DECISIONS_DIR}/archive/deep/${name}`]: text });
+    it('refuses a file outside the closed list that names an admission artifact, act identity or record id, in any case, dash spelling or directory', async () => {
+      const variants = [
+        `Artifact identity: \`${EGRESS_V2_INSTANCE}\``,
+        `Artifact identity: \`${REDIS_PATH}\``,
+        `artifact   identity :  ${REDIS_PATH.toUpperCase()}`,
+        '- **Act identity**: `PUBLIC-OBS-REDIS-2026-10-05`',
+        'Act identity: `public\u2011egress\u2010anthropic-2026-10-05`',
+        'Act identity: `PUBLIC\uFF0DEGRESS-ANTHROPIC-V2-2026-10-05`',
+        'Record ID: `PUBLIC-EGRESS-anthropic`',
+        '> Record ID: `public-obs-requests-2026-10-03`',
+        'Act identity: `\uFF30\uFF35\uFF22\uFF2C\uFF29\uFF23-OBS-REDIS-2026-10-05`',   // fullwidth letters fold to the ASCII spelling
+        'This revokes the consent recorded in PUBLIC-OBS-REDIS-2026-10-03 in full.',   // named in prose, not on a field line
+        `The artifact ${REDIS_PATH} is withdrawn.`,
+      ];
+      for (const line of variants) {
+        await expect(reader(v2World(naming(`# Withdrawal\n\n${line}\n`))).read(), line).rejects.toBeInstanceOf(AdmissionRecordError);
+        await expect(reader(v2World(sub('withdrawal.md', `# Withdrawal\n\n${line}\n`))).read(), `sub: ${line}`).rejects.toBeInstanceOf(AdmissionRecordError);
+      }
+    });
+    it('applies the field-line rule to the aggregate acceptance record, which is exempt from the whole-text rule only', async () => {
+      const aggregate = (extra: string): Record<string, string> => ({ [`${DECISIONS_DIR}/ACCEPTANCE-ACT-RECORD.md`]: `# Acceptance act record\n\n| Recording | \`${V2_ACT}\` |\n${extra}` });
+      expect((await reader(v2World(aggregate(''))).read()).length).toBe(3);
+      for (const line of [`Artifact identity: \`${REDIS_PATH}\``, 'Record ID: `PUBLIC-OBS-REDIS-2026-10-03`', 'Act identity: `PUBLIC-EGRESS-ANTHROPIC-2026-10-09`'])
+        await expect(reader(v2World(aggregate(`\n${line}\n`))).read(), line).rejects.toBeInstanceOf(AdmissionRecordError);
+    });
+    it('refuses a file whose name carries an admission stem, in a subdirectory too', async () => {
+      for (const name of ['public-obs-redis-withdrawal.md', 'Public\u2011Egress-Anthropic-WITHDRAWN.md', 'PUBLIC-REPO-ADMISSION-NOTES.md'])
+        await expect(reader(v2World(sub(name, 'x'))).read(), name).rejects.toBeInstanceOf(AdmissionRecordError);
+    });
+    it('does not refuse unrelated records, including ones in subdirectories', async () => {
+      expect((await reader(v2World({ ...naming('# Notes\n\nAct identity: `SOMETHING-ELSE-2026-10-05`\nArtifact identity: `.syzygy/x.md`\n'), ...sub('other.md', 'plain text') })).read()).length).toBe(3);
+    });
+    it('does not refuse the recorders\' other act records or the aggregate acceptance record they append to', async () => {
+      const policy = JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.2', publicSourceScope: { rules: [] } });
+      const others = {
+        [`${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md`]: renderPolicyAct(sha(policy), '2026-10-03', '2026-10-03T09:30:00Z', 1),
+        [`${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md`]: renderPolicyAct(sha(policy), '2026-10-04', '2026-10-04T09:30:00Z', 2),
+        [`${DECISIONS_DIR}/ACCEPTANCE-ACT-RECORD.md`]: `# Acceptance act record\n\n| Act type / artifact | \`consent-observation\` / \`${REDIS_PATH}\` |\n| Recording | \`${V2_ACT}\` |\n`,
+      };
+      expect((await reader(v2World(others)).read()).length).toBe(3);
+      expect(await createPackagePolicyReader({ root: '/r', fs: memoryFs(v2World({ ...others, [POLICY_PATH]: policy })) }).read()).toHaveLength(2);   // both acts name these bytes
+    });
+    it('refuses when a subdirectory cannot be listed or the tree is too deep', async () => {
+      const deep = `${DECISIONS_DIR}/${'d/'.repeat(8)}f.md`;
+      await expect(reader(v2World({ [deep]: 'x' })).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+    });
+  });
+
+  describe('instance sections', () => {
+    const key = `${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md`;
+    it('takes admitted repositories only from the Scope section', async () => {
+      const text = `${egressText()}\n## Not admitted\n\n- \`(project:syzygy, repository:elsewhere)\`\n`;
+      const files = world({ [EGRESS_PATH]: text, [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`]: actText('consent-egress', EGRESS_PATH, text) });
+      expect((await reader(files).read()).find(r => r.class === 'egress')!.admittedRepositories).toEqual(['psf-requests', 'redis-redis']);
+      const twice = `${egressText()}\n## Scope\n\n- \`(project:syzygy, repository:elsewhere)\`\n`;
+      await expect(reader(world({ [EGRESS_PATH]: twice, [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`]: actText('consent-egress', EGRESS_PATH, twice) })).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+    });
+    it('takes admitted revisions only from the one revisions table', async () => {
+      const other = 'f'.repeat(40);
+      const text = `${obsText()}\n| Label | Notes |\n|---|---|\n| \`x\` | \`${other}\` |\n`;
+      const files = world({ [REDIS_PATH]: text, [key]: actText('consent-observation', REDIS_PATH, text) });
+      expect((await reader(files).read()).find(r => r.class === 'observation')!.admittedRevisions).toEqual([REDIS_REV, OTHER_REV]);
+      const second = `${obsText()}\n| Label | Commit object id |\n|---|---|\n| \`x\` | \`${other}\` |\n`;
+      await expect(reader(world({ [REDIS_PATH]: second, [key]: actText('consent-observation', REDIS_PATH, second) })).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+    });
+  });
+});
+
+describe('screening scope version 2 policy act', () => {
+  const V1 = `${DECISIONS_DIR}/${POLICY_ACT_FILE}`;
+  const V2 = `${DECISIONS_DIR}/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md`;
+  const p1 = JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.1', publicSourceScope: { rules: [] } }, null, 1) + '\n';
+  const p2 = JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.2', publicSourceScope: { rules: ['more'] } }, null, 1) + '\n';
+  const act = (text: string, version: 1 | 2, date = '2026-10-04'): string => renderPolicyAct(sha(text), date, `${date}T09:30:00Z`, version);
+  const files = (policy: string, extra: Record<string, string>): Record<string, string> => ({ ...world(), [POLICY_PATH]: policy, ...extra });
+  const policyReader = (f: Record<string, string>) => createPackagePolicyReader({ root: '/r', fs: memoryFs(f) });
+
+  it('counts the version 2 act when the policy carries the version 2 bytes, and the version 1 act goes quiet', async () => {
+    const f = files(p2, { [V1]: act(p1, 1, '2026-10-03'), [V2]: act(p2, 2) });
+    expect(await policyReader(f).read()).toEqual([{ actIdentity: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-2026-10-04', digest: sha(p2), inForceAt: AT }]);
+    expect(await createPackageAdmissionRecordsPort({ root: '/r', now: () => AT, fs: memoryFs(f) }).check(requirement('public-source-policy'))).toEqual({ satisfied: true, record: 'PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-APPROVAL-2026-10-04' });
+  });
+  it('counts the version 1 act while the policy still carries the version 1 bytes', async () => {
+    const f = files(p1, { [V1]: act(p1, 1, '2026-10-03') });
+    expect((await policyReader(f).read()).map(r => r.actIdentity)).toEqual(['PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-03']);
+  });
+  it('counts nothing for version 2 bytes with only the version 1 act, or for an edited policy under the version 2 act', async () => {
+    expect(await policyReader(files(p2, { [V1]: act(p1, 1, '2026-10-03') })).read()).toEqual([]);
+    expect(await policyReader(files(p2 + ' ', { [V2]: act(p2, 2) })).read()).toEqual([]);
+  });
+  it('refuses a version 2 act in a form the recorder does not write', async () => {
+    const good = act(p2, 2);
+    for (const bad of [good.replace(', version 2)', ')'), good.replace('V2-APPROVAL', 'APPROVAL'), good.replace(/^Act type: `[^`]+`/m, 'Act type: `adopt-doctrine`'), good.replace(/Recorded at \(UTC\): \S+\n\n/, '')])
+      await expect(policyReader(files(p2, { [V2]: bad })).read(), bad.slice(0, 120)).rejects.toBeInstanceOf(AdmissionRecordError);
+  });
+  it('refuses an unlisted record that names the policy: another file, a subdirectory, a loose field spelling, a Unicode-hyphen identity', async () => {
+    const lines = [`Artifact identity: \`${POLICY_PATH}\``, `artifact   identity :  ${POLICY_PATH.toLowerCase()}`, 'Act identity: `PWB\u2011SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-APPROVAL-2026-10-05`', '- **Act identity**: `pwb-secret-classification-policy-withdrawal-2026-10-05`', 'This revokes PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-04 in full.'];
+    for (const line of lines) {
+      const text = `# Withdrawal\n\n${line}\n`;
+      await expect(policyReader(files(p1, { [V1]: act(p1, 1), [`${DECISIONS_DIR}/NOTES.md`]: text })).read(), line).rejects.toBeInstanceOf(AdmissionRecordError);
+      await expect(policyReader(files(p1, { [V1]: act(p1, 1), [`${DECISIONS_DIR}/launch-gate/deep/NOTES.md`]: text })).read(), `sub: ${line}`).rejects.toBeInstanceOf(AdmissionRecordError);
+    }
   });
 });

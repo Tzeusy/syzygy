@@ -92,7 +92,7 @@ function effective(records: readonly AdmissionRecord[], now: number): { readonly
   });
   // A successor that took effect replaces its predecessor for good, whether the successor is later withdrawn or is itself ambiguous
   // (two byte-different claims of one id and version): neither leaves the old version standing.
-  const replaced = new Set(records.flatMap(r => r.supersedes === null || r.inForceAt === null || r.inForceAt > now ? [] : [r.supersedes]));
+  const replaced = new Set(records.flatMap(r => r.supersedes === null || r.supersessionAt === null || r.supersessionAt > now ? [] : [r.supersedes]));
   return { live: live.filter(r => !replaced.has(ref(r))), dead };
 }
 

@@ -24,6 +24,8 @@ export interface AdmissionRecord {
   readonly withdrawnAt: number | null;
   /** `recordId@version` of the record this one replaces, if any. */
   readonly supersedes: string | null;
+  /** Instant (epoch ms) the supersession took effect: the successor act's instant, whether or not its bytes still match. Null when it supersedes nothing. */
+  readonly supersessionAt: number | null;
   /** Observation: full commit object ids; a tag or branch name never counts. */
   readonly admittedRevisions: readonly string[];
   /** Egress: repository ids whose content may be sent. */
@@ -41,7 +43,7 @@ export class AdmissionRecordError extends Error {
   constructor(readonly code: 'invalid-records') { super(code); this.name = 'AdmissionRecordError'; }
 }
 
-const KEYS = ['recordId', 'version', 'class', 'project', 'repositoryId', 'providerId', 'digest', 'inForceAt', 'withdrawnAt', 'supersedes', 'admittedRevisions', 'admittedRepositories', 'contentClasses'];
+const KEYS = ['recordId', 'version', 'class', 'project', 'repositoryId', 'providerId', 'digest', 'inForceAt', 'withdrawnAt', 'supersedes', 'supersessionAt', 'admittedRevisions', 'admittedRepositories', 'contentClasses'];
 const isText = (v: unknown): v is string => typeof v === 'string' && v.length > 0 && v.length <= 256;
 const isNullableText = (v: unknown): v is string | null => v === null || isText(v);
 const isInstant = (v: unknown): v is number | null => v === null || (typeof v === 'number' && Number.isSafeInteger(v) && v >= 0);
@@ -59,7 +61,7 @@ export function parseAdmissionRecords(value: unknown): readonly AdmissionRecord[
     if (Object.keys(r).length !== KEYS.length || !KEYS.every(key => key in r)) throw new AdmissionRecordError('invalid-records');
     const ok = isText(r.recordId) && isText(r.version) && (r.class === 'observation' || r.class === 'egress') && isText(r.project)
       && isNullableText(r.repositoryId) && isNullableText(r.providerId) && typeof r.digest === 'string' && /^[0-9a-f]{64}$/.test(r.digest)
-      && isInstant(r.inForceAt) && isInstant(r.withdrawnAt) && isNullableText(r.supersedes)
+      && isInstant(r.inForceAt) && isInstant(r.withdrawnAt) && isNullableText(r.supersedes) && isInstant(r.supersessionAt) && (r.supersedes !== null || r.supersessionAt === null)
       && isTextList(r.admittedRevisions) && isTextList(r.admittedRepositories) && isTextList(r.contentClasses);
     if (!ok) throw new AdmissionRecordError('invalid-records');
     const record = r as unknown as AdmissionRecord;

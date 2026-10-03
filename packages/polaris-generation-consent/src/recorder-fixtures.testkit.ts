@@ -22,13 +22,30 @@ sys.stdout.write(m.render_act(m.ACT_BY_KEY['${key}'], '${argument}', '${date}', 
   return run.stdout;
 }
 
-/** The public-source screening-scope policy act as scripts/record_public_source_screening_scope_act.py renders it. */
-export function renderPolicyAct(argument: string, date: string, instant: string): string {
-  const id = ['policy', argument, date, instant].join('|');
+/** The public-source screening-scope policy act as scripts/record_public_source_screening_scope_act.py (version 1) or
+ * scripts/record_public_source_screening_scope_v2_act.py (version 2) renders it. */
+export function renderPolicyAct(argument: string, date: string, instant: string, version: 1 | 2 = 1): string {
+  const id = ['policy', version, argument, date, instant].join('|');
   const hit = cache.get(id);
   if (hit !== undefined) return hit;
-  const py = `import sys; sys.path.insert(0, 'scripts'); import record_public_source_screening_scope_act as m
-sys.stdout.write(m.render_act(m.ACT, '${argument}', '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*64, '${instant}', '1'*64, '1.2.0-public-source-candidate.1'))`;
+  const py = version === 1
+    ? `import sys; sys.path.insert(0, 'scripts'); import record_public_source_screening_scope_act as m
+sys.stdout.write(m.render_act(m.ACT, '${argument}', '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*64, '${instant}', '1'*64, '1.2.0-public-source-candidate.1'))`
+    : `import sys; sys.path.insert(0, 'scripts'); import record_public_source_screening_scope_v2_act as m
+sys.stdout.write(m.render_act(m.ACT, '${argument}', 'none', '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*64, '${instant}', '1'*64, '2026-10-03', '1.2.0-public-source-candidate.2'))`;
+  const run = spawnSync('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8' });
+  if (run.status !== 0) throw new Error(`recorder render failed: ${run.stderr}`);
+  cache.set(id, run.stdout);
+  return run.stdout;
+}
+
+/** The RFC5-14 project-documentation class amendment act as scripts/record_rfc5_project_documentation_act.py renders it. */
+export function renderClassAct(argument: string, date: string, instant: string): string {
+  const id = ['class', argument, date, instant].join('|');
+  const hit = cache.get(id);
+  if (hit !== undefined) return hit;
+  const py = `import sys; sys.path.insert(0, 'scripts'); import record_rfc5_project_documentation_act as m
+sys.stdout.write(m.render_act('${argument}', '${date}', 'b'*64, 'c'*40, 'CONFIRM', m.Selection('opening', 'label', 'description'), 'f'*64, '${instant}'))`;
   const run = spawnSync('python3', ['-c', py], { cwd: ROOT, encoding: 'utf8' });
   if (run.status !== 0) throw new Error(`recorder render failed: ${run.stderr}`);
   cache.set(id, run.stdout);
