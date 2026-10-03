@@ -17,7 +17,7 @@ export interface GenerationSource {
    * `start`/`end` are UTF-8 byte offsets into the full blob; `body` and span
    * offsets are relative to the piece, anchors use the blob offsets. */
   readonly segment?: { readonly index: number; readonly count: number; readonly start: number; readonly end: number; readonly blobBytes: number };
-  readonly exclusion: { readonly excluded: false } | { readonly excluded: true; readonly reason: string };
+  readonly exclusion: { readonly excluded: false } | { readonly excluded: true; readonly reason: GenerationExclusionReason };
   /** Present only for an admitted body. Never sent to a provider except in
    * the inventory envelope or a later explicitly cited span. */
   readonly body?: string;
@@ -37,6 +37,39 @@ export class GenerationSourceError extends Error {
 
 const fail = (code: GenerationSourceFailure): never => { throw new GenerationSourceError(code); };
 const handle = new RegExp(SOURCE_ID_PATTERN, 'u');
+
+/** An excluded row carries no path-derived id: `s-` plus 24 hex digits of a digest. */
+const OPAQUE_SOURCE_ID = /^s-[0-9a-f]{24}$/u;
+
+export const GENERATION_EXCLUSION_REASONS = [
+  'oversize-source-excluded',
+  'body-not-retained-for-generation',
+  'deferred-by-budget',
+  'empty-file',
+  'binary-or-non-utf8',
+  'denied-path',
+  'resource-limit',
+  'contains-nul',
+  'not-utf-8',
+  'active-content',
+  'unknown-extraction-class',
+  'parse-failure',
+  'policy-excluded',
+  'not-in-manifest',
+  'missing-at-revision',
+  'not-a-regular-blob',
+  'not-in-tree',
+  'path-escapes-repository',
+  'path-not-normalized',
+  'object-id-mismatch',
+  'git-read-failed',
+  'unclassified-exclusion',
+] as const;
+/** The closed set above; `validateGenerationSources` refuses any other reason. */
+export type GenerationExclusionReason = typeof GENERATION_EXCLUSION_REASONS[number];
+
+export const isGenerationExclusionReason = (value: unknown): value is GenerationExclusionReason =>
+  typeof value === 'string' && (GENERATION_EXCLUSION_REASONS as readonly string[]).includes(value);
 const hexObjectId = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/u;
 
 export function generationSourceIdentity(source: Pick<GenerationSource, 'repositoryId' | 'revision' | 'path'> & { readonly objectId: string }): string {
@@ -91,7 +124,7 @@ export function validateGenerationSources(value: readonly GenerationSource[]): r
     if (source.objectId === null && !source.exclusion.excluded) fail('invalid-source');
     if (source.classificationBasis === 'path-only' || source.exclusion.excluded) {
       if (source.body !== undefined || source.spans.length !== 0) fail('unquotable-source');
-      if (source.exclusion.excluded && !source.exclusion.reason) fail('invalid-source');
+      if (source.exclusion.excluded && (!isGenerationExclusionReason(source.exclusion.reason) || !OPAQUE_SOURCE_ID.test(source.sourceId))) fail('invalid-source');
       continue;
     }
     if (source.body === undefined && source.spans.length === 0) continue;

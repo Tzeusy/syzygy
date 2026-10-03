@@ -1,6 +1,7 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import { generationSourcesForBody, segmentBody, generationAnchorId, generationSourceIdentity, gitBlobObjectId, quotableGenerationSources, validateGenerationSources, type GenerationSource } from './generation-source.js';
+import { GENERATION_EXCLUSION_REASONS, generationSourcesForBody, segmentBody, generationAnchorId, generationSourceIdentity, gitBlobObjectId, quotableGenerationSources, validateGenerationSources, type GenerationExclusionReason, type GenerationSource } from './generation-source.js';
 
 const body = 'A supported purpose.\n';
 const base = { repositoryId: 'repository:fixture', revision: 'a'.repeat(40), path: 'intent/purpose.md', objectId: gitBlobObjectId(body) };
@@ -26,14 +27,35 @@ describe('evaluation-bound generation sources', () => {
     const quoted = source();
     const { body: _body, ...withoutBody } = quoted;
     const pathOnly: GenerationSource = { ...withoutBody, sourceId: 'path-only', path: 'intent/path-only.md', classificationBasis: 'path-only', spans: [] };
-    const excluded: GenerationSource = { ...withoutBody, sourceId: 'excluded', path: 'intent/secret.md', exclusion: { excluded: true, reason: 'excluded-content' }, spans: [] };
-    const unavailable: GenerationSource = { ...withoutBody, sourceId: 'unavailable', path: 'intent/missing.md', objectId: null, exclusion: { excluded: true, reason: 'source-unavailable' }, spans: [] };
+    const excluded: GenerationSource = { ...withoutBody, sourceId: `s-${'1'.repeat(24)}`, path: 'intent/secret.md', exclusion: { excluded: true, reason: 'active-content' }, spans: [] };
+    const unavailable: GenerationSource = { ...withoutBody, sourceId: `s-${'2'.repeat(24)}`, path: 'intent/missing.md', objectId: null, exclusion: { excluded: true, reason: 'missing-at-revision' }, spans: [] };
     const population = [quoted, pathOnly, excluded, unavailable];
     expect(validateGenerationSources(population)).toHaveLength(4);
     expect(quotableGenerationSources(population)).toEqual([{ sourceId: 'purpose', text: body }]);
     expect(() => validateGenerationSources([{ ...pathOnly, spans: quoted.spans }])).toThrow('unquotable-source');
     expect(() => validateGenerationSources([{ ...excluded, body }])).toThrow('unquotable-source');
     expect(() => validateGenerationSources([{ ...quoted, extra: 'unreviewed' } as GenerationSource])).toThrow('invalid-source');
+  });
+
+  it('declares a closed, literal exclusion reason list and refuses any reason or path-derived id outside it', () => {
+    const { body: _body, ...withoutBody } = source();
+    const row = (reason: unknown, sourceId = `s-${'3'.repeat(24)}`): GenerationSource => ({ ...withoutBody, sourceId, exclusion: { excluded: true, reason: reason as GenerationExclusionReason }, spans: [] });
+    expect(GENERATION_EXCLUSION_REASONS).toContain('oversize-source-excluded');
+    expect(new Set(GENERATION_EXCLUSION_REASONS).size).toBe(GENERATION_EXCLUSION_REASONS.length);
+    for (const reason of GENERATION_EXCLUSION_REASONS) expect(validateGenerationSources([row(reason)]), reason).toHaveLength(1);
+    for (const reason of ['', 'r', 'excluded-content', 'ACTIVE-CONTENT', 'active-content ', 7, null, undefined, { toString: () => 'empty-file' }]) {
+      expect(() => validateGenerationSources([row(reason)]), String(reason)).toThrow('invalid-source');
+    }
+    for (const sourceId of ['README.md', 'readme', 'secret', `s-${'3'.repeat(23)}`, `s-${'3'.repeat(25)}`, `s-${'G'.repeat(24)}`, `s-${'3'.repeat(24)}-p1`]) {
+      expect(() => validateGenerationSources([row('empty-file', sourceId)]), sourceId).toThrow('invalid-source');
+    }
+  });
+
+  it('keeps the declaration a plain literal array a static reader can parse', () => {
+    const text = readFileSync(new URL('./generation-source.ts', import.meta.url), 'utf8');
+    const match = /^export const GENERATION_EXCLUSION_REASONS = \[\n((?:  '[a-z0-9-]+',\n)+)\] as const;$/mu.exec(text);
+    expect(match).not.toBeNull();
+    expect([...match![1]!.matchAll(/'([a-z0-9-]+)'/gu)].map(entry => entry[1])).toEqual([...GENERATION_EXCLUSION_REASONS]);
   });
 
   it('rejects forged object binding, offset drift, duplicate anchors and unknown-byte spans', () => {
@@ -69,7 +91,7 @@ describe('byte-order mark', () => {
 describe('oversize bodies', () => {
   const big = `${'line of ordinary text \u00e9\u4e2d!\n'.repeat(9000)}tail`;
   const ident = (text: string) => ({ repositoryId: 'repository:fixture', revision: 'a'.repeat(40), path: 'src/big.c', objectId: gitBlobObjectId(text),
-    sourceId: 'big', evaluationId: 'evaluation:fixture', body: text });
+    sourceId: `s-${'4'.repeat(24)}`, evaluationId: 'evaluation:fixture', body: text });
 
   it('fits a body at the limit whole and splits one character over', () => {
     const at = 'x'.repeat(100_000), over = `${at}y`;
@@ -93,7 +115,7 @@ describe('oversize bodies', () => {
   it('produces valid quotable pieces with blob-absolute anchors and unique ids', () => {
     const sources = generationSourcesForBody(ident(big));
     expect(validateGenerationSources(sources)).toHaveLength(sources.length);
-    expect(quotableGenerationSources(sources).map(q => q.sourceId)).toEqual(sources.map((_, i) => `big-p${i + 1}`));
+    expect(quotableGenerationSources(sources).map(q => q.sourceId)).toEqual(sources.map((_, i) => `s-${'4'.repeat(24)}-p${i + 1}`));
     const second = sources[1]!;
     expect(second.spans[0]!.anchorId.endsWith(`:${second.segment!.start}-${second.segment!.end}`)).toBe(true);
     expect(second.spans[0]!.start).toBe(0);
@@ -122,11 +144,11 @@ describe('oversize bodies', () => {
     const whole2 = generationSourcesForBody(ident('small\n'))[0]!;
     expect(() => validateGenerationSources([{ ...sources[0]!, objectId: whole2.objectId, path: whole2.path }, whole2])).toThrow();
     expect(() => validateGenerationSources([{ ...sources[0]!, body: 'short' }, ...sources.slice(1)])).toThrow('body-mismatch');
-    expect(() => validateGenerationSources([{ ...sources[0]!, exclusion: { excluded: true, reason: 'r' }, body: undefined, spans: [] } as GenerationSource, ...sources.slice(1)])).toThrow('invalid-source');
+    expect(() => validateGenerationSources([{ ...sources[0]!, exclusion: { excluded: true, reason: 'r' }, body: undefined, spans: [] } as unknown as GenerationSource, ...sources.slice(1)])).toThrow('invalid-source');
   });
   it('rejects a whole or excluded row of the same blob beside its pieces', () => {
     const sources = generationSourcesForBody(ident(big));
-    const [excluded] = generationSourcesForBody({ ...ident(big), sourceId: 'big-whole', oversize: 'exclude' });
+    const [excluded] = generationSourcesForBody({ ...ident(big), sourceId: `s-${'6'.repeat(24)}`, oversize: 'exclude' });
     expect(() => validateGenerationSources([excluded!, ...sources])).toThrow('invalid-segments');
   });
 

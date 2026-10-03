@@ -1,9 +1,20 @@
 import { createHash } from 'node:crypto';
 
-import { generationSourceIdentity, validateGenerationSources, type GenerationSource } from '@syzygy/polaris-generation-core';
-import type { PocModel } from '@syzygy/three-surface-poc-core';
+import { generationSourceIdentity, isGenerationExclusionReason, validateGenerationSources, type GenerationExclusionReason, type GenerationSource } from '@syzygy/polaris-generation-core';
+import type { ClassificationRecord, PocModel } from '@syzygy/three-surface-poc-core';
 
 import { sourceRouteHref } from '../polaris-source.js';
+
+/** Maps a PWB withholding onto the closed generation set. The classifier's own
+ * `unknownReason` is a free sentence and is never passed through: an excluded
+ * record maps by its closed `exclusionReason` (a detector match with none is
+ * `policy-excluded`), an unavailable one by its closed `reason`, and anything
+ * outside the set fails closed to `unclassified-exclusion`. */
+export function generationExclusionReason(record: ClassificationRecord): GenerationExclusionReason {
+  const candidate = record.outcome === 'excluded' ? (record.exclusion.exclusionReason ?? 'policy-excluded')
+    : record.outcome === 'unavailable' ? record.reason : 'unclassified-exclusion';
+  return isGenerationExclusionReason(candidate) ? candidate : 'unclassified-exclusion';
+}
 
 /** Projects the already observed PWB source population without re-reading a
  * repository. PWB intentionally retains no source bodies after extraction;
@@ -14,10 +25,10 @@ export function generationSourcesFromPocModel(model: PocModel): readonly Generat
   const sources = shape.sources.map((source): GenerationSource => {
     const sourceId = `s-${createHash('sha256').update(source.identity).digest('hex').slice(0, 24)}`;
     const objectId = source.anchor.kind === 'blob' ? source.anchor.objectId : null;
-    const exclusion = source.record.outcome === 'excluded'
-      ? { excluded: true as const, reason: source.record.unknown.unknownReason }
+    const exclusion: GenerationSource['exclusion'] = source.record.outcome === 'excluded'
+      ? { excluded: true as const, reason: generationExclusionReason(source.record) }
       : source.record.outcome === 'unavailable'
-        ? { excluded: true as const, reason: source.record.unknown.unknownReason }
+        ? { excluded: true as const, reason: generationExclusionReason(source.record) }
         : source.record.basis === 'body'
           ? { excluded: true as const, reason: 'body-not-retained-for-generation' }
           : { excluded: false as const };

@@ -22,9 +22,10 @@ function bodySource(sourceId: string, path: string, body: string): GenerationSou
 // "Café " is 6 UTF-8 bytes, so the quoted sentence runs from byte 6 to 32.
 const README = bodySource('readme', 'README.md', 'Café keeps every key in memory.\nWrites are appended to a log.');
 const DURABILITY = bodySource('durability', 'docs/durability.md', 'Use "fsync" & <wait>.');
+const SECRET_ID = `s-${'5'.repeat(24)}`;
 const SECRET: GenerationSource = {
-  sourceId: 'secret', repositoryId: 'project:kv', revision: REVISION, path: 'config/secret.toml', objectId: null, evaluationId: 'eval-1',
-  classificationBasis: 'path-only', exclusion: { excluded: true, reason: 'active content' }, spans: [],
+  sourceId: SECRET_ID, repositoryId: 'project:kv', revision: REVISION, path: 'config/secret.toml', objectId: null, evaluationId: 'eval-1',
+  classificationBasis: 'path-only', exclusion: { excluded: true, reason: 'active-content' }, spans: [],
 };
 const SOURCES = [README, DURABILITY, SECRET];
 
@@ -154,7 +155,7 @@ describe('(b) fidelity', () => {
     ['an empty range', INDEX.replace('data-quote-end="32"', 'data-quote-end="6"'), 'invalid-offsets'],
     ['a non-numeric offset', INDEX.replace('data-quote-start="6"', 'data-quote-start="six"'), 'invalid-offsets'],
     ['an unadmitted source', INDEX.replace('data-quote-source="readme"', 'data-quote-source="unlisted"'), 'unknown-source'],
-    ['an excluded source', INDEX.replace('data-quote-source="readme"', 'data-quote-source="secret"'), 'unquotable-source'],
+    ['an excluded source', INDEX.replace('data-quote-source="readme"', `data-quote-source="${SECRET_ID}"`), 'unquotable-source'],
   ])('fails a quote with %s', async (_, index, outcome) => {
     const report = await evaluateDossier(input({ index }), signal);
     expect(report.fidelity.quotes.outcome).toBe('failures');
