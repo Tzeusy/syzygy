@@ -37,9 +37,15 @@ it already read the status pages and the governance checker, at C1.
     - A package whose act record and block verify but whose tool check
       fails (drifted) grants nothing and **contests every file it names**
       (since round 16, `syzygy-t69g`). The recorder refuses those files
-      rather than compose the other packages' pairs around it, so it can no
-      longer accept a tree the tool refuses (round 15's N1). Before round 16
-      such a package was skipped like a malformed one.
+      rather than compose the other packages' pairs around it, so it no
+      longer composes around a package whose act verifies but whose check
+      fails (round 15's N1). Before round 16 such a package was skipped like
+      a malformed one. Two trees the tool refuses still pass the recorder
+      alone (round 16's N1): the same tree after the refused package's act
+      record is edited, so the package no longer verifies and is skipped;
+      and a file written back to its adopted bytes, where the recorder
+      never consults the row (round 14's N1). The battery, which runs the
+      tool, refuses both.
     - Paths are normalized before they are compared, so `./x` and `x` are
       one path.
     - **The chain** (since round 14). A later successor of a file names the
@@ -159,7 +165,8 @@ it already read the status pages and the governance checker, at C1.
     of its own.
 
   Recorded refusals replace temporary directory names with `<tmpdir>`; row
-  42 predates that form.
+  42 predates that form. Row 120's refusal embeds a set-ordered dict, so
+  only its text before the colon reproduces byte for byte (round 16's N2).
 - **Review rounds.**
   - Round 1 (`HISTORY-REVIEW-1-RAW.md`, REVISE): M1, a deleted raw was not
     refused, is answered by the Git population; M2, untested predicates, by
@@ -281,6 +288,18 @@ it already read the status pages and the governance checker, at C1.
     - N3: a two-package tie fixture joins N1's follow-up. Answered in
       round 16 by that fixture.
     - N4 and N5 describe the review's own probes and need no change.
+  - Round 16 (`HISTORY-REVIEW-16-RAW.md`, CONFIRM WITH EXCEPTIONS, notes
+    only) binds the current recorder, with the contested marking above.
+    Under the 2026-09-26 stopping rule its notes are answered here, not in
+    the reviewed bytes:
+    - N1: this page claimed the recorder could no longer accept any tree
+      the tool refuses. The claim is narrowed above, naming both residuals;
+      the battery, never the recorder alone, is the claim.
+    - N2: row 120's refusal is not byte-reproducible; noted at the
+      rule-6 rows above.
+    - N3: a refused package contests every path it names, so drift on a
+      path no adopted subject depends on can contest an adopted one. That
+      matches the tool and fails closed.
   - Notes answered here, not in code: round 1's N3 (this page quotes the
     frozen README sentence), N4 (a later verdict supersedes only as a fresh,
     retained review), N5 (two mutants fail by exception) and N6 (the raws
