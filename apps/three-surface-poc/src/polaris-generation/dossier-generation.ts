@@ -63,7 +63,9 @@ export const productionProviderFactory: ProviderFactory = build => {
 };
 
 /** What one provider call counted for, whatever the provider reported. Content-free. */
-export interface MeteredCall { readonly phase: 'discovery' | 'narrative'; readonly stage: PromptStage; readonly ceilingUnits: number; readonly countedUnits: number; readonly usageUnknown: boolean }
+export interface MeteredCall { readonly phase: 'discovery' | 'narrative'; readonly stage: PromptStage; readonly ceilingUnits: number; readonly countedUnits: number; readonly usageUnknown: boolean;
+  /** sha256 of the exact system text sent: the record names which prompt each call ran, content-free. */
+  readonly promptDigest: string }
 
 const digest = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 const spentOf = (error: unknown): number | null => (typeof (error as { spentUnits?: unknown } | null)?.spentUnits === 'number' ? (error as { spentUnits: number }).spentUnits : null);
@@ -130,7 +132,7 @@ export function openGeneration(options: OpenGenerationOptions): (context: Genera
         if (spent !== null) { counted = spent; unknown = false; }
         throw error;
       } finally {
-        calls.push({ phase, stage, ceilingUnits: input.permit.maxUsageUnits, countedUnits: counted, usageUnknown: unknown });
+        calls.push({ phase, stage, ceilingUnits: input.permit.maxUsageUnits, countedUnits: counted, usageUnknown: unknown, promptDigest: digest(input.system) });
         if (phase === 'discovery') discoverySpent += counted;
       }
     };
@@ -167,7 +169,9 @@ export function openGeneration(options: OpenGenerationOptions): (context: Genera
     const auditFile = path.join(stateDir, 'consent-audit.jsonl');
     const narrativeGenerate: PipelinePorts['generate'] = input => metered('narrative', input.stage)(input);
 
+    let promptProfile: string | null = null;
     const runPipeline = async (request: PipelineRequest, signal: AbortSignal): Promise<PipelineResult> => {
+      promptProfile = request.promptProfile ?? 'manifesto';
       const base = createDurableLifecycle({
         stateDir: path.join(stateDir, 'narrative'),
         permissionIdentity: async () => '',   // replaced by the consent ports; alone it refuses
@@ -205,7 +209,7 @@ export function openGeneration(options: OpenGenerationOptions): (context: Genera
         accountingPolicy: profile.accountingPolicy, route: options.route, routeName: ROUTE_NAMES[options.route], model: profile.model, effort: profile.effort, thinking: profile.thinking,
         budget: { ...profile.owner, narrativeUnits: profile.owner.runTotalUnits - profile.owner.discoveryUnits },
         spend: { discoveryCountedUnits: discoverySpent, narrativeCountedUnits: calls.filter(call => call.phase === 'narrative').reduce((sum, call) => sum + call.countedUnits, 0) },
-        calls, attempts: handle.attempts(), gateDecisions: handle.gateDecisions(), stateDir,
+        promptProfile, calls, attempts: handle.attempts(), gateDecisions: handle.gateDecisions(), stateDir,
       }),
       close: async () => { await handle.close(); },
     };

@@ -27,6 +27,7 @@
     "test:polaris-generation": "vitest run --project @syzygy/polaris-generation-core --project @syzygy/polaris-generation-provider --project @syzygy/polaris-generation-consent",
     "poc:dossier": "node scripts/check_generator_install.mjs && npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/dossier-main.js",
     "poc:generator-demo": "node scripts/check_generator_install.mjs && npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/pipeline-demo-main.js",
+    "poc:dossier-rehearsal": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/dossier-rehearsal-main.testkit.js",
     "poc:dossier-render": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/dossier-render-main.js",
     "poc:dossier-evaluation": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/dossier-evaluation-main.js",
     "poc:generation-mutation-run": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/generation-mutation-run-main.js"

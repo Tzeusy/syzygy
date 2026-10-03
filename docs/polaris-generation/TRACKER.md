@@ -191,6 +191,18 @@ Authorized implementation work (generator implementation authorization,
         the profile, prompt version and system-text digest on every receipt. `evaluateDossier` reports
         `fidelity.inBlockQuotes` (checked blocks, quotes checked, failures,
         outcome `all-verbatim` / `no-quotes` / `failures` / `unknown`).
+  - [x] **Dossier dry-run rehearsal.** `npm run poc:dossier-rehearsal`
+        (`dossier-rehearsal.testkit.ts`): `poc:dossier` end to end against a
+        four-file repository and the synthetic Redis-shaped one, with the
+        loopback stub provider, no model and no network. Scenarios: complete,
+        at-ceiling, partial (exit 7), wall-clock (exit 6) and three refusals
+        (exits 5, 3, 2). It checks that the rendered site opens (complete
+        documents, no script, no external reference, every link and anchor
+        lands), that every page passes `evaluateDossier`, and that the run
+        record names the profile, the sha256 of the prompt each call sent and
+        the budget spent. [Observed] the Redis-shaped scenario fails today:
+        discovery's 200-source selection (1,893,524 bytes) cannot fit the
+        inventory stage's 600-unit ceiling under the 1-token-per-byte bound.
   - [x] **Closed exclusion reasons.** `GENERATION_EXCLUSION_REASONS`
         (`generation-source.ts`, a plain literal array) lists every reason an
         excluded source may carry; `validateGenerationSources` refuses any
