@@ -44,8 +44,66 @@ const HIREDIS = ['alloc', 'async', 'dict', 'hiredis', 'net', 'read', 'sds', 'soc
 
 const tclTests = (dir: string, names: readonly string[]): [string, string][] => names.map(name => [`tests/${dir}/${name}.tcl`, `# synthetic Tcl test ${dir}/${name}\n`]);
 
+/**
+ * A permissive-licence header of the usual shape (a copyright line and the standard three-clause
+ * wording, written from general knowledge of how such headers read), about 1,600 characters, so
+ * the old 1,500-character excerpt of a C file is nothing but this block. The holder is a placeholder.
+ */
+function licenceHeader(path: string): string {
+  return `/*
+ * Copyright (c) 2009-2024, Example Author <author at example.invalid>
+ * All rights reserved.
+ *
+ * SYNTHETIC FIXTURE FILE ${path}: generated filler, not the contents of any real repository.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *   * Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *   * Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE.
+ */
+`;
+}
+
+/** C-family filler with the layout such files have: licence block, an overview comment, includes, defines, a struct, then functions (prototypes in a header). */
+function cBody(path: string, chars: number): string {
+  const ident = path.replace(/[^A-Za-z0-9]/gu, '_');
+  const header = path.endsWith('.h');
+  const lines: string[] = [licenceHeader(path),
+    `/* ${path}: synthetic overview. This unit owns the ${ident} state machine: it accepts work from the event loop, applies it to the keyspace and reports the outcome to the caller. */\n`,
+    '#include "server.h"\n', `#define ${ident.toUpperCase()}_MAX 1024\n`, `#define ${ident.toUpperCase()}_FLAG(x) ((x) & 0x1)\n`,
+    `struct ${ident}_state {\n    int phase;\n    long pending;\n};\n`, `typedef struct ${ident}_item {\n    int id;\n} ${ident}_item;\n`];
+  let size = lines.reduce((total, line) => total + line.length, 0);
+  for (let i = 0; size < chars; i++) {
+    const line = header
+      ? `int ${ident}_op_${i}(struct ${ident}_state *s, int arg);\n`
+      : `int ${ident}_op_${i}(struct ${ident}_state *s, int arg) {\n    s->pending += arg + ${i};\n    return (int)s->pending; /* ${path} stub ${i} */\n}\n\n`;
+    lines.push(line);
+    size += line.length;
+  }
+  return lines.join('');
+}
+
 /** About `chars` characters of generated, path-naming filler: a header comment and numbered stubs. */
 function body(path: string, chars: number): string {
+  if (/\.[ch]$/u.test(path)) return cBody(path, chars);
   const ident = path.replace(/[^A-Za-z0-9]/gu, '_');
   const head = `/* SYNTHETIC FIXTURE FILE ${path}: generated filler, not the contents of any real repository. */\n`;
   const lines: string[] = [head];

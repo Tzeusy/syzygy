@@ -1,11 +1,42 @@
 import { createHash } from 'node:crypto';
 
-import { DEFAULT_DISCOVERY_BUDGET, DOSSIER_READER_QUESTIONS, discoverAndSelect, quotableGenerationSources, type DiscoveryBudget, type DiscoveryResult } from '@syzygy/polaris-generation-core';
+import { DEFAULT_DISCOVERY_BUDGET, DOSSIER_READER_QUESTIONS, buildExcerpt, discoverAndSelect, quotableGenerationSources, type DiscoveryBudget, type DiscoveryResult, type GenerationSource } from '@syzygy/polaris-generation-core';
 
 import { CORE_FILES, buildRedisShapedFixture, redisShapedFiles, type RedisShapedFixture } from './redis-shaped-fixture.js';
 import { readRepoCorpus, type RepoCorpus } from './repo-corpus.js';
 
 const VENDORED = /^(?:deps|vendor|third_party)\//u;
+
+const CODE_PATH = /\.(?:c|h)$/u;
+const codeLines = (text: string): number => text.split('\n').filter(line => line !== '' && !/^[ /*[]/u.test(line)).length;
+const mean = (values: readonly number[]): number => (values.length === 0 ? 0 : Math.round(values.reduce((a, b) => a + b, 0) / values.length));
+
+function measureExcerpts(selected: readonly GenerationSource[], budget: DiscoveryBudget): RedisShapedMeasurement['excerpts'] {
+  const first = new Map<string, GenerationSource>();
+  for (const source of selected) if (!first.has(source.path)) first.set(source.path, source);
+  const rows = [...first].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([path, source]) => {
+    const text = source.body ?? source.spans[0]?.text ?? '';
+    const before = [...text].slice(0, budget.maxExcerptChars).join('');
+    const after = buildExcerpt(path, text, source.segment?.start ?? 0, budget.maxExcerptChars);
+    return { path, before, after };
+  });
+  const code = rows.filter(row => CODE_PATH.test(row.path));
+  const byKind: Record<string, number> = {};
+  for (const row of rows) byKind[row.after.kind] = (byKind[row.after.kind] ?? 0) + 1;
+  const sample = rows.find(row => row.path === 'src/ae.c') ?? rows[0]!;
+  return {
+    files: rows.length, byKind, codeFiles: code.length,
+    before: { meanChars: mean(rows.map(row => row.before.length)), codeFilesWithNoCodeLine: code.filter(row => codeLines(row.before) === 0).length,
+      codeFilesLicenceOnly: code.filter(row => row.before.includes('Copyright') && codeLines(row.before) === 0).length },
+    after: { meanChars: mean(rows.map(row => row.after.text.length)), codeFilesWithNoCodeLine: code.filter(row => codeLines(row.after.text) === 0).length,
+      licenceCommentInExcerpt: code.filter(row => row.after.text.includes('Copyright')).length, meanCodeLines: mean(code.map(row => codeLines(row.after.text))), licenceRangeRecorded: code.filter(row => row.after.licenceSkipped !== null).length },
+    coreMechanisms: Object.fromEntries(Object.entries(CORE_FILES).map(([role, paths]) => {
+      const inRole = rows.filter(row => (paths as readonly string[]).includes(row.path));
+      return [role, { files: inRole.length, beforeWithCodeLine: inRole.filter(row => codeLines(row.before) > 0).length, afterWithCodeLine: inRole.filter(row => codeLines(row.after.text) > 0).length }];
+    })),
+    sample: { path: sample.path, before: sample.before, after: sample.after.text, afterKind: sample.after.kind, afterRanges: sample.after.ranges, licenceSkipped: sample.after.licenceSkipped },
+  };
+}
 
 export interface RedisShapedMeasurement {
   /** `sha256` is over every path and body in sorted order (path, NUL, body, NUL), so a changed fixture is a changed subject. */
@@ -20,6 +51,17 @@ export interface RedisShapedMeasurement {
     readonly srcFiles: number;
   };
   readonly coreMechanisms: Readonly<Record<string, { readonly selected: readonly string[]; readonly deferred: readonly string[] }>>;
+  /** What the map call sees for each selected file: the old first-N-characters excerpt against the current one. */
+  readonly excerpts: {
+    readonly files: number;
+    readonly byKind: Readonly<Record<string, number>>;
+    readonly codeFiles: number;
+    /** Code lines are non-empty lines that do not start with a space, `/`, `*` or `[`: declarations, defines, tags. */
+    readonly before: { readonly meanChars: number; readonly codeFilesWithNoCodeLine: number; readonly codeFilesLicenceOnly: number };
+    readonly after: { readonly meanChars: number; readonly codeFilesWithNoCodeLine: number; readonly licenceCommentInExcerpt: number; readonly meanCodeLines: number; readonly licenceRangeRecorded: number };
+    readonly coreMechanisms: Readonly<Record<string, { readonly files: number; readonly beforeWithCodeLine: number; readonly afterWithCodeLine: number }>>;
+    readonly sample: { readonly path: string; readonly before: string; readonly after: string; readonly afterKind: string; readonly afterRanges: readonly (readonly [number, number])[]; readonly licenceSkipped: readonly [number, number] | null };
+  };
   readonly accounting: {
     readonly population: number;
     readonly candidateBlobs: number;
@@ -51,6 +93,7 @@ export async function measureRedisShapedDiscovery(dir: string, budget: Discovery
     selection: { selectedBlobs: result.report.selected.blobs, selectedSources: result.report.selected.sources, rankingBasis: result.report.rankingBasis, byTopDirectory,
       vendored: [...selectedPaths].filter(path => VENDORED.test(path)).length, srcFiles: [...selectedPaths].filter(path => path.startsWith('src/')).length },
     coreMechanisms: Object.fromEntries(Object.entries(CORE_FILES).map(([role, paths]) => [role, { selected: paths.filter(path => selectedPaths.has(path)), deferred: paths.filter(path => deferredPaths.has(path)) }])),
+    excerpts: measureExcerpts(result.sources.filter(source => quotableIds.has(source.sourceId)), budget),
     accounting: { population: result.report.population.sources, candidateBlobs: result.report.population.candidateBlobs, deferredBlobs: result.report.deferred.length, deferredRows,
       deferredVendored: [...deferredPaths].filter(path => VENDORED.test(path)).length,
       closes: result.report.selected.blobs + result.report.deferred.length === result.report.population.candidateBlobs },
