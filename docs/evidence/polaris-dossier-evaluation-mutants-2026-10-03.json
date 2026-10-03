@@ -1,33 +1,37 @@
 {
- "subject": "Polaris dossier evaluation harness (TRACKER G5, gap #10): evaluateDossier and poc:dossier-evaluation",
+ "subject": "Polaris dossier evaluation harness (TRACKER G5, gap #10): evaluateDossier and poc:dossier-evaluation, after the #261 review repairs (blob-absolute quotes, subject digests, label honesty, reader factory, non-file refusal)",
  "date": "2026-10-03",
- "commit": "fefad7200df616815e8ade1c36096779a82dd8ce",
+ "commit": "c4dab877cb3009d094ca938acdf11d7b0b19d165",
  "subjectFiles": [
   {
    "path": "packages/polaris-generation-core/src/dossier-evaluation.ts",
-   "sha256": "b6a19d6f3124107d6f2ddb63770e941f904d48d348cad8d49dbf39a415082406"
+   "sha256": "9c8b53aebd7b342d8553eb4525354749b426433106c9d12d83b1df15aa6224fe"
   },
   {
    "path": "packages/polaris-generation-core/src/dossier-evaluation.test.ts",
-   "sha256": "4f328209a311b708bd85c81788b16ccaeeae016f7f3885e4a72bf4fdc59f8791"
+   "sha256": "a83c9f3690a1711049bdefaa19923ac8a6210470263f7ae9f1274f4bb461be85"
   },
   {
    "path": "apps/three-surface-poc/src/polaris-generation/dossier-evaluation-main.ts",
-   "sha256": "2cfce89afa167f50b794caf112234abda5f6224d97ab71dd044f90258f01eb43"
+   "sha256": "438aeb520083971793d694aa2142902e0601adf8959d93e2c21e8740713fd2a0"
   },
   {
    "path": "apps/three-surface-poc/src/polaris-generation/dossier-evaluation-main.test.ts",
-   "sha256": "b58bcfc92e2c04fae3c471f51ea8c9cc47a5f79fd57b55f841838053239abe01"
+   "sha256": "3297b7a46f4679a592fc7c5b30b5280901b43e82ea23f9c1427b27c7feb1255b"
   }
  ],
- "method": "Each mutant replaced exactly one fragment (asserted to occur once) in the named file, ran both test files (npx vitest run <core test> <app test>, 30 tests), and restored the file; the worktree was clean afterwards. A mutant is killed when at least one test fails.",
- "tests": "packages/polaris-generation-core/src/dossier-evaluation.test.ts (25) and apps/three-surface-poc/src/polaris-generation/dossier-evaluation-main.test.ts (5); all fixtures synthetic, no external repository read, no provider call",
+ "method": "Each mutant replaced exactly one fragment (asserted to occur once) in the named file, ran both test files (npx vitest run <core test> <app test>, 38 tests), and restored the file; the worktree was clean afterwards. A mutant is killed when at least one test fails.",
+ "tests": "packages/polaris-generation-core/src/dossier-evaluation.test.ts (32) and apps/three-surface-poc/src/polaris-generation/dossier-evaluation-main.test.ts (6); all fixtures synthetic, no external repository read, no provider call",
  "result": {
-  "mutants": 17,
-  "killed": 17,
+  "mutants": 29,
+  "killed": 29,
   "survived": []
  },
- "history": "At 2b5500ff a mutant deleting the head-text guard (`if (inHead()) return;`) survived: <title>, the only text-bearing head element, was already skipped as raw text. The guard was removed as redundant in the next commit, and the mutant replaced by title-counted, which removes title from the raw-text set.",
+ "history": [
+  "At 2b5500ff a mutant deleting the head-text guard (`if (inHead()) return;`) survived: <title>, the only text-bearing head element, was already skipped as raw text. The guard was removed as redundant in the next commit, and the mutant replaced by title-counted, which removes title from the raw-text set.",
+  "At fefad720 the first record held 17 mutants, all killed. The #261 review (CHANGES at d1591dcb) renamed the coverage status, the claims pass word and the reader input; the five affected fragments were re-pointed to the renamed code, and twelve mutants were added for the repairs.",
+  "At cdd24994 body-not-digested (the sources digest ignoring body bytes) survived: the only changed-bytes case also changed the object id. c4dab877 adds a body swapped under the same identity; this run is at that commit."
+ ],
  "mutants": [
   {
    "id": "quote-trim",
@@ -35,11 +39,12 @@
    "description": "a quote compared modulo surrounding whitespace",
    "old": "return decoded === quote.text ? 'exact' : 'text-mismatch';",
    "new": "return decoded.trim() === quote.text.trim() ? 'exact' : 'text-mismatch';",
-   "tests": 30,
+   "tests": 38,
    "failed": 1,
    "killedBy": [
     "(b) fidelity fails a quote with an added space"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
@@ -48,8 +53,8 @@
    "description": "named entities left undecoded",
    "old": "    if (name !== undefined) return NAMED_ENTITIES[name] ?? match;\n",
    "new": "    if (name !== undefined) return match;\n",
-   "tests": 30,
-   "failed": 9,
+   "tests": 38,
+   "failed": 13,
    "killedBy": [
     "(b) fidelity resolves every quote exactly, including multibyte offsets and decoded entities, and finds every claim labelled",
     "(b) fidelity fails a quote with one changed character",
@@ -59,8 +64,13 @@
     "(b) fidelity fails a quote with an empty range",
     "(b) fidelity fails a quote with a non-numeric offset",
     "(b) fidelity fails a quote with an unadmitted source",
-    "(b) fidelity fails a quote with an excluded source"
+    "(b) fidelity fails a quote with an excluded source",
+    "blob-absolute quote offsets resolves a quote in a later piece by its blob offsets and refuses its piece-relative offsets",
+    "blob-absolute quote offsets refuses a quote that crosses a piece boundary, whichever piece it names",
+    "blob-absolute quote offsets resolves a 4-byte emoji only on its code-point boundaries",
+    "blob-absolute quote offsets reads a CRLF quote as a browser would: a raw CR is normalized away, a character reference survives"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
@@ -69,37 +79,40 @@
    "description": "an unlabelled claim counted as observed",
    "old": "const label = claim.epistemic === null ? 'missing-label' as const",
    "new": "const label = claim.epistemic === null ? 'observed' as const",
-   "tests": 30,
+   "tests": 38,
    "failed": 1,
    "killedBy": [
     "(b) fidelity fails a claim with no label, an out-of-vocabulary label, or a reused id"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
    "id": "duplicate-claims-ignored",
    "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
    "description": "reused claim ids do not fail",
-   "old": "outcome: outcome(claims.length, unlabelled.length + duplicateClaimIds.length),",
-   "new": "outcome: outcome(claims.length, unlabelled.length),",
-   "tests": 30,
+   "old": "outcome: outcome(claims.length, unlabelled.length + duplicateClaimIds.length, 'all-labelled'),",
+   "new": "outcome: outcome(claims.length, unlabelled.length, 'all-labelled'),",
+   "tests": 38,
    "failed": 1,
    "killedBy": [
     "(b) fidelity fails a claim with no label, an out-of-vocabulary label, or a reused id"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
    "id": "empty-population-passes",
    "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
-   "description": "no quotes or claims reads as all-resolved",
-   "old": "failures > 0 ? 'failures' : population === 0 ? 'unknown' : 'all-resolved';",
-   "new": "failures > 0 ? 'failures' : 'all-resolved';",
-   "tests": 30,
+   "description": "no quotes or claims reads as a pass",
+   "old": "failures > 0 ? 'failures' : population === 0 ? 'unknown' : pass;",
+   "new": "failures > 0 ? 'failures' : pass;",
+   "tests": 38,
    "failed": 1,
    "killedBy": [
     "(b) fidelity reports Unknown, not a pass, when the pages carry no quotes or no claims"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
@@ -108,12 +121,13 @@
    "description": "title text counted as page words",
    "old": "const RAW_TEXT = new Set(['script', 'style', 'textarea', 'title']);",
    "new": "const RAW_TEXT = new Set(['script', 'style', 'textarea']);",
-   "tests": 30,
+   "tests": 38,
    "failed": 2,
    "killedBy": [
     "(a) reader cost counts words by reading level from the page bytes, skipping title, script and style",
     "(a) reader cost measures bytes to the close of the last level-0 element and totals per page depth"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
@@ -122,11 +136,12 @@
    "description": "unmarked first level reads as zero words",
    "old": "const firstLevelWords = entry.words.byLevel['0'] ?? null;",
    "new": "const firstLevelWords = entry.words.byLevel['0'] ?? 0;",
-   "tests": 30,
+   "tests": 38,
    "failed": 1,
    "killedBy": [
     "(a) reader cost reports first-level words as null and its bounds as Unknown when the entry page marks no level 0"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
@@ -135,12 +150,13 @@
    "description": "bytes through the first level never measured",
    "old": "        if (closed.level === '0') lastLevelZeroClose = Buffer.byteLength(html.slice(0, cursor), 'utf8');\n",
    "new": "",
-   "tests": 30,
+   "tests": 38,
    "failed": 2,
    "killedBy": [
     "(a) reader cost measures bytes to the close of the last level-0 element and totals per page depth",
     "(a) reader cost reports each budget bound as within, over, or Unknown when none is declared"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
@@ -149,26 +165,28 @@
    "description": "an undeclared budget reads as within",
    "old": "  if (limit === undefined) return { outcome: 'unknown', reason: 'no-budget-declared' };",
    "new": "  if (limit === undefined) return { bound: 0, observed: observed ?? 0, outcome: 'within' };",
-   "tests": 30,
+   "tests": 38,
    "failed": 1,
    "killedBy": [
     "(a) reader cost reports each budget bound as within, over, or Unknown when none is declared"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
    "id": "declared-is-cited",
    "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
-   "description": "a page declaration upgrades to reader-cited",
-   "old": "const status = answeredFrom.length > 0 ? 'reader-cited' as const : declared.length > 0 ? 'declared-only' as const : 'unknown' as const;",
-   "new": "const status = answeredFrom.length > 0 || declared.length > 0 ? 'reader-cited' as const : 'unknown' as const;",
-   "tests": 30,
+   "description": "a page declaration upgrades to scripted-answer-cited",
+   "old": "const status = answeredFrom.length > 0 ? 'scripted-answer-cited' as const : declared.length > 0 ? 'declared-only' as const : 'unknown' as const;",
+   "new": "const status = answeredFrom.length > 0 || declared.length > 0 ? 'scripted-answer-cited' as const : 'unknown' as const;",
+   "tests": 38,
    "failed": 3,
    "killedBy": [
-    "(d) coverage per owner topic separates reader-cited topics from page-declared ones and leaves the rest Unknown",
-    "(d) coverage per owner topic never upgrades a declaration to reader-cited without a reader run",
+    "(d) coverage per owner topic separates scripted-answer-cited topics from page-declared ones and leaves the rest Unknown",
+    "(d) coverage per owner topic never upgrades a declaration to answer-cited without a reader run",
     "dossier evaluation over a run directory reads the manifest pages, sources and frozen questions and reports all four parts"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
@@ -177,24 +195,26 @@
    "description": "a citation to a missing section counts as coverage",
    "old": ".flatMap(result => result.citations.filter(citation => citation.resolves).map(",
    "new": ".flatMap(result => result.citations.map(",
-   "tests": 30,
+   "tests": 38,
    "failed": 1,
    "killedBy": [
-    "(d) coverage per owner topic separates reader-cited topics from page-declared ones and leaves the rest Unknown"
+    "(d) coverage per owner topic separates scripted-answer-cited topics from page-declared ones and leaves the rest Unknown"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
    "id": "reader-sees-topics",
    "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
    "description": "the reader port receives the question topics",
-   "old": "port.answer({ question: { id: question.id, text: question.text }, pages",
-   "new": "port.answer({ question, pages",
-   "tests": 30,
+   "old": "answer({ question: { id: question.id, text: question.text }, pages",
+   "new": "answer({ question, pages",
+   "tests": 38,
    "failed": 1,
    "killedBy": [
     "(c) reader test scaffolding gives each fresh reader only the question and the pages, and records answers ungraded"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
@@ -203,25 +223,27 @@
    "description": "the questions digest freeze is not enforced",
    "old": "if (input.expectedQuestionsSha256 !== undefined && input.expectedQuestionsSha256 !== questionsSha256) throw",
    "new": "if (false as boolean) throw",
-   "tests": 30,
+   "tests": 38,
    "failed": 2,
    "killedBy": [
     "dossier input format refuses a questions file that no longer hashes to its frozen digest",
     "dossier evaluation over a run directory reads the manifest pages, sources and frozen questions and reports all four parts"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
    "id": "answer-unchecked",
    "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
    "description": "a malformed answer is accepted",
-   "old": "    const answer = checkAnswer(await port.answer(",
-   "new": "    const answer = (x => x as ReaderAnswer)(await port.answer(",
-   "tests": 30,
+   "old": "    const answer = checkAnswer(await readers.create().answer(",
+   "new": "    const answer = (x => x as ReaderAnswer)(await readers.create().answer(",
+   "tests": 38,
    "failed": 1,
    "killedBy": [
     "(c) reader test scaffolding does not run without an answer port, and refuses a malformed answer"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
@@ -230,11 +252,183 @@
    "description": "more than one depth-0 page or a mismatched entry accepted",
    "old": "if (atZero.length !== 1 || atZero[0]!.path !== record.entryPage) fail();",
    "new": "if (atZero.length === 0) fail();",
-   "tests": 30,
+   "tests": 38,
    "failed": 1,
    "killedBy": [
     "dossier input format accepts the agreed manifest and refuses every malformed shape"
    ],
+   "suiteErrors": [],
+   "outcome": "killed"
+  },
+  {
+   "id": "segment-base-ignored",
+   "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+   "description": "a piece quote read with piece-relative offsets",
+   "old": "  const base = source.segment?.start ?? 0;\n",
+   "new": "  const base = 0;\n",
+   "tests": 38,
+   "failed": 2,
+   "killedBy": [
+    "blob-absolute quote offsets resolves a quote in a later piece by its blob offsets and refuses its piece-relative offsets",
+    "blob-absolute quote offsets refuses a quote that crosses a piece boundary, whichever piece it names"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed"
+  },
+  {
+   "id": "crossing-reads-as-range",
+   "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+   "description": "a quote crossing a piece boundary reported as out-of-range",
+   "old": "return start < source.segment.end && end > base ? 'crosses-piece-boundary' : 'out-of-range';",
+   "new": "return 'out-of-range';",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "blob-absolute quote offsets refuses a quote that crosses a piece boundary, whichever piece it names"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed"
+  },
+  {
+   "id": "segment-bounds-unchecked",
+   "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+   "description": "a quote outside the named piece is not refused by piece bounds",
+   "old": "  if (source.segment !== undefined && (start < base || end > source.segment.end)) {\n",
+   "new": "  if (false as boolean) {\n",
+   "tests": 38,
+   "failed": 2,
+   "killedBy": [
+    "blob-absolute quote offsets resolves a quote in a later piece by its blob offsets and refuses its piece-relative offsets",
+    "blob-absolute quote offsets refuses a quote that crosses a piece boundary, whichever piece it names"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed"
+  },
+  {
+   "id": "cr-kept",
+   "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+   "description": "page text keeps raw CR the browser would drop",
+   "old": "decodeHtmlText(raw.replace(/\\r\\n?/gu, '\\n'))",
+   "new": "decodeHtmlText(raw)",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "blob-absolute quote offsets reads a CRLF quote as a browser would: a raw CR is normalized away, a character reference survives"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed"
+  },
+  {
+   "id": "outer-claim-not-quoted",
+   "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+   "description": "a quote nested in a claim does not count for it",
+   "old": "      for (const open of stack) if (open.claim !== null) open.claim.hasQuote = true;\n",
+   "new": "",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "(b) fidelity resolves every quote exactly, including multibyte offsets and decoded entities, and finds every claim labelled"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed"
+  },
+  {
+   "id": "observed-without-quote-empty",
+   "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+   "description": "Observed claims with no quote are never listed",
+   "old": "observedWithoutQuote: claims.filter(claim => claim.label === 'observed' && !claim.hasQuote)",
+   "new": "observedWithoutQuote: claims.filter(claim => false && claim.hasQuote)",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "(b) fidelity resolves every quote exactly, including multibyte offsets and decoded entities, and finds every claim labelled"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed"
+  },
+  {
+   "id": "port-shared",
+   "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+   "description": "one reader instance answers every question",
+   "old": "  for (const question of questions) {\n    signal.throwIfAborted();\n    const answer = checkAnswer(await readers.create().answer(",
+   "new": "  const port = readers.create();\n  for (const question of questions) {\n    signal.throwIfAborted();\n    const answer = checkAnswer(await port.answer(",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "(c) reader test scaffolding gives each fresh reader only the question and the pages, and records answers ungraded"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed"
+  },
+  {
+   "id": "body-not-digested",
+   "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+   "description": "the sources digest ignores body bytes",
+   "old": "    bodySha256: source.body === undefined ? null : sha256(source.body),\n",
+   "new": "    bodySha256: null,\n",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "report subject (rule 11) binds the admitted sources by a canonical digest that ignores order and follows the bytes"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed"
+  },
+  {
+   "id": "sources-unsorted",
+   "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+   "description": "the sources digest depends on input order",
+   "old": "const rows = [...sources].sort((a, b) => (a.sourceId < b.sourceId ? -1 : a.sourceId > b.sourceId ? 1 : 0)).map(",
+   "new": "const rows = [...sources].map(",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "report subject (rule 11) binds the admitted sources by a canonical digest that ignores order and follows the bytes"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed"
+  },
+  {
+   "id": "budget-not-bound",
+   "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+   "description": "the budget is not bound into the subject",
+   "old": "budgetSha256: input.budget === undefined ? null : digestCanonicalJson({ ...input.budget }, JSON_LIMITS).digest,",
+   "new": "budgetSha256: null,",
+   "tests": 38,
+   "failed": 2,
+   "killedBy": [
+    "report subject (rule 11) binds the budget and the scripted answers, and records neither when absent",
+    "dossier evaluation over a run directory reads the manifest pages, sources and frozen questions and reports all four parts"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed"
+  },
+  {
+   "id": "script-not-bound",
+   "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+   "description": "the scripted answers are not bound into the subject",
+   "old": "    subjectSha256: digestCanonicalJson(frozen, JSON_LIMITS).digest,\n",
+   "new": "    subjectSha256: '',\n",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "report subject (rule 11) binds the budget and the scripted answers, and records neither when absent"
+   ],
+   "suiteErrors": [],
+   "outcome": "killed"
+  },
+  {
+   "id": "fifo-read",
+   "file": "apps/three-surface-poc/src/polaris-generation/dossier-evaluation-main.ts",
+   "description": "a page that is not a regular file is read",
+   "old": "  if (!(await stat(real)).isFile()) throw new Error('page-not-a-file');\n",
+   "new": "",
+   "tests": 38,
+   "failed": 1,
+   "killedBy": [
+    "dossier evaluation over a run directory refuses a page that is a FIFO rather than a regular file, without blocking on it"
+   ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
@@ -243,11 +437,12 @@
    "description": "a symlinked page is followed",
    "old": "  if ((await lstat(path)).isSymbolicLink()) throw new Error('page-is-symlink');\n",
    "new": "",
-   "tests": 30,
+   "tests": 38,
    "failed": 1,
    "killedBy": [
     "dossier evaluation over a run directory refuses a page that is a symlink, even to a file inside the directory"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   },
   {
@@ -256,11 +451,12 @@
    "description": "a page resolving outside the run directory is read",
    "old": "  if (!real.startsWith(root + sep)) throw new Error('page-outside-run-directory');\n",
    "new": "",
-   "tests": 30,
+   "tests": 38,
    "failed": 1,
    "killedBy": [
     "dossier evaluation over a run directory refuses a page under a symlinked directory that resolves outside the run directory"
    ],
+   "suiteErrors": [],
    "outcome": "killed"
   }
  ]
