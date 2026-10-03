@@ -1,0 +1,187 @@
+{
+  "bead": "syzygy-u05.3",
+  "rule": "AGENTS.md verification rule 6: mutate the input and confirm the check fails, per predicate",
+  "commit": "c60a301f76785bd74d12785786ee79a66a2fd5fc",
+  "subjects": [
+    {
+      "path": "packages/three-surface-poc-core/src/resource-headroom.ts",
+      "sha256": "89a1daca3d9cc9e110cf77038a93ee4badc1f3e99f8a46f53e68b82bc2b21015"
+    },
+    {
+      "path": "packages/three-surface-poc-core/src/model.ts",
+      "sha256": "627ccbfd3d9c50f59c44e0a21359eac52c464c9343eba60c747b6030bd3acddb"
+    },
+    {
+      "path": "apps/three-surface-poc/src/resource-headroom-line.ts",
+      "sha256": "a887185e0e2a44e9d2f7110e01071bd139f3bc37e88b2b86c372004858698473"
+    },
+    {
+      "path": "apps/three-surface-poc/src/page-shell.ts",
+      "sha256": "c628b683482b42b71987f92afa7fc915b6b1d063f03d4d577f1b939e58e27b5a"
+    },
+    {
+      "path": "apps/three-surface-poc/src/routes.ts",
+      "sha256": "81cd2099b9a162579a87c154137217e97d1e08e11542c07d91d42ad9a8cdd050"
+    }
+  ],
+  "mutants": [
+    {
+      "id": "H1-cost-unknown-when-observed",
+      "predicate": "core: an observed ledger reports its cost Unknown",
+      "file": "packages/three-surface-poc-core/src/resource-headroom.ts",
+      "old": "cost: { id: RESOURCE_COST_ID, state: 'observed', ...cost },",
+      "new": "cost: { id: RESOURCE_COST_ID, state: 'unknown', reason: 'x' },",
+      "check": "npx vitest run packages/three-surface-poc-core/src/resource-headroom.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  5 failed | 54 passed (59)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "H2-unread-as-zero",
+      "predicate": "core (VIS-2): no ledger reads as observed zero",
+      "file": "packages/three-surface-poc-core/src/resource-headroom.ts",
+      "old": "      observed: unknown,\n",
+      "new": "      observed: { state: 'observed', value: 0 },\n",
+      "check": "npx vitest run packages/three-surface-poc-core/src/resource-headroom.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  2 failed | 1 passed (3)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "H3-ids-collide",
+      "predicate": "core: tuple ids are not distinct per limit",
+      "file": "packages/three-surface-poc-core/src/resource-headroom.ts",
+      "old": "return `resource-headroom:${limit}`;",
+      "new": "return 'resource-headroom:maxSources';",
+      "check": "npx vitest run packages/three-surface-poc-core/src/resource-headroom.test.ts apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  9 failed | 50 passed (59)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "H4-supplied-envelope-ignored",
+      "predicate": "core: the declared value ignores the evaluation's own envelope",
+      "file": "packages/three-surface-poc-core/src/resource-headroom.ts",
+      "old": "      declared: limits[limit],\n",
+      "new": "      declared: PWB_RESOURCE_LIMITS[limit],\n",
+      "check": "npx vitest run packages/three-surface-poc-core/src/resource-headroom.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 2 passed (3)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "H5-model-never-reads-ledger",
+      "predicate": "model: the block is built as if no ledger ran",
+      "file": "packages/three-surface-poc-core/src/model.ts",
+      "old": "resourceHeadroom: deepFreeze(deriveResourceHeadroom(projectShape, input.projectShape?.resourceLimits)),",
+      "new": "resourceHeadroom: deepFreeze(deriveResourceHeadroom(unevaluatedProjectShape('x'), input.projectShape?.resourceLimits)),",
+      "check": "npx vitest run apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  4 failed | 52 passed (56)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "H6-block-excluded-from-identity",
+      "predicate": "identity: the block is added to the response identity exclusions",
+      "file": "packages/three-surface-poc-core/src/response-identity.ts",
+      "old": "  'proposedWork.currentAuthority.claim.evaluationId',\n",
+      "new": "  'proposedWork.currentAuthority.claim.evaluationId',\n  'resourceHeadroom',\n",
+      "check": "npx vitest run apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  2 failed | 54 passed (56)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "L1-observed-attr-swapped",
+      "predicate": "parity: the human observed value is the remaining one",
+      "file": "apps/three-surface-poc/src/resource-headroom-line.ts",
+      "old": "data-observed=\"${attr(entry.observed)}\"",
+      "new": "data-observed=\"${attr(entry.remaining)}\"",
+      "check": "npx vitest run apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  4 failed | 52 passed (56)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "L2-cost-span-dropped",
+      "predicate": "parity: the human entry omits the cost tuple",
+      "file": "apps/three-surface-poc/src/resource-headroom-line.ts",
+      "old": "[...entries, costSpan].join('; ')",
+      "new": "entries.join('; ')",
+      "check": "npx vitest run apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  7 failed | 49 passed (56)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "L3-unknown-renders-zero",
+      "predicate": "human (VIS-2): an unread limit renders 0 of declared",
+      "file": "apps/three-surface-poc/src/resource-headroom-line.ts",
+      "old": ": `${LIMIT_LABEL[entry.limit]} ${note(",
+      "new": ": `${LIMIT_LABEL[entry.limit]} 0 of ${entry.declared}, ${entry.declared} left ${note(",
+      "check": "npx vitest run apps/three-surface-poc/src/response-limits.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 17 passed (18)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "L4-status-not-supplied",
+      "predicate": "routes: the model block never reaches the status slot",
+      "file": "apps/three-surface-poc/src/routes.ts",
+      "old": "      resourceHeadroom: model.resourceHeadroom,\n",
+      "new": "      resourceHeadroom: null,\n",
+      "check": "npx vitest run apps/three-surface-poc/src/polaris-parity-sweep.test.ts apps/three-surface-poc/src/response-limits.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  8 failed | 66 passed (74)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    },
+    {
+      "id": "L5-reasons-dropped",
+      "predicate": "human: Unknown values lose their stated reason",
+      "file": "apps/three-surface-poc/src/resource-headroom-line.ts",
+      "old": "${why === '' ? '' : ` Unknown because: ${why}.`}",
+      "new": "",
+      "check": "npx vitest run apps/three-surface-poc/src/response-limits.test.ts",
+      "exit": 1,
+      "outcome": "killed",
+      "evidence": [
+        "      Tests  1 failed | 17 passed (18)",
+        "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯"
+      ]
+    }
+  ],
+  "summary": {
+    "mutants": 11,
+    "killed": 11
+  }
+}
