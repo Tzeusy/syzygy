@@ -1,6 +1,7 @@
 > **Candidate — binds nothing.** This brief says what an independent reviewer
-> is given and what they decide. It is not a review and carries no verdict. No
-> review has been run against this package.
+> is given and what they decide. It is not a review and carries no verdict.
+> Round 1 (REVISE) is retained in `reviews/`; this brief is for round 2 over
+> the repaired bytes.
 
 # Review brief — RFC5-14 `project-documentation` class
 
@@ -59,14 +60,17 @@ Each is a yes/no question with the evidence that settles it.
    clause.
 5. **Does it keep the composite rule and secret screening intact?** The delta
    says "highest" is unchanged and no order is added. Is that statement true
-   of the proposed text? Does the new bullet's phrase "as below" resolve to
-   the fail-closed paragraph, and "rule above" to the composite bullet?
+   of the proposed text? Does "rule above" resolve to the composite bullet, and
+   does "fails closed (RFC5-15)" cite a clause that says so for a single file?
 6. **Is the blast radius honest?** Re-run the three sweeps in
-   `IMPACT-LEDGER.md` at the commit they name, from the regexes as printed, and
-   confirm 78, 83, 141 and 7; confirm the group counts sum to 141. Name any
-   authority text that enumerates the vocabulary and is not listed
-   (rule 9). Confirm that `SOURCE-POLICY.md` is digest-bound by a performed act
-   and so correctly left unedited.
+   `IMPACT-LEDGER.md` at the commit they name, from the regexes, run form and
+   span rule as printed there, by your own script, and report your own figures
+   for A, B, A and B together, the union and C, and for each group of the
+   classification (the ledger states a path rule per group). Do not accept the
+   ledger's figures; say where yours differ and why. Name any authority text
+   that enumerates the vocabulary and is not listed (rule 9). Confirm that
+   `SOURCE-POLICY.md` is digest-bound by a performed act and so correctly left
+   unedited.
 7. **Is the migration plan sound?** The module is bound by the bootstrap
    manifest and the restyle link. Is it right that the patch must not be applied
    while this is a candidate, and does the plan name the regeneration and
@@ -82,6 +86,13 @@ Each is a yes/no question with the evidence that settles it.
     options described correctly, including that Scope A's named scope does not
     obviously reach an RFC-0005 amendment, and is it labelled Inferred?
 
+11. **Round-1 repairs.** `reviews/ROUND-1-DISPOSITIONS.md` dispositions each
+    round-1 finding. For each, is the disposition true of the current bytes?
+    In particular: Finding 1 (does the signals sub-bullet now constrain only
+    how a signal places a file in this class, leaving the content of a
+    declared policy to the policy, and does the delta say so?) and Finding 2
+    (do the published predicate and your own run agree?).
+
 ## Out of scope
 
 - Whether to perform the act. That is the owner's alone.
@@ -91,22 +102,25 @@ Each is a yes/no question with the evidence that settles it.
 
 ## Recording
 
-Store the raw output verbatim under `docs/reviews/` as
-`R-RFC5-PROJECT-DOCUMENTATION-CLASS-RAW.md`; a later round is a second
-`-RAW.md`, never an overwrite. The first four non-blank lines must be the
-title and exactly:
+Store the raw output verbatim in `reviews/` of this package as
+`R-RFC5-PROJECT-DOCUMENTATION-CLASS-2-RAW.md`; round 1 is the `-1-RAW.md` beside
+it and is never overwritten. The first four lines of the file must be the
+title and exactly the three lines below, with **no blank line anywhere in
+those four lines** (a blank line pushes `Verdict:` past a literal four-line
+head):
 
 ```text
+# <title>
 Reviewed commit: <the 40-hex commit the reviewer read>
 Manifest SHA-256: <SHA-256 of the FILE CONTRACT-AMENDMENT-MANIFEST.txt>
 Verdict: CONFIRM | CONFIRM WITH EXCEPTIONS | REVISE
 ```
 
 `Manifest SHA-256` is the digest of the manifest **file** at the reviewed
-commit (it has one row; the file and the row are different digests). Print it
-with `sha256sum`. Keep the verdict within the first four non-blank lines.
-Number findings as `**Finding N — title** (blocking|revise|note)` under a
-`## Findings` heading. A CONFIRM WITH EXCEPTIONS clears the bytes only when
-every finding is a `note`, dispositioned in a sibling
-`ROUND-<n>-DISPOSITIONS.md` that names the raw on a `Reviewed record:` line.
-Any later edit to the package retires the review (rule 10).
+commit, printed with `sha256sum` (it has one row; the file and the row are
+different digests, and the row is not what the head carries). Number findings
+as `**Finding N — title** (blocking|revise|note)` under a `## Findings`
+heading. A CONFIRM WITH EXCEPTIONS clears the bytes only when every finding is
+a `note`, dispositioned in a sibling `ROUND-<n>-DISPOSITIONS.md` that names the
+raw on a `Reviewed record:` line. Any later edit to the package retires the
+review (rule 10).
