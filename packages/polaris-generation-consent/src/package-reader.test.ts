@@ -100,12 +100,15 @@ describe('package admission reader', () => {
       ['unrecognised package decision file', { [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-REDIS-WITHDRAWAL.md`]: 'withdrawn' }],
       ['artifact outside the instances directory', { [act]: actText('consent-observation', '.syzygy/elsewhere.md', obsText()), '.syzygy/elsewhere.md': obsText() }],
       ['traversal in the artifact path', { [act]: actText('consent-observation', `${INSTANCES_DIR}/../x.md`, obsText()) }],
+      ['act form under an unrecognised file name', { [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT-WITHDRAWN.md`]: actText('consent-observation', REDIS_PATH, obsText()) }],
+      ['act for another project', { [act]: actText('consent-observation', REDIS_PATH, obsText()).replace('`project:syzygy`', '`project:butlers`') }],
+      ['duplicate Record ID line', (() => { const t = obsText() + '\nRecord ID: `OTHER`\n'; return { [REDIS_PATH]: t, [act]: actText('consent-observation', REDIS_PATH, t) }; })()],
       ['unknown act type', { [act]: actText('consent-other', REDIS_PATH, obsText()) }],
       ['malformed digest', { [act]: actText('consent-observation', REDIS_PATH, obsText(), '2026-10-04', 'abc') }],
       ['bad date', { [act]: actText('consent-observation', REDIS_PATH, obsText(), '2026-13-45') }],
       ['artifact missing', { [act]: actText('consent-observation', `${INSTANCES_DIR}/gone/OBSERVATION-CONSENT.md`, obsText()) }],
       ['successor form not parsed', (() => { const t = obsText({ revocation: 'active; supersedes PUBLIC-OBS-REDIS-2026-09-01@1' }); return { [REDIS_PATH]: t, [act]: actText('consent-observation', REDIS_PATH, t) }; })()],
-      ['branch name as revision', (() => { const t = obsText({ rows: '| `main` | `main` |' }); return { [REDIS_PATH]: t, [act]: actText('consent-observation', REDIS_PATH, t) }; })()],
+      ['branch name as revision', (() => { const t = obsText({ rows: '| `short` | `abc123` |' }); return { [REDIS_PATH]: t, [act]: actText('consent-observation', REDIS_PATH, t) }; })()],
       ['subject not a pair', (() => { const t = obsText({ subject: '(project:syzygy, repository:*)' }); return { [REDIS_PATH]: t, [act]: actText('consent-observation', REDIS_PATH, t) }; })()],
     ];
     for (const [name, over] of cases) await expect(reader(world(over)).read(), name).rejects.toBeInstanceOf(AdmissionRecordError);
@@ -129,6 +132,10 @@ describe('admission records port', () => {
     expect(await p.check(requirement('egress-consent', 'butlers'))).toMatchObject({ satisfied: false });
     expect(await p.check(requirement('public-source-policy'))).toMatchObject({ satisfied: false });
     expect(await port(world({ [REDIS_PATH]: obsText() + 'x' }), DAY).check(requirement('observation-consent'))).toMatchObject({ satisfied: false });
+  });
+  it('does not take another provider\'s egress record for the Anthropic requirement', async () => {
+    const other = egressText().replace('provider:anthropic', 'provider:other');
+    expect(await port(world({ [EGRESS_PATH]: other, [`${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-EGRESS-ANTHROPIC-ACT.md`]: actText('consent-egress', EGRESS_PATH, other) }), DAY).check(requirement('egress-consent'))).toMatchObject({ satisfied: false });
   });
   it('is unsatisfied, with a reason, when records cannot be read or none exist', async () => {
     const none = world(); for (const key of Object.keys(none)) if (key.endsWith('-ACT.md')) delete none[key];
