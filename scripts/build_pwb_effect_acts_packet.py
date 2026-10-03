@@ -9,10 +9,24 @@ owner act bound to that artifact's exact SHA-256 (RFC3-16(b) item 3). This
 script performs no act; it renders the closed population, verifies drift and
 generates the plain-language packet the owner reads.
 
-The policy and registry subjects were superseded by separate owner acts on
-2026-09-05. Their 2026-09-02 packet is immutable history, so ``--check`` now
-fails by design and the default write mode must not be used to regenerate it.
-``--selftest`` remains the safe way to exercise this generator's predicates.
+**``--check`` fails by design** (syzygy-fclp, 2026-10-04). Each act binds its
+artifact's own digest, not this manifest's, but the manifest's digest is
+quoted by ``OWNER-SIGNOFF-PACKET.md``, ``CANDIDATE-REPORT.md`` and retained
+reviews under ``docs/reviews/``. The 2026-09-02 manifest is therefore
+immutable history, and the default write mode must not be used to regenerate
+it. Of its three rows, the consent row still matches:
+``decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`` still binds the bytes in
+force. The policy and registry rows have drifted since commit ``305500dc``
+(2026-09-05), which prepared the truth-and-readiness amendment that the
+owner's 2026-09-05 amendment acts then bound. Later acts moved both again: the
+registry's currency-briefing amendment (2026-09-30) and the two
+behaviour-contract re-pin acts (2026-10-02), whose arguments the two subjects
+carry today. ``--check`` therefore reports two digest mismatches and a
+regeneration mismatch. That is not a defect. ``--selftest`` does not fail: it
+renders over the current bytes in memory, never reads the committed manifest,
+and passes. To check the bytes in force, run
+``record_pwb_behavior_contract_repin_acts.py --check policy`` and
+``--check registry`` (their lines in the ``PROJECT-STATUS.md`` battery).
 """
 
 from __future__ import annotations
